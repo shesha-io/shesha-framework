@@ -1,30 +1,24 @@
 "use client";
 
-import React, { FC } from 'react';
+import React, { ReactNode } from 'react';
 import { FormIdentifier } from '@/interfaces';
 import { DynamicPage } from '@/generic-pages/dynamic';
 import { notFound } from 'next/navigation';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
-/*
 interface AsyncPageProps {
   params: Promise<{ path: string[] }>;
   searchParams: Promise<NodeJS.Dict<string | string[]>>;
 }
-*/
-interface PageProps {
-  params: { path: string[] };
-  searchParams: NodeJS.Dict<string | string[]>;
-}
 
-const DynamicPageInternal: FC<PageProps> = (props) => {
-  // const params = use(props.params);
-  // const searchParams = use(props.searchParams);
-  const { params, searchParams } = props;
+const DynamicPageInternal = async (props: AsyncPageProps): Promise<ReactNode> => {
+  const params = await props.params;
+  const searchParams = await props.searchParams;
 
   // possible values of path:
   // 1. array with one element: [formName]
   // 2. array with two elements: [moduleName, formName]
-  const fullPath = params.path && Array.isArray(params.path)
+  const fullPath = isDefined(params.path) && Array.isArray(params.path)
     ? params.path.length === 1
       ? [null, params.path[0]]
       : params.path.length === 2
@@ -34,7 +28,7 @@ const DynamicPageInternal: FC<PageProps> = (props) => {
   const moduleName = fullPath[0];
   const formName = fullPath[1];
 
-  if (!formName)
+  if (isNullOrWhiteSpace(moduleName) || isNullOrWhiteSpace(formName))
     return notFound();
 
   const formId: FormIdentifier = {

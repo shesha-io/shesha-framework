@@ -1,37 +1,37 @@
 import { FormMode } from '@/providers';
 import { FrontEndApplicationDto, IFrontEndApplication, ISettingConfiguration, ISettingIdentifier, LoadingState, SettingValue } from './models';
 import { createNamedContext } from '@/utils/react';
+import { IErrorInfo } from '@/interfaces';
 
 export interface IEditorBridge {
   save: () => Promise<void>;
   cancel: () => void;
-  // startEdit: () => void,
 }
 
 export type SaveStatus = 'none' | 'saving' | 'success' | 'error' | 'canceled';
 
 export interface ISettingsEditorStateContext {
   configsLoadingState: LoadingState;
-  loadingConfigsError?: any;
+  loadingConfigsError?: IErrorInfo | undefined;
   settingConfigurations: ISettingConfiguration[];
 
   applicationsLoadingState: LoadingState;
-  loadingApplicationsError?: any;
+  loadingApplicationsError?: IErrorInfo | undefined;
   applications: IFrontEndApplication[];
 
-  settingSelection: ISettingSelection;
+  settingSelection: ISettingSelection | undefined;
 
-  editorMode: FormMode;
-  editorBridge?: IEditorBridge;
+  editorMode: FormMode | undefined;
+  editorBridge: IEditorBridge | undefined;
 
-  selectedApplication?: IFrontEndApplication;
+  selectedApplication: IFrontEndApplication | undefined;
 
-  saveStatus?: SaveStatus;
+  saveStatus: SaveStatus | undefined;
 }
 
 export interface ISettingsEditorActionsContext {
-  selectApplication: (app?: IFrontEndApplication) => void;
-  selectSetting: (setting: ISettingConfiguration, app?: IFrontEndApplication) => void;
+  selectApplication: (app?: IFrontEndApplication | undefined) => void;
+  selectSetting: (setting: ISettingConfiguration, app?: IFrontEndApplication | undefined) => void;
 
   saveSetting: () => Promise<void>;
   startEditSetting: () => void;
@@ -51,19 +51,19 @@ export interface IFetchConfigurationsSuccessPayload {
   settingConfigurations: ISettingConfiguration[];
 }
 export interface IFetchConfigurationsErrorPayload {
-  error: any;
+  error: IErrorInfo;
 }
 
 export interface IFetchApplicationsSuccessPayload {
   applications: FrontEndApplicationDto[];
 }
 export interface IFetchApplicationsErrorPayload {
-  error: any;
+  error: IErrorInfo;
 }
 
 export interface ISettingSelection {
-  setting?: ISettingConfiguration;
-  app?: IFrontEndApplication;
+  setting?: ISettingConfiguration | undefined;
+  app?: IFrontEndApplication | undefined;
 }
 
 
@@ -75,8 +75,11 @@ export const SETTINGS_EDITOR_STATE_CONTEXT_INITIAL_STATE: ISettingsEditorStateCo
   applicationsLoadingState: 'waiting',
   applications: [],
 
-  settingSelection: null,
+  settingSelection: undefined,
   editorMode: 'edit',
+  editorBridge: undefined,
+  selectedApplication: undefined,
+  saveStatus: undefined,
 };
 
-export const SettingsEditorContext = createNamedContext<ISettingsEditorContext>(undefined, "SettingsEditorContext");
+export const SettingsEditorContext = createNamedContext<ISettingsEditorContext | undefined>(undefined, "SettingsEditorContext");

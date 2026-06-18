@@ -11,18 +11,18 @@ using System.Linq.Expressions;
 
 namespace Shesha.MongoRepository.Mongo
 {
-    public class MongoRepository<T> : ITransientDependency, IMongoRepository<T> where T : MongoEntity
+    public sealed class MongoRepository<T> : ITransientDependency, IMongoRepository<T>, IDisposable where T : MongoEntity
     {
         private readonly IMongoDbContext context;
         private IMongoCollection<T> _document;
+        private bool disposed;
 
         public MongoRepository()
         {
             context = new MongoDbContext(MongoUtil.ConnectionString.NotNullOrWhiteSpace());
         }
 
-        #region Properties
-        protected IMongoCollection<T> Document
+        private IMongoCollection<T> Document
         {
             get
             {
@@ -48,7 +48,7 @@ namespace Shesha.MongoRepository.Mongo
         /// Get type of IMongoQueryable document
         /// If you want an IEnumerable list make 'Table.ToList()'
         /// </summary>
-        public IMongoQueryable<T> Table
+        public IQueryable<T> Table
         {
             get
             {
@@ -66,7 +66,6 @@ namespace Shesha.MongoRepository.Mongo
                 return Table.Count();
             }
         }
-        #endregion
 
         #region Insert
 
@@ -184,6 +183,25 @@ namespace Shesha.MongoRepository.Mongo
         {
             return Document.Find(filter).ToList();
         }
+
+        public void Dispose()
+        {
+            if (disposed)
+                return;
+
+            context.Dispose();
+
+            disposed = true;
+        }
+
+        private void ThrowIfDisposed()
+        {
+            if (disposed)
+            {
+                throw new ObjectDisposedException(GetType().FullName);
+            }
+        }
+
         #endregion
     }
 }

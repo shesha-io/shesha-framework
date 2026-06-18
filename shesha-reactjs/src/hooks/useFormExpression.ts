@@ -1,12 +1,11 @@
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
-import { GenericDictionary } from '@/providers';
 import { useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
-import { IExecuteActionPayload } from '@/providers/configurableActionsDispatcher/contexts';
+import { IArgumentsEvaluationContext, IExecuteActionPayload } from '@/providers/configurableActionsDispatcher/contexts';
 import { useAvailableConstantsData } from '..';
 import { executeScriptSync } from '@/providers/form/utils';
 
-interface IFormExpression {
-  argumentsEvaluationContext: GenericDictionary;
+interface IFormExpression<TContext extends IArgumentsEvaluationContext = IArgumentsEvaluationContext> {
+  argumentsEvaluationContext: TContext;
   executeActionViaPayload: (payload: IExecuteActionPayload) => void;
   executeActionViaConfiguration: (payload: IConfigurableActionConfiguration) => void;
   executeBooleanExpression: (expression: string, returnBoolean?: boolean) => boolean;
@@ -16,13 +15,13 @@ interface IFormExpression {
 export const useFormExpression = (): IFormExpression => {
   const { executeAction: executeConfig } = useConfigurableActionDispatcher();
 
-  const allData: GenericDictionary = useAvailableConstantsData();
+  const allData = useAvailableConstantsData();
 
   const executeActionViaPayload = (payload: IExecuteActionPayload): void => {
-    executeConfig(payload as IExecuteActionPayload);
+    void executeConfig(payload as IExecuteActionPayload);
   };
   const executeActionViaConfiguration = (payload: IConfigurableActionConfiguration): void => {
-    executeConfig({ actionConfiguration: payload as IConfigurableActionConfiguration, argumentsEvaluationContext: allData });
+    void executeConfig({ actionConfiguration: payload, argumentsEvaluationContext: allData });
   };
 
   const executeBooleanExpression = (expression: string, returnBoolean = true): boolean => {

@@ -78,7 +78,7 @@ class DefaultGenerationLogic extends BaseGenerationLogic {
     // Do nothing for default logic
   }
 
-  override async processTemplate(markup: string, replacements: Record<string, any>): Promise<string> {
+  override async processTemplate(markup: string, replacements: Record<string, unknown>): Promise<string> {
     // Override base implementation to just apply standard replacements
     const result = await Promise.resolve(evaluateString(markup, replacements, true));
     return result;

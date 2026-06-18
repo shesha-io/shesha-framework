@@ -1,5 +1,7 @@
-import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import camelcase from 'camelcase';
+import { ReactNode, isValidElement } from 'react';
+import { ReactElement } from 'react-markdown/lib/react-markdown';
 
 /* tslint:disable:no-empty-character-class */
 
@@ -85,13 +87,16 @@ export function getLastSection(separator: string, value: string): string {
     : '';
 }
 
-export const getNumericValue = (localValue: number | string): number => {
+
+export const getNumberOrUndefined = (value: unknown | undefined): number | undefined => {
   try {
-    return Number(localValue);
+    return isDefined(value) ? Number(value) : undefined;
   } catch {
-    return 0;
+    return undefined;
   }
 };
+
+export const getNumericValue = (localValue: number | string | undefined): number => getNumberOrUndefined(localValue) ?? 0;
 
 export interface CamelCaseOptions {
   /** Keep the leading separator: `_foo_bar` → `_fooBar`.
@@ -133,6 +138,13 @@ export interface CamelCaseOptions {
 
 const leadingSeparatorsRegex = /^[-_.\s]+/;
 
+
+export function toCamelCase(str: string, options?: CamelCaseOptions): string;
+// eslint-disable-next-line no-redeclare
+export function toCamelCase(str: null, options?: CamelCaseOptions): null;
+// eslint-disable-next-line no-redeclare
+export function toCamelCase(str: undefined, options?: CamelCaseOptions): undefined;
+// eslint-disable-next-line no-redeclare
 export function toCamelCase(str: string | null | undefined, options?: CamelCaseOptions): string | null | undefined {
   const text = str?.trim();
 
@@ -144,16 +156,16 @@ export function toCamelCase(str: string | null | undefined, options?: CamelCaseO
     ? text.match(leadingSeparatorsRegex)?.[0] ?? ''
     : '';
 
-  const result = camelcase(text.replace(leadingSeparatorsRegex, ''), {
-    locale: options?.locale ?? undefined,
+  const result = camelcase(text, {
+    locale: options?.locale ?? false,
     pascalCase: options?.pascalCase ?? false,
     preserveConsecutiveUppercase: options?.preserveConsecutiveUppercase ?? false,
-  });
+  }).replace(/[^\p{L}\p{N}]/gu, ''); // remove all non-alphanumeric characters
 
-  return leadingSeparators + result;
+  return leadingSeparators + result; // restore the leading separators if needed
 }
 
-export function getNumberFormat(str: string, format: string): string {
+export function numberToFormattedString(str: string, format: string | undefined): string {
   if (!isNullOrWhiteSpace(str)) {
     const value = parseFloat(str);
 
@@ -219,4 +231,45 @@ export const trimPrefix = (s: string, w: string): string => {
 
 export const isEmptyString = (value: unknown): boolean => {
   return typeof (value) === 'string' && value.trim() === '';
+};
+
+export const truncateMiddle = (str: string, maxLength: number, ellipsis: string = '...'): string => {
+  if (!str) return str;
+  if (maxLength <= 0) return '';
+  if (str.length <= maxLength) return str;
+  if (maxLength <= ellipsis.length) return ellipsis.slice(0, maxLength);
+  const charsToShow = maxLength - ellipsis.length;
+  const start = Math.ceil(charsToShow / 2);
+  const end = Math.floor(charsToShow / 2);
+  return str.slice(0, start) + ellipsis + (end > 0 ? str.slice(-end) : '');
+};
+
+export const reactNodeToString = (node: ReactNode): string => {
+  if (node == null) return '';
+  if (typeof node === 'string') return node;
+  if (typeof node === 'number') return String(node);
+  if (Array.isArray(node)) return node.map(reactNodeToString).join('');
+  if (isValidElement(node)) {
+    const { props } = node as ReactElement;
+    if (typeof props === 'object' && 'children' in props && typeof props.children === 'object')
+      return reactNodeToString(props.children as ReactNode);
+  }
+
+  return '';
+};
+
+export const incrementStringNumber = (input: string): string => {
+  // Match a space followed by one or more digits at the end of the string
+  const regex = / (\d+)$/;
+  const match = input.match(regex);
+
+  if (match && match[1]) {
+    const prefix = input.slice(0, match.index);
+    const currentNumber = parseInt(match[1], 10);
+    const incrementedNumber = currentNumber + 1;
+    return `${prefix} ${incrementedNumber}`;
+  }
+
+  // No trailing number found, append " 1"
+  return `${input} 1`;
 };

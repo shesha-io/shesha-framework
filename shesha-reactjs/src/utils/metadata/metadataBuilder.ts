@@ -1,31 +1,34 @@
 import { DataTypes, IReferenceListIdentifier } from "@/interfaces";
-import { IEntityProperty, IMethodMetadata, IObjectMetadata, IPropertyMetadata, ModelTypeIdentifier, PropertiesLoader, TypeDefinition, TypeDefinitionLoader, isEntityMetadata } from "@/interfaces/metadata";
-import { Environment, PropertiesBuilder, StandardConstantInclusionArgs,
+import { IEntityProperty, IFunctionProperty, IMethodMetadata, IModelMetadata, IObjectMetadata, IObjectProperty, IPropertyMetadata, ModelTypeIdentifier, PropertiesLoader, TypeDefinition, TypeDefinitionLoader, isEntityMetadata } from "@/interfaces/metadata";
+import {
+  Environment, PropertiesBuilder, StandardConstantInclusionArgs,
   IMetadataBuilder as IPublicMetadataBuilder,
-  IObjectMetadataBuilder as IPublicObjectMetadataBuilder } from "@/publicJsApis/metadataBuilder";
+  IObjectMetadataBuilder as IPublicObjectMetadataBuilder,
+} from "@/publicJsApis/apis/metadataBuilder";
 import { registerMetadataBuilderAction } from "./standardProperties";
 
 
-import { IMemberType, IMetadata } from '@/publicJsApis/metadata';
-import { metadataSourceCode } from '@/publicJsApis';
+import { IMemberType, IMetadata } from '@/publicJsApis/apis/metadata';
+import { metadataSourceCode } from '@/publicJsApis/apis';
 import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
 import { getEntityTypeIdentifier } from "@/providers/metadataDispatcher/entities/utils";
+import { isDefined } from "../nullables";
 
 export interface IObjectMetadataBuilder extends IPublicObjectMetadataBuilder {
   // internal methods
-  addCustom(path: string, label: string, typeDefinitionLoader: TypeDefinitionLoader): this;
+  addCustom(path: string, label: string, typeDefinitionLoader: TypeDefinitionLoader, isNullable?: boolean): this;
   addFunction(path: string, label: string): this;
   addRefList(path: string, refListId: IReferenceListIdentifier, label: string): this;
   setPropertiesLoader(loader: PropertiesLoader): this;
-  setProperties(properties: IPropertyMetadata[]);
-  setMethods(methods: IMethodMetadata[]);
+  setProperties(properties: IPropertyMetadata[]): this;
+  setMethods(methods: IMethodMetadata[]): this;
   setTypeDefinition(typeDefinitionLoader: TypeDefinitionLoader): this;
 }
 
 export type IMetadataBuilder = IPublicMetadataBuilder<IObjectMetadataBuilder>;
 
-export type MetadataFetcher = (typeId: ModelTypeIdentifier) => Promise<IObjectMetadata | null>;
-export type MetadataBuilderAction = (builder: IObjectMetadataBuilder, name: string) => void;
+export type MetadataFetcher = (typeId: ModelTypeIdentifier) => Promise<IModelMetadata | null>;
+export type MetadataBuilderAction = (builder: IObjectMetadataBuilder, name: string | undefined) => void;
 
 export type WellKnownConstantDescriptor = {
   includeByDefault: boolean;
@@ -52,7 +55,7 @@ export class ObjectMetadataBuilder implements IObjectMetadataBuilder {
     this.metadata.description = description;
   }
 
-  _createProperty = <T extends IPropertyMetadata = IPropertyMetadata>(dataType: string, path: string, label: string, init?: (base: IPropertyMetadata) => T): T => {
+  _createProperty = <T extends IPropertyMetadata = IPropertyMetadata>(dataType: string, path: string, label: string | undefined, init?: (base: IPropertyMetadata) => T): T => {
     const baseProps: IPropertyMetadata = {
       dataType,
       path,
@@ -103,36 +106,38 @@ export class ObjectMetadataBuilder implements IObjectMetadataBuilder {
     return this.add(DataTypes.any, path, label);
   }
 
-  addCustom(path: string, label: string, typeDefinitionLoader: TypeDefinitionLoader): this {
-    const nestedObject = this._createProperty(DataTypes.object, path, label);
-    nestedObject.typeDefinitionLoader = typeDefinitionLoader;
+  addCustom(path: string, label: string, typeDefinitionLoader: TypeDefinitionLoader, isNullable: boolean = false): this {
+    this._createProperty<IObjectProperty>(DataTypes.object, path, label, (p) => ({ ...p, isNullable, typeDefinitionLoader }));
     return this;
   }
 
   addFunction(path: string, label: string): this {
-    const nestedObject = this._createProperty(DataTypes.function, path, label);
+    const nestedObject = this._createProperty<IFunctionProperty>(DataTypes.function, path, label);
     nestedObject.typeDefinitionLoader = (_ctx) => {
       return Promise.resolve({ typeName: '(...arguments: any) => any;', files: [] });
     };
     return this;
   }
 
-  addObject(path: string, label: string, propertiesBuilder: PropertiesBuilder<this>): this {
-    const nestedObject = this._createProperty(DataTypes.object, path, label);
-
-    if (propertiesBuilder) {
-      const builder = new ObjectMetadataBuilder(this.#metadataBuilder, path) as this;
-      propertiesBuilder(builder);
-      nestedObject.properties = builder.metadata.properties;
-      nestedObject.typeDefinitionLoader = builder.metadata.typeDefinitionLoader;
-    }
+  addObject(path: string, label: string | undefined, propertiesBuilder: PropertiesBuilder<this> | undefined): this {
+    this._createProperty<IObjectProperty>(DataTypes.object, path, label, (p) => {
+      const property = p as IObjectProperty;
+      if (propertiesBuilder) {
+        const builder = new ObjectMetadataBuilder(this.#metadataBuilder, path) as this;
+        propertiesBuilder(builder);
+        property.properties = builder.metadata.properties;
+        property.typeDefinitionLoader = builder.metadata.typeDefinitionLoader as TypeDefinitionLoader;
+      }
+      return property;
+    });
 
     return this;
   }
 
   addEntityAsync(path: string, label: string, entityType: string | IEntityTypeIdentifier): Promise<this> {
-    return this.#metadataBuilder.metadataFetcher(getEntityTypeIdentifier(entityType)).then((response) => {
-      if (!isEntityMetadata(response))
+    const entityTypeId = getEntityTypeIdentifier(entityType);
+    return this.#metadataBuilder.metadataFetcher(entityTypeId).then((response) => {
+      if (!isDefined(response) || !isEntityMetadata(response))
         throw new Error(`Failed to resolve entity type '${entityType}'`);
 
       this._createProperty<IEntityProperty>(DataTypes.entityReference, path, label,
@@ -140,7 +145,7 @@ export class ObjectMetadataBuilder implements IObjectMetadataBuilder {
           ...p,
           fullClassName: response.fullClassName,
           entityType: response.entityType,
-          entityModule: response.entityModule,
+          entityModule: response.entityModule ?? undefined,
 
           // ToDo: AS - remove after implementation of module + name
           typeAccessor: response.typeAccessor,
@@ -162,7 +167,7 @@ export class ObjectMetadataBuilder implements IObjectMetadataBuilder {
         : item.name;
       const descriptor = this.#metadataBuilder.standardProperties.get(key);
       if (descriptor)
-        descriptor.buildAction?.(this, name);
+        descriptor.buildAction(this, name);
     });
     return this;
   }
@@ -179,7 +184,7 @@ export class ObjectMetadataBuilder implements IObjectMetadataBuilder {
 
   addRefList(path: string, refListId: IReferenceListIdentifier, label: string): this {
     const property = this._createProperty(DataTypes.referenceListItem, path, label);
-    property.referenceListModule = refListId.module;
+    property.referenceListModule = refListId.module ?? undefined;
     property.referenceListName = refListId.name;
     return this;
   }
@@ -249,7 +254,7 @@ export class MetadataBuilder implements IMetadataBuilderInternal {
     throw new Error("Method not implemented.");
   }
 
-  entity(entityType: string): Promise<IObjectMetadata> {
+  entity(entityType: string): Promise<IObjectMetadata | null> {
     return this.metadataFetcher({ name: entityType, module: null });
   }
 
@@ -290,7 +295,7 @@ export class MetadataBuilder implements IMetadataBuilderInternal {
 
   isEntityAsync(entityType: string): Promise<boolean> {
     return this.metadataFetcher({ name: entityType, module: null }).then((response) => {
-      return isEntityMetadata(response);
+      return isDefined(response) && isEntityMetadata(response);
     });
   }
 }

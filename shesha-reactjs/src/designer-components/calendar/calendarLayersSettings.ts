@@ -68,7 +68,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         _code: 'return getSettingValue(data?.showLegend) !== true',
                         _mode: 'code',
                         _value: false,
-                      } as any,
+                      },
                       validate: {
                         required: true,
                       },
@@ -112,7 +112,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         _code: 'return getSettingValue(data?.dataSource) !== "entity"',
                         _mode: 'code',
                         _value: false,
-                      } as any,
+                      },
                     },
                   ],
                 })
@@ -130,7 +130,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         _code: 'return getSettingValue(data?.dataSource) !== "entity"',
                         _mode: 'code',
                         _value: false,
-                      } as any,
+                      },
                       fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
                     },
                   ],
@@ -148,7 +148,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         _code: 'return getSettingValue(data?.dataSource) !== "custom"',
                         _mode: 'code',
                         _value: false,
-                      } as any,
+                      },
                       jsSetting: false,
                     },
                   ],
@@ -181,8 +181,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       modelType: {
                         _code: 'return data?.entityType;',
                         _mode: 'code',
-                        _value: false,
-                      } as any,
+                      },
                       autoFillProps: false,
                       jsSetting: false,
                     },
@@ -197,8 +196,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       modelType: {
                         _code: 'return data?.entityType;',
                         _mode: 'code',
-                        _value: false,
-                      } as any,
+                      },
                       autoFillProps: false,
                       jsSetting: false,
                     },
@@ -227,14 +225,13 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       modelType: {
                         _code: 'return data?.entityType;',
                         _mode: 'code',
-                        _value: false,
-                      } as any,
+                      },
                       autoFillProps: false,
                       hidden: {
                         _code: 'return getSettingValue(data?.overfetch) !== true',
                         _mode: 'code',
                         _value: false,
-                      } as any,
+                      },
                     },
                   ],
                 })
@@ -304,7 +301,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         _code: "return getSettingValue(data?.showIcon) !== true",
                         _mode: "code",
                         _value: false,
-                      } as any,
+                      },
                       description: 'Set the icon of your nodes',
                       exposedVariables: [
                         {
@@ -343,7 +340,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         _code: "return getSettingValue(data?.showIcon) !== true",
                         _mode: "code",
                         _value: false,
-                      } as any,
+                      },
                     },
                   ],
                 })

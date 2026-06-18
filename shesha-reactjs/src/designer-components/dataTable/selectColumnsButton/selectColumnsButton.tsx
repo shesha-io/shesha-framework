@@ -5,18 +5,18 @@ import { useDataTableStore } from '@/providers';
 
 export const SelectColumnsButton: FC = ({ }) => {
   const {
-    isInProgress: { isSelectingColumns },
-    setIsInProgressFlag,
+    isColumnsSelectorVisible,
+    toggleColumnsSelector,
   } = useDataTableStore();
 
-  const startTogglingColumnVisibility = (): void => setIsInProgressFlag({ isSelectingColumns: true, isFiltering: false });
+  const startTogglingColumnVisibility = (): void => toggleColumnsSelector(true);
 
   return (
     <Button
       type="link"
       className="extra-btn column-visibility"
       icon={<SlidersOutlined rotate={90} />}
-      disabled={!!isSelectingColumns}
+      disabled={isColumnsSelectorVisible}
       onClick={startTogglingColumnVisibility}
       size="small"
     />

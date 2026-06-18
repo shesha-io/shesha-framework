@@ -1,67 +1,61 @@
-import { handleActions } from 'redux-actions';
-import { CanvasConfigActionEnums } from './actions';
-import { ICanvasStateContext, CANVAS_CONTEXT_INITIAL_STATE, ICanvasWidthProps, IDeviceTypes, IViewType } from './contexts';
-import { getDeviceTypeByWidth, getSmallerDevice, getWidthByDeviceType } from './utils';
+import { createReducer } from '@reduxjs/toolkit';
+import { setCanvasZoomAction,
+  setCanvasWidthAction,
+  setScreenWidthAction,
+  setDesignerDeviceAction,
+  setCanvasAutoZoomAction,
+  setConfigTreePanelSizeAction,
+  setViewTypeAction } from './actions';
+import { CANVAS_CONTEXT_INITIAL_STATE } from './contexts';
+import { applyCanvasSize, getDeviceTypeByWidth, getSmallerDevice } from './utils';
 
-export default handleActions<ICanvasStateContext, any>(
-  {
-    [CanvasConfigActionEnums.SetScreenWidth]: (state: ICanvasStateContext, action: ReduxActions.Action<number>) => {
-      const { payload: width } = action;
-      const device = getDeviceTypeByWidth(width);
-      return {
-        ...state,
-        physicalDevice: device,
-        activeDevice: getSmallerDevice(device, state.designerDevice),
-      };
-    },
-    [CanvasConfigActionEnums.SetDesignerDevice]: (state: ICanvasStateContext, action: ReduxActions.Action<IDeviceTypes>) => {
-      const { payload: deviceType } = action;
-
-      return {
-        ...state,
-        designerWidth: state.designerWidth ?? getWidthByDeviceType(deviceType),
-        designerDevice: deviceType,
-        activeDevice: getSmallerDevice(deviceType, state.physicalDevice),
-      };
-    },
-    [CanvasConfigActionEnums.SetCanvasWidth]: (state: ICanvasStateContext, action: ReduxActions.Action<ICanvasWidthProps>) => {
-      const { payload: { width, deviceType } } = action;
-
-      return {
-        ...state,
-        designerWidth: typeof width === 'string' ? width : `${width}px`,
-        designerDevice: deviceType,
-        activeDevice: getSmallerDevice(deviceType, state.physicalDevice),
-      };
-    },
-    [CanvasConfigActionEnums.SetCanvasZoom]: (state: ICanvasStateContext, action: ReduxActions.Action<number>) => {
-      const { payload } = action;
-
+export const reducer = createReducer(CANVAS_CONTEXT_INITIAL_STATE, (builder) => {
+  builder
+    .addCase(setCanvasZoomAction, (state, { payload }) => {
       return {
         ...state,
         zoom: payload,
       };
-    },
-    [CanvasConfigActionEnums.SetCanvasAutoZoom]: (state: ICanvasStateContext) => {
+    })
+    .addCase(setCanvasWidthAction, (state, { payload }) => {
+      const { width, deviceType } = payload;
+
+      return applyCanvasSize(state, width, deviceType);
+    })
+    .addCase(setScreenWidthAction, (state, { payload }) => {
+      const device = getDeviceTypeByWidth(payload);
+      return {
+        ...state,
+        physicalDevice: device,
+        activeDevice: getSmallerDevice(device, state.designerDevice ?? "desktop"),
+      };
+    })
+    .addCase(setDesignerDeviceAction, (state, { payload }) => {
+      return {
+        ...state,
+        designerWidth: state.designerWidth,
+        designerDevice: payload,
+        activeDevice: getSmallerDevice(payload, state.physicalDevice ?? "desktop"),
+      };
+    })
+    .addCase(setCanvasAutoZoomAction, (state) => {
       return {
         ...state,
         autoZoom: !state.autoZoom,
       };
-    },
-    [CanvasConfigActionEnums.SetConfigTreePanelSize]: (state: ICanvasStateContext, action: ReduxActions.Action<number>) => {
-      const { payload } = action;
+    })
+    .addCase(setConfigTreePanelSizeAction, (state, { payload }) => {
       return {
         ...state,
         configTreePanelSize: payload,
       };
-    },
-    [CanvasConfigActionEnums.SetViewType]: (state: ICanvasStateContext, action: ReduxActions.Action<IViewType>) => {
-      const { payload } = action;
+    })
+    .addCase(setViewTypeAction, (state, { payload }) => {
       return {
         ...state,
         viewType: payload,
       };
-    },
-  },
-  CANVAS_CONTEXT_INITIAL_STATE,
-);
+    });
+});
+
+

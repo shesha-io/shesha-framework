@@ -14,7 +14,7 @@ namespace Shesha.Metadata
         /// Get available models
         /// </summary>
         /// <returns></returns>
-        Task<List<ModelDto>> GetModelsAsync();
+        Task<List<ModelDto>> GetModelsListAsync();
 
         /// <summary>
         /// Get model type by name or alias
@@ -27,5 +27,12 @@ namespace Shesha.Metadata
         /// </summary>
         /// <returns></returns>
         Task ClearCacheAsync();
+
+        /// <summary>
+        /// Get cached snapshot hash calculated for all available models
+        /// Note: returns null if value is  missing in cache
+        /// </summary>
+        /// <returns></returns>
+        Task<string?> GetModelsSnapshotHashOrNullAsync();
     }
 }

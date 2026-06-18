@@ -7,10 +7,12 @@ import { getEntityFilterByIds } from './graphQl';
 import { isEqual } from 'lodash';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { getEntityTypeIdentifierQueryParams } from '@/providers/metadataDispatcher/entities/utils';
+import { isNullOrWhiteSpace } from './nullables';
+import { getIdOrUndefined } from './entity';
 
 interface AutocompleteReturn {
   data: EntityData[];
-  error: any;
+  error: unknown;
   search: (term: string) => void;
   loading: boolean;
 }
@@ -18,24 +20,26 @@ interface AutocompleteReturn {
 export type AutocompleteValueType = string | string[] | object | object[];
 
 export interface IAutocompleteProps {
-  entityType: string | IEntityTypeIdentifier;
-  filter?: string;
-  maxResultCount?: number;
-  displayProperty?: string;
-  value?: AutocompleteValueType;
+  entityType: string | IEntityTypeIdentifier | undefined;
+  filter?: string | undefined;
+  maxResultCount?: number | undefined;
+  displayProperty?: string | undefined;
+  value?: AutocompleteValueType | undefined;
 }
 
-const buildFilterById = (value: AutocompleteValueType): string => {
-  if (!value) return null;
+const buildFilterById = (value: AutocompleteValueType | undefined): string | undefined => {
+  if (!value) return undefined;
 
-  const ids = (Array.isArray(value) ? value : [value]).map((val) => {
-    return typeof val === 'string' ? val : val?.id ?? undefined;
-  }).filter((x) => Boolean(x));
+  const ids = (Array.isArray(value) ? value : [value]).map<string | undefined>((val) => {
+    return typeof val === 'string'
+      ? val
+      : getIdOrUndefined(val);
+  }).filter((x) => !isNullOrWhiteSpace(x));
 
   return getEntityFilterByIds(ids);
 };
 
-export const autocompleteValueIsEmpty = (value: AutocompleteValueType): boolean => {
+export const autocompleteValueIsEmpty = (value: AutocompleteValueType | undefined | null): boolean => {
   return Array.isArray(value) ? value.length === 0 : !Boolean(value);
 };
 
@@ -43,7 +47,7 @@ export const autocompleteValueIsEmpty = (value: AutocompleteValueType): boolean 
  * Generic entities autocomplete
  */
 export const useEntityAutocomplete = (props: IAutocompleteProps): AutocompleteReturn => {
-  const previousQueryParams = useRef<IGenericGetAllPayload>(null);
+  const previousQueryParams = useRef<IGenericGetAllPayload>(undefined);
   const displayProperty = props.displayProperty || '_displayName';
 
   const [searchIsValid, setSearchIsValid] = useState<boolean>(false);
@@ -55,7 +59,7 @@ export const useEntityAutocomplete = (props: IAutocompleteProps): AutocompleteRe
       maxResultCount: props.maxResultCount ?? 10,
       properties: properties,
       quickSearch: term,
-      filter: props?.filter,
+      filter: props.filter,
       sorting: displayProperty,
       ...getEntityTypeIdentifierQueryParams(props.entityType),
     };
@@ -71,7 +75,7 @@ export const useEntityAutocomplete = (props: IAutocompleteProps): AutocompleteRe
     filter: buildFilterById(props.value),
     ...getEntityTypeIdentifierQueryParams(props.entityType),
   };
-  const valueFetcher = useGet<IAbpWrappedGetEntityListResponse, any, IGenericGetAllPayload>(
+  const valueFetcher = useGet<IAbpWrappedGetEntityListResponse, unknown, IGenericGetAllPayload>(
     `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
     {
       lazy: autocompleteValueIsEmpty(props.value),
@@ -80,7 +84,7 @@ export const useEntityAutocomplete = (props: IAutocompleteProps): AutocompleteRe
   );
 
 
-  const listFetcher = useGet<IAbpWrappedGetEntityListResponse, any, IGenericGetAllPayload>(
+  const listFetcher = useGet<IAbpWrappedGetEntityListResponse, unknown, IGenericGetAllPayload>(
     `${GENERIC_ENTITIES_ENDPOINT}/GetAll`,
     {
       lazy: true,
@@ -94,9 +98,13 @@ export const useEntityAutocomplete = (props: IAutocompleteProps): AutocompleteRe
 
     setSearchIsValid(false);
     previousQueryParams.current = queryParams;
-    listFetcher.refetch({ queryParams }).then(() => {
-      setSearchIsValid(true);
-    });
+    listFetcher.refetch({ queryParams })
+      .then(() => {
+        setSearchIsValid(true);
+      })
+      .catch((error) => {
+        console.error('Failed to fetch autocomplete list', error);
+      });
   };
 
   const listItems = listFetcher.data?.result?.items;
@@ -120,7 +128,7 @@ export const useEntityAutocomplete = (props: IAutocompleteProps): AutocompleteRe
     }
 
     return result;
-  }, [listItems, valueItems, props.value, searchIsValid]);
+  }, [listItems, valueItems, props.value]);
 
   return {
     data: allItems,

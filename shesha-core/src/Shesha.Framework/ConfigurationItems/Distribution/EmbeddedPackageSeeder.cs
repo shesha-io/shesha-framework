@@ -56,7 +56,7 @@ namespace Shesha.ConfigurationItems.Distribution
 
             context.Logger.Warn($"Found {embeddedPackages.Count} embedded packages total");
 
-            var importedPackages = await _importResultRepository.GetAll()
+            var importedPackages = await (await _importResultRepository.GetAllAsync())
                 .Where(r => r.IsSuccess && r.ImportedFile != null && r.ImportedFileMD5 != null)
                 .Select(r => new { MD5 = r.ImportedFileMD5, FileName = r.ImportedFile.FileName })
                 .ToListAsync();
@@ -64,6 +64,8 @@ namespace Shesha.ConfigurationItems.Distribution
             var readPackageContext = new ReadPackageContext() { SkipUnsupportedItems = true };
 
             var imported = false;
+
+            var moduleName = context.Assembly.GetConfigurableModuleName();
 
             foreach (var embeddedPackage in embeddedPackages)
             {
@@ -98,7 +100,10 @@ namespace Shesha.ConfigurationItems.Distribution
                                 CreateModules = false,
                                 Logger = context.Logger,
                                 ImportResult = importResult,
-                                IsMigrationImport = true,
+                                RevisionCreationMethod = Domain.Enums.ConfigurationItemRevisionCreationMethod.MigrationImport,
+                                ShouldImportItem = (item) => { 
+                                    return item.ModuleName == moduleName;
+                                }
                             };
                             try
                             {
@@ -129,8 +134,7 @@ namespace Shesha.ConfigurationItems.Distribution
             var fileName = Path.GetFileName(context.Assembly.Location);
             var filePath = Path.GetDirectoryName(context.Assembly.Location);
 
-            return await _startupAssemblyRepository.GetAll().Where(e => e.ApplicationStartup.Id == _startupSession.CurrentStartup.Id && e.FileName == fileName && e.FilePath == filePath)
-                .FirstOrDefaultAsync();
+            return await _startupAssemblyRepository.FirstOrDefaultAsync(e => e.ApplicationStartup.Id == _startupSession.CurrentStartup.Id && e.FileName == fileName && e.FilePath == filePath);
         }
 
         protected EmbeddedPackageInfo? TryGetPackageInfo(Assembly assembly, string resourceName)

@@ -1,29 +1,48 @@
 import { createStyles } from '@/styles';
-import { CSSObject } from '@emotion/serialize';
+import { CSSObject } from 'antd-style';
+import { addPx } from '@/utils/style';
 
-interface StyleProps extends CSSObject {
+export interface FileUploadStyleProps extends CSSObject {
   jsStyle?: CSSObject;
 }
 
 interface ModelProps {
-  layout?: boolean;
-  isDragger?: boolean;
-  hideFileName?: boolean;
-  listType?: 'text' | 'picture' | 'picture-card' | 'thumbnail';
+  layout?: boolean | undefined;
+  isDragger?: boolean | undefined;
+  hideFileName?: boolean | undefined;
+  listType?: 'text' | 'picture' | 'picture-card' | 'thumbnail' | undefined;
 }
 
-interface UseStylesParams {
-  style?: StyleProps;
+interface FileUploadStylesParams {
+  style?: FileUploadStyleProps | undefined;
   model: ModelProps;
 }
 
 type TextAlignType = 'left' | 'right' | 'center' | 'justify';
 
-export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model }: UseStylesParams) => {
+export type FileUploadStylesResponse = {
+  shaStoredFilesRenderer?: string;
+  storedFilesRendererBtnContainer?: string;
+  storedFilesRendererNoFiles?: string;
+  antUploadDragIcon?: string;
+  antPreviewDownloadIcon?: string;
+  thumbnailControls?: string;
+  overlayThumbnailControls?: string;
+  antUploadText?: string;
+  antUploadHint?: string;
+  styledFileControls?: string;
+  thumbnailReadOnly?: string;
+};
+
+export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesResponse>(({ token, css, cx, prefixCls }, { style, model }) => {
   const {
     background = 'transparent',
     backgroundImage,
     borderRadius = '8px',
+    borderTopLeftRadius,
+    borderTopRightRadius,
+    borderBottomLeftRadius,
+    borderBottomRightRadius,
     borderWidth = '0',
     borderTopWidth,
     width,
@@ -79,6 +98,21 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
   const storedFilesRendererBtnContainer = 'stored-files-renderer-btn-container';
   const storedFilesRendererNoFiles = 'stored-files-renderer-no-files';
 
+  const normalizeRadius = (value: unknown): string => {
+    const scalar = typeof value === 'string' || typeof value === 'number'
+      ? value
+      : typeof borderRadius === 'string' || typeof borderRadius === 'number'
+        ? borderRadius
+        : undefined;
+    return addPx(scalar) ?? '0';
+  };
+  const borderRadiusCss = `
+    border-top-left-radius: ${normalizeRadius(borderTopLeftRadius)} !important;
+    border-top-right-radius: ${normalizeRadius(borderTopRightRadius)} !important;
+    border-bottom-right-radius: ${normalizeRadius(borderBottomRightRadius)} !important;
+    border-bottom-left-radius: ${normalizeRadius(borderBottomLeftRadius)} !important;
+  `;
+
   const commonBorderStyles = css`
     border: ${borderWidth} ${borderStyle} ${borderColor};
     border-top: ${borderTopWidth || borderWidth} ${borderTopStyle || borderStyle} ${borderTopColor || borderColor};
@@ -114,18 +148,37 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       min-height: ${layout ? (minHeight) : '100%'} !important;
       max-width: ${layout ? (maxWidth) : '100%'} !important;
       min-width: ${layout ? (minWidth) : '100%'} !important;
+      background: ${backgroundImage ?? backgroundColor ?? background};
+      ${backgroundPosition ? `background-position: ${backgroundPosition};` : ''}
+      ${backgroundRepeat ? `background-repeat: ${backgroundRepeat};` : ''}
+      ${backgroundSize ? `background-size: ${backgroundSize};` : ''}
 
-      .ant-upload-select-picture-card {
+      .ant-upload-select-picture-card,
+      .ant-upload-list-picture-card .ant-upload-select,
+      .ant-upload-list-picture-card .ant-upload.ant-upload-select {
         width: var(--thumbnail-width) !important;
         height: var(--thumbnail-height) !important;
         background-position: ${backgroundPosition} !important;
         background-repeat: ${backgroundRepeat} !important;
         background-size: ${backgroundSize} !important;
+        ${borderRadiusCss}
+        border: ${borderWidth} ${borderStyle} ${borderColor} !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
+
+      /* Hide the upload trigger once a file is present (single-file upload). antd's
+         maxCount=1 isn't auto-hiding the trigger in this version, so suppress it via
+         a sibling-combinator rule: any .ant-upload-select that follows a file item is hidden. */
+      .ant-upload-list-picture-card .ant-upload-list-item-container ~ .ant-upload-select,
+      .ant-upload-list-picture-card .ant-upload-list-item-container ~ .ant-upload.ant-upload-select {
+        display: none !important;
       }
 
       .ant-upload-list-item {
         width: var(--thumbnail-width) !important;
-        height: calc(var(--thumbnail-height) + 32px) !important;
+        height: ${hideFileName ? 'var(--thumbnail-height)' : 'calc(var(--thumbnail-height) + 32px)'} !important;
         border-top: ${borderTop} !important;
         border-bottom: ${borderBottom} !important;
         border-right: ${borderRight} !important;
@@ -133,6 +186,9 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
       .ant-upload-list-picture-card {
         height: ${hideFileName
+          ? 'var(--thumbnail-height)'
+          : `calc(var(--thumbnail-height) + ${fontSize} * 2 + 32px)`} !important;
+        min-height: ${hideFileName
           ? 'var(--thumbnail-height)'
           : `calc(var(--thumbnail-height) + ${fontSize} * 2 + 32px)`} !important;
         padding-bottom: 1rem;
@@ -155,21 +211,21 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         --ant-padding-xs: 0px !important;
         --font-size: ${fontSize} !important;
         --ant-font-size: ${fontSize} !important;
-        border-radius: ${borderRadius} !important;
-        border: 1px dashed ${borderColor} !important;
+        ${borderRadiusCss}
+        border: ${borderWidth} ${borderStyle} ${borderColor} !important;
         display: flex;
 
         :before {
           top: 0;
           width: 100% !important;
-          border-radius: ${borderRadius} !important;
-          border: 1px dashed ${borderColor} !important;
+          ${borderRadiusCss}
+          border: ${borderWidth} ${borderStyle} ${borderColor} !important;
           height: 100% !important;
         }
       }
 
       .ant-upload-list-item-thumbnail {
-        border-radius: ${borderRadius} !important;
+        ${borderRadiusCss}
         padding: 0 !important;
         ${commonBorderStyles}
         ${style}
@@ -185,7 +241,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
             color: ${color} !important;
           }
         }
-        ${listType !== 'thumbnail' && style?.jsStyle}
+        ${style?.jsStyle}
       }
 
       .thumbnail-stub {
@@ -193,7 +249,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        border: 1px ${borderStyle} ${borderColor} !important;
+        ${borderRadiusCss}
+        border: ${borderWidth} ${borderStyle} ${borderColor} !important;
         ${style}
       }
 
@@ -212,9 +269,9 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
       .${prefixCls}-upload {
 
-        width: ${layout && !isDragger ? 'var(--thumbnail-width)' : '100%'} !important;
-        height: ${layout && !isDragger ? 'var(--thumbnail-height)' : '100%'} !important;
-        border-radius: ${borderRadius} !important;
+        width: ${layout && !isDragger ? 'var(--thumbnail-width)' : isDragger ? (width ?? height ?? '120px') : 'auto'} !important;
+        height: ${layout && !isDragger ? 'var(--thumbnail-height)' : isDragger ? (height ?? width ?? '120px') : (height ?? width ?? '54px')} !important;
+        ${borderRadiusCss}
         align-items: center;
 
         &.${prefixCls}-upload-btn {
@@ -243,17 +300,24 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         * {
           ${commonTextStyles}
         }
-        ${listType === 'thumbnail' && style}
-        width: 100%;
-        height: 100%;
+        ${style}
+        width: 100% !important;
+        height: 100% !important;
+        border: none !important;
+        background: transparent !important;
       }
 
       .ant-upload-list-item-container {
         background: ${backgroundImage ?? backgroundColor} !important;
         width: var(--thumbnail-width) !important;
         height: var(--thumbnail-height) !important;
-        border-radius: ${borderRadius} !important;
-        border: ${borderWidth} ${listType === 'thumbnail' ? borderStyle : 'none'} ${borderColor} !important;
+        ${borderRadiusCss}
+        border: ${borderWidth} ${borderStyle} transparent !important;
+        /* antd's default margin-block on this container shifts the file tile down after upload;
+           the trigger has no such margin, so reset both margin and padding to keep the file
+           tile in the same spot the trigger occupied. */
+        margin: 0 !important;
+        padding: 0 !important;
         &.ant-upload-animate-inline-appear,
         &.ant-upload-animate-inline-appear-active,
         &.ant-upload-animate-inline {
@@ -261,7 +325,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
           animation: none !important;
           transition: none !important;
         }
-        ${listType !== 'thumbnail' && style}
+        ${style}
       }
     `,
   );
@@ -284,7 +348,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     css`
       width: var(--thumbnail-width, 54px) !important;
       height: var(--thumbnail-height, 54px) !important;
-      border-radius: ${borderRadius} !important;
+      ${borderRadiusCss}
       object-fit: cover !important;
       display: flex !important;
       justify-content: center !important;
@@ -326,14 +390,15 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     css`
       ${commonBorderStyles}
       ${commonTextStyles}
-      border-radius: ${borderRadius} !important;
+      ${borderRadiusCss}
       padding: 0 !important;
-      background: ${background ?? backgroundImage ?? backgroundColor} !important;
+      background: ${background} !important;
       width: ${width || '54px'} !important;
       height: ${height || '54px'} !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
+      position: relative !important;
 
       .anticon {
         img {

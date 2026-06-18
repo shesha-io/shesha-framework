@@ -1,9 +1,9 @@
 import { MenuProps, Tooltip } from 'antd';
 import classNames from 'classnames';
-import React, { ReactElement, ReactNode } from 'react';
-import ShaIcon, { IconType } from '@/components/shaIcon';
+import React, { ReactNode } from 'react';
+import { ShaIcon, IconType } from '@/components/shaIcon';
 import { ISidebarMenuItem, isSidebarButton, isSidebarGroup, SidebarItemType } from '@/interfaces/sidebar';
-import { IConfigurableActionConfiguration } from '@/providers/index';
+import { IConfigurableActionConfiguration, isNavigationActionConfiguration } from '@/providers/index';
 import Link from 'next/link';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 
@@ -13,19 +13,19 @@ interface IGetItemArgs {
   label: React.ReactNode;
   key: React.Key;
   icon?: React.ReactNode;
-  children?: MenuItem[];
-  isParent?: boolean;
+  children?: MenuItem[] | undefined;
+  isParent?: boolean | undefined;
   itemType: SidebarItemType;
-  url?: string;
-  navigationType?: string;
-  onClick?: () => void;
-  tooltip?: string | ReactNode;
+  url?: string | undefined;
+  navigationType?: string | undefined;
+  onClick?: (() => void) | undefined;
+  tooltip?: ReactNode;
 }
 
 function getItem({ label, key, icon, children, isParent, itemType, onClick, navigationType, url, tooltip }: IGetItemArgs): MenuItem {
-  const clickHandler = (event): void => {
+  const clickHandler: React.MouseEventHandler = (event): void => {
     event.preventDefault();
-    onClick();
+    onClick?.();
   };
 
   const className = classNames('nav-links-renderer', { 'is-parent-menu': isParent });
@@ -37,7 +37,15 @@ function getItem({ label, key, icon, children, isParent, itemType, onClick, navi
     label: (() => {
       const baseContent = onClick
         ? ((navigationType === 'url' || navigationType === 'form')
-          ? <Link className={className} href={url} onClick={clickHandler}>{label}</Link>
+          ? (
+            <Link
+              className={className}
+              href={url ?? ""}
+              onClick={clickHandler}
+            >
+              {label}
+            </Link>
+          )
           : <Link href="" className={className} onClick={clickHandler}>{label}</Link>)
         : <span className={className}>{label}</span>;
 
@@ -67,7 +75,7 @@ function getItem({ label, key, icon, children, isParent, itemType, onClick, navi
   } as MenuItem;
 }
 
-const getIcon = (icon: ReactNode, isParent?: boolean): ReactElement => {
+const getIcon = (icon: ReactNode, isParent?: boolean): ReactNode => {
   if (typeof icon === 'string')
     return <ShaIcon iconName={icon as IconType} className={classNames({ 'is-parent-menu': isParent })} />;
 
@@ -77,16 +85,14 @@ const getIcon = (icon: ReactNode, isParent?: boolean): ReactElement => {
 
 export interface IProps {
   item: ISidebarMenuItem;
-  onButtonClick?: (itemId: string, actionConfiguration: IConfigurableActionConfiguration) => void;
-  onItemEvaluation?: (item: ISidebarMenuItem) => void;
-  getFormUrl: (args) => string;
-  getUrl: (args) => string;
+  onButtonClick?: ((itemId: string, actionConfiguration: IConfigurableActionConfiguration) => void) | undefined;
+  onItemEvaluation?: ((item: ISidebarMenuItem) => void) | undefined;
+  getFormUrl: (args: IConfigurableActionConfiguration | undefined) => string;
+  getUrl: (url: string) => string;
 }
 
 export const sidebarMenuItemToMenuItem = ({ item, onButtonClick, onItemEvaluation, getFormUrl, getUrl }: IProps): MenuItem => {
   const { id, title, icon, itemType } = item;
-
-  const navigationType = item?.actionConfiguration?.actionArguments?.navigationType;
 
   if (item.hidden) return null;
 
@@ -97,23 +103,28 @@ export const sidebarMenuItemToMenuItem = ({ item, onButtonClick, onItemEvaluatio
 
   const actionConfiguration = isSidebarButton(item) ? item.actionConfiguration : undefined;
 
-  let url;
-  if (navigationType === 'form') {
-    url = getFormUrl(actionConfiguration);
-  } else if (navigationType === 'url') {
-    url = getUrl(actionConfiguration?.actionArguments?.url);
-  }
+  const navigationType = isNavigationActionConfiguration(actionConfiguration)
+    ? actionConfiguration.actionArguments?.navigationType
+    : undefined;
+
+  const url = isNavigationActionConfiguration(actionConfiguration)
+    ? navigationType === 'form'
+      ? getFormUrl(actionConfiguration)
+      : navigationType === 'url'
+        ? getUrl(actionConfiguration.actionArguments?.url ?? "")
+        : undefined
+    : undefined;
 
   const itemEvaluationArguments: IGetItemArgs = {
     label: title,
     key: id,
     icon: getIcon(icon, hasChildren),
-    children: children,
+    children: children ?? undefined,
     isParent: hasChildren,
     itemType,
     url,
     navigationType,
-    onClick: actionConfiguration ? () => onButtonClick(id, actionConfiguration) : undefined,
+    onClick: actionConfiguration && onButtonClick ? () => onButtonClick(id, actionConfiguration) : undefined,
     tooltip: item.tooltip,
   };
   if (onItemEvaluation)

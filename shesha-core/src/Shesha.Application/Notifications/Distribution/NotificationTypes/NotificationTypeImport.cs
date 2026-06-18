@@ -2,7 +2,6 @@
 using Abp.Domain.Repositories;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
-using Shesha.Extensions;
 using Shesha.Notifications.Distribution.NotificationTypes.Dto;
 using Shesha.Services.ConfigurationItems;
 using System;
@@ -41,7 +40,7 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
 
         private async Task ImportTemplatesAsync(NotificationTypeConfig item, List<DistributedNotificationTemplateDto> templates)
         {
-            var dbTemplates = await _templateRepo.GetAll().Where(e => e.PartOf == item).ToListAsync();
+            var dbTemplates = await _templateRepo.GetAllListAsync(e => e.PartOf == item);
 
             foreach (var templateDto in templates) 
             {
@@ -81,7 +80,7 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
                 return false;
 
             // compare templates
-            var dbTemplates = await _templateRepo.GetAll().Where(e => e.PartOf == item).ToListAsync();
+            var dbTemplates = await _templateRepo.GetAllListAsync(e => e.PartOf == item);
             if (dbTemplates.Count() != distributedItem.Templates.Count)
                 return false;
 

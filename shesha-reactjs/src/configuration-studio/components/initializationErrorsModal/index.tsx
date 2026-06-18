@@ -12,12 +12,15 @@ export const InitializationErrorsModal: FC = () => {
     storage.getItem('last_initialization')
       .then((lastInitialization) => {
         if (lastInitialization !== errorsInfo?.lastInitialization && errorsInfo?.errors?.length) {
-          storage.setItem('last_initialization', errorsInfo.lastInitialization);
+          void storage.setItem('last_initialization', errorsInfo.lastInitialization);
           modal.error({
             title: 'Application initialized with critical errors: ',
             content: <>{errorsInfo.errors.map((e, i) => <p key={i}>• {e}</p>)}</>,
           });
         }
+      })
+      .catch((error) => {
+        console.error('Failed to init form', error);
       });
   }, [errorsInfo, modal, storage]);
 

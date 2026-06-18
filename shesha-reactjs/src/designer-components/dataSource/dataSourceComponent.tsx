@@ -7,6 +7,7 @@ import { LayoutOutlined } from '@ant-design/icons';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { getFirstNonEmptyStringPropertyOrUndefined } from '@/utils/object';
 
 const DataSourceComponent: IToolboxComponent<IDataSourceComponentProps> = {
   type: 'dataSource',
@@ -20,7 +21,7 @@ const DataSourceComponent: IToolboxComponent<IDataSourceComponentProps> = {
     m.add<IDataSourceComponentProps>(0, (prev) => {
       return {
         ...prev,
-        name: prev['uniqueStateId'] ?? prev['name'],
+        name: getFirstNonEmptyStringPropertyOrUndefined(prev, ["uniqueStateId", "name"]),
         sourceType: 'Entity',
       };
     })

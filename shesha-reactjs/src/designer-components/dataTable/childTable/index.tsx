@@ -31,7 +31,7 @@ const ChildTableComponent: IToolboxComponent<IPanelComponentProps> = {
       .add<IChildTableComponentProps>(0, (prev) => {
         return {
           ...prev,
-          isNotWrapped: prev['isNotWrapped'] ?? true,
+          isNotWrapped: "isNotWrapped" in prev && typeof (prev.isNotWrapped) === "boolean" ? prev.isNotWrapped : true,
           defaultSelectedFilterId: null,
         };
       })

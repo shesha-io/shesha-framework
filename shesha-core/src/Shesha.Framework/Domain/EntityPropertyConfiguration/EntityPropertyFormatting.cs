@@ -13,7 +13,7 @@ namespace Shesha.Domain.EntityPropertyConfiguration
 
         public virtual bool? ShowAsPercentage { get; set; }
 
-        public virtual bool? ShowThousandsSeparator { get; set; }
+        public virtual string? ThousandsSeparator { get; set; }
 
         public virtual string? CustomFormat { get; set; }
     }

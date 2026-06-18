@@ -1,24 +1,24 @@
 import React, { FC, useState } from 'react';
 import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { Button, Divider, Input, Select, Space, Tooltip } from 'antd';
+import { Button, Divider, Input, Select, SelectProps, Space, Tooltip } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { IDropdownOption } from '@/designer-components/_settings/utils/background/interfaces';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 interface CustomDropdownProps {
   value: string;
   options: Array<string | IDropdownOption>;
-  readOnly?: boolean;
+  readOnly?: boolean | undefined;
   label?: string | React.ReactNode;
-  size?: SizeType;
-  defaultValue?: string;
-  customTooltip?: string;
-  onAddCustomOption?: (newOption: string) => void;
-  onChange?: (value: string) => void;
-  placeholder?: string;
-  optionFilterProp?: string;
-  style?: React.CSSProperties;
-  popupMatchSelectWidth?: boolean;
-  labelRender?: (props: any) => React.ReactNode;
+  size?: SizeType | undefined;
+  customTooltip?: string | undefined;
+  onAddCustomOption?: ((newOption: string) => void) | undefined;
+  onChange?: ((value: string) => void) | undefined;
+  placeholder?: string | undefined;
+  optionFilterProp?: string | undefined;
+  style?: React.CSSProperties | undefined;
+  popupMatchSelectWidth?: boolean | undefined;
+  labelRender?: SelectProps["labelRender"] | undefined;
 }
 
 const CustomDropdown: FC<CustomDropdownProps> = ({
@@ -27,7 +27,6 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
   readOnly,
   label,
   placeholder,
-  defaultValue,
   optionFilterProp,
   customTooltip,
   onChange,
@@ -49,7 +48,7 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
   };
 
 
-  const renderCustomOptionInput = (): JSX.Element => (
+  const renderCustomOptionInput = (): React.JSX.Element => (
     <>
       <Divider style={{ margin: '8px 0' }} />
       <Space style={{ padding: '0 8px 4px' }} onClick={(e) => e.stopPropagation()}>
@@ -87,17 +86,24 @@ const CustomDropdown: FC<CustomDropdownProps> = ({
     </>
   );
 
+  const optionalProps: Partial<SelectProps> = {
+  };
+  if (labelRender)
+    optionalProps.labelRender = labelRender;
+  if (style)
+    optionalProps.style = style;
+
   return (
-    <Select
+    <Select<string>
       value={value}
-      disabled={readOnly}
+      disabled={readOnly ?? false}
       size={size}
-      onChange={onChange}
-      defaultValue={defaultValue}
+      onChange={(value) => {
+        onChange?.(value);
+      }}
       placeholder={placeholder}
-      labelRender={labelRender}
-      style={style}
-      optionFilterProp={optionFilterProp}
+      {...optionalProps}
+      showSearch={!isNullOrWhiteSpace(optionFilterProp) ? { optionFilterProp } : false}
       popupMatchSelectWidth={popupMatchSelectWidth}
       popupRender={(menu) => (
         <>

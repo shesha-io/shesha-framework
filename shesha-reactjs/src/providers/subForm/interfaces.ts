@@ -3,44 +3,44 @@ import { FormMarkupWithSettings, IChangeable, IValuable } from '@/interfaces';
 import { FormIdentifier } from '../form/models';
 import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
 
-export interface ISubFormProviderProps extends IValuable, IChangeable {
-  context?: string;
+export type SubFormApiMode = 'entityName' | 'url';
 
-  propertyName?: string;
-  markup?: FormMarkupWithSettings;
-  value?: string | { id: string; [key: string]: any };
+export interface ISubFormProviderProps<TValue extends object = object> extends IValuable<TValue>, IChangeable<TValue> {
+  context?: string | undefined;
 
-  dataSourceUrl?: string;
+  propertyName?: string | undefined;
+  markup?: FormMarkupWithSettings | undefined;
+
+  dataSourceUrl?: string | undefined;
   id: string;
-  componentName?: string;
+  componentName?: string | undefined;
 
-  formSelectionMode?: 'name' | 'dynamic';
-  formType?: string;
+  formSelectionMode?: 'name' | 'dynamic' | undefined;
+  formType?: string | undefined | undefined;
 
-  formId?: FormIdentifier;
+  formId?: FormIdentifier | undefined | undefined;
 
-  buttons?: any[];
-  labelCol?: ColProps;
-  wrapperCol?: ColProps;
-  dataSource?: 'form' | 'api';
-  apiMode?: 'entityName' | 'url';
-  entityType?: string | IEntityTypeIdentifier;
-  properties?: string | string[];
-  queryParams?: string;
+  labelCol?: ColProps | undefined;
+  wrapperCol?: ColProps | undefined;
+  dataSource?: 'form' | 'api' | undefined;
+  apiMode?: SubFormApiMode | undefined;
+  entityType?: string | IEntityTypeIdentifier | undefined;
+  properties?: string | string[] | undefined;
+  queryParams?: string | undefined;
 
   //#region Actions
-  onCreated?: string;
-  onUpdated?: string;
+  onCreated?: string | undefined;
+  onUpdated?: string | undefined;
   //#endregion
 
   //#region URLs
   /** Optional */
-  getUrl?: string;
-  postUrl?: string;
-  putUrl?: string;
+  getUrl?: string | undefined;
+  postUrl?: string | undefined;
+  putUrl?: string | undefined;
   //#endregion
 
-  readOnly?: boolean;
+  readOnly?: boolean | undefined;
 }
 
 export interface IProperty {

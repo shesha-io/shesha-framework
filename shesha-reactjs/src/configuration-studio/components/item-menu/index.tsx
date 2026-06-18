@@ -1,4 +1,4 @@
-import { CustomErrorBoundary } from '@/components';
+import { CustomErrorBoundary } from '@/components/customErrorBoundary';
 import { useConfigurationStudioEnvironment } from '@/configuration-studio/cs-environment/contexts';
 import { useConfigurationStudio } from '@/configuration-studio/cs/contexts';
 import { useActiveDoc } from '@/configuration-studio/cs/hooks';

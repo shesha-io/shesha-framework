@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
@@ -29,23 +29,23 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Abp" Version="9.0.0" />
-    <PackageReference Include="Abp.AspNetCore" Version="9.0.0" />
-    <PackageReference Include="AsyncFixer" Version="1.6.0">
+    <PackageReference Include="Abp" />
+    <PackageReference Include="Abp.AspNetCore" />
+    <PackageReference Include="AsyncFixer">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Cronos" Version="0.9.0" />
-    <PackageReference Include="FluentMigrator" Version="5.0.0" />
-    <PackageReference Include="Hangfire.Core" Version="1.8.6" />
-	  <PackageReference Include="Hangfire.AspNetCore" Version="1.8.6" />
-	  <PackageReference Include="IDisposableAnalyzers" Version="4.0.8">
+    <PackageReference Include="Cronos" />
+    <PackageReference Include="FluentMigrator" />
+    <PackageReference Include="Hangfire.Core" />
+	  <PackageReference Include="Hangfire.AspNetCore" />
+	  <PackageReference Include="IDisposableAnalyzers">
 	    <PrivateAssets>all</PrivateAssets>
 	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	  </PackageReference>
-    <PackageReference Include="log4net" Version="2.0.15" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.13.2">
+    <PackageReference Include="log4net" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR" />
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -58,7 +58,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
 </Project>

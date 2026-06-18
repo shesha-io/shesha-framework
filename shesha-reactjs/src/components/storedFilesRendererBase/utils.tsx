@@ -1,13 +1,15 @@
 import React, { FC } from 'react';
-import { Button, Popover, Skeleton, Typography, UploadFile } from 'antd';
+import { Button, Popover, Skeleton, Typography } from 'antd';
 import { HistoryOutlined } from '@ant-design/icons';
 import filesize from 'filesize';
-import { ConfigurableForm, DateDisplay } from '@/components';
 import { useStoredFileGetFileVersions, StoredFileVersionInfoDto } from '@/apis/storedFile';
-import { IStoredFile } from '@/providers/storedFiles/contexts';
 import { FormIdentifier } from '@/providers/form/models';
 import { listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { buildUrl } from '@/utils/url';
+import { StoredFileModel } from '@/utils/storedFile/models';
+import { ConfigurableForm } from '../configurableForm';
+import DateDisplay from '../dateDisplay';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 export interface IFileVersionsButtonProps {
   fileId: string;
@@ -15,17 +17,17 @@ export interface IFileVersionsButtonProps {
 }
 
 export interface IExtraContentProps {
-  file: IStoredFile;
+  file: StoredFileModel;
   formId?: FormIdentifier;
 }
 
 
 /**
- * Creates a placeholder file object for stub/preview rendering in design mode.
+ * Placeholder file object for stub/preview rendering in design mode.
  *
  * @returns A mock IStoredFile with example properties
  */
-export const createPlaceholderFile = (): IStoredFile => ({
+export const PLACEHOLDER_FILE: StoredFileModel = {
   uid: 'placeholder-file-1',
   name: 'example-file.pdf',
   status: 'done',
@@ -36,7 +38,7 @@ export const createPlaceholderFile = (): IStoredFile => ({
   fileCategory: 'documents',
   temporary: false,
   userHasDownloaded: false,
-});
+};
 
 /**
  * Determines the appropriate Ant Design Upload list type based on configuration.
@@ -123,18 +125,20 @@ export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDow
     lazy: true,
   });
 
-  if (fileId == null) return null;
-
   const handleVisibleChange = (visible: boolean): void => {
     if (visible) {
-      fetchHistory();
+      fetchHistory().catch((error) => {
+        console.error('Failed to fetch file history', error);
+        throw error;
+      });
     }
   };
 
   const uploads = serverData?.success ? serverData.result : [];
 
   const handleVersionDownloadClick = (fileVersion: StoredFileVersionInfoDto): void => {
-    onDownload(fileVersion.versionNo, fileVersion.fileName);
+    if (fileVersion.versionNo && !isNullOrWhiteSpace(fileVersion.fileName))
+      onDownload(fileVersion.versionNo, fileVersion.fileName);
   };
 
   const content = (
@@ -147,7 +151,7 @@ export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDow
               {item.dateUploaded && <DateDisplay>{item.dateUploaded}</DateDisplay>} by {item.uploadedBy}
               <br />
               <Button type="link" onClick={() => handleVersionDownloadClick(item)}>
-                {item.fileName} ({filesize(item.size)})
+                {item.fileName} {isDefined(item.size) && <>({filesize(item.size)})</>}
               </Button>
             </li>
           ))}
@@ -184,11 +188,11 @@ const formatFileSize = (bytes?: number): string => {
 
 // Helper component to render file name with ellipsis and title
 export const FileNameDisplay: FC<{
-  file: UploadFile;
-  className?: string;
-  icon?: JSX.Element;
+  file: StoredFileModel;
+  className?: string | undefined;
+  icon?: React.JSX.Element | undefined;
   popoverContent?: React.ReactNode;
-  popoverClassName?: string;
+  popoverClassName?: string | undefined;
 }> = ({ file, icon, className, popoverContent, popoverClassName }) => {
   const sizeStr = formatFileSize(file.size);
   const title = sizeStr ? `${file.name} (${sizeStr})` : file.name;
@@ -205,7 +209,12 @@ export const FileNameDisplay: FC<{
   return (
     <div className={className} style={{ overflow: 'hidden', flex: 1 }}>
       {popoverContent ? (
-        <Popover content={popoverContent} trigger="hover" placement="top" classNames={{ root: popoverClassName }}>
+        <Popover
+          content={popoverContent}
+          trigger="hover"
+          placement="top"
+          {...(popoverClassName ? { classNames: { root: popoverClassName } } : {})}
+        >
           {textElement}
         </Popover>
       ) : (

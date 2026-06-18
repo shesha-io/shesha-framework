@@ -8,7 +8,7 @@ namespace Shesha.GraphQL.Provider
         {
             Name = nameof(EmptyQuery);
 
-            Field<StringGraphType>("ping", resolve: _ => "pong");
+            Field<StringGraphType>("ping").Resolve(_ => "pong");
         }
     }
 }

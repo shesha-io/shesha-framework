@@ -29,7 +29,7 @@ export const UserProfileBlock: FC = () => {
     boxShadow: 'none',
   };
 
-  const userFullName = loginInfo.fullName ?? "Unknown User";
+  const userFullName = loginInfo?.fullName ?? "Unknown User";
 
   return (
     <Dropdown

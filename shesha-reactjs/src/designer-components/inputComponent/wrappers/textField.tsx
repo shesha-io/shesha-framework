@@ -1,10 +1,12 @@
 import { ITextFieldSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React, { FC, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import Icon from '@/components/icon/Icon';
 import { useStyles } from '../styles';
 import { Input } from 'antd';
+import { FCUnwrapped } from '@/providers/form/models';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
-export const TextFieldWrapper: FC<ITextFieldSettingsInputProps> = (props) => {
+export const TextFieldWrapper: FCUnwrapped<ITextFieldSettingsInputProps> = (props) => {
   const { value, readOnly, size, variant, placeholder, icon, textType, tooltip, label, width, onChange, regExp } = props;
   const { styles } = useStyles();
 
@@ -16,15 +18,18 @@ export const TextFieldWrapper: FC<ITextFieldSettingsInputProps> = (props) => {
       console.warn(`Invalid regExp pattern for '${props.propertyName}':`, regExp, error);
       return null;
     }
-  }, [regExp]);
+  }, [props.propertyName, regExp]);
 
   return (
     <Input
       size={size}
       onChange={(e) => {
-        const inputValue: string | undefined = e.target.value?.toString();
-        const isEmpty = inputValue === undefined || inputValue === null || inputValue === '';
-        const isRegExpMatch = regExpObj && Boolean(inputValue?.match(regExpObj));
+        if (!isDefined(onChange))
+          return;
+
+        const inputValue: string | undefined = e.target.value;
+        const isEmpty = isNullOrWhiteSpace(inputValue);
+        const isRegExpMatch = regExpObj && Boolean(inputValue.match(regExpObj));
         if ((!isEmpty && isRegExpMatch) || !regExpObj || isEmpty) {
           onChange(inputValue);
         } else {
@@ -37,12 +42,12 @@ export const TextFieldWrapper: FC<ITextFieldSettingsInputProps> = (props) => {
         }
       }}
       readOnly={readOnly}
-      variant={variant}
+      {...(variant ? { variant } : {})}
       placeholder={placeholder}
       style={{ width: width ?? "100%" }}
-      suffix={<span style={{ height: '20px' }}><Icon icon={icon} hint={tooltip ?? label} className={styles.icon} /></span>}
-      value={value}
-      type={textType}
+      suffix={<span style={{ height: '20px' }}><Icon icon={icon} hint={tooltip ?? (typeof label === 'string' ? label : '')} className={styles.icon} /></span>}
+      value={value as string}
+      {...(textType ? { type: textType } : {})}
     />
   );
 };

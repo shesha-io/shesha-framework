@@ -12,9 +12,9 @@ export const CanvasConfig: FC = () => {
 
   return (
     <div className={styles.shaDesignerCanvasConfig}>
-      <Space direction="horizontal" size={5} style={{ flexWrap: "nowrap" }}>
+      <Space orientation="horizontal" size={5} style={{ flexWrap: "nowrap" }}>
         <DeviceOptions />
-        <Space direction="horizontal" size={2} style={{ flexWrap: "nowrap" }}>
+        <Space orientation="horizontal" size={2} style={{ flexWrap: "nowrap" }}>
           <Tooltip title={`${zoom}%`}>
             <Button
               size="small"

@@ -14,6 +14,8 @@ namespace Shesha.Authorization.Users
     public class User : AbpUser<User>
     {
         public const string DefaultPassword = "123qwe";
+        public const string EmailAlreadyInUse = "Specified email already used by another person";
+        public const string MobileNoAlreadyInUse = "Specified mobile number already used by another person";
 
         public User()
         {
@@ -68,6 +70,19 @@ namespace Shesha.Authorization.Users
         /// </summary>
         [Display(Name = "Security Question Status")]
         public virtual RefListSecurityQuestionStatus? SecurityQuestionStatus { get; set; }
+
+        /// <summary>
+        /// Number of consecutive failed security-question verification attempts.
+        /// Reset to zero on a successful verification or when a lockout window starts.
+        /// </summary>
+        [Display(Name = "Security Question Failed Attempts")]
+        public virtual int? SecurityQuestionFailedAttempts { get; set; }
+
+        /// <summary>
+        /// UTC time until which security-question verification is blocked after too many failed attempts.
+        /// </summary>
+        [Display(Name = "Security Question Lockout End")]
+        public virtual DateTime? SecurityQuestionLockoutEnd { get; set; }
 
         /// <summary>
         /// 

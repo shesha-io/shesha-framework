@@ -1,4 +1,4 @@
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import React from 'react';
 import { HeartOutlined } from '@ant-design/icons';
 import { IconPickerWrapper } from './iconPickerWrapper';
@@ -24,10 +24,10 @@ const IconPickerComponent: IconPickerComponentDefinition = {
     const allData = useAvailableConstantsData();
 
     return (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem<string> model={model}>
         {(value, onChange) => (
           <IconPickerWrapper
-            fullStyles={model.allStyles.fullStyle}
+            fullStyles={model.allStyles?.fullStyle}
             {...model}
             applicationContext={allData}
             value={value}

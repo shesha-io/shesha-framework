@@ -1,7 +1,7 @@
 import ConfigurationItemsExport, { IExportInterface } from '@/components/configurationFramework/itemsExport';
 import React, {
   FC,
-  MutableRefObject,
+  RefObject,
   useRef,
   useState,
 } from 'react';
@@ -12,7 +12,7 @@ import { nanoid } from '@/utils/uuid';
 import { SheshaActionOwners } from '../../configurableActionsDispatcher/models';
 import { useAppConfiguratorState, useDynamicModals } from '@/providers';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
-import { ValidationErrors } from '@/components';
+import { ValidationErrors } from '@/components/validationErrors';
 import _ from 'lodash';
 import { isDefined } from '@/utils/nullables';
 
@@ -20,7 +20,7 @@ const actionsOwner = 'Configuration Items';
 
 interface IConfigurationItemsExportFooterProps {
   hideModal: () => void;
-  exporterRef: MutableRefObject<IExportInterface | undefined>;
+  exporterRef: RefObject<IExportInterface | undefined>;
 }
 
 export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterProps> = (props) => {
@@ -36,7 +36,7 @@ export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterP
 
     exporterRef.current.exportExecuter().then(() => {
       hideModal();
-    }).catch((error) => {
+    }).catch((error: unknown) => {
       notification.error({
         message: "Failed to export package",
         icon: null,
@@ -57,7 +57,7 @@ export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterP
 export const useConfigurationItemsExportAction = (): void => {
   const { createModal, removeModal } = useDynamicModals();
   const appConfigState = useAppConfiguratorState();
-  const exporterRef = useRef<IExportInterface>();
+  const exporterRef = useRef<IExportInterface>(undefined);
 
   useConfigurableAction({
     name: 'Export items',

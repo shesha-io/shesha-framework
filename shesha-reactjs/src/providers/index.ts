@@ -28,8 +28,6 @@ export * from './settings';
 export * from './shaRouting';
 export * from './sheshaApplication';
 export * from './sheshaApplication/publicApi';
-export * from './sidebarMenu';
-export * from './signalR';
 export * from './storedFile';
 export * from './storedFiles';
 export * from './subForm';

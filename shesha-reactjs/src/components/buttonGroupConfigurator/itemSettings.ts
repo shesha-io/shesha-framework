@@ -96,7 +96,7 @@ export const getItemSettings: FormMarkupFactory = ({ fbf }) => {
                         _code: 'return  getSettingValue(data?.itemSubType) !== "button";',
                         _mode: 'code',
                         _value: false,
-                      } as any,
+                      },
                       inputs: [
                         {
                           id: nanoid(),
@@ -148,7 +148,7 @@ export const getItemSettings: FormMarkupFactory = ({ fbf }) => {
                             _code: 'return  !getSettingValue(data?.icon);',
                             _mode: 'code',
                             _value: false,
-                          } as any,
+                          },
                         },
                       ],
                     })
@@ -179,7 +179,6 @@ export const getItemSettings: FormMarkupFactory = ({ fbf }) => {
                       id: nanoid(),
                       propertyName: 'actionConfiguration',
                       label: 'Action Configuration',
-                      hideLabel: true,
                       validate: {},
                       settingsValidationErrors: [],
                     }).toJson(),
@@ -241,7 +240,7 @@ export const getItemSettings: FormMarkupFactory = ({ fbf }) => {
                         _code: `return ${entityOrUrl};`,
                         _mode: 'code',
                         _value: false,
-                      } as any,
+                      },
                     },
                     {
                       id: nanoid(),
@@ -252,7 +251,7 @@ export const getItemSettings: FormMarkupFactory = ({ fbf }) => {
                         _code: 'return  getSettingValue(data?.itemSubType) !== "separator";',
                         _mode: 'code',
                         _value: false,
-                      } as any,
+                      },
                     },
                     {
                       id: nanoid(),
@@ -263,7 +262,7 @@ export const getItemSettings: FormMarkupFactory = ({ fbf }) => {
                         _code: 'return  getSettingValue(data?.itemSubType) !== "separator";',
                         _mode: 'code',
                         _value: false,
-                      } as any,
+                      },
                     },
                   ],
                 })
@@ -278,7 +277,7 @@ export const getItemSettings: FormMarkupFactory = ({ fbf }) => {
                     _code: `return  getSettingValue(data?.itemSubType) == "separator" || ${entityOrUrl};`,
                     _mode: 'code',
                     _value: false,
-                  } as any,
+                  },
                   collapsible: 'header',
                   content: {
                     id: fontStylePnlId,
@@ -348,7 +347,7 @@ export const getItemSettings: FormMarkupFactory = ({ fbf }) => {
                     _code: `return  getSettingValue(data?.itemSubType) == "separator" || ${entityOrUrl};`,
                     _mode: 'code',
                     _value: false,
-                  } as any,
+                  },
                   collapsible: 'header',
                   content: {
                     id: dimensionsStylePnlId,
@@ -431,7 +430,7 @@ export const getItemSettings: FormMarkupFactory = ({ fbf }) => {
                   label: 'Border',
                   labelAlign: 'right',
                   ghost: true,
-                  hidden: { _code: `return  ["dashed","text", "link", "ghost"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false } as any,
+                  hidden: { _code: `return  ["dashed","text", "link", "ghost"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false },
                   parentId: appearanceTabId,
                   collapsible: 'header',
                   content: {
@@ -459,7 +458,7 @@ export const getItemSettings: FormMarkupFactory = ({ fbf }) => {
                   ghost: true,
                   parentId: appearanceTabId,
                   collapsible: 'header',
-                  hidden: { _code: `return  ["text", "link", "primary", "ghost"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false } as any,
+                  hidden: { _code: `return  ["text", "link", "primary", "ghost"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false },
                   content: {
                     id: backgroundStylePnlId,
                     components: [
@@ -485,7 +484,7 @@ export const getItemSettings: FormMarkupFactory = ({ fbf }) => {
                             hideLabel: true,
                             jsSetting: false,
                           }],
-                          hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
+                          hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "color";', _mode: 'code', _value: false },
                         })
                         .addSettingsInputRow({
                           id: nanoid(),
@@ -498,7 +497,7 @@ export const getItemSettings: FormMarkupFactory = ({ fbf }) => {
                             jsSetting: false,
                           },
                           ],
-                          hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
+                          hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "gradient";', _mode: 'code', _value: false },
                           hideLabel: true,
                         })
                         .addSettingsInputRow({
@@ -511,7 +510,7 @@ export const getItemSettings: FormMarkupFactory = ({ fbf }) => {
                             jsSetting: false,
                             label: "URL",
                           }],
-                          hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
+                          hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "url";', _mode: 'code', _value: false },
                         })
                         .addSettingsInputRow({
                           id: nanoid(),
@@ -523,12 +522,12 @@ export const getItemSettings: FormMarkupFactory = ({ fbf }) => {
                             label: "Image",
                             jsSetting: false,
                           }],
-                          hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
+                          hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "image";', _mode: 'code', _value: false },
                         })
                         .addSettingsInputRow({
                           id: nanoid(),
                           parentId: backgroundStylePnlId,
-                          hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
+                          hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "storedFile";', _mode: 'code', _value: false },
                           inputs: [
                             {
                               type: 'textField',
@@ -543,7 +542,7 @@ export const getItemSettings: FormMarkupFactory = ({ fbf }) => {
                           id: nanoid(),
                           parentId: backgroundStylePnlId,
                           inline: true,
-                          hidden: { _code: 'return  getSettingValue(data?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                          hidden: { _code: 'return  getSettingValue(data?.background?.type) === "color";', _mode: 'code', _value: false },
                           inputs: [
                             {
                               type: 'customDropdown',
@@ -576,7 +575,7 @@ export const getItemSettings: FormMarkupFactory = ({ fbf }) => {
                             propertyName: 'background.repeat',
                             buttonGroupOptions: repeatOptions,
                           }],
-                          hidden: { _code: 'return  getSettingValue(data?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                          hidden: { _code: 'return  getSettingValue(data?.background?.type) === "color";', _mode: 'code', _value: false },
                         })
                         .toJson(),
                     ],
@@ -588,7 +587,7 @@ export const getItemSettings: FormMarkupFactory = ({ fbf }) => {
                   label: 'Shadow',
                   labelAlign: 'right',
                   ghost: true,
-                  hidden: { _code: `return  ["text", "link", "ghost"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false } as any,
+                  hidden: { _code: `return  ["text", "link", "ghost"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false },
                   parentId: appearanceTabId,
                   collapsible: 'header',
                   content: {
@@ -655,7 +654,7 @@ export const getItemSettings: FormMarkupFactory = ({ fbf }) => {
                   labelAlign: 'right',
                   ghost: true,
                   parentId: appearanceTabId,
-                  hidden: { _code: `return  getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false } as any,
+                  hidden: { _code: `return  getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false },
                   collapsible: 'header',
                   content: {
                     id: stylePnlId,
@@ -680,7 +679,7 @@ export const getItemSettings: FormMarkupFactory = ({ fbf }) => {
                     _code: `return  getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`,
                     _mode: 'code',
                     _value: false,
-                  } as any,
+                  },
                   parentId: appearanceTabId,
                   collapsible: 'header',
                   content: {
@@ -709,7 +708,7 @@ export const getItemSettings: FormMarkupFactory = ({ fbf }) => {
               _code: `return !${entityOrUrl};`,
               _mode: 'code',
               _value: false,
-            } as any,
+            },
             components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),

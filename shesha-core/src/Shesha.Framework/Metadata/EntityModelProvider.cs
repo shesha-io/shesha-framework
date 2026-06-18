@@ -17,7 +17,7 @@ namespace Shesha.Metadata
 {
     public class EntityModelProvider : BaseModelProvider<EntityModelDto>, IEntityModelProvider, ISingletonDependency,
         IAsyncEventHandler<EntityChangedEventData<EntityProperty>>,
-        IAsyncEventHandler<EntityChangingEventData<ConfigurationItem>>
+        IAsyncEventHandler<EntityChangingEventData<EntityConfig>>
     {
         private readonly IRepository<EntityConfig, Guid> _entityConfigRepository;
         private readonly IEntityTypeConfigurationStore _entityTypesConfigurationStore;
@@ -37,18 +37,18 @@ namespace Shesha.Metadata
 
         public Task HandleEventAsync(EntityChangedEventData<EntityProperty> eventData)
         {
-            return Cache.ClearAsync();
+            return ClearCacheAsync();
         }
 
-        public Task HandleEventAsync(EntityChangingEventData<ConfigurationItem> eventData)
+        public Task HandleEventAsync(EntityChangingEventData<EntityConfig> eventData)
         {
-            return Cache.ClearAsync();
+            return ClearCacheAsync();
         }
 
         protected async override Task<List<EntityModelDto>> FetchModelsAsync()
         {
             // Get all Entity configurations from DB (include exposed Entities)
-            var entityConfigs = await _entityConfigRepository.GetAll().ToListAsync();
+            var entityConfigs = await _entityConfigRepository.GetAllListAsync();
             var dtos = (await entityConfigs
                 .SelectAsync(async entityConfig =>
                 {

@@ -2,13 +2,12 @@ import { HomeOutlined } from '@ant-design/icons';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import AutoCompletePlacesControl from './control';
 import { IAddressCompomentProps } from './models';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './formSettings';
-import { getEventHandlers, useAvailableConstantsData } from '@/index';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
@@ -21,20 +20,29 @@ const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
   icon: <HomeOutlined />,
   preserveDimensionsInDesigner: true,
   Factory: ({ model }) => {
-    const allData = useAvailableConstantsData();
-    const customEvents = getEventHandlers(model, allData);
-
     const finalStyle = !model.enableStyleOnReadonly && model.readOnly ? {
-      ...model.allStyles.fontStyles,
-      ...model.allStyles.dimensionsStyles,
-    } : model.allStyles.fullStyle;
+      ...model.allStyles?.fontStyles,
+      ...model.allStyles?.dimensionsStyles,
+    } : model.allStyles?.fullStyle;
 
     return (
-      <ConfigurableFormItem model={model}>
-        {(value, onChange) => {
+      <ConfigurableFormItem<string> model={model}>
+        {(value, onChange, _, ctx) => {
           return model.readOnly
             ? <ReadOnlyDisplayFormItem value={value} style={finalStyle} />
-            : <AutoCompletePlacesControl {...model} value={value} onChange={onChange} onFocusCustom={customEvents.onFocus} />;
+            : (
+              <AutoCompletePlacesControl
+                {...model}
+                value={value ?? ""}
+                onChange={(newValue) => {
+                  ctx?.handleEvent(undefined, newValue, model.onChangeCustom);
+                  onChange(newValue);
+                }}
+                onFocus={(event) => ctx?.handleEvent(event, value, model.onFocusCustom)}
+                onSelect={(event) => ctx?.handleEvent(event, value, model.onSelectCustom)}
+                style={model.allStyles?.fullStyle}
+              />
+            );
         }}
       </ConfigurableFormItem>
     );

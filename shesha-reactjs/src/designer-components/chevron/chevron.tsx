@@ -5,7 +5,7 @@ import { IToolboxComponent } from '@/interfaces';
 import { ChevronControl } from '@/components/chevron';
 import { RefListItemGroupConfiguratorProvider } from '@/components/refListSelectorDisplay/provider';
 import { getSettings } from './settingsForm';
-import { ConfigurableFormItem } from '@/components';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { IChevronProps } from '@/components/chevron/models';
 import { defaultStyles } from './utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
@@ -19,9 +19,9 @@ const ChevronComponent: IToolboxComponent<IChevronProps> = {
   Factory: ({ model }) => {
     if (model.hidden) return null;
     return (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem<number> model={model}>
         {(value) => (
-          <RefListItemGroupConfiguratorProvider value={value} items={model.items} referenceList={model.referenceList} readOnly={model.readOnly}>
+          <RefListItemGroupConfiguratorProvider items={model.items ?? []} referenceList={model.referenceList} readOnly={model.readOnly}>
             <ChevronControl
               value={value}
               {...model}

@@ -1,7 +1,15 @@
-FROM microsoft/aspnetcore:2.0.1
+#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
+
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
+
+RUN apt-get update && apt-get install -y libfontconfig1 && rm -rf /var/lib/apt/lists/*
+
+ENV ASPNETCORE_URLS=http://+:8080
+EXPOSE 8080
 
 WORKDIR /app
-COPY . .
 
-ENTRYPOINT ["dotnet", "Shesha.Web.Host.dll"]
-#ENTRYPOINT ["dotnet", "Shesha.Web.Host.dll"]
+COPY . /app
+
+USER $APP_UID
+ENTRYPOINT ["sh", "-c", "dotnet $(find . -maxdepth 1 -name '*.Web.Host.dll' -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d' ')"]

@@ -1,87 +1,28 @@
-import { IFlagsSetters, IFlagsState } from '@/interfaces';
 import { createNamedContext } from '@/utils/react';
-import { UploadFile } from 'antd/lib/upload/interface';
-import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
+import { DownloadFileArgs, FileListReference, ReplaceFilePayload, StoredFileModel, UploadFileAsAttachmentArgs } from '../../utils/storedFile/models';
+import { SubscribeFunc } from '@/utils/subscriptions/subscriptionManager';
+import { OnFileDownloaded, OnFileListChanged } from './models';
 
-export type IFlagProgressFlags =
-  'downloadFile' |
-  'uploadFile' |
-  'replaceFile' |
-  'deleteFile' |
-  'fetchFileList' |
-  'downloadZip'; /* NEW_IN_PROGRESS_FLAG_GOES_HERE */
-export type IFlagSucceededFlags =
-  'downloadFile' |
-  'uploadFile' |
-  'replaceFile' |
-  'deleteFile' |
-  'fetchFileList' |
-  'downloadZip'; /* NEW_SUCCEEDED_FLAG_GOES_HERE */
-export type IFlagErrorFlags =
-  'downloadFile' |
-  'uploadFile' |
-  'replaceFile' |
-  'deleteFile' |
-  'fetchFileList' |
-  'downloadZip'; /* NEW_ERROR_FLAG_GOES_HERE */
-export type IFlagActionedFlags = '__DEFAULT__'; /* NEW_ACTIONED_FLAG_GOES_HERE */
+export type AttachmentsEditorEvents = 'fileList';
 
-export interface IStoredFile extends UploadFile {
-  error?: string | null;
-  id?: string | null;
-  fileCategory?: string | null;
-  url?: string | null;
-  temporary?: boolean;
-  userHasDownloaded?: boolean;
+export interface IAttachmentsEditorActions {
+  uploadFile: (args: UploadFileAsAttachmentArgs) => Promise<void>;
+  replaceFile: (args: ReplaceFilePayload) => Promise<void>;
+  deleteFile: (fileId: string) => Promise<void>;
+  downloadZipFile: () => Promise<void>;
+  downloadFile: (args: DownloadFileArgs) => Promise<void>;
+
+  init: (fileListReference: FileListReference) => void;
+  setOnFileListChanged: (onChange: OnFileListChanged | undefined) => void;
+  setOnFileDownloaded: (onFileDownloaded: OnFileDownloaded | undefined) => void;
+
+  subscribe: SubscribeFunc<AttachmentsEditorEvents, IAttachmentsEditorActions>;
 }
 
-export interface IRequestFilePayload {
-  file: File;
-  ownerId?: string;
-  ownerType?: string | IEntityTypeIdentifier;
-  ownerName?: string;
+export interface IAttachmentsEditorState {
+  readonly fileList: StoredFileModel[];
 }
 
-export type IUploadFilePayload = IRequestFilePayload;
+export type IAttachmentsEditorInstance = IAttachmentsEditorActions & IAttachmentsEditorState;
 
-export type IDownloadZipPayload = IRequestFilePayload;
-
-export interface IDownloadFilePayload {
-  fileId: string;
-  versionNo?: number;
-  fileName: string;
-}
-
-export interface IReplaceFilePayload extends IRequestFilePayload {
-  fileId: string;
-}
-
-export interface IStoredFilesStateContext
-  extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
-  fileList?: IStoredFile[];
-  newFile?: IStoredFile;
-  fileId?: string;
-  url?: string;
-  originalFileId?: IStoredFile['id'];
-}
-
-export interface IStoredFilesActionsContext
-  extends IFlagsSetters<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
-  uploadFile: (payload: IUploadFilePayload) => void;
-  replaceFile: (payload: IReplaceFilePayload) => void;
-  deleteFile: (fileIdToDelete: string) => void;
-  downloadZipFile: (payload?: IDownloadZipPayload) => void;
-  downloadFile: (payload: IDownloadFilePayload) => void;
-}
-
-export const STORED_FILES_CONTEXT_INITIAL_STATE: IStoredFilesStateContext = {
-  isInProgress: {},
-  succeeded: {},
-  error: {},
-  actioned: {},
-  fileList: [],
-};
-
-export const StoredFilesStateContext = createNamedContext<IStoredFilesStateContext>(STORED_FILES_CONTEXT_INITIAL_STATE, "StoredFilesStateContext");
-
-export const StoredFilesActionsContext = createNamedContext<IStoredFilesActionsContext>(undefined, "StoredFilesActionsContext");
+export const AttachmentsEditorContext = createNamedContext<IAttachmentsEditorInstance | undefined>(undefined, "AttachmentsEditorContext");

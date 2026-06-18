@@ -60,7 +60,7 @@ namespace Shesha.DynamicEntities
             if (invocation.Method.Name.StartsWith("set_"))
             {
                 var propName = invocation.Method.Name.Substring(4, invocation.Method.Name.Length - 4);
-                var prop = invocation.InvocationTarget.GetType().GetProperty(propName);
+                var prop = invocation.InvocationTarget.NotNull("InvocationTarget is not available").GetType().GetProperty(propName);
                 if (prop != null)
                 {
                     var val = prop.GetValue(invocation.InvocationTarget, null);

@@ -7,7 +7,7 @@ export type LayoutMode = 'defaultLayout' | 'horizontalLayout';
 export interface ILayoutSelectionHook {
   layoutMode: LayoutMode;
   setLayoutMode: (mode: LayoutMode) => void;
-  getLayoutWrapper: (page: ReactElement) => JSX.Element;
+  getLayoutWrapper: (page: ReactElement) => React.JSX.Element;
   LayoutComponent: typeof MainLayout | typeof HorizontalLayout;
 }
 
@@ -19,7 +19,7 @@ export interface ILayoutSelectionHook {
 export const useLayoutSelection = (defaultMode: LayoutMode = 'defaultLayout'): ILayoutSelectionHook => {
   const [layoutMode, setLayoutMode] = useState<LayoutMode>(defaultMode);
 
-  const getLayoutWrapper = useCallback((page: ReactElement): JSX.Element => {
+  const getLayoutWrapper = useCallback((page: ReactElement): React.JSX.Element => {
     switch (layoutMode) {
       case 'horizontalLayout':
         return getHorizontalLayout(page);

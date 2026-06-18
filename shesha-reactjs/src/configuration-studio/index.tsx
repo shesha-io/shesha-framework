@@ -43,7 +43,7 @@ const ConfigurationStudio: FC = () => {
           </div>
           <div className={styles.csHeaderRight}>
             <ItemToolbarHolder />
-            <Divider type="vertical" />
+            <Divider orientation="vertical" />
             <UserProfileBlock />
           </div>
         </Layout.Header>

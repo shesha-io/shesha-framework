@@ -40,11 +40,12 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls, responsive, tok
           position: relative;
           min-height: 30px;
           display: block;
-      
+          overflow: visible;
+
           &.${shaConfigurableComponentSelected} {
             border: 2px dashed ${token.colorPrimary};
           }
-      
+
           .${shaConfigurableComponentOverlay} {
             position: absolute;
             top: 0;

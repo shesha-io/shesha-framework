@@ -1,4 +1,4 @@
-import { IStyleType } from '@/index';
+import { IStyleType } from "@/providers/form/models";
 
 export const defaultStyles = (): IStyleType => {
   return {
@@ -31,8 +31,6 @@ export const defaultStyles = (): IStyleType => {
       position: 'center',
       gradient: { direction: 'to right', colors: {} },
       url: '',
-      storedFile: { id: null },
-      uploadFile: null,
     },
     shadow: {
       offsetX: 0,

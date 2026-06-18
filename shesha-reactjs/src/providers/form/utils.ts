@@ -1,117 +1,131 @@
-import { Rule, RuleObject } from 'antd/lib/form';
-import Schema, { Rules, ValidateSource } from 'async-validator';
-import camelcase from 'camelcase';
-import Mustache from 'mustache';
-import { nanoid } from '@/utils/uuid';
-import { CSSProperties, useRef } from 'react';
+import { updateJsSettingsForComponents } from '@/designer-components/_settings/utils/utils';
 import {
-  DataTypes,
   IToolboxComponent,
   IToolboxComponentGroup,
   IToolboxComponents,
   SettingsFormMarkupFactory,
   SettingsMigrationContext,
 } from '@/interfaces';
-import { IPropertyMetadata, NestedProperties, isPropertiesArray, isPropertiesLoader } from '@/interfaces/metadata';
-import { Migrator } from '@/utils/fluentMigrator/migrator';
-import { getFullPath } from '@/utils/metadata/helpers';
-import { IAnyObject } from './../../interfaces/anyObject';
-import {
-  ActionArguments,
-  ActionParameters,
-  ActionParametersDictionary,
-  DEFAULT_FORM_SETTINGS,
-  FormFullName,
-  FormIdentifier,
-  FormMarkup,
-  FormMarkupWithSettings,
-  FormUid,
-  GenericDictionary,
-  IComponentsContainer,
-  IComponentsDictionary,
-  IConfigurableFormComponent,
-  IFlatComponentsStructure,
-  IFormSettings,
-  IFormValidationRulesOptions,
-  EditMode,
-  ROOT_COMPONENT_KEY,
-  SILENT_KEY,
-  FormRawMarkup,
-} from './models';
-import { updateJsSettingsForComponents } from '@/designer-components/_settings/utils';
-import {
-  IDataContextManagerActionsContext,
-  IDataContextManagerFullInstance,
-  IDataContextsData,
-  RootContexts,
-  useDataContextManagerActionsOrUndefined,
-  useDataContextManagerOrUndefined,
-} from '@/providers/dataContextManager';
-import moment from 'moment';
-import FileSaver from 'file-saver';
-import { App } from 'antd';
-import { ISelectionProps } from '@/providers/dataTable/contexts';
-import { IDataContextFull, useDataContextOrUndefined } from '@/providers/dataContextProvider/contexts';
+import { IPropertyMetadata } from '@/interfaces/metadata';
 import {
   FormMode,
   HttpClientApi,
   IApplicationApi,
+  isComponentsContainer,
   isConfigurableFormComponent,
+  isObjectWithStringId,
   isRawComponentsContainer,
+  RootContexts,
   STYLE_BOX_CSS_POPERTIES,
   StyleBoxValue,
-  useDataTableState,
+  useDataTableStateOrUndefined,
   useGlobalState,
   useHttpClient,
+  useMetadataDispatcher,
 } from '@/providers';
-import { MessageInstance } from 'antd/es/message/interface';
-import { executeFunction } from '@/utils';
-import { IParentProviderProps, useParent } from '../parentProvider/index';
-import { SheshaCommonContexts } from '../dataContextManager/models';
-import { toCamelCase } from '@/utils/string';
-import { IFormApi } from './formApi';
-import { makeObservableProxy, ProxyPropertiesAccessors, TypedProxy } from './observableProxy';
-import { ISetStatePayload } from '../globalState/contexts';
-import { IShaFormInstance } from './store/interfaces';
-import { useShaFormInstanceOrUndefined, useShaFormDataUpdate } from './providers/shaFormProvider';
-import { QueryStringParams } from '@/utils/url';
-import { GetShaFormDataAccessor } from '../dataContextProvider/contexts/shaDataAccessProxy';
-import { jsonSafeParse } from '@/utils/object';
-import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
-import { getActualModel, getActualPropertyValue } from './utils/js-settings';
 import {
-  executeScriptSync,
+  useDataContextManagerActionsOrUndefined,
+  useDataContextManagerOrUndefined,
+} from '@/providers/dataContextManager/hooks';
+import { IDataContextFull, useDataContextOrUndefined } from '@/providers/dataContextProvider/contexts';
+import { ISelectionProps } from '@/providers/dataTable/interfaces';
+import { executeFunction } from '@/utils';
+import { Migrator } from '@/utils/fluentMigrator/migrator';
+import { ExpressionNodeValue } from '@/utils/jsonLogic';
+import { getFullPath } from '@/utils/metadata/helpers';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { deepCopyViaJson, deepMergeValues, jsonSafeParse, unsafeGetValueByPropertyName } from '@/utils/object';
+import { QueryStringParams } from '@/utils/url';
+import { nanoid } from '@/utils/uuid';
+import { App } from 'antd';
+import { MessageInstance } from 'antd/es/message/interface';
+import { Rule, RuleObject } from 'antd/lib/form';
+import Schema, { Rules, ValidateSource } from 'async-validator';
+import camelcase from 'camelcase';
+import FileSaver from 'file-saver';
+import moment from 'moment';
+import Mustache from 'mustache';
+import { CSSProperties, useRef } from 'react';
+import { IArgumentsEvaluationContext } from '../configurableActionsDispatcher/contexts';
+import { IDataContextManagerActions, IDataContextManagerFullInstance, IDataContextsData, SheshaCommonContexts } from '../dataContextManager/models';
+import { ISetStatePayload } from '../globalState/contexts';
+import { IParentProviderProps, useParentOrUndefined } from '../parentProvider/index';
+import { IAnyObject } from './../../interfaces/anyObject';
+import { IFormApi } from './formApi';
+import {
+  ActionParametersDictionary,
+  DEFAULT_FORM_SETTINGS,
+  EditMode,
+  FormFullName,
+  FormIdentifier,
+  FormMarkup,
+  FormMarkupWithSettings,
+  FormRawMarkup,
+  FormUid,
+  IComponentsContainer,
+  IConfigurableFormComponent,
+  IFlatComponentsStructure,
+  IFormDto,
+  IFormSettings,
+  IFormValidationRulesOptions,
+  IPersistedFormProps,
+  ROOT_COMPONENT_KEY,
+} from './models';
+import { isHasPropsAccessor, makeObservableProxy, ProxyPropertiesAccessors, TypedProxy } from './observableProxy';
+import { useShaFormDataUpdate, useShaFormInstanceOrUndefined } from './providers/shaFormProvider';
+import { IShaFormInstance } from './store/interfaces';
+import { isHasDataGetter } from './touchableProperty';
+import { getActualModel, getActualPropertyValue } from './utils/js-settings';
+import { findToolboxComponent, getToolboxComponent } from './utils/markup';
+import {
   executeExpression,
+  executeScript,
+  executeScriptSync,
   FunctionExecutor,
   getFunctionExecutor,
-  executeScript,
   IExpressionExecuterArguments,
   IExpressionExecuterFailedHandler,
 } from './utils/scripts';
-import { findToolboxComponent, getToolboxComponent } from './utils/markup';
+import { IMetadataDispatcher } from '../metadataDispatcher/contexts';
+import { IModalApi } from '../dynamicModal/modalApi';
+import { useModalApiWithFallback } from '../dynamicModal';
+import { ICanvasContextApi } from '@/publicJsApis/apis/canvasContextApi';
 
 export {
-  // prop settings
-  getActualModel,
-  getActualPropertyValue,
+  executeExpression, executeScript,
   // scripts
   executeScriptSync,
-  executeExpression,
-  getFunctionExecutor,
-  executeScript,
-  type FunctionExecutor,
+  // prop settings
+  getActualModel,
+  getActualPropertyValue, getFunctionExecutor, type FunctionExecutor,
   type IExpressionExecuterArguments,
   type IExpressionExecuterFailedHandler,
 };
 
+type MomentType = typeof moment;
+
+export interface IPageApi {
+  readonly context: IDataContextFull | undefined;
+  readonly canvas: ICanvasContextApi | undefined;
+}
+
 /** Interface to get all avalilable data */
 export interface IApplicationContext<Value extends object = object> {
-  application?: IApplicationApi;
   contextManager?: IDataContextManagerFullInstance;
-  /** Form data */
-  data?: Value;
+  metadataDispatcher?: IMetadataDispatcher;
 
-  form?: IFormApi<Value>;
+  /** Application Api */
+  readonly application?: IApplicationApi;
+  /** Page Api */
+  readonly page?: IPageApi;
+  /** Form Api */
+  readonly form?: IFormApi<Value> | undefined;
+
+  readonly webStorage?: IDataContextFull;
+
+  /** Form data */
+  data?: Value | undefined;
+
   /** Contexts datas */
   contexts: IDataContextsData | undefined;
   /** Global state */
@@ -119,18 +133,21 @@ export interface IApplicationContext<Value extends object = object> {
   /** Table selection */
   selectedRow: ISelectionProps | undefined;
   /** Moment function */
-  moment: Function;
+  moment: MomentType;
   /** Http Client */
   http: HttpClientApi;
   /** Message API */
   message: MessageInstance;
+  /** Modal API - for displaying dialogs and forms in modals (limited functionality if DynamicModalProvider is not available) */
+  modal: IModalApi;
   /** File Saver API */
-  fileSaver: typeof FileSaver;
+  fileSaver: (data: Blob | string, filename?: string) => void;
 
   /** Last updated date */
   lastUpdated?: Date;
 
   pageContext?: IDataContextFull;
+
   setGlobalState: (payload: ISetStatePayload) => void;
   /**
    * Query string values. Is used for backward compatibility only
@@ -148,8 +165,10 @@ export interface IApplicationContext<Value extends object = object> {
   /**
    * Function for testing
    */
-  test?: { getArguments: (args: Array<object> | object) => object[] };
+  test?: { getArguments: (args: Array<object> | object) => unknown[] };
 }
+
+export const isApplicationContext = (obj: object): obj is IApplicationContext => Boolean(obj) && 'data' in obj && 'contexts' in obj && 'application' in obj && 'form' in obj;
 
 export type GetAvailableConstantsDataArgs<TValues extends object = object> = {
   topContextId?: string;
@@ -160,11 +179,13 @@ export type GetAvailableConstantsDataArgs<TValues extends object = object> = {
 export type AvailableConstantsContext = {
   closestShaFormApi: IFormApi | undefined;
   selectedRow?: ISelectionProps | undefined;
-  dcm: IDataContextManagerActionsContext | undefined;
+  dcm: IDataContextManagerActions | undefined;
+  metadataDispatcher: IMetadataDispatcher | undefined;
   closestContextId: string | undefined;
   globalState: IAnyObject | undefined;
   setGlobalState: (payload: ISetStatePayload) => void;
   message: MessageInstance;
+  modal: IModalApi;
   httpClient: HttpClientApi;
 };
 
@@ -178,23 +199,25 @@ export const toBase64 = (file: Blob): Promise<string> => new Promise<string>((re
 
 const useBaseAvailableConstantsContexts = (): AvailableConstantsContext => {
   const { message } = App.useApp();
+  const modal = useModalApiWithFallback();
   const { globalState, setState: setGlobalState } = useGlobalState();
   // get closest data context Id
   const closestContextId = useDataContextOrUndefined()?.id;
   // get selected row if exists
-  const selectedRow = useDataTableState(false)?.selectedRow;
-
+  const selectedRow = useDataTableStateOrUndefined()?.selectedRow;
   const httpClient = useHttpClient();
 
   const result: AvailableConstantsContext = {
     closestShaFormApi: undefined,
     selectedRow,
     dcm: undefined,
+    metadataDispatcher: undefined,
     closestContextId,
     globalState,
     setGlobalState,
     httpClient,
     message,
+    modal,
   };
   return result;
 };
@@ -204,26 +227,26 @@ export const useAvailableConstantsContextsNoRefresh = (): AvailableConstantsCont
   // get DataContext Manager
   const dcm = useDataContextManagerActionsOrUndefined();
 
-  const parent = useParent(false);
+  const parent = useParentOrUndefined();
+  const metadataDispatcher = useMetadataDispatcher();
   const form = useShaFormInstanceOrUndefined();
   const closestShaFormApi = parent?.formApi ?? form?.getPublicFormApi();
-  baseContext.closestShaFormApi = closestShaFormApi;
-  baseContext.dcm = dcm;
-  return baseContext;
+  return { ...baseContext, closestShaFormApi, dcm, metadataDispatcher };
 };
 
 export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
   const baseContext = useBaseAvailableConstantsContexts();
   // get DataContext Manager
   const dcm = useDataContextManagerOrUndefined();
+
+  const metadataDispatcher = useMetadataDispatcher();
+
   useShaFormDataUpdate();
 
-  const parent = useParent(false);
+  const parent = useParentOrUndefined();
   const form = useShaFormInstanceOrUndefined();
   const closestShaFormApi = parent?.formApi ?? form?.getPublicFormApi();
-  baseContext.closestShaFormApi = closestShaFormApi;
-  baseContext.dcm = dcm;
-  return baseContext;
+  return { ...baseContext, closestShaFormApi, dcm, metadataDispatcher };
 };
 
 export type WrapConstantsDataArgs<TValues extends object = object> = GetAvailableConstantsDataArgs<TValues> & {
@@ -232,13 +255,17 @@ export type WrapConstantsDataArgs<TValues extends object = object> = GetAvailabl
 
 const EMPTY_DATA = {};
 
-const getArguments = (args: object[] | object): object[] => {
-  const fArgs = Array.isArray(args) && args.length === 1 ? args[0] : args;
+const getArguments = (args: object[] | object): unknown[] => {
+  const fArgs = Array.isArray(args) && args.length === 1
+    ? args[0] as object
+    : !Array.isArray(args)
+      ? args
+      : undefined;
 
-  if (fArgs && '_propAccessors' in fArgs && fArgs._propAccessors !== undefined) {
-    return Array.from(fArgs._propAccessors, ([name, accessor]: [string, () => object]) => {
+  if (isHasPropsAccessor(fArgs)) {
+    return Array.from(fArgs._propAccessors, ([name, accessor]: [string, () => unknown]) => {
       const resolved = accessor();
-      const value = resolved && 'getData' in resolved && typeof resolved.getData === 'function'
+      const value = isHasDataGetter(resolved)
         ? resolved.getData()
         : resolved;
       return { [name]: value };
@@ -246,7 +273,7 @@ const getArguments = (args: object[] | object): object[] => {
   }
 
   const values = Array.isArray(fArgs) ? fArgs : Object.values(fArgs ?? {});
-  return values.map((value: any) => (value && typeof value.getData === 'function' ? value.getData() : value));
+  return values.map((value: unknown) => (isHasDataGetter(value) ? value.getData() : value));
 };
 
 export const wrapConstantsData = <TValues extends object = object>(args: WrapConstantsDataArgs<TValues>): ProxyPropertiesAccessors<IApplicationContext<TValues>> => {
@@ -259,8 +286,14 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
     setGlobalState,
     httpClient,
     message,
+    metadataDispatcher,
+    modal,
   } = fullContext;
-  const shaFormInstance = (shaForm?.getPublicFormApi() ?? closestShaForm) as IFormApi<TValues> | undefined;
+  const shaFormApi = (shaForm?.getPublicFormApi() ?? closestShaForm) as IFormApi<TValues> | undefined;
+
+  const pageContext = dcm?.getPageContext()?.getFull();
+  const canvasContext = dcm?.getNearestDataContext(SheshaCommonContexts.CanvasContext, 'appLayer')?.getFull();
+  const webStorageContext = dcm?.getNearestDataContext(SheshaCommonContexts.WebStorageContext, 'storage')?.getFull();
 
   const accessors: ProxyPropertiesAccessors<IApplicationContext<TValues>> = {
     application: () => {
@@ -269,47 +302,48 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
       const applicationData = application?.getData();
       return applicationData as IApplicationApi;
     },
+    metadataDispatcher: () => metadataDispatcher,
     contexts: () => {
       const tcId = topContextId || closestContextId;
       return isDefined(dcm)
         ? { ...dcm.getDataContextsData(tcId) }
         : undefined;
     },
-    pageContext: () => {
+    page: () => {
       // get page context
-      const pc = dcm?.getPageContext();
-      // get full page context data
-      const pageContext = pc?.getFull();
-      return pageContext;
+      return { context: pageContext, canvas: canvasContext } as IPageApi;
     },
+    pageContext: () => pageContext,
+    webStorage: () => webStorageContext,
     selectedRow: () => selectedRow,
     globalState: () => globalState,
     setGlobalState: () => setGlobalState,
     moment: () => moment,
     http: () => httpClient,
     message: () => message,
+    modal: () => modal,
     fileSaver: () => FileSaver,
-    data: () => (!shaFormInstance ? EMPTY_DATA : GetShaFormDataAccessor<TValues>(shaFormInstance)) as TValues,
-    form: () => shaFormInstance,
+    data: () => (shaFormApi?.data ?? EMPTY_DATA) as TValues,
+    form: () => shaFormApi,
     query: () => queryStringGetter?.() ?? {},
-    initialValues: () => shaFormInstance?.initialValues,
-    parentFormValues: () => shaFormInstance?.parentFormValues,
+    initialValues: () => shaFormApi?.initialValues,
+    parentFormValues: () => shaFormApi?.parentFormValues,
     // don't delete this as is used for debug the proxied data from the form scripts
     test: () => ({ getArguments }),
   };
   return accessors;
 };
 
-const useWrapAvailableConstantsData = (fullContext: AvailableConstantsContext, args: GetAvailableConstantsDataArgs = {}, additionalData?: any): IApplicationContext => {
+const useWrapAvailableConstantsData = (fullContext: AvailableConstantsContext, args: GetAvailableConstantsDataArgs = {}, additionalData?: object): IApplicationContext => {
   const accessors = wrapConstantsData({ fullContext, ...args });
 
-  const contextProxyRef = useRef<TypedProxy<IApplicationContext>>();
+  const contextProxyRef = useRef<TypedProxy<IApplicationContext>>(undefined);
   if (!contextProxyRef.current)
     contextProxyRef.current = makeObservableProxy<IApplicationContext>(accessors);
   else
     contextProxyRef.current.refreshAccessors(accessors);
 
-  contextProxyRef.current.setAdditionalData(additionalData);
+  contextProxyRef.current.setAdditionalData(additionalData ?? {});
 
   return contextProxyRef.current;
 };
@@ -353,40 +387,19 @@ export const getReadOnlyBool = (editMode: EditMode | undefined, parentReadOnly: 
 
 export const isCommonContext = (name: string): boolean => {
   const r = RootContexts;
-  return r.filter((i) => i === name)?.length > 0;
+  return r.filter((i) => i === name).length > 0;
+};
+
+const extractReadOnly = (data: unknown): boolean | undefined => {
+  return isDefined(data) && typeof data === 'object' && 'readOnly' in data && typeof (data.readOnly) === 'boolean' ? data.readOnly : undefined;
 };
 
 export const getParentReadOnly = (parent: IParentProviderProps | undefined, allData: unknown): boolean => {
   // TODO: review type of allData
-  const form = typeof allData === 'object' && "form" in allData ? allData.form : undefined;
+  const form = isDefined(allData) && typeof allData === 'object' && "form" in allData ? allData.form : undefined;
   const formMode: FormMode | undefined = isDefined(form) && "formMode" in form ? form.formMode as FormMode : undefined;
   return formMode !== 'designer' &&
-    (parent?.model?.readOnly as boolean ?? (parent?.formMode === 'readonly' || formMode === 'readonly'));
-};
-
-// const regexp = new RegExp('/(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d)|(\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d)/');
-export const updateModelToMoment = async (model: object, properties: NestedProperties): Promise<any> => {
-  if (properties === null)
-    return model;
-  const newModel = { ...model };
-  const propsPromise = isPropertiesArray(properties)
-    ? Promise.resolve(properties)
-    : isPropertiesLoader(properties)
-      ? properties()
-      : Promise.resolve([]);
-  return await propsPromise.then(async (props: IPropertyMetadata[]) => {
-    for (const key in newModel) {
-      if (newModel.hasOwnProperty(key)) { // regexp.test(newModel[key])) {
-        const prop = props.find((i) => toCamelCase(i.path) === key);
-        if (prop && (prop.dataType === DataTypes.date || prop.dataType === DataTypes.dateTime))
-          newModel[key] = newModel[key] ? moment(newModel[key]).utc(true) : newModel[key];
-        if (prop && prop.dataType === DataTypes.entityReference && prop.properties?.length > 0) {
-          newModel[key] = await updateModelToMoment(newModel[key], prop.properties as IPropertyMetadata[]);
-        }
-      }
-    }
-    return newModel;
-  });
+    (extractReadOnly(parent?.model) ?? (parent?.formMode === 'readonly' || formMode === 'readonly'));
 };
 
 const getContainerNames = (toolboxComponent: IToolboxComponent): string[] => {
@@ -395,18 +408,21 @@ const getContainerNames = (toolboxComponent: IToolboxComponent): string[] => {
     : ['components'];
 };
 
-const getSubContainers = (component: IConfigurableFormComponent, componentRegistration: IToolboxComponent): IComponentsContainer[] => {
+const getSubContainers = (component: IConfigurableFormComponent, componentRegistration: IToolboxComponent | undefined): IComponentsContainer[] => {
   const customContainerNames = componentRegistration?.customContainerNames || [];
   let subContainers: IComponentsContainer[] = [];
   customContainerNames.forEach((containerName) => {
-    const containers = component[containerName]
-      ? Array.isArray(component[containerName])
-        ? (component[containerName] as IComponentsContainer[])
-        : [component[containerName] as IComponentsContainer]
+    const containerValue = unsafeGetValueByPropertyName(component, containerName);
+    const containers = containerValue
+      ? Array.isArray(containerValue)
+        ? (containerValue as IComponentsContainer[])
+        : [containerValue as IComponentsContainer]
       : undefined;
     if (containers) subContainers = [...subContainers, ...containers];
   });
-  if (component['components']) subContainers.push({ id: component.id, components: component['components'] });
+  const standardComponents = unsafeGetValueByPropertyName(component, "components");
+  if (standardComponents)
+    subContainers.push({ id: component.id, components: standardComponents as IConfigurableFormComponent[] });
   return subContainers;
 };
 
@@ -425,14 +441,14 @@ export const componentsTreeToFlatStructure = (
     componentRelations: {},
   };
 
-  const processComponent = (component: IConfigurableFormComponent, parentId?: string): void => {
+  const processComponent = (component: IConfigurableFormComponent, parentId: string): void => {
     // prepare component runtime
     result.allComponents[component.id] = {
       ...component,
       parentId,
     };
 
-    const level = result.componentRelations[parentId] || [];
+    const level = result.componentRelations[parentId] ?? [];
     level.push(component.id);
     result.componentRelations[parentId] = level;
 
@@ -443,16 +459,39 @@ export const componentsTreeToFlatStructure = (
       const subContainers = getSubContainers(component, componentRegistration);
 
       subContainers.forEach((subContainer) => {
-        if (subContainer && subContainer.components) {
+        if (isDefined(subContainer.components)) {
           subContainer.components.forEach((c) => {
             processComponent(c, subContainer.id);
           });
         }
       });
+
+      // Handle nested custom containers inside array items (e.g., stepFooter inside steps)
+      // Generic approach: look for any property that is a container (has id and components)
+      if (componentRegistration?.customContainerNames) {
+        componentRegistration.customContainerNames.forEach((containerName) => {
+          const containerData = unsafeGetValueByPropertyName(component, containerName);
+          if (Array.isArray(containerData)) {
+            containerData.forEach((item: unknown) => {
+              if (item && typeof item === 'object') {
+                // Check all properties of the item for nested containers
+                Object.keys(item).forEach((key) => {
+                  const prop = (item as Record<string, unknown>)[key];
+                  if (isComponentsContainer(prop)) {
+                    prop.components.forEach((c) => {
+                      processComponent(c, prop.id);
+                    });
+                  }
+                });
+              }
+            });
+          }
+        });
+      }
     }
   };
 
-  if (components) {
+  if (isDefined(components)) {
     components.forEach((component) => {
       processComponent(component, ROOT_COMPONENT_KEY);
     });
@@ -464,7 +503,7 @@ export const componentsTreeToFlatStructure = (
 export const upgradeComponent = (
   componentModel: IConfigurableFormComponent,
   definition: IToolboxComponent,
-  formSettings: IFormSettings,
+  formSettings: IFormSettings | undefined,
   flatStructure: IFlatComponentsStructure,
   isNew?: boolean,
 ): IConfigurableFormComponent => {
@@ -474,7 +513,7 @@ export const upgradeComponent = (
   const fluent = definition.migrator(migrator);
   const versionedModel = { ...componentModel, version: componentModel.version ?? -1 };
   const model = fluent.migrator.upgrade(versionedModel, {
-    isNew,
+    isNew: isNew ?? false,
     formSettings,
     flatStructure,
     componentId: versionedModel.id,
@@ -484,7 +523,7 @@ export const upgradeComponent = (
 
 export const upgradeComponents = (
   toolboxComponents: IToolboxComponents,
-  formSettings: IFormSettings,
+  formSettings: IFormSettings | undefined,
   flatStructure: IFlatComponentsStructure,
   isNew?: boolean,
 ): void => {
@@ -506,7 +545,7 @@ export const upgradeComponents = (
 export const getClosestComponent = (componentId: string, context: SettingsMigrationContext, componentType: string): IConfigurableFormComponent | null => {
   let component = context.flatStructure.allComponents[componentId];
   do {
-    component = component?.parentId ? context.flatStructure.allComponents[component.parentId] : null;
+    component = component?.parentId ? context.flatStructure.allComponents[component.parentId] : undefined;
   } while (component && (isRawComponentsContainer(component) || component.type !== componentType));
 
   return isConfigurableFormComponent(component) && component.type === componentType
@@ -516,7 +555,13 @@ export const getClosestComponent = (componentId: string, context: SettingsMigrat
 
 export const getClosestTableId = (context: SettingsMigrationContext): string | null => {
   const table = getClosestComponent(context.componentId, context, 'dataContext');
-  return table ? table['uniqueStateId'] ?? table.propertyName : null;
+  if (!table)
+    return null;
+
+  const uniqueStateId = unsafeGetValueByPropertyName(table, "uniqueStateId");
+  return typeof (uniqueStateId) === "string" && !isNullOrWhiteSpace(uniqueStateId)
+    ? uniqueStateId
+    : table.propertyName ?? null;
 };
 
 //#endregion
@@ -534,31 +579,50 @@ export const componentsFlatStructureToTree = (
     if (!componentIds) return;
 
     const ownerComponent = flat.allComponents[ownerId];
-    const ownerDefinition = isConfigurableFormComponent(ownerComponent) && ownerComponent.type
-      ? toolboxComponents[ownerComponent.type]
-      : undefined;
-    const staticContainerIds = [];
-    if (ownerDefinition?.customContainerNames) {
-      ownerDefinition.customContainerNames.forEach((sc) => {
-        const subContainer = ownerComponent[sc];
-        if (subContainer) {
+
+    const staticContainerIds: string[] = [];
+    // Track nested container ids that should be handled separately (e.g., stepFooter)
+    const nestedContainerMap: Map<string, { parent: unknown; property: string }> = new Map();
+    if (ownerComponent) {
+      const ownerDefinition = isConfigurableFormComponent(ownerComponent) && ownerComponent.type
+        ? toolboxComponents[ownerComponent.type]
+        : undefined;
+
+      if (isDefined(ownerDefinition) && ownerDefinition.customContainerNames) {
+        ownerDefinition.customContainerNames.forEach((sc) => {
+          const subContainer = unsafeGetValueByPropertyName(ownerComponent, sc);
+          if (subContainer) {
           // container with id
-          if (subContainer.id)
-            staticContainerIds.push(subContainer.id);
-          // container without id (array of components)
-          if (Array.isArray(subContainer))
-            subContainer.forEach((c) => {
-              if (c.id)
-                staticContainerIds.push(c.id);
-            });
-        }
-      });
+            if (isObjectWithStringId(subContainer))
+              staticContainerIds.push(subContainer.id);
+            // container without id (array of components)
+            if (Array.isArray(subContainer))
+              subContainer.forEach((c: unknown) => {
+                if (isObjectWithStringId(c))
+                  staticContainerIds.push(c.id);
+                // Track nested containers inside array items (generic approach)
+                if (c && typeof c === 'object') {
+                  Object.keys(c).forEach((key) => {
+                    const prop = (c as Record<string, unknown>)[key];
+                    if (isComponentsContainer(prop)) {
+                      nestedContainerMap.set(prop.id, { parent: c, property: key });
+                    }
+                  });
+                }
+              });
+          }
+        });
+      }
     }
 
     // iterate all component ids on the current level
     componentIds.forEach((id) => {
+      // Skip nested container ids (they'll be handled separately)
+      if (nestedContainerMap.has(id))
+        return;
+
       // extract current component and add to hierarchy
-      const component = { ...flat.allComponents[id] };
+      const component: Record<string, unknown> = { ...flat.allComponents[id] };
       if (!isConfigurableFormComponent(component))
         return;
       if (!staticContainerIds.includes(id))
@@ -584,13 +648,28 @@ export const componentsFlatStructureToTree = (
             return { ...container, components: childComponents };
           };
 
-          const childContainers = component[containerName];
+          const childContainers = unsafeGetValueByPropertyName(component, containerName);
           if (childContainers) {
             if (Array.isArray(childContainers)) {
-              component[containerName] = childContainers.map(processContainer);
-            } else {
+              component[containerName] = childContainers.map((c: unknown) => {
+                if (!isComponentsContainer(c)) return c as IComponentsContainer;
+                const processed = processContainer(c);
+                // Handle nested containers inside array items (generic approach)
+                const containerWithNested = processed as unknown as Record<string, unknown>;
+                Object.keys(containerWithNested).forEach((key) => {
+                  const prop = containerWithNested[key];
+                  if (isComponentsContainer(prop)) {
+                    const nestedComponents: IConfigurableFormComponent[] = [];
+                    processComponent(nestedComponents, prop.id);
+                    containerWithNested[key] = { ...prop, components: nestedComponents };
+                  }
+                });
+                return processed;
+              });
+            } else if (isComponentsContainer(childContainers))
               component[containerName] = processContainer(childContainers);
-            }
+            else
+              throw new Error(`Unknown container type: ${typeof childContainers}`, childContainers);
           }
         });
       }
@@ -628,6 +707,82 @@ class StaticMustacheTag {
   }
 }
 
+type MomentProto = {
+  toString(): string;
+};
+
+/**
+ * Deep-clones data into plain objects/arrays and attaches a JSON-producing `toString` so
+ * Mustache's `{{path}}` interpolation yields JSON instead of "[object Object]" / "1,2,3".
+ *
+ * Why this is needed:
+ *  - Shesha data-access proxies (ShaArrayAccessProxy / ShaObjectAccessProxy) route every
+ *    property read through their `get` trap, including `toString`. We unwrap them via
+ *    `getAccessorValue()` to recover the underlying data.
+ *  - Plain arrays/objects produce useless default string forms when Mustache stringifies them.
+ *
+ * Exported separately so it can be unit-tested without going through the full evaluator.
+ *
+ * Note on circular references: the `seen` WeakMap preserves cycles in the cloned structure,
+ * which means the custom `toString` will catch the JSON.stringify error and return ''.
+ * That's intentional — better than throwing during template rendering.
+ */
+export const cloneAndDecorateForMustache = (input: unknown, seen: WeakMap<object, unknown> = new WeakMap()): unknown => {
+  if (input == null || typeof input !== 'object') return input;
+  if (input instanceof Date || moment.isMoment(input)) return input;
+
+  // Shesha data-access proxies are terminal: never iterate them via Object.keys (each
+  // property access re-triggers the proxy's `get` trap and may expose internal accessor
+  // properties or cause side effects). Whatever `getAccessorValue` returns is the answer.
+  const accessor = (input as { getAccessorValue?: () => unknown }).getAccessorValue;
+  if (typeof accessor === 'function') {
+    try {
+      const unwrapped = accessor.call(input);
+      return unwrapped === input ? undefined : cloneAndDecorateForMustache(unwrapped, seen);
+    } catch {
+      return undefined;
+    }
+  }
+
+  // Preserve known special types that carry internal state which would break under a generic
+  // clone (Map, Set, RegExp, Error, URL, typed arrays, etc.). We detect them via the
+  // [[Class]] tag — anything that's not `[object Object]` or `[object Array]` is returned by
+  // reference. Class instances (which have `[object Object]` tag) ARE walked so their
+  // enumerable fields are cloned and any nested Shesha proxies inside get unwrapped.
+  const tag = Object.prototype.toString.call(input);
+  if (tag !== '[object Object]' && tag !== '[object Array]') return input;
+
+  const cached = seen.get(input);
+  if (cached) return cached;
+
+  const isArray = Array.isArray(input);
+  // Preserve the prototype for class instances so prototype methods/getters remain reachable.
+  const result: Record<string, unknown> | unknown[] = isArray
+    ? []
+    : Object.create(Object.getPrototypeOf(input) as object | null) as Record<string, unknown>;
+  seen.set(input, result);
+  for (const key of Object.keys(input))
+    (result as Record<string, unknown>)[key] = cloneAndDecorateForMustache((input as Record<string, unknown>)[key], seen);
+  // Only override toString on objects — arrays must stay as real arrays so their values are
+  // submitted correctly to the API. Attaching JSON.stringify-based toString to arrays caused
+  // array fields (e.g. multi-select) to be sent as "[32,128,64]" strings instead of [32,128,64].
+  if (!isArray) {
+    Object.defineProperty(result, 'toString', {
+      value: () => {
+        try {
+          return JSON.stringify(result);
+        } catch {
+          return '';
+        }
+      },
+      configurable: true,
+      enumerable: false,
+      writable: true,
+    });
+  }
+  return result;
+};
+
 /**
  * Evaluates the string using Mustache template.
  *
@@ -646,9 +801,10 @@ class StaticMustacheTag {
  * @returns {string} evaluated string
  */
 export const evaluateString = (template: string = '', data: object, skipUnknownTags: boolean = false): string => {
+  const prototype = moment.prototype as MomentProto;
   // store moment toString function to get ISO format of datetime
-  var toString = moment.prototype.toString;
-  moment.prototype.toString = function () {
+  const toString = prototype.toString;
+  prototype.toString = function (this: moment.Moment) {
     return this.format('YYYY-MM-DDTHH:mm:ss');
   };
 
@@ -658,11 +814,14 @@ export const evaluateString = (template: string = '', data: object, skipUnknownT
 
     // The function throws an exception if the expression passed doesn't have a corresponding curly braces
     try {
-      const view = {
-        ...data,
+      // Clone per call: caching the decorated structure is unsafe because long-lived proxies
+      // (e.g. the constants context) refresh in place, and skipUnknownTags mutates the view's
+      // nested nodes — both would leak shared state across evaluations.
+      const view: IAnyObject = {
+        ...(cloneAndDecorateForMustache(data) as IAnyObject),
         // adding a function to the data object that will format datetime
         dateFormat: function () {
-          return function (timestamp, render) {
+          return function (timestamp: unknown, render: (renderArgs: unknown) => string) {
             return new Date(render(timestamp).trim()).toLocaleDateString('en-us', {
               year: 'numeric',
               month: 'short',
@@ -673,21 +832,30 @@ export const evaluateString = (template: string = '', data: object, skipUnknownT
       };
 
       if (skipUnknownTags) {
-        template.match(/{{\s*[\w\.]+\s*}}/g).forEach((x) => {
+        template.match(/{{\s*[\w\.]+\s*}}/g)?.forEach((x) => {
           const mathes = x.match(/[\w\.]+/);
-          const tag = mathes.length ? mathes[0] : undefined;
+          const tag = mathes && mathes.length > 0
+            ? mathes[0]
+            : undefined;
 
+          if (!tag)
+            return;
           const parts = tag.split('.');
           const field = parts.pop();
-          const container = parts.reduce((level, key) => {
-            return level.hasOwnProperty(key) ? level[key] : (level[key] = {});
+          if (isNullOrWhiteSpace(field))
+            return;
+
+          const container = parts.reduce((level: IAnyObject, key: string) => {
+            return level.hasOwnProperty(key)
+              ? level[key] as IAnyObject
+              : (level[key] = {} as IAnyObject);
           }, view);
           if (!container.hasOwnProperty(field)) {
             container[field] = new StaticMustacheTag(tag);
           }
         });
 
-        const escape = (value: any): string => {
+        const escape = (value: string | StaticMustacheTag): string => {
           return value instanceof StaticMustacheTag
             ? value.toEscapedString()
             : value;
@@ -702,7 +870,7 @@ export const evaluateString = (template: string = '', data: object, skipUnknownT
     }
   } finally {
     // restore moment toString function
-    moment.prototype.toString = toString;
+    prototype.toString = toString;
   }
 };
 
@@ -737,8 +905,10 @@ export const evaluateString = (template: string = '', data: object, skipUnknownT
  * @param data - data to use to evaluate the string
  * @returns {string} evaluated string
  */
-export const evaluateComplexString = (expression: string, mappings: IMatchData[]): string => {
-  const matches = new Set([...expression?.matchAll(/\{\{(?:(?!}}).)*\}\}/g)].flat());
+export const evaluateComplexString = (expression: string, mappings: IMatchData[]): string => { // TODO (V1): merge with evaluateComplexStringWithResult
+  if (isNullOrWhiteSpace(expression))
+    return expression;
+  const matches = new Set([...expression.matchAll(/\{\{(?:(?!}}).)*\}\}/g)].flat());
 
   let result = expression;
 
@@ -749,7 +919,7 @@ export const evaluateComplexString = (expression: string, mappings: IMatchData[]
         // This is useful for backward compatibility
         // Initially expression would simply be {{expression}} and they wou be evaluated against formData
         // But dynamic expression now can use formData and globalState, so as a result the expressions need to use dot notation
-        const evaluatedValue = evaluateString(matched, match ? { [match]: data } : data);
+        const evaluatedValue = evaluateString(matched, match ? { [match]: data } : isDefined(data) && typeof (data) === "object" ? data : {});
 
         result = result.replaceAll(matched, evaluatedValue);
       }
@@ -760,9 +930,9 @@ export const evaluateComplexString = (expression: string, mappings: IMatchData[]
 };
 
 export interface IEvaluateComplexStringResult {
-  result: string;
-  unevaluatedExpressions?: string[];
-  success?: boolean;
+  result: ExpressionNodeValue;
+  unevaluatedExpressions: string[] | undefined;
+  success: boolean;
 }
 
 /**
@@ -811,19 +981,23 @@ export interface IEvaluateComplexStringResult {
  * @returns {string} evaluated string
  */
 
+// TODO (V1): merge with evaluateComplexString
 // newer versions
 export const evaluateComplexStringWithResult = (
   expression: string,
   mappings: IMatchData[],
   requireNonEmptyResult: boolean,
 ): IEvaluateComplexStringResult => {
-  const matches = new Set([...expression?.matchAll(/\{\{(?:(?!}}).)*\}\}/g)].flat());
+  if (isNullOrWhiteSpace(expression))
+    return expression;
+
+  const matches = new Set([...expression.matchAll(/\{\{(?:(?!}}).)*\}\}/g)].flat());
 
   let result = expression;
 
   let success = true;
 
-  const unevaluatedExpressions = [];
+  const unevaluatedExpressions: string[] = [];
 
   Array.from(matches).forEach((template) => {
     mappings.forEach(({ match, data }) => {
@@ -833,11 +1007,11 @@ export const evaluateComplexStringWithResult = (
         // Initially expression would simply be {{expression}} and they wou be evaluated against formData
         // But dynamic expression now can use formData and globalState, so as a result the expressions need to use dot notation
 
-        const evaluatedValue = evaluateString(template, match ? { [match]: data } : data);
+        const evaluatedValue = evaluateString(template, match ? { [match]: data } : isDefined(data) && typeof (data) === "object" ? data : {});
 
-        if (requireNonEmptyResult && !evaluatedValue?.trim()) {
+        if (requireNonEmptyResult && isNullOrWhiteSpace(evaluatedValue)) {
           success = false;
-          unevaluatedExpressions?.push(template);
+          unevaluatedExpressions.push(template);
         }
 
         result = result.replaceAll(template, evaluatedValue);
@@ -864,7 +1038,7 @@ export const isComponentFiltered = (
  *
  * @param expression field name in dot notation e.g. 'supplier.name' or 'fullName'
  */
-export const getFieldNameFromExpression = (expression: string): string | string[] | undefined => {
+export const getFieldNameFromExpression = (expression: string | undefined | null): string | string[] | undefined => {
   if (!expression) return undefined;
 
   return expression.includes('.') ? expression.split('.') : expression;
@@ -873,7 +1047,7 @@ export const getFieldNameFromExpression = (expression: string): string | string[
 export const getBoolean = (value: unknown): boolean => {
   if (typeof value == 'boolean') {
     return value;
-  } else if (typeof (value) === 'string' && value?.toLowerCase() === 'true') {
+  } else if (typeof (value) === 'string' && value.toLowerCase() === 'true') {
     return true;
   }
   return false;
@@ -883,14 +1057,13 @@ export const hasBoolean = (value: unknown): boolean => {
   if (typeof value === 'boolean') {
     return true;
   } else if (typeof value === 'string') {
-    if (value?.toLowerCase() === 'true') {
-      return true;
-    } else if (value?.toLowerCase() === 'false') {
-      return true;
-    }
+    return value.toLowerCase() === 'true' || value.toLowerCase() === 'false';
   }
   return false;
 };
+
+type ValidatorFunc = (rule: RuleObject, value: unknown, callback: (error?: string) => void, data: unknown) => Promise<void>;
+
 /**
  * Return valudation rules for the specified form component
  */
@@ -904,7 +1077,7 @@ export const getValidationRules = (component: IConfigurableFormComponent, option
     if (validate.required)
       rules.push({
         required: true,
-        message: validate?.message || 'This field is required',
+        message: validate.message || 'This field is required',
       });
 
     if (validate.minValue !== undefined)
@@ -931,17 +1104,21 @@ export const getValidationRules = (component: IConfigurableFormComponent, option
         type: 'string',
       });
 
-    if (validate.validator)
+    if (!isNullOrWhiteSpace(validate.validator) && options) {
+      const validatorFunc = new Function('rule', 'value', 'callback', 'data', validate.validator) as ValidatorFunc;
+
       rules.push({
-        // tslint:disable-next-line:function-constructor
-        validator: (rule: RuleObject, value: any, callback: (error?: string) => void) =>
-          new Function('rule', 'value', 'callback', 'data', validate.validator)(
+        validator: (rule: RuleObject, value: unknown, callback: (error?: string) => void) => {
+          const formData = options.getFormData ? options.getFormData() : options.formData;
+          return validatorFunc(
             rule,
             value,
             callback,
-            options?.getFormData ? options?.getFormData() : options?.formData,
-          ),
+            formData,
+          );
+        },
       });
+    }
   }
 
   return rules;
@@ -968,29 +1145,31 @@ export const removeZeroWidthCharsFromString = (value: string): string => {
   return value.replace(/[\u200B-\u200D\uFEFF]/g, '');
 };
 
-const evaluateValueInternal = (value: string, dictionary: any, isRoot: boolean): unknown => {
-  if (!value) return value;
-  if (!dictionary) return null;
+const evaluateValueInternal = (value: string, dictionary: IAnyObject, isRoot: boolean): unknown => {
+  if (isNullOrWhiteSpace(value))
+    return value;
 
   const match = value.match(isRoot ? DICTIONARY_ACCESSOR_REGEX : NESTED_ACCESSOR_REGEX);
-  if (!match) return value;
+  if (!match || !match.groups) return value;
+
+  const { key, accessor } = match.groups;
+  if (isNullOrWhiteSpace(key) || isNullOrWhiteSpace(accessor))
+    return value;
 
   // check nested properties
-  if (match.groups.accessor.match(NESTED_ACCESSOR_REGEX)) {
+  if (accessor.match(NESTED_ACCESSOR_REGEX)) {
     // try get value recursive
-    return evaluateValueInternal(match.groups.accessor, dictionary[match.groups.key], false);
+    return evaluateValueInternal(accessor, dictionary[key] as IAnyObject, false);
   } else {
-    const container = dictionary[match.groups.key];
+    const container = dictionary[key];
     if (!container) return null;
 
-    const evaluatedValue = container[match.groups.accessor];
-
-    return evaluatedValue;
+    return (container as IAnyObject)[accessor];
   }
 };
 
 export const evaluateValue = (value: string, dictionary: object): unknown => {
-  return evaluateValueInternal(value, dictionary, true);
+  return evaluateValueInternal(value, dictionary as IAnyObject, true);
 };
 
 export const evaluateValueAsString = (value: string, dictionary: object): string | undefined => {
@@ -999,7 +1178,7 @@ export const evaluateValueAsString = (value: string, dictionary: object): string
 };
 
 export const getComponentsFromMarkup = (markup: FormMarkup): IConfigurableFormComponent[] => {
-  if (!markup) return [];
+  if (!isDefined(markup)) return [];
   return Array.isArray(markup)
     ? (markup as IConfigurableFormComponent[])
     : (markup as FormMarkupWithSettings).components;
@@ -1029,8 +1208,9 @@ export const getFormValidationRules = (markup: FormMarkup): Rules => {
   const components = getComponentsFromMarkup(markup);
 
   const rules: Rules = {};
-  components?.forEach((component) => {
-    rules[component.propertyName] = getValidationRules(component) as [];
+  components.forEach((component) => {
+    if (component.propertyName)
+      rules[component.propertyName] = getValidationRules(component) as [];
   });
 
   return rules;
@@ -1077,6 +1257,45 @@ export function linkComponentToModelMetadata<TModel extends IConfigurableFormCom
   return mappedModel;
 }
 
+export function getComponentModelFromMetadata<TModel extends IConfigurableFormComponent>(
+  component: IToolboxComponent<TModel>,
+  model: TModel,
+  metadata: IPropertyMetadata,
+): TModel {
+  // make copy of component model but with undefined values
+  let m = deepCopyViaJson(model) as Record<string, unknown>;
+  for (const key in m)
+    if (Object.hasOwn(m, key))
+      m[key] = undefined;
+
+  // apply metadata
+  m = linkComponentToModelMetadata(component, m as TModel, metadata) as Record<string, unknown>;
+
+  // remove fields with undefined values
+  for (const key in m)
+    if (Object.hasOwn(m, key))
+      if (m[key] === undefined)
+        delete m[key];
+
+  return m as TModel;
+};
+
+export function updateComponentModelFromMetadata<TModel extends IConfigurableFormComponent>(
+  component: IToolboxComponent<TModel>,
+  model: TModel,
+  metadata: IPropertyMetadata,
+): TModel {
+  const mm = getComponentModelFromMetadata(component, model, metadata);
+  const m = deepMergeValues(deepCopyViaJson(model), mm, (t: Record<string, unknown>, s: Record<string, unknown>, key) => {
+    // skip merge
+    // metadata value is empty
+    return s[key] === undefined ||
+      // model value is a non-empty primitive (non-object values are not merged if already set)
+      (t[key] !== undefined && t[key] !== null && t[key] !== '' && typeof t[key] !== 'object');
+  });
+  return m;
+};
+
 export type ProcessingFunc = (child: IConfigurableFormComponent, parentId: string) => void;
 
 export const processRecursive = (
@@ -1085,29 +1304,30 @@ export const processRecursive = (
   component: IConfigurableFormComponent,
   func: ProcessingFunc,
 ): void => {
+  if (!isDefined(component))
+    return;
   func(component, parentId);
 
-  if (isNullOrWhiteSpace(component?.type))
+  if (isNullOrWhiteSpace(component.type))
     return;
-  const toolboxComponent = findToolboxComponent(componentsRegistration, (c) => c.type === component?.type);
+  const toolboxComponent = findToolboxComponent(componentsRegistration, (c) => c.type === component.type);
   if (!toolboxComponent) return;
   const containers = getContainerNames(toolboxComponent);
 
-  if (containers) {
-    containers.forEach((containerName) => {
-      const containerComponents = component[containerName]
-        ? Array.isArray(component[containerName])
-          ? (component[containerName] as IConfigurableFormComponent[])
-          : [component[containerName] as IConfigurableFormComponent]
-        : undefined;
-      if (containerComponents) {
-        containerComponents.forEach((child) => {
-          func(child, component.id);
-          processRecursive(componentsRegistration, parentId, child, func);
-        });
-      }
-    });
-  }
+  containers.forEach((cnt) => {
+    const containerName = cnt as keyof IConfigurableFormComponent;
+    const containerComponents = component[containerName]
+      ? Array.isArray(component[containerName])
+        ? (component[containerName] as IConfigurableFormComponent[])
+        : [component[containerName] as IConfigurableFormComponent]
+      : undefined;
+    if (containerComponents) {
+      containerComponents.forEach((child) => {
+        func(child, component.id);
+        processRecursive(componentsRegistration, parentId, child, func);
+      });
+    }
+  });
 };
 
 /**
@@ -1131,15 +1351,14 @@ export const cloneComponents = (
     const toolboxComponent = getToolboxComponent(componentsRegistration, (c) => c.type === component.type);
     const containers = getContainerNames(toolboxComponent);
 
-    if (containers) {
-      containers.forEach((containerName) => {
-        const containerComponents = clone[containerName] as IConfigurableFormComponent[];
-        if (containerComponents) {
-          const newChilds = cloneComponents(componentsRegistration, containerComponents);
-          clone[containerName] = newChilds;
-        }
-      });
-    }
+    containers.forEach((cnt) => {
+      const containerName = cnt as keyof IConfigurableFormComponent;
+      const containerComponents = clone[containerName] as IConfigurableFormComponent[] | undefined;
+      if (containerComponents) {
+        const newChilds = cloneComponents(componentsRegistration, containerComponents);
+        (clone as IAnyObject)[containerName] = newChilds;
+      }
+    });
   });
 
   return result;
@@ -1152,17 +1371,20 @@ export const createComponentModelForDataProperty = (
     componentModel: IConfigurableFormComponent,
     toolboxComponent: IToolboxComponent,
   ) => IConfigurableFormComponent,
-): IConfigurableFormComponent => {
-  let toolboxComponent = findToolboxComponent(components, (c) => c.type === propertyMetadata.formatting.defaultEditor);
-  toolboxComponent = toolboxComponent ||
+): IConfigurableFormComponent | undefined => {
+  const { defaultEditor } = propertyMetadata.formatting ?? {};
+  let toolboxComponent = !isNullOrWhiteSpace(defaultEditor)
+    ? findToolboxComponent(components, (c) => c.type === defaultEditor)
+    : undefined;
+  toolboxComponent = toolboxComponent ??
     findToolboxComponent(
       components,
       (c) =>
-        Boolean(c.dataTypeSupported) &&
-        c.dataTypeSupported({ dataType: propertyMetadata.dataType, dataFormat: propertyMetadata.dataFormat }),
+        isDefined(c.dataTypeSupported) &&
+        c.dataTypeSupported({ dataType: propertyMetadata.dataType, dataFormat: propertyMetadata.dataFormat ?? undefined }),
     );
 
-  if (!Boolean(toolboxComponent)) return null;
+  if (!toolboxComponent) return undefined;
 
   // find appropriate toolbox component
   // create instance of the component
@@ -1176,10 +1398,9 @@ export const createComponentModelForDataProperty = (
     type: toolboxComponent.type,
     propertyName: fullName,
     componentName: fullName,
-    label: propertyMetadata.label,
     labelAlign: 'right',
     // parentId: containerId,
-    hidden: false,
+    visible: true,
     isDynamic: false,
     validate: {},
   };
@@ -1187,26 +1408,28 @@ export const createComponentModelForDataProperty = (
 
   if (toolboxComponent.migrator && migrator) componentModel = migrator(componentModel, toolboxComponent);
 
-  componentModel = linkComponentToModelMetadata(toolboxComponent, componentModel, propertyMetadata);
+  if (!toolboxComponent.allowInherit)
+    componentModel = linkComponentToModelMetadata(toolboxComponent, componentModel, propertyMetadata);
 
   return componentModel;
 };
 
 export interface IMatchData {
   match: string;
-  data: any;
+  data: unknown;
 }
 
-export const pickStyleFromModel = (model: StyleBoxValue, ...args: any[]): CSSProperties => {
+export const pickStyleFromModel = (model: StyleBoxValue | undefined, ...args: unknown[]): CSSProperties => {
   let style = {};
 
   const propsToCopy = !args.length
     ? STYLE_BOX_CSS_POPERTIES
     : args;
 
-  if (model) {
+  if (isDefined(model)) {
     propsToCopy.forEach((prop) => {
-      if (model[prop]) style = { ...style, [prop]: `${model[prop]}px` };
+      const key = prop as keyof StyleBoxValue;
+      if (model[key]) style = { ...style, [key]: `${model[key]}px` };
     });
   }
 
@@ -1214,17 +1437,22 @@ export const pickStyleFromModel = (model: StyleBoxValue, ...args: any[]): CSSPro
 };
 
 const emptyStyle = {};
+type StyleFunction = (data: object, globalState: object) => CSSProperties | undefined;
 export const getStyle = (
-  style: string,
-  formData: any = {},
-  globalState: any = {},
+  style: string | undefined,
+  formData: object = {},
+  globalState: object = {},
   defaultStyle: object = emptyStyle,
   excludeMargin: boolean = false,
 ): CSSProperties => {
-  if (!style) return defaultStyle;
-  // tslint:disable-next-line:function-constructor
-  const allStyle = new Function('data, globalState', style)(formData, globalState);
-  if (!allStyle || typeof allStyle !== 'object') return defaultStyle;
+  if (!style)
+    return defaultStyle;
+
+  const evaluator = new Function('data, globalState', style) as StyleFunction;
+  const allStyle = evaluator(formData, globalState);
+
+  if (!allStyle || typeof allStyle !== 'object')
+    return defaultStyle;
   const { margin, marginTop, marginBottom, marginLeft, marginRight, ...rest } = allStyle;
   return excludeMargin
     ? rest : {
@@ -1237,28 +1465,20 @@ export const getStyle = (
     };
 };
 
-export const getLayoutStyle = (model: IConfigurableFormComponent, args: { [key: string]: any }): CSSProperties => {
-  const styling = jsonSafeParse<StyleBoxValue>(model?.stylingBox || '{}');
-  let style = pickStyleFromModel(styling);
+export const getLayoutStyle = (model: Pick<IConfigurableFormComponent, "style" | "stylingBox">, args: { [key: string]: unknown }): CSSProperties => {
+  const styling = !isNullOrWhiteSpace(model.stylingBox)
+    ? jsonSafeParse<StyleBoxValue>(model.stylingBox, {}) ?? {}
+    : {};
+  const style = pickStyleFromModel(styling);
 
   try {
-    return { ...style, ...(executeFunction<object>(model?.style, args) || {}) };
+    const evaluatedStyle = !isNullOrWhiteSpace(model.style)
+      ? executeFunction<object>(model.style, args) ?? {}
+      : {};
+    return { ...style, ...evaluatedStyle };
   } catch {
     return style;
   }
-};
-
-export const filterFormData = <TData extends object = object>(data: TData): TData => {
-  if (typeof data === 'object' && Object.getOwnPropertyNames(data || {}).length) {
-    return Object.entries(data)
-      .filter(([k]) => !k.startsWith(SILENT_KEY))
-      .reduce((accum, [k, v]) => {
-        accum[k] = v;
-        return accum;
-      }, {}) as TData;
-  }
-
-  return data;
 };
 
 /**
@@ -1270,28 +1490,30 @@ export const filterFormData = <TData extends object = object>(data: TData): TDat
 export const convertDotNotationPropertiesToGraphQL = (properties: string[]): string => {
   const tree = {};
 
-  const makeProp = (container: object, name: string): void => {
+  const makeProp = (container: IAnyObject, name: string): void => {
     let parts = name.split('.');
-    let currentContainer = container;
+    let currentContainer: IAnyObject = container;
 
     do {
       const part = parts.shift();
-      if (parts.length > 0) {
+      if (!isNullOrWhiteSpace(part)) {
+        if (parts.length > 0) {
         // current property is a container
-        const existingContainer = currentContainer[part];
-        // reuse if already exists, it already contains some properties
-        if (typeof existingContainer !== 'object') currentContainer[part] = {};
+          const existingContainer = currentContainer[part];
+          // reuse if already exists, it already contains some properties
+          if (typeof existingContainer !== 'object') currentContainer[part] = {};
 
-        currentContainer = currentContainer[part];
-      } else {
-        if (!Boolean(currentContainer[part])) currentContainer[part] = true; // scalar property
+          currentContainer = currentContainer[part] as IAnyObject;
+        } else {
+          if (!isDefined(currentContainer[part])) currentContainer[part] = true; // scalar property
+        }
       }
     } while (parts.length > 0);
   };
 
   const expandedProps = [...properties];
   // add id if missing only if there are any other properties
-  if (expandedProps?.length > 0 && !expandedProps.includes('id')) expandedProps.push('id');
+  if (expandedProps.length > 0 && !expandedProps.includes('id')) expandedProps.push('id');
 
   // build properties tree
   expandedProps.forEach((p) => {
@@ -1302,12 +1524,12 @@ export const convertDotNotationPropertiesToGraphQL = (properties: string[]): str
     return name.startsWith('_') ? name : camelcase(name);
   };
 
-  const getNodes = (container: object): string => {
+  const getNodes = (container: IAnyObject): string => {
     let result = '';
     for (const node in container) {
       if (container.hasOwnProperty(node)) {
         if (result !== '') result += ' ';
-        const nodeValue = container[node];
+        const nodeValue = (container as IAnyObject)[node] as IAnyObject;
         if (typeof nodeValue === 'object') result += `${preparePropertyName(node)} { ${getNodes(nodeValue)} }`;
         else result += preparePropertyName(node);
       }
@@ -1320,38 +1542,33 @@ export const convertDotNotationPropertiesToGraphQL = (properties: string[]): str
 };
 
 export const isFormRawId = (formId: FormIdentifier): formId is FormUid => {
-  return formId && typeof formId === 'string';
+  return isDefined(formId) && typeof formId === 'string';
 };
 
-export const isFormFullName = (formId: FormIdentifier): formId is FormFullName => {
+export const isFormFullName = (formId: FormIdentifier | undefined): formId is FormFullName => {
   return isDefined(formId) && typeof (formId) === 'object' && "name" in formId && typeof (formId.name) === 'string';
+};
+
+/**
+ * Check if a formId is a valid FormFullName (i.e. it is an object with 'module' and 'name' properties that are not empty or whitespace-only strings)
+ * @param formId The formId to check
+ * @returns True if the formId is a valid FormFullName, false otherwise
+ */
+export const isValidFormFullName = (formId: FormIdentifier | undefined): formId is FormFullName => {
+  return isFormFullName(formId) && !isNullOrWhiteSpace(formId.module) && !isNullOrWhiteSpace(formId.name);
 };
 
 export const isSameFormIds = (id1: FormIdentifier, id2: FormIdentifier): boolean => {
   return (isFormRawId(id1) && isFormRawId(id2) && id1 === id2) ||
-    (isFormFullName(id1) && isFormFullName(id2) && id1.module?.toLowerCase() === id2.module?.toLowerCase() && id1.name?.toLowerCase() === id2.name?.toLowerCase());
-};
-
-export const convertToMarkupWithSettings = (markup: FormMarkup, isSettingsForm?: boolean): FormMarkupWithSettings => {
-  if (!markup) return null;
-  const result = markup as FormMarkupWithSettings;
-  if (result?.components && !!result.formSettings)
-    if (typeof isSettingsForm === 'undefined') return result;
-    else if (typeof isSettingsForm !== 'undefined' && isSettingsForm !== null) {
-      result.formSettings.isSettingsForm = isSettingsForm;
-      return result;
-    }
-  if (Array.isArray(markup)) return { components: markup, formSettings: { ...DEFAULT_FORM_SETTINGS, isSettingsForm } };
-
-  return { components: [], formSettings: { ...DEFAULT_FORM_SETTINGS, isSettingsForm } };
+    (isFormFullName(id1) && isFormFullName(id2) && id1.module?.toLowerCase() === id2.module?.toLowerCase() && id1.name.toLowerCase() === id2.name.toLowerCase());
 };
 
 export interface EvaluationContext {
-  contextData: GenericDictionary;
+  contextData: IArgumentsEvaluationContext;
   path: string;
-  evaluationFilter?: (context: EvaluationContext, data: any) => boolean;
+  evaluationFilter?: (context: EvaluationContext, data: unknown) => boolean;
 };
-const evaluateRecursive = (data: any, evaluationContext: EvaluationContext): any => {
+const evaluateRecursive = (data: unknown, evaluationContext: EvaluationContext): unknown => {
   if (!data)
     return data;
 
@@ -1367,11 +1584,11 @@ const evaluateRecursive = (data: any, evaluationContext: EvaluationContext): any
     return data.map((item) => evaluateRecursive(item, evaluationContext));
   }
   if (typeof data === 'object') {
-    const evaluatedObject = {};
+    const evaluatedObject: IAnyObject = {};
     for (const key in data) {
       if (data.hasOwnProperty(key)) {
         const memberPath = path ? `${path}.${key}` : key;
-        evaluatedObject[key] = evaluateRecursive(data[key], { ...evaluationContext, path: memberPath });
+        evaluatedObject[key] = evaluateRecursive((data as IAnyObject)[key], { ...evaluationContext, path: memberPath });
       }
     }
     return evaluatedObject;
@@ -1382,8 +1599,8 @@ const evaluateRecursive = (data: any, evaluationContext: EvaluationContext): any
 export const recursiveEvaluator = <TArguments = ActionParametersDictionary>(
   argumentsConfiguration: TArguments,
   evaluationContext: EvaluationContext,
-): Promise<TArguments> => {
-  if (!Boolean(argumentsConfiguration)) return Promise.resolve(null);
+): Promise<TArguments | undefined> => {
+  if (!Boolean(argumentsConfiguration)) return Promise.resolve(undefined);
 
   return new Promise<TArguments>((resolve) => {
     const evaluated = evaluateRecursive(argumentsConfiguration, evaluationContext);
@@ -1393,8 +1610,8 @@ export const recursiveEvaluator = <TArguments = ActionParametersDictionary>(
 
 export const genericActionArgumentsEvaluator = <TArguments = ActionParametersDictionary>(
   argumentsConfiguration: TArguments,
-  evaluationData: GenericDictionary,
-): Promise<TArguments> => {
+  evaluationData: IArgumentsEvaluationContext,
+): Promise<TArguments | undefined> => {
   const evaluationContext: EvaluationContext = {
     contextData: evaluationData,
     path: '',
@@ -1404,68 +1621,6 @@ export const genericActionArgumentsEvaluator = <TArguments = ActionParametersDic
 };
 
 /**
- * Convert action parameters definition to a runtime parameters
- */
-export const getFormActionArguments = (
-  params: ActionParameters,
-  evaluationContext: GenericDictionary,
-): Promise<ActionArguments> => {
-  if (!Boolean(params)) return Promise.resolve({});
-
-  if (typeof params === 'string') {
-    try {
-      const evaluationKeys = Object.keys(evaluationContext);
-      evaluationKeys.push(params);
-
-      const func = Function.apply(null, evaluationKeys);
-      const evaluated = func(evaluationContext); // promise or value
-      return Promise.resolve(evaluated);
-    } catch (error) {
-      return Promise.reject(error);
-    }
-  }
-
-  return new Promise<ActionArguments>((resolve) => {
-    const dictionary = params as ActionParametersDictionary;
-    const actionArgs = {};
-
-    for (const parameterIdx in dictionary) {
-      if (parameterIdx) {
-        const parameter = dictionary[parameterIdx];
-
-        // TODO: add promise support
-        const value =
-          typeof parameter?.value === 'string' ? evaluateString(parameter?.value, evaluationContext) : parameter?.value;
-
-        if (value) {
-          actionArgs[parameter?.key] = value;
-        }
-      }
-    }
-    resolve(actionArgs);
-  });
-};
-
-type ComponentByTypePredicate = (component: IConfigurableFormComponent) => boolean;
-
-export const getComponentNames = (components: IComponentsDictionary, predicate: ComponentByTypePredicate): string[] => {
-  let componentNames: string[] = [];
-
-  if (typeof predicate !== 'function') throw new Error('getComponentNames: predicate must be defined');
-
-  Object.keys(components).forEach((key) => {
-    let component = components[key];
-
-    if (isConfigurableFormComponent(component) && predicate(component)) {
-      componentNames.push(component.propertyName);
-    }
-  });
-
-  return componentNames;
-};
-
-
-/**
  * Converts the given form markup to a flat structure of configurable form components.
  *
  * @param {FormRawMarkup} markup - The form markup to convert.
@@ -1473,14 +1628,15 @@ export const getComponentNames = (components: IComponentsDictionary, predicate: 
  * @param {IToolboxComponents} designerComponents - The designer components.
  * @return {IFlatComponentsStructure} The flat structure of configurable form components.
  */
-export const convertFormMarkupToFlatStructure = (markup: FormRawMarkup, formSettings: IFormSettings | null, designerComponents: IToolboxComponents): IFlatComponentsStructure => {
+export const convertFormMarkupToFlatStructure = (markup: FormRawMarkup, formSettings: IFormSettings | undefined, designerComponents: IToolboxComponents): IFlatComponentsStructure => {
   let components = getComponentsFromMarkup(markup);
   if (formSettings?.isSettingsForm)
     components = updateJsSettingsForComponents(designerComponents, components);
   const newFlatComponents = componentsTreeToFlatStructure(designerComponents, components);
 
   // migrate components to last version
-  upgradeComponents(designerComponents, formSettings, newFlatComponents);
+  if (formSettings)
+    upgradeComponents(designerComponents, formSettings, newFlatComponents);
 
   return newFlatComponents;
 };
@@ -1511,9 +1667,21 @@ export const standardActualModelPropertyFilter = (name: string): boolean => {
  * @param value - The property value
  * @returns true if the property should be included, false otherwise
  */
-export const formComponentActualModelPropertyFilter = (component: IToolboxComponent, name: string, value: unknown): boolean => {
-  if (component?.actualModelPropertyFilter) {
+export const formComponentActualModelPropertyFilter = (component: IToolboxComponent | undefined, name: string, value: unknown): boolean => {
+  if (isDefined(component) && component.actualModelPropertyFilter) {
     return component.actualModelPropertyFilter(name, value) && standardActualModelPropertyFilter(name);
   }
   return standardActualModelPropertyFilter(name);
+};
+
+
+export const formDtop2PersistedFormProps = (formDto: IFormDto): IPersistedFormProps => {
+  return {
+    id: formDto.id,
+    module: formDto.module,
+    name: formDto.name,
+    label: formDto.label ?? undefined,
+    description: formDto.description ?? undefined,
+    markup: formDto.markup ?? undefined,
+  };
 };

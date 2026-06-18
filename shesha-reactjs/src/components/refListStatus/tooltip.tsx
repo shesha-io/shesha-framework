@@ -1,6 +1,7 @@
 import React, { FC, PropsWithChildren } from 'react';
 import { ReferenceListItemDto } from '@/apis/referenceList';
 import { Tooltip } from 'antd';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 interface IToolTipProps {
   currentStatus: ReferenceListItemDto;
@@ -12,9 +13,9 @@ export const DescriptionTooltip: FC<PropsWithChildren<IToolTipProps>> = ({
   showReflistName,
   children,
 }) => {
-  const popReflistName = !!(!showReflistName && currentStatus?.item);
+  const popReflistName = !showReflistName && !isNullOrWhiteSpace(currentStatus.item);
 
-  const showToolTip = !!currentStatus?.description || popReflistName;
+  const showToolTip = !isNullOrWhiteSpace(currentStatus.description) || popReflistName;
 
 
   return showToolTip ? (
@@ -24,7 +25,7 @@ export const DescriptionTooltip: FC<PropsWithChildren<IToolTipProps>> = ({
         <div>
           {popReflistName && (
             <>
-              <span>{currentStatus?.item}</span>
+              <span>{currentStatus.item}</span>
               <br />
             </>
           )}

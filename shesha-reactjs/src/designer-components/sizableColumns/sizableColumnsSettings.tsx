@@ -5,14 +5,13 @@ import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 import SizableColumnsList from './sizableColumnList';
 import StyleBox from '../styleBox/components/box';
 import { Checkbox, Input } from 'antd';
-import { EXPOSED_VARIABLES } from './exposedVariables';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
 import { ISizableColumnComponentProps } from './interfaces';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
 import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
 const SizableColumnsSettings = (props: ISettingsFormFactoryArgs<ISizableColumnComponentProps>): ReactElement => {
-  const { readOnly } = props;
+  const { readOnly = false } = props;
 
   return (
     <>
@@ -35,7 +34,6 @@ const SizableColumnsSettings = (props: ISettingsFormFactoryArgs<ISizableColumnCo
             mode="dialog"
             label="Style"
             description="A script that returns the style of the element as an object. This should conform to CSSProperties"
-            exposedVariables={EXPOSED_VARIABLES}
           />
         </SettingsFormItem>
 

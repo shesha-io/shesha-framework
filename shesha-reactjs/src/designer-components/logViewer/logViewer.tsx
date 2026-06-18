@@ -1,4 +1,4 @@
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { IToolboxComponent } from '@/interfaces';
 import { FormMarkup } from '@/providers/form/models';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';

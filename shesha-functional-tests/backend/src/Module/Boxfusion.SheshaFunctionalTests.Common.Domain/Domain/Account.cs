@@ -15,5 +15,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Domain.Domain
         public virtual RefListAccType? AccountType { get; set; }
 
         public virtual Bank Bank { get; set; }
+        public virtual FormConfiguration CaptureForm { get; set; }
+
     }
 }

@@ -13,21 +13,22 @@ export interface InitializationErrorsInfoDto {
 }
 
 export interface UserLoginInfoDto {
-  id?: number;
-  accountFound?: boolean;
-  userName?: string | null;
-  firstName?: string | null;
-  lastName?: string | null;
-  fullName?: string | null;
-  picture?: string | null;
-  email?: string | null;
-  mobileNumber?: string | null;
-  hasRegistered?: boolean;
+  id: number;
+  accountFound: boolean;
+  userName: string;
+  firstName: string | null;
+  lastName: string | null;
+  fullName: string | null;
+  picture: string | null;
+  email: string | null;
+  mobileNumber: string | null;
+  hasRegistered: boolean;
   loginProvider?: string | null;
   personId: string;
   homeUrl?: string | null;
   isSelfServiceUser?: boolean;
   grantedPermissions?: GrantedPermissionDto[] | null;
+  requireChangePassword?: boolean;
 }
 export interface ApplicationInfoDto {
   version?: string | null;

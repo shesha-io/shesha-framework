@@ -2,7 +2,6 @@
 using Moq;
 using NHibernate;
 using Shesha.Domain;
-using Shesha.Extensions;
 using Shesha.NHibernate;
 using Shesha.NHibernate.Repositories;
 using Shesha.Specifications;
@@ -90,7 +89,7 @@ namespace Shesha.Tests.Specifications
 
             await Task.Delay(1);
 
-            var allPersonsCount = await repository.GetAll().CountAsync();
+            var allPersonsCount = await repository.CountAsync();
             allPersonsCount.ShouldBe(expectedAllPersonsCount);
 
             using (specAccessor.Use<Age18PlusSpecification, Person>())
@@ -99,7 +98,7 @@ namespace Shesha.Tests.Specifications
 
                 specAccessor.SpecificationTypes.ShouldBe(new[] { typeof(Age18PlusSpecification) }, ignoreOrder: true);
 
-                var persons18Plus = await repository.GetAll().ToListAsync();
+                var persons18Plus = await repository.GetAllListAsync();
                 persons18Plus.ShouldBe(expectedPersons18Plus, ignoreOrder: true);
 
                 using (specAccessor.Use<HasNoAccountSpecification, Person>())
@@ -108,7 +107,7 @@ namespace Shesha.Tests.Specifications
 
                     specAccessor.SpecificationTypes.ShouldBe(new[] { typeof(Age18PlusSpecification), typeof(HasNoAccountSpecification) }, ignoreOrder: true);
                     
-                    var persons18PlusWithoutAccount = await repository.GetAll().ToListAsync();
+                    var persons18PlusWithoutAccount = await repository.GetAllListAsync();
                     persons18PlusWithoutAccount.ShouldBe(expectedPersons18PlusWithoutAccount, ignoreOrder: true);
                 }
 
@@ -116,7 +115,7 @@ namespace Shesha.Tests.Specifications
 
                 specAccessor.SpecificationTypes.ShouldBe(new[] { typeof(Age18PlusSpecification) }, ignoreOrder: true);
 
-                var persons18Plus2 = await repository.GetAll().ToListAsync();
+                var persons18Plus2 = await repository.GetAllListAsync();
                 persons18Plus2.ShouldBe(expectedPersons18Plus, ignoreOrder: true);
             }
 
@@ -124,7 +123,7 @@ namespace Shesha.Tests.Specifications
 
             specAccessor.SpecificationTypes.ShouldBeEmpty();
             
-            var allPersonsCount2 = await repository.GetAll().CountAsync();
+            var allPersonsCount2 = await repository.CountAsync();
             allPersonsCount2.ShouldBe(expectedAllPersonsCount);
         }
 

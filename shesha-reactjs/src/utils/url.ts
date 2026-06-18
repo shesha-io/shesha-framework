@@ -82,7 +82,7 @@ export const joinUrlAndPath = (baseUrl: string, path: string): string => {
 export function removeURLParameter(url: string, parameter: string): string {
   if (!url) return url;
 
-  const [baseUrl, queryString = ''] = url.split('?');
+  const [baseUrl = "", queryString = ""] = url.split("?");
   if (queryString === '') return url;
 
   const parsed = qs.parse(queryString, { allowDots: true });
@@ -96,7 +96,7 @@ export function removeURLParameter(url: string, parameter: string): string {
 }
 
 
-export const buildUrl = (url: string, queryParams?: object): string => {
+export const buildUrl = <TPayload extends object = object>(url: string, queryParams?: TPayload): string => {
   const urlWithoutQuery = getUrlWithoutQueryParams(url);
   const urlQueryPatams = getQueryParams(url);
 

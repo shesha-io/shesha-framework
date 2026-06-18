@@ -1,16 +1,18 @@
 ﻿using Abp.Dependency;
 using Abp.Linq;
 using NHibernate.Linq;
+using Shesha.Configuration.Runtime;
+using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Services;
+using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
-using ReflectionHelper = Shesha.Reflection.ReflectionHelper;
+using static Shesha.Reflection.ReflectionHelper;
 
 namespace Shesha.NHibernate
 {
@@ -26,76 +28,147 @@ namespace Shesha.NHibernate
             _asyncExecuter = asyncExecuter;
         }
 
-        public Task<List<T>> ToListAsync<T>(IQueryable<T> queryable, List<string> properties)
+        public Task<List<T>> ToListAsync<T>(IQueryable<T> queryable, List<string> properties) where T : class, new()
         {
-            IQueryable<T>? fetcher = null;
-
-            foreach (var propName in properties)
+            var propertiesToFetch = new List<string>();
+            var missingProperties = new List<string>();
+            foreach (var propName in properties) 
             {
-                var property = ReflectionHelper.GetProperty(typeof(T), propName, useCamelCase: true);
-                if (property != null && property.PropertyType.IsEntityType())
+                var propWithPath = ExtractPropNameAndPath(propName);
+                if (propWithPath.PropName == EntityConstants.DisplayNameField)
                 {
-                    fetcher = FetchNested(fetcher ?? queryable, propName);
-                }
-            }
+                    var ownerProperty = propWithPath.Path.Delimited(".");
 
-            return fetcher != null
-                ? fetcher.ToListAsync()
-                : _asyncExecuter.ToListAsync(queryable); // fallback to IAsyncQueryableExecuter
-        }
-
-        private IQueryable<T> FetchNested<T>(IQueryable<T> queryable, string propName)
-        {
-            var parts = propName.Split('.');
-            var firstPart = parts.First();
-
-            var property = ReflectionHelper.GetProperty(typeof(T), firstPart, useCamelCase: true);
-            if (property != null && property.PropertyType.IsEntityType())
-            {
-                var method = typeof(NHibernateEntityFetcher).GetRequiredMethod(nameof(MakeFetch), BindingFlags.Static | BindingFlags.Public);
-                var invoker = method.MakeGenericMethod(typeof(T), property.PropertyType);
-                var fetcher = invoker.Invoke(null, [queryable, firstPart]).ForceCastAs<IQueryable<T>>();
-
-                var nestedParts = parts.Skip(1).ToArray();
-                if (nestedParts.Any())
-                {
-                    var currentType = property.PropertyType;
-                    foreach (var nestedPart in nestedParts)
+                    if (!string.IsNullOrWhiteSpace(ownerProperty))
                     {
-                        var nestedProperty = ReflectionHelper.GetProperty(currentType, nestedPart, useCamelCase: true);
-                        if (nestedProperty != null && nestedProperty.PropertyType.IsEntityType())
+                        var ownerProp = GetPropertyWithPath(typeof(T), ownerProperty);
+                        if (ownerProp != null && ownerProp.PropertyInfo.PropertyType.IsEntityType()) 
                         {
-                            var nestMethod = typeof(NHibernateEntityFetcher).GetRequiredMethod(nameof(MakeFetchNested), BindingFlags.Static | BindingFlags.Public);
-                            var nestInvoker = nestMethod.MakeGenericMethod(typeof(T), currentType, nestedProperty.PropertyType);
-                            fetcher = nestInvoker.Invoke(null, [fetcher, nestedPart]).ForceCastAs<IQueryable<T>>();
-
-                            currentType = nestedProperty.PropertyType;
+                            var displayNamePropInfo = ownerProp.PropertyInfo.PropertyType.GetEntityConfiguration()?.DisplayNamePropertyInfo;
+                            if (displayNamePropInfo != null && !string.IsNullOrWhiteSpace(displayNamePropInfo.Name)) 
+                            {
+                                string[] nestedPath = [.. ownerProp.Path, displayNamePropInfo.Name];
+                                var nestedProp = nestedPath.Delimited(".");
+                                propertiesToFetch.Add(nestedProp);
+                            }
                         }
                     }
+                    else
+                    {
+                        var displayNamePropInfo = typeof(T).GetEntityConfiguration()?.DisplayNamePropertyInfo;
+                        if (displayNamePropInfo != null) 
+                        {
+                            propertiesToFetch.Add(displayNamePropInfo.Name);
+                        }
+                    }
+                } else
+                if (propWithPath.PropName == EntityConstants.ClassNameField)
+                {
+                    // noop
+                }
+                else
+                {
+                    var propertyWithPath = GetPropertyWithPath(typeof(T), propName);
+                    if (propertyWithPath != null)
+                    {
+                        if (propertyWithPath.PropertyInfo.CanWrite) 
+                        {
+                            var realPath = propertyWithPath.Path.Delimited(".");
+                            if (!propertiesToFetch.Contains(realPath))
+                                propertiesToFetch.Add(realPath);
+                        }                        
+                    }
+                    else
+                    {
+                        if (propName.EndsWith("Id"))
+                        {
+                            var nestedEntityPropName = propName.RemovePostfix("Id");
+                            if (!string.IsNullOrWhiteSpace(nestedEntityPropName)) 
+                            {
+                                var nestedEntityPropertyWithPath = GetPropertyWithPath(typeof(T), nestedEntityPropName);
+                                if (nestedEntityPropertyWithPath != null && nestedEntityPropertyWithPath.PropertyInfo.PropertyType.IsEntityType()) 
+                                {
+                                    string[] nestedPath = [.. nestedEntityPropertyWithPath.Path, "Id"];
+                                    var nestedProp = nestedPath.Delimited(".");
+                                    propertiesToFetch.Add(nestedProp);
+                                } else
+                                    missingProperties.Add(propName);
+                            } else
+                                missingProperties.Add(propName);
+                        }                        
+                        
+                        missingProperties.Add(propName);
+                    }
+                }                
+            }            
+
+            var partialQuery = queryable.SelectProperties(propertiesToFetch);
+            return _asyncExecuter.ToListAsync(partialQuery);
+        }
+
+        public PropertyInfoWithPath? GetPropertyWithPath(Type type, string propertyName)
+        {
+            var propTokens = propertyName.Split('.');
+            var currentType = type;
+            var path = new List<string>();
+
+            for (int i = 0; i < propTokens.Length; i++)
+            {
+                PropertyInfo? propInfo;
+                var containerType = currentType.StripCastleProxyType();
+                try
+                {
+                    var props = containerType.GetProperties().Where(p => p.Name.ToCamelCase() == propTokens[i].ToCamelCase()).ToList();
+                    if (props.Count() > 1)
+                        throw new AmbiguousMatchException();
+
+                    propInfo = props.FirstOrDefault();
+                }
+                catch (AmbiguousMatchException)
+                {
+                    // Property may have been overriden using the 'new' keyword hence there are multiple properties with the same name.
+                    // Will look for the one declared at the highest level.
+                    propInfo = FindHighestLevelProperty(propTokens[i], containerType);
                 }
 
-                return fetcher;
+                if (propInfo == null)
+                    return null;
+
+                path.Add(propInfo.Name);
+
+                if (i == propTokens.Length - 1)
+                {
+                    return new PropertyInfoWithPath(propInfo, path);
+                }
+                else
+                {
+                    if (propInfo.PropertyType.IsCollectionType(out var elementType))
+                        currentType = elementType;
+                    else
+                        currentType = propInfo.PropertyType;
+                }
             }
-            else
-                return queryable;
+
+            return null;
         }
 
-        public static IQueryable<T> MakeFetch<T, TRelated>(IQueryable<T> queryable, string propName)
-        {
-            var argParam = Expression.Parameter(typeof(T), "ent");
-            var memberAccess = Shesha.JsonLogic.ExpressionExtensions.GetMemberExpression(argParam, propName);
-
-            var expr = Expression.Lambda<Func<T, TRelated>>(memberAccess, argParam);
-            return queryable.Fetch(expr);
+        private class PropWithPath 
+        { 
+            public string[] Path { get; set; }
+            public string PropName { get; set; }
         }
 
-        public static IQueryable<TQueried> MakeFetchNested<TQueried, TFetch, TRelated>(INhFetchRequest<TQueried, TFetch> fetcher, string propName)
+        private PropWithPath ExtractPropNameAndPath(string dotNotation) 
         {
-            var argParam = Expression.Parameter(typeof(TFetch), "ent");
-            var memberAccess = Shesha.JsonLogic.ExpressionExtensions.GetMemberExpression(argParam, propName);
+            var fullPath = dotNotation.Split('.');
+            return new PropWithPath { PropName = fullPath[^1], Path = fullPath[..^1] };
+        }
 
-            var expr = Expression.Lambda<Func<TFetch, TRelated>>(memberAccess, argParam);
-            return fetcher.ThenFetch(expr);
+        public IQueryable<T> SetReadOnly<T>(IQueryable<T> queryable)
+        {
+            return queryable.WithOptions((options) => {
+                options.SetReadOnly(true);
+            });
         }
     }
 }

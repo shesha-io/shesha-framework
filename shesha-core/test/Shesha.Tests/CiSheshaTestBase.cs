@@ -2,10 +2,8 @@
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Shesha.Domain;
-using Shesha.Extensions;
 using Shesha.Tests.Fixtures;
 using System;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
@@ -19,7 +17,7 @@ namespace Shesha.Tests
 
         private static async Task UpdateWhereAsync<T, TId>(IRepository<T, TId> repo, Expression<Func<T, bool>> predicate, Action<T> updater) where T: Entity<TId>
         {
-            var entities = await repo.GetAll().Where(predicate).ToListAsync();
+            var entities = await repo.GetAllListAsync(predicate);
             foreach (var entity in entities)
             {
                 updater(entity);
@@ -34,7 +32,7 @@ namespace Shesha.Tests
             var uowManager = Resolve<IUnitOfWorkManager>();
 
             await DeleteActionAsync(async () => {
-                var revisions = await revisionRepo.GetAll().Where(e => e.ConfigurationItem.Module != null && e.ConfigurationItem.Module.Name == moduleName && e.ConfigurationItem.Name == formName).ToListAsync();
+                var revisions = await revisionRepo.GetAllListAsync(e => e.ConfigurationItem.Module != null && e.ConfigurationItem.Module.Name == moduleName && e.ConfigurationItem.Name == formName);
                 foreach (var revision in revisions) 
                 {
                     await UpdateWhereAsync(repo, e => e.ExposedFromRevision == revision, form => {
@@ -53,7 +51,7 @@ namespace Shesha.Tests
             });
 
             await DeleteActionAsync(async () => {
-                var revisions = await revisionRepo.GetAll().Where(e => e.ConfigurationItem.Module != null && e.ConfigurationItem.Module.Name == moduleName && e.ConfigurationItem.Name == formName).ToListAsync();
+                var revisions = await revisionRepo.GetAllListAsync(e => e.ConfigurationItem.Module != null && e.ConfigurationItem.Module.Name == moduleName && e.ConfigurationItem.Name == formName);
                 foreach (var revision in revisions)
                 {
                     await revisionRepo.HardDeleteAsync(revision);
@@ -74,9 +72,8 @@ namespace Shesha.Tests
 
             // exposed from
             await DeleteActionAsync(async () => {
-                var forms = await repo.GetAll().Where(e => e.ExposedFromRevision != null && e.ExposedFromRevision.ConfigurationItem.Name == formName ||
-                        e.ExposedFrom != null && e.ExposedFrom.Name == formName)
-                    .ToListAsync();
+                var forms = await repo.GetAllListAsync(e => e.ExposedFromRevision != null && e.ExposedFromRevision.ConfigurationItem.Name == formName ||
+                        e.ExposedFrom != null && e.ExposedFrom.Name == formName);
                 foreach (var form in forms)
                 {
                     form.ExposedFromRevision = null;
@@ -86,8 +83,7 @@ namespace Shesha.Tests
             });
             // latest revision & active revision
             await DeleteActionAsync(async () => {
-                var forms = await repo.GetAll().Where(e => e.LatestRevision != null && e.LatestRevision.ConfigurationItem.Name == formName)
-                    .ToListAsync();
+                var forms = await repo.GetAllListAsync(e => e.LatestRevision != null && e.LatestRevision.ConfigurationItem.Name == formName);
                 foreach (var form in forms)
                 {
                     form.LatestRevision = null!;

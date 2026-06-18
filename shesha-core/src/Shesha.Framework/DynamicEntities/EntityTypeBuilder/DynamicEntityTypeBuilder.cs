@@ -107,9 +107,7 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
             var assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
             // Get all user configs
-            var userConfigs = await _entityConfigRepo.GetAll()
-                .Where(x => x.Source == Domain.Enums.MetadataSourceType.UserDefined && !x.IsDeleted)
-                .ToListAsync();
+            var userConfigs = await _entityConfigRepo.GetAllListAsync(x => x.Source == Domain.Enums.MetadataSourceType.UserDefined && !x.IsDeleted);
 
             Logger.Warn("DynamicEntityTypeBuilder: CreateDynamicAssemblies");
 
@@ -251,7 +249,7 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
 
         public async Task<Type> CreateTypeAsync(EntityTypeBuilderType typeBuilderType, EntityTypeBuilderContext context)
         {
-            var properties = await _propertyConfigRepo.GetAll().Where(x => x.EntityConfig.Id == typeBuilderType.EntityConfig.Id && !x.IsDeleted).ToListAsync();
+            var properties = await _propertyConfigRepo.GetAllListAsync(x => x.EntityConfig.Id == typeBuilderType.EntityConfig.Id && !x.IsDeleted);
             var t = await CreateTypeAsync(typeBuilderType, properties, context);
 
             await UpdateSuccessAsync(typeBuilderType.EntityConfig);
@@ -351,6 +349,7 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
 
         public async Task<Type> CreateTypeAsync(EntityTypeBuilderType typeBuilderType, List<EntityProperty>? properties, EntityTypeBuilderContext context)
         {
+            Exception? exc = null;
             // Class properties
             if (properties != null)
             {
@@ -365,24 +364,29 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
                         await UpdateSuccessAsync(property);
                         continue;
                     }
-                    var propType = GetPropertyType(property, context);
-                    if (propType != null)
+                    try
                     {
-                        try
+                        var propType = GetPropertyType(property, context);
+                        if (propType != null)
                         {
                             CreateProperty(typeBuilderType.TypeBuilder, property, propType);
                             await UpdateSuccessAsync(property);
                         }
-                        catch (Exception e)
-                        {
-                            throw new EntityPropertyInitializationException(property, e, "initialize property for");
-                        }
+                    }
+                    catch (Exception e)
+                    {
+                        // Register error for configuration studio message
+                        await _errorHandler.HandleInitializationErrorAsync(new EntityPropertyInitializationException(property, e, "initialize property for"));
+                        exc = e;
                     }
                 }
             }
 
             var type = typeBuilderType.TypeBuilder.CreateType();
             typeBuilderType.Type = type;
+
+            // throw exception to exclude type from the metadata
+            if (exc != null) throw new EntityInitializationException(typeBuilderType.EntityConfig, null, "initialize some properties for");
 
             return type;
         }
@@ -553,7 +557,6 @@ namespace Shesha.DynamicEntities.EntityTypeBuilder
                 default:
                     // ToDo: AS - need to decide ignore wrong properties or raise exception (write critical log)
                     return null;
-                    throw new NotSupportedException($"Data type not supported: {dataType}");
             }
         }
 

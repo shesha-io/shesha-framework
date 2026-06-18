@@ -104,7 +104,7 @@ namespace Shesha
         /// <summary>
         /// Maps <typeparamref name="TEntity"/> to <typeparamref name="TEntityDto"/>.
         /// It uses <see cref="IObjectMapper"/> by default.
-        /// It can be overrided for custom mapping.
+        /// It can be overridden for custom mapping.
         /// </summary>
         protected virtual TEntityDto MapToEntityDto(TEntity entity)
         {
@@ -114,7 +114,7 @@ namespace Shesha
         /// <summary>
         /// Maps <typeparamref name="TEntityDto"/> to <typeparamref name="TEntity"/> to create a new entity.
         /// It uses <see cref="IObjectMapper"/> by default.
-        /// It can be overrided for custom mapping.
+        /// It can be overridden for custom mapping.
         /// </summary>
         protected virtual TEntity MapToEntity(TCreateInput createInput)
         {
@@ -124,7 +124,7 @@ namespace Shesha
         /// <summary>
         /// Maps <typeparamref name="TUpdateInput"/> to <typeparamref name="TEntity"/> to update the entity.
         /// It uses <see cref="IObjectMapper"/> by default.
-        /// It can be overrided for custom mapping.
+        /// It can be overridden for custom mapping.
         /// </summary>
         protected virtual void MapToEntity(TUpdateInput updateInput, TEntity entity)
         {

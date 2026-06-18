@@ -1,9 +1,10 @@
 import { BorderOutlined } from '@ant-design/icons';
 import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import React from 'react';
-import { ConfigurableFormItem, FormComponentSelector } from '@/components';
+import { FormComponentSelector } from '@/components/formComponentSelector';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { IToolboxComponent } from '@/interfaces';
-import { useFormData, useMetadata } from '@/providers';
+import { useFormData, useMetadataOrUndefined } from '@/providers';
 import { IComponentSelectorComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
 import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
@@ -24,12 +25,12 @@ export const ComponentSelectorComponent: IToolboxComponent<IComponentSelectorCom
     const propertyName = model.propertyAccessor
       ? evaluateString(model.propertyAccessor, { data: formData })
       : null;
-    const { noSelectionItemText, noSelectionItemValue } = model;
-    const meta = useMetadata(false);
+    const { noSelectionItemText, noSelectionItemValue = "" } = model;
+    const meta = useMetadataOrUndefined();
 
     const propertyMeta = propertyName && meta
       ? meta.getPropertyMeta(propertyName)
-      : null;
+      : undefined;
 
     return (
       <ConfigurableFormItem model={model}>

@@ -40,7 +40,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: commonTabId,
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                   inputs: [
                     {
                       id: nanoid(),
@@ -54,8 +54,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         _code: 'return getSettingValue(data?.readOnly);',
                         _mode: 'code',
                         _value: false,
-                      } as any,
-                      jsSetting: true,
+                      },
                       availableConstantsExpression:
                         '    return metadataBuilder.object("constants").addAllStandard().build();',
                       placeholder: '',
@@ -109,7 +108,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           _value: false,
                           _code: "return getSettingValue(data.sourceType) !== 'Entity';",
                           _mode: 'code',
-                        } as any,
+                        },
                         inputs: [
                           {
                             id: nanoid(),
@@ -134,7 +133,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           _code:
                             "return getSettingValue(data.sourceType) !== 'Url' && getSettingValue(data.sourceType) !== 'Entity';",
                           _mode: 'code',
-                        } as any,
+                        },
                         inputs: [
                           {
                             id: nanoid(),
@@ -149,7 +148,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 _code: "return getSettingValue(data.sourceType) === 'Url';",
                                 _mode: 'code',
                                 _value: false,
-                              } as any,
+                              } as unknown as boolean,
                             },
                             settingsValidationErrors: [],
                             jsSetting: true,
@@ -166,7 +165,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           _code: 'return getSettingValue(data?.readOnly);',
                           _mode: 'code',
                           _value: false,
-                        } as any,
+                        },
                         inputs: [
                           {
                             id: nanoid(),
@@ -191,7 +190,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               _code: 'return getSettingValue(data?.readOnly);',
                               _mode: 'code',
                               _value: false,
-                            } as any,
+                            },
                             jsSetting: true,
                           },
                           {
@@ -204,7 +203,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               _value: false,
                               _code: "return getSettingValue(data.dataFetchingMode) !== 'paging';",
                               _mode: 'code',
-                            } as any,
+                            },
                             dropdownOptions: [
                               {
                                 label: '5',
@@ -265,8 +264,8 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             modelType: {
                               _code: 'return getSettingValue(data?.entityType);',
                               _mode: 'code',
-                              _value: false,
-                            } as any,
+                              _value: undefined,
+                            },
                             fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
                             jsSetting: false,
                             width: '100%',
@@ -282,7 +281,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           _code:
                             "return !getSettingValue(data?.sourceType) || getSettingValue(data.sourceType) === 'Url' || getSettingValue(data.sourceType) === 'Form';",
                           _mode: 'code',
-                        } as any,
+                        },
                         inputs: [
                           {
                             id: nanoid(),
@@ -317,12 +316,12 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           _code:
                             "return !getSettingValue(data?.sortMode) || getSettingValue(data.sortMode) !== 'strict';",
                           _mode: 'code',
-                        } as any,
+                        },
                         validate: {
                           required: {
                             _code: "return getSettingValue(data.sortMode) === 'strict';",
                             _mode: 'code',
-                          } as any,
+                          },
                         },
                         inputs: [
                           {
@@ -340,8 +339,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             modelType: {
                               _code: 'return getSettingValue(data?.entityType);',
                               _mode: 'code',
-                              _value: false,
-                            } as any,
+                            },
                             autoFillProps: false,
                             settingsValidationErrors: [],
                             jsSetting: true,
@@ -356,7 +354,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           _value: false,
                           _code: "return getSettingValue(data.sortMode) !== 'strict';",
                           _mode: 'code',
-                        } as any,
+                        },
                         inputs: [
                           {
                             id: nanoid(),
@@ -371,7 +369,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 _code: "return data.sortMode === 'strict';",
                                 _mode: 'code',
                                 _value: false,
-                              } as any,
+                              },
                             },
                             dropdownOptions: [
                               {
@@ -411,15 +409,13 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               _code:
                                 "return !getSettingValue(data?.sortMode) || getSettingValue(data.sortMode) !== 'standard';",
                               _mode: 'code',
-                            } as any,
-                            customVisibility: null,
+                            },
                             isDynamic: false,
                             version: 0,
                             modelType: {
                               _code: 'return getSettingValue(data?.entityType);',
                               _mode: 'code',
-                              _value: false,
-                            } as any,
+                            } as unknown as string,
                             validate: {},
                             settingsValidationErrors: [],
                             jsSetting: true,
@@ -434,7 +430,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           _code:
                             "return !(getSettingValue(data && data.sourceType) === 'Entity' && getSettingValue(data.sortMode) !== 'strict');",
                           _mode: 'code',
-                        } as any,
+                        },
                         inputs: [
                           {
                             id: nanoid(),
@@ -449,7 +445,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               _code:
                                 "return !(getSettingValue(data && data.sourceType) === 'Entity' && getSettingValue(data.sortMode) !== 'strict');\n",
                               _mode: 'code',
-                            } as any,
+                            },
                             isDynamic: false,
                             version: 0,
                             validate: {},
@@ -458,8 +454,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             modelType: {
                               _code: 'return getSettingValue(data?.entityType);',
                               _mode: 'code',
-                              _value: false,
-                            } as any,
+                            } as unknown as string,
                           },
                         ],
                       })
@@ -509,7 +504,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           _value: false,
                           _code: "return getSettingValue(data?.allowReordering) !== 'yes';",
                           _mode: 'code',
-                        } as any,
+                        },
                         inputs: [
                           {
                             id: nanoid(),
@@ -532,7 +527,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           _value: false,
                           _code: "return getSettingValue(data?.allowReordering) !== 'yes';",
                           _mode: "code",
-                        } as any,
+                        },
                         inputs: [
                           {
                             id: nanoid(),
@@ -553,7 +548,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           _value: false,
                           _code: "return getSettingValue(data?.allowReordering) !== 'yes';",
                           _mode: "code",
-                        } as any,
+                        },
                         inputs: [
                           {
                             id: nanoid(),

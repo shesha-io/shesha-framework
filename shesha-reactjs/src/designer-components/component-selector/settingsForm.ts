@@ -67,18 +67,10 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
       labelAlign: 'right',
       parentId: 'root',
       hidden: false,
-      customVisibility: null,
       description:
         'Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
       validate: {},
       settingsValidationErrors: [],
-      exposedVariables: [
-        { name: 'data', description: 'The form data', type: 'object' },
-        { name: 'moment', description: 'The moment.js object', type: 'object' },
-        { name: 'form', description: 'Form instance', type: 'FormInstance' },
-        { name: 'formMode', description: 'The form mode', type: "'readonly' | 'edit' | 'designer'" },
-        { name: 'globalState', description: 'The global state of the application', type: 'object' },
-      ],
     })
     .addCodeEditor({
       id: nanoid(),
@@ -87,18 +79,10 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
       labelAlign: 'right',
       parentId: 'root',
       hidden: false,
-      customEnabled: null,
       description:
         'Enter custom enabled code.  You must return true to enable the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
       validate: {},
       settingsValidationErrors: [],
-      exposedVariables: [
-        { name: 'data', description: 'The form data', type: 'object' },
-        { name: 'moment', description: 'The moment.js object', type: 'object' },
-        { name: 'form', description: 'Form instance', type: 'FormInstance' },
-        { name: 'formMode', description: 'The form mode', type: "'readonly' | 'edit' | 'designer'" },
-        { name: 'globalState', description: 'The global state of the application', type: 'object' },
-      ],
     })
     .addPermissionAutocomplete({
       id: '4d81ae9d-d222-4fc1-85b2-4dc3ee6a3721',

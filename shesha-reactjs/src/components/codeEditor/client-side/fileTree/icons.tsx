@@ -5,11 +5,11 @@ import { AiFillFileText } from "react-icons/ai";
 import { AntdTreeNodeAttribute } from 'antd/lib/tree';
 import { getLastSection } from '@/utils/string';
 
-export const getNodeIcon = (nodeProps: AntdTreeNodeAttribute): JSX.Element => {
+export const getNodeIcon = (nodeProps: AntdTreeNodeAttribute): React.JSX.Element => {
   if (!nodeProps.isLeaf)
     return nodeProps.expanded ? <FcOpenedFolder /> : <FcFolder />;
 
-  const extension = getLastSection('.', nodeProps.title?.toString());
+  const extension = getLastSection('.', nodeProps.title?.toString() ?? "");
   switch (extension) {
     case "js": return <SiJavascript color="#fbcb38" />;
     case "jsx": return <SiJavascript color="#fbcb38" />;

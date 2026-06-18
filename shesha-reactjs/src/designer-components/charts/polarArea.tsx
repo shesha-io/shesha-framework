@@ -1,5 +1,5 @@
 import React from 'react';
-import { ConfigurableFormItem } from '@/components';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IToolboxComponent } from '@/interfaces';
 import { RadarChartOutlined } from '@ant-design/icons';
@@ -16,6 +16,7 @@ import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider
 import useStyles from './styles';
 import ChartLoader from './components/chartLoader';
 import { useChartFilters } from './hooks/useChartFilters';
+import { isDefined } from '@/utils/nullables';
 
 const PolarAreaChartComponent: IToolboxComponent<IChartProps> = {
   type: 'polarAreaChart',
@@ -35,7 +36,7 @@ const PolarAreaChartComponent: IToolboxComponent<IChartProps> = {
       shadowStyles,
       stylingBoxAsCSS,
       jsStyle,
-    } = model.allStyles;
+    } = model.allStyles ?? {};
 
     const wrapperStyles = removeUndefinedProps({
       ...dimensionsStyles,
@@ -54,7 +55,7 @@ const PolarAreaChartComponent: IToolboxComponent<IChartProps> = {
         <ConfigurableFormItem model={model} className={styles.formItem}>
           <Alert
             showIcon
-            message="Error evaluating filters"
+            title="Error evaluating filters"
             description={filterError}
             type="error"
             style={{ margin: '16px' }}
@@ -68,7 +69,7 @@ const PolarAreaChartComponent: IToolboxComponent<IChartProps> = {
       return (
         <ConfigurableFormItem model={model} className={styles.formItem}>
           <div className={cx(styles.loadingContainer)}>
-            <ChartLoader chartType={model.chartType} />
+            {isDefined(model.chartType) && <ChartLoader chartType={model.chartType} />}
             <div className={cx(styles.loadingText)}>Fetching data...</div>
           </div>
         </ConfigurableFormItem>

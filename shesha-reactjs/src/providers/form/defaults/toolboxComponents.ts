@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-deprecated */
 import Address from '@/designer-components/address';
+import AddressInput from '@/designer-components/addressInput';
 import Alert from '@/designer-components/alert';
 import AutocompleteTagGroup from '@/designer-components/autocompleteTagGroup';
 import Button from '@/designer-components/button/button';
@@ -15,6 +17,7 @@ import DynamicView from '@/designer-components/dynamicView';
 import EditableTagGroup from '@/designer-components/editableTagGroup';
 import EndpointsAutocompleteComponent from '@/designer-components/endpointsAutocomplete/endpointsAutocomplete';
 import EntityPickerComponent from '@/designer-components/entityPicker';
+import ExpressionEditorComponent from '@/designer-components/expressionEditor';
 import FormAutocompleteComponent from '@/designer-components/formAutocomplete';
 import NotificationAutocompleteComponent from '@/designer-components/notificationAutocomplete';
 import IconPicker from '@/designer-components/iconPicker';
@@ -91,7 +94,7 @@ import { SortingEditorComponent } from '@/designer-components/sortingEditor/inde
 import TextAreaComponent from '@/designer-components/textArea/textArea';
 import TextFieldComponent from '@/designer-components/textField/textField';
 import { TimeFieldComponent } from '@/designer-components/timeField';
-import { IToolboxComponent, IToolboxComponentGroup } from '@/interfaces/formDesigner';
+import { IToolboxComponent, IToolboxComponentBase, IToolboxComponentGroup } from '@/interfaces/formDesigner';
 import PermissionAutocompleteComponent from '@/designer-components/permissions/permissionAutocomplete';
 import EditModeToggler from '@/designer-components/editModeToggler';
 import ProfileDropdown from '@/designer-components/profileDropdown';
@@ -102,7 +105,7 @@ import AdvancedFilterButton from '@/designer-components/dataTable/advancedFilter
 import { getToolboxComponentsVisibility } from '@/utils';
 import ThemeEditorComponent from '@/designer-components/settingsEditor/themeEditor';
 import MainMenuEditorComponent from '@/designer-components/settingsEditor/mainMenuEditor';
-import LabelConfigurator from '@/designer-components/styleLabel';
+import LabelConfigurator from '@/designer-components/labelConfigurator';
 import SearchableTabs from '@/designer-components/propertiesTabs';
 import PropertyRouterComponent from '@/designer-components/propertyRouter';
 import ChevronComponent from '@/designer-components/chevron/chevron';
@@ -114,16 +117,19 @@ import LineChartComponent from '@/designer-components/charts/line';
 import PieChartComponent from '@/designer-components/charts/pie';
 import PolarAreaChartComponent from '@/designer-components/charts/polarArea';
 import { ConfigurableItemAutocompleteComponent } from '@/designer-components/configurableItemAutocomplete';
-import DividerComponent from '@/designer-components/_legacyComponents/divider';
+import { DividerComponent } from '@/designer-components/_legacyComponents/divider';
 import EntityTypeAutocompleteComponent from '@/designer-components/configurableItemAutocomplete/entityTypeAutocomplete';
 import CalendarComponent from '@/designer-components/calendar';
 import TableContextComponentLegacy from '@/designer-components/dataTable/tableContext/tableContextComponentLegacy';
+import { isDefined } from '@/utils/nullables';
+
+type IToolboxComponentGroupRelaxed = Omit<IToolboxComponentGroup, 'components'> & { components: IToolboxComponentBase[] };
 
 export const getToolboxComponents = (
   devMode: boolean,
-  formMetadata: Pick<IFormPersisterStateContext, 'formId' | 'formProps'>,
+  formMetadata: Pick<IFormPersisterStateContext, 'formId' | 'formProps'> | undefined,
 ): IToolboxComponentGroup[] => {
-  return [
+  const groups: IToolboxComponentGroupRelaxed[] = [
     {
       name: 'Data entry',
       visible: true,
@@ -134,6 +140,7 @@ export const getToolboxComponents = (
         NumberFieldComponent,
         TextFieldComponent,
         TextAreaComponent,
+        ExpressionEditorComponent,
         Checkbox,
         CheckboxGroup,
         RadioComponent,
@@ -154,6 +161,7 @@ export const getToolboxComponents = (
       visible: true,
       components: [
         Address,
+        AddressInput,
         Autocomplete,
         ColorPickerComponent,
         IconPicker,
@@ -161,7 +169,6 @@ export const getToolboxComponents = (
         Image,
         RichTextEditor,
         Markdown,
-        PasswordCombo,
         Progress,
         RefListStatusComponent,
         StatusTag,
@@ -230,6 +237,7 @@ export const getToolboxComponents = (
         Toolbar,
         List,
         EditableTagGroup,
+        PasswordCombo,
         FormAutocompleteComponent,
         ReferenceListAutocompleteComponent,
         NotificationAutocompleteComponent,
@@ -282,19 +290,21 @@ export const getToolboxComponents = (
     },
     {
       name: 'Header Components',
-      visible: getToolboxComponentsVisibility(formMetadata?.formProps, [
+      visible: isDefined(formMetadata?.formProps) && getToolboxComponentsVisibility(formMetadata.formProps, [
         HEADER_CONFIGURATION,
         HEADER_PUB_PORTAL_CONFIGURATION,
       ]),
       components: [EditModeToggler, ProfileDropdown],
     },
   ];
+
+  return groups.map<IToolboxComponentGroup>((group) => ({ ...group, components: group.components.map<IToolboxComponent>((c) => c as IToolboxComponent) }));
 };
 
 export const getComponentDefinitions = (): Map<string, IToolboxComponent> => {
   const result = new Map<string, IToolboxComponent>();
 
-  for (const toolboxComponentGroup of getToolboxComponents(false, { formId: null, formProps: null })) {
+  for (const toolboxComponentGroup of getToolboxComponents(false, { formId: "", formProps: null })) {
     for (const toolboxComponent of toolboxComponentGroup.components) {
       result.set(toolboxComponent.type, toolboxComponent);
     }

@@ -22,13 +22,12 @@ export const QuickEditToolbar: FC<IQuickEditToolbarProps> = ({ onUpdated, render
   const onSaved = (): void => {
     message.success('Form saved successfully');
 
-    if (onUpdated)
-      onUpdated();
+    onUpdated();
   };
 
   return (
     <div className="sha-designer-toolbar">
-      <Space direction="horizontal" size={20}>
+      <Space orientation="horizontal" size={20}>
         <CanvasConfig />
         <div className="sha-designer-toolbar-right" style={{ marginRight: renderSource === "modal" ? "30px" : "auto" }}>
           <FormSettingsButton buttonText="" size="small" />

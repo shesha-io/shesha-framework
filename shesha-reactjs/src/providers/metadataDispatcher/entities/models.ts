@@ -2,7 +2,7 @@ import { MetadataDto } from "@/apis/metadata";
 import { FormIdentifier, IEntityMetadata, IReferenceListIdentifier } from "@/interfaces";
 import { IConfigurationLoader } from "@/providers/configurationItemsLoader/configurationLoader";
 import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
-import { HttpClientApi } from "@/publicJsApis/httpClient";
+import { HttpClientApi } from "@/publicJsApis/apis/httpClient";
 
 export type SyncStatus = 'uptodate' | 'unknown' | 'outofdate';
 
@@ -25,6 +25,7 @@ export interface ModuleSyncRequest {
 
 export interface SyncAllRequest {
   modules: ModuleSyncRequest[];
+  clientSnapshotHash: string | undefined;
 }
 
 export type EntityOutOfDateResponse = {
@@ -64,6 +65,7 @@ export interface LookupSyncResponse {
 export interface SyncAllResponse {
   modules: ModuleSyncResponse[];
   lookups: LookupSyncResponse[];
+  serverSnapshotHash: string;
 }
 
 export interface ICacheProvider {
@@ -93,6 +95,7 @@ export interface ISyncEntitiesContext {
 }
 
 export interface IEntityMetadataFetcher {
+  resetSynchronized: () => Promise<void>;
   syncAll: () => Promise<void>;
   getByTypeId: (typeId: IEntityTypeIdentifier) => Promise<IEntityMetadata | null>;
   getByClassName: (className: string) => Promise<IEntityMetadata | null>;

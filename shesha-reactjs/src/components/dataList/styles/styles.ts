@@ -129,8 +129,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
         }
 
         .${shaDatalistCard} {
-            padding: 16px;
-            background-color: #ffffff;
             border-radius: 8px;
             position: relative;
             max-width: 100%;
@@ -145,11 +143,18 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
             }
         }
 
-        .${shaDatalistCard} > * {
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            overflow-wrap: break-word;
+        .${shaDatalistCard} > *,
+        .${shaDatalistComponentItem} > * {
+            width: 100% !important;
             max-width: 100%;
+            overflow-wrap: break-word;
+        }
+
+        .${shaDatalistCard} .sha-components-container,
+        .${shaDatalistCard} .sha-components-container-inner,
+        .${shaDatalistComponentItem} .sha-components-container,
+        .${shaDatalistComponentItem} .sha-components-container-inner {
+            width: 100% !important;
         }
 
         .${shaDatalistHorizontal} {
@@ -168,7 +173,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
 
         .${shaDatalistComponentItem} {
             position: relative;
-            padding: 12px;
             border-radius: 6px;
             transition: background-color 0.2s ease-in-out;
 

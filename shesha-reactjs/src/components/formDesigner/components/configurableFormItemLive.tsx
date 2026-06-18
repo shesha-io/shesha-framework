@@ -1,15 +1,16 @@
-import React, { FC, useMemo } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 import { Form, FormItemProps } from 'antd';
-import { getFieldNameFromExpression, getValidationRules, useAvailableConstantsData } from '@/providers/form/utils';
+import { getFieldNameFromExpression, getValidationRules, useAvailableConstantsDataNoRefresh } from '@/providers/form/utils';
 import classNames from 'classnames';
-import { useFormItem, useShaFormInstance } from '@/providers';
+import { UnwrapCodeEvaluators, useFormItem, useShaFormInstance } from '@/providers';
 import { IConfigurableFormItemProps } from './model';
 import { ConfigurableFormItemContext } from './configurableFormItemContext';
 import { ConfigurableFormItemForm } from './configurableFormItemForm';
 import { designerConstants } from '../utils/designerConstants';
 import { addPx } from '@/utils/style';
+import { useStyles } from './styles';
 
-export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
+export const ConfigurableFormItemLive = <TValue = unknown>({
   children,
   model,
   valuePropName,
@@ -17,22 +18,24 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   className,
   labelCol,
   wrapperCol,
-}) => {
-  const { getPublicFormApi } = useShaFormInstance();
-  const getFormData = getPublicFormApi().getFormData;
+  autoAlignLabel = true,
+}: UnwrapCodeEvaluators<IConfigurableFormItemProps<TValue>>): ReactNode => {
+  const shaForm = useShaFormInstance();
+  const getFormData = shaForm.getPublicFormApi().getFormData;
   const formItem = useFormItem();
   const { namePrefix, wrapperCol: formItemWrapperCol, labelCol: formItemlabelCol } = formItem;
-  const shaForm = useShaFormInstance();
   const isInDesigner = shaForm.formMode === 'designer';
-  const allData = useAvailableConstantsData();
+  const allData = useAvailableConstantsDataNoRefresh();
+  const { styles } = useStyles({ autoAlignLabel });
 
   const layout = useMemo(() => {
     // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form
-    return { labelCol: formItemlabelCol || labelCol, wrapperCol: formItemWrapperCol || wrapperCol };
-  }, [formItemlabelCol, formItemWrapperCol]);
+    return { labelCol: formItemlabelCol ?? labelCol, wrapperCol: formItemWrapperCol || wrapperCol };
+  }, [formItemlabelCol, labelCol, formItemWrapperCol, wrapperCol]);
+
+  const isVertical = (model.layout ?? shaForm.settings?.layout) === 'vertical';
 
   const { hideLabel, hidden } = model;
-  if (hidden) return null;
 
   const { top: defaultMarginTop, left: defaultMarginLeft, right: defaultMarginRight, bottom: defaultMarginBottom } = designerConstants.DEFAULT_FORM_ITEM_MARGINS;
 
@@ -41,7 +44,7 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
   // Note: margins are stored separately so inner components don't get them (prevents double margins)
   const rawMargins = isInDesigner
     ? { marginTop: 0, marginBottom: 0, marginLeft: 0, marginRight: 0 }
-    : (model?.allStyles?.margins || {});
+    : (model.allStyles?.margins || {});
 
   const {
     marginTop = defaultMarginTop,
@@ -54,18 +57,15 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
     ? namePrefix + '.' + model.propertyName
     : model.propertyName;
 
+  if (hidden) return null;
+
   const formItemProps: FormItemProps = {
-    className: classNames(className),
-    label: hideLabel ? null : model.label,
-    labelAlign: model.labelAlign,
-    hidden: model.hidden,
-    valuePropName: valuePropName,
+    className: classNames(className, styles.formItem),
+    hidden: model.hidden ?? false,
+    ...(valuePropName ? { valuePropName: valuePropName } : {}),
     initialValue: initialValue,
     tooltip: model.description || undefined,
     rules: model.hidden ? [] : getValidationRules(model, { getFormData }),
-    labelCol: layout?.labelCol,
-    wrapperCol: hideLabel ? { span: 24 } : layout?.wrapperCol,
-    // layout: model.layout, this property appears to have been removed from the Ant component
     name: model.context ? undefined : getFieldNameFromExpression(propName),
     style: {
       marginTop: addPx(marginTop, allData),
@@ -73,16 +73,21 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
       marginRight: addPx(marginRight, allData),
       marginLeft: addPx(marginLeft, allData),
     },
+    ...(model.labelAlign ? { labelAlign: model.labelAlign } : {}),
+    ...(!hideLabel ? { label: model.label } : {}),
+    ...(layout.labelCol ? { labelCol: layout.labelCol } : {}),
+    ...(hideLabel || isVertical ? { wrapperCol: { span: 24 } } : layout.wrapperCol ? { wrapperCol: layout.wrapperCol } : {}),
   };
 
   if (typeof children === 'function') {
     if (model.context) {
       return (
-        <ConfigurableFormItemContext
+        <ConfigurableFormItemContext<TValue>
           componentId={model.id}
           formItemProps={formItemProps}
           valuePropName={valuePropName}
-          propertyName={propName}
+          componentName={model.componentName ?? ""}
+          propertyName={propName ?? ""}
           contextName={model.context}
         >
           {children}
@@ -90,9 +95,11 @@ export const ConfigurableFormItemLive: FC<IConfigurableFormItemProps> = ({
       );
     } else {
       return (
-        <ConfigurableFormItemForm
+        <ConfigurableFormItemForm<TValue>
           formItemProps={formItemProps}
           valuePropName={valuePropName}
+          componentName={model.componentName ?? ""}
+          componentId={model.id}
         >
           {children}
         </ConfigurableFormItemForm>

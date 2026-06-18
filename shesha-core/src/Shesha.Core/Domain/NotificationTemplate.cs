@@ -56,7 +56,7 @@ namespace Shesha.Domain
             if (template.PartOf == null)
                 return true;
 
-            var alreadyExist = await _repository.GetAll()
+            var alreadyExist = await (await _repository.GetAllAsync())
                 .Where(m => m.PartOf == template.PartOf && m.MessageFormat == template.MessageFormat && m.Id != template.Id)
                 .AnyAsync();
 

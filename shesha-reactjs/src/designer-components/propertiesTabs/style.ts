@@ -3,6 +3,7 @@ import { createStyles } from '@/styles';
 export const useStyles = createStyles(({ css, cx, token }) => {
   const searchField = cx(css`
     z-index: unset;
+    margin-bottom: 8px;
 
     .ant-input-affix-wrapper-focused, .ant-input-affix-wrapper:hover {
       z-index: unset !important;

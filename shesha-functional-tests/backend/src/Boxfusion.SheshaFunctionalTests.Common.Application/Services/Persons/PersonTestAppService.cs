@@ -1,5 +1,4 @@
-﻿using Abp.Auditing;
-using Abp.Authorization;
+﻿using Abp.Authorization;
 using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Shesha;
@@ -7,7 +6,6 @@ using Shesha.Domain;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Reflection;
-using Shesha.Specifications;
 using System.ComponentModel.DataAnnotations;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services.Persons
@@ -52,23 +50,6 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services.Persons
         public override async Task<DynamicDto<Person, Guid>> UpdateAsync([DynamicBinder(UseDtoForEntityReferences = true, UseDynamicDtoProxy = true)] DynamicDto<Person, Guid> input)
         {
             return await base.UpdateAsync(input);
-        }
-
-        [DisableSpecifications]
-        public async Task GetUnfilteredAsync()
-        {
-            var persons = await AsyncQueryableExecuter.ToListAsync(Repository.GetAll());
-        }
-
-        public async Task GetDefaultFilteredAsync()
-        {
-            var persons = await AsyncQueryableExecuter.ToListAsync(Repository.GetAll());
-        }
-
-        //[ApplySpecifications(typeof(Age18PlusSpecification), typeof(HasNoAccountSpecification))]
-        public async Task GetFilteredAsync()
-        {
-            var persons = await AsyncQueryableExecuter.ToListAsync(Repository.GetAll());
         }
     }
 }

@@ -1,46 +1,37 @@
 import {
-  ILayerGroupConfiguratorStateContext,
-  IUpdateChildItemsPayload,
-  IUpdateItemSettingsPayload,
   LAYER_GROUP_CONTEXT_INITIAL_STATE,
 } from './contexts';
-import { LayerGroupActionEnums } from './actions';
+import { addLayerAction, deleteLayerAction, selectItemAction, setRefreshTriggerAction, updateChildItemsAction, updateItemAction } from './actions';
 import { ILayerFormModel } from './models';
-import { handleActions, Action } from 'redux-actions';
 import { deleteItemAtPath, updateChildItemsAtPath, updateItemAtPath } from './utils';
 import { nanoid } from '@/utils/uuid';
+import { createReducer } from '@reduxjs/toolkit';
 
-const LayerGroupReducer = handleActions<ILayerGroupConfiguratorStateContext, any>(
-  {
-    [LayerGroupActionEnums.AddLayer]: (state: ILayerGroupConfiguratorStateContext) => {
-      const LayersCount = state.items.length;
-      const LayerProps: ILayerFormModel = {
+export const reducer = createReducer(LAYER_GROUP_CONTEXT_INITIAL_STATE, (builder) => {
+  builder
+    .addCase(addLayerAction, (state) => {
+      const layersCount = state.items.length;
+      const layerProps: ILayerFormModel = {
         id: nanoid(),
         sortOrder: state.items.length,
         orderIndex: state.items.length,
-        name: `Layer${LayersCount + 1}`,
-        label: `Layer ${LayersCount + 1}`,
+        name: `Layer${layersCount + 1}`,
+        label: `Layer ${layersCount + 1}`,
         allowChangeVisibility: true,
         visible: true,
       };
 
       const newItems = [...state.items];
 
-      newItems.push(LayerProps);
+      newItems.push(layerProps);
 
       return {
         ...state,
         items: newItems,
-        selectedItemId: LayerProps.id,
+        selectedItemId: layerProps.id,
       };
-    },
-
-    [LayerGroupActionEnums.DeleteLayer]: (
-      state: ILayerGroupConfiguratorStateContext,
-      action: Action<string>,
-    ) => {
-      const { payload } = action;
-
+    })
+    .addCase(deleteLayerAction, (state, { payload }) => {
       // Use immutable deletion that handles nested items
       const newItems = deleteItemAtPath(state.items, payload);
 
@@ -49,26 +40,14 @@ const LayerGroupReducer = handleActions<ILayerGroupConfiguratorStateContext, any
         items: newItems,
         selectedItemId: state.selectedItemId === payload ? undefined : state.selectedItemId,
       };
-    },
-
-    [LayerGroupActionEnums.SelectItem]: (
-      state: ILayerGroupConfiguratorStateContext,
-      action: Action<string>,
-    ) => {
-      const { payload } = action;
-
+    })
+    .addCase(selectItemAction, (state, { payload }) => {
       return {
         ...state,
         selectedItemId: payload,
       };
-    },
-
-    [LayerGroupActionEnums.UpdateItem]: (
-      state: ILayerGroupConfiguratorStateContext,
-      action: Action<IUpdateItemSettingsPayload>,
-    ) => {
-      const { payload } = action;
-
+    })
+    .addCase(updateItemAction, (state, { payload }) => {
       // Use immutable update that clones the entire path to the target item
       const newItems = updateItemAtPath(state.items, payload.id, (item) => ({
         ...item,
@@ -79,16 +58,9 @@ const LayerGroupReducer = handleActions<ILayerGroupConfiguratorStateContext, any
         ...state,
         items: newItems,
       };
-    },
-
-    [LayerGroupActionEnums.UpdateChildItems]: (
-      state: ILayerGroupConfiguratorStateContext,
-      action: Action<IUpdateChildItemsPayload>,
-    ) => {
-      const {
-        payload: { index, childs: childIds },
-      } = action;
-
+    })
+    .addCase(updateChildItemsAction, (state, { payload }) => {
+      const { index, childs: childIds } = payload;
       // Use immutable update that clones the entire path to the parent
       const newItems = updateChildItemsAtPath(state.items, index, childIds);
 
@@ -96,14 +68,8 @@ const LayerGroupReducer = handleActions<ILayerGroupConfiguratorStateContext, any
         ...state,
         items: newItems,
       };
-    },
-    [LayerGroupActionEnums.SetRefreshTrigger]: (state, action) => ({
-      ...state,
-      ...action.payload,
-    }),
-  },
-
-  LAYER_GROUP_CONTEXT_INITIAL_STATE,
-);
-
-export default LayerGroupReducer;
+    })
+    .addCase(setRefreshTriggerAction, (state, { payload }) => {
+      state.refreshTrigger = payload;
+    });
+});

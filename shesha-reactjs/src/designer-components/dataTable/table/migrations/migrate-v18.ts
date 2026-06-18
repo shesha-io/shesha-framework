@@ -16,12 +16,12 @@ export const migrateV17toV18 = (props: ITableComponentProps, _context: SettingsM
   }
 
   // Migrate useMultiselect to selectionMode
-  if (props.useMultiselect === true) {
+  if (props["useMultiselect"] === true) {
     return {
       ...props,
       selectionMode: 'multiple',
     };
-  } else if (props.useMultiselect === false) {
+  } else if (props["useMultiselect"] === false) {
     return {
       ...props,
       selectionMode: 'none',

@@ -27,7 +27,7 @@ export class GlobalState implements IGlobalState {
     this.#forceUpdate();
   };
 
-  getStateByKey = (key: string): IAnyObject => {
-    return (this.#state?.globalState || {})[key];
+  getStateByKey = (key: string): unknown => {
+    return this.#state[key];
   };
 }

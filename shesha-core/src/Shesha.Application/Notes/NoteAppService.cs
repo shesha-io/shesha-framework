@@ -45,7 +45,7 @@ namespace Shesha.Notes
         {
             var className = await GetFullClassNameFromEntityTypeIdAsync(input.OwnerType);
 
-            var notes = await Repository.GetAll()
+            var notes = await (await Repository.GetAllAsync())
                 .Where(c => c.OwnerId == input.OwnerId && c.OwnerType == className && (input.AllCategories || c.Category == input.Category))
                 .OrderBy(c => c.CreationTime)
                 .ToListAsync();

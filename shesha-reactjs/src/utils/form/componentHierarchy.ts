@@ -1,10 +1,11 @@
 import { IFlatComponentsStructure, IConfigurableFormComponent } from '@/providers/form/models';
+import { isDefined } from '../nullables';
 
 /**
  * Type guard to check if a component is IConfigurableFormComponent (has type property)
  */
-const isConfigurableFormComponent = (component: any): component is IConfigurableFormComponent => {
-  return component && typeof component === 'object' && 'type' in component;
+const isConfigurableFormComponent = (component: unknown): component is IConfigurableFormComponent => {
+  return isDefined(component) && typeof component === 'object' && 'type' in component && typeof component.type === 'string';
 };
 
 /**

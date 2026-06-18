@@ -1,9 +1,9 @@
 import React from 'react';
 import { FormMarkup } from '@/providers/form/models';
 import { HomeOutlined } from '@ant-design/icons';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
-import { EditableTagGroup } from '@/components';
+import { EditableTagGroup } from '@/components/editableTagGroup';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { EditableTagGroupComponentDefinition, IEditableTagGroupComponentProps } from './interfaces';
@@ -23,8 +23,8 @@ const EditableTagGroupComponent: EditableTagGroupComponentDefinition = {
   dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.array && dataFormat === ArrayFormats.simple,
   Factory: ({ model }) => {
     return (
-      <ConfigurableFormItem model={model}>
-        {(value, onChange) => (<EditableTagGroup value={value} onChange={onChange} readOnly={model.readOnly} />)}
+      <ConfigurableFormItem<string[]> model={model}>
+        {(value, onChange) => (<EditableTagGroup value={value ?? undefined} onChange={onChange} readOnly={model.readOnly} />)}
       </ConfigurableFormItem>
     );
   },

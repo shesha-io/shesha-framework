@@ -1,5 +1,5 @@
 import React from 'react';
-import { ConfigurableForm } from '@/components';
+import { ConfigurableForm } from '@/components/configurableForm';
 import { FormMarkup } from '@/providers/form/models';
 import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';
 
@@ -8,7 +8,7 @@ export interface IProps<TModel extends object = object> {
   markup: FormMarkup;
   onSave: (model: TModel) => void;
   onCancel: () => void;
-  onValuesChange?: (changedValues: any, values: TModel) => void;
+  onValuesChange?: ((changedValues: Partial<TModel>, values: TModel) => void) | undefined;
   readOnly?: boolean;
 }
 
@@ -18,11 +18,11 @@ export function GenericSettingsEditor<TModel extends object = object>({
   markup,
   onValuesChange,
   readOnly = false,
-}: IProps<TModel>): JSX.Element {
-  const formRef = useShaFormRef();
+}: IProps<TModel>): React.JSX.Element {
+  const formRef = useShaFormRef<TModel>();
 
   return (
-    <ConfigurableForm
+    <ConfigurableForm<TModel>
       labelCol={{ span: 24 }}
       wrapperCol={{ span: 24 }}
       mode={readOnly ? 'readonly' : 'edit'}

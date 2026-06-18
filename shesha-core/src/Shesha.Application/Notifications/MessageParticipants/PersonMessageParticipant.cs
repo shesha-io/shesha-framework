@@ -27,7 +27,7 @@ namespace Shesha.Notifications.MessageParticipants
         public async Task<bool> IsNotificationOptedOutAsync(NotificationTypeConfig type)
         {
             var userNotificationPreferenceRepository = StaticContext.IocManager.Resolve<IRepository<UserNotificationPreference, Guid>>();
-            return await userNotificationPreferenceRepository.GetAll().AnyAsync(x => x.User.Id == _person.Id && x.NotificationType.Id == type.Id && x.OptOut);            
+            return await userNotificationPreferenceRepository.AnyAsync(x => x.User.Id == _person.Id && x.NotificationType.Id == type.Id && x.OptOut);            
         }
 
         public override int GetHashCode()

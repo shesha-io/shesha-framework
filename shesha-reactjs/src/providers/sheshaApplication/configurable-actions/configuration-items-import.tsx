@@ -1,7 +1,7 @@
 import { ConfigurationItemsImport, IImportInterface } from '@/components/configurationFramework/itemsImport';
 import React, {
   FC,
-  MutableRefObject,
+  RefObject,
   useRef,
   useState,
 } from 'react';
@@ -12,31 +12,33 @@ import { nanoid } from '@/utils/uuid';
 import { SheshaActionOwners } from '../../configurableActionsDispatcher/models';
 import { useAppConfiguratorState, useDynamicModals } from '@/providers';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
-import { ValidationErrors } from '@/components';
+import { ValidationErrors } from '@/components/validationErrors';
+import { throwError } from '@/utils/errors';
 
 const actionsOwner = 'Configuration Items';
 
 interface IConfigurationItemsImportFooterProps {
   hideModal: () => void;
-  importerRef: MutableRefObject<IImportInterface | undefined>;
+  importerRef: RefObject<IImportInterface | undefined>;
 }
 
 export const ConfigurationItemsImportFooter: FC<IConfigurationItemsImportFooterProps> = (props) => {
   const [inProgress, setInProgress] = useState(false);
-  const { hideModal, importerRef: exporterRef } = props;
+  const { hideModal, importerRef } = props;
   const { message, notification } = App.useApp();
 
   const onImport = (): void => {
     setInProgress(true);
 
-    exporterRef.current.importExecuter().then(() => {
+    const importer = importerRef.current ?? throwError("importerRef is not defined");
+    importer.importExecuter().then(() => {
       message.info('Items imported successfully');
       hideModal();
-    }).catch((error) => {
+    }).catch((error: unknown) => {
       notification.error({
         message: "Failed to import package",
         icon: null,
-        description: <ValidationErrors error={error} renderMode="raw" defaultMessage={null} />,
+        description: <ValidationErrors error={error} renderMode="raw" defaultMessage="" />,
       });
       setInProgress(false);
     });
@@ -53,7 +55,7 @@ export const ConfigurationItemsImportFooter: FC<IConfigurationItemsImportFooterP
 export const useConfigurationItemsImportAction = (): void => {
   const { createModal, removeModal } = useDynamicModals();
   const appConfigState = useAppConfiguratorState();
-  const exporterRef = useRef<IImportInterface>();
+  const exporterRef = useRef<IImportInterface>(undefined);
 
   useConfigurableAction({
     name: 'Import items',

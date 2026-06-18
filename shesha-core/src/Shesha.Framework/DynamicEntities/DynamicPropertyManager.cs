@@ -46,7 +46,7 @@ namespace Shesha.DynamicEntities
         {
             var config = entity.GetType().GetEntityConfiguration();
 
-            var result = await _entityPropertyValueRepository.GetAll()
+            var result = await (await _entityPropertyValueRepository.GetAllAsync())
                 .Where(x => x.EntityProperty.Id == property.Id && x.OwnerId == entity.Id.ToString() && x.OwnerType == config.TypeShortAlias)
                 .OrderByDescending(x => x.CreationTime).FirstOrDefaultAsync();
                 
@@ -58,8 +58,7 @@ namespace Shesha.DynamicEntities
         {
             var config = entity.GetType().GetEntityConfiguration();
 
-            var prop = await _entityPropertyValueRepository
-                .GetAll()
+            var prop = await (await _entityPropertyValueRepository.GetAllAsync())
                 .Where(x => x.EntityProperty.Id == property.Id && x.OwnerId == entity.Id.ToString() &&
                             x.OwnerType == config.TypeShortAlias)
                 .OrderByDescending(x => x.CreationTime)

@@ -7,6 +7,7 @@ import { useStyles } from "./styles";
 import { cx } from "antd-style";
 import { BugOutlined, CheckCircleOutlined, CloseCircleOutlined, CodeOutlined, FolderOutlined, InfoCircleOutlined, WarningOutlined } from "@ant-design/icons";
 import { purple } from '@ant-design/colors';
+import { isNonEmptyArray } from "@/utils/array";
 
 // Log line props
 export interface LogLineProps {
@@ -14,9 +15,9 @@ export interface LogLineProps {
   index: number;
   style: CSSProperties;
   isExpanded?: boolean;
-  onToggleExpand?: (index: number) => void;
-  searchMatches?: RegExpMatchArray[];
-  onClick?: (log: LogLine, index: number) => void;
+  onToggleExpand?: ((index: number) => void) | undefined;
+  searchMatches?: RegExpMatchArray[] | undefined;
+  onClick?: ((log: LogLine, index: number) => void) | undefined;
 }
 
 const LogLineComponentRenderer: FC<LogLineProps> = ({
@@ -29,7 +30,8 @@ const LogLineComponentRenderer: FC<LogLineProps> = ({
   onClick,
 }) => {
   const { styles, theme } = useStyles();
-  const { level, message, isTimeline, hasChildren, collapsed, duration, taskName } = log;
+  const { level, message: nullableMessage, isTimeline, hasChildren, collapsed, duration, taskName } = log;
+  const message = nullableMessage ?? "";
 
   const getLineStyles = (): string => {
     const baseStyles = [styles.logLine, styles.logLineHover];
@@ -62,7 +64,7 @@ const LogLineComponentRenderer: FC<LogLineProps> = ({
       case LogLevel.SUCCESS: return theme.colorSuccess;
       case LogLevel.SECTION: return theme.colorInfo;
       case LogLevel.COMMAND: return theme.colorPrimary;
-      case LogLevel.DEBUG: return purple.primary;
+      case LogLevel.DEBUG: return purple.primary ?? "";
       default: return theme.colorText;
     }
   };
@@ -81,7 +83,7 @@ const LogLineComponentRenderer: FC<LogLineProps> = ({
   };
 
   const renderMessage = (): React.ReactNode => {
-    if (!searchMatches || searchMatches.length === 0) {
+    if (!isNonEmptyArray(searchMatches)) {
       return message;
     }
 

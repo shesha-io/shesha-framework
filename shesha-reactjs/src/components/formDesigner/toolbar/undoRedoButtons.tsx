@@ -9,7 +9,7 @@ export const UndoRedoButtons: FC<IUndoRedoButtonsProps> = (props) => {
   const { canUndo, canRedo, undo, redo } = useFormDesignerUndoRedo();
 
   return (
-    <Space direction="horizontal" size={2}>
+    <Space orientation="horizontal" size={2}>
       <Button
         icon={<UndoOutlined />}
         key="undo"

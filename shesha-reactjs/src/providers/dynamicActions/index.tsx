@@ -1,8 +1,6 @@
-import React, { useContext, PropsWithChildren, ReactElement, useState } from 'react';
+import React, { PropsWithChildren, ReactElement, useState } from 'react';
 import {
-  DYNAMIC_ACTIONS_CONTEXT_INITIAL_STATE,
   IDynamicActionsContext,
-  DynamicActionsContext,
 } from './contexts';
 import { useDynamicActionsDispatcher } from '@/providers/dynamicActionsDispatcher';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
@@ -11,10 +9,10 @@ import { IProviderSettingsFormFactory } from '@/designer-components/dynamicActio
 import { FormMarkup } from '@/interfaces';
 
 export interface IDynamicActionsProps<TSettings extends object = object> {
-  id?: string;
+  id: string;
   name: string;
   renderingHoc?: DynamicRenderingHoc;
-  useEvaluator: DynamicItemsEvaluationHook;
+  useEvaluator: DynamicItemsEvaluationHook<TSettings>;
   hasArguments?: boolean;
   /**
    * Settings form factory
@@ -27,8 +25,7 @@ export interface IHasActions {
 }
 
 const DynamicActionsProvider = <TSettings extends object = object>({ id, name, useEvaluator, children, hasArguments = false, settingsFormFactory, settingsFormMarkup }: PropsWithChildren<IDynamicActionsProps<TSettings>>): ReactElement => {
-  const [state] = useState<IDynamicActionsContext>(() => ({
-    ...DYNAMIC_ACTIONS_CONTEXT_INITIAL_STATE,
+  const [state] = useState<IDynamicActionsContext<TSettings>>(() => ({
     id,
     name,
     useEvaluator,
@@ -42,17 +39,7 @@ const DynamicActionsProvider = <TSettings extends object = object>({ id, name, u
 
   registerProvider({ id, contextValue: state });
 
-  return <DynamicActionsContext.Provider value={state}>{children}</DynamicActionsContext.Provider>;
+  return <>{children}</>;
 };
 
-function useDynamicActions(require: boolean): IDynamicActionsContext | undefined {
-  const context = useContext(DynamicActionsContext);
-
-  if (context === undefined && require) {
-    throw new Error('useDynamicActions must be used within a DynamicActions');
-  }
-
-  return context;
-}
-
-export { DynamicActionsProvider, useDynamicActions };
+export { DynamicActionsProvider };

@@ -1,11 +1,12 @@
 import { IApiEndpoint, StandardEntityActions } from "@/interfaces/metadata";
-import { HttpClientApi } from "@/publicJsApis/httpClient";
+import { HttpClientApi } from "@/publicJsApis/apis/httpClient";
 import { EntityConfigurationDto, IEntity, IEntityTypeIdentifier } from "./models";
 import { IAjaxResponse, IEntityMetadata } from "@/interfaces";
 import { ICacheProvider, IEntityMetadataFetcher } from "@/providers/metadataDispatcher/entities/models";
 import qs from "qs";
 
 import { IEntityEndpoints } from "./entityTypeAccessor";
+import { throwError } from "@/utils/errors";
 
 export const ENTITIES_URLS = {
   GET_CONFIGURATIONS: '/api/services/app/EntityConfig/GetClientApiConfigurations',
@@ -18,7 +19,7 @@ export class EntitiesManager {
 
   readonly _metadataFetcher: IEntityMetadataFetcher;
 
-  static #configurationsPromise: Promise<EntityConfigurationDto[]> = undefined;
+  static #configurationsPromise: Promise<EntityConfigurationDto[]> | undefined = undefined;
 
   getApiEndpointsAsync = async (typeAccessor: IEntityTypeIdentifier): Promise<IEntityEndpoints> => {
     const meta = await this.#resolveEntityTypeAsync(typeAccessor);
@@ -85,7 +86,8 @@ export class EntitiesManager {
   };
 
   #getApiEndpoint = (meta: IEntityMetadata, action: StandardEntityActions): IApiEndpoint => {
-    return meta.apiEndpoints[action];
+    const endpoint = meta.apiEndpoints[action];
+    return endpoint ?? throwError(`Failed to get endpoint for action '${action}'`);
   };
 
   #resolveEntityTypeAsync = (typeId: IEntityTypeIdentifier): Promise<IEntityMetadata | null> => {

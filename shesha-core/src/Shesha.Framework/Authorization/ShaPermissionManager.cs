@@ -163,7 +163,7 @@ namespace Shesha.Authorization
 
         public async Task<Abp.Authorization.Permission> EditPermissionAsync(string oldName, PermissionDefinition permissionDefinition)
         {
-            var dbPermission = _permissionDefinitionRepository.GetAll().FirstOrDefault(x => x.Name == oldName);
+            var dbPermission = await _permissionDefinitionRepository.FirstOrDefaultAsync(x => x.Name == oldName);
 
             if (dbPermission == null)
             {
@@ -203,7 +203,7 @@ namespace Shesha.Authorization
 
         public async Task UpdateParentAsync(string name, string? parentName, Module? module)
         {
-            var dbPermission = _permissionDefinitionRepository.GetAll().FirstOrDefault(x => x.Name == name);
+            var dbPermission = await _permissionDefinitionRepository.FirstOrDefaultAsync(x => x.Name == name);
 
             if (dbPermission == null)
             {
@@ -236,7 +236,7 @@ namespace Shesha.Authorization
 
         public async Task DeletePermissionAsync(string name)
         {
-            var dbPermission = _permissionDefinitionRepository.GetAll().FirstOrDefault(x => x.Name == name);
+            var dbPermission = await _permissionDefinitionRepository.FirstOrDefaultAsync(x => x.Name == name);
 
             if (dbPermission == null)
             {
@@ -244,7 +244,7 @@ namespace Shesha.Authorization
                 throw new EntityNotFoundException("Permission 'name' not found");
             }
 
-            var child = _permissionDefinitionRepository.GetAll().Where(x => x.Parent == name);
+            var child = await _permissionDefinitionRepository.GetAllListAsync(x => x.Parent == name);
             foreach (var item in child)
             {
                 await DeletePermissionAsync(item.Name);

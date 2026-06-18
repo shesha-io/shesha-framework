@@ -1,6 +1,5 @@
-import axios from 'axios';
 import FileSaver from 'file-saver';
-import React, { MutableRefObject, useMemo, useState, FC } from 'react';
+import React, { RefObject, useMemo, useState, FC, Key } from 'react';
 
 import {
   Button,
@@ -12,33 +11,35 @@ import {
   Spin,
   Switch,
   Tree,
+  TreeProps,
 } from 'antd';
 import { getFileNameFromResponse } from '@/utils/fetchers';
-import { useSheshaApplication } from '@/providers';
+import { useHttpClient } from '@/providers';
 import { EMPTY_FILTER, FilterState } from './models';
 import { ExportFilter } from './filter';
 import { useTreeForExport } from '@/configuration-studio/apis';
 import { isConfigItemTreeNode, isNodeWithChildren, TreeNode } from '@/configuration-studio/models';
 import { DownOutlined } from '@ant-design/icons';
 import { getTitleWithHighlight } from '@/configuration-studio/filter-utils';
+import { isDefined } from '@/utils/nullables';
 
 export interface IExportInterface {
-  exportExecuter: () => Promise<any>;
+  exportExecuter: () => Promise<void>;
   canExport: boolean;
   exportInProgress: boolean;
 }
 
 export interface IConfigurationItemsExportProps {
   onExported?: () => void;
-  exportRef: MutableRefObject<IExportInterface | undefined>;
+  exportRef: RefObject<IExportInterface | undefined>;
 }
 
 export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (props) => {
-  const { backendUrl, httpHeaders } = useSheshaApplication();
   const [filterState, setFilterState] = useState<FilterState>(EMPTY_FILTER);
   const [exportDependencies, setExportDependencies] = useState<boolean>(true);
+  const httpClient = useHttpClient();
 
-  const [checkedIds, setCheckedIds] = useState<string[]>([]);
+  const [checkedIds, setCheckedIds] = useState<Key[]>([]);
   const [exportInProgress, setExportInProgress] = useState(false);
   const { data: treeData, error, isLoading, mutate: refreshTree } = useTreeForExport();
 
@@ -85,26 +86,20 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
 
   const exportExecuter = (): Promise<void> => {
     const filter = getExportFilter();
-    const exportUrl = `${backendUrl}/api/services/app/ConfigurationStudio/ExportPackage`;
+    const exportUrl = `/api/services/app/ConfigurationStudio/ExportPackage`;
 
 
     setExportInProgress(true);
-    return axios({
-      url: exportUrl,
-      method: 'POST',
-      data: {
-        filter: JSON.stringify(filter),
-        exportDependencies: exportDependencies,
-        // versionSelectionMode: itemSelectionMode,
-      },
-      responseType: 'blob', // important
-      headers: httpHeaders,
-    })
+    return httpClient.post<BlobPart>(exportUrl, {
+      filter: JSON.stringify(filter),
+      exportDependencies: exportDependencies,
+    }, { responseType: 'blob' })
       .then((response) => {
         const fileName = getFileNameFromResponse(response) ?? 'package.zip';
-        FileSaver.saveAs(new Blob([response.data]), fileName);
+        FileSaver(new Blob([response.data]), fileName, { autoBom: false });
         setExportInProgress(false);
-        if (Boolean(props.onExported)) props.onExported();
+        if (isDefined(props.onExported))
+          props.onExported();
       })
       .catch((e) => {
         setExportInProgress(false);
@@ -112,23 +107,23 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
       });
   };
 
-  if (props.exportRef)
-    props.exportRef.current = {
-      exportExecuter: exportExecuter,
-      canExport: checkedIds.length === 0,
-      exportInProgress: exportInProgress,
-    };
-
-  const onRefreshClick = (): void => {
-    refreshTree();
+  props.exportRef.current = {
+    exportExecuter: exportExecuter,
+    canExport: checkedIds.length === 0,
+    exportInProgress: exportInProgress,
   };
 
-  const onCheck = (checkedIds: string[]): void => {
-    setCheckedIds(checkedIds);
+  const onRefreshClick = (): void => {
+    void refreshTree();
+  };
+
+  const onCheck: TreeProps["onCheck"] = (checkedIds): void => {
+    if (Array.isArray(checkedIds))
+      setCheckedIds(checkedIds);
   };
 
   return (
-    <Spin spinning={exportInProgress} tip="Exporting...">
+    <Spin spinning={exportInProgress} description="Exporting...">
       <Form>
         <Form.Item label="Filter by">
           <ExportFilter value={filterState} onChange={setFilterState} />

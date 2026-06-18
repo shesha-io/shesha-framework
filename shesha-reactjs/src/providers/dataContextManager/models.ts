@@ -1,8 +1,8 @@
-import { DataTypes } from "@/interfaces";
+import { ConfigurableFormInstance, DataTypes } from "@/interfaces";
 import { IContextMetadata } from "@/interfaces/metadata";
 import { DataContextType, IDataContextProviderActionsContext } from "../dataContextProvider/contexts";
 
-export interface IDataContextDescriptor extends IDataContextProviderActionsContext {
+export interface IDataContextDescriptor<TData extends object = object> extends IDataContextProviderActionsContext<TData> {
   id: string;
   uid: string;
   name: string;
@@ -26,6 +26,7 @@ export const SHESHA_ROOT_DATA_CONTEXT_MANAGER = 'SHESHA_ROOT_DATA_CONTEXT_MANAGE
 export enum SheshaCommonContexts {
   ApplicationContext = 'application',
   WebStorageContext = 'webStorage',
+  CanvasContext = 'canvasContext',
   AppContext = 'appContext',
   PageContext = 'pageContext',
   FormContext = 'formContext',
@@ -39,3 +40,40 @@ export const DEFAULT_CONTEXT_METADATA = {
   properties: [],
   methods: [],
 } as IContextMetadata;
+
+export interface IDataContextManagerState {
+  lastUpdate: number;
+  id: string;
+  parent?: IDataContextManagerFullInstance | undefined;
+
+}
+
+export interface IDataContextsData {
+  [key: string]: unknown;
+  lastUpdate: number;
+}
+
+export interface IDataContextManagerActions {
+  updateForceUpdate: (forceUpdate: ((data?: unknown) => void) | undefined) => void;
+  registerDataManagerOnce: (payload: IDataContextManagerFullInstance) => void;
+  unregisterDataManager: (payload: IDataContextManagerFullInstance) => void;
+  registerDataContextOnce: (payload: IRegisterDataContextPayload) => void;
+  unregisterDataContext: (payload: IRegisterDataContextPayload) => void;
+  getLocalDataContexts: (contextId: string) => IDataContextDescriptor[];
+  getDataContexts: (topId?: string) => IDataContextDescriptor[];
+  getDataContextsData: (topId?: string, data?: IDataContextsData) => IDataContextsData;
+  getDataContext: (contextId: string) => IDataContextDescriptor | undefined;
+  getNearestDataContext: (topId: string, type: DataContextType) => IDataContextDescriptor | undefined;
+  getDataContextData: (contextId: string) => unknown;
+  onChangeContext: (dataContext: IDataContextDescriptor) => void;
+  onChangeContextData: (data?: unknown) => void;
+  updatePageFormInstance: (form: ConfigurableFormInstance) => void;
+  getPageFormInstance: () => ConfigurableFormInstance | undefined;
+  getPageContext: () => IDataContextDescriptor | undefined;
+  getRoot: () => IDataContextManagerFullInstance | undefined;
+  getParent: () => IDataContextManagerFullInstance | undefined;
+}
+
+export interface IDataContextManagerFullInstance extends IDataContextManagerState, IDataContextManagerActions {
+
+}

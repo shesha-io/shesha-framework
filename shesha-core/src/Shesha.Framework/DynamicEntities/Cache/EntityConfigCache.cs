@@ -10,7 +10,6 @@ using Abp.Runtime.Caching;
 using Shesha.Domain;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.DynamicEntities.TypeFinder;
-using Shesha.Extensions;
 using Shesha.Reflection;
 using System;
 using System.Collections.Generic;
@@ -71,9 +70,7 @@ namespace Shesha.DynamicEntities.Cache
         {
             using (var uow = _unitOfWorkManager.Begin())
             {
-                var conf = await _configReprository.GetAll()
-                    .Where(x => x.ClassName == className && x.Namespace == classNamespace || x.TypeShortAlias == $"{classNamespace}.{className}")
-                    .FirstOrDefaultAsync();
+                var conf = await _configReprository.FirstOrDefaultAsync(x => x.ClassName == className && x.Namespace == classNamespace || x.TypeShortAlias == $"{classNamespace}.{className}");
 
                 // ToDo: AS - get nested properties
 
@@ -83,9 +80,7 @@ namespace Shesha.DynamicEntities.Cache
                     return null;
                 }
 
-                var properties = await _propertyRepository.GetAll()
-                    .Where(p => p.EntityConfig == conf && p.ParentProperty == null)
-                    .ToListAsync();
+                var properties = await _propertyRepository.GetAllListAsync(p => p.EntityConfig == conf && p.ParentProperty == null);
                 var propertyDtos = properties.Select(p => _mapper.Map<EntityPropertyDto>(p)).ToList();
                 
                 var confDto = _mapper.Map<EntityConfigDto>(conf);

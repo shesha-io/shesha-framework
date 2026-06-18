@@ -6,9 +6,9 @@ import { getSettings } from './settingsForm';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IToolboxComponent } from '@/interfaces/formDesigner';
 import { LayerGroupConfiguratorProvider } from '@/providers/layersProvider';
-import { migratePrevStyles } from '@/index';
 import { defaultStyles } from './utils';
 import { ICalendarProps } from './interfaces';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 
 const CalendarComponent: IToolboxComponent<ICalendarProps> = {
   type: 'calendar',
@@ -22,8 +22,8 @@ const CalendarComponent: IToolboxComponent<ICalendarProps> = {
     if (model.hidden) return null;
 
     const additionalStyles: CSSProperties = ({
-      ...allStyles.dimensionsStyles,
-      ...allStyles.stylingBoxAsCSS,
+      ...allStyles?.dimensionsStyles,
+      ...allStyles?.stylingBoxAsCSS,
     });
 
     return (
@@ -40,7 +40,7 @@ const CalendarComponent: IToolboxComponent<ICalendarProps> = {
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) =>
-    m.add<any>(0, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
+    m.add<ICalendarProps>(0, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
       .add<ICalendarProps>(1, (prev) => ({ ...prev, displayPeriod: ['month', 'week', 'work_week', 'day', 'agenda'] })),
 
 };

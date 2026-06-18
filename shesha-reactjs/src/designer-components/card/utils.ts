@@ -1,4 +1,4 @@
-import { IStyleType } from "@/index";
+import { IStyleType } from "@/providers/form/models";
 import { ICardComponentProps } from "./interfaces";
 
 export const defaultStyles = (prev: ICardComponentProps): IStyleType => {
@@ -15,8 +15,6 @@ export const defaultStyles = (prev: ICardComponentProps): IStyleType => {
       position: 'center',
       gradient: { direction: 'to right', colors: {} },
       url: '',
-      storedFile: { id: null },
-      uploadFile: null,
     },
     font: {
       color: '#000',

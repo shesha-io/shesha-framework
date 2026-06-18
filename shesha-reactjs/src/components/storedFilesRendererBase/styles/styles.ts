@@ -1,5 +1,6 @@
 import { listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { createStyles } from '@/styles';
+import { CSSObject } from 'antd-style';
 import { CSSProperties } from 'react';
 interface IModelInterface {
   gap?: string;
@@ -71,7 +72,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     cursor: pointer;
     &:hover {
       background-color: ${colorBgTextHover} !important;
-      border-radius: ${borderRadius ?? '4px'} !important;
+      border-radius: ${borderRadius} !important;
     }
     > .item-file-name {
       &:hover {
@@ -90,21 +91,21 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     }
 
     >.ant-upload-list-item > .ant-upload-list-item-thumbnail {
-      ${rest}
+      ${rest as CSSObject}
       opacity: 0.8;
-      border: 2px solid ${downloadedFileStyles?.color ?? token.colorSuccess};
-      ${{ ...downloadedFileStyles }};
+      border: 2px solid ${downloadedFileStyles.color ?? token.colorSuccess};
+      ${{ ...(downloadedFileStyles as CSSObject) }};
     }
 
     .item-file-name {
-      ${downloadedFileStyles?.textAlign === 'center' ? 'justify-content: center' : downloadedFileStyles?.textAlign === 'right' ? 'justify-content: flex-end' : 'justify-content: flex-start'} !important;
+      ${downloadedFileStyles.textAlign === 'center' ? 'justify-content: center' : downloadedFileStyles.textAlign === 'right' ? 'justify-content: flex-end' : 'justify-content: flex-start'} !important;
       .ant-typography {
         display: ${model.hideFileName ? 'none' : 'block'};
-        color: ${downloadedFileStyles?.color ?? color} !important;
-        font-size: ${downloadedFileStyles?.fontSize ?? fontSize} !important;
-        font-weight: ${downloadedFileStyles?.fontWeight ?? fontWeight} !important;
-        font-family: ${downloadedFileStyles?.fontFamily ?? fontFamily} !important;
-        text-align: ${downloadedFileStyles?.textAlign ?? textAlign} !important;
+        color: ${downloadedFileStyles.color ?? color} !important;
+        font-size: ${downloadedFileStyles.fontSize ?? fontSize} !important;
+        font-weight: ${downloadedFileStyles.fontWeight ?? fontWeight} !important;
+        font-family: ${downloadedFileStyles.fontFamily ?? fontFamily} !important;
+        text-align: ${downloadedFileStyles.textAlign ?? textAlign} !important;
         margin: 2px 0px;
         position: relative;
         white-space: nowrap;
@@ -116,7 +117,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
 
     .ant-upload-list-item-action {
       .anticon-download {
-        color: ${downloadedFileStyles?.color ?? token.colorSuccess} !important;
+        color: ${downloadedFileStyles.color ?? token.colorSuccess} !important;
       }
     }
 
@@ -130,7 +131,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     position: ${layout ? 'absolute' : 'relative'};
     top: 4px;
     right: 4px;
-    background: ${downloadedFileStyles?.color ?? token.colorSuccess};
+    background: ${downloadedFileStyles.color ?? token.colorSuccess};
     color: white;
     border-radius: 50%;
     width: 20px;
@@ -169,7 +170,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     min-width: ${containerMinWidth ?? '100%'} !important;
     display: flex;
     flex-direction: column;
-    ${restContainerStyles}
+    ${restContainerStyles as CSSObject}
     overflow: auto;
     scrollbar-width: thin;
     scrollbar-gutter: stable;
@@ -194,19 +195,19 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
       border: unset !important; 
       width: ${layout ? width : '100%'};
       :before {
-        ${rest}
+        ${rest as CSSObject}
         display: none;
       }
     }
 
     .ant-upload-list-item-thumbnail {
-      ${rest}
+      ${rest as CSSObject}
       background: ${background ?? backgroundImage ?? (backgroundColor ?? 'transparent')} !important;
       background-size: ${backgroundSize ?? 'cover'} !important;
       background-position: ${backgroundPosition ?? 'center'} !important;
       background-repeat: ${backgroundRepeat ?? 'no-repeat'} !important;
       box-shadow: ${boxShadow};
-      border-radius: ${borderRadius ?? '8px'} !important;
+      border-radius: ${borderRadius} !important;
       height: ${thumbnailHeight} !important;
       display: flex !important;
       justify-content: center !important;
@@ -223,13 +224,13 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
       img {
         width: ${thumbnailWidth} !important;
         height: ${thumbnailHeight} !important;
-        border-radius: ${borderRadius ?? '8px'} !important;
+        border-radius: ${borderRadius} !important;
         object-fit: cover !important;
         display: flex !important;
         justify-content: center !important;
       }
       .ant-image .anticon {
-        border-radius: ${borderRadius ?? '8px'} !important;
+        border-radius: ${borderRadius} !important;
         display: block !important;
       }
     }
@@ -259,7 +260,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     }
 
     .${prefixCls}-upload-select {
-      ${rest}
+      ${rest as CSSObject}
       border: unset;
       width: ${layout ? thumbnailWidth : '100%'} !important;
       height: ${layout ? thumbnailHeight : '100%'} !important;
@@ -361,7 +362,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     }
 
     .thumbnail-stub {
-      ${rest}
+      ${rest as CSSObject}
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -385,7 +386,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
 
     .ant-upload-list-item-container {
       display: inline-block !important;
-      border-radius: ${borderRadius ?? '8px'} !important;
+      border-radius: ${borderRadius} !important;
       &.ant-upload-animate-inline-appear,
       &.ant-upload-animate-inline-appear-active,
       &.ant-upload-animate-inline {
@@ -417,7 +418,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
 
     .ant-upload-list-item-container {
       display: inline-block !important;
-      border-radius: ${borderRadius ?? '8px'} !important;
+      border-radius: ${borderRadius} !important;
       &.ant-upload-animate-inline-appear,
       &.ant-upload-animate-inline-appear-active,
       &.ant-upload-animate-inline {
@@ -441,13 +442,13 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
       .${prefixCls}-upload-list-item {
         width: 100% !important;
         height: 100% !important;
-        border-radius: ${borderRadius ?? '8px'} !important;
+        border-radius: ${borderRadius} !important;
       }
     }
 
     .ant-upload-list-item-container {
       display: inline-block !important;
-      border-radius: ${borderRadius ?? '8px'} !important;
+      border-radius: ${borderRadius} !important;
       &.ant-upload-animate-inline-appear,
       &.ant-upload-animate-inline-appear-active,
       &.ant-upload-animate-inline {

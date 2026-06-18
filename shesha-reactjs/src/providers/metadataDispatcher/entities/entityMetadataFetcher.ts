@@ -1,4 +1,4 @@
-import { HttpClientApi } from "@/publicJsApis/httpClient";
+import { HttpClientApi } from "@/publicJsApis/apis/httpClient";
 import { IEntityTypesMap, IEntityMetadataFetcher, ISyncEntitiesContext, ICacheProvider } from "./models";
 import { DataTypes, IPropertyMetadata } from "@/interfaces";
 import { IEntityMetadata, NestedProperties, isIHasEntityType, isPropertiesArray } from "@/interfaces/metadata";
@@ -70,6 +70,13 @@ export class EntityMetadataFetcher implements IEntityMetadataFetcher {
 
   #syncEntities = (): Promise<void> => {
     return syncEntities(this.#syncContext);
+  };
+
+  resetSynchronized = async (): Promise<void> => {
+    if (this.#syncPromise) {
+      await this.#syncPromise.catch(() => {}); // Wait for in-flight sync to complete (ignore errors)
+    }
+    this.#syncPromise = undefined;
   };
 
   syncAll = (): Promise<void> => {

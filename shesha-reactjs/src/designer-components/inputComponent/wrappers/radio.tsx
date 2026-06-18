@@ -1,12 +1,13 @@
 import { IRadioSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React, { FC } from 'react';
+import React from 'react';
+import { FCUnwrapped } from '@/providers/form/models';
 import { useStyles } from '../styles';
 import Icon from '@/components/icon/Icon';
 import { Radio } from 'antd';
 
-export const RadioWrapper: FC<IRadioSettingsInputProps> = (props) => {
+export const RadioWrapper: FCUnwrapped<IRadioSettingsInputProps> = (props) => {
   const { styles } = useStyles();
-  const { value, onChange, readOnly, buttonGroupOptions, size, allowDeselect } = props;
+  const { value, onChange, readOnly = false, buttonGroupOptions, size, allowDeselect } = props;
 
   const handleClick = (clickedValue: string | number): void => {
     if (allowDeselect && value === clickedValue) {
@@ -17,7 +18,9 @@ export const RadioWrapper: FC<IRadioSettingsInputProps> = (props) => {
   return (
     <Radio.Group
       value={value}
-      onChange={onChange}
+      onChange={(event) => {
+        onChange?.(event.target.value);
+      }}
       disabled={readOnly}
       buttonStyle="solid"
       size={size}

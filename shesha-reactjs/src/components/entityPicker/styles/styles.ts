@@ -47,8 +47,13 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, { style }:
         }
       
         .${shaReactTable} {
-          margin: unset;
+          margin: unset !important;
+          width: 100% !important;
+          display: block !important;
           overflow: auto;
+          border: 1px solid #d9d9d9;
+          border-radius: 6px;
+          box-sizing: border-box;
           ${sheshaStyles.thinScrollbars}
         }
       
@@ -63,7 +68,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, { style }:
         }
       
         .${prefixCls}-modal-footer {
-          padding: 12px 24px;
+          padding: 12px 0 !important;
           display: flex;
           flex-direction: row;
           justify-content: space-between;

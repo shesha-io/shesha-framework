@@ -1,57 +1,29 @@
-import React, { PropsWithChildren, useContext, useMemo } from 'react';
+import React, { PropsWithChildren, useContext, useMemo, useState } from 'react';
 import { GenericListEditorProvider } from './provider';
 import {
   getListEditorActionsContext,
   getListEditorContextInitialState,
   getListEditorStateContext,
-  IListEditorContext,
 } from './contexts';
 import { IGenericListEditorProps } from './interfaces';
 import { ListEditorRenderer } from './renderer';
-import { ListItem } from './models';
-
-export interface IListStateProps<TItem = any> {
-  value: TItem[];
-}
-
-export interface NestedItemsRenderingArgs<TItem = any> {
-  items: TItem[];
-  onChange: (newValue: TItem[], changeDetails?: ItemChangeDetails) => void;
-  initNewItem: (items: TItem[]) => TItem;
-}
-
-export interface ItemChangeDetails {
-  isReorder: boolean;
-  childsLengthDelta?: number;
-}
-export interface ListItemRenderingArgs<TItem = any> {
-  item: TItem;
-  itemOnChange: (newValue: TItem, changeDetails?: ItemChangeDetails) => void;
-  index: number;
-  readOnly: boolean;
-  nestedRenderer?: (args: NestedItemsRenderingArgs<TItem>) => React.ReactNode | null;
-}
-export type ListEditorChildrenFn<TItem = any> = (args: ListItemRenderingArgs<TItem>) => React.ReactNode | null;
-
-export interface ListEditorSectionRenderingArgs<TItem = any> {
-  contextAccessor: () => IListEditorContext<TItem>;
-  parentItem?: TItem;
-  level: number;
-  addItemText?: string;
-}
-export type ListEditorSectionRenderingFn<TItem = any> = (args: ListEditorSectionRenderingArgs<TItem>) => React.ReactNode | null;
-
-export interface IListEditorProps<TItem = any> extends IGenericListEditorProps<TItem> {
-  children: ListEditorChildrenFn<TItem>;
-  header?: ListEditorSectionRenderingFn<TItem>;
-  initNewItem: (items: TItem[]) => TItem;
-  maxItemsCount?: number;
-}
+import {
+  IListEditorContext,
+  IListEditorProps,
+  ListItem,
+  ItemChangeDetails,
+  NestedItemsRenderingArgs,
+  ListEditorSectionRenderingArgs,
+  ListEditorChildrenFn,
+  ListEditorSectionRenderingFn,
+  ListItemRenderingArgs,
+} from './models';
 
 interface CreateListEditorComponentResult<TItem extends object> {
   ListEditorProvider: <T extends React.PropsWithChildren<IGenericListEditorProps<TItem>>>(props: T) => React.JSX.Element;
   useListEditorComponent: () => IListEditorContext<TItem>;
 }
+
 export const createListEditorComponent = <TItem extends object>(): CreateListEditorComponentResult<TItem> => {
   const StateContext = getListEditorStateContext<TItem>(undefined);
   const ActionContext = getListEditorActionsContext<TItem>();
@@ -69,11 +41,9 @@ export const createListEditorComponent = <TItem extends object>(): CreateListEdi
 
   const ListEditorProvider = <T extends PropsWithChildren<IGenericListEditorProps<TItem>>>(
     props: T,
-  ): JSX.Element => {
+  ): React.JSX.Element => {
     const { value, onChange, onSelectionChange, initNewItem, readOnly } = props;
-    const initialState = useMemo(() => {
-      return getListEditorContextInitialState<TItem>(value);
-    }, []);
+    const [initialState] = useState(() => getListEditorContextInitialState<TItem>(value));
 
     return (
       <GenericListEditorProvider<TItem>
@@ -84,7 +54,7 @@ export const createListEditorComponent = <TItem extends object>(): CreateListEdi
         onChange={onChange}
         onSelectionChange={onSelectionChange}
         initNewItem={initNewItem}
-        readOnly={readOnly}
+        readOnly={readOnly === true}
       >
         {props.children}
       </GenericListEditorProvider>
@@ -103,7 +73,7 @@ export const ListEditor = <TItem extends ListItem>({
   initNewItem,
   readOnly = false,
   maxItemsCount,
-}: IListEditorProps<TItem>): JSX.Element => {
+}: IListEditorProps<TItem>): React.JSX.Element => {
   const component = useMemo(() => {
     return createListEditorComponent<TItem>();
   }, []);
@@ -127,3 +97,5 @@ export const ListEditor = <TItem extends ListItem>({
     </ListEditorProvider>
   );
 };
+
+export { type ItemChangeDetails, type NestedItemsRenderingArgs, type ListEditorSectionRenderingArgs, type ListEditorChildrenFn, type ListEditorSectionRenderingFn, type ListItemRenderingArgs };

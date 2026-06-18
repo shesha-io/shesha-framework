@@ -1,7 +1,5 @@
 import camelcase from "camelcase";
-import { useMemo } from "react";
-import { IPropertyMetadata, asPropertiesArray, isEntityReferencePropertyMetadata } from "@/interfaces/metadata";
-import { useMetadata } from "@/providers/metadata";
+import { IPropertyMetadata, isEntityReferencePropertyMetadata } from "@/interfaces/metadata";
 import { IProperty, hasCustomQBSettings, IPropertyWithCustomQBSettings } from "./models";
 
 /**
@@ -12,9 +10,9 @@ import { IProperty, hasCustomQBSettings, IPropertyWithCustomQBSettings } from ".
  */
 export const propertyMetadata2QbProperty = (property: IPropertyMetadata): IProperty => {
   const base: IProperty = {
-    label: property.label,
+    label: property.label ?? "",
     propertyName: property.path,
-    visible: property.isVisible,
+    visible: property.isVisible ?? true,
     dataType: property.dataType,
     fieldSettings: {
       entityTypeName: isEntityReferencePropertyMetadata(property) ? property.entityType : undefined,
@@ -24,6 +22,7 @@ export const propertyMetadata2QbProperty = (property: IPropertyMetadata): IPrope
       allowInherited: true,
       propertyMetadata: property,
     },
+    childProperties: [],
   };
 
   return !hasCustomQBSettings(property)
@@ -36,19 +35,4 @@ export const propertyMetadata2QbProperty = (property: IPropertyMetadata): IPrope
 
 export const getPropertyFullPath = (path: string, prefix: string): string => {
   return prefix ? `${prefix}.${camelcase(path)}` : camelcase(path);
-};
-
-export const useMetadataFields = (): IProperty[] | null => {
-  const metadata = useMetadata(false);
-
-  const fields = useMemo<IProperty[]>(() => {
-    if (metadata) {
-      const properties = asPropertiesArray(metadata?.metadata?.properties, []);
-      if (Boolean(properties))
-        return properties.map<IProperty>((property) => propertyMetadata2QbProperty(property));
-    }
-    return null;
-  }, [metadata, metadata?.metadata]);
-
-  return fields;
 };

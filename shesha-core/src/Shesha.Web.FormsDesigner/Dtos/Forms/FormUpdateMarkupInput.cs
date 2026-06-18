@@ -18,5 +18,7 @@ namespace Shesha.Web.FormsDesigner.Dtos
         public RefListPermissionedAccess? Access { get; set; }
 
         public List<string>? Permissions { get; set; }
+
+        public string? ModelType { get; set; }
     }
 }

@@ -7,7 +7,7 @@ import { ConfigurationItemsExportFooter } from "@/providers/sheshaApplication/co
 import { ConfigurationItemsImportFooter } from "@/providers/sheshaApplication/configurable-actions/configuration-items-import";
 import { buildUrl } from "@/utils/url";
 import { HomeOutlined, SettingOutlined } from "@ant-design/icons";
-import React, { MutableRefObject, ReactNode } from "react";
+import React, { RefObject, ReactNode } from "react";
 import { isDefined, isNullOrWhiteSpace } from "../../utils/nullables";
 import { deleteConfigurationItemAsync, deleteFolderAsync, duplicateItemAsync, fetchFlatTreeAsync, fetchItemTypesAsync, getRevisionJsonAsync, MoveNodePayload, moveTreeNodeAsync, restoreItemRevisionAsync } from "../apis";
 import { confirmSaveDocumentAsync } from "../components/save-confirmation";
@@ -105,7 +105,7 @@ interface ConfigurationStudioArguments {
   storage: IAsyncStorage;
   modalApi: IModalApi;
   notificationApi: INotificationApi;
-  toolbarRef: MutableRefObject<HTMLDivElement>;
+  toolbarRef: RefObject<HTMLDivElement>;
   shaRouter: IShaRouter;
   logEnabled?: boolean;
 }
@@ -131,7 +131,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
   readonly renderedDocs: Map<string, ReactNode>;
 
-  toolbarRef: MutableRefObject<HTMLDivElement>;
+  toolbarRef: RefObject<HTMLDivElement>;
 
   findDoc = (itemId?: string): IDocumentInstance | undefined => {
     return isDefined(itemId)
@@ -260,7 +260,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
   setQuickSearch = (value: string): void => {
     this._quickSearch = value;
-    this.saveQuickSearchAsync();
+    void this.saveQuickSearchAsync();
     this.notifySubscribers(['tree']);
   };
 
@@ -318,7 +318,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
   onTreeNodeExpand = (expandedKeys: React.Key[]): void => {
     this._treeExpandedKeys = expandedKeys;
-    this.saveTreeExpandedNodesAsync();
+    void this.saveTreeExpandedNodesAsync();
     this.notifySubscribers(['tree']);
   };
 
@@ -389,10 +389,10 @@ export class ConfigurationStudio implements IConfigurationStudio {
         const newTab = await this.createNewCiTabAsync(node);
         this.notifySubscribers(['tabs']);
         // select new tab
-        this.selectTabAsync(newTab);
+        await this.selectTabAsync(newTab);
         this.notifySubscribers(['tabs']);
       } else {
-        this.selectTabAsync(tab);
+        await this.selectTabAsync(tab);
         this.notifySubscribers(['tabs']);
       }
     } else
@@ -402,9 +402,9 @@ export class ConfigurationStudio implements IConfigurationStudio {
           // load item, add new tab and select
           const newTab = await this.createNewSpecialTabAsync(node);
           // select new tab
-          this.selectTabAsync(newTab);
+          await this.selectTabAsync(newTab);
         } else {
-          this.selectTabAsync(tab);
+          await this.selectTabAsync(tab);
         }
         this.notifySubscribers(['tabs']);
       }
@@ -554,7 +554,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
     if (isDefined(selectedDocId) && this._selectedNodeId !== selectedDocId) {
       const treeNode = this.getTreeNodeById(selectedDocId);
       if (isConfigItemTreeNode(treeNode)) {
-        this.selectTreeNode(treeNode);
+        await this.selectTreeNode(treeNode);
       }
     }
   };
@@ -1015,15 +1015,15 @@ export class ConfigurationStudio implements IConfigurationStudio {
   importPackageAsync = async (_args: ImportPackageArgs): Promise<void> => {
     const importerRef = createManualRef<IImportInterface | undefined>(undefined);
 
-    const exported = await this.modalApi.showModalContentAsync<boolean>(({ resolve, removeModal }) => {
+    const responseData = await this.modalApi.showModalContentAsync<{ response: boolean }>(({ resolve, removeModal }) => {
       const hideModal = (): void => {
-        resolve(false);
+        resolve({ response: false });
         removeModal();
       };
 
       const onImported = (): void => {
         removeModal();
-        resolve(true);
+        resolve({ response: true });
       };
       return {
         title: 'Import Configuration',
@@ -1032,22 +1032,22 @@ export class ConfigurationStudio implements IConfigurationStudio {
       };
     });
 
-    if (exported === true)
+    if (responseData?.response === true)
       await this.loadTreeAsync();
   };
 
   exportPackageAsync = async (_args: ExportPackageArgs): Promise<void> => {
     const exporterRef = createManualRef<IExportInterface | undefined>(undefined);
 
-    const exported = await this.modalApi.showModalContentAsync<boolean>(({ resolve, removeModal }) => {
+    const responseData = await this.modalApi.showModalContentAsync<{ response: boolean }>(({ resolve, removeModal }) => {
       const hideModal = (): void => {
-        resolve(false);
+        resolve({ response: false });
         removeModal();
       };
 
       const onExported = (): void => {
         removeModal();
-        resolve(true);
+        resolve({ response: true });
       };
       return {
         title: 'Export Configuration',
@@ -1056,7 +1056,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
       };
     });
 
-    if (exported === true)
+    if (responseData?.response === true)
       await this.loadTreeAsync();
   };
 

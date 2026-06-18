@@ -1,8 +1,6 @@
-import { setValueByPropertyName } from "@/utils/object";
-import { ConfigurableFormInstance, ISetFormDataPayload } from "./contexts";
-import { FormMode } from "@/generic-pages/dynamic/interfaces";
+import { ISetFormDataPayload } from "./contexts";
 import { FormInstance } from "antd";
-import { IAjaxResponseBase, IErrorInfo, IFormValidationErrors, isEntityMetadata } from "@/interfaces";
+import { FormMode, IAjaxResponseBase, IErrorInfo } from "@/interfaces";
 import { IEntityEndpoints } from "../sheshaApplication/publicApi/entities/entityTypeAccessor";
 import { IShaFormInstance } from "./store/interfaces";
 import { IDelayedUpdateGroup } from "../delayedUpdateProvider/models";
@@ -11,17 +9,17 @@ import { FieldValueSetter } from "@/utils/dotnotation";
 import { IEntityTypeIdentifier } from "../sheshaApplication/publicApi/entities/models";
 
 export interface IFormSettings {
-  modelType?: string | IEntityTypeIdentifier;
+  modelType?: string | IEntityTypeIdentifier | undefined;
 
-  postUrl?: string;
-  putUrl?: string;
-  deleteUrl?: string;
-  getUrl?: string;
+  postUrl?: string | undefined;
+  putUrl?: string | undefined;
+  deleteUrl?: string | undefined;
+  getUrl?: string | undefined;
 
-  fieldsToFetch?: string[];
+  fieldsToFetch?: string[] | undefined;
 
   /** if true then need to update components structure for using Setting component */
-  isSettingsForm?: boolean;
+  isSettingsForm?: boolean | undefined;
 };
 
 type PublicFormSettings = Pick<IFormSettings, 'modelType'>;
@@ -61,117 +59,30 @@ export interface IFormApi<Values extends object = object> {
    * @deprecated The method should not be used
    * @param payload data payload
    */
-  setFormData: (payload: ISetFormDataPayload) => void;
+  setFormData: (payload: ISetFormDataPayload<Values>) => void;
 
   /** Get form data. Need for getting actual form data (using in scripts) */
-  getFormData: () => Values;
+  getFormData: (() => Values) | undefined;
 
   /** Set validation errors. Need for display validation errors in the ValidationErrors component */
   setValidationErrors: (payload: string | IErrorInfo | IAjaxResponseBase | AxiosResponse<IAjaxResponseBase> | Error) => void;
 
   /** antd form instance */
-  formInstance?: FormInstance<Values>;
-  shaForm?: IShaFormInstance<Values>;
+  formInstance?: FormInstance<Values> | undefined;
+  shaForm?: IShaFormInstance<Values> | undefined;
   /** Configurable form settings */
-  formSettings: PublicFormSettings;
+  formSettings: PublicFormSettings | undefined;
   /** Form mode */
   formMode: FormMode;
   /** Form data */
-  data: Values;
+  data: Values | undefined;
   /** Default API endpoints (create, read, update, delete) */
   defaultApiEndpoints: IEntityEndpoints;
   /** Form arguments passed by caller */
-  formArguments?: any;
-  readonly initialValues?: Partial<Values>;
-  readonly parentFormValues?: any;
-};
-
-export type ConfigurableFormPublicApi = Pick<ConfigurableFormInstance, 'setFormData' | 'form' | 'formSettings' | 'formMode' | 'formData' | 'modelMetadata'> & {
-  shaForm?: IShaFormInstance;
-};
-
-class PublicFormApiWrapper implements IFormApi {
-  readonly #form: ConfigurableFormPublicApi;
-
-  constructor(form: ConfigurableFormPublicApi) {
-    this.#form = form;
-  }
-
-  addDelayedUpdateData = (data: any): IDelayedUpdateGroup[] => {
-    const delayedUpdateData = this.#form?.shaForm?.getDelayedUpdates();
-    if (delayedUpdateData?.length > 0)
-      data['_delayedUpdate'] = delayedUpdateData;
-    return delayedUpdateData;
-  };
-
-  setFieldValue = (name: string, value: any): void => {
-    this.#form?.setFormData({ values: setValueByPropertyName(this.#form.formData, name, value, true), mergeValues: true });
-  };
-
-  setFieldsValue = (values: any): void => {
-    this.#form?.setFormData({ values, mergeValues: true });
-  };
-
-  clearFieldsValue = (): void => {
-    this.#form?.setFormData({ values: {}, mergeValues: false });
-  };
-
-  submit = (): void => {
-    this.#form?.form?.submit();
-  };
-
-  setFormData = (payload: ISetFormDataPayload): void => {
-    this.#form?.setFormData(payload);
-  };
-
-  getFormData = (): any => {
-    return this.#form?.formData;
-  };
-
-  setValidationErrors = (payload: IFormValidationErrors): void => {
-    this.#form?.shaForm?.setValidationErrors(payload);
-  };
-
-  get formInstance(): FormInstance<any> {
-    // antd form
-    return this.#form?.form;
-  }
-
-  get shaForm(): IShaFormInstance {
-    return this.#form?.shaForm;
-  }
-
-  get formSettings(): PublicFormSettings {
-    return this.#form?.formSettings ? { modelType: this.#form.formSettings.modelType } : {};
-  }
-
-  get formMode(): FormMode {
-    return this.#form?.formMode;
-  }
-
-  get data(): any {
-    return this.#form?.formData;
-  }
-
-  get defaultApiEndpoints(): IEntityEndpoints {
-    return isEntityMetadata(this.#form?.modelMetadata)
-      ? this.#form.modelMetadata.apiEndpoints
-      : {};
-  }
-
-  get initialValues(): any {
-    return this.#form?.shaForm?.initialValues;
-  }
-
-  get parentFormValues(): any {
-    return this.#form?.shaForm?.parentFormValues;
-  }
-
-  get formArguments(): any {
-    return this.#form?.shaForm?.formArguments;
-  }
-}
-
-export const getFormApi = (form: ConfigurableFormPublicApi): IFormApi => {
-  return new PublicFormApiWrapper(form);
+  formArguments?: object | undefined;
+  readonly initialValues?: Partial<Values> | undefined;
+  readonly parentFormValues?: object | undefined;
+  context: Record<string, unknown> | undefined;
+  /** Form components API */
+  components: Record<string, Record<string, unknown>>;
 };

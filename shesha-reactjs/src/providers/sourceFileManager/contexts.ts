@@ -10,4 +10,4 @@ export interface ISourcesFolderContext {
    */
   path: string;
 }
-export const SourcesFolderContext = createNamedContext<ISourcesFolderContext>(undefined, "SourcesFolderContext");
+export const SourcesFolderContext = createNamedContext<ISourcesFolderContext | undefined>(undefined, "SourcesFolderContext");

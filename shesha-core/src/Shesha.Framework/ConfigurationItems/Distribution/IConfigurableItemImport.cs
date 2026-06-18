@@ -1,5 +1,4 @@
 ﻿using Shesha.Domain;
-using Shesha.Services.ConfigurationItems;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -21,8 +20,9 @@ namespace Shesha.ConfigurationItems.Distribution
         /// </summary>
         /// <param name="item">Item to be imported</param>
         /// <param name="context">Import context</param>
+        /// <param name="explicitItem"></param>
         /// <returns></returns>
-        Task<ConfigurationItem> ImportItemAsync(DistributedConfigurableItemBase item, IConfigurationItemsImportContext context);
+        Task<ConfigurationItem> ImportItemAsync(DistributedConfigurableItemBase item, IConfigurationItemsImportContext context, ConfigurationItem? explicitItem = null);
 
         /// <summary>
         /// Read item from json stream

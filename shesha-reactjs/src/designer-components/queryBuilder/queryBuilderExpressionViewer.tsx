@@ -2,7 +2,7 @@ import { CodeEditor } from '@/components/codeEditor/codeEditor';
 import React, { FC } from 'react';
 
 export interface IQueryBuilderExpressionViewerProps {
-  value?: object;
+  value?: object | undefined;
 }
 
 export const QueryBuilderExpressionViewer: FC<IQueryBuilderExpressionViewerProps> = (props) => {

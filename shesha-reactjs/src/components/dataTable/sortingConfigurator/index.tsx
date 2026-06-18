@@ -5,17 +5,18 @@ import React, { FC } from 'react';
 import { getNanoId } from '@/utils/uuid';
 import { ListItem } from '@/components/listEditor/models';
 
-const { Option } = Select;
-
 export interface ISortingEditorProps {
-  value?: SortingItem[];
-  onChange: (newValue?: SortingItem[]) => void;
-  readOnly?: boolean;
-  maxItemsCount?: number;
+  value: SortingItem[] | null | undefined;
+  onChange: (newValue: SortingItem[] | null) => void;
+  readOnly?: boolean | undefined;
+  maxItemsCount?: number | undefined;
 }
 
+const EMPTY_VALUE: SortingItem[] = [];
+
 export const SortingEditor: FC<ISortingEditorProps> = (props) => {
-  const { value, onChange, readOnly: editorReadOnly, maxItemsCount } = props;
+  const { value: nullableValue, onChange, readOnly: editorReadOnly, maxItemsCount } = props;
+  const value = nullableValue ?? EMPTY_VALUE;
   return (
     <ListEditor<SortingItem & ListItem>
       value={value}
@@ -47,10 +48,11 @@ export const SortingEditor: FC<ISortingEditorProps> = (props) => {
                 }}
                 size="small"
                 disabled={readOnly}
-              >
-                <Option value="asc">Ascending</Option>
-                <Option value="desc">Descending</Option>
-              </Select>
+                options={[
+                  { value: 'asc', label: 'Ascending' },
+                  { value: 'desc', label: 'Descending' },
+                ]}
+              />
             </Space.Compact>
           </div>
         );

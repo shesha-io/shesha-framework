@@ -1,12 +1,11 @@
-import { IComponentMetadata } from "@/index";
-import { IComponentWrapperProps } from "./interfaces";
+import { InlineEditMode } from "@/components/reactTable/interfaces";
 import { YesNoInheritJs } from "../interfaces";
 
 interface ICrudOptions {
-  canEdit?: YesNoInheritJs;
-  canAdd?: YesNoInheritJs;
-  canDelete?: YesNoInheritJs;
-  inlineEditMode?: 'all-at-once' | 'one-by-one';
+  canEdit?: YesNoInheritJs | undefined;
+  canAdd?: YesNoInheritJs | undefined;
+  canDelete?: YesNoInheritJs | undefined;
+  inlineEditMode?: InlineEditMode | undefined;
 }
 
 export const adjustWidth = (crudOptions: ICrudOptions): { maxWidth: number; minWidth: number } => {
@@ -43,18 +42,6 @@ export const adjustWidth = (crudOptions: ICrudOptions): { maxWidth: number; minW
   return { minWidth: 0, maxWidth: 0 };
 };
 
-export const getInjectables = ({ defaultRow, defaultValue }: IComponentWrapperProps): IComponentMetadata => {
-  let result: IComponentMetadata = {};
-
-  /** Adds injectedTableRow to result if applicable **/
-  if (defaultRow) result = { ...result, injectedTableRow: defaultRow };
-
-  /** Adds injectedDefaultValue to result if applicable **/
-  if (defaultValue) result = { ...result, injectedDefaultValue: defaultValue };
-
-  return result;
-};
-
-export const asNumber = (value: unknown): number => {
-  return typeof value === 'number' ? value : null;
+export const asNumber = (value: unknown): number | undefined => {
+  return typeof value === 'number' ? value : undefined;
 };

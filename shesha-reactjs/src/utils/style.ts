@@ -32,7 +32,7 @@ export const parseDimension = (value: string | number | null | undefined | IProp
   }
 
   // Handle JavaScript code execution for dynamic values
-  if (typeof value === 'object' && value?._mode === 'code' && value?._code) {
+  if (typeof value === 'object' && value._mode === 'code' && value._code) {
     try {
       const executedValue = executeScriptSync(value._code, context ?? {});
 
@@ -53,7 +53,7 @@ export const parseDimension = (value: string | number | null | undefined | IProp
     }
   }
   // Handle IPropertySetting with _mode === 'value' - extract the underlying value
-  if (typeof value === 'object' && value?._mode === 'value' && isDefined(value?._value)) {
+  if (typeof value === 'object' && value._mode === 'value' && isDefined(value._value)) {
     // Validate that _value is a valid dimension type before recursing
     if (!isValidDimensionResult(value._value)) {
       console.error(
@@ -115,12 +115,14 @@ export const addPx = (value: number | string | null | undefined, context?: objec
  * const ghostStyles = getGhostStyleOverrides();
  * // Returns: { background: 'transparent', backgroundColor: 'transparent', border: 'none', boxShadow: 'none' }
  */
-export const getGhostStyleOverrides = (): React.CSSProperties => {
+export const getGhostStyleOverrides = (fontStyles?: React.CSSProperties): React.CSSProperties => {
   return {
+    ...fontStyles,
     background: 'transparent',
     backgroundColor: 'transparent',
     border: 'none',
     boxShadow: 'none',
+    color: fontStyles?.color ?? '#000',
   };
 };
 
@@ -138,8 +140,8 @@ export const getTagStyle = (style: React.CSSProperties = {}, hasColor: boolean =
  * @param maxPercentage - The maximum percentage value (default: 98)
  * @returns The capped value or the original value if not a percentage string
  */
-export const capPercentageWidth = (value: number | string | null | undefined, maxPercentage: number = 98): number | string | null | undefined => {
-  if (!value) return value;
+export const capPercentageWidth = (value: number | string | null | undefined, maxPercentage: number = 98): number | string | undefined => {
+  if (!isDefined(value)) return undefined;
 
   // Check if it's a percentage string (e.g., "99%", "100%")
   if (typeof value === 'string' && value.endsWith('%')) {

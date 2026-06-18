@@ -1,85 +1,33 @@
-import { UploadFile } from 'antd/lib/upload/interface';
-import { IFlagsSetters, IFlagsState } from '@/interfaces';
-import { StoredFileGetQueryParams } from '@/apis/storedFile';
 import { createNamedContext } from '@/utils/react';
+import { StoredFileModel } from '../../utils/storedFile/models';
+import { DownloadFileArgs, FileUploadMode, OnFileUploadChanged, UploadFileArgs } from './models';
+import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
+import { SubscribeFunc } from '../../utils/subscriptions/subscriptionManager';
+import { FileUploadEvents } from './instance';
 
-export type IFlagProgressFlags =
-  'downloadFile' |
-  'uploadFile' |
-  'deleteFile' |
-  'downloadZip' |
-  'fetchFileInfo' |
-  'getStoredFile'
-  /* NEW_IN_PROGRESS_FLAG_GOES_HERE */;
-export type IFlagSucceededFlags =
-  'downloadFile' |
-  'uploadFile' |
-  'deleteFile' |
-  'downloadZip' |
-  'fetchFileInfo' |
-  'getStoredFile'
-  /* NEW_SUCCEEDED_FLAG_GOES_HERE */;
-export type IFlagErrorFlags =
-  'downloadFile' |
-  'uploadFile' |
-  'deleteFile' |
-  'downloadZip' |
-  'fetchFileInfo' |
-  'getStoredFile'
-  /* NEW_ERROR_FLAG_GOES_HERE */;
-export type IFlagActionedFlags = '__DEFAULT__';
-
-// Pick<UploadFile, "uid" | "status" | "name" | "size" | "type">
-export interface IStoredFile extends UploadFile {
-  error?: string | null;
-  id?: string | null;
-  url?: string | null;
-  temporary?: boolean | null;
+export interface IStoredFileStateContext {
+  fileInfo: StoredFileModel | undefined;
 }
 
-interface IRequestFilePayload {
-  file: File;
-  // ownerId?: string;
-  // ownerType?: string;
-  // propertyName?: string;
-  // fileId?: string;
-}
-
-export type IUploadFilePayload = IRequestFilePayload;
-
-export interface IDownloadFilePayload {
-  fileId: string;
-  versionNo?: number;
-  fileName: string;
-}
-
-export interface IStoredFileStateContext
-  extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
-  fileInfo?: IStoredFile;
-}
-
-export interface IStoredFileActionsContext
-  extends IFlagsSetters<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
-  downloadFile: (payload: IDownloadFilePayload) => void;
-  downloadFileSuccess: () => void;
-  downloadFileError: () => void;
-  uploadFile: (payload: IUploadFilePayload, callback?: (...args: any) => any) => void;
-  deleteFile: () => void;
-  fetchFileInfo: () => void;
-  fetchFileInfoError: () => void;
-  getStoredFile: (payload: StoredFileGetQueryParams) => Promise<string>;
-
-  // fetchFileInfoError: () => void;
-  /* NEW_ACTION_ACTION_DECLARATIO_GOES_HERE */
-}
-
-export const STORED_FILE_CONTEXT_INITIAL_STATE: IStoredFileStateContext = {
-  isInProgress: {},
-  succeeded: {},
-  error: {},
-  actioned: {},
+export type FileUploadInitArgs = {
+  ownerId?: string | undefined;
+  ownerType?: string | IEntityTypeIdentifier | undefined;
+  propertyName?: string | undefined;
+  fileId?: string | undefined;
+  uploadMode: FileUploadMode;
 };
 
-export const StoredFileStateContext = createNamedContext<IStoredFileStateContext>(STORED_FILE_CONTEXT_INITIAL_STATE, "StoredFileStateContext");
+export interface IFileUpload {
+  fileInfo: StoredFileModel | undefined;
 
-export const StoredFileActionsContext = createNamedContext<IStoredFileActionsContext>(undefined, "StoredFileActionsContext");
+  downloadFile: (payload: DownloadFileArgs) => Promise<void>;
+  uploadFile: (payload: UploadFileArgs) => Promise<void>;
+  deleteFile: () => Promise<void>;
+  fetchFileInfo: () => Promise<void>;
+
+  init: (args: FileUploadInitArgs) => void;
+  setOnChange: (onChange: OnFileUploadChanged | undefined) => void;
+  subscribe: SubscribeFunc<FileUploadEvents, IFileUpload>;
+};
+
+export const FileUploadContext = createNamedContext<IFileUpload | undefined>(undefined, "FileUploadContext");

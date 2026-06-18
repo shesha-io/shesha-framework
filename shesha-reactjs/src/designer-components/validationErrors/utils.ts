@@ -1,4 +1,4 @@
-import { IStyleType } from "@/index";
+import { IStyleType } from '@/providers/form/models';
 import { sheshaStyles } from '@/styles';
 
 export const defaultStyles = (): IStyleType => {

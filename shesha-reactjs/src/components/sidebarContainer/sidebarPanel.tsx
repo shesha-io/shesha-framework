@@ -1,9 +1,10 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 import classNames from 'classnames';
 import { RightOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import { useStyles } from './styles/styles';
 import { ISidebarProps, SidebarPanelPosition } from './models';
+import { useEffectOnce } from '@/hooks/useEffectOnce';
 
 interface SidebarPanelProps extends ISidebarProps {
   side: SidebarPanelPosition;
@@ -22,9 +23,9 @@ export const SidebarPanel: FC<SidebarPanelProps> = (props) => {
   const initialState = isControllable ? open : defaultOpen;
 
 
-  useEffect(() => {
+  useEffectOnce(() => {
     if (setIsOpenGlobal) setIsOpenGlobal(initialState);
-  }, []);
+  });
 
 
   const [isOpen, setIsOpen] = useState(initialState);

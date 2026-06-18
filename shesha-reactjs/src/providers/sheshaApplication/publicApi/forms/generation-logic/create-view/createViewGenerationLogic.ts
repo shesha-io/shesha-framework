@@ -1,7 +1,6 @@
 import { castToExtensionType, addDetailsPanel } from "../viewGenerationUtils";
 import { FormMetadataHelper } from "../formMetadataHelper";
-import { PropertyMetadataDto } from "@/apis/metadata";
-import { IEntityMetadata } from "@/interfaces";
+import { IEntityMetadata, IPropertyMetadata } from "@/interfaces";
 import { BaseGenerationLogic } from "../baseGenerationLogic";
 import { CreateViewExtensionJson } from "../../models/CreateViewExtensionJson";
 import { IEntityTypeIdentifier } from "../../../entities/models";
@@ -14,13 +13,13 @@ export class CreateViewGenerationLogic extends BaseGenerationLogic {
 
   protected getModelTypeFromReplacements(replacements: object): string | IEntityTypeIdentifier | null {
     const extensionJson = castToExtensionType<CreateViewExtensionJson>(replacements);
-    return extensionJson?.modelType || null;
+    return extensionJson.modelType || null;
   }
 
   protected async addComponentsToMarkup(
-    markup: unknown,
+    markup: object,
     _entity: IEntityMetadata,
-    nonFrameworkProperties: PropertyMetadataDto[],
+    nonFrameworkProperties: IPropertyMetadata[],
     metadataHelper: FormMetadataHelper,
   ): Promise<void> {
     try {

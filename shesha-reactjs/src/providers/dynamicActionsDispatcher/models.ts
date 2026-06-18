@@ -12,8 +12,8 @@ export interface IHasActions {
 
 export type DynamicRenderingHoc = <T>(WrappedComponent: ComponentType<T & IHasActions>) => FC<T>;
 
-export interface DynamicItemsEvaluationHookArgs<TSettings = any> {
+export interface DynamicItemsEvaluationHookArgs<TSettings = unknown> {
   item: IDynamicItem;
-  settings: TSettings;
+  settings: TSettings | undefined;
 }
-export type DynamicItemsEvaluationHook<TSettings = any> = (args: DynamicItemsEvaluationHookArgs<TSettings>) => ButtonGroupItemProps[];
+export type DynamicItemsEvaluationHook<TSettings = unknown> = (args: DynamicItemsEvaluationHookArgs<TSettings>) => ButtonGroupItemProps[];

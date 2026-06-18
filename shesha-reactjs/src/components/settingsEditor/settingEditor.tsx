@@ -1,17 +1,19 @@
-import React, { useEffect, useState, FC } from 'react';
-import { CustomFormSettingEditor } from './customFormSettingEditor';
+import { IErrorInfo } from '@/interfaces';
+import { isDefined } from '@/utils/nullables';
 import { Empty } from 'antd';
-
+import React, { FC, useEffect, useState } from 'react';
+import { CustomFormSettingEditor } from './customFormSettingEditor';
 import { GenericSettingEditor } from './genericSettingEditor';
-import { SettingValue } from './provider/models';
+import { isSelectionWithSetting } from './models';
 import { useSettingsEditor } from './provider';
+import { SettingValue } from './provider/models';
 
 interface ISettingEditorState {
   isLoading: boolean;
-  loadingError?: any;
+  loadingError?: IErrorInfo | undefined;
   value?: SettingValue;
-  initialValue?: SettingValue;
-  editor?: React.ReactElement;
+  initialValue?: SettingValue | undefined;
+  editor?: React.ReactElement | undefined;
 }
 
 export const SettingEditor: FC = () => {
@@ -19,22 +21,26 @@ export const SettingEditor: FC = () => {
   const [state, setState] = useState<ISettingEditorState>({ isLoading: false });
 
   useEffect(() => {
-    if (settingSelection) {
+    const { setting } = settingSelection || {};
+    if (isDefined(settingSelection) && isSelectionWithSetting(settingSelection) && isDefined(setting)) {
       setState((prev) => ({ ...prev, isLoading: true }));
       fetchSettingValue({
-        name: settingSelection.setting.name,
-        module: settingSelection.setting.module,
+        name: setting.name,
+        module: setting.module,
         appKey: settingSelection.app?.appKey,
       }).then((response) => {
-        const editor = settingSelection.setting.editorForm
-          ? <CustomFormSettingEditor selection={settingSelection} value={response} key={settingSelection.setting.name} />
-          : <GenericSettingEditor selection={settingSelection} value={response} key={settingSelection.setting.name} />;
+        const editor = setting.editorForm
+          ? <CustomFormSettingEditor selection={settingSelection} value={response} key={setting.name} />
+          : <GenericSettingEditor selection={settingSelection} value={response} key={setting.name} />;
         setState((prev) => ({ ...prev, isLoading: false, value: response, initialValue: response, editor }));
+      }).catch((error) => {
+        console.error('Failed to fetch setting', error);
+        throw error;
       });
     } else {
-      setState((prev) => ({ ...prev, isLoading: false, value: null, loadingError: null, editor: null }));
+      setState((prev) => ({ ...prev, isLoading: false, value: null, loadingError: undefined, editor: undefined }));
     }
-  }, [settingSelection]);
+  }, [fetchSettingValue, settingSelection]);
 
   return state.editor
     ? state.editor

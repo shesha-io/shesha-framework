@@ -24,6 +24,15 @@ namespace Shesha.Authentication.JwtBearer
         Task<bool> IsTokenBlacklistedAsync(string tokenId);
 
         /// <summary>
+        /// Atomically attempts to blacklist a token if it's not already blacklisted.
+        /// This operation is thread-safe and prevents TOCTOU race conditions.
+        /// </summary>
+        /// <param name="tokenId">Token to blacklist</param>
+        /// <param name="expirationDate">Token expiration date</param>
+        /// <returns>True if the token was successfully blacklisted (first time); False if it was already blacklisted</returns>
+        Task<bool> TryBlacklistTokenAsync(string tokenId, DateTime? expirationDate);
+
+        /// <summary>
         /// Remove expired tokens
         /// </summary>
         /// <returns></returns>

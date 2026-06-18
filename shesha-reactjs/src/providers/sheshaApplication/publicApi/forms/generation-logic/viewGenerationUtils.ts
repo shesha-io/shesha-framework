@@ -1,7 +1,6 @@
 // Utility functions for view generation logic
 
 import { evaluateString } from "@/providers/form/utils";
-import { PropertyMetadataDto } from "@/apis/metadata";
 import { DataTypes } from "@/interfaces/dataTypes";
 import { nanoid } from "@/utils/uuid";
 import { COLUMN_FLEX, COLUMN_GUTTER_X, COLUMN_GUTTER_Y,
@@ -11,20 +10,22 @@ import { COLUMN_FLEX, COLUMN_GUTTER_X, COLUMN_GUTTER_Y,
   COLUMN_WIDTH_STRING, COLUMN_WIDTH_STRING_MULTILINE, COLUMN_WIDTH_TIME, ROW_COUNT } from "../constants";
 import { FormMetadataHelper } from "./formMetadataHelper";
 import pluralize from 'pluralize';
-import { EditMode, IConfigurableFormComponent, isConfigurableFormComponent } from "@/interfaces";
+import { EditMode, IComponentsContainer, IConfigurableFormComponent, IPropertyMetadata, isComponentsContainer, isConfigurableFormComponent } from "@/interfaces";
 import { FormBuilderFactory } from "@/form-factory/interfaces";
+import { isDefined } from "@/utils/nullables";
 
 export function findContainersWithPlaceholderRecursive(
   token: unknown,
   placeholder: string,
-  results: any[],
-  visited: WeakSet<any>,
+  results: IComponentsContainer[],
+  visited: WeakSet<object>,
 ): void {
-  if (!token) return;
-  if (typeof token === 'object' && token !== null) {
+  if (!isDefined(token)) return;
+
+  if (typeof token === 'object') {
     if (visited.has(token)) return;
     visited.add(token);
-    if (isConfigurableFormComponent(token) && (token.componentName === placeholder || token.propertyName === placeholder)) {
+    if (isConfigurableFormComponent(token) && (token.componentName === placeholder || token.propertyName === placeholder) && isComponentsContainer(token)) {
       results.push(token);
     }
     if (Array.isArray(token)) {
@@ -32,20 +33,51 @@ export function findContainersWithPlaceholderRecursive(
         findContainersWithPlaceholderRecursive(item, placeholder, results, visited),
       );
     } else {
-      for (const key in token) {
-        if (Object.prototype.hasOwnProperty.call(token, key)) {
-          findContainersWithPlaceholderRecursive(token[key], placeholder, results, visited);
-        }
-      }
+      Object.entries(token).forEach(([_key, value]) => {
+        findContainersWithPlaceholderRecursive(value, placeholder, results, visited);
+      });
     }
   }
 }
 
-export function findContainersWithPlaceholder(markup: unknown, placeholder: string): any[] {
-  const containers: any[] = [];
+export function findContainersWithPlaceholder(markup: object, placeholder: string): IComponentsContainer[] {
+  const containers: IComponentsContainer[] = [];
   const visited = new WeakSet();
   findContainersWithPlaceholderRecursive(markup, placeholder, containers, visited);
   return containers;
+}
+
+function findComponentsWithPlaceholderRecursive(
+  token: unknown,
+  placeholder: string,
+  results: IConfigurableFormComponent[],
+  visited: WeakSet<object>,
+): void {
+  if (!isDefined(token)) return;
+
+  if (typeof token === 'object') {
+    if (visited.has(token)) return;
+    visited.add(token);
+    if (isConfigurableFormComponent(token) && (token.componentName === placeholder || token.propertyName === placeholder)) {
+      results.push(token);
+    }
+    if (Array.isArray(token)) {
+      token.forEach((item) =>
+        findComponentsWithPlaceholderRecursive(item, placeholder, results, visited),
+      );
+    } else {
+      Object.entries(token).forEach(([_key, value]) => {
+        findComponentsWithPlaceholderRecursive(value, placeholder, results, visited);
+      });
+    }
+  }
+}
+
+export function findComponentsWithPlaceholder(markup: object, placeholder: string): IConfigurableFormComponent[] {
+  const components: IConfigurableFormComponent[] = [];
+  const visited = new WeakSet();
+  findComponentsWithPlaceholderRecursive(markup, placeholder, components, visited);
+  return components;
 }
 
 /**
@@ -85,7 +117,7 @@ export function humanizeModelType(modelType: string): string {
   return pluralize(humanized);
 }
 
-export function processBaseMarkup(markup: string, replacements: Record<string, any>): string {
+export function processBaseMarkup(markup: string, replacements: Record<string, unknown>): string {
   return evaluateString(markup, replacements, true);
 }
 
@@ -163,8 +195,8 @@ export function getColumnWidthByDataType(dataType: string | null | undefined, da
  * @param metadataHelper The metadata helper instance.
  */
 export function addDetailsPanel(
-  metadata: PropertyMetadataDto[],
-  markup: unknown,
+  metadata: IPropertyMetadata[],
+  markup: object,
   metadataHelper: FormMetadataHelper,
   formBuilderFactory: FormBuilderFactory,
 ): void {
@@ -197,7 +229,11 @@ export function addDetailsPanel(
   if (sortedMetadata.length > ROW_COUNT) {
     sortedMetadata.forEach((prop, index) => {
       const columnBuilder = formBuilderFactory();
-      metadataHelper.getConfigFields(prop, columnBuilder);
+      try {
+        metadataHelper.getConfigFields(prop, columnBuilder);
+      } catch (err) {
+        console.warn(`Skipping property '${prop.path}' due to error:`, err);
+      }
 
       if (index % 2 === 0) {
         column1.push(...columnBuilder.toJson());
@@ -235,11 +271,15 @@ export function addDetailsPanel(
     });
   } else {
     sortedMetadata.forEach((prop) => {
-      metadataHelper.getConfigFields(prop, builder);
+      try {
+        metadataHelper.getConfigFields(prop, builder);
+      } catch (err) {
+        console.warn(`Skipping property '${prop.path}' due to error:`, err);
+      }
     });
   }
 
-  if (detailsPanelContainer[0].components && Array.isArray(detailsPanelContainer[0].components)) {
+  if (detailsPanelContainer[0]) {
     detailsPanelContainer[0].components.push(...builder.toJson());
   }
 }

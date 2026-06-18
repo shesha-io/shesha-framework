@@ -60,7 +60,7 @@ namespace Shesha.Languages
         }
         private async Task AddLanguageIfNotExistsAsync(ApplicationLanguage language)
         {
-            if (await _repository.GetAll().AnyAsync(l => l.TenantId == language.TenantId && l.Name == language.Name))
+            if (await _repository.AnyAsync(l => l.TenantId == language.TenantId && l.Name == language.Name))
                 return;
 
             await _repository.InsertAsync(language);

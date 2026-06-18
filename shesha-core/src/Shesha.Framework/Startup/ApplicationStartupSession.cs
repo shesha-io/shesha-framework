@@ -123,8 +123,8 @@ namespace Shesha.Startup
                 using (var uow = _uowManager.Begin())
                 {
                     // try to fetch one row from both tables to check readiness of the DB structure
-                    await _startupRepository.GetAll().OrderByDescending(a => a.StartedOn).FirstOrDefaultAsync();
-                    await _assemblyRepository.GetAll().OrderByDescending(a => a.ApplicationStartup.StartedOn).ThenBy(a => a.FileName).FirstOrDefaultAsync();
+                    await (await _startupRepository.GetAllAsync()).OrderByDescending(a => a.StartedOn).FirstOrDefaultAsync();
+                    await (await _assemblyRepository.GetAllAsync()).OrderByDescending(a => a.ApplicationStartup.StartedOn).ThenBy(a => a.FileName).FirstOrDefaultAsync();
 
                     await uow.CompleteAsync();
                 }
@@ -240,10 +240,10 @@ namespace Shesha.Startup
             ApplicationStartupDto? result = null;
             using (var uow = _uowManager.Begin()) 
             {
-                var prevStartup = await _startupRepository.GetAll().OrderByDescending(s => s.StartedOn).FirstOrDefaultAsync();
+                var prevStartup = await (await _startupRepository.GetAllAsync()).OrderByDescending(s => s.StartedOn).FirstOrDefaultAsync();
                 if (prevStartup != null) 
                 {
-                    var prevAssemblies = await _assemblyRepository.GetAll().Where(a => a.ApplicationStartup == prevStartup).OrderByDescending(s => s.FileName).ToListAsync();
+                    var prevAssemblies = await (await _assemblyRepository.GetAllAsync()).Where(a => a.ApplicationStartup == prevStartup).OrderByDescending(s => s.FileName).ToListAsync();
                     result = MapStartupToDto(prevStartup, prevAssemblies);
                 }
 

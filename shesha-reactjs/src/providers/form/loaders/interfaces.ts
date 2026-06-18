@@ -1,24 +1,25 @@
 import { IApiEndpoint, IFlatComponentsStructure, IFormSettings, IPropertyMetadata } from "@/interfaces";
 import { IErrorInfo } from "@/interfaces/errorInfo";
 import { ExpressionExecuter } from "../submitters/interfaces";
+import { isDefined } from "@/utils/nullables";
 
 export interface FormDataLoadingPayload {
-  formArguments?: any;
+  formArguments?: object | undefined;
   formSettings: IFormSettings;
   formFlatStructure: IFlatComponentsStructure;
-  loadingCallback?: LoadingCallback;
+  loadingCallback?: LoadingCallback | undefined;
   expressionExecuter: ExpressionExecuter;
 }
 
-export interface IFormDataLoader {
-  loadAsync: (payload: FormDataLoadingPayload) => Promise<any>;
-  canLoadData: (formArguments: any) => boolean;
+export interface IFormDataLoader<Values extends object = object> {
+  loadAsync: (payload: FormDataLoadingPayload) => Promise<Values | undefined>;
+  canLoadData: (formArguments: object | undefined) => boolean;
 }
 
 export interface IFieldData {
   name: string;
   child: IFieldData[];
-  property: IPropertyMetadata;
+  property: IPropertyMetadata | undefined;
 }
 
 export interface GetFormFieldsPayload {
@@ -30,18 +31,18 @@ export type GetGqlFieldsPayload = GetFormFieldsPayload;
 
 export type LoadingState = 'waiting' | 'loading' | 'ready' | 'failed';
 export interface LoadingCallbackState {
-  loaderHint?: string;
+  loaderHint?: string | undefined;
   loadingState: LoadingState;
-  error?: IErrorInfo;
+  error?: IErrorInfo | undefined;
 }
 export type LoadingCallback = (loadingState: LoadingCallbackState) => void;
 
 export type LoaderEndpointType = 'default' | 'static' | 'dynamic';
 export interface GqlLoaderSettings {
-  fieldsToFetch?: string[];
+  fieldsToFetch?: string[] | undefined;
   endpointType: LoaderEndpointType;
-  staticEndpoint?: IApiEndpoint;
-  dynamicEndpoint?: string;
+  staticEndpoint?: IApiEndpoint | undefined;
+  dynamicEndpoint?: string | undefined;
 }
 
 export interface CustomLoaderSettings {
@@ -49,9 +50,9 @@ export interface CustomLoaderSettings {
 }
 
 export const isGqlLoaderSettings = (s: unknown): s is GqlLoaderSettings => {
-  return s && typeof s === 'object' && "endpointType" in s && typeof (s.endpointType) === 'string';
+  return isDefined(s) && typeof s === 'object' && "endpointType" in s && typeof (s.endpointType) === 'string';
 };
 
 export const isCustomLoaderSettings = (s: unknown): s is CustomLoaderSettings => {
-  return s && typeof s === 'object' && "onDataLoad" in s && typeof (s.onDataLoad) === 'string';
+  return isDefined(s) && typeof s === 'object' && "onDataLoad" in s && typeof (s.onDataLoad) === 'string';
 };

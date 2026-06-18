@@ -1,12 +1,9 @@
 ﻿using Abp.Application.Services.Dto;
-using Abp.Authorization;
 using Abp.Collections.Extensions;
 using Abp.Domain.Repositories;
 using Abp.Extensions;
-using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Shesha.Application.Services.Dto;
 using Shesha.AutoMapper.Dto;
 using Shesha.Configuration.Runtime;
@@ -173,7 +170,17 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
         var metadataService = IocManager.Resolve<IMetadataProvider>();
 
         var entityModelProvider = IocManager.Resolve<IEntityModelProvider>();
-        var models = await entityModelProvider.GetModelsAsync();
+
+        if (!string.IsNullOrWhiteSpace(input.ClientSnapshotHash))
+        {
+            var serverSnapshotHash = await entityModelProvider.GetModelsSnapshotHashOrNullAsync();
+            if (serverSnapshotHash == input.ClientSnapshotHash)
+                return new SyncAllResponse { ServerSnapshotHash = serverSnapshotHash };
+        }
+
+        var modelsResponse = await entityModelProvider.GetModelsAsync();
+        var models = modelsResponse.Models;
+
         var groupped = models.GroupBy(e => e.Module, (module, entities) =>
         {
             return new
@@ -185,7 +192,7 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
         
         var lookups = new List<LookupSyncResponse>();
 
-        var lookupData = (await _configItemInheritanceRepository.GetAll()
+        var lookupData = (await (await _configItemInheritanceRepository.GetAllAsync())
             .Where(x => x.ItemType == "entity" && x.ModuleId != x.ExposedInModuleId)
             .Select(x => new { x.ItemId, x.Name, x.ModuleName, x.ExposedInModuleName, x.ModuleLevel })
             .ToListAsync())
@@ -239,6 +246,7 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
         var response = new SyncAllResponse()
         {
             Lookups = lookups,
+            ServerSnapshotHash = modelsResponse.SnapshotHash
         };
 
         foreach (var module in input.Modules)

@@ -3,34 +3,46 @@ import ComponentsContainer from '@/components/formDesigner/containers/components
 import ConditionalWrap from '@/components/conditionalWrapper';
 import ParentProvider from '@/providers/parentProvider/index';
 import React, { FC, useEffect, useMemo } from 'react';
-import ShaIcon from '@/components/shaIcon';
+import { ShaIcon } from '@/components/shaIcon';
 import { Button, Space, Steps } from 'antd';
-import { DataTypes, IObjectMetadata, ValidationErrors, getStyle, useDataContextManager, useShaFormInstance } from '@/index';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { getWizardButtonStyle } from './utils';
 import { IStepProps, IWizardComponentProps } from './models';
-import { useFormExpression } from '@/hooks/index';
 import { useStyles } from './styles';
 import { useWizard } from './hooks';
 import DataContextBinder from '@/providers/dataContextProvider/dataContextBinder';
-import { wizardApiCode } from '@/publicJsApis';
+import { wizardApiCode } from '@/publicJsApis/apis';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { getOverflowStyle } from '../_settings/utils/overflow/util';
 import { addPx } from '@/utils/style';
+import { DataTypes } from '@/interfaces/dataTypes';
+import { IObjectMetadata } from '@/interfaces/metadata';
+import ValidationErrors from '@/components/validationErrors';
+import { getStyle } from '@/providers/form/utils';
+import { useDataContextManager } from '@/providers/dataContextManager/hooks';
+import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 
-export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }) => {
+export const Tabs: FC<IWizardComponentProps> = ({ form, ...model }) => {
   const contextMetadata = useMemo<Promise<IObjectMetadata>>(() => Promise.resolve({
     typeDefinitionLoader: () => Promise.resolve({ typeName: 'IWizardApi', files: [{ content: wizardApiCode, fileName: 'apis/wizard.ts' }] }),
-    properties: [{ path: 'current', dataType: DataTypes.number }],
+    properties: [
+      { path: 'current', dataType: DataTypes.number },
+      { path: 'currentStep', dataType: DataTypes.object },
+      { path: 'visibleSteps', dataType: DataTypes.array },
+    ],
     dataType: DataTypes.object,
   } as IObjectMetadata), []);
 
   const { formMode } = useShaFormInstance();
-  const { executeBooleanExpression } = useFormExpression();
-  const onChangeContextData = useDataContextManager()?.onChangeContextData;
+  const onChangeContextData = useDataContextManager().onChangeContextData;
 
-  const { components, current, currentStep, visibleSteps, back, cancel, content, done, next, setStep } = useWizard(model);
-  useEffect(() => onChangeContextData(), [current]);
+  const { components, current, currentStep, visibleSteps, back, cancel, close, content, done, executeBooleanExpression, next, reset, setStep } = useWizard(model);
+  useEffect(() => onChangeContextData(), [onChangeContextData, current]);
+
+  const contextData = useMemo(
+    () => ({ current, currentStep, visibleSteps }),
+    [current, currentStep, visibleSteps],
+  );
 
   const {
     buttonsLayout = 'spaceBetween',
@@ -41,44 +53,61 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
     stepWidth,
   } = model;
 
+  // Get or create footer container id for current step
+  const currentStepFooterId = useMemo(() => {
+    if (!currentStep) return undefined;
+
+    // Use existing footer id if available
+    if (currentStep.stepFooter?.id) {
+      return currentStep.stepFooter.id;
+    }
+
+    // Fallback: generate footer id from step id if hasCustomFooter is true but stepFooter is missing
+    if (currentStep.hasCustomFooter) {
+      return `${currentStep.id}_footer`;
+    }
+
+    return undefined;
+  }, [currentStep]);
+
   const { primaryTextColor, secondaryTextColor, primaryBgColor, secondaryBgColor } = model;
   const colors = { primaryBgColor, secondaryBgColor, primaryTextColor, secondaryTextColor };
-  const activeStepStyle = useFormComponentStyles(visibleSteps[current]);
-  const { fontSize, fontFamily, fontWeight, color, height, minHeight, maxHeight, ...rest } = activeStepStyle.fullStyle;
+  const activeStepStyle = useFormComponentStyles(visibleSteps[current] ?? {});
   const overflow = getOverflowStyle(true, false);
   const { styles } = useStyles({
-    styles: { ...model.allStyles.fullStyle, overflow: '', ...rest },
-    colors, activeStepStyle: activeStepStyle.fullStyle, stepWidth: addPx(stepWidth),
+    styles: { ...model.allStyles?.fullStyle, overflow: '' },
+    colors,
+    activeStepStyle: activeStepStyle.fullStyle,
+    stepWidth: addPx(stepWidth),
     overflow,
   });
 
-  const steps = useMemo(() => {
-    return visibleSteps?.map<IStepProps>(({ id, title, subTitle, description, icon, customEnabled, status, style }, index) => {
-      const isDisabledByCondition = !executeBooleanExpression(customEnabled, true) && formMode !== 'designer';
-      const iconProps = icon ? { icon: <ShaIcon iconName={icon as any} /> } : {};
+  const steps = visibleSteps.map<IStepProps>(({ id, title, subTitle, description, icon, customEnabled, status, style }, index) => {
+    const isDisabledByCondition = !executeBooleanExpression(customEnabled, true) && formMode !== 'designer';
+    const iconProps = icon ? { icon: <ShaIcon iconName={icon} /> } : {};
 
-      const stepStyle = getStyle(style, visibleSteps[index]);
+    const stepStyle = getStyle(style, visibleSteps[index]);
 
-      return {
-        id,
-        title,
-        subTitle,
-        description: content(description, index),
-        disabled: isDisabledByCondition,
-        status: isDisabledByCondition ? 'wait' : status,
-        ...iconProps,
-        style: stepStyle,
-        // render only current step
-        content: current === index
-          ? (
-            <ParentProvider model={{ ...model, readOnly: isDisabledByCondition }}>
-              <ComponentsContainer wrapperStyle={{ height: '100%', display: 'grid', ...getOverflowStyle(model.overflow ?? true, model.hideScrollBar ?? false) }} containerId={id} dynamicComponents={isDynamic ? components : []} />
-            </ParentProvider>
-          )
-          : undefined,
-      };
-    });
-  }, [visibleSteps, current]);
+    const result: IStepProps = {
+      title,
+      subTitle,
+      content: content(description, index),
+      disabled: isDisabledByCondition,
+      status: isDisabledByCondition ? "wait" : status ?? "wait",
+      ...iconProps,
+      style: stepStyle,
+    };
+    if (current === index)
+      result.bodyContent = (
+        <ParentProvider
+          name="WizardStep"
+          model={{ ...model, readOnly: isDisabledByCondition }}
+        >
+          <ComponentsContainer wrapperStyle={{ height: '100%', display: 'grid', ...getOverflowStyle(model.overflow ?? true, model.hideScrollBar ?? false) }} containerId={id} dynamicComponents={isDynamic ? components : []} />
+        </ParentProvider>
+      );
+    return result;
+  });
 
   const splitButtons = buttonsLayout === 'spaceBetween';
 
@@ -91,85 +120,97 @@ export const Tabs: FC<Omit<IWizardComponentProps, 'size'>> = ({ form, ...model }
   return (
     <DataContextBinder
       id={'ctx_' + model.id}
-      name={model.componentName}
+      name={model.componentName ?? model.id}
       description={`Wizard context for ${model.componentName}`}
       type="control"
       metadata={contextMetadata}
-      data={{ current, currentStep, visibleSteps }}
-      api={{ back, cancel, content, done, next, setStep }}
+      data={contextData}
+      api={{ back, cancel, close, content, done, next, reset, setStep }}
     >
-      <ParentProvider model={model}>
+      <ParentProvider
+        name="Wizard"
+        model={model}
+      >
         <div className={styles.shaWizard}>
           <div className={classNames(styles.shaWizardContainer, { vertical: direction === 'vertical' })}>
             <Steps
               type={wizardType}
               current={current}
-              items={steps.map((step) => ({ ...step, style: {} }))}
-              size={model['size']}
-              direction={direction}
-              labelPlacement={labelPlacement}
+              items={steps.map(({ bodyContent: _, ...step }) => ({ ...step, style: {} }))}
+              {...(direction ? { orientation: direction } : {})}
+              {...(labelPlacement ? { titlePlacement: labelPlacement } : {})}
+              {...(model.size && model.size !== 'large' ? { size: model.size } : {})}
             />
-            <div className={styles.shaStepsContent}>{steps[current]?.content}</div>
+            <div className={styles.shaStepsContent}>{steps[current]?.bodyContent}</div>
           </div>
-          <ConditionalWrap condition={buttonsLayout === 'left'} wrap={(children) => <Space>{children}</Space>}>
-            <div
-              className={classNames(styles.shaStepsButtonsContainer, {
-                split: splitButtons,
-                left: buttonsLayout === 'left',
-                right: buttonsLayout === 'right',
-              })}
-            >
-              <ConditionalWrap
-                condition={splitButtons}
-                wrap={(children) => <Space><div className={styles.shaStepsButtons}>{children}</div></Space>}
-              >
-                {current > 0 && (currentStep?.showBackButton ?? true) && (
-                  <Button
-                    style={btnStyle('back')}
-                    onClick={back}
-                    type="default"
-                    disabled={!executeBooleanExpression(currentStep?.backButtonCustomEnabled, true)}
-                  >
-                    {currentStep.backButtonText ? currentStep.backButtonText : 'Back'}
-                  </Button>
-                )}
-                {currentStep?.allowCancel === true && (
-                  <Button
-                    style={btnStyle('cancel')}
-                    onClick={cancel}
-                    disabled={!executeBooleanExpression(currentStep?.cancelButtonCustomEnabled, true)}
-                  >
-                    {currentStep.cancelButtonText ? currentStep.cancelButtonText : 'Cancel'}
-                  </Button>
-                )}
-              </ConditionalWrap>
-              <ConditionalWrap
-                condition={splitButtons}
-                wrap={(children) => <Space><div className={styles.shaStepsButtons}>{children}</div></Space>}
-              >
-                {current < visibleSteps.length - 1 && (
-                  <Button
-                    type="primary"
-                    style={btnStyle('next')}
-                    onClick={next}
-                    disabled={!executeBooleanExpression(currentStep?.nextButtonCustomEnabled, true)}
-                  >
-                    {currentStep.nextButtonText ? currentStep.nextButtonText : 'Next'}
-                  </Button>
-                )}
-                {current === visibleSteps.length - 1 && (currentStep?.showDoneButton ?? true) && (
-                  <Button
-                    type="primary"
-                    style={btnStyle('next')}
-                    onClick={done}
-                    disabled={!executeBooleanExpression(currentStep?.doneButtonCustomEnabled, true)}
-                  >
-                    {currentStep.doneButtonText ? currentStep.doneButtonText : 'Done'}
-                  </Button>
-                )}
-              </ConditionalWrap>
+          {currentStep?.hasCustomFooter && currentStepFooterId ? (
+            <div className={styles.shaStepsContent}>
+              <ComponentsContainer
+                wrapperStyle={{ height: '100%' }}
+                containerId={currentStepFooterId}
+              />
             </div>
-          </ConditionalWrap>
+          ) : (
+            <ConditionalWrap condition={buttonsLayout === 'left'} wrap={(children) => <Space>{children}</Space>}>
+              <div
+                className={classNames(styles.shaStepsButtonsContainer, {
+                  split: splitButtons,
+                  left: buttonsLayout === 'left',
+                  right: buttonsLayout === 'right',
+                })}
+              >
+                <ConditionalWrap
+                  condition={splitButtons}
+                  wrap={(children) => <Space><div className={styles.shaStepsButtons}>{children}</div></Space>}
+                >
+                  {currentStep && current > 0 && (currentStep.showBackButton ?? true) && (
+                    <Button
+                      style={btnStyle('back')}
+                      onClick={back}
+                      type="default"
+                      disabled={!executeBooleanExpression(currentStep.backButtonCustomEnabled, true)}
+                    >
+                      {currentStep.backButtonText ? currentStep.backButtonText : 'Back'}
+                    </Button>
+                  )}
+                  {currentStep && currentStep.allowCancel === true && (
+                    <Button
+                      style={btnStyle('cancel')}
+                      onClick={cancel}
+                      disabled={!executeBooleanExpression(currentStep.cancelButtonCustomEnabled, true)}
+                    >
+                      {currentStep.cancelButtonText ? currentStep.cancelButtonText : 'Cancel'}
+                    </Button>
+                  )}
+                </ConditionalWrap>
+                <ConditionalWrap
+                  condition={splitButtons}
+                  wrap={(children) => <Space><div className={styles.shaStepsButtons}>{children}</div></Space>}
+                >
+                  {currentStep && current < visibleSteps.length - 1 && (
+                    <Button
+                      type="primary"
+                      style={btnStyle('next')}
+                      onClick={next}
+                      disabled={!executeBooleanExpression(currentStep.nextButtonCustomEnabled, true)}
+                    >
+                      {currentStep.nextButtonText ? currentStep.nextButtonText : 'Next'}
+                    </Button>
+                  )}
+                  {currentStep && current === visibleSteps.length - 1 && (currentStep.showDoneButton ?? true) && (
+                    <Button
+                      type="primary"
+                      style={btnStyle('next')}
+                      onClick={done}
+                      disabled={!executeBooleanExpression(currentStep.doneButtonCustomEnabled, true)}
+                    >
+                      {currentStep.doneButtonText ? currentStep.doneButtonText : 'Done'}
+                    </Button>
+                  )}
+                </ConditionalWrap>
+              </div>
+            </ConditionalWrap>
+          )}
         </div>
       </ParentProvider>
     </DataContextBinder>

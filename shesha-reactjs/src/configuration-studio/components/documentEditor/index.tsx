@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { CustomErrorBoundary } from '@/components';
+import { CustomErrorBoundary } from '@/components/customErrorBoundary';
 import { IDocumentInstance, isCIDocument, isCustomDocument } from '../../models';
 import { useStyles } from '../../styles';
 import { DocumentInstanceProvider } from '../../document-instance/provider';

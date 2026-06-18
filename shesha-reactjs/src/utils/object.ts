@@ -6,6 +6,9 @@ import { Path, PathValue } from "./dotnotation";
 import { TouchableArrayProperty, TouchableProperty } from "@/providers/form/touchableProperty";
 import { TouchableProxy } from "@/providers/form/touchableProxy";
 import { ShaArrayAccessProxy, ShaObjectAccessProxy } from "@/providers/dataContextProvider/contexts/shaDataAccessProxy";
+import { WritableDraft } from "@reduxjs/toolkit";
+import { StorageArrayProperty, StorageProperty } from "@/providers/dataContextProvider/contexts/storageProxy";
+import { ObservableProxy } from "@/providers/form/observableProxy";
 
 export const jsonSafeParse = <T = unknown>(value: string, defaultValue?: T): T | undefined => {
   try {
@@ -19,44 +22,62 @@ export const jsonSafeParse = <T = unknown>(value: string, defaultValue?: T): T |
   }
 };
 
-export const isProxy = <TValue extends object = object>(value: TValue): boolean => {
-  return value && (
+export const isProxy = <TValue>(value: TValue): boolean => {
+  return isDefined(value) && (
     value instanceof TouchableProperty ||
     value instanceof TouchableArrayProperty ||
     value instanceof TouchableProxy ||
     value instanceof ShaArrayAccessProxy ||
-    value instanceof ShaObjectAccessProxy
+    value instanceof ShaObjectAccessProxy ||
+    value instanceof StorageProperty ||
+    value instanceof StorageArrayProperty ||
+    value instanceof ObservableProxy
   );
 };
 
-export const unproxyValue = <TValue>(value: TValue): TValue => {
-  const result = value
+export const unproxyValue = <TValue = unknown>(value: TValue): TValue => {
+  const result = isDefined(value)
     ? value instanceof TouchableProperty ||
     value instanceof TouchableArrayProperty ||
-    value instanceof TouchableProxy
-      ? value.getData()
+    value instanceof TouchableProxy ||
+    value instanceof StorageProperty ||
+    value instanceof StorageArrayProperty
+      ? value.getData() as TValue
       : value instanceof ShaArrayAccessProxy ||
         value instanceof ShaObjectAccessProxy
-        ? value.getAccessorValue()
-        : value
+        ? value.getAccessorValue() as TValue
+        : value instanceof ObservableProxy
+          ? Array.isArray(value) ? [...value] : { ...value }
+          : value
     : value;
 
-  return isProxy(result) ? unproxyValue(result) : result;
+  return isProxy(result) ? unproxyValue<TValue>(result as TValue) : result as TValue;
 };
 
-export const deepMergeValues = <TObject, TSource>(target: TObject, source: TSource): TObject & TSource => {
-  return mergeWith({ ...target }, source, (objValue, srcValue, key, obj) => {
+export const deepMergeValues = <TObject extends object = object, TSource extends object = object>(
+  target: TObject,
+  source: TSource,
+  skipProp: ((target: Record<string, unknown>, source: Record<string, unknown>, key: string) => boolean) | undefined = undefined):
+TObject & TSource => {
+  return mergeWith({ ...target }, source, (objValue: unknown, srcValue: unknown, key: string, obj: TObject | null) => {
+    // Check if the property should be skipped
+    const skip = skipProp && typeof skipProp === 'function' ? skipProp(target as Record<string, unknown>, source as Record<string, unknown>, key) : false;
+    // if skip is true, return original value
+    if (skip) return objValue;
+
     // handle null
     if (srcValue === null) {
       // reset field to null
-      obj[key] = null;
+      if (typeof (obj) === 'object' && obj !== null)
+        (obj as Record<string, unknown>)[key] = null;
       return undefined;
     }
 
     // handle undefined
     if (srcValue === undefined) {
       // reset field to undefined
-      obj[key] = undefined;
+      if (typeof (obj) === 'object' && obj !== null)
+        (obj as Record<string, unknown>)[key] = undefined;
       return undefined;
     }
 
@@ -73,9 +94,9 @@ export const deepMergeValues = <TObject, TSource>(target: TObject, source: TSour
     }
 
     // handle objects
-    if (typeof objValue === "object" && typeof srcValue === "object") {
+    if (typeof objValue === "object" && typeof srcValue === "object" && objValue !== null) {
       // make a copy of merged objects
-      return deepMergeValues(objValue, srcValue);
+      return deepMergeValues(objValue, srcValue, skipProp);
     }
 
     return undefined;
@@ -128,14 +149,16 @@ export const hasProperty = <T extends object = object>(obj: T, key: string | num
   return key in obj;
 };
 
-export const safeGetProperty = <T extends object>(obj: T, key: string | symbol): T[keyof T] | undefined => {
+type PropertyValueOrUndefined<T extends object, K extends keyof T | string> = K extends keyof T ? T[K] : undefined;
+export const safeGetProperty = <T extends object, K extends keyof T | string>(obj: T, key: K): PropertyValueOrUndefined<T, K> => {
   return hasProperty(obj, key)
-    ? obj[key]
-    : undefined;
+    ? obj[key] as PropertyValueOrUndefined<T, K>
+    : undefined as PropertyValueOrUndefined<T, K>;
 };
 
 export const setValueByPropertyName = <TData extends object = object>(data: TData, propertyName: string, value: unknown, makeCopy: boolean = false): TData => {
   const resultData = makeCopy ? { ...data } : data;
+  if (!propertyName) return resultData;
   const path = propertyName.split(/\.|\[|\]/g).filter(Boolean);
   const lastPropName = path.length > 0 ? path[path.length - 1] : undefined;
   if (isNullOrWhiteSpace(lastPropName))
@@ -150,18 +173,19 @@ export const setValueByPropertyName = <TData extends object = object>(data: TDat
       prop[propName] = (Number.isNaN(Number(path[i + 1])) ? {} : []) as never;
       prop = prop[propName];
     } else {
+      let next: object = level;
       if (makeCopy) {
-        const newCopy = Array.isArray(level) ? [...level] : { ...(level as object) };
-        prop[propName] = newCopy as never;
+        next = Array.isArray(level) ? [...level] : { ...(level as object) };
+        prop[propName] = next as never;
       }
-      prop = level;
+      prop = next;
     }
   }
   prop[lastPropName as keyof typeof prop] = value as never;
   return resultData;
 };
 
-export const deepCopyViaJson = <TValue = any>(value: TValue): TValue => {
+export const deepCopyViaJson = <TValue = unknown>(value: TValue): TValue => {
   if (!value)
     return value;
 
@@ -192,3 +216,72 @@ export const mapProps = <T extends object, K extends keyof T>(
     }
   });
 };
+
+
+export const unwrapDraft = <T>(draft: WritableDraft<T>): T => {
+  return draft as T;
+};
+
+
+export const getPropertyOrUndefined = <TValue>(obj: object, key: string | null | undefined, converter: (propertyValue: unknown) => TValue | undefined): TValue | undefined => {
+  if (!isNullOrWhiteSpace(key) && key in obj) {
+    const value = (obj as Record<string, unknown>)[key];
+    return value !== undefined ? converter(value) : undefined;
+  }
+  return undefined;
+};
+
+export const getStringPropertyOrUndefined = (obj: object, key: string | null | undefined): string | undefined => {
+  return getPropertyOrUndefined<string>(obj, key, (value) => typeof value === "string" ? value : undefined);
+};
+
+export const getNumberPropertyOrUndefined = (obj: object, key: string | null | undefined): number | undefined => {
+  return getPropertyOrUndefined<number>(obj, key, (value) => typeof value === "number" ? value : undefined);
+};
+
+export const getFirstNonEmptyStringPropertyOrUndefined = (obj: object, keys: string[]): string | undefined => {
+  for (const key of keys) {
+    const value = getStringPropertyOrUndefined(obj, key);
+    if (value !== undefined) {
+      return value;
+    }
+  }
+  return undefined;
+};
+
+export const getDisplayNameOrUndefined = (obj: unknown): string | undefined => typeof (obj) === "object" && isDefined(obj)
+  ? getStringPropertyOrUndefined(obj, "_displayName")
+  : undefined;
+
+export const getBooleanPropertyOrUndefined = (obj: object, key: string | null | undefined): boolean | undefined => {
+  if (!isNullOrWhiteSpace(key) && key in obj) {
+    const value = (obj as Record<string, unknown>)[key];
+    return typeof value === "boolean" ? value : undefined;
+  }
+  return undefined;
+};
+
+export const getStringEnumOrDefault = <TEnum extends string>(container: object, propertyName: string, validValues: readonly string[], defaultValue?: TEnum | undefined): TEnum | undefined => {
+  var value = getStringPropertyOrUndefined(container, propertyName);
+  if (isNullOrWhiteSpace(value))
+    return defaultValue;
+
+  return validValues.includes(value as TEnum) ? value as TEnum : defaultValue;
+};
+
+export const getDatePropertyOrUndefined = <TContainer extends object = object>(obj: TContainer, propertyName: string): Date | undefined => {
+  if (propertyName in obj) {
+    const value = (obj as Record<string, unknown>)[propertyName];
+    return value instanceof Date
+      ? value
+      : typeof (value) === "string" || typeof (value) === "number"
+        ? new Date(value)
+        : undefined;
+  }
+  return undefined;
+};
+
+/**
+ * Checks if the key is a key of the object
+ */
+export const isKeyOf = <T extends object>(key: string | keyof T, obj: T): key is keyof T => key in obj;

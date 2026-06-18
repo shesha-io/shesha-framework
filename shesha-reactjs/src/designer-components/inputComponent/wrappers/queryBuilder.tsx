@@ -1,8 +1,9 @@
 import { IQueryBuilderSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React, { FC } from 'react';
+import React from 'react';
+import { FCUnwrapped } from '@/providers/form/models';
 import { QueryBuilder } from '../../queryBuilder/queryBuilder';
 
-export const QueryBuilderWrapper: FC<IQueryBuilderSettingsInputProps> = (props) => {
+export const QueryBuilderWrapper: FCUnwrapped<IQueryBuilderSettingsInputProps> = (props) => {
   const { readOnly } = props;
   return (
     <QueryBuilder

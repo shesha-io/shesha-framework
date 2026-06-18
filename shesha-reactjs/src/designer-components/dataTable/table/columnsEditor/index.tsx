@@ -1,6 +1,6 @@
 import { ColumnWidthOutlined } from '@ant-design/icons';
 import React from 'react';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { ColumnsEditorComponentDefinition, IColumnsEditorComponentProps } from './interfaces';
 import { ColumnsConfig } from './columnsConfig';
 import { MetadataProvider, useForm } from '@/providers';

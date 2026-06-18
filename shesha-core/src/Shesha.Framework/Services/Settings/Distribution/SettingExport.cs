@@ -2,7 +2,6 @@
 using Abp.Domain.Repositories;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
-using Shesha.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,7 +41,7 @@ namespace Shesha.Services.Settings.Distribution
 
         private async Task<List<DistributedSettingValue>> ExportSettingValuesAsync(SettingConfiguration settingConfig)
         {
-            var values = await _settingValueRepo.GetAll().Where(v => v.SettingConfiguration == settingConfig).ToListAsync();
+            var values = await _settingValueRepo.GetAllListAsync(v => v.SettingConfiguration == settingConfig);
 
             return values.Select(v => new DistributedSettingValue
             {

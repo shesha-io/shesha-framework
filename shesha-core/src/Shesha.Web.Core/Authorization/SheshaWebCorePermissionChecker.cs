@@ -46,9 +46,7 @@ namespace Boxfusion.Authorization
         /// inheritedDoc
         public Task<bool> IsInAnyOfRolesAsync(Person person, params string[] roles)
         {
-            return _rolePersonRepository.GetAll()
-                .Where(e => roles.Contains(e.Role.Name) && e.Person == person)
-                .AnyAsync();
+            return _rolePersonRepository.AnyAsync(e => roles.Contains(e.Role.Name) && e.Person == person);
         }
 
         /// <summary>

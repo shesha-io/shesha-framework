@@ -11,7 +11,7 @@ export interface IFormToolbarProps {
 
 export const FormToolbar: FC<IFormToolbarProps> = ({ readOnly = false }) => {
   return (
-    <Space direction="horizontal" size={5}>
+    <Space orientation="horizontal" size={5}>
       <FormSettingsButton buttonText="" size="small" />
       {!readOnly && (<UndoRedoButtons size="small" />)}
       <PreviewButton size="small" />

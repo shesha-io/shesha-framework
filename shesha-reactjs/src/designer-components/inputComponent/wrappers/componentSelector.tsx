@@ -1,10 +1,11 @@
 import { IComponentSelectorSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React, { FC } from 'react';
-import { useMetadata, useShaFormInstance } from '@/providers';
-import { FormComponentSelector } from '@/components';
+import React from 'react';
+import { FCUnwrapped } from '@/providers/form/models';
+import { useMetadataOrUndefined, useShaFormInstance } from '@/providers';
+import { FormComponentSelector } from '@/components/formComponentSelector';
 import { evaluateString } from '@/providers/form/utils';
 
-export const ComponentSelectorWrapper: FC<IComponentSelectorSettingsInputProps> = (props) => {
+export const ComponentSelectorWrapper: FCUnwrapped<IComponentSelectorSettingsInputProps> = (props) => {
   const { value, onChange, readOnly, size, componentType, propertyAccessor, noSelectionItemText, noSelectionItemValue } = props;
 
   const { formData } = useShaFormInstance();
@@ -12,19 +13,21 @@ export const ComponentSelectorWrapper: FC<IComponentSelectorSettingsInputProps> 
     ? evaluateString(propertyAccessor, { data: formData })
     : null;
 
-  const meta = useMetadata(false);
+  const meta = useMetadataOrUndefined();
 
   const propertyMeta = property && meta
     ? meta.getPropertyMeta(property)
-    : null;
+    : undefined;
   return (
     <FormComponentSelector
       value={value}
       onChange={onChange}
       readOnly={readOnly}
 
-      componentType={componentType}
-      noSelectionItem={noSelectionItemText ? { label: noSelectionItemText, value: noSelectionItemValue } : undefined}
+      componentType={componentType ?? 'input'}
+      noSelectionItem={noSelectionItemText
+        ? { label: noSelectionItemText, value: noSelectionItemValue ?? "" }
+        : undefined}
       size={size}
       propertyMeta={propertyMeta}
     />

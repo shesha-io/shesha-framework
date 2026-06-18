@@ -4,13 +4,16 @@ import React, {
   useContext,
   useState,
 } from 'react';
-import { FormIdentifier } from '@/interfaces';
+import { FormFullName, FormIdentifier } from '@/interfaces';
 import { IConfigurableActionConfiguration, useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { getNavigateArgumentsForm } from './actions/navigate-arguments';
 import { IShaRouter, ShaRouterContext } from './contexts';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
 import { ShaRouter } from './router';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isValidFormFullName } from '../form/utils';
+import { IHasVersion } from '@/utils/fluentMigrator/migrator';
 
 export type NavigationType = 'url' | 'form';
 
@@ -29,11 +32,11 @@ interface IRouter {
   path: string;
 }
 
-export interface INavigateActoinArguments {
+export interface INavigateActoinArguments extends IHasVersion {
   navigationType: NavigationType;
-  url?: string;
-  formId?: FormIdentifier;
-  queryParameters?: IKeyValue[];
+  url?: string | undefined;
+  formId?: FormIdentifier | undefined;
+  queryParameters?: IKeyValue[] | undefined;
 }
 
 export interface IScriptActionArguments {
@@ -42,8 +45,8 @@ export interface IScriptActionArguments {
 
 interface ShaRoutingProviderProps {
   router: IRouter;
-  getFormUrlFunc?: (formId: FormIdentifier, isLoggedIn: boolean) => string;
-  urlOverrideFunc?: (url: string) => string;
+  getFormUrlFunc?: ((formId: FormIdentifier, isLoggedIn: boolean) => string) | undefined;
+  urlOverrideFunc?: ((url: string) => string) | undefined;
   getIsLoggedIn: () => boolean;
 }
 
@@ -60,17 +63,16 @@ const ShaRoutingProvider: FC<PropsWithChildren<ShaRoutingProviderProps>> = ({ ch
       ownerUid: SheshaActionOwners.Common,
       sortOrder: 2,
       hasArguments: true,
-      executer: (request) => {
-        if (request.navigationType !== 'form' && request.navigationType !== 'url')
-          return Promise.reject(`Common:Navigate: 'navigationType' is not configured properly, current value is '${request.navigationType}'`);
-
+      executer: async (request) => {
         const url = shaRouter.getUrlFromNavigationRequest(request);
-        return Boolean(url)
-          ? shaRouter.goingToRoute(url)
-          : Promise.reject('Common:Navigate: url is empty');
+
+        if (isNullOrWhiteSpace(url))
+          throw new Error('Common:Navigate: url is empty');
+
+        await shaRouter.goingToRoute(url);
       },
       argumentsFormMarkup: getNavigateArgumentsForm,
-      migrator: (m) => m.add<INavigateActoinArguments>(0, (prev: INavigateActoinArguments) => ({ ...prev, navigationType: prev.navigationType ?? 'form' })),
+      migrator: (m) => m.add<INavigateActoinArguments>(0, (prev) => ({ ...prev, navigationType: !isNullOrWhiteSpace(prev.navigationType) ? prev.navigationType : 'form' })),
     },
   );
 
@@ -93,11 +95,18 @@ const useShaRouting = (): IShaRouter => {
   return context;
 };
 
-const isNavigationActionConfiguration = (actionConfig: IConfigurableActionConfiguration): actionConfig is IConfigurableActionConfiguration<INavigateActoinArguments> => {
-  return actionConfig && actionConfig.actionOwner === SheshaActionOwners.Common && actionConfig.actionName === NAVIGATE_ACTION_NAME;
-};
-const isScriptActionConfiguration = (actionConfig: IConfigurableActionConfiguration): actionConfig is IConfigurableActionConfiguration<IScriptActionArguments> => {
-  return actionConfig && actionConfig.actionOwner === SheshaActionOwners.Common && actionConfig.actionName === SCRIPT_ACTION_NAME;
+const isNavigationActionConfiguration = (actionConfig: IConfigurableActionConfiguration | undefined): actionConfig is IConfigurableActionConfiguration<INavigateActoinArguments> => {
+  return isDefined(actionConfig) && actionConfig.actionOwner === SheshaActionOwners.Common && actionConfig.actionName === NAVIGATE_ACTION_NAME;
 };
 
-export { ShaRoutingProvider, useShaRouting, useShaRoutingOrUndefined, isNavigationActionConfiguration, isScriptActionConfiguration, type IRouter };
+const tryExtractNavigationValidForm = (actionConfig: IConfigurableActionConfiguration | undefined): FormFullName | undefined => {
+  return isNavigationActionConfiguration(actionConfig) && actionConfig.actionArguments && actionConfig.actionArguments.navigationType === 'form' && isValidFormFullName(actionConfig.actionArguments.formId)
+    ? actionConfig.actionArguments.formId
+    : undefined;
+};
+
+const isScriptActionConfiguration = (actionConfig: IConfigurableActionConfiguration): actionConfig is IConfigurableActionConfiguration<IScriptActionArguments> => {
+  return isDefined(actionConfig) && actionConfig.actionOwner === SheshaActionOwners.Common && actionConfig.actionName === SCRIPT_ACTION_NAME;
+};
+
+export { ShaRoutingProvider, useShaRouting, useShaRoutingOrUndefined, isNavigationActionConfiguration, isScriptActionConfiguration, tryExtractNavigationValidForm, type IRouter };

@@ -13,8 +13,10 @@ import {
 import { BorderlessTableOutlined } from '@ant-design/icons';
 import { CodeVariablesTables, ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { ILabelValueEditorPropsBase } from './interfaces';
-import { ListEditor } from '@/components';
+import { ListEditor } from '@/components/listEditor';
 import { ItemChangeDetails } from '../listEditor';
+import { getStringPropertyOrUndefined } from '@/utils/object';
+import { isDefined } from '@/utils/nullables';
 
 export interface ILabelValueItem {
   [key: string]: string;
@@ -24,27 +26,27 @@ export interface ILabelValueEditorProps extends ILabelValueEditorPropsBase {
   /**
    * Selected value
    */
-  value?: ILabelValueItem[];
+  value?: ILabelValueItem[] | undefined;
 
   /**
    * On change event handler
    */
-  onChange?: (newValue: ILabelValueItem[]) => void;
+  onChange?: ((newValue: ILabelValueItem[]) => void) | undefined;
 
-  mode?: 'dialog' | 'inline';
+  mode?: 'dialog' | 'inline' | undefined;
 
-  exposedVariables?: ICodeExposedVariable[];
+  exposedVariables?: ICodeExposedVariable[] | undefined;
 
-  description?: string;
+  description?: string | undefined;
 
-  readOnly?: boolean;
+  readOnly?: boolean | undefined;
 }
 
 interface InputPropertyEditorProps<TItem> {
   item: TItem;
-  itemOnChange: (newValue: TItem, changeDetails: ItemChangeDetails) => void;
+  itemOnChange: (newValue: TItem, changeDetails?: ItemChangeDetails) => void;
   readOnly: boolean;
-  placeholder?: string;
+  placeholder?: string | undefined;
   propertyName: string;
 }
 export const InputPropertyEditor = <TItem extends object>(props: InputPropertyEditorProps<TItem>): ReactElement => {
@@ -53,21 +55,23 @@ export const InputPropertyEditor = <TItem extends object>(props: InputPropertyEd
     <Input
       placeholder={placeholder}
       title={placeholder}
-      value={item[propertyName]}
+      value={getStringPropertyOrUndefined(item, propertyName) ?? ""}
       onChange={(e) => {
-        itemOnChange({ ...item, [propertyName]: e.target.value }, undefined);
+        itemOnChange({ ...item, [propertyName]: e.target.value }, { isReorder: false });
       }}
     />
   );
 };
 
+const EMPTY_VALUE: ILabelValueItem[] = [];
+
 const LabelValueEditor: FC<ILabelValueEditorProps> = ({
   value,
   onChange,
   labelTitle,
-  labelName,
+  labelName = "label",
   valueTitle,
-  valueName,
+  valueName = "value",
   description,
   mode = 'dialog',
   exposedVariables,
@@ -76,6 +80,9 @@ const LabelValueEditor: FC<ILabelValueEditorProps> = ({
   const [showModal, setShowModal] = useState(false);
 
   const toggleModal = (): void => setShowModal((currentVisible) => !currentVisible);
+
+  if (!isDefined(onChange))
+    return undefined;
 
   return (
     <ConditionalWrap
@@ -98,7 +105,7 @@ const LabelValueEditor: FC<ILabelValueEditorProps> = ({
             cancelText={readOnly ? 'Close' : undefined}
           >
             <Show when={!!description}>
-              <Alert type="info" message={description} />
+              <Alert type="info" title={description} />
               <br />
             </Show>
             <Tabs
@@ -112,7 +119,7 @@ const LabelValueEditor: FC<ILabelValueEditorProps> = ({
       )}
     >
       <ListEditor<ILabelValueItem>
-        value={value}
+        value={value ?? EMPTY_VALUE}
         onChange={onChange}
         initNewItem={(_items) => ({
           [labelName]: '',

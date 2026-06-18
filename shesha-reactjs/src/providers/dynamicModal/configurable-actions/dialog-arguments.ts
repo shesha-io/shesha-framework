@@ -2,23 +2,24 @@ import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models
 import { FormIdentifier, FormMarkup } from '../../form/models';
 import { ModalFooterButtons } from '../models';
 import closeDialogArgumentsJson from './close-dialog-arguments.json';
+import { IHasVersion } from '@/utils/fluentMigrator/migrator';
 
 export interface ICloseModalActionArguments {
   showDialogResult?: string;
 }
 
-export interface IShowModalActionArguments {
+export interface IShowModalActionArguments extends IHasVersion {
   modalTitle: string;
-  formId: FormIdentifier;
+  formId: FormIdentifier | undefined;
   formMode?: 'edit' | 'readonly';
-  formArguments?: string;
-  modalWidth?: number | string;
-  customWidth?: number;
-  widthUnits?: '%' | 'px';
-  buttons?: ButtonGroupItemProps[];
-  footerButtons?: ModalFooterButtons;
-  showModalFooter?: boolean;
-  showCloseIcon?: boolean;
+  formArguments?: string | undefined;
+  modalWidth?: number | string | undefined;
+  customWidth?: number | undefined;
+  widthUnits?: '%' | 'px' | undefined;
+  buttons?: ButtonGroupItemProps[] | undefined;
+  footerButtons?: ModalFooterButtons | undefined;
+  showModalFooter?: boolean | undefined;
+  showCloseIcon?: boolean | undefined;
   /**
    * What http verb to use when submitting the form. Used in conjunction with `showModalFooter`
    */

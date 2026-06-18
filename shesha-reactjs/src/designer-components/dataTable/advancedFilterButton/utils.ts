@@ -1,5 +1,5 @@
 import { IButtonComponentProps } from "@/designer-components/button/interfaces";
-import { IStyleType } from "@/index";
+import { IStyleType } from "@/providers/form/models";
 
 export const defaultStyles = (prev: Omit<IButtonComponentProps, 'buttonType'>): IStyleType => {
   return {

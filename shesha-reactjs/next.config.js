@@ -57,7 +57,7 @@ const nextConfig = (phase) => {
     poweredByHeader: false,
     productionBrowserSourceMaps: true,
     env,
-    publicRuntimeConfig: env,
+    // publicRuntimeConfig: env,
     typescript: {
       tsconfigPath: './tsconfig.next.json',
     },

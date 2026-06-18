@@ -1,3 +1,5 @@
+"use client";
+
 import { useSheshaApplication } from '@/providers';
 import { AxiosRequestConfig } from 'axios';
 import { useMemo } from 'react';

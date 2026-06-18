@@ -17,6 +17,7 @@
  * ```
  */
 
+import { isDefined } from '@/utils/nullables';
 import { addPx } from '@/utils/style';
 import { CSSProperties } from 'react';
 
@@ -36,8 +37,8 @@ export const designerConstants = {
   DEFAULT_FORM_ITEM_MARGINS: {
     top: '5px',
     bottom: '5px',
-    left: '3px',
-    right: '3px',
+    left: '0px',
+    right: '0px',
   } as const,
 
   /**
@@ -48,7 +49,7 @@ export const designerConstants = {
    */
   DEFAULT_MARGINS: {
     vertical: '5px',
-    horizontal: '3px',
+    horizontal: '0px',
   } as const,
 
   /**
@@ -124,7 +125,7 @@ export const designerConstants = {
     paddingBottom: string,
   ): string | number | undefined {
     // Treat undefined/null as invalid, but allow 0 and '0' as valid heights
-    if (height === undefined || height === null) return undefined;
+    if (!isDefined(height)) return undefined;
 
     // Add 8px to account for border width in designer (4px top + 4px bottom)
     const heightWithUnit = addPx(height);
@@ -162,7 +163,7 @@ export const designerConstants = {
     padding2: string,
   ): string | number | undefined {
     // Treat undefined/null as invalid, but allow 0 and '0' as valid dimensions
-    if (value === undefined || value === null) return undefined;
+    if (!isDefined(value)) return undefined;
 
     const valueWithUnit = addPx(value);
     // Guard against addPx returning undefined - treat empty strings as unset
@@ -222,7 +223,7 @@ export const designerConstants = {
    */
   extractMarginsFromStyleBox(
     styleBoxCss: CSSProperties | undefined,
-  ): { marginTop?: number | string; marginRight?: number | string; marginBottom?: number | string; marginLeft?: number | string } {
+  ): { marginTop?: number | string | undefined; marginRight?: number | string | undefined; marginBottom?: number | string | undefined; marginLeft?: number | string | undefined } {
     if (!styleBoxCss) return {};
 
     return {

@@ -10,7 +10,6 @@ using Shesha.Scheduler.Attributes;
 using Shesha.Scheduler.Domain;
 using Shesha.Scheduler.Domain.Enums;
 using Shesha.Scheduler.Utilities;
-using Shesha.Services;
 using Shesha.Startup;
 using System;
 using System.Linq;
@@ -67,7 +66,7 @@ namespace Shesha.Scheduler.Bootstrappers
                 .ToList();
 
             // deactivate all jobs which are missing in the code
-            var dbItems = await _jobRepo.GetAll().ToListAsync();
+            var dbItems = await _jobRepo.GetAllListAsync();
             var toDelete = dbItems.Where(i => !jobs.Any(j => j.Attribute.Uid == i.Id)).ToList();
             foreach (var scheduledJob in toDelete)
             {

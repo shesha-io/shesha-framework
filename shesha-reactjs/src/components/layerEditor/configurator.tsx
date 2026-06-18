@@ -2,8 +2,8 @@ import { Alert } from 'antd';
 import React, { FC, ReactNode } from 'react';
 import LayerProperties from './properties';
 import { useStyles } from './styles/styles';
-import { FormMarkup } from '@/index';
 import { useLayerGroupConfigurator } from '@/providers/layersProvider';
+import { FormMarkup } from '@/providers/form/models';
 
 export interface ILayerGroupConfiguratorProps {
   allowAddLayers?: boolean;
@@ -19,7 +19,7 @@ export const LayerGroupConfigurator: FC<ILayerGroupConfiguratorProps> = ({ setti
   return (
     <div className={styles.shaToolbarConfigurator}>
       <Alert
-        message={readOnly ? 'Here you can view layer configuration.' : 'Here you can configure the layer settings'}
+        title={readOnly ? 'Here you can view layer configuration.' : 'Here you can configure the layer settings'}
         className={styles.shaToolbarConfiguratorAlert}
       />
       <LayerProperties settings={settings} />

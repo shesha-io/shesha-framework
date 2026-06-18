@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { IToolboxComponentBase } from '@/interfaces';
-import { Show } from '@/components';
+import { Show } from '@/components/show';
 import { Space, Tooltip } from 'antd';
 import { useStyles } from './styles/styles';
 
@@ -10,26 +10,23 @@ export interface IProps {
   index: number;
 }
 
-const ToolbarComponent: FC<IProps> = ({ component /* , index*/ }) => {
+const ToolbarComponent: FC<IProps> = ({ component }) => {
   const { styles } = useStyles();
-  const ComponentContent = (): JSX.Element => (
-    <div>
-      {component.icon}
-      <Space size="small">
-        <span>{component.name}</span>
-
-        <Show when={Boolean(component?.tooltip)}>
-          <Tooltip title={component?.tooltip}>
-            <InfoCircleOutlined />
-          </Tooltip>
-        </Show>
-      </Space>
-    </div>
-  );
 
   return (
     <div className={styles.shaToolboxComponent}>
-      <ComponentContent />
+      <div>
+        {component.icon}
+        <Space size="small">
+          <span>{component.name}</span>
+
+          <Show when={Boolean(component.tooltip)}>
+            <Tooltip title={component.tooltip}>
+              <InfoCircleOutlined />
+            </Tooltip>
+          </Show>
+        </Space>
+      </div>
     </div>
   );
 };

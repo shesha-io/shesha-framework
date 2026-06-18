@@ -1,4 +1,5 @@
 import { isDefined } from "@/utils/nullables";
+import { hasProperty } from "@/utils/object";
 
 export interface IWebStorageProxy {
   updateOnChangeHandler: (func: () => void) => void;
@@ -68,8 +69,8 @@ export class WebStorageProxy {
     this._prefix = prefix;
     return new Proxy(this, {
       get(target, name) {
-        if (name in target) {
-          const result = target[name as keyof IWebStorageProxy];
+        if (hasProperty(target, name)) {
+          const result = target[name];
           return typeof result === 'function'
             ? result.bind(target)
             : result;

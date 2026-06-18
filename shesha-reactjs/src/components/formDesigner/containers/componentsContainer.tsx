@@ -4,13 +4,13 @@ import { ICommonContainerProps, IComponentsContainerBaseProps } from '@/interfac
 import { useComponentContainer } from '@/providers/form/nesting/containerContext';
 
 export interface IComponentsContainerProps extends IComponentsContainerBaseProps, Omit<ICommonContainerProps, 'wrapperStyle'> {
-  className?: string;
-  render?: (components: JSX.Element[]) => ReactNode;
-  itemsLimit?: number;
-  dynamicComponents?: IConfigurableFormComponent[];
-  wrapperStyle?: CSSProperties;
-  emptyInsertThreshold?: number;
-  showHintWhenEmpty?: boolean;
+  className?: string | undefined;
+  render?: ((components: React.JSX.Element[]) => ReactNode) | undefined;
+  itemsLimit?: number | undefined;
+  dynamicComponents?: IConfigurableFormComponent[] | undefined;
+  wrapperStyle?: CSSProperties | undefined;
+  emptyInsertThreshold?: number | undefined;
+  showHintWhenEmpty?: boolean | undefined;
 }
 
 const ComponentsContainer: FC<IComponentsContainerProps> = (props) => {

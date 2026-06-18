@@ -1,7 +1,6 @@
 import { castToExtensionType, findContainersWithPlaceholder, getDataTypePriority, getColumnWidthByDataType, humanizeModelType } from "../viewGenerationUtils";
 import { FormMetadataHelper } from "../formMetadataHelper";
-import { PropertyMetadataDto } from "@/apis/metadata";
-import { IEntityMetadata } from "@/interfaces";
+import { IEntityMetadata, IPropertyMetadata } from "@/interfaces";
 import { nanoid } from "@/utils/uuid";
 import { toCamelCase } from "@/utils/string";
 import { TableViewExtensionJson } from "../../models/TableViewExtensionJson";
@@ -17,13 +16,13 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
 
   protected getModelTypeFromReplacements(replacements: object): string | null {
     const extensionJson = castToExtensionType<TableViewExtensionJson>(replacements);
-    return extensionJson?.modelType || null;
+    return extensionJson.modelType || null;
   }
 
   protected async addComponentsToMarkup(
-    markup: unknown,
+    markup: object,
     entity: IEntityMetadata,
-    nonFrameworkProperties: PropertyMetadataDto[],
+    nonFrameworkProperties: IPropertyMetadata[],
     _metadataHelper: FormMetadataHelper,
   ): Promise<void> {
     try {
@@ -50,7 +49,7 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
    * @param extensionJson The extension configuration.
    * @param metadataHelper The metadata helper instance.
    */
-  private addHeader(entity: IEntityMetadata, markup: any): void {
+  private addHeader(entity: IEntityMetadata, markup: object): void {
     const title = entity.typeAccessor ? humanizeModelType(entity.typeAccessor) : "Table";
 
     const titleContainer = findContainersWithPlaceholder(markup, "//*TABLEFILTER*//");
@@ -72,7 +71,7 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
       }],
     });
 
-    if (titleContainer[0].components && Array.isArray(titleContainer[0].components)) {
+    if (titleContainer[0]) {
       titleContainer[0].components.push(...builder.toJson());
     }
   }
@@ -84,7 +83,7 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
    * @param nonFrameworkProperties The list of non-framework properties for the entity.
    * @param markup The JSON markup object.
    */
-  private addColumns(nonFrameworkProperties: PropertyMetadataDto[], markup: any): void {
+  private addColumns(nonFrameworkProperties: IPropertyMetadata[], markup: object): void {
     const tableContainer = findContainersWithPlaceholder(markup, "//*TABLECOLUMNS*//");
 
     if (tableContainer.length === 0) {
@@ -136,7 +135,7 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
       }),
     });
 
-    if (tableContainer[0].components && Array.isArray(tableContainer[0].components)) {
+    if (tableContainer[0]) {
       tableContainer[0].components = builder.toJson();
     }
   }

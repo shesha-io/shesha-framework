@@ -45,28 +45,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 parentId: commonTabId,
                 inputs: [
                   {
-                    type: 'textField',
-                    id: nanoid(),
-                    propertyName: 'label',
-                    parentId: commonTabId,
-                    label: 'Label',
-                    jsSetting: true,
-                  },
-                  {
-                    id: nanoid(),
-                    propertyName: 'hasCustomHeader',
-                    parentId: commonTabId,
-                    label: 'Custom Header',
-                    type: 'switch',
-                    jsSetting: true,
-                  },
-                ],
-              })
-              .addSettingsInputRow({
-                id: nanoid(),
-                parentId: commonTabId,
-                inputs: [
-                  {
                     id: nanoid(),
                     propertyName: 'expandIconPosition',
                     parentId: commonTabId,
@@ -179,14 +157,14 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   _mode: "code",
                   _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
                   _value: "",
-                } as any,
+                },
                 components: [
                   ...fbf()
                     .addSettingsInputRow({
                       id: nanoid(),
                       propertyName: 'ghost',
                       parentId: styleRouterId,
-                      readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                      readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                       inputs: [
                         {
                           id: nanoid(),
@@ -209,7 +187,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     .addSettingsInputRow({
                       id: nanoid(),
                       parentId: styleRouterId,
-                      readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                      readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                       inputs: [
                         {
                           id: nanoid(),
@@ -325,7 +303,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       ghost: true,
                       parentId: styleRouterId,
                       collapsible: 'header',
-                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.ghost) || getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.isSimpleDesign);', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.ghost) || getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.isSimpleDesign);', _mode: 'code', _value: false },
                       content: {
                         id: nanoid(),
                         components: [...fbf()
@@ -351,7 +329,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       ghost: true,
                       parentId: styleRouterId,
                       collapsible: 'header',
-                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.ghost) || getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.isSimpleDesign);', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.ghost) || getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.isSimpleDesign);', _mode: 'code', _value: false },
                       content: {
                         id: nanoid(),
                         components: [
@@ -377,7 +355,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 hideLabel: true,
                                 jsSetting: false,
                               }],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false },
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
@@ -390,7 +368,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 jsSetting: false,
                               },
                               ],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false },
                               hideLabel: true,
                             })
                             .addSettingsInputRow({
@@ -403,7 +381,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 jsSetting: false,
                                 label: "URL",
                               }],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false },
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
@@ -415,12 +393,12 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 label: "Image",
                                 jsSetting: false,
                               }],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false },
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: styleRouterId,
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false },
                               inputs: [
                                 {
                                   type: 'textField',
@@ -435,7 +413,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               id: nanoid(),
                               parentId: styleRouterId,
                               inline: true,
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
                               inputs: [
                                 {
                                   type: 'customDropdown',
@@ -516,7 +494,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 propertyName: 'background.repeat',
                                 buttonGroupOptions: repeatOptions,
                               }],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
                             })
                             .toJson(),
                         ],
@@ -528,7 +506,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       label: 'Shadow',
                       labelAlign: 'right',
                       ghost: true,
-                      hidden: { _code: 'return  getSettingValue(data?.ghost) || getSettingValue(data?.isSimpleDesign);', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return  getSettingValue(data?.ghost) || getSettingValue(data?.isSimpleDesign);', _mode: 'code', _value: false },
                       parentId: styleRouterId,
                       collapsible: 'header',
                       content: {
@@ -775,7 +753,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 ' || getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.accentStyle)' +
                                 ' || getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.isSimpleDesign);',
                               _mode: 'code', _value: false,
-                            } as any,
+                            },
                             content: {
                               id: nanoid(),
                               components: [...fbf()
@@ -794,7 +772,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             labelAlign: 'right',
                             collapsedByDefault: true,
                             ghost: true,
-                            hidden: { _code: 'return  getSettingValue(data?.ghost) || getSettingValue(data?.isSimpleDesign);', _mode: 'code', _value: false } as any,
+                            hidden: { _code: 'return  getSettingValue(data?.ghost) || getSettingValue(data?.isSimpleDesign);', _mode: 'code', _value: false },
                             parentId: styleRouterId,
                             collapsible: 'header',
                             content: {
@@ -847,7 +825,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     hideLabel: true,
                                     jsSetting: false,
                                   }],
-                                  hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
+                                  hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "color";', _mode: 'code', _value: false },
                                 })
                                 .addSettingsInputRow({
                                   id: nanoid(),
@@ -860,7 +838,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     jsSetting: false,
                                   },
                                   ],
-                                  hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
+                                  hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "gradient";', _mode: 'code', _value: false },
                                   hideLabel: true,
                                 })
                                 .addSettingsInputRow({
@@ -873,7 +851,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     jsSetting: false,
                                     label: "URL",
                                   }],
-                                  hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
+                                  hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "url";', _mode: 'code', _value: false },
                                 })
                                 .addSettingsInputRow({
                                   id: nanoid(),
@@ -885,12 +863,12 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     label: "Image",
                                     jsSetting: false,
                                   }],
-                                  hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
+                                  hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "image";', _mode: 'code', _value: false },
                                 })
                                 .addSettingsInputRow({
                                   id: nanoid(),
                                   parentId: styleRouterId,
-                                  hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
+                                  hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "storedFile";', _mode: 'code', _value: false },
                                   inputs: [
                                     {
                                       type: 'textField',
@@ -905,7 +883,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   id: nanoid(),
                                   parentId: styleRouterId,
                                   inline: true,
-                                  hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                  hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) === "color";', _mode: 'code', _value: false },
                                   inputs: [
                                     {
                                       type: 'customDropdown',
@@ -936,7 +914,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     propertyName: 'headerStyles.background.repeat',
                                     buttonGroupOptions: repeatOptions,
                                   }],
-                                  hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                  hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) === "color";', _mode: 'code', _value: false },
                                 })
                                 .toJson(),
                               ],

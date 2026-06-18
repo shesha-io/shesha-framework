@@ -1,8 +1,9 @@
 import { IDateSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React, { FC } from 'react';
+import React from 'react';
+import { FCUnwrapped } from '@/providers/form/models';
 import { DatePickerWrapper } from '@/designer-components/dateField/datePickerWrapper';
 
-export const DateWrapper: FC<IDateSettingsInputProps> = (props) => {
+export const DateWrapper: FCUnwrapped<IDateSettingsInputProps> = (props) => {
   const { value, readOnly, propertyName, id, onChange } = props;
   return (
     <DatePickerWrapper
@@ -11,7 +12,7 @@ export const DateWrapper: FC<IDateSettingsInputProps> = (props) => {
       readOnly={readOnly}
 
       type="date"
-      id={id}
+      id={id ?? ""}
       propertyName={propertyName}
       hideBorder={false}
       range={false}

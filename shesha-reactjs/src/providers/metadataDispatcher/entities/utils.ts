@@ -4,6 +4,8 @@ import { ICacheProvider, ISyncEntitiesContext, ModuleSyncRequest, SyncAllRequest
 import { isAjaxSuccessResponse } from "@/interfaces/ajaxResponse";
 import { IConfigurationItemDto } from "@/providers/configurationItemsLoader/models";
 import { IEntityTypeIdentifierQueryParams, IPropertyMetadata } from "@/interfaces/metadata";
+import { isNonEmptyArray } from "@/utils/array";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 
 export const ENTITY_CACHE = {
   ENTITIES: 'entity',
@@ -16,6 +18,7 @@ const wrapModuleName = (name?: string | null): string => (name ?? NO_MODULE);
 const unwrapModuleName = (name: string | null): string | null => (name === NO_MODULE ? null : name);
 
 const CURRENT_SYNC_VERSION = '2';
+const CLIENT_SNAPSHOT_HASH = 'ENTITIES_SYNC_SNAPSHOT_HASH';
 const ENTITIES_SYNC_VERSION_FIELD_NAME = "ENTITIES_SYNC_VERSION";
 
 const URLS = {
@@ -35,6 +38,16 @@ const getEntitiesSyncVersion = (cacheProvider: ICacheProvider): Promise<string |
 const setEntitiesSyncVersion = (cacheProvider: ICacheProvider, value: string): Promise<string> => {
   const cache = cacheProvider.getCache(ENTITY_CACHE.MISC);
   return cache.setItem<string>(ENTITIES_SYNC_VERSION_FIELD_NAME, value);
+};
+
+const getClientSnapshotHash = (cacheProvider: ICacheProvider): Promise<string | null> => {
+  const cache = cacheProvider.getCache(ENTITY_CACHE.MISC);
+  return cache.getItem<string>(CLIENT_SNAPSHOT_HASH);
+};
+
+const setClientSnapshotHash = (cacheProvider: ICacheProvider, value: string): Promise<string> => {
+  const cache = cacheProvider.getCache(ENTITY_CACHE.MISC);
+  return cache.setItem<string>(CLIENT_SNAPSHOT_HASH, value);
 };
 
 const getEntitiesSyncRequest = async (context: ISyncEntitiesContext): Promise<SyncAllRequest> => {
@@ -67,7 +80,7 @@ const getEntitiesSyncRequest = async (context: ISyncEntitiesContext): Promise<Sy
 
       const aliases = [...(metadata.aliases ?? []), metadata.fullClassName];
       aliases.forEach((alias) => {
-        context.typesMap.register(alias, { module: metadata.module, name: metadata.name });
+        context.typesMap.register(alias, { module: metadata.module, name: name });
       });
 
       moduleSync.entities.push({
@@ -78,9 +91,11 @@ const getEntitiesSyncRequest = async (context: ISyncEntitiesContext): Promise<Sy
     });
   }
   await setEntitiesSyncVersion(context.cacheProvider, CURRENT_SYNC_VERSION);
+  const clientSnapshotHash = await getClientSnapshotHash(context.cacheProvider) ?? undefined;
 
   const request: SyncAllRequest = {
     modules: [],
+    clientSnapshotHash,
   };
   modulesMap.forEach((m) => request.modules.push(m));
   return request;
@@ -96,78 +111,84 @@ export const syncEntities = async (context: ISyncEntitiesContext): Promise<void>
         const promises: Promise<unknown>[] = [];
         const data = response.data.result;
 
-        const metadataCache = context.cacheProvider.getCache(ENTITY_CACHE.ENTITIES);
-        data.modules.forEach((m) => {
-          m.entities.forEach((e) => {
-            const key = getEntityMetadataCacheKey({ module: m.accessor, name: e.accessor });
+        promises.push(setClientSnapshotHash(context.cacheProvider, data.serverSnapshotHash));
 
-            if (isEntityOutOfDateResponse(e)) {
-              const meta: IConfigurationItemDto<IEntityMetadata> = {
-                cacheMd5: e.metadata.md5 ?? "",
-                configuration: {
-                  ...e.metadata,
-                  entityType: e.metadata.name,
-                  entityModule: e.metadata.module,
-                  properties: e.metadata.properties.map((p) => ({ ...p, entityType: p.entityType ?? undefined } as IPropertyMetadata)),
+        if (!isNonEmptyArray(data.modules)) {
+          const metadataCache = context.cacheProvider.getCache(ENTITY_CACHE.ENTITIES);
+          data.modules.forEach((m) => {
+            m.entities.forEach((e) => {
+              const key = getEntityMetadataCacheKey({ module: m.accessor, name: e.accessor });
 
-                  inheritedFromEntityType: e.metadata.inheritedFromName,
-                  inheritedFromEntityModule: e.metadata.inheritedFromModule,
-                  inheritedFromFullClassName: e.metadata.inheritedFromFullClassName,
-                },
-              };
+              if (isEntityOutOfDateResponse(e)) {
+                const meta: IConfigurationItemDto<IEntityMetadata> = {
+                  cacheMd5: e.metadata.md5 ?? "",
+                  configuration: {
+                    ...e.metadata,
+                    entityType: e.metadata.name,
+                    entityModule: e.metadata.module,
+                    properties: e.metadata.properties.map((p) => ({ ...p, entityType: p.entityType ?? undefined } as IPropertyMetadata)),
 
-              promises.push(metadataCache.setItem(key, meta));
+                    inheritedFromEntityType: e.metadata.inheritedFromName,
+                    inheritedFromEntityModule: e.metadata.inheritedFromModule,
+                    inheritedFromFullClassName: e.metadata.inheritedFromFullClassName,
+                  },
+                };
 
-              const aliases = [...e.metadata.aliases ?? [], e.metadata.fullClassName];
-              aliases.forEach((alias) => {
-                context.typesMap.register(alias, { module: e.metadata.module, name: e.metadata.name });
+                promises.push(metadataCache.setItem(key, meta));
+
+                const aliases = [...e.metadata.aliases ?? [], e.metadata.fullClassName];
+                aliases.forEach((alias) => {
+                  context.typesMap.register(alias, { module: e.metadata.module, name: e.metadata.name });
+                });
+                return;
+              }
+
+              if (e.status === 'unknown') {
+                promises.push(metadataCache.removeItem(key));
+                return;
+              }
+            });
+          });
+        }
+
+        if (!isNonEmptyArray(data.lookups)) {
+          const lookupCache = context.cacheProvider.getCache(ENTITY_CACHE.ENTITIES_LOOKUP);
+          await lookupCache.clear().catch((error) => {
+            console.error('Failed to populate lookup cache', error);
+            return Promise.reject(error);
+          });
+          data.lookups.forEach((m) => {
+            if (m.items.length) {
+              const key = getEntityMetadataCacheKey({ module: m.module ?? '', name: m.name ?? '' });
+
+              const data = {} as { [key: string]: string };
+              m.items.forEach((e) => {
+                data[e.module] = e.match;
               });
-              return;
-            }
 
-            if (e.status === 'unknown') {
-              promises.push(metadataCache.removeItem(key));
-              return;
+              // Add lookup for full config name
+              promises.push(lookupCache.setItem(key, data));
+
+              // Add lookup for Full Class Name
+              if (m.id)
+                promises.push(lookupCache.setItem(m.id, { module: data['_default'] ?? '', name: m.name }));
+              if (m.aliases?.length) {
+                m.aliases.forEach((alias) => {
+                  promises.push(lookupCache.setItem(alias, { module: data['_default'] ?? '', name: m.name }));
+                });
+              }
+            } else {
+            // Add lookup for Full Class Name without lookup data
+              if (m.id)
+                promises.push(lookupCache.setItem(m.id, { module: m.module ?? '', name: m.name ?? '' }));
+              if (m.aliases?.length) {
+                m.aliases.forEach((alias) => {
+                  promises.push(lookupCache.setItem(alias, { module: m.module ?? '', name: m.name ?? '' }));
+                });
+              }
             }
           });
-        });
-
-        const lookupCache = context.cacheProvider.getCache(ENTITY_CACHE.ENTITIES_LOOKUP);
-        await lookupCache.clear().catch((error) => {
-          console.error('Failed to populate lookup cache', error);
-          return Promise.reject(error);
-        });
-        data.lookups.forEach((m) => {
-          if (m.items.length) {
-            const key = getEntityMetadataCacheKey({ module: m.module ?? '', name: m.name ?? '' });
-
-            const data = {} as { [key: string]: string };
-            m.items.forEach((e) => {
-              data[e.module] = e.match;
-            });
-
-            // Add lookup for full config name
-            promises.push(lookupCache.setItem(key, data));
-
-            // Add lookup for Full Class Name
-            if (m.id)
-              promises.push(lookupCache.setItem(m.id, { module: data['_default'] ?? '', name: m.name }));
-            if (m.aliases?.length) {
-              m.aliases.forEach((alias) => {
-                promises.push(lookupCache.setItem(alias, { module: data['_default'] ?? '', name: m.name }));
-              });
-            }
-          } else {
-            // Add lookup for Full Class Name without lookup data
-            if (m.id)
-              promises.push(lookupCache.setItem(m.id, { module: m.module ?? '', name: m.name ?? '' }));
-            if (m.aliases?.length) {
-              m.aliases.forEach((alias) => {
-                promises.push(lookupCache.setItem(alias, { module: m.module ?? '', name: m.name ?? '' }));
-              });
-            }
-          }
-        });
+        }
         return await Promise.all(promises);
       } else {
         console.error('Failed to sync entities', response.data.error);
@@ -209,24 +230,30 @@ export const isEntityTypeIdentifier = (modelType: string | IEntityTypeIdentifier
 export const getEntityTypeIdentifier = (modelType: string | IEntityTypeIdentifier): IEntityTypeIdentifier =>
   (isEntityTypeIdentifier(modelType) ? modelType : { name: modelType, module: null });
 
-export const getEntityTypeIdentifierQueryParams = (modelType: string | IEntityTypeIdentifier): IEntityTypeIdentifierQueryParams =>
-  (isEntityTypeIdentifier(modelType)
-    ? { name: modelType.name, module: modelType.module ?? undefined }
-    : { entityType: modelType }
-  );
+export const getEntityTypeIdentifierQueryParams = (modelType: string | IEntityTypeIdentifier | undefined): IEntityTypeIdentifierQueryParams => {
+  return !isDefined(modelType)
+    ? {}
+    : (isEntityTypeIdentifier(modelType)
+      ? { name: modelType.name, module: modelType.module ?? undefined }
+      : { entityType: modelType }
+    );
+};
+
 export const isEntityTypeIdEqual = (a: string | IEntityTypeIdentifier, b: string | IEntityTypeIdentifier): boolean =>
   (typeof a === 'string' && typeof b === 'string' && a === b) ||
   (isEntityTypeIdentifier(a) && isEntityTypeIdentifier(b) && a.name === b.name && a.module === b.module);
 
-export const isEntityTypeIdEmpty = (a: string | IEntityTypeIdentifier | null | undefined): boolean =>
+export const isEntityTypeIdEmpty = (a: string | IEntityTypeIdentifier | null | undefined): a is null | undefined =>
   a === null || a === undefined ||
-  (typeof a === 'string' && a.trim().length === 0) ||
+  (typeof a === 'string' && isNullOrWhiteSpace(a)) ||
   (typeof a === 'object' && !isEntityTypeIdentifier(a)) ||
-  (isEntityTypeIdentifier(a) && a.name.trim().length === 0);
+  (isEntityTypeIdentifier(a) && isNullOrWhiteSpace(a.name));
 
-export const getEntityTypeName = (modelType: string | IEntityTypeIdentifier | null | undefined): string | null | undefined =>
+export const isEntityTypeId = (id: string | IEntityTypeIdentifier | null | undefined): id is string | IEntityTypeIdentifier => !isEntityTypeIdEmpty(id);
+
+export const getEntityTypeName = (modelType: string | IEntityTypeIdentifier | null | undefined): string | undefined =>
   isEntityTypeIdentifier(modelType)
     ? Boolean(modelType.module)
       ? `${modelType.module}:${modelType.name}`
       : modelType.name
-    : modelType;
+    : modelType ?? undefined;

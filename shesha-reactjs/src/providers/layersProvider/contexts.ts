@@ -13,10 +13,10 @@ export interface IUpdateItemSettingsPayload {
 }
 
 export interface ILayerGroupConfiguratorStateContext {
-  items?: LayerGroupItemProps[];
-  selectedItemId?: string;
-  readOnly?: boolean;
-  refreshTrigger?: number;
+  items: LayerGroupItemProps[];
+  selectedItemId?: string | undefined;
+  readOnly: boolean;
+  refreshTrigger: number;
 }
 
 export interface ILayerGroupConfiguratorActionsContext {
@@ -35,8 +35,8 @@ export const LAYER_GROUP_CONTEXT_INITIAL_STATE: ILayerGroupConfiguratorStateCont
   refreshTrigger: 0,
 };
 
-export const LayerGroupConfiguratorStateContext = createContext<ILayerGroupConfiguratorStateContext>(
-  LAYER_GROUP_CONTEXT_INITIAL_STATE,
+export const LayerGroupConfiguratorStateContext = createContext<ILayerGroupConfiguratorStateContext | undefined>(
+  undefined,
 );
 
 export const LayerGroupConfiguratorActionsContext = createContext<ILayerGroupConfiguratorActionsContext | undefined>(undefined);
