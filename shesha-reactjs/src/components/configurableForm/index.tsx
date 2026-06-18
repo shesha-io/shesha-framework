@@ -16,6 +16,7 @@ import ParentProvider from '@/providers/parentProvider';
 import { ShaSpin } from '..';
 import { DataLoadingError } from './dataLoadingError';
 import { IFormActionsContext, ISetFormDataPayload } from '@/providers/form/contexts';
+import { isDefined } from '@/utils/nullables';
 
 export type ConfigurableFormProps<Values extends object = object> = Omit<IConfigurableFormProps<Values>, 'form' | 'formRef' | 'shaForm'> & {
   form?: FormInstance<Values>;
@@ -89,22 +90,22 @@ const ConfigurableFormInner = <Values extends object = object>(props: Configurab
 
   // init form
   useEffect(() => {
-    if (formId) {
+    if (isDefined(formId)) {
       void shaForm.initFormByFormId({
         formId: formId,
         formArguments: formArguments,
         initialValues: initialValues,
       });
-    }
-    if (markup) {
-      void shaForm.initFormByRawMarkup({
-        rawMarkup: markup,
-        formArguments: formArguments,
-        initialValues: initialValues,
-        cacheKey: cacheKey,
-        isSettingsForm: isSettingsForm,
-      });
-    }
+    } else
+      if (markup) {
+        void shaForm.initFormByRawMarkup({
+          rawMarkup: markup,
+          formArguments: formArguments,
+          initialValues: initialValues,
+          cacheKey: cacheKey,
+          isSettingsForm: isSettingsForm,
+        });
+      }
   }, [shaForm, markup, formArguments, initialValues, isSettingsForm, cacheKey, formId]);
 
   // init form data
@@ -218,7 +219,7 @@ export const ConfigurableForm = <Values extends object = object>(props: Configur
   return (
     <ParentProvider
       model={null}
-      name={props.formId ? configurableItemIdentifierToString(props.formId) : `form`}
+      name={isDefined(props.formId) ? configurableItemIdentifierToString(props.formId) : `form`}
       isScope
     >
       <ConfigurableFormInner {...props} />

@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import DragWrapper from './dragWrapper';
-import FormComponent from '../formComponent';
+import FormComponent from '../formComponent/formComponent';
 import React, {
   CSSProperties,
   FC,
