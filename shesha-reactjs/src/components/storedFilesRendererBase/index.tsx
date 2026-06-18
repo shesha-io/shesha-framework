@@ -37,6 +37,7 @@ import { ShaIcon, IconType } from '@/components/shaIcon';
 import { defaultStyles } from '@/designer-components/attachmentsEditor/utils';
 import { DownloadFileArgs, ReplaceFilePayload, StoredFileModel } from '@/utils/storedFile/models';
 import { useSheshaApplication } from '@/providers/sheshaApplication';
+import { useHttpClient } from '@/providers/sheshaApplication/publicApi/http/hooks';
 import { ValidationErrors } from '../validationErrors';
 import { buildUrl } from '@/utils';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
@@ -142,7 +143,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   ...rest
 }) => {
   const { message, notification } = App.useApp();
-  const { backendUrl, httpHeaders } = useSheshaApplication();
+  const { backendUrl } = useSheshaApplication();
+  const httpClient = useHttpClient();
   const allData = useAvailableConstantsData();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState<{ url: string; uid: string; name: string } | null>(null);
@@ -314,7 +316,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
             const thumbnailUrl = buildUrl(`${backendUrl}${STORED_FILE_URLS.DOWNLOAD_THUMBNAIL}`, cleanedParams);
 
-            const { url: imageUrl, revoke } = await fetchStoredFile(thumbnailUrl, httpHeaders);
+            const { url: imageUrl, revoke } = await fetchStoredFile(httpClient, thumbnailUrl);
             if (isCancelled) {
               // Cleanup if cancelled after fetch completes
               revoke();
@@ -361,7 +363,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       // Call all revoke functions to clean up blob URLs
       revokeCallbacks.forEach((revoke) => revoke());
     };
-  }, [fileList, httpHeaders, backendUrl, model.dimensions?.width, model.dimensions?.height, listType]);
+  }, [fileList, httpClient, backendUrl, model.dimensions?.width, model.dimensions?.height, listType]);
 
   // Clean up uploaded blob URLs on component unmount to prevent memory leaks
   useEffect(() => {
@@ -410,7 +412,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
     setPreviewLoading(true);
     const fullImageDownloadUrl = buildUrl(`${backendUrl}${STORED_FILE_URLS.DOWNLOAD_FILE}`, { id: file.id });
-    fetchStoredFile(fullImageDownloadUrl, httpHeaders)
+    fetchStoredFile(httpClient, fullImageDownloadUrl)
       .then(({ url: fullImageUrl, revoke }) => {
         // The preview may have moved to another file (or closed) while this was loading.
         // In that case discard the fetched image instead of swapping it in.

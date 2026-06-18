@@ -1,10 +1,6 @@
 import { createStyles } from '@/styles';
-import { CSSObject } from 'antd-style';
 import { addPx } from '@/utils/style';
-
-export interface FileUploadStyleProps extends CSSObject {
-  jsStyle?: CSSObject;
-}
+import { CSSProperties } from 'react';
 
 interface ModelProps {
   layout?: boolean | undefined;
@@ -14,7 +10,7 @@ interface ModelProps {
 }
 
 interface FileUploadStylesParams {
-  style?: FileUploadStyleProps | undefined;
+  style?: CSSProperties | undefined;
   model: ModelProps;
 }
 
@@ -228,7 +224,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
         ${borderRadiusCss}
         padding: 0 !important;
         ${commonBorderStyles}
-        ${style}
+        ${{...style}}
       }
 
       .thumbnail-item-name {
@@ -241,7 +237,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
             color: ${color} !important;
           }
         }
-        ${style?.jsStyle}
+        ${{...style}}
       }
 
       .thumbnail-stub {
@@ -251,7 +247,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
         justify-content: center;
         ${borderRadiusCss}
         border: ${borderWidth} ${borderStyle} ${borderColor} !important;
-        ${style}
+        ${{...style}}
       }
 
       .ant-upload-list-text {
@@ -300,7 +296,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
         * {
           ${commonTextStyles}
         }
-        ${style}
+        ${{...style}}
         width: 100% !important;
         height: 100% !important;
         border: none !important;
@@ -325,7 +321,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
           animation: none !important;
           transition: none !important;
         }
-        ${style}
+        ${{...style}}
       }
     `,
   );
@@ -405,7 +401,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
           object-fit: cover !important;
         }
       }
-      ${style}
+      ${{...style}}
     `,
   );
 

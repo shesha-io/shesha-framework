@@ -17,7 +17,7 @@ import { useFileUploadState, useSheshaApplication, useFileUpload, useTheme } fro
 import { isFileTypeAllowed } from '@/utils/fileValidation';
 import FileVersionsPopup from './fileVersionsPopup';
 import { DraggerStub } from './stubs';
-import { FileUploadStyleProps, useStyles } from './styles/styles';
+import { useStyles } from './styles/styles';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { storedFileModel2UploadFile } from '@/utils/storedFile/utils';
 import { StoredFileModel } from '@/utils/storedFile/models';
@@ -64,7 +64,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const { backendUrl } = useSheshaApplication();
 
   const { styles } = useStyles({
-    style: stylesProp as FileUploadStyleProps | undefined,
+    style: stylesProp,
     model: {
       layout: listType === 'thumbnail' && !isDragger,
       isDragger,
@@ -300,14 +300,14 @@ export const FileUpload: FC<IFileUploadProps> = ({
     );
   };
 
-  const fileProps: UploadProps = {
+  const fileProps: UploadProps<any> = {
     name: 'file',
     disabled: !allowUpload,
     accept: allowedFileTypes.join(','),
     multiple: false,
     fileList: isDefined(uploadFileModel) && fileInfo?.status !== 'error' ? [uploadFileModel] : [],
     maxCount: 1,
-    ...(!isDragger && listType !== 'thumbnail' && isDefined(stylesProp) ? { style: stylesProp } : {}),
+    ...(!isDragger && listType !== 'thumbnail' && isDefined(stylesProp) ? { style: stylesProp as CSSProperties } : {}),
     customRequest: onCustomRequest,
     beforeUpload: (file) => {
       if (!isFileTypeAllowed(file.name, allowedFileTypes)) {

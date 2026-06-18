@@ -9,6 +9,7 @@ import { StoredFileModel } from '@/utils/storedFile/models';
 import { ConfigurableForm } from '../configurableForm';
 import DateDisplay from '../dateDisplay';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { HttpClientApi } from '@/publicJsApis/apis/httpClient';
 
 export interface IFileVersionsButtonProps {
   fileId: string;
@@ -70,14 +71,14 @@ export interface IFetchStoredFileResult {
  * the URL is no longer needed to prevent memory leaks. The revoke function is safe to call
  * multiple times.
  *
+ * @param httpClient - The Shesha HTTP client used for the request (handles auth/standard headers)
  * @param url - The file URL to fetch
- * @param httpHeaders - Optional HTTP headers to include in the request
  * @returns A Promise resolving to an object containing the blob URL and revoke function
- * @throws {Error} If the fetch fails (non-ok response status)
+ * @throws {Error} If the request fails
  *
  * @example
  * ```typescript
- * const { url, revoke } = await fetchStoredFile('/api/files/123');
+ * const { url, revoke } = await fetchStoredFile(httpClient, '/api/files/123');
  * try {
  *   // Use the URL...
  *   imgElement.src = url;
@@ -88,18 +89,12 @@ export interface IFetchStoredFileResult {
  * ```
  */
 export const fetchStoredFile = async (
+  httpClient: HttpClientApi,
   url: string,
-  httpHeaders: Record<string, string> = {},
 ): Promise<IFetchStoredFileResult> => {
-  const response = await fetch(url, {
-    headers: { ...httpHeaders },
-  });
+  const response = await httpClient.get<BlobPart>(url, { responseType: 'blob' });
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch file: ${response.status} ${response.statusText}`);
-  }
-
-  const blob = await response.blob();
+  const blob = new Blob([response.data]);
   const objectUrl = URL.createObjectURL(blob);
 
   let revoked = false;
