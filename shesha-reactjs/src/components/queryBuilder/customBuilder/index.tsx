@@ -19,7 +19,9 @@ import {
   Config,
   FieldProps,
   FieldSource,
+  FuncValue,
   RuleValue,
+  SimpleValue,
   Utils as QbUtils,
   ValueSource,
   WidgetProps,
@@ -31,6 +33,12 @@ import { getRootLogicLabel, IPlainTreeNode } from '../treeRelations';
 import { ignoreIfUnassignedTooltip } from '../widgets/ignoreIfUnassigned/constants';
 import { FieldWidgetProvider } from '../widgets/field/fieldWidgetContext';
 
+/**
+ * `RuleValue` from the query-builder lib includes an `any` member, which collapses the whole
+ * union to `any` and trips no-unsafe-* rules. This is the same union without the `any` part.
+ */
+type SafeRuleValue = SimpleValue | FuncValue;
+
 type RelationValue = 'AND' | 'OR';
 type DropPlacement = 'before' | 'after' | 'append';
 
@@ -39,7 +47,7 @@ interface IPlainRuleProperties {
   fieldSrc?: FieldSource;
   fieldType?: string;
   operator?: string;
-  value?: RuleValue[];
+  value?: SafeRuleValue[];
   valueSrc?: ValueSource[];
   valueType?: string[];
   valueError?: Array<string | null>;
@@ -125,12 +133,12 @@ const getChildren = (node?: IPlainTreeItem): IPlainTreeItem[] => Array.isArray(n
 const getRelationOptions = (config: Config): Array<{ label: string; value: RelationValue }> => {
   return RELATION_OPTIONS.map((value) => ({
     value,
-    label: config.conjunctions?.[value]?.label ?? value,
+    label: config.conjunctions[value]?.label ?? value,
   }));
 };
 
 const getDefaultConjunction = (config: Config): RelationValue => {
-  const configured = config.settings?.defaultConjunction;
+  const configured = config.settings.defaultConjunction;
   return configured === 'OR' ? 'OR' : 'AND';
 };
 
@@ -225,7 +233,7 @@ const canMoveNodeToParentPath = (
 const getSourceLabel = (config: Config, source: string): string => {
   const valueSourcesInfo = (config.settings as Config['settings'] & {
     valueSourcesInfo?: Record<string, { label?: string } | string>;
-  })?.valueSourcesInfo;
+  }).valueSourcesInfo;
   const sourceInfo = valueSourcesInfo?.[source];
 
   if (typeof sourceInfo === 'string')
@@ -248,7 +256,7 @@ const getFallbackOperatorsForType = (config: Config, typeName?: string): string[
   if (!typeName)
     return [];
 
-  const typeDefinition = config.types?.[typeName] as { operators?: string[] } | undefined;
+  const typeDefinition = config.types[typeName] as { operators?: string[] } | undefined;
   return Array.isArray(typeDefinition?.operators) ? typeDefinition.operators : [];
 };
 
@@ -268,7 +276,7 @@ const getOperatorOptions = (config: Config, field?: string): Array<{ label: stri
 
   return operatorKeys.map((value) => ({
     value,
-    label: config.operators?.[value]?.label ?? value,
+    label: config.operators[value]?.label ?? value,
   }));
 };
 
@@ -282,7 +290,7 @@ const getOperatorOptionsForType = (config: Config, typeName: string): Array<{ la
 
   return operatorKeys.map((value) => ({
     value,
-    label: config.operators?.[value]?.label ?? value,
+    label: config.operators[value]?.label ?? value,
   }));
 };
 
@@ -290,7 +298,7 @@ const getOperatorCardinality = (config: Config, operator?: string): number => {
   if (!operator)
     return 1;
 
-  const operatorDefinition = config.operators?.[operator] as { cardinality?: number } | undefined;
+  const operatorDefinition = config.operators[operator] as { cardinality?: number } | undefined;
   return typeof operatorDefinition?.cardinality === 'number' ? operatorDefinition.cardinality : 1;
 };
 
@@ -305,7 +313,7 @@ type IValueSourceAwareOperatorDefinition = {
 };
 
 const getConfigValueSources = (config: Config): ValueSource[] => {
-  const valueSourceKeys = Object.keys(config.settings?.valueSourcesInfo ?? {});
+  const valueSourceKeys = Object.keys(config.settings.valueSourcesInfo ?? {});
   return (valueSourceKeys.length > 0 ? valueSourceKeys : ['value']) as ValueSource[];
 };
 
@@ -315,8 +323,8 @@ const getFallbackValueSources = (
   operator?: string,
 ): ValueSource[] => {
   const fieldType = fieldDefinition?.type ?? fieldDefinition?.returnType;
-  const typeDefinition = fieldType ? (config.types?.[fieldType] as { valueSources?: ValueSource[] } | undefined) : undefined;
-  const operatorDefinition = operator ? (config.operators?.[operator] as IValueSourceAwareOperatorDefinition | undefined) : undefined;
+  const typeDefinition = fieldType ? (config.types[fieldType] as { valueSources?: ValueSource[] } | undefined) : undefined;
+  const operatorDefinition = operator ? (config.operators[operator] as IValueSourceAwareOperatorDefinition | undefined) : undefined;
 
   const fieldValueSources = Array.isArray(fieldDefinition?.valueSources) && fieldDefinition.valueSources.length > 0
     ? fieldDefinition.valueSources
@@ -347,10 +355,10 @@ const getValueSources = (config: Config, field?: string, operator?: string): Val
   );
 
   if (typeof configUtils.getValueSourcesForFieldOp === 'function')
-    return configUtils.getValueSourcesForFieldOp(config, field, operator, fieldDefinition) ?? fallbackValueSources;
+    return configUtils.getValueSourcesForFieldOp(config, field, operator, fieldDefinition);
 
   if (typeof configUtils.filterValueSourcesForField === 'function')
-    return configUtils.filterValueSourcesForField(config, fallbackValueSources, fieldDefinition, operator) ?? fallbackValueSources;
+    return configUtils.filterValueSourcesForField(config, fallbackValueSources, fieldDefinition, operator);
 
   return fallbackValueSources;
 };
@@ -372,19 +380,19 @@ const getWidgetKey = (config: Config, field?: string, operator?: string, valueSr
 };
 
 const getFieldSourceReadonly = (config: Config, readOnly: boolean): boolean => {
-  return readOnly || config.settings?.immutableFieldsMode === true;
+  return readOnly || config.settings.immutableFieldsMode === true;
 };
 
 const getOperatorReadonly = (config: Config, readOnly: boolean): boolean => {
-  return readOnly || config.settings?.immutableOpsMode === true;
+  return readOnly || config.settings.immutableOpsMode === true;
 };
 
 const getValueReadonly = (config: Config, readOnly: boolean): boolean => {
-  return readOnly || config.settings?.immutableValuesMode === true;
+  return readOnly || config.settings.immutableValuesMode === true;
 };
 
 const getGroupReadonly = (config: Config, readOnly: boolean): boolean => {
-  return readOnly || config.settings?.immutableGroupsMode === true;
+  return readOnly || config.settings.immutableGroupsMode === true;
 };
 
 const getPrimitiveTitle = (value: RuleValue | undefined): string | undefined => {
@@ -463,7 +471,7 @@ const RelationPrefix: React.FC<{
         variant="borderless"
         disabled={readOnly}
         popupMatchSelectWidth={false}
-        size={config.settings?.renderSize === 'medium' ? 'middle' : config.settings?.renderSize}
+        size={config.settings.renderSize === 'medium' ? 'middle' : config.settings.renderSize}
       />
     </div>
   );
@@ -508,7 +516,7 @@ const RuleValueFieldEditor: React.FC<{
   path: string[];
   actions: BuilderProps['actions'];
   readOnly: boolean;
-  value?: RuleValue;
+  value?: SafeRuleValue;
 }> = ({ actions, config, field, fieldType, operator, path, readOnly, value }) => {
   const widgetProps = React.useMemo(() => ({
     config,
@@ -550,7 +558,7 @@ const RuleWidgetEditor: React.FC<{
   delta: number;
   readOnly: boolean;
   valueSrc: ValueSource;
-  value?: RuleValue;
+  value?: SafeRuleValue;
   valueType?: string;
   valueError?: string | null;
 }> = ({
@@ -576,7 +584,7 @@ const RuleWidgetEditor: React.FC<{
   delta: number;
   readOnly: boolean;
   valueSrc: ValueSource;
-  value?: RuleValue;
+  value?: SafeRuleValue;
   valueType?: string;
   valueError?: string | null;
 }) => {
@@ -597,7 +605,7 @@ const RuleWidgetEditor: React.FC<{
 
   const fieldDefinition = QbUtils.ConfigUtils.getFieldConfig(config, field);
   const widgetKey = getWidgetKey(config, field, operator, valueSrc);
-  const widgetDefinition = widgetKey ? config.widgets?.[widgetKey] : undefined;
+  const widgetDefinition = widgetKey ? config.widgets[widgetKey] : undefined;
   const fieldConfigType = (fieldDefinition as { type?: string } | null)?.type;
   const fieldConfigLabel = (fieldDefinition as { label?: string } | null)?.label;
   const fieldConfigSettings = (fieldDefinition as unknown as { fieldSettings?: Record<string, unknown> } | null)?.fieldSettings;
@@ -644,7 +652,7 @@ const FunctionValueEditor: React.FC<{
   operator: string;
   path: string[];
   readOnly: boolean;
-  value?: RuleValue;
+  value?: SafeRuleValue;
 }> = ({ actions, config, field, fieldType, operator, path, readOnly, value }: {
   actions: BuilderProps['actions'];
   config: Config;
@@ -653,10 +661,10 @@ const FunctionValueEditor: React.FC<{
   operator: string;
   path: string[];
   readOnly: boolean;
-  value?: RuleValue;
+  value?: SafeRuleValue;
 }) => {
   const currentValue = React.useMemo(() => parseEvaluateFunctionValue(value), [value]);
-  const widgetDefinition = config.widgets?.mustacheExpression;
+  const widgetDefinition = config.widgets.mustacheExpression;
   const widgetFactory = typeof widgetDefinition?.factory === 'function'
     ? widgetDefinition.factory as unknown as (props: WidgetProps, ctx?: Config['ctx']) => React.ReactNode
     : null;
@@ -758,7 +766,7 @@ const FieldFunctionEditor: React.FC<{
 }> = ({ actions, config, field, path, readOnly }) => {
   const { expression, ignoreIfUnassigned } = React.useMemo(() => parseFieldFuncExpression(field), [field]);
 
-  const widgetDefinition = config.widgets?.mustacheExpression;
+  const widgetDefinition = config.widgets.mustacheExpression;
   const widgetFactory = typeof widgetDefinition?.factory === 'function'
     ? widgetDefinition.factory as unknown as (props: WidgetProps, ctx?: Config['ctx']) => React.ReactNode
     : null;
@@ -986,7 +994,7 @@ const QueryRuleRow: React.FC<IRuleProps> = (props) => {
   const fieldProps: FieldProps = {
     items: [],
     config,
-    placeholder: config.settings?.fieldPlaceholder,
+    placeholder: config.settings.fieldPlaceholder,
     selectedFieldSrc: 'field',
     selectedKey: selectedField,
     readonly: fieldReadonly,
@@ -1042,11 +1050,11 @@ const QueryRuleRow: React.FC<IRuleProps> = (props) => {
             value={selectedOperator}
             options={operatorOptions}
             variant="borderless"
-            placeholder={config.settings?.operatorPlaceholder}
+            placeholder={config.settings.operatorPlaceholder}
             onChange={(nextOperator) => actions.setOperator(path, nextOperator)}
             disabled={operatorReadonly || (!selectedField && !isFieldFunc)}
             popupMatchSelectWidth={false}
-            size={config.settings?.renderSize === 'medium' ? 'middle' : config.settings?.renderSize}
+            size={config.settings.renderSize === 'medium' ? 'middle' : config.settings.renderSize}
           />
         </div>
       </div>
@@ -1087,12 +1095,9 @@ const QueryBuilderItem: React.FC<IBuilderItemProps> = ({
   const canDelete = !readOnly;
   const siblingCount = getChildren(parentNode).length;
   const isNested = path.length > 2;
-  const canDrag = !readOnly && config.settings?.canReorder !== false && (siblingCount > 1 || isNested);
+  const canDrag = !readOnly && config.settings.canReorder !== false && (siblingCount > 1 || isNested);
 
   const handleRelationChange = (nextRelation: RelationValue): void => {
-    if (!actions.setTree)
-      return;
-
     const nextTree = (tree as unknown as {
       setIn: (path: Array<string | number>, value: unknown) => BuilderProps['tree'];
     }).setIn([...getImmutablePath(path), 'properties', '__relation'], nextRelation);
@@ -1276,7 +1281,7 @@ function QueryBuilderGroup({
     <div
       className={classNames(
         'sha-query-builder-group-card',
-        dropHint?.placement === 'append' && dropHint?.path && getPathKey(dropHint.path) === getPathKey(path) && 'is-drop-append',
+        dropHint?.placement === 'append' && getPathKey(dropHint.path) === getPathKey(path) && 'is-drop-append',
       )}
       onDragOver={onDragOverAppend(path)}
       onDrop={onDropAppend(path)}
@@ -1352,7 +1357,7 @@ function QueryBuilderGroup({
             onDropAppend={onDropAppend}
           />
         ))}
-        {children.length === 0 && dropHint?.placement === 'append' && dropHint?.path && getPathKey(dropHint.path) === getPathKey(path) && (
+        {children.length === 0 && dropHint?.placement === 'append' && getPathKey(dropHint.path) === getPathKey(path) && (
           <div className="sha-query-builder-drop-placeholder" />
         )}
       </div>
@@ -1362,7 +1367,7 @@ function QueryBuilderGroup({
 
 export const CustomQueryBuilder: React.FC<BuilderProps> = ({ actions, config, tree }) => {
   const plainTree = React.useMemo(() => QbUtils.getTree(tree) as IPlainTreeItem, [tree]);
-  const rootPath = React.useMemo(() => [plainTree?.id ?? String(tree?.get?.('id') ?? '')], [plainTree?.id, tree]);
+  const rootPath = React.useMemo(() => [plainTree.id], [plainTree.id]);
   const [dragState, setDragState] = React.useState<string[] | null>(null);
   const [dropHint, setDropHint] = React.useState<IDropHint | null>(null);
   const readOnly = getGroupReadonly(config, false) && getFieldSourceReadonly(config, false) && getValueReadonly(config, false);
@@ -1455,7 +1460,7 @@ export const CustomQueryBuilder: React.FC<BuilderProps> = ({ actions, config, tr
     }
   }, []);
 
-  if (!plainTree || !rootPath[0])
+  if (!rootPath[0])
     return <div className="sha-query-builder-surface" />;
 
   return (

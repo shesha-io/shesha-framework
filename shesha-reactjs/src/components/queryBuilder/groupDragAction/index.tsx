@@ -7,7 +7,7 @@ interface IGroupDragActionProps {
   parentFieldCanReorder?: boolean;
   reordableNodesCnt?: number;
   // The library types this as `Function`; we accept that and narrow it at the call site.
-  handleDraggerMouseDown?: Function;
+  handleDraggerMouseDown?: React.MouseEventHandler<HTMLButtonElement>;
   config?: {
     settings?: {
       canReorder?: boolean;
@@ -40,7 +40,7 @@ export const GroupDragAction: FC<IGroupDragActionProps> = ({
   if (!canRenderDrag)
     return null;
 
-  const icon = config?.settings?.renderIcon?.({ type: 'drag' }, config?.ctx);
+  const icon = config?.settings?.renderIcon?.({ type: 'drag' }, config.ctx);
 
   return (
     <div className="sha-query-builder-group-extra-actions">

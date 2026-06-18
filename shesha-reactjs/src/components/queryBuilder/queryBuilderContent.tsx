@@ -60,9 +60,9 @@ export const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
   }, [value]);
 
   const renderBuilder = (props: BuilderProps): React.JSX.Element => {
-    const children1 = props.tree?.getIn?.(['children1']);
-    const hasRules = Boolean(children1 && (children1 as { size?: number })?.size > 0);
-    const plainTree = props.tree ? QbUtils.getTree(props.tree) : undefined;
+    const children1 = props.tree.getIn(['children1']);
+    const hasRules = Boolean(children1 && (children1 as { size: number }).size > 0);
+    const plainTree = QbUtils.getTree(props.tree);
     const logicHeading = getRootLogicLabel(plainTree);
 
     return (

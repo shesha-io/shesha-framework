@@ -7,7 +7,7 @@ type RulePropsWithReorder = RuleProps & { parentFieldCanReorder?: boolean };
 export const RuleDragHandlePlaceholder = (props: RulePropsWithReorder): JSX.Element | null => {
   const { config, reordableNodesCnt, isLocked, parentField, parentFieldCanReorder } = props;
 
-  const canReorder = config?.settings?.canReorder !== false;
+  const canReorder = config.settings.canReorder !== false;
   const canReorderInParent = !parentField || Boolean(parentFieldCanReorder);
   const showNativeDragHandle = canReorder && canReorderInParent && Number(reordableNodesCnt || 0) > 1 && !Boolean(isLocked);
 

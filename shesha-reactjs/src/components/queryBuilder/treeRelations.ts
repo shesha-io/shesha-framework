@@ -74,9 +74,6 @@ const normalizeNodeForExport = (node?: IPlainTreeNode): IPlainTreeNode | undefin
   let currentClause: IPlainTreeNode[] = [];
 
   normalizedChildren.forEach((child, index) => {
-    if (!child)
-      return;
-
     if (index === 0) {
       currentClause = [child];
       return;
@@ -123,7 +120,7 @@ export const normalizeTreeForJsonLogic = <T extends IPlainTreeNode>(tree?: T): T
 
 export const getRootLogicLabel = (tree?: IPlainTreeNode | JsonTree): string => {
   const normalizedTree = normalizeTreeForJsonLogic(tree as IPlainTreeNode);
-  const conjunction = (normalizedTree?.properties as Record<string, unknown>)?.conjunction;
+  const conjunction = (normalizedTree.properties as Record<string, unknown>).conjunction;
 
   if (conjunction === 'OR')
     return 'Show any...';

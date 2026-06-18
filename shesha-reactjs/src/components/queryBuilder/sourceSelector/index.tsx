@@ -59,7 +59,7 @@ export const SourceSelector: FC<ISourceSelectorProps> = ({
     selectedKeys: [activeSource],
     items: menuItems,
     onClick: ({ key, domEvent }) => {
-      domEvent?.stopPropagation();
+      domEvent.stopPropagation();
       setValueSrc(String(key));
     },
   };

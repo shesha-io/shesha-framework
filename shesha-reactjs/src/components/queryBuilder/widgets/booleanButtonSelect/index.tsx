@@ -34,13 +34,13 @@ export const BooleanButtonSelectWidget: BooleanButtonSelectWidgetType = {
   ...BasicConfig.widgets.boolean,
   valueSrc: 'value',
   factory: (props) => {
-    const extProps = props as typeof props & { labelYes?: string; labelNo?: string };
+    const extProps = props as Omit<typeof props, 'value'> & { labelYes?: string; labelNo?: string; value?: boolean };
     const labelYes = extProps.labelYes ?? 'Yes';
     const labelNo = extProps.labelNo ?? 'No';
 
     return (
       <BoolButtonGroup
-        value={props.value ?? true}
+        value={extProps.value ?? true}
         readonly={props.readonly}
         labelYes={labelYes}
         labelNo={labelNo}
