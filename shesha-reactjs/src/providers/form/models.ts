@@ -116,7 +116,7 @@ export interface IComponentValidationRules {
 
 export type EditMode = 'editable' | 'readOnly' | 'inherited' | boolean;
 export type PositionType = 'relative' | 'fixed';
-export interface IStyleType {
+export interface IStyleValue {
   border?: IBorderValue | undefined;
   background?: IBackgroundValue | undefined;
   font?: IFontValue | undefined;
@@ -124,7 +124,10 @@ export interface IStyleType {
   dimensions?: IDimensionsValue | undefined;
   size?: SizeType | undefined;
   style?: string | undefined;
+  styleJson?: CSSProperties | undefined;
+  /** @deprecated use stylingBoxJson insted */
   stylingBox?: string | undefined;
+  stylingBoxJson?: StyleBoxValue | undefined;
   primaryTextColor?: string | undefined;
   primaryBgColor?: string | undefined;
   secondaryBgColor?: string | undefined;
@@ -135,7 +138,7 @@ export interface IStyleType {
   autoHeight?: boolean | undefined;
 }
 
-export interface IInputStyles extends IStyleType {
+export interface IInputStyles extends IStyleValue {
   borderSize?: string | number | undefined;
   borderRadius?: string | number | undefined;
   borderType?: IBorderType | undefined;
@@ -146,7 +149,6 @@ export interface IInputStyles extends IStyleType {
   color?: string | undefined;
   fontWeight?: string | number | undefined;
   fontSize?: string | number | undefined;
-  stylingBox?: string | undefined;
   height?: string | number | undefined;
   width?: string | number | undefined;
   hideBorder?: boolean | undefined;
@@ -161,9 +163,8 @@ export interface IInputStyles extends IStyleType {
   backgroundUrl?: string | undefined;
   backgroundBase64?: string | undefined;
   backgroundStoredFileId?: string | undefined;
-  style?: string | undefined;
   enableStyleOnReadonly?: boolean | undefined;
-  container?: IStyleType | undefined;
+  container?: IStyleValue | undefined;
   display?: 'block' | 'flex' | 'grid' | 'inline-grid' | undefined;
 };
 
@@ -214,6 +215,12 @@ export interface IComponentRuntimeProps {
 
   /** Custom onSelect handler */
   onSelectCustom?: string | undefined;
+
+  /** Custom onHover handler */
+  onHoverCustom?: string | undefined;
+
+  /** Custom onKeyPress handler */
+  onKeyPressCustom?: string | undefined;
 }
 
 export interface IComponentBindingProps {
@@ -239,6 +246,7 @@ export interface IComponentVisibilityProps {
    * It may also depend on the permissions and/or state of the parent container/form
    * Use `hidden` to get actual visible/hidden state of the component */
   visible?: boolean | undefined;
+  visiblePermissions?: string[] | undefined;
 
   /** Custom visibility code */
   /** @deprecated Use hidden in js mode instead */
@@ -269,14 +277,14 @@ export type DeviceType = StringSubtype<typeof DEVICE_TYPES>;
 /**
  * Base model of the configurable component
  */
-export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles = IInputStyles>
+export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles = IStyleValue>
   extends IFormComponentContainer,
   IHasVersion,
   IComponentBindingProps,
   IComponentLabelProps,
   IComponentVisibilityProps,
   IComponentRuntimeProps,
-  IStyleType {
+  IStyleValue {
   /** Type of the component */
   type: string;
 
@@ -291,6 +299,7 @@ export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles =
 
   /** Component edit/action mode */
   editMode?: EditMode | IPropertySetting<EditMode> | undefined;
+  editModePermissions?: string[] | undefined;
 
   /** Custom visibility code */
   /** @deprecated Use disabled in js mode instead */
@@ -313,12 +322,6 @@ export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles =
 
   subscribedEventNames?: string[] | undefined;
 
-  /** Default style CSS applied as expression */
-  style?: string | undefined;
-
-  /** Default css style applied as string */
-  stylingBox?: string | undefined;
-
   wrapperStyle?: string | undefined;
 
   noDataText?: string | undefined;
@@ -333,19 +336,16 @@ export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles =
 
   layout?: FormLayout | undefined;
 
-  inputStyles?: IStyleType | undefined;
-
   desktop?: TDeviceStyles | undefined;
 
   tablet?: TDeviceStyles | undefined;
 
   mobile?: TDeviceStyles | undefined;
 
+  /** @deprecated Will be removed. Use properties from IStyleValue */
   allStyles?: IFormComponentStyles | undefined;
 
   enableStyleOnReadonly?: boolean | undefined;
-
-  listType?: 'text' | 'thumbnail' | undefined;
 
   // TODO: V1: review usages and remove if not used
   jsStyle?: CSSProperties | undefined;
@@ -573,11 +573,13 @@ export type GenericDictionary = { [key: string]: unknown };
 
 export const STYLE_BOX_CSS_POPERTIES = ['marginTop', 'marginRight', 'marginBottom', 'marginLeft', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'] as const;
 export type StyleBoxCssProperties = typeof STYLE_BOX_CSS_POPERTIES[number];
-export type StyleBoxValue = Pick<CSSProperties, StyleBoxCssProperties>;
+export type StyleBoxValue = Partial<Pick<CSSProperties, StyleBoxCssProperties>> & {
+  _type: 'styleBox';
+};
 
 export interface IContainerConfig {
   dimensions?: IDimensionsValue | undefined;
-  stylingBox?: string | undefined;
+  stylingBox?: string | StyleBoxValue | undefined;
   style?: string | undefined;
 }
 export interface IComponentModelProps extends IConfigurableFormComponent {

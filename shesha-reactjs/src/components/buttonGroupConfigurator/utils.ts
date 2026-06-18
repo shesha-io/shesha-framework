@@ -1,6 +1,6 @@
-import { IStyleType } from "../..";
+import { IStyleValue } from "../..";
 
-export const initialValues = (): IStyleType => {
+export const initialValues = (): IStyleValue => {
   return {
     background: {
       type: 'color',

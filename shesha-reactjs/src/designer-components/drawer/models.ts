@@ -1,7 +1,7 @@
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IConfigurableFormComponent } from '@/interfaces/formDesigner';
 import { IBackgroundValue } from '../_settings/utils/background/interfaces';
-import { IInputStyles, IStyleType } from '@/providers/form/models';
+import { IInputStyles, IStyleValue } from '@/providers/form/models';
 
 export interface IDrawerProps extends IConfigurableFormComponent {
   showFooter?: boolean | undefined;
@@ -28,8 +28,8 @@ export interface IDrawerProps extends IConfigurableFormComponent {
   fontColor?: string | undefined;
   backgroundColor?: string | undefined;
   fontSize?: number | undefined;
-  headerStyles?: IStyleType | undefined;
-  footerStyles?: IStyleType | undefined;
+  headerStyles?: IStyleValue | undefined;
+  footerStyles?: IStyleValue | undefined;
   background?: IBackgroundValue | undefined;
 
   desktop?: IInputStyles | undefined;

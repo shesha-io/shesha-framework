@@ -9,9 +9,9 @@ import { useStyles } from '../../../components/formDesigner/styles/styles';
 import { useParent } from '@/providers/parentProvider';
 import _ from 'lodash';
 import { getAlignmentStyle } from '@/components/formDesigner/containers/util';
-import { ConfigurableFormComponentDesigner } from '@/components/formDesigner/configurableFormComponent';
 import { ISettingContainerProps } from './settingComponentContainer';
 import { isDefined } from '@/utils/nullables';
+import DesignerFormComponent from '@/components/formDesigner/formComponent/designerFormComponent';
 
 export const SettingContainerDesigner: FC<ISettingContainerProps> = (props) => {
   const {
@@ -72,7 +72,7 @@ export const SettingContainerDesigner: FC<ISettingContainerProps> = (props) => {
 
   return (
     <ConditionalWrap
-      condition={!noDefaultStyling}
+      condition={noDefaultStyling !== true}
       wrap={(content) => (
         <div className={classNames(styles.shaComponentsContainer, direction, className)} style={wrapperStyle}>
           {content}
@@ -100,11 +100,11 @@ export const SettingContainerDesigner: FC<ISettingContainerProps> = (props) => {
           scroll={true}
           bubbleScroll={true}
           direction={direction}
-          className={noDefaultStyling ? '' : styles.shaComponentsContainerInner}
+          className={noDefaultStyling === true ? '' : styles.shaComponentsContainerInner}
           style={{ ...style, ...incomingStyle }}
         >
           {childIds.length === 0 && <div className={styles.shaDropHint}>Drag and Drop form component</div>}
-          {component.id && <ConfigurableFormComponentDesigner componentModel={component} />}
+          {component.id && <DesignerFormComponent componentModel={component} />}
         </ReactSortable>
       </>
     </ConditionalWrap>

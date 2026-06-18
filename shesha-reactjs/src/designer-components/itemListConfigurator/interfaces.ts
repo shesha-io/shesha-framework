@@ -1,10 +1,10 @@
 import { ListItemRenderingArgs } from "@/components/listEditor";
-import { FormMarkup, IStyleType } from "@/providers";
+import { FormMarkup, IStyleValue } from "@/providers";
 import { isDefined } from "@/utils/nullables";
 
 export type ItemSettingsMarkupFactory<TItem = unknown> = (item: TItem) => FormMarkup;
 
-export interface DefaultItemRenderingProps extends IStyleType {
+export interface DefaultItemRenderingProps extends IStyleValue {
   label: string;
   description?: string | undefined;
   icon?: string | undefined;

@@ -38,7 +38,7 @@ const SizableColumnsSettings = (props: ISettingsFormFactoryArgs<ISizableColumnCo
         </SettingsFormItem>
 
         <SettingsFormItem name="stylingBox">
-          <StyleBox />
+          <StyleBox readOnly={false} value={undefined} propertyName="stylingBox" />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 

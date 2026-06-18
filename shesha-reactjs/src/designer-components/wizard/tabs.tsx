@@ -139,7 +139,7 @@ export const Tabs: FC<IWizardComponentProps> = ({ form, ...model }) => {
               items={steps.map(({ bodyContent: _, ...step }) => ({ ...step, style: {} }))}
               {...(direction ? { orientation: direction } : {})}
               {...(labelPlacement ? { titlePlacement: labelPlacement } : {})}
-              {...(model.size && model.size !== 'large' ? { size: model.size } : {})}
+              // {...(model.size && model.size !== 'large' ? { size: model.size } : {})}
             />
             <div className={styles.shaStepsContent}>{steps[current]?.bodyContent}</div>
           </div>
