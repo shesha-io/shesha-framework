@@ -63,13 +63,8 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
-  // Convert CSSProperties to FileUploadStyleProps safely
-  const convertedStyles: FileUploadStyleProps | undefined = stylesProp ? {
-    ...stylesProp,
-  } : undefined;
-
   const { styles } = useStyles({
-    style: convertedStyles,
+    style: stylesProp as FileUploadStyleProps | undefined,
     model: {
       layout: listType === 'thumbnail' && !isDragger,
       isDragger,
@@ -94,7 +89,6 @@ export const FileUpload: FC<IFileUploadProps> = ({
   // Clean up blob URLs on unmount
   useEffect(() => {
     const blobUrlsMap = uploadedFileBlobUrls.current;
-    const pendingBlob = pendingFileBlob.current;
 
     return () => {
       blobUrlsMap.forEach((blobUrl) => {
@@ -102,8 +96,9 @@ export const FileUpload: FC<IFileUploadProps> = ({
       });
       blobUrlsMap.clear();
 
-      if (pendingBlob) {
-        URL.revokeObjectURL(pendingBlob.blobUrl);
+      if (pendingFileBlob.current) {
+        URL.revokeObjectURL(pendingFileBlob.current.blobUrl);
+        pendingFileBlob.current = null;
       }
     };
   }, []);
@@ -190,7 +185,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
           pendingFileBlob.current = null;
         }
         console.error('Failed to upload file', error);
-        onError?.(error as Error);
+        onError?.(error instanceof Error ? error : new Error(String(error)));
       });
     } else {
       const error = new Error('File is not an instance of File. Please check the file object.');
