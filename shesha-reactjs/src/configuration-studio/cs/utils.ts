@@ -1,9 +1,11 @@
-import { RefObject } from "react";
+export class MutableApi<TApi> {
+  private _api: TApi | undefined = undefined;
 
-export interface ManualRefObject<T> extends RefObject<T> {
-  current: T;
+  setApi(api: TApi): void {
+    this._api = api;
+  }
+
+  getApi(): TApi | undefined {
+    return this._api;
+  }
 }
-
-export const createManualRef = <T>(initialValue: T): ManualRefObject<T> => {
-  return { current: initialValue };
-};
