@@ -12,7 +12,7 @@ import { isNonEmptyArray } from '@/utils/array';
  * @return {boolean} Indicates whether the data is an instance of IPropertySetting
  */
 export const isPropertySettings = <Value = unknown>(data: unknown): data is IPropertySetting<Value> => {
-  if (!data || typeof data !== 'object') return false;
+  if (!isDefined(data) || typeof data !== 'object') return false;
 
   const typed = data as IPropertySetting;
   return typed._mode === 'code' || typed._mode === 'value';

@@ -5,7 +5,7 @@ import { useActualContextData, useDeepCompareMemo } from '@/hooks';
 import { useCalculatedModel, useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { IConfigurableFormComponent, IPropertyMetadata, IToolboxComponent, ValidateErrorEntity } from '@/interfaces';
-import { DEVICE_TYPES, DeviceType, IStyleType, UnwrapCodeEvaluators, useCanvas, useForm, useShaFormInstance, useSheshaApplication } from '@/providers';
+import { DEVICE_TYPES, DeviceType, IStyleType, useCanvas, useForm, useShaFormInstance, useSheshaApplication } from '@/providers';
 import { ComponentApiProperty, IComponentApiDescription } from '@/providers/componentApi/model';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { formComponentActualModelPropertyFilter, isFormFullName, updateComponentModelFromMetadata } from '@/providers/form/utils';
@@ -108,41 +108,47 @@ export const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel
     ),
   }, apiStyles);
 
-  const actualModel = useActualContextData<IConfigurableFormComponent & IStyleType>(
+  const unwrappedModel = useActualContextData<IConfigurableFormComponent & IStyleType>(
     deviceModel,
     undefined,
     undefined,
     (name, value) => formComponentActualModelPropertyFilter(toolboxComponent, name, value),
     undefined,
-  ) as UnwrapCodeEvaluators<IConfigurableFormComponent & IStyleType>; // TODO: move type cast to useActualContextData after refactoring
-
-  actualModel.hidden = shaForm.formMode !== 'designer' &&
-    (
-      // ToDo: AS - remove hidden from this check
-      actualModel.hidden ||
-      actualModel.visible === false ||
-      !anyOfPermissionsGranted(actualModel.permissions || []) ||
-      !isComponentFiltered(actualModel));
+  );
 
   const { isInput, isOutput = false } = toolboxComponent;
-  if (!isInput && !isOutput)
-    actualModel.propertyName = undefined;
 
-  const allStyles = useFormComponentStyles(actualModel);
+  const allStyles = useFormComponentStyles(unwrappedModel);
 
-  // For input components: Strip margins from fullStyle and jsStyle
-  // Margins are handled by the FormItem wrapper (via allStyles.margins), not the inner component
-  // This prevents double margins (wrapper + component) in both designer and live modes
-  if (isInput) {
-    actualModel.allStyles = {
-      ...allStyles,
-      fullStyle: stylingUtils.stripMargins(allStyles.fullStyle),
-      jsStyle: stylingUtils.stripMargins(allStyles.jsStyle),
+  const actualModel = useMemo(() => {
+    const hidden = shaForm.formMode !== 'designer' &&
+      (
+      // ToDo: AS - remove hidden from this check
+        unwrappedModel.hidden === true ||
+        unwrappedModel.visible === false ||
+        !anyOfPermissionsGranted(unwrappedModel.permissions || []) ||
+        !isComponentFiltered(unwrappedModel));
+
+    const propertyName = !isInput && !isOutput
+      ? undefined
+      : unwrappedModel.propertyName;
+
+    const finalAllStyles = isInput
+      ? {
+        ...allStyles,
+        fullStyle: stylingUtils.stripMargins(allStyles.fullStyle),
+        jsStyle: stylingUtils.stripMargins(allStyles.jsStyle),
       // margins are preserved for FormItem wrapper use
+      }
+      : allStyles;
+
+    return {
+      ...unwrappedModel,
+      hidden,
+      propertyName,
+      allStyles: finalAllStyles,
     };
-  } else {
-    actualModel.allStyles = allStyles;
-  }
+  }, [allStyles, anyOfPermissionsGranted, isComponentFiltered, isInput, isOutput, shaForm.formMode, unwrappedModel]);
 
   const calculatedModel = useCalculatedModel(actualModel, toolboxComponent.useCalculateModel, toolboxComponent.calculateModel);
 
@@ -170,7 +176,7 @@ export const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel
         // use actualModel.hidden because it's already filtered by some other means (eg permissions)
         { name: 'visible',
           getter: () => actualApiModel.visible ?? false,
-          setter: (value) => updateApiModel(setApiModel, { hidden: actualModel.hidden || !value }),
+          setter: (value) => updateApiModel(setApiModel, { hidden: actualModel.hidden === true || !value }),
         },
         { name: 'editable',
           getter: () => actualApiModel.editMode,
@@ -253,7 +259,7 @@ export const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel
     const errors: Array<{ propertyName?: string; error: string }> = [];
     let validationType: ISheshaErrorTypes | undefined;
 
-    if (actualModel.background?.type === 'storedFile' && actualModel.background.storedFile?.id && !isValidGuid(actualModel.background.storedFile.id)) {
+    if (actualModel.background?.type === 'storedFile' && !isNullOrWhiteSpace(actualModel.background.storedFile?.id) && !isValidGuid(actualModel.background.storedFile.id)) {
       errors.push({ propertyName: 'The provided StoredFileId is invalid', error: 'The provided StoredFileId is invalid' });
     }
 
@@ -304,7 +310,7 @@ export const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel
     </ErrorIconPopover>
   ) : control;
 
-  if (shaForm.form && shaForm.form.settings.isSettingsForm)
+  if (shaForm.form && shaForm.form.settings.isSettingsForm === true)
     return control;
 
   const attributes: CustomHtmlAttributes = {

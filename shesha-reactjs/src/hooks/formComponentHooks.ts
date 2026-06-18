@@ -56,40 +56,51 @@ export const useTouchableProxy = <T>(accessors: ProxyPropertiesAccessors<T>, add
   return proxy;
 };
 
+const unwrapModel = <T extends object = object>(
+  model: T,
+  contextProxy: TouchableProxy<IApplicationContext>,
+  propertyFilter?: (name: string, value: unknown) => boolean,
+  executor?: (data: T, context: TouchableProxy<IApplicationContext>) => UnwrapCodeEvaluators<T>,
+  parentReadonly?: boolean,
+): UnwrapCodeEvaluators<T> => {
+  const preparedData: MayHaveEditMode<T> = Array.isArray(model)
+    ? model
+    : { ...model,
+      editMode: model.hasOwnProperty('editMode')
+        ? (model as MayHaveEditMode<T>).editMode
+        : undefined, // add editMode property if not exists
+    };
+
+  const actualModel: UnwrapCodeEvaluators<T> = executor
+    ? executor(preparedData, contextProxy)
+    : getActualModel(preparedData, contextProxy, parentReadonly, propertyFilter);
+  return actualModel;
+};
+
 export function useActualContextData<T extends object = object>(
   model: T,
   parentReadonly?: boolean,
   additionalData?: object,
   propertyFilter?: (name: string, value: unknown) => boolean,
-  executor?: (data: T, context: TouchableProxy<IApplicationContext>) => T,
+  executor?: (data: T, context: TouchableProxy<IApplicationContext>) => UnwrapCodeEvaluators<T>,
 ): UnwrapCodeEvaluators<T> {
   const parent = useParentOrUndefined();
   const fullContext = useAvailableConstantsContexts();
   const accessors = wrapConstantsData({ fullContext, topContextId: DataContextTopLevels.All });
 
-  const contextProxyRef = useTouchableProxy<IApplicationContext>(accessors, additionalData);
+  const contextProxy = useTouchableProxy<IApplicationContext>(accessors, additionalData);
 
-  const pReadonly = parentReadonly ?? getParentReadOnly(parent, contextProxyRef);
+  const pReadonly = parentReadonly ?? getParentReadOnly(parent, contextProxy);
 
   const prevParentReadonly = useRef(pReadonly);
   const prevModel = useRef<T>(undefined);
-  const actualModelRef = useRef<T>(model);
+  const actualModelRef = useRef<UnwrapCodeEvaluators<T> | undefined>(undefined);
   const prevActualModelRef = useRef<string>('');
 
-  let actualModel = undefined;
+  let actualModel: UnwrapCodeEvaluators<T> | undefined = undefined;
   const modelChanged = !isEqual(prevModel.current, model);
-  if (contextProxyRef.changed || modelChanged || !isEqual(prevParentReadonly.current, pReadonly)) {
-    const preparedData: MayHaveEditMode<T> = Array.isArray(model)
-      ? model
-      : { ...model,
-        editMode: model.hasOwnProperty('editMode')
-          ? (model as MayHaveEditMode<T>).editMode
-          : undefined, // add editMode property if not exists
-      };
-
-    actualModel = executor
-      ? executor(preparedData, contextProxyRef)
-      : getActualModel(preparedData, contextProxyRef, pReadonly, propertyFilter);
+  if (!isDefined(actualModelRef.current) || contextProxy.changed || modelChanged || !isEqual(prevParentReadonly.current, pReadonly)) {
+    actualModel = unwrapModel(model, contextProxy, propertyFilter, executor, pReadonly);
 
     // ToDo: AS - review copy and compare for performance and reliability
     const actualModelJson = JSON.stringify(actualModel);
@@ -103,8 +114,10 @@ export function useActualContextData<T extends object = object>(
   if (modelChanged)
     prevModel.current = model;
 
-  // TODO V1: review unwrapping
-  return actualModelRef.current as UnwrapCodeEvaluators<T>;
+  if (!isDefined(actualModelRef.current))
+    throw new Error('Actual model is not defined');
+
+  return actualModelRef.current;
 }
 
 export function useCalculatedModel<T extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = object>(
