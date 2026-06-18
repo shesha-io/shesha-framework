@@ -1,11 +1,13 @@
 import { isPropertySettings } from '@/designer-components/_settings/utils/utils';
 import {
+  IAnyObject,
   IPropertySetting,
 } from '@/interfaces';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { unproxyValue } from '@/utils/object';
 import {
   EditMode,
+  UnwrapCodeEvaluators,
 } from '../models';
 import { ObservableProxy } from '../observableProxy';
 import { TouchableProxy } from '../touchableProxy';
@@ -19,15 +21,13 @@ const getSettingValue = <TValue = unknown>(
   parentReadOnly?: boolean | undefined,
   propertyFilter?: ((name: string, value: unknown) => boolean) | undefined,
   processedObjects?: unknown[] | null,
-): TValue => {
+): UnwrapCodeEvaluators<TValue> | TValue | undefined => {
   const processed = isDefined(processedObjects) ? processedObjects : [];
 
   const unproxiedValue = unproxyValue(value);
 
-  let result: TValue = value;
-
   if (!isDefined(unproxiedValue) || (typeof propertyFilter === 'function' && !propertyFilter(propertyName, value)))
-    result = value;
+    return value;
   else if (typeof unproxiedValue === 'object' &&
     processed.indexOf(unproxiedValue) === -1 // skip already processed objects to avoid infinite loop
   ) {
@@ -36,20 +36,19 @@ const getSettingValue = <TValue = unknown>(
       const v = unproxiedValue.length === 0
         ? unproxiedValue
         : unproxiedValue.map((x) => {
-          // TODO: review and enable rule
           return getActualModel(x, allData, parentReadOnly, propertyFilter, processed);
         });
       processed.push(v);
-      result = v as TValue;
+      return v as UnwrapCodeEvaluators<TValue>;
     } else
       // update setting value to actual but only if not lazy
-      if (isPropertySettings(unproxiedValue) && unproxiedValue._lazy !== true) {
+      if (isPropertySettings<TValue>(unproxiedValue) && unproxiedValue._lazy !== true) {
         const v = unproxiedValue._mode === 'code'
           ? !isNullOrWhiteSpace(unproxiedValue._code) ? calcFunction(unproxiedValue, allData) : undefined
           : unproxiedValue._value;
         const upv = unproxyValue(v);
         processed.push(upv);
-        result = upv as TValue;
+        return upv;
       } else {
         // update nested objects
 
@@ -57,11 +56,10 @@ const getSettingValue = <TValue = unknown>(
 
         const v = getActualModel(unproxiedValue, allData, parentReadOnly, propertyFilter, processed);
         processed.push(v);
-        result = v;
+        return v as UnwrapCodeEvaluators<TValue>;
       }
   }
-
-  return result;
+  return value;
 };
 
 const getValue = <TValue>(val: TValue, allData: object, calcValue: (setting: IPropertySetting, allData: object) => unknown): unknown => {
@@ -122,17 +120,17 @@ export const getActualModel = <T extends object = object>(
   parentReadOnly?: boolean | undefined,
   propertyFilter?: ((name: string, value: unknown) => boolean) | undefined,
   processedObjects?: unknown[] | undefined,
-): T => {
+): UnwrapCodeEvaluators<T> => {
   const processed = isDefined(processedObjects) ? processedObjects : [];
 
   if (Array.isArray(model)) {
-    return getSettingValue('', model, allData, calcValue, parentReadOnly, propertyFilter, processed) as T;
+    return getSettingValue('', model, allData, calcValue, parentReadOnly, propertyFilter, processed) as UnwrapCodeEvaluators<T>;
   }
 
   if (!isDefined(model) || typeof model !== 'object')
     return model;
 
-  const m = {} as T;
+  const m = {} as IAnyObject;
   for (const propName in model) {
     if (!model.hasOwnProperty(propName)) continue;
     const value = model[propName];
@@ -148,7 +146,7 @@ export const getActualModel = <T extends object = object>(
   if (isHasEditMode(m) && readOnly !== undefined)
     m.readOnly = getReadOnlyBool(m.editMode, readOnly);
 
-  return m;
+  return m as UnwrapCodeEvaluators<T>;
 };
 
 // TODO: Alex, please review this. Purpose of the function is not clear from its name. Most probably there should be a function for calculation of a single property
