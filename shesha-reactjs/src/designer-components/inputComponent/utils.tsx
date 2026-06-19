@@ -32,7 +32,7 @@ export const getEditor = (
   constantsAccessor: IObjectMetadata | (() => Promise<IObjectMetadata>),
   resultTypeAccessor: IObjectMetadata | (() => Promise<IObjectMetadata>) | undefined,
 ): ReactElement => {
-  return availableConstantsExpression?.trim()
+  return !isNullOrWhiteSpace(availableConstantsExpression)
     ? <CodeEditor {...codeEditorProps} availableConstants={constantsAccessor} resultType={resultTypeAccessor} />
     : <CodeEditorWithStandardConstants {...codeEditorProps} resultType={resultTypeAccessor} />;
 };
@@ -64,7 +64,7 @@ export const CustomLabelValueEditorInputs = (props: ILabelValueEditorProps): Rea
         const data = item as Record<string, string | null>;
         return (
           <div className={styles.rowInputs} style={{ gap: 8 }}>
-            {labelName && (
+            {!isNullOrWhiteSpace(labelName) && (
               <InputComponent
                 type="textField"
                 placeholder={labelTitle}
@@ -79,7 +79,7 @@ export const CustomLabelValueEditorInputs = (props: ILabelValueEditorProps): Rea
                 }}
               />
             )}
-            {valueName && (
+            {!isNullOrWhiteSpace(valueName) && (
               <InputComponent
                 type="textField"
                 placeholder={valueTitle}
@@ -95,7 +95,7 @@ export const CustomLabelValueEditorInputs = (props: ILabelValueEditorProps): Rea
               />
             )}
             <Row>
-              {colorName && (
+              {!isNullOrWhiteSpace(colorName) && (
                 <>
                   <InputComponent
                     type="colorPicker"
@@ -130,7 +130,7 @@ export const CustomLabelValueEditorInputs = (props: ILabelValueEditorProps): Rea
                   />
                 </>
               )}
-              {iconName && (
+              {!isNullOrWhiteSpace(iconName) && (
                 <InputComponent
                   type="iconPicker"
                   placeholder={iconTitle}

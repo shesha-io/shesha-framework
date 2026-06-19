@@ -7,7 +7,6 @@ import { RollbackOutlined, SyncOutlined } from '@ant-design/icons';
 import { useDefaultModelActionsOrUndefined, useDefaultModelPropertyUpdateSubscription } from '../_settings/defaultModelProvider/defaultModelProvider';
 import { getValueByPropertyName, setValueByPropertyName } from '@/utils/object';
 import { convertValueToFriendlyString } from './utils';
-import { useDeepCompareMemo } from '@/hooks';
 
 // make value unknown to process any type of value (InputComponent is not generic)
 export type InputComponentProps<TValue = unknown> = Omit<BaseInputProps, 'value' | 'onChange'> & {
@@ -78,7 +77,7 @@ export const InputComponent = <TValue = string>(props: InputComponentProps<TValu
     ) : null;
   }, [props.tooltip, additionalInfo, isInherited, valueInfo?.latestDefaultModelName, isOverridden, defaultValue, setOverride, resetToDefault]);
 
-  const newProps = useDeepCompareMemo(() => ({ ...props, defaultModelPropertyName, onChange: internalOnChange } as BaseInputProps), [props, internalOnChange]);
+  const newProps = { ...props, defaultModelPropertyName, onChange: internalOnChange } as BaseInputProps;
 
   if (!Editor) return null;
 
