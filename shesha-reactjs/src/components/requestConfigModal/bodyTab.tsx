@@ -136,8 +136,8 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
     if (typeof raw === 'string') {
       // Legacy storage: JSON-stringified array
       try {
-        const parsed = JSON.parse(raw);
-        return Array.isArray(parsed) ? parsed : [];
+        const parsed: unknown = JSON.parse(raw);
+        return Array.isArray(parsed) ? (parsed as IFormDataField[]) : [];
       } catch {
         return [];
       }
@@ -179,7 +179,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
         key: 'enabled',
         width: '12%',
         align: 'center' as const,
-        render: (_: any, row: IFormDataField, index: number) => (
+        render: (_: unknown, row: IFormDataField, index: number) => (
           <Checkbox
             checked={row.enabled !== false}
             onChange={(e) => handleFormDataUpdate(index, 'enabled', e.target.checked)}
@@ -198,10 +198,8 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
             placeholder="Field name"
             style={{ width: '100%' }}
             // Suggest model properties but let the user type any key (free text).
-            filterOption={(input, option) =>
-              String(option?.value ?? '').toLowerCase().includes(input.toLowerCase())
-            }
-            onChange={(value) => handleFormDataUpdate(index, 'key', value ?? '')}
+            filterOption={(input, option) => String(option?.value ?? '').toLowerCase().includes(input.toLowerCase())}
+            onChange={(value) => handleFormDataUpdate(index, 'key', value)}
           />
         ),
       },
@@ -212,7 +210,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
         width: '43%',
         render: (value: string, _: IFormDataField, index: number) => (
           <TableValueEditor
-            value={value ?? ''}
+            value={value}
             onChange={(v) => handleFormDataUpdate(index, 'value', v)}
             context={expressionContext}
             placeholder="Value or {{expression}}"
@@ -223,7 +221,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
         title: '',
         key: 'action',
         width: '15%',
-        render: (_: any, __: IFormDataField, index: number) => (
+        render: (_: unknown, __: IFormDataField, index: number) => (
           <Button
             type="text"
             danger
@@ -263,7 +261,9 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
       return (
         <TransformationTab
           {...(transformation !== undefined ? { value: transformation } : {})}
-          onChange={(t) => { onTransformationChange?.(t); }}
+          onChange={(t) => {
+            onTransformationChange?.(t);
+          }}
         />
       );
     }
@@ -356,7 +356,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
 
   // Whether the current view has anything worth clearing (drives the Clear button's enabled state).
   const hasContent = view === 'transformation'
-    ? Boolean(transformation?.enabled || transformation?.script?.trim())
+    ? Boolean(transformation?.enabled || transformation?.script.trim())
     : typeof body.content === 'string'
       ? Boolean(body.content.trim())
       : Array.isArray(body.content) && body.content.length > 0;
@@ -364,7 +364,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
   return (
     <div className={styles.bodyEditor}>
       <div className={styles.bodyTypeSelector} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Radio.Group value={view} onChange={(e) => handleViewChange(e.target.value)}>
+        <Radio.Group value={view} onChange={(e) => handleViewChange(e.target.value as BodyView)}>
           <Radio.Button value="none">none</Radio.Button>
           <Radio.Button value="json">JSON</Radio.Button>
           <Radio.Button value="form-data">form-data</Radio.Button>

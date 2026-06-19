@@ -17,7 +17,7 @@ export const TableValueEditor: FC<ITableValueEditorProps> = ({
   disabled,
 }) => (
   <ExpressionEditor
-    value={value ?? ''}
+    value={value}
     onChange={onChange}
     context={context}
     placeholder={placeholder}

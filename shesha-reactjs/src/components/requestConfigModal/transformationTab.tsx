@@ -54,7 +54,7 @@ export const TransformationTab: FC<ITransformationTabProps> = ({ value, onChange
   };
 
   const handleScriptChange = (next: string): void => {
-    update({ script: next ?? '' });
+    update({ script: next });
   };
 
   const scriptValidation = enabled ? validateTransformationScript(script) : null;

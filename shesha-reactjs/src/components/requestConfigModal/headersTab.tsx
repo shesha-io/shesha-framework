@@ -19,7 +19,7 @@ export const HeadersTab: FC<IHeadersTabProps> = ({ headers, onChange, expression
     onChange([...headers, { key: '', value: '', enabled: true }]);
   };
 
-  const handleUpdate = (index: number, field: keyof IRequestHeader, value: any): void => {
+  const handleUpdate = (index: number, field: keyof IRequestHeader, value: IRequestHeader[keyof IRequestHeader]): void => {
     const updated = [...headers];
     updated[index] = { ...updated[index], [field]: value } as IRequestHeader;
     onChange(updated);
@@ -50,7 +50,7 @@ export const HeadersTab: FC<IHeadersTabProps> = ({ headers, onChange, expression
       width: '45%',
       render: (value: string, _record: IRequestHeader, index: number) => (
         <TableValueEditor
-          value={value ?? ''}
+          value={value}
           onChange={(v) => handleUpdate(index, 'value', v)}
           context={expressionContext}
           placeholder="Value or {{expression}}"
@@ -73,7 +73,7 @@ export const HeadersTab: FC<IHeadersTabProps> = ({ headers, onChange, expression
       title: '',
       key: 'action',
       width: '10%',
-      render: (_: any, __: IRequestHeader, index: number) => (
+      render: (_: unknown, __: IRequestHeader, index: number) => (
         <Button
           type="text"
           danger

@@ -25,7 +25,7 @@ export type RawBodySubType = 'text' | 'json' | 'xml' | 'html' | 'javascript';
 
 export interface IRequestBody {
   type: BodyType;
-  content: string | Record<string, any> | IFormDataField[];
+  content: string | Record<string, unknown> | IFormDataField[];
   rawSubType?: RawBodySubType;
 }
 
@@ -46,3 +46,4 @@ export interface IRequestConfig {
   body: IRequestBody;
   responseTransformation?: IResponseTransformationConfiguration;
 }
+  

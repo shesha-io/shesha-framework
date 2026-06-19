@@ -100,7 +100,7 @@ export const RequestConfigModal: FC<IRequestConfigModalProps> = ({
               label: 'Params',
               children: (
                 <ParamsTab
-                  params={localConfig.params || []}
+                  params={localConfig.params}
                   onChange={(params) => updateConfig({ params })}
                   expressionContext={expressionContext}
                 />
@@ -111,7 +111,7 @@ export const RequestConfigModal: FC<IRequestConfigModalProps> = ({
               label: 'Headers',
               children: (
                 <HeadersTab
-                  headers={localConfig.headers || []}
+                  headers={localConfig.headers}
                   onChange={(headers) => updateConfig({ headers })}
                   expressionContext={expressionContext}
                 />
@@ -122,7 +122,7 @@ export const RequestConfigModal: FC<IRequestConfigModalProps> = ({
               label: 'Body',
               children: (
                 <BodyTab
-                  body={localConfig.body || { type: 'none', content: '' }}
+                  body={localConfig.body}
                   onChange={(body) => updateConfig({ body })}
                   {...(localConfig.responseTransformation !== undefined ? { transformation: localConfig.responseTransformation } : {})}
                   onTransformationChange={(responseTransformation) => updateConfig({ responseTransformation })}

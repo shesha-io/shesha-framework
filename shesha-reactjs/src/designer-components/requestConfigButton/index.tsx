@@ -36,14 +36,14 @@ export const RequestConfigButton: FC<IRequestConfigButtonProps> = ({
   };
 
   const getConfigSummary = (): string => {
-    const paramsCount = currentConfig.params?.filter((p) => p.enabled).length || 0;
-    const headersCount = currentConfig.headers?.filter((h) => h.enabled).length || 0;
-    const hasBody = currentConfig.body?.type !== 'none';
+    const paramsCount = currentConfig.params.filter((p) => p.enabled).length || 0;
+    const headersCount = currentConfig.headers.filter((h) => h.enabled).length || 0;
+    const hasBody = currentConfig.body.type !== 'none';
 
     const parts = [];
     if (paramsCount > 0) parts.push(`${paramsCount} param${paramsCount > 1 ? 's' : ''}`);
     if (headersCount > 0) parts.push(`${headersCount} header${headersCount > 1 ? 's' : ''}`);
-    if (hasBody) parts.push(`body: ${currentConfig.body?.type}`);
+    if (hasBody) parts.push(`body: ${currentConfig.body.type}`);
 
     return parts.length > 0 ? parts.join(', ') : 'Not configured';
   };

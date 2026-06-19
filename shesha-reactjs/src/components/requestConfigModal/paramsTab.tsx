@@ -19,7 +19,7 @@ export const ParamsTab: FC<IParamsTabProps> = ({ params, onChange, expressionCon
     onChange([...params, { key: '', value: '', description: '', enabled: true }]);
   };
 
-  const handleUpdate = (index: number, field: keyof IRequestParam, value: any): void => {
+  const handleUpdate = (index: number, field: keyof IRequestParam, value: IRequestParam[keyof IRequestParam]): void => {
     const updated = [...params];
     updated[index] = { ...updated[index], [field]: value } as IRequestParam;
     onChange(updated);
@@ -49,10 +49,10 @@ export const ParamsTab: FC<IParamsTabProps> = ({ params, onChange, expressionCon
       key: 'value',
       width: '30%',
       render: (value: string, record: IRequestParam, index: number) => {
-        const isPropertiesParam = typeof record?.key === 'string' && record.key.toLowerCase() === 'properties';
+        const isPropertiesParam = record.key.toLowerCase() === 'properties';
         return (
           <TableValueEditor
-            value={value ?? ''}
+            value={value}
             onChange={(v) => handleUpdate(index, 'value', v)}
             context={expressionContext}
             placeholder={isPropertiesParam ? 'firstName lastName address { city }' : 'Value or {{expression}}'}
@@ -73,7 +73,7 @@ export const ParamsTab: FC<IParamsTabProps> = ({ params, onChange, expressionCon
       key: 'description',
       width: '25%',
       render: (text: string, record: IRequestParam, index: number) => {
-        const isPropertiesParam = typeof record?.key === 'string' && record.key.toLowerCase() === 'properties';
+        const isPropertiesParam = record.key.toLowerCase() === 'properties';
         return (
           <Input
             value={text}
@@ -99,7 +99,7 @@ export const ParamsTab: FC<IParamsTabProps> = ({ params, onChange, expressionCon
       title: '',
       key: 'action',
       width: '10%',
-      render: (_: any, __: IRequestParam, index: number) => (
+      render: (_: unknown, __: IRequestParam, index: number) => (
         <Button
           type="text"
           danger
