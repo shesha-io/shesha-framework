@@ -12,21 +12,18 @@ import { mapKeyValueToDictionary } from "@/utils/dictionary";
 import { getQueryParams } from "@/utils/url";
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { FormMarkupFactory } from '@/interfaces/configurableAction';
-import { IRequestParam, IRequestHeader, IRequestBody, IResponseTransformationConfiguration, RequestValue, executeResponseTransformation } from '@/components/requestConfigModal';
-import { isPropertySettings } from '@/designer-components/_settings/utils/utils';
+import { IRequestParam, IRequestHeader, IRequestBody, IResponseTransformationConfiguration, executeResponseTransformation } from '@/components/requestConfigModal';
 import { IDictionary } from '@/interfaces';
 
-// The action arguments evaluator already runs Mustache on every string in the arguments tree,
-// including `_value` and `_code` inside our IPropertySetting wrapper. So by the time the
-// executer runs, those strings are already interpolated — we just need to pick the right one
-// based on the chosen mode and unwrap the setting.
-const resolveRequestValue = (raw: RequestValue): string | undefined => {
-  if (isPropertySettings(raw)) {
-    const wrapped = raw as { _mode?: string; _value?: unknown; _code?: unknown };
-    const picked = wrapped._mode === 'code' ? wrapped._code : wrapped._value;
-    return picked === undefined || picked === null ? '' : String(picked);
+// Values are now plain strings (possibly containing {{ }} mustache). The generic evaluator has
+// already resolved them before the executer runs. Legacy configs may still store an IPropertySetting
+// object — handle that transparently so old configurations keep working.
+const resolveRequestValue = (raw: any): string => {
+  if (!raw) return '';
+  if (typeof raw === 'object') {
+    return raw._mode === 'code' ? (raw._code ?? '') : (raw._value ?? '');
   }
-  return raw as string | undefined;
+  return String(raw);
 };
 
 export interface IApiCallArguments {
@@ -245,7 +242,7 @@ export const useApiCallAction = (): void => {
               try {
                 // New storage: typed array of fields. Legacy storage: JSON-stringified array.
                 const rawContent = requestConfig.body.content;
-                const formFields: Array<{ key: string; value: RequestValue; enabled?: boolean }> = Array.isArray(rawContent)
+                const formFields: Array<{ key: string; value: any; enabled?: boolean }> = Array.isArray(rawContent)
                   ? rawContent
                   : JSON.parse(rawContent as string);
                 requestBody = formFields.reduce((acc: any, field) => {
