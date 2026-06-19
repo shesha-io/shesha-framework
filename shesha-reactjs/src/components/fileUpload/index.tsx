@@ -107,8 +107,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
   useEffect(() => {
     if (fileInfo?.status === 'uploading' && pendingFileBlob.current) {
       const { blobUrl } = pendingFileBlob.current;
-      const fileKey = fileInfo.id || fileInfo.uid;
-      uploadedFileBlobUrls.current.set(fileKey, blobUrl);
+      uploadedFileBlobUrls.current.set(fileInfo.uid, blobUrl);
       pendingFileBlob.current = null;
     }
   }, [fileInfo]);
@@ -120,13 +119,11 @@ export const FileUpload: FC<IFileUploadProps> = ({
       return;
     }
 
-    const fileKey = fileInfo.id || fileInfo.uid;
-
     // Use a locally cached blob URL for files just uploaded in this session.
     // For persisted files, use the backend URL directly; avoid pre-downloading
     // the file here because it duplicates the request the browser/preview makes
     // when the user actually views the file.
-    const cachedBlobUrl = uploadedFileBlobUrls.current.get(fileKey);
+    const cachedBlobUrl = uploadedFileBlobUrls.current.get(fileInfo.uid);
     setImageUrl(cachedBlobUrl ?? url);
   }, [fileInfo, url]);
 

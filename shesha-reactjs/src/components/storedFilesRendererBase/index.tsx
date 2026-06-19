@@ -35,6 +35,7 @@ import classNames from 'classnames';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
 import { ShaIcon, IconType } from '@/components/shaIcon';
 import { defaultStyles } from '@/designer-components/attachmentsEditor/utils';
+import { getFileExtension } from '@/utils/storedFile/utils';
 import { DownloadFileArgs, ReplaceFilePayload, StoredFileModel } from '@/utils/storedFile/models';
 import { useSheshaApplication } from '@/providers/sheshaApplication';
 import { useHttpClient } from '@/providers/sheshaApplication/publicApi/http/hooks';
@@ -677,7 +678,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       // the extension format (e.g. '.jpg'), so derive the extension from the file name.
       if (isFile(file)) {
         tempKey = `${file.name}_${file.size}`;
-        const fileExt = `.${(file.name.split('.').pop() || '').toLowerCase()}`;
+        const fileExt = `.${getFileExtension(file).toLowerCase()}`;
         if (isImageType(fileExt)) {
           blobUrl = URL.createObjectURL(file);
           uploadedFileBlobUrls.current.set(tempKey, blobUrl);
