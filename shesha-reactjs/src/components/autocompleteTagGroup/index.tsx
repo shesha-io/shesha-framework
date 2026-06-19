@@ -3,12 +3,13 @@ import { InputProps, Tag } from 'antd';
 import React, { FC, useState } from 'react';
 import { Autocomplete } from '@/components/autocomplete';
 import Show from '@/components/show';
+import { isDefined } from '@/utils/nullables';
 
 export interface IAutocompleteTagGroupProps extends Omit<InputProps, 'value' | 'onChange'> {
-  value?: string[] | null | undefined;
+  value?: string[] | undefined | null;
   defaultValue?: string;
   autocompleteUrl: string;
-  onChange?: (values: string[] | null) => void;
+  onChange?: (values: string[] | undefined) => void;
 }
 
 interface IAutocompleteTagGroupState {
@@ -39,7 +40,7 @@ export const AutocompleteTagGroup: FC<IAutocompleteTagGroupProps> =
 
       let localValue = value;
 
-      if (selected && localValue.indexOf(selected) === -1) {
+      if (isDefined(selected) && localValue.indexOf(selected) === -1) {
         localValue = [...localValue, selected];
 
         if (onChange) {
@@ -68,7 +69,7 @@ export const AutocompleteTagGroup: FC<IAutocompleteTagGroupProps> =
     const forMap = (tag: string): React.JSX.Element => {
       const tagElem = (
         <>
-          <Show when={!rest.readOnly}>
+          <Show when={!(rest.readOnly ?? false)}>
             <Tag
               closable
               onClose={(e) => {
@@ -116,7 +117,7 @@ export const AutocompleteTagGroup: FC<IAutocompleteTagGroupProps> =
           />
         </Show>
 
-        <Show when={!inputVisible && !rest.readOnly}>
+        <Show when={!inputVisible && !(rest.readOnly ?? false)}>
           <Tag onClick={showInput} className="site-tag-plus">
             <PlusOutlined /> New value
           </Tag>

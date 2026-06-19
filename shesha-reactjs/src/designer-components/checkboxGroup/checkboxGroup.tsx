@@ -16,7 +16,7 @@ import {
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
-import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { DATA_SOURCE_TYPES, DataSourceType } from '../dropdown/model';
 import { getStringEnumOrDefault } from '@/utils/object';
 
@@ -38,7 +38,7 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
   icon: <ProfileOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.referenceListItem,
   calculateModel: (model, allData) => ({
-    dataSourceUrl: model.dataSourceUrl ? executeScriptSync(model.dataSourceUrl, allData) : model.dataSourceUrl,
+    dataSourceUrl: isNotNullOrWhiteSpace(model.dataSourceUrl) ? executeScriptSync(model.dataSourceUrl, allData) : model.dataSourceUrl,
   }),
   Factory: ({ model, calculatedModel }) => {
     return (
@@ -47,12 +47,12 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
           return (
             <RefListCheckboxGroup
               {...model}
-              style={!model.enableStyleOnReadonly && model.readOnly ? {} : model.allStyles?.fullStyle}
+              style={!(model.enableStyleOnReadonly ?? false) && (model.readOnly ?? false) ? {} : model.allStyles?.fullStyle}
               dataSourceUrl={calculatedModel.dataSourceUrl}
               value={value ?? undefined}
               onChange={(newValue) => {
                 ctx?.handleEvent(undefined, newValue, model.onChangeCustom);
-                onChange(newValue ?? null);
+                onChange(newValue);
               }}
               onFocus={(event) => ctx?.handleEvent(event, value/* event.currentTarget.value*/, model.onFocusCustom)}
               onBlur={(event) => ctx?.handleEvent(event, value/* event.currentTarget.value*/, model.onBlurCustom)}

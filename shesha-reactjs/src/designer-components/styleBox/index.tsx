@@ -12,6 +12,9 @@ import { ConfigurableFormItem } from '@/components/formDesigner/components/formI
 import Box from './components/box';
 import { IStyleBoxComponentProps, StyleBoxDefinition } from './interfaces';
 import { getSettings } from './settings';
+import { getStyleBoxValue } from './utils';
+import { StyleBoxValue } from '@/providers/form/models';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 const StyleBox: StyleBoxDefinition = {
   type: 'styleBox',
@@ -24,11 +27,17 @@ const StyleBox: StyleBoxDefinition = {
   Factory: ({ model: passedModel }) => {
     const { size, ...model } = passedModel;
 
-    return model.hidden ? null : (
-      <ConfigurableFormItem<string> model={model}>
-        {(value, onChange) => <Box value={value} onChange={onChange} readOnly={model.readOnly} />}
-      </ConfigurableFormItem>
-    );
+    return Boolean(model.hidden) || isNullOrWhiteSpace(model.propertyName)
+      ? null
+      : (
+        <ConfigurableFormItem<string | StyleBoxValue> model={model}>
+          {(value, onChange) => {
+            const json = getStyleBoxValue(value);
+            const internalOnChange = (newValue: StyleBoxValue | undefined): void => onChange(model.format === 'json' ? newValue : JSON.stringify(newValue));
+            return <Box value={json} onChange={internalOnChange} readOnly={model.readOnly ?? false} propertyName={model.propertyName ?? ''} />;
+          }}
+        </ConfigurableFormItem>
+      );
   },
   initModel: (model) => {
     return {

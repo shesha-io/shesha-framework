@@ -1,6 +1,6 @@
 import { nanoid } from "@/utils/uuid";
 import { addPx } from '@/utils/style';
-import { ICommonContainerProps, IConfigurableFormComponent, IInputStyles, IStyleType } from "@/interfaces";
+import { ICommonContainerProps, IConfigurableFormComponent, IInputStyles, IStyleValue } from "@/interfaces";
 import { BorderType, IBorderType } from "../_settings/utils/border/interfaces";
 import { getNumberOrUndefined } from "@/utils/string";
 import { isNullOrWhiteSpace } from "@/utils/nullables";
@@ -17,7 +17,7 @@ const stringOrUndefined = (value: unknown): string | undefined => typeof (value)
 
 const inputTypes = ['textField', 'numberField', 'passwordCombo', 'dropdown', 'autocomplete', 'timePicker', 'dateField', 'button', 'entityPicker'];
 const isInputField = (prev: ExtendedType): boolean => !isNullOrWhiteSpace(prev.type) && inputTypes.includes(prev.type);
-export const migrateStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<ICommonContainerProps, 'style' | 'id' | 'label'>, screen?: 'desktop' | 'tablet' | 'mobile'): IStyleType => {
+export const migrateStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<ICommonContainerProps, 'style' | 'id' | 'label'>, screen?: 'desktop' | 'tablet' | 'mobile'): IStyleValue => {
   const prevStyles: IInputStyles = screen && prev[screen] ? prev[screen] : prev;
 
   const border = (side: BorderType): BorderCssProps => ({
@@ -108,9 +108,9 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Om
   const result: T = {
     ...prev,
     enableStyleOnReadonly: prev.enableStyleOnReadonly || false,
-    desktop: { ...prev.desktop, ...migrateStyles(prev, defaults, 'desktop'), enableStyleOnReadonly: prev.desktop?.enableStyleOnReadonly || false },
-    tablet: { ...prev.tablet, ...migrateStyles(prev, defaults, 'tablet'), enableStyleOnReadonly: prev.tablet?.enableStyleOnReadonly || false },
-    mobile: { ...prev.mobile, ...migrateStyles(prev, defaults, 'mobile'), enableStyleOnReadonly: prev.mobile?.enableStyleOnReadonly || false },
+    desktop: { ...prev.desktop, ...migrateStyles(prev, defaults, 'desktop'), enableStyleOnReadonly: (prev.desktop as IInputStyles | undefined)?.enableStyleOnReadonly ?? false },
+    tablet: { ...prev.tablet, ...migrateStyles(prev, defaults, 'tablet'), enableStyleOnReadonly: (prev.tablet as IInputStyles | undefined)?.enableStyleOnReadonly ?? false },
+    mobile: { ...prev.mobile, ...migrateStyles(prev, defaults, 'mobile'), enableStyleOnReadonly: (prev.mobile as IInputStyles | undefined)?.enableStyleOnReadonly ?? false },
   };
 
   return result;

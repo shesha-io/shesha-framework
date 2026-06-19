@@ -1,9 +1,10 @@
 import React, { ReactNode } from 'react';
 import { IConfigurableFormItemChildFunc } from '@/components/formDesigner/components/model';
+import { isNotNullOrWhiteSpace } from '@/utils/nullables';
 
 export type IDataBinderProps<TValue = unknown> = {
   value?: TValue | undefined;
-  onChange?: ((newValue: TValue | null) => void) | undefined;
+  onChange?: ((newValue: TValue | undefined | null) => void) | undefined;
   children: IConfigurableFormItemChildFunc<TValue>;
   valuePropName?: string | undefined;
 };
@@ -15,7 +16,7 @@ const emptyOnChange = (): void => {
 const DataBinder = <TValue = unknown>(props: IDataBinderProps<TValue>): ReactNode => {
   const { onChange = emptyOnChange, valuePropName } = props;
 
-  if (valuePropName) {
+  if (isNotNullOrWhiteSpace(valuePropName)) {
     const effectiveValue = props[valuePropName as keyof typeof props] as TValue;
     return (<>{props.children(effectiveValue, onChange)}</>);
   }

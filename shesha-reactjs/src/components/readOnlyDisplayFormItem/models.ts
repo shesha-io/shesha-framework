@@ -1,21 +1,13 @@
 import { ReactNode } from 'react';
-import { FormIdentifier } from '@/providers/form/models';
+import { FormIdentifier, IStyleValue } from '@/providers/form/models';
 import { SwitchSize } from 'antd/es/switch';
+
+export type ReadOnlyItemType = 'string' | 'number' | 'dropdown' | 'dropdownMultiple' | 'time' | 'datetime' | 'checkbox' | 'switch' | 'radiogroup' | 'textArea';
 
 export interface IReadOnlyDisplayFormItemProps<TValue = unknown> {
   value?: TValue | undefined;
-  render?: () => ReactNode | ReactNode;
-  type?:
-    | 'string' |
-    'number' |
-    'dropdown' |
-    'dropdownMultiple' |
-    'time' |
-    'datetime' |
-    'checkbox' |
-    'switch' |
-    'radiogroup' |
-    'textArea';
+  render?: (() => ReactNode) | ReactNode | undefined;
+  type?: ReadOnlyItemType | undefined;
   dropdownDisplayMode?: 'raw' | 'tags' | undefined;
   showIcon?: boolean | undefined;
   solidColor?: boolean | undefined;
@@ -30,4 +22,6 @@ export interface IReadOnlyDisplayFormItemProps<TValue = unknown> {
   style?: React.CSSProperties | undefined;
   tagStyle?: React.CSSProperties | undefined;
   size?: SwitchSize | undefined;
+  styleValue?: IStyleValue | undefined;
+  enableFullStyle?: boolean | undefined;
 }

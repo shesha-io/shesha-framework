@@ -1,4 +1,4 @@
-import React, { RefObject, useState, FC, ComponentProps } from 'react';
+import React, { useState, FC, ComponentProps } from 'react';
 import {
   DeleteOutlined,
   FileZipTwoTone,
@@ -25,7 +25,7 @@ export interface IImportInterface {
 
 export interface IConfigurationItemsImportProps {
   onImported?: () => void;
-  importRef?: RefObject<IImportInterface | undefined>;
+  setImporterApi?: (api: IImportInterface) => void;
 }
 
 export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (props) => {
@@ -122,10 +122,9 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
       });
   };
 
-  if (props.importRef)
-    props.importRef.current = {
-      importExecuter: importExecuter,
-    };
+  props.setImporterApi?.({
+    importExecuter,
+  });
 
   return (
     <Spin spinning={isImporting} description="Importing...">
