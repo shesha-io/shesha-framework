@@ -26,6 +26,7 @@ import { useEffectOnce } from '@/hooks/useEffectOnce';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
+import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 
 const suffixStyle = { color: 'rgba(0,0,0,.45)' };
 
@@ -198,7 +199,7 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
       .add<INumberFieldComponentPropsV1>(2, (prev) => migrateReadOnly(prev))
       .add<INumberFieldComponentPropsV1>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
       .add<INumberFieldComponentPropsV1>(4, (prev, context) => {
-        if (context.isNew ?? false) return prev;
+        if (context.isNew === true) return prev;
 
         const styles: IInputStyles = {
           size: prev.size,
@@ -209,10 +210,12 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
 
         return { ...prev, desktop: { ...styles } };
       })
-      .add<INumberFieldComponentPropsV1>(5, (prev, context) => context.isNew ?? false ? prev : {
-        ...prev,
-        desktop: { ...migrateStyles(prev, {}, 'desktop'), enableStyleOnReadonly: (prev.desktop as IInputStyles | undefined)?.enableStyleOnReadonly ?? false },
-      })
+      .add<INumberFieldComponentPropsV1>(5, (prev, context) => context.isNew === true
+        ? prev
+        : {
+          ...prev,
+          desktop: { ...migrateStyles(prev, {}, 'desktop'), enableStyleOnReadonly: (prev.desktop as IInputStyles | undefined)?.enableStyleOnReadonly ?? false },
+        })
       .add<INumberFieldComponentProps>(6, (prev) => {
         const model = { ...migrateHiddenToVisible(prev) };
         if (prev.min !== undefined || prev.max !== undefined) {
@@ -223,7 +226,9 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
           } as IComponentValidationRules;
         }
         return model;
-      }),
+      })
+      .add<INumberFieldComponentProps>(7, (prev) => migratePermissionsToVisiblePermissions(prev)),
+
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   linkToModelMetadata: (model, metadata): INumberFieldComponentProps => {
     const numFormat = isNumberFormatting(metadata.formatting) ? metadata.formatting as INumberFormatting : null;
