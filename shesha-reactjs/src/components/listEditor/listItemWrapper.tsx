@@ -24,7 +24,7 @@ const NewItemPlaceHolder: FC<NewItemPlaceHolderProps> = ({ className }) => {
   return (<div className={classNames(styles.listInsertPlaceholder, className)}></div>);
 };
 
-export const ListItemWrapper: FC<IListItemWrapperProps> = ({ children, onDelete, onDragHandleClick, onInsert, readOnly, isLast, className }) => {
+export const ListItemWrapper: FC<IListItemWrapperProps> = ({ children, onDelete, onDragHandleClick, onInsert, readOnly = false, isLast, className }) => {
   const [placeholderPosition, setPlaceholderPosition] = useState<ItemInsertPosition | null>(null);
   const { styles } = useStyles();
 
