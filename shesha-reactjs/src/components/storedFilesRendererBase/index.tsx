@@ -832,7 +832,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                   ? <Spin indicator={<LoadingOutlined spin />} size="large" />
                   : originalNode),
               }}
-              src={previewImage.url}
+              {...(isNotNullOrWhiteSpace(previewImage.url) ? { src: previewImage.url } : {})}
             />
           )}
 
