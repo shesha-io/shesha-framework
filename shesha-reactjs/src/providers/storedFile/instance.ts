@@ -207,19 +207,19 @@ export class FileUploadInstance implements IFileUpload {
 
   fetchFileInfo = async (): Promise<void> => {
     try {
-    if (this.fileId) {
-      const fileDto = await this.#fileHelper.fetchFileInfoByIdAsync(this.fileId);
-      this.updateFileInfo(() => storedFileDtoToModel(fileDto));
-      return;
-    }
+      if (this.fileId) {
+        const fileDto = await this.#fileHelper.fetchFileInfoByIdAsync(this.fileId);
+        this.updateFileInfo(() => storedFileDtoToModel(fileDto));
+        return;
+      }
 
-    const filereference = this.getValidFileReference();
-    if (filereference) {
-      const fileDto = await this.#fileHelper.fetchFileInfoByReferenceAsync(filereference);
-      this.updateFileInfo(() => storedFileDtoToModel(fileDto));
-      return;
-    }
-  } catch (error) {
+      const filereference = this.getValidFileReference();
+      if (filereference) {
+        const fileDto = await this.#fileHelper.fetchFileInfoByReferenceAsync(filereference);
+        this.updateFileInfo(() => storedFileDtoToModel(fileDto));
+        return;
+      }
+    } catch (error) {
       console.error('Failed to fetch file info:', error);
       this.clearFileInfo();
     }
