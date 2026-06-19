@@ -1,10 +1,21 @@
-import React, { FC, useState, useEffect, useRef } from 'react';
+import React, { FC, useState, useEffect, useRef, useMemo } from 'react';
 import { Modal, Tabs } from 'antd';
 import { ParamsTab } from './paramsTab';
 import { HeadersTab } from './headersTab';
 import { BodyTab } from './bodyTab';
 import { IRequestConfig } from './models';
 import { useStyles } from './styles';
+import { ExpressionContext, buildExpressionContextFromPaths } from '@/components/expressionEditor';
+import {
+  ExpressionContextTree,
+  buildExpressionContextFromMetadata,
+  mergeExpressionContexts,
+} from '@/components/expressionEditor/contextMetadata';
+import { useAsyncMemo } from '@/hooks/useAsyncMemo';
+import { useAvailableConstantsMetadata } from '@/utils/metadata/hooks';
+import { SheshaConstants } from '@/utils/metadata/standardProperties';
+import { useMetadataOrUndefined } from '@/providers/metadata';
+import { asPropertiesArray } from '@/interfaces/metadata';
 
 export interface IRequestConfigModalProps {
   visible: boolean;
@@ -12,6 +23,8 @@ export interface IRequestConfigModalProps {
   onChange: (config: IRequestConfig) => void;
   onClose: () => void;
 }
+
+const STANDARD_CONSTANTS = [SheshaConstants.application, SheshaConstants.form];
 
 export const RequestConfigModal: FC<IRequestConfigModalProps> = ({
   visible,
@@ -24,9 +37,6 @@ export const RequestConfigModal: FC<IRequestConfigModalProps> = ({
   const [activeTab, setActiveTab] = useState('params');
   const wasVisible = useRef(false);
 
-  // Seed local config from the incoming config only when the modal OPENS (false → true). Parents
-  // can hand us a fresh `config` object on any re-render; re-syncing on every change would wipe
-  // in-progress edits (e.g. a form-data row you just added). Edits are committed on Save.
   useEffect(() => {
     if (visible && !wasVisible.current) {
       setLocalConfig(config);
@@ -34,8 +44,28 @@ export const RequestConfigModal: FC<IRequestConfigModalProps> = ({
     wasVisible.current = visible;
   }, [visible, config]);
 
+  // Build expression context once so all tabs share the same autocomplete data.
+  const availableConstants = useAvailableConstantsMetadata({ standardConstants: STANDARD_CONSTANTS });
+  const formMetadata = useMetadataOrUndefined()?.metadata;
+
+  const dataPathContext = useMemo<ExpressionContext>(() => {
+    const properties = asPropertiesArray(formMetadata?.properties, []);
+    const paths = properties.map((p) => p.path).filter(Boolean);
+    return buildExpressionContextFromPaths(paths, { additionalRoots: [] });
+  }, [formMetadata]);
+
+  const constantsContext = useAsyncMemo<ExpressionContextTree>(
+    () => buildExpressionContextFromMetadata(availableConstants),
+    [availableConstants],
+    {},
+  );
+
+  const expressionContext = useMemo<ExpressionContext>(
+    () => mergeExpressionContexts(dataPathContext, constantsContext ?? {}),
+    [dataPathContext, constantsContext],
+  );
+
   const handleOk = (): void => {
-    console.warn('🔍 RequestConfigModal - Saving config:', localConfig);
     onChange(localConfig);
     onClose();
   };
@@ -72,6 +102,7 @@ export const RequestConfigModal: FC<IRequestConfigModalProps> = ({
                 <ParamsTab
                   params={localConfig.params || []}
                   onChange={(params) => updateConfig({ params })}
+                  expressionContext={expressionContext}
                 />
               ),
             },
@@ -82,6 +113,7 @@ export const RequestConfigModal: FC<IRequestConfigModalProps> = ({
                 <HeadersTab
                   headers={localConfig.headers || []}
                   onChange={(headers) => updateConfig({ headers })}
+                  expressionContext={expressionContext}
                 />
               ),
             },
@@ -92,8 +124,9 @@ export const RequestConfigModal: FC<IRequestConfigModalProps> = ({
                 <BodyTab
                   body={localConfig.body || { type: 'none', content: '' }}
                   onChange={(body) => updateConfig({ body })}
-                  transformation={localConfig.responseTransformation}
+                  {...(localConfig.responseTransformation !== undefined ? { transformation: localConfig.responseTransformation } : {})}
                   onTransformationChange={(responseTransformation) => updateConfig({ responseTransformation })}
+                  expressionContext={expressionContext}
                 />
               ),
             },

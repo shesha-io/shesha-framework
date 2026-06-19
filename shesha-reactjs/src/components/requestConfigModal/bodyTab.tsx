@@ -1,15 +1,16 @@
 import React, { FC, useState } from 'react';
 import { AutoComplete, Button, Checkbox, Radio, Select, Space, Table, Tooltip, Typography } from 'antd';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
-import { BodyType, IFormDataField, IRequestBody, IResponseTransformationConfiguration, RawBodySubType, RequestValue } from './models';
-import { RequestValueEditor } from './requestValueEditor';
+import { BodyType, IFormDataField, IRequestBody, IResponseTransformationConfiguration, RawBodySubType } from './models';
+import { ExpressionContext } from '@/components/expressionEditor';
+import { TableValueEditor } from './tableValueEditor';
 import { TransformationTab } from './transformationTab';
 import { CodeEditor as BaseCodeEditor } from '@/components/codeEditor/codeEditor';
 import { CodeLanguages } from '@/designer-components/codeEditor/types';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/hooks';
 import { DataTypes } from '@/interfaces';
 import { asPropertiesArray } from '@/interfaces/metadata';
-import { useMetadata } from '@/providers';
+import { useMetadataOrUndefined } from '@/providers/metadata';
 import { useStyles } from './styles';
 
 // The raw JavaScript body is executed as a script that returns the payload, so its wrapper reads
@@ -32,6 +33,7 @@ export interface IBodyTabProps {
   /** Response transformation config — persisted alongside the request, edited under the "Transformation" body option. */
   transformation?: IResponseTransformationConfiguration;
   onTransformationChange?: (transformation: IResponseTransformationConfiguration) => void;
+  expressionContext: ExpressionContext;
 }
 
 // "transformation" is a view-only selection in the body type bar — it edits the response
@@ -39,7 +41,7 @@ export interface IBodyTabProps {
 // is tracked in local state and never written to body.type.
 type BodyView = BodyType | 'transformation';
 
-export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onTransformationChange }) => {
+export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onTransformationChange, expressionContext }) => {
   const { styles } = useStyles();
   const [jsonError, setJsonError] = useState<string | null>(null);
   const [view, setView] = useState<BodyView>(body.type);
@@ -65,7 +67,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
 
   // Properties of the model the host form is bound to (if any) — offered as autocomplete suggestions
   // for form-data field keys. Undefined when there's no metadata context; free typing always works.
-  const metadataCtx = useMetadata(false);
+  const metadataCtx = useMetadataOrUndefined();
   const keyOptions = asPropertiesArray(metadataCtx?.metadata?.properties, []).map((p) => ({
     value: p.path,
     label: p.path,
@@ -83,9 +85,9 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
     // Restore the previously-entered content for this type instead of resetting it.
     const stashed = contentByType[type];
     const content = stashed !== undefined ? stashed : defaultContentFor(type);
-    const rawSubType = type === 'raw' ? lastRawSubType : undefined;
-
-    onChange({ type, content, rawSubType });
+    const next: IRequestBody = { type, content };
+    if (type === 'raw') next.rawSubType = lastRawSubType;
+    onChange(next);
     setJsonError(null);
   };
 
@@ -119,7 +121,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
       JSON.parse(value);
       setJsonError(null);
     } catch (err) {
-      setJsonError('Invalid JSON: ' + err.message);
+      setJsonError('Invalid JSON: ' + (err as Error).message);
     }
   };
 
@@ -159,7 +161,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
     value: IFormDataField[K],
   ): void => {
     const rows = parseFormData();
-    rows[index] = { ...rows[index], [field]: value };
+    rows[index] = { ...rows[index], [field]: value } as IFormDataField;
     updateFormData(rows);
   };
 
@@ -208,11 +210,12 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
         dataIndex: 'value',
         key: 'value',
         width: '43%',
-        render: (value: RequestValue, _: IFormDataField, index: number) => (
-          <RequestValueEditor
-            value={value}
+        render: (value: string, _: IFormDataField, index: number) => (
+          <TableValueEditor
+            value={value ?? ''}
             onChange={(v) => handleFormDataUpdate(index, 'value', v)}
-            placeholder="Field value"
+            context={expressionContext}
+            placeholder="Value or {{expression}}"
           />
         ),
       },
@@ -259,8 +262,8 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
     if (view === 'transformation') {
       return (
         <TransformationTab
-          value={transformation}
-          onChange={(t) => onTransformationChange?.(t)}
+          {...(transformation !== undefined ? { value: transformation } : {})}
+          onChange={(t) => { onTransformationChange?.(t); }}
         />
       );
     }
@@ -307,7 +310,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
 
       case 'raw': {
         const activeSubType = body.rawSubType ?? 'text';
-        const subTypeMeta = RAW_SUB_TYPES.find((s) => s.value === activeSubType) ?? RAW_SUB_TYPES[0];
+        const subTypeMeta = (RAW_SUB_TYPES.find((s) => s.value === activeSubType) ?? RAW_SUB_TYPES[0])!;
         // The JavaScript sub-type is executed at request time, so it gets the templated editor with
         // exposed constants (like the Transformation tab). Other sub-types are sent as plain text.
         const isExecutableJs = activeSubType === 'javascript';

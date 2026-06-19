@@ -1,24 +1,27 @@
 import React, { FC } from 'react';
 import { Button, Input, Switch, Table } from 'antd';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
-import { IRequestHeader, RequestValue } from './models';
-import { RequestValueEditor } from './requestValueEditor';
+import { IRequestHeader } from './models';
+import { ExpressionContext } from '@/components/expressionEditor';
+import { TableValueEditor } from './tableValueEditor';
 import { useStyles } from './styles';
 
 export interface IHeadersTabProps {
   headers: IRequestHeader[];
   onChange: (headers: IRequestHeader[]) => void;
+  expressionContext: ExpressionContext;
 }
 
-export const HeadersTab: FC<IHeadersTabProps> = ({ headers, onChange }) => {
+export const HeadersTab: FC<IHeadersTabProps> = ({ headers, onChange, expressionContext }) => {
   const { styles } = useStyles();
+
   const handleAdd = (): void => {
     onChange([...headers, { key: '', value: '', enabled: true }]);
   };
 
   const handleUpdate = (index: number, field: keyof IRequestHeader, value: any): void => {
     const updated = [...headers];
-    updated[index] = { ...updated[index], [field]: value };
+    updated[index] = { ...updated[index], [field]: value } as IRequestHeader;
     onChange(updated);
   };
 
@@ -45,11 +48,12 @@ export const HeadersTab: FC<IHeadersTabProps> = ({ headers, onChange }) => {
       dataIndex: 'value',
       key: 'value',
       width: '45%',
-      render: (value: RequestValue, _record: IRequestHeader, index: number) => (
-        <RequestValueEditor
-          value={value}
+      render: (value: string, _record: IRequestHeader, index: number) => (
+        <TableValueEditor
+          value={value ?? ''}
           onChange={(v) => handleUpdate(index, 'value', v)}
-          placeholder="Header value"
+          context={expressionContext}
+          placeholder="Value or {{expression}}"
         />
       ),
     },

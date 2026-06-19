@@ -1,24 +1,27 @@
 import React, { FC } from 'react';
 import { Button, Input, Switch, Table, Tooltip } from 'antd';
 import { DeleteOutlined, PlusOutlined, InfoCircleOutlined } from '@ant-design/icons';
-import { IRequestParam, RequestValue } from './models';
-import { RequestValueEditor } from './requestValueEditor';
+import { IRequestParam } from './models';
+import { ExpressionContext } from '@/components/expressionEditor';
+import { TableValueEditor } from './tableValueEditor';
 import { useStyles } from './styles';
 
 export interface IParamsTabProps {
   params: IRequestParam[];
   onChange: (params: IRequestParam[]) => void;
+  expressionContext: ExpressionContext;
 }
 
-export const ParamsTab: FC<IParamsTabProps> = ({ params, onChange }) => {
+export const ParamsTab: FC<IParamsTabProps> = ({ params, onChange, expressionContext }) => {
   const { styles } = useStyles();
+
   const handleAdd = (): void => {
     onChange([...params, { key: '', value: '', description: '', enabled: true }]);
   };
 
   const handleUpdate = (index: number, field: keyof IRequestParam, value: any): void => {
     const updated = [...params];
-    updated[index] = { ...updated[index], [field]: value };
+    updated[index] = { ...updated[index], [field]: value } as IRequestParam;
     onChange(updated);
   };
 
@@ -44,19 +47,15 @@ export const ParamsTab: FC<IParamsTabProps> = ({ params, onChange }) => {
       title: 'Value',
       dataIndex: 'value',
       key: 'value',
-      width: '25%',
-      render: (value: RequestValue, record: IRequestParam, index: number) => {
-        // Special handling for 'properties' parameter (Shesha GraphQL-like syntax)
+      width: '30%',
+      render: (value: string, record: IRequestParam, index: number) => {
         const isPropertiesParam = typeof record?.key === 'string' && record.key.toLowerCase() === 'properties';
-
         return (
-          <RequestValueEditor
-            value={value}
+          <TableValueEditor
+            value={value ?? ''}
             onChange={(v) => handleUpdate(index, 'value', v)}
-            placeholder={isPropertiesParam ? 'firstName lastName address { addressLine1 city }' : 'Parameter value'}
-            multiline={isPropertiesParam}
-            rows={3}
-            textAreaStyle={isPropertiesParam ? { fontFamily: 'monospace', fontSize: '13px' } : undefined}
+            context={expressionContext}
+            placeholder={isPropertiesParam ? 'firstName lastName address { city }' : 'Value or {{expression}}'}
           />
         );
       },
@@ -72,14 +71,13 @@ export const ParamsTab: FC<IParamsTabProps> = ({ params, onChange }) => {
       ),
       dataIndex: 'description',
       key: 'description',
-      width: '30%',
+      width: '25%',
       render: (text: string, record: IRequestParam, index: number) => {
         const isPropertiesParam = typeof record?.key === 'string' && record.key.toLowerCase() === 'properties';
-
         return (
           <Input
             value={text}
-            placeholder={isPropertiesParam ? "GraphQL-like property selection" : "Optional description"}
+            placeholder={isPropertiesParam ? 'GraphQL-like property selection' : 'Optional description'}
             onChange={(e) => handleUpdate(index, 'description', e.target.value)}
           />
         );
