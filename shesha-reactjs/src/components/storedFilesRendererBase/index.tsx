@@ -37,11 +37,10 @@ import { ShaIcon, IconType } from '@/components/shaIcon';
 import { defaultStyles } from '@/designer-components/attachmentsEditor/utils';
 import { getFileExtension } from '@/utils/storedFile/utils';
 import { DownloadFileArgs, ReplaceFilePayload, StoredFileModel } from '@/utils/storedFile/models';
-import { useSheshaApplication } from '@/providers/sheshaApplication';
 import { useHttpClient } from '@/providers/sheshaApplication/publicApi/http/hooks';
 import { ValidationErrors } from '../validationErrors';
 import { buildUrl } from '@/utils';
-import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { isFile } from '@/utils/fileValidation';
 
 interface IUploaderFileTypes {
@@ -144,7 +143,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   ...rest
 }) => {
   const { message, notification } = App.useApp();
-  const { backendUrl } = useSheshaApplication();
   const httpClient = useHttpClient();
   const allData = useAvailableConstantsData();
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -159,9 +157,10 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   // Uid of the file currently being previewed. Used to ignore stale async results when the user
   // switches preview to another file (or closes it) before a fetch resolves.
   const activePreviewUid = useRef<string | null>(null);
-  // Blob URL of the full-resolution image currently shown in the preview. Tracked so it can be
-  // revoked when the preview closes or another preview is opened, preventing memory leaks.
-  const previewFullImageUrl = useRef<string | null>(null);
+  // Cache of fetched full-resolution preview blob URLs, keyed by file id. Lets repeat previews
+  // of the same file reuse the already-downloaded image instead of hitting the server again.
+  // Entries are revoked on unmount.
+  const previewImageCache = useRef<Map<string, string>>(new Map());
   const model = rest;
 
   // Handler for replacing a file
@@ -191,7 +190,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   // Handler to trigger file replacement
   const onReplaceClick = (file: StoredFileModel): void => {
-    const fileId = file.id || file.uid;
+    const fileId = isNotNullOrWhiteSpace(file.id) ? file.id : file.uid;
     setFileToReplace({ uid: file.uid, id: fileId });
     if (hiddenUploadInputRef.current) {
       hiddenUploadInputRef.current.click();
@@ -211,7 +210,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       ...containerJsStyle,
       ...stylingBoxAsCSS,
     },
-    style: !enableStyleOnReadonly && disabled
+    style: !enableStyleOnReadonly && disabled === true
       ? { ...(model.allStyles?.dimensionsStyles ?? {}), ...(model.allStyles?.fontStyles ?? {}), border: `${defaultBorder.width} ${defaultBorder.style} ${defaultBorder.color}` }
       : { ...(model.allStyles?.fullStyle ?? {}) },
     model: {
@@ -231,7 +230,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const listTypeAndLayout = getListTypeAndLayout(listType, isDragger);
 
   useEffect(() => {
-    if (isDownloadZipSucceeded) {
+    if (isDownloadZipSucceeded === true) {
       notification.success({
         message: `Download success!`,
         description: 'Your files have been downloaded successfully. Please check your download folder.',
@@ -243,7 +242,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   // Cleanup cache when file list changes to prevent memory leaks
   useEffect(() => {
     const currentFileIds = new Set(
-      fileList.map((f) => f.id || f.uid),
+      fileList.map((f) => isNotNullOrWhiteSpace(f.id) ? f.id : f.uid),
     );
     const cachedKeys = Array.from(fileContextCache.current.keys());
 
@@ -284,7 +283,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         if (isImageType(file.type ?? "") && !isNullOrWhiteSpace(file.url)) {
           // Preserve existing URL to avoid unnecessary re-fetches
           const existingUrl = imageUrlsRef.current[file.uid];
-          if (existingUrl) {
+          if (isNotNullOrWhiteSpace(existingUrl)) {
             newImageUrls[file.uid] = existingUrl;
             continue;
           }
@@ -295,19 +294,19 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           // It is keyed by name/size so it survives the temp uid (nanoid) -> server GUID transition.
           const tempKey = `${file.name}_${file.size}`;
           const blobUrl = uploadedFileBlobUrls.current.get(tempKey);
-          if (blobUrl) {
+          if (isNotNullOrWhiteSpace(blobUrl)) {
             newImageUrls[file.uid] = blobUrl;
             continue;
           }
 
           try {
-            if (!file.id) {
+            if (isNullOrWhiteSpace(file.id)) {
               continue;
             }
             const queryParams = {
               id: file.id,
-              width: model.dimensions?.width ? parseFloat(`${model.dimensions.width}`) : undefined,
-              height: model.dimensions?.height ? parseFloat(`${model.dimensions.height}`) : undefined,
+              width: isDefined(model.dimensions?.width) ? parseFloat(`${model.dimensions.width}`) : undefined,
+              height: isDefined(model.dimensions?.height) ? parseFloat(`${model.dimensions.height}`) : undefined,
             };
 
             // Filter out undefined/NaN values
@@ -315,7 +314,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               Object.entries(queryParams).filter(([_, v]) => v !== undefined && !Number.isNaN(v)),
             );
 
-            const thumbnailUrl = buildUrl(`${backendUrl}${STORED_FILE_URLS.DOWNLOAD_THUMBNAIL}`, cleanedParams);
+            const thumbnailUrl = buildUrl(STORED_FILE_URLS.DOWNLOAD_THUMBNAIL, cleanedParams);
 
             const { url: imageUrl, revoke } = await fetchStoredFile(httpClient, thumbnailUrl);
             if (isCancelled) {
@@ -364,40 +363,32 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       // Call all revoke functions to clean up blob URLs
       revokeCallbacks.forEach((revoke) => revoke());
     };
-  }, [fileList, httpClient, backendUrl, model.dimensions?.width, model.dimensions?.height, listType]);
+  }, [fileList, httpClient, model.dimensions?.width, model.dimensions?.height, listType]);
 
   // Clean up uploaded blob URLs on component unmount to prevent memory leaks
   useEffect(() => {
     const blobUrls = uploadedFileBlobUrls.current;
+    const previewCache = previewImageCache.current;
     return () => {
       blobUrls.forEach((url) => {
         URL.revokeObjectURL(url);
       });
       blobUrls.clear();
-      if (previewFullImageUrl.current) {
-        URL.revokeObjectURL(previewFullImageUrl.current);
-        previewFullImageUrl.current = null;
-      }
+      previewCache.forEach((url) => {
+        URL.revokeObjectURL(url);
+      });
+      previewCache.clear();
     };
   }, []);
 
-  // Revokes the previously fetched full-resolution preview blob URL, if any.
-  const revokePreviewFullImageUrl = (): void => {
-    if (previewFullImageUrl.current) {
-      URL.revokeObjectURL(previewFullImageUrl.current);
-      previewFullImageUrl.current = null;
-    }
-  };
-
   const handlePreview = (file: StoredFileModel): void => {
-    revokePreviewFullImageUrl();
     activePreviewUid.current = file.uid;
 
     // For a freshly uploaded file we already have a blob URL of the full original image locally,
     // so reuse it instead of downloading the file again from the server. The blob is owned by
     // uploadedFileBlobUrls (cleaned up on unmount), so it must not be tracked for revocation here.
     const uploadedBlobUrl = uploadedFileBlobUrls.current.get(`${file.name}_${file.size}`);
-    if (uploadedBlobUrl) {
+    if (isNotNullOrWhiteSpace(uploadedBlobUrl)) {
       setPreviewImage({ url: uploadedBlobUrl, uid: file.uid, name: file.name });
       setPreviewLoading(false);
       setPreviewOpen(true);
@@ -408,11 +399,20 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     setPreviewOpen(true);
 
     // Fetch the full-resolution image; show a loader until it arrives.
-    if (!file.id)
+    if (isNullOrWhiteSpace(file.id))
       return;
 
+    // Reuse a previously downloaded full image for this file to avoid re-hitting the server.
+    const previouslyFetched = previewImageCache.current.get(file.id);
+    if (isNotNullOrWhiteSpace(previouslyFetched)) {
+      setPreviewImage((current) => (current?.uid === file.uid ? { ...current, url: previouslyFetched } : current));
+      setPreviewLoading(false);
+      return;
+    }
+
+    const fileId = file.id;
     setPreviewLoading(true);
-    const fullImageDownloadUrl = buildUrl(`${backendUrl}${STORED_FILE_URLS.DOWNLOAD_FILE}`, { id: file.id });
+    const fullImageDownloadUrl = buildUrl(STORED_FILE_URLS.DOWNLOAD_FILE, { id: fileId });
     fetchStoredFile(httpClient, fullImageDownloadUrl)
       .then(({ url: fullImageUrl, revoke }) => {
         // The preview may have moved to another file (or closed) while this was loading.
@@ -421,7 +421,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           revoke();
           return;
         }
-        previewFullImageUrl.current = fullImageUrl;
+        previewImageCache.current.set(fileId, fullImageUrl);
         setPreviewImage((current) => (current?.uid === file.uid ? { ...current, url: fullImageUrl } : current));
       })
       .catch((error) => {
@@ -437,7 +437,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const iconRender: UploadProps["iconRender"] = (file) => {
     const { type, uid } = file;
 
-    if (isImageType(type) && imageUrls[uid]) {
+    if (isImageType(type) && isNotNullOrWhiteSpace(imageUrls[uid])) {
       if (listType === 'thumbnail' && !isDragger) {
         return (
           <>
@@ -470,7 +470,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     return fileContextCache.current.get(cacheKey)!;
   }, []);
 
-  if (model.background?.type === 'storedFile' && model.background.storedFile?.id && !isValidGuid(model.background.storedFile.id)) {
+  if (model.background?.type === 'storedFile' && isNotNullOrWhiteSpace(model.background.storedFile?.id) && !isValidGuid(model.background.storedFile.id)) {
     return <ValidationErrors error="The provided StoredFileId is invalid" />;
   }
 
@@ -478,13 +478,13 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     const shaFile = antdFile as StoredFileModel;
 
     const isDownloaded = shaFile.userHasDownloaded === true;
-    const fileId = shaFile.id || shaFile.uid;
+    const fileId = isNotNullOrWhiteSpace(shaFile.id) ? shaFile.id : shaFile.uid;
     const persistedFileId = shaFile.id; // Only persisted files have .id
 
     const actions = (
       <div onClick={(e) => e.stopPropagation()} onMouseDown={(e) => e.stopPropagation()}>
         <Space size={5}>
-          {allowReplace && !disabled && persistedFileId && isValidGuid(persistedFileId) && (
+          {allowReplace && disabled !== true && isNotNullOrWhiteSpace(persistedFileId) && isValidGuid(persistedFileId) && (
             <Button
               size="small"
               icon={<SyncOutlined />}
@@ -496,7 +496,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               }}
             />
           )}
-          {allowDelete && !disabled && persistedFileId && (
+          {allowDelete === true && disabled !== true && isNotNullOrWhiteSpace(persistedFileId) && (
             <Popconfirm
               title="Delete Attachment"
               onConfirm={(e) => {
@@ -528,7 +528,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               }}
             />
           )}
-          {persistedFileId && (
+          {isNotNullOrWhiteSpace(persistedFileId) && (
             <Button
               size="small"
               icon={<DownloadOutlined />}
@@ -569,7 +569,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
     const handleItemClick = (e: React.MouseEvent): void => {
       // Only allow interaction with persisted files (those with a GUID)
-      if (!persistedFileId) {
+      if (isNullOrWhiteSpace(persistedFileId)) {
         e.preventDefault();
         e.stopPropagation();
         return;
@@ -642,7 +642,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             />
           </div>
         )}
-        {hasExtraContent && extraFormId && (
+        {hasExtraContent === true && isDefined(extraFormId) && (
           <ExtraContent
             file={shaFile}
             formId={extraFormId}
@@ -687,7 +687,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
       uploadFile({ file: file as File }).catch((error) => {
         // Clean up blob URL if upload failed
-        if (blobUrl && tempKey) {
+        if (isNotNullOrWhiteSpace(blobUrl) && isNotNullOrWhiteSpace(tempKey)) {
           URL.revokeObjectURL(blobUrl);
           uploadedFileBlobUrls.current.delete(tempKey);
         }
@@ -720,7 +720,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     },
     iconRender: iconRender,
     itemRender: itemRenderFunction,
-    showUploadList: isDragger && !disabled ? false : {
+    showUploadList: isDragger && disabled !== true ? false : {
       showRemoveIcon: false,
       showPreviewIcon: false,
       showDownloadIcon: false,
@@ -729,7 +729,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
   const renderUploadContent = (): React.ReactNode => {
     return (
-      !disabled && (
+      disabled !== true && (
         <Button
           type="link"
           icon={<UploadOutlined />}
@@ -749,7 +749,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   };
 
   return (
-    fileList.length === 0 && disabled ? null
+    fileList.length === 0 && disabled === true ? null
       : (
         <div className={`${styles.shaStoredFilesRenderer} ${layout === 'horizontal' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererHorizontal
           : layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical
@@ -776,7 +776,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                         file name
                       </div>
                     )}
-                    {hasExtraContent && extraFormId && (
+                    {hasExtraContent === true && isDefined(extraFormId) && (
                       <ExtraContent
                         file={PLACEHOLDER_FILE}
                         formId={extraFormId}
@@ -786,9 +786,9 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                 </>
               )
             )
-            : (props.disabled && fileList.length === 0
+            : (props.disabled === true && fileList.length === 0
               ? null
-              : props.disabled
+              : props.disabled === true
                 ? (
                   <Upload
                     {...props}
@@ -825,7 +825,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                     setPreviewImage(null);
                     setPreviewLoading(false);
                     activePreviewUid.current = null;
-                    revokePreviewFullImageUrl();
                   }
                 },
                 // Show a loader while the full-resolution image downloads instead of a broken image.
@@ -837,11 +836,11 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             />
           )}
 
-          {fetchFilesError && (
+          {fetchFilesError === true && (
             <Alert title="Error" description="Sorry, an error occurred while trying to fetch file list." type="error" />
           )}
 
-          {downloadZipFileError && (
+          {downloadZipFileError === true && (
             <Alert title="Error" description="Sorry, an error occurred while trying to download zip file." type="error" />
           )}
 

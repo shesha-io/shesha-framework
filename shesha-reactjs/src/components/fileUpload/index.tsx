@@ -13,14 +13,17 @@ import filesize from 'filesize';
 import React, { CSSProperties, FC, ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { ListType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { getFileIcon, isImageType } from '@/icons/fileIcons';
-import { useFileUploadState, useSheshaApplication, useFileUpload, useTheme } from '@/providers';
+import { useFileUploadState, useFileUpload, useTheme } from '@/providers';
+import { useHttpClient } from '@/providers/sheshaApplication/publicApi/http/hooks';
+import { fetchStoredFile } from '@/components/storedFilesRendererBase/utils';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
 import FileVersionsPopup from './fileVersionsPopup';
 import { DraggerStub } from './stubs';
 import { useStyles } from './styles/styles';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { storedFileModel2UploadFile } from '@/utils/storedFile/utils';
-import { StoredFileModel } from '@/utils/storedFile/models';
+import { StoredFileModel, STORED_FILE_URLS } from '@/utils/storedFile/models';
+import { buildUrl } from '@/utils';
 const { Dragger } = Upload;
 
 export interface IFileUploadProps {
@@ -61,8 +64,6 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const fileInfo = useFileUploadState();
   const uploadFileModel = useMemo<UploadFile | undefined>(() => fileInfo ? storedFileModel2UploadFile(fileInfo) : undefined, [fileInfo]);
 
-  const { backendUrl } = useSheshaApplication();
-
   const { styles } = useStyles({
     style: stylesProp,
     model: {
@@ -77,18 +78,24 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const uploadDraggerSpanRef = useRef<HTMLSpanElement>(null);
   const hiddenUploadInputRef = useRef<HTMLInputElement>(null);
   const { message, modal } = App.useApp();
-  const [imageUrl, setImageUrl] = useState('');
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState({ url: '', uid: '', name: '' });
+  const httpClient = useHttpClient();
   // Cache blob URLs per file to avoid immediate server round-trip and prevent stale thumbnails
   const uploadedFileBlobUrls = useRef<Map<string, string>>(new Map());
   // Track pending file uploads to cache their blob URLs
   const pendingFileBlob = useRef<{ file: File; blobUrl: string } | null>(null);
-  const url = isNotNullOrWhiteSpace(fileInfo?.url) ? `${backendUrl}${fileInfo.url}` : '';
+  // Cache of fetched full-resolution preview blob URLs, keyed by file id. Lets repeat previews
+  // of the same file reuse the already-downloaded image instead of hitting the server again.
+  // Entries are revoked on unmount.
+  const previewImageCache = useRef<Map<string, string>>(new Map());
+  const downloadUrl = buildUrl(fileInfo?.url ?? '');
+  const thumbnailUrl = buildUrl(STORED_FILE_URLS.DOWNLOAD_THUMBNAIL, { id: fileInfo?.id ?? '' });
 
   // Clean up blob URLs on unmount
   useEffect(() => {
     const blobUrlsMap = uploadedFileBlobUrls.current;
+    const previewCache = previewImageCache.current;
 
     return () => {
       blobUrlsMap.forEach((blobUrl) => {
@@ -100,6 +107,11 @@ export const FileUpload: FC<IFileUploadProps> = ({
         URL.revokeObjectURL(pendingFileBlob.current.blobUrl);
         pendingFileBlob.current = null;
       }
+
+      previewCache.forEach((blobUrl) => {
+        URL.revokeObjectURL(blobUrl);
+      });
+      previewCache.clear();
     };
   }, []);
 
@@ -112,26 +124,50 @@ export const FileUpload: FC<IFileUploadProps> = ({
     }
   }, [fileInfo]);
 
+  // Thumbnail image shown in thumbnail mode. For files just uploaded in this session we
+  // already have a local blob URL (used directly); for persisted files the thumbnail endpoint
+  // requires auth, so the effect below fetches it through the httpClient and swaps in the
+  // resulting blob URL rather than pointing <Image> at the raw endpoint (which would fail).
+  // Intentionally read the blob cache ref during render; it is keyed by file uid and only
+  // mutated alongside fileInfo changes, so the value stays consistent for a given file.
+  const cachedThumbnailBlobUrl = isDefined(fileInfo) ? uploadedFileBlobUrls.current.get(fileInfo.uid) : undefined;
+  const [fetchedThumbnailUrl, setFetchedThumbnailUrl] = useState('');
+  const imageUrl = cachedThumbnailBlobUrl ?? fetchedThumbnailUrl;
+
   useEffect(() => {
-    if (!fileInfo) {
-      // Clear image URL if no file
-      setImageUrl('');
-      return;
+    // Skip the server fetch for transient files, non-images, or when a local blob already exists.
+    if (isNotNullOrWhiteSpace(cachedThumbnailBlobUrl) || isNullOrWhiteSpace(fileInfo?.id) || !isImageType(fileInfo.type ?? '')) {
+      return undefined;
     }
 
-    // Use a locally cached blob URL for files just uploaded in this session.
-    // For persisted files, use the backend URL directly; avoid pre-downloading
-    // the file here because it duplicates the request the browser/preview makes
-    // when the user actually views the file.
-    const cachedBlobUrl = uploadedFileBlobUrls.current.get(fileInfo.uid);
-    setImageUrl(cachedBlobUrl ?? url);
-  }, [fileInfo, url]);
+    let isCancelled = false;
+    let revokeFetched: (() => void) | undefined;
+    const loadThumbnail = async (): Promise<void> => {
+      try {
+        const { url, revoke } = await fetchStoredFile(httpClient, thumbnailUrl);
+        if (isCancelled) {
+          revoke();
+          return;
+        }
+        revokeFetched = revoke;
+        setFetchedThumbnailUrl(url);
+      } catch (error) {
+        console.error('Failed to fetch thumbnail', error);
+      }
+    };
+    loadThumbnail().catch((error) => console.error('Failed to fetch thumbnail', error));
+
+    return () => {
+      isCancelled = true;
+      revokeFetched?.();
+    };
+  }, [fileInfo, thumbnailUrl, httpClient, cachedThumbnailBlobUrl]);
 
   const onCustomRequest: UploadProps['customRequest'] = ({ file, onSuccess, onError }): void => {
     if (file instanceof File) {
       // For image files, create a blob URL directly from the File object to avoid
       // an immediate server round-trip for the thumbnail right after upload
-      const fileExt = `.${(file.name.split('.').pop() || '').toLowerCase()}`;
+      const fileExt = `.${(file.name.split('.').pop() ?? '').toLowerCase()}`;
 
       if (isImageType(fileExt)) {
         const blobUrl = URL.createObjectURL(file);
@@ -193,15 +229,47 @@ export const FileUpload: FC<IFileUploadProps> = ({
   };
 
   const onPreview = (): void => {
-    if (fileInfo) {
-      const previewUrl = imageUrl || url;
-      if (!previewUrl) {
-        message.error('Preview URL not available');
-        return;
-      }
-      setPreviewImage({ url: previewUrl, uid: fileInfo.id || '', name: fileInfo.name });
+    if (!fileInfo)
+      return;
+
+    // For a freshly uploaded file we already have a local blob URL of the original image,
+    // so reuse it instead of downloading the file again from the server.
+    const cachedBlobUrl = uploadedFileBlobUrls.current.get(fileInfo.uid);
+    if (isNotNullOrWhiteSpace(cachedBlobUrl)) {
+      setPreviewImage({ url: cachedBlobUrl, uid: fileInfo.id ?? '', name: fileInfo.name });
       setPreviewOpen(true);
+      return;
     }
+
+    // Persisted file: the download endpoint requires auth headers, so fetch it through the
+    // httpClient (which carries the backend base URL + auth) and preview the resulting blob URL
+    // rather than pointing <Image> at the raw endpoint, which would fail.
+    if (isNullOrWhiteSpace(fileInfo.id)) {
+      message.error('Preview URL not available');
+      return;
+    }
+
+    // Reuse a previously downloaded full image for this file to avoid re-hitting the server.
+    const previouslyFetched = previewImageCache.current.get(fileInfo.id);
+    if (isNotNullOrWhiteSpace(previouslyFetched)) {
+      setPreviewImage({ url: previouslyFetched, uid: fileInfo.id, name: fileInfo.name });
+      setPreviewOpen(true);
+      return;
+    }
+
+    const fileId = fileInfo.id;
+    setPreviewImage({ url: '', uid: fileId, name: fileInfo.name });
+    setPreviewOpen(true);
+
+    fetchStoredFile(httpClient, downloadUrl)
+      .then(({ url: fullImageUrl }) => {
+        previewImageCache.current.set(fileId, fullImageUrl);
+        setPreviewImage((current) => (current.uid === fileId ? { ...current, url: fullImageUrl } : current));
+      })
+      .catch((error: unknown) => {
+        console.error('Failed to fetch image for preview', error);
+        message.error('Failed to load preview');
+      });
   };
 
   const fileControls = (color: string | undefined): ReactNode => {
@@ -392,7 +460,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
             onVisibleChange: (visible) => setPreviewOpen(visible),
             toolbarRender: (original) => (
               <div style={{ display: 'flex', flexDirection: 'row-reverse' }}>
-                {previewImage.uid && (
+                {isNotNullOrWhiteSpace(previewImage.uid) && (
                   <DownloadOutlined
                     className={styles.antPreviewDownloadIcon}
                     onClick={() => downloadFile({ fileId: previewImage.uid, fileName: previewImage.name })}
@@ -402,7 +470,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
               </div>
             ),
           }}
-          src={imageUrl}
+          src={previewImage.url}
         />
       )}
 
@@ -422,7 +490,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
             }
 
             // For image files, create a blob URL for immediate display
-            const fileExt = `.${(file.name.split('.').pop() || '').toLowerCase()}`;
+            const fileExt = `.${(file.name.split('.').pop() ?? '').toLowerCase()}`;
 
             if (isImageType(fileExt)) {
               const blobUrl = URL.createObjectURL(file);

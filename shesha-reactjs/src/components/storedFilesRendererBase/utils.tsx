@@ -8,7 +8,7 @@ import { ListType } from '@/designer-components/attachmentsEditor/attachmentsEdi
 import { StoredFileModel } from '@/utils/storedFile/models';
 import { ConfigurableForm } from '../configurableForm';
 import DateDisplay from '../dateDisplay';
-import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
 import { HttpClientApi } from '@/publicJsApis/apis/httpClient';
 
 export interface IFileVersionsButtonProps {
@@ -126,21 +126,21 @@ export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDow
     }
   };
 
-  const uploads = serverData?.success ? serverData.result : [];
+  const uploads = serverData?.success === true ? (serverData.result ?? []) : [];
 
   const handleVersionDownloadClick = (fileVersion: StoredFileVersionInfoDto): void => {
-    if (fileVersion.versionNo && !isNullOrWhiteSpace(fileVersion.fileName))
+    if (isDefined(fileVersion.versionNo) && isNotNullOrWhiteSpace(fileVersion.fileName))
       onDownload(fileVersion.versionNo, fileVersion.fileName);
   };
 
   const content = (
     <Skeleton loading={loading}>
       <ul>
-        {uploads &&
+        {uploads.length > 0 &&
           uploads.map((item, i) => (
             <li key={item.versionNo ?? `version-${i}`}>
               <strong>Version {item.versionNo}</strong> Uploaded{' '}
-              {item.dateUploaded && <DateDisplay>{item.dateUploaded}</DateDisplay>} by {item.uploadedBy}
+              {isNotNullOrWhiteSpace(item.dateUploaded) && <DateDisplay>{item.dateUploaded}</DateDisplay>} by {item.uploadedBy}
               <br />
               <Button type="link" onClick={() => handleVersionDownloadClick(item)}>
                 {item.fileName} {isDefined(item.size) && <>({filesize(item.size)})</>}
@@ -159,7 +159,7 @@ export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDow
 };
 
 export const ExtraContent: FC<IExtraContentProps> = ({ file, formId }) => {
-  if (!formId) {
+  if (!isDefined(formId)) {
     return null;
   }
 
@@ -187,7 +187,7 @@ export const FileNameDisplay: FC<{
   popoverClassName?: string | undefined;
 }> = ({ file, icon, className, popoverContent, popoverClassName }) => {
   const sizeStr = formatFileSize(file.size);
-  const title = sizeStr ? `${file.name} (${sizeStr})` : file.name;
+  const title = isNotNullOrWhiteSpace(sizeStr) ? `${file.name} (${sizeStr})` : file.name;
 
   const textElement = (
     <Text
@@ -200,12 +200,12 @@ export const FileNameDisplay: FC<{
 
   return (
     <div className={className} style={{ overflow: 'hidden', flex: 1 }}>
-      {popoverContent ? (
+      {isDefined(popoverContent) ? (
         <Popover
           content={popoverContent}
           trigger="hover"
           placement="top"
-          {...(popoverClassName ? { classNames: { root: popoverClassName } } : {})}
+          {...(isNotNullOrWhiteSpace(popoverClassName) ? { classNames: { root: popoverClassName } } : {})}
         >
           {textElement}
         </Popover>

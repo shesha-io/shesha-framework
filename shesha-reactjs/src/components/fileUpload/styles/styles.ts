@@ -1,7 +1,6 @@
 import { createStyles } from '@/styles';
 import { addPx } from '@/utils/style';
 import { CSSProperties } from 'react';
-import { CSSInterpolation } from '@emotion/serialize';
 
 interface ModelProps {
   layout?: boolean | undefined;
@@ -78,7 +77,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
 
   // React.CSSProperties is not directly assignable to Emotion's CSSInterpolation;
   // spreading it into a CSSObject-shaped value is safe at runtime.
-  const extraStyles = { ...style } as CSSInterpolation;
+  const extraStyles = { ...style };
 
   const { layout, isDragger, hideFileName, listType } = model;
 
@@ -242,7 +241,6 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
             color: ${color} !important;
           }
         }
-        ${extraStyles}
       }
 
       .thumbnail-stub {
