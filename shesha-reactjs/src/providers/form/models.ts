@@ -330,6 +330,7 @@ export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles =
 
   noDataSecondaryText?: string | undefined;
 
+  /** @deprecated use visiblePermissions or editModePermissions instead */
   permissions?: string[] | undefined;
 
   _formFields?: string[] | undefined;
