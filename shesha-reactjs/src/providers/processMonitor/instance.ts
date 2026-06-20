@@ -8,6 +8,7 @@ import { getFileNameFromResponse } from '@/utils/fetchers';
 import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 import { mergeSortedEvents, parseLog4NetLine, parseLogLevel } from './utils';
 import { buildUrl } from '@/utils/url';
+import { isNotNullOrWhiteSpace } from '@/utils/nullables';
 
 export type ForceRenderFunc = () => void;
 
@@ -124,7 +125,7 @@ export class ProcessMonitorInstance implements IProcessMonitor {
       id: Date.now(),
       message,
       level: parseLogLevel(level),
-      timeStamp: timeStamp ? moment(timeStamp) : undefined,
+      timeStamp: isNotNullOrWhiteSpace(timeStamp) ? moment(timeStamp) : undefined,
     };
     this.updateEvents([...this._events, event]);
   };
@@ -154,9 +155,12 @@ export class ProcessMonitorInstance implements IProcessMonitor {
   };
 
   changeProcessId = async (processId: string): Promise<void> => {
+    if (this._processId === processId) return;
     await this.stopAsync().then(async () => {
       this._processId = processId;
       this.clearLog();
+      this._status = 'idle';
+      this._errorMessage = undefined;
       await this.startAsync();
       this._forceRender();
     });

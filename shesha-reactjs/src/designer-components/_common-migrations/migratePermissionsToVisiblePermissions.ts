@@ -3,7 +3,7 @@ import { IConfigurableFormComponent } from "@/providers";
 
 export const migratePermissionsToVisiblePermissions = <TModel extends IConfigurableFormComponent = IConfigurableFormComponent>(prev: TModel): TModel => {
   const model = { ...prev };
-  model.visiblePermissions = model.permissions;
+  model.visiblePermissions = prev.visiblePermissions ?? model.permissions;
   delete model.permissions;
   return model;
 };
