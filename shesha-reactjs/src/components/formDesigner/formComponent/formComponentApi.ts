@@ -49,7 +49,9 @@ export const updateApi = (args: IUpdateApiArgs): void => {
       // component properties
       // use model.hidden because it's already filtered by some other means (eg permissions)
       { name: 'visible',
+        // use Visible as actual configuration value
         getter: () => apiModel.visible === true,
+        // use hidden as value that will be send to the component; ToDo: AS - review visible|hidden properties.
         setter: (value) => updateApiModel(setApiModel, { hidden: model.hidden === true ? model.hidden : !value }),
       },
       { name: 'editable',
