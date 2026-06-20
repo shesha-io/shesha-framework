@@ -19,7 +19,7 @@ export const ParamsTab: FC<IParamsTabProps> = ({ params, onChange, expressionCon
     onChange([...params, { key: '', value: '', description: '', enabled: true }]);
   };
 
-  const handleUpdate = (index: number, field: keyof IRequestParam, value: IRequestParam[keyof IRequestParam]): void => {
+  const handleUpdate = <K extends keyof IRequestParam>(index: number, field: K, value: IRequestParam[K]): void => {
     const updated = [...params];
     updated[index] = { ...updated[index], [field]: value } as IRequestParam;
     onChange(updated);

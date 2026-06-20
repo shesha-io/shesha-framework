@@ -33,13 +33,20 @@ export const RequestConfigModal: FC<IRequestConfigModalProps> = ({
   onClose,
 }) => {
   const { styles } = useStyles();
-  const [localConfig, setLocalConfig] = useState<IRequestConfig>(config);
+  const cloneConfig = (c: IRequestConfig): IRequestConfig => ({
+    ...c,
+    params: [...c.params],
+    headers: [...c.headers],
+    body: { ...c.body },
+  });
+
+  const [localConfig, setLocalConfig] = useState<IRequestConfig>(() => cloneConfig(config));
   const [activeTab, setActiveTab] = useState('params');
   const wasVisible = useRef(false);
 
   useEffect(() => {
     if (visible && !wasVisible.current) {
-      setLocalConfig(config);
+      setLocalConfig(cloneConfig(config));
     }
     wasVisible.current = visible;
   }, [visible, config]);
@@ -71,7 +78,7 @@ export const RequestConfigModal: FC<IRequestConfigModalProps> = ({
   };
 
   const handleCancel = (): void => {
-    setLocalConfig(config);
+    setLocalConfig(cloneConfig(config));
     onClose();
   };
 
@@ -87,7 +94,7 @@ export const RequestConfigModal: FC<IRequestConfigModalProps> = ({
       onCancel={handleCancel}
       width={800}
       className={styles.requestConfigModal}
-      destroyOnClose={false}
+      destroyOnClose
       maskClosable={false}
     >
       <div className={styles.modalContent}>

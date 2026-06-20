@@ -19,7 +19,7 @@ export const HeadersTab: FC<IHeadersTabProps> = ({ headers, onChange, expression
     onChange([...headers, { key: '', value: '', enabled: true }]);
   };
 
-  const handleUpdate = (index: number, field: keyof IRequestHeader, value: IRequestHeader[keyof IRequestHeader]): void => {
+  const handleUpdate = <K extends keyof IRequestHeader>(index: number, field: K, value: IRequestHeader[K]): void => {
     const updated = [...headers];
     updated[index] = { ...updated[index], [field]: value } as IRequestHeader;
     onChange(updated);

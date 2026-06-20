@@ -96,7 +96,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
       onTransformationChange?.({ enabled: false, script: '' });
       return;
     }
-    const type = view as BodyType;
+    const type = view;
     const cleared = defaultContentFor(type);
     setContentByType((prev) => ({ ...prev, [type]: cleared }));
     onChange({ ...body, content: cleared });
@@ -132,7 +132,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
 
   const parseFormData = (): IFormDataField[] => {
     const raw = body.content;
-    if (Array.isArray(raw)) return raw as IFormDataField[];
+    if (Array.isArray(raw)) return [...(raw as IFormDataField[])];
     if (typeof raw === 'string') {
       // Legacy storage: JSON-stringified array
       try {

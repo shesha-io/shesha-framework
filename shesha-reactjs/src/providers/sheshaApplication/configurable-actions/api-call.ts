@@ -12,7 +12,7 @@ import { mapKeyValueToDictionary } from "@/utils/dictionary";
 import { getQueryParams } from "@/utils/url";
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { FormMarkupFactory } from '@/interfaces/configurableAction';
-import { IRequestParam, IRequestHeader, IRequestBody, IResponseTransformationConfiguration, executeResponseTransformation } from '@/components/requestConfigModal';
+import { IRequestParam, IRequestHeader, IRequestBody, IFormDataField, IResponseTransformationConfiguration, executeResponseTransformation } from '@/components/requestConfigModal';
 import { IDictionary } from '@/interfaces';
 
 // Values are now plain strings (possibly containing {{ }} mustache). The generic evaluator has
@@ -20,7 +20,7 @@ import { IDictionary } from '@/interfaces';
 // object — handle that transparently so old configurations keep working.
 const resolveRequestValue = (raw: unknown): string => {
   if (!raw) return '';
-  if (typeof raw === 'object' && raw !== null) {
+  if (typeof raw === 'object') {
     const obj = raw as Record<string, unknown>;
     return obj['_mode'] === 'code' ? String(obj['_code'] ?? '') : String(obj['_value'] ?? '');
   }
@@ -181,15 +181,6 @@ export const useApiCallAction = (): void => {
       let finalHeaders: Record<string, string> = {};
       let requestBody: unknown;
 
-      // Debug logging (can be removed in production)
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('🔍 API Call Debug:', {
-          hasRequestConfig: !!requestConfig,
-          requestConfigParams: requestConfig?.params,
-          verb,
-        });
-      }
-
       if (requestConfig) {
         // New structure: use requestConfig
         const enabledParams = requestConfig.params?.filter((p) => p.enabled) || [];
@@ -243,10 +234,16 @@ export const useApiCallAction = (): void => {
               try {
                 // New storage: typed array of fields. Legacy storage: JSON-stringified array.
                 const rawContent = requestConfig.body.content;
-                const formFields: IFormDataField[] = Array.isArray(rawContent)
-                  ? rawContent as IFormDataField[]
-                  : JSON.parse(rawContent as string) as IFormDataField[];
-                requestBody = formFields.reduce((acc: Record<string, string>, field) => {
+                const toFormFields = (content: IRequestBody['content']): IFormDataField[] => {
+                  if (Array.isArray(content)) return content as IFormDataField[];
+                  if (typeof content === 'string') {
+                    const parsed: unknown = JSON.parse(content);
+                    return Array.isArray(parsed) ? (parsed as IFormDataField[]) : [];
+                  }
+                  return [];
+                };
+                const formFields = toFormFields(rawContent);
+                requestBody = formFields.reduce((acc: Record<string, string>, field: IFormDataField) => {
                   if (field.key && field.enabled !== false) {
                     acc[field.key] = resolveRequestValue(field.value);
                   }
@@ -314,12 +311,20 @@ export const useApiCallAction = (): void => {
         ? undefined
         : backendUrl;
 
-      const { url: preparedUrl, data: paramsData } = prepareUrlAndData(url, verb, { ...finalParams });
-      // An explicitly configured request body takes precedence as the payload for verbs that send one
-      // (GET/DELETE encode params into the query string, so paramsData is undefined there and no body is sent).
-      const preparedData = paramsData !== undefined && requestBody !== undefined
-        ? requestBody
-        : paramsData;
+      // When an explicit body is configured on a non-GET verb, encode params as URL query string so
+      // they are not silently dropped (without this, prepareUrlAndData would put them in the body).
+      const hasParams = Object.keys(finalParams).length > 0;
+      const bodyOverridesParams = requestBody !== undefined && hasParams;
+      const effectiveUrl = bodyOverridesParams
+        ? `${url.split('?')[0]}?${qs.stringify({ ...getQueryParams(url), ...finalParams }, { allowDots: true })}`
+        : url;
+
+      const { url: preparedUrl, data: paramsData } = prepareUrlAndData(
+        effectiveUrl,
+        verb,
+        bodyOverridesParams ? {} : { ...finalParams },
+      );
+      const preparedData = requestBody !== undefined ? requestBody : paramsData;
 
       return axios({
         url: preparedUrl,

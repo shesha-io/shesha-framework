@@ -46,4 +46,3 @@ export interface IRequestConfig {
   body: IRequestBody;
   responseTransformation?: IResponseTransformationConfiguration;
 }
-  

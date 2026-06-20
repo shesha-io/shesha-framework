@@ -27,7 +27,6 @@ export const RequestConfigButton: FC<IRequestConfigButtonProps> = ({
   };
 
   const handleModalChange = (config: IRequestConfig): void => {
-    console.warn('🔍 RequestConfigButton - Modal changed:', config);
     onChange?.(config);
   };
 
@@ -53,7 +52,7 @@ export const RequestConfigButton: FC<IRequestConfigButtonProps> = ({
       <Button
         icon={<SettingOutlined />}
         onClick={handleOpenModal}
-        disabled={readOnly}
+        disabled={readOnly ?? false}
         block
       >
         Configure Request
