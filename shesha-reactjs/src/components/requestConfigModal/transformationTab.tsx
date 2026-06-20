@@ -17,7 +17,7 @@ const { Text } = Typography;
 // isn't rebuilt each render.
 const RESULT_TYPE = { dataType: DataTypes.any };
 
-const DEFAULT_SCRIPT = `return {
+export const DEFAULT_TRANSFORMATION_SCRIPT = `return {
     fullName: response.firstName + " " + response.lastName,
     email: response.email
 };`;
@@ -49,8 +49,7 @@ export const TransformationTab: FC<ITransformationTabProps> = ({ value, onChange
   };
 
   const handleEnabledChange = (checked: boolean): void => {
-    // Seed an example the first time it is enabled with an empty script, for convenience.
-    update({ enabled: checked, script: checked && !script.trim() ? DEFAULT_SCRIPT : script });
+    update({ enabled: checked });
   };
 
   const handleScriptChange = (next: string): void => {
@@ -78,7 +77,7 @@ export const TransformationTab: FC<ITransformationTabProps> = ({ value, onChange
                 value={script}
                 onChange={(v) => handleScriptChange(v ?? '')}
                 language="javascript"
-                placeholder={DEFAULT_SCRIPT}
+                placeholder={DEFAULT_TRANSFORMATION_SCRIPT}
                 fileName="expression"
                 wrapInTemplate
                 templateSettings={{ useAsyncDeclaration: true, functionName: 'transformResponse' }}

@@ -23,11 +23,12 @@ export interface IFormDataField {
 
 export type RawBodySubType = 'text' | 'json' | 'xml' | 'html' | 'javascript';
 
-export interface IRequestBody {
-  type: BodyType;
-  content: string | Record<string, unknown> | IFormDataField[];
-  rawSubType?: RawBodySubType;
-}
+export type IRequestBody =
+  { type: 'none'; content: string } |
+  { type: 'json'; content: string } |
+  { type: 'form-data'; content: IFormDataField[] } |
+  { type: 'x-www-form-urlencoded'; content: IFormDataField[] } |
+  { type: 'raw'; content: string; rawSubType: RawBodySubType };
 
 /**
  * Optional transformation applied to the API response before it is displayed/consumed.

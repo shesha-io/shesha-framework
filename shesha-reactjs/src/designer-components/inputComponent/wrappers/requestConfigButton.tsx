@@ -3,11 +3,17 @@ import { IRequestConfigButtonSettingsInputProps } from '@/designer-components/se
 import { RequestConfigButton } from '@/designer-components/requestConfigButton';
 import { IRequestConfig } from '@/components/requestConfigModal';
 
+const isIRequestConfig = (v: unknown): v is IRequestConfig =>
+  typeof v === 'object' && v !== null &&
+  Array.isArray((v as IRequestConfig).params) &&
+  Array.isArray((v as IRequestConfig).headers) &&
+  typeof (v as IRequestConfig).body === 'object';
+
 export const RequestConfigButtonWrapper: FC<IRequestConfigButtonSettingsInputProps> = (props) => {
   return (
     <RequestConfigButton
-      {...(props.value !== undefined ? { value: props.value as IRequestConfig } : {})}
-      {...(props.onChange !== undefined ? { onChange: props.onChange as (value: IRequestConfig) => void } : {})}
+      {...(isIRequestConfig(props.value) ? { value: props.value } : {})}
+      onChange={(v: IRequestConfig) => props.onChange?.(v)}
       {...(typeof props.readOnly === 'boolean' ? { readOnly: props.readOnly } : {})}
     />
   );

@@ -19,7 +19,7 @@ import { IDictionary } from '@/interfaces';
 // already resolved them before the executer runs. Legacy configs may still store an IPropertySetting
 // object — handle that transparently so old configurations keep working.
 const resolveRequestValue = (raw: unknown): string => {
-  if (!raw) return '';
+  if (raw === null || raw === undefined || raw === '') return '';
   if (typeof raw === 'object') {
     const obj = raw as Record<string, unknown>;
     return obj['_mode'] === 'code' ? String(obj['_code'] ?? '') : String(obj['_value'] ?? '');
@@ -116,6 +116,13 @@ const applyResponseTransformation = async (
 
 const isGlobalUrl = (url: string): boolean => {
   return !isNullOrWhiteSpace(url) && Boolean(url.match(/^(http|ftp|https):\/\//gi));
+};
+
+const hasHeader = (headers: Record<string, string>, name: string): boolean =>
+  Object.keys(headers).some((k) => k.toLowerCase() === name.toLowerCase());
+
+const setHeaderIfMissing = (headers: Record<string, string>, name: string, value: string): void => {
+  if (!hasHeader(headers, name)) headers[name] = value;
 };
 
 const prepareUrlAndData = (url: string, verb: string, parameters: IDictionary<string>): { url: string; data: IDictionary<string> | undefined } => {
@@ -225,9 +232,7 @@ export const useApiCallAction = (): void => {
               } catch {
                 requestBody = requestConfig.body.content;
               }
-              if (!finalHeaders['Content-Type']) {
-                finalHeaders['Content-Type'] = 'application/json';
-              }
+              setHeaderIfMissing(finalHeaders, 'Content-Type', 'application/json');
               break;
             case 'form-data':
             case 'x-www-form-urlencoded':
@@ -249,15 +254,15 @@ export const useApiCallAction = (): void => {
                   }
                   return acc;
                 }, {});
-                if (requestConfig.body.type === 'x-www-form-urlencoded' && !finalHeaders['Content-Type']) {
-                  finalHeaders['Content-Type'] = 'application/x-www-form-urlencoded';
+                if (requestConfig.body.type === 'x-www-form-urlencoded') {
+                  setHeaderIfMissing(finalHeaders, 'Content-Type', 'application/x-www-form-urlencoded');
                 }
               } catch {
                 requestBody = requestConfig.body.content;
               }
               break;
             case 'raw': {
-              const rawSubType = requestConfig.body.rawSubType ?? 'text';
+              const rawSubType = requestConfig.body.rawSubType;
               if (rawSubType === 'javascript') {
                 // Executable JS body: run the script against the live execution context (data,
                 // globalState, http, …); its returned value becomes the payload.
@@ -270,8 +275,8 @@ export const useApiCallAction = (): void => {
                   requestBody = undefined;
                 }
                 // Object results are sent as JSON; strings/primitives are sent as-is.
-                if (!finalHeaders['Content-Type'] && requestBody !== null && typeof requestBody === 'object') {
-                  finalHeaders['Content-Type'] = 'application/json';
+                if (requestBody !== null && typeof requestBody === 'object') {
+                  setHeaderIfMissing(finalHeaders, 'Content-Type', 'application/json');
                 }
               } else {
                 // Other raw sub-types are sent as text, with Mustache resolved against the context.
@@ -284,9 +289,7 @@ export const useApiCallAction = (): void => {
                   xml: 'application/xml',
                   html: 'text/html',
                 };
-                if (!finalHeaders['Content-Type']) {
-                  finalHeaders['Content-Type'] = rawContentTypeMap[rawSubType] ?? 'text/plain';
-                }
+                setHeaderIfMissing(finalHeaders, 'Content-Type', rawContentTypeMap[rawSubType] ?? 'text/plain');
               }
               break;
             }

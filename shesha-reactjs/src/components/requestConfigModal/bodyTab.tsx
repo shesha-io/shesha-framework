@@ -4,7 +4,7 @@ import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { BodyType, IFormDataField, IRequestBody, IResponseTransformationConfiguration, RawBodySubType } from './models';
 import { ExpressionContext } from '@/components/expressionEditor';
 import { TableValueEditor } from './tableValueEditor';
-import { TransformationTab } from './transformationTab';
+import { TransformationTab, DEFAULT_TRANSFORMATION_SCRIPT } from './transformationTab';
 import { CodeEditor as BaseCodeEditor } from '@/components/codeEditor/codeEditor';
 import { CodeLanguages } from '@/designer-components/codeEditor/types';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/hooks';
@@ -55,7 +55,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
 
   // Remember the raw sub-type (Text/JSON/XML/…) so leaving and returning to the "raw" tab keeps the
   // last choice instead of resetting to "text".
-  const [lastRawSubType, setLastRawSubType] = useState<RawBodySubType>(body.rawSubType ?? 'text');
+  const [lastRawSubType, setLastRawSubType] = useState<RawBodySubType>(body.type === 'raw' ? body.rawSubType : 'text');
 
   const defaultContentFor = (type: BodyType): IRequestBody['content'] =>
     type === 'form-data' || type === 'x-www-form-urlencoded' ? ([] as IFormDataField[]) : '';
@@ -82,11 +82,16 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
   };
 
   const handleTypeChange = (type: BodyType): void => {
-    // Restore the previously-entered content for this type instead of resetting it.
     const stashed = contentByType[type];
     const content = stashed !== undefined ? stashed : defaultContentFor(type);
-    const next: IRequestBody = { type, content };
-    if (type === 'raw') next.rawSubType = lastRawSubType;
+    let next: IRequestBody;
+    if (type === 'raw') {
+      next = { type, content: (content as string | undefined) ?? '', rawSubType: lastRawSubType };
+    } else if (type === 'form-data' || type === 'x-www-form-urlencoded') {
+      next = { type, content: (content as IFormDataField[] | undefined) ?? [] };
+    } else {
+      next = { type, content: (content as string | undefined) ?? '' };
+    }
     onChange(next);
     setJsonError(null);
   };
@@ -97,20 +102,27 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
       return;
     }
     const type = view;
-    const cleared = defaultContentFor(type);
-    setContentByType((prev) => ({ ...prev, [type]: cleared }));
-    onChange({ ...body, content: cleared });
+    setContentByType((prev) => ({ ...prev, [type]: defaultContentFor(type) }));
+    let clearedBody: IRequestBody;
+    if (type === 'raw') {
+      clearedBody = { type, content: '', rawSubType: lastRawSubType };
+    } else if (type === 'form-data' || type === 'x-www-form-urlencoded') {
+      clearedBody = { type, content: [] };
+    } else {
+      clearedBody = { type, content: '' };
+    }
+    onChange(clearedBody);
     setJsonError(null);
   };
 
   const handleRawSubTypeChange = (rawSubType: RawBodySubType): void => {
     setLastRawSubType(rawSubType);
-    onChange({ ...body, rawSubType });
+    if (body.type === 'raw') onChange({ ...body, rawSubType });
   };
 
   const handleJsonChange = (value: string): void => {
     setContentByType((prev) => ({ ...prev, json: value }));
-    onChange({ ...body, content: value });
+    onChange({ type: 'json', content: value });
 
     if (!value.trim()) {
       setJsonError(null);
@@ -121,13 +133,13 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
       JSON.parse(value);
       setJsonError(null);
     } catch (err) {
-      setJsonError('Invalid JSON: ' + (err as Error).message);
+      setJsonError('Invalid JSON: ' + (err instanceof Error ? err.message : String(err)));
     }
   };
 
   const handleRawChange = (value: string): void => {
     setContentByType((prev) => ({ ...prev, raw: value }));
-    onChange({ ...body, content: value });
+    onChange({ type: 'raw', content: value, rawSubType: lastRawSubType });
   };
 
   const parseFormData = (): IFormDataField[] => {
@@ -147,7 +159,9 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
 
   const updateFormData = (rows: IFormDataField[]): void => {
     setContentByType((prev) => ({ ...prev, [body.type]: rows }));
-    onChange({ ...body, content: rows });
+    if (body.type === 'form-data' || body.type === 'x-www-form-urlencoded') {
+      onChange({ ...body, content: rows });
+    }
   };
 
   const handleFormDataAdd = (): void => {
@@ -262,7 +276,10 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
         <TransformationTab
           {...(transformation !== undefined ? { value: transformation } : {})}
           onChange={(t) => {
-            onTransformationChange?.(t);
+            const seeded = t.enabled && !t.script.trim()
+              ? { ...t, script: DEFAULT_TRANSFORMATION_SCRIPT }
+              : t;
+            onTransformationChange?.(seeded);
           }}
         />
       );
@@ -309,7 +326,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
         );
 
       case 'raw': {
-        const activeSubType = body.rawSubType ?? 'text';
+        const activeSubType = body.rawSubType;
         const subTypeMeta = (RAW_SUB_TYPES.find((s) => s.value === activeSubType) ?? RAW_SUB_TYPES[0])!;
         // The JavaScript sub-type is executed at request time, so it gets the templated editor with
         // exposed constants (like the Transformation tab). Other sub-types are sent as plain text.
