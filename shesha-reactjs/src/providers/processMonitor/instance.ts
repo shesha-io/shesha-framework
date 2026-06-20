@@ -29,7 +29,7 @@ export class ProcessMonitorInstance implements IProcessMonitor {
 
   private processType: string;
 
-  private processId: string;
+  private _processId: string;
 
   private logEnabled: boolean = false;
 
@@ -46,7 +46,7 @@ export class ProcessMonitorInstance implements IProcessMonitor {
   constructor({ processType, processId, httpClient, backendUrl, forceRender }: ProcessMonitorInstanceArgs) {
     this._forceRender = forceRender;
     this.processType = processType;
-    this.processId = processId;
+    this._processId = processId;
     this.httpClient = httpClient;
     // this.setLogEnabled(true);
 
@@ -89,6 +89,10 @@ export class ProcessMonitorInstance implements IProcessMonitor {
   private unsubscribe(type: ProcessMonitorSubscriptionType, callback: ProcessMonitorSubscriptionCallback): void {
     const callbacks = this.getSubscriptions(type);
     callbacks.delete(callback);
+  }
+
+  get processId(): string {
+    return this._processId;
   }
 
   notifySubscribers(types: ProcessMonitorSubscriptionType[]): void {
@@ -149,6 +153,15 @@ export class ProcessMonitorInstance implements IProcessMonitor {
     this._forceRender();
   };
 
+  changeProcessId = async (processId: string): Promise<void> => {
+    await this.stopAsync().then(async () => {
+      this._processId = processId;
+      this.clearLog();
+      await this.startAsync();
+      this._forceRender();
+    });
+  };
+
   startAsync = async (): Promise<void> => {
     try {
       void this.fetchProcessStateAsync();
@@ -156,8 +169,8 @@ export class ProcessMonitorInstance implements IProcessMonitor {
       this.log('LOG: connecting...');
       await this.connection.start();
       this.log('LOG: connected ✅');
-      if (this.processId)
-        await this.connection.invoke('JoinGroup', this.processId);
+      if (this._processId)
+        await this.connection.invoke('JoinGroup', this._processId);
     } catch (err) {
       console.error(err);
       throw err;
@@ -178,9 +191,9 @@ export class ProcessMonitorInstance implements IProcessMonitor {
 
   fetchProcessStateAsync = async (): Promise<void> => {
     try {
-      if (!this.processId)
+      if (!this._processId)
         return;
-      const url = buildUrl(URLS.GET_PROCESS_STATE, { processId: this.processId, processType: this.processType });
+      const url = buildUrl(URLS.GET_PROCESS_STATE, { processId: this._processId, processType: this.processType });
       const response = await this.httpClient.get<IAjaxResponse<ProcessStateDto>>(url);
       const { data } = response;
       if (isAjaxSuccessResponse(data)) {
@@ -201,9 +214,9 @@ export class ProcessMonitorInstance implements IProcessMonitor {
   };
 
   downloadLogAsync = async (): Promise<void> => {
-    if (!this.processId)
+    if (!this._processId)
       throw new Error('No process id');
-    const url = buildUrl(URLS.DOWNLOAD_LOG, { processId: this.processId, processType: this.processType });
+    const url = buildUrl(URLS.DOWNLOAD_LOG, { processId: this._processId, processType: this.processType });
     const response = await this.httpClient.get<BlobPart>(url, { responseType: 'blob' });
     const fileName = getFileNameFromResponse(response) ?? 'execution.log';
     FileSaver(new Blob([response.data]), fileName, { autoBom: false });

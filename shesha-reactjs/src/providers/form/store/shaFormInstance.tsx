@@ -39,7 +39,7 @@ import { removeGhostKeys } from "@/utils/form";
 import { FieldValueSetter } from "@/utils/dotnotation";
 import { addDelayedUpdateProperty } from "@/providers/delayedUpdateProvider";
 import { RecursivePartial } from "@/interfaces/entity";
-import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from "@/utils/nullables";
 import { extractErrorInfo, throwError } from "@/utils/errors";
 import { GetShaFormDataAccessor } from "@/providers/dataContextProvider/contexts/shaDataAccessProxy";
 import { IComponentApi } from "@/providers/componentApi/model";
@@ -489,7 +489,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
       this.events.onValuesUpdate = makeCaller<IDataArguments<Values>, void>(settings.onValuesUpdate);
     }
 
-    this.modelMetadata = settings?.modelType
+    this.modelMetadata = isDefined(settings?.modelType)
       ? await this.metadataDispatcher.getMetadata({ modelType: settings.modelType, dataType: DataTypes.entityReference }) ?? undefined
       : undefined;
   };
@@ -500,7 +500,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
       : {};
   };
 
-  loadDataAndFireEvents = async (dataLoader?: () => Promise<void>): Promise<void> => {
+  loadDataWithBeforeAfterLoad = async (dataLoader?: () => Promise<void>): Promise<void> => {
     if (this.markupLoadingState.status === "ready") {
       if (this.events.onBeforeDataLoad) {
         this.log('LOG: fireEvents - onBeforeDataLoad');
@@ -510,11 +510,6 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
       if (dataLoader) {
         this.log('LOG: fireEvents - dataLoader');
         await dataLoader();
-      }
-
-      if (this.events.onAfterDataLoad) {
-        this.log('LOG: fireEvents - onAfterDataLoad');
-        await this.events.onAfterDataLoad();
       }
     }
   };
@@ -550,7 +545,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
 
   loadFormByLocalIdAsync = async (payload: LoadFormByIdPayload<Values> = {}): Promise<void> => {
     const { skipCache = false, initialValues } = payload;
-    if (!this.formId)
+    if (!isDefined(this.formId))
       throw new Error("FormId is not defined");
 
     this.resetMarkup();
@@ -612,8 +607,16 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     }
   };
 
+  triggerAfterDataLoad = async (): Promise<void> => {
+    if (this.events.onAfterDataLoad) {
+      this.log('LOG: fireEvents - onAfterDataLoad');
+      await this.events.onAfterDataLoad();
+    }
+  };
+
   triggerEvents = async (): Promise<void> => {
-    await this.loadDataAndFireEvents();
+    await this.loadDataWithBeforeAfterLoad();
+    await this.triggerAfterDataLoad();
   };
 
   initFormByRawMarkup = async (payload: InitByRawMarkupPayload<Values>): Promise<void> => {
@@ -631,10 +634,13 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     this.formData = initialValues as Values;
 
     await this.loadFormByRawMarkupAsync(true);
+
+    if (payload.lazyLoadData !== true && this.markupLoadingState.status === 'ready')
+      await this.initLoadData();
   };
 
   initInitialData = async (): Promise<void> => {
-    await this.loadDataAndFireEvents(() => {
+    await this.loadDataWithBeforeAfterLoad(() => {
       this.antdForm.resetFields();
       if (this.initialValues)
         this.antdForm.setFieldsValue(this.initialValues as RecursivePartial<Values>);
@@ -675,17 +681,20 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
       await this.loadFormByLocalIdAsync({ initialValues: payload.initialValues });
     } else
       this.log('LOG: loadFormByFormId - load form skipped', payload);
+
+    if (payload.lazyLoadData !== true && this.markupLoadingState.status === 'ready')
+      await this.initLoadData();
   };
 
   initLoadData = async (): Promise<void> => {
-    await this.loadDataAndFireEvents(async () => {
+    await this.loadDataWithBeforeAfterLoad(async () => {
       this.log('LOG: initData - load data', this.formArguments);
       await this.loadData(this.formArguments);
     });
   };
 
   private get dataLoader(): IFormDataLoader<Values> | undefined {
-    return this.settings?.dataLoaderType
+    return isNotNullOrWhiteSpace(this.settings?.dataLoaderType)
       ? this.dataLoaders.getFormDataLoader(this.settings.dataLoaderType) as IFormDataLoader<Values>
       : undefined;
   }
@@ -721,7 +730,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
         expressionExecuter: this.expressionExecuter ?? throwError('Expression executer is not initialized'),
         loadingCallback: (loadingState) => {
           this.dataLoadingState = { status: loadingState.loadingState, hint: loadingState.loaderHint, error: loadingState.error };
-          this.forceRootUpdate();
+          // this.forceRootUpdate();
         },
       });
       if (this.dataLoadingState.status === 'failed')
@@ -746,7 +755,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
   };
 
   private get dataSubmitter(): IFormDataSubmitter<Values> | undefined {
-    return this.settings?.dataSubmitterType
+    return isNotNullOrWhiteSpace(this.settings?.dataSubmitterType)
       ? this.dataSubmitters.getFormDataSubmitter(this.settings.dataSubmitterType) as unknown as IFormDataSubmitter<Values>
       : undefined;
   }
@@ -876,7 +885,7 @@ const useShaForm = <Values extends object = object>(args: UseShaFormArgs<Values>
       const allConstants = makeObservableProxy<IApplicationContext<Values>>(accessors);
 
       const expressionExecuter: ExpressionExecuter = (expression, data) => {
-        if (data && typeof (data) === 'object')
+        if (isDefined(data) && typeof (data) === 'object')
           allConstants.setAdditionalData(data);
 
         // get formApi here and pass to caller
