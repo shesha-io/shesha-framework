@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import { ConfigurationTree } from '@/configuration-studio/components/configuration-tree';
 import { Divider, Splitter, Layout } from 'antd';
 import { WorkArea } from '@/configuration-studio/components/work-area';
@@ -16,6 +16,7 @@ import { DocumentDefinitionRegistration } from './document-definitions/documentD
 import { SheshaDocumentDefinitions } from './document-definitions';
 import { useCanvas } from '@/providers';
 import { InitializationErrorsModal } from './components/initializationErrorsModal';
+import { throttle } from 'lodash';
 
 // Width of the collapsed tree panel (just enough to show the expand toggle), matches the builder's collapsed sidebar.
 const COLLAPSED_TREE_SIZE = 35;
@@ -40,6 +41,8 @@ const ConfigurationStudio: FC = () => {
       setExpandedTreeSize(treeSize);
     }
   };
+
+  const throttledTreeResize = useMemo(() => throttle(handleTreeResize, 100), []);
 
   const toggleTreeCollapsed = (): void => {
     setTreeCollapsed((prev) => !prev);
@@ -73,8 +76,9 @@ const ConfigurationStudio: FC = () => {
         </Layout.Header>
         <Layout.Content className={styles.csContent}>
           <Splitter
-            onResize={handleTreeResize}
+            onResize={throttledTreeResize}
             onResizeEnd={(sizes) => {
+              throttledTreeResize.cancel();
               handleTreeResize(sizes);
               canvas.setConfigTreePanelSize(sizes[0] ?? 0);
             }}
