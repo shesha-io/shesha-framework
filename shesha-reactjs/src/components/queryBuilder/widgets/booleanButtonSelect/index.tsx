@@ -4,7 +4,7 @@ import { BaseWidget, BasicConfig, BooleanFieldSettings } from '@react-awesome-qu
 type BooleanButtonSelectWidgetType = BaseWidget & BooleanFieldSettings;
 
 interface BoolButtonGroupProps {
-  value: boolean;
+  value?: boolean;
   readonly?: boolean;
   labelYes: string;
   labelNo: string;
@@ -15,6 +15,7 @@ const BoolButtonGroup = ({ value, readonly, labelYes, labelNo, onChange }: BoolB
   <div className={`sha-bool-btn-group${readonly ? ' is-disabled' : ''}`}>
     <button
       type="button"
+      disabled={readonly}
       className={`sha-bool-btn-group__btn${value === true ? ' is-active' : ''}`}
       onClick={() => onChange(true)}
     >
@@ -22,6 +23,7 @@ const BoolButtonGroup = ({ value, readonly, labelYes, labelNo, onChange }: BoolB
     </button>
     <button
       type="button"
+      disabled={readonly}
       className={`sha-bool-btn-group__btn${value === false ? ' is-active' : ''}`}
       onClick={() => onChange(false)}
     >
@@ -40,7 +42,7 @@ export const BooleanButtonSelectWidget: BooleanButtonSelectWidgetType = {
 
     return (
       <BoolButtonGroup
-        value={extProps.value ?? true}
+        {...(extProps.value !== undefined ? { value: extProps.value } : {})}
         {...(props.readonly !== undefined ? { readonly: props.readonly } : {})}
         labelYes={labelYes}
         labelNo={labelNo}

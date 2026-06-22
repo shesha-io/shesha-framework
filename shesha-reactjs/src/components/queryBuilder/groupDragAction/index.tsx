@@ -6,7 +6,6 @@ interface IGroupDragActionProps {
   parentField?: string;
   parentFieldCanReorder?: boolean;
   reordableNodesCnt?: number;
-  // The library types this as `Function`; we accept that and narrow it at the call site.
   handleDraggerMouseDown?: React.MouseEventHandler<HTMLButtonElement>;
   config?: {
     settings?: {
@@ -47,7 +46,7 @@ export const GroupDragAction: FC<IGroupDragActionProps> = ({
       <button
         type="button"
         className="sha-query-builder-group-extra-action qb-drag-handler group--drag-handler"
-        onMouseDown={handleDraggerMouseDown as React.MouseEventHandler<HTMLButtonElement>}
+        onMouseDown={handleDraggerMouseDown}
         aria-label="Drag group"
       >
         {icon}

@@ -638,22 +638,26 @@ namespace Shesha.JsonLogic
                                             Expression.Constant(timeSpan)
                                         );
                                     }
-                                case "month": 
+                                case "month":
                                     {
+                                        if (number.Value < int.MinValue || number.Value > int.MaxValue)
+                                            throw new ArgumentException($"{JsOperators.DateAdd}: the `number` argument is out of range for datepart `month`");
                                         var addMonthsMethod = typeof(DateTime).GetRequiredMethod(nameof(DateTime.AddMonths), [ typeof(int) ]);
                                         return Expression.Call(
                                             date,
                                             addMonthsMethod,
-                                            Expression.Constant(number.Value)
+                                            Expression.Constant((int)number.Value)
                                         );
                                     }
                                 case "year":
                                     {
+                                        if (number.Value < int.MinValue || number.Value > int.MaxValue)
+                                            throw new ArgumentException($"{JsOperators.DateAdd}: the `number` argument is out of range for datepart `year`");
                                         var addYearsMethod = typeof(DateTime).GetRequiredMethod(nameof(DateTime.AddYears), [ typeof(int) ]);
                                         return Expression.Call(
                                             date,
                                             addYearsMethod,
-                                            Expression.Constant(number.Value)
+                                            Expression.Constant((int)number.Value)
                                         );
                                     }
                                 default:
@@ -915,10 +919,10 @@ namespace Shesha.JsonLogic
                 if (constExpr.Type == typeof(Int64) && constExpr.Value != null)
                 {
                     var constValue = (Int64)constExpr.Value;
-                    if (constValue <= int.MaxValue)
+                    if (constValue >= int.MinValue && constValue <= int.MaxValue)
                         numericConstToConvert = Expression.Constant(Convert.ToInt32(constValue));
                     else
-                        throw new OverflowException($"Constant value must be not grester than {int.MaxValue} (max int size) to compare with {memberExpr.Member.Name}, currtent value is {constValue}");
+                        throw new OverflowException($"Constant value must be between {int.MinValue} and {int.MaxValue} (int size) to compare with {memberExpr.Member.Name}, current value is {constValue}");
                 }
                 else
                     if (constExpr.Type == typeof(string) && int.TryParse((string?)constExpr.Value, out var intValue)) 

@@ -1098,10 +1098,11 @@ const QueryBuilderItem: React.FC<IBuilderItemProps> = ({
   const pathKey = getPathKey(path);
   const isDropBefore = dropHint?.placement === 'before' && getPathKey(dropHint.path) === pathKey;
   const isDropAfter = dropHint?.placement === 'after' && getPathKey(dropHint.path) === pathKey;
-  const canDelete = !readOnly;
+  const groupReadOnly = getGroupReadonly(config, readOnly);
+  const canDelete = !groupReadOnly;
   const siblingCount = getChildren(parentNode).length;
   const isNested = path.length > 2;
-  const canDrag = !readOnly && config.settings.canReorder !== false && (siblingCount > 1 || isNested);
+  const canDrag = !groupReadOnly && config.settings.canReorder !== false && (siblingCount > 1 || isNested);
 
   const handleRelationChange = (nextRelation: RelationValue): void => {
     const nextTree = (tree as unknown as {
@@ -1376,7 +1377,8 @@ export const CustomQueryBuilder: React.FC<BuilderProps> = ({ actions, config, tr
   const rootPath = React.useMemo(() => [plainTree.id], [plainTree.id]);
   const [dragState, setDragState] = React.useState<string[] | null>(null);
   const [dropHint, setDropHint] = React.useState<IDropHint | null>(null);
-  const readOnly = getGroupReadonly(config, false) && getFieldSourceReadonly(config, false) && getValueReadonly(config, false);
+  // Drag is a structural/reorder operation, so gate it on group-readonly (consistent with canDrag).
+  const readOnly = getGroupReadonly(config, false);
 
   const resetDragState = React.useCallback((): void => {
     setDragState(null);

@@ -100,7 +100,6 @@ const typeModifiers: IDictionary<TypeModifier> = {
           'not_like',
           'starts_with',
           'ends_with',
-          'proximity',
         ],
       },
     },
