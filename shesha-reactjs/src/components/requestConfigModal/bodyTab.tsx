@@ -1,10 +1,9 @@
 import React, { FC, useState } from 'react';
 import { AutoComplete, Button, Checkbox, Radio, Select, Space, Table, Tooltip, Typography } from 'antd';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
-import { BodyType, IFormDataField, IRequestBody, IResponseTransformationConfiguration, RawBodySubType } from './models';
+import { BodyType, IFormDataField, IRequestBody, RawBodySubType } from './models';
 import { ExpressionContext } from '@/components/expressionEditor';
 import { TableValueEditor } from './tableValueEditor';
-import { TransformationTab, DEFAULT_TRANSFORMATION_SCRIPT } from './transformationTab';
 import { CodeEditor as BaseCodeEditor } from '@/components/codeEditor/codeEditor';
 import { CodeLanguages } from '@/designer-components/codeEditor/types';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/hooks';
@@ -30,21 +29,13 @@ const { Text } = Typography;
 export interface IBodyTabProps {
   body: IRequestBody;
   onChange: (body: IRequestBody) => void;
-  /** Response transformation config — persisted alongside the request, edited under the "Transformation" body option. */
-  transformation?: IResponseTransformationConfiguration;
-  onTransformationChange?: (transformation: IResponseTransformationConfiguration) => void;
   expressionContext: ExpressionContext;
 }
 
-// "transformation" is a view-only selection in the body type bar — it edits the response
-// transformation (a sibling of the request body) rather than a real request body type, so it
-// is tracked in local state and never written to body.type.
-type BodyView = BodyType | 'transformation';
-
-export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onTransformationChange, expressionContext }) => {
+export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, expressionContext }) => {
   const { styles } = useStyles();
   const [jsonError, setJsonError] = useState<string | null>(null);
-  const [view, setView] = useState<BodyView>(body.type);
+  const [view, setView] = useState<BodyType>(body.type);
 
   // Remembers each body type's content while the user toggles between formats, so switching tabs
   // never wipes what was entered. Seeded from the incoming body; entries are only emptied by the
@@ -73,12 +64,9 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
     label: p.path,
   }));
 
-  const handleViewChange = (next: BodyView): void => {
+  const handleViewChange = (next: BodyType): void => {
     setView(next);
-    // Only real body types mutate the request body; "transformation" leaves the body untouched.
-    if (next !== 'transformation') {
-      handleTypeChange(next);
-    }
+    handleTypeChange(next);
   };
 
   const handleTypeChange = (type: BodyType): void => {
@@ -97,10 +85,6 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
   };
 
   const handleClear = (): void => {
-    if (view === 'transformation') {
-      onTransformationChange?.({ enabled: false, script: '' });
-      return;
-    }
     const type = view;
     setContentByType((prev) => ({ ...prev, [type]: defaultContentFor(type) }));
     let clearedBody: IRequestBody;
@@ -271,20 +255,6 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
   };
 
   const renderBodyContent = (): JSX.Element | null => {
-    if (view === 'transformation') {
-      return (
-        <TransformationTab
-          {...(transformation !== undefined ? { value: transformation } : {})}
-          onChange={(t) => {
-            const seeded = t.enabled && !t.script.trim()
-              ? { ...t, script: DEFAULT_TRANSFORMATION_SCRIPT }
-              : t;
-            onTransformationChange?.(seeded);
-          }}
-        />
-      );
-    }
-
     switch (body.type) {
       case 'none':
         return <Text type="secondary">This request does not have a body.</Text>;
@@ -371,12 +341,9 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
     }
   };
 
-  // Whether the current view has anything worth clearing (drives the Clear button's enabled state).
-  const hasContent = view === 'transformation'
-    ? Boolean(transformation?.enabled || transformation?.script.trim())
-    : typeof body.content === 'string'
-      ? Boolean(body.content.trim())
-      : Array.isArray(body.content) && body.content.length > 0;
+  const hasContent = typeof body.content === 'string'
+    ? Boolean(body.content.trim())
+    : Array.isArray(body.content) && body.content.length > 0;
 
   return (
     <div className={styles.bodyEditor}>
@@ -387,7 +354,6 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, transformation, onT
           <Radio.Button value="form-data">form-data</Radio.Button>
           <Radio.Button value="x-www-form-urlencoded">x-www-form-urlencoded</Radio.Button>
           <Radio.Button value="raw">raw</Radio.Button>
-          <Radio.Button value="transformation">Transformation</Radio.Button>
         </Radio.Group>
         <Button
           size="small"
