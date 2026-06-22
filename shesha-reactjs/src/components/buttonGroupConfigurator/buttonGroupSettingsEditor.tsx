@@ -49,7 +49,7 @@ const ButtonGroupEditorHeader = ({ contextAccessor, level, parentItem }: ListEdi
     ? parentItem
     : undefined;
 
-  return !readOnly
+  return !Boolean(readOnly)
     ? level === 1
       ? (
         <div className={styles.customActionButtons}>
@@ -57,7 +57,7 @@ const ButtonGroupEditorHeader = ({ contextAccessor, level, parentItem }: ListEdi
           <Button onClick={onAddItemClick} type="primary">Add New Item</Button>
         </div>
       )
-      : isDefined(parent) && !(parent.childItems?.length)
+      : isDefined(parent) && !Boolean(parent.childItems?.length)
         ? (
           <Divider style={{ marginTop: 0, marginBottom: 0 }}>
             <Button shape="round" size="small" type="link" onClick={onAddItemClick}>Add item</Button>

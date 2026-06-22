@@ -19,7 +19,7 @@ import { getEntityTypeName, isEntityTypeIdEqual } from '@/providers/metadataDisp
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { getNestedPropertyValueByPath } from '@/utils/dotnotation';
 import { getClassNameOrUndefined } from '@/utils/entity';
-import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { toCamelCase } from '@/utils/string';
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Checkbox, Collapse, Divider, Typography } from 'antd';
@@ -764,7 +764,7 @@ export const DataList: FC<IDataListProps> = ({
   type MomentType = typeof moment;
   type NewListItemInitExecuter = (form: IFormApi | undefined, contexts: IDataContextsData | object, globalState: IAnyObject | undefined, http: HttpClientApi, moment: MomentType) => ITableRowData;
   const onNewListItemInitializeExecuter = useMemo<NewListItemInitExecuter | undefined>(() => {
-    return props.onNewListItemInitialize
+    return isNotNullOrWhiteSpace(props.onNewListItemInitialize)
       ? new Function('form, contexts, globalState, contexts, http, moment', props.onNewListItemInitialize) as NewListItemInitExecuter
       : undefined;
   }, [props.onNewListItemInitialize]);

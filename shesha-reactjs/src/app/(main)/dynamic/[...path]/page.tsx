@@ -4,12 +4,12 @@ import React, { FC, use } from 'react';
 import { FormIdentifier } from '@/interfaces';
 import { DynamicPage } from '@/generic-pages/dynamic';
 import { notFound } from 'next/navigation';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 interface AsyncPageProps {
   params: Promise<{ path: string[] }>;
   searchParams: Promise<NodeJS.Dict<string | string[]>>;
 }
-
 
 const DynamicPageInternal: FC<AsyncPageProps> = (props) => {
   const params = use(props.params);
@@ -28,7 +28,7 @@ const DynamicPageInternal: FC<AsyncPageProps> = (props) => {
   const moduleName = fullPath[0];
   const formName = fullPath[1];
 
-  if (!formName)
+  if (isNullOrWhiteSpace(formName))
     return notFound();
 
   const formId: FormIdentifier = {

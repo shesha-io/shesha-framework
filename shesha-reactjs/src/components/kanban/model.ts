@@ -1,5 +1,5 @@
 import { IConfigurableFormComponent } from '@/providers/form/models';
-import { IButtonGroupItem, IConfigurableActionConfiguration, IStyleType } from '@/providers';
+import { IButtonGroupItem, IConfigurableActionConfiguration, IStyleValue } from '@/providers';
 import { CSSProperties } from 'react';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { IReferenceListIdentifier } from '@/interfaces';
@@ -8,7 +8,7 @@ export interface IKanbanButton extends IButtonGroupItem {
   itemValue: number;
   item: string;
 }
-export interface IKanbanProps extends IConfigurableFormComponent, IStyleType {
+export interface IKanbanProps extends IConfigurableFormComponent, IStyleValue {
   items?: IKanbanButton[] | undefined;
   referenceList?: IReferenceListIdentifier | undefined;
   fontColor?: string | undefined;
@@ -29,5 +29,5 @@ export interface IKanbanProps extends IConfigurableFormComponent, IStyleType {
   editFormId?: string | undefined;
   allowEdit?: boolean | undefined;
   allowDelete?: boolean | undefined;
-  columnStyles?: IStyleType | undefined;
+  columnStyles?: IStyleValue | undefined;
 }

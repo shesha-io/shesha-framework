@@ -122,7 +122,7 @@ export const useStyles = createStyles(({ css, cx }) => {
   );
 
   const themeHeader = cx(
-    'theme-parameters',
+    'theme-header',
     css`
       font-size: 18px;
       font-weight: 700;

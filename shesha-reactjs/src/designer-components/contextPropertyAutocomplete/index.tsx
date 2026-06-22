@@ -1,52 +1,28 @@
-import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
+import React, { FC, ReactNode, useCallback, useMemo, useRef, useState } from 'react';
+import settingsFormJson from './settingsForm.json';
+import { Button, Input } from 'antd';
 import { DataContextSelector } from '@/designer-components/dataContextSelector';
-import { useEffectOnce } from '@/hooks/useEffectOnce';
-import { IModelMetadata, isEntityMetadata, isPropertiesArray, IToolboxComponent } from '@/interfaces';
-import { isJsonEntityMetadata } from '@/interfaces/metadata';
-import { IConfigurableFormComponent, IPropertySetting, MetadataProvider, UnwrapCodeEvaluators, useFormDesignerComponents, useMetadataDispatcher, useShaFormInstanceOrUndefined } from '@/providers';
+import { FileSearchOutlined } from '@ant-design/icons';
 import { FormMarkup } from '@/providers/form/models';
 import { getStyle, linkComponentToModelMetadata, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { useFormDesignerSettings } from '@/providers/formDesigner';
+import { IConfigurableFormComponent, MetadataProvider, useFormDesignerComponents, useMetadataDispatcher, useShaFormInstanceOrUndefined } from '@/providers';
 import { MetadataType } from '@/providers/metadata/contexts';
-import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
-import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
-import { getBooleanPropertyOrUndefined, getStringPropertyOrUndefined } from '@/utils/object';
-import { toCamelCase, truncateMiddle } from '@/utils/string';
-import { FileSearchOutlined } from '@ant-design/icons';
-import { Button, Input } from 'antd';
-import React, { CSSProperties, FC, ReactNode, useCallback, useMemo, useState } from 'react';
-import { useDefaultModelProviderStateOrUndefined } from '../_settings/defaultModelProvider/defaultModelProvider';
+import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
+import { useFormDesignerSettings } from '@/providers/formDesigner';
 import SettingsControl from '../_settings/settingsControl';
-import { useStyles } from '../_settings/styles/styles';
 import { getValueFromPropertySettings } from '../_settings/utils/utils';
-import { ContextPropertyAutocompleteComponentDefinition, IContextPropertyAutocompleteCalculatedModel, IContextPropertyAutocompleteComponentProps } from './interfaces';
-import settingsFormJson from './settingsForm.json';
+import { useStyles } from '../_settings/styles/styles';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
+import { ContextPropertyAutocompleteComponentDefinition, IContextPropertyAutocompleteComponentProps, IContextPropertyAutocompleteProps, IContextPropertyAutocompleteState, IContextPropertyAutocompleteValue } from './interfaces';
+import { IModelMetadata, isEntityMetadata, isPropertiesArray, IToolboxComponent } from '@/interfaces';
+import { toCamelCase, truncateMiddle } from '@/utils/string';
+import { useDefaultModelActionsOrUndefined } from '../_settings/defaultModelProvider/defaultModelProvider';
+import { isJsonEntityMetadata } from '@/interfaces/metadata';
+import { useEffectOnce } from '@/hooks/useEffectOnce';
+import { throwError } from '@/utils/errors';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 
 const settingsForm = settingsFormJson as FormMarkup;
-
-export type ContextPropertyAutocompleteValueType = {
-  propertyName?: string | IPropertySetting<string> | undefined;
-  context?: string | undefined;
-  componentName?: string | undefined;
-};
-
-export interface IContextPropertyAutocompleteProps extends Omit<UnwrapCodeEvaluators<IContextPropertyAutocompleteComponentProps>, 'style' | 'dropdownStyle' | 'type'> {
-  componentName: string;
-  propertyName: string;
-  contextName: string;
-  style?: CSSProperties;
-  dropdownStyle?: CSSProperties;
-  defaultModelType: string | IEntityTypeIdentifier;
-  onValuesChange: (newValue: ContextPropertyAutocompleteValueType) => void;
-}
-
-interface IContextPropertyAutocompleteState {
-  mode: 'formData' | 'context';
-  context?: string | undefined;
-  propertyName?: string | undefined;
-  componentName?: string | undefined;
-}
 
 export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> = (model) => {
   const {
@@ -64,56 +40,58 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
     componentName,
     propertyName,
     context: contextName,
-    mode: contextName || propertyName !== componentName ? 'context' : 'formData',
+    mode: isNotNullOrWhiteSpace(contextName) || propertyName !== componentName ? 'context' : 'formData',
   });
   const { styles } = useStyles();
 
   const setContextMode = (): void => {
     setState({ ...state, mode: 'context' });
-    onValuesChange({ context: state.context, componentName: state.componentName });
+    onValuesChange?.({ context: state.context, componentName: state.componentName });
   };
 
   const setFormDataMode = (): void => {
     setState({ ...state, mode: 'formData' });
-    onValuesChange({ context: undefined, componentName: state.propertyName });
+    onValuesChange?.({ context: null, componentName: state.propertyName });
   };
 
-  const { mode } = state;
+  const mode = state.mode;
 
-  const context = state.context && mode === 'context' ? state.context : undefined;
+  const context = isNotNullOrWhiteSpace(state.context) && mode === 'context' ? state.context : undefined;
 
   const styledLabel = (label: string): ReactNode => <span className={styles.label}>{label}</span>;
-  const contextlabel = model.styledLabel ? styledLabel("Context") : <label>Context</label>;
-  const componentlabel = model.styledLabel ? styledLabel("Component Name") : <label>Component name</label>;
-  const propertylabel = model.styledLabel ? styledLabel("Property Name") : <label>Property name</label>;
+  const contextlabel = model.styledLabel ?? false ? styledLabel("Context") : <label>Context</label>;
+  const componentlabel = model.styledLabel ?? false ? styledLabel("Component Name") : <label>Component name</label>;
+  const propertylabel = model.styledLabel ?? false ? styledLabel("Property Name") : <label>Property name</label>;
 
-  const modelType = !context || mode === 'formData' ? defaultModelType : context;
-  const dataType: MetadataType = !context || mode === 'formData' ? 'entity' : 'context';
+  const modelType = isNullOrWhiteSpace(context) || mode === 'formData' ? defaultModelType : context;
+  const dataType: MetadataType = isNullOrWhiteSpace(context) || mode === 'formData' ? 'entity' : 'context';
 
   return (
     <>
-      <ConfigurableFormItem<string> model={{ ...model, type: "", style: "", label: componentlabel, componentName: 'componentName', propertyName: 'componentName', hidden: mode === 'formData' }}>
+      <ConfigurableFormItem<string> model={{ ...model, label: componentlabel, componentName: 'componentName', propertyName: 'componentName', hidden: mode === 'formData', type: '', style: undefined }}>
         {(value, onChange) => {
           return (
             <Input
               readOnly={readOnly}
-              value={value ?? ""}
+              value={value as string}
               onChange={(e) => {
                 const value = e.target.value;
-                setState((prev) => ({ ...prev, componentName: value }));
-                onChange(value);
+                if (isDefined(value)) {
+                  setState((prev) => ({ ...prev, componentName: value }));
+                  onChange(value);
+                }
               }}
               size={model.size}
             />
           );
         }}
       </ConfigurableFormItem>
-      <ConfigurableFormItem<string> model={{ ...model, type: "", style: "", label: contextlabel, componentName: 'context', propertyName: 'context', hidden: mode === 'formData' }}>
+      <ConfigurableFormItem<string> model={{ ...model, label: contextlabel, componentName: 'context', propertyName: 'context', hidden: mode === 'formData', type: '', style: undefined }}>
         {(value, onChange) => {
           return (
             <DataContextSelector
               {...model}
-              readOnly={readOnly ?? false}
+              readOnly={readOnly}
               value={value}
               onChange={(value) => {
                 onChange(value);
@@ -124,34 +102,34 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
         }}
       </ConfigurableFormItem>
       <MetadataProvider modelType={modelType} dataType={dataType}>
-        <ConfigurableFormItem<string | IPropertySetting<string>> model={{ ...model, type: "", style: "", label: propertylabel, componentName: 'propertyName', propertyName: 'propertyName' }}>
+        <ConfigurableFormItem<string> model={{ ...model, label: propertylabel, componentName: 'propertyName', propertyName: 'propertyName', type: '', style: undefined }}>
           {(value, onChange) => {
             return (
-              <SettingsControl<string>
+              <SettingsControl<string | string[]>
                 propertyName="propertyName"
                 mode="value"
                 onChange={(value) => {
-                  const changedData: ContextPropertyAutocompleteValueType = { propertyName: value ?? undefined };
-                  if (state.mode === 'formData')
-                    changedData.componentName = getValueFromPropertySettings(value) ?? undefined;
-                  // TODO V1: review condition and types
-                  if (state.propertyName !== value) {
-                    setState((prev) => ({ ...prev, ...changedData } as IContextPropertyAutocompleteState));
-                    onChange(value);
-                    onValuesChange(changedData);
+                  if (value !== undefined) {
+                    const changedData: IContextPropertyAutocompleteValue = { propertyName: value as string };
+                    if (state.mode === 'formData')
+                      changedData.componentName = getValueFromPropertySettings(value as string);
+                    if (state.propertyName !== value) {
+                      setState((prev) => ({ ...prev, ...changedData } as IContextPropertyAutocompleteState));
+                      onChange(value as string);
+                      onValuesChange?.(changedData);
+                    }
                   }
                 }}
-                value={value ?? undefined}
+                value={value}
                 readOnly={readOnly}
+                enabled={false}
               >
                 {(valueSettings, onChangeSettings) => {
                   return (
                     <PropertyAutocomplete
+                      mode="single"
                       value={valueSettings}
-                      onChange={(newValue) => {
-                        // TODO: split types for single and miltiple in PropertyAutocomplete and change value type
-                        if (!Array.isArray(newValue)) onChangeSettings(newValue);
-                      }}
+                      onChange={onChangeSettings}
                       style={style}
                       dropdownStyle={dropdownStyle}
                       size={model.size}
@@ -165,10 +143,10 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
           }}
         </ConfigurableFormItem>
       </MetadataProvider>
-      <Button type="link" onClick={setFormDataMode} hidden={model.readOnly || mode === 'formData'}>
+      <Button type="link" onClick={setFormDataMode} hidden={Boolean(model.readOnly) || mode === 'formData'}>
         hide binding option (bind to form data)
       </Button>
-      <Button type="link" onClick={setContextMode} hidden={model.readOnly || mode === 'context'}>
+      <Button type="link" onClick={setContextMode} hidden={Boolean(model.readOnly) || mode === 'context'}>
         show binding option
       </Button>
     </>
@@ -184,7 +162,7 @@ const ContextPropertyAutocompleteComponent: ContextPropertyAutocompleteComponent
   isInput: true,
   isOutput: true,
   preserveDimensionsInDesigner: true,
-  calculateModel: (model, allData) => {
+  calculateModel(model, allData) {
     const initialValues = (allData.form?.initialValues ?? {}) as IConfigurableFormComponent;
     return {
       componentId: initialValues.id,
@@ -192,73 +170,68 @@ const ContextPropertyAutocompleteComponent: ContextPropertyAutocompleteComponent
       componentName: initialValues.componentName,
       propertyName: initialValues.propertyName,
       contextName: initialValues.context,
-      style: model.style ? getStyle(model.style, allData.data, allData.globalState) : emptyObj,
-      dropdownStyle: model.dropdownStyle ? getStyle(model.dropdownStyle, allData.data, allData.globalState) : emptyObj,
+      style: isNotNullOrWhiteSpace(model.style) ? getStyle(model.style, allData.data, allData.globalState) : emptyObj,
+      dropdownStyle: isNotNullOrWhiteSpace(model.dropdownStyle) ? getStyle(model.dropdownStyle, allData.data, allData.globalState) : emptyObj,
       modelType: allData.form?.formSettings?.modelType,
       clearFieldsValue: allData.form?.clearFieldsValue,
       getFieldsValue: allData.form?.formInstance?.getFieldsValue,
       setFieldsValue: allData.form?.setFieldsValue,
-      getPropertyName: () => {
-        const formData = allData.form?.getFormData?.();
-        return getStringPropertyOrUndefined(formData ?? {}, "propertyName") ?? "";
-      },
-    } satisfies IContextPropertyAutocompleteCalculatedModel;
+      getPropertyName: () => (allData.form?.getFormData?.() as IConfigurableFormComponent | undefined)?.propertyName,
+    };
   },
   Factory: ({ model, calculatedModel }) => {
-    const defaultValue = useDefaultModelProviderStateOrUndefined();
-    const formComponent = useFormDesignerComponents()[calculatedModel.componentType];
+    const defaultValue = useDefaultModelActionsOrUndefined();
+    const formComponent = useFormDesignerComponents()[calculatedModel.componentType] as IToolboxComponent<IConfigurableFormComponent> | undefined;
+
+    if (!isDefined(formComponent)) throwError(`Component ${calculatedModel.componentType} not found`);
 
     const formSettings = useFormDesignerSettings();
-    const inst = useShaFormInstanceOrUndefined();
+    const formInstance = useShaFormInstanceOrUndefined();
     const designerModelType = formSettings.modelType;
     const validate = useMemo(() => ({ ...model.validate, required: false }), [model.validate]);
 
-    const [metadata, setMetadata] = useState<IModelMetadata | null>(null);
+    const metadata = useRef<IModelMetadata>(undefined);
+    const metaName = useRef<string>(undefined);
     const metaDispatcher = useMetadataDispatcher();
 
-    const setContextMetadata = useCallback((meta: IModelMetadata | null, propName: string, component: IToolboxComponent): IConfigurableFormComponent | undefined => {
-      if (!isDefined(meta))
-        return undefined;
-
+    const setContextMetadata = useCallback((propName: string, component: IToolboxComponent<IConfigurableFormComponent>): IConfigurableFormComponent | undefined => {
+      const meta = metadata.current;
+      const metaNameLocal = (isEntityMetadata(meta) || isJsonEntityMetadata(meta) ? `${meta.entityType} (${truncateMiddle(meta.entityModule ?? '', 25)})` : meta?.name) ?? undefined;
       const propertyName = toCamelCase(propName);
-      const propertyMetadata = isPropertiesArray(meta.properties)
+      const propertyMetadata = isPropertiesArray(meta?.properties)
         ? meta.properties.find((p) => toCamelCase(p.path) === propertyName)
         : null;
-      if (!propertyMetadata)
+      if (!propertyMetadata) {
+        defaultValue?.removeDefaultModel(metaName.current ?? '');
         return undefined;
-
+      }
+      if (metaName.current !== metaNameLocal) defaultValue?.removeDefaultModel(metaName.current ?? '');
       const metadataConfig = linkComponentToModelMetadata(component, { id: '', type: '' }, propertyMetadata);
-      const metaName = isEntityMetadata(meta) || isJsonEntityMetadata(meta)
-        ? `${meta.entityType} (${truncateMiddle(meta.entityModule ?? "", 25)})`
-        : meta.name ?? "";
-      defaultValue?.setDefaultModel(metaName, metadataConfig);
-      inst?.updateData?.();
+      metaName.current = metaNameLocal;
+      defaultValue?.setDefaultModel(metaNameLocal ?? '', metadataConfig);
+      formInstance?.updateData?.();
       return metadataConfig;
-    }, [defaultValue, inst]);
+    }, [defaultValue, formInstance]);
 
-    // ToDo: AS - review getting metadata and updating default model, merge this actions with PropertyAutocomplete
     useEffectOnce(() => {
-      if (formComponent && formComponent.allowInherit) {
+      if (isDefined(formComponent) && (formComponent.allowInherit ?? false)) {
         const modelType = designerModelType ?? calculatedModel.modelType;
-        if (isDefined(modelType)) {
-          metaDispatcher.getMetadata({ modelType, dataType: 'entity' })
-            .then((meta) => {
-              setMetadata(meta);
-              setContextMetadata(meta, calculatedModel.propertyName ?? "", formComponent);
-            })
-            .catch((error) => {
-              console.error(`Failed to fetch metadata for ${calculatedModel.propertyName}: ${modelType} - `, error);
-            });
-        }
+        if (!isDefined(modelType)) return;
+        metaDispatcher.getMetadata({ modelType, dataType: 'entity' })
+          .then((meta) => {
+            metadata.current = meta ?? undefined;
+            setContextMetadata(calculatedModel.propertyName ?? '', formComponent);
+          })
+          .catch((error) => {
+            console.error(`Failed to fetch metadata for ${calculatedModel.propertyName}: ${modelType} - `, error);
+          });
       }
     });
 
-    const onValuesChange = useCallback((values: ContextPropertyAutocompleteValueType) => {
-      if (formComponent && formComponent.allowInherit) {
+    const onValuesChange = useCallback((values: IContextPropertyAutocompleteValue) => {
+      if (isDefined(formComponent) && (formComponent.allowInherit ?? false)) {
         // update default model
-        const metadataConfig = typeof (values.propertyName) === "string" && !isNullOrWhiteSpace(values.propertyName)
-          ? setContextMetadata(metadata, values.propertyName, formComponent)
-          : undefined;
+        const metadataConfig = setContextMetadata(values.propertyName ?? '', formComponent);
         if (!metadataConfig) {
           // Property not found in metadata, just update the values
           calculatedModel.setFieldsValue?.(values);
@@ -273,27 +246,25 @@ const ContextPropertyAutocompleteComponent: ContextPropertyAutocompleteComponent
       } else
         // update propertyName and componentName (all other values will be updated by nested propertyAutocomplete)
         calculatedModel.setFieldsValue?.(values);
-    }, [calculatedModel, formComponent, metadata, setContextMetadata]);
+    }, [calculatedModel, formComponent, setContextMetadata]);
 
-    if (!isDefined(formComponent))
-      throw new Error(`Component ${calculatedModel.componentType} not found`);
-
-    return model.hidden
+    return model.hidden ?? false
       ? null
       : (
         <ContextPropertyAutocomplete
           {...model}
-          componentName={calculatedModel.componentName ?? ""}
-          propertyName={calculatedModel.propertyName ?? ""}
-          contextName={calculatedModel.contextName ?? ""}
+          componentName={calculatedModel.componentName}
+          propertyName={calculatedModel.propertyName}
+          contextName={calculatedModel.contextName}
           style={calculatedModel.style}
           dropdownStyle={calculatedModel.dropdownStyle}
           validate={validate}
           readOnly={model.readOnly}
           styledLabel={model.styledLabel}
-          defaultModelType={designerModelType ?? calculatedModel.modelType ?? ""}
+          defaultModelType={designerModelType ?? calculatedModel.modelType}
           onValuesChange={onValuesChange}
-          autoFillProps={!formComponent.allowInherit}
+
+          autoFillProps={!(formComponent?.allowInherit ?? false)}
         />
       )
     ;
@@ -302,9 +273,12 @@ const ContextPropertyAutocompleteComponent: ContextPropertyAutocompleteComponent
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   migrator: (m) => m
     .add<IContextPropertyAutocompleteComponentProps>(0, (prev) => {
-      return getBooleanPropertyOrUndefined(prev, "showFillPropsButton") !== undefined
-        ? { ...prev, autoFillProps: true }
-        : { ...prev };
+      const showFillPropsButton = (prev as { showFillPropsButton?: boolean | undefined })['showFillPropsButton'];
+      if (typeof showFillPropsButton !== 'undefined') {
+        return { ...prev, autoFillProps: showFillPropsButton };
+      } else {
+        return { ...prev };
+      }
     }),
 };
 

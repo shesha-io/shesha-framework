@@ -1,8 +1,6 @@
 import { CSSProperties } from 'react';
-import { addPx } from '@/utils/style';
 import { DEFAULT_MARGINS } from './designerConstants';
-import { getCalculatedDimension } from '@/designer-components/_settings/utils/index';
-import { isDefined } from '@/utils/nullables';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 /** Margin values extracted from various style sources */
 export interface MarginValues {
@@ -40,7 +38,11 @@ const DEFAULT_MARGIN_VALUES = {
   right: DEFAULT_MARGINS.horizontal,
 };
 
-const getExpandedDimensions = (value: string | number, marginTop: string | number, marginBottom: string | number): string | undefined => {
+export const DEFAULT_ROOT_CONTAINER_STYLE: CSSProperties = { boxSizing: 'border-box' };
+
+// ToDo: AS - remove all unused commented code afer review and migration to the new styles
+
+/* const getExpandedDimensions = (value: string | number, marginTop: string | number, marginBottom: string | number): string | undefined => {
   if (!isDefined(value) || value === '') {
     // When no explicit dimension is provided, don't set a CSS value at all.
     // This avoids producing invalid CSS like `calc(undefined + ...)`.
@@ -48,7 +50,7 @@ const getExpandedDimensions = (value: string | number, marginTop: string | numbe
   }
 
   return `calc(${addPx(value)} + (${addPx(marginTop)} + ${addPx(marginBottom)}))`;
-};
+};*/
 
 /**
  * Styling utility functions for form designer components.
@@ -89,9 +91,10 @@ export const stylingUtils = {
    * @returns CSSProperties for the root container
    */
   createRootContainerStyle(
-    dimensions: CSSProperties,
-    margins: MarginValues,
+    _dimensions: CSSProperties,
+    _margins: MarginValues,
   ): CSSProperties {
+    /*
     // Use margin values directly (preserves relative values like 50%)
     const marginTop = addPx(margins.marginTop);
     const marginBottom = addPx(margins.marginBottom);
@@ -139,11 +142,12 @@ export const stylingUtils = {
       : dimensions.maxWidth === 'auto'
         ? 'auto'
         : getCalculatedDimension(dimensions.maxWidth, DEFAULT_MARGIN_VALUES.left, DEFAULT_MARGIN_VALUES.right);
+    */
 
     return {
       boxSizing: 'border-box' as const,
       // Dimensions from component configuration
-      width,
+      /* width,
       height,
       minWidth,
       maxWidth,
@@ -154,7 +158,7 @@ export const stylingUtils = {
       marginTop,
       marginBottom,
       marginLeft,
-      marginRight,
+      marginRight,*/
     };
   },
 
@@ -166,7 +170,7 @@ export const stylingUtils = {
    * component should have no margins since they're applied to the wrapper.
    */
   removeMarginsFromStylingBox(stylingBox: string | undefined): string {
-    if (!stylingBox) return EMPTY_STYLING_BOX;
+    if (isNullOrWhiteSpace(stylingBox)) return EMPTY_STYLING_BOX;
 
     try {
       const parsed = JSON.parse(stylingBox) as CSSProperties;
@@ -215,7 +219,7 @@ export const stylingUtils = {
    * applies padding to the component, while margins are handled by the wrapper.
    */
   createPaddingOnlyStylingBox(stylingBox: string | undefined): string {
-    if (!stylingBox) return EMPTY_STYLING_BOX;
+    if (isNullOrWhiteSpace(stylingBox)) return EMPTY_STYLING_BOX;
 
     try {
       const parsed = JSON.parse(stylingBox) as PaddingValues;

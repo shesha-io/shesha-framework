@@ -7,12 +7,12 @@ import { IReadOnlyDisplayFormItemProps } from './models';
 import { useStyles } from './styles/styles';
 import ReflistTag from '../refListDropDown/reflistTag';
 import InputField from './inputField';
-import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getClassNameOrUndefined, getIdOrUndefined } from '@/utils/entity';
 import { getFirstNonEmptyStringPropertyOrUndefined } from '@/utils/object';
 import { findMap, isNonEmptyArray } from '@/utils/array';
 
-export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props) => {
+export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = <TValue = unknown>(props: IReadOnlyDisplayFormItemProps<TValue>) => {
   const {
     value,
     type = 'string',
@@ -30,12 +30,15 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
     showIcon,
     solidColor,
     showItemName,
+    styleValue,
+    enableFullStyle,
   } = props;
 
-  const { styles } = useStyles({ textAlign: style?.textAlign || 'left' });
+  // ToDo: remove `textAlign` after migrate all components to the new styles
+  const { styles } = useStyles({ styleValue, enableFullStyle, textAlign: styleValue?.font?.align || style?.textAlign || 'left' });
 
   const renderValue = useMemo(() => {
-    if (render) {
+    if (isDefined(render)) {
       return typeof render === 'function' ? render() : render;
     }
 
@@ -60,8 +63,8 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
             : undefined,
           );
 
-          if (quickviewEnabled && quickviewFormPath) {
-            return quickviewGetEntityUrl
+          if (Boolean(quickviewEnabled) && isDefined(quickviewFormPath)) {
+            return isNotNullOrWhiteSpace(quickviewGetEntityUrl)
               ? (
                 <QuickView
                   entityId={entityId}
@@ -84,7 +87,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
           } else {
             if (dropdownDisplayMode === 'tags') {
               const rawValue = typeof (value) === "string" || typeof (value) === "number" ? value : undefined;
-              const objValue = typeof (value) === "object" ? value as ISelectOption : undefined;
+              const objValue = typeof (value) === "object" ? value as unknown as ISelectOption : undefined;
               return (
                 <ReflistTag
                   value={rawValue}
@@ -99,7 +102,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
                 />
               );
             } else
-              return <InputField style={style} value={displayName ?? (typeof value === 'object' ? null : String(value))} />;
+              return <InputField className={styles.inputField} style={style} value={displayName ?? (typeof value === 'object' ? null : value as string)} />;
           }
         }
         return null;
@@ -112,7 +115,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
           const values = typedValue.map(({ label }) => label);
 
           return dropdownDisplayMode === 'raw'
-            ? <InputField style={style} value={values.join(', ')} />
+            ? <InputField className={styles.inputField} style={style} value={values.join(', ')} />
             : (
               <div
                 className={styles.wrapper}
@@ -150,25 +153,38 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
         );
       }
       case 'time': {
-        return <InputField style={style} value={<ValueRenderer value={value} meta={{ path: '', dataType: 'time', dataFormat: timeFormat, isVisible: true }} />} />;
+        return <InputField className={styles.inputField} style={style} value={<ValueRenderer value={value} meta={{ path: '', dataType: 'time', dataFormat: timeFormat, isVisible: true }} />} />;
       }
       case 'datetime': {
-        return <InputField style={style} value={getMoment(value, dateFormat)?.format(dateFormat) || ''} />;
+        return <InputField className={styles.inputField} style={style} value={getMoment(value, dateFormat)?.format(dateFormat) ?? ''} />;
       }
       case 'textArea': {
         return <div style={{ ...style, whiteSpace: 'pre-wrap', lineHeight: '1.2' }}>{String(value)}</div>;
       }
 
-      default:
-        break;
+      default: {
+        return <InputField className={styles.inputField} style={style} value={Boolean(value) && typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value)} />;
+      }
     }
-    return (
-      <InputField
-        style={style}
-        value={isDefined(value) && typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value)}
-      />
-    );
-  }, [value, type, dateFormat, timeFormat, dropdownDisplayMode, render, quickviewEnabled, quickviewFormPath, quickviewDisplayPropertyName, quickviewGetEntityUrl, quickviewWidth, showIcon, showItemName, solidColor, tagStyle, style, styles.wrapper]);
+  }, [value,
+    type,
+    dateFormat,
+    timeFormat,
+    dropdownDisplayMode,
+    render,
+    quickviewEnabled,
+    quickviewFormPath,
+    quickviewDisplayPropertyName,
+    quickviewGetEntityUrl,
+    quickviewWidth,
+    showIcon,
+    showItemName,
+    solidColor,
+    tagStyle,
+    style,
+    styles.wrapper,
+    styles.inputField,
+  ]);
 
   // Only apply layout-related styles to outer container, not appearance styles
   // Appearance styles (border, background, etc.) are applied by InputField to avoid double borders

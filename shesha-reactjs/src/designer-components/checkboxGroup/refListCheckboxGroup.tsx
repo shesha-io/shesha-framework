@@ -12,7 +12,7 @@ export const RefListCheckboxGroup: FC<ICheckboxGroupProps> = (props) => {
         onChange={(event) => {
           if (!props.onChange)
             return;
-          const newValue = event.target.value ? String(event.target.value) : null;
+          const newValue = event.target.value as string ? String(event.target.value) : undefined;
           props.onChange(newValue);
         }}
       />

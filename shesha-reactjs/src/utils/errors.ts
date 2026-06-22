@@ -1,5 +1,5 @@
 import { IErrorInfo, isAjaxErrorResponse, isErrorInfo, isHasErrorInfo } from "@/interfaces";
-import { isDefined } from "./nullables";
+import { isDefined, isNullOrWhiteSpace } from "./nullables";
 import axios from "axios";
 import { isAxiosResponse } from "@/interfaces/ajaxResponse";
 
@@ -55,7 +55,7 @@ export class SheshaError extends Error {
 
   /** Throw a SheshaError with model property error */
   static throwPropertyError(propertyName: string, error: string | null | undefined = null): void {
-    throw new SheshaError('', { hasErrors: true, errors: [{ propertyName, error: error || `Please make sure the '${propertyName}' property is configured properly.` }] }, 'warning');
+    throw new SheshaError('', { hasErrors: true, errors: [{ propertyName, error: isNullOrWhiteSpace(error) ? `Please make sure the '${propertyName}' property is configured properly.` : error }] }, 'warning');
   }
 
   /** Throw a SheshaError with model errors */
