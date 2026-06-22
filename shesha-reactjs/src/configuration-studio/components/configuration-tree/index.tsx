@@ -190,7 +190,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
                 <Button
                   className={styles.csNavPanelToggle}
                   onClick={onToggleCollapsed}
-                  type='text'
+                  type="text"
                   icon={<RightOutlined rotate={collapsed ? 0 : 180} />}
                 />
               </Tooltip>
