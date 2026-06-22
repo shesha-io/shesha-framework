@@ -1,8 +1,8 @@
-import { Dropdown, Input, MenuProps, Spin, Tree, TreeProps } from 'antd';
+import { Button, Dropdown, Input, MenuProps, Spin, Tooltip, Tree, TreeProps } from 'antd';
 import React, { FC, useMemo, useState } from 'react';
 import { MoveNodePayload } from '../../apis';
 import { isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, TreeNode } from '../../models';
-import { DownOutlined } from '@ant-design/icons';
+import { DownOutlined, RightOutlined } from '@ant-design/icons';
 import { ValidationErrors } from '@/components/validationErrors';
 import { useCsTree, useCsTreeDnd } from '../../cs/hooks';
 import { useConfigurationStudio } from '../../cs/contexts';
@@ -16,6 +16,10 @@ import { useConfigurationStudioEnvironment } from '@/configuration-studio/cs-env
 
 export interface IConfigurationTreeProps {
   debugDnd?: boolean;
+  /** Whether the tree panel is collapsed to a thin strip. */
+  collapsed?: boolean;
+  /** Toggles the collapsed state of the tree panel. */
+  onToggleCollapsed?: () => void;
 }
 type OnSelectHandler = TreeProps<TreeNode>['onSelect'];
 type OnClickHandler = TreeProps<TreeNode>['onClick'];
@@ -59,7 +63,7 @@ type DndState = {
   allowed: boolean;
 };
 
-export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = false }) => {
+export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = false, collapsed = false, onToggleCollapsed }) => {
   const cs = useConfigurationStudio();
   const { getDocumentDefinition } = useConfigurationStudioEnvironment();
   const { treeNodes, loadTreeAsync, treeLoadingState, expandedKeys, selectedKeys, onNodeExpand, quickSearch, setQuickSearch, getTreeNodeById } = useCsTree();
@@ -178,58 +182,75 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
       classNames={{ root: styles.csNavPanelSpinner }}
     >
       {treeLoadingState.status === 'ready' && isDefined(treeNodes) && (
-        <div className={styles.csNavPanelContent}>
-          <div className={styles.csNavPanelHeader}>
-            <Input.Search
-              placeholder="Search"
-              value={quickSearch}
-              onChange={onSearchChange}
-              allowClear
-            />
-          </div>
-          <div className={styles.csNavPanelTree}>
-            <Dropdown
-              menu={{ items: nodeContextMenuItems }}
-              trigger={["contextMenu"]}
-              getPopupContainer={() => document.body}
-            >
-              <Tree<TreeNode>
-                showLine
-                showIcon
-                switcherIcon={<DownOutlined />}
-
-                treeData={filteredTreeNodes}
-                blockNode /* required for correct dragging*/
-
-                draggable={isNodeDraggable}
-                allowDrop={allowNodeDropWrapper}
-                onDrop={handleNodeDrop}
-                onDragStart={handleDragStart}
-                onDragEnd={handleDragEnd}
-                onRightClick={handleNodeRightClick}
-                expandedKeys={expandedKeys ?? []}
-
-                onSelect={handleSelect}
-                onClick={handleClick}
-                selectedKeys={selectedKeys ?? []}
-                onExpand={onNodeExpand}
-                onKeyDown={handleKeyDown}
-                tabIndex={0}
-              />
-            </Dropdown>
-            {debugDnd && (
-              <div>
-                {dndState && (
-                  <DndPreview
-                    dragNode={dndState.dragNode}
-                    dropNode={dndState.dropNode}
-                    dropPosition={dndState.dropPosition}
-                    allowed={dndState.allowed}
-                  />
-                )}
-              </div>
+        <div className={`${styles.csNavPanelContent}${collapsed ? ' collapsed' : ''}`}>
+          <div className={styles.csNavPanelTitle}>
+            {!collapsed && <span className={styles.csNavPanelTitleText}>Explorer</span>}
+            {isDefined(onToggleCollapsed) && (
+              <Tooltip title={collapsed ? 'Expand' : 'Collapse'} placement="right">
+                <Button
+                  className={styles.csNavPanelToggle}
+                  onClick={onToggleCollapsed}
+                  type="text"
+                  icon={<RightOutlined rotate={collapsed ? 0 : 180} />}
+                />
+              </Tooltip>
             )}
           </div>
+          {!collapsed && (
+            <div className={styles.csNavPanelHeader}>
+              <Input.Search
+                placeholder="Search"
+                value={quickSearch}
+                onChange={onSearchChange}
+                allowClear
+              />
+            </div>
+          )}
+          {!collapsed && (
+            <div className={styles.csNavPanelTree}>
+              <Dropdown
+                menu={{ items: nodeContextMenuItems }}
+                trigger={["contextMenu"]}
+                getPopupContainer={() => document.body}
+              >
+                <Tree<TreeNode>
+                  showLine
+                  showIcon
+                  switcherIcon={<DownOutlined />}
+
+                  treeData={filteredTreeNodes}
+                  blockNode /* required for correct dragging*/
+
+                  draggable={isNodeDraggable}
+                  allowDrop={allowNodeDropWrapper}
+                  onDrop={handleNodeDrop}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                  onRightClick={handleNodeRightClick}
+                  expandedKeys={expandedKeys ?? []}
+
+                  onSelect={handleSelect}
+                  onClick={handleClick}
+                  selectedKeys={selectedKeys ?? []}
+                  onExpand={onNodeExpand}
+                  onKeyDown={handleKeyDown}
+                  tabIndex={0}
+                />
+              </Dropdown>
+              {debugDnd && (
+                <div>
+                  {dndState && (
+                    <DndPreview
+                      dragNode={dndState.dragNode}
+                      dropNode={dndState.dropNode}
+                      dropPosition={dndState.dropPosition}
+                      allowed={dndState.allowed}
+                    />
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
       {treeLoadingState.status === 'failed' && (
