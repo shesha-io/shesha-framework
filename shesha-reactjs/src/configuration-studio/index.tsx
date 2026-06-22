@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useState } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import { ConfigurationTree } from '@/configuration-studio/components/configuration-tree';
 import { Divider, Splitter, Layout } from 'antd';
 import { WorkArea } from '@/configuration-studio/components/work-area';
@@ -43,6 +43,12 @@ const ConfigurationStudio: FC = () => {
   };
 
   const throttledTreeResize = useMemo(() => throttle(handleTreeResize, 100), []);
+
+  useEffect(() => {
+    return () => {
+      throttledTreeResize.cancel();
+    };
+  }, [throttledTreeResize]);
 
   const toggleTreeCollapsed = (): void => {
     setTreeCollapsed((prev) => !prev);
