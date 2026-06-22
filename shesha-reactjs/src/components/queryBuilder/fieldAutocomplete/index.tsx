@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FactoryWithContext, FieldProps } from '@react-awesome-query-builder/antd';
-import { SELECT_WIDTH_OFFSET_RIGHT, calcTextWidth } from "../domUtils";
 import { IPropertyItem, IPropertySelectProps, isPropertyMetadata, PropertySelect } from "../../propertyAutocomplete/propertySelect";
 import { isEntityReferencePropertyMetadata } from "@/interfaces/metadata";
 import { useFieldWidget } from "../widgets/field/fieldWidgetContext";
 import { CustomFieldSettings } from "@/providers/queryBuilder/models";
 import { DataTypes } from "@/interfaces";
+import { PackedSelect } from '../packedControl';
 import { isDefined } from "@/utils/nullables";
 
 type OnPropertySelect = IPropertySelectProps["onSelect"];
@@ -13,6 +13,11 @@ type OnPropertySelect = IPropertySelectProps["onSelect"];
 export const FieldAutocomplete: FactoryWithContext<FieldProps> = (props) => {
   const [text, setText] = useState(props.selectedKey);
   const fieldWidget = useFieldWidget();
+
+  useEffect(() => {
+    setText(props.selectedKey);
+  }, [props.selectedKey]);
+
   const onSelect: OnPropertySelect = (key) => {
     // check fields and expand if needed
     if (typeof (key) === 'string')
@@ -26,21 +31,8 @@ export const FieldAutocomplete: FactoryWithContext<FieldProps> = (props) => {
   };
 
   const {
-    config, customProps, /* items,*/ placeholder,
-    selectedKey, selectedLabel, /* selectedOpts,*/ selectedAltLabel, selectedFullLabel, /* readonly,*/
+    config, /* items,*/ placeholder,
   } = props;
-
-  const { showSearch } = customProps || {};
-
-  const selectText = (text || selectedLabel || placeholder) ?? "";
-  const selectWidth = calcTextWidth(selectText);
-  const isFieldSelected = !!selectedKey;
-
-  const width = isFieldSelected && !showSearch ? undefined : selectWidth + SELECT_WIDTH_OFFSET_RIGHT;
-
-  let tooltipText = selectedAltLabel || selectedFullLabel;
-  if (tooltipText === selectedLabel)
-    tooltipText = null;
 
   const readOnly = isDefined(config) && config.settings.immutableFieldsMode === true;
 
@@ -72,15 +64,19 @@ export const FieldAutocomplete: FactoryWithContext<FieldProps> = (props) => {
     : undefined;
 
   return (
-    <PropertySelect
-      readOnly={readOnly}
-      value={text ?? ""}
-      onChange={onChange}
-      style={{ width }}
-      {...(size ? { size } : {})}
-      onSelect={onSelect}
-      isPropertyVisible={isPropertyVisible}
-      isPropertySelectable={isPropertySelectable}
-    />
+    <PackedSelect variant="field">
+      <PropertySelect
+        readOnly={readOnly}
+        value={text ?? ""}
+        onChange={onChange}
+        style={{ width: '100%', minWidth: 0 }}
+        {...(size ? { size } : {})}
+        onSelect={onSelect}
+        {...(placeholder !== undefined ? { placeholder } : {})}
+        variant="borderless"
+        isPropertyVisible={isPropertyVisible}
+        isPropertySelectable={isPropertySelectable}
+      />
+    </PackedSelect>
   );
 };

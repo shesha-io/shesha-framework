@@ -19,7 +19,7 @@ import {
   ISpecification,
   metadataHasNestedProperties,
 } from '@/interfaces/metadata';
-import { Select, Tooltip } from 'antd';
+import { Select, SelectProps, Tooltip } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { useQueryBuilder } from '@/providers';
 import { isNonEmptyArray } from '@/utils/array';
@@ -33,6 +33,8 @@ export interface IPropertySelectProps {
   style?: CSSProperties;
   dropdownStyle?: CSSProperties;
   size?: SizeType;
+  placeholder?: string;
+  variant?: SelectProps['variant'];
   onChange?: (value: string | null) => void;
   onSelect?: (value: string, selectedProperty: IPropertyItem | undefined) => void;
   readOnly?: boolean;
@@ -56,6 +58,39 @@ interface IAutocompleteState {
   propertyItems: IPropertyItem[];
   prefix: string;
 }
+
+const propertyOptionContainerStyle: CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: 8,
+  width: '100%',
+  maxWidth: '100%',
+  minWidth: 0,
+};
+
+const propertyOptionIconStyle: CSSProperties = {
+  flex: '0 0 auto',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+};
+
+const propertyOptionTextStyle: CSSProperties = {
+  flex: '1 1 auto',
+  minWidth: 0,
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+};
+
+const getOptionTitle = (option: IOption | undefined): string | undefined => {
+  if (!option)
+    return undefined;
+
+  return typeof option.label === 'string'
+    ? option.label
+    : option.value;
+};
 
 const getFullPath = (path: string, prefix: string | null): string => {
   return prefix ? `${prefix}.${camelcase(path)}` : camelcase(path);
@@ -89,10 +124,12 @@ const propertyItem2option = (item: IPropertyItem, prefix: string, isSelectable: 
   if (isSpecification(item)) {
     const value = item.name;
     const label = (
-      <div>
-        {item.description ? <Tooltip title={item.description}><BulbTwoTone twoToneColor="orange" style={{ cursor: 'help' }} /></Tooltip> : <BulbOutlined />}
-        {item.friendlyName}
-      </div>
+      <span className="sha-property-select-option" title={item.friendlyName} style={propertyOptionContainerStyle}>
+        <span className="sha-property-select-option-icon" style={propertyOptionIconStyle}>
+          {item.description ? <Tooltip title={item.description}><BulbTwoTone twoToneColor="orange" style={{ cursor: 'help' }} /></Tooltip> : <BulbOutlined />}
+        </span>
+        <span className="sha-property-select-option-text" style={propertyOptionTextStyle}>{item.friendlyName}</span>
+      </span>
     );
 
     return {
@@ -105,7 +142,12 @@ const propertyItem2option = (item: IPropertyItem, prefix: string, isSelectable: 
     const property = item as IPropertyMetadata;
     const value = getPropertyItemIdentifier(item, prefix);
     const icon = getIconByPropertyMetadata(property);
-    const label = <div>{icon} {value}</div>;
+    const label = (
+      <span className="sha-property-select-option" title={value} style={propertyOptionContainerStyle}>
+        <span className="sha-property-select-option-icon" style={propertyOptionIconStyle}>{icon}</span>
+        <span className="sha-property-select-option-text" style={propertyOptionTextStyle}>{value}</span>
+      </span>
+    );
 
     return {
       value: value,
@@ -236,8 +278,15 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, isP
     props.onChange?.(null);
   };
 
+  const selectedOption = useMemo(
+    () => state.options.find((option) => option.value === props.value),
+    [props.value, state.options],
+  );
+  const title = getOptionTitle(selectedOption) ?? props.value ?? props.placeholder;
+
   return (
     <Select<string>
+      {...(title !== undefined ? { title } : {})}
       onSelect={onSelect}
       value={props.value ?? null}
       showSearch={{
@@ -246,13 +295,14 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, isP
       size={props.size}
       disabled={readOnly}
       options={state.options}
-      style={{ minWidth: "150px" }}
+      style={{ minWidth: "150px", ...props.style }}
       {...(props.dropdownStyle ? { styles: { popup: { root: props.dropdownStyle } } } : {})}
+      {...(props.variant ? { variant: props.variant } : {})}
       popupMatchSelectWidth={false}
       allowClear
       onClear={onClear}
-    >
-    </Select>
+      placeholder={props.placeholder}
+    />
   );
 };
 
