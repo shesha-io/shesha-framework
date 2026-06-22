@@ -17,10 +17,7 @@ const { Text } = Typography;
 // isn't rebuilt each render.
 const RESULT_TYPE = { dataType: DataTypes.any };
 
-export const DEFAULT_TRANSFORMATION_SCRIPT = `return {
-    fullName: response.firstName + " " + response.lastName,
-    email: response.email
-};`;
+export const DEFAULT_TRANSFORMATION_SCRIPT = `return response;`;
 
 export interface ITransformationTabProps {
   value?: IResponseTransformationConfiguration;
