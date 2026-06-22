@@ -1,4 +1,4 @@
-import { Dropdown, Input, MenuProps, Spin, Tooltip, Tree, TreeProps } from 'antd';
+import { Button, Dropdown, Input, MenuProps, Spin, Tooltip, Tree, TreeProps } from 'antd';
 import React, { FC, useMemo, useState } from 'react';
 import { MoveNodePayload } from '../../apis';
 import { isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, TreeNode } from '../../models';
@@ -187,14 +187,12 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
             {!collapsed && <span className={styles.csNavPanelTitleText}>Explorer</span>}
             {isDefined(onToggleCollapsed) && (
               <Tooltip title={collapsed ? 'Expand' : 'Collapse'} placement="right">
-                <div
+                <Button
                   className={styles.csNavPanelToggle}
                   onClick={onToggleCollapsed}
-                  role="button"
-                  tabIndex={0}
-                >
-                  <RightOutlined rotate={collapsed ? 0 : 180} />
-                </div>
+                  type='text'
+                  icon={<RightOutlined rotate={collapsed ? 0 : 180} />}
+                />
               </Tooltip>
             )}
           </div>

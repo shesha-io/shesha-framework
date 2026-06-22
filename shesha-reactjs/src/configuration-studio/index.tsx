@@ -25,11 +25,11 @@ const ConfigurationStudio: FC = () => {
   const { styles } = useStyles();
   const canvas = useCanvas();
   const [treeCollapsed, setTreeCollapsed] = useState(false);
-  // Live size of the tree panel (in px) while expanded. `undefined` lets the Splitter use its defaultSize.
-  const [expandedTreeSize, setExpandedTreeSize] = useState<number | undefined>(undefined);
+  // Live size of the tree panel (in px) while expanded. Initialized from the canvas default so the
+  // panel stays controlled throughout the component's lifetime and avoids uncontrolled/controlled switches.
+  const [expandedTreeSize, setExpandedTreeSize] = useState<number>(canvas.configTreePanelSize);
 
-  // While collapsed we force the thin strip; otherwise we leave the panel uncontrolled (undefined)
-  // until the user drags, so the Splitter keeps full drag-resize behaviour.
+  // While collapsed we force the thin strip; otherwise we use the controlled expanded size.
   const treePanelSize = treeCollapsed ? COLLAPSED_TREE_SIZE : expandedTreeSize;
 
   const handleTreeResize = (sizes: number[]): void => {
@@ -91,8 +91,7 @@ const ConfigurationStudio: FC = () => {
           >
             <Splitter.Panel
               min={treeCollapsed ? COLLAPSED_TREE_SIZE : '5%'}
-              defaultSize="20%"
-              {...(treePanelSize !== undefined ? { size: treePanelSize } : {})}
+              size={treePanelSize}
               className={styles.csTreeArea}
             >
               <ConfigurationTree collapsed={treeCollapsed} onToggleCollapsed={toggleTreeCollapsed} />
