@@ -338,8 +338,6 @@ export const useStyles = createStyles<IStyleProps, StyleResponse>(
       transition: background 0.3s;
       width: 40px;
       flex: 0 0 40px;
-      height: ${menuItemHeight};
-      align-self: center;
       align-items: center;
       justify-content: center;
       display: flex;
@@ -347,6 +345,9 @@ export const useStyles = createStyles<IStyleProps, StyleResponse>(
       background: ${colors?.itemBackground || 'transparent'};
       ${menuItemStyle || ''}
       ${itemStyle || ''}
+      box-sizing: border-box;
+      width: 40px;
+      flex: 0 0 40px;
 
       &:hover {
         background: ${colors?.hoverItemBackground
