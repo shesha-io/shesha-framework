@@ -187,8 +187,9 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const imageUrl = cachedThumbnailBlobUrl ?? fetchedThumbnailUrl;
 
   useEffect(() => {
-    // Skip the server fetch for transient files, non-images, or when a local blob already exists.
-    if (isNotNullOrWhiteSpace(cachedThumbnailBlobUrl) || isNullOrWhiteSpace(fileInfo?.id) || !isImageType(fileInfo.type ?? '')) {
+    // Thumbnails are only displayed in thumbnail mode, so don't download them otherwise. Also skip
+    // the server fetch for transient files, non-images, or when a local blob already exists.
+    if (listType !== 'thumbnail' || isNotNullOrWhiteSpace(cachedThumbnailBlobUrl) || isNullOrWhiteSpace(fileInfo?.id) || !isImageType(fileInfo.type ?? '')) {
       return undefined;
     }
 
@@ -223,7 +224,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     return () => {
       isCancelled = true;
     };
-  }, [fileInfo, thumbnailUrl, httpClient, cachedThumbnailBlobUrl]);
+  }, [fileInfo, thumbnailUrl, httpClient, cachedThumbnailBlobUrl, listType]);
 
   const onCustomRequest: UploadProps['customRequest'] = ({ file, onSuccess, onError }): void => {
     if (file instanceof File) {
