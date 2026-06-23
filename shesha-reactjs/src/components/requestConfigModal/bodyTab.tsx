@@ -16,6 +16,17 @@ import { useStyles } from './styles';
 // `async (): Promise<any>` (returning any value, not void). Stable reference avoids editor rebuilds.
 const JS_BODY_RESULT_TYPE = { dataType: DataTypes.any };
 
+const BODY_TYPES: { value: BodyType; label: string }[] = [
+  { value: 'none', label: 'none' },
+  { value: 'json', label: 'JSON' },
+  { value: 'form-data', label: 'form-data' },
+  { value: 'x-www-form-urlencoded', label: 'x-www-form-urlencoded' },
+  { value: 'raw', label: 'raw' },
+];
+
+const isBodyType = (value: unknown): value is BodyType =>
+  BODY_TYPES.some((t) => t.value === value);
+
 const RAW_SUB_TYPES: { value: RawBodySubType; label: string; language: CodeLanguages }[] = [
   { value: 'text', label: 'Text', language: 'plain_text' },
   { value: 'json', label: 'JSON', language: 'json' },
@@ -348,12 +359,16 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, expressionContext }
   return (
     <div className={styles.bodyEditor}>
       <div className={styles.bodyTypeSelector} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Radio.Group value={view} onChange={(e) => handleViewChange(e.target.value as BodyType)}>
-          <Radio.Button value="none">none</Radio.Button>
-          <Radio.Button value="json">JSON</Radio.Button>
-          <Radio.Button value="form-data">form-data</Radio.Button>
-          <Radio.Button value="x-www-form-urlencoded">x-www-form-urlencoded</Radio.Button>
-          <Radio.Button value="raw">raw</Radio.Button>
+        <Radio.Group
+          value={view}
+          onChange={(e) => {
+            const next: unknown = e.target.value;
+            if (isBodyType(next)) handleViewChange(next);
+          }}
+        >
+          {BODY_TYPES.map((t) => (
+            <Radio.Button key={t.value} value={t.value}>{t.label}</Radio.Button>
+          ))}
         </Radio.Group>
         <Button
           size="small"
