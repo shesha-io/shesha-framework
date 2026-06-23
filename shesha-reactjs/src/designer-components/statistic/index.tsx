@@ -88,7 +88,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
                 }),
               }}
               onClick={(event) => {
-                ctx?.handleEvent(event, undefined, model.onClickCustom);
+                ctx?.handleEvent(event, { value }, model.onClickCustom);
               }}
             />
           );

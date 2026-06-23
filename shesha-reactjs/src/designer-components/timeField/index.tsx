@@ -41,11 +41,11 @@ export const TimeFieldComponent: TimeFieldComponentDefinition = {
               onChange={(value: number | [number, number] | null) => {
                 // TODO: EVENTS: pass timeString to event handler
                 // addContextData(context, { timeString, value })
-                ctx?.handleEvent(undefined, value, model.onChangeCustom);
+                ctx?.handleEvent(undefined, { value }, model.onChangeCustom);
                 onChange(value);
               }}
-              onFocus={(event) => ctx?.handleEvent(event, value, model.onFocusCustom)}
-              onBlur={(event) => ctx?.handleEvent(event, value, model.onBlurCustom)}
+              onFocus={(event) => ctx?.handleEvent(event, { value }, model.onFocusCustom)}
+              onBlur={(event) => ctx?.handleEvent(event, { value }, model.onBlurCustom)}
             />
           );
         }}

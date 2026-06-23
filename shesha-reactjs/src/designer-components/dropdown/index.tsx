@@ -56,7 +56,7 @@ const DropdownComponent: DropdownComponentDefinition = {
                 // value: CustomLabeledValue<T>, option: any
                 // TODO: EVENTS add option to context
                 // addContextData(context, { option, value })
-                ctx?.handleEvent(undefined, newValue, model.onChangeCustom);
+                ctx?.handleEvent(undefined, { value: newValue }, model.onChangeCustom);
                 onChange(newValue ?? null);
               }}
             />

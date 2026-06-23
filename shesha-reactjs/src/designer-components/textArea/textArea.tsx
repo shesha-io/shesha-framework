@@ -148,8 +148,8 @@ const TextAreaComponent: TextAreaComponentDefinition = {
                   <JsonTextArea
                     value={value}
                     textAreaProps={textAreaProps}
-                    onFocus={(event) => ctx?.handleEvent(event, event.currentTarget.value, model.onFocusCustom)}
-                    onBlur={(event) => ctx?.handleEvent(event, event.currentTarget.value, model.onBlurCustom)}
+                    onFocus={(event) => ctx?.handleEvent(event, { value }, model.onFocusCustom)}
+                    onBlur={(event) => ctx?.handleEvent(event, { value }, model.onBlurCustom)}
                   />
                   {renderCharCounter()}
                 </>
@@ -165,11 +165,11 @@ const TextAreaComponent: TextAreaComponentDefinition = {
 
                     // TODO EVENTS
                     onChange={(event) => {
-                      ctx?.handleEvent(event, event.currentTarget.value, model.onChangeCustom);
+                      ctx?.handleEvent(event, { value: event.currentTarget.value }, model.onChangeCustom);
                       onChange(event.currentTarget.value);
                     }}
-                    onFocus={(event) => ctx?.handleEvent(event, event.currentTarget.value, model.onFocusCustom)}
-                    onBlur={(event) => ctx?.handleEvent(event, event.currentTarget.value, model.onBlurCustom)}
+                    onFocus={(event) => ctx?.handleEvent(event, { value }, model.onFocusCustom)}
+                    onBlur={(event) => ctx?.handleEvent(event, { value }, model.onBlurCustom)}
                   />
                   {renderCharCounter()}
                 </>

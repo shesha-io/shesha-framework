@@ -635,6 +635,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
 
     await this.loadFormByRawMarkupAsync(true);
 
+    // Default to eager loading when lazyLoadData is undefined or false
     if (payload.lazyLoadData !== true && this.markupLoadingState.status === 'ready')
       await this.initLoadData();
   };
@@ -682,6 +683,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     } else
       this.log('LOG: loadFormByFormId - load form skipped', payload);
 
+    // Default to eager loading when lazyLoadData is undefined or false
     if (payload.lazyLoadData !== true && this.markupLoadingState.status === 'ready')
       await this.initLoadData();
   };

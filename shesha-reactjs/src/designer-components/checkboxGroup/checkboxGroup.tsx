@@ -51,11 +51,11 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
               dataSourceUrl={calculatedModel.dataSourceUrl}
               value={value ?? undefined}
               onChange={(newValue) => {
-                ctx?.handleEvent(undefined, newValue, model.onChangeCustom);
+                ctx?.handleEvent(undefined, { value: newValue }, model.onChangeCustom);
                 onChange(newValue);
               }}
-              onFocus={(event) => ctx?.handleEvent(event, value/* event.currentTarget.value*/, model.onFocusCustom)}
-              onBlur={(event) => ctx?.handleEvent(event, value/* event.currentTarget.value*/, model.onBlurCustom)}
+              onFocus={(event) => ctx?.handleEvent(event, { value }, model.onFocusCustom)}
+              onBlur={(event) => ctx?.handleEvent(event, { value }, model.onBlurCustom)}
             />
           );
         }}

@@ -217,9 +217,11 @@ export interface IComponentRuntimeProps {
   /** Custom onSelect handler */
   onSelectCustom?: string | undefined;
 
+  // html components don't have onHover, use onMouseMove instead
   /** Custom onHover handler */
   onHoverCustom?: string | undefined;
 
+  // onKeyPress is deprecated, use onKeyDown instead
   /** Custom onKeyPress handler */
   onKeyPressCustom?: string | undefined;
 }
