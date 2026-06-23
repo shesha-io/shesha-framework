@@ -1,5 +1,6 @@
 ﻿using Abp.Dependency;
 using NHibernate.Connection;
+using Shesha.Services;
 using System;
 using System.Data.Common;
 
@@ -16,7 +17,7 @@ namespace Shesha.NHibernate.Connection
                 ? iocManager.Resolve<IDbConnectionFactory>() 
                 : null;
         }
-        public SheshaNhConnectionProvider(): this(IocManager.Instance) 
+        public SheshaNhConnectionProvider(): this(StaticContext.IocManager) 
         {
         }
 
