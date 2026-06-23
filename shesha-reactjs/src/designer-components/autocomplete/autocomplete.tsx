@@ -137,7 +137,7 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
               size={model.size ?? 'middle'}
               value={value}
               onChange={(newValue) => {
-                ctx?.handleEvent(undefined, newValue, model.onChangeCustom);
+                ctx?.handleEvent(undefined, { value: newValue }, model.onChangeCustom);
                 onChange(newValue);
               }}
               allowFreeText={model.allowFreeText && model.valueFormat === 'simple'}

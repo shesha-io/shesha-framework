@@ -1,12 +1,14 @@
 import { ReactNode, useEffect, useRef, useState } from "react";
-import { IConfigurableFormItemChildFunc } from "./model";
+import { HandleEvent, IConfigurableFormItemChildFunc } from "./model";
 import { useComponentApi } from "@/providers/componentApi/provider";
 import { InputComponentApi } from "@/componentsApi/componentApi";
 import { useEffectOnce } from "@/hooks/useEffectOnce";
 import { IComponentApiInputRef } from "@/providers/componentApi/model";
-import { isDefined } from "@/utils/nullables";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
+import { executeScriptSync, useAvailableConstantsDataNoRefresh } from "@/providers/form/utils";
+import { addContextData } from "./utils";
 
-interface IComponentApiValueRegistratorProps<TValue = unknown> {
+interface IEventsAndApiValueProcessorProps<TValue = unknown> {
   componentId: string;
   componentName: string;
   value: TValue | undefined | null;
@@ -18,7 +20,8 @@ interface IComponentApiValueRegistratorProps<TValue = unknown> {
 /** The component is intended for registering Value handlers for Input components
  * The component intercepts onChange and keeps the requested Value up to date, regardless of the data source.
  */
-export const ComponentApiValueProcessor = <TValue = unknown>({ value, onChange, children, componentId, componentName, propertyName }: IComponentApiValueRegistratorProps<TValue>): ReactNode => {
+export const EventsAndApiValueProcessor = <TValue = unknown>({ value, onChange, children, componentId, componentName, propertyName }: IEventsAndApiValueProcessorProps<TValue>): ReactNode => {
+  const allData = useAvailableConstantsDataNoRefresh();
   const componentApi = useComponentApi();
   // set isInput once because componentName should not be changed
   const [isInput] = useState(() => isDefined(componentApi) && componentApi.getApi(componentName)?.isInput);
@@ -30,6 +33,15 @@ export const ComponentApiValueProcessor = <TValue = unknown>({ value, onChange, 
     if (apiRef.current) {
       apiRef.current.onChange(val);
       apiRef.current.value = val;
+    }
+  };
+
+  const handleEvent: HandleEvent<TValue> = (event, value, code, eventName) => {
+    if (isNullOrWhiteSpace(code)) return;
+    try {
+      executeScriptSync(code, addContextData(allData, { ...value, event }));
+    } catch (error) {
+      console.error(`${componentName}: ${isDefined(eventName) ? `'${eventName}'` : ''} event script execution failed`, error);
     }
   };
 
@@ -46,5 +58,5 @@ export const ComponentApiValueProcessor = <TValue = unknown>({ value, onChange, 
   useEffectOnce(() => () => componentApi?.removeApi(componentId));
 
 
-  return children(value, onChangeHandler, propertyName);
+  return children(value, onChangeHandler, propertyName, { handleEvent });
 };

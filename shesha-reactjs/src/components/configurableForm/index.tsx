@@ -171,7 +171,6 @@ const ConfigurableFormInner = <Values extends object = object>(props: Configurab
                         ? dataLoadingState.status === 'ready' && (
                           <FormWithFlatMarkup<Values>
                             {...props}
-                            // mode={dataLoadingState.status !== 'ready' ? 'readonly' : props.mode}
                             isActionsOwner={isActionsOwner}
                             form={form}
                             initialValues={shaForm.initialValues}

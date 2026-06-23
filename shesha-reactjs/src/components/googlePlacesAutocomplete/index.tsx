@@ -17,6 +17,8 @@ export interface IAddressAndCoords {
   lng?: number;
 }
 
+export const isIAddressAndCoords = (value: object): value is IAddressAndCoords => 'address' in value;
+
 const Keys = {
   ArrowDown: "ArrowDown",
   ArrowUp: "ArrowUp",

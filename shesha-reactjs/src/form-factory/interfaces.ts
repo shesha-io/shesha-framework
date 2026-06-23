@@ -151,8 +151,8 @@ export type StandardFormBuilderMethods<TConfig extends Record<ComponentTypes, ob
   stdPropertyLabelInputs(): FluentFormBuilder<TConfig>;
   stdPlaceholderDescriptionInputs(): FluentFormBuilder<TConfig>;
   stdCollapsiblePanel(label: string, components: (fbf: FormBuilder) => FormBuilder, meta?: IPropertyMetadata | undefined): FluentFormBuilder<TConfig>;
-  stdEventHandler(propertyName: string, label: string, tooltip: string, meta?: IPropertyMetadata | undefined): FluentFormBuilder<TConfig>;
-  stdEventHandlers(events: StandardEventHandler[]): FluentFormBuilder<TConfig>;
+  stdEventHandler(propertyName: string, label: string, tooltip: string, availableConstantsExpression?: string | undefined, meta?: IPropertyMetadata | undefined): FluentFormBuilder<TConfig>;
+  stdEventHandlers(events: StandardEventHandler[], valueType: string): FluentFormBuilder<TConfig>;
   stdFontPanel(propertyName?: string): FluentFormBuilder<TConfig>;
   stdDimensionsPanel(propertyName?: string): FluentFormBuilder<TConfig>;
   stdBorderPanel(): FluentFormBuilder<TConfig>;
