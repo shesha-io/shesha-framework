@@ -35,10 +35,11 @@ const standardTextType = standardTypes.text;
 const standardTextFieldWidget = standardTextType.widgets['field'];
 
 const standardSourceTypes: ValueSource[] = ['value', 'field', 'func'];
-const withoutValueTypes = <T extends object>(operator: T): T => {
-  const nextOperator = { ...(operator as T & { valueTypes?: unknown }) };
-  delete nextOperator.valueTypes;
-  return nextOperator as T;
+const withoutValueTypes = <T extends { valueTypes?: unknown }>(
+  operator: T,
+): Omit<T, 'valueTypes'> => {
+  const { valueTypes: _valueTypes, ...nextOperator } = operator;
+  return nextOperator;
 };
 
 const types = {

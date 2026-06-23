@@ -20,6 +20,9 @@ const normalizeTypeAlias = (value?: string): string => {
   return value?.replace(/[\s_-]/g, '').toLowerCase() ?? '';
 };
 
+const isCustomFieldSettings = (settings: unknown): settings is CustomFieldSettings =>
+  settings != null && typeof settings === 'object' && 'propertyMetadata' in settings;
+
 const getTypeOverrideFromAlias = (
   typeShortAlias?: string,
 ): { type?: string; preferWidgets?: string[] } => {
@@ -112,7 +115,7 @@ const QueryBuilder: FC<IQueryBuilderProps> = (props) => {
       if (!isVisible)
         return undefined;
 
-      const typeOverride = getTypeOverrideFromAlias((fieldSettings as CustomFieldSettings | undefined)?.typeShortAlias);
+      const typeOverride = getTypeOverrideFromAlias(isCustomFieldSettings(fieldSettings) ? fieldSettings.typeShortAlias : undefined);
       if (typeOverride.type) {
         type = typeOverride.type;
         defaultPreferWidgets = typeOverride.preferWidgets ?? [];

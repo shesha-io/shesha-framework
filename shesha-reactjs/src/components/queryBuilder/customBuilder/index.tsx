@@ -574,19 +574,6 @@ const RuleWidgetEditor: React.FC<{
   valueError,
   valueSrc,
   valueType,
-}: {
-  actions: BuilderProps['actions'];
-  config: Config;
-  field: string;
-  fieldType?: string;
-  operator: string;
-  path: string[];
-  delta: number;
-  readOnly: boolean;
-  valueSrc: ValueSource;
-  value?: SafeRuleValue;
-  valueType?: string;
-  valueError?: string | null;
 }) => {
   if (valueSrc === 'field') {
     return (

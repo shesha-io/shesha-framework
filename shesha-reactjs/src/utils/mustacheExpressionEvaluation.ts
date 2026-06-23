@@ -12,7 +12,7 @@ export interface IMustacheTemplateEvaluationResult {
 
 const mustacheTemplatePattern = /^\s*\{\{([\s\S]*?)\}\}\s*$/;
 const safeExpressionPattern = /^[A-Za-z0-9_$\s.'"(),+\-*/<>=!&|?:]+$/;
-const disallowedKeywordPattern = /\b(?:new|function|class|while|for|if|return|this|window|globalThis|document|constructor|prototype|__proto__|eval|Function)\b/;
+const disallowedKeywordPattern = /\b(?:new|function|class|while|for|if|return|this|window|globalThis|document|constructor|prototype|__proto__|eval|Function|Object|Array|Reflect|Proxy)\b/;
 
 const isObjectValue = (value: unknown): value is Record<string, unknown> => {
   return typeof value === 'object' && value !== null && !Array.isArray(value);

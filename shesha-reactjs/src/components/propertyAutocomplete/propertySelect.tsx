@@ -51,6 +51,7 @@ export interface IQbItem {
 interface IOption extends DefaultOptionType {
   value: string;
   label: string | React.ReactNode;
+  displayTitle?: string;
 }
 
 interface IAutocompleteState {
@@ -87,9 +88,8 @@ const getOptionTitle = (option: IOption | undefined): string | undefined => {
   if (!option)
     return undefined;
 
-  return typeof option.label === 'string'
-    ? option.label
-    : option.value;
+  return option.displayTitle ??
+    (typeof option.label === 'string' ? option.label : option.value);
 };
 
 const getFullPath = (path: string, prefix: string | null): string => {
@@ -135,6 +135,7 @@ const propertyItem2option = (item: IPropertyItem, prefix: string, isSelectable: 
     return {
       value: value,
       label: label,
+      displayTitle: item.friendlyName,
     };
   }
 
@@ -152,6 +153,7 @@ const propertyItem2option = (item: IPropertyItem, prefix: string, isSelectable: 
     return {
       value: value,
       label: label,
+      displayTitle: value,
       disabled: isSelectable ? !isSelectable(item) : false,
     };
   }
