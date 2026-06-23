@@ -587,7 +587,7 @@ namespace Shesha.Extensions
         /// </summary>
         public static Type GetRealEntityType<TId>(this IEntity<TId> entity)
         {
-            var provider = IocManager.Instance.Resolve<IEntityTypeProvider>();
+            var provider = StaticContext.IocManager.Resolve<IEntityTypeProvider>();
             return provider.GetEntityType(entity);
         }        
     }

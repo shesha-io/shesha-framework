@@ -1,6 +1,5 @@
-﻿using Abp.Dependency;
-using ConcurrentCollections;
-using Shesha.Domain;
+﻿using Shesha.Domain;
+using Shesha.Services;
 using System.Collections.Generic;
 
 namespace Shesha.Permissions
@@ -9,7 +8,7 @@ namespace Shesha.Permissions
     {
         public static List<string> GetActualPermissions(this PermissionedObject permissionedObject, bool useInherited = true)
         {
-            var permissionedObjectManager = IocManager.Instance.Resolve<IPermissionedObjectManager>();
+            var permissionedObjectManager = StaticContext.IocManager.Resolve<IPermissionedObjectManager>();
             return permissionedObjectManager?.GetActualPermissions(permissionedObject.Object, permissionedObject.Type, useInherited) ?? new List<string>();
         }
     }

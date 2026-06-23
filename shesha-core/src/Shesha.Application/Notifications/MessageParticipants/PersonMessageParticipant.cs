@@ -2,6 +2,7 @@
 using Abp.Domain.Repositories;
 using Shesha.Domain;
 using Shesha.Extensions;
+using Shesha.Services;
 using System;
 using System.Threading.Tasks;
 
@@ -27,7 +28,7 @@ namespace Shesha.Notifications.MessageParticipants
 
         public async Task<bool> IsNotificationOptedOutAsync(NotificationTypeConfig type)
         {
-            var userNotificationPreferenceRepository = IocManager.Instance.Resolve<IRepository<UserNotificationPreference, Guid>>();
+            var userNotificationPreferenceRepository = StaticContext.IocManager.Resolve<IRepository<UserNotificationPreference, Guid>>();
             return await userNotificationPreferenceRepository.GetAll().AnyAsync(x => x.User.Id == _person.Id && x.NotificationType.Id == type.Id && x.OptOut);            
         }
     }
