@@ -6,7 +6,7 @@ import { useStyles } from './styles/styles';
 import { useShaRouting } from '@/providers';
 import ComponentError from '../componentErrors';
 import { IModelValidation, SheshaError } from '@/utils/errors';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 const errorBoundaryErrorHandler = ({ error }: Omit<FallbackProps, 'resetErrorBoundary'>): void => {
   // Do something with the error
@@ -59,11 +59,11 @@ const CustomErrorBoundaryFallbackComponent: FC<ICustomErrorBoundaryFallbackProps
   }
 
   if (SheshaError.isSheshaError(error)) {
-    const shaErrors = error.cause?.errors;
+    const shaErrors = { ...error.cause?.errors ?? {} } as IModelValidation;
     if (isDefined(shaErrors)) {
-      if (!shaErrors.componentId) shaErrors.componentId = componentId;
-      if (!shaErrors.componentName) shaErrors.componentName = componentName;
-      if (!shaErrors.componentType) shaErrors.componentType = componentType;
+      if (isNullOrWhiteSpace(shaErrors.componentId)) shaErrors.componentId = componentId;
+      if (isNullOrWhiteSpace(shaErrors.componentName)) shaErrors.componentName = componentName;
+      if (isNullOrWhiteSpace(shaErrors.componentType)) shaErrors.componentType = componentType;
     }
     return <ComponentError errors={shaErrors} message={error.message} type={error.cause?.type} />;
   }

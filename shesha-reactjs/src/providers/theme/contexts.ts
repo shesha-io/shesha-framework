@@ -73,6 +73,7 @@ export interface IConfigurableTheme {
   layout?: FormLayout;
   colon?: boolean;
   componentGroups?: IComponentGroupsSettings;
+  components?: { [key: string]: unknown };
 }
 
 export interface IThemeStateContext {
@@ -90,6 +91,7 @@ export interface IThemeStateContext {
 export interface IThemeActionsContext {
   changeTheme: (theme: IConfigurableTheme, isApplication?: boolean) => void;
   resetToApplicationTheme: () => void;
+  getComponentStyle: (componentName: string) => unknown;
 
   /* NEW_ACTION_ACTION_DECLARATIO_GOES_HERE */
 }

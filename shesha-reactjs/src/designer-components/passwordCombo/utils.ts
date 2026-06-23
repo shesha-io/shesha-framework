@@ -3,7 +3,7 @@ import { FormItemProps, InputProps } from 'antd';
 import { getFieldNameFromExpression, getValidationRules } from '@/formDesignerUtils';
 import { getStyle } from '@/providers/form/utils';
 import { IConfigurableFormComponent } from '@/interfaces';
-import { IStyleType, SILENT_KEY, UnwrapCodeEvaluators } from '@/providers/form/models';
+import { IStyleValue, SILENT_KEY, UnwrapCodeEvaluators } from '@/providers/form/models';
 import { incrementStringNumber } from '@/utils/string';
 
 export interface IFormPropOptions {
@@ -11,7 +11,7 @@ export interface IFormPropOptions {
   formData: object;
 }
 
-export interface IPasswordComponentProps extends IConfigurableFormComponent, IStyleType {
+export interface IPasswordComponentProps extends IConfigurableFormComponent, IStyleValue {
   placeholder?: string | undefined;
   confirmDescription?: string | undefined;
   confirmPlaceholder?: string | undefined;
@@ -68,7 +68,7 @@ export const getDefaultModel = (model: IPasswordComponentPropsUnwrapped): IPassw
     : model;
 };
 
-export const defaultStyles = (): IStyleType => {
+export const defaultStyles = (): IStyleValue => {
   return {
     background: { type: 'color', color: '#fff' },
     font: {

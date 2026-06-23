@@ -11,7 +11,7 @@ import {
 } from '@/providers/form/models';
 import { IHasVersion, Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 import { IModelMetadata, IPropertyMetadata } from './metadata';
-import { IAjaxResponseBase, IApplicationContext, IDimensionsValue, IErrorInfo, IObjectMetadata, UnwrapCodeEvaluators } from '..';
+import { IAjaxResponseBase, IApplicationContext, IDimensionsValue, IErrorInfo, IObjectMetadata, IStyleValue, UnwrapCodeEvaluators } from '..';
 import { ISheshaApplicationInstance } from '@/providers/sheshaApplication/application';
 import { AxiosResponse } from 'axios';
 import { FormBuilderFactory } from '@/form-factory/interfaces';
@@ -56,6 +56,7 @@ export type IComponentSettingsFormFactory<TModel extends IConfigurableFormCompon
 
 export type SettingsFormMarkupFactoryArgs = {
   fbf: FormBuilderFactory;
+  removeStyleRouter?: boolean;
 };
 export type SettingsFormMarkupFactory = (args: SettingsFormMarkupFactoryArgs) => FormMarkup;
 
@@ -135,7 +136,7 @@ export type IToolboxComponentBase = {
   /**
    * Return true to indicate that the data type is supported by the component
    */
-  dataTypeSupported?: (dataTypeInfo: { dataType: string; dataFormat?: string | undefined }) => boolean;
+  dataTypeSupported?: (dataTypeInfo: { dataType: string; dataFormat: string | undefined }) => boolean;
   /**
    * Returns true if the property should be calculated for the actual model (calculated from JS code)
    */
@@ -199,6 +200,10 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
    */
   initModel?: (model: TModel) => TModel;
   /**
+   * Returns default component styles
+   */
+  getDefaultStyles?: (model?: TModel) => IStyleValue;
+  /**
    * Link component to a model metadata
    */
   linkToModelMetadata?: (model: TModel, metadata: IPropertyMetadata) => TModel;
@@ -237,6 +242,11 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
    * Validate model before rendering a component, used to add user-friendly messages about the need to correctly configure the component fields in the designer
    */
   validateModel?: (model: TModel, addModelError: (propertyName: string, error: string) => void) => void;
+
+  /**
+   * Configuration is used to show a preview of the component in the some places (like theme component configurator)
+   */
+  previewConfiguration?: TModel;
 } & ToolboxComponentAsTemplate;
 
 export type ComponentDefinition<TType extends string = string, TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = object> =

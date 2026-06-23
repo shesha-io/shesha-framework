@@ -1,6 +1,6 @@
-import { IStyleType } from "@/providers/form/models";
+import { IStyleValue } from "@/providers/form/models";
 
-export const defaultStyles = (): IStyleType => {
+export const defaultStyles = (): IStyleValue => {
   return {
     background: { type: 'color', color: '#fff' },
     font: {
@@ -32,7 +32,7 @@ export const defaultStyles = (): IStyleType => {
   };
 };
 
-export const defaultTagStyles = (): IStyleType => {
+export const defaultTagStyles = (): IStyleValue => {
   return {
     background: { type: 'color', color: '#f0f0f0' },
     font: {

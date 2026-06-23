@@ -34,7 +34,6 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
 
   const { styles } = useStyles();
 
-  // ToDo: AS - need to optimize
   useShaFormDataUpdate();
 
   const application = useSheshaApplication();

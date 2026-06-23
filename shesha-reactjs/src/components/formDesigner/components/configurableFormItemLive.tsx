@@ -9,6 +9,7 @@ import { ConfigurableFormItemForm } from './configurableFormItemForm';
 import { designerConstants } from '../utils/designerConstants';
 import { addPx } from '@/utils/style';
 import { useStyles } from './styles';
+import { isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 
 export const ConfigurableFormItemLive = <TValue = unknown>({
   children,
@@ -24,7 +25,6 @@ export const ConfigurableFormItemLive = <TValue = unknown>({
   const getFormData = shaForm.getPublicFormApi().getFormData;
   const formItem = useFormItem();
   const { namePrefix, wrapperCol: formItemWrapperCol, labelCol: formItemlabelCol } = formItem;
-  const isInDesigner = shaForm.formMode === 'designer';
   const allData = useAvailableConstantsDataNoRefresh();
   const { styles } = useStyles({ autoAlignLabel });
 
@@ -39,34 +39,27 @@ export const ConfigurableFormItemLive = <TValue = unknown>({
 
   const { top: defaultMarginTop, left: defaultMarginLeft, right: defaultMarginRight, bottom: defaultMarginBottom } = designerConstants.DEFAULT_FORM_ITEM_MARGINS;
 
-  // In designer mode: NEVER apply margins to Form.Item (wrapper handles them)
-  // In live mode: Apply margins from allStyles.margins or use defaults
-  // Note: margins are stored separately so inner components don't get them (prevents double margins)
-  const rawMargins = isInDesigner
-    ? { marginTop: 0, marginBottom: 0, marginLeft: 0, marginRight: 0 }
-    : (model.allStyles?.margins || {});
-
   const {
     marginTop = defaultMarginTop,
     marginBottom = defaultMarginBottom,
     marginRight = defaultMarginRight,
     marginLeft = defaultMarginLeft,
-  } = rawMargins;
+  } = (model.stylingBoxJson || {});
 
-  const propName = namePrefix && !model.initialContext
+  const propName = isNotNullOrWhiteSpace(namePrefix) && isNullOrWhiteSpace(model.initialContext)
     ? namePrefix + '.' + model.propertyName
     : model.propertyName;
 
-  if (hidden) return null;
+  if (Boolean(hidden)) return null;
 
   const formItemProps: FormItemProps = {
     className: classNames(className, styles.formItem),
     hidden: model.hidden ?? false,
-    ...(valuePropName ? { valuePropName: valuePropName } : {}),
+    ...(isNotNullOrWhiteSpace(valuePropName) ? { valuePropName: valuePropName } : {}),
     initialValue: initialValue,
-    tooltip: model.description || undefined,
-    rules: model.hidden ? [] : getValidationRules(model, { getFormData }),
-    name: model.context ? undefined : getFieldNameFromExpression(propName),
+    tooltip: isNotNullOrWhiteSpace(model.description) ? model.description : undefined,
+    rules: getValidationRules(model, { getFormData }),
+    name: isNotNullOrWhiteSpace(model.context) ? undefined : getFieldNameFromExpression(propName),
     style: {
       marginTop: addPx(marginTop, allData),
       marginBottom: addPx(marginBottom, allData),
@@ -74,13 +67,13 @@ export const ConfigurableFormItemLive = <TValue = unknown>({
       marginLeft: addPx(marginLeft, allData),
     },
     ...(model.labelAlign ? { labelAlign: model.labelAlign } : {}),
-    ...(!hideLabel ? { label: model.label } : {}),
+    ...(!Boolean(hideLabel) ? { label: model.label } : {}),
     ...(layout.labelCol ? { labelCol: layout.labelCol } : {}),
-    ...(hideLabel || isVertical ? { wrapperCol: { span: 24 } } : layout.wrapperCol ? { wrapperCol: layout.wrapperCol } : {}),
+    ...(Boolean(hideLabel) || isVertical ? { wrapperCol: { span: 24 } } : layout.wrapperCol ? { wrapperCol: layout.wrapperCol } : {}),
   };
 
   if (typeof children === 'function') {
-    if (model.context) {
+    if (isNotNullOrWhiteSpace(model.context)) {
       return (
         <ConfigurableFormItemContext<TValue>
           componentId={model.id}

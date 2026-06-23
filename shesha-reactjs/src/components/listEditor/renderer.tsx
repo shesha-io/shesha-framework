@@ -5,6 +5,8 @@ import { PlusCircleOutlined } from '@ant-design/icons';
 import { ReactSortable } from 'react-sortablejs';
 import { useStyles } from './styles/styles';
 import { ListItemWrapper } from './listItemWrapper';
+import { isNonEmptyArray } from '@/utils/array';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 export interface IListEditorRendererProps<TItem extends ListItem> {
   contextAccessor: () => IListEditorContext<TItem>;
@@ -86,9 +88,9 @@ export const ListEditorRenderer = <TItem extends ListItem>(props: IListEditorRen
   };
 
   const sortableItems = useMemo(() => {
-    return Boolean(value) && Array.isArray(value) /* && value.length > 0*/
+    return isNonEmptyArray(value)
       ? value.map<SortableItem<TItem>>((item, index) => ({ data: item, id: index }))
-      : undefined;
+      : [];
   }, [value]);
 
   const listHasChanged = (newState: SortableItem<TItem>[]): boolean => {
@@ -114,112 +116,110 @@ export const ListEditorRenderer = <TItem extends ListItem>(props: IListEditorRen
 
   const headerRenderer = header
     ? header
-    : () => ((!maxItemsCount || (sortableItems?.length ?? 0) < maxItemsCount) && <Button icon={<PlusCircleOutlined />} shape="round" onClick={onAddClick} size="small" disabled={readOnly ?? false}>Add</Button>);
+    : () => ((!isDefined(maxItemsCount) || sortableItems.length < maxItemsCount) && <Button icon={<PlusCircleOutlined />} shape="round" onClick={onAddClick} size="small" disabled={readOnly ?? false}>Add</Button>);
 
   return (
     <div className={styles.list}>
       <div className={styles.listHeader}>
         {headerRenderer({ contextAccessor, level, parentItem })}
       </div>
-      {sortableItems && (
-        <div className={styles.listContainer}>
+      <div className={styles.listContainer}>
 
-          <ReactSortable<SortableItem<TItem>>
-            list={sortableItems}
-            setList={onSetList}
-            fallbackOnBody={true}
-            swapThreshold={0.5}
-            group={{
-              name: 'rows',
-            }}
-            sort={true}
-            draggable={`.${styles.listItem}`}
-            animation={75}
-            ghostClass={styles.listItemGhost}
-            emptyInsertThreshold={20}
-            handle={`.${styles.dragHandle}`}
-            scroll={true}
-            bubbleScroll={true}
-            disabled={readOnly}
-          >
-            {value.map((item, index) => {
-              const localItemChange = (newValue: TItem, changeDetails?: ItemChangeDetails): void => {
-                Object.assign(item, newValue);
+        <ReactSortable<SortableItem<TItem>>
+          list={sortableItems}
+          setList={onSetList}
+          fallbackOnBody={true}
+          swapThreshold={0.5}
+          group={{
+            name: 'rows',
+          }}
+          sort={true}
+          draggable={`.${styles.listItem}`}
+          animation={75}
+          ghostClass={styles.listItemGhost}
+          emptyInsertThreshold={20}
+          handle={`.${styles.dragHandle}`}
+          scroll={true}
+          bubbleScroll={true}
+          disabled={readOnly}
+        >
+          {value.map((item, index) => {
+            const localItemChange = (newValue: TItem, changeDetails?: ItemChangeDetails): void => {
+              Object.assign(item, newValue);
 
-                const skipValueUpdate = changeDetails && changeDetails.isReorder && (changeDetails.childsLengthDelta ?? 0) < 0;
-                refresh(!skipValueUpdate);
-              };
+              const skipValueUpdate = isDefined(changeDetails) && changeDetails.isReorder && (changeDetails.childsLengthDelta ?? 0) < 0;
+              refresh(!skipValueUpdate);
+            };
 
-              return (
-                <ListItemWrapper
-                  key={index}
-                  onDelete={() => {
-                    deleteItem(index);
-                  }}
-                  onDragHandleClick={() => {
-                    setSelectedItem(item);
-                  }}
-                  onInsert={(insertPosition) => {
-                    const newIndex = index + (insertPosition === 'before' ? 0 : 1);
-                    insertItem(newIndex);
-                  }}
-                  readOnly={readOnly ?? false}
-                  isLast={index === value.length - 1}
-                  {...(selectedItem && item.id === selectedItem.id ? { className: styles.listItemSelected } : {})}
-                >
-                  {children({
-                    item,
-                    itemOnChange: localItemChange,
-                    index,
-                    readOnly: readOnly === true,
-                    nestedRenderer: ({ items, onChange, initNewItem }) => {
-                      const childListContext = makeListContext({
-                        value: items,
-                        onChange: (newItems) => {
-                          onChange(newItems);
-                        },
-                        onReorder: (newItems, prevValue) => {
-                          onChange(newItems, { isReorder: true, childsLengthDelta: newItems.length - prevValue.length });
+            return (
+              <ListItemWrapper
+                key={index}
+                onDelete={() => {
+                  deleteItem(index);
+                }}
+                onDragHandleClick={() => {
+                  setSelectedItem(item);
+                }}
+                onInsert={(insertPosition) => {
+                  const newIndex = index + (insertPosition === 'before' ? 0 : 1);
+                  insertItem(newIndex);
+                }}
+                readOnly={readOnly ?? false}
+                isLast={index === value.length - 1}
+                {...(selectedItem && !isNullOrWhiteSpace(selectedItem.id) && item.id === selectedItem.id ? { className: styles.listItemSelected } : {})}
+              >
+                {children({
+                  item,
+                  itemOnChange: localItemChange,
+                  index,
+                  readOnly: readOnly === true,
+                  nestedRenderer: ({ items, onChange, initNewItem }) => {
+                    const childListContext = makeListContext({
+                      value: items,
+                      onChange: (newItems) => {
+                        onChange(newItems);
+                      },
+                      onReorder: (newItems, prevValue) => {
+                        onChange(newItems, { isReorder: true, childsLengthDelta: newItems.length - prevValue.length });
 
-                          const gotItem = prevValue.length < newItems.length;
-                          refresh(gotItem);
-                        },
-                        initNewItem: (items) => {
-                          return initNewItem(items);
-                        },
+                        const gotItem = prevValue.length < newItems.length;
+                        refresh(gotItem);
+                      },
+                      initNewItem: (items) => {
+                        return initNewItem(items);
+                      },
+                      selectedItem,
+                      setSelectedItem,
+                    });
+                    const itemContextAccessor = (): IListEditorContext<TItem> => {
+                      const accessor: IListEditorContext<TItem> = {
+                        ...childListContext,
+                        refresh: refresh,
+                        readOnly: readOnly === true,
                         selectedItem,
                         setSelectedItem,
-                      });
-                      const itemContextAccessor = (): IListEditorContext<TItem> => {
-                        const accessor: IListEditorContext<TItem> = {
-                          ...childListContext,
-                          refresh: refresh,
-                          readOnly: readOnly === true,
-                          selectedItem,
-                          setSelectedItem,
-                        };
-                        return accessor;
                       };
-                      const itemLevel = level + 1;
-                      return (
-                        <ListEditorRenderer
-                          level={itemLevel}
-                          parentItem={item}
-                          contextAccessor={itemContextAccessor}
-                          header={headerRenderer}
-                        >
-                          {props.children}
-                        </ListEditorRenderer>
-                      );
-                    },
-                  })}
-                </ListItemWrapper>
-              );
-            })}
-          </ReactSortable>
+                      return accessor;
+                    };
+                    const itemLevel = level + 1;
+                    return (
+                      <ListEditorRenderer
+                        level={itemLevel}
+                        parentItem={item}
+                        contextAccessor={itemContextAccessor}
+                        header={headerRenderer}
+                      >
+                        {props.children}
+                      </ListEditorRenderer>
+                    );
+                  },
+                })}
+              </ListItemWrapper>
+            );
+          })}
+        </ReactSortable>
 
-        </div>
-      )}
+      </div>
     </div>
   );
 };

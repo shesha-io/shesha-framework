@@ -5,14 +5,14 @@ import { getAddressValue, getSearchOptions, loadGooglePlaces } from './utils';
 import { IAddressCompomentBaseProps } from './models';
 import { useGet } from '@/hooks';
 import { IOpenCageResponse } from '@/components/googlePlacesAutocomplete/models';
-import { IStyleType } from '@/providers/form/models';
-import { getNumericValue } from '@/utils/string';
+import { IStyleValue } from '@/providers/form/models';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { getNumericValue } from '@/utils/string';
 
 interface IAutoCompletePlacesFieldProps extends IAddressCompomentBaseProps /* UnwrapCodeEvaluators<IAddressCompomentProps>*/ {
   value?: string;
   onChange?: (value: string) => void;
-  font?: IStyleType['font'];
+  font?: IStyleValue['font'];
 
   readOnly?: boolean | undefined;
   onFocus?: ((event: React.FocusEvent<HTMLInputElement, Element>) => void) | undefined;
@@ -32,7 +32,7 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
   const [googlePlaceReady, setGooglePlaceReady] = useState(false);
 
   useEffect(() => {
-    if (googleMapsApiKey && !isDefined(window.google)) {
+    if (isDefined(googleMapsApiKey) && !isDefined(window.google)) {
       loadGooglePlaces(googleMapsApiKey, setGooglePlaceReady);
     }
   }, [googleMapsApiKey, googlePlaceReady]);

@@ -15,10 +15,14 @@ import { isNullOrWhiteSpace } from '@/utils/nullables';
 const stringToFriendlyMap = new Map<string, string>([['true', 'On'], ['false', 'Off'], ['editable', 'Editable'], ['readOnly', 'Read only'], ['inherited', 'Inherited']]);
 
 export const convertValueToFriendlyString = (value: unknown): string => {
-  if (typeof value === 'string') {
+  if (value === null)
+    return 'NULL';
+  if (value === undefined)
+    return 'Undefined';
+  if (typeof value === 'object')
+    return 'Complex value';
+  if (typeof value === 'string')
     return stringToFriendlyMap.get(value) ?? value;
-  }
-
   return String(value);
 };
 
@@ -28,7 +32,7 @@ export const getEditor = (
   constantsAccessor: IObjectMetadata | (() => Promise<IObjectMetadata>),
   resultTypeAccessor: IObjectMetadata | (() => Promise<IObjectMetadata>) | undefined,
 ): ReactElement => {
-  return availableConstantsExpression?.trim()
+  return !isNullOrWhiteSpace(availableConstantsExpression)
     ? <CodeEditor {...codeEditorProps} availableConstants={constantsAccessor} resultType={resultTypeAccessor} />
     : <CodeEditorWithStandardConstants {...codeEditorProps} resultType={resultTypeAccessor} />;
 };
@@ -60,7 +64,7 @@ export const CustomLabelValueEditorInputs = (props: ILabelValueEditorProps): Rea
         const data = item as Record<string, string | null>;
         return (
           <div className={styles.rowInputs} style={{ gap: 8 }}>
-            {labelName && (
+            {!isNullOrWhiteSpace(labelName) && (
               <InputComponent
                 type="textField"
                 placeholder={labelTitle}
@@ -75,7 +79,7 @@ export const CustomLabelValueEditorInputs = (props: ILabelValueEditorProps): Rea
                 }}
               />
             )}
-            {valueName && (
+            {!isNullOrWhiteSpace(valueName) && (
               <InputComponent
                 type="textField"
                 placeholder={valueTitle}
@@ -91,7 +95,7 @@ export const CustomLabelValueEditorInputs = (props: ILabelValueEditorProps): Rea
               />
             )}
             <Row>
-              {colorName && (
+              {!isNullOrWhiteSpace(colorName) && (
                 <>
                   <InputComponent
                     type="colorPicker"
@@ -126,7 +130,7 @@ export const CustomLabelValueEditorInputs = (props: ILabelValueEditorProps): Rea
                   />
                 </>
               )}
-              {iconName && (
+              {!isNullOrWhiteSpace(iconName) && (
                 <InputComponent
                   type="iconPicker"
                   placeholder={iconTitle}

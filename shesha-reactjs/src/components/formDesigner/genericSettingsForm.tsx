@@ -9,11 +9,13 @@ import { sheshaStyles } from '@/styles';
 import { ICanvasStateContext } from '@/providers/canvas/contexts';
 import { deepCopyViaJson, deepMergeValues, unproxyValue } from '@/utils/object';
 import { DeviceTypes } from '@/publicJsApis/apis/canvasContextApi';
-import { useDefaultModelProviderStateOrUndefined } from '@/designer-components/_settings/defaultModelProvider/defaultModelProvider';
+import { useDefaultModelActionsOrUndefined } from '@/designer-components/_settings/defaultModelProvider/defaultModelProvider';
 import { ISetFormDataPayload } from '@/providers/form/contexts';
 import { useDataContextManager } from '@/providers/dataContextManager/hooks';
 import { OnFormFinishFailedHandler, OnFormValuesChangeHandler } from '../configurableForm/models';
-import { isDefined } from '@/utils/nullables';
+import { IStyleValue, useThemeActions } from '@/providers';
+import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
+import { getStyleBoxValue } from '@/designer-components/styleBox/utils';
 
 export interface IProps<TModel extends IConfigurableFormComponent> {
   readOnly: boolean;
@@ -42,23 +44,31 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
   isInModal,
 }: IProps<TModel>): React.JSX.Element {
   const [form] = Form.useForm();
+  const { getComponentStyle } = useThemeActions();
 
-  const defaultModel = useDefaultModelProviderStateOrUndefined();
+  const defaultModel = useDefaultModelActionsOrUndefined<TModel>();
   const dcm = useDataContextManager();
-  const designerDevice = (dcm.getDataContextData('canvasContext') as ICanvasStateContext | undefined)?.designerDevice || 'desktop';
+  const designerDevice = ((dcm.getDataContextData('canvasContext') as ICanvasStateContext | undefined)?.designerDevice || 'desktop');
   const currentDevice = useRef<DeviceTypes>('desktop');
 
-  // inherit mobile and tablet styles from desktop styles
-  useEffect(() => {
-    if (toolboxComponent.allowInherit && designerDevice !== 'desktop' && designerDevice !== currentDevice.current) {
-      const desktopStyles = (defaultModel?.getModel() as Record<string, unknown> | undefined)?.['desktop'];
-      if (desktopStyles) {
-        const newStyle = { [designerDevice]: unproxyValue(deepCopyViaJson(desktopStyles)) };
-        defaultModel?.setDefaultModel('Desktop style', newStyle);
+  useDeepCompareEffect(() => {
+    if (Boolean(toolboxComponent.allowInherit)) {
+      const defaultComponentStyle = toolboxComponent.getDefaultStyles?.() ?? {};
+      defaultModel?.setDefaultModel('Default comonent Style', { ['desktop']: defaultComponentStyle } as TModel);
+      const themeStyle = getComponentStyle(toolboxComponent.type);
+      defaultModel?.setDefaultModel('Theme component Style', { ['desktop']: themeStyle } as TModel);
+
+      if (designerDevice !== 'desktop' && designerDevice !== currentDevice.current) {
+        // inherit mobile and tablet styles from desktop styles
+        defaultModel?.setDefaultModel('Default comonent Style', { [designerDevice]: defaultComponentStyle } as unknown as TModel);
+        defaultModel?.setDefaultModel('Theme component Style', { [designerDevice]: themeStyle } as unknown as TModel);
+        const model = defaultModel?.getModel();
+        const desktopStyles = deepCopyViaJson(unproxyValue((model as IConfigurableFormComponent).desktop ?? {})) as IStyleValue;
+        defaultModel?.setDefaultModel('Desktop component Style', { [designerDevice]: { ...desktopStyles, stylingBox: getStyleBoxValue(desktopStyles.stylingBox as string) } } as unknown as TModel);
       }
     }
     currentDevice.current = designerDevice;
-  }, [designerDevice, defaultModel, toolboxComponent.allowInherit]);
+  }, [toolboxComponent.allowInherit, designerDevice, defaultModel, toolboxComponent, getComponentStyle]);
 
   // Keep the Ant Design form store in sync when the component model changes externally.
   // initialValues is applied once on mount, so without this sync any field managed outside
@@ -101,11 +111,11 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
     onValuesChange?.(changedValues, values);
   };
 
-  const setFormDataNewDataAction = (payload: ISetFormDataPayload<TModel>, _instance: IShaFormInstance<TModel>): TModel => {
+  const getMergedOrValue = (payload: ISetFormDataPayload<TModel>, _instance: IShaFormInstance<TModel>): TModel => {
     const { values, mergeValues } = payload;
     const data = defaultModel?.getModel();
     return mergeValues && data
-      ? deepMergeValues(data, values)
+      ? deepMergeValues({ ...data, stylingBox: getStyleBoxValue((data as IStyleValue).stylingBox as string) }, values)
       : values;
   };
 
@@ -121,7 +131,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
 
   return (
     <ConfigurableForm<TModel>
-      formName={isInModal ? 'modalSettings' : 'componentSettings'}
+      formName={Boolean(isInModal) ? 'modalSettings' : 'componentSettings'}
       labelCol={layoutSettings.labelCol}
       wrapperCol={layoutSettings.wrapperCol}
       layout={layoutSettings.layout}
@@ -139,9 +149,8 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
       onFinishFailed={onFinishFailed}
       propertyFilter={propertyFilter}
       isSettingsForm={true}
-      formDataGetter={isDefined(defaultModel) ? () => (defaultModel.getMergedModel() as TModel) : undefined}
-      formDataSetter={isDefined(defaultModel) ? (data) => (defaultModel.setModel(data as object | undefined)) : undefined}
-      setFormDataNewDataAction={setFormDataNewDataAction}
+
+      dataSource={{ dataGetter: defaultModel?.getMergedModel, dataSetter: defaultModel?.setModel, getMergedOrValue }}
     />
   );
 }

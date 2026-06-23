@@ -1,18 +1,32 @@
 import classNames from 'classnames';
-import React, { FC } from 'react';
+import React, { FC, useRef } from 'react';
 import BoxInput from './input';
 import { useStyles } from '../styles/styles';
-import { IChangeable } from '@/interfaces';
+import { StyleBoxValue } from '../../../providers/form/models';
+import { getStyleBoxValue } from '../utils';
 
-interface IProps extends IChangeable<string> {
+interface IProps {
   className?: string | undefined;
-  readOnly?: boolean | undefined;
-  value?: string | null | undefined;
+  readOnly: boolean;
+  value: StyleBoxValue | undefined;
+  propertyName: string;
+  onChange?: ((newValue: StyleBoxValue | undefined) => void) | undefined;
 }
 
-const Box: FC<IProps> = ({ className, onChange, readOnly, value }) => {
-  const commonProps = { onChange, readOnly, value };
+const Box: FC<IProps> = ({ className, onChange, readOnly, value, propertyName }) => {
   const { styles } = useStyles();
+
+  // need to store the value locally because internal components may not be rendered and will use the old value
+  const localValue = useRef<StyleBoxValue | undefined>(value);
+
+  const onChangeInternal = (val: Partial<StyleBoxValue>): void => {
+    const mergedValue: StyleBoxValue = { ...localValue.current, ...val, _type: 'styleBox' };
+    // ensure the value is a valid style box
+    onChange?.(getStyleBoxValue(mergedValue));
+    localValue.current = value;
+  };
+
+  const commonProps = { onChange: onChangeInternal, readOnly, value, propertyName };
 
   return (
     <div className={classNames(styles.shaStyleBox, className)}>

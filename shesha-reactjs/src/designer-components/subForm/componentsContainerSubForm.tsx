@@ -6,7 +6,7 @@ import { IComponentsContainerBaseProps } from '@/interfaces';
 import { removeUndefinedProperties } from '@/utils/array';
 import { useGlobalState, useSubForm } from '@/providers';
 import { useParent } from '@/providers/parentProvider/index';
-import FormComponent from '../../components/formDesigner/formComponent';
+import FormComponent from '../../components/formDesigner/formComponent/formComponent';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 interface IComponentsContainerSubFormProps extends IComponentsContainerBaseProps, ICommonContainerProps { }

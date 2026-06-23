@@ -34,7 +34,7 @@ import { Migrator } from '@/utils/fluentMigrator/migrator';
 import { ExpressionNodeValue } from '@/utils/jsonLogic';
 import { getFullPath } from '@/utils/metadata/helpers';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
-import { deepCopyViaJson, deepMergeValues, jsonSafeParse, unsafeGetValueByPropertyName } from '@/utils/object';
+import { deepCopyViaJson, deepMergeSkipUndefinedFunc, deepMergeValues, jsonSafeParse, unsafeGetValueByPropertyName } from '@/utils/object';
 import { QueryStringParams } from '@/utils/url';
 import { nanoid } from '@/utils/uuid';
 import { App } from 'antd';
@@ -1286,13 +1286,7 @@ export function updateComponentModelFromMetadata<TModel extends IConfigurableFor
   metadata: IPropertyMetadata,
 ): TModel {
   const mm = getComponentModelFromMetadata(component, model, metadata);
-  const m = deepMergeValues(deepCopyViaJson(model), mm, (t: Record<string, unknown>, s: Record<string, unknown>, key) => {
-    // skip merge
-    // metadata value is empty
-    return s[key] === undefined ||
-      // model value is a non-empty primitive (non-object values are not merged if already set)
-      (t[key] !== undefined && t[key] !== null && t[key] !== '' && typeof t[key] !== 'object');
-  });
+  const m = deepMergeValues(mm, model, deepMergeSkipUndefinedFunc);
   return m;
 };
 
@@ -1466,9 +1460,7 @@ export const getStyle = (
 };
 
 export const getLayoutStyle = (model: Pick<IConfigurableFormComponent, "style" | "stylingBox">, args: { [key: string]: unknown }): CSSProperties => {
-  const styling = !isNullOrWhiteSpace(model.stylingBox)
-    ? jsonSafeParse<StyleBoxValue>(model.stylingBox, {}) ?? {}
-    : {};
+  const styling = jsonSafeParse<StyleBoxValue>(model.stylingBox);
   const style = pickStyleFromModel(styling);
 
   try {
@@ -1635,8 +1627,7 @@ export const convertFormMarkupToFlatStructure = (markup: FormRawMarkup, formSett
   const newFlatComponents = componentsTreeToFlatStructure(designerComponents, components);
 
   // migrate components to last version
-  if (formSettings)
-    upgradeComponents(designerComponents, formSettings, newFlatComponents);
+  upgradeComponents(designerComponents, formSettings ?? undefined, newFlatComponents);
 
   return newFlatComponents;
 };

@@ -1,21 +1,21 @@
 import React, { ReactNode } from 'react';
-import { useStyles } from './styles/styles';
 
 interface IInputFieldProps {
   value?: string | number | React.ReactNode;
   style?: React.CSSProperties | undefined;
   children?: React.ReactNode;
+  className?: string;
 }
 
-function InputField({ value, style, children }: IInputFieldProps): ReactNode {
-  const { styles } = useStyles({ textAlign: style?.textAlign || 'left' });
-
+function InputField({ value, style, children, className }: IInputFieldProps): ReactNode {
   const { height } = style || {};
 
+  const strValue = String(value ?? '');
+
   // Apply all styles to single container to avoid double borders
-  return value || children ? (
+  return (
     <div
-      className={styles.inputField}
+      className={className}
       style={{
         ...style,
         whiteSpace: height === 'auto' ? 'pre-wrap' : 'nowrap',
@@ -24,9 +24,13 @@ function InputField({ value, style, children }: IInputFieldProps): ReactNode {
         boxSizing: 'border-box',
       }}
     >
-      {value || children}
+      {
+        (!strValue ? ' ' : value) || // add space if value is empty to keep base comopnent style
+        children ||
+        null
+      }
     </div>
-  ) : null;
+  );
 }
 
 export default InputField;

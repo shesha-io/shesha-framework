@@ -10,6 +10,9 @@ import AlertsExample from './alertsPreview';
 import InputStatesPreview from './inputStatePreview';
 import TextsPreview from './textsPreview';
 import { ColorValueType } from 'antd/es/color-picker/interface';
+import { FormLayout } from 'antd/lib/form/Form';
+import { FormLabelAlign } from 'antd/es/form/interface';
+import { useDebouncedCallback } from 'use-debounce';
 
 /** The sections (tabs) of the theme settings screen. */
 export type ThemeSettingsSection = 'theme' | 'input' | 'inline' | 'standard' | 'layout' | 'components';
@@ -52,8 +55,15 @@ const ColorCircle: FC<ColorCircleProps> = ({ color, onChange, label, readonly })
 };
 
 const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, readonly, section = 'theme' }) => {
+  // it is necessary to use debounce save because it changes the theme and it results in re-rendering of all components.
+  const debouncedSave = useDebouncedCallback(
+    (values: IConfigurableTheme) => onChange?.(values),
+    // delay in ms
+    200,
+  );
+
   const changeThemeInternal = (theme: IConfigurableTheme): void => {
-    if (onChange) onChange(theme);
+    debouncedSave(theme);
   };
 
   const mergeThemeSection = (
@@ -110,7 +120,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
                 sidebar: e.target.value,
               });
             }}
-            // disabled={readonly}
+            disabled={!!readonly}
             optionType="button"
             buttonStyle="solid"
           >
@@ -170,8 +180,8 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
 
             <Radio.Group
               value={layout}
-              onChange={(e) => changeThemeInternal({ ...theme, layout: e.target.value })}
-              // disabled={readonly}
+              onChange={(e) => changeThemeInternal({ ...theme, layout: e.target.value as FormLayout })}
+              disabled={!!readonly}
               optionType="button"
               buttonStyle="solid"
               style={{ marginBottom: 16 }}
@@ -192,7 +202,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
                   range={false}
                   value={labelSpan}
                   onChange={handleSpanChange}
-                  // disabled={readonly}
+                  disabled={!!readonly}
                   tooltip={{ formatter: (v) => `Label: ${v}, Control: ${24 - (v ?? 0)}` }}
                   className={styles.slider}
                 />
@@ -201,8 +211,8 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
                 </div>
                 <Radio.Group
                   value={theme?.labelAlign}
-                  onChange={(e) => changeThemeInternal({ ...theme, labelAlign: e.target.value })}
-                  // disabled={readonly}
+                  onChange={(e) => changeThemeInternal({ ...theme, labelAlign: e.target.value as FormLabelAlign })}
+                  disabled={!!readonly}
                   optionType="button"
                   buttonStyle="solid"
                   style={{ marginBottom: 16 }}

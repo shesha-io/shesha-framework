@@ -3,6 +3,7 @@ import React, { FC, PropsWithChildren, useCallback, useContext, useMemo, useStat
 import { IConfigurableTheme, IThemeActionsContext, IThemeStateContext, THEME_CONTEXT_INITIAL_STATE, UiActionsContext, UiStateContext } from './contexts';
 import { defaultRequiredMark } from './shaRequiredMark';
 import { useSettings, useSheshaApplication } from '..';
+import { isNotNullOrWhiteSpace } from '@/utils/nullables';
 
 export interface ThemeProviderProps {
   prefixCls?: string;
@@ -42,17 +43,19 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
     setState((prev) => ({ ...prev, theme: { ...prev.initialTheme } }));
   }, []);
 
+  const getComponentStyle = useCallback((componentName: string) => state.theme.components?.[componentName] ?? {}, [state.theme.components]);
+
   const themeConfig = useMemo<ThemeConfig>(() => {
     const appTheme = state.theme.application;
     const themeDefaults: ThemeConfig['token'] = {};
 
     const theme: Partial<ThemeConfig['token']> = appTheme
       ? {
-        ...(appTheme.primaryColor ? { colorPrimary: appTheme.primaryColor, colorLink: appTheme.primaryColor } : {}),
-        ...(appTheme.infoColor ? { colorInfo: appTheme.infoColor } : {}),
-        ...(appTheme.successColor ? { colorSuccess: appTheme.successColor } : {}),
-        ...(appTheme.errorColor ? { colorError: appTheme.errorColor } : {}),
-        ...(appTheme.warningColor ? { colorWarning: appTheme.warningColor } : {}),
+        ...(isNotNullOrWhiteSpace(appTheme.primaryColor) ? { colorPrimary: appTheme.primaryColor, colorLink: appTheme.primaryColor } : {}),
+        ...(isNotNullOrWhiteSpace(appTheme.infoColor) ? { colorInfo: appTheme.infoColor } : {}),
+        ...(isNotNullOrWhiteSpace(appTheme.successColor) ? { colorSuccess: appTheme.successColor } : {}),
+        ...(isNotNullOrWhiteSpace(appTheme.errorColor) ? { colorError: appTheme.errorColor } : {}),
+        ...(isNotNullOrWhiteSpace(appTheme.warningColor) ? { colorWarning: appTheme.warningColor } : {}),
       }
       : {};
 
@@ -76,6 +79,7 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
         value={{
           changeTheme,
           resetToApplicationTheme,
+          getComponentStyle,
         }}
       >
         <ConfigProvider

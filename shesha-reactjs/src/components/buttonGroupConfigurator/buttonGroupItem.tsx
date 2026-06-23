@@ -12,14 +12,14 @@ import { initialValues } from './utils';
 import { useActualContextData } from '@/hooks';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { getGhostStyleOverrides } from '@/utils/style';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
 
 const { Text } = Typography;
 
 const DynamicGroupDetails: FC<IDynamicItem> = (props) => {
   const { getProviders } = useDynamicActionsDispatcher();
 
-  const provider = props.dynamicItemsConfiguration?.providerUid
+  const provider = isNotNullOrWhiteSpace(props.dynamicItemsConfiguration?.providerUid)
     ? getProviders()[props.dynamicItemsConfiguration.providerUid]
     : null;
 
@@ -85,7 +85,7 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
             ghost={isGhost}
             disabled={readOnly ?? false}
             danger={danger ?? false}
-            icon={icon ? <ShaIcon iconName={icon as IconType} /> : undefined}
+            icon={isNotNullOrWhiteSpace(icon) ? <ShaIcon iconName={icon as IconType} /> : undefined}
             {...(iconPosition ? { iconPlacement: iconPosition } : {})}
             className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable')}
             size={size}
@@ -94,7 +94,7 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
           >
             {label}
           </Button>
-          {tooltip && (
+          {isNotNullOrWhiteSpace(tooltip) && (
             <Tooltip title={tooltip}>
               <QuestionCircleOutlined className={styles.helpIcon} style={{ marginLeft: '2px' }} />
             </Tooltip>

@@ -8,8 +8,8 @@ type ConfigurableFormItemContext<TValue = unknown> = {
 };
 
 export type IConfigurableFormItemChildFunc<TValue = unknown> = (
-  value: TValue | null | undefined,
-  onChange: ((newValue: TValue | null) => void),
+  value: TValue | undefined | null,
+  onChange: ((newValue: TValue | undefined | null) => void),
   propertyName?: string | undefined,
   ctx?: ConfigurableFormItemContext,
 ) => ReactNode;
