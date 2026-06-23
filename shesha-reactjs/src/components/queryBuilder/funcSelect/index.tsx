@@ -19,7 +19,7 @@ export const FuncSelect: FactoryWithContext<FieldProps> = ((props) => {
   };
 
   const {
-    config, customProps, items: allItems, placeholder,
+    config, customProps, items: allItems, placeholder, setField,
     selectedKey, selectedLabel, selectedAltLabel, selectedFullLabel, readonly = false,
   } = props;
 
@@ -45,9 +45,11 @@ export const FuncSelect: FactoryWithContext<FieldProps> = ((props) => {
 
   useEffect(() => {
     if (singleLeafPath && selectedKey !== singleLeafPath) {
-      props.setField(singleLeafPath);
+      setField(singleLeafPath);
     }
-  }, [singleLeafPath, selectedKey, props]);
+    // depend on setField, not the whole props object (which is a new
+    // reference every render and would re-fire this effect continuously)
+  }, [singleLeafPath, selectedKey, setField]);
 
   const dropdownPlacement = getStringEnumOrDefault<Placements>(config?.settings ?? {}, "dropdownPlacement", VALID_PLACEMENTS);
   const size: SizeType | undefined = config?.settings.renderSize === 'medium' ? 'middle' : config?.settings.renderSize;
