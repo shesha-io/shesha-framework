@@ -192,7 +192,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     .ant-upload-list-item {
       display: flex;
       padding: 0 !important;
-      border: unset !important; 
+      border: unset !important;
       width: ${layout ? width : '100%'};
       :before {
         ${rest as CSSObject}

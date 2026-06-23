@@ -4,8 +4,6 @@ import { useAttachmentsEditorActions, useAttachmentsEditorState } from '@/provid
 import { ButtonProps } from 'antd';
 
 export interface IStoredFilesRendererProps {
-  ownerId?: string | undefined;
-  ownerType?: string | undefined;
   isDragger?: boolean | undefined;
   uploadBtnProps?: ButtonProps | undefined;
   disabled?: boolean | undefined;
@@ -15,8 +13,6 @@ export interface IStoredFilesRendererProps {
 }
 
 export const StoredFilesRenderer: FC<IStoredFilesRendererProps> = ({
-  ownerId,
-  ownerType,
   isDragger,
   uploadBtnProps,
   disabled,
@@ -37,8 +33,6 @@ export const StoredFilesRenderer: FC<IStoredFilesRendererProps> = ({
 
   return (
     <StoredFilesRendererBase
-      ownerId={ownerId}
-      ownerType={ownerType}
       fileList={fileList}
       uploadFile={uploadFile}
       replaceFile={replaceFile}

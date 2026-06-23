@@ -1,10 +1,7 @@
 import { createStyles } from '@/styles';
-import { CSSObject } from 'antd-style';
 import { addPx } from '@/utils/style';
-
-export interface FileUploadStyleProps extends CSSObject {
-  jsStyle?: CSSObject;
-}
+import { CSSProperties } from 'react';
+import { CSSInterpolation } from '@emotion/serialize';
 
 interface ModelProps {
   layout?: boolean | undefined;
@@ -14,7 +11,7 @@ interface ModelProps {
 }
 
 interface FileUploadStylesParams {
-  style?: FileUploadStyleProps | undefined;
+  style?: CSSProperties | undefined;
   model: ModelProps;
 }
 
@@ -78,6 +75,10 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
     minHeight,
     textAlign = 'left',
   } = style || {};
+
+  // React.CSSProperties is not directly assignable to Emotion's CSSInterpolation;
+  // spreading it into a CSSObject-shaped value is safe at runtime.
+  const extraStyles = { ...style } as CSSInterpolation;
 
   const { layout, isDragger, hideFileName, listType } = model;
 
@@ -228,7 +229,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
         ${borderRadiusCss}
         padding: 0 !important;
         ${commonBorderStyles}
-        ${style}
+        ${extraStyles}
       }
 
       .thumbnail-item-name {
@@ -241,7 +242,6 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
             color: ${color} !important;
           }
         }
-        ${style?.jsStyle}
       }
 
       .thumbnail-stub {
@@ -251,7 +251,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
         justify-content: center;
         ${borderRadiusCss}
         border: ${borderWidth} ${borderStyle} ${borderColor} !important;
-        ${style}
+        ${extraStyles}
       }
 
       .ant-upload-list-text {
@@ -300,7 +300,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
         * {
           ${commonTextStyles}
         }
-        ${style}
+        ${extraStyles}
         width: 100% !important;
         height: 100% !important;
         border: none !important;
@@ -325,7 +325,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
           animation: none !important;
           transition: none !important;
         }
-        ${style}
+        ${extraStyles}
       }
     `,
   );
@@ -405,7 +405,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
           object-fit: cover !important;
         }
       }
-      ${style}
+      ${extraStyles}
     `,
   );
 
