@@ -348,7 +348,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, expressionContext }
   return (
     <div className={styles.bodyEditor}>
       <div className={styles.bodyTypeSelector} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Radio.Group value={view} onChange={(e) => handleViewChange(e.target.value as BodyView)}>
+        <Radio.Group value={view} onChange={(e) => handleViewChange(e.target.value as BodyType)}>
           <Radio.Button value="none">none</Radio.Button>
           <Radio.Button value="json">JSON</Radio.Button>
           <Radio.Button value="form-data">form-data</Radio.Button>
