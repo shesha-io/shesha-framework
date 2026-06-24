@@ -9,8 +9,8 @@ import { isDefined } from "@/utils/nullables";
 interface IComponentApiValueRegistratorProps<TValue = unknown> {
   componentId: string;
   componentName: string;
-  value: TValue | null | undefined;
-  onChange: (newValue: TValue | null) => void;
+  value: TValue | undefined | null;
+  onChange: (newValue: TValue | undefined | null) => void;
   propertyName?: string | undefined;
   readonly children: IConfigurableFormItemChildFunc<TValue>;
 }
@@ -23,10 +23,10 @@ export const ComponentApiValueProcessor = <TValue = unknown>({ value, onChange, 
   // set isInput once because componentName should not be changed
   const [isInput] = useState(() => isDefined(componentApi) && componentApi.getApi(componentName)?.isInput);
 
-  const apiRef = useRef<IComponentApiInputRef<TValue>>(null);
+  const apiRef = useRef<IComponentApiInputRef<TValue>>(undefined);
   apiRef.current = { value, onChange };
 
-  const onChangeHandler = (val: TValue | null): void => {
+  const onChangeHandler = (val: TValue | undefined | null): void => {
     if (apiRef.current) {
       apiRef.current.onChange(val);
       apiRef.current.value = val;
@@ -34,7 +34,7 @@ export const ComponentApiValueProcessor = <TValue = unknown>({ value, onChange, 
   };
 
   useEffect(() => {
-    if (isInput) {
+    if (isInput ?? false) {
       componentApi?.updateApi<InputComponentApi>({
         id: componentId,
         componentName: componentName,

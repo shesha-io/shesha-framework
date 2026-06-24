@@ -33,6 +33,7 @@ export interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps,
   hideLabel?: boolean | undefined;
   type?: string | undefined;
   availableConstantsExpression?: string | GetAvailableConstantsFunc | undefined;
+  permissionSettings?: boolean | undefined;
 }
 
 type WrappedComponentProps = {

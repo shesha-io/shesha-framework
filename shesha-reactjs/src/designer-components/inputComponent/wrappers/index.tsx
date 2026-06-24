@@ -46,7 +46,6 @@ import { ThreeStateSwitchWrapper } from "./threeStateSwitch";
 import { SectionSeparatorWrapper } from "./sectionSeparator";
 import { UnwrapCodeEvaluators } from "@/providers/form/models";
 
-
 type InputType = Exclude<ISettingsInputProps['type'], undefined | "settingsInput">;
 
 export type EditorComponent = FC<ISettingsInputProps>;

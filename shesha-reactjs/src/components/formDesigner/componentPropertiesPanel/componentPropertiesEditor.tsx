@@ -83,6 +83,8 @@ export const ComponentPropertiesEditor = <TModel extends IConfigurableFormCompon
 
   return isDefined(SettingsForm)
     ? (
+      // Settings form is getting from cache and not created on the each rerender
+      // eslint-disable-next-line react-hooks/static-components
       <SettingsForm
         readOnly={readOnly}
         model={componentModel}

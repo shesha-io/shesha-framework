@@ -7,7 +7,7 @@ import { FCUnwrapped } from '@/providers/form/models';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 export const TextFieldWrapper: FCUnwrapped<ITextFieldSettingsInputProps> = (props) => {
-  const { value, readOnly, size, variant, placeholder, icon, textType, tooltip, label, width, onChange, regExp } = props;
+  const { className, value, readOnly, size, variant, placeholder, icon, textType, tooltip, label, width, onChange, regExp } = props;
   const { styles } = useStyles();
 
   const regExpObj = useMemo(() => {
@@ -19,6 +19,12 @@ export const TextFieldWrapper: FCUnwrapped<ITextFieldSettingsInputProps> = (prop
       return null;
     }
   }, [props.propertyName, regExp]);
+
+  const suffix = useMemo(() => {
+    return icon && (
+      <Icon icon={icon} hint={tooltip || (typeof label === 'string' ? label : undefined)} className={styles.icon} />
+    );
+  }, [icon, tooltip, label, styles.icon]);
 
   return (
     <Input
@@ -45,9 +51,10 @@ export const TextFieldWrapper: FCUnwrapped<ITextFieldSettingsInputProps> = (prop
       {...(variant ? { variant } : {})}
       placeholder={placeholder}
       style={{ width: width ?? "100%" }}
-      suffix={<span style={{ height: '20px' }}><Icon icon={icon} hint={tooltip ?? (typeof label === 'string' ? label : '')} className={styles.icon} /></span>}
+      suffix={suffix}
       value={value as string}
       {...(textType ? { type: textType } : {})}
+      className={className}
     />
   );
 };

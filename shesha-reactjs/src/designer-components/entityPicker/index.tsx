@@ -5,7 +5,7 @@ import { ValidationErrors } from '@/components/validationErrors';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
 import { FilterExpression, IEntityReferenceDto, IStoredFilter, IToolboxComponent } from '@/interfaces';
 import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
-import { ButtonGroupItemProps, IStyleType, useMetadataDispatcher } from '@/providers';
+import { ButtonGroupItemProps, IStyleValue, useMetadataDispatcher } from '@/providers';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { FormIdentifier, IConfigurableFormComponent } from '@/providers/form/models';
 import { executeExpression, validateConfigurableComponentSettings } from '@/providers/form/utils';
@@ -29,7 +29,7 @@ import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { isEntityReferenceId } from '@/utils';
 import { getIdOrUndefined } from '@/utils/entity';
 
-export interface IEntityPickerComponentProps extends IConfigurableFormComponent, IStyleType {
+export interface IEntityPickerComponentProps extends IConfigurableFormComponent, IStyleValue {
   placeholder?: string | undefined;
   items: IConfigurableColumnsProps[];
   hideBorder?: boolean | undefined;

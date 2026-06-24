@@ -2,7 +2,7 @@ import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
 import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const eventsTabId = nanoid();
@@ -65,11 +65,11 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
           },
           {
             key: '2', title: 'Events', id: eventsTabId,
-            components: [...fbf(eventsTabId).stdEventHandlers(['onChange', 'onFocus', 'onBlur']).toJson()],
+            components: [...fbf(eventsTabId).stdEventHandlers(['onChange', 'onFocus', 'onBlur', 'onClick']).toJson()],
           },
           {
             key: '3', title: 'Appearance', id: appearanceTabId,
-            components: [...fbf(appearanceTabId).stdAppearancePanels(['font', 'dimensions', 'border', 'background', 'shadow', 'marginPadding', 'customStyle']).toJson()],
+            components: [...fbf(appearanceTabId).stdAppearancePanels(['font', 'dimensions', 'border', 'background', 'shadow', 'marginPadding', 'customStyle'], removeStyleRouter).toJson()],
           },
         ],
       })
