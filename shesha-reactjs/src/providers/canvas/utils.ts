@@ -79,13 +79,14 @@ export interface IAutoZoomParams {
 
 /**
  * Predefined zoom levels (percentages) that the +/- buttons step through.
- * Direct numeric entry is still free-form within [minZoom, maxZoom].
+ * Direct numeric entry in the zoom input is free-form within [minZoom, maxZoom]
+ * and is not restricted to these levels.
  */
 export const ZOOM_LEVELS = [25, 50, 75, 80, 100, 125, 150, 200] as const;
 
 export const DEFAULT_OPTIONS = {
-  minZoom: 25,
-  maxZoom: 200,
+  minZoom: 10,
+  maxZoom: 400,
   defaultZoom: 80,
   sizes: [25, 50, 25],
   configTreePanelWidth: (val: number = 20): number => typeof window !== 'undefined' ? (val / 100) * window.innerWidth : 200,
