@@ -104,8 +104,8 @@ const ConfigurableFormInner = <Values extends object = object>(props: Configurab
 
   // init form data
   useEffect(() => {
-    if (shaForm.markupLoadingState.status === 'ready' && shaForm.dataLoadingState.status === 'waiting') {
-      void shaForm.initLoadData();
+    if (shaForm.markupLoadingState.status === 'ready' && shaForm.dataLoadingState.status === 'ready') {
+      void shaForm.triggerAfterDataLoad();
     }
   }, [shaForm, shaForm.markupLoadingState.status, shaForm.dataLoadingState.status, formId, markup]);
 
@@ -168,10 +168,9 @@ const ConfigurableFormInner = <Values extends object = object>(props: Configurab
                         <DataLoadingError dataLoadingState={dataLoadingState} />
                       )
                       : shaForm.flatStructure && shaForm.settings
-                        ? (
+                        ? dataLoadingState.status === 'ready' && (
                           <FormWithFlatMarkup<Values>
                             {...props}
-                            mode={dataLoadingState.status !== 'ready' ? 'readonly' : props.mode}
                             isActionsOwner={isActionsOwner}
                             form={form}
                             initialValues={shaForm.initialValues}

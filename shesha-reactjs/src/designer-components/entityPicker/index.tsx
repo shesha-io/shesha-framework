@@ -165,7 +165,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
               configurableColumns={model.items}
               value={value ?? undefined}
               onChange={(newValue) => {
-                ctx?.handleEvent(undefined, newValue, model.onChangeCustom);
+                ctx?.handleEvent(undefined, { value: newValue }, model.onChangeCustom);
                 onChange(newValue);
               }}
               size={model.size}

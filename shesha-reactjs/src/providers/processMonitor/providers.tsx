@@ -34,6 +34,15 @@ export const ProcessMonitorProvider: FC<PropsWithChildren<ProcessMonitorProvider
     void instance.startAsync();
     return instance;
   });
+
+  useEffect(() => {
+    if (processMonitor.processId !== processId) {
+      processMonitor.changeProcessId(processId).catch((err) => {
+        console.error('Failed to change process ID', err);
+      });
+    }
+  }, [processMonitor, processId]);
+
   useEffect(() => {
     return () => {
       void processMonitor.stopAsync();

@@ -166,6 +166,7 @@ export interface IInputStyles extends IStyleValue {
   enableStyleOnReadonly?: boolean | undefined;
   container?: IStyleValue | undefined;
   display?: 'block' | 'flex' | 'grid' | 'inline-grid' | undefined;
+  gap?: string | number | SizeType | undefined;
 };
 
 export type ConfigurableFormComponentTypes =
@@ -216,9 +217,11 @@ export interface IComponentRuntimeProps {
   /** Custom onSelect handler */
   onSelectCustom?: string | undefined;
 
+  // html components don't have onHover, use onMouseMove instead
   /** Custom onHover handler */
   onHoverCustom?: string | undefined;
 
+  // onKeyPress is deprecated, use onKeyDown instead
   /** Custom onKeyPress handler */
   onKeyPressCustom?: string | undefined;
 }
@@ -330,6 +333,7 @@ export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles =
 
   noDataSecondaryText?: string | undefined;
 
+  /** @deprecated use visiblePermissions or editModePermissions instead */
   permissions?: string[] | undefined;
 
   _formFields?: string[] | undefined;

@@ -51,12 +51,14 @@ import { getComponentDefinitions } from "@/providers/form/defaults/toolboxCompon
 import { fontTypes, fontWeightsOptions, textAlignOptions } from "@/designer-components/_settings/utils/font/utils";
 import { getBorderInputs, getCornerInputs } from "@/designer-components/_settings/utils/border/utils";
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from "@/designer-components/_settings/utils/background/utils";
+import { isDefined } from "@/utils/nullables";
 
 interface EventConfig {
   event: StandardEventHandler;
   propertyName: string;
   label: string;
   tooltip: string;
+  availableConstantsExpression?: string | undefined;
 };
 
 const eventConfigs: EventConfig[] = [
@@ -65,39 +67,52 @@ const eventConfigs: EventConfig[] = [
     propertyName: 'onChangeCustom',
     label: 'On Change',
     tooltip: 'Enter the data change event handling code',
+    availableConstantsExpression: "return metadataBuilder.object(\"constants\")\r\n.addAllStandard()\r\n.addObject(\"event\", \"Event callback when user input\", undefined)\r\n.add(\"@valueType@\", \"value\", \"Component new value\")\r\n.build();",
   },
   {
     event: 'onFocus',
     propertyName: 'onFocusCustom',
     label: 'On Focus',
     tooltip: 'Enter the event handling code when the component gets focus',
+    availableConstantsExpression: "return metadataBuilder.object(\"constants\")\r\n .addAllStandard()\r\n .add(\"@valueType@\", \"value\", \"Component current value\")\r\n .addObject(\"event\", \"Event callback when user input\", undefined)\r\n .build();",
   },
   {
     event: 'onBlur',
     propertyName: 'onBlurCustom',
     label: 'On Blur',
     tooltip: 'Enter the event handling code when the component removes focus',
+    availableConstantsExpression: "return metadataBuilder.object(\"constants\")\r\n .addAllStandard()\r\n .add(\"@valueType@\", \"value\", \"Component current value\")\r\n .addObject(\"event\", \"Event callback when user input\", undefined)\r\n .build();",
   },
   {
     event: 'onClick',
     propertyName: 'onClickCustom',
     label: 'On Click',
     tooltip: 'Enter the event handling code on click on the component',
+    availableConstantsExpression: "return metadataBuilder.object(\"constants\")\r\n .addAllStandard()\r\n .add(\"@valueType@\", \"value\", \"Component current value\")\r\n .addObject(\"event\", \"Event callback when user input\", undefined)\r\n .build();",
   },
   {
     event: 'onHover',
     propertyName: 'onHoverCustom',
     label: 'On Hover',
     tooltip: 'Enter the event handling code on hover of the component',
+    availableConstantsExpression: "return metadataBuilder.object(\"constants\")\r\n .addAllStandard()\r\n .add(\"@valueType@\", \"value\", \"Component current value\")\r\n .addObject(\"event\", \"Event callback when user input\", undefined)\r\n .build();",
   },
   {
     event: 'onKeyPress',
     propertyName: 'onKeyPressCustom',
     label: 'On Key Press',
     tooltip: 'Enter the event handling code on key press on the component',
+    availableConstantsExpression: "return metadataBuilder.object(\"constants\")\r\n .addAllStandard()\r\n .add(\"@valueType@\", \"value\", \"Component current value\")\r\n .addObject(\"event\", \"Event callback when user input\", undefined)\r\n .build();",
   },
 ];
 
+const getEventConfig = (event: StandardEventHandler, valueType: string): EventConfig | undefined => {
+  const e = eventConfigs.find((config) => config.event === event);
+  if (!isDefined(e)) return undefined;
+  const eventConfig = { ...e };
+  eventConfig.availableConstantsExpression = eventConfig.availableConstantsExpression?.replace('@valueType@', valueType) ?? undefined;
+  return eventConfig;
+};
 
 export class FormBuilderImplementation implements FormBuilder, StandardFormBuilderMethods<AllComponentsConfig> {
   addKeyInformationBar = (props: FluentSettings<IKeyInformationBarComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'KeyInformationBar', meta);
@@ -294,22 +309,29 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
     return this._addProperty(fixedProps, 'collapsiblePanel', meta);
   };
 
-  stdEventHandler = (propertyName: string, label: string, tooltip: string, meta?: IPropertyMetadata | undefined): FormBuilder => {
+  stdEventHandler = (
+    propertyName: string,
+    label: string,
+    tooltip: string,
+    availableConstantsExpression?: string | undefined,
+    meta?: IPropertyMetadata | undefined,
+  ): FormBuilder => {
     this.addSettingsInput({
       inputType: 'codeEditor',
       propertyName: propertyName,
       label: label,
       labelAlign: 'right',
       tooltip: tooltip,
+      availableConstantsExpression,
     }, meta);
     return this;
   };
 
-  stdEventHandlers = (events: StandardEventHandler[]): FormBuilder => {
+  stdEventHandlers = (events: StandardEventHandler[], valueType: string): FormBuilder => {
     events.forEach((event) => {
-      const eventConfig = eventConfigs.find((e) => e.event === event);
+      const eventConfig = getEventConfig(event, valueType);
       if (eventConfig)
-        this.stdEventHandler(eventConfig.propertyName, eventConfig.label, eventConfig.tooltip);
+        this.stdEventHandler(eventConfig.propertyName, eventConfig.label, eventConfig.tooltip, eventConfig.availableConstantsExpression);
     });
     return this;
   };
@@ -431,14 +453,6 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
   stdAppearancePanels = (appearancePanels: StandardAppearancePanel[], removeStyleRouter?: boolean): FormBuilder => {
     const rootId = nanoid();
     const fbf = new FormBuilderImplementation(this.componentDefinitions, rootId);
-    fbf.addSettingsInput({
-      propertyName: 'enableStyleOnReadonly',
-      label: 'Enable Style On Readonly',
-      tooltip: 'Removes all visual styling except typography when the component becomes read-only',
-      inputType: 'switch',
-      jsSetting: true,
-    });
-
     appearancePanels.forEach((panel) => {
       switch (panel) {
         case 'background':

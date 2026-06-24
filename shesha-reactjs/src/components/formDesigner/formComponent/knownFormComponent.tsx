@@ -1,31 +1,23 @@
 import { stylingUtils } from '@/components/formDesigner/utils/stylingUtils';
-import { IBackgroundValue, IBorderValue, IFontValue } from '@/designer-components/_settings/utils';
 import { isSubFormComponent } from '@/designer-components/subForm';
 import { useActualContextData, useDeepCompareMemo } from '@/hooks';
 import { useActualContextExecution, useBackgroundStoredFile, useCalculatedModel, useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
-import { IConfigurableFormComponent, IToolboxComponent, ValidateErrorEntity } from '@/interfaces';
+import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
 import { IStyleValue, useCanvas, useForm, useShaFormInstance, useSheshaApplication, useTheme } from '@/providers';
-import { ComponentApiProperty, IComponentApiDescription } from '@/providers/componentApi/model';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { formComponentActualModelPropertyFilter, isFormFullName } from '@/providers/form/utils';
 import { useValidationErrorsStateOrDefault } from '@/providers/validationErrors';
 import { IModelValidation, ISheshaErrorTypes } from '@/utils/errors';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
-import { deepMergeSkipUndefinedFunc, deepMergeValues, getValueByPropertyName, removeUndefinedProps, setValueByPropertyName } from '@/utils/object';
-import React, { FC, useMemo, useState } from 'react';
-import { IComponentStyle, InputComponentApi } from '../../../componentsApi/componentApi';
-import apiCode from "../../../componentsApi/componentApi.ts?raw";
+import { deepMergeSkipUndefinedFunc, deepMergeValues } from '@/utils/object';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import AttributeDecorator from '../../attributeDecorator';
 import ErrorIconPopover from '../../componentErrors/errorIconPopover';
 import { isValidGuid } from '../components/utils';
-import { isNonEmptyArray } from '@/utils/array';
 import { getStyleBoxValue } from '@/designer-components/styleBox/utils';
 import { IFormComponentProps } from './formComponent';
-
-const updateApiModel = <T extends object>(func: (f: (prev: T) => T) => void, value: Partial<T>): void => {
-  func((prev) => removeUndefinedProps(deepMergeValues(prev, value)) as T);
-};
+import { updateApi } from './formComponentApi';
 
 type CustomHtmlAttributes = {
   "data-sha-c-id"?: string | undefined;
@@ -117,21 +109,20 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
   const allStyles = useFormComponentStyles(unwrappedModel); // ToDo: AS - remove afte migrate all components to use IStyleValue
   const styleJson = useActualContextExecution(unwrappedModel.style, undefined, {}); // use default style if empty or error
 
+  const readOnly = useMemo(() => Boolean(unwrappedModel.readOnly) || !anyOfPermissionsGranted(unwrappedModel.editModePermissions || []), [unwrappedModel, anyOfPermissionsGranted]);
+  const hidden = useMemo(() => shaForm.formMode !== 'designer' &&
+    (
+      // ToDo: AS - remove hidden from this check after migration
+      Boolean(unwrappedModel.hidden) ||
+      unwrappedModel.visible === false ||
+      !anyOfPermissionsGranted(unwrappedModel.permissions || []) || // ToDo: AS - remove afte migrate all components to use visiblePermissions
+      !anyOfPermissionsGranted(unwrappedModel.visiblePermissions || []) ||
+      !isComponentFiltered(unwrappedModel)),
+  [anyOfPermissionsGranted, isComponentFiltered, shaForm.formMode, unwrappedModel]);
+
+  const propertyName = isInput || isOutput ? unwrappedModel.propertyName : undefined;
+
   const actualModel = useMemo(() => {
-    const readOnly = Boolean(unwrappedModel.readOnly) || !anyOfPermissionsGranted(unwrappedModel.editModePermissions || []);
-    const hidden = shaForm.formMode !== 'designer' &&
-      (
-        // ToDo: AS - remove hidden from this check after migration
-        Boolean(unwrappedModel.hidden) ||
-        unwrappedModel.visible === false ||
-        !anyOfPermissionsGranted(unwrappedModel.permissions || []) ||
-        !anyOfPermissionsGranted(unwrappedModel.visiblePermissions || []) ||
-        !isComponentFiltered(unwrappedModel));
-
-    const propertyName = !isInput && !isOutput
-      ? undefined
-      : unwrappedModel.propertyName;
-
     // For input components: Strip margins from fullStyle and jsStyle
     // Margins are handled by the FormItem wrapper (via allStyles.margins), not the inner component
     // This prevents double margins (wrapper + component) in both designer and live modes
@@ -152,94 +143,16 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
       propertyName,
       allStyles: finalAllStyles,
     };
-  }, [allStyles, anyOfPermissionsGranted, isComponentFiltered, isInput, isOutput, shaForm.formMode, styleJson, unwrappedModel]);
+  }, [allStyles, hidden, isInput, propertyName, readOnly, styleJson, unwrappedModel]);
 
   const calculatedModel = useCalculatedModel(actualModel, toolboxComponent.useCalculateModel, toolboxComponent.calculateModel);
 
   const actualApiModel = useDeepCompareMemo(() => deepMergeValues(actualModel, apiModel), [actualModel, apiModel]);
 
-  if (componentApi !== undefined && !isNullOrWhiteSpace(actualModel.componentName)) {
-    const propertyName = actualModel.propertyName ?? "";
-    // common Api
-    const commonApi: IComponentApiDescription<InputComponentApi> = {
-      id: actualModel.id,
-      componentName: actualModel.componentName,
-      componentModel: actualModel,
-      level: 1,
-      isInput: isInput,
-      api: {
-        componentName: actualModel.componentName,
-        context: actualModel.context,
-        propertyName: propertyName,
-      },
-      typeDefinition: { typeName: 'CommonComponentApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
-      skipUpdateTypeDefinitionIfExists: true,
-      properties: [
-        // component properties
-        // use actualModel.hidden because it's already filtered by some other means (eg permissions)
-        { name: 'visible',
-          getter: () => actualApiModel.visible ?? false,
-          setter: (value) => updateApiModel(setApiModel, { hidden: actualModel.hidden === true ? actualModel.hidden : !value }),
-        },
-        { name: 'editable',
-          getter: () => actualApiModel.editMode,
-          setter: (value) => setApiModel((prev) => {
-            const editMode = typeof value === 'boolean' ? value ? 'editable' : 'readOnly' : value;
-            return { ...prev, editMode, readOnly: editMode === 'readOnly' ? true : editMode === 'inherited' ? prev.readOnly : false };
-          }),
-        },
-        // component styles
-        {
-          name: 'style', getter: () => {
-            const style = {} as IComponentStyle;
-            // TODO: implement generic methods and avoid type casts
-            componentApi.createOrUpdateApiProperty(style, { name: 'font', getter: () => actualApiModel.font, setter: (value) => updateApiModel(setApiStyles, { font: value as IFontValue }) });
-            componentApi.createOrUpdateApiProperty(style, { name: 'background', getter: () => actualApiModel.background, setter: (value) => updateApiModel(setApiStyles, { background: value as IBackgroundValue }) });
-            componentApi.createOrUpdateApiProperty(style, { name: 'border', getter: () => actualApiModel.border, setter: (value) => updateApiModel(setApiStyles, { border: value as IBorderValue }) });
-            return style;
-          },
-        },
-      ],
-    };
-
-    // input common Api
-    if (isInput) {
-      commonApi.api = {
-        ...commonApi.api,
-        isValid: () => !isNullOrWhiteSpace(propertyName)
-          ? shaForm.antdForm.validateFields([propertyName], { validateOnly: true })
-            .then(() => true).catch(() => false)
-          : Promise.resolve(true),
-        getErrors: () => !isNullOrWhiteSpace(propertyName)
-          ? shaForm.antdForm.validateFields([propertyName], { validateOnly: true })
-            .then(() => []).catch((e: ValidateErrorEntity) => isNonEmptyArray(e.errorFields) ? e.errorFields[0].errors : [])
-          : Promise.resolve([]),
-        reset: () => !isNullOrWhiteSpace(propertyName)
-          ? shaForm.antdForm.resetFields([propertyName])
-          : undefined,
-      } as InputComponentApi;
-      commonApi.typeDefinition = { typeName: 'InputComponentApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] };
-
-      commonApi.properties = [
-        ...(commonApi.properties ?? []),
-        ...[
-          { name: 'required', getter: () => actualApiModel.validate?.required, setter: (v) => updateApiModel(setApiModel, { validate: { required: v } }) },
-          {
-            name: 'value',
-            getter: () => !isNullOrWhiteSpace(propertyName)
-              ? getValueByPropertyName(shaForm.formData as Record<string, unknown>, propertyName)
-              : undefined,
-            setter: (value) => {
-              if (!isNullOrWhiteSpace(propertyName))
-                shaForm.setFieldsValue(setValueByPropertyName({}, propertyName, value));
-            },
-          },
-        ] as ComponentApiProperty<InputComponentApi>[],
-      ];
-    }
-
-    componentApi.updateApi<InputComponentApi>(commonApi);
-  };
+  useEffect(() => {
+    if (isDefined(componentApi))
+      updateApi({ model: actualModel, apiModel: actualApiModel, componentApi, shaForm, isInput, setApiModel, setApiStyles });
+  }, [componentApi, actualModel, actualApiModel, isInput, shaForm]);
   useEffectOnce(() => () => componentApi?.removeApi(actualModel.id));
 
   const control = useMemo(() => {

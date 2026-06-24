@@ -13,17 +13,19 @@ import { RecursivePartial } from "@/interfaces/entity";
 export type LoaderType = 'gql' | 'custom' | 'none';
 export type SubmitType = 'gql' | 'custom' | 'none';
 
-export interface InitByFormIdPayload<Values extends object = object> {
-  formId: FormIdentifier;
+export interface InitFormDataPayload<Values extends object = object> {
   formArguments?: object | undefined;
   initialValues?: Partial<Values> | undefined;
+  lazyLoadData?: boolean | undefined;
 }
 
-export interface InitByRawMarkupPayload<Values extends object = object> {
+export interface InitByFormIdPayload<Values extends object = object> extends InitFormDataPayload<Values> {
+  formId: FormIdentifier;
+}
+
+export interface InitByRawMarkupPayload<Values extends object = object> extends InitFormDataPayload<Values> {
   rawMarkup: FormMarkup;
   cacheKey?: string | undefined;
-  formArguments?: object | undefined;
-  initialValues: Partial<Values> | undefined;
   isSettingsForm?: boolean | undefined;
 }
 
@@ -79,8 +81,10 @@ export interface IShaFormInstance<Values extends object = object> {
   initLoadData: () => Promise<void>;
   /** Initializes the form with initial data values. */
   initInitialData: () => Promise<void>;
-  /** Triggers configured form events after initialization. */
+  /** Triggers configured form Before and After dataload events */
   triggerEvents: () => Promise<void>;
+  triggerAfterDataLoad: () => Promise<void>;
+
 
   loadData: (formArguments: object) => Promise<Values>;
   submitData: (payload?: SubmitDataPayload) => Promise<Values>;

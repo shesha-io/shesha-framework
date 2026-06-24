@@ -29,11 +29,15 @@ const DropdownComponent: DropdownComponentDefinition = {
   dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.referenceListItem || (dataType === DataTypes.array && dataFormat === ArrayFormats.multivalueReferenceList),
   Factory: ({ model }) => {
     const tagStyle = useFormComponentStyles({ ...model.tag }).fullStyle;
+    const {
+      readOnly = false,
+      enableStyleOnReadonly = false,
+    } = model;
 
     // When enableStyleOnReadonly is true, apply all configured styles in readonly mode
     // When enableStyleOnReadonly is false, apply only minimal styles (font + dimensions)
-    const finalStyle = model.readOnly
-      ? model.enableStyleOnReadonly
+    const finalStyle = readOnly
+      ? enableStyleOnReadonly
         ? { ...model.allStyles?.fullStyle, overflow: 'auto' }
         : { ...model.allStyles?.fontStyles, ...model.allStyles?.dimensionsStyles }
       : { ...model.allStyles?.fullStyle, overflow: 'auto' };
@@ -52,7 +56,7 @@ const DropdownComponent: DropdownComponentDefinition = {
                 // value: CustomLabeledValue<T>, option: any
                 // TODO: EVENTS add option to context
                 // addContextData(context, { option, value })
-                ctx?.handleEvent(undefined, newValue, model.onChangeCustom);
+                ctx?.handleEvent(undefined, { value: newValue }, model.onChangeCustom);
                 onChange(newValue ?? null);
               }}
             />
@@ -81,11 +85,11 @@ const DropdownComponent: DropdownComponentDefinition = {
     .add<IDropdownComponentProps>(5, (prev, context) => ({
       ...prev,
       valueFormat: prev.valueFormat ??
-        context.isNew
-        ? 'simple'
-        : getBooleanPropertyOrUndefined(prev, "useRawValue") === true
+        (context.isNew === true
           ? 'simple'
-          : 'listItem',
+          : getBooleanPropertyOrUndefined(prev, "useRawValue") === true
+            ? 'simple'
+            : 'listItem'),
       editMode: prev.editMode ?? 'inherited',
     }))
     .add<IDropdownComponentProps>(6, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
@@ -139,7 +143,8 @@ const DropdownComponent: DropdownComponentDefinition = {
       if (referenceListId && referenceListId.name && !referenceListId.module && knownPrefixes.some((p) => referenceListId.name.startsWith(p)))
         result.referenceListId = { module: "Shesha", name: referenceListId.name };
       return result;
-    }),
+    })
+    .add<IDropdownComponentProps>(12, (prev) => ({ ...prev, mode: prev.mode ?? 'single' })),
   linkToModelMetadata: (model, metadata): IDropdownComponentProps => {
     const isSingleRefList = metadata.dataType === DataTypes.referenceListItem;
     const isMultipleRefList = metadata.dataType === DataTypes.array && metadata.dataFormat === ArrayFormats.multivalueReferenceList;

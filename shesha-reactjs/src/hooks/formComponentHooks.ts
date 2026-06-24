@@ -263,7 +263,7 @@ export const useFormComponentStyles = <TModel extends IStyleValue & Pick<IConfig
 
   const { dimensions, border, font, shadow, background, stylingBox, overflow } = model;
 
-  const backgroundLocal = getBackgroundStyle(background, jsStyle, background?.url);
+  const backgroundLocal = useMemo(() => getBackgroundStyle(background, jsStyle, background?.url), [background, jsStyle]);
 
   const stylingBoxParsed = useMemo(() => !isNullOrWhiteSpace(stylingBox) ? jsonSafeParse<StyleBoxValue>(stylingBox) : {}, [stylingBox]);
 

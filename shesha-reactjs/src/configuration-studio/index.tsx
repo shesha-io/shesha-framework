@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import { ConfigurationTree } from '@/configuration-studio/components/configuration-tree';
 import { Divider, Splitter, Layout } from 'antd';
 import { WorkArea } from '@/configuration-studio/components/work-area';
@@ -16,10 +16,43 @@ import { DocumentDefinitionRegistration } from './document-definitions/documentD
 import { SheshaDocumentDefinitions } from './document-definitions';
 import { useCanvas } from '@/providers';
 import { InitializationErrorsModal } from './components/initializationErrorsModal';
+import { throttle } from 'lodash';
+
+// Width of the collapsed tree panel (just enough to show the expand toggle), matches the builder's collapsed sidebar.
+const COLLAPSED_TREE_SIZE = 35;
 
 const ConfigurationStudio: FC = () => {
   const { styles } = useStyles();
   const canvas = useCanvas();
+  const [treeCollapsed, setTreeCollapsed] = useState(false);
+  // Live size of the tree panel (in px) while expanded. Initialized from the canvas default so the
+  // panel stays controlled throughout the component's lifetime and avoids uncontrolled/controlled switches.
+  const [expandedTreeSize, setExpandedTreeSize] = useState<number>(canvas.configTreePanelSize);
+
+  // While collapsed we force the thin strip; otherwise we use the controlled expanded size.
+  const treePanelSize = treeCollapsed ? COLLAPSED_TREE_SIZE : expandedTreeSize;
+
+  const handleTreeResize = (sizes: number[]): void => {
+    const treeSize = sizes[0] ?? 0;
+    if (treeSize <= COLLAPSED_TREE_SIZE) {
+      setTreeCollapsed(true);
+    } else {
+      setTreeCollapsed(false);
+      setExpandedTreeSize(treeSize);
+    }
+  };
+
+  const throttledTreeResize = useMemo(() => throttle(handleTreeResize, 100), []);
+
+  useEffect(() => {
+    return () => {
+      throttledTreeResize.cancel();
+    };
+  }, [throttledTreeResize]);
+
+  const toggleTreeCollapsed = (): void => {
+    setTreeCollapsed((prev) => !prev);
+  };
 
   return (
     <ConfigurationStudioProvider>
@@ -48,17 +81,20 @@ const ConfigurationStudio: FC = () => {
           </div>
         </Layout.Header>
         <Layout.Content className={styles.csContent}>
-          <Splitter onResizeEnd={(sizes) => {
-            canvas.setConfigTreePanelSize(sizes[0] || 0);
-          }}
+          <Splitter
+            onResize={throttledTreeResize}
+            onResizeEnd={(sizes) => {
+              throttledTreeResize.cancel();
+              handleTreeResize(sizes);
+              canvas.setConfigTreePanelSize(sizes[0] ?? 0);
+            }}
           >
             <Splitter.Panel
-              collapsible
-              min="5%"
-              defaultSize="20%"
+              min={treeCollapsed ? COLLAPSED_TREE_SIZE : '5%'}
+              size={treePanelSize}
               className={styles.csTreeArea}
             >
-              <ConfigurationTree />
+              <ConfigurationTree collapsed={treeCollapsed} onToggleCollapsed={toggleTreeCollapsed} />
             </Splitter.Panel>
             <Splitter.Panel
               min="20%"
