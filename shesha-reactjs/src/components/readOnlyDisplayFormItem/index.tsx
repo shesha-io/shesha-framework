@@ -109,7 +109,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = <TValu
 
       case 'dropdownMultiple': {
         const typedValue = Array.isArray(value) && (!isNonEmptyArray(value) || typeof (value[0]) === "object")
-          ? value as ISelectOption[]
+          ? (value as ISelectOption[]).filter(isDefined)
           : undefined;
         if (typedValue) {
           const values = typedValue.map(({ label }) => label);
