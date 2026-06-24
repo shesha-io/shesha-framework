@@ -961,9 +961,14 @@ const QueryRuleRow: React.FC<IRuleProps> = (props) => {
   const isFieldFunc = selectedFieldSrc === 'func';
   const selectedOperator = properties.operator;
   // When field side is a func, derive operators from the function return type (text for UPPER/LOWER).
-  const operatorOptions = isFieldFunc
-    ? getOperatorOptionsForType(config, 'text')
-    : getOperatorOptions(config, selectedField);
+  // Memoized: a fresh array each render makes the (open) operator <Select> re-run rc-virtual-list
+  // scrollTo on every render ("reach the max limitation"), which keeps the row churning.
+  const operatorOptions = React.useMemo(
+    () => isFieldFunc
+      ? getOperatorOptionsForType(config, 'text')
+      : getOperatorOptions(config, selectedField),
+    [config, isFieldFunc, selectedField],
+  );
   const fieldReadonly = getFieldSourceReadonly(config, readOnly);
   const operatorReadonly = getOperatorReadonly(config, readOnly);
   const activeOperatorLabel = operatorOptions.find((item) => item.value === selectedOperator)?.label;

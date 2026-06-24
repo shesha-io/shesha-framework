@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import React, { FC, useMemo, useRef } from 'react';
+import { isEqual } from 'lodash';
 import { IQueryBuilderProps } from './interfaces';
 import { usePrevious } from 'react-use';
 import { useStyles } from './styles/styles';
@@ -36,11 +37,26 @@ export const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
 }) => {
   const { styles } = useStyles();
   const lastLocallyChangedValue = useRef(value);
-  const changedOutside = value !== lastLocallyChangedValue.current;
+  // Content comparison, not reference: Shesha form bindings hand back a new object
+  // reference for identical content (setFormData clones via deepMergeValues), so a
+  // reference check is permanently "changed" and rebuilds the tree on every render → loop.
+  const changedOutside = !isEqual(value, lastLocallyChangedValue.current);
   const prevValue = usePrevious(value);
   const prevTree = useRef<ImmutableTree | undefined>(undefined);
+  // Set when WE emit a change. The resulting value echo must NOT rebuild the tree — RAQB
+  // already holds the up-to-date tree, and rebuilding hands it a new reference that retriggers
+  // its internal redux store (QueryContainer.onPropsChanged → dispatch → re-render → …).
+  // A content compare can't catch this for date values: their JsonLogic round-trip
+  // (moment(...).format()) drifts every cycle, so the echo never equals what we emitted.
+  const selfOriginated = useRef(false);
 
   const tree = useMemo<ImmutableTree | undefined>(() => {
+    if (selfOriginated.current) {
+      selfOriginated.current = false;
+      lastLocallyChangedValue.current = value;
+      return prevTree.current;
+    }
+
     const needRebuildTree = value !== prevValue && changedOutside;
 
     if (!needRebuildTree && prevTree.current)
@@ -77,11 +93,20 @@ export const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
   };
 
   const handleChange = (_tree: ImmutableTree, _config: Config): void => {
+    // Keep our controlled value in sync with RAQB's own internal tree, so the next render
+    // hands <Query> the exact reference it already holds (no spurious onPropsChanged).
+    prevTree.current = _tree;
     if (onChange) {
       const normalizedTree = QbUtils.loadTree(normalizeTreeForJsonLogic(QbUtils.getTree(_tree) as unknown as IPlainTreeNode) as unknown as JsonTree);
       const jsonLogicResult = QbUtils.jsonLogicFormat(normalizedTree, _config);
 
+      const previous = lastLocallyChangedValue.current;
       lastLocallyChangedValue.current = jsonLogicResult;
+      // Don't re-emit identical content — breaks the controlled value ⇄ onChange echo loop.
+      if (isEqual(jsonLogicResult, previous))
+        return;
+      // The upcoming value echo is our own — don't rebuild the tree from it (see selfOriginated).
+      selfOriginated.current = true;
       onChange(jsonLogicResult);
     }
   };
