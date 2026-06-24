@@ -63,8 +63,8 @@ const CanvasProvider: FC<PropsWithChildren> = ({
     dispatch(setManualZoomAction(zoom));
   }, []);
 
-  const setCanvasAutoZoom = useCallback(() => {
-    dispatch(setCanvasAutoZoomAction());
+  const setCanvasAutoZoom = useCallback((value?: boolean) => {
+    dispatch(setCanvasAutoZoomAction(value));
   }, []);
 
   const setConfigTreePanelSize = useCallback((size: number) => {

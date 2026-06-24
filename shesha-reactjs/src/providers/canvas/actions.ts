@@ -20,7 +20,7 @@ export const setScreenWidthAction = createAction<number>(CanvasConfigActionEnums
 
 export const setDesignerDeviceAction = createAction<DeviceTypes>(CanvasConfigActionEnums.SetDesignerDevice);
 
-export const setCanvasAutoZoomAction = createAction(CanvasConfigActionEnums.SetCanvasAutoZoom);
+export const setCanvasAutoZoomAction = createAction<boolean | undefined>(CanvasConfigActionEnums.SetCanvasAutoZoom);
 
 // Sets an explicit zoom value and switches the canvas into manual mode (disables auto-zoom).
 export const setManualZoomAction = createAction<number>(CanvasConfigActionEnums.SetManualZoom);

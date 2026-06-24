@@ -36,7 +36,7 @@ export const CanvasConfig: FC = () => {
   // (and avoids "Maximum update depth exceeded" when holding the arrow keys) while the canvas
   // catches up once the rapid-fire changes settle.
   const debouncedSetCanvasZoom = useDebouncedCallback((value: number) => {
-    if (autoZoom) setCanvasAutoZoom();
+    if (autoZoom) setCanvasAutoZoom(false);
     setCanvasZoom(value);
   }, 150);
 
@@ -53,14 +53,14 @@ export const CanvasConfig: FC = () => {
   // Zoom out: exit Auto mode (5e) and step to the previous predefined level (5c)
   const handleZoomOut = (): void => {
     debouncedSetCanvasZoom.cancel();
-    if (autoZoom) setCanvasAutoZoom();
+    if (autoZoom) setCanvasAutoZoom(false);
     setCanvasZoom(getPrevZoomLevel(zoom));
   };
 
   // Zoom in: exit Auto mode (5e) and step to the next predefined level (5c)
   const handleZoomIn = (): void => {
     debouncedSetCanvasZoom.cancel();
-    if (autoZoom) setCanvasAutoZoom();
+    if (autoZoom) setCanvasAutoZoom(false);
     setCanvasZoom(getNextZoomLevel(zoom));
   };
 
@@ -88,7 +88,7 @@ export const CanvasConfig: FC = () => {
       setInputZoom(zoom);
       return;
     }
-    if (autoZoom) setCanvasAutoZoom();
+    if (autoZoom) setCanvasAutoZoom(false);
     setCanvasZoom(clampZoom(inputZoom));
   };
 

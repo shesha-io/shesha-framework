@@ -68,6 +68,9 @@ export const dimensionRelativeToCanvas = (
 
 export const defaultDesignerWidth = `${(typeof window !== 'undefined' ? window.screen.availWidth : 1024)}px`;
 
+/** Sentinel value for the responsive Canvas preset in the dropdown */
+export const CANVAS_PRESET_SENTINEL = '__CANVAS_RESPONSIVE__' as const;
+
 export interface IAutoZoomParams {
   currentZoom: number;
   designerWidth?: string;
@@ -271,7 +274,7 @@ export const screenSizeOptions = [
     label: 'Full HD 1920x1080', value: '1920px', icon: DesktopOutlined,
   },
   {
-    label: 'Canvas', value: defaultDesignerWidth, icon: DesktopOutlined,
+    label: 'Canvas', value: CANVAS_PRESET_SENTINEL, icon: DesktopOutlined,
   },
 ];
 
