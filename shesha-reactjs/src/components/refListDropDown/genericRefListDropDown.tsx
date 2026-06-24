@@ -7,7 +7,7 @@ import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { CustomLabeledValue, IGenericRefListDropDownProps, ISelectOption } from './models';
 import ReflistTag from './reflistTag';
 import { isNonEmptyArray } from '@/utils/array';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 const parseDisabledValues = (input: number[] | string | undefined): number[] => {
   if (!isDefined(input))
@@ -29,7 +29,7 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
     disabledValues,
     mode,
     onChange,
-    readOnly,
+    readOnly = false,
     disabled,
     style,
     allowClear = true,
@@ -137,7 +137,7 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
     ) : (
       <Empty
         image={Empty.PRESENTED_IMAGE_SIMPLE}
-        description={refListError ? <ValidationErrors renderMode="raw" error={refListError} /> : 'No matches'}
+        description={isDefined(refListError) ? <ValidationErrors renderMode="raw" error={refListError} /> : 'No matches'}
       />
     ),
     allowClear,
@@ -146,7 +146,7 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
     filterOption: filterOption,
     size: size,
     ...(variant ? { variant } : {}),
-    ...(className ? { className } : {}),
+    ...(!isNullOrWhiteSpace(className) ? { className } : {}),
     onChange: handleChange,
     value: wrapValue(value, options),
   };
