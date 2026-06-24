@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { FC, useMemo, useRef } from 'react';
+import React, { FC, useCallback, useMemo, useRef } from 'react';
 import { isEqual } from 'lodash';
 import { IQueryBuilderProps } from './interfaces';
 import { usePrevious } from 'react-use';
@@ -75,7 +75,7 @@ export const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
-  const renderBuilder = (props: BuilderProps): React.JSX.Element => {
+  const renderBuilder = useCallback((props: BuilderProps): React.JSX.Element => {
     const children1 = props.tree.getIn(['children1']);
     const hasRules = Boolean(children1 && (children1 as { size: number }).size > 0);
     const plainTree = QbUtils.getTree(props.tree);
@@ -90,7 +90,7 @@ export const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
         </div>
       </div>
     );
-  };
+  }, [showActionBtnOnHover]);
 
   const handleChange = (_tree: ImmutableTree, _config: Config): void => {
     // Keep our controlled value in sync with RAQB's own internal tree, so the next render

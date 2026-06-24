@@ -1,4 +1,5 @@
 import React from 'react';
+import { isEqual } from 'lodash';
 import classNames from 'classnames';
 import {
   Button,
@@ -111,6 +112,18 @@ interface IRuleProps {
   actions: BuilderProps['actions'];
   readOnly: boolean;
 }
+
+// Skip re-rendering a rule/value editor whose data is unchanged. `config`/`actions` are
+// referentially stable across edits (qbConfig is memoized; actions come from RAQB), so a
+// sibling edit — which only rebuilds the plain-tree node objects via getTree — is deep-equal
+// here and short-circuits this row's expensive getFieldConfig/getValueSources/widget work.
+// React.memo still lets context updates through, so this cannot cause stale UI.
+const areRuleNodePropsEqual = (prev: IRuleProps, next: IRuleProps): boolean =>
+  prev.config === next.config &&
+  prev.actions === next.actions &&
+  prev.readOnly === next.readOnly &&
+  isEqual(prev.path, next.path) &&
+  isEqual(prev.node, next.node);
 
 const DEFAULT_SOURCE_LABELS: Record<string, string> = {
   field: 'Field',
@@ -548,7 +561,7 @@ const RuleValueFieldEditor: React.FC<{
   );
 };
 
-const RuleWidgetEditor: React.FC<{
+const RuleWidgetEditorInner: React.FC<{
   actions: BuilderProps['actions'];
   config: Config;
   field: string;
@@ -630,6 +643,25 @@ const RuleWidgetEditor: React.FC<{
     </div>
   );
 };
+
+const areRuleWidgetPropsEqual = (
+  prev: Readonly<React.ComponentProps<typeof RuleWidgetEditorInner>>,
+  next: Readonly<React.ComponentProps<typeof RuleWidgetEditorInner>>,
+): boolean =>
+  prev.config === next.config &&
+  prev.actions === next.actions &&
+  prev.field === next.field &&
+  prev.fieldType === next.fieldType &&
+  prev.operator === next.operator &&
+  prev.delta === next.delta &&
+  prev.readOnly === next.readOnly &&
+  prev.valueSrc === next.valueSrc &&
+  prev.valueType === next.valueType &&
+  prev.valueError === next.valueError &&
+  isEqual(prev.path, next.path) &&
+  isEqual(prev.value, next.value);
+
+const RuleWidgetEditor = React.memo(RuleWidgetEditorInner, areRuleWidgetPropsEqual);
 
 const FunctionValueEditor: React.FC<{
   actions: BuilderProps['actions'];
@@ -807,7 +839,7 @@ const FieldFunctionEditor: React.FC<{
   );
 };
 
-const RuleValueEditor: React.FC<{
+const RuleValueEditorInner: React.FC<{
   node: IPlainTreeItem;
   path: string[];
   config: Config;
@@ -947,7 +979,9 @@ const RuleValueEditor: React.FC<{
   );
 };
 
-const QueryRuleRow: React.FC<IRuleProps> = (props) => {
+const RuleValueEditor = React.memo(RuleValueEditorInner, areRuleNodePropsEqual);
+
+const QueryRuleRowInner: React.FC<IRuleProps> = (props) => {
   const {
     actions,
     config,
@@ -1068,6 +1102,8 @@ const QueryRuleRow: React.FC<IRuleProps> = (props) => {
   );
 };
 
+const QueryRuleRow = React.memo(QueryRuleRowInner, areRuleNodePropsEqual);
+
 const QueryBuilderItem: React.FC<IBuilderItemProps> = ({
   actions,
   config,
@@ -1128,7 +1164,7 @@ const QueryBuilderItem: React.FC<IBuilderItemProps> = ({
 
       <div className="sha-query-builder-item-main">
         {isGroupNode(node) ? (
-          // eslint-disable-next-line @typescript-eslint/no-use-before-define
+
           <QueryBuilderGroup
             canDelete={canDelete}
             canDrag={canDrag}
