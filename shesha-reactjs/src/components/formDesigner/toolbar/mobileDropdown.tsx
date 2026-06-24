@@ -8,7 +8,7 @@ export const DeviceOptions: FC = () => {
   const { setCanvasWidth, designerWidth } = useCanvas();
 
   // When the actual width matches the screen's available width, show the Canvas sentinel so it displays as "Canvas" in the dropdown
-  const displayValue = designerWidth === defaultDesignerWidth ? CANVAS_PRESET_SENTINEL : (typeof designerWidth === 'number' ? `${designerWidth}px` : designerWidth);
+  const displayValue = designerWidth === defaultDesignerWidth ? CANVAS_PRESET_SENTINEL : designerWidth;
 
   return (
     <CustomDropdown
