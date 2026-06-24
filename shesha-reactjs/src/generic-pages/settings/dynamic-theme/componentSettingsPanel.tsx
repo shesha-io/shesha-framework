@@ -1,6 +1,6 @@
 import { Card, Col, Menu, Row } from 'antd';
 import React, { FC, useMemo, useState } from 'react';
-import { IConfigurableTheme } from '@/providers/theme/contexts';
+import { IConfigurableTheme, IThemeDeviceStyles } from '@/providers/theme/contexts';
 import { useStyles } from './styles/styles';
 import { findComponentNode, getMenuItems, IMenuItem } from './toolboxComponents';
 import { ConfigurableForm } from '@/components/configurableForm';
@@ -9,6 +9,8 @@ import { ItemType } from 'antd/es/menu/interface';
 import { deepCopyViaJson, deepMergeValues } from '@/utils/object';
 import { buildPreviewComponents, getPreviewFormData, previewNeedsDesignerMode } from './previewData';
 import { getAppearanceMarkup } from './appearanceMarkup';
+import { useCanvas } from '@/providers';
+import { DeviceTypes } from '@/providers/canvas/contexts';
 
 export interface IComponentDefaultsPanelProps {
   value?: IConfigurableTheme | undefined;
@@ -21,6 +23,13 @@ export interface IComponentDefaultsPanelProps {
  */
 export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value: theme, onChange, readonly }) => {
   const { styles } = useStyles();
+
+  // The component appearance markup uses a device-keyed property router, so the form reads/writes style
+  // props under a `<device>.*` path (the theme page has no device switcher yet, so that device is
+  // 'desktop'). Component theme styles are stored under theme[device].components[componentType], so the form's
+  // device layer aligns with the theme device bucket: we feed the form { [device]: stored } and, on
+  // save, unwrap that device key back into theme[device].components[componentType].
+  const device: DeviceTypes = useCanvas().designerDevice ?? 'desktop';
 
   // Convert tree data to Ant Design Menu format with groups
   const menuData = useMemo(() => {
@@ -85,12 +94,27 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
   }, [selectedNode?.key, selectedNode?.type, theme]);
 
   // Handle form data change — deep-merge so nested keys (e.g. application) are not replaced wholesale
-  const handleFormDataChange = (changedValues: Partial<IConfigurableTheme>): void => {
+  const handleFormDataChange = (changedValues:  Record<string, unknown>): void => {
     if (!onChange) return;
+    const incoming = (changedValues[device] as Record<string, unknown> | undefined) ?? {};
     const base = deepCopyViaJson(theme ?? {}) as IConfigurableTheme;
-    const merged = deepMergeValues(base, (changedValues ?? {}) as object) as IConfigurableTheme;
+    const deviceStyles: IThemeDeviceStyles = base[device] ?? {};
+    const componentBase = deepCopyViaJson(deviceStyles.components?.[componentType ?? ''] ?? {}) as any;
+    const mergedComponent = deepMergeValues(componentBase, incoming) as any;
+
+    const merged: IConfigurableTheme = {
+      ...base,
+      [device]: {
+        ...deviceStyles,
+        components: {
+          ...(deviceStyles.components ?? {}),
+          [componentType ?? '']: mergedComponent,
+        },
+      }
+    };
+
     onChange(merged);
-  };
+    };
 
   return (
     <Row gutter={16}>
@@ -136,7 +160,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
             <ConfigurableForm
               mode={readonly ? 'readonly' : 'edit'}
               markup={appearanceMarkup as FormMarkup}
-              initialValues={theme ?? {}}
+              initialValues={theme?.[device]?.components?.[selectedNode?.type ?? ''] ?? {}}
               onValuesChange={handleFormDataChange}
               className={styles.appearanceForm}
             />

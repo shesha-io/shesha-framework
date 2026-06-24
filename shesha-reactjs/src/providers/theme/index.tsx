@@ -1,9 +1,10 @@
 import { App, ConfigProvider, ThemeConfig } from 'antd';
 import React, { FC, PropsWithChildren, useCallback, useContext, useMemo, useState } from 'react';
-import { IConfigurableTheme, IThemeActionsContext, IThemeStateContext, THEME_CONTEXT_INITIAL_STATE, UiActionsContext, UiStateContext } from './contexts';
+import { IComponentGroupsSettings, IConfigurableTheme, IThemeActionsContext, IThemeStateContext, THEME_CONTEXT_INITIAL_STATE, ThemeComponentGroup, ThemeDevice, UiActionsContext, UiStateContext } from './contexts';
 import { defaultRequiredMark } from './shaRequiredMark';
 import { useSettings, useSheshaApplication } from '..';
-import { isNotNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
+import { deepMergeSkipUndefinedFunc, deepMergeValues } from '@/utils/object';
 
 export interface ThemeProviderProps {
   prefixCls?: string;
@@ -43,7 +44,26 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
     setState((prev) => ({ ...prev, theme: { ...prev.initialTheme } }));
   }, []);
 
-  const getComponentStyle = useCallback((componentName: string) => state.theme.components?.[componentName] ?? {}, [state.theme.components]);
+  // Component/group theme styles live under a device key (theme.desktop / theme.tablet / theme.mobile);
+  // desktop is the base and the requested device overlays it. Legacy themes stored these at the theme
+  // root, so fall back to the deprecated top-level fields.
+  const getComponentStyle = useCallback((componentName: string, device: ThemeDevice = 'desktop') => {
+    const base = state.theme.desktop?.components ?? state.theme.components ?? {};
+    const overlay = device === 'desktop' ? {} : state.theme[device]?.components ?? {};
+    const components = deepMergeValues(base, overlay, deepMergeSkipUndefinedFunc) as Record<string, unknown>;
+    return components[componentName] ?? {};
+  }, [state.theme]);
+
+  const getComponentGroupStyle = useCallback(
+    (group: ThemeComponentGroup | undefined, device: ThemeDevice = 'desktop') => {
+      if (!isDefined(group)) return {};
+      const base = state.theme.desktop?.componentGroups ?? state.theme.componentGroups ?? {};
+      const overlay = device === 'desktop' ? {} : state.theme[device]?.componentGroups ?? {};
+      const groups = deepMergeValues(base, overlay, deepMergeSkipUndefinedFunc) as IComponentGroupsSettings;
+      return groups[group] ?? {};
+    },
+    [state.theme],
+  );
 
   const themeConfig = useMemo<ThemeConfig>(() => {
     const appTheme = state.theme.application;
@@ -80,6 +100,7 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
           changeTheme,
           resetToApplicationTheme,
           getComponentStyle,
+          getComponentGroupStyle,
         }}
       >
         <ConfigProvider

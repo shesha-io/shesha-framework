@@ -60,6 +60,30 @@ export interface IComponentGroupsSettings {
   inline?: IInlineGroupSettings;
 }
 
+/**
+ * The four component-group tiers a component can belong to for theming purposes. A component declares
+ * its tier via `IToolboxComponent.themeGroup`; the runtime style merge then layers
+ * `theme[device].componentGroups[themeGroup]` between the component's hardcoded defaults and its
+ * per-type theme overrides (see `knownFormComponent` effectiveStyle).
+ */
+export type ThemeComponentGroup = keyof IComponentGroupsSettings;
+
+/** Device buckets the theme's component/group styles are nested under. */
+export type ThemeDevice = 'desktop' | 'tablet' | 'mobile';
+
+/**
+ * Device-scoped theme styles. Component and group appearance defaults live under a device key
+ * (theme.desktop / theme.tablet / theme.mobile) so they can be themed per device, mirroring how a
+ * component instance's own desktop/tablet/mobile style buckets cascade. `desktop` is the base; tablet
+ * and mobile overlay it.
+ */
+export interface IThemeDeviceStyles {
+  /** Per-component-group appearance defaults (input/layout/standard/inline). */
+  componentGroups?: IComponentGroupsSettings;
+  /** Per-component-type appearance defaults, keyed by component type. */
+  components?: Record<string, unknown>;
+}
+
 export interface IConfigurableTheme {
   application?: Theme | undefined;
   sidebar?: SidebarTheme | undefined;
@@ -72,7 +96,22 @@ export interface IConfigurableTheme {
   labelAlign?: FormLabelAlign;
   layout?: FormLayout;
   colon?: boolean;
+
+  /** Device-scoped component & group appearance defaults. `desktop` is the base tier. */
+  desktop?: IThemeDeviceStyles;
+  tablet?: IThemeDeviceStyles;
+  mobile?: IThemeDeviceStyles;
+  custom?: IThemeDeviceStyles;
+
+  /**
+   * @deprecated Use `theme[device].componentGroups`. Kept for reading legacy themes saved before
+   * component/group styles were nested under a device key.
+   */
   componentGroups?: IComponentGroupsSettings;
+  /**
+   * @deprecated Use `theme[device].components`. Kept for reading legacy themes saved before
+   * component/group styles were nested under a device key.
+   */
   components?: { [key: string]: unknown };
 }
 
@@ -91,7 +130,10 @@ export interface IThemeStateContext {
 export interface IThemeActionsContext {
   changeTheme: (theme: IConfigurableTheme, isApplication?: boolean) => void;
   resetToApplicationTheme: () => void;
-  getComponentStyle: (componentName: string) => unknown;
+  /** Per-component theme styles for a device (defaults to desktop, the base tier), or {} when unset. */
+  getComponentStyle: (componentName: string, device?: ThemeDevice) => unknown;
+  /** Group-tier theme styles for a component group, for a device (defaults to desktop), or {} when unset. */
+  getComponentGroupStyle: (group: ThemeComponentGroup | undefined, device?: ThemeDevice) => unknown;
 
   /* NEW_ACTION_ACTION_DECLARATIO_GOES_HERE */
 }

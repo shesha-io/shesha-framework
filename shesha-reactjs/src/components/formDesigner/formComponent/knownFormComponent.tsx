@@ -5,6 +5,7 @@ import { useActualContextExecution, useBackgroundStoredFile, useCalculatedModel,
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
 import { IStyleValue, useCanvas, useForm, useShaFormInstance, useSheshaApplication, useTheme } from '@/providers';
+import { IComponentGroupsSettings, ThemeDevice } from '@/providers/theme/contexts';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { formComponentActualModelPropertyFilter, isFormFullName } from '@/providers/form/utils';
 import { useValidationErrorsStateOrDefault } from '@/providers/validationErrors';
@@ -51,11 +52,29 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
   const effectiveDevice = activeDevice || 'desktop';
 
   const effectiveStyle = useMemo((): IStyleValue => {
-    // Default styles + Theme component styles
+    // Default styles + Theme group styles + Theme component styles
     const defStyle: IStyleValue = toolboxComponent.getDefaultStyles?.() ?? {};
-    const themeDefStyle: IStyleValue = isDefined(theme.components)
-      ? deepMergeValues(defStyle, theme.components[componentModel.type] as IStyleValue, deepMergeSkipUndefinedFunc)
+
+    // Theme component/group styles are nested under a device key (theme.desktop / theme.tablet /
+    // theme.mobile). Resolve them device-aware: desktop is the base; the active device overlays it.
+    // Legacy themes stored these at the theme root, so fall back to the deprecated top-level fields.
+    const desktopTheme = theme.desktop;
+    const deviceTheme = effectiveDevice === 'desktop' ? undefined : theme[effectiveDevice as ThemeDevice];
+    const themeGroups: IComponentGroupsSettings =
+      deepMergeValues(desktopTheme?.componentGroups ?? theme.componentGroups ?? {}, deviceTheme?.componentGroups ?? {}, deepMergeSkipUndefinedFunc);
+    const themeComponents: Record<string, unknown> =
+      deepMergeValues(desktopTheme?.components ?? theme.components ?? {}, deviceTheme?.components ?? {}, deepMergeSkipUndefinedFunc);
+
+    // Group tier: theme[device].componentGroups[themeGroup] applies to every component declaring that
+    // group (e.g. all input components), sitting between the hardcoded defaults and the per-type overrides.
+    const groupStyle: IStyleValue | undefined = isDefined(toolboxComponent.themeGroup)
+      ? themeGroups[toolboxComponent.themeGroup] as IStyleValue | undefined
+      : undefined;
+    const groupDefStyle: IStyleValue = isDefined(groupStyle)
+      ? deepMergeValues(defStyle, groupStyle, deepMergeSkipUndefinedFunc)
       : defStyle;
+
+    const themeDefStyle: IStyleValue = deepMergeValues(groupDefStyle, themeComponents[componentModel.type] as IStyleValue, deepMergeSkipUndefinedFunc);
 
     // Default styles + Theme component styles + Desktop component styles
     const desktopModel = componentModel.desktop;
@@ -72,7 +91,7 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
     const effectiveStylingBoxJson = effectiveModel?.stylingBoxJson;
     const effectiveDesktopStyle = deepMergeValues(desktopThemeStyle, { ...effectiveModel, stylingBoxJson: (Boolean(effectiveStylingBoxJson)) ? effectiveStylingBoxJson : effectiveStylingBox }, deepMergeSkipUndefinedFunc);
     return effectiveDesktopStyle as IStyleValue;
-  }, [componentModel, effectiveDevice, theme.components, toolboxComponent]);
+  }, [componentModel, effectiveDevice, theme, toolboxComponent]);
 
   const sfBackground = useBackgroundStoredFile(effectiveStyle.background, shaApplication);
   const sfStyle = useMemo((): IStyleValue => ({ ...effectiveStyle, background: sfBackground }), [effectiveStyle, sfBackground]);

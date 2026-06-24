@@ -1,6 +1,6 @@
 import React, { FC, useMemo } from 'react';
 import { Typography } from 'antd';
-import { IConfigurableTheme } from '@/providers/theme/contexts';
+import { IConfigurableTheme, IThemeDeviceStyles } from '@/providers/theme/contexts';
 import { useStyles } from './styles/styles';
 import { ConfigurableForm } from '@/components/configurableForm';
 import { FormMarkup } from '@/providers/form/models';
@@ -10,6 +10,10 @@ import { getSettings as getInputSettings } from './componentGroups/inputComponen
 import { getSettings as getLayoutSettings } from './componentGroups/layoutComponentSettings';
 import { getSettings as getStandardSettings } from './componentGroups/standardComponentSettings';
 import { getSettings as getInlineSettings } from './componentGroups/inlineComponentSettings';
+import { ComponentGroupPreview } from './componentGroups/groupPreview';
+import { isDefined } from '@/utils/nullables';
+import { useCanvas } from '@/providers';
+import { DeviceTypes } from '@/providers/canvas/contexts';
 
 export type ComponentGroupKey = 'input' | 'layout' | 'standard' | 'inline';
 
@@ -56,16 +60,33 @@ export const ComponentGroupSettings: FC<IComponentGroupSettingsProps> = ({ group
     return factory({ fbf });
   }, [group, fbf]);
 
-  const handleValuesChange = (changedValues: any): void => {
+  // The group appearance markup uses a device-keyed property router, so the form reads/writes style
+  // props under a `<device>.*` path (the theme page has no device switcher yet, so that device is
+  // 'desktop'). Group theme styles are stored under theme[device].componentGroups[group], so the form's
+  // device layer aligns with the theme device bucket: we feed the form { [device]: stored } and, on
+  // save, unwrap that device key back into theme[device].componentGroups[group].
+  const device: DeviceTypes = useCanvas().designerDevice ?? 'desktop';
+
+  const initialValues = useMemo(() => {
+    const stored = theme?.[device]?.componentGroups?.[group] ?? {};
+    return { [device]: stored };
+  }, [theme, group, device]);
+
+  const handleValuesChange = (changedValues: Record<string, unknown>): void => {
     if (!onChange) return;
+    const incoming = (changedValues[device] as Record<string, unknown> | undefined) ?? {};
     const base = deepCopyViaJson(theme ?? {}) as IConfigurableTheme;
-    const groupBase = deepCopyViaJson(base.componentGroups?.[group] ?? {}) as any;
-    const mergedGroup = deepMergeValues(groupBase, changedValues) as any;
-    const merged = {
+    const deviceStyles: IThemeDeviceStyles = base[device] ?? {};
+    const groupBase = deepCopyViaJson(deviceStyles.componentGroups?.[group] ?? {}) as any;
+    const mergedGroup = deepMergeValues(groupBase, incoming) as any;
+    const merged: IConfigurableTheme = {
       ...base,
-      componentGroups: {
-        ...base.componentGroups,
-        [group]: mergedGroup,
+      [device]: {
+        ...deviceStyles,
+        componentGroups: {
+          ...(deviceStyles.componentGroups ?? {}),
+          [group]: mergedGroup,
+        },
       },
     };
     onChange(merged);
@@ -80,11 +101,13 @@ export const ComponentGroupSettings: FC<IComponentGroupSettingsProps> = ({ group
         <ConfigurableForm
           mode={readonly ? 'readonly' : 'edit'}
           markup={markup as FormMarkup}
-          initialValues={theme?.componentGroups?.[group] ?? {}}
+          initialValues={initialValues}
           onValuesChange={handleValuesChange}
           className={styles.appearanceForm}
         />
       </div>
+
+      {isDefined(theme) && <ComponentGroupPreview group={group} theme={theme} />}
     </div>
   );
 };

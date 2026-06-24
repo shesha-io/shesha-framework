@@ -85,6 +85,7 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
 
   const { styles } = useStyles();
 
+  console.log('theme', theme);
   const labelSpan = theme?.labelSpan ?? 6;
   const layout = theme?.layout;
 
