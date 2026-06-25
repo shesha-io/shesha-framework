@@ -23,14 +23,22 @@ const COLLAPSED_TREE_SIZE = 35;
 
 const ConfigurationStudio: FC = () => {
   const { styles } = useStyles();
-  const canvas = useCanvas();
+  const { configTreePanelSize, setConfigTreePanelSize } = useCanvas();
   const [treeCollapsed, setTreeCollapsed] = useState(false);
   // Live size of the tree panel (in px) while expanded. Initialized from the canvas default so the
   // panel stays controlled throughout the component's lifetime and avoids uncontrolled/controlled switches.
-  const [expandedTreeSize, setExpandedTreeSize] = useState<number>(canvas.configTreePanelSize);
+  const [expandedTreeSize, setExpandedTreeSize] = useState<number>(configTreePanelSize);
 
   // While collapsed we force the thin strip; otherwise we use the controlled expanded size.
   const treePanelSize = treeCollapsed ? COLLAPSED_TREE_SIZE : expandedTreeSize;
+
+  // Keep the canvas context in sync with the *effective* tree panel width so the canvas auto-zoom
+  // reserves the right amount of space. When collapsed this is the thin strip (not the last expanded
+  // width), so the canvas reclaims the freed space instead of leaving a gap on the sides — matching
+  // how the form builder's properties/components panels are treated when collapsed.
+  useEffect(() => {
+    setConfigTreePanelSize(treePanelSize);
+  }, [treePanelSize, setConfigTreePanelSize]);
 
   const handleTreeResize = (sizes: number[]): void => {
     const treeSize = sizes[0] ?? 0;
@@ -86,7 +94,6 @@ const ConfigurationStudio: FC = () => {
             onResizeEnd={(sizes) => {
               throttledTreeResize.cancel();
               handleTreeResize(sizes);
-              canvas.setConfigTreePanelSize(sizes[0] ?? 0);
             }}
           >
             <Splitter.Panel
