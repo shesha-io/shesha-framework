@@ -260,7 +260,7 @@ export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
       const result = { ...item, size: item.size ?? props.size ?? 'middle' };
       return result;
     }),
-    props.readOnly,
+    { readOnly: props.readOnly, disabled: props.readOnly },
     undefined,
     standardActualModelPropertyFilter,
   );

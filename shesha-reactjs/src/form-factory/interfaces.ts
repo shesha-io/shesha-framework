@@ -48,7 +48,8 @@ import { TextComponentDefinition } from '@/designer-components/text/models';
 import { TextAreaComponentDefinition } from '@/designer-components/textArea/interfaces';
 import { TextFieldComponentDefinition } from '@/designer-components/textField/interfaces';
 import { TimeFieldComponentDefinition } from '@/designer-components/timeField/models';
-import { ComponentDefinition, IConfigurableFormComponent, IPropertyMetadata, IPropertySetting } from '@/interfaces';
+import { ComponentDefinition, IConfigurableFormComponent, InteractionType, IPropertyMetadata, IPropertySetting } from '@/interfaces';
+import { StandardEventHandler } from '@/designer-components/_common/events';
 
 // Create a union of all your component definitions
 type AllComponentDefinitions =
@@ -129,9 +130,9 @@ export type FluentSettings<T extends IConfigurableFormComponent> = CustomOmit<T,
   // ToDo: AS - remove hidden after migration all components
   /** @deprecated Use `visible` instead (inversion of `hidden`) */
   hidden?: boolean | IPropertySetting<boolean> | undefined;
-  readOnly?: boolean | IPropertySetting<boolean> | undefined;
   visible?: boolean | undefined;
   visibleJs?: string | undefined;
+  readOnly?: boolean | IPropertySetting<boolean> | undefined;
 };
 
 /** Extract settings from component definition */
@@ -142,12 +143,11 @@ export type AllComponentsConfig<T extends AllComponentDefinitions = AllComponent
   [K in T["type"]]: Extract<T, { type: K }> extends ComponentDefinition<infer _TType, infer TSettings, infer _CalcModel> ? FluentSettings<TSettings> : never;
 };
 
-export type StandardEventHandler = 'onChange' | 'onBlur' | 'onFocus' | 'onClick' | 'onHover' | 'onKeyPress';
 export type StandardAppearancePanel = 'font' | 'dimensions' | 'border' | 'shadow' | 'background' | 'customStyle' | 'marginPadding';
 
 export type StandardFormBuilderMethods<TConfig extends Record<ComponentTypes, object> = Record<ComponentTypes, object>> = {
   stdPrefixSuffixInputs(visibleJs?: string | undefined): FluentFormBuilder<TConfig>;
-  stdVisibleEditableInputs(): FluentFormBuilder<TConfig>;
+  stdVisibleEditableInputs(interactionType: InteractionType): FluentFormBuilder<TConfig>;
   stdPropertyLabelInputs(): FluentFormBuilder<TConfig>;
   stdPlaceholderDescriptionInputs(): FluentFormBuilder<TConfig>;
   stdCollapsiblePanel(label: string, components: (fbf: FormBuilder) => FormBuilder, meta?: IPropertyMetadata | undefined): FluentFormBuilder<TConfig>;
