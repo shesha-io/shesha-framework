@@ -1,5 +1,5 @@
 import { DateDisplay } from '@/components/dateDisplay';
-import { isConfigItemTreeNode, TreeNode } from '@/configuration-studio/models';
+import { isConfigItemTreeNode, ITEM_TYPES, TreeNode } from '@/configuration-studio/models';
 import { useIsDevMode } from '@/hooks/useIsDevMode';
 import { Popover, Typography } from 'antd';
 import React, { FC, PropsWithChildren, ReactNode, useMemo } from 'react';
@@ -9,6 +9,21 @@ import { useCsTreeDnd } from '@/configuration-studio/cs/hooks';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 const { Text } = Typography;
+
+const ITEM_TYPE_FRIENDLY_NAMES: Record<string, string> = {
+  [ITEM_TYPES.FORM]: 'Form',
+  [ITEM_TYPES.ROLE]: 'Role',
+  [ITEM_TYPES.ENTITY]: 'Entity',
+  [ITEM_TYPES.PERMISSION]: 'Permission',
+  [ITEM_TYPES.REFLIST]: 'Reference list',
+  [ITEM_TYPES.SETTING]: 'Setting',
+  [ITEM_TYPES.NOTIFICATION]: 'Notification',
+  [ITEM_TYPES.NOTIFICATION_CHANNEL]: 'Notification channel',
+};
+
+const getItemTypeFriendlyName = (itemType: string): string =>
+  ITEM_TYPE_FRIENDLY_NAMES[itemType] ??
+  itemType.charAt(0).toUpperCase() + itemType.slice(1).replace(/-/g, ' ');
 
 export interface ICsTreeNodeProps extends PropsWithChildren {
   node: TreeNode;
@@ -54,12 +69,16 @@ export const CsTreeNode: FC<ICsTreeNodeProps> = ({ node, children }) => {
       result.push({ label: 'Exposed from', value: node.baseModule });
     if (!isNullOrWhiteSpace(node.description))
       result.push({ label: 'Description', value: node.description });
-    if (node.flags.isUpdated) {
-      result.push({ label: 'Has manual changes', value: 'yes' });
+    if (isDefined(node.lastModifierUser) && isDefined(node.lastModificationTime)) {
+      const typeName = getItemTypeFriendlyName(node.itemType);
+      result.push(
+        <div>
+          {typeName} was last updated by {node.lastModifierUser} on{' '}
+          <DateDisplay format="MMMM D, YYYY">{node.lastModificationTime}</DateDisplay> at{' '}
+          <DateDisplay format="h:mm A">{node.lastModificationTime}</DateDisplay>
+        </div>
+      );
     }
-
-    if (isDefined(node.lastModifierUser) && isDefined(node.lastModificationTime))
-      result.push(<div>Last updated by {node.lastModifierUser} on <DateDisplay>{node.lastModificationTime}</DateDisplay></div>);
 
     return result;
   }, [node, isDevMode]);
