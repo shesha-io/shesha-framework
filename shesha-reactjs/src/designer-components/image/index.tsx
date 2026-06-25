@@ -46,7 +46,7 @@ const ImageComponent: IToolboxComponent<IImageProps, ImageComponentCalculatedMod
   type: 'image',
   name: 'Image',
   icon: <FileImageOutlined />,
-  isInput: true,
+  isInput: false,
   isOutput: true,
   preserveDimensionsInDesigner: true,
   calculateModel: (model, allData) => ({

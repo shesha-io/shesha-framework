@@ -1,7 +1,7 @@
 import { createStyles, sheshaStyles } from '@/styles';
 import { CSSProperties } from 'react';
 
-export const useStyles = createStyles(({ css, cx, prefixCls, token }, { style }: { style?: CSSProperties }) => {
+export const useStyles = createStyles(({ css, cx, prefixCls, token }, { style, hoverBorderColor }: { style?: CSSProperties; hoverBorderColor?: string }) => {
   const pickerEllipsisBtnWidth = "45px";
 
   const pickerInputGroup = "picker-input-group";
@@ -25,7 +25,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, { style }:
     }  
       .${pickerInputGroupEllipsis} {
         &:hover {
-          border-color: ${token.colorPrimary} !important;
+          border-color: ${hoverBorderColor ?? token.colorPrimary} !important;
         }
       }
   
@@ -81,7 +81,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, { style }:
         width: calc(100% - 32px) !important;
         flex-basis: unset !important;
         &:hover {
-                border-color: ${token.colorPrimary} !important;
+                border-color: ${hoverBorderColor ?? token.colorPrimary} !important;
               }
 
         .ant-select-selector {
