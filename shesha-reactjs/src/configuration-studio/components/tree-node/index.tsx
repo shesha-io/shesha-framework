@@ -76,7 +76,7 @@ export const CsTreeNode: FC<ICsTreeNodeProps> = ({ node, children }) => {
           {typeName} was last updated by {node.lastModifierUser} on{' '}
           <DateDisplay format="MMMM D, YYYY">{node.lastModificationTime}</DateDisplay> at{' '}
           <DateDisplay format="h:mm A">{node.lastModificationTime}</DateDisplay>
-        </div>
+        </div>,
       );
     }
 

@@ -16,6 +16,9 @@ export const NodeIndicator: FC<INodeIndicatorProps> = ({ node }) => {
     <>
       {node.flags.isUpdated && (
         <span
+          role="img"
+          aria-label="Has manual changes"
+          title="Has manual changes"
           style={{
             display: 'inline-block',
             width: 8,
@@ -28,7 +31,12 @@ export const NodeIndicator: FC<INodeIndicatorProps> = ({ node }) => {
         />
       )}
       {node.flags.isCodegenPending && (
-        <ExclamationCircleOutlined style={{ color: theme.colorError }} />
+        <ExclamationCircleOutlined
+          role="img"
+          aria-label="Code generation pending"
+          title="Code generation pending"
+          style={{ color: theme.colorError, marginLeft: 4 }}
+        />
       )}
     </>
   );
