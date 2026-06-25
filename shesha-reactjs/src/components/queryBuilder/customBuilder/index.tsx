@@ -672,16 +672,7 @@ const FunctionValueEditor: React.FC<{
   path: string[];
   readOnly: boolean;
   value?: SafeRuleValue;
-}> = ({ actions, config, field, fieldType, operator, path, readOnly, value }: {
-  actions: BuilderProps['actions'];
-  config: Config;
-  field: string;
-  fieldType?: string;
-  operator: string;
-  path: string[];
-  readOnly: boolean;
-  value?: SafeRuleValue;
-}) => {
+}> = ({ actions, config, field, fieldType, operator, path, readOnly, value }) => {
   const currentValue = React.useMemo(() => parseEvaluateFunctionValue(value), [value]);
   const widgetDefinition = config.widgets['mustacheExpression'];
   const widgetFactory = typeof widgetDefinition?.factory === 'function'
