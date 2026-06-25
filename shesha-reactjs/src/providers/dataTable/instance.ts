@@ -1,28 +1,62 @@
-import { DatatableInitArgs, IDatasetInstance } from "./models";
+/* eslint @typescript-eslint/strict-boolean-expressions: "error" */
+import { getFilterOptions } from "@/components/columnItemFilter";
+import { IAsyncStorage } from "@/configuration-studio/storage";
+import { IModelMetadata } from "@/interfaces";
+import { ProperyDataType } from "@/interfaces/metadata";
+import { isNonEmptyArray, undefinedIfEmptyArray } from "@/utils/array";
+import { getIdOrUndefined } from "@/utils/entity";
+import { extractErrorInfo } from "@/utils/errors";
+import { isDefined, isNullOrWhiteSpace, undefinedIfNullOrWhiteSpace } from "@/utils/nullables";
+import { jsonSafeParse } from "@/utils/object";
+import { camelcaseDotNotation, firstNonEmptyStringOrUndefined } from "@/utils/string";
+import { SubscribeFunc, SubscriptionManager } from "@/utils/subscriptions/subscriptionManager";
+import { isEqual, sortBy } from 'lodash';
 import { SortingRule } from "react-table";
 import { IConfigurableColumnsProps, isActionColumnProps, isCrudOperationsColumnProps, isDataColumnProps, isFormColumnProps, isRendererColumnProps } from "../datatableColumnsConfigurator/models";
-import { DataFetchDependencies, DatasetEvents, DataTableColumnDto, DragState, FilterExpression, IColumnWidth, IGetListDataPayload, ISelectionProps, isTableRowData, ITableActionColumn, ITableColumn, ITableDataColumn, ITableFormColumn, ITableRendererColumn, RowSelection } from "./interfaces";
-import { IndexColumnFilterOption, ColumnFilter, ITableRowData, IStoredFilter, ISortingItem, ITableFilter, DataFetchDependency } from "./interfaces";
-import { IRepository } from "./repository/interfaces";
-import { IDataTableStateContext } from "./interfaces.state";
 import { DATA_TABLE_CONTEXT_INITIAL_STATE, IDataTableUserConfig, ITableColumnUserSettings, MIN_COLUMN_WIDTH } from "./contexts";
-import { IModelMetadata } from "@/interfaces";
-import { isNonEmptyArray, undefinedIfEmptyArray } from "@/utils/array";
+import {
+  ColumnFilter,
+  DataFetchDependencies,
+  DataFetchDependency,
+  DatasetEvents, DataTableColumnDto,
+  DragState, FilterExpression, IColumnWidth,
+  IGetListDataPayload,
+  IndexColumnFilterOption,
+  ISelectionProps,
+  ISortingItem,
+  isTableRowData,
+  IStoredFilter,
+  ITableActionColumn, ITableColumn, ITableDataColumn,
+  ITableFilter,
+  ITableFormColumn, ITableRendererColumn,
+  ITableRowData,
+  JsonLogicFilter, RowSelection,
+} from "./interfaces";
+import { IDataTableStateContext } from "./interfaces.state";
+import { DatatableInitArgs, IDatasetInstance } from "./models";
+import { IRepository } from "./repository/interfaces";
 import { advancedFilter2JsonLogic, getCurrentSorting, getTableDataColumn, getTableDataColumns, getTableFormColumns, sortingItems2ColumnSorting } from "./utils";
-import { extractErrorInfo } from "@/utils/errors";
-import { SubscribeFunc, SubscriptionManager } from "@/utils/subscriptions/subscriptionManager";
-import { isDefined, isNullOrWhiteSpace, undefinedIfNullOrWhiteSpace } from "@/utils/nullables";
-import { camelcaseDotNotation } from "@/utils/string";
-import { ProperyDataType } from "@/interfaces/metadata";
-import { IAsyncStorage } from "@/configuration-studio/storage";
-import { isEqual, sortBy } from 'lodash';
-import { getFilterOptions } from "@/components/columnItemFilter";
-import { getIdOrUndefined } from "@/utils/entity";
 
 export type DataTableInstanceArgs = {
   repository: IRepository;
   logEnabled: boolean;
   storage: IAsyncStorage;
+};
+
+const filterExpression2Object = (filter: FilterExpression | undefined): JsonLogicFilter | undefined => {
+  if (!isDefined(filter))
+    return undefined;
+
+  return typeof filter === 'string'
+    ? !isNullOrWhiteSpace(filter)
+      ? jsonSafeParse(filter)
+      : undefined
+    : filter;
+};
+const tryAddFilter = (filters: JsonLogicFilter[], filter: FilterExpression | undefined): void => {
+  const converted = filterExpression2Object(filter);
+  if (isDefined(converted))
+    filters.push(converted);
 };
 
 export class DatasetInstance implements IDatasetInstance {
@@ -94,7 +128,7 @@ export class DatasetInstance implements IDatasetInstance {
     this.state.customReorderEndpoint = args.customReorderEndpoint;
     this.state.permanentFilter = args.permanentFilter;
 
-    const userConfig = this.userConfigId
+    const userConfig = !isNullOrWhiteSpace(this.userConfigId)
       ? await this.featchUserConfigAsync()
       : undefined;
 
@@ -117,7 +151,7 @@ export class DatasetInstance implements IDatasetInstance {
 
   private prepareColumn = (column: IConfigurableColumnsProps, repoColOverrides: DataTableColumnDto[], userConfig: IDataTableUserConfig | undefined): ITableColumn | undefined => {
     const resolvedPropertyName = isDataColumnProps(column)
-      ? (column.propertyName || column.accessor || column.id)
+      ? firstNonEmptyStringOrUndefined(column.propertyName, column.accessor, column.id)
       : undefined;
     const userColumnId = isDataColumnProps(column) ? resolvedPropertyName : column.id;
     const userColumn = userConfig?.columns?.find((c) => c.id === userColumnId);
@@ -130,7 +164,7 @@ export class DatasetInstance implements IDatasetInstance {
       anchored: column.anchored,
       header: column.caption,
       caption: column.caption,
-      minWidth: column.minWidth || MIN_COLUMN_WIDTH,
+      minWidth: column.minWidth ?? MIN_COLUMN_WIDTH,
       maxWidth: column.maxWidth,
       width: userColumn?.width,
       isVisible: column.isVisible,
@@ -145,18 +179,18 @@ export class DatasetInstance implements IDatasetInstance {
     if (isDataColumnProps(column)) {
       const colVisibility = userColumn && isDefined(userColumn.show) ? userColumn.show : column.isVisible;
 
-      const srvColumn = resolvedPropertyName
+      const srvColumn = !isNullOrWhiteSpace(resolvedPropertyName)
         ? repoColOverrides.find((c) => !isNullOrWhiteSpace(c.propertyName) && camelcaseDotNotation(c.propertyName) === camelcaseDotNotation(resolvedPropertyName))
         : {};
 
       const dataCol: ITableDataColumn = {
         ...baseProps,
-        id: resolvedPropertyName || column.id,
-        accessor: resolvedPropertyName ? camelcaseDotNotation(resolvedPropertyName) : column.accessor ?? "",
+        id: !isNullOrWhiteSpace(resolvedPropertyName) ? resolvedPropertyName : column.id,
+        accessor: !isNullOrWhiteSpace(resolvedPropertyName) ? camelcaseDotNotation(resolvedPropertyName) : column.accessor ?? "",
         propertyName: resolvedPropertyName,
 
         propertiesToFetch: resolvedPropertyName,
-        isEnitty: srvColumn?.dataType === 'entity',
+        isEntity: srvColumn?.dataType === 'entity',
 
         createComponent: column.createComponent,
         editComponent: column.editComponent,
@@ -242,7 +276,7 @@ export class DatasetInstance implements IDatasetInstance {
       })
       : [];
 
-    const selectedStoredFilterIds = state.selectedStoredFilterIds?.length
+    const selectedStoredFilterIds = isNonEmptyArray(state.selectedStoredFilterIds)
       ? [...state.selectedStoredFilterIds]
       : [...userFilters];
 
@@ -258,7 +292,7 @@ export class DatasetInstance implements IDatasetInstance {
         ...state,
         columns: cols,
         // user config
-        currentPage: userConfig?.currentPage || 1,
+        currentPage: userConfig?.currentPage ?? 1,
         selectedPageSize: userConfig?.pageSize ?? state.selectedPageSize,
         quickSearch: userConfig?.quickSearch ?? "",
         tableFilter: userConfig?.advancedFilter ?? [],
@@ -323,7 +357,7 @@ export class DatasetInstance implements IDatasetInstance {
   };
 
   private getRowSelection = (rows: ITableRowData[], selectedId: string | undefined): ISelectionProps | undefined => {
-    if (!selectedId || rows.length === 0)
+    if (isNullOrWhiteSpace(selectedId) || rows.length === 0)
       return undefined;
 
     const rowIndex = rows.findIndex((row) => row.id === selectedId);
@@ -354,7 +388,7 @@ export class DatasetInstance implements IDatasetInstance {
     }
     const filter = this.getFilter(state);
 
-    if (state.sortMode === 'strict' && state.strictSortBy) {
+    if (state.sortMode === 'strict' && !isNullOrWhiteSpace(state.strictSortBy)) {
       if (!dataColumns.find((column) => column.propertyName === state.strictSortBy))
         dataColumns.push({
           id: state.strictSortBy,
@@ -387,26 +421,20 @@ export class DatasetInstance implements IDatasetInstance {
   private getFilter = (state: IDataTableStateContext): string => {
     const allFilters = state.predefinedFilters ?? [];
 
-    const filters = allFilters.filter((f) => (state.selectedStoredFilterIds && state.selectedStoredFilterIds.indexOf(f.id) > -1));
+    const filters = allFilters.filter((f) => (isNonEmptyArray(state.selectedStoredFilterIds) && state.selectedStoredFilterIds.indexOf(f.id) > -1));
     const { permanentFilter } = state;
 
-    const filterExpression2Object = (filter: FilterExpression): object => {
-      return typeof filter === 'string' ? JSON.parse(filter) : filter;
-    };
-
-    let expressions = [];
+    const expressions: JsonLogicFilter[] = [];
     filters.forEach((f) => {
-      if (f.expression) {
-        expressions.push(filterExpression2Object(f.expression));
-      }
+      tryAddFilter(expressions, f.expression);
     });
     // add permanent filter if specified
-    if (permanentFilter)
-      expressions.push(filterExpression2Object(permanentFilter));
+    tryAddFilter(expressions, permanentFilter);
 
     if (isNonEmptyArray(state.tableFilter)) {
       const advancedFilter = advancedFilter2JsonLogic(state.tableFilter, state.columns);
-      if (advancedFilter && advancedFilter.length > 0) expressions = expressions.concat(advancedFilter);
+      if (isNonEmptyArray(advancedFilter))
+        expressions.push(...advancedFilter);
     }
 
     if (expressions.length === 0) return "";
@@ -626,7 +654,7 @@ export class DatasetInstance implements IDatasetInstance {
     if (!this.isInitialized)
       return;
 
-    const userConfig = this.userConfigId
+    const userConfig = !isNullOrWhiteSpace(this.userConfigId)
       ? await this.featchUserConfigAsync()
       : undefined;
 
