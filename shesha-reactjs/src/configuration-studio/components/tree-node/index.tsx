@@ -69,7 +69,32 @@ export const CsTreeNode: FC<ICsTreeNodeProps> = ({ node, children }) => {
       result.push({ label: 'Exposed from', value: node.baseModule });
     if (!isNullOrWhiteSpace(node.description))
       result.push({ label: 'Description', value: node.description });
-    if (isDefined(node.lastModifierUser) && isDefined(node.lastModificationTime)) {
+    if (node.flags.isUpdated) {
+      const typeName = getItemTypeFriendlyName(node.itemType);
+      const hasUser = isDefined(node.lastModifierUser);
+      const hasTime = isDefined(node.lastModificationTime);
+      if (hasUser && hasTime) {
+        result.push(
+          <div>
+            {typeName} was last updated by {node.lastModifierUser} on{' '}
+            <DateDisplay format="MMMM D, YYYY">{node.lastModificationTime}</DateDisplay> at{' '}
+            <DateDisplay format="h:mm A">{node.lastModificationTime}</DateDisplay>
+          </div>,
+        );
+      } else if (hasUser) {
+        result.push(<div>{typeName} was last updated by {node.lastModifierUser}</div>);
+      } else if (hasTime) {
+        result.push(
+          <div>
+            {typeName} was last updated on{' '}
+            <DateDisplay format="MMMM D, YYYY">{node.lastModificationTime}</DateDisplay> at{' '}
+            <DateDisplay format="h:mm A">{node.lastModificationTime}</DateDisplay>
+          </div>,
+        );
+      } else {
+        result.push(<div>{typeName} has manual changes</div>);
+      }
+    } else if (isDefined(node.lastModifierUser) && isDefined(node.lastModificationTime)) {
       const typeName = getItemTypeFriendlyName(node.itemType);
       result.push(
         <div>
