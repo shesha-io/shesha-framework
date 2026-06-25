@@ -90,7 +90,12 @@ export function getLastSection(separator: string, value: string): string {
 
 export const getNumberOrUndefined = (value: unknown | undefined): number | undefined => {
   try {
-    return isDefined(value) ? Number(value) : undefined;
+    if (typeof value === 'string' && value.trim() === '')
+      return undefined;
+    const res = isDefined(value) ? Number(value) : undefined;
+    if (isDefined(res) && isNaN(res))
+      return undefined;
+    return res;
   } catch {
     return undefined;
   }

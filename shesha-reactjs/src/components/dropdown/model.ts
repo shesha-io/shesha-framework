@@ -18,7 +18,7 @@ export type DropdownValueFormat = 'simple' | 'listItem' | 'custom';
 
 export interface IDropdownProps {
   dataSourceType: DataSourceType;
-  values?: ILabelValue[];
+  values?: ILabelValue<number | string>[];
   /**
    * @deprecated - use referenceListId instead
    */
@@ -28,8 +28,8 @@ export interface IDropdownProps {
    */
   referenceListName?: string | undefined;
   referenceListId?: IReferenceListIdentifier | undefined;
-  value?: number | number[] | undefined;
-  onChange?: ((value: number | number[] | undefined) => void) | undefined;
+  value?: number | number[] | string | string[] | undefined;
+  onChange?: ((value: number | number[] | string | string[] | undefined) => void) | undefined;
   hideBorder?: boolean | undefined;
   allowClear?: boolean | undefined;
   mode?: 'single' | 'multiple' | 'tags' | undefined;
