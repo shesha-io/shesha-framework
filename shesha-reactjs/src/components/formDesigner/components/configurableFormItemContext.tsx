@@ -29,7 +29,7 @@ const isSyntheticEvent = (event: unknown): event is SyntheticEvent => {
   );
 };
 
-export const ConfigurableFormItemContext = <TValue = unknown>(props: IConfigurableFormItem_ContextProps<TValue>): ReactNode => {
+export const ConfigurableFormItemCtx = <TValue = unknown>(props: IConfigurableFormItem_ContextProps<TValue>): ReactNode => {
   const { componentId, formItemProps, valuePropName, componentName, propertyName, contextName, children } = props;
   const { getDataContext } = useDataContextManager();
   const { getFieldValue, setFieldValue } = getDataContext(contextName) ?? {};

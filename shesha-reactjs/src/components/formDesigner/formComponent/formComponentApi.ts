@@ -3,12 +3,30 @@ import { IBackgroundValue, IBorderValue, IFontValue } from "@/designer-component
 import { IShaFormInstance } from "@/providers/form/store/interfaces";
 import { EditMode, IConfigurableFormComponent, IStyleValue } from "@/providers";
 import { ComponentApiProperty, IComponentApi, IComponentApiDescription } from "@/providers/componentApi/model";
-import { isNullOrWhiteSpace } from "@/utils/nullables";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { deepMergeValues, getValueByPropertyName, removeUndefinedProps, setValueByPropertyName } from "@/utils/object";
 import { ValidateErrorEntity } from "@/interfaces";
 import { isNonEmptyArray } from "@/utils/array";
 
 import apiCode from "../../../componentsApi/componentApi.ts?raw";
+
+export interface IDisabledAndReadOnly {
+  disabled: boolean | undefined;
+  readOnly: boolean | undefined;
+}
+
+export const getDisabledAndReadOnly = (mode: Exclude<EditMode, 'inherited'> | EditMode): IDisabledAndReadOnly =>
+  mode === false
+    ? { disabled: true, readOnly: false }
+    : mode === true
+      ? { disabled: false, readOnly: false }
+      : mode === 'editable'
+        ? { disabled: false, readOnly: false }
+        : mode === 'readOnly'
+          ? { disabled: false, readOnly: true }
+          : mode === 'disabled'
+            ? { disabled: true, readOnly: false }
+            : { disabled: false, readOnly: false };
 
 const updateApiModel = <T extends object>(func: (f: (prev: T) => T) => void, value: Partial<T>): void => {
   func((prev) => removeUndefinedProps(deepMergeValues(prev, value)) as T);
@@ -50,12 +68,12 @@ export const updateApi = (args: IUpdateApiArgs): void => {
       // use model.hidden because it's already filtered by some other means (eg permissions)
       { name: 'visible',
         // use Visible as actual configuration value
-        getter: () => apiModel.visible === true,
+        getter: () => model.hidden !== true && apiModel.hidden !== true,
         // use hidden as value that will be send to the component; ToDo: AS - review visible|hidden properties.
         setter: (value) => updateApiModel(setApiModel, { hidden: model.hidden === true ? model.hidden : !value }),
       },
-      { name: 'editable',
-        getter: () => apiModel.editMode as EditMode | undefined,
+      { name: 'interactionMode',
+        getter: () => isDefined(apiModel.editMode) ? apiModel.editMode as EditMode : model.editMode as EditMode | undefined,
         setter: (value) => setApiModel((prev) => {
           const editMode = typeof value === 'boolean' ? value ? 'editable' : 'readOnly' : value;
           return { ...prev, editMode, readOnly: editMode === 'readOnly' ? true : editMode === 'inherited' ? prev.readOnly : false };

@@ -8,7 +8,6 @@ import {
 } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import {
-  FormMode,
   HttpClientApi,
   IApplicationApi,
   isComponentsContainer,
@@ -128,7 +127,9 @@ export interface IApplicationContext<Value extends object = object> {
 
   /** Contexts datas */
   contexts: IDataContextsData | undefined;
-  /** Global state */
+  /** Global state
+   * @deprecated
+   */
   globalState: IAnyObject | undefined;
   /** Table selection */
   selectedRow: ISelectionProps | undefined;
@@ -146,6 +147,7 @@ export interface IApplicationContext<Value extends object = object> {
   /** Last updated date */
   lastUpdated?: Date;
 
+  /** @deprecated use page.context instead */
   pageContext?: IDataContextFull;
 
   setGlobalState: (payload: ISetStatePayload) => void;
@@ -393,13 +395,17 @@ export const isCommonContext = (name: string): boolean => {
 const extractReadOnly = (data: unknown): boolean | undefined => {
   return isDefined(data) && typeof data === 'object' && 'readOnly' in data && typeof (data.readOnly) === 'boolean' ? data.readOnly : undefined;
 };
+const extractDisabled = (data: unknown): boolean | undefined => {
+  return isDefined(data) && typeof data === 'object' && 'disabled' in data && typeof (data.disabled) === 'boolean' ? data.disabled : undefined;
+};
 
-export const getParentReadOnly = (parent: IParentProviderProps | undefined, allData: unknown): boolean => {
-  // TODO: review type of allData
-  const form = isDefined(allData) && typeof allData === 'object' && "form" in allData ? allData.form : undefined;
-  const formMode: FormMode | undefined = isDefined(form) && "formMode" in form ? form.formMode as FormMode : undefined;
-  return formMode !== 'designer' &&
-    (extractReadOnly(parent?.model) ?? (parent?.formMode === 'readonly' || formMode === 'readonly'));
+export const getParentDisabled = (parent: IParentProviderProps | undefined): boolean => {
+  return extractDisabled(parent?.model) ?? false;
+};
+
+export const getParentReadOnly = (parent: IParentProviderProps | undefined, allData: IApplicationContext): boolean => {
+  const formMode = allData.form?.formMode;
+  return extractReadOnly(parent?.model) ?? (parent?.formMode === 'readonly' || formMode === 'readonly');
 };
 
 const getContainerNames = (toolboxComponent: IToolboxComponent): string[] => {
@@ -629,7 +635,7 @@ export const componentsFlatStructureToTree = (
         container.push(component);
 
       //  process all childs if any
-      if (id in flat.componentRelations) {
+      if (id in flat.componentRelations && isComponentsContainer(component)) {
         const childComponents: IConfigurableFormComponent[] = [];
         processComponent(childComponents, id);
 
@@ -649,9 +655,9 @@ export const componentsFlatStructureToTree = (
           };
 
           const childContainers = unsafeGetValueByPropertyName(component, containerName);
-          if (childContainers) {
+          if (isDefined(childContainers)) {
             if (Array.isArray(childContainers)) {
-              component[containerName] = childContainers.map((c: unknown) => {
+              (component as unknown as Record<string, unknown>)[containerName] = childContainers.map((c: unknown) => {
                 if (!isComponentsContainer(c)) return c as IComponentsContainer;
                 const processed = processContainer(c);
                 // Handle nested containers inside array items (generic approach)
@@ -667,7 +673,7 @@ export const componentsFlatStructureToTree = (
                 return processed;
               });
             } else if (isComponentsContainer(childContainers))
-              component[containerName] = processContainer(childContainers);
+              (component as unknown as Record<string, unknown>)[containerName] = processContainer(childContainers);
             else
               throw new Error(`Unknown container type: ${typeof childContainers}`, childContainers);
           }

@@ -15,7 +15,7 @@ export type HandleEvent<TValue = unknown> = <TEvent extends SyntheticEvent | Rad
   eventName?: string | undefined,
 ) => void;
 
-type ConfigurableFormItemContext<TValue = unknown> = {
+export type ConfigurableFormItemContext<TValue = unknown> = {
   handleEvent: HandleEvent<TValue>;
 };
 

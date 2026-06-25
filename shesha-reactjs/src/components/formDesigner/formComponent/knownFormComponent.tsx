@@ -110,6 +110,7 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
   const styleJson = useActualContextExecution(unwrappedModel.style, undefined, {}); // use default style if empty or error
 
   const readOnly = useMemo(() => Boolean(unwrappedModel.readOnly) || !anyOfPermissionsGranted(unwrappedModel.editModePermissions || []), [unwrappedModel, anyOfPermissionsGranted]);
+  const disabled = useMemo(() => Boolean(unwrappedModel.disabled) || !anyOfPermissionsGranted(unwrappedModel.editModePermissions || []), [unwrappedModel, anyOfPermissionsGranted]);
   const hidden = useMemo(() => shaForm.formMode !== 'designer' &&
     (
       // ToDo: AS - remove hidden from this check after migration
@@ -139,11 +140,12 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
       ...unwrappedModel,
       styleJson,
       readOnly,
+      disabled,
       hidden,
       propertyName,
       allStyles: finalAllStyles,
     };
-  }, [allStyles, hidden, isInput, propertyName, readOnly, styleJson, unwrappedModel]);
+  }, [allStyles, hidden, isInput, propertyName, readOnly, disabled, styleJson, unwrappedModel]);
 
   const calculatedModel = useCalculatedModel(actualModel, toolboxComponent.useCalculateModel, toolboxComponent.calculateModel);
 

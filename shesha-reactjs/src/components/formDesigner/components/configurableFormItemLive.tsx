@@ -4,7 +4,7 @@ import { getFieldNameFromExpression, getValidationRules, useAvailableConstantsDa
 import classNames from 'classnames';
 import { UnwrapCodeEvaluators, useFormItem, useShaFormInstance } from '@/providers';
 import { IConfigurableFormItemProps } from './model';
-import { ConfigurableFormItemContext } from './configurableFormItemContext';
+import { ConfigurableFormItemCtx } from './configurableFormItemContext';
 import { ConfigurableFormItemForm } from './configurableFormItemForm';
 import { designerConstants } from '../utils/designerConstants';
 import { addPx } from '@/utils/style';
@@ -75,7 +75,7 @@ export const ConfigurableFormItemLive = <TValue = unknown>({
   if (typeof children === 'function') {
     if (isNotNullOrWhiteSpace(model.context)) {
       return (
-        <ConfigurableFormItemContext<TValue>
+        <ConfigurableFormItemCtx<TValue>
           componentId={model.id}
           formItemProps={formItemProps}
           valuePropName={valuePropName}
@@ -84,7 +84,7 @@ export const ConfigurableFormItemLive = <TValue = unknown>({
           contextName={model.context}
         >
           {children}
-        </ConfigurableFormItemContext>
+        </ConfigurableFormItemCtx>
       );
     } else {
       return (
