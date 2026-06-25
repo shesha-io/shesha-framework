@@ -71,38 +71,42 @@ export const CsTreeNode: FC<ICsTreeNodeProps> = ({ node, children }) => {
       result.push({ label: 'Description', value: node.description });
     if (node.flags.isUpdated) {
       const typeName = getItemTypeFriendlyName(node.itemType);
-      const hasUser = isDefined(node.lastModifierUser);
-      const hasTime = isDefined(node.lastModificationTime);
-      if (hasUser && hasTime) {
+      const modUser = node.lastModifierUser;
+      const modTime = node.lastModificationTime;
+      if (modUser && modTime) {
         result.push(
           <div>
-            {typeName} was last updated by {node.lastModifierUser} on{' '}
-            <DateDisplay format="MMMM D, YYYY">{node.lastModificationTime}</DateDisplay> at{' '}
-            <DateDisplay format="h:mm A">{node.lastModificationTime}</DateDisplay>
+            {typeName} was last updated by {modUser} on{' '}
+            <DateDisplay format="MMMM D, YYYY">{modTime}</DateDisplay> at{' '}
+            <DateDisplay format="h:mm A">{modTime}</DateDisplay>
           </div>,
         );
-      } else if (hasUser) {
-        result.push(<div>{typeName} was last updated by {node.lastModifierUser}</div>);
-      } else if (hasTime) {
+      } else if (modUser) {
+        result.push(<div>{typeName} was last updated by {modUser}</div>);
+      } else if (modTime) {
         result.push(
           <div>
             {typeName} was last updated on{' '}
-            <DateDisplay format="MMMM D, YYYY">{node.lastModificationTime}</DateDisplay> at{' '}
-            <DateDisplay format="h:mm A">{node.lastModificationTime}</DateDisplay>
+            <DateDisplay format="MMMM D, YYYY">{modTime}</DateDisplay> at{' '}
+            <DateDisplay format="h:mm A">{modTime}</DateDisplay>
           </div>,
         );
       } else {
         result.push(<div>{typeName} has manual changes</div>);
       }
-    } else if (isDefined(node.lastModifierUser) && isDefined(node.lastModificationTime)) {
-      const typeName = getItemTypeFriendlyName(node.itemType);
-      result.push(
-        <div>
-          {typeName} was last updated by {node.lastModifierUser} on{' '}
-          <DateDisplay format="MMMM D, YYYY">{node.lastModificationTime}</DateDisplay> at{' '}
-          <DateDisplay format="h:mm A">{node.lastModificationTime}</DateDisplay>
-        </div>,
-      );
+    } else {
+      const modUser = node.lastModifierUser;
+      const modTime = node.lastModificationTime;
+      if (modUser && modTime) {
+        const typeName = getItemTypeFriendlyName(node.itemType);
+        result.push(
+          <div>
+            {typeName} was last updated by {modUser} on{' '}
+            <DateDisplay format="MMMM D, YYYY">{modTime}</DateDisplay> at{' '}
+            <DateDisplay format="h:mm A">{modTime}</DateDisplay>
+          </div>,
+        );
+      }
     }
 
     return result;
