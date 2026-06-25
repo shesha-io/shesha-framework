@@ -273,3 +273,9 @@ export const incrementStringNumber = (input: string): string => {
   // No trailing number found, append " 1"
   return `${input} 1`;
 };
+
+export const firstNonEmptyString = (...args: (string | null | undefined)[]): string => firstNonEmptyStringOrUndefined(...args) ?? '';
+
+export const firstNonEmptyStringOrUndefined = (...args: (string | null | undefined)[]): string | undefined => {
+  return args.find((s) => !isNullOrWhiteSpace(s));
+};
