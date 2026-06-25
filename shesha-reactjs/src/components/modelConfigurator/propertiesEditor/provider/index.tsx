@@ -35,7 +35,7 @@ const PropertiesEditorProvider: FC<PropsWithChildren<IPropertiesEditorProviderPr
   const selRef = useRef<HTMLDivElement>(null);
   const [state, dispatch] = useThunkReducer(modelReducer, {
     ...PROPERTIES_EDITOR_CONTEXT_INITIAL_STATE,
-    items: props.items.filter((x) => !x.isFrameworkRelated),
+    items: props.items.filter((x) => x.isFrameworkRelated !== true),
     onChange: props.onChange,
   });
 
@@ -89,7 +89,7 @@ const PropertiesEditorProvider: FC<PropsWithChildren<IPropertiesEditorProviderPr
 
   const actions = useDeepCompareMemo(() => {
     return { addItem, deleteItem, selectItem, updateChildItems, getItem, updateItem /* NEW_ACTION_GOES_HERE */ };
-  }, [state]);
+  }, []);
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
