@@ -114,8 +114,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
     const outcomeValueFunc: OutcomeValueFunc = useCallback((value, args) => {
       if (model.valueFormat === 'entityReference') {
         // Accept any object with a non-empty string id (e.g. ITableRowData from picker modal or existing IEntityReferenceDto)
-        const isObjectWithId = isDefined(value) && typeof value === 'object' && value !== null && 'id' in value;
-        if (!isObjectWithId) return undefined;
+        if (!isDefined(value) || typeof value !== 'object' || !('id' in value)) return undefined;
 
         const valueObj = value as Record<string, unknown>;
         const id = getStringPropertyOrUndefined(valueObj, 'id');
