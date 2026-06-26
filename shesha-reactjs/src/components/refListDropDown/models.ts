@@ -37,12 +37,12 @@ export interface IRefListDropDownProps<TValue = unknown> extends LimitedSelectPr
   showIcon?: boolean | undefined;
   solidColor?: boolean | undefined;
   showItemName?: boolean | undefined;
-  value?: (TValue extends unknown ? TValue | TValue[] : never) | undefined;
+  value?: TValue | TValue[] | (TValue extends unknown ? TValue | TValue[] : never) | undefined;
   ignoredValues?: number[] | undefined;
   disabledValues?: number[] | undefined;
   size?: SizeType | undefined;
   displayStyle?: 'tags' | 'text' | undefined;
-  onChange?: ((value: (TValue extends unknown ? TValue | TValue[] : never) | undefined) => void) | undefined;
+  onChange?: ((value: TValue | TValue[] | (TValue extends unknown ? TValue | TValue[] : never) | undefined) => void) | undefined;
   enableStyleOnReadonly?: boolean | undefined;
 }
 

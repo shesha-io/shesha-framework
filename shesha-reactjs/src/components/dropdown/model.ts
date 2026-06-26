@@ -28,8 +28,8 @@ export interface IDropdownProps {
    */
   referenceListName?: string | undefined;
   referenceListId?: IReferenceListIdentifier | undefined;
-  value?: number | number[] | string | string[] | undefined;
-  onChange?: ((value: number | number[] | string | string[] | undefined) => void) | undefined;
+  value?: number | number[] | string | string[] | (string | number)[] | undefined;
+  onChange?: ((value: number | number[] | string | string[] | (string | number)[] | undefined) => void) | undefined;
   hideBorder?: boolean | undefined;
   allowClear?: boolean | undefined;
   mode?: 'single' | 'multiple' | 'tags' | undefined;
