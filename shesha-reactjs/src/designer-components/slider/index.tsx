@@ -32,7 +32,7 @@ const SliderComponent: SliderComponentDefinition = {
               range={false}
               className="sha-slider"
               {...(isDefined(model.min) ? { min: model.min } : {})}
-              {...(isDefined(model.max) ? { min: model.max } : {})}
+              {...(isDefined(model.max) ? { max: model.max } : {})}
               onChange={(newValue) => onChange(newValue)}
               {...(isDefined(value) ? { value } : {})}
               style={{ ...(!model.enableStyleOnReadonly && model.readOnly
