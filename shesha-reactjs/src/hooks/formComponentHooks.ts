@@ -86,9 +86,13 @@ const unwrapModel = <T extends object = object>(
         const parentReadOnly = !isDefined(parentDisabledAndReadOnly?.readOnly)
           ? contextProxy.form?.formMode === 'readonly'
           : parentDisabledAndReadOnly.readOnly;
-        const disabledAndReadOnly = isConfigurableFormComponent(newModel) && isDefined(newModel.editMode) ? getDisabledAndReadOnly(newModel.editMode) : { disabled: false, readOnly: parentReadOnly };
-        newModel.readOnly = disabledAndReadOnly.readOnly === true || parentReadOnly;
-        newModel.disabled = disabledAndReadOnly.disabled === true || parentDisabledAndReadOnly?.disabled === true;
+        const disabledAndReadOnly =
+          // Calculate disabled and readOnly, use parent values if editMode is not set or Inherited
+          isConfigurableFormComponent(newModel) && isDefined(newModel.editMode) && newModel.editMode !== 'inherited' && newModel.editMode !== true
+            ? getDisabledAndReadOnly(newModel.editMode)
+            : { disabled: parentDisabledAndReadOnly?.disabled ?? false, readOnly: parentReadOnly };
+        newModel.readOnly = disabledAndReadOnly.readOnly;
+        newModel.disabled = disabledAndReadOnly.disabled;
       }
     });
   return actualModel;
