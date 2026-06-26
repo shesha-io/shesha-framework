@@ -25,7 +25,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, { style, h
     }  
       .${pickerInputGroupEllipsis} {
         &:hover {
-          border-color: ${hoverBorderColor ?? token.colorPrimary} !important;
+          border-color: ${token.colorPrimary} !important;
         }
       }
   
@@ -81,7 +81,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, { style, h
         width: calc(100% - 32px) !important;
         flex-basis: unset !important;
         &:hover {
-                border-color: ${hoverBorderColor ?? token.colorPrimary} !important;
+                border-color: ${token.colorPrimary} !important;
               }
 
         .ant-select-selector {
