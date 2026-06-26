@@ -113,13 +113,20 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
 
     const outcomeValueFunc: OutcomeValueFunc = useCallback((value, args) => {
       if (model.valueFormat === 'entityReference') {
-        // Accept any object with a non-empty string id (e.g. ITableRowData from picker modal)
-        const id = isDefined(value) && typeof value === 'object' && 'id' in value
-          ? getStringPropertyOrUndefined(value as object, 'id')
-          : undefined;
-        return !isNullOrWhiteSpace(id)
-          ? { id: id, _displayName: getStringPropertyOrUndefined(value as object, displayEntityKey) ?? "", _className: getStringPropertyOrUndefined(value as object, '_className') ?? metadata?.fullClassName ?? "" } satisfies IEntityReferenceDto
-          : undefined;
+        // Accept any object with a non-empty string id (e.g. ITableRowData from picker modal or existing IEntityReferenceDto)
+        const isObjectWithId = isDefined(value) && typeof value === 'object' && value !== null && 'id' in value;
+        if (!isObjectWithId) return undefined;
+
+        const valueObj = value as Record<string, unknown>;
+        const id = getStringPropertyOrUndefined(valueObj, 'id');
+        if (isNullOrWhiteSpace(id)) return undefined;
+
+        // Preserve existing _displayName if present, otherwise try displayEntityKey, then fall back to empty string
+        const existingDisplayName = getStringPropertyOrUndefined(valueObj, '_displayName');
+        const displayName = existingDisplayName ?? getStringPropertyOrUndefined(valueObj, displayEntityKey) ?? "";
+        const className = getStringPropertyOrUndefined(valueObj, '_className') ?? metadata?.fullClassName ?? "";
+
+        return { id, _displayName: displayName, _className: className } satisfies IEntityReferenceDto;
       }
       if (model.valueFormat === 'custom') {
         if (isNullOrWhiteSpace(model.outcomeCustomJs))
