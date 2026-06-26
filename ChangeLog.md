@@ -2,11 +2,12 @@
 
 ## 🐞 Bug Fixes
 
-- **User Details Form:** Resolved an error that occurred when trying to delete an assigned role.
-- **Generic Entity Reference:** Fixed an exception related to `GenericEntityReference` lacking a default constructor.
+- **Email registration text** — Fixed incorrect "reset password" message in registration emails
+- **Forget Password** — Fixed invalid link generation for password reset emails
+- **Reset Password** — Added UI feedback when password fails minimum length validation
+- **Security: Dynamic LINQ Sorting** — Restricted navigation property traversal to prevent sensitive data exposure
+- **Security:Path Traversal** — Fixed Local File Inclusion vulnerability in ScheduledJobExecution LogFilePath
 
 ## 💪 Enhancements
 
-- **SyncClientApi:** Added a server-snapshot shortcut to skip per-entity comparison on no-change hot paths, reducing unnecessary processing.
-- **EntityModelProviderCache:** Fixed cache invalidation to trigger only on `EntityConfig` changes instead of any `ConfigurationItem` change.
-- **SyncClientApi Metadata:** Prevented re-fetching metadata for new modules by using cached `EntityModelDto.Metadata` where applicable.
+- **SignalR** — Implemented automatic reconnection 
