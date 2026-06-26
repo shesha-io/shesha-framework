@@ -3,7 +3,7 @@ import { FormMarkup } from '@/providers/form/models';
 import { FileImageOutlined } from '@ant-design/icons';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
-import { evaluateValueAsString, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import React, { ReactElement, ReactNode } from 'react';
 import {
   migrateCustomFunctions,
@@ -46,11 +46,11 @@ const ImageComponent: IToolboxComponent<IImageProps, ImageComponentCalculatedMod
   type: 'image',
   name: 'Image',
   icon: <FileImageOutlined />,
-  isInput: false,
+  isInput: true,
   isOutput: true,
   preserveDimensionsInDesigner: true,
   calculateModel: (model, allData) => ({
-    ownerId: model.ownerId ? evaluateValueAsString(model.ownerId, allData) : undefined,
+    ownerId: model.ownerId ? evaluateString(model.ownerId, allData) : undefined,
     dataId: allData.data ? (allData.data as { Id: string }).Id : undefined, // TODO: review and remove
     formModelType: allData.form?.formSettings?.modelType,
   }),
