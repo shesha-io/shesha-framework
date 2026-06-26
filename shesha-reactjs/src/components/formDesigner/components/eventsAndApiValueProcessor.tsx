@@ -39,7 +39,7 @@ export const EventsAndApiValueProcessor = <TValue = unknown>({ value, onChange, 
   const handleEvent: HandleEvent<TValue> = (event, value, code, eventName) => {
     if (isNullOrWhiteSpace(code)) return;
     try {
-      executeScriptSync(code, addContextData(allData, { ...value, event }));
+      executeScriptSync(code, addContextData(allData, { event, ...value }));
     } catch (error) {
       console.error(`${componentName}: ${isDefined(eventName) ? `'${eventName}'` : ''} event script execution failed`, error);
     }
