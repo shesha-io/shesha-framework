@@ -83,8 +83,7 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
   if (!entityType)
     throw SheshaError.throwPropertyError('entityType');
 
-  const borderColor = style.borderColor;
-  const { styles } = useStyles({ style, ...(borderColor ? { hoverBorderColor: String(borderColor) } : {}) });
+  const { styles } = useStyles({ style });
   const selectRef = useRef<SelectRef>(null);
   const allData = useAvailableConstantsData();
 

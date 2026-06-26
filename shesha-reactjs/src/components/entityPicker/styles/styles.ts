@@ -1,7 +1,7 @@
 import { createStyles, sheshaStyles } from '@/styles';
 import { CSSProperties } from 'react';
 
-export const useStyles = createStyles(({ css, cx, prefixCls, token }, { style, hoverBorderColor }: { style?: CSSProperties; hoverBorderColor?: string }) => {
+export const useStyles = createStyles(({ css, cx, prefixCls, token }, { style }: { style?: CSSProperties; hoverBorderColor?: string }) => {
   const pickerEllipsisBtnWidth = "45px";
 
   const pickerInputGroup = "picker-input-group";
