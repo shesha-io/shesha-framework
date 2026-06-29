@@ -1,4 +1,5 @@
 import { updateJsSettingsForComponents } from '@/designer-components/_settings/utils/utils';
+import { normalizeSingleBraceAccessor } from '@/providers/form/utils/mustacheNormalization';
 import {
   IToolboxComponent,
   IToolboxComponentGroup,
@@ -818,6 +819,10 @@ export const evaluateString = (template: string = '', data: object, skipUnknownT
     if (!template || typeof template !== 'string')
       return template;
 
+    // Backward compatibility: upgrade legacy single-brace accessors ({data.id}) to Mustache
+    // tags ({{data.id}}) so older form configs keep resolving after the move to Mustache.
+    const normalizedTemplate = normalizeSingleBraceAccessor(template);
+
     // The function throws an exception if the expression passed doesn't have a corresponding curly braces
     try {
       // Clone per call: caching the decorated structure is unsafe because long-lived proxies
@@ -838,7 +843,7 @@ export const evaluateString = (template: string = '', data: object, skipUnknownT
       };
 
       if (skipUnknownTags) {
-        template.match(/{{\s*[\w\.]+\s*}}/g)?.forEach((x) => {
+        normalizedTemplate.match(/{{\s*[\w\.]+\s*}}/g)?.forEach((x) => {
           const mathes = x.match(/[\w\.]+/);
           const tag = mathes && mathes.length > 0
             ? mathes[0]
@@ -867,9 +872,9 @@ export const evaluateString = (template: string = '', data: object, skipUnknownT
             : value;
         };
 
-        return Mustache.render(template, view, undefined, { escape });
+        return Mustache.render(normalizedTemplate, view, undefined, { escape });
       } else
-        return Mustache.render(template, view);
+        return Mustache.render(normalizedTemplate, view);
     } catch (error) {
       console.warn('evaluateString ', error);
       return template;
