@@ -21,7 +21,7 @@ export const useStyles = createStyles(({ css }) => {
     width: 100%;
     height: 100%;
     margin: 0;
-    padding: 0;
+    padding: 0 11px;
     display: inline-flex;
     align-items: center;
     justify-content: flex-start;
@@ -41,39 +41,31 @@ export const useStyles = createStyles(({ css }) => {
   const formLabel = css`
     .ant-form-item-label {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: flex-end;
 
       > label {
-        display: flex;
-        align-items: center;
-        height: 100%;
+        height: auto;
+        white-space: normal;
+        text-align: right;
+        padding-top: 4px;
       }
     }
 
-    .ant-form-item-control {
+    .ant-form-item-control-input-content {
       .read-only-display-form-item {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        overflow: visible;
+      }
+
+      .read-only-display-form-item > *:not(.ant-tag):not([data-tag-wrapper="true"]) {
+        overflow: visible;
+        text-overflow: clip;
         white-space: normal !important;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-        word-break: break-all;
-
-        > div {
-          white-space: normal !important;
-          word-wrap: break-word;
-          overflow-wrap: break-word;
-          word-break: break-all;
-          height: auto !important;
-          min-height: 32px;
-
-          > div {
-            white-space: normal !important;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-            word-break: break-all;
-            flex: auto !important;
-          }
-        }
+        word-break: break-word;
+        overflow-wrap: anywhere;
       }
     }
   `;
