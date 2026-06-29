@@ -1,5 +1,5 @@
 import { useFormStateOrUndefined } from '@/providers/form';
-import { useSubForm } from '@/providers/subForm';
+import { useSubFormOrUndefined } from '@/providers/subForm';
 
 const EMPTY_OBJECT = {};
 
@@ -9,7 +9,7 @@ const EMPTY_OBJECT = {};
  */
 export const useFormData = (): { data: object } => {
   const form = useFormStateOrUndefined();
-  const subForm = useSubForm(false);
+  const subForm = useSubFormOrUndefined();
 
   const data = subForm?.value ?? form?.formData ?? EMPTY_OBJECT;
 

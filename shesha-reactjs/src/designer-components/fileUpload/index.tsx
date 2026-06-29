@@ -23,6 +23,8 @@ import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { FileUploadComponentDefinition, IFileUploadProps } from './interfaces';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { getIdOrUndefined } from '@/utils/entity';
+import { getFirstNonEmptyStringPropertyOrUndefined, getStringPropertyOrUndefined } from '@/utils/object';
+import { FileUploadValue } from '@/providers/storedFile/models';
 
 const FileUploadComponent: FileUploadComponentDefinition = {
   type: 'fileUpload',
@@ -35,9 +37,9 @@ const FileUploadComponent: FileUploadComponentDefinition = {
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.file,
   Factory: ({ model }) => {
     const finalStyle = (!model.enableStyleOnReadonly && model.readOnly) ? {
-      ...model.allStyles.fontStyles,
-      ...model.allStyles.dimensionsStyles,
-    } : model.allStyles.fullStyle;
+      ...model.allStyles?.fontStyles,
+      ...model.allStyles?.dimensionsStyles,
+    } : model.allStyles?.fullStyle;
     // TODO: refactor and implement a generic way for values evaluation
     const { formSettings, formMode } = useForm();
     const { data } = useFormData();
@@ -47,7 +49,7 @@ const FileUploadComponent: FileUploadComponentDefinition = {
     const enabled = !model.readOnly;
 
     return (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem<FileUploadValue> model={model}>
         {(value, onChange) => {
           return (
             <FileUploadProvider
@@ -57,7 +59,7 @@ const FileUploadComponent: FileUploadComponentDefinition = {
               ownerType={!isEntityTypeIdEmpty(model.ownerType)
                 ? model.ownerType
                 : !isEntityTypeIdEmpty(formSettings?.modelType)
-                  ? formSettings?.modelType
+                  ? formSettings.modelType
                   : ''}
               propertyName={model.propertyName}
               uploadMode={model.useSync ? 'sync' : 'async'}
@@ -68,8 +70,8 @@ const FileUploadComponent: FileUploadComponentDefinition = {
                 allowUpload={enabled && model.allowUpload}
                 allowDelete={enabled && model.allowDelete}
                 allowReplace={enabled && model.allowReplace}
-                allowedFileTypes={model?.allowedFileTypes}
-                isDragger={model?.isDragger}
+                allowedFileTypes={model.allowedFileTypes}
+                isDragger={model.isDragger}
                 styles={finalStyle}
               />
             </FileUploadProvider>
@@ -101,17 +103,16 @@ const FileUploadComponent: FileUploadComponentDefinition = {
           allowDelete: true,
           allowUpload: true,
           hideFileName: true,
-          ownerId: prev['ownerId'],
-          ownerType: prev['ownerType'],
-          owner: prev['owner'],
-        } as IFileUploadProps;
+          ownerId: getStringPropertyOrUndefined(prev, 'ownerId') ?? "",
+          ownerType: getStringPropertyOrUndefined(prev, 'ownerType') ?? "",
+        };
       })
       .add<IFileUploadProps>(1, (prev, context) => ({
         ...prev,
         useSync: prev.useSync === undefined ? isEntityTypeIdEmpty(context.formSettings?.modelType) : prev.useSync,
       }))
       .add<IFileUploadProps>(2, (prev) => {
-        const pn = prev['name'] ?? prev.propertyName;
+        const pn = getFirstNonEmptyStringPropertyOrUndefined(prev, ['name', 'propertyName']);
         const model = migratePropertyName(migrateCustomFunctions(prev));
         model.propertyName = pn;
         return model;

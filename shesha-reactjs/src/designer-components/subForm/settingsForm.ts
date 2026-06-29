@@ -103,7 +103,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     jsSetting: true,
                   },
                 ],
-                hidden: { _code: 'return getSettingValue(data?.formSelectionMode) !== "dynamic";', _mode: 'code', _value: false } as any,
+                hidden: { _code: 'return getSettingValue(data?.formSelectionMode) !== "dynamic";', _mode: 'code', _value: false },
               })
               .addSettingsInputRow({
                 id: nanoid(),
@@ -117,7 +117,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     jsSetting: true,
                   },
                 ],
-                hidden: { _code: 'return getSettingValue(data?.formSelectionMode) === "dynamic";', _mode: 'code', _value: false } as any,
+                hidden: { _code: 'return getSettingValue(data?.formSelectionMode) === "dynamic";', _mode: 'code', _value: false },
               })
               .addSettingsInput({
                 id: nanoid(),
@@ -148,7 +148,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     jsSetting: true,
                   },
                 ],
-                hidden: { _code: 'return getSettingValue(data?.dataSource) === "form";', _mode: 'code', _value: false } as any,
+                hidden: { _code: 'return getSettingValue(data?.dataSource) === "form";', _mode: 'code', _value: false },
               })
               .addSettingsInputRow({
                 id: nanoid(),
@@ -162,7 +162,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     jsSetting: true,
                   },
                 ],
-                hidden: { _code: 'return getSettingValue(data?.dataSource) === "form" || getSettingValue(data?.apiMode) !== "entityName";', _mode: 'code', _value: false } as any,
+                hidden: { _code: 'return getSettingValue(data?.dataSource) === "form" || getSettingValue(data?.apiMode) !== "entityName";', _mode: 'code', _value: false },
               })
               .addSettingsInputRow({
                 id: nanoid(),
@@ -180,7 +180,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     wrapInTemplate: false,
                   },
                 ],
-                hidden: { _code: 'return !getSettingValue(data?.entityType);', _mode: 'code', _value: false } as any,
+                hidden: { _code: 'return !getSettingValue(data?.entityType);', _mode: 'code', _value: false },
               })
               .addSettingsInputRow({
                 id: nanoid(),
@@ -191,7 +191,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     type: "codeEditor",
                     propertyName: "queryParams",
                     label: "Query Params",
-                    hidden: { _code: 'return getSettingValue(data?.dataSource) === "form";', _mode: 'code', _value: false } as any,
+                    hidden: { _code: 'return getSettingValue(data?.dataSource) === "form";', _mode: 'code', _value: false },
                     tooltip: "The code that returns the query parameters to be used to fetch the data. Ideally this should be a function that returns an object with the entity id",
                     description: "The code that returns the query parameters to be used to fetch the data. Ideally this should be a function that returns an object with the entity id",
                     exposedVariables: [
@@ -225,8 +225,8 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     tooltip: "The API URL that will be used to fetch the data. Write the code that returns the string",
                     mode: "dialog",
                     description: "The API URL that will be used to fetch the data. Write the code that returns the string",
-                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
-                    hidden: { _code: 'return getSettingValue(data?.dataSource) === "form" || getSettingValue(data?.apiMode) === "entityName";', _mode: 'code', _value: false } as any,
+                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
+                    hidden: { _code: 'return getSettingValue(data?.dataSource) === "form" || getSettingValue(data?.apiMode) === "entityName";', _mode: 'code', _value: false },
                     exposedVariables: [
                       {
                         name: 'data',
@@ -258,7 +258,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 inputs: [
                   {
                     id: nanoid(),
-                    hidden: { _code: 'return getSettingValue(data?.dataSource) === "form";', _mode: 'code', _value: false } as any,
+                    hidden: { _code: 'return getSettingValue(data?.dataSource) === "form";', _mode: 'code', _value: false },
                     type: "codeEditor",
                     propertyName: "postUrl",
                     parentId: dataTabId,
@@ -266,7 +266,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     tooltip: "The API URL that will be used to create new data. Write a function that returns this URL as a string.",
                     mode: "dialog",
                     description: "The API URL that will be used to update data. Write the code that returns the string",
-                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                     exposedVariables: [
                       {
                         name: 'data',
@@ -291,7 +291,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   },
                   {
                     id: nanoid(),
-                    hidden: { _code: 'return getSettingValue(data?.dataSource) === "form";', _mode: 'code', _value: false } as any,
+                    hidden: { _code: 'return getSettingValue(data?.dataSource) === "form";', _mode: 'code', _value: false },
                     type: "codeEditor",
                     propertyName: "putUrl",
                     parentId: dataTabId,
@@ -299,7 +299,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     tooltip: "The API URL that will be used to update data. Write the code that returns the string",
                     mode: "dialog",
                     description: "The API URL that will be used to update data. Write the code that returns the string",
-                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                    readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                     exposedVariables: [
                       {
                         name: 'data',
@@ -443,7 +443,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   _mode: "code",
                   _code: "return contexts.canvasContext?.designerDevice || 'desktop';",
                   _value: "",
-                } as any,
+                },
                 components: [
                   ...fbf()
                     .addCollapsiblePanel({

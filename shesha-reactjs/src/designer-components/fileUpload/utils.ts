@@ -1,6 +1,6 @@
-import { IStyleType } from "@/providers/form/models";
+import { IStyleValue } from "@/providers/form/models";
 
-export const defaultStyles = (): IStyleType => {
+export const defaultStyles = (): IStyleValue => {
   return {
     font: {
       type: 'Segoe UI',
@@ -31,8 +31,6 @@ export const defaultStyles = (): IStyleType => {
       position: 'center',
       gradient: { direction: 'to right', colors: {} },
       url: '',
-      storedFile: { id: null },
-      uploadFile: null,
     },
     shadow: {
       offsetX: 0,
@@ -44,7 +42,7 @@ export const defaultStyles = (): IStyleType => {
   };
 };
 
-export const containerDefaultStyles = (): IStyleType => {
+export const containerDefaultStyles = (): IStyleValue => {
   return {
     font: {
       color: '',

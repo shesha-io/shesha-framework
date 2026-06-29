@@ -22,8 +22,7 @@ export const QuickEditToolbar: FC<IQuickEditToolbarProps> = ({ onUpdated, render
   const onSaved = (): void => {
     message.success('Form saved successfully');
 
-    if (onUpdated)
-      onUpdated();
+    onUpdated();
   };
 
   return (

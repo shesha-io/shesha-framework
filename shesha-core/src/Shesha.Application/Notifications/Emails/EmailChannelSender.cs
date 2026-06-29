@@ -139,7 +139,7 @@ namespace Shesha.Notifications
                 IsBodyHtml = true,
             };
 
-            if (string.IsNullOrWhiteSpace(fromAddress))
+            if (string.IsNullOrWhiteSpace(fromAddress) || !smtpSettings.UseSmtpRelay)
             {
                 if (!StringHelper.IsValidEmail(smtpSettings.DefaultFromAddress))
                 {

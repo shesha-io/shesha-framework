@@ -56,3 +56,4 @@ export * from './publicApis';
 export * from './configurableItems';
 export { type ISettingsComponent, type ISettingsComponentGroup } from '@/designer-components/settingsInput/settingsInput';
 export * from './gql';
+export * from './form';

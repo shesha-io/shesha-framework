@@ -1,6 +1,6 @@
-import { IStyleType } from "@/providers/form/models";
+import { IStyleValue } from "@/providers/form/models";
 
-export const defaultStyles = (): IStyleType => {
+export const defaultStyles = (): IStyleValue => {
   return {
     font: { color: '#000', size: 14, weight: '400', type: 'Segoe UI' },
     background: { type: 'color', color: '#fff' },
@@ -29,7 +29,7 @@ export const defaultStyles = (): IStyleType => {
   };
 };
 
-export const defaultColumnStyles = (): IStyleType => {
+export const defaultColumnStyles = (): IStyleValue => {
   return {
     font: { color: '#000', size: 14, weight: '400', type: 'Segoe UI' },
     background: { type: 'color', color: '#00000005' },

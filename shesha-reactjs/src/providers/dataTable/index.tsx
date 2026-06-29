@@ -21,6 +21,7 @@ import {
   useDataTableStore,
   useDataFetchDependency,
 } from './hooks';
+import { isEntityTypeId } from '../metadataDispatcher/entities/utils';
 
 export type DataTableProviderWithUrlData = IDataTableProviderBaseProps & IHasEntityDataSourceConfig;
 
@@ -31,7 +32,7 @@ export interface IHasFormDataSourceConfig {
   propertyName: string;
   getFieldValue: (propertyName: string) => ITableRowData[];
   metadata?: IModelMetadata | undefined;
-  onChange: (...args: unknown[]) => void;
+  onChange: (newValue: ITableRowData[]) => void;
 }
 export interface IUrlDataSourceConfig {
   getDataPath?: string | undefined;
@@ -45,7 +46,7 @@ export interface IHasEntityDataSourceConfig extends IUrlDataSourceConfig {
 const DataTableWithMetadataProvider: FC<PropsWithChildren<IDataTableProviderProps>> = (props) => {
   const modelType = (props as IHasEntityDataSourceConfig).entityType;
 
-  return props.sourceType === 'Entity' && modelType
+  return props.sourceType === 'Entity' && isEntityTypeId(modelType)
     ? <MetadataProvider id={props.userConfigId} modelType={modelType}>{props.children}</MetadataProvider>
     // use metadata provider with empty model to reset metadata (clear property list for column editor)
     : <MetadataProvider id={props.userConfigId} modelType="">{props.children}</MetadataProvider>;

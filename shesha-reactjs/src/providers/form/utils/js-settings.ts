@@ -1,33 +1,32 @@
 import { isPropertySettings } from '@/designer-components/_settings/utils/utils';
-import {
-  IPropertySetting,
-} from '@/interfaces';
-import { isDefined } from '@/utils/nullables';
+import { IPropertySetting } from '@/interfaces';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { unproxyValue } from '@/utils/object';
 import {
   EditMode,
+  UnwrapCodeEvaluators,
 } from '../models';
 import { ObservableProxy } from '../observableProxy';
 import { TouchableProxy } from '../touchableProxy';
 import { executeScriptSync } from './scripts';
+import { IDisabledAndReadOnly } from '@/components/formDesigner/formComponent/formComponentApi';
 
 const getSettingValue = <TValue = unknown>(
   propertyName: string,
   value: TValue,
   allData: object,
   calcFunction: (setting: IPropertySetting, allData: object) => TValue | undefined,
-  parentReadOnly?: boolean | undefined,
+  parentDisabledAndReadOnly?: IDisabledAndReadOnly | undefined,
   propertyFilter?: ((name: string, value: unknown) => boolean) | undefined,
   processedObjects?: unknown[] | null,
-): TValue => {
+  processModel?: ((model: unknown) => void) | undefined,
+): UnwrapCodeEvaluators<TValue> | TValue | undefined => {
   const processed = isDefined(processedObjects) ? processedObjects : [];
 
   const unproxiedValue = unproxyValue(value);
 
-  let result: TValue = value;
-
-  if (!unproxiedValue || (typeof propertyFilter === 'function' && !propertyFilter(propertyName, value)))
-    result = value;
+  if (!isDefined(unproxiedValue) || (typeof propertyFilter === 'function' && !propertyFilter(propertyName, value)))
+    return value;
   else if (typeof unproxiedValue === 'object' &&
     processed.indexOf(unproxiedValue) === -1 // skip already processed objects to avoid infinite loop
   ) {
@@ -36,32 +35,30 @@ const getSettingValue = <TValue = unknown>(
       const v = unproxiedValue.length === 0
         ? unproxiedValue
         : unproxiedValue.map((x) => {
-          // TODO: review and enable rule
-          return getActualModel(x, allData, parentReadOnly, propertyFilter, processed);
+          return getActualModel(x, allData, parentDisabledAndReadOnly, propertyFilter, processed, processModel);
         });
       processed.push(v);
-      result = v as TValue;
+      return v as UnwrapCodeEvaluators<TValue>;
     } else
       // update setting value to actual but only if not lazy
-      if (isPropertySettings(unproxiedValue) && unproxiedValue._lazy !== true) {
+      if (isPropertySettings<TValue>(unproxiedValue) && unproxiedValue._lazy !== true) {
         const v = unproxiedValue._mode === 'code'
-          ? Boolean(unproxiedValue._code) ? calcFunction(unproxiedValue, allData) : undefined
+          ? !isNullOrWhiteSpace(unproxiedValue._code) ? calcFunction(unproxiedValue, allData) : undefined
           : unproxiedValue._value;
         const upv = unproxyValue(v);
         processed.push(upv);
-        result = upv as TValue;
+        return upv;
       } else {
         // update nested objects
 
         // TODO: review and enable rule
 
-        const v = getActualModel(unproxiedValue, allData, parentReadOnly, propertyFilter, processed);
+        const v = getActualModel(unproxiedValue, allData, parentDisabledAndReadOnly, propertyFilter, processed, processModel);
         processed.push(v);
-        result = v;
+        return v as UnwrapCodeEvaluators<TValue>;
       }
   }
-
-  return result;
+  return value;
 };
 
 const getValue = <TValue>(val: TValue, allData: object, calcValue: (setting: IPropertySetting, allData: object) => unknown): unknown => {
@@ -85,7 +82,7 @@ const calcValue = <TValue>(setting: IPropertySetting, allData: object): TValue |
       casted.staticValue = setting._value;
       casted.getSettingValue = getSettingValueInScript;
     }
-    return setting._code
+    return !isNullOrWhiteSpace(setting._code)
       ? executeScriptSync(setting._code, allData)
       : undefined;
   } catch (error) {
@@ -94,7 +91,7 @@ const calcValue = <TValue>(setting: IPropertySetting, allData: object): TValue |
   }
 };
 
-const getReadOnlyBool = (editMode: EditMode | undefined, parentReadOnly: boolean): boolean => {
+export const getReadOnlyBool = (editMode: EditMode | undefined, parentReadOnly: boolean): boolean => {
   return (
     editMode === false || // check exact condition
     editMode === 'readOnly' ||
@@ -106,8 +103,9 @@ const getReadOnlyBool = (editMode: EditMode | undefined, parentReadOnly: boolean
 type HasEditMode = {
   editMode: EditMode | undefined;
   readOnly: boolean | undefined;
+  disabled: boolean | undefined;
 };
-const isHasEditMode = (value: object): value is HasEditMode => 'editMode' in value && (typeof value.editMode === 'string' || value.editMode === undefined || typeof (value.editMode) === 'boolean');
+export const isHasEditMode = (value: object): value is HasEditMode => 'editMode' in value && (typeof value.editMode === 'string' || value.editMode === undefined || typeof (value.editMode) === 'boolean');
 
 /**
  * Convert model to values calculated from JS code if provided (for each fields)
@@ -119,14 +117,15 @@ const isHasEditMode = (value: object): value is HasEditMode => 'editMode' in val
 export const getActualModel = <T extends object = object>(
   model: T,
   allData: object,
-  parentReadOnly?: boolean | undefined,
+  parentDisabledAndReadOnly?: IDisabledAndReadOnly | undefined,
   propertyFilter?: ((name: string, value: unknown) => boolean) | undefined,
   processedObjects?: unknown[] | undefined,
-): T => {
+  processModel?: ((model: unknown) => void) | undefined,
+): UnwrapCodeEvaluators<T> => {
   const processed = isDefined(processedObjects) ? processedObjects : [];
 
   if (Array.isArray(model)) {
-    return getSettingValue('', model, allData, calcValue, parentReadOnly, propertyFilter, processed) as T;
+    return getSettingValue('', model, allData, calcValue, parentDisabledAndReadOnly, propertyFilter, processed, processModel) as UnwrapCodeEvaluators<T>;
   }
 
   if (!isDefined(model) || typeof model !== 'object')
@@ -136,19 +135,12 @@ export const getActualModel = <T extends object = object>(
   for (const propName in model) {
     if (!model.hasOwnProperty(propName)) continue;
     const value = model[propName];
-    m[propName] = getSettingValue<typeof value>(propName, value, allData, calcValue, parentReadOnly, propertyFilter, processed);
+    m[propName] = getSettingValue<typeof value>(propName, value, allData, calcValue, parentDisabledAndReadOnly, propertyFilter, processed, processModel) as typeof value;
   }
 
-  const readOnly = typeof parentReadOnly === 'undefined'
-    ? "formMode" in allData ? allData.formMode === 'readonly' : undefined // TODO: review type of allData and update condition
-    : parentReadOnly;
+  processModel?.(m);
 
-  // TODO: Alex, please review, looks like it's specific case but included to the generic function.
-  // update ReadOnly if exists
-  if (isHasEditMode(m) && readOnly !== undefined)
-    m.readOnly = getReadOnlyBool(m.editMode, readOnly);
-
-  return m;
+  return m as UnwrapCodeEvaluators<T>;
 };
 
 // TODO: Alex, please review this. Purpose of the function is not clear from its name. Most probably there should be a function for calculation of a single property

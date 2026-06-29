@@ -9,7 +9,7 @@ export const ConfigurableActionConfiguratorWrapper: FCUnwrapped<IConfigurableAct
     <ConfigurableActionConfigurator
       value={value}
       onChange={onChange}
-      editorConfig={null}
+      editorConfig={undefined}
       level={0}
       label={label}
       allowedActions={allowedActions}

@@ -16,23 +16,24 @@ import { Show } from '@/components/show';
 import { useSourcesFolderOrUndefined } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { useStyles } from './styles';
 import classNames from 'classnames';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 export const CodeEditor: FC<ICodeEditorProps> = ({
   mode = 'inline',
-  value,
+  value = null,
   readOnly = false,
   language = 'typescript',
   environment,
   ...props
 }) => {
-  const [internalValue, setInternalValue] = useState<string>(value); // stores value for the `dialog` mode
+  const [internalValue, setInternalValue] = useState<string | null>(value); // stores value for the `dialog` mode
   const [showDialog, setShowDialog] = useState(false);
   const { modal } = App.useApp();
 
   const src = useSourcesFolderOrUndefined();
   const { styles } = useStyles();
 
-  const onChange = (_value): void => {
+  const onChange = (_value: string | null): void => {
     switch (mode) {
       case 'inline': {
         if (props.onChange) props.onChange(_value);
@@ -45,7 +46,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
     }
   };
 
-  const hasValue = value && typeof (value) === 'string' && Boolean(value?.trim());
+  const hasValue = !isNullOrWhiteSpace(value);
 
   const onClear = (): void => {
     if (hasValue) {
@@ -161,8 +162,8 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
               ),
             ]}
           >
-            <Show when={Boolean(props?.description)}>
-              <Alert title={props?.description} />
+            <Show when={Boolean(props.description)}>
+              <Alert title={props.description} />
               <br />
             </Show>
 

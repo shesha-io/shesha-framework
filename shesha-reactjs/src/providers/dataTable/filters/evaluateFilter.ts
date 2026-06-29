@@ -5,16 +5,17 @@ import { NestedPropertyMetadatAccessor } from "@/providers/metadataDispatcher/co
 import { evaluateDynamicFilters } from '@/utils/datatable';
 import { FilterExpression, IStoredFilter } from "../interfaces";
 import { useRef } from "react";
-import { TouchableProxy, makeTouchableProxy } from "@/providers/form/touchableProxy";
+import { useTouchableProxy } from "@/hooks/formComponentHooks";
+import { isDefined } from "@/utils/nullables";
 
 interface IMatchDataWithPreparation extends IMatchData {
   prepare?: (data: unknown) => unknown;
 }
 
 export interface UseEvaluatedFilterArgs {
-  filter?: FilterExpression;
+  filter?: FilterExpression | undefined;
   mappings: IMatchDataWithPreparation[];
-  metadataAccessor?: NestedPropertyMetadatAccessor;
+  metadataAccessor?: NestedPropertyMetadatAccessor | undefined;
 };
 
 export interface UseFormEvaluatedFilterArgs {
@@ -25,26 +26,17 @@ export const useFormEvaluatedFilter = (args: UseFormEvaluatedFilterArgs, additio
   const fullContext = useAvailableConstantsContexts();
   const accessors = wrapConstantsData({ fullContext });
 
-  const contextProxyRef = useRef<TouchableProxy<IApplicationContext>>();
-  if (!contextProxyRef.current) {
-    contextProxyRef.current = makeTouchableProxy<IApplicationContext>(accessors);
-  } else {
-    contextProxyRef.current.refreshAccessors(accessors);
-  }
-  if (additionalData)
-    contextProxyRef.current.setAdditionalData(additionalData);
-
-  contextProxyRef.current.checkChanged();
+  const contextProxyRef = useTouchableProxy<IApplicationContext>(accessors, additionalData);
 
   const prevChanged = useRef<number>(0);
-  if (contextProxyRef.current.changed)
+  if (contextProxyRef.changed)
     prevChanged.current = Date.now();
 
-  var keys = Object.keys({ ...contextProxyRef.current }) as Array<keyof typeof contextProxyRef.current>;
-  var mappings = keys.map<IMatchData>((key) => ({ match: key, data: contextProxyRef.current?.[key] }));
+  var keys = Object.keys({ ...contextProxyRef }) as Array<keyof typeof contextProxyRef>;
+  var mappings = keys.map<IMatchData>((key) => ({ match: key, data: contextProxyRef[key] }));
 
   const evaluatedFilters = useAsyncMemo(async () => {
-    if (!args.filter) return '';
+    if (!isDefined(args.filter)) return '';
 
     const response = await evaluateDynamicFilters(
       [{ expression: args.filter } as IStoredFilter],

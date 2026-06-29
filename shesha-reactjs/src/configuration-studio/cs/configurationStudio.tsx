@@ -7,7 +7,7 @@ import { ConfigurationItemsExportFooter } from "@/providers/sheshaApplication/co
 import { ConfigurationItemsImportFooter } from "@/providers/sheshaApplication/configurable-actions/configuration-items-import";
 import { buildUrl } from "@/utils/url";
 import { HomeOutlined, SettingOutlined } from "@ant-design/icons";
-import React, { MutableRefObject, ReactNode } from "react";
+import React, { RefObject, ReactNode } from "react";
 import { isDefined, isNullOrWhiteSpace } from "../../utils/nullables";
 import { deleteConfigurationItemAsync, deleteFolderAsync, duplicateItemAsync, fetchFlatTreeAsync, fetchItemTypesAsync, getRevisionJsonAsync, MoveNodePayload, moveTreeNodeAsync, restoreItemRevisionAsync } from "../apis";
 import { confirmSaveDocumentAsync } from "../components/save-confirmation";
@@ -33,7 +33,7 @@ import { flatNode2TreeNode, getIcon } from "../tree-utils";
 import { CreateFolderArgs, CreateItemArgs, CsSubscriptionType, ExportPackageArgs, ExposeArgs, GetRevisionJsonAsyncArgs, IConfigurationStudio, ImportPackageArgs, ProcessingState, RenameRevisionArgs, RestoreRevisionArgs } from "./interfaces";
 import { IModalApi } from "./modalApi";
 import { INotificationApi } from "./notificationApi";
-import { createManualRef } from "./utils";
+import { MutableApi } from "./utils";
 import { IConfigurationStudioEnvironment } from "../cs-environment/interfaces";
 
 export const SPECIAL_NODES: { HOME: SpecialTreeNode; SETTINGS: SpecialTreeNode } = {
@@ -105,7 +105,7 @@ interface ConfigurationStudioArguments {
   storage: IAsyncStorage;
   modalApi: IModalApi;
   notificationApi: INotificationApi;
-  toolbarRef: MutableRefObject<HTMLDivElement>;
+  toolbarRef: RefObject<HTMLDivElement>;
   shaRouter: IShaRouter;
   logEnabled?: boolean;
 }
@@ -131,7 +131,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
   readonly renderedDocs: Map<string, ReactNode>;
 
-  toolbarRef: MutableRefObject<HTMLDivElement>;
+  toolbarRef: RefObject<HTMLDivElement>;
 
   findDoc = (itemId?: string): IDocumentInstance | undefined => {
     return isDefined(itemId)
@@ -1013,7 +1013,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
   };
 
   importPackageAsync = async (_args: ImportPackageArgs): Promise<void> => {
-    const importerRef = createManualRef<IImportInterface | undefined>(undefined);
+    const importerApi = new MutableApi<IImportInterface>();
 
     const responseData = await this.modalApi.showModalContentAsync<{ response: boolean }>(({ resolve, removeModal }) => {
       const hideModal = (): void => {
@@ -1027,8 +1027,8 @@ export class ConfigurationStudio implements IConfigurationStudio {
       };
       return {
         title: 'Import Configuration',
-        content: <ConfigurationItemsImport onImported={onImported} importRef={importerRef} />,
-        footer: <ConfigurationItemsImportFooter hideModal={hideModal} importerRef={importerRef} />,
+        content: <ConfigurationItemsImport onImported={onImported} setImporterApi={(api) => importerApi.setApi(api)} />,
+        footer: <ConfigurationItemsImportFooter hideModal={hideModal} importerApi={importerApi} />,
       };
     });
 
@@ -1037,7 +1037,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
   };
 
   exportPackageAsync = async (_args: ExportPackageArgs): Promise<void> => {
-    const exporterRef = createManualRef<IExportInterface | undefined>(undefined);
+    const exporterApi = new MutableApi<IExportInterface>();
 
     const responseData = await this.modalApi.showModalContentAsync<{ response: boolean }>(({ resolve, removeModal }) => {
       const hideModal = (): void => {
@@ -1051,8 +1051,13 @@ export class ConfigurationStudio implements IConfigurationStudio {
       };
       return {
         title: 'Export Configuration',
-        content: (<ConfigurationItemsExport exportRef={exporterRef} onExported={onExported} />),
-        footer: (<ConfigurationItemsExportFooter hideModal={hideModal} exporterRef={exporterRef} />),
+        content: (
+          <ConfigurationItemsExport
+            setExporterApi={(api) => exporterApi.setApi(api)}
+            onExported={onExported}
+          />
+        ),
+        footer: (<ConfigurationItemsExportFooter hideModal={hideModal} exporterApi={exporterApi} />),
       };
     });
 

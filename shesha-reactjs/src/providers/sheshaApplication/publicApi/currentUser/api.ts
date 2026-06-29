@@ -59,11 +59,11 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
   }
 
   get firstName(): string | undefined {
-    return this.#profileInfo?.firstName;
+    return this.#profileInfo?.firstName ?? undefined;
   }
 
   get lastName(): string | undefined {
-    return this.#profileInfo?.lastName;
+    return this.#profileInfo?.lastName ?? undefined;
   }
 
   get personId(): string | undefined {

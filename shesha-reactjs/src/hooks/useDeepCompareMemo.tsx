@@ -15,7 +15,7 @@ export function useDeepCompareMemo<T>(callback: () => T, dependencies: Dependenc
  * @returns
  */
 export function useDeepCompareMemoKeepReference<T>(callback: () => T, dependencies: DependencyList): T {
-  const ref = useRef<T>();
+  const ref = useRef<T>(undefined);
 
   // note: we can't use existing `useDeepCompareMemoize` hook inside `useMemo` because React doesn't allow to use any hooks inside standard hooks
   return useMemo<T>(() => {

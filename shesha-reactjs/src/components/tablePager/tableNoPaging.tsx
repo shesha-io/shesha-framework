@@ -4,7 +4,7 @@ import { useMedia } from 'react-use';
 export interface ITablePagerBaseProps {
   /** Total number of rows to display on the table */
   totalRows: number;
-  style?: CSSProperties;
+  style?: CSSProperties | undefined;
 }
 
 export const TableNoPaging: FC<ITablePagerBaseProps> = ({

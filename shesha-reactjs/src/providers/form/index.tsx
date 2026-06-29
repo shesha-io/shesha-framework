@@ -1,5 +1,5 @@
 import { FormInstance } from 'antd';
-import React, { useCallback, MutableRefObject, PropsWithChildren, useContext, useMemo, ReactElement, useEffect } from 'react';
+import React, { useCallback, RefObject, PropsWithChildren, useContext, useMemo, ReactElement, useEffect } from 'react';
 import {
   IConfigurableFormComponent,
 } from '@/interfaces';
@@ -37,13 +37,13 @@ const ShaForm: ShaFormCompoundedComponent = {
 };
 
 export interface IFormProviderProps<TValues extends object = object> {
-  name: string;
+  name?: string | undefined;
   formSettings: IFormSettings;
   mode: FormMode;
   form?: FormInstance<TValues> | undefined;
   actions?: IFormActions | undefined;
   sections?: IFormSections | undefined;
-  formRef?: MutableRefObject<IFormActionsContext<TValues> | undefined> | undefined;
+  formRef?: RefObject<IFormActionsContext<TValues> | undefined> | undefined;
   /**
    * If true, form should register configurable actions. Should be enabled for main forms only
    */
@@ -73,7 +73,7 @@ const FormProvider = <TValues extends object = object>({
     props.shaForm.setFormMode(formMode);
   }, [props.shaForm]);
 
-  useShaFormActions({ isActionsOwner, name, shaForm: props.shaForm });
+  useShaFormActions({ isActionsOwner, name: name ?? "", shaForm: props.shaForm });
 
   const setFormData = useCallback((payload: ISetFormDataPayload<TValues>) => {
     props.shaForm.setFormData(payload);

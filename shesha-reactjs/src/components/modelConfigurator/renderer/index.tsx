@@ -11,8 +11,8 @@ import { ViewsEditorComponent } from '../viewsEditor';
 import { useStyles } from '../styles/styles';
 import { cloneDeep, filter, isEqual, keys, union } from 'lodash';
 import { isDefined } from '@/utils/nullables';
-import { IPropertyErrors } from '@/providers/modelConfigurator/contexts';
 import { ModelConfigurationDto } from '@/apis/modelConfigurations';
+import { isNonEmptyArray } from '@/utils/array';
 
 const markup = modelSettingsMarkup as FormMarkup;
 
@@ -29,20 +29,21 @@ export const ModelConfiguratorRenderer: FC = () => {
       <>
         <div>Please check the following errors:</div>
         <ul>
-          {errors?.map((e: IPropertyErrors | string, i1) => {
-            if (typeof e === 'string') return <li key={i1}>{e}</li>;
-            return (
-              <>
-                <li key={i1}>{e.propertyName}</li>
-                {
-                  e.errors && e.errors.length > 0 && (
-                    <ul>
-                      {e.errors.map((error, i2) => <li key={i2}>{error}</li>)}
-                    </ul>
-                  )
-                }
-              </>
-            );
+          {errors?.map((e, i1) => {
+            return typeof e === 'string'
+              ? <li key={i1}>{e}</li>
+              : (
+                <>
+                  <li key={i1}>{e.propertyName}</li>
+                  {
+                    isNonEmptyArray(e.errors) && (
+                      <ul>
+                        {e.errors.map((error, i2) => <li key={i2}>{error}</li>)}
+                      </ul>
+                    )
+                  }
+                </>
+              );
           })}
         </ul>
       </>
@@ -56,21 +57,27 @@ export const ModelConfiguratorRenderer: FC = () => {
   };
 
   // get list of changed keys
-  const changedKeys = (o1, o2, name?: string): string[] => {
+  const changedKeys = (o1: object, o2: object, name?: string): string[] => {
+    // const o1 = left as Record<string, unknown>;
+    // const o2 = right as IAnyObject;
+
     // Get all keys
     const allKeys = union(keys(o1), keys(o2));
     // Get keys that are not equal
     const filtered = filter(allKeys, function (key) {
       return (isDefined(o1) && !isDefined(o2)) ||
         (!isDefined(o1) && isDefined(o2)) ||
-        (isDefined(o1) && isDefined(o2) && !isEqual(o1[key], o2[key]));
+        (isDefined(o1) && isDefined(o2) && !isEqual(o1[key as keyof typeof o1], o2[key as keyof typeof o2]));
     });
 
     let newChanged: string[] = [];
     // Return only latest keys
     for (const key of filtered) {
-      if (isDefined(o1) && isDefined(o2) && ((typeof o1[key] === 'object' && o1[key] !== null) || (typeof o2[key] === 'object' && o2[key] !== null)))
-        newChanged = newChanged.concat(changedKeys(o1[key], o2[key], name ? name + '.' + key : key));
+      const o1Prop = o1[key as keyof typeof o1];
+      const o2Prop = o2[key as keyof typeof o2];
+
+      if (typeof o1Prop === 'object' && isDefined(o1Prop) && typeof o2Prop === 'object' && isDefined(o2Prop))
+        newChanged = newChanged.concat(changedKeys(o1Prop, o2Prop, name ? name + '.' + key : key));
       // Exclude some framework keys
       else if (['chosen', 'selected', 'dependency'].indexOf(key) === -1)
         newChanged.push(name ? name + '.' + key : key);
@@ -79,7 +86,7 @@ export const ModelConfiguratorRenderer: FC = () => {
   };
 
   const onValuesChange = (_changedValues: unknown, values: ModelConfigurationDto): void => {
-    const keys = changedKeys(modelConfiguration, values);
+    const keys = changedKeys(modelConfiguration ?? {}, values);
     // Modified if there are changed keys
     const modified = keys.length > 0;
     setModified(modified);
@@ -92,7 +99,7 @@ export const ModelConfiguratorRenderer: FC = () => {
   return (
     <div className={styles.shaModelConfigurator}>
       <CustomErrorBoundary>
-        {showErrors && errors?.length > 0 && <Alert type="error" title={errorsText} showIcon />}
+        {showErrors && isNonEmptyArray(errors) && <Alert type="error" title={errorsText} showIcon />}
         <ConfigurableForm
           className={styles.shaModelConfiguratorForm}
           layout="horizontal"

@@ -27,17 +27,17 @@ const CodeEditorComponent: CodeEditorComponentDefinition = {
     dataType === DataTypes.string && (dataFormat === StringFormats.javascript || dataFormat === StringFormats.json),
   Factory: ({ model }) => {
     const editorProps: ICodeEditorProps = {
-      ...model as any,
+      ...model,
     };
     const constantsEvaluator = useConstantsEvaluator({ availableConstantsExpression: model.availableConstantsExpression });
 
     const resultType = useResultTypeEvaluator({ resultTypeExpression: model.resultTypeExpression });
 
     return (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem<string> model={model}>
         {(value, onChange) => {
           const props: ICodeEditorProps = {
-            value: value,
+            value: value ?? undefined,
             onChange: onChange,
             language: "typescript",
             ...editorProps,

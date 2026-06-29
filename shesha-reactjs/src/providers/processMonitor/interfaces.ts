@@ -9,11 +9,13 @@ export type ProcessMonitorSubscriptionCallback = () => void;
 export interface IProcessMonitor {
   readonly status: ProcessStatus;
   readonly events: ILogEvent[];
+  readonly processId: string;
   startAsync: () => Promise<void>;
   stopAsync: () => Promise<void>;
   downloadLogAsync: () => Promise<void>;
   subscribe(type: ProcessMonitorSubscriptionType, callback: ProcessMonitorSubscriptionCallback): () => void;
   clearLog: () => void;
+  changeProcessId: (processId: string) => Promise<void>;
 }
 
 export interface EventLogItemDto {

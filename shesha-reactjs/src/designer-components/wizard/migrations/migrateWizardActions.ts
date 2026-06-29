@@ -1,8 +1,9 @@
 import { migrateNavigateAction } from "@/designer-components/_common-migrations/migrate-navigate-action";
 import { IWizardComponentProps } from "../models";
+import { isDefined } from "@/utils/nullables";
 
 export const migrateWizardActions = (props: IWizardComponentProps): IWizardComponentProps => {
-  const steps = (props.steps ?? []).map((step) => {
+  const steps = (isDefined(props.steps) ? props.steps : []).map((step) => {
     return {
       ...step,
       cancelButtonActionConfiguration: migrateNavigateAction(step.cancelButtonActionConfiguration),

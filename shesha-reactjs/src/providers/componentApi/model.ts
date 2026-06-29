@@ -20,14 +20,13 @@ export interface IComponentApiDescription<T extends object = Record<string, unkn
   componentName: string;
   level: number;
   isInput?: boolean;
-  rawComponentModel?: IConfigurableFormComponent | undefined;
   componentModel?: IConfigurableFormComponent | undefined;
   metadata?: IApiMetadata | undefined;
   typeDefinition?: TypeDefinition | undefined;
   skipUpdateTypeDefinitionIfExists?: boolean | undefined;
   api?: Partial<T> | undefined;
   propertiesLevel?: Record<string, number> | undefined;
-  properties?: ComponentApiProperty<T>[];
+  properties?: ComponentApiProperty<T>[] | undefined;
 }
 
 export interface IComponentApi {
@@ -44,7 +43,7 @@ export interface IComponentApi {
 
 export type useComponentApiFunc = () => IComponentApi | undefined;
 
-export interface IComponentApiInputRef<T> {
-  value: T;
-  onChange: (...args: unknown[]) => void;
+export interface IComponentApiInputRef<TValue> {
+  value: TValue | undefined | null;
+  onChange: (newValue: TValue | undefined | null) => void;
 }

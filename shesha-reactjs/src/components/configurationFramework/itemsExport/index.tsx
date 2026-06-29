@@ -1,7 +1,7 @@
 import FileSaver from 'file-saver';
-import React, { MutableRefObject, useMemo, useState, FC } from 'react';
-
+import React, { useMemo, useState, FC, Key } from 'react';
 import {
+  App,
   Button,
   Card,
   Empty,
@@ -11,6 +11,7 @@ import {
   Spin,
   Switch,
   Tree,
+  TreeProps,
 } from 'antd';
 import { getFileNameFromResponse } from '@/utils/fetchers';
 import { useHttpClient } from '@/providers';
@@ -20,24 +21,26 @@ import { useTreeForExport } from '@/configuration-studio/apis';
 import { isConfigItemTreeNode, isNodeWithChildren, TreeNode } from '@/configuration-studio/models';
 import { DownOutlined } from '@ant-design/icons';
 import { getTitleWithHighlight } from '@/configuration-studio/filter-utils';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 export interface IExportInterface {
-  exportExecuter: () => Promise<any>;
-  canExport: boolean;
+  exportExecuter: () => Promise<void>;
+  canExport: () => boolean;
   exportInProgress: boolean;
 }
 
 export interface IConfigurationItemsExportProps {
   onExported?: () => void;
-  exportRef: MutableRefObject<IExportInterface | undefined>;
+  setExporterApi: (ref: IExportInterface) => void;
 }
 
 export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (props) => {
   const [filterState, setFilterState] = useState<FilterState>(EMPTY_FILTER);
   const [exportDependencies, setExportDependencies] = useState<boolean>(true);
   const httpClient = useHttpClient();
+  const { message } = App.useApp();
 
-  const [checkedIds, setCheckedIds] = useState<string[]>([]);
+  const [checkedIds, setCheckedIds] = useState<Key[]>([]);
   const [exportInProgress, setExportInProgress] = useState(false);
   const { data: treeData, error, isLoading, mutate: refreshTree } = useTreeForExport();
 
@@ -56,9 +59,9 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
             (mode === 'updated' && node.flags.isUpdated) ||
             (mode === 'updated-by-me' && node.flags.isUpdatedByMe);
           if (filterPassed) {
-            if (quickSearch) {
+            if (!isNullOrWhiteSpace(quickSearch)) {
               const newTitle = getTitleWithHighlight(node, quickSearch);
-              if (newTitle)
+              if (isDefined(newTitle))
                 result.push({ ...node, title: newTitle });
             } else
               result.push(node);
@@ -86,7 +89,6 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
     const filter = getExportFilter();
     const exportUrl = `/api/services/app/ConfigurationStudio/ExportPackage`;
 
-
     setExportInProgress(true);
     return httpClient.post<BlobPart>(exportUrl, {
       filter: JSON.stringify(filter),
@@ -96,27 +98,35 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
         const fileName = getFileNameFromResponse(response) ?? 'package.zip';
         FileSaver(new Blob([response.data]), fileName, { autoBom: false });
         setExportInProgress(false);
-        if (Boolean(props.onExported)) props.onExported();
+        if (isDefined(props.onExported))
+          props.onExported();
       })
       .catch((e) => {
-        setExportInProgress(false);
         throw e;
-      });
+      })
+      .finally(() => setExportInProgress(false));
   };
 
-  if (props.exportRef)
-    props.exportRef.current = {
-      exportExecuter: exportExecuter,
-      canExport: checkedIds.length === 0,
-      exportInProgress: exportInProgress,
-    };
+  props.setExporterApi({
+    exportExecuter: exportExecuter,
+    canExport: () => {
+      if (checkedIds.length === 0) {
+        message.info("Please select items to export");
+        return false;
+      }
+
+      return true;
+    },
+    exportInProgress: exportInProgress,
+  });
 
   const onRefreshClick = (): void => {
     void refreshTree();
   };
 
-  const onCheck = (checkedIds: string[]): void => {
-    setCheckedIds(checkedIds);
+  const onCheck: TreeProps["onCheck"] = (checkedIds): void => {
+    if (Array.isArray(checkedIds))
+      setCheckedIds(checkedIds);
   };
 
   return (

@@ -10,11 +10,11 @@ export type SubscriptionsManager = {
 export const useDisposableSubscriptions = (): SubscriptionsManager => {
   const subscriptions = useRef<IDisposable[]>([]);
   const addSubscription = (subscription: IDisposable): void => {
-    subscriptions.current?.push(subscription);
+    subscriptions.current.push(subscription);
   };
 
   const clearSubscriptions = (): void => {
-    subscriptions.current?.forEach((s) => s.dispose());
+    subscriptions.current.forEach((s) => s.dispose());
     subscriptions.current = [];
   };
 

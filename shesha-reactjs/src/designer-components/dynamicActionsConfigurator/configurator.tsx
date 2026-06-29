@@ -7,19 +7,21 @@ import { ProviderSettingsEditor } from './providerSettingsEditor';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export interface IDynamicActionsConfiguratorProps {
-  value?: IDynamicActionsConfiguration;
-  onChange?: (newValue: IDynamicActionsConfiguration) => void;
-  readOnly?: boolean;
-  size?: SizeType;
+  value?: IDynamicActionsConfiguration | undefined;
+  onChange?: ((newValue: IDynamicActionsConfiguration) => void) | undefined;
+  readOnly?: boolean | undefined;
+  size?: SizeType | undefined;
 }
 
+const EMPTY_VALUE: IDynamicActionsConfiguration = {};
+
 export const DynamicActionsConfigurator: FC<IDynamicActionsConfiguratorProps> = ({ value, onChange, readOnly, size }) => {
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<IDynamicActionsConfiguration>();
   const { formSettings } = useForm();
 
   const { getProvider } = useDynamicActionsDispatcher();
 
-  const onValuesChange = (_value, values: IDynamicActionsConfiguration): void => {
+  const onValuesChange = (_changedValues: Partial<IDynamicActionsConfiguration>, values: IDynamicActionsConfiguration): void => {
     if (onChange) {
       onChange(values);
     }
@@ -38,9 +40,9 @@ export const DynamicActionsConfigurator: FC<IDynamicActionsConfiguratorProps> = 
       form={form}
       labelCol={{ span: 24 }}
       wrapperCol={{ span: 24 }}
-      colon={formSettings.colon}
+      colon={formSettings?.colon ?? false}
       onValuesChange={onValuesChange}
-      initialValues={value}
+      initialValues={value ?? EMPTY_VALUE}
       size={size}
     >
       <Form.Item name="providerUid" label="">

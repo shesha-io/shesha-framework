@@ -13,6 +13,7 @@ namespace Shesha.ConfigurationItems
     /// <summary>
     /// Common Configuration Item application service
     /// </summary>
+    [Authorization.SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.RequiresPermissions, "app:Configurator")]
     public class ConfigurationItemAppService: SheshaAppServiceBase
     {
         private readonly IConfigurationItemClientSideCache _clientSideCache;

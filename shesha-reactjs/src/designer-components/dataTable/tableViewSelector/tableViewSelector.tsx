@@ -34,7 +34,6 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
 
   const { styles } = useStyles();
 
-  // ToDo: AS - need to optimize
   useShaFormDataUpdate();
 
   const application = useSheshaApplication();
@@ -78,11 +77,11 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
 
   useDeepCompareEffect(() => {
     debounceEvaluateDynamicFiltersHelper();
-  }, [filters, formData, globalState, dataContextManager.lastUpdate]);
+  }, [filters, formData, globalState, dataContextManager?.lastUpdate]);
 
   //#endregion
 
-  const changeSelectedFilter = (id: string): void => {
+  const changeSelectedFilter = (id: string | undefined): void => {
     changeSelectedStoredFilterIds(id ? [id] : []);
   };
 
@@ -110,7 +109,7 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
       hidden={hidden && !isDesignerMode}
       filters={predefinedFilters || []}
       onSelectFilter={changeSelectedFilter}
-      selectedFilterId={selectedFilterId}
+      selectedFilterId={selectedFilterId ?? undefined}
       showIcon={showIcon}
     />
   );

@@ -7,6 +7,7 @@ import {
   isButtonItem,
 } from '@/providers/buttonGroupConfigurator/models';
 import { IFullAuditedEntity } from '@/publicJsApis/apis/entities';
+import { isDefined } from '@/utils/nullables';
 import { ItemType } from 'antd/es/menu/interface';
 import React, { Fragment } from 'react';
 
@@ -56,7 +57,7 @@ export const getMenuItem = (
         </Fragment>
       ),
       children: childItems ? getMenuItem(childItems, execute, visibilityChecker) : undefined,
-      onClick: () => isButtonItem(item) ? execute(item.actionConfiguration, dynamicItem) : undefined,
+      onClick: () => isButtonItem(item) && isDefined(item.actionConfiguration) ? execute(item.actionConfiguration, dynamicItem) : undefined,
     };
   });
 };

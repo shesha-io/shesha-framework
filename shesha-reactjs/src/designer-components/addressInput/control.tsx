@@ -8,17 +8,17 @@ import { unsafeGetValueByPropertyName, setValueByPropertyName } from '@/utils/ob
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface IAddressInputControlProps {
-  value?: unknown;
-  onChange?: (value: string) => void;
-  placeholder?: string;
-  readOnly?: boolean;
-  googleMapsApiKey?: string;
-  enableMapInterface?: boolean;
-  latitudePropertyName?: string;
-  longitudePropertyName?: string;
-  defaultZoom?: number;
-  mapHeight?: number;
-  mapWidth?: number;
+  value?: unknown | undefined;
+  onChange?: ((value: string) => void) | undefined;
+  placeholder?: string | undefined;
+  readOnly?: boolean | undefined;
+  googleMapsApiKey?: string | undefined;
+  enableMapInterface?: boolean | undefined;
+  latitudePropertyName?: string | undefined;
+  longitudePropertyName?: string | undefined;
+  defaultZoom?: number | undefined;
+  mapHeight?: number | undefined;
+  mapWidth?: number | undefined;
 }
 
 // ─── Google Maps type contracts ───────────────────────────────────────────────
@@ -95,10 +95,10 @@ interface IGoogleMapsApi {
 function getGoogleMaps(): IGoogleMapsApi | null {
   if (typeof window === 'undefined') return null;
   const win = window as unknown as Record<string, unknown>;
-  if (typeof win.google !== 'object' || win.google === null) return null;
-  const google = win.google as Record<string, unknown>;
-  if (typeof google.maps !== 'object' || google.maps === null) return null;
-  return google.maps as IGoogleMapsApi;
+  if (typeof win['google'] !== 'object' || win['google'] === null) return null;
+  const google = win['google'] as Record<string, unknown>;
+  if (typeof google['maps'] !== 'object' || google['maps'] === null) return null;
+  return google['maps'] as IGoogleMapsApi;
 }
 
 function isGeocoder(value: unknown): value is IGeocoder {
@@ -106,7 +106,7 @@ function isGeocoder(value: unknown): value is IGeocoder {
     typeof value === 'object' &&
     value !== null &&
     'geocode' in value &&
-    typeof (value as Record<string, unknown>).geocode === 'function'
+    typeof (value as Record<string, unknown>)['geocode'] === 'function'
   );
 }
 
@@ -128,9 +128,9 @@ const toDisplayString = (value: unknown): string => {
   if (
     typeof value === 'object' &&
     '_displayName' in value &&
-    typeof (value as Record<string, unknown>)._displayName === 'string'
+    typeof (value as Record<string, unknown>)['_displayName'] === 'string'
   ) {
-    return (value as Record<string, unknown>)._displayName as string;
+    return (value as Record<string, unknown>)['_displayName'] as string;
   }
   return '';
 };
@@ -196,7 +196,7 @@ function loadGoogleMapsScript(apiKey: string): Promise<void> {
 function geocodeLatLng(geocoder: IGeocoder, lat: number, lng: number): Promise<string> {
   return new Promise((resolve, reject) => {
     geocoder.geocode({ location: { lat, lng } }, (results, status) => {
-      if (status === 'OK' && results?.[0]) resolve(results[0].formatted_address);
+      if (status === 'OK' && results[0]) resolve(results[0].formatted_address);
       else reject(new Error(`Reverse geocode failed: ${status}`));
     });
   });
@@ -205,7 +205,7 @@ function geocodeLatLng(geocoder: IGeocoder, lat: number, lng: number): Promise<s
 function geocodeAddressString(geocoder: IGeocoder, address: string): Promise<{ lat: number; lng: number }> {
   return new Promise((resolve, reject) => {
     geocoder.geocode({ address }, (results, status) => {
-      const loc = status === 'OK' ? results?.[0]?.geometry?.location : undefined;
+      const loc = status === 'OK' ? results[0]?.geometry?.location : undefined;
       if (loc) {
         resolve({ lat: loc.lat(), lng: loc.lng() });
       } else {
@@ -225,8 +225,8 @@ interface IMapModalProps {
   initialAddress: string;
   defaultZoom: number;
   mapHeight: number;
-  mapWidth?: number;
-  geocoder: unknown;
+  mapWidth?: number | undefined;
+  geocoder: IGeocoder | null;
   onOk: (address: string, lat: number, lng: number) => void;
   onCancel: () => void;
 }
@@ -350,8 +350,8 @@ const MapModal: FC<IMapModalProps> = ({
     if (!match || !isGeocoder(geocoder)) return;
 
     e.preventDefault();
-    const lat = parseFloat(match[1]);
-    const lng = parseFloat(match[2]);
+    const lat = parseFloat(match[1] ?? "");
+    const lng = parseFloat(match[2] ?? "");
 
     try {
       const addr = await geocodeLatLng(geocoder, lat, lng);
@@ -380,7 +380,7 @@ const MapModal: FC<IMapModalProps> = ({
       try {
         const { suggestions: preds } = await autocomplete.fetchAutocompleteSuggestions({ input: text });
         setModalSuggestions(
-          (preds ?? []).map((s) => {
+          preds.map((s) => {
             const pred = s.placePrediction;
             return { value: pred?.text?.toString() ?? '', label: pred?.text?.toString() ?? '', placeId: pred?.placeId ?? '' };
           }),
@@ -396,7 +396,7 @@ const MapModal: FC<IMapModalProps> = ({
   const handleModalSelect = async (_address: string, option: { placeId: string }): Promise<void> => {
     setModalSuggestions([]);
     const PlaceClass = getGoogleMaps()?.places?.Place;
-    if (!option?.placeId || !PlaceClass) return;
+    if (!option.placeId || !PlaceClass) return;
     try {
       const place = new PlaceClass({ id: option.placeId });
       await place.fetchFields({ fields: ['formattedAddress', 'location'] });
@@ -514,8 +514,8 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
   const geocoderRef = useRef<IGeocoder | null>(null);
   const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const { setFormData } = useFormActions() ?? {};
-  const { data: formData } = useFormData() ?? {};
+  const { setFormData } = useFormActions();
+  const { data: formData } = useFormData();
 
   // ── Load / detect Google Maps ──────────────────────────────────────────────
 
@@ -542,6 +542,7 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
       .catch(() => {
         message.error('Failed to load Google Maps. Check your API key.');
       });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [googleMapsApiKey]);
 
   // ── Sync external value (form reset / programmatic update) ────────────────
@@ -558,7 +559,6 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
 
   const writeLatLng = useCallback(
     (lat: number | null, lng: number | null) => {
-      if (!setFormData) return;
       let values: Record<string, unknown> = {};
       if (latitudePropertyName)
         values = setValueByPropertyName(values, latitudePropertyName, lat, true);
@@ -583,7 +583,7 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
       try {
         const { suggestions: preds } = await autocomplete.fetchAutocompleteSuggestions({ input: text });
         setSuggestions(
-          (preds ?? []).map((s) => {
+          preds.map((s) => {
             const pred = s.placePrediction;
             return {
               value: pred?.text?.toString() ?? '',
@@ -610,7 +610,7 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
   const handleSelect = async (_address: string, option: ISuggestion): Promise<void> => {
     setSuggestions([]);
     const PlaceClass = getGoogleMaps()?.places?.Place;
-    if (!option?.placeId || !PlaceClass) {
+    if (!option.placeId || !PlaceClass) {
       lastExternalValueRef.current = _address;
       setSearchText(_address);
       onChange?.(_address);
@@ -647,8 +647,8 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
     if (!match || !geocoderRef.current) return;
 
     e.preventDefault();
-    const lat = parseFloat(match[1]);
-    const lng = parseFloat(match[2]);
+    const lat = parseFloat(match[1] ?? "");
+    const lng = parseFloat(match[2] ?? "");
 
     try {
       const addr = await geocodeLatLng(geocoderRef.current, lat, lng);
@@ -668,13 +668,11 @@ const AddressInputControl: FC<IAddressInputControlProps> = ({
     let lat = DEFAULT_LAT;
     let lng = DEFAULT_LNG;
 
-    if (formData) {
-      const storedLat = latitudePropertyName ? unsafeGetValueByPropertyName(formData, latitudePropertyName) : null;
-      const storedLng = longitudePropertyName ? unsafeGetValueByPropertyName(formData, longitudePropertyName) : null;
-      if (typeof storedLat === 'number' && typeof storedLng === 'number') {
-        lat = storedLat;
-        lng = storedLng;
-      }
+    const storedLat = latitudePropertyName ? unsafeGetValueByPropertyName(formData, latitudePropertyName) : null;
+    const storedLng = longitudePropertyName ? unsafeGetValueByPropertyName(formData, longitudePropertyName) : null;
+    if (typeof storedLat === 'number' && typeof storedLng === 'number') {
+      lat = storedLat;
+      lng = storedLng;
     }
 
     if (lat === DEFAULT_LAT && lng === DEFAULT_LNG && searchText && geocoderRef.current) {
