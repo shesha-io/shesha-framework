@@ -98,6 +98,17 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const { getMetadata } = useMetadataDispatcher();
   const executionContext = useAvailableConstantsData();
 
+  // Style used only for the empty-state buttons (no value / not configured). With no content and
+  // the default `width: auto`, the link button collapses to a thin sliver, so any configured
+  // background/border renders as a small blob (most visible in the designer and preview, where
+  // there is no bound value). When the width would collapse, fall back to full width so the empty
+  // field reads as a proper box like its siblings. An explicitly configured width is respected,
+  // and the with-value rendering is left untouched.
+  const emptyStateStyle = useMemo((): CSSProperties => {
+    const width = props.style?.width;
+    return !width || width === 'auto' ? { ...props.style, width: '100%' } : props.style;
+  }, [props.style]);
+
   const [formIdentifier, setFormIdentifier] = useState<FormIdentifier>(
     props.formSelectionMode === 'name' ? props.formIdentifier : null,
   );
@@ -370,7 +381,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
   if (props.formSelectionMode === 'name' && !props.formIdentifier)
     return (
-      <Button type="link" disabled className={styles.innerEntityReferenceButtonBoxStyle} style={props.style}>
+      <Button type="link" disabled className={styles.innerEntityReferenceButtonBoxStyle} style={emptyStateStyle}>
         <span className={styles.innerEntityReferenceSpanBoxStyle} title="Form identifier is not configured">Form identifier is not configured</span>
       </Button>
     );
@@ -378,7 +389,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   // Handle empty/null/undefined values - works for both string and object formats
   if (!props.value || !entityId)
     return (
-      <Button type="link" disabled className={styles.innerEntityReferenceButtonBoxStyle} style={props.style}>
+      <Button type="link" disabled className={styles.innerEntityReferenceButtonBoxStyle} style={emptyStateStyle}>
         <span className={styles.innerEntityReferenceSpanBoxStyle} title={typeof displayText === 'string' ? displayText : undefined}>{displayText as string}</span>
       </Button>
     );
