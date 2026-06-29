@@ -12,6 +12,7 @@ import {
   useSheshaApplication,
 } from '@/providers';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
+import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { ModalFooterButtons } from '@/providers/dynamicModal/models';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { App, Button, Spin } from 'antd';
@@ -136,7 +137,10 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
   const { styles } = useStyles();
 
-  useEffect(() => {
+  // Deep-compare deps: `entityType` is an object that gets a fresh reference on every
+  // designer re-render (e.g. when unrelated Appearance/Quickview-width properties change),
+  // which would otherwise re-fire this effect and trigger a redundant GetEntityConfigForm call.
+  useDeepCompareEffect(() => {
     const fetchFormId = async (): Promise<void> => {
       if (
         props.formSelectionMode === 'dynamic' &&
@@ -156,7 +160,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       console.error('Failed to fetch form ID', error);
       throw error;
     });
-  }, [entityType, formType, props.formSelectionMode, props.entityReferenceType, getEntityFormIdAsync]);
+  }, [entityType, formType, props.formSelectionMode, props.entityReferenceType]);
 
   useEffect(() => {
     const fetchMetadata = async (): Promise<void> => {

@@ -24,6 +24,7 @@ export interface ISettingsFormItemProps extends Omit<IConfigurableFormItemProps,
   disabled?: boolean;
   style?: React.CSSProperties;
   required?: boolean;
+  validationDependencies?: string[];
   tooltip?: string;
   hidden?: boolean;
   layout?: 'horizontal' | 'vertical';

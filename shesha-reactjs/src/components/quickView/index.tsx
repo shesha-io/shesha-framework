@@ -15,6 +15,7 @@ import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/e
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 import { buildUrl } from '@/utils';
 import { extractAjaxResponse, IAjaxResponse } from '@/interfaces';
+import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 
 export interface IQuickViewProps extends PropsWithChildren {
   /** The id or guid for the entity */
@@ -276,7 +277,10 @@ export const GenericQuickView: FC<IQuickViewProps> = (props) => {
   const [formConfig, setFormConfig] = useState<FormIdentifier>(undefined);
   const { styles } = useStyles();
 
-  useEffect(() => {
+  // Deep-compare deps: `entityType` and `formIdentifier` are objects that get a fresh
+  // reference on every designer re-render (e.g. when unrelated Appearance properties change),
+  // which would otherwise re-fire this effect and trigger a redundant GetEntityConfigForm call.
+  useDeepCompareEffect(() => {
     // If formIdentifier is provided directly, use it
     if (props.formIdentifier) {
       setFormConfig(props.formIdentifier);
@@ -290,7 +294,7 @@ export const GenericQuickView: FC<IQuickViewProps> = (props) => {
           setFormConfig(null);
         });
     }
-  }, [props.formIdentifier, props.entityType, props.formType, getEntityFormIdAsync]);
+  }, [props.formIdentifier, props.entityType, props.formType]);
 
   // Show loading while formConfig is being fetched (undefined)
   // Show error message only when formConfig fetch explicitly failed (null)
