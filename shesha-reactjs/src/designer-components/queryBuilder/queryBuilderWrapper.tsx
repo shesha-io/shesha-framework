@@ -1,8 +1,8 @@
 import React, { FC, PropsWithChildren } from 'react';
-import { QueryBuilderProvider, useMetadata } from '@/providers';
+import { QueryBuilderProvider, useMetadataOrUndefined } from '@/providers';
 
 export const QueryBuilderWrapper: FC<PropsWithChildren> = ({ children }) => {
-  const { metadata } = useMetadata();
+  const metadata = useMetadataOrUndefined()?.metadata;
   return metadata
     ? (
       <QueryBuilderProvider id="QueryBuilderWrapper" metadata={metadata}>
