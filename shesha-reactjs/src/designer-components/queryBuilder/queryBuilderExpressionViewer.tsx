@@ -1,4 +1,5 @@
 import { CodeEditor } from '@/components/codeEditor/codeEditor';
+import { useAvailableStandardConstantsMetadata } from '@/utils/metadata/hooks';
 import React, { FC } from 'react';
 
 export interface IQueryBuilderExpressionViewerProps {
@@ -6,11 +7,20 @@ export interface IQueryBuilderExpressionViewerProps {
 }
 
 export const QueryBuilderExpressionViewer: FC<IQueryBuilderExpressionViewerProps> = (props) => {
+  const availableConstants = useAvailableStandardConstantsMetadata();
+
   return (
     <CodeEditor
       readOnly={true}
       value={props.value ? JSON.stringify(props.value, null, 2) : ''}
-      language="javascript"
+      language="typescript"
+      fileName="queryExpression"
+      wrapInTemplate={true}
+      templateSettings={{
+        functionName: 'executeScriptAsync',
+        useAsyncDeclaration: true,
+      }}
+      availableConstants={availableConstants}
     />
   );
 };
