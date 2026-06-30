@@ -110,7 +110,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   // and the with-value rendering is left untouched.
   const emptyStateStyle = useMemo((): CSSProperties | undefined => {
     const width = props.style?.width;
-    return !width || width === 'auto' ? { ...props.style, width: '100%' } : props.style;
+    return width == null || width === 'auto' ? { ...props.style, width: '100%' } : props.style;
   }, [props.style]);
 
   const [formIdentifier, setFormIdentifier] = useState<FormIdentifier | undefined>(() =>
