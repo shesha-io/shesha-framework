@@ -109,7 +109,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       _code: 'return !getSettingValue(data?.getEntityUrl);',
                       _mode: 'code',
                       _value: true,
-                    } as any,
+                    },
                   },
                   validationDependencies: ['getEntityUrl'],
                   settingsValidationErrors: [],
