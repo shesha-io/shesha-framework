@@ -87,9 +87,7 @@ const PropertiesEditorProvider: FC<PropsWithChildren<IPropertiesEditorProviderPr
     return { ...state, selectedItemRef: selRef };
   }, [state]);
 
-  const actions = useDeepCompareMemo(() => {
-    return { addItem, deleteItem, selectItem, updateChildItems, getItem, updateItem /* NEW_ACTION_GOES_HERE */ };
-  }, []);
+  const actions = { addItem, deleteItem, selectItem, updateChildItems, getItem, updateItem /* NEW_ACTION_GOES_HERE */ };
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
