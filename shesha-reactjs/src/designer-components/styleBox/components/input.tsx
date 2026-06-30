@@ -35,7 +35,7 @@ const BoxInput: FC<IProps> = ({ direction, onChange, readOnly, type, value, prop
   const className = valueInfo?.state === 'usedDefault' ? styles.inheritedValue : valueInfo?.state === 'usedModel' ? styles.overriddenValue : '';
 
   const rawValue = value?.[propertyName];
-  const localValue: string | undefined = defaultModel?.getValueInfo(defaultName)?.state === 'usedDefault' ? defaultValue : rawValue != null ? String(rawValue) : '0';
+  const localValue: string | undefined = defaultModel?.getValueInfo(defaultName)?.state === 'usedDefault' ? defaultValue : rawValue != null ? String(rawValue) : undefined;
 
   const internalOnChange = (val: string | undefined): void => {
     if ((!val || val.length < 4) && onChange)

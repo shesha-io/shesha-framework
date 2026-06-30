@@ -291,7 +291,7 @@ export const useFormComponentStyles = <TModel extends IStyleValue & Pick<IConfig
 
   const stylingBoxParsed = useMemo(() =>
     stylingBoxJson ?? (!isNullOrWhiteSpace(stylingBox) ? jsonSafeParse<StyleBoxValue>(stylingBox) : {}),
-    [stylingBoxJson, stylingBox]);
+  [stylingBoxJson, stylingBox]);
 
   const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
   const fontStyles = useMemo(() => getFontStyle(font), [font]);
