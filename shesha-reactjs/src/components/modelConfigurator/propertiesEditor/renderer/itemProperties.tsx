@@ -31,7 +31,7 @@ export const ToolbarItemProperties: FC = () => {
 
   const debouncedSave = useDebouncedCallback<OnFormValuesChangeHandler<IModelItem>>(
     (_, values) => {
-      if (selectedItemId)
+      if (isNotNullOrWhiteSpace(selectedItemId))
         updateItem({ id: selectedItemId, settings: values });
     },
     // delay in ms
@@ -77,7 +77,7 @@ export const ToolbarItemProperties: FC = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [components, debouncedSave, fbf, formRef, selectedItemId]);
 
-  if (!Boolean(selectedItemId)) {
+  if (isNullOrWhiteSpace(selectedItemId)) {
     return (
       <div>
         <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Please select a component to begin editing" />
