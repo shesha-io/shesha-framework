@@ -1,6 +1,7 @@
 import { CSSProperties } from 'react';
 import { DEFAULT_MARGINS } from './designerConstants';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { addPx } from '@/utils/style';
 
 /** Margin values extracted from various style sources */
 export interface MarginValues {
@@ -92,14 +93,14 @@ export const stylingUtils = {
    */
   createRootContainerStyle(
     _dimensions: CSSProperties,
-    _margins: MarginValues,
+    margins: MarginValues,
   ): CSSProperties {
-    /*
-    // Use margin values directly (preserves relative values like 50%)
     const marginTop = addPx(margins.marginTop);
     const marginBottom = addPx(margins.marginBottom);
     const marginLeft = addPx(margins.marginLeft);
     const marginRight = addPx(margins.marginRight);
+    /*
+    // Use margin values directly (preserves relative values like 50%)
 
     // When width is 100% and there are margins, use getCalculatedDimension to prevent overflow
     // Use getCalculatedDimension to properly handle converted vw/vh values that are calc() expressions
@@ -146,19 +147,17 @@ export const stylingUtils = {
 
     return {
       boxSizing: 'border-box' as const,
-      // Dimensions from component configuration
+      marginTop,
+      marginBottom,
+      marginLeft,
+      marginRight,
       /* width,
       height,
       minWidth,
       maxWidth,
       minHeight,
       maxHeight,
-      flexBasis: dimensions.flexBasis,
-      // Apply margins directly (not as padding) to preserve relative values
-      marginTop,
-      marginBottom,
-      marginLeft,
-      marginRight,*/
+      flexBasis: dimensions.flexBasis,*/
     };
   },
 

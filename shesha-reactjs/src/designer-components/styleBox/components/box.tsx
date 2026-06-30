@@ -18,12 +18,12 @@ const Box: FC<IProps> = ({ className, onChange, readOnly, value, propertyName })
 
   // need to store the value locally because internal components may not be rendered and will use the old value
   const localValue = useRef<StyleBoxValue | undefined>(value);
+  localValue.current = value; // keep in sync with prop on every render
 
   const onChangeInternal = (val: Partial<StyleBoxValue>): void => {
-    const mergedValue: StyleBoxValue = { ...localValue.current, ...val, _type: 'styleBox' };
-    // ensure the value is a valid style box
-    onChange?.(getStyleBoxValue(mergedValue));
-    localValue.current = value;
+    const mergedValue = getStyleBoxValue({ ...localValue.current, ...val, _type: 'styleBox' });
+    localValue.current = mergedValue; // update immediately so rapid changes merge correctly
+    onChange?.(mergedValue);
   };
 
   const commonProps = { onChange: onChangeInternal, readOnly, value, propertyName };
