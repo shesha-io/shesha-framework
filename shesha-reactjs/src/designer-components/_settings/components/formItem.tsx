@@ -9,7 +9,7 @@ import { useFormItem } from '@/providers';
 
 const FormItem: FC<ISettingsFormItemProps> = (props) => {
   const { styles } = useStyles();
-  const { name, label, tooltip, required, hidden, jsSetting, children, valuePropName = 'value', layout, availableConstantsExpression } = props;
+  const { name, label, tooltip, required, validationDependencies, hidden, jsSetting, children, valuePropName = 'value', layout, availableConstantsExpression } = props;
   const [hasCode, setHasCode] = useState(false);
 
   useDefaultModelPropertyUpdateSubscription(name);
@@ -59,6 +59,7 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
         id: '',
         description: tooltip,
         validate: { required },
+        validationDependencies,
         hidden,
         layout,
         size: 'small',

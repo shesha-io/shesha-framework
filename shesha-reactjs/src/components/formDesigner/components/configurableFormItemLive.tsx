@@ -68,6 +68,7 @@ export const ConfigurableFormItemLive: FCUnwrapped<IConfigurableFormItemProps> =
     initialValue: initialValue,
     tooltip: model.description || undefined,
     rules: model.hidden ? [] : getValidationRules(model, { getFormData }),
+    ...(model.validationDependencies?.length ? { dependencies: model.validationDependencies } : {}),
     // labelCol: layout?.labelCol,
     // wrapperCol: hideLabel || isVertical ? { span: 24 } : layout?.wrapperCol,
     name: model.context ? undefined : getFieldNameFromExpression(propName),

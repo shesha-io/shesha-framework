@@ -19,7 +19,7 @@ export interface ISettingsComponentGroup {
 }
 
 export const SettingInput: FCUnwrapped<ISettingsInputProps> = (props) => {
-  const { label, hideLabel, propertyName, type, readOnly, jsSetting, tooltip, hidden, visible, size, validate, inline, width, availableConstantsExpression, ...rest } = props;
+  const { label, hideLabel, propertyName, type, readOnly, jsSetting, tooltip, hidden, visible, size, validate, validationDependencies, inline, width, availableConstantsExpression, ...rest } = props;
 
   const { formData } = useShaFormInstance();
   const settingsComponents = useSettingsComponents();
@@ -65,6 +65,7 @@ export const SettingInput: FCUnwrapped<ISettingsInputProps> = (props) => {
             label={label}
             tooltip={tooltip}
             required={validate?.required}
+            validationDependencies={validationDependencies}
             layout="vertical"
             jsSetting={unwrappedType === 'codeEditor' ? false : jsSetting}
             readOnly={readOnly}
