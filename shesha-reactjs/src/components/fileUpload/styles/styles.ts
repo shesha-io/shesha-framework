@@ -28,7 +28,6 @@ export type FileUploadStylesResponse = {
   antUploadText?: string;
   antUploadHint?: string;
   styledFileControls?: string;
-  thumbnailReadOnly?: string;
 };
 
 export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesResponse>(({ token, css, cx, prefixCls }, { style, model }) => {
@@ -76,11 +75,15 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
     textAlign = 'left',
   } = style || {};
 
+  const { layout, isDragger, hideFileName, listType } = model;
+
+  // The configured component styles (background, border, shadow, dimensions) describe the
+  // thumbnail tile, so they must only be applied in thumbnail mode. In text mode the file is
+  // shown as a plain filename and must not pick up the thumbnail's shadow/border/box styling.
+  const isThumbnail = listType === 'thumbnail';
   // React.CSSProperties is not directly assignable to Emotion's CSSInterpolation;
   // spreading it into a CSSObject-shaped value is safe at runtime.
-  const extraStyles = { ...style } as CSSInterpolation;
-
-  const { layout, isDragger, hideFileName, listType } = model;
+  const extraStyles = (isThumbnail ? { ...style } : {}) as CSSInterpolation;
 
   const justifyContentMap: Record<TextAlignType, string> = {
     left: 'flex-start',
@@ -115,7 +118,6 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
   `;
 
   const commonBorderStyles = css`
-    border: ${borderWidth} ${borderStyle} ${borderColor};
     border-top: ${borderTopWidth || borderWidth} ${borderTopStyle || borderStyle} ${borderTopColor || borderColor};
     border-right: ${borderRightWidth || borderWidth} ${borderRightStyle || borderStyle}
       ${borderRightColor || borderColor};
@@ -149,34 +151,22 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
       min-height: ${layout ? (minHeight) : '100%'} !important;
       max-width: ${layout ? (maxWidth) : '100%'} !important;
       min-width: ${layout ? (minWidth) : '100%'} !important;
+      ${isThumbnail ? `
       background: ${backgroundImage ?? backgroundColor ?? background};
       ${backgroundPosition ? `background-position: ${backgroundPosition};` : ''}
       ${backgroundRepeat ? `background-repeat: ${backgroundRepeat};` : ''}
       ${backgroundSize ? `background-size: ${backgroundSize};` : ''}
+      ` : ''}
 
-      .ant-upload-select-picture-card,
-      .ant-upload-list-picture-card .ant-upload-select,
-      .ant-upload-list-picture-card .ant-upload.ant-upload-select {
-        width: var(--thumbnail-width) !important;
-        height: var(--thumbnail-height) !important;
-        background-position: ${backgroundPosition} !important;
-        background-repeat: ${backgroundRepeat} !important;
-        background-size: ${backgroundSize} !important;
-        ${borderRadiusCss}
-        border: ${borderWidth} ${borderStyle} ${borderColor} !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-      }
+      // /* Hide the upload trigger once a file is present (single-file upload). antd's
+      //    maxCount=1 isn't auto-hiding the trigger in this version, so suppress it via
+      //    a sibling-combinator rule: any .ant-upload-select that follows a file item is hidden. */
+      // .ant-upload-list-picture-card .ant-upload-list-item-container ~ .ant-upload-select,
+      // .ant-upload-list-picture-card .ant-upload-list-item-container ~ .ant-upload.ant-upload-select {
+      //   display: none !important;
+      // }
 
-      /* Hide the upload trigger once a file is present (single-file upload). antd's
-         maxCount=1 isn't auto-hiding the trigger in this version, so suppress it via
-         a sibling-combinator rule: any .ant-upload-select that follows a file item is hidden. */
-      .ant-upload-list-picture-card .ant-upload-list-item-container ~ .ant-upload-select,
-      .ant-upload-list-picture-card .ant-upload-list-item-container ~ .ant-upload.ant-upload-select {
-        display: none !important;
-      }
-
+      ${isThumbnail ? `
       .ant-upload-list-item {
         width: var(--thumbnail-width) !important;
         height: ${hideFileName ? 'var(--thumbnail-height)' : 'calc(var(--thumbnail-height) + 32px)'} !important;
@@ -184,16 +174,8 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
         border-bottom: ${borderBottom} !important;
         border-right: ${borderRight} !important;
       }
+      ` : ''}
 
-      .ant-upload-list-picture-card {
-        height: ${hideFileName
-          ? 'var(--thumbnail-height)'
-          : `calc(var(--thumbnail-height) + ${fontSize} * 2 + 32px)`} !important;
-        min-height: ${hideFileName
-          ? 'var(--thumbnail-height)'
-          : `calc(var(--thumbnail-height) + ${fontSize} * 2 + 32px)`} !important;
-        padding-bottom: 1rem;
-      }
 
       .ant-upload-list-item-image {
         object-fit: contain !important;
@@ -212,9 +194,10 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
         --ant-padding-xs: 0px !important;
         --font-size: ${fontSize} !important;
         --ant-font-size: ${fontSize} !important;
+        display: flex;
+        ${isThumbnail ? `
         ${borderRadiusCss}
         border: ${borderWidth} ${borderStyle} ${borderColor} !important;
-        display: flex;
 
         :before {
           top: 0;
@@ -223,13 +206,14 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
           border: ${borderWidth} ${borderStyle} ${borderColor} !important;
           height: 100% !important;
         }
+        ` : ''}
       }
 
       .ant-upload-list-item-thumbnail {
+        ${extraStyles}
         ${borderRadiusCss}
         padding: 0 !important;
         ${commonBorderStyles}
-        ${extraStyles}
       }
 
       .thumbnail-item-name {
@@ -245,13 +229,15 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
       }
 
       .thumbnail-stub {
+        ${extraStyles}
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         ${borderRadiusCss}
-        border: ${borderWidth} ${borderStyle} ${borderColor} !important;
-        ${extraStyles}
+        ${commonBorderStyles}
+        ${commonTextStyles}
+        ${borderRadiusCss}
       }
 
       .ant-upload-list-text {
@@ -268,9 +254,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
       }
 
       .${prefixCls}-upload {
-
-        width: ${layout && !isDragger ? 'var(--thumbnail-width)' : isDragger ? (width ?? height ?? '120px') : 'auto'} !important;
-        height: ${layout && !isDragger ? 'var(--thumbnail-height)' : isDragger ? (height ?? width ?? '120px') : (height ?? width ?? '54px')} !important;
+        ${isDragger ? `min-height: ${minHeight ?? '120px'} !important;` : ''}
         ${borderRadiusCss}
         align-items: center;
 
@@ -300,7 +284,6 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
         * {
           ${commonTextStyles}
         }
-        ${extraStyles}
         width: 100% !important;
         height: 100% !important;
         border: none !important;
@@ -308,14 +291,11 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
       }
 
       .ant-upload-list-item-container {
-        background: ${backgroundImage ?? backgroundColor} !important;
-        width: var(--thumbnail-width) !important;
-        height: var(--thumbnail-height) !important;
-        ${borderRadiusCss}
-        border: ${borderWidth} ${borderStyle} transparent !important;
-        /* antd's default margin-block on this container shifts the file tile down after upload;
-           the trigger has no such margin, so reset both margin and padding to keep the file
-           tile in the same spot the trigger occupied. */
+        max-height: calc(var(--container-max-height) - calc(${fontSize} * 4)) !important;
+        min-height: calc(var(--container-min-height) - 32px) !important;
+        width: calc(var(--container-width) - 32px) !important;
+        max-width: calc(var(--container-max-width) - 32px) !important;
+        min-width: calc(var(--container-min-width) - 32px) !important;
         margin: 0 !important;
         padding: 0 !important;
         &.ant-upload-animate-inline-appear,
@@ -325,7 +305,6 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
           animation: none !important;
           transition: none !important;
         }
-        ${extraStyles}
       }
     `,
   );
@@ -392,7 +371,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
       ${commonTextStyles}
       ${borderRadiusCss}
       padding: 0 !important;
-      background: ${background} !important;
+      background: ${backgroundImage ?? backgroundColor ?? background};
       width: ${width || '54px'} !important;
       height: ${height || '54px'} !important;
       display: flex !important;
@@ -409,15 +388,6 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
     `,
   );
 
-  const thumbnailReadOnly = cx("ant-upload-list-item thumbnail-readonly", css`
-      text-align: center;
-      align-items: center;
-      justify-content: center;
-      background-color: #00000005 !important;
-      border: 1px dashed #d9d9d9 !important;
-      border-radius: 8px !important;
-  `);
-
   return {
     shaStoredFilesRenderer,
     storedFilesRendererBtnContainer,
@@ -429,6 +399,5 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
     antUploadText,
     antUploadHint,
     styledFileControls,
-    thumbnailReadOnly,
   };
 });
