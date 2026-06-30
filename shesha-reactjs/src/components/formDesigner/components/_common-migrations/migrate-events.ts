@@ -1,9 +1,9 @@
 import { IConfigurableActionConfiguration } from "@/interfaces/configurableAction";
 
 export interface IHasDispatchEvent {
-  eventName?: string;
-  customEventNameToDispatch?: string;
-  uniqueStateId?: string;
+  eventName?: string | undefined;
+  customEventNameToDispatch?: string | undefined;
+  uniqueStateId?: string | undefined;
 }
 
 const makeAction = (props: Pick<IConfigurableActionConfiguration, 'actionName' | 'actionOwner'>): IConfigurableActionConfiguration => {
@@ -27,11 +27,11 @@ const ListControlEvents = {
   addListItems: 'addListItems',
 };
 
-export const getDispatchEventReplacement = (eventCallerProps: IHasDispatchEvent): IConfigurableActionConfiguration => {
-  const eventName = eventCallerProps?.eventName === 'CUSTOM_EVENT' && eventCallerProps?.customEventNameToDispatch
-    ? eventCallerProps?.customEventNameToDispatch
-    : eventCallerProps?.eventName;
-  const target = eventCallerProps?.uniqueStateId;
+export const getDispatchEventReplacement = (eventCallerProps: IHasDispatchEvent): IConfigurableActionConfiguration | undefined => {
+  const eventName = eventCallerProps.eventName === 'CUSTOM_EVENT' && eventCallerProps.customEventNameToDispatch
+    ? eventCallerProps.customEventNameToDispatch
+    : eventCallerProps.eventName;
+  const target = eventCallerProps.uniqueStateId ?? "";
   switch (eventName) {
     case SUB_FORM_EVENT_NAMES.getFormData: {
       return makeAction({ actionName: 'Get form data', actionOwner: target });
@@ -53,5 +53,5 @@ export const getDispatchEventReplacement = (eventCallerProps: IHasDispatchEvent)
     }
   }
 
-  return null;
+  return undefined;
 };

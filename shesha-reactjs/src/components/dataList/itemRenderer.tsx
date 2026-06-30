@@ -1,11 +1,11 @@
 import ComponentsContainer from "@/components/formDesigner/containers/componentsContainer";
 import { FormRawMarkup, IFormSettings } from "@/interfaces";
 import { FormItemProvider } from "@/providers";
-import { DataListCrudProvider } from "@/providers/dataListCrudContext/index";
+import { DataListCrudProvider, DataProcessor } from "@/providers/dataListCrudContext/index";
 import { CrudMode } from "@/providers/crudContext/models";
 import { ComponentsContainerProvider } from "@/providers/form/nesting/containerContext";
 import { FormMarkupConverter } from "@/providers/formMarkupConverter/index";
-import React, { FC, Component, ErrorInfo, ReactNode } from "react";
+import React, { Component, ErrorInfo, ReactNode } from "react";
 import CrudActionButtons from "./crudActionButtons";
 import { ItemContainerForm } from "./itemContainerForm";
 import { useStyles } from './styles/styles';
@@ -31,7 +31,7 @@ class DataListItemErrorBoundary extends Component<ErrorBoundaryProps, ErrorBound
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
+  override componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     // Log error for debugging
     if (error instanceof ConfigurationLoadingError) {
       console.error('Configuration loading error in DataList item:', error.message);
@@ -40,7 +40,7 @@ class DataListItemErrorBoundary extends Component<ErrorBoundaryProps, ErrorBound
     }
   }
 
-  render(): ReactNode {
+  override render(): ReactNode {
     if (this.state.hasError) {
       // Return fallback or null to show placeholder
       return this.props.fallback || null;
@@ -50,18 +50,18 @@ class DataListItemErrorBoundary extends Component<ErrorBoundaryProps, ErrorBound
   }
 }
 
-export interface IDataListItemProps {
+export interface IDataListItemProps<TValue extends object = object> {
   listId: string;
-  listName?: string;
+  listName?: string | undefined;
   itemIndex: number;
-  itemId?: any;
+  itemId?: string;
 
   allowEdit: boolean;
-  updater?: (data: any) => Promise<any>;
+  updater?: DataProcessor<TValue> | undefined;
   allowDelete: boolean;
-  deleter?: () => Promise<void>;
+  deleter?: (() => Promise<void>) | undefined;
   editMode: CrudMode;
-  data?: any;
+  data?: TValue;
   markup: FormRawMarkup;
   formSettings: IFormSettings;
   allowChangeEditMode: boolean;
@@ -70,7 +70,7 @@ export interface IDataListItemProps {
   isNewObject: boolean;
 }
 
-export const DataListItemRenderer: FC<IDataListItemProps> = (props) => {
+export const DataListItemRenderer = <TValue extends object = object>(props: IDataListItemProps<TValue>): ReactNode => {
   const {
     listId,
     itemIndex,
@@ -93,7 +93,7 @@ export const DataListItemRenderer: FC<IDataListItemProps> = (props) => {
 
   return (
     <DataListItemErrorBoundary>
-      <div key={itemListId}>
+      <div key={itemListId} style={{ width: '100%' }}>
 
         <FormMarkupConverter markup={markup} formSettings={formSettings}>
           {(flatComponents) => {
@@ -115,7 +115,7 @@ export const DataListItemRenderer: FC<IDataListItemProps> = (props) => {
 
                   <ComponentsContainerProvider ContainerComponent={ItemContainerForm}>
                     {/* add FormItemProvider to reset namePrefix and other SubForm settings if DataList uses inside SubForm*/}
-                    <FormItemProvider namePrefix="" labelCol={formSettings?.labelCol} wrapperCol={formSettings?.wrapperCol}>
+                    <FormItemProvider namePrefix="" labelCol={formSettings.labelCol} wrapperCol={formSettings.wrapperCol}>
                       <ComponentsContainer containerId="root" />
                     </FormItemProvider>
                   </ComponentsContainerProvider>

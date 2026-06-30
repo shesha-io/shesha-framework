@@ -53,7 +53,7 @@ export const migratePasswordComboToTextField = (
     parentId: prev.parentId,
     validate: {
       required: prev.validate?.required,
-      validator: CONFIRM_MATCH_VALIDATOR.replace('__PROPERTY_NAME__', prev.propertyName),
+      validator: CONFIRM_MATCH_VALIDATOR.replace('__PROPERTY_NAME__', prev.propertyName ?? ""),
       message: prev.message || 'Passwords do not match',
     },
     version: 6,

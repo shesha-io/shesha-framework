@@ -4,11 +4,12 @@ import React from 'react';
 import { FCUnwrapped } from '@/providers/form/models';
 
 export const RefListItemSelectorSettingsModalWrapper: FCUnwrapped<IRefListItemSelectorSettingsModalProps> = (props) => {
-  const { referenceList, onChange } = props;
+  const { referenceList, value, onChange } = props;
   return (
     <RefListItemSelectorSettingsModal
       {...props}
-      onChange={(e) => onChange(e)}
+      value={value}
+      onChange={(e) => onChange?.(e)}
       referenceList={referenceList}
       readOnly={false}
     />

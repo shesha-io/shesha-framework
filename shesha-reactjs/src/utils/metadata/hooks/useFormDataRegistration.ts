@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { DataTypes } from "@/interfaces";
-import { FormFullName, useMetadata, useMetadataDispatcher } from "@/providers";
+import { FormFullName, useMetadataOrUndefined, useMetadataDispatcher } from "@/providers";
 import { isEntityMetadata } from "@/interfaces/metadata";
 import { useFormPersisterIfAvailable } from "@/providers/formPersisterProvider";
 import { TypesImporter } from "../typesImporter";
@@ -8,7 +8,7 @@ import { MetadataBuilderAction } from "../metadataBuilder";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 
 export const useFormDataRegistration = (): MetadataBuilderAction => {
-  const meta = useMetadata(false);
+  const meta = useMetadataOrUndefined();
   const { formProps } = useFormPersisterIfAvailable() ?? {};
   const { getMetadata } = useMetadataDispatcher();
 

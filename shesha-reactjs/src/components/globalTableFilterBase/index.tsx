@@ -5,13 +5,13 @@ import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { useStyles } from './styles/styles';
 
 export interface IGlobalTableFilterBaseProps {
-  searchProps?: SearchProps;
+  searchProps?: SearchProps | undefined;
   changeQuickSearch: (val: string) => void;
-  performQuickSearch?: (val: string) => void;
-  quickSearch: string;
-  size?: SizeType;
-  block?: boolean;
-  style?: React.CSSProperties;
+  performQuickSearch?: ((val: string) => void) | undefined;
+  quickSearch: string | undefined;
+  size?: SizeType | undefined;
+  block?: boolean | undefined;
+  style?: React.CSSProperties | undefined;
 }
 
 export const GlobalTableFilterBase: FC<IGlobalTableFilterBaseProps> = ({
@@ -50,7 +50,7 @@ export const GlobalTableFilterBase: FC<IGlobalTableFilterBaseProps> = ({
         onKeyDown={(event) => event.stopPropagation()}
         onSearch={onSearch}
         onChange={(e) => {
-          e?.stopPropagation();
+          e.stopPropagation();
           changeQuickSearch(e.target.value);
         }}
         onClick={(event) => event.stopPropagation()}

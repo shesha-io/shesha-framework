@@ -1,4 +1,5 @@
 import { SettingsFormMarkupFactory } from '@/interfaces';
+import { getStringPropertyOrUndefined } from '@/utils/object';
 
 export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   return fbf()
@@ -11,7 +12,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
       expandIconPosition: 'start',
       ghost: true,
       collapsible: 'header',
-      hidden: { _code: 'return getSettingValue(data?.disabled) ?? false;', _mode: 'code', _value: false } as any,
+      hidden: { _code: 'return getSettingValue(data?.disabled) ?? false;', _mode: 'code', _value: false },
       content: {
         id: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
         components: [...fbf()
@@ -55,7 +56,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
               useAsyncDeclaration: true,
             },
             availableConstantsExpression: async ({ metadataBuilder, data }) => {
-              const { modelType } = data ?? {};
+              const modelType = getStringPropertyOrUndefined(data, "modelType");
               const result = metadataBuilder.object("constants");
               const isEntity = modelType
                 ? await metadataBuilder.isEntityAsync(modelType)

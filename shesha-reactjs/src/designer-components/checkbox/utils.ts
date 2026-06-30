@@ -1,7 +1,7 @@
-import { IInputStyles, IStyleType } from '@/providers/form/models';
+import { IInputStyles, IStyleValue } from '@/providers/form/models';
 import { ICheckboxComponentProps } from './interfaces';
 
-export const defaultStyles = (prev: ICheckboxComponentProps & IInputStyles): IStyleType => {
+export const defaultStyles = (prev: ICheckboxComponentProps & IInputStyles): IStyleValue => {
   return {
     border: {
       radiusType: 'all',
@@ -25,8 +25,6 @@ export const defaultStyles = (prev: ICheckboxComponentProps & IInputStyles): ISt
       position: 'center',
       gradient: { direction: 'to right', colors: {} },
       url: '',
-      storedFile: { id: null },
-      uploadFile: null,
     },
     font: {
       color: '',

@@ -21,9 +21,9 @@ export const isEntityReferenceId = (data: unknown): data is IEntityReferenceDto 
 };
 
 export interface IUseEntityDisplayTextProps {
-  entityType: string | IEntityTypeIdentifier;
+  entityType: string | IEntityTypeIdentifier | undefined;
   propertyName: string;
-  selection?: string | string[];
+  selection?: string | string[] | undefined;
 }
 
 interface IGetEntityPayload extends IGetAllPayload, IEntityTypeIdentifierQueryParams {
@@ -54,7 +54,7 @@ interface ILoadedSelectionSummary {
 
 export const useEntitySelectionData = (props: IUseEntityDisplayTextProps): IEntitySelectionResult => {
   const { entityType, propertyName, selection } = props;
-  const lastSelection = useRef<ILoadedSelectionSummary>();
+  const lastSelection = useRef<ILoadedSelectionSummary>(undefined);
   const [fetchedEntities, setFetchedEntities] = useState<EntityData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -65,7 +65,7 @@ export const useEntitySelectionData = (props: IUseEntityDisplayTextProps): IEnti
     selection &&
     Array.isArray(selection) &&
     isDefined(lastSelectionCurrent) &&
-    isEntityTypeIdEqual(lastSelectionCurrent.entityType, entityType) &&
+    entityType && isEntityTypeIdEqual(lastSelectionCurrent.entityType, entityType) &&
     lastSelectionCurrent.propertyName === propertyName &&
     !Boolean(selection.find((item) => !lastSelectionCurrent.keys.includes(item)));
 
@@ -77,7 +77,7 @@ export const useEntitySelectionData = (props: IUseEntityDisplayTextProps): IEnti
   const getValuePayload = useMemo<IGetEntityPayload>(() => ({
     skipCount: 0,
     maxResultCount: 1000,
-    ...getEntityTypeIdentifierQueryParams(entityType),
+    ...(entityType ? getEntityTypeIdentifierQueryParams(entityType) : {}),
     properties: `id ${gqlFields}`,
     filter: buildFilterById(selection),
   }), [entityType, selection, gqlFields]);

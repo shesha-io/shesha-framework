@@ -5,16 +5,16 @@ import { IBackgroundValue } from '../_settings/utils/background/interfaces';
 
 interface ICardContent {
   id: string;
-  components?: IConfigurableFormComponent[];
+  components?: IConfigurableFormComponent[] | undefined;
 }
 
 export interface ICardComponentProps extends IConfigurableFormComponent {
-  className?: string;
-  content?: ICardContent;
-  header?: ICardContent;
-  hideHeading?: boolean;
-  hideWhenEmpty?: boolean;
-  border?: IBorderValue;
-  shadow?: IShadowValue;
-  background?: IBackgroundValue;
+  className?: string | undefined;
+  content?: ICardContent | undefined;
+  header?: ICardContent | undefined;
+  hideHeading?: boolean | undefined;
+  hideWhenEmpty?: boolean | undefined;
+  border?: IBorderValue | undefined;
+  shadow?: IShadowValue | undefined;
+  background?: IBackgroundValue | undefined;
 }

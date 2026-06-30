@@ -1,3 +1,3 @@
-export interface IChangeable {
-  onChange?: (...params: unknown[]) => void;
+export interface IChangeable<TValue = unknown> {
+  onChange?: ((newValue: TValue | null) => void) | undefined;
 }

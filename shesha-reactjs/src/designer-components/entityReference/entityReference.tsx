@@ -19,6 +19,8 @@ import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { migrateButtonGroupDynamicItems } from '../_common-migrations/migrateButtonGroupDynamicItems';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { getIdOrUndefined } from '@/utils/entity';
 
 export type IActionParameters = [{ key: string; value: string }];
 
@@ -29,22 +31,20 @@ export interface IEntityReferenceControlProps extends Omit<IEntityReferenceProps
 
 // Helper function to normalize entity reference values to extract ID
 const normalizeEntityReferenceValue = (
-  value: EntityReferenceValue | string,
+  value: EntityReferenceValue | string | undefined,
 ): string | null => {
-  if (!value) return value as null;
+  if (!isDefined(value))
+    return null;
   if (typeof value === 'string' || typeof value === 'number') return value;
-  // If it's an object, extract and return the id; otherwise undefined
-  if (typeof value === 'object' && value !== null && 'id' in value) {
-    return value.id ?? undefined;
-  }
-  return undefined;
+
+  return getIdOrUndefined(value) ?? null;
 };
 
 // Component wrapper that normalizes the value for display and form storage
 const EntityReferenceWrapper: React.FC<{
   model: IEntityReferenceControlProps;
-  value: EntityReferenceValue;
-  onChange?: (value: string | number | null | undefined) => void;
+  value: EntityReferenceValue | undefined;
+  onChange?: ((value: EntityReferenceValue | null) => void) | undefined;
   style?: React.CSSProperties;
 }> = ({ model, value, onChange, style }) => {
   // Normalize value for display: if it's an object, extract the id
@@ -56,7 +56,7 @@ const EntityReferenceWrapper: React.FC<{
 
   React.useEffect(() => {
     // Normalize the form value if it's an object: extract and store just the ID
-    if (onChange && value && typeof value === 'object' && value !== null && 'id' in value) {
+    if (onChange && isDefined(value) && typeof value === 'object' && 'id' in value) {
       const idValue = value.id;
       const previousValue = previousValueRef.current;
 
@@ -64,7 +64,7 @@ const EntityReferenceWrapper: React.FC<{
       // 1. The ID exists and is valid
       // 2. The current value is an object (not already normalized to a string/primitive)
       // 3. The value has changed from the previous one
-      if (idValue !== undefined && idValue !== null) {
+      if (isDefined(idValue)) {
         const previousId = typeof previousValue === 'object' && previousValue !== null
           ? previousValue.id
           : previousValue;
@@ -96,14 +96,14 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
     if (hidden) return null;
 
     return (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem<EntityReferenceValue> model={model}>
         {(value, onChange) => {
           return (
             <EntityReferenceWrapper
               model={model}
               value={value}
               onChange={onChange}
-              style={{ ...allStyles.fullStyle }}
+              style={{ ...allStyles?.fullStyle }}
             />
           );
         }}
@@ -144,7 +144,7 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
       .add<IEntityReferenceControlProps>(8, (prev) => ({
         ...prev,
         // eslint-disable-next-line @typescript-eslint/no-deprecated
-        iconName: (prev?.iconName as ShaIconTypes) ?? (prev?.icon as ShaIconTypes),
+        iconName: (prev.iconName ?? prev.icon) as ShaIconTypes | undefined,
       }))
       .add<IEntityReferenceControlProps>(9, (prev) => ({
         ...prev,
@@ -177,7 +177,7 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
   linkToModelMetadata: (model, propMetadata): IEntityReferenceControlProps => {
     return {
       ...model,
-      entityType: isEntityReferencePropertyMetadata(propMetadata)
+      entityType: isEntityReferencePropertyMetadata(propMetadata) && !isNullOrWhiteSpace(propMetadata.entityType)
         ? { name: propMetadata.entityType, module: propMetadata.entityModule ?? null }
         : undefined,
     };

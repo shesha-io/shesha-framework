@@ -7,6 +7,7 @@ import { ReactNode } from 'react';
 import { SettingsMigrationContext } from '@/interfaces';
 import { IShowModalActionArgumentsV0 } from '@/providers/dynamicModal/migrations/ver0';
 import { IHasVersion } from '@/utils/fluentMigrator/migrator';
+import { getStringPropertyOrUndefined } from '@/utils/object';
 
 const makeAction = (props: Pick<IConfigurableActionConfiguration, 'actionName' | 'actionOwner' | 'actionArguments'>): IConfigurableActionConfiguration => {
   return {
@@ -19,8 +20,8 @@ const makeAction = (props: Pick<IConfigurableActionConfiguration, 'actionName' |
   };
 };
 
-const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: SettingsMigrationContext): IConfigurableActionConfiguration => {
-  if (buttonProps['actionConfiguration'])
+const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: SettingsMigrationContext): IConfigurableActionConfiguration | undefined => {
+  if ("actionConfiguration" in buttonProps && typeof buttonProps.actionConfiguration === "object")
     return buttonProps['actionConfiguration'] as IConfigurableActionConfiguration;
 
   switch (buttonProps.buttonAction) {
@@ -51,7 +52,7 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
       const propsWithModal = buttonProps as IToolbarButtonTableDialogPropsV0;
 
       const modalArguments: IShowModalActionArgumentsV0 = {
-        modalTitle: buttonProps.modalTitle,
+        modalTitle: buttonProps.modalTitle ?? "",
         formId: buttonProps.modalFormId,
 
         showModalFooter: propsWithModal.showModalFooter,
@@ -73,7 +74,7 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
       }
       if (propsWithModal.refreshTableOnSuccess) {
         actionConfig.handleSuccess = true;
-        actionConfig.onSuccess = makeAction({ actionOwner: getClosestTableId(context), actionName: 'Refresh table' });
+        actionConfig.onSuccess = makeAction({ actionOwner: getClosestTableId(context) ?? "", actionName: 'Refresh table' });
       }
       return actionConfig;
     }
@@ -88,23 +89,24 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
     }
     case "executeFormAction": {
       if (buttonProps.formAction === 'exportToExcel' || buttonProps.formAction === 'EXPORT_TO_EXCEL') {
-        return makeAction({ actionOwner: getClosestTableId(context), actionName: 'Export to Excel' });
+        return makeAction({ actionOwner: getClosestTableId(context) ?? "", actionName: 'Export to Excel' });
       }
       if (buttonProps.formAction === 'TOGGLE_COLUMNS_SELECTOR' || buttonProps.customAction === 'toggleColumnsSelector') {
-        return makeAction({ actionOwner: getClosestTableId(context), actionName: 'Toggle Columns Selector' });
+        return makeAction({ actionOwner: getClosestTableId(context) ?? "", actionName: 'Toggle Columns Selector' });
       }
       if (buttonProps.formAction === 'TOGGLE_ADVANCED_FILTER' || buttonProps.customAction === 'toggleAdvancedFilter') {
-        return makeAction({ actionOwner: getClosestTableId(context), actionName: 'Toggle Advanced Filter' });
+        return makeAction({ actionOwner: getClosestTableId(context) ?? "", actionName: 'Toggle Advanced Filter' });
       }
       if (buttonProps.formAction === 'REFRESH_TABLE' || buttonProps.customAction === 'refresh') {
-        return makeAction({ actionOwner: getClosestTableId(context), actionName: 'Refresh table' });
+        return makeAction({ actionOwner: getClosestTableId(context) ?? "", actionName: 'Refresh table' });
       }
+      return undefined;
     }
     case "dispatchAnEvent": {
       return getDispatchEventReplacement(buttonProps);
     }
   }
-  return null;
+  return undefined;
 };
 
 //#region old types
@@ -134,71 +136,71 @@ export interface IButtonGroupItemBaseV0 extends IHasVersion {
   id: string;
   name: string;
   label?: string | ReactNode;
-  tooltip?: string;
+  tooltip?: string | undefined;
   sortOrder: number;
-  danger?: boolean;
-  hidden?: boolean;
-  disabled?: boolean;
-  isDynamic?: boolean;
+  danger?: boolean | undefined;
+  hidden?: boolean | undefined;
+  disabled?: boolean | undefined;
+  isDynamic?: boolean | undefined;
   itemType: ButtonGroupItemTypeV0;
-  groupType?: ButtonGroupTypeV0;
-  icon?: string;
-  buttonType?: ButtonTypeV0;
-  customVisibility?: string;
-  customEnabled?: string;
-  permissions?: string[];
-  style?: string;
-  size?: SizeTypeV0;
+  groupType?: ButtonGroupTypeV0 | undefined;
+  icon?: string | undefined;
+  buttonType?: ButtonTypeV0 | undefined;
+  customVisibility?: string | undefined;
+  customEnabled?: string | undefined;
+  permissions?: string[] | undefined;
+  style?: string | undefined;
+  size?: SizeTypeV0 | undefined;
 }
 
 interface IButtonGroupButtonV0 extends IButtonGroupItemBaseV0 {
   itemSubType: ToolbarItemSubTypeV0;
-  buttonAction?: ButtonActionTypeV0;
-  refreshTableOnSuccess?: boolean;
-  targetUrl?: string;
+  buttonAction?: ButtonActionTypeV0 | undefined;
+  refreshTableOnSuccess?: boolean | undefined;
+  targetUrl?: string | undefined;
 
   /**
    * Predefined form action that gets executed via events
    */
-  formAction?: string;
+  formAction?: string | undefined;
 
   /**
    * Custom form events that can be passed with parameters
    */
-  customFormAction?: string;
-  uniqueStateId?: string;
-  customAction?: string;
-  customActionParameters?: string;
-  actionScript?: string;
-  size?: SizeTypeV0;
-  modalFormId?: string;
-  modalTitle?: string;
-  modalFormMode?: 'designer' | 'edit' | 'readonly';
-  skipFetchData?: boolean;
-  submitLocally?: boolean;
+  customFormAction?: string | undefined;
+  uniqueStateId?: string | undefined;
+  customAction?: string | undefined;
+  customActionParameters?: string | undefined;
+  actionScript?: string | undefined;
+  size?: SizeTypeV0 | undefined;
+  modalFormId?: string | undefined;
+  modalTitle?: string | undefined;
+  modalFormMode?: 'designer' | 'edit' | 'readonly' | undefined;
+  skipFetchData?: boolean | undefined;
+  submitLocally?: boolean | undefined;
 
   // This is the event that will be triggered once the form has been submitted. The event will be passed this data
-  onSubmitEvent?: string;
+  onSubmitEvent?: string | undefined;
 
   /** An event name to dispatch on the click of a button */
-  eventName?: string;
+  eventName?: string | undefined;
 
   /** The string representing a custom event name to dispatch when the button has been dispatched
    * in case we forgot to include it in the `eventName` dropdown
    */
-  customEventNameToDispatch?: string;
+  customEventNameToDispatch?: string | undefined;
 
-  modalWidth?: number;
-  modalActionOnSuccess?: 'keepOpen' | 'navigateToUrl' | 'close' | undefined;
-  showConfirmDialogBeforeSubmit?: boolean;
-  modalConfirmDialogMessage?: string;
-  onSuccessScript?: string;
-  onErrorScript?: string;
+  modalWidth?: number | undefined;
+  modalActionOnSuccess?: 'keepOpen' | 'navigateToUrl' | 'close' | undefined | undefined;
+  showConfirmDialogBeforeSubmit?: boolean | undefined;
+  modalConfirmDialogMessage?: string | undefined;
+  onSuccessScript?: string | undefined;
+  onErrorScript?: string | undefined;
 }
 
 interface IToolbarButtonTableDialogPropsV0 extends Omit<IModalPropsV0, 'formId' | 'isVisible'>, IButtonGroupButtonV0 {
-  modalProps?: IModalPropsV0;
-  additionalProperties?: IKeyValue[];
+  modalProps?: IModalPropsV0 | undefined;
+  additionalProperties?: IKeyValue[] | undefined;
 }
 
 interface IModalPropsV0 {
@@ -210,24 +212,24 @@ interface IModalPropsV0 {
   /**
    * Url to be used to fetch form data
    */
-  fetchUrl?: string;
+  fetchUrl?: string | undefined;
 
   /**
    * Whether the modal footer should be shown. The modal footer shows default buttons Submit and Cancel.
    *
    * The url to use will be found in the form settings and the correct verb to use is specified by submitHttpVerb
    */
-  showModalFooter?: boolean;
+  showModalFooter?: boolean | undefined;
 
   /**
    * What http verb to use when submitting the form. Used in conjunction with `showModalFooter`
    */
-  submitHttpVerb?: 'POST' | 'PUT';
+  submitHttpVerb?: 'POST' | 'PUT' | undefined;
 
   /**
    * Title to display on the modal
    */
-  title?: string;
+  title?: string | undefined;
   // path | id | markup
 
   /**
@@ -243,37 +245,37 @@ interface IModalPropsV0 {
   /**
    * A callback to execute when the form has been submitted
    */
-  onSubmitted?: (values?: any) => void;
+  onSubmitted?: (values?: unknown) => void;
 
   /**
    * If passed, the user will be redirected to this url on success
    */
-  onSuccessRedirectUrl?: string;
+  onSuccessRedirectUrl?: string | undefined;
 
   /**
    * If specified, the form data will not be fetched, even if the GET Url has query parameters that can be used to fetch the data.
    * This is useful in cases whereby one form is used both for create and edit mode
    */
-  skipFetchData?: boolean;
+  skipFetchData?: boolean | undefined;
 
-  submitLocally?: boolean;
+  submitLocally?: boolean | undefined;
 
-  width?: number;
+  width?: number | undefined;
 
-  modalConfirmDialogMessage?: string;
+  modalConfirmDialogMessage?: string | undefined;
 
   onCancel?: () => void;
 }
 //#endregion
 
-export const migrateV0toV1 = (props: IButtonGroupButtonV0, context: SettingsMigrationContext): IButtonComponentProps => {
-  const actionConfiguration = getActionConfiguration(props, context);
+export const migrateV0toV1 = (props: IButtonGroupItemBaseV0, context: SettingsMigrationContext): IButtonComponentProps => {
+  const actionConfiguration = getActionConfiguration(props as IButtonGroupButtonV0, context);
 
   const isGhost = props.buttonType === 'ghost';
   const result: IButtonComponentProps = {
     ...props,
     actionConfiguration: actionConfiguration,
-    type: props['type'] ?? "button",
+    type: getStringPropertyOrUndefined(props, "type") ?? "button",
     propertyName: props['name'],
     buttonType: isGhost ? 'default' : props.buttonType,
     ghost: isGhost,

@@ -17,6 +17,8 @@ import { ConfigurableFormItem } from '@/components/formDesigner/components/formI
 import { useStyles } from './styles/styles';
 import { nanoid } from '@/utils/uuid';
 import { migrateButtonGroupDynamicItems } from '@/designer-components/_common-migrations/migrateButtonGroupDynamicItems';
+import { isNonEmptyArray } from '@/utils/array';
+import { isDefined } from '@/utils/nullables';
 
 const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   type: 'buttonGroup',
@@ -27,10 +29,10 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   preserveDimensionsInDesigner: true,
   Factory: ({ model, form }) => {
     const { styles } = useStyles();
-    return model.hidden ? null
+    return model.hidden === true ? null
       : (
         <ConfigurableFormItem model={{ ...model, hideLabel: true }} className={styles.shaHideEmpty}>
-          <ButtonGroup {...model} styles={model.allStyles.fullStyle} form={form} />
+          <ButtonGroup {...model} styles={model.allStyles?.fullStyle} form={form} />
         </ConfigurableFormItem>
       );
   },
@@ -39,7 +41,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
     .add<IButtonGroupComponentProps>(0, (prev) => {
       return {
         ...prev,
-        items: prev['items'] ?? [],
+        items: "items" in prev && Array.isArray(prev.items) ? prev.items as ButtonGroupItemProps[] : [],
       };
     })
     .add<IButtonGroupComponentProps>(1, migrateV0toV1)
@@ -47,7 +49,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
     .add<IButtonGroupComponentProps>(3, (prev) => ({ ...prev, isInline: prev['isInline'] ?? true })) /* default isInline to true if not specified */
     .add<IButtonGroupComponentProps>(4, (prev) => {
       const newModel = { ...prev };
-      newModel.items = prev.items?.map((item) => migrateCustomFunctions(item as any));
+      newModel.items = (isDefined(prev.items) ? prev.items : []).map((item) => migrateCustomFunctions(item));
       return migratePropertyName(migrateCustomFunctions(newModel));
     })
     .add<IButtonGroupComponentProps>(5, (prev) => {
@@ -68,7 +70,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
         return { ...item };
       };
 
-      newModel.items = prev.items?.map(updateItemDefaults);
+      newModel.items = prev.items.map(updateItemDefaults);
       return newModel;
     })
     .add<IButtonGroupComponentProps>(6, (prev) => migrateVisibility(prev))
@@ -90,7 +92,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
     .add<IButtonGroupComponentProps>(10, (prev) => {
       const setDownIcon = (item: ButtonGroupItemProps): ButtonGroupItemProps => {
         if (isGroup(item)) {
-          item.downIcon = !item.downIcon ? "DownOutlined" : item.downIcon;
+          item.downIcon = !isDefined(item.downIcon) ? "DownOutlined" : item.downIcon;
           item.childItems = (item.childItems ?? []).map(setDownIcon);
         }
         return item;
@@ -120,7 +122,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
     })
     .add<IButtonGroupComponentProps>(14, (prev) => {
       // Add default buttons with proper styling when ButtonGroup is empty
-      if (!prev.items || prev.items.length === 0) {
+      if (!isNonEmptyArray(prev.items)) {
         const newModel = { ...prev };
         return {
           ...newModel,

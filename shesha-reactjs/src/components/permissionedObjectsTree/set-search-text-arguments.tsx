@@ -2,7 +2,7 @@ import { nanoid } from '@/utils/uuid';
 import { FormMarkupFactory } from '@/interfaces/configurableAction';
 
 export interface ISetSearchTextArguments {
-  searchText?: string;
+  searchText?: string | undefined;
 }
 
 export const setSearchTextArgumentsForm: FormMarkupFactory = ({ fbf }) => {

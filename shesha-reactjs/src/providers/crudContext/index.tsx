@@ -34,23 +34,23 @@ import { ShaFormProvider } from '../form/providers/shaFormProvider';
 import { useShaForm } from '../form/store/shaFormInstance';
 import { extractErrorInfo, throwError } from '@/utils/errors';
 
-export type DataProcessor = (data: unknown) => Promise<unknown>;
+export type DataProcessor<TData extends object = object> = (data: TData) => Promise<TData>;
 
 export interface ICrudProviderProps<TData extends object = object> {
   isNewObject: boolean;
   allowEdit: boolean;
   allowDelete: boolean;
-  mode?: CrudMode;
+  mode?: CrudMode | undefined;
   allowChangeMode: boolean;
   data: TData | RowDataInitializer<TData>;
-  updater?: DataProcessor;
-  creater?: DataProcessor;
-  deleter?: () => Promise<void>;
-  onSave?: DataProcessor;
-  autoSave?: boolean;
+  updater?: DataProcessor<TData> | undefined;
+  creater?: DataProcessor<TData> | undefined;
+  deleter?: (() => Promise<void>) | undefined;
+  onSave?: DataProcessor<TData> | undefined;
+  autoSave?: boolean | undefined;
   editorComponents?: IFlatComponentsStructure | undefined;
   displayComponents?: IFlatComponentsStructure | undefined;
-  formSettings?: IFormSettings;
+  formSettings?: IFormSettings | undefined;
 }
 
 interface IInternalCrudProviderProps<TData extends object = object> extends ICrudProviderProps<TData> {
@@ -58,7 +58,7 @@ interface IInternalCrudProviderProps<TData extends object = object> extends ICru
   onValuesChange: () => void;
   setInitialValues: (values: object) => void;
   setInitialValuesLoading: (loading: boolean) => void;
-  delayedUpdate: React.MutableRefObject<IDelayedUpdateGroup[] | undefined> | undefined;
+  delayedUpdate: React.RefObject<IDelayedUpdateGroup[] | undefined> | undefined;
 }
 
 const InternalCrudProvider = <TData extends object = object>(props: PropsWithChildren<IInternalCrudProviderProps<TData>>): React.ReactElement => {
@@ -131,9 +131,9 @@ const CrudProvider = <TData extends object = object>(props: PropsWithChildren<IC
   });
 
   const toolboxComponents = useFormDesignerComponents();
-  const delayedUpdate = useRef<IDelayedUpdateGroup[]>();
+  const delayedUpdate = useRef<IDelayedUpdateGroup[]>(undefined);
 
-  const formRef = useRef<IFormActionsContext<TData>>();
+  const formRef = useRef<IFormActionsContext<TData>>(undefined);
 
   const switchModeInternal = (mode: CrudMode, allowChangeMode: boolean): void => {
     dispatch(switchModeAction({ mode, allowChangeMode }));
@@ -197,7 +197,7 @@ const CrudProvider = <TData extends object = object>(props: PropsWithChildren<IC
     };
   };
 
-  const performSave = (processor: DataProcessor, updateType: string): Promise<void> => {
+  const performSave = (processor: DataProcessor<TData>, updateType: string): Promise<void> => {
     dispatch(saveStartedAction());
 
     return form
@@ -210,7 +210,7 @@ const CrudProvider = <TData extends object = object>(props: PropsWithChildren<IC
           removeGhostKeys(mergedData), // TODO: temporary use ghost keys for file upload components, form colums still not provide components structure
           props.editorComponents?.allComponents ?? {},
           toolboxComponents,
-        );
+        ) as TData;
         // send data of stored files
         if (Boolean(delayedUpdate)) (postData as Record<string, unknown>)['_delayedUpdate'] = delayedUpdate.current;
 

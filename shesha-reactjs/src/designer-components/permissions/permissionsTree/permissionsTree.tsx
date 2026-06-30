@@ -9,22 +9,15 @@ import { ConfigurableFormItem } from '@/components/formDesigner/components/formI
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 export interface IPermissionsTreeComponentProps extends IConfigurableFormComponent {
-  value?: string[];
-  updateKey?: string;
-  onChange?: (values?: string[]) => void;
-  /**
-   * Whether this control is disabled
-   */
-  disabled?: boolean;
   /**
    * If true, the automplete will be in read-only mode. This is not the same sa disabled mode
    */
   readOnly?: boolean;
   height?: number;
   mode: PermissionsTreeMode;
-
   onSelectAction?: IConfigurableActionConfiguration;
 }
 
@@ -37,39 +30,22 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionsTreeCompon
   isInput: true,
   isOutput: true,
   Factory: ({ model }) => {
-    if (model.mode === 'Edit') {
-      return (
-        <PermissionsTree
-          onSelectAction={model.onSelectAction}
-          formComponentId={model?.id}
-          formComponentName={model.componentName}
-          value={model?.value}
-          updateKey={model?.updateKey}
-          onChange={model?.onChange}
-          readOnly={model?.readOnly}
-          mode={model?.mode ?? "Select"}
-          height={model?.height}
-        />
-      );
-    } else {
-      return (
-        <ConfigurableFormItem model={model}>
-          {(value, onChange) => (
-            <PermissionsTree
-              onSelectAction={model.onSelectAction}
-              formComponentId={model?.id}
-              formComponentName={model.componentName}
-              value={value}
-              updateKey={model?.updateKey}
-              onChange={onChange}
-              readOnly={model?.readOnly}
-              mode={model?.mode ?? "Select"}
-              height={model?.height}
-            />
-          )}
-        </ConfigurableFormItem>
-      );
-    };
+    return (
+      <ConfigurableFormItem<string[]> model={model}>
+        {(value, onChange) => (
+          <PermissionsTree
+            onSelectAction={model.onSelectAction}
+            formComponentId={model.id}
+            formComponentName={model.componentName ?? ""}
+            value={value ?? undefined}
+            onChange={onChange}
+            readOnly={model.readOnly}
+            mode={!isNullOrWhiteSpace(model.mode) ? model.mode : "Select"}
+            height={model.height}
+          />
+        )}
+      </ConfigurableFormItem>
+    );
   },
   initModel: (model: IPermissionsTreeComponentProps) => {
     return {

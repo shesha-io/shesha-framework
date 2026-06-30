@@ -1,8 +1,8 @@
 import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
-import { SettingsFormMarkupFactory } from '@/interfaces';
+import { DataTypes, SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const eventsTabId = nanoid();
@@ -33,7 +33,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true }, jsSetting: true })
                 .addLabelConfigurator({ propertyName: 'label', label: 'Label', hideLabel: true })
                 .stdPlaceholderDescriptionInputs()
-                .stdVisibleEditableInputs()
+                .stdVisibleEditableInputs('full')
                 .stdCollapsiblePanel('Format', (fb) => fb
                   .addSettingsInput({ inputType: 'dropdown', propertyName: 'numberFormat', label: 'Format', dropdownOptions: numberFormatOptions })
                   .addSettingsInputRow({ inputs: [
@@ -65,11 +65,11 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
           },
           {
             key: '2', title: 'Events', id: eventsTabId,
-            components: [...fbf(eventsTabId).stdEventHandlers(['onChange', 'onFocus', 'onBlur']).toJson()],
+            components: [...fbf(eventsTabId).stdEventHandlers(['onChange', 'onFocus', 'onBlur', 'onClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave', 'onKeyDown', 'onKeyUp'], DataTypes.number).toJson()],
           },
           {
             key: '3', title: 'Appearance', id: appearanceTabId,
-            components: [...fbf(appearanceTabId).stdAppearancePanels(['font', 'dimensions', 'border', 'background', 'shadow', 'marginPadding', 'customStyle']).toJson()],
+            components: [...fbf(appearanceTabId).stdAppearancePanels(['font', 'dimensions', 'border', 'background', 'shadow', 'marginPadding', 'customStyle'], removeStyleRouter).toJson()],
           },
         ],
       })

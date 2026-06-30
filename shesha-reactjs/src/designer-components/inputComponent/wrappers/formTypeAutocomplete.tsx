@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 const formTypes = ['Table', 'Create', 'Edit', 'Details', 'Quickview', 'ListItem', 'Picker'];
 
 export const FormTypeAutocompleteWrapper: FCUnwrapped<IFormTypeAutocompleteSettingsInputProps> = (props) => {
-  const { value, onChange, readOnly, size } = props;
+  const { value, onChange, readOnly = false, size } = props;
   const [formTypesOptions, setFormTypesOptions] = useState<{ value: string }[]>(
     formTypes.map((i) => {
       return { value: i };
@@ -15,7 +15,9 @@ export const FormTypeAutocompleteWrapper: FCUnwrapped<IFormTypeAutocompleteSetti
   return (
     <AutoComplete
       value={value}
-      onChange={onChange}
+      onChange={(newValue) => {
+        onChange?.(newValue);
+      }}
       disabled={readOnly}
 
       options={formTypesOptions}

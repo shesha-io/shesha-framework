@@ -103,8 +103,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   referenceList: {
                     _code: 'return getSettingValue(data?.referenceList);',
                     _mode: 'code',
-                    _value: false,
-                  } as any,
+                  },
                   inputType: 'RefListItemSelectorSettingsModal',
                 })
                 .toJson(),
@@ -128,7 +127,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     _mode: 'code',
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
                     _value: '',
-                  } as any,
+                  },
                   components: [
                     ...fbf()
                       .addCollapsiblePanel({
@@ -295,7 +294,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             _code: 'return  getSettingValue(data?.colorSource) !== "custom";',
                             _mode: 'code',
                             _value: false,
-                          } as any,
+                          },
                           inputs: [
                             {
                               id: nanoid(),

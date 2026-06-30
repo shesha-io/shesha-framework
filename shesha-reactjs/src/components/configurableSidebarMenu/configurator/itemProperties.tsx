@@ -2,7 +2,6 @@ import React, {
   FC,
   useMemo,
 } from 'react';
-import { Empty } from 'antd';
 import { useDebouncedCallback } from 'use-debounce';
 import { ISidebarMenuItem, isSidebarGroup } from '@/interfaces/sidebar';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
@@ -11,17 +10,18 @@ import { getGroupSettings } from './groupSettings';
 import { getItemSettings } from './itemSettings';
 import { useFormBuilderFactory } from '@/form-factory/hooks';
 import { ConfigurableForm } from '@/components/configurableForm';
+import { OnFormValuesChangeHandler } from '@/components/configurableForm/models';
 
 export interface ISidebarItemPropertiesProps {
-  item?: ISidebarMenuItem;
-  onChange?: (item: ISidebarMenuItem) => void;
+  item: ISidebarMenuItem;
+  onChange: (item: ISidebarMenuItem) => void;
   readOnly: boolean;
 }
 
 export const SidebarItemProperties: FC<ISidebarItemPropertiesProps> = ({ item, onChange, readOnly }) => {
-  const debouncedSave = useDebouncedCallback(
+  const debouncedSave = useDebouncedCallback<OnFormValuesChangeHandler<ISidebarMenuItem>>(
     (values) => {
-      onChange?.({ ...item, ...values });
+      onChange({ ...item, ...values });
     },
     // delay in ms
     300,
@@ -31,9 +31,6 @@ export const SidebarItemProperties: FC<ISidebarItemPropertiesProps> = ({ item, o
 
   // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
   const editor = useMemo(() => {
-    const emptyEditor = null;
-    if (!item) return emptyEditor;
-
     const markup = isSidebarGroup(item)
       ? getGroupSettings({ fbf })
       : getItemSettings({ fbf });
@@ -41,7 +38,6 @@ export const SidebarItemProperties: FC<ISidebarItemPropertiesProps> = ({ item, o
     return (
       <SourceFilesFolderProvider folder={`button-${item.id}`}>
         <ConfigurableForm
-          // key={item.id} // rerender for each item to initialize all controls
           labelCol={{ span: 24 }}
           wrapperCol={{ span: 24 }}
           mode={readOnly ? 'readonly' : 'edit'}
@@ -53,15 +49,7 @@ export const SidebarItemProperties: FC<ISidebarItemPropertiesProps> = ({ item, o
         />
       </SourceFilesFolderProvider>
     );
-  }, [item]);
-
-  if (!Boolean(item)) {
-    return (
-      <div>
-        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={readOnly ? 'Please select a component to view properties' : 'Please select a component to begin editing'} />
-      </div>
-    );
-  }
+  }, [debouncedSave, fbf, item, readOnly]);
 
   return <>{editor}</>;
 };

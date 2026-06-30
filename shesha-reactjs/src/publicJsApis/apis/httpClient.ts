@@ -38,11 +38,11 @@ export interface HttpRequestConfig {
  * HTTP client API
  */
 export interface HttpClientApi {
-  get<T = unknown, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R>;
-  delete<T = unknown, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R>;
-  head<T = unknown, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R>;
-  options<T = unknown, R = HttpResponse<T>>(url: string, config?: HttpRequestConfig): Promise<R>;
-  post<T = unknown, R = HttpResponse<T>, D = unknown>(url: string, data?: D, config?: HttpRequestConfig): Promise<R>;
-  put<T = unknown, R = HttpResponse<T>, D = unknown>(url: string, data?: D, config?: HttpRequestConfig): Promise<R>;
-  patch<T = unknown, R = HttpResponse<T>, D = unknown>(url: string, data?: D, config?: HttpRequestConfig): Promise<R>;
+  get<T = unknown>(url: string, config?: HttpRequestConfig): Promise<HttpResponse<T>>;
+  delete<T = unknown>(url: string, config?: HttpRequestConfig): Promise<HttpResponse<T>>;
+  head<T = unknown>(url: string, config?: HttpRequestConfig): Promise<HttpResponse<T>>;
+  options<T = unknown>(url: string, config?: HttpRequestConfig): Promise<HttpResponse<T>>;
+  post<T = unknown, D = unknown>(url: string, data?: D, config?: HttpRequestConfig): Promise<HttpResponse<T>>;
+  put<T = unknown, D = unknown>(url: string, data?: D, config?: HttpRequestConfig): Promise<HttpResponse<T>>;
+  patch<T = unknown, D = unknown>(url: string, data?: D, config?: HttpRequestConfig): Promise<HttpResponse<T>>;
 }

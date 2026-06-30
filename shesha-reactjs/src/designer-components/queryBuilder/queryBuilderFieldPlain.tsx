@@ -1,16 +1,17 @@
 import { Alert, Typography } from 'antd';
-import { useForm, useQueryBuilder } from '@/providers';
+import { useForm, useQueryBuilderOrUndefined } from '@/providers';
 import React, { FC } from 'react';
 import { IQueryBuilderProps } from './models';
 import QueryBuilderPlain from './queryBuilderPlain';
+import { isDefined } from '@/utils/nullables';
 
 export const QueryBuilderPlainRenderer: FC<IQueryBuilderProps> = (props) => {
   const { fieldsUnavailableHint } = props;
 
-  const queryBuilder = useQueryBuilder(false);
+  const queryBuilder = useQueryBuilderOrUndefined();
   const { formMode } = useForm();
 
-  const fieldsAvailable = Boolean(queryBuilder);
+  const fieldsAvailable = isDefined(queryBuilder);
   if (!fieldsAvailable && formMode === 'designer' && !fieldsUnavailableHint)
     return (
       <Alert
@@ -24,8 +25,8 @@ export const QueryBuilderPlainRenderer: FC<IQueryBuilderProps> = (props) => {
     <Typography.Text type="secondary">{fieldsUnavailableHint}</Typography.Text>
   ) : (
     <QueryBuilderPlain
-      onChange={props?.onChange}
-      value={props?.value}
+      onChange={props.onChange}
+      value={props.value}
       readOnly={props.readOnly}
     />
   );

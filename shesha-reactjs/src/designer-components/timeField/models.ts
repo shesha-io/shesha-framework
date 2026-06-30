@@ -1,43 +1,41 @@
 import React from 'react';
-import { IEventHandlers } from '@/components/formDesigner/components/utils';
 import { ComponentDefinition } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers';
+import { PickerFocusEventHandler } from '@rc-component/picker/interface';
 
-export type TimePickerChangeEvent = (value: number | null, timeString: string) => void;
-export type RangePickerChangeEvent = (values: number[] | null, timeString: [string, string]) => void;
+export type TimePickerChangeEvent = (value: number | null, timeString: string | null) => void;
+export type RangePickerChangeEvent = (values: (number | null)[] | null, timeString: [string, string]) => void;
+
+export type TimeFieldValueType = number | [number, number];
 
 export interface ITimePickerProps {
-  className?: string;
-  defaultValue?: string | [string, string];
-  format?: string;
-  value?: string | [string, string];
-  placeholder?: string;
-  popupClassName?: string;
-  hourStep?: number;
-  minuteStep?: number;
-  secondStep?: number;
-  disabled?: boolean; // Use
-  range?: boolean; // Use
-  allowClear?: boolean;
-  autoFocus?: boolean;
-  inputReadOnly?: boolean;
-  showNow?: boolean;
-  hideDisabledOptions?: boolean;
-  use12Hours?: boolean;
-  hideBorder?: boolean;
-  onChange?: TimePickerChangeEvent | RangePickerChangeEvent;
-  style?: React.CSSProperties;
-  readOnly?: boolean;
-  enableStyleOnReadonly?: boolean;
+  // className?: string | undefined;
+  format?: string | undefined;
+  value?: TimeFieldValueType | null | undefined;
+  placeholder?: string | undefined;
+  // popupClassName?: string | undefined;
+  hourStep?: number | undefined;
+  minuteStep?: number | undefined;
+  secondStep?: number | undefined;
+  disabled?: boolean | undefined;
+  range?: boolean | undefined;
+  allowClear?: boolean | undefined;
+  autoFocus?: boolean | undefined;
+  // inputReadOnly?: boolean | undefined;
+  showNow?: boolean | undefined;
+  hideDisabledOptions?: boolean | undefined;
+  use12Hours?: boolean | undefined;
+  hideBorder?: boolean | undefined;
+  onChange?: TimePickerChangeEvent | RangePickerChangeEvent | undefined;
+  style?: React.CSSProperties | undefined;
+  readOnly?: boolean | undefined;
+  enableStyleOnReadonly?: boolean | undefined;
+  onFocus?: PickerFocusEventHandler;
+  onBlur?: PickerFocusEventHandler;
 }
 
 export interface ITimePickerComponentProps extends Omit<ITimePickerProps, 'defaultValue' | 'style' | "readOnly">, IConfigurableFormComponent {
 
 }
 
-interface ITimePickerComponentCalulatedValues {
-  defaultValue?: string;
-  eventHandlers?: IEventHandlers;
-}
-
-export type TimeFieldComponentDefinition = ComponentDefinition<"timePicker", ITimePickerComponentProps, ITimePickerComponentCalulatedValues>;
+export type TimeFieldComponentDefinition = ComponentDefinition<"timePicker", ITimePickerComponentProps>;

@@ -64,7 +64,7 @@ export interface ResetPasswordVerifyOtpResponse {
 export type ResetPasswordVerifyOtpResponseAjaxResponse = IAjaxResponse<ResetPasswordVerifyOtpResponse>;
 
 export const useResetPasswordSendOtp = (): IUseMutateResponseFixedEndpoint<UserResetPasswordSendOtpQueryParams, ResetPasswordSendOtpResponseAjaxResponse> => 
-    useMutateForEndpoint<UserResetPasswordSendOtpQueryParams, ResetPasswordSendOtpResponseAjaxResponse>({ url: data => `/api/services/app/User/ResetPasswordSendOtp?mobileNo=${data.mobileNo}`, httpVerb: 'POST' });
+    useMutateForEndpoint<UserResetPasswordSendOtpQueryParams, ResetPasswordSendOtpResponseAjaxResponse>({ url: data => `/api/services/app/User/ResetPasswordSendOtp?mobileNo=${data?.mobileNo}`, httpVerb: 'POST' });
 
 export const useResetPasswordVerifyOtp = (): IUseMutateResponseFixedEndpoint<ResetPasswordVerifyOtpInput, ResetPasswordVerifyOtpResponseAjaxResponse> => 
     useMutateForEndpoint<ResetPasswordVerifyOtpInput, ResetPasswordVerifyOtpResponseAjaxResponse>({ url: '/api/services/app/User/ResetPasswordVerifyOtp', httpVerb: 'POST' });

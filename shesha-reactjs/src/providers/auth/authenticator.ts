@@ -2,8 +2,8 @@ import { getAccessToken, removeAccessToken, saveUserToken } from '@/utils/auth';
 import { DEFAULT_ACCESS_TOKEN_NAME } from '../sheshaApplication/contexts';
 import { URL_HOME_PAGE, URL_LOGIN_PAGE } from '@/shesha-constants';
 import { IEntityReferenceDto, IErrorInfo, ILoginForm, toErrorInfo } from '@/interfaces';
-import { HttpClientApi, HttpResponse } from '@/publicJsApis/apis/httpClient';
-import { AuthenticateModel, AuthenticateResultModelAjaxResponse } from '@/apis/tokenAuth';
+import { HttpClientApi } from '@/publicJsApis/apis/httpClient';
+import { AuthenticateResultModelAjaxResponse } from '@/apis/tokenAuth';
 import { GetCurrentLoginInfoOutput, GetCurrentLoginInfoOutputAjaxResponse, InitializationErrorsInfoDto, UserLoginInfoDto } from '@/apis/session';
 import { getQueryParam, isSameUrls, removeURLParameter } from '@/utils/url';
 import { IRouter } from '../shaRouting';
@@ -26,6 +26,7 @@ import { ISettingsClientContext } from '../settings/contexts';
 import { extractAjaxResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { IShaRouter } from '../shaRouting/contexts';
+import { extractErrorInfo } from '@/utils/errors';
 
 type RerenderTrigger = () => void;
 
@@ -113,7 +114,7 @@ export class Authenticator implements IAuthenticator {
       const userProfile = await this.#fetchUserInfoHttp(headersOverride);
       this.#loginInfo = userProfile;
     } catch (error) {
-      this.#updateState('failed', ERROR_MESSAGES.USER_PROFILE_LOADING, error);
+      this.#updateState('failed', ERROR_MESSAGES.USER_PROFILE_LOADING, extractErrorInfo(error));
       throw error;
     }
   };
@@ -183,8 +184,8 @@ export class Authenticator implements IAuthenticator {
 
   #loginUserHttp = async (loginFormData: ILoginForm): Promise<void> => {
     const httpResponse = await this.#httpClient.post<
-      AuthenticateModel,
-      HttpResponse<AuthenticateResultModelAjaxResponse>
+      AuthenticateResultModelAjaxResponse,
+      ILoginForm
     >(URLS.LOGIN, loginFormData);
     const { data: response } = httpResponse;
 
@@ -196,7 +197,11 @@ export class Authenticator implements IAuthenticator {
 
     if (token && token.accessToken) {
       // save token to the localStorage
-      this.#saveUserToken(token);
+      this.#saveUserToken({
+        accessToken: token.accessToken,
+        expireInSeconds: token.expireInSeconds,
+        expireOn: token.expireOn,
+      });
     } else {
       throw new Error(ERROR_MESSAGES.GENERIC);
     }
@@ -205,7 +210,7 @@ export class Authenticator implements IAuthenticator {
   #fetchUserInfoHttp = async (headersOverride?: IHttpHeaders): Promise<GetCurrentLoginInfoOutput> => {
     const headers = { ...this.#getHttpHeaders(), ...headersOverride };
 
-    const httpResponse = await this.#httpClient.get<void, HttpResponse<GetCurrentLoginInfoOutputAjaxResponse>>(URLS.GET_CURRENT_LOGIN_INFO, { headers: headers });
+    const httpResponse = await this.#httpClient.get<GetCurrentLoginInfoOutputAjaxResponse>(URLS.GET_CURRENT_LOGIN_INFO, { headers: headers });
     const response = extractAjaxResponse(httpResponse.data, 'Failed to get user profile');
 
     this.#onSetRequestHeaders?.(headers);
@@ -292,7 +297,7 @@ export class Authenticator implements IAuthenticator {
     // We pass the token explicitly in headers since it's no longer in localStorage
     try {
       if (currentToken?.accessToken) {
-        await this.#httpClient.post<void, void>(
+        await this.#httpClient.post<void>(
           URLS.LOGOFF,
           {},
           { headers: { Authorization: `Bearer ${currentToken.accessToken}` } },
@@ -424,7 +429,7 @@ export class Authenticator implements IAuthenticator {
 }
 
 export const useAuthenticatorInstance = (args: AuthenticatorArgs): [IAuthenticator] => {
-  const authenticatorRef = React.useRef<IAuthenticator>();
+  const authenticatorRef = React.useRef<IAuthenticator>(undefined);
   const [, forceUpdate] = React.useState({});
 
   if (!authenticatorRef.current) {

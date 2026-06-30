@@ -6,11 +6,11 @@ import { nanoid } from '@/utils/uuid';
 import { IRadioOption } from '../settingsInput/interfaces';
 
 export interface ILabelProps {
-  readOnly?: boolean;
+  readOnly?: boolean | undefined;
   label: string | React.ReactNode;
-  hideLabel?: boolean;
-  labelAlignOptions?: IRadioOption[];
-  placeholder?: string;
+  hideLabel?: boolean | undefined;
+  labelAlignOptions?: IRadioOption[] | undefined;
+  placeholder?: string | undefined;
 }
 
 const LabelConfiguratorComponent: FC<ILabelProps> = ({ hideLabel: value, readOnly, label, labelAlignOptions: labelAlign, placeholder }) => {

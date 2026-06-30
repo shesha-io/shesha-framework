@@ -21,7 +21,7 @@ namespace Shesha.Tests.Fixtures
         {
             // Configure the PostgreSQL container
             _postgresContainer = new PostgreSqlBuilder()
-                .WithImage("boxfusionregistry.azurecr.io/shesha-framework-postgresql:1.0") // Use the latest PostgreSQL image
+                .WithImage("iilyichev/shesha-framework-postgresql:0.43") // Use the latest PostgreSQL image
                 .WithDatabase(DbName) // Set the database name
                 .WithUsername(Login) // Set the username
                 .WithPassword(Password) // Set the password

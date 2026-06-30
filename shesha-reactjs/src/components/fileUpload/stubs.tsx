@@ -1,8 +1,9 @@
 import React from 'react';
 import { InboxOutlined } from '@ant-design/icons';
+import { FileUploadStylesResponse } from './styles/styles';
 
 interface DraggerStubProps {
-  styles?: any;
+  styles: FileUploadStylesResponse;
   type?: string;
 }
 

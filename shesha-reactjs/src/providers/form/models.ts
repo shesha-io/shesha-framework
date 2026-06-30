@@ -8,13 +8,14 @@ import { IHasVersion } from '@/utils/fluentMigrator/migrator';
 import { ConfigurableItemFullName, ConfigurableItemIdentifier, ConfigurableItemUid } from '@/interfaces/configurableItems';
 import { IFontValue } from '@/designer-components/_settings/utils/font/interfaces';
 import { IBackgroundValue } from '@/designer-components/_settings/utils/background/interfaces';
-import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
+import { IBorderType, IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
 import { IDimensionsValue } from '@/designer-components/_settings/utils/dimensions/interfaces';
 import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
 import { isDefined } from '@/utils/nullables';
 import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
 import { IActionExecutionContext } from '@/interfaces/configurableAction';
 import { GetAvailableConstantsFunc } from "@/designer-components/codeEditor/interfaces";
+import { StringSubtype } from '@/interfaces/utilityTypes';
 
 export const ROOT_COMPONENT_KEY: string = 'root'; // root key of the flat components structure
 export const TOOLBOX_COMPONENT_DROPPABLE_KEY: string = 'toolboxComponent';
@@ -39,7 +40,7 @@ export type LabelAlign = 'left' | 'right';
 export type PropertySettingMode = 'value' | 'code';
 
 export interface IPropertySetting<Value = unknown> {
-  _mode?: PropertySettingMode | undefined;
+  _mode: PropertySettingMode | undefined;
   _value?: Value | undefined;
   _code?: string | undefined;
   _lazy?: boolean | undefined;
@@ -50,21 +51,48 @@ export type ValueOrCodeEvaluator<Value = unknown> = Value | IPropertySetting<Val
 // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 export type SafeFunctionType = Function;
 
-export type UnwrapCodeEvaluators<T> = T extends SafeFunctionType
-  ? T
-  : T extends React.HTMLAttributes<infer _>
-    ? T
-    : {
-      [Key in keyof T]: T[Key] extends React.ReactNode | SafeFunctionType
-        ? T[Key]
-        : T[Key] extends ValueOrCodeEvaluator<infer Value>
-          ? UnwrapCodeEvaluators<Value> // Recursively unwrap Value
-          : T[Key] extends Record<string, unknown> // Check if it's a plain object
-            ? UnwrapCodeEvaluators<T[Key]> // Recursively unwrap object
-            : T[Key]; // Leave everything else
-    };
+type IsUnknown<T> = unknown extends T ? (T extends object ? false : true) : false;
 
-export type FCUnwrapped<T> = React.FC<UnwrapCodeEvaluators<T>>;
+/*
+export type UnwrapCodeEvaluators<T, PropsToSkip extends keyof T = never> = IsUnknown<T> extends true
+  ? T
+  : T extends SafeFunctionType
+    ? T
+    : T extends (infer U)[]
+      ? UnwrapCodeEvaluators<U>[]
+      : {
+        [Key in keyof T]: Key extends PropsToSkip
+          ? T[Key]
+          : T[Key] extends React.ReactNode | SafeFunctionType
+            ? T[Key]
+            : T[Key] extends ValueOrCodeEvaluator<infer Value>
+              ? UnwrapCodeEvaluators<Value> // Recursively unwrap Value
+              : T[Key] extends Record<string, unknown> // Check if it's a plain object
+                ? UnwrapCodeEvaluators<T[Key]> // Recursively unwrap object
+                : T[Key]; // Leave everything else
+      };
+      */
+export type UnwrapCodeEvaluators<T, PropsToSkip extends keyof T = never> = IsUnknown<T> extends true
+  ? T
+  : T extends SafeFunctionType
+    ? T
+    : T extends (infer U)[]
+      ? UnwrapCodeEvaluators<U>[]
+      : T extends object
+        ? {
+          [Key in keyof T]: Key extends PropsToSkip | `_${string}`
+            ? T[Key]
+            : T[Key] extends React.ReactNode | SafeFunctionType
+              ? T[Key]
+              : T[Key] extends ValueOrCodeEvaluator<infer Value>
+                ? UnwrapCodeEvaluators<Value> // Recursively unwrap Value
+                : T[Key] extends Record<string, unknown> // Check if it's a plain object
+                  ? UnwrapCodeEvaluators<T[Key]> // Recursively unwrap object
+                  : T[Key]; // Leave everything else
+        }
+        : T;
+
+export type FCUnwrapped<T, PropsToSkip extends keyof T = never> = React.FC<UnwrapCodeEvaluators<T, PropsToSkip>>;
 
 /**
  * Component container
@@ -78,17 +106,19 @@ export interface IFormComponentContainer {
 
 export interface IComponentValidationRules {
   required?: boolean | IPropertySetting<boolean> | undefined;
-  minValue?: number;
-  maxValue?: number;
-  minLength?: number;
-  maxLength?: number;
-  message?: string;
-  validator?: string;
+  minValue?: number | undefined;
+  maxValue?: number | undefined;
+  minLength?: number | undefined;
+  maxLength?: number | undefined;
+  message?: string | undefined;
+  validator?: string | undefined;
 }
 
-export type EditMode = 'editable' | 'readOnly' | 'inherited' | boolean;
+export type InteractionType = 'full' | 'disabling';
+export type EditMode = 'editable' | 'readOnly' | 'disabled' | 'inherited' | boolean;
+
 export type PositionType = 'relative' | 'fixed';
-export interface IStyleType {
+export interface IStyleValue {
   border?: IBorderValue | undefined;
   background?: IBackgroundValue | undefined;
   font?: IFontValue | undefined;
@@ -96,29 +126,31 @@ export interface IStyleType {
   dimensions?: IDimensionsValue | undefined;
   size?: SizeType | undefined;
   style?: string | undefined;
+  styleJson?: CSSProperties | undefined;
+  /** @deprecated use stylingBoxJson insted */
   stylingBox?: string | undefined;
+  stylingBoxJson?: StyleBoxValue | undefined;
   primaryTextColor?: string | undefined;
   primaryBgColor?: string | undefined;
   secondaryBgColor?: string | undefined;
   secondaryTextColor?: string | undefined;
-  overflow?: boolean | "dropdown" | "menu" | "scroll" | "auto"; // TODO V1: check and fix values, it look slike a mix of css and component specific values
-  hideScrollBar?: boolean;
-  autoWidth?: boolean;
-  autoHeight?: boolean;
+  overflow?: boolean | "dropdown" | "menu" | "scroll" | "auto" | undefined; // TODO V1: check and fix values, it look slike a mix of css and component specific values
+  hideScrollBar?: boolean | undefined;
+  autoWidth?: boolean | undefined;
+  autoHeight?: boolean | undefined;
 }
 
-export interface IInputStyles extends IStyleType {
+export interface IInputStyles extends IStyleValue {
   borderSize?: string | number | undefined;
   borderRadius?: string | number | undefined;
-  borderType?: string | undefined;
-  borderStyle?: string | undefined;
+  borderType?: IBorderType | undefined;
+  borderStyle?: IBorderType | undefined;
   borderWidth?: string | number | undefined;
   borderColor?: string | undefined;
   fontColor?: string | undefined;
   color?: string | undefined;
   fontWeight?: string | number | undefined;
   fontSize?: string | number | undefined;
-  stylingBox?: string | undefined;
   height?: string | number | undefined;
   width?: string | number | undefined;
   hideBorder?: boolean | undefined;
@@ -133,10 +165,10 @@ export interface IInputStyles extends IStyleType {
   backgroundUrl?: string | undefined;
   backgroundBase64?: string | undefined;
   backgroundStoredFileId?: string | undefined;
-  style?: string | undefined;
   enableStyleOnReadonly?: boolean | undefined;
-  container?: IStyleType | undefined;
+  container?: IStyleValue | undefined;
   display?: 'block' | 'flex' | 'grid' | 'inline-grid' | undefined;
+  gap?: string | number | SizeType | undefined;
 };
 
 export type ConfigurableFormComponentTypes =
@@ -162,10 +194,10 @@ export interface IComponentLabelProps {
   /** The label for this field that will appear next to it. */
   label?: string | React.ReactNode;
   /** Hide label of the field */
-  hideLabel?: boolean;
+  hideLabel?: boolean | undefined;
 
   /** Position of the label */
-  labelAlign?: LabelAlign;
+  labelAlign?: LabelAlign | undefined;
 }
 
 export interface IComponentRuntimeProps {
@@ -179,13 +211,28 @@ export interface IComponentRuntimeProps {
   onChangeCustom?: string | undefined;
 
   /** Custom onClick handler */
-  onClickCustom?: string;
+  onClickCustom?: string | undefined;
 
   /** Custom onFocus handler */
   onFocusCustom?: string | undefined;
 
   /** Custom onSelect handler */
   onSelectCustom?: string | undefined;
+
+  /** Custom onMouseEnter handler */
+  onMouseEnterCustom?: string | undefined;
+
+  /** Custom onMouseMove handler */
+  onMouseMoveCustom?: string | undefined;
+
+  /** Custom onMouseLeave handler */
+  onMouseLeaveCustom?: string | undefined;
+
+  /** Custom onKeyDown handler */
+  onKeyDownCustom?: string | undefined;
+
+  /** Custom onKeyUp handler */
+  onKeyUpCustom?: string | undefined;
 }
 
 export interface IComponentBindingProps {
@@ -199,7 +246,7 @@ export interface IComponentBindingProps {
   context?: string | undefined;
 
   /** initial data context ID, empty for from data */
-  initialContext?: string;
+  initialContext?: string | undefined;
 }
 
 export interface IComponentVisibilityProps {
@@ -211,6 +258,7 @@ export interface IComponentVisibilityProps {
    * It may also depend on the permissions and/or state of the parent container/form
    * Use `hidden` to get actual visible/hidden state of the component */
   visible?: boolean | undefined;
+  visiblePermissions?: string[] | undefined;
 
   /** Custom visibility code */
   /** @deprecated Use hidden in js mode instead */
@@ -235,17 +283,20 @@ export interface IFormComponentStyles {
   margins: CSSProperties;
 }
 
+export const DEVICE_TYPES = ['mobile', 'tablet', 'desktop'] as const;
+export type DeviceType = StringSubtype<typeof DEVICE_TYPES>;
+
 /**
  * Base model of the configurable component
  */
-export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles = IInputStyles>
+export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles = IStyleValue>
   extends IFormComponentContainer,
   IHasVersion,
   IComponentBindingProps,
   IComponentLabelProps,
   IComponentVisibilityProps,
   IComponentRuntimeProps,
-  IStyleType {
+  IStyleValue {
   /** Type of the component */
   type: string;
 
@@ -259,11 +310,15 @@ export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles =
    * (maps to antd Form.Item `dependencies`). Use for cross-field conditional `required` rules. */
   validationDependencies?: string[] | undefined;
 
-  /** Whether the component is read-only */
-  readOnly?: boolean | IPropertySetting<boolean> | undefined;
+  /** If true, indicates that component is read-only and can't be edited anyway */
+  readOnly?: boolean | undefined;
+
+  /** If true, indicates that edited or actioned are disabled for now but may be enabled */
+  disabled?: boolean | undefined;
 
   /** Component edit/action mode */
-  editMode?: EditMode | undefined;
+  editMode?: EditMode | IPropertySetting<EditMode> | undefined;
+  editModePermissions?: string[] | undefined;
 
   /** Custom visibility code */
   /** @deprecated Use disabled in js mode instead */
@@ -286,12 +341,6 @@ export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles =
 
   subscribedEventNames?: string[] | undefined;
 
-  /** Default style CSS applied as expression */
-  style?: string | undefined;
-
-  /** Default css style applied as string */
-  stylingBox?: string | undefined;
-
   wrapperStyle?: string | undefined;
 
   noDataText?: string | undefined;
@@ -300,13 +349,12 @@ export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles =
 
   noDataSecondaryText?: string | undefined;
 
+  /** @deprecated use visiblePermissions or editModePermissions instead */
   permissions?: string[] | undefined;
 
   _formFields?: string[] | undefined;
 
   layout?: FormLayout | undefined;
-
-  inputStyles?: IStyleType | undefined;
 
   desktop?: TDeviceStyles | undefined;
 
@@ -314,20 +362,27 @@ export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles =
 
   mobile?: TDeviceStyles | undefined;
 
+  /** @deprecated Will be removed. Use properties from IStyleValue */
   allStyles?: IFormComponentStyles | undefined;
 
   enableStyleOnReadonly?: boolean | undefined;
 
-  listType?: 'text' | 'thumbnail' | undefined;
+  // TODO: V1: review usages and remove if not used
+  jsStyle?: CSSProperties | undefined;
 }
 
-export const isConfigurableFormComponent = (component: unknown): component is IConfigurableFormComponent =>
+export const isHasEditMode = (value: object): value is { editMode: EditMode | undefined; readOnly: boolean | undefined; disabled: boolean | undefined } => 'editMode' in value;
+
+export const isConfigurableFormComponent = (component: unknown): component is UnwrapCodeEvaluators<IConfigurableFormComponent> =>
   isDefined(component) && typeof (component) === "object" && ['id', 'type'].every((key) => (key in component && typeof component[key as keyof typeof component] === 'string'));
 
 export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {
   /** Whether the component is read-only */
   readOnly?: boolean;
 }
+
+export const isComponentsContainer = (obj: unknown): obj is IComponentsContainer =>
+  isDefined(obj) && typeof obj === "object" && "id" in obj && typeof (obj.id) === "string" && "components" in obj && Array.isArray(obj.components);
 
 export interface IComponentsContainer {
   id: string;
@@ -338,9 +393,6 @@ export type IObjectWithStringId = {
   id: string;
 };
 export const isObjectWithStringId = (obj: unknown): obj is IObjectWithStringId => isDefined(obj) && typeof (obj) === "object" && "id" in obj && typeof (obj.id) === "string";
-
-export const isComponentsContainer = (obj: unknown): obj is IComponentsContainer =>
-  isDefined(obj) && typeof obj === "object" && "id" in obj && typeof (obj.id) === "string" && "components" in obj && Array.isArray(obj.components);
 
 export type IRawComponentsContainer = IFormComponentContainer & {
   components: IConfigurableFormComponent[];
@@ -460,13 +512,12 @@ export type HasFormFlatMarkup = {
 };
 export type HasFormRawMarkup = {
   markup: FormMarkup;
-  cacheKey?: string;
+  cacheKey?: string | undefined;
 };
 
 export type HasFormIdOrMarkup = ExclusifyUnion<HasFormId | HasFormFlatMarkup | HasFormRawMarkup>;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type FormAction = (...args: any[]) => any;
+export type FormAction = (...args: unknown[]) => unknown;
 
 export type FormSection = (data?: object) => ReactNode;
 
@@ -523,8 +574,8 @@ export interface IFormDto extends Omit<FormDto, 'markup'> {
 }
 
 export interface IFormValidationRulesOptions<TData extends object = object> {
-  formData?: TData;
-  getFormData?: () => TData;
+  formData?: TData | undefined;
+  getFormData?: (() => TData) | undefined;
 }
 
 /** Default form settings */
@@ -544,13 +595,15 @@ export type GenericDictionary = { [key: string]: unknown };
 
 export const STYLE_BOX_CSS_POPERTIES = ['marginTop', 'marginRight', 'marginBottom', 'marginLeft', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft'] as const;
 export type StyleBoxCssProperties = typeof STYLE_BOX_CSS_POPERTIES[number];
-export type StyleBoxValue = Pick<CSSProperties, StyleBoxCssProperties>;
+export type StyleBoxValue = Partial<Pick<CSSProperties, StyleBoxCssProperties>> & {
+  _type: 'styleBox';
+};
 
 export interface IContainerConfig {
-  dimensions?: IDimensionsValue;
-  stylingBox?: string;
-  style?: string;
+  dimensions?: IDimensionsValue | undefined;
+  stylingBox?: string | StyleBoxValue | undefined;
+  style?: string | undefined;
 }
 export interface IComponentModelProps extends IConfigurableFormComponent {
-  container?: IContainerConfig;
+  container?: IContainerConfig | undefined;
 }

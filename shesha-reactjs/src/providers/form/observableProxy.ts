@@ -2,13 +2,13 @@ import { isDefined } from "@/utils/nullables";
 
 export type ValueAccessor<TValue = unknown> = () => TValue;
 
-export interface ProxyWithRefresh<T> {
+export interface IProxyWithRefresh<T> {
   refreshAccessors: (accessors: ProxyPropertiesAccessors<T>) => void;
   addAccessor: <V = unknown>(key: string, accessor: ValueAccessor<V>) => void;
   setAdditionalData: (data: object) => void;
 };
 
-export const isProxyWithRefresh = <T = unknown>(obj: T): obj is T & ProxyWithRefresh<T> => isDefined(obj) &&
+export const isProxyWithRefresh = <T = unknown>(obj: T): obj is T & IProxyWithRefresh<T> => isDefined(obj) &&
   typeof (obj) === "object" &&
   'refreshAccessors' in obj && typeof (obj.refreshAccessors) === 'function' &&
   'addAccessor' in obj && typeof (obj.addAccessor) === 'function' &&
@@ -18,9 +18,9 @@ export type ProxyPropertiesAccessors<Type> = {
   [Property in keyof Type]: ValueAccessor<Type[Property]>;
 };
 
-export type TypedProxy<T> = T & ProxyWithRefresh<T>;
+export type TypedProxy<T> = T & IProxyWithRefresh<T>;
 
-export class ObservableProxy<T> implements ProxyWithRefresh<T> {
+export class ObservableProxy<T> implements IProxyWithRefresh<T> {
   private _touchedProps: Set<string>;
 
   private _propAccessors: Map<string, ValueAccessor<unknown>>;
@@ -73,11 +73,7 @@ export class ObservableProxy<T> implements ProxyWithRefresh<T> {
         const propertyName = name.toString();
 
         if (propertyName === 'hasOwnProperty')
-          return (prop: string | symbol) => {
-            return prop
-              ? target._propAccessors.has(prop.toString())
-              : false;
-          };
+          return (prop: string | symbol) => isDefined(prop) ? target._propAccessors.has(prop.toString()) : false;
 
         if (target._propAccessors.has(propertyName))
           return target.getPropertyValue(propertyName);

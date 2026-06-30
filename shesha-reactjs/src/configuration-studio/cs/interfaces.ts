@@ -1,5 +1,5 @@
 import { IErrorInfo } from "@/interfaces";
-import { MutableRefObject, ReactNode } from "react";
+import { RefObject, ReactNode } from "react";
 import { MoveNodePayload } from "../apis";
 import {
   CloseDocumentResponse,
@@ -81,7 +81,7 @@ export interface IConfigurationStudio {
   setIsTreeDragging: (isDragging: boolean) => void;
 
   readonly itemTypes: ItemTypeDefinition[];
-  toolbarRef: MutableRefObject<HTMLDivElement>;
+  toolbarRef: RefObject<HTMLDivElement>;
   setDocumentToolbarRerenderer: (itemId: string, forceRender: ForceRenderFunc) => void;
 
   onTreeNodeExpand: (expandedKeys: React.Key[]) => void;
