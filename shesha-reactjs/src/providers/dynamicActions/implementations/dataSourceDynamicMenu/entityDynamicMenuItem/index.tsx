@@ -123,8 +123,9 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
         stylingBox: p.stylingBox ?? item.stylingBox,
         style: p.style ?? item.style,
         dimensions: p.dimensions ?? item.dimensions,
+        dynamicItem: p,
         actionConfiguration: actionConfiguration,
-      } satisfies ButtonGroupItemProps;
+      };
     });
 
     return result;
