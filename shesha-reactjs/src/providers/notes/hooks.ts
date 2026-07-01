@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo } from "react";
 import { useHttpClient } from "../sheshaApplication/publicApi";
 import { NotesEditorInstance } from "./instance";
 import { INotesEditorInstance } from "./contexts";
@@ -9,12 +9,12 @@ export const useNotesEditorInstance = (): INotesEditorInstance => {
   const form = useFormOrUndefined();
   const isDesignerMode = form?.formMode === 'designer';
 
-  const [instance] = useState<INotesEditorInstance>(() => {
+  const instance = useMemo<INotesEditorInstance>(() => {
     return new NotesEditorInstance({
       httpClient,
       isDesignerMode,
     });
-  });
+  }, [httpClient, isDesignerMode]);
 
   return instance;
 };

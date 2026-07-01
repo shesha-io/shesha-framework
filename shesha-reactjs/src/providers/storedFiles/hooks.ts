@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo } from "react";
 import { AttachmentsEditorInstance } from "./instance";
 import { useHttpClient } from "../sheshaApplication/publicApi";
 import { App } from "antd";
@@ -13,14 +13,14 @@ export const useAttachmentsEditorInstance = (): IAttachmentsEditorInstance => {
   const form = useFormOrUndefined();
   const isDesignerMode = form?.formMode === 'designer';
 
-  const [instance] = useState<IAttachmentsEditorInstance>(() => {
+  const instance = useMemo<IAttachmentsEditorInstance>(() => {
     return new AttachmentsEditorInstance({
       httpClient,
       message,
       delayedUpdateClient,
       isDesignerMode,
     });
-  });
+  }, [httpClient, message, delayedUpdateClient, isDesignerMode]);
 
   return instance;
 };
