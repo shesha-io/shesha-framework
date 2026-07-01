@@ -84,6 +84,10 @@ export const SettingsControl = <Value = unknown>(props: ISettingsControlProps<Va
     onInternalChange(setting, newMode);
   };
 
+  // Skip setting control if disabled
+  if (props.enabled === false)
+    return <>{props.children?.(props.value as Value, onChange as (value: Value) => void, props.propertyName)}</>;
+  // --------------------------------
 
   const propertyName = isNotNullOrWhiteSpace(code) || mode === 'code' ? `${props.propertyName}._value` : props.propertyName;
   const functionName = `get${camelcase(props.propertyName, { pascalCase: true })}`;

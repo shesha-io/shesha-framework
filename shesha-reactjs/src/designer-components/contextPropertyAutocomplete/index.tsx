@@ -68,7 +68,7 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
 
   return (
     <>
-      <ConfigurableFormItem<string> model={{ ...model, label: componentlabel, componentName: 'componentName', propertyName: 'componentName', hidden: mode === 'formData', type: '', style: undefined }}>
+      <ConfigurableFormItem<string> model={{ ...model, label: componentlabel, componentName: 'componentName', propertyName: 'componentName', hidden: mode === 'formData', type: '', style: undefined, jsSetting: false }}>
         {(value, onChange) => {
           return (
             <Input
@@ -86,7 +86,7 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
           );
         }}
       </ConfigurableFormItem>
-      <ConfigurableFormItem<string> model={{ ...model, label: contextlabel, componentName: 'context', propertyName: 'context', hidden: mode === 'formData', type: '', style: undefined }}>
+      <ConfigurableFormItem<string> model={{ ...model, label: contextlabel, componentName: 'context', propertyName: 'context', hidden: mode === 'formData', type: '', style: undefined, jsSetting: false }}>
         {(value, onChange) => {
           return (
             <DataContextSelector
@@ -102,7 +102,7 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
         }}
       </ConfigurableFormItem>
       <MetadataProvider modelType={modelType} dataType={dataType}>
-        <ConfigurableFormItem<string> model={{ ...model, label: propertylabel, componentName: 'propertyName', propertyName: 'propertyName', type: '', style: undefined }}>
+        <ConfigurableFormItem<string> model={{ ...model, label: propertylabel, componentName: 'propertyName', propertyName: 'propertyName', type: '', style: undefined, jsSetting: false }}>
           {(value, onChange) => {
             return (
               <SettingsControl<string | string[]>
