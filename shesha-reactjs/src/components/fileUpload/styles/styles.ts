@@ -17,6 +17,16 @@ interface FileUploadStylesParams {
 
 type TextAlignType = 'left' | 'right' | 'center' | 'justify';
 
+/**
+ * Converts React CSSProperties to Emotion CSSInterpolation.
+ * Spreading CSSProperties into a new object is safe at runtime and produces
+ * a shape compatible with Emotion's CSSObject. The type assertion is necessary
+ * because CSSInterpolation is a union type that doesn't directly accept the spread.
+ */
+const toCssInterpolation = (style: CSSProperties | undefined): CSSInterpolation => {
+  return (style ? { ...style } : {}) as CSSInterpolation;
+};
+
 export type FileUploadStylesResponse = {
   shaStoredFilesRenderer?: string;
   storedFilesRendererBtnContainer?: string;
@@ -81,9 +91,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
   // thumbnail tile, so they must only be applied in thumbnail mode. In text mode the file is
   // shown as a plain filename and must not pick up the thumbnail's shadow/border/box styling.
   const isThumbnail = listType === 'thumbnail';
-  // React.CSSProperties is not directly assignable to Emotion's CSSInterpolation;
-  // spreading it into a CSSObject-shaped value is safe at runtime.
-  const extraStyles = (isThumbnail ? { ...style } : {}) as CSSInterpolation;
+  const extraStyles = isThumbnail ? toCssInterpolation(style) : {};
 
   const justifyContentMap: Record<TextAlignType, string> = {
     left: 'flex-start',
@@ -158,14 +166,6 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
       ${backgroundSize ? `background-size: ${backgroundSize};` : ''}
       ` : ''}
 
-      // /* Hide the upload trigger once a file is present (single-file upload). antd's
-      //    maxCount=1 isn't auto-hiding the trigger in this version, so suppress it via
-      //    a sibling-combinator rule: any .ant-upload-select that follows a file item is hidden. */
-      // .ant-upload-list-picture-card .ant-upload-list-item-container ~ .ant-upload-select,
-      // .ant-upload-list-picture-card .ant-upload-list-item-container ~ .ant-upload.ant-upload-select {
-      //   display: none !important;
-      // }
-
       ${isThumbnail ? `
       .ant-upload-list-item {
         width: var(--thumbnail-width) !important;
@@ -237,7 +237,6 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
         ${borderRadiusCss}
         ${commonBorderStyles}
         ${commonTextStyles}
-        ${borderRadiusCss}
       }
 
       .ant-upload-list-text {
@@ -291,6 +290,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
       }
 
       .ant-upload-list-item-container {
+        height: calc(var(--container-height) - 32px) !important;
         max-height: calc(var(--container-max-height) - calc(${fontSize} * 4)) !important;
         min-height: calc(var(--container-min-height) - 32px) !important;
         width: calc(var(--container-width) - 32px) !important;
