@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useRef } from "react";
 import { useHttpClient } from "../sheshaApplication/publicApi";
 import { NotesEditorInstance } from "./instance";
 import { INotesEditorInstance } from "./contexts";
@@ -9,12 +9,22 @@ export const useNotesEditorInstance = (): INotesEditorInstance => {
   const form = useFormOrUndefined();
   const isDesignerMode = form?.formMode === 'designer';
 
-  const instance = useMemo<INotesEditorInstance>(() => {
-    return new NotesEditorInstance({
+  // Use ref to maintain stable instance across renders, preserving mutable state (#notes, #notesReference)
+  const instanceRef = useRef<INotesEditorInstance | null>(null);
+
+  if (instanceRef.current === null) {
+    instanceRef.current = new NotesEditorInstance({
       httpClient,
       isDesignerMode,
     });
-  }, [httpClient, isDesignerMode]);
+  }
 
-  return instance;
+  // Update designer mode on the existing instance without recreation
+  useEffect(() => {
+    if (instanceRef.current) {
+      instanceRef.current.setDesignerMode(isDesignerMode);
+    }
+  }, [isDesignerMode]);
+
+  return instanceRef.current;
 };

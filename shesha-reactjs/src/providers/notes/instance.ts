@@ -28,6 +28,10 @@ export class NotesEditorInstance implements INotesEditorActions, INotesEditorSta
     this.#isDesignerMode = args.isDesignerMode ?? false;
   }
 
+  setDesignerMode = (isDesignerMode: boolean): void => {
+    this.#isDesignerMode = isDesignerMode;
+  };
+
   init = (notesReference: NotesReference): void => {
     if (isDefined(this.#notesReference) && notesReferenceEqual(this.#notesReference, notesReference))
       return;
