@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { AttachmentsEditorInstance } from "./instance";
 import { useHttpClient } from "../sheshaApplication/publicApi";
 import { App } from "antd";
@@ -13,14 +13,20 @@ export const useAttachmentsEditorInstance = (): IAttachmentsEditorInstance => {
   const form = useFormOrUndefined();
   const isDesignerMode = form?.formMode === 'designer';
 
+  // Store delayedUpdateClient in a ref to avoid recreating instance when it changes identity
+  const delayedUpdateClientRef = useRef(delayedUpdateClient);
+  delayedUpdateClientRef.current = delayedUpdateClient;
+
+  // Only recreate instance when isDesignerMode changes (which should trigger state reset)
+  // httpClient and message are stable, delayedUpdateClient is accessed via ref
   const instance = useMemo<IAttachmentsEditorInstance>(() => {
     return new AttachmentsEditorInstance({
       httpClient,
       message,
-      delayedUpdateClient,
+      delayedUpdateClient: delayedUpdateClientRef.current,
       isDesignerMode,
     });
-  }, [httpClient, message, delayedUpdateClient, isDesignerMode]);
+  }, [httpClient, message, isDesignerMode]);
 
   return instance;
 };
