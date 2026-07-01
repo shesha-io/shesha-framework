@@ -1,4 +1,3 @@
-import { stylingUtils } from '@/components/formDesigner/utils/stylingUtils';
 import { isSubFormComponent } from '@/designer-components/subForm';
 import { useActualContextData, useDeepCompareMemo } from '@/hooks';
 import { useActualContextExecution, useBackgroundStoredFile, useCalculatedModel, useFormComponentStyles } from '@/hooks/formComponentHooks';
@@ -16,6 +15,7 @@ import AttributeDecorator from '../../attributeDecorator';
 import ErrorIconPopover from '../../componentErrors/errorIconPopover';
 import { isValidGuid } from '../components/utils';
 import { getStyleBoxValue } from '@/designer-components/styleBox/utils';
+import { stylingUtils } from '@/components/formDesigner/utils/stylingUtils';
 import { IFormComponentProps } from './formComponent';
 import { updateApi } from './formComponentApi';
 
@@ -124,16 +124,12 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
   const propertyName = isInput || isOutput ? unwrappedModel.propertyName : undefined;
 
   const actualModel = useMemo(() => {
-    // For input components: Strip margins from fullStyle and jsStyle
-    // Margins are handled by the FormItem wrapper (via allStyles.margins), not the inner component
-    // This prevents double margins (wrapper + component) in both designer and live modes
-    const finalAllStyles = isInput
-      ? {
-        ...allStyles,
-        fullStyle: stylingUtils.stripMargins(allStyles.fullStyle),
-        jsStyle: stylingUtils.stripMargins(allStyles.jsStyle),
-      // margins are preserved for FormItem wrapper use
-      }
+    // In designer mode the outer wrapper div owns the margins (via createRootContainerStyle).
+    // Strip them from fullStyle/jsStyle here to avoid double-application inside the wrapper.
+    // In live mode there is no outer wrapper, so margins stay in fullStyle.
+    const isDesignerMode = shaForm.formMode === 'designer';
+    const finalAllStyles = isDesignerMode
+      ? { ...allStyles, fullStyle: stylingUtils.stripMargins(allStyles.fullStyle), jsStyle: stylingUtils.stripMargins(allStyles.jsStyle) }
       : allStyles;
 
     return {
@@ -145,7 +141,7 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
       propertyName,
       allStyles: finalAllStyles,
     };
-  }, [allStyles, hidden, isInput, propertyName, readOnly, disabled, styleJson, unwrappedModel]);
+  }, [allStyles, hidden, propertyName, readOnly, disabled, shaForm.formMode, styleJson, unwrappedModel]);
 
   const calculatedModel = useCalculatedModel(actualModel, toolboxComponent.useCalculateModel, toolboxComponent.calculateModel);
 
