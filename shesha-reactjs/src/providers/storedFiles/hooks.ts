@@ -13,17 +13,17 @@ export const useAttachmentsEditorInstance = (): IAttachmentsEditorInstance => {
   const form = useFormOrUndefined();
   const isDesignerMode = form?.formMode === 'designer';
 
-  // Store delayedUpdateClient in a ref to avoid recreating instance when it changes identity
+  // Store delayedUpdateClient in a ref so instance can access latest value without recreation
   const delayedUpdateClientRef = useRef(delayedUpdateClient);
   delayedUpdateClientRef.current = delayedUpdateClient;
 
   // Only recreate instance when isDesignerMode changes (which should trigger state reset)
-  // httpClient and message are stable, delayedUpdateClient is accessed via ref
+  // httpClient and message are stable, delayedUpdateClient ref is passed and dereferenced inside instance
   const instance = useMemo<IAttachmentsEditorInstance>(() => {
     return new AttachmentsEditorInstance({
       httpClient,
       message,
-      delayedUpdateClient: delayedUpdateClientRef.current,
+      delayedUpdateClientRef,
       isDesignerMode,
     });
   }, [httpClient, message, isDesignerMode]);
