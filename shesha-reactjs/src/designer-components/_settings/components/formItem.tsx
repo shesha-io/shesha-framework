@@ -7,7 +7,7 @@ import { useDefaultModelPropertyUpdateSubscription, useDefaultModelActionsOrUnde
 import { getValueByPropertyName } from '@/utils/object';
 import { useFormItem } from '@/providers';
 import { IAnyObject } from '@/interfaces';
-import { isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
 import PermissionsControl from '../permissionsControl';
 
@@ -49,9 +49,9 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
           readOnly: readOnly,
           size: 'small',
           disabled: readOnly,
-          onChange: (event: SyntheticEvent) => {
-            const { target } = event;
-            const data = !isNullOrWhiteSpace(valuePropName) && typeof target === 'object' && valuePropName in target
+          onChange: (event: SyntheticEvent | undefined) => {
+            const target = event?.target as HTMLInputElement | undefined;
+            const data = !isNullOrWhiteSpace(valuePropName) && isDefined(target) && typeof target === 'object' && valuePropName in target
               ? target[valuePropName as keyof typeof target]
               : event;
             onChange(data);
