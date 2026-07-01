@@ -798,10 +798,18 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                       {fileList.length === 0 ? (
                         <DraggerStub styles={styles} />
                       ) : (
-                        <div>
-                          {renderUploadContent()}
+                        <div style={{ pointerEvents: 'none' }}>
+                          <Button
+                            type="link"
+                            icon={<UploadOutlined />}
+                            disabled={disabled ?? false}
+                            className={styles.uploadButton}
+                            style={{ pointerEvents: 'auto', marginBottom: '8px' }}
+                          >
+                            (Click or drag to upload)
+                          </Button>
                           {fileList.map((file) => (
-                            <div key={file.uid}>
+                            <div key={file.uid} style={{ pointerEvents: 'auto' }}>
                               {itemRenderFunction(<></>, file as UploadFile)}
                             </div>
                           ))}

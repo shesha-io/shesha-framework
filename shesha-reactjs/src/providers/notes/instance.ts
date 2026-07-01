@@ -11,6 +11,7 @@ import { INotesEditorActions, INotesEditorState } from "./contexts";
 
 export type NotesEditorInstanceArgs = {
   httpClient: HttpClientApi;
+  isDesignerMode?: boolean;
 };
 
 export class NotesEditorInstance implements INotesEditorActions, INotesEditorState {
@@ -20,8 +21,11 @@ export class NotesEditorInstance implements INotesEditorActions, INotesEditorSta
 
   #notesReference: NotesReference | undefined;
 
+  #isDesignerMode: boolean;
+
   constructor(args: NotesEditorInstanceArgs) {
     this.#httpClient = args.httpClient;
+    this.#isDesignerMode = args.isDesignerMode ?? false;
   }
 
   init = (notesReference: NotesReference): void => {
@@ -29,7 +33,8 @@ export class NotesEditorInstance implements INotesEditorActions, INotesEditorSta
       return;
 
     this.#notesReference = notesReference;
-    if (isOwnerReferenceValid(this.#notesReference))
+    // Skip API calls in designer/config mode to prevent errors from incomplete data
+    if (!this.#isDesignerMode && isOwnerReferenceValid(this.#notesReference))
       this.fetchNotesAsync()
         .catch((error) => {
           console.error('Failed to fetch notes', error);

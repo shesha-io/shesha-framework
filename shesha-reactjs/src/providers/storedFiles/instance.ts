@@ -18,6 +18,7 @@ export type StoredFilesProcessorArgs = {
   httpClient: HttpClientApi;
   message: MessageInstance;
   delayedUpdateClient: DelayedUpdateClient | undefined;
+  isDesignerMode?: boolean;
 };
 
 export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
@@ -37,11 +38,14 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
 
   #subscriptionManager: SubscriptionManager<AttachmentsEditorEvents, IAttachmentsEditorInstance>;
 
+  #isDesignerMode: boolean;
+
   constructor(args: StoredFilesProcessorArgs) {
     this.#message = args.message;
     this.#delayedUpdateClient = args.delayedUpdateClient;
     this.#fileHelper = new StoredFileHelper(args.httpClient);
     this.#subscriptionManager = new SubscriptionManager<AttachmentsEditorEvents, IAttachmentsEditorInstance>();
+    this.#isDesignerMode = args.isDesignerMode ?? false;
   }
 
   subscribe: SubscribeFunc<AttachmentsEditorEvents, IAttachmentsEditorInstance> = (type, callback) => {
@@ -73,7 +77,8 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
       return;
 
     this.#fileListReference = fileListReference;
-    if (isOwnerReferenceValid(this.#fileListReference))
+    // Skip API calls in designer/config mode to prevent errors from incomplete data
+    if (!this.#isDesignerMode && isOwnerReferenceValid(this.#fileListReference))
       void this.fetchFilesList();
   };
 
