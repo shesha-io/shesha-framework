@@ -112,6 +112,8 @@ namespace Shesha.Metadata
                 : null;
             var epc = entityConfig?[property.Name];
 
+            var refListId = epc == null ? property.GetReferenceListIdentifierOrNull() : null;
+
             var dataType = GetDataType(property, context.MainType);
             var cascadeAttribute = property.GetAttributeOrNull<CascadeUpdateRulesAttribute>()
                 ?? property.PropertyType.GetCustomAttribute<CascadeUpdateRulesAttribute>();
@@ -143,8 +145,8 @@ namespace Shesha.Metadata
 
                 DataType = dataType.DataType,
                 DataFormat = dataType.DataFormat,
-                ReferenceListModule = epc?.ReferenceListModule,
-                ReferenceListName = epc?.ReferenceListName,
+                ReferenceListModule = epc?.ReferenceListModule ?? refListId?.Module,
+                ReferenceListName = epc?.ReferenceListName ?? refListId?.Name,
                 EnumType = epc?.EnumType,
                 OrderIndex = property.GetAttributeOrNull<DisplayAttribute>()?.GetOrder() ?? -1,
                 IsFrameworkRelated = IsFrameworkRelatedProperty(property),
