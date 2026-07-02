@@ -40,7 +40,7 @@ export const RadioWrapper: FCUnwrapped<IRadioSettingsInputProps> = (props) => {
               onClick={() => handleClick(optionValue)}
               {...(!onlyModel ? { onMouseEnter: () => currentValueAdditionalInfo(title) } : {})}
             >
-              {isDefined(icon) ? <Icon icon={icon} hint={onlyModel ? title : undefined} className={styles.icon} /> : title}
+              {isDefined(icon) ? <Icon icon={icon} className={styles.icon} {...(onlyModel && isDefined(title) ? { hint: title } : { })} /> : title}
             </Radio.Button>
           );
         })
