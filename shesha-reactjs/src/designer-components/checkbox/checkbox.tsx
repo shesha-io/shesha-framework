@@ -50,11 +50,11 @@ const CheckboxComponent: CheckboxComponentDefinition = {
               disabled={model.readOnly ?? false}
               checked={value ?? false}
               onChange={(event) => {
-                ctx?.handleEvent(event, event.target.checked, model.onChangeCustom);
+                ctx?.handleEvent(event, { value: event.target.checked }, model.onChangeCustom);
                 onChange(event.target.checked);
               }}
-              onFocus={(event) => ctx?.handleEvent(event, event.target.checked, model.onFocusCustom)}
-              onBlur={(event) => ctx?.handleEvent(event, event.target.checked, model.onBlurCustom)}
+              onFocus={(event) => ctx?.handleEvent(event, { value }, model.onFocusCustom)}
+              onBlur={(event) => ctx?.handleEvent(event, { value }, model.onBlurCustom)}
             />
           );
         }}

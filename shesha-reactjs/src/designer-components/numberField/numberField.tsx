@@ -174,14 +174,17 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
                         : numValue;
                   }
 
-                  ctx?.handleEvent(undefined, newValue, model.onChangeCustom);
+                  ctx?.handleEvent(undefined, { value: newValue }, model.onChangeCustom);
                   onChange(newValue);
 
                   // force refresh because Antd InputNumber does not trigger render
                   forceRefresh({});
                 }}
-                onFocus={(event) => ctx?.handleEvent(event, event.currentTarget.value, model.onFocusCustom)}
-                onBlur={(event) => ctx?.handleEvent(event, event.currentTarget.value, model.onBlurCustom)}
+                onFocus={(event) => ctx?.handleEvent(event, { value }, model.onFocusCustom)}
+                onBlur={(event) => ctx?.handleEvent(event, { value }, model.onBlurCustom)}
+                onClick={(event) => ctx?.handleEvent(event, { value }, model.onClickCustom)}
+                onMouseMove={(event) => ctx?.handleEvent(event, { value }, model.onHoverCustom)}
+                onKeyDown={(event) => ctx?.handleEvent(event, { value }, model.onKeyPressCustom)}
               />
             );
         }}

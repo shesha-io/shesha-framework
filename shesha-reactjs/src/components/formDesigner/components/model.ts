@@ -3,15 +3,27 @@ import { IComponentModelProps } from "@/providers/form/models";
 import { ColProps, RadioChangeEvent } from "antd";
 import { ReactNode, SyntheticEvent } from "react";
 
+type EventValue<TValue = unknown> = {
+  value?: TValue | undefined | null;
+  [key: string]: unknown;
+};
+
+export type HandleEvent<TValue = unknown> = <TEvent extends SyntheticEvent | RadioChangeEvent = SyntheticEvent | RadioChangeEvent>(
+  event: TEvent | undefined,
+  value: EventValue<TValue>,
+  expression: string | undefined,
+  eventName?: string | undefined,
+) => void;
+
 type ConfigurableFormItemContext<TValue = unknown> = {
-  handleEvent: <TEvent = SyntheticEvent | RadioChangeEvent>(event: TEvent | undefined, value: TValue, expression: string | undefined) => void;
+  handleEvent: HandleEvent<TValue>;
 };
 
 export type IConfigurableFormItemChildFunc<TValue = unknown> = (
   value: TValue | undefined | null,
   onChange: ((newValue: TValue | undefined | null) => void),
   propertyName?: string | undefined,
-  ctx?: ConfigurableFormItemContext,
+  ctx?: ConfigurableFormItemContext<TValue>,
 ) => ReactNode;
 
 export interface IConfigurableFormItemProps<TValue = unknown> {

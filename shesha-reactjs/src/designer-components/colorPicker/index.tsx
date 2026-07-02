@@ -29,7 +29,7 @@ const ColorPickerComponent: ColorPickerComponentDefinition = {
               readOnly={model.readOnly ?? false}
               style={model.allStyles?.fullStyle ?? {}}
               onChange={(newValue) => {
-                ctx?.handleEvent(undefined, newValue, model.onChangeCustom);
+                ctx?.handleEvent(undefined, { value: newValue }, model.onChangeCustom);
                 onChange(newValue);
               }}
             />

@@ -140,7 +140,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
                   const isEmpty = isNullOrWhiteSpace(inputValue);
                   const isRegExpMatch = regExpObj && Boolean(inputValue.match(regExpObj));
                   if ((!isEmpty && isRegExpMatch) || !regExpObj || isEmpty) {
-                    const changedValue = ctx?.handleEvent(event, inputValue, model.onChangeCustom);
+                    const changedValue = ctx?.handleEvent(event, { value: inputValue }, model.onChangeCustom);
 
                     onChange(changedValue !== undefined ? changedValue : inputValue);
                   } else {
@@ -153,10 +153,10 @@ const TextFieldComponent: TextFieldComponentDefinition = {
                   }
                 }}
                 onFocus={(event) => {
-                  ctx?.handleEvent(event, event.currentTarget.value, model.onFocusCustom);
+                  ctx?.handleEvent(event, { value }, model.onFocusCustom);
                 }}
                 onBlur={(event) => {
-                  ctx?.handleEvent(event, event.currentTarget.value, model.onBlurCustom);
+                  ctx?.handleEvent(event, { value }, model.onBlurCustom);
                 }}
               />
             );

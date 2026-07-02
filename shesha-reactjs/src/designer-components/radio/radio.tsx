@@ -15,7 +15,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { IRadioComponentProps, RadioComponentDefinition } from './interfaces';
-import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { DataSourceType } from '../dropdown/model';
 import { getNumberOrUndefined } from '@/utils/string';
 
@@ -30,7 +30,7 @@ const RadioComponent: RadioComponentDefinition = {
   preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.referenceListItem || (dataType === DataTypes.array && dataFormat === ArrayFormats.simple),
   calculateModel: (model, allData) => ({
-    dataSourceUrl: model.dataSourceUrl ? executeScriptSync(model.dataSourceUrl, allData) : model.dataSourceUrl,
+    dataSourceUrl: isNotNullOrWhiteSpace(model.dataSourceUrl) ? executeScriptSync(model.dataSourceUrl, allData) : model.dataSourceUrl,
   }),
   Factory: ({ model, calculatedModel }) => {
     return (
@@ -39,13 +39,15 @@ const RadioComponent: RadioComponentDefinition = {
           return (
             <RadioGroup
               {...model}
-              style={!model.enableStyleOnReadonly && model.readOnly ? {} : model.allStyles?.fullStyle}
+              style={model.enableStyleOnReadonly !== true && model.readOnly === true ? {} : model.allStyles?.fullStyle}
               value={value ?? undefined}
               dataSourceUrl={calculatedModel.dataSourceUrl}
               onChange={(event) => {
-                ctx?.handleEvent(event, event.target.value, model.onChangeCustom);
+                ctx?.handleEvent(event, { value: getNumberOrUndefined(event.target.value) }, model.onChangeCustom);
                 onChange(getNumberOrUndefined(event.target.value) ?? null);
               }}
+              onFocus={(event) => ctx?.handleEvent(event, { value }, model.onFocusCustom)}
+              onBlur={(event) => ctx?.handleEvent(event, { value }, model.onBlurCustom)}
             />
           );
         }}

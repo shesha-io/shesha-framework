@@ -156,14 +156,12 @@ export class ProcessMonitorInstance implements IProcessMonitor {
 
   changeProcessId = async (processId: string): Promise<void> => {
     if (this._processId === processId) return;
-    await this.stopAsync().then(async () => {
-      this._processId = processId;
-      this.clearLog();
-      this._status = 'idle';
-      this._errorMessage = undefined;
-      await this.startAsync();
-      this._forceRender();
-    });
+    await this.stopAsync();
+    this._processId = processId;
+    this.clearLog();
+    this.updateStatus('idle');
+    await this.startAsync();
+    this._forceRender();
   };
 
   startAsync = async (): Promise<void> => {

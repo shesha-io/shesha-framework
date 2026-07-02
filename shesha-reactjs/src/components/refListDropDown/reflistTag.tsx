@@ -3,6 +3,7 @@ import convert from 'color-convert';
 import { Tag, Tooltip, TooltipProps } from 'antd';
 import React, { CSSProperties } from 'react';
 import { ShaIcon, IconType } from '../shaIcon';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 interface IReflistTagProps {
   value?: string | number | undefined;
@@ -16,10 +17,22 @@ interface IReflistTagProps {
   label?: string | React.ReactNode | undefined;
   placement?: TooltipProps['placement'] | undefined;
 }
-function ReflistTag({ value, description, color = "", icon, showIcon, tagStyle, solidColor = false, showItemName, label, placement = 'right' }: IReflistTagProps): React.JSX.Element {
+
+const tryConvertToHex = (value: string): string => {
+  try {
+    return value.startsWith('#')
+      ? value
+      : convert.keyword.hex(value);
+  } catch {
+    console.warn(`Failed to convert ${value} to hex`);
+    return value;
+  }
+};
+
+function ReflistTag({ value, description, color = "", icon, showIcon = false, tagStyle, solidColor = false, showItemName = false, label, placement = 'right' }: IReflistTagProps): React.JSX.Element {
   const memoizedColor = !solidColor
     ? color.toLowerCase()
-    : convert.keyword.hex(color);
+    : tryConvertToHex(color.toLowerCase());
 
   const labelToRender = typeof label === 'string' ? label.toUpperCase() : label;
 
@@ -33,7 +46,7 @@ function ReflistTag({ value, description, color = "", icon, showIcon, tagStyle, 
       <Tag
         key={value}
         color={memoizedColor}
-        icon={(icon && showIcon) && <ShaIcon iconName={icon as IconType} />}
+        icon={(!isNullOrWhiteSpace(icon) && showIcon) && <ShaIcon iconName={icon as IconType} />}
         style={getTagStyle(tagStyle, !!color)}
       >{showItemName && labelToRender}
       </Tag>

@@ -11,6 +11,7 @@ import { getSettings } from './formSettings';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
+import { isIAddressAndCoords } from '@/components/googlePlacesAutocomplete';
 
 const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
   type: 'address',
@@ -20,7 +21,7 @@ const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
   icon: <HomeOutlined />,
   preserveDimensionsInDesigner: true,
   Factory: ({ model }) => {
-    const finalStyle = !model.enableStyleOnReadonly && model.readOnly ? {
+    const finalStyle = model.enableStyleOnReadonly !== true && model.readOnly === true ? {
       ...model.allStyles?.fontStyles,
       ...model.allStyles?.dimensionsStyles,
     } : model.allStyles?.fullStyle;
@@ -28,18 +29,18 @@ const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
     return (
       <ConfigurableFormItem<string> model={model}>
         {(value, onChange, _, ctx) => {
-          return model.readOnly
+          return model.readOnly === true
             ? <ReadOnlyDisplayFormItem value={value} style={finalStyle} />
             : (
               <AutoCompletePlacesControl
                 {...model}
                 value={value ?? ""}
                 onChange={(newValue) => {
-                  ctx?.handleEvent(undefined, newValue, model.onChangeCustom);
+                  ctx?.handleEvent(undefined, { value: newValue }, model.onChangeCustom);
                   onChange(newValue);
                 }}
-                onFocus={(event) => ctx?.handleEvent(event, value, model.onFocusCustom)}
-                onSelect={(event) => ctx?.handleEvent(event, value, model.onSelectCustom)}
+                onFocus={(event) => ctx?.handleEvent(event, { value }, model.onFocusCustom)}
+                onSelect={(event) => ctx?.handleEvent(undefined, { value: isIAddressAndCoords(event) ? event.address : undefined, extraValue: event }, model.onSelectCustom)}
                 style={model.allStyles?.fullStyle}
               />
             );
