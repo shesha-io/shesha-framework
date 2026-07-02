@@ -35,9 +35,15 @@ export class DatasetInstance implements IDatasetInstance {
   //#region config
   private userConfigId: string | undefined;
 
+  /** last fetched user config, is used to apply user's filter selection when predefined filters arrive after initialization */
+  private userConfig: IDataTableUserConfig | undefined;
+
   private waitForColumnsBeforeFetch: boolean = false;
 
   private dataFetchDependencies: DataFetchDependencies = {};
+
+  /** true when a fetch was skipped because some data fetch dependencies were not ready (e.g. dynamic filters are not evaluated yet) */
+  private fetchSkippedDueToDependencies: boolean = false;
   //#endregion
 
   #storage: IAsyncStorage;
@@ -83,6 +89,7 @@ export class DatasetInstance implements IDatasetInstance {
     this.log("Initializing datatable instance");
     this.#metadata = args.metadata;
     this.userConfigId = args.userConfigId;
+    this.initialPageSize = args.initialPageSize ?? DATA_TABLE_CONTEXT_INITIAL_STATE.selectedPageSize;
     this.state.sortMode = args.sortMode; // TODO: make mandetory and split models
     this.state.dataFetchingMode = args.dataFetchingMode;
     this.state.selectedPageSize = args.initialPageSize ?? DATA_TABLE_CONTEXT_INITIAL_STATE.selectedPageSize;
@@ -93,6 +100,8 @@ export class DatasetInstance implements IDatasetInstance {
     this.state.allowReordering = args.allowReordering ?? false;
     this.state.customReorderEndpoint = args.customReorderEndpoint;
     this.state.permanentFilter = args.permanentFilter;
+    this.state.onBeforeRowReorder = args.onBeforeRowReorder;
+    this.state.onAfterRowReorder = args.onAfterRowReorder;
 
     const userConfig = this.userConfigId
       ? await this.featchUserConfigAsync()
@@ -224,37 +233,46 @@ export class DatasetInstance implements IDatasetInstance {
     return undefined;
   };
 
+  /** monotonic counter used to skip outdated columns initializations (see `initColumnsAsync`) */
+  #columnsInitVersion: number = 0;
+
   private initColumnsAsync = async (columns: IConfigurableColumnsProps[], userConfig: IDataTableUserConfig | undefined): Promise<void> => {
-    const { state } = this;
+    const initVersion = ++this.#columnsInitVersion;
     const repoColOverrides = await this.repository.prepareColumns(columns);
+
+    // skip outdated initialization: a newer one was started while `prepareColumns` was awaited,
+    // applying this one may bring back an outdated set of columns
+    if (initVersion !== this.#columnsInitVersion)
+      return;
 
     const cols = columns
       .map<ITableColumn | undefined>((col) => this.prepareColumn(col, repoColOverrides, userConfig))
       .filter((c): c is ITableColumn => isDefined(c));
 
-    const { predefinedFilters } = state;
+    // note: use the updater form of state to not lose changes made while `prepareColumns` was awaited (e.g. predefined filters)
+    this.updateState((state) => {
+      const { predefinedFilters } = state;
 
-    const userFilters = isDefined(userConfig) && isNonEmptyArray(userConfig.selectedFilterIds) && isNonEmptyArray(predefinedFilters)
-      ? userConfig.selectedFilterIds.filter((x) => {
-        return predefinedFilters.some((f) => {
-          return f.id === x;
-        });
-      })
-      : [];
+      const userFilters = isDefined(userConfig) && isNonEmptyArray(userConfig.selectedFilterIds) && isNonEmptyArray(predefinedFilters)
+        ? userConfig.selectedFilterIds.filter((x) => {
+          return predefinedFilters.some((f) => {
+            return f.id === x;
+          });
+        })
+        : [];
 
-    const selectedStoredFilterIds = state.selectedStoredFilterIds?.length
-      ? [...state.selectedStoredFilterIds]
-      : [...userFilters];
+      const selectedStoredFilterIds = state.selectedStoredFilterIds?.length
+        ? [...state.selectedStoredFilterIds]
+        : [...userFilters];
 
-    if (selectedStoredFilterIds.length === 0 && isNonEmptyArray(predefinedFilters))
-      selectedStoredFilterIds.push(predefinedFilters[0].id);
+      if (selectedStoredFilterIds.length === 0 && isNonEmptyArray(predefinedFilters))
+        selectedStoredFilterIds.push(predefinedFilters[0].id);
 
-    const userSorting = isDefined(userConfig) && isNonEmptyArray(userConfig.tableSorting)
-      ? userConfig.tableSorting
-      : [];
+      const userSorting = isDefined(userConfig) && isNonEmptyArray(userConfig.tableSorting)
+        ? userConfig.tableSorting
+        : [];
 
-    this.updateState(() => (
-      {
+      return {
         ...state,
         columns: cols,
         // user config
@@ -265,8 +283,8 @@ export class DatasetInstance implements IDatasetInstance {
         tableFilterDirty: userConfig?.advancedFilter,
         selectedStoredFilterIds,
         userSorting: userSorting,
-      }
-    ));
+      };
+    });
   };
 
   private updateState = (updater: (state: IDataTableStateContext) => IDataTableStateContext): void => {
@@ -291,8 +309,30 @@ export class DatasetInstance implements IDatasetInstance {
 
   notifySubscribers = (types: DatasetEvents[]): void => this.#subscriptionManager.notifySubscribers(types, this);
 
+  private isDataDependenciesReady = (): boolean => {
+    return Object.values(this.dataFetchDependencies).every((dep) => dep.state === 'ready');
+  };
+
   fetchData = async (): Promise<void> => {
     this.log("fetchData");
+
+    // the host component requires columns loading (see `requireColumns`), skip fetching until the columns
+    // are registered, `registerConfigurableColumns` triggers a fetch after registration
+    if (this.waitForColumnsBeforeFetch && !this.#columnsRegistered) {
+      this.log("fetchData skipped: columns are not registered yet");
+      return;
+    }
+
+    // Components (e.g. TableViewSelector) may require preparation logic (e.g. evaluation of dynamic filters)
+    // before the data can be fetched. Skip fetching until all dependencies are ready, the fetch
+    // is re-triggered when the dependency owner pushes its data (see `setPredefinedFilters`)
+    if (!this.isDataDependenciesReady()) {
+      this.fetchSkippedDueToDependencies = true;
+      this.log("fetchData skipped: data fetch dependencies are not ready");
+      return;
+    }
+    this.fetchSkippedDueToDependencies = false;
+
     this.updateState((state) => ({ ...state, isFetchingTableData: true, fetchTableDataError: undefined }));
     try {
       await this.saveUserConfigAsync();
@@ -523,12 +563,32 @@ export class DatasetInstance implements IDatasetInstance {
     const { state } = this;
     const filtersChanged = !isEqual(sortBy(state.predefinedFilters), sortBy(predefinedFilters));
 
-    if (filtersChanged)
-      this.updateState((state) => ({ ...state, predefinedFilters }));
+    if (filtersChanged) {
+      // filters may arrive after initialization (e.g. when dynamic filters are evaluated using async form data),
+      // in this case the default filter selection must be applied here, the same way as `initColumnsAsync` does it
+      const currentSelectedIds = state.selectedStoredFilterIds ?? [];
+      let selectedStoredFilterIds = currentSelectedIds;
+      if (currentSelectedIds.length === 0 && isNonEmptyArray(predefinedFilters)) {
+        const userFilters = this.userConfig?.selectedFilterIds?.filter((id) => predefinedFilters.some((f) => f.id === id)) ?? [];
+        selectedStoredFilterIds = userFilters.length > 0 ? [...userFilters] : [predefinedFilters[0].id];
+      }
+
+      this.updateState((state) => ({ ...state, predefinedFilters, selectedStoredFilterIds }));
+    }
+
+    // refetch when the filters were changed or a previous fetch was skipped because filters were not evaluated yet
+    if (this.isInitialized && (filtersChanged || this.fetchSkippedDueToDependencies))
+      void this.fetchData();
   };
 
   setPermanentFilter = (filter: FilterExpression | undefined): void => {
+    const filterChanged = !isEqual(this.state.permanentFilter, filter);
+    if (!filterChanged)
+      return;
+
     this.updateState((state) => ({ ...state, permanentFilter: filter }));
+    if (this.isInitialized)
+      void this.fetchData();
   };
 
   onSort = async (sorting: SortingRule<ITableRowData>[]): Promise<void> => {
@@ -578,9 +638,10 @@ export class DatasetInstance implements IDatasetInstance {
   };
 
   private featchUserConfigAsync = async (): Promise<IDataTableUserConfig | undefined> => {
-    return !isNullOrWhiteSpace(this.userConfigId)
+    this.userConfig = !isNullOrWhiteSpace(this.userConfigId)
       ? await this.#storage.getAsync<IDataTableUserConfig>(this.userConfigId)
       : undefined;
+    return this.userConfig;
   };
 
   private saveUserConfigAsync = async (updater?: (userConfig: IDataTableUserConfig) => void): Promise<void> => {
@@ -619,9 +680,13 @@ export class DatasetInstance implements IDatasetInstance {
     await this.#storage.setAsync(userConfigId, userConfig);
   };
 
+  /** true when configurable columns were registered at least once (see `requireColumns` and `fetchData`) */
+  #columnsRegistered: boolean = false;
+
   registerConfigurableColumns = async (_ownerId: string, columns: IConfigurableColumnsProps[]): Promise<void> => {
     this.log("Register columns...");
     this.columns = columns;
+    this.#columnsRegistered = true;
 
     if (!this.isInitialized)
       return;

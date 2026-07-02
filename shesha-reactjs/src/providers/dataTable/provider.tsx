@@ -1,4 +1,5 @@
-import React, { FC, PropsWithChildren, useEffect, useMemo } from "react";
+import React, { FC, PropsWithChildren, useMemo } from "react";
+import { useDeepCompareEffect } from "@/hooks/useDeepCompareEffect";
 import { useDatasetInstance, useDatasetState } from "./hooks";
 import { DataTableActionsContext, DataTableStateContext, IDataTableStateContext } from "./contexts";
 import { useConfigurableAction } from "../configurableActionsDispatcher";
@@ -152,19 +153,54 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     dataFetchingMode,
     permanentFilter,
     needToRegisterContext = true,
+    initialPageSize,
+    standardSorting,
+    strictSortBy,
+    strictSortOrder,
+    grouping,
+    allowReordering,
+    customReorderEndpoint,
+    onBeforeRowReorder,
+    onAfterRowReorder,
   } = props;
 
   const instance = useDatasetInstance(repository);
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     void instance.init({
       metadata: undefined,
       userConfigId: userConfigId,
       sortMode: sortMode ?? "standard",
 
       dataFetchingMode: dataFetchingMode,
+      initialPageSize: initialPageSize,
       permanentFilter: permanentFilter,
+
+      standardSorting: standardSorting,
+      strictSortBy: strictSortBy,
+      strictSortOrder: strictSortOrder,
+      grouping: grouping,
+
+      allowReordering: allowReordering,
+      customReorderEndpoint: customReorderEndpoint,
+      onBeforeRowReorder: onBeforeRowReorder,
+      onAfterRowReorder: onAfterRowReorder,
     });
-  }, [instance, userConfigId, sortMode, permanentFilter, dataFetchingMode]);
+  }, [
+    instance,
+    userConfigId,
+    sortMode,
+    permanentFilter,
+    dataFetchingMode,
+    initialPageSize,
+    standardSorting,
+    strictSortBy,
+    strictSortOrder,
+    grouping,
+    allowReordering,
+    customReorderEndpoint,
+    onBeforeRowReorder,
+    onAfterRowReorder,
+  ]);
 
   const content = (
     <DataTableActionsContext.Provider value={instance}>
