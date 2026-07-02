@@ -14,10 +14,12 @@ const ComponentPropertiesPanelInner: FC = () => {
   return (
     <>
       {!selectedComponentId && (
-        <Empty
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-          description={readOnly ? 'Please select a component to view settings' : 'Please select a component to begin editing'}
-        />
+        <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <Empty
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            description={readOnly ? 'Please select a component to view settings' : 'Please select a component to begin editing'}
+          />
+        </div>
       )}
       <div ref={panelRef}></div>
     </>
