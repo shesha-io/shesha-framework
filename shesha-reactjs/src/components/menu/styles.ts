@@ -314,7 +314,7 @@ export const useStyles = createStyles<IStyleProps, StyleResponse>(
     // height, re-measure the rendered `.ant-menu-item` height in DevTools and update this
     // constant to match.
     const menuItemExtraHeight = 9.5;
-    const menuItemHeight = `calc(48px + ${menuItemExtraHeight}px)`;
+    const menuItemHeight = `calc(51px + ${menuItemExtraHeight}px)`;
 
     const scrollButtons = css`
       width: 80px;
@@ -335,19 +335,24 @@ export const useStyles = createStyles<IStyleProps, StyleResponse>(
       cursor: pointer;
       padding: 0 5px;
       margin: 0;
+      margin-top: 1px;
       transition: background 0.3s;
       width: 40px;
       flex: 0 0 40px;
+      height: ${menuItemHeight};
+      align-self: center;
       align-items: center;
       justify-content: center;
       display: flex;
-      color: ${itemStyle ? 'inherit' : `${colors?.itemColor || BLACK_CLR}`};
       background: ${colors?.itemBackground || 'transparent'};
       ${menuItemStyle || ''}
       ${itemStyle || ''}
+      color: ${colors?.itemColor || BLACK_CLR};
       box-sizing: border-box;
-      width: 40px;
-      flex: 0 0 40px;
+
+      .anticon {
+        color: inherit;
+      }
 
       &:hover {
         background: ${colors?.hoverItemBackground
