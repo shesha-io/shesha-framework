@@ -19,7 +19,9 @@ export const getDataSourceList = (
       const items: ILabelValue[] = [];
       urlList.forEach((item) => {
         const label = getFirstNonEmptyStringPropertyOrUndefined(item, ['label', 'item']);
-        const value = getFirstNonEmptyStringPropertyOrUndefined(item, ['value', 'itemValue']);
+        const raw = item as unknown as Record<string, unknown>;
+        const rawValue = raw['value'] ?? raw['itemValue'];
+        const value = rawValue != null ? String(rawValue) : undefined;
         if (!isNullOrWhiteSpace(label) && !isNullOrWhiteSpace(value)) {
           const id = getFirstNonEmptyStringPropertyOrUndefined(item, ['id']) ?? nanoid();
           items.push({ label, value, id });
