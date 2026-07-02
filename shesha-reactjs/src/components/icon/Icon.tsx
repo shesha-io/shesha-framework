@@ -2,7 +2,6 @@ import { Tooltip } from 'antd';
 import React, { ReactNode } from 'react';
 import { ShaIcon } from '../shaIcon';
 import { customIcons } from './icons';
-import { startCase } from 'lodash';
 import * as antdIcons from '@ant-design/icons';
 import { isKeyOf } from '@/utils/object';
 
@@ -11,7 +10,6 @@ type IconProps = {
   hint?: string | undefined;
   style?: React.CSSProperties | undefined;
   className?: string | undefined;
-  propertyName?: string | undefined;
 };
 
 export const Icon = ({
@@ -19,7 +17,6 @@ export const Icon = ({
   hint,
   style,
   className,
-  propertyName,
 }: IconProps): ReactNode => {
   const icons = antdIcons;
 
@@ -32,14 +29,14 @@ export const Icon = ({
   if (isKeyOf(icon, icons)) {
     return (
       <Tooltip title={hint}>
-        <ShaIcon iconName={icon} style={style} />
+        <span style={style}><ShaIcon iconName={icon} style={style} /></span>
       </Tooltip>
     );
   }
 
   if (isKeyOf(icon, customIcons)) {
     return (
-      <Tooltip title={hint ?? startCase(propertyName?.split('.')[1])}>
+      <Tooltip title={hint}>
         <span style={style}>{customIcons[icon]}</span>
       </Tooltip>
     );
