@@ -92,6 +92,7 @@ export interface IWizardComponentProps extends Omit<IConfigurableFormComponent, 
   labelPlacement?: 'vertical' | 'horizontal' | undefined;
   buttonsLayout?: 'left' | 'right' | 'spaceBetween' | undefined;
   showStepStatus?: boolean | undefined;
+  persistCurrentStep?: boolean | undefined;
   sequence?: IWizardSequence | undefined;
   primaryTextColor?: React.CSSProperties['color'] | undefined;
   primaryBgColor?: React.CSSProperties['color'] | undefined;

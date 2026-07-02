@@ -1,12 +1,12 @@
 import { componentsTreeToFlatStructure, executeScriptSync, useAvailableConstantsData } from '@/providers/form/utils';
 import { getStepDescritpion, getWizardStep } from './utils';
+import { getInitialStepIndex, getDefaultStepIndex, isValidStepIndex, shouldPersistStep } from './stepSelection';
 import { IActionExecutionContext, IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IConfigurableFormComponent, isConfigurableFormComponent, useForm, useSheshaApplication, ShaForm } from '@/providers';
 import { IWizardComponentProps, IWizardStepProps } from './models';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { useEffect, useMemo, useState } from 'react';
-import { useDeepCompareMemo } from '@/hooks';
-import { useFormExpression } from '@/hooks';
+import { useDeepCompareMemo, useFormExpression, useSessionStorage } from '@/hooks';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { useValidator } from '@/providers/validateProvider';
 import { useClosestModal } from '@/providers/dynamicModal';
@@ -32,19 +32,6 @@ interface IWizardComponent {
 
 type IValidatable = IActionExecutionContext & { validate: (() => Promise<void>) | undefined };
 
-const getDefaultStepIndex = (tabs: IWizardStepProps[], i: number | string | undefined): number => {
-  if (typeof (i) === 'number' && i >= 0 && tabs.length > i)
-    return i;
-
-  if (typeof (i) === 'string') {
-    const index = tabs.findIndex((item) => item.id === i);
-    if (index > -1)
-      return index;
-  }
-
-  return 0;
-};
-
 export const useWizard = (model: IWizardComponentProps): IWizardComponent => {
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const allData = useAvailableConstantsData({ topContextId: 'ctx_' + model.id });
@@ -69,12 +56,18 @@ export const useWizard = (model: IWizardComponentProps): IWizardComponent => {
     defaultActiveStep = 0,
     showStepStatus = false,
     sequence,
+    persistCurrentStep = true,
   } = model;
   const actionOwnerName = componentName ?? "";
 
-  const [current, setCurrent] = useState(() => {
-    return getDefaultStepIndex(tabs, defaultActiveStep);
-  });
+  // Persist the active step across page refresh (opt-in). Disabled in the designer and inside
+  // modals, since a modal won't reopen on refresh and its stored step would apply out of context.
+  // NOTE: useClosestModal() has a non-undefined default, so check `instance` to detect a real modal.
+  const canPersist = shouldPersistStep(persistCurrentStep, formMode, !!closestModal?.instance);
+  const stepStorageKey = `wizard-step:${actionsOwnerId}`;
+  const [storedStep, setStoredStep] = useSessionStorage<number | undefined>(stepStorageKey);
+
+  const [current, setCurrent] = useState(() => getInitialStepIndex(canPersist, storedStep, tabs, defaultActiveStep));
 
   const { componentRelations, allComponents } = ShaForm.useMarkup();
 
@@ -149,7 +142,11 @@ export const useWizard = (model: IWizardComponentProps): IWizardComponent => {
   const argumentsEvaluationContext = { ...allData, fieldsToValidate: componentsNames, validate: validator?.validate };
 
   useEffect(() => {
+    // Don't clobber a valid persisted step on mount/tabs change when persistence is active.
+    if (canPersist && isValidStepIndex(storedStep, tabs))
+      return;
     setCurrent(getDefaultStepIndex(tabs, defaultActiveStep));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultActiveStep, tabs]);
 
   useEffect(() => {
@@ -173,12 +170,18 @@ export const useWizard = (model: IWizardComponentProps): IWizardComponent => {
     }
   };
 
+  const applyStep = (stepIndex: number): void => {
+    setCurrent(stepIndex);
+    if (canPersist)
+      setStoredStep(stepIndex);
+  };
+
   const successCallback = (type: 'back' | 'next' | 'reset'): void => {
     setTimeout(() => {
       const step = getWizardStep(visibleSteps, current, type);
 
       if (step >= 0 && step !== current) {
-        setCurrent(step);
+        applyStep(step);
       }
     }, 100); // It is necessary to have time to complete a request
   };
@@ -265,6 +268,11 @@ export const useWizard = (model: IWizardComponentProps): IWizardComponent => {
       executeActionIfConfigured(
         (tab) => tab.beforeDoneActionConfiguration,
         (tab) => tab.afterDoneActionConfiguration,
+        () => {
+          // Wizard finished - drop the persisted step so a later visit starts fresh.
+          if (canPersist)
+            setStoredStep(undefined);
+        },
       );
     } catch (errInfo) {
       console.error("Couldn't Proceed", errInfo);
@@ -278,7 +286,7 @@ export const useWizard = (model: IWizardComponentProps): IWizardComponent => {
   const setStep = (stepIndex: number): void => {
     if (stepIndex < 0 || stepIndex >= visibleSteps.length)
       throw `Step with index ${stepIndex} is not available`;
-    setCurrent(stepIndex);
+    applyStep(stepIndex);
   };
 
   // #region configurable actions
