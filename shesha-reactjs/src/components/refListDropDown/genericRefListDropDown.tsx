@@ -96,6 +96,20 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
     return disabledValues ? result.map(disableValue) : result;
   }, [refList?.items, filter, wrapValue, value, disabledValues, disableValue, getOptionFromFetchedItem]);
 
+  const singleValueTitle = useMemo(() => {
+    if (mode === 'multiple' || mode === 'tags')
+      return undefined;
+
+    const labeledValue = wrapValue(value, options);
+    if (Array.isArray(labeledValue))
+      return undefined;
+
+    if (typeof labeledValue?.label === 'string')
+      return labeledValue.label;
+
+    return typeof placeholder === 'string' ? placeholder : undefined;
+  }, [mode, options, placeholder, value, wrapValue]);
+
   const handleChange: SelectProps['onChange'] = (_, option): void => {
     if (!isDefined(onChange))
       return;
@@ -155,6 +169,7 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
     return (
       <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
         {...commonSelectProps}
+        {...(singleValueTitle !== undefined ? { title: singleValueTitle } : {})}
         popupMatchSelectWidth={false}
         style={{ width: 'max-content', height: 'max-content' }}
         placeholder={placeholder}
@@ -185,6 +200,7 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
   return (
     <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
       {...commonSelectProps}
+      {...(singleValueTitle !== undefined ? { title: singleValueTitle } : {})}
       style={{ ...style }}
       showSearch
       {...(mode ? { mode } : {})}
@@ -207,7 +223,13 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
           );
         },
       } : {})}
-      options={options.map(({ value: localValue, label, data, disabled }) => ({ value: localValue, label, data, disabled: disabled ?? false }))}
+      options={options.map(({ value: localValue, label, data, disabled }) => ({
+        value: localValue,
+        label,
+        data,
+        disabled: disabled ?? false,
+        ...(typeof label === 'string' ? { title: label } : {}),
+      }))}
     />
   );
 };
