@@ -6,7 +6,7 @@ import { getFirstNonEmptyStringPropertyOrUndefined } from '@/utils/object';
 
 type UrlDataItem = ILabelValue<unknown> & { itemValue?: unknown; item?: string };
 
-const isNonEmpty = (v: unknown): v is string | number => v != null && String(v).trim() !== '';
+const isNonEmpty = (v: unknown): boolean => v != null && String(v).trim() !== '';
 
 export const getDataSourceList = (
   dataSource: DataSourceType,
