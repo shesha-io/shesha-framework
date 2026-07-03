@@ -7,13 +7,13 @@ export interface IItemProps {
 }
 
 export interface ILabelValueEditorPropsBase {
-  labelTitle?: string;
-  labelName?: string;
-  valueTitle?: string;
-  valueName?: string;
-  colorName?: string;
-  iconName?: string;
-  colorTitle?: string;
-  iconTitle?: string;
-  dropdownOptions?: IDropdownOption[];
+  labelTitle?: string | undefined;
+  labelName?: string | undefined;
+  valueTitle?: string | undefined;
+  valueName?: string | undefined;
+  colorName?: string | undefined;
+  iconName?: string | undefined;
+  colorTitle?: string | undefined;
+  iconTitle?: string | undefined;
+  dropdownOptions?: IDropdownOption[] | undefined;
 }

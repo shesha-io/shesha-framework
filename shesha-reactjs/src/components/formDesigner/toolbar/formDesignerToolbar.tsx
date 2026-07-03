@@ -18,7 +18,7 @@ export const FormDesignerToolbar: FC = () => {
 
   const { anyOfPermissionsGranted } = useSheshaApplication();
 
-  const isGranted = formSettings?.access !== 4 || anyOfPermissionsGranted(formSettings?.permissions || []);
+  const isGranted = formSettings.access !== 4 || anyOfPermissionsGranted(formSettings.permissions || []);
 
   return (
     <div className={styles.shaDesignerToolbar}>

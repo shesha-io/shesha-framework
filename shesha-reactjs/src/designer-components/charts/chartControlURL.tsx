@@ -7,16 +7,15 @@ import { IChartsProps } from './model';
 import useStyles from './styles';
 import { getURLChartDataRefetchParams, renderChart } from './utils';
 import ChartLoader from './components/chartLoader';
-import { useTheme } from '@/providers/theme';
 import { IAjaxResponse } from '@/interfaces';
 import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
+import { isDefined } from '@/utils/nullables';
 
 const ChartControlURL: React.FC<IChartsProps> = (props) => {
   const { url, chartType, requestTimeout = 5000 } = props;
   const { refetch } = useGet<IAjaxResponse<object>>({ path: '', lazy: true });
-  const state = useChartDataStateContext();
   const { setIsLoaded, setUrlTypeData } = useChartDataActionsContext();
-  const { theme } = useTheme();
+  const state = useChartDataStateContext();
   const [error, setError] = useState<string | null>(null);
   const isFetchingRef = useRef(false);
   const currentControllerRef = useRef<AbortController | null>(null);
@@ -57,30 +56,32 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
 
     refetch({ ...getURLChartDataRefetchParams(transformedUrl), signal: newController.signal })
       .then((response) => {
+        if (!response)
+          throw new Error('Response is null, please check the URL and try again.');
         if (!isAjaxSuccessResponse(response))
           throw new Error(response.error.details ?? 'Invalid response structure, please check the URL and try again.');
 
-        setUrlTypeData(response.result ?? { labels: [], datasets: [] });
+        setUrlTypeData(response.result);
         setIsLoaded(true);
       })
       .catch((err: Error) => {
         console.error('Error fetching URL chart data:', err);
 
         // Check if this is an intentional abort (reset, unmount, user cancellation, or component initialization)
-        const abortMessage = err?.message || '';
+        const abortMessage = err.message || '';
         const isIntentionalAbort = abortMessage.includes('Resetting chart') ||
           abortMessage.includes('Unmounting chart') ||
           abortMessage.includes('Request cancelled by user') ||
           abortMessage.includes('Component initialization');
 
-        if (err?.name === 'AbortError' && isIntentionalAbort) {
+        if (err.name === 'AbortError' && isIntentionalAbort) {
           // Don't set error for intentional aborts - just clean up
           isFetchingRef.current = false;
           return;
         }
 
         // Check if it's a timeout error
-        const isTimeoutError = err?.name === 'AbortError' && err?.message?.includes('timeout');
+        const isTimeoutError = err.name === 'AbortError' && err.message.includes('timeout');
 
         const altErrorMessage = err instanceof Error ? err.message : 'An error occurred while fetching chart data from URL';
         const errorMessage = isTimeoutError
@@ -109,7 +110,7 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
     setError(null);
 
     fetchData();
-  }, [transformedUrl, requestTimeout]);
+  }, [transformedUrl, requestTimeout, setIsLoaded, fetchData]);
 
   // Cleanup effect to abort requests on unmount
   useEffect(() => {
@@ -152,51 +153,9 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
     );
   }, [url, chartType, missingPropertiesInfo.descriptionMessage]);
 
-  const errorAlert = useMemo(() => {
-    if (!error) return null;
-
-    const isUserCancelled = error === 'Request cancelled by user';
-    const isTimeoutError = error.includes('Request timed out after');
-
-    return (
-      <Alert
-        showIcon
-        title={isUserCancelled ? "Request cancelled" : isTimeoutError ? "Request timed out" : "Error loading chart data from URL"}
-        description={error}
-        type={isUserCancelled ? "info" : isTimeoutError ? "warning" : "error"}
-        action={(
-          <Button
-            color="danger"
-            onClick={() => {
-              fetchData();
-            }}
-          >
-            Retry
-          </Button>
-        )}
-      />
-    );
-  }, [error, theme.application.errorColor]);
-
-  const noDataAlert = useMemo(() => {
-    if (state.urlTypeData?.labels?.length > 0 && state.urlTypeData?.datasets?.length > 0 &&
-      memoUrlTypeData.datasets.length > 0 && memoUrlTypeData.labels.length > 0) {
-      return null;
-    }
-
-    return (
-      <Alert
-        showIcon
-        title="No data to display!"
-        description="Please check the URL and try again."
-        type="warning"
-      />
-    );
-  }, [state.urlTypeData, memoUrlTypeData]);
-
   // Memoize the loader component
   const loaderComponent = useMemo(() => {
-    if (!state.isLoaded) {
+    if (!state.isLoaded && chartType) {
       return (
         <div className={cx(styles.loadingContainer)}>
           <ChartLoader
@@ -246,14 +205,29 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
     overflow: 'hidden',
   }), []);
 
-  const hasValidData = useMemo(() => {
-    return state.urlTypeData?.labels?.length > 0 && state.urlTypeData?.datasets?.length > 0 &&
-      memoUrlTypeData.datasets.length > 0 && memoUrlTypeData.labels.length > 0;
-  }, [state.urlTypeData, memoUrlTypeData]);
-
   // Early returns with memoized components
   if (error) {
-    return errorAlert;
+    const isUserCancelled = error === 'Request cancelled by user';
+    const isTimeoutError = error.includes('Request timed out after');
+
+    return (
+      <Alert
+        showIcon
+        title={isUserCancelled ? "Request cancelled" : isTimeoutError ? "Request timed out" : "Error loading chart data from URL"}
+        description={error}
+        type={isUserCancelled ? "info" : isTimeoutError ? "warning" : "error"}
+        action={(
+          <Button
+            color="danger"
+            onClick={() => {
+              fetchData();
+            }}
+          >
+            Retry
+          </Button>
+        )}
+      />
+    );
   }
 
   if (!url || !chartType) {
@@ -264,8 +238,18 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
     return loaderComponent;
   }
 
+  const hasValidData = isDefined(state.urlTypeData) && isDefined(state.urlTypeData.labels) && state.urlTypeData.labels.length > 0 &&
+    isDefined(state.urlTypeData.datasets) && state.urlTypeData.datasets.length > 0 &&
+    memoUrlTypeData.datasets.length > 0 && memoUrlTypeData.labels.length > 0;
   if (!hasValidData) {
-    return noDataAlert;
+    return (
+      <Alert
+        showIcon
+        title="No data to display!"
+        description="Please check the URL and try again."
+        type="warning"
+      />
+    );
   }
 
   return (

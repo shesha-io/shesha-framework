@@ -3,16 +3,15 @@ import { isValidGuid } from '@/components/formDesigner/components/utils';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { IFormComponentContainer, StyleBoxValue, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { IFormComponentContainer, StyleBoxValue, useFormData, useGlobalState } from '@/providers';
 import { getLayoutStyle, getStyle, pickStyleFromModel } from '@/providers/form/utils';
 import ParentProvider from '@/providers/parentProvider/index';
 import { jsonSafeParse, removeUndefinedProps } from '@/utils/object';
 import { SplitCellsOutlined } from '@ant-design/icons';
 import { Col, Row } from 'antd';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { removeComponents } from '../_common-migrations/removeComponents';
-import { getBackgroundStyle } from '../_settings/utils/background/utils';
 import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
@@ -21,9 +20,10 @@ import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { nanoid } from '@/utils/uuid';
 import { Property } from 'csstype';
+import { useBackgroundStyles } from '../_settings/utils/background/useBackground';
 
 // Validation function to ensure columns don't exceed 24-column limit
-const validateColumns = (columns: IColumnProps[]): IColumnProps[] => {
+const validateColumns = (columns: IColumnProps[] | undefined): IColumnProps[] => {
   if (!columns || columns.length === 0) return [];
 
   const totalFlex = columns.reduce((sum, col) => sum + (col.flex || 0), 0);
@@ -48,8 +48,6 @@ const ColumnsComponent: ColumnsComponentDefinition = {
     const { globalState } = useGlobalState();
     const { columns, gutterX = 0, gutterY = 0 } = model as IColumnsComponentProps;
 
-    const { backendUrl, httpHeaders } = useSheshaApplication();
-
     const dimensions = model.dimensions;
     const border = model.border;
     const shadow = model.shadow;
@@ -57,34 +55,14 @@ const ColumnsComponent: ColumnsComponentDefinition = {
     const jsStyle = getStyle(model.style, data);
 
     const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions), [dimensions]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border]);
-    const [backgroundStyles, setBackgroundStyles] = useState({});
+    const backgroundStyles = useBackgroundStyles({ background, jsStyle });
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
-
-    useEffect(() => {
-      const fetchStyles = async (): Promise<void> => {
-        const storedImageUrl = background?.storedFile?.id && background?.type === 'storedFile'
-          ? await fetch(`${backendUrl}/api/StoredFile/Download?id=${background?.storedFile?.id}`,
-            { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
-            .then((response) => {
-              return response.blob();
-            })
-            .then((blob) => {
-              return URL.createObjectURL(blob);
-            }) : '';
-
-        const style = await getBackgroundStyle(background, jsStyle, storedImageUrl);
-        setBackgroundStyles(style);
-      };
-
-      fetchStyles().catch((error) => {
-        console.error('Failed to fetch styles', error);
-      });
-    }, [background, background?.gradient?.colors, backendUrl, httpHeaders]);
 
     if (model.hidden) return null;
 
-    if (model?.background?.type === 'storedFile' && model.background.storedFile?.id && !isValidGuid(model?.background.storedFile.id)) {
+    if (model.background?.type === 'storedFile' && model.background.storedFile?.id && !isValidGuid(model.background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
     const styling = jsonSafeParse<StyleBoxValue>(model.stylingBox || '{}');
@@ -97,7 +75,7 @@ const ColumnsComponent: ColumnsComponentDefinition = {
       ...shadowStyles,
     });
 
-    const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model?.font?.weight?.split(' - ')[0]) || 400 });
+    const finalStyle = removeUndefinedProps({ ...additionalStyles, fontWeight: Number(model.font?.weight?.split(' - ')[0]) || 400 });
 
     // Add padding when border is configured to prevent border from touching components
     const hasBorder = border && !border.hideBorder && (
@@ -123,21 +101,20 @@ const ColumnsComponent: ColumnsComponentDefinition = {
       <div style={{ ...getLayoutStyle(model, { data, globalState }), ...containerPadding, ...boxSizing, ...finalStyle }}>
         <Row gutter={[gutterX || 0, gutterY || 0]} style={{ marginLeft: 0, marginRight: 0 }}>
           <ParentProvider model={model} name={`Columns-${model.id}`}>
-            {validatedColumns &&
-              validatedColumns.map((col, index) => (
-                <Col
-                  key={index}
-                  md={col.flex}
-                  offset={col.offset}
-                  pull={col.pull}
-                  push={col.push}
-                >
-                  <ComponentsContainer
-                    containerId={col.id}
-                    dynamicComponents={model?.isDynamic ? col?.components : []}
-                  />
-                </Col>
-              ))}
+            {validatedColumns.map((col, index) => (
+              <Col
+                key={index}
+                md={col.flex}
+                offset={col.offset}
+                pull={col.pull}
+                push={col.push}
+              >
+                <ComponentsContainer
+                  containerId={col.id}
+                  dynamicComponents={model.isDynamic ? col.components : []}
+                />
+              </Col>
+            ))}
           </ParentProvider>
         </Row>
       </div>
@@ -167,7 +144,7 @@ const ColumnsComponent: ColumnsComponentDefinition = {
       .add<IColumnsComponentProps>(1, (prev) => migrateVisibility(prev))
       .add<IColumnsComponentProps>(2, (prev) => removeComponents(prev))
       .add<IColumnsComponentProps>(3, (prev) => {
-        const columns = prev.columns.map((c) => ({
+        const columns = (prev.columns ?? []).map((c) => ({
           ...c,
           components: c.components.map((c) => ({
             ...c,
@@ -202,7 +179,7 @@ const ColumnsComponent: ColumnsComponentDefinition = {
   settingsFormMarkup: getSettings,
   customContainerNames: ['columns'],
   getContainers: (model) => {
-    return model.columns.map<IFormComponentContainer>((t) => ({ id: t.id }));
+    return (model.columns ?? []).map<IFormComponentContainer>((t) => ({ id: t.id }));
   },
 };
 

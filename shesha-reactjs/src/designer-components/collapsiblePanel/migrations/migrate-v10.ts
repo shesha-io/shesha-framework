@@ -5,6 +5,8 @@ import { IContainerComponentProps } from "@/designer-components/container/interf
 import { ITextComponentProps } from "@/designer-components/text/models";
 import { ICollapsiblePanelComponentProps } from "../interfaces";
 import { defaultStyles as containerDefaultStyles } from "@/designer-components/container/data";
+import { isNonEmptyArray } from "@/utils/array";
+import { isDefined } from "@/utils/nullables";
 
 export const migrateV9toV10 = (prev: ICollapsiblePanelComponentProps, context: SettingsMigrationContext): ICollapsiblePanelComponentProps => {
   const model = { ...prev };
@@ -12,7 +14,7 @@ export const migrateV9toV10 = (prev: ICollapsiblePanelComponentProps, context: S
   const customHeader = model.customHeader;
   const label = model.label;
   const header = model.header;
-  const textContent = typeof label === 'string' ? label : undefined;
+  const textContent = typeof label === 'string' ? label : "";
   // Get default styles for extraArea container
   const defaultStyles = containerDefaultStyles({
     direction: "horizontal",
@@ -31,14 +33,14 @@ export const migrateV9toV10 = (prev: ICollapsiblePanelComponentProps, context: S
 
   // Skip if already migrated to the new structure
   const alreadyMigrated = header?.components?.some(
-    (c: IContainerComponentProps) => c.type === "container" && c.componentName === "headerLayout",
+    (c) => c.type === "container" && c.componentName === "headerLayout",
   );
 
-  if (alreadyMigrated) {
+  if (alreadyMigrated ?? false) {
     const headerLayout = header?.components?.find(
-      (c: IContainerComponentProps) => c.type === "container" && c.componentName === "headerLayout",
+      (c) => c.type === "container" && c.componentName === "headerLayout",
     );
-    if (headerLayout && !headerLayout.desktop?.display) {
+    if (headerLayout && !(isDefined((headerLayout.desktop as { display?: string } | undefined)?.display))) {
       headerLayout.desktop = { ...defaultHeaderStyles, ...headerLayout.desktop };
       headerLayout.tablet = { ...defaultHeaderStyles, ...headerLayout.tablet };
       headerLayout.mobile = { ...defaultHeaderStyles, ...headerLayout.mobile };
@@ -49,9 +51,9 @@ export const migrateV9toV10 = (prev: ICollapsiblePanelComponentProps, context: S
   }
 
   // Case 1: hasCustomHeader=true -> preserve customHeader content as the header
-  if (hasCustomHeader && customHeader) {
+  if ((hasCustomHeader ?? false) && customHeader) {
     // Remove previous header subtree from flat structure
-    if (header?.id) {
+    if (isDefined(header?.id)) {
       const removeSubtree = (rootId: string): void => {
         const childIds = context.flatStructure.componentRelations[rootId] ?? [];
         childIds.forEach((childId) => {
@@ -68,7 +70,7 @@ export const migrateV9toV10 = (prev: ICollapsiblePanelComponentProps, context: S
     model.header = customHeader;
 
     // Recursively register customHeader components in flat structure
-    if (customHeader.components?.length > 0) {
+    if (isNonEmptyArray(customHeader.components)) {
       const registerComponents = (components: IConfigurableFormComponent[], parentId: string): void => {
         context.flatStructure.componentRelations[parentId] = components.map((c) => c.id);
         components.forEach((component) => {

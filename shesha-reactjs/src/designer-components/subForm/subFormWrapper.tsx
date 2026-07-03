@@ -8,9 +8,9 @@ import { SubFormProvider, UnwrapCodeEvaluators } from '@/providers';
 export interface ISubFormComponentProps
   extends Omit<ISubFormProviderProps, 'labelCol' | 'wrapperCol' | 'readOnly'>,
   IConfigurableFormComponent {
-  labelCol?: number;
-  wrapperCol?: number;
-  queryParams?: ISubFormProviderProps['queryParams'];
+  labelCol?: number | undefined;
+  wrapperCol?: number | undefined;
+  queryParams?: ISubFormProviderProps['queryParams'] | undefined;
 }
 
 interface ISubFormWrapperProps
@@ -21,7 +21,7 @@ interface ISubFormWrapperProps
 
 export const SubFormWrapper: FC<UnwrapCodeEvaluators<ISubFormWrapperProps>> = ({ style, ...props }) => {
   return (
-    <SubFormProvider {...props as unknown as ISubFormProviderProps} key={props.id}>
+    <SubFormProvider {...props} key={props.id}>
       <SubForm style={style} readOnly={props.readOnly} />
     </SubFormProvider>
   );

@@ -28,11 +28,7 @@ export const EntityDocumentDefinition: DocumentDefinition = {
     useEffect(() => {
       cs.setDocumentModified(doc.itemId, isModified);
     }, [cs, doc, isModified]);
-    return (
-      <div>
-        <ModelConfiguratorRenderer />
-      </div>
-    );
+    return <ModelConfiguratorRenderer />;
   },
   Provider: ({ children, doc: document }: ProviderRendererProps): ReactNode => {
     const [form] = Form.useForm();

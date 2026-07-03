@@ -1,5 +1,5 @@
 import { getTitleWithHighlight } from "@/configuration-studio/filter-utils";
-import { isConfigItemTreeNode, isNodeWithChildren, TreeNode } from "@/configuration-studio/models";
+import { isConfigItemTreeNode, isFolderTreeNode, isNodeWithChildren, TreeNode } from "@/configuration-studio/models";
 import { renderCsTreeNode } from "@/configuration-studio/tree-utils";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { useMemo } from "react";
@@ -26,8 +26,19 @@ export const useFilteredTreeNodes = (treeNodes: TreeNode[], quickSearch?: string
 
         if (isNodeWithChildren(node)) {
           const nodeChildren = loop(node.children);
-          if (nodeChildren.length > 0)
-            result.push({ ...node, children: nodeChildren });
+
+          // Folders are first-class searchable items: surface a folder whenever its own
+          // name matches the query, regardless of whether any child matched.
+          const folderTitle = isFolderTreeNode(node)
+            ? getTitleWithHighlight(node, quickSearch)
+            : undefined;
+
+          if (nodeChildren.length > 0 || isDefined(folderTitle))
+            result.push({
+              ...node,
+              ...(isDefined(folderTitle) ? { title: renderCsTreeNode(node, folderTitle) } : {}),
+              children: nodeChildren,
+            });
         }
       });
       return result;

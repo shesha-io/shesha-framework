@@ -1,13 +1,18 @@
-import { CSSObject } from '@emotion/serialize';
 import { createStyles, sheshaStyles } from '@/styles';
+import { CSSObject } from 'antd-style';
 
-interface RefListStatusStyleProps {
+type StylesArgs = {
   dimensionsStyles: CSSObject;
   fontStyles: CSSObject;
   readOnly?: boolean;
-}
+};
 
-export const useStyles = createStyles(({ css, cx }, { dimensionsStyles, fontStyles, readOnly }: RefListStatusStyleProps) => {
+type StylesResponse = {
+  shaStatusTagContainer: string;
+  shaStatusTag: string;
+};
+
+export const useStyles = createStyles<StylesArgs, StylesResponse>(({ css, cx }, { dimensionsStyles, fontStyles, readOnly }) => {
   const shaStatusTag = 'sha-status-tag';
   const shaStatusTagContainer = cx(
     'sha-status-tag-container',

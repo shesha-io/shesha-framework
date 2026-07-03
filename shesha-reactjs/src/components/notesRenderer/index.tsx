@@ -4,15 +4,15 @@ import NotesRendererBase from '@/components/notesRendererBase';
 import { useStyles } from './styles/styles';
 
 export interface INotesRendererProps {
-  allowCreate?: boolean;
-  allowUpdate?: boolean;
-  allowDelete?: boolean;
+  allowCreate?: boolean | undefined;
+  allowUpdate?: boolean | undefined;
+  allowDelete?: boolean | undefined;
 
-  buttonPostion?: 'left' | 'right';
-  autoSize?: boolean;
-  showCharCount?: boolean;
-  minLength?: number;
-  maxLength?: number;
+  buttonPostion?: 'left' | 'right' | undefined;
+  autoSize?: boolean | undefined;
+  showCharCount?: boolean | undefined;
+  minLength?: number | undefined;
+  maxLength?: number | undefined;
 }
 
 export const NotesRenderer: FC<INotesRendererProps> = ({

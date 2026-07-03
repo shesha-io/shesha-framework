@@ -16,6 +16,7 @@ import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './util';
 import { useShaFormInstance } from '@/providers';
 import { dimensionUtils } from '@/components/formDesigner/utils/dimensionUtils';
+import { getStringPropertyOrUndefined } from '@/utils/object';
 
 export type IActionParameters = [{ key: string; value: string }];
 
@@ -43,17 +44,17 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
     const shaForm = useShaFormInstance();
     const { style, ...restProps } = model;
 
-    const isDesignerMode = shaForm?.formMode === 'designer';
+    const isDesignerMode = shaForm.formMode === 'designer';
 
     // Merge base styles with designer dimensions
     // Button preserves its original dimensions in designer mode
     const finalStyle = useMemo(() => dimensionUtils.mergeWithDesignerDimensions(
       {
         ...model.allStyles?.dimensionsStyles,
-        ...(['primary', 'default'].includes(model.buttonType) && !model.readOnly && model.allStyles?.borderStyles),
+        ...(['primary', 'default'].includes(model.buttonType ?? "") && !model.readOnly && model.allStyles?.borderStyles),
         ...model.allStyles?.fontStyles,
-        ...(['dashed', 'default'].includes(model.buttonType) && !model.readOnly && model.allStyles?.backgroundStyles),
-        ...(['primary', 'default'].includes(model.buttonType) && model.allStyles?.shadowStyles),
+        ...(['dashed', 'default'].includes(model.buttonType ?? "") && !model.readOnly && model.allStyles?.backgroundStyles),
+        ...(['primary', 'default'].includes(model.buttonType ?? "") && model.allStyles?.shadowStyles),
         ...model.allStyles?.stylingBoxAsCSS,
         ...model.allStyles?.jsStyle,
         justifyContent: model.font?.align,
@@ -78,7 +79,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       <ConfigurableButton
         {...restProps}
         readOnly={model.readOnly}
-        block={restProps?.block}
+        block={restProps.block}
         style={finalStyle}
         form={form}
       />
@@ -101,15 +102,15 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
         const buttonModel: IButtonGroupItemBaseV0 = {
           ...prev,
           size: prev.size as IButtonGroupItemBaseV0['size'],
-          hidden: prev.hidden,
+          hidden: prev.hidden ?? false,
           label: prev.label ?? 'Submit',
           sortOrder: 0,
           itemType: 'item',
-          name: prev['name'],
+          name: getStringPropertyOrUndefined(prev, "name") ?? "",
         };
         return buttonModel;
       })
-      .add<IButtonComponentProps>(1, migrateV0toV1)
+      .add<IButtonComponentProps>(1, (p, c) => migrateV0toV1(p, c))
       .add<IButtonComponentProps>(2, migrateV1toV2)
       .add<IButtonComponentProps>(3, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<IButtonComponentProps>(4, (prev) => migrateVisibility(prev))

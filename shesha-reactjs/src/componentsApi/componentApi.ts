@@ -230,7 +230,7 @@ export interface IComponentStyle extends Record<string, unknown> {
   border: IBorderValue;
 }
 
-export type EditMode = 'editable' | 'readOnly' | 'inherited' | boolean;
+export type InteractionMode = 'editable' | 'readOnly' | 'disabled' | 'inherited' | boolean;
 
 export interface CommonComponentApi {
   /** Name of the component (e.g., `"textField"`, `"numberField"`). */
@@ -243,8 +243,8 @@ export interface CommonComponentApi {
   readonly style: IComponentStyle;
   /** Whether the component is visible in the UI. */
   visible: boolean;
-  /** Current edit mode of the component. */
-  editable: EditMode;
+  /** Current interaction mode of the component. */
+  interactionMode: InteractionMode | undefined;
 }
 
 export interface InputComponentApi<T = unknown> extends CommonComponentApi {

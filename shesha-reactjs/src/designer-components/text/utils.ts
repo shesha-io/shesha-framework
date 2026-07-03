@@ -9,11 +9,11 @@ import {
   TypographyFontSize,
   TypographyPaddingSize,
 } from './models';
-import { IStyleType } from '@/interfaces';
+import { IStyleValue } from '@/interfaces';
 import { formatDateStringAndPrefix } from '@/utils/formatting';
 
-export const getFontSizeStyle = (key: TypographyFontSize): FontSizeProps => FONT_SIZES[key];
-export const getPaddingSizeStyle = (key: TypographyPaddingSize): PaddingProps => PADDING_SIZES[key];
+export const getFontSizeStyle = (key: TypographyFontSize): FontSizeProps | undefined => FONT_SIZES[key];
+export const getPaddingSizeStyle = (key: TypographyPaddingSize): PaddingProps | undefined => PADDING_SIZES[key];
 
 export const DEFAULT_CONTENT_TYPE = '';
 export const DEFAULT_CONTENT_DISPLAY: ContentDisplay = 'content';
@@ -39,7 +39,7 @@ export const getContent = (content: string, { dataType = 'string', dateFormat, n
   }
 };
 
-export const defaultStyles = (textType: string): IStyleType => {
+export const defaultStyles = (textType: string): IStyleValue => {
   return {
     font: {
       color: '#000',
@@ -70,11 +70,11 @@ export const defaultStyles = (textType: string): IStyleType => {
   };
 };
 
-export const remToPx = (remValue: string | number, rootFontSize = 14): number | null => {
+export const remToPx = (remValue: string | number | undefined, rootFontSize = 14): number => {
   if (typeof remValue !== 'string') return rootFontSize;
   const match = remValue.trim().match(/^([0-9.]+)rem$/);
   if (!match) return rootFontSize;
-  const rem = parseFloat(match[1]);
+  const rem = parseFloat(match[1] ?? "");
   if (isNaN(rem)) return rootFontSize;
   return rem * rootFontSize;
 };

@@ -1,7 +1,7 @@
-import { IStyleType } from "@/providers/form/models";
+import { IStyleValue } from "@/providers/form/models";
 import { IEntityPickerComponentProps } from ".";
 
-export const defaultStyles = (prev: IEntityPickerComponentProps): IStyleType => {
+export const defaultStyles = (prev: IEntityPickerComponentProps): IStyleValue => {
   const { size } = prev;
 
   return {
@@ -15,8 +15,6 @@ export const defaultStyles = (prev: IEntityPickerComponentProps): IStyleType => 
       position: 'center',
       gradient: { direction: 'to right', colors: {} },
       url: '',
-      storedFile: { id: null },
-      uploadFile: null,
     },
     font: {
       color: '#000',

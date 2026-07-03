@@ -11,7 +11,7 @@ export interface IProps {
 }
 const DynamicContainer: FC<PropsWithChildren<IProps>> = ({ components, children, direction = 'vertical', className }) => {
   const renderComponents = (): React.JSX.Element[] => {
-    return components?.map((component) => <DynamicComponent model={component} key={component.id} />);
+    return components.map((component) => <DynamicComponent model={component} key={component.id} />);
   };
 
   return (

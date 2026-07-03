@@ -27,18 +27,6 @@ export type DatatableInitArgs = {
   customReorderEndpoint?: string | undefined;
 
   permanentFilter?: FilterExpression | undefined;
-
-  /*
-needToRegisterContext
-onBeforeRowReorder
-onAfterRowReorder
-contextValidation
-
-disableRefresh
-
-actionOwnerId
-actionOwnerName
-  */
 };
 
 type MissingProperties<A, B> = Pick<A, Exclude<keyof A, keyof B>>;

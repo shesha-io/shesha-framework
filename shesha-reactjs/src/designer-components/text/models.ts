@@ -62,35 +62,35 @@ export interface ITypographyProps {
   keyboard?: boolean;
   italic?: boolean;
   type?: BaseType;
-  style?: CSSProperties;
+  style: CSSProperties | undefined;
 }
 
 export interface ITextComponentProps extends IConfigurableFormComponent {
   textType: 'span' | 'paragraph' | 'title';
   content: string;
-  contentType?: ContentType;
-  contentDisplay: ContentDisplay;
-  color?: string;
-  backgroundColor?: string;
-  level?: LevelType | TypographyFontSize;
-  fontSize?: TypographyFontSize | string | number;
-  padding?: TypographyPaddingSize;
-  dataType?: string;
-  dateFormat?: string;
-  numberFormat?: string;
-  code?: boolean;
-  italic?: boolean;
-  copyable?: boolean;
-  delete?: boolean;
-  ellipsis?: boolean;
-  mark?: boolean;
-  underline?: boolean;
-  keyboard?: boolean;
-  strong?: boolean;
-  value?: any;
-  textAlign?: string;
-  styles?: CSSProperties;
-  shadow?: IShadowValue;
+  contentType?: ContentType | undefined;
+  contentDisplay: ContentDisplay | undefined;
+  color?: string | undefined;
+  backgroundColor?: string | undefined;
+  level?: LevelType | TypographyFontSize | undefined;
+  fontSize?: TypographyFontSize | string | number | undefined;
+  padding?: TypographyPaddingSize | undefined;
+  dataType?: string | undefined;
+  dateFormat?: string | undefined;
+  numberFormat?: string | undefined;
+  code?: boolean | undefined;
+  italic?: boolean | undefined;
+  copyable?: boolean | undefined;
+  delete?: boolean | undefined;
+  ellipsis?: boolean | undefined;
+  mark?: boolean | undefined;
+  underline?: boolean | undefined;
+  keyboard?: boolean | undefined;
+  strong?: boolean | undefined;
+  value?: unknown | undefined;
+  textAlign?: string | undefined;
+  styles?: CSSProperties | undefined;
+  shadow?: IShadowValue | undefined;
 }
 
 export type TextComponentDefinition = ComponentDefinition<"text", ITextComponentProps>;

@@ -97,7 +97,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
 
   const { setGlobalVariables } = useSheshaApplication();
 
-  const sideMenuTheme = themeFromStorage?.sidebar;
+  const sideMenuTheme = themeFromStorage.sidebar;
 
   const [collapsed, setCollapsed] = useLocalStorage(SIDEBAR_COLLAPSE, true);
 
@@ -164,7 +164,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
     return () => {
       clearTimeout(timeoutId);
       resizeObserver?.disconnect();
-      mutationObserver?.disconnect();
+      mutationObserver.disconnect();
     };
   }, []);
 
@@ -217,7 +217,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
         collapsed={collapsed}
         onCollapse={onCollapse}
         trigger={<MenuTrigger collapsed={collapsed} />}
-        theme={sideMenuTheme}
+        {...(sideMenuTheme ? { theme: sideMenuTheme } : {})}
       >
         <ConfigurableSidebarMenu
           theme={sideMenuTheme}
@@ -233,7 +233,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
         </Header>
         <Content className={classNames(styles.content, { collapsed })} style={contentStyle}>
           <NodeOrFuncRenderer>
-            {breadcrumb}
+            <NodeOrFuncRenderer>{breadcrumb}</NodeOrFuncRenderer>
             <div className={classNames(styles.shaLayoutHeading, headingClass)}>
               {renderPageTitle()} {renderPageControls()}
             </div>
@@ -242,7 +242,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
               className={classNames(styles.shaSiteLayoutBackground, headingClass, {
                 [styles.shaSiteLayoutBackgroundNoPadding]: noPadding,
               })}
-              style={{ ...layoutBackgroundStyle, background: themeFromStorage?.layoutBackground }}
+              style={{ ...layoutBackgroundStyle, background: themeFromStorage.layoutBackground }}
             >
               {children}
             </div>

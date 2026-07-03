@@ -1,3 +1,4 @@
+import { RcFile } from "antd/es/upload";
 import { IEntityTypeIdentifier } from "../../providers/sheshaApplication/publicApi/entities/models";
 import { OwnerEntityReference } from "@/interfaces/entity";
 
@@ -11,6 +12,7 @@ export const STORED_FILE_URLS = {
   DELETE_FILE_BY_REFERENCE: "/api/StoredFile/Delete",
   FILES_LIST: "/api/StoredFile/FilesList",
   DOWNLOAD_FILE: "/api/StoredFile/Download",
+  DOWNLOAD_THUMBNAIL: "/api/StoredFile/DownloadThumbnail",
   DOWNLOAD_FILE_BASE64: "/api/StoredFile/Base64String",
   DOWNLOAD_ZIP: "/api/StoredFile/DownloadZip",
 };
@@ -45,7 +47,7 @@ export type DeleteFileArgs = {
 };
 
 export type UploadFileAsAttachmentArgs = {
-  file: File;
+  file: RcFile | Blob | string;
   ownerId?: string | undefined;
   ownerType?: string | IEntityTypeIdentifier | undefined;
   ownerName?: string | undefined;
@@ -92,3 +94,9 @@ export type StoredFileModel = {
   temporary: boolean;
   userHasDownloaded: boolean;
 };
+
+declare module 'antd' {
+  export interface UploadFile {
+    id?: string | undefined;
+  }
+}

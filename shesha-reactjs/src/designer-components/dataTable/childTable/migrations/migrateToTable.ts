@@ -121,7 +121,7 @@ export const migrateToTable = (
     className: 'no-content-padding',
   };
 
-  const result = migrateFunctionToProp(panel, 'hidden', 'customVisibility', null, true);
+  const result = migrateFunctionToProp(panel, 'hidden', 'customVisibility', undefined, true);
 
   // migrate filter
   const selectedFilter = props.defaultSelectedFilterId

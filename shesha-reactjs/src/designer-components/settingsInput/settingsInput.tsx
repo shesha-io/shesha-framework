@@ -1,16 +1,13 @@
 import React, { ComponentType, useMemo } from 'react';
 import FormItem from "../_settings/components/formItem";
 import { BaseInputProps, hasModelType, ISettingsInputProps, isSettingsInputProps } from './interfaces';
-import ConditionalWrap from '@/components/conditionalWrapper';
-import { MetadataProvider, useSettingsComponents, FCUnwrapped, useShaFormInstance } from '@/providers';
+import { useSettingsComponents, FCUnwrapped, useShaFormInstance, ConditionalMetadataProvider, UnwrapCodeEvaluators } from '@/providers';
 import { InputComponent } from '../inputComponent';
-import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 import { evaluateString } from '@/providers/form/utils';
-import { IToolboxComponentBase } from '@/interfaces/formDesigner';
+import { IToolboxComponent } from '@/interfaces/formDesigner';
 
-export type ISettingsComponent = IToolboxComponentBase & {
-  settingsComponent?: React.FC<any>;
-  component?: ComponentType<any>;
+export type ISettingsComponent = IToolboxComponent & {
+  component?: ComponentType<UnwrapCodeEvaluators<Omit<ISettingsInputProps, 'type' | 'propertyName' | 'label' | 'value'>>>;
 };
 
 export interface ISettingsComponentGroup {
@@ -19,7 +16,7 @@ export interface ISettingsComponentGroup {
 }
 
 export const SettingInput: FCUnwrapped<ISettingsInputProps> = (props) => {
-  const { label, hideLabel, propertyName, type, readOnly, jsSetting, tooltip, hidden, visible, size, validate, inline, width, availableConstantsExpression, ...rest } = props;
+  const { label, hideLabel, propertyName, type, readOnly, jsSetting, tooltip, hidden, visible, size, validate, inline, width, availableConstantsExpression, permissionSettings, ...rest } = props;
 
   const { formData } = useShaFormInstance();
   const settingsComponents = useSettingsComponents();
@@ -54,12 +51,9 @@ export const SettingInput: FCUnwrapped<ISettingsInputProps> = (props) => {
   return isHidden ? null
     : (
       <div key={propertyName} style={style}>
-        <ConditionalWrap
-          condition={!isEntityTypeIdEmpty(evaluatedModelType)}
-          wrap={(content) => <MetadataProvider modelType={evaluatedModelType}>{content}</MetadataProvider>}
-        >
+        <ConditionalMetadataProvider modelType={evaluatedModelType}>
           <FormItem
-            id={props.id ?? props.propertyName ?? props.componentName}
+            id={props.id ?? props.propertyName}
             name={propertyName}
             hideLabel={hideLabel}
             label={label}
@@ -67,6 +61,7 @@ export const SettingInput: FCUnwrapped<ISettingsInputProps> = (props) => {
             required={validate?.required}
             layout="vertical"
             jsSetting={unwrappedType === 'codeEditor' ? false : jsSetting}
+            permissionSettings={unwrappedType === 'codeEditor' ? false : permissionSettings}
             readOnly={readOnly}
             availableConstantsExpression={availableConstantsExpression}
           >
@@ -74,7 +69,7 @@ export const SettingInput: FCUnwrapped<ISettingsInputProps> = (props) => {
               ? <CustomComponent {...rest} />
               : (value, onChange): React.ReactElement => <InputComponent {...nestedProps} value={value} onChange={onChange} />}
           </FormItem>
-        </ConditionalWrap>
+        </ConditionalMetadataProvider>
       </div>
     )
   ;

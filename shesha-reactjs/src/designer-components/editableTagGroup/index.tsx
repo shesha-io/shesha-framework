@@ -23,8 +23,8 @@ const EditableTagGroupComponent: EditableTagGroupComponentDefinition = {
   dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.array && dataFormat === ArrayFormats.simple,
   Factory: ({ model }) => {
     return (
-      <ConfigurableFormItem model={model}>
-        {(value, onChange) => (<EditableTagGroup value={value} onChange={onChange} readOnly={model.readOnly} />)}
+      <ConfigurableFormItem<string[]> model={model}>
+        {(value, onChange) => (<EditableTagGroup value={value ?? undefined} onChange={onChange} readOnly={model.readOnly} />)}
       </ConfigurableFormItem>
     );
   },

@@ -10,6 +10,7 @@ import {
   ImmutableTree,
   Config,
   BuilderProps,
+  Utils,
 } from '@react-awesome-query-builder/antd';
 
 interface IQueryBuilderContentProps extends IQueryBuilderProps {
@@ -21,7 +22,7 @@ const loadJsonLogic = (jlValue: object, config: Config): ImmutableTree | undefin
     return QbUtils.loadFromJsonLogic(jlValue, config);
   } catch (error) {
     console.error('failed to parse JsonLogic expression', { error, jlValue, config });
-    return null;
+    return undefined;
   }
 };
 
@@ -35,9 +36,9 @@ export const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
   const lastLocallyChangedValue = useRef(value);
   const changedOutside = value !== lastLocallyChangedValue.current;
   const prevValue = usePrevious(value);
-  const prevTree = useRef<ImmutableTree>(null);
+  const prevTree = useRef<ImmutableTree | undefined>(undefined);
 
-  const tree = useMemo(() => {
+  const tree = useMemo<ImmutableTree | undefined>(() => {
     const needRebuildTree = value !== prevValue && changedOutside;
 
     if (!needRebuildTree && prevTree.current)
@@ -47,12 +48,13 @@ export const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
       ? loadJsonLogic(value, qbConfig)
       : QbUtils.loadTree({ id: QbUtils.uuid(), type: 'group' });
 
-    const checkedTree = QbUtils.checkTree(loadedTree, qbConfig);
+    const checkedTree = loadedTree ? Utils.Validation.sanitizeTree(loadedTree, qbConfig).fixedTree : undefined;
 
     prevTree.current = checkedTree;
     lastLocallyChangedValue.current = value;
 
     return checkedTree;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   const renderBuilder = (props: BuilderProps): React.JSX.Element => {
@@ -76,7 +78,7 @@ export const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
 
   return (
     <div className={styles.shaQueryBuilder}>
-      {tree && qbConfig && <Query {...qbConfig} value={tree} onChange={handleChange} renderBuilder={renderBuilder} />}
+      {tree && <Query {...qbConfig} value={tree} onChange={handleChange} renderBuilder={renderBuilder} />}
     </div>
   );
 };

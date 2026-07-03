@@ -35,7 +35,7 @@ export const getAlignmentStyle = ({
     display,
   };
 
-  const gridTemplateColumns = Array(gridColumnsCount).fill('auto')?.join(' ');
+  const gridTemplateColumns = Array(gridColumnsCount).fill('auto').join(' ');
 
   if (direction === 'horizontal' || display !== 'block') {
     style['justifyContent'] = justifyContent;
@@ -43,7 +43,7 @@ export const getAlignmentStyle = ({
     style['justifyItems'] = justifyItems;
     // Note: justifySelf and alignSelf should be applied to the wrapper element, not the inner container
     // They are handled in the wrapperStyle in containerComponent.tsx
-    style['textJustify'] = textJustify as any;
+    style['textJustify'] = textJustify;
     style['gap'] = gap;
   }
 

@@ -4,17 +4,28 @@ import { setCanvasZoomAction,
   setScreenWidthAction,
   setDesignerDeviceAction,
   setCanvasAutoZoomAction,
+  setManualZoomAction,
   setConfigTreePanelSizeAction,
   setViewTypeAction } from './actions';
 import { CANVAS_CONTEXT_INITIAL_STATE } from './contexts';
-import { getDeviceTypeByWidth, getSmallerDevice, getWidthByDeviceType } from './utils';
+import { DEFAULT_OPTIONS, getDeviceTypeByWidth, getSmallerDevice } from './utils';
+
+const clampZoom = (zoom: number): number =>
+  Math.max(DEFAULT_OPTIONS.minZoom, Math.min(DEFAULT_OPTIONS.maxZoom, zoom));
 
 export const reducer = createReducer(CANVAS_CONTEXT_INITIAL_STATE, (builder) => {
   builder
     .addCase(setCanvasZoomAction, (state, { payload }) => {
       return {
         ...state,
-        zoom: payload,
+        zoom: clampZoom(payload),
+      };
+    })
+    .addCase(setManualZoomAction, (state, { payload }) => {
+      return {
+        ...state,
+        zoom: clampZoom(payload),
+        autoZoom: false,
       };
     })
     .addCase(setCanvasWidthAction, (state, { payload }) => {
@@ -38,15 +49,15 @@ export const reducer = createReducer(CANVAS_CONTEXT_INITIAL_STATE, (builder) => 
     .addCase(setDesignerDeviceAction, (state, { payload }) => {
       return {
         ...state,
-        designerWidth: state.designerWidth ?? getWidthByDeviceType(payload),
+        designerWidth: state.designerWidth,
         designerDevice: payload,
         activeDevice: getSmallerDevice(payload, state.physicalDevice ?? "desktop"),
       };
     })
-    .addCase(setCanvasAutoZoomAction, (state) => {
+    .addCase(setCanvasAutoZoomAction, (state, { payload }) => {
       return {
         ...state,
-        autoZoom: !state.autoZoom,
+        autoZoom: payload !== undefined ? payload : !state.autoZoom,
       };
     })
     .addCase(setConfigTreePanelSizeAction, (state, { payload }) => {

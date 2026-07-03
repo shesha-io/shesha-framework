@@ -1,17 +1,26 @@
 import { createStyles, sheshaStyles } from '@/styles';
+import { CSSObject } from 'antd-style';
 import { CSSProperties } from 'react';
 
-interface ICollapseStyleProps {
-  headerStyle?: CSSProperties;
-  bodyStyle?: CSSProperties;
-  hideCollapseContent?: boolean;
-  isSimpleDesign?: boolean;
-  ghost?: boolean;
-  accentStyle?: boolean;
-  overflow?: CSSProperties;
-}
+type StylesArgs = {
+  headerStyle?: CSSProperties | undefined;
+  bodyStyle?: CSSProperties | undefined;
+  hideCollapseContent?: boolean | undefined;
+  isSimpleDesign?: boolean | undefined;
+  ghost?: boolean | undefined;
+  accentStyle?: boolean | undefined;
+  overflow?: CSSProperties | undefined;
+};
 
-export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerStyle = {}, bodyStyle = {}, hideCollapseContent, isSimpleDesign, ghost, accentStyle, overflow }: ICollapseStyleProps = {}) => {
+export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
+  headerStyle = {},
+  bodyStyle = {},
+  hideCollapseContent = false,
+  isSimpleDesign,
+  ghost,
+  accentStyle,
+  overflow,
+}: StylesArgs = {}) => {
   const noContentPadding = "no-content-padding";
   const hideWhenEmpty = "hide-empty";
   const shaHeaderComponentsContainer = "sha-header-components-container";
@@ -99,7 +108,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
   const hasBorder = borderWidth || borderTopWidth || borderBottomWidth || borderLeftWidth || borderRightWidth;
 
   const shaCollapsiblePanel = cx("ant-collapse-component", css`
-    &.${hideWhenEmpty}:not(:has(.ant-collapse-body .sha-component)):not(:has(.${prefixCls}-collapse-content-box .sha-component)) {
+    &.${hideWhenEmpty}:not(:has(.ant-collapse-body .sha-component)):not(:has(.${prefixCls}-collapse-content-box .sha-component)):not(:has(.ant-collapse-body .ant-form-item)) {
       display: none;
     }
     --primary-color: ${token.colorPrimary};
@@ -148,12 +157,12 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
         padding: 0px !important;
         width: 100%;
         height: 100%;
-        overflow: ${typeof overflow === 'object' ? (overflow?.overflow ?? 'auto') : (overflow ?? 'auto')};
+        overflow: ${typeof overflow === 'object' ? (overflow.overflow ?? 'auto') : 'auto'};
       }
     }
 
     > .ant-collapse-item > .ant-collapse-header {
-      ${headerRest}
+      ${headerRest as CSSObject}
       position: relative;
       visibility: ${hideCollapseContent ? 'hidden' : 'visible'};
       background: ${headerBgImage || headerBgColor};
@@ -205,7 +214,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
     }
 
     > .ant-collapse-item.ant-collapse-item-active > .ant-collapse-header {
-      border-radius: ${isSimpleDesign || ghost ? '0px' : borderTopLeftRadius ?? '0px'} ${isSimpleDesign || ghost ? '0px' : borderTopRightRadius ?? '0px'} 0px 0px !important;
+      border-radius: ${isSimpleDesign || ghost ? '0px' : borderTopLeftRadius} ${isSimpleDesign || ghost ? '0px' : borderTopRightRadius} 0px 0px !important;
     }
 
     &.${prefixCls}-collapse-ghost {
@@ -243,7 +252,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
 
     &.${prefixCls}-collapse-ghost {
       > .ant-collapse-item > .ant-collapse-header {
-        --ant-collapse-header-padding: ${headerStyle?.padding || '12px 16px'} !important;
+        --ant-collapse-header-padding: ${headerStyle.padding || '12px 16px'} !important;
         padding: 12px 16px !important;
         font-size: 14px;
       }
@@ -257,7 +266,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, { headerSt
       height: max-content;
       min-height: ${minHeight};
       max-height: ${maxHeight};
-      overflow: ${typeof overflow === 'object' ? (overflow?.overflow ?? 'auto') : (overflow ?? 'auto')};
+      overflow: ${typeof overflow === 'object' ? (overflow.overflow ?? 'auto') : 'auto'};
       padding-top: ${paddingTop} !important;
       padding-bottom: ${paddingBottom} !important;
       padding-left: ${paddingLeft} !important;

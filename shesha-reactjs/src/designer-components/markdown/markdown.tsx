@@ -1,38 +1,65 @@
 import { Alert, Skeleton } from 'antd';
-import React, { FC, lazy } from 'react';
-import { useFormData, useGlobalState, useSubForm } from '@/providers';
+import React, { FC, lazy, use } from 'react';
+import { useFormData, useGlobalState, useSubFormOrUndefined } from '@/providers';
 import { useForm } from '@/providers/form';
 import { evaluateString } from '@/providers/form/utils';
 import { IMarkdownComponentProps } from './interfaces';
 import './styles.module.scss'; // This manually loads github-markdown-css, as per https://raw.githubusercontent.com/sindresorhus/github-markdown-css/gh-pages/github-markdown.css
 
-let SyntaxHighlighter;
-let dark;
-let remarkGfm;
+const remarkGfmPromise = import('remark-gfm').then((mod) => mod.default);
+const darkPrismPromise = import('react-syntax-highlighter/dist/esm/styles/prism').then((mod) => mod.dark);
 
-const ReactMarkdown = lazy(async () => {
-  const remarkGfmModule = await import('remark-gfm');
-  remarkGfm = remarkGfmModule?.default;
+const ReactMarkdown = lazy(() => import('react-markdown'));
+const SyntaxHighlighter = lazy(() => import('react-syntax-highlighter').then((mod) => ({ default: mod.Prism })));
 
-  const syntaxHighlighterModule = await import('react-syntax-highlighter');
-  SyntaxHighlighter = syntaxHighlighterModule?.Prism;
+type MarkdownWithGfmProps = {
+  content: string;
+  style?: React.CSSProperties;
+};
+const MarkdownWithGfm: FC<MarkdownWithGfmProps> = ({ content/* , style*/ }) => {
+  const gfm = use(remarkGfmPromise);
+  const dark = use(darkPrismPromise);
 
-  const darkModule = await import('react-syntax-highlighter/dist/esm/styles/prism');
-  dark = darkModule?.dark;
-
-  return import('react-markdown');
-});
+  return (
+    <ReactMarkdown
+      remarkPlugins={[gfm]}
+      components={{
+        // style: style,
+        code(/* { node, inline, className, children, ...props }*/props) {
+          const { inline, className, children } = props;
+          const match = /language-(\w+)/.exec(className || '');
+          return !inline && match ? (
+            <SyntaxHighlighter
+              style={dark}
+              language={match[1]}
+              PreTag="div"
+              {...props}
+            >
+              {/* {String(children).replace(/\n$/, '')} */}
+            </SyntaxHighlighter>
+          ) : (
+            <code className={className} {...props}>
+              {children}
+            </code>
+          );
+        },
+      }}
+    >
+      {content}
+    </ReactMarkdown>
+  );
+};
 
 const Markdown: FC<IMarkdownComponentProps> = (model) => {
   const { formMode } = useForm();
   // NOTE: to be replaced with a generic context implementation
-  const { value: subFormData } = useSubForm(false) ?? {};
+  const { value: subFormData } = useSubFormOrUndefined() ?? {};
   const { data: formData } = useFormData();
   const { globalState } = useGlobalState();
 
   const data = subFormData || formData;
 
-  const content = evaluateString(model?.content, { data, globalState });
+  const content = evaluateString(model.content, { data, globalState });
 
   if (!content && formMode === 'designer') {
     return <Alert type="warning" title="Please make sure you enter the content to be displayed here!" />;
@@ -45,31 +72,7 @@ const Markdown: FC<IMarkdownComponentProps> = (model) => {
   ) : (
     <React.Suspense fallback={<div>Loading editor...</div>}>
       <div className="markdown-body" style={model.style}>
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm]?.filter(Boolean)}
-          components={{
-            style: model.style as any,
-            code({ node, inline, className, children, ...props }) {
-              const match = /language-(\w+)/.exec(className || '');
-              return !inline && match && SyntaxHighlighter ? (
-                <SyntaxHighlighter
-                  style={dark}
-                  language={match[1]}
-                  PreTag="div"
-                  {...props}
-                >
-                  {String(children).replace(/\n$/, '')}
-                </SyntaxHighlighter>
-              ) : (
-                <code className={className} {...props}>
-                  {children}
-                </code>
-              );
-            },
-          }}
-        >
-          {content}
-        </ReactMarkdown>
+        <MarkdownWithGfm content={content} style={model.style} />
       </div>
     </React.Suspense>
   );

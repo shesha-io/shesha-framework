@@ -19,8 +19,8 @@ const PermissionAutocompleteComponent: PermissionAutocompleteComponentDefinition
   Factory: ({ model }) => {
     if (model.hidden) return null;
     return (
-      <ConfigurableFormItem model={model}>
-        {(value, onChange) => <PermissionAutocomplete value={value} onChange={onChange} readOnly={model.readOnly} />}
+      <ConfigurableFormItem<string[]> model={model}>
+        {(value, onChange) => <PermissionAutocomplete value={value ?? undefined} onChange={onChange} readOnly={model.readOnly} />}
       </ConfigurableFormItem>
     );
   },

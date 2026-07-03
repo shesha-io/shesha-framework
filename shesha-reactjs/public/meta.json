@@ -7,16 +7,6 @@
         "url": "https://ant.design/docs/react/introduce"
       },
       {
-        "name": "Styled Components",
-        "description": "Utilising tagged template literals (a recent addition to JavaScript) and the power of CSS, styled-components allows you to write actual CSS code to style your components.",
-        "url": "https://styled-components.com/docs"
-      },
-      {
-        "name": "Styled System",
-        "description": "Styled System is a collection of utility functions that add style props to your React components and allows you to control styles based on a global theme object with typographic scales, colors, and layout properties.",
-        "url": "https://styled-system.com/getting-started"
-      },
-      {
         "name": "Fetch",
         "description": "Next.js has a built-in polyfill for the fetch API. You don't need to worry about using it on either server or client side.",
         "url": "https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API"

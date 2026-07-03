@@ -1,10 +1,11 @@
 import { createStyles } from '@/styles';
-import React from 'react';
+import { CSSObject } from 'antd-style';
+import { CSSProperties } from 'react';
 
-export const useStyles = createStyles(({ css, cx, prefixCls }, { style }: { style: React.CSSProperties }) => {
+export const useStyles = createStyles(({ css, cx, prefixCls }, { style }: { style: CSSProperties }) => {
   const { fontWeight, backgroundImage, backgroundColor, ...rest } = style;
 
-  const borderWidthFromWeight = (weight): string => {
+  const borderWidthFromWeight = (weight: CSSProperties['fontWeight'] | undefined): string => {
     switch (weight) {
       case '100':
         return '1px';
@@ -31,15 +32,15 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { style }: { styl
           height: 100%;
         }
         .${prefixCls}-checkbox-inner {
-            --ant-control-interactive-size: ${style?.fontSize};
-            --ant-line-width-bold: ${borderWidthFromWeight(style?.fontWeight)} !important;
+            --ant-control-interactive-size: ${style.fontSize};
+            --ant-line-width-bold: ${borderWidthFromWeight(style.fontWeight)} !important;
             --ant-color-white: ${style.color || '#fff'} !important;
             --ant-color-primary-hover: ${backgroundColor};
-            width: ${style?.width};
-            height: ${style?.height};
+            width: ${style.width};
+            height: ${style.height};
             display: flex;
             justify-content: center;
-            ${rest}
+            ${rest as CSSObject}
             :after {
                 inset-inline-start: unset;
             }
@@ -49,7 +50,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { style }: { styl
       .${prefixCls}-checkbox-checked {
         .${prefixCls}-checkbox-inner {
             background: ${backgroundImage || backgroundColor};
-            ${rest}
+            ${rest as CSSObject}
             }
         }
     `);

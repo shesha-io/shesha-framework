@@ -6,10 +6,11 @@ import { getIconByDataType } from '@/utils/metadata';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 import PropertyWrapper from './propertyWrapper';
 import { getEntityTypeName } from '@/providers/metadataDispatcher/entities/utils';
+import { isNotNullOrWhiteSpace } from '@/utils/nullables';
 
 export interface IProps extends IModelItem {
   index: number[];
-  parent?: IModelItem;
+  parent?: IModelItem | undefined;
 }
 
 export const ArrayEntityProperty: FC<IProps> = (props) => {
@@ -17,15 +18,15 @@ export const ArrayEntityProperty: FC<IProps> = (props) => {
 
   const icon = getIconByDataType(props.dataType, props.dataFormat);
 
-  const itemsType = props.properties?.find((p) => p.isItemsType);
+  const itemsType = props.properties?.find((p) => p.isItemsType === true);
   const listType = getEntityTypeName(itemsType?.entityType);
   const listIcon = itemsType ? getIconByDataType(itemsType.dataType, itemsType.dataFormat) : null;
 
   return (
     <PropertyWrapper {...props}>
       {icon}<span> </span>{listIcon}
-      <span className={styles.shaToolbarItemName}>{props.name} {props.label && <>({props.label})</>}: <i>List of {`<${listType ?? 'undefined'}>`}</i></span>
-      {props.description && (
+      <span className={styles.shaToolbarItemName}>{props.name} {isNotNullOrWhiteSpace(props.label) && <>({props.label})</>}: <i>List of {`<${listType ?? 'undefined'}>`}</i></span>
+      {isNotNullOrWhiteSpace(props.description) && (
         <Tooltip title={props.description}>
           <QuestionCircleOutlined className={styles.shaHelpIcon} />
         </Tooltip>

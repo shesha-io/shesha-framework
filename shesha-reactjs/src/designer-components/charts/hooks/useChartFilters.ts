@@ -1,12 +1,13 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { evaluateDynamicFiltersSync } from '@/utils/datatable';
 import { IChartProps } from '../model';
-import { FilterExpression, IStoredFilter } from '@/providers/dataTable/interfaces';
+import { FilterExpression, IStoredFilter, JsonLogicFilter } from '@/providers/dataTable/interfaces';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { useDataContextManager } from '@/providers/dataContextManager/hooks';
 import { useMetadataDispatcher } from '@/providers/metadataDispatcher/provider';
 import { IModelMetadata } from '@/interfaces/metadata';
 import { DataTypes } from '@/interfaces/dataTypes';
+import { isDefined } from '@/utils/nullables';
 
 interface UseChartFiltersResult {
   stateEvaluatedFilters: string;
@@ -19,7 +20,7 @@ export const useChartFilters = (model: IChartProps): UseChartFiltersResult => {
   const dataContextManager = useDataContextManager();
   const { getMetadata } = useMetadataDispatcher();
   const [stateEvaluatedFilters, setStateEvaluatedFilters] = useState<string>('');
-  const [metaData, setMetaData] = useState<IModelMetadata>(undefined);
+  const [metaData, setMetaData] = useState<IModelMetadata | null>(null);
   const [filtersReady, setFiltersReady] = useState<boolean>(false);
   const [filterError, setFilterError] = useState<string | undefined>(undefined);
 
@@ -28,17 +29,18 @@ export const useChartFilters = (model: IChartProps): UseChartFiltersResult => {
   const filtersReadyRef = useRef<boolean>(false);
 
   useEffect(() => {
-    getMetadata({ modelType: model.entityType, dataType: DataTypes.entityReference })
-      .then(setMetaData)
-      .catch((error) => {
-        console.error('Error getting entity metadata:', error);
-        setFilterError('Error getting entity metadata');
-      });
+    if (model.entityType)
+      getMetadata({ modelType: model.entityType, dataType: DataTypes.entityReference })
+        .then(setMetaData)
+        .catch((error) => {
+          console.error('Error getting entity metadata:', error);
+          setFilterError('Error getting entity metadata');
+        });
   }, [model.entityType, getMetadata]);
 
   // Memoize the data context values to prevent unnecessary re-renders
-  const pageContext = useMemo(() => dataContextManager?.getPageContext(), [dataContextManager]);
-  const contextsData = useMemo(() => dataContextManager?.getDataContextsData(), [dataContextManager]);
+  const pageContext = useMemo(() => dataContextManager.getPageContext(), [dataContextManager]);
+  const contextsData = useMemo(() => dataContextManager.getDataContextsData(), [dataContextManager]);
 
   useEffect(() => {
     if (!model.filters) {
@@ -60,42 +62,45 @@ export const useChartFilters = (model: IChartProps): UseChartFiltersResult => {
       { match: 'data', data: allAvailableData.form?.data },
       { match: 'globalState', data: allAvailableData.globalState },
       { match: 'pageContext', data: pageContext },
-      contextsData ? { match: 'contexts', data: contextsData } : null,
+      { match: 'contexts', data: contextsData },
     ].filter(Boolean);
 
     try {
       // Convert the filter expression to IStoredFilter format
-      const filterExpression2Object = (filter: FilterExpression): object => {
+      const filterExpression2Object = (filter: FilterExpression): JsonLogicFilter => {
         return typeof filter === 'string' ? JSON.parse(filter) : filter;
       };
 
       // Handle multiple filters by converting to array of IStoredFilter objects
       let filters: IStoredFilter[] = [];
 
-      if (Array.isArray(model.filters)) {
+      if (isDefined(model.filters)) {
+        if (Array.isArray(model.filters)) {
         // If filters is an array, convert each item to IStoredFilter
-        filters = model.filters.map((filter, index) => ({
-          id: `chart-filter-${index}`,
-          name: `Chart Filter ${index + 1}`,
-          expression: filterExpression2Object(filter),
-          selected: true,
-          defaultSelected: true,
-        }));
-      } else {
+          filters = model.filters.map((filter, index) => ({
+            id: `chart-filter-${index}`,
+            name: `Chart Filter ${index + 1}`,
+            expression: filterExpression2Object(filter),
+            selected: true,
+            defaultSelected: true,
+          }));
+        } else {
         // If filters is a single expression, wrap it in an array
-        filters = [{
-          id: 'chart-filter-0',
-          name: 'Chart Filter',
-          expression: filterExpression2Object(model.filters),
-          selected: true,
-          defaultSelected: true,
-        }];
+          filters = [{
+            id: 'chart-filter-0',
+            name: 'Chart Filter',
+            expression: filterExpression2Object(model.filters),
+            selected: true,
+            defaultSelected: true,
+          }];
+        }
       }
+
 
       const response = evaluateDynamicFiltersSync(
         filters,
         match,
-        metaData?.properties,
+        metaData.properties,
       );
 
       // Combine multiple evaluated filters using 'and' operator
@@ -108,13 +113,13 @@ export const useChartFilters = (model: IChartProps): UseChartFiltersResult => {
       } else {
         // Multiple filters - combine with 'and' operator
         const expressions = response
-          .map((filter) => filter?.expression)
-          .filter(Boolean);
+          .map((filter) => filter.expression)
+          .filter(isDefined);
 
         if (expressions.length === 0) {
           combinedFilters = null;
         } else if (expressions.length === 1) {
-          combinedFilters = expressions[0];
+          combinedFilters = expressions[0] ?? null;
         } else {
           combinedFilters = { and: expressions };
         }

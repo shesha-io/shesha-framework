@@ -1,6 +1,6 @@
 import { ComponentDefinition } from '@/interfaces';
 import { headerType } from './../../components/panel/index';
-import { IConfigurableFormComponent, IStyleType } from '@/providers/form/models';
+import { IConfigurableFormComponent, IStyleValue } from '@/providers/form/models';
 import { isDefined } from '@/utils/nullables';
 import { CollapsibleType } from 'antd/lib/collapse/CollapsePanel';
 import { Collapse } from 'antd';
@@ -13,29 +13,29 @@ export interface ICollapsiblePanelContent {
   components?: IConfigurableFormComponent[];
 }
 
-export interface ICollapsiblePanelComponentProps extends IConfigurableFormComponent, IStyleType {
+export interface ICollapsiblePanelComponentProps extends IConfigurableFormComponent, IStyleValue {
   label?: string | ReactNode;
-  collapsedByDefault?: boolean;
-  expandIconPosition?: ExpandIconPlacement | 'hide';
-  header?: ICollapsiblePanelContent;
+  collapsedByDefault?: boolean | undefined;
+  expandIconPosition?: ExpandIconPlacement | 'hide' | undefined;
+  header?: ICollapsiblePanelContent | undefined;
   content?: ICollapsiblePanelContent | undefined;
-  collapsible?: CollapsibleType;
-  ghost?: boolean;
-  accentStyle?: boolean;
-  hideWhenEmpty?: boolean;
-  className?: string;
-  marginBottom?: string;
-  marginTop?: string;
-  headerColor?: string;
-  bodyColor?: string;
-  isSimpleDesign?: boolean;
-  hideCollapseContent?: boolean;
-  borderRadius?: number;
-  noMargin?: boolean;
-  hasCustomHeader?: boolean;
-  customHeader?: ICollapsiblePanelContent;
-  panelHeadType?: headerType;
-  headerStyles?: IStyleType;
+  collapsible?: CollapsibleType | undefined;
+  ghost?: boolean | undefined;
+  accentStyle?: boolean | undefined;
+  hideWhenEmpty?: boolean | undefined;
+  className?: string | undefined;
+  marginBottom?: string | undefined;
+  marginTop?: string | undefined;
+  headerColor?: string | undefined;
+  bodyColor?: string | undefined;
+  isSimpleDesign?: boolean | undefined;
+  hideCollapseContent?: boolean | undefined;
+  borderRadius?: number | undefined;
+  noMargin?: boolean | undefined;
+  hasCustomHeader?: boolean | undefined;
+  customHeader?: ICollapsiblePanelContent | undefined;
+  panelHeadType?: headerType | undefined;
+  headerStyles?: IStyleValue | undefined;
 };
 
 // TODO: implement generic guard on the component level
@@ -44,9 +44,13 @@ export const isCollapsiblePanel = (component: IConfigurableFormComponent): compo
 type ExpandIconPositionLegacy = 'left' | 'right';
 
 export interface ICollapsiblePanelComponentPropsV0 extends IConfigurableFormComponent {
-  collapsedByDefault?: boolean;
-  expandIconPosition?: ExpandIconPositionLegacy;
-  components?: IConfigurableFormComponent[];
+  collapsedByDefault?: boolean | undefined;
+  expandIconPosition?: ExpandIconPositionLegacy | undefined;
+  components?: IConfigurableFormComponent[] | undefined;
 }
 
-export type CollapsiblePanelComponentDefinition = ComponentDefinition<"collapsiblePanel", ICollapsiblePanelComponentProps>;
+export interface ICollapsiblePanelComponentCalcProps {
+  evaluatedLabel?: string | ReactNode;
+}
+
+export type CollapsiblePanelComponentDefinition = ComponentDefinition<"collapsiblePanel", ICollapsiblePanelComponentProps, ICollapsiblePanelComponentCalcProps>;

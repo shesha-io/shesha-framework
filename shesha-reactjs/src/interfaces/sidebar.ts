@@ -42,14 +42,14 @@ export interface ISidebarGroup extends ISidebarMenuItem {
   childItems?: ISidebarMenuItem[] | undefined;
 }
 
-export const isSidebarGroup = (item: ISidebarMenuItem): item is ISidebarGroup => {
+export const isSidebarGroup = (item: ISidebarMenuItem | undefined): item is ISidebarGroup => {
   return isDefined(item) && item.itemType === 'group';
 };
 
-export const isSidebarButton = (item: ISidebarMenuItem): item is ISidebarButton => {
+export const isSidebarButton = (item: ISidebarMenuItem | undefined): item is ISidebarButton => {
   return isDefined(item) && item.itemType === 'button';
 };
 
-export const isSidebarDivider = (item: ISidebarMenuItem): item is ISidebarButton => {
+export const isSidebarDivider = (item: ISidebarMenuItem | undefined): item is ISidebarButton => {
   return isDefined(item) && item.itemType === 'divider';
 };

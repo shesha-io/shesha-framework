@@ -13,15 +13,15 @@ interface IToolbarItemBase {
   id: string;
   name: string;
   label: string;
-  tooltip?: string;
+  tooltip?: string | undefined;
   sortOrder: number;
-  danger?: boolean;
+  danger?: boolean | undefined;
   itemType: ToolbarItemType;
-  icon?: string;
-  buttonType?: ButtonType;
-  customVisibility?: string;
-  customEnabled?: string;
-  permissions?: string[];
+  icon?: string | undefined;
+  buttonType?: ButtonType | undefined;
+  customVisibility?: string | undefined;
+  customEnabled?: string | undefined;
+  permissions?: string[] | undefined;
 }
 
 export interface IToolbarButton extends IToolbarItemBase {

@@ -45,7 +45,7 @@ export const SaveButton: FC<ISaveButtonProps> = (props) => {
     <Button
       icon={<SaveOutlined />}
       onClick={onSaveClick}
-      type={props.type}
+      {...(props.type ? { type: props.type } : {})}
       size={props.size}
       disabled={!isModified}
     />

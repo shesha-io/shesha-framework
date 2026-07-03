@@ -1,7 +1,7 @@
 import { addPx } from '@/utils/style';
 import { createStyles } from 'antd-style';
 
-export const useStyles = createStyles(({ css, cx, prefixCls }, { height }) => {
+export const useStyles = createStyles(({ css, cx, prefixCls }, { height }: { height: number }) => {
   const shaModelConfiguratorForm = 'sha-model-configurator-form';
   const shaModelConfiguratorToolbar = 'sha-model-configurator-toolbar';
   const shaModelConfiguratorToolbarLeft = 'sha-model-configurator-toolbar-left';
@@ -17,7 +17,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { height }) => {
       padding-left: 12px;
       padding-right: 12px;
       height: 100%;
-      overflow: hidden;
 
       .${shaModelConfiguratorForm} {
         height: calc(100vh - ${addPx(height) ?? '280px'});

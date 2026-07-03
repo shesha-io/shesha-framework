@@ -5,6 +5,7 @@ import { isAjaxSuccessResponse } from "@/interfaces/ajaxResponse";
 import { IConfigurationItemDto } from "@/providers/configurationItemsLoader/models";
 import { IEntityTypeIdentifierQueryParams, IPropertyMetadata } from "@/interfaces/metadata";
 import { isNonEmptyArray } from "@/utils/array";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 
 export const ENTITY_CACHE = {
   ENTITIES: 'entity',
@@ -79,7 +80,7 @@ const getEntitiesSyncRequest = async (context: ISyncEntitiesContext): Promise<Sy
 
       const aliases = [...(metadata.aliases ?? []), metadata.fullClassName];
       aliases.forEach((alias) => {
-        context.typesMap.register(alias, { module: metadata.module, name: metadata.name });
+        context.typesMap.register(alias, { module: metadata.module, name: name });
       });
 
       moduleSync.entities.push({
@@ -229,26 +230,30 @@ export const isEntityTypeIdentifier = (modelType: string | IEntityTypeIdentifier
 export const getEntityTypeIdentifier = (modelType: string | IEntityTypeIdentifier): IEntityTypeIdentifier =>
   (isEntityTypeIdentifier(modelType) ? modelType : { name: modelType, module: null });
 
-export const getEntityTypeIdentifierQueryParams = (modelType: string | IEntityTypeIdentifier): IEntityTypeIdentifierQueryParams =>
-  (isEntityTypeIdentifier(modelType)
-    ? { name: modelType.name, module: modelType.module ?? undefined }
-    : { entityType: modelType }
-  );
+export const getEntityTypeIdentifierQueryParams = (modelType: string | IEntityTypeIdentifier | undefined): IEntityTypeIdentifierQueryParams => {
+  return !isDefined(modelType)
+    ? {}
+    : (isEntityTypeIdentifier(modelType)
+      ? { name: modelType.name, module: modelType.module ?? undefined }
+      : { entityType: modelType }
+    );
+};
+
 export const isEntityTypeIdEqual = (a: string | IEntityTypeIdentifier, b: string | IEntityTypeIdentifier): boolean =>
   (typeof a === 'string' && typeof b === 'string' && a === b) ||
   (isEntityTypeIdentifier(a) && isEntityTypeIdentifier(b) && a.name === b.name && a.module === b.module);
 
-export const isEntityTypeIdEmpty = (a: string | IEntityTypeIdentifier | null | undefined): boolean =>
+export const isEntityTypeIdEmpty = (a: string | IEntityTypeIdentifier | null | undefined): a is null | undefined =>
   a === null || a === undefined ||
-  (typeof a === 'string' && a.trim().length === 0) ||
+  (typeof a === 'string' && isNullOrWhiteSpace(a)) ||
   (typeof a === 'object' && !isEntityTypeIdentifier(a)) ||
-  (isEntityTypeIdentifier(a) && a.name.trim().length === 0);
+  (isEntityTypeIdentifier(a) && isNullOrWhiteSpace(a.name));
 
 export const isEntityTypeId = (id: string | IEntityTypeIdentifier | null | undefined): id is string | IEntityTypeIdentifier => !isEntityTypeIdEmpty(id);
 
-export const getEntityTypeName = (modelType: string | IEntityTypeIdentifier | null | undefined): string | null | undefined =>
+export const getEntityTypeName = (modelType: string | IEntityTypeIdentifier | null | undefined): string | undefined =>
   isEntityTypeIdentifier(modelType)
     ? Boolean(modelType.module)
       ? `${modelType.module}:${modelType.name}`
       : modelType.name
-    : modelType;
+    : modelType ?? undefined;

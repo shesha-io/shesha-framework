@@ -6,9 +6,9 @@ import { ShaIcon, IconType } from '../shaIcon';
 const { Title, Paragraph } = Typography;
 
 export interface IEmptyStateProps {
-  noDataIcon?: string;
-  noDataText?: string;
-  noDataSecondaryText?: string;
+  noDataIcon?: string | undefined;
+  noDataText?: string | undefined;
+  noDataSecondaryText?: string | undefined;
 }
 
 const EmptyState: React.FC<IEmptyStateProps> = ({ noDataIcon, noDataText, noDataSecondaryText }) => {

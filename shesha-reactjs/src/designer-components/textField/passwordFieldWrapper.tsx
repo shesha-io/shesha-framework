@@ -27,7 +27,7 @@ export const PasswordFieldWrapper: FC<PropsWithChildren<Props>> = ({ children, c
 
       resizeObserver = new ResizeObserver((entries: ResizeObserverEntry[]): void => {
         for (const entry of entries) {
-          const width = entry.borderBoxSize?.[0]?.inlineSize ?? entry.contentRect.width;
+          const width = entry.borderBoxSize[0]?.inlineSize ?? entry.contentRect.width;
           container.style.setProperty('--sha-password-input-width', `${width}px`);
         }
       });
@@ -60,7 +60,7 @@ export const PasswordFieldWrapper: FC<PropsWithChildren<Props>> = ({ children, c
     }
     const errorEl = e.target.closest<HTMLElement>('.ant-form-item-explain-error');
     if (errorEl && errorEl.scrollWidth > errorEl.clientWidth) {
-      showTooltip(errorEl.textContent ?? '');
+      showTooltip(errorEl.textContent);
     } else {
       hideTooltip();
     }

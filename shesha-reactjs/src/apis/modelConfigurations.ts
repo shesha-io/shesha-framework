@@ -247,7 +247,7 @@ export interface FormIdFullNameDto {
 export interface EntityViewConfigurationDto {
   isStandard?: boolean;
   type?: string | null;
-  formId?: FormIdFullNameDto;
+  formId?: FormIdFullNameDto | undefined;
 }
 
 /**

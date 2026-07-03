@@ -7,9 +7,9 @@ import { ItemChangeDetails, NestedItemsRenderingArgs } from '@/components/listEd
 
 export interface IButtonGroupListItemProps {
   item: ButtonGroupItemProps;
-  onChange: (newValue: ButtonGroupItemProps, changeDetails: ItemChangeDetails) => void;
+  onChange: (newValue: ButtonGroupItemProps, changeDetails?: ItemChangeDetails) => void;
   index: number[];
-  nestedRenderer?: (args: NestedItemsRenderingArgs<ButtonGroupItemProps>) => React.ReactNode | null;
+  nestedRenderer?: ((args: NestedItemsRenderingArgs<ButtonGroupItemProps>) => React.ReactNode | null) | undefined;
   initNewItem: (items: ButtonGroupItemProps[]) => ButtonGroupItemProps;
 }
 
@@ -25,10 +25,12 @@ export const ButtonGroupListItem: FC<IButtonGroupListItemProps> = ({ item, onCha
         key={item.id}
         item={item}
         containerRendering={(args) => {
-          return nestedRenderer({
-            ...args,
-            initNewItem: initNewItem,
-          });
+          return nestedRenderer
+            ? nestedRenderer({
+              ...args,
+              initNewItem: initNewItem,
+            })
+            : undefined;
         }}
       />
     );

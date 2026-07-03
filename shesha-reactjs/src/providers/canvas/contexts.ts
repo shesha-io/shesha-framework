@@ -5,13 +5,13 @@ export type DeviceTypes = 'desktop' | 'mobile' | 'tablet' | 'custom';
 export type IViewType = 'configStudio' | 'page' | 'modal';
 
 export interface ICanvasStateContext {
-  zoom?: number;
-  autoZoom?: boolean;
-  designerWidth?: string;
+  zoom: number;
+  autoZoom: boolean;
+  designerWidth: string;
   designerDevice?: DeviceTypes;
   physicalDevice?: DeviceTypes;
   activeDevice?: DeviceTypes;
-  configTreePanelSize?: number;
+  configTreePanelSize: number;
   viewType?: IViewType;
 }
 
@@ -23,15 +23,15 @@ export interface ICanvasActionsContext {
   setDesignerDevice: (deviceType: DeviceTypes) => void;
   setCanvasWidth: (width: number | string, deviceType: DeviceTypes) => void;
   setCanvasZoom: (zoom: number) => void;
-  setCanvasAutoZoom: () => void;
+  setCanvasAutoZoom: (value?: boolean) => void;
   setConfigTreePanelSize: (size: number) => void;
   setViewType: (viewType: IViewType) => void;
   /* NEW_ACTION_ACTION_DECLARATION_GOES_HERE */
 }
 
 export const CANVAS_CONTEXT_INITIAL_STATE: ICanvasStateContext = {
-  zoom: 100,
-  autoZoom: true,
+  zoom: 80,
+  autoZoom: false,
   designerDevice: 'desktop',
   designerWidth: defaultDesignerWidth,
   configTreePanelSize: typeof window !== 'undefined' ? (20 / 100) * window.innerWidth : 200,

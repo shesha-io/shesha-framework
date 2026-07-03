@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { DataTypes, NumberFormats } from '@/interfaces/dataTypes';
-import { IComponentValidationRules, IInputStyles, useMetadata } from '@/providers';
+import { IComponentValidationRules, IInputStyles, useMetadataOrUndefined } from '@/providers';
 import { executeScriptSync, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { INumberFieldComponentProps, INumberFieldComponentPropsV1, NumberFieldComponentDefinition } from './interfaces';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly, migrateHiddenToVisible } from '@/designer-components/_common-migrations/migrateSettings';
@@ -13,8 +13,8 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { asPropertiesArray, IDecimalFormatting, INumberFormatting, isDecimalFormatting, isNumberFormatting } from '@/interfaces/metadata';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
-import { migratePrevStyles, migrateStyles } from '../_common-migrations/migrateStyles';
-import { customOnChangeValueEventHandler, addContextData, getAllEventHandlers } from '@/components/formDesigner/components/utils';
+import { migrateStyles } from '../_common-migrations/migrateStyles';
+import { addContextData } from '@/components/formDesigner/components/utils';
 import { defaultStyles } from './utils';
 import { useStyles } from './styles';
 import { InputNumber, InputNumberProps } from 'antd';
@@ -25,6 +25,9 @@ import { NumberFieldApi } from '../../componentsApi/componentApi';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
+import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
+import { getComponentEvents } from '../_common/events';
 
 const suffixStyle = { color: 'rgba(0,0,0,.45)' };
 
@@ -47,21 +50,20 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
   icon: <NumberOutlined />,
   preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.number,
-  calculateModel: (model, allData) => {
+  calculateModel: (_, allData) => {
     return {
-      eventHandlers: { ...getAllEventHandlers(model, allData), ...customOnChangeValueEventHandler(model, allData) },
-      executeCustomFormat: (value: unknown, code: string): string => executeScriptSync(code, addContextData(allData, { value })),
+      executeCustomFormat: (value: unknown, code: string): string => executeScriptSync(code, addContextData(allData, { value })) ?? "",
     };
   },
   Factory: ({ model, calculatedModel }) => {
     const [, forceRefresh] = useState({});
 
     const componentApi = useComponentApi();
-    const inputRef = useRef<InputNumberRef>();
+    const inputRef = useRef<InputNumberRef>(null);
     useEffect(() => {
       componentApi?.updateApi<NumberFieldApi>({
         id: model.id,
-        componentName: model.componentName,
+        componentName: model.componentName ?? "",
         level: 3,
         typeDefinition: { typeName: 'NumberFieldApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
         api: { focus: () => inputRef.current?.focus() },
@@ -69,25 +71,10 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
     }, [componentApi, model.componentName, model.id]);
     useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
-    const { styles } = useStyles({
-      fontFamily: model.font?.type,
-      fontWeight: model.font?.weight,
-      textAlign: model.font?.align,
-      color: model.font?.color,
-      fontSize: model.font?.size,
-      padding: {
-        padding: model.allStyles?.fullStyle?.padding,
-        paddingLeft: model.allStyles?.fullStyle?.paddingLeft,
-        paddingRight: model.allStyles?.fullStyle?.paddingRight,
-        paddingTop: model.allStyles?.fullStyle?.paddingTop,
-        paddingBottom: model.allStyles?.fullStyle?.paddingBottom,
-      },
-      hasSuffix: model.suffix || model.suffixIcon,
-      hasPrefix: model.prefix || model.prefixIcon,
-    });
+    const { styles } = useStyles(model);
 
-    const { properties: metaProperties } = useMetadata(false)?.metadata ?? {};
-    const properties = asPropertiesArray(metaProperties, []);
+    const { properties: metaProperties } = useMetadataOrUndefined()?.metadata ?? {};
+    const properties = asPropertiesArray(metaProperties ?? [], []);
 
     const prefix = useMemo(() => {
       return model.numberFormat === 'custom'
@@ -100,91 +87,109 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
         : null;
     }, [model.numberFormat, model.suffix, model.suffixIcon]);
 
-    const inputProps: InputNumberProps = {
-      disabled: model.readOnly,
-      variant: model.hideBorder ? 'borderless' : undefined,
+    const inputProps: InputNumberProps<number> = {
+      disabled: model.disabled === true,
+      ...(Boolean(model.hideBorder) ? { variant: 'borderless' } : {}),
       placeholder: model.placeholder,
       size: model.size,
-      ...calculatedModel.eventHandlers,
-      defaultValue: calculatedModel.defaultValue,
       changeOnWheel: false,
       prefix,
       suffix,
       stringMode: true,
       controls: false,
-      max: model.validate?.maxValue !== undefined ? model.validate?.maxValue : null,
-      min: model.validate?.minValue !== undefined ? model.validate?.minValue : null,
+      ...(isDefined(model.validate?.maxValue) ? { max: model.validate.maxValue } : {}),
+      ...(isDefined(model.validate?.minValue) ? { min: model.validate.minValue } : {}),
+      ...(isDefined(model.styleJson) ? { style: model.styleJson } : {}),
     };
 
     // ToDo: AS - implement custom number formatting
-    if (model.thousandsSeparator || model.numberFormat === 'percent' || (isPropertySettings(model.customFormat) && model.customFormat._mode === 'code' && model.customFormat._code)) {
+    if (isDefined(model.thousandsSeparator) ||
+      model.numberFormat === 'percent' ||
+      (isPropertySettings(model.customFormat) && model.customFormat._mode === 'code' && isNotNullOrWhiteSpace(model.customFormat._code))
+    ) {
       inputProps.formatter = (value) => {
-        if (isPropertySettings(model.customFormat) && model.customFormat._mode === 'code' && model.customFormat._code) {
-          return calculatedModel.executeCustomFormat(value, model.customFormat._code);
+        if (isPropertySettings(model.customFormat) && model.customFormat._mode === 'code' && isNotNullOrWhiteSpace(model.customFormat._code)) {
+          if (isDefined(calculatedModel.executeCustomFormat))
+            return calculatedModel.executeCustomFormat(value, model.customFormat._code);
         }
 
-        if (value === null || value === undefined || value === '') return '';
+        if (!isDefined(value)) return '';
 
         const strValue = value.toString();
-        return (Boolean(model.thousandsSeparator) ? strValue.replace(/\B(?=(\d{3})+(?!\d))/g, model.thousandsSeparator) : strValue) + (model.numberFormat === 'percent' ? ' %' : '');
+        const parts = value.toString().split('.');
+
+        return (isDefined(model.thousandsSeparator)
+          ? parts.length > 1
+            ? `${parts[0]?.replace(/\B(?=(\d{3})+(?!\d))/g, model.thousandsSeparator)}.${parts[1]}`
+            : parts[0]?.replace(/\B(?=(\d{3})+(?!\d))/g, model.thousandsSeparator) ?? ''
+          : strValue) +
+          (model.numberFormat === 'percent' ? ' %' : '');
       };
       inputProps.parser = (value) => {
-        if (value === null || value === undefined) return value;
+        if (!isDefined(value))
+          return 0;
         const ts = model.thousandsSeparator;
-        const escapedTs = ts ? ts.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') : '';
-        const regex = new RegExp(`[+-]?(?:\\d+${(Boolean(ts) ? `(?:${escapedTs}\\d*)*` : '')}(?:\\.\\d*)?|\\.\\d+)`, 'g');
+        const escapedTs = isDefined(ts) ? ts.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') : '';
+        const regex = new RegExp(`[+-]?(?:\\d+${(isDefined(ts) ? `(?:${escapedTs}\\d*)*` : '')}(?:\\.\\d*)?|\\.\\d+)`, 'g');
 
         const match = value.match(regex);
         if (match) {
           const rawNumber = match[0]; // "-1,234.56"
-          const cleanNumber = Boolean(ts) ? rawNumber.replaceAll(ts, '') : rawNumber; // "-1234.56"
+          const cleanNumber = !isNullOrWhiteSpace(ts) ? rawNumber.replaceAll(ts, '') : rawNumber; // "-1234.56"
           return parseFloat(cleanNumber); // -1234.56
         }
-        return undefined;
+        return 0;
       };
     }
 
-    const finalStyle = !model.enableStyleOnReadonly && model.readOnly ? {
-      ...model.allStyles.fontStyles,
-      ...model.allStyles.dimensionsStyles,
-    } : model.allStyles.fullStyle;
-
     return (
-      <ConfigurableFormItem model={model} initialValue={calculatedModel.defaultValue}>
-        {(value, onChange) => {
-          const customEvents = calculatedModel.eventHandlers;
-          const onChangeInternal = (val: number | string | null | undefined): void => {
-            let newValue = val;
-            let numValue = 0;
-            if (val !== undefined && val !== null) {
-              const strVal = val.toString();
-              const decimal = strVal.indexOf('.');
-              const numDecimalPlaces = model.numberFormat === 'integer' ? 0 : model.numDecimalPlaces;
-              const formattedValue = numDecimalPlaces !== undefined && numDecimalPlaces !== null && decimal !== -1
-                ? strVal.substring(0, decimal + numDecimalPlaces + 1)
-                : strVal;
-              numValue = parseFloat(formattedValue);
-              newValue = model.highPrecision ? formattedValue : Number.isNaN(numValue) ? undefined : numValue;
-              /* if (model.validate?.minValue !== undefined && numValue < model.validate?.minValue) {
-                numValue = value as number | undefined;
-                newValue = model.highPrecision ? numValue?.toString() : numValue;
-              }
-              if (model.validate?.maxValue !== undefined && numValue > model.validate?.maxValue) {
-                numValue = value as number | undefined;
-                newValue = model.highPrecision ? numValue?.toString() : numValue;
-              }*/
-            }
+      <ConfigurableFormItem<number> model={model}>
+        {(value, onChange, _, ctx) => {
+          return model.readOnly === true
+            ? (
+              <ReadOnlyDisplayFormItem
+                type="number"
+                // ToDo: AS - implement custom number formatting and merge with code from this component
+                value={numberToFormattedString(value?.toString(), getDataProperty(properties, model.propertyName ?? '', 'dataFormat'))}
+                enableFullStyle={model.enableStyleOnReadonly}
+                style={model.styleJson}
+                styleValue={model}
+              />
+            )
+            : (
+              <InputNumber
+                value={value ?? null}
+                {...inputProps}
+                ref={inputRef}
+                className={styles.numberStyles}
 
-            customEvents.onChange(newValue);
-            onChange(newValue);
+                onChange={(val) => {
+                  let newValue = val ?? undefined;
+                  let numValue = 0;
+                  if (isDefined(val)) {
+                    const strVal = val.toString();
+                    const decimal = strVal.indexOf('.');
+                    const numDecimalPlaces = model.numberFormat === 'integer' ? 0 : model.numDecimalPlaces;
+                    const formattedValue = numDecimalPlaces !== undefined && isDefined(numDecimalPlaces) && decimal !== -1
+                      ? strVal.substring(0, decimal + numDecimalPlaces + 1)
+                      : strVal;
+                    numValue = parseFloat(formattedValue);
+                    newValue = Boolean(model.highPrecision)
+                      ? parseFloat(formattedValue)
+                      : Number.isNaN(numValue)
+                        ? undefined
+                        : numValue;
+                  }
 
-            // force refresh because Antd InputNumber does not trigger render
-            forceRefresh({});
-          };
+                  ctx?.handleEvent(undefined, { value: newValue }, model.onChangeCustom);
+                  onChange(newValue);
 
-          return model.readOnly
-            ? <ReadOnlyDisplayFormItem type="number" value={numberToFormattedString(value, getDataProperty(properties, model.propertyName, 'dataFormat'))} style={finalStyle} />
-            : <InputNumber value={value} {...inputProps} style={model.allStyles.fullStyle} className={styles.numberField} onChange={onChangeInternal} ref={inputRef} />;
+                  // force refresh because Antd InputNumber does not trigger render
+                  forceRefresh({});
+                }}
+                {...getComponentEvents<number>(model, ['onFocus', 'onBlur', 'onClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave', 'onKeyDown', 'onKeyUp'], ctx, value, DataTypes.number)}
+              />
+            );
         }}
       </ConfigurableFormItem>
     );
@@ -193,13 +198,16 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
   initModel: (model) => ({
     ...model,
   }),
+  getDefaultStyles: () => defaultStyles(),
   migrator: (m) =>
     m
       .add<INumberFieldComponentPropsV1>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<INumberFieldComponentPropsV1>(1, (prev) => migrateVisibility(prev))
       .add<INumberFieldComponentPropsV1>(2, (prev) => migrateReadOnly(prev))
       .add<INumberFieldComponentPropsV1>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-      .add<INumberFieldComponentPropsV1>(4, (prev) => {
+      .add<INumberFieldComponentPropsV1>(4, (prev, context) => {
+        if (context.isNew === true) return prev;
+
         const styles: IInputStyles = {
           size: prev.size,
           hideBorder: prev.hideBorder,
@@ -207,9 +215,14 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
           style: prev.style,
         };
 
-        return { ...prev, desktop: { ...styles } }; // , tablet: { ...styles }, mobile: { ...styles } };
+        return { ...prev, desktop: { ...styles } };
       })
-      .add<INumberFieldComponentPropsV1>(5, (prev, context) => context.isNew ? { ...prev, desktop: { ...migrateStyles(prev, defaultStyles(), 'desktop') } } : { ...migratePrevStyles(prev, defaultStyles()) })
+      .add<INumberFieldComponentPropsV1>(5, (prev, context) => context.isNew === true
+        ? prev
+        : {
+          ...prev,
+          desktop: { ...migrateStyles(prev, {}, 'desktop'), enableStyleOnReadonly: (prev.desktop as IInputStyles | undefined)?.enableStyleOnReadonly ?? false },
+        })
       .add<INumberFieldComponentProps>(6, (prev) => {
         const model = { ...migrateHiddenToVisible(prev) };
         if (prev.min !== undefined || prev.max !== undefined) {
@@ -220,7 +233,9 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
           } as IComponentValidationRules;
         }
         return model;
-      }),
+      })
+      .add<INumberFieldComponentProps>(7, (prev) => migratePermissionsToVisiblePermissions(prev)),
+
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   linkToModelMetadata: (model, metadata): INumberFieldComponentProps => {
     const numFormat = isNumberFormatting(metadata.formatting) ? metadata.formatting as INumberFormatting : null;
@@ -230,13 +245,25 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
       numberFormat: metadata.dataType === DataTypes.number
         ? metadata.dataFormat === NumberFormats.int64 || metadata.dataFormat === NumberFormats.int32
           ? 'integer'
-          : decimalFormat?.showAsPercentage
+          : decimalFormat?.showAsPercentage ?? false
             ? 'percent'
             : 'decimal'
         : 'custom',
       numDecimalPlaces: decimalFormat?.numDecimalPlaces,
       thousandsSeparator: numFormat?.thousandsSeparator,
     };
+  },
+  previewConfiguration: {
+    type: 'numberField',
+    id: 'numberField',
+    propertyName: `numberFieldAppearance`,
+    label: `Number Field Label`,
+    prefix: 'Prefix',
+    prefixIcon: 'DoubleRightOutlined',
+    suffixIcon: 'DoubleLeftOutlined',
+    suffix: 'Suffix',
+    version: 'latest',
+    numberFormat: 'custom',
   },
 };
 

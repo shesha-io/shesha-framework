@@ -34,11 +34,11 @@ const KeyInformationBarComponent: KeyInformationBarComponentDefinition = {
       .add<IKeyInformationBarComponentProps>(2, (prev) => removeComponents(prev))
       .add<IKeyInformationBarComponentProps>(3, (prev) => {
         const prevDividerStyles = {
-          orientation: prev?.orientation,
-          dividerWidth: prev?.dividerWidth,
-          dividerMargin: prev?.dividerMargin,
-          dividerColor: prev?.dividerColor,
-          gap: prev?.gap,
+          orientation: prev.orientation,
+          dividerWidth: prev.dividerWidth,
+          dividerMargin: prev.dividerMargin,
+          dividerColor: prev.dividerColor,
+          gap: prev.gap,
         };
 
         return ({
