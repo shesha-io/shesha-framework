@@ -1,7 +1,6 @@
 import React, { FC, useCallback } from 'react';
 import { Empty } from 'antd';
 import { useFormDesigner, useFormDesignerReadOnly, useFormDesignerSelectedComponentId } from '@/providers/formDesigner';
-import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 const ComponentPropertiesPanelInner: FC = () => {
   const formDesigner = useFormDesigner();
