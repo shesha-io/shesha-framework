@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Shesha.ConfigurationItems;
 using Shesha.DynamicEntities.Middleware;
+using System.Threading.Tasks;
 
 namespace Shesha.Extensions
 {
@@ -26,11 +27,15 @@ namespace Shesha.Extensions
         {
             return app.Use(async (context, next) =>
             {
-                context.Response.Headers.XContentTypeOptions = "nosniff";
-                context.Response.Headers.XFrameOptions = "DENY";
-                context.Response.Headers.XXSSProtection = "0";
-                context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
-                context.Response.Headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()";
+                context.Response.OnStarting(() =>
+                {
+                    context.Response.Headers.XContentTypeOptions = "nosniff";
+                    context.Response.Headers.XFrameOptions = "DENY";
+                    context.Response.Headers.XXSSProtection = "0";
+                    context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
+                    context.Response.Headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()";
+                    return Task.CompletedTask;
+                });
                 await next(context);
             });
         }

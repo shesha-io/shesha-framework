@@ -153,6 +153,9 @@ namespace Shesha.Web.Host.Startup
 
         public void Configure(IApplicationBuilder app, IBackgroundJobClient backgroundJobs)
         {
+            // Security headers (registered first so they apply to all responses)
+            app.UseSecurityHeaders();
+
             app.UseSheshaElmah();
 
             // note: already registered in the ABP
@@ -161,9 +164,6 @@ namespace Shesha.Web.Host.Startup
             app.UseConfigurationFramework();
 
             app.UseAbp(options => { options.UseAbpRequestLocalization = false; }); // Initializes ABP framework.
-
-            // Security headers
-            app.UseSecurityHeaders();
 
             // global cors policy
             var corsOrigins = _appConfiguration["App:CorsOrigins"]?
