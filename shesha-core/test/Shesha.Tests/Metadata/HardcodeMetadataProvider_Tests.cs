@@ -1,5 +1,6 @@
 using NSubstitute;
 using Shesha.Configuration.Runtime;
+using Shesha.Generators;
 using Shesha.Metadata;
 using System.Linq;
 using Xunit;
@@ -8,7 +9,7 @@ namespace Shesha.Tests.Metadata
 {
     /// <summary>
     /// Unit tests for <see cref="HardcodeMetadataProvider"/>. Constructs the
-    /// provider directly with a mocked <see cref="IEntityConfigurationStore"/>
+    /// provider directly with a mocked <see cref="IEntityTypeConfigurationStore"/>
     /// so the test does not require the full ABP/NHibernate harness.
     /// </summary>
     public class HardcodeMetadataProvider_Tests
@@ -20,8 +21,9 @@ namespace Shesha.Tests.Metadata
         [Fact]
         public void GetProperties_ShouldExclude_JsonIgnoreProperties()
         {
-            var entityConfigurationStore = Substitute.For<IEntityConfigurationStore>();
-            var provider = new HardcodeMetadataProvider(entityConfigurationStore);
+            var entityConfigurationStore = Substitute.For<IEntityTypeConfigurationStore>();
+            var nameGenerator = Substitute.For<INameGenerator>();
+            var provider = new HardcodeMetadataProvider(entityConfigurationStore, nameGenerator);
 
             var properties = provider.GetProperties(typeof(EntityWithJsonIgnoreProps));
             var paths = properties.Select(p => p.Path).ToList();

@@ -39,7 +39,7 @@ namespace Shesha.Authorization.Users
         /// metadata, GraphQL, or used as a sort key — see issue #4774.
         /// </summary>
         [JsonIgnore]
-        public override string PasswordResetCode { get; set; }
+        public override string? PasswordResetCode { get; set; }
 
         /// <summary>
         /// Security stamp used for token/session invalidation. Marked [JsonIgnore]

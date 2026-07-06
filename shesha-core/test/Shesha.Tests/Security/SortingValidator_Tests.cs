@@ -40,7 +40,7 @@ namespace Shesha.Tests.Security
         [InlineData("Name asc, Child.Visible desc")]
         [InlineData("")]
         [InlineData(null)]
-        public void EnsureSortingAllowed_AllowsVisibleProperties(string sorting)
+        public void EnsureSortingAllowed_AllowsVisibleProperties(string? sorting)
         {
             SortingValidator.EnsureSortingAllowed(typeof(SampleEntity), sorting);
         }

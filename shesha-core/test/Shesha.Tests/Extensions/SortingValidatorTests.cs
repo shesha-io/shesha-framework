@@ -48,7 +48,7 @@ namespace Shesha.Tests.Extensions
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public void EnsureSortingAllowed_NullOrWhitespace_DoesNotThrow(string sorting)
+        public void EnsureSortingAllowed_NullOrWhitespace_DoesNotThrow(string? sorting)
         {
             SortingValidator.EnsureSortingAllowed(typeof(TestEntity), sorting);
         }

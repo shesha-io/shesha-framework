@@ -21,7 +21,7 @@ namespace Shesha.Extensions
         /// properties to leak ordering information about sensitive fields
         /// (e.g. password hashes) — see issue #4774.
         /// </summary>
-        public static void EnsureSortingAllowed(Type entityType, string sorting)
+        public static void EnsureSortingAllowed(Type? entityType, string? sorting)
         {
             if (string.IsNullOrWhiteSpace(sorting) || entityType == null)
                 return;

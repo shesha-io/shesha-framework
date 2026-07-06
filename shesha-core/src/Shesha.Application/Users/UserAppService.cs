@@ -569,7 +569,7 @@ namespace Shesha.Users
 
             var successResponse = new ResetPasswordVerifyOtpResponse();
             ObjectMapper.Map(VerifyPinResponse.Success(), successResponse);
-            successResponse.Token = user.PasswordResetCode;
+            successResponse.Token = user.PasswordResetCode!;
             return successResponse;
         }
 
@@ -631,7 +631,7 @@ namespace Shesha.Users
                 await _userManager.UpdateAsync(user);
                 
                 // real password reset will be done using token
-                response.Token = user.PasswordResetCode;
+                response.Token = user.PasswordResetCode!;
                 response.Username = user.UserName;
             }
 
