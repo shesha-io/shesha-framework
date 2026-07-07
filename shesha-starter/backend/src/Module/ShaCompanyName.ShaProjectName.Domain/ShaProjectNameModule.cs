@@ -2,10 +2,8 @@ using System.Reflection;
 using Abp.AspNetCore.Configuration;
 using Abp.AutoMapper;
 using Abp.Modules;
-using Castle.MicroKernel.Registration;
 using Intent.RoslynWeaver.Attributes;
 using Shesha;
-using Shesha.Authorization;
 using Shesha.Modules;
 
 [assembly: DefaultIntentManaged(Mode.Fully)]
