@@ -98,14 +98,19 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
     };
 
     const getEvaluatedFormat = (incomingPercent?: number, incomingSuccessPercent?: number): React.ReactNode => {
-      return !isNullOrWhiteSpace(format)
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        ? new Function('percent, successPercent', format)(incomingPercent, incomingSuccessPercent)
-        : undefined;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      return new Function('percent, successPercent', format ?? '')(incomingPercent, incomingSuccessPercent);
     };
 
     const finalStrokeColor = getEvaluatedStrokeValue();
     const gapPlacement = gapPositionToPlacement(gapPosition);
+
+    // Some settings are only valid for specific progress types. Even though the
+    // settings editor hides irrelevant inputs, a value configured for one type
+    // still lingers in the model when the type is switched. Gate each type-specific
+    // prop by the active type so it never leaks into a type that doesn't support it.
+    const isLine = progressType === 'line' || progressType === undefined;
+    const isCircular = progressType === 'circle' || progressType === 'dashboard';
 
     return (
       <ConfigurableFormItem<number> model={model}>
@@ -115,18 +120,18 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
             <Progress
               {...(progressType && { type: progressType })}
               {...(finalStrokeColor && { strokeColor: finalStrokeColor })}
-              format={getEvaluatedFormat}
+              {...(!isNullOrWhiteSpace(format) && { format: getEvaluatedFormat })}
               {...(finalPercent ? { percent: finalPercent } : {})}
-              size={width}
+              {...(isCircular && { size: width })}
               {...(strokeWidth && { strokeWidth })}
-              {...(gapPlacement && { gapPlacement })}
-              {...(steps && { steps })}
+              {...(isCircular && gapPlacement && { gapPlacement })}
+              {...(isLine && steps && { steps })}
               {...(trailColor && { railColor: trailColor })}
               {...(status && { status })}
-              {...(showInfo && { showInfo })}
+              showInfo={showInfo ?? true}
               {...(strokeLinecap && { strokeLinecap })}
               success={getEvaluatedSuccessColor()}
-              {...(gapDegree && { gapDegree })}
+              {...(isCircular && gapDegree && { gapDegree })}
               style={finalStyle}
             />
           );
