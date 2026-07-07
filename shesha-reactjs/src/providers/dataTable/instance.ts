@@ -480,9 +480,18 @@ export class DatasetInstance implements IDatasetInstance {
         const filterOptions = column && !isNullOrWhiteSpace(column.dataType)
           ? getFilterOptions(column.dataType)
           : [];
+        const defaultFilterOption = (): IndexColumnFilterOption | undefined => {
+          if (filterOptions.length > 0) return filterOptions[0];
+          if (!column) return undefined;
+          if (column.dataType === 'reference-list-item') return 'contains';
+          if (column.dataType === 'array') return 'contains';
+          if (column.dataType === 'entity') return 'equals';
+          if (column.dataType === 'boolean') return 'equals';
+          return undefined;
+        };
         return {
           columnId: id,
-          filterOption: filterOptions.length > 0 ? filterOptions[0] : undefined,
+          filterOption: defaultFilterOption(),
           filter: undefined,
         };
       });

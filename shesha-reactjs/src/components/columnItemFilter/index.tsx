@@ -378,14 +378,10 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
     onChangeFilterOption?.(id, key as IndexColumnFilterOption);
   };
 
-  // Make sue that you initialize the `IndexColumnFilterOption` once when the component gets rendered
+  // Make sure that you initialize the `IndexColumnFilterOption` once when the component gets rendered
   useEffectOnce(() => {
-    if (!filter) {
-      if (isNonEmptyArray(options)) {
-        onChangeFilterOption?.(id, options[0]);
-      } else if (isMultivalueRefList) {
-        onChangeFilterOption?.(id, 'contains');
-      }
+    if (!filter && isNonEmptyArray(options)) {
+      onChangeFilterOption?.(id, options[0]);
     }
   });
 
