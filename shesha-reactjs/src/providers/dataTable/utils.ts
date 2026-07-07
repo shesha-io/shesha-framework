@@ -14,6 +14,7 @@ import {
   ColumnSorting,
   DataTableColumnDto,
   IColumnSorting,
+  IndexColumnFilterOption,
   isDataColumn,
   isFormColumn,
   ISortingItem,
@@ -101,6 +102,14 @@ const convertFilterValue = (value: unknown, column: ITableDataColumn): unknown =
   return value;
 };
 
+export const getDefaultFilterOptionForDataType = (dataType: ProperyDataType | undefined): IndexColumnFilterOption | undefined => {
+  if (dataType === 'reference-list-item') return 'contains';
+  if (dataType === 'array') return 'contains';
+  if (dataType === 'entity') return 'equals';
+  if (dataType === 'boolean') return 'equals';
+  return undefined;
+};
+
 // Expand selected bitmask values to all OR-combinations so that rows with multiple stored values
 // are matched by the backend's equality-based IN check.
 // e.g. [1, 4] → [1, 4, 5] because 5 = 1|4 and a row with both bits set stores 5.
@@ -144,10 +153,7 @@ export const advancedFilter2JsonLogic = (advancedFilter: ITableFilter[], columns
 
       let filterOption = f.filterOption;
       if (isNullOrWhiteSpace(filterOption)) {
-        if (column.dataType === 'reference-list-item') filterOption = 'contains';
-        if (column.dataType === 'array') filterOption = 'contains';
-        if (column.dataType === 'entity') filterOption = 'equals';
-        if (column.dataType === 'boolean') filterOption = 'equals';
+        filterOption = getDefaultFilterOptionForDataType(column.dataType);
       }
 
       switch (filterOption) {
