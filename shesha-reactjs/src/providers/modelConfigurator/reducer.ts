@@ -118,7 +118,7 @@ export const modelReducer = createReducer(MODEL_CONFIGURATOR_CONTEXT_INITIAL_STA
       return {
         ...state,
         errors: payload,
-        showErrors: payload.length > 0,
+        ...(payload.length > 0 ? {} : { showErrors: false }),
       };
     })
     .addCase(setShowErrorsAction, (state, { payload }) => {

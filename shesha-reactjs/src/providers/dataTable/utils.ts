@@ -24,6 +24,7 @@ import {
   ITableFilter,
   ITableFormColumn,
   ITableRendererColumn,
+  JsonLogicFilter,
   SortDirection,
 } from './interfaces';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
@@ -100,11 +101,11 @@ const convertFilterValue = (value: unknown, column: ITableDataColumn): unknown =
   return value;
 };
 
-export const advancedFilter2JsonLogic = (advancedFilter: ITableFilter[], columns: ITableColumn[]): object[] | null => {
+export const advancedFilter2JsonLogic = (advancedFilter: ITableFilter[], columns: ITableColumn[]): JsonLogicFilter[] | null => {
   if (advancedFilter.length === 0) return null;
 
   const filterItems = advancedFilter
-    .map<object | null>((f) => {
+    .map<JsonLogicFilter | null>((f) => {
       const property = { var: f.columnId };
       const column = columns.find((c) => c.id === f.columnId);
       // skip incorrect columns
@@ -166,7 +167,7 @@ export const advancedFilter2JsonLogic = (advancedFilter: ITableFilter[], columns
 
       return null;
     })
-    .filter((f): f is object => isDefined(f));
+    .filter(isDefined);
 
   return filterItems;
 };
@@ -190,7 +191,7 @@ export const prepareColumn = (
     anchored: column.anchored,
     header: column.caption,
     caption: column.caption,
-    minWidth: column.minWidth || MIN_COLUMN_WIDTH,
+    minWidth: column.minWidth ?? MIN_COLUMN_WIDTH,
     maxWidth: column.maxWidth,
     width: userColumn?.width,
     isVisible: column.isVisible,
@@ -216,7 +217,7 @@ export const prepareColumn = (
       propertyName: resolvedPropertyName,
 
       propertiesToFetch: resolvedPropertyName,
-      isEnitty: srvColumn?.dataType === 'entity',
+      isEntity: srvColumn?.dataType === 'entity',
 
       createComponent: column.createComponent,
       editComponent: column.editComponent,
@@ -318,12 +319,13 @@ export const isStandardSortingUsed = (state: IDataTableStateContext): boolean =>
  * @returns Array of sorting column or null
  */
 const getEffectiveUserSorting = (state: IDataTableStateContext): IColumnSorting[] | undefined => {
-  if (!state.userSorting) return undefined;
+  if (!isNonEmptyArray(state.userSorting)) return undefined;
 
   return state.userSorting.filter((s) => {
-    if (!s.id) return false;
+    if (isNullOrWhiteSpace(s.id))
+      return false;
     const column = state.columns.find((c) => c.id === s.id);
-    return column && column.isSortable;
+    return isDefined(column) && column.isSortable;
   });
 };
 

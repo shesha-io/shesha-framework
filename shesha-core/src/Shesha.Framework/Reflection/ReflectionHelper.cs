@@ -77,6 +77,24 @@ namespace Shesha.Reflection
             return memberInfo.GetAttributeOrNull<T>() != null;
         }
 
+        /// <summary>
+        /// Returns true if the specified <paramref name="memberInfo"/> is marked with a JsonIgnore attribute
+        /// that causes the property to be unconditionally omitted from JSON serialization. Matches
+        /// Newtonsoft's <see cref="Newtonsoft.Json.JsonIgnoreAttribute"/> (always ignores) and
+        /// <see cref="System.Text.Json.Serialization.JsonIgnoreAttribute"/> with
+        /// <see cref="System.Text.Json.Serialization.JsonIgnoreCondition.Always"/> (the default).
+        /// Conditional STJ variants (<c>Never</c>, <c>WhenWritingNull</c>, <c>WhenWritingDefault</c>) do not count.
+        /// </summary>
+        public static bool IsJsonIgnored(this MemberInfo memberInfo)
+        {
+            if (memberInfo.HasAttribute<Newtonsoft.Json.JsonIgnoreAttribute>())
+                return true;
+
+            var stjIgnore = memberInfo.GetAttributeOrNull<System.Text.Json.Serialization.JsonIgnoreAttribute>();
+            return stjIgnore != null
+                && stjIgnore.Condition == System.Text.Json.Serialization.JsonIgnoreCondition.Always;
+        }
+
         public static T? GetUniqueAttribute<T>(this MemberInfo memberInfo) where T : Attribute
         {
             return GetAttributeOrNull<T>(memberInfo);

@@ -5,7 +5,7 @@ import { UseEvaluatedFilterArgs } from "@/providers/dataTable/filters/evaluateFi
 import { IStoredFilter } from "@/providers/dataTable/interfaces";
 import { NestedPropertyMetadatAccessor } from "@/providers/metadataDispatcher/contexts";
 import { ILayerWithMetadata } from "./interfaces";
-import { getEntityTypeIdentifierQueryParams } from "@/providers/metadataDispatcher/entities/utils";
+import { getEntityTypeIdentifierQueryParams, isEntityTypeIdEmpty } from "@/providers/metadataDispatcher/entities/utils";
 import { IMatchData } from "@/providers/form/utils";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { getDatePropertyOrUndefined } from "@/utils/object";
@@ -97,6 +97,11 @@ export const getQueryProperties = ({ startTime, endTime, propertyList, title }: 
   return Array.from(properties).join(' ');
 };
 
+export const isLayerFetchable = (layer: ICalendarLayersProps): boolean =>
+  layer.dataSource === 'custom'
+    ? !isNullOrWhiteSpace(layer.customUrl)
+    : !isEntityTypeIdEmpty(layer.entityType);
+
 export const getCalendarDataUrl = (param: ICalendarLayersProps, filter: string): string => {
   const { customUrl, dataSource, entityType, overfetch } = param;
 
@@ -107,7 +112,7 @@ export const getCalendarDataUrl = (param: ICalendarLayersProps, filter: string):
   }
 
   return buildUrl("/api/services/app/Entities/GetAll", {
-    ...getEntityTypeIdentifierQueryParams(entityType ?? ''),
+    ...getEntityTypeIdentifierQueryParams(entityType),
     properties: overfetch ? getQueryProperties(param) : null,
     maxResultCount: 100,
     filter,

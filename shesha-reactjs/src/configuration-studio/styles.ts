@@ -124,8 +124,32 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
                         height:100%;
                     }
                     .${prefixCls}-tree-treenode {
+                      width: 100%;
+                      max-width: 100%;
                       .${prefixCls}-tree-draggable-icon {
                         display: none;
+                      }
+                      /* Keep long labels on a single line, clipped at the panel
+                         edge instead of wrapping (File Explorer behaviour).
+                         The content wrapper becomes a flex row so the type icon
+                         stays inline and only the title truncates; min-width: 0
+                         lets the title shrink below its content width so the
+                         ellipsis actually triggers. */
+                      .${prefixCls}-tree-node-content-wrapper {
+                        display: flex;
+                        align-items: center;
+                        min-width: 0;
+                        overflow: hidden;
+                        .${prefixCls}-tree-iconEle {
+                          flex: none;
+                        }
+                        .${prefixCls}-tree-title {
+                          flex: 1 1 auto;
+                          min-width: 0;
+                          overflow: hidden;
+                          white-space: nowrap;
+                          text-overflow: ellipsis;
+                        }
                       }
                     }
                 }

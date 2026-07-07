@@ -93,13 +93,15 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
 
     const incomeValueFunc: IncomeValueFunc = useCallback((value, args) => {
       if (model.valueFormat === 'entityReference') {
+        // Accept plain string id (e.g. after switching from simple format) or entity reference object
+        if (typeof value === 'string') return value || null;
         return isDefined(value) && isEntityReferenceId(value)
           ? value.id
           : null;
       }
       if (model.valueFormat === 'custom') {
         if (isNullOrWhiteSpace(model.incomeCustomJs))
-          throw new Error('Custom income expression is empty');
+          return null;
         return executeExpression<string | null>(model.incomeCustomJs, { ...args, value }, null);
       }
       return typeof (value) === 'string'
@@ -111,13 +113,23 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
 
     const outcomeValueFunc: OutcomeValueFunc = useCallback((value, args) => {
       if (model.valueFormat === 'entityReference') {
-        return isDefined(value) && isEntityReferenceId(value) && !isNullOrWhiteSpace(value.id)
-          ? { id: value.id, _displayName: getStringPropertyOrUndefined(value, displayEntityKey) ?? "", _className: value._className ?? metadata?.fullClassName ?? "" } satisfies IEntityReferenceDto
-          : undefined;
+        // Accept any object with a non-empty string id (e.g. ITableRowData from picker modal or existing IEntityReferenceDto)
+        if (!isDefined(value) || typeof value !== 'object' || !('id' in value)) return undefined;
+
+        const valueObj = value as Record<string, unknown>;
+        const id = getStringPropertyOrUndefined(valueObj, 'id');
+        if (isNullOrWhiteSpace(id)) return undefined;
+
+        // Preserve existing _displayName if present, otherwise try displayEntityKey, then fall back to empty string
+        const existingDisplayName = getStringPropertyOrUndefined(valueObj, '_displayName');
+        const displayName = existingDisplayName ?? getStringPropertyOrUndefined(valueObj, displayEntityKey) ?? "";
+        const className = getStringPropertyOrUndefined(valueObj, '_className') ?? metadata?.fullClassName ?? "";
+
+        return { id, _displayName: displayName, _className: className } satisfies IEntityReferenceDto;
       }
       if (model.valueFormat === 'custom') {
         if (isNullOrWhiteSpace(model.outcomeCustomJs))
-          throw new Error('Custom outcome expression is empty');
+          return undefined;
         return executeExpression<string | IEntityReferenceDto | undefined>(model.outcomeCustomJs, { ...args, value }, undefined) ?? undefined;
       }
       return getIdOrUndefined(value);
@@ -221,7 +233,7 @@ const EntityPickerComponent: IToolboxComponent<IEntityPickerComponentProps> = {
       ...prev,
       footerButtons: context.isNew
         ? 'default'
-        : prev.footerButtons ?? prev.showModalFooter ? 'default' : 'none',
+        : prev.footerButtons ?? (prev.showModalFooter ? 'default' : 'none'),
     }))
     .add<IEntityPickerComponentProps>(9, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
     .add<IEntityPickerComponentProps>(10, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) }))

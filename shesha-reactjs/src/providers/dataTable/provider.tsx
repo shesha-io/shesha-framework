@@ -147,6 +147,11 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     repository,
     userConfigId = "",
     sortMode,
+    standardSorting,
+    strictSortBy,
+    strictSortOrder,
+    allowReordering = false,
+    customReorderEndpoint,
     actionOwnerId = "",
     actionOwnerName = "",
     dataFetchingMode,
@@ -160,11 +165,20 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
       metadata: undefined,
       userConfigId: userConfigId,
       sortMode: sortMode ?? "standard",
-
+      standardSorting: standardSorting,
+      strictSortBy: strictSortBy,
+      strictSortOrder: strictSortOrder,
+      allowReordering: allowReordering,
+      customReorderEndpoint: customReorderEndpoint,
       dataFetchingMode: dataFetchingMode,
       permanentFilter: permanentFilter,
     });
-  }, [instance, userConfigId, sortMode, permanentFilter, dataFetchingMode]);
+  }, [
+    instance,
+    userConfigId,
+    sortMode, standardSorting, strictSortBy, strictSortOrder, allowReordering, customReorderEndpoint,
+    permanentFilter, dataFetchingMode,
+  ]);
 
   const content = (
     <DataTableActionsContext.Provider value={instance}>

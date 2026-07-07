@@ -33,7 +33,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                 .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true }, jsSetting: true })
                 .addLabelConfigurator({ propertyName: 'label', label: 'Label', hideLabel: true })
                 .stdPlaceholderDescriptionInputs()
-                .stdVisibleEditableInputs()
+                .stdVisibleEditableInputs('full')
                 .stdCollapsiblePanel('Format', (fb) => fb
                   .addSettingsInput({ inputType: 'dropdown', propertyName: 'numberFormat', label: 'Format', dropdownOptions: numberFormatOptions })
                   .addSettingsInputRow({ inputs: [
@@ -65,7 +65,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
           },
           {
             key: '2', title: 'Events', id: eventsTabId,
-            components: [...fbf(eventsTabId).stdEventHandlers(['onChange', 'onFocus', 'onBlur', 'onClick', 'onHover', 'onKeyPress'], DataTypes.number).toJson()],
+            components: [...fbf(eventsTabId).stdEventHandlers(['onChange', 'onFocus', 'onBlur', 'onClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave', 'onKeyDown', 'onKeyUp'], DataTypes.number).toJson()],
           },
           {
             key: '3', title: 'Appearance', id: appearanceTabId,

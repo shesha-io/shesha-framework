@@ -16,6 +16,7 @@ import { EntityInitFlags } from '@/apis/modelConfigurations';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { isNonEmptyArray } from '@/utils/array';
 import { createReducer } from '@reduxjs/toolkit';
+import { deepCopyViaJson } from '@/utils/object';
 
 const findItemById = (items: IModelItem[], id: string): IModelItem | null => {
   for (const item of items) {
@@ -51,13 +52,13 @@ export const modelReducer = createReducer(PROPERTIES_EDITOR_CONTEXT_INITIAL_STAT
         initStatus: EntityInitFlags.InitializationRequired,
       };
 
-      const newItems = [...state.items];
+      const newItems = deepCopyViaJson(state.items);
 
       const parent = !isNullOrWhiteSpace(payload.parentId)
         ? findItemById(newItems, payload.parentId)
         : null;
 
-      if (parent) {
+      if (isDefined(parent)) {
         parent.properties = [...(parent.properties ?? []), itemProps];
       } else newItems.push(itemProps);
 
@@ -143,7 +144,7 @@ export const modelReducer = createReducer(PROPERTIES_EDITOR_CONTEXT_INITIAL_STAT
       const newItem = { ...prevItem, ...payload.settings };
 
 
-      const itemsTypeIndex = newItem.properties?.findIndex((p) => p.isItemsType);
+      const itemsTypeIndex = newItem.properties?.findIndex((p) => p.isItemsType === true);
       let itemsType: IModelItem | null = isDefined(itemsTypeIndex) && isDefined(newItem.properties) && isDefined(newItem.properties[itemsTypeIndex])
         ? { ...newItem.properties[itemsTypeIndex] }
         : null;
@@ -153,10 +154,10 @@ export const modelReducer = createReducer(PROPERTIES_EDITOR_CONTEXT_INITIAL_STAT
       }
 
       if (newItem.dataType === DataTypes.array) {
-        if (!itemsType) {
+        if (!isDefined(itemsType)) {
           // create itemsType
           itemsType =
-            newItem.properties?.find((p) => p.isItemsType) ??
+            newItem.properties?.find((p) => p.isItemsType === true) ??
             {
               name: newItem.name ?? null,
               label: `List items type`,
@@ -199,8 +200,8 @@ export const modelReducer = createReducer(PROPERTIES_EDITOR_CONTEXT_INITIAL_STAT
           }
 
           newItem.itemsType = itemsType;
-          if (itemsTypeIndex && newItem.properties)
-            newItem.properties[itemsTypeIndex] = itemsType;
+          if (isDefined(itemsTypeIndex) && isDefined(newItem.properties))
+            newItem.properties = newItem.properties.map((p, i) => (i === itemsTypeIndex && isDefined(itemsType) ? itemsType : p));
         }
       }
 

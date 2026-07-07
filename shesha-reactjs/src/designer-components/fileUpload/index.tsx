@@ -6,7 +6,7 @@ import { DataTypes } from '@/interfaces';
 import { FileUploadProvider, useFormData, useGlobalState } from '@/providers';
 import { useForm } from '@/providers/form';
 import {
-  evaluateValueAsString,
+  evaluateString,
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
 import {
@@ -44,7 +44,7 @@ const FileUploadComponent: FileUploadComponentDefinition = {
     const { formSettings, formMode } = useForm();
     const { data } = useFormData();
     const { globalState } = useGlobalState();
-    const ownerId = evaluateValueAsString(model.ownerId, { data, globalState });
+    const ownerId = evaluateString(model.ownerId, { data, globalState });
 
     const enabled = !model.readOnly;
 

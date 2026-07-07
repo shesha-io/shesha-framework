@@ -60,17 +60,9 @@ export const deepMergeValues = <TObject extends object = object, TSource extends
   target: TObject,
   source: TSource | null | undefined,
   action?: (objValue: unknown, srcValue: unknown, key: string, obj: Record<string, unknown>, src: Record<string, unknown>) => unknown,
-  // skipProp: ((target: Record<string, unknown>, source: Record<string, unknown>, key: string) => boolean) | undefined = undefined
 ): TObject & TSource => {
-  if (!source) return target as TObject & TSource;
+  if (!isDefined(source)) return target as TObject & TSource;
   return mergeWith({ ...target }, source, (objValue: unknown, srcValue: unknown, key: string, obj: TObject | null) => {
-    /*
-    // Check if the property should be skipped
-    const skip = skipProp && typeof skipProp === 'function' ? skipProp(target as Record<string, unknown>, source as Record<string, unknown>, key) : false;
-    // if skip is true, return original value
-    if (skip) return objValue;
-    */
-
     if (action) {
       const result = action(objValue, srcValue, key, obj as Record<string, unknown>, source as Record<string, unknown>);
       if (result !== undefined) return result;

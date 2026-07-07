@@ -1,4 +1,5 @@
 import HelpTextPopover from '@/components/helpTextPopover';
+import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { extractAjaxResponse, IAjaxResponse, IErrorInfo } from '@/interfaces';
 import { GetAllResponse, IGenericGetAllPayload } from '@/interfaces/gql';
 import { JsonLogicFilter } from '@/interfaces/jsonLogic';
@@ -11,7 +12,7 @@ import { makeErrorWithMessage } from '@/utils/errors';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { AutoComplete, Empty, Spin, Typography } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import React, { ComponentProps, Dispatch, FC, ReactNode, SetStateAction, useEffect, useMemo, useRef, useState } from 'react';
+import React, { ComponentProps, Dispatch, FC, ReactNode, SetStateAction, useMemo, useRef, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 
 export interface IReferenceListAutocompleteRuntimeProps {
@@ -184,7 +185,7 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
       : valueItems.data;
   }, [listItems, valueItems]);
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     // fetch data if required
     const valueFetchParams = getSelectedValueQueryParams(props.value ?? null);
     if (valueFetchParams) {
@@ -315,6 +316,7 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
       size={props.size}
       value={autocompleteText}
       onChange={setAutocompleteText}
+      title={autocompleteText}
     >
     </AutoComplete>
   );

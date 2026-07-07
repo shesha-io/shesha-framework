@@ -1,28 +1,27 @@
 import { isPropertySettings } from '@/designer-components/_settings/utils/utils';
 import { useActualContextData, useDeepCompareMemo } from '@/hooks';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
+import { IAnyObject } from '@/interfaces';
 import { DataTableProvider, useDataTableStore, useNestedPropertyMetadatAccessor, useShaFormInstanceOrUndefined } from '@/providers';
 import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 import { isDataColumn } from '@/providers/dataTable/interfaces';
 import { evaluateString } from '@/providers/form/utils';
-import { getUrlKeyParam } from '@/utils';
+import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
+import { buildUrl } from '@/utils';
+import { isNonEmptyArray } from '@/utils/array';
+import { getClassNameOrUndefined } from '@/utils/entity';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getDisplayNameOrUndefined, getStringPropertyOrUndefined, getValueByPropertyName, unsafeGetValueByPropertyName } from '@/utils/object';
 import { Select, Spin, Typography, type GetRef } from 'antd';
 import DOMPurify from 'dompurify';
 import { isEqual, uniqWith } from 'lodash';
-import QueryString from 'qs';
 import React, { ReactNode, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import ReadOnlyDisplayFormItem from '../readOnlyDisplayFormItem';
 import { ValueRenderer } from '../valueRenderer';
 import { AutocompleteDataSourceType, DisplayValueFunc, FilterSelectedFunc, IAutocompleteBaseProps, IAutocompleteProps, ISelectOption, KayValueFunc, OutcomeValueFunc, getColumns } from './models';
 import { useStyles } from './style';
-import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 import { createOutcomeValueFunc } from './utils';
-import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
-import { isNonEmptyArray } from '@/utils/array';
-import { getClassNameOrUndefined } from '@/utils/entity';
-import { IAnyObject } from '@/interfaces';
 
 type SelectRef = GetRef<typeof Select>; // Resolves to BaseSelectRef
 
@@ -32,7 +31,13 @@ const getNormalizedValues = (value: unknown): unknown[] => {
 };
 
 const AutocompleteInner = <TValue = unknown>(props: IAutocompleteBaseProps<TValue>): ReactNode => {
-  const { allowClear = true, style = {} } = props;
+  const {
+    allowClear = true,
+    style = {},
+    allowFreeText = false,
+    readOnly = false,
+    disableSearch = false,
+  } = props;
 
   const { styles } = useStyles({ style });
 
@@ -42,8 +47,12 @@ const AutocompleteInner = <TValue = unknown>(props: IAutocompleteBaseProps<TValu
 
   // init props
   // --- For backward compatibility
-  const keyPropName = props.keyPropName || (props.dataSourceType === 'entitiesList' ? 'id' : 'value');
-  const displayPropName = props.displayPropName || (props.dataSourceType === 'entitiesList' ? '_displayName' : 'displayText');
+  const keyPropName = !isNullOrWhiteSpace(props.keyPropName)
+    ? props.keyPropName
+    : (props.dataSourceType === 'entitiesList' ? 'id' : 'value');
+  const displayPropName = !isNullOrWhiteSpace(props.displayPropName)
+    ? props.displayPropName
+    : (props.dataSourceType === 'entitiesList' ? '_displayName' : 'displayText');
   // ---
   const keyValueFunc: KayValueFunc = useMemo(() => props.keyValueFunc ??
     ((value: unknown) => String(getValueByPropertyName(value as Record<string, unknown>, keyPropName) ?? value)), [props.keyValueFunc, keyPropName]);
@@ -94,7 +103,7 @@ const AutocompleteInner = <TValue = unknown>(props: IAutocompleteBaseProps<TValu
   };
 
   const keys = useMemo(() => {
-    const res = props.value
+    const res = isDefined(props.value)
       ? Array.isArray(props.value)
         ? props.value.map((x) => keyValueFunc(x))
         : [keyValueFunc(props.value)]
@@ -134,7 +143,7 @@ const AutocompleteInner = <TValue = unknown>(props: IAutocompleteBaseProps<TValu
   // update local store of values details
   useDeepCompareEffect(() => {
     if ((props.dataSourceType === 'entitiesList' && !isEntityTypeIdEmpty(props.entityType)) ||
-      (props.dataSourceType === 'url' && props.dataSourceUrl)
+      (props.dataSourceType === 'url' && !isNullOrWhiteSpace(props.dataSourceUrl))
     ) {
       if (keys.length) {
         const normalizedValue: unknown = isDefined(props.value) && Array.isArray(props.value)
@@ -167,7 +176,7 @@ const AutocompleteInner = <TValue = unknown>(props: IAutocompleteBaseProps<TValu
               setLoadingValues(false);
               setLoadingIndicator(false);
               // Fallback to using existing values
-              if (props.value) {
+              if (isDefined(props.value)) {
                 setSelected(props.value);
               }
             }
@@ -175,7 +184,7 @@ const AutocompleteInner = <TValue = unknown>(props: IAutocompleteBaseProps<TValu
             // Data source not ready - reset loading and use existing values
             setLoadingValues(false);
             setLoadingIndicator(false);
-            if (props.value) {
+            if (isDefined(props.value)) {
               setSelected(props.value);
             }
           }
@@ -213,14 +222,14 @@ const AutocompleteInner = <TValue = unknown>(props: IAutocompleteBaseProps<TValu
 
   const debouncedSearch = useDebouncedCallback<(searchText: string, force?: boolean) => void>(
     (searchText, force = false) => {
-      if (props.readOnly || (!force && lastSearchText.current === searchText))
+      if (readOnly || (!force && lastSearchText.current === searchText))
         return;
       source.performQuickSearch(searchText);
       lastSearchText.current = searchText;
     }, 200);
 
   const handleSearch = (searchText: string): void => {
-    if (props.allowFreeText)
+    if (allowFreeText)
       setAutocompleteText(searchText);
     debouncedSearch(searchText);
     if (props.onSearch)
@@ -245,7 +254,7 @@ const AutocompleteInner = <TValue = unknown>(props: IAutocompleteBaseProps<TValu
         : outcomeValueFunc((option as ISelectOption).data) as TValue
       : null;
 
-    const selectedFilter = selectedValue && (!Array.isArray(selectedValue) || selectedValue.length)
+    const selectedFilter = isDefined(selectedValue) && (!Array.isArray(selectedValue) || selectedValue.length)
       ? filterNotKeysFunc(selectedValue)
       : undefined;
     source.setPredefinedFilters([{
@@ -259,7 +268,11 @@ const AutocompleteInner = <TValue = unknown>(props: IAutocompleteBaseProps<TValu
     if (!Boolean(props.onChange))
       return;
     if (props.mode === 'multiple')
-      props.onChange?.(Array.isArray(selectedValue) ? selectedValue : selectedValue ? [selectedValue] : []);
+      props.onChange?.(Array.isArray(selectedValue)
+        ? selectedValue
+        : isDefined(selectedValue)
+          ? [selectedValue]
+          : []);
     else
       props.onChange?.(selectedValue as TValue);
   };
@@ -291,7 +304,7 @@ const AutocompleteInner = <TValue = unknown>(props: IAutocompleteBaseProps<TValu
   }, [selected.current]);
 
   const freeTextValuesList = useMemo(() => {
-    return props.allowFreeText && autocompleteText && source.tableData.findIndex((x) => getStringPropertyOrUndefined(x, displayPropName)?.toLowerCase() === autocompleteText.toLowerCase()) === -1
+    return allowFreeText && autocompleteText && source.tableData.findIndex((x) => getStringPropertyOrUndefined(x, displayPropName)?.toLowerCase() === autocompleteText.toLowerCase()) === -1
       ? renderOption({ [keyPropName]: autocompleteText, [displayPropName]: autocompleteText }, 'freeText')
       : null;
   // TODO V1: review dependencies
@@ -334,7 +347,7 @@ const AutocompleteInner = <TValue = unknown>(props: IAutocompleteBaseProps<TValu
   }, [selected.current, source.tableData, props.grouping]);
 
   // Show loading when actively fetching data
-  const shouldShowLoading = (loadingIndicator || (!props.readOnly && loadingValues));
+  const shouldShowLoading = (loadingIndicator || (!readOnly && loadingValues));
 
   if (shouldShowLoading) {
     return (
@@ -345,7 +358,7 @@ const AutocompleteInner = <TValue = unknown>(props: IAutocompleteBaseProps<TValu
     );
   }
 
-  if (props.readOnly) {
+  if (readOnly) {
     if (!isNonEmptyArray(selected.current))
       return null;
     const readonlyValue = props.mode === 'multiple'
@@ -366,13 +379,12 @@ const AutocompleteInner = <TValue = unknown>(props: IAutocompleteBaseProps<TValu
         style={style}
         quickviewEnabled={props.quickviewEnabled}
         quickviewFormPath={props.quickviewFormPath}
-        quickviewDisplayPropertyName={props.quickviewDisplayPropertyName || props.displayPropName}
+        quickviewDisplayPropertyName={!isNullOrWhiteSpace(props.quickviewDisplayPropertyName) ? props.quickviewDisplayPropertyName : props.displayPropName}
         quickviewGetEntityUrl={props.quickviewGetEntityUrl}
         quickviewWidth={props.quickviewWidth ?? undefined} // quick fix string value of quickviewWidth (from configurator)
       />
     );
   }
-
 
   const { width, ...restOfDropdownStyles } = style;
 
@@ -385,7 +397,7 @@ const AutocompleteInner = <TValue = unknown>(props: IAutocompleteBaseProps<TValu
       value={keys}
       className={styles.autocomplete}
       styles={{ popup: { root: restOfDropdownStyles } }}
-      showSearch={props.disableSearch ? false : { filterOption: false, onSearch: handleSearch }}
+      showSearch={disableSearch ? false : { filterOption: false, onSearch: handleSearch }}
       notFoundContent={props.notFoundContent}
       defaultActiveFirstOption={false}
       onChange={handleChange}
@@ -398,7 +410,7 @@ const AutocompleteInner = <TValue = unknown>(props: IAutocompleteBaseProps<TValu
       size={props.size}
       ref={selectRef}
       {...(style.hasOwnProperty("border") || style.hasOwnProperty("borderWidth") ? { variant: 'borderless' } : {})}
-      {...(props.value && props.mode === 'multiple' ? { mode: props.mode } : {})}
+      {...(isDefined(props.value) && props.mode === 'multiple' ? { mode: props.mode } : {})}
     >
       {freeTextValuesList}
       {list}
@@ -418,9 +430,9 @@ const Autocomplete = <TValue = unknown>(props: IAutocompleteProps<TValue>): Reac
   const permanentFilter = useFormEvaluatedFilter({ filter: props.filter, metadataAccessor: propertyMetadataAccessor });
 
   const fields = [...(props.fields ?? [])];
-  if (props.displayPropName && fields.findIndex((x) => x === props.displayPropName) === -1)
+  if (!isNullOrWhiteSpace(props.displayPropName) && fields.findIndex((x) => x === props.displayPropName) === -1)
     fields.push(props.displayPropName);
-  if (props.keyPropName && fields.findIndex((x) => x === props.keyPropName) === -1)
+  if (!isNullOrWhiteSpace(props.keyPropName) && fields.findIndex((x) => x === props.keyPropName) === -1)
     fields.push(props.keyPropName);
   if (props.dataSourceType === 'entitiesList') {
     if (fields.findIndex((x) => x === 'id') === -1)
@@ -442,9 +454,10 @@ const Autocomplete = <TValue = unknown>(props: IAutocompleteProps<TValue>): Reac
       if (queryParams && typeof (queryParams) === 'object') {
         if (Array.isArray(queryParams)) {
           queryParams.forEach(({ param, value }) => {
-            const valueAsString = value as string;
-            if (param?.length && valueAsString.length) {
-              queryParamObj[param] = /{.*}/i.test(valueAsString) ? evaluateString(valueAsString, { data: formData }) : value;
+            if (!isNullOrWhiteSpace(param) && typeof (value) === "string" && !isNullOrWhiteSpace(value)) {
+              queryParamObj[param] = /{.*}/i.test(value)
+                ? evaluateString(value, { data: formData })
+                : value;
             }
           });
         } else
@@ -460,11 +473,9 @@ const Autocomplete = <TValue = unknown>(props: IAutocompleteProps<TValue>): Reac
   }, [props.dataSourceType, queryParams, formData, searchText]);
 
 
-  const key = getUrlKeyParam(props.dataSourceUrl);
-
   const url = useDeepCompareMemo(() => {
-    return props.dataSourceUrl
-      ? `${props.dataSourceUrl}${key}${QueryString.stringify(queryParamsObj)}`
+    return !isNullOrWhiteSpace(props.dataSourceUrl)
+      ? buildUrl(props.dataSourceUrl, queryParamsObj)
       : undefined;
   }, [props.dataSourceUrl, queryParamsObj]);
 
@@ -518,8 +529,8 @@ export const RawAutocomplete = (props: IAutocompleteProps<string>): React.JSX.El
   return (
     <Autocomplete<string>
       {...props}
-      displayPropName={props.displayPropName || (props.dataSourceType === 'url' ? 'displayText' : '_displayName')}
-      keyPropName={props.keyPropName || (props.dataSourceType === 'url' ? 'value' : 'id')}
+      displayPropName={!isNullOrWhiteSpace(props.displayPropName) ? props.displayPropName : (props.dataSourceType === 'url' ? 'displayText' : '_displayName')}
+      keyPropName={!isNullOrWhiteSpace(props.keyPropName) ? props.keyPropName : (props.dataSourceType === 'url' ? 'value' : 'id')}
       mode="single"
     />
   );
