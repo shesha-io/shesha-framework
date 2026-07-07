@@ -101,6 +101,26 @@ const convertFilterValue = (value: unknown, column: ITableDataColumn): unknown =
   return value;
 };
 
+// Expand selected bitmask values to all OR-combinations so that rows with multiple stored values
+// are matched by the backend's equality-based IN check.
+// e.g. [1, 4] → [1, 4, 5] because 5 = 1|4 and a row with both bits set stores 5.
+const expandBitmaskSubsets = (values: number[]): number[] => {
+  const n = values.length;
+  // Enumerating all OR-combinations is O(2ⁿ); cap to avoid freezing the UI
+  // (and to stay within a safe 32-bit shift range).
+  const MAX_EXPANDABLE = 12;
+  if (n > MAX_EXPANDABLE) return Array.from(new Set(values));
+  const result = new Set<number>();
+  for (let mask = 1; mask < (1 << n); mask++) {
+    let combined = 0;
+    for (let i = 0; i < n; i++) {
+      if (mask & (1 << i)) combined |= values[i] ?? 0;
+    }
+    result.add(combined);
+  }
+  return Array.from(result);
+};
+
 export const advancedFilter2JsonLogic = (advancedFilter: ITableFilter[], columns: ITableColumn[]): JsonLogicFilter[] | null => {
   if (advancedFilter.length === 0) return null;
 
@@ -118,6 +138,7 @@ export const advancedFilter2JsonLogic = (advancedFilter: ITableFilter[], columns
       let filterOption = f.filterOption;
       if (isNullOrWhiteSpace(filterOption)) {
         if (column.dataType === 'reference-list-item') filterOption = 'contains';
+        if (column.dataType === 'array') filterOption = 'contains';
         if (column.dataType === 'entity') filterOption = 'equals';
         if (column.dataType === 'boolean') filterOption = 'equals';
       }
@@ -128,9 +149,15 @@ export const advancedFilter2JsonLogic = (advancedFilter: ITableFilter[], columns
             '==': [property, filterValues],
           };
         case 'contains':
-          return column.dataType === 'string'
-            ? { in: [filterValues, property] /* for strings arguments are reversed */ }
-            : { in: [property, filterValues] };
+          if (column.dataType === 'string') return { in: [filterValues, property] /* for strings arguments are reversed */ };
+          if (column.dataType === 'array' && column.dataFormat === 'multivalue-reference-list' && Array.isArray(filterValues))
+            // Bitmask storage: expand selected values to all OR-combinations so the backend equality
+            // check (col == v1 OR col == v2 ...) also matches rows that store multiple languages.
+            // e.g. [1, 4] → [1, 4, 5] so stored value 5 (= 1|4) is caught.
+            // Limitation: rows with a selected language plus an unselected one (e.g. stored=3 = English+Tswana)
+            // still won't match — that case requires a backend bitmask fix.
+            return { in: [property, expandBitmaskSubsets(filterValues as number[])] };
+          return { in: [property, filterValues] };
         case 'greaterThan':
           return {
             '>': [property, filterValues],

@@ -330,6 +330,7 @@ export interface IColumnItemFilterProps {
   entityTypeModule?: string | undefined;
   autocompleteUrl?: string;
   dataType: ProperyDataType | undefined;
+  dataFormat?: string | undefined;
   filter?: ColumnFilter | undefined;
   filterOption: IndexColumnFilterOption | undefined;
   onRemoveFilter?: ((id: string) => void) | undefined;
@@ -342,6 +343,7 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
   id,
   filterName,
   dataType = 'string',
+  dataFormat,
   filterOption,
   onRemoveFilter,
   onChangeFilterOption,
@@ -378,8 +380,12 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
 
   // Make sue that you initialize the `IndexColumnFilterOption` once when the component gets rendered
   useEffectOnce(() => {
-    if (!filter && isNonEmptyArray(options)) {
-      onChangeFilterOption?.(id, options[0]);
+    if (!filter) {
+      if (isNonEmptyArray(options)) {
+        onChangeFilterOption?.(id, options[0]);
+      } else if (isMultivalueRefList) {
+        onChangeFilterOption?.(id, 'contains');
+      }
     }
   });
 
@@ -412,7 +418,10 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
     );
   };
 
-  const hideFilterOptions = (): boolean => ['boolean', 'reference-list-item', 'multiValueRefList', 'entity'].includes(dataType);
+  const isMultivalueRefList = dataType === 'array' && dataFormat === 'multivalue-reference-list';
+
+  const hideFilterOptions = (): boolean =>
+    ['boolean', 'reference-list-item', 'multiValueRefList', 'entity'].includes(dataType) || isMultivalueRefList;
 
   const baseProps: BaseFilterProps = {
     id,
@@ -492,7 +501,7 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
           />
         )}
 
-        {['reference-list-item', 'multiValueRefList'].includes(dataType) &&
+        {(['reference-list-item', 'multiValueRefList'].includes(dataType) || isMultivalueRefList) &&
           !isNullOrWhiteSpace(referenceListName) && !isNullOrWhiteSpace(referenceListModule) && (
           <RefListFilter
             onChange={handleRawFilter}
