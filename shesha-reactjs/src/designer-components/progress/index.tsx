@@ -105,10 +105,6 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
     const finalStrokeColor = getEvaluatedStrokeValue();
     const gapPlacement = gapPositionToPlacement(gapPosition);
 
-    // Some settings are only valid for specific progress types. Even though the
-    // settings editor hides irrelevant inputs, a value configured for one type
-    // still lingers in the model when the type is switched. Gate each type-specific
-    // prop by the active type so it never leaks into a type that doesn't support it.
     const isLine = progressType === 'line' || progressType === undefined;
     const isCircular = progressType === 'circle' || progressType === 'dashboard';
 
