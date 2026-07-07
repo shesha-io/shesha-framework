@@ -1,6 +1,6 @@
 import { CodeVariablesTables } from '@/components/codeVariablesTable';
 import { ListEditorRenderer } from '@/components/listEditorRenderer';
-import QueryBuilderExpressionViewer from '@/designer-components/queryBuilder/queryBuilderExpressionViewer';
+import QueryBuilderExpressionViewer, { JsonValue } from '@/designer-components/queryBuilder/queryBuilderExpressionViewer';
 import { QueryBuilderPlainRenderer } from '@/designer-components/queryBuilder/queryBuilderFieldPlain';
 import { QueryBuilderProvider, useMetadata } from '@/providers';
 import { Tabs } from 'antd';
@@ -64,7 +64,7 @@ export const FilterItemSettingsEditor: FC<IFilterItemSettingsEditorProps> = ({ v
           {
             key: 'expressionViewerTab',
             label: 'Query expression viewer',
-            children: <QueryBuilderExpressionViewer value={expressionObject} />,
+            children: <QueryBuilderExpressionViewer value={expressionObject as JsonValue | undefined} />,
           },
           {
             key: 'exposedVariables',
