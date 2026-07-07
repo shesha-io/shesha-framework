@@ -1,18 +1,18 @@
-import React, { FC, PropsWithChildren, useContext, useEffect } from 'react';
+import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
 import {
   INotesEditorActions,
   INotesEditorInstance,
   INotesEditorState,
   NotesEditorInstanceContext,
+  OnNoteCreatedFunc,
+  OnNoteDeletedFunc,
+  OnNoteUpdatedFunc,
 } from './contexts';
 import { useNotesEditorInstance } from './hooks';
 import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
 import { throwError } from '@/utils/errors';
-import { NoteDto } from './api-models';
 
-export type OnNoteCreatedFunc = (note: NoteDto) => void;
-export type OnNoteUpdatedFunc = (note: NoteDto) => void;
-export type OnNoteDeletedFunc = (note: NoteDto) => void;
+export type { OnNoteCreatedFunc, OnNoteUpdatedFunc, OnNoteDeletedFunc };
 
 export type NotesProviderProps = {
   ownerId: string;
@@ -29,8 +29,19 @@ const NotesEditorProvider: FC<PropsWithChildren<NotesProviderProps>> = ({
   ownerId,
   ownerType,
   category,
+  onCreatedAction,
+  onUpdatedAction,
+  onDeletedAction,
 }) => {
   const instance = useNotesEditorInstance();
+
+  // keep the latest handlers on the instance (closures change on every render)
+  instance.setEventHandlers({
+    onCreated: onCreatedAction,
+    onUpdated: onUpdatedAction,
+    onDeleted: onDeletedAction,
+  });
+
   useEffect(() => {
     instance.init({ ownerId, ownerType, category });
   }, [instance, ownerId, ownerType, category]);
@@ -48,9 +59,14 @@ const useNotesEditorActions = (): INotesEditorActions => useNotesEditor();
 
 const useNotesEditorState = (): INotesEditorState => {
   const instance = useNotesEditor();
-  // useNotesEditorSubscription('fileList');
+  const [, forceUpdate] = useReducer((x: number) => x + 1, 0);
+
+  useEffect(() => instance.subscribe(forceUpdate), [instance]);
+
   return {
     notes: instance.notes,
+    isFetchingNotes: instance.isFetchingNotes,
+    isPostingNotes: instance.isPostingNotes,
   };
 };
 

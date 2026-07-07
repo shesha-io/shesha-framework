@@ -7,7 +7,7 @@ import { getEntityTypeIdentifierQueryParams } from "../metadataDispatcher/entiti
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { extractAjaxResponse, IAjaxResponse } from "@/interfaces";
 import { noteDto2NoteModel, notesReferenceEqual } from "./utils";
-import { INotesEditorActions, INotesEditorState } from "./contexts";
+import { INotesEditorActions, INotesEditorState, NotesEventHandlers } from "./contexts";
 
 export type NotesEditorInstanceArgs = {
   httpClient: HttpClientApi;
@@ -19,6 +19,14 @@ export class NotesEditorInstance implements INotesEditorActions, INotesEditorSta
   #httpClient: HttpClientApi;
 
   #notesReference: NotesReference | undefined;
+
+  #eventHandlers: NotesEventHandlers = {};
+
+  #subscribers = new Set<() => void>();
+
+  #isFetchingNotes = false;
+
+  #isPostingNotes = false;
 
   constructor(args: NotesEditorInstanceArgs) {
     this.#httpClient = args.httpClient;
@@ -36,6 +44,10 @@ export class NotesEditorInstance implements INotesEditorActions, INotesEditorSta
         });
   };
 
+  setEventHandlers = (handlers: NotesEventHandlers): void => {
+    this.#eventHandlers = handlers;
+  };
+
   private fetchNotesAsync = async (): Promise<void> => {
     const reference = this.getValidNoteReference();
 
@@ -45,6 +57,7 @@ export class NotesEditorInstance implements INotesEditorActions, INotesEditorSta
       category: reference.category,
       allCategories: isNullOrWhiteSpace(reference.category),
     });
+    this.setIsFetchingNotes(true);
     try {
       const response = await this.#httpClient.get<IAjaxResponse<NoteDto[]>>(url);
       const noteDtos = extractAjaxResponse(response.data);
@@ -53,6 +66,8 @@ export class NotesEditorInstance implements INotesEditorActions, INotesEditorSta
     } catch (error) {
       console.error(error);
       // TODO: handle errors
+    } finally {
+      this.setIsFetchingNotes(false);
     }
   };
 
@@ -72,10 +87,16 @@ export class NotesEditorInstance implements INotesEditorActions, INotesEditorSta
       parentId: args.parentId,
       noteText: args.noteText,
     };
-    const response = await this.#httpClient.post<IAjaxResponse<NoteDto>>(NOTES_URLS.NOTE_CREATE, payload);
-    const noteDto = extractAjaxResponse(response.data);
-    const noteModel = noteDto2NoteModel(noteDto);
-    this.updateNotes((notes) => [...notes, noteModel]);
+    this.setIsPostingNotes(true);
+    try {
+      const response = await this.#httpClient.post<IAjaxResponse<NoteDto>>(NOTES_URLS.NOTE_CREATE, payload);
+      const noteDto = extractAjaxResponse(response.data);
+      const noteModel = noteDto2NoteModel(noteDto);
+      this.updateNotes((notes) => [...notes, noteModel]);
+      this.#eventHandlers.onCreated?.(noteDto);
+    } finally {
+      this.setIsPostingNotes(false);
+    }
   };
 
   updateNoteAsync = async (args: UpdateNoteArgs): Promise<void> => {
@@ -89,6 +110,7 @@ export class NotesEditorInstance implements INotesEditorActions, INotesEditorSta
       const updatedNote = extractAjaxResponse(response.data);
       const updatedNoteModel = noteDto2NoteModel(updatedNote);
       this.updateNotes((notes) => notes.map((n) => n.id === note.id ? updatedNoteModel : n));
+      this.#eventHandlers.onUpdated?.(updatedNote);
     } catch (error) {
       console.error(error);
       // TODO: handle errors
@@ -96,24 +118,57 @@ export class NotesEditorInstance implements INotesEditorActions, INotesEditorSta
   };
 
   deleteNoteAsync = async (args: DeleteNoteArgs): Promise<void> => {
+    const deletedNote = this.#notes.find((n) => n.id === args.id);
     const url = buildUrl(NOTES_URLS.NOTE_DELETE, { id: args.id });
     const response = await this.#httpClient.delete<IAjaxResponse<void>>(url);
     try {
       extractAjaxResponse(response.data);
       this.updateNotes((notes) => notes.filter((n) => n.id !== args.id));
+      if (deletedNote)
+        this.#eventHandlers.onDeleted?.(deletedNote);
     } catch (error) {
       console.error(error);
       // TODO: handle errors
     }
   };
 
-  private updateNotes = (updater: (files: NoteModel[]) => NoteModel[]): void => {
-    this.#notes = updater(this.#notes);
-    // TODO: notify subscribers
-    // this.notifySubscribers(['notes']);
+  private setIsFetchingNotes = (value: boolean): void => {
+    if (this.#isFetchingNotes === value) return;
+    this.#isFetchingNotes = value;
+    this.notifySubscribers();
   };
 
-  get notes(): NoteDto[] {
+  private setIsPostingNotes = (value: boolean): void => {
+    if (this.#isPostingNotes === value) return;
+    this.#isPostingNotes = value;
+    this.notifySubscribers();
+  };
+
+  private updateNotes = (updater: (notes: NoteModel[]) => NoteModel[]): void => {
+    this.#notes = updater(this.#notes);
+    this.notifySubscribers();
+  };
+
+  subscribe = (callback: () => void): (() => void) => {
+    this.#subscribers.add(callback);
+    return () => {
+      this.#subscribers.delete(callback);
+    };
+  };
+
+  private notifySubscribers = (): void => {
+    this.#subscribers.forEach((callback) => callback());
+  };
+
+  get notes(): NoteModel[] {
     return this.#notes;
+  }
+
+  get isFetchingNotes(): boolean {
+    return this.#isFetchingNotes;
+  }
+
+  get isPostingNotes(): boolean {
+    return this.#isPostingNotes;
   }
 }
