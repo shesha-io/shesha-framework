@@ -37,7 +37,7 @@ export const ComponentDefaultsSettings: FC<IComponentDefaultsSettingsProps> = ({
   useEffect(() => {
     form.resetFields();
     form.setFieldsValue(initialModel);
-  }, [form, componentType]);
+  }, [form, componentType, initialModel]);
 
   return (
     <Card

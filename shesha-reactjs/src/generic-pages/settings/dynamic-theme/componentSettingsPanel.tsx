@@ -157,8 +157,8 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
     const incoming = (changedValues[device] as Record<string, unknown> | undefined) ?? {};
     const base = deepCopyViaJson(theme ?? {}) as IConfigurableTheme;
     const deviceStyles: IThemeDeviceStyles = base[device] ?? {};
-    const componentBase = deepCopyViaJson(deviceStyles.components?.[componentType ?? ''] ?? {}) as any;
-    const mergedComponent = deepMergeValues(componentBase, incoming) as any;
+    const componentBase = deepCopyViaJson(deviceStyles.components?.[componentType ?? ''] ?? {});
+    const mergedComponent = deepMergeValues(componentBase, incoming);
 
     const merged: IConfigurableTheme = {
       ...base,

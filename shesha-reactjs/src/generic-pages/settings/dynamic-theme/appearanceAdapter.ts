@@ -106,12 +106,12 @@ const collectProperties = (
 const toRenderable = (found: IFoundProperty): IConfigurableFormComponent => {
   const clone = JSON.parse(JSON.stringify(found.node)) as Record<string, unknown>;
   // Force the control to be visible regardless of cross-field conditions defined on its original tab.
-  delete clone.hidden;
-  delete clone.visible;
-  delete clone.visibleJs;
+  delete clone["hidden"];
+  delete clone["visible"];
+  delete clone["visibleJs"];
 
   if (found.kind === 'component') {
-    clone.id = nanoid();
+    clone["id"] = nanoid();
     return clone as unknown as IConfigurableFormComponent;
   }
 
@@ -119,7 +119,7 @@ const toRenderable = (found: IFoundProperty): IConfigurableFormComponent => {
   return {
     id: nanoid(),
     type: 'settingsInputRow',
-    propertyName: `appearanceExtra_${(clone.propertyName as string) ?? nanoid()}`,
+    propertyName: `appearanceExtra_${(clone["propertyName"] as string) ?? nanoid()}`,
     parentId: 'root',
     hidden: false,
     inputs: [clone],

@@ -57,7 +57,7 @@ const isStyleableComponent = (component: IToolboxComponent): boolean => {
 let cachedMenuItems: IMenuItem[] | null = null;
 
 const buildComponentItems = (): IMenuItem[] => {
-  const toolboxComponents = getToolboxComponents(false, { formId: null, formProps: null });
+  const toolboxComponents = getToolboxComponents(false, { formId: '', formProps: null });
 
   return toolboxComponents
     .filter((group) => group.visible)

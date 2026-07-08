@@ -93,8 +93,8 @@ export const ComponentGroupSettings: FC<IComponentGroupSettingsProps> = ({ group
     const base = deepCopyViaJson(theme ?? {}) as IConfigurableTheme;
     const deviceStyles: IThemeDeviceStyles = base[device] ?? {};
     const legacyGroupBase = device === 'desktop' ? base.componentGroups?.[group] : undefined;
-    const groupBase = deepCopyViaJson(deviceStyles.componentGroups?.[group] ?? legacyGroupBase ?? {}) as any;
-    const mergedGroup = deepMergeValues(groupBase, incoming) as any;
+    const groupBase = deepCopyViaJson(deviceStyles.componentGroups?.[group] ?? legacyGroupBase ?? {});
+    const mergedGroup = deepMergeValues(groupBase, incoming);
     const merged: IConfigurableTheme = {
       ...base,
       [device]: {
