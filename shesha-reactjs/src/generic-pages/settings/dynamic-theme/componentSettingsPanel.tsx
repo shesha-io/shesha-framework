@@ -6,11 +6,13 @@ import { findComponentNode, getMenuItems, IMenuItem } from './toolboxComponents'
 import { ConfigurableForm } from '@/components/configurableForm';
 import { DEFAULT_FORM_SETTINGS, FormMarkup } from '@/providers/form/models';
 import { ItemType } from 'antd/es/menu/interface';
-import { deepCopyViaJson, deepMergeValues } from '@/utils/object';
+import { getComponentDefinitions } from '@/providers/form/defaults/toolboxComponents';
+import { deepCopyViaJson, deepMergeSkipUndefinedFunc, deepMergeValues } from '@/utils/object';
 import { buildPreviewComponents, getPreviewFormData, previewNeedsDesignerMode } from './previewData';
 import { getAppearanceMarkup } from './appearanceMarkup';
 import { useCanvas } from '@/providers';
 import { DeviceTypes } from '@/providers/canvas/contexts';
+import DefaultModelProvider from '@/designer-components/_settings/defaultModelProvider/defaultModelProvider';
 
 export interface IComponentDefaultsPanelProps {
   value?: IConfigurableTheme | undefined;
@@ -60,6 +62,64 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
 
   const selectedNode = useMemo(() => findComponentNode(selectedKey), [selectedKey]);
   const componentType = selectedNode?.type;
+  const componentDef = useMemo(
+    () => (componentType ? getComponentDefinitions().get(componentType) : undefined),
+    [componentType],
+  );
+
+  // Baseline the form on the same inheritance chain the designer applies (see genericSettingsForm):
+  // hardcoded defaults (getDefaultStyles) ← group-tier theme (themeGroup) ← per-type theme.
+  //
+  // The two tiers are kept separate so the form can show the same inheritance indicators as the
+  // properties panel (green = inherited from the default model, tan = overridden by this theme). The
+  // settings FormItem reads those states from a DefaultModelProvider by comparing its `model` (the
+  // per-type theme values the user has actually set) against its `defaultModel` (everything the
+  // component inherits: hardcoded defaults ← group-tier theme). We therefore expose:
+  //   • defaultModel — defaults ← group-tier theme (the inherited baseline)
+  //   • model        — stored per-type theme values (the overrides)
+  //   • initialValues — the effective merge, so fields open pre-filled with what's in effect.
+  //
+  // handleFormDataChange still merges user edits over the *stored* per-type theme, so seeded defaults
+  // never leak into the saved theme.
+  //
+  // All three are wrapped under the device key because the appearance markup routes every style prop
+  // through a device propertyRouter (`<device>.*`) — the settings FormItem prefixes its lookup path
+  // with that router's namePrefix, so the default/model paths must be keyed the same way.
+  const merge = (target: object, source: object): object =>
+    deepMergeValues(target, source, deepMergeSkipUndefinedFunc);
+
+  const inheritedModel = useMemo(() => {
+    if (!componentType) return {};
+
+    // 1. Hardcoded component defaults.
+    const defaults = deepCopyViaJson(componentDef?.getDefaultStyles?.() ?? {}) as object;
+
+    // 2. Group-tier theme styles: desktop is the base, the active device overlays it (legacy themes
+    //    stored groups at the theme root — same fallback the theme provider applies).
+    const group = componentDef?.themeGroup;
+    const groupBase = (group ? theme?.desktop?.componentGroups?.[group] ?? theme?.componentGroups?.[group] : undefined) ?? {};
+    const groupOverlay = (group && device !== 'desktop' ? theme?.[device]?.componentGroups?.[group] : undefined) ?? {};
+    const groupStyle = merge(deepCopyViaJson(groupBase) as object, groupOverlay);
+
+    return { [device]: deepCopyViaJson(merge(defaults, groupStyle)) };
+  }, [componentType, componentDef, theme, device]);
+
+  const storedModel = useMemo(() => {
+    if (!componentType) return {};
+
+    // Stored per-type theme styles, with the same desktop-base/legacy fallback.
+    const storedBase = theme?.desktop?.components?.[componentType] ?? theme?.components?.[componentType] ?? {};
+    const storedOverlay = (device !== 'desktop' ? theme?.[device]?.components?.[componentType] : undefined) ?? {};
+    const stored = merge(deepCopyViaJson(storedBase) as object, storedOverlay as object);
+
+    return { [device]: deepCopyViaJson(stored) };
+  }, [componentType, theme, device]);
+
+  const initialValues = useMemo(
+    // Deep-copy so the form never mutates objects still referenced by the theme.
+    () => (componentType ? deepCopyViaJson(merge(inheritedModel, storedModel)) : {}),
+    [componentType, inheritedModel, storedModel],
+  );
 
   // Extract the appearance tab components for the selected component (shared with the menu filter).
   const appearanceMarkup = useMemo(() => getAppearanceMarkup(componentType), [componentType]);
@@ -94,7 +154,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
   }, [selectedNode?.key, selectedNode?.type, theme]);
 
   // Handle form data change — deep-merge so nested keys (e.g. application) are not replaced wholesale
-  const handleFormDataChange = (changedValues:  Record<string, unknown>): void => {
+  const handleFormDataChange = (changedValues: Record<string, unknown>): void => {
     if (!onChange) return;
     const incoming = (changedValues[device] as Record<string, unknown> | undefined) ?? {};
     const base = deepCopyViaJson(theme ?? {}) as IConfigurableTheme;
@@ -110,11 +170,11 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
           ...(deviceStyles.components ?? {}),
           [componentType ?? '']: mergedComponent,
         },
-      }
+      },
     };
 
     onChange(merged);
-    };
+  };
 
   return (
     <Row gutter={16}>
@@ -157,13 +217,28 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
           className={styles.themeCardSettings}
         >
           {appearanceMarkup && componentType ? (
-            <ConfigurableForm
-              mode={readonly ? 'readonly' : 'edit'}
-              markup={appearanceMarkup as FormMarkup}
-              initialValues={theme?.[device]?.components?.[selectedNode?.type ?? ''] ?? {}}
-              onValuesChange={handleFormDataChange}
-              className={styles.appearanceForm}
-            />
+            // The settings FormItem reads inheritance state (inherited vs. overridden) from this
+            // provider — comparing the stored per-type theme values (model) against the inherited
+            // baseline (defaultModel) — and paints the same green/tan indicators + hover tooltip the
+            // properties panel shows. Keyed by componentType so each selection gets a fresh provider
+            // seeded with its own slice, instead of the previous component's values bleeding through.
+            <DefaultModelProvider
+              key={componentType}
+              name="Component Default Styles"
+              model={storedModel}
+              defaultModel={inheritedModel}
+            >
+              <ConfigurableForm
+                // Remount when the selection or device changes so initialValues (applied on mount only)
+                // re-seed with the newly selected component's inherited baseline.
+                key={`${selectedKey}-${device}`}
+                mode={readonly ? 'readonly' : 'edit'}
+                markup={appearanceMarkup as FormMarkup}
+                initialValues={initialValues}
+                onValuesChange={handleFormDataChange}
+                className={styles.appearanceForm}
+              />
+            </DefaultModelProvider>
           ) : (
             <div style={{ padding: 16, textAlign: 'center', color: '#999' }}>
               {componentType

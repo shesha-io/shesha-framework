@@ -5,7 +5,7 @@ import { useStyles } from './styles/styles';
 import { ConfigurableForm } from '@/components/configurableForm';
 import { FormMarkup } from '@/providers/form/models';
 import { useFormBuilderFactory } from '@/form-factory/hooks';
-import { deepCopyViaJson, deepMergeValues } from '@/utils/object';
+import { deepCopyViaJson, deepMergeSkipUndefinedFunc, deepMergeValues } from '@/utils/object';
 import { getSettings as getInputSettings } from './componentGroups/inputComponentSettings';
 import { getSettings as getLayoutSettings } from './componentGroups/layoutComponentSettings';
 import { getSettings as getStandardSettings } from './componentGroups/standardComponentSettings';
@@ -68,8 +68,23 @@ export const ComponentGroupSettings: FC<IComponentGroupSettingsProps> = ({ group
   const device: DeviceTypes = useCanvas().designerDevice ?? 'desktop';
 
   const initialValues = useMemo(() => {
-    const stored = theme?.[device]?.componentGroups?.[group] ?? {};
-    return { [device]: stored };
+    const merge = (target: object, source: object): object =>
+      deepMergeValues(target, source, deepMergeSkipUndefinedFunc);
+
+    // Desktop is the base tier and the active device overlays it; legacy themes stored groups at the
+    // theme root — the same fallback chain the theme provider's getComponentGroupStyle applies.
+    const base = theme?.desktop?.componentGroups?.[group] ?? theme?.componentGroups?.[group] ?? {};
+    const overlay = (device !== 'desktop' ? theme?.[device]?.componentGroups?.[group] : undefined) ?? {};
+    const stored = merge(deepCopyViaJson(base) as object, overlay);
+
+    // Theme-level settings are the tier above the group tier. Seed the input group's label settings
+    // from them so the form opens showing what the group currently inherits. Display-only: only user
+    // edits are persisted (handleValuesChange merges changed values over the stored group styles).
+    const inherited: Record<string, unknown> = group === 'input'
+      ? { labelAlign: theme?.labelAlign, colon: theme?.colon, labelSpan: theme?.labelSpan }
+      : {};
+
+    return { [device]: deepCopyViaJson(merge(inherited, stored)) };
   }, [theme, group, device]);
 
   const handleValuesChange = (changedValues: Record<string, unknown>): void => {
@@ -96,9 +111,11 @@ export const ComponentGroupSettings: FC<IComponentGroupSettingsProps> = ({ group
     <div style={{ padding: '0 0 24px' }}>
       <Typography.Title level={4} style={{ marginBottom: 4 }}>{title}</Typography.Title>
       <Typography.Text type="secondary">{description}</Typography.Text>
-      
+
       <div style={{ marginTop: 16 }}>
         <ConfigurableForm
+          // Remount on device change so initialValues (applied on mount only) re-seed for the device.
+          key={`${group}-${device}`}
           mode={readonly ? 'readonly' : 'edit'}
           markup={markup as FormMarkup}
           initialValues={initialValues}
