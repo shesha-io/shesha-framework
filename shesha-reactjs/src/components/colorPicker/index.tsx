@@ -39,6 +39,9 @@ const formatColor = (color: AggregationColor | undefined, format: ColorFormat): 
   return null;
 };
 
+const toCssColorString = (color: ColorValueType | undefined): string | undefined =>
+  typeof color === 'string' ? color : undefined;
+
 /**
  *
  * @param theme
@@ -51,8 +54,8 @@ export const readThemeColor = (theme: IConfigurableTheme): Record<string, string
   error: theme.application?.errorColor,
   info: theme.application?.infoColor,
   processing: theme.application?.processingColor,
-  primaryTextColor: theme.text?.default,
-  secondaryTextColor: theme.text?.secondary,
+  primaryTextColor: toCssColorString(theme.text?.default),
+  secondaryTextColor: toCssColorString(theme.text?.secondary),
 });
 
 export const ColorPicker: FC<IColorPickerProps> = ({

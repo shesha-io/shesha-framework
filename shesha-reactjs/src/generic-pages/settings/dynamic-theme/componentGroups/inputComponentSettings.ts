@@ -41,49 +41,49 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 } as any,
                 components: [
                   ...fbf()
-                  .addSettingsInput({
-                    id: nanoid(),
-                    inputType: 'radio',
-                    parentId: styleRouterId,
-                    propertyName: 'labelAlign',
-                    label: 'Label Align',
-                    tooltip: 'Removes all visual styling except typography when the component becomes read-only',
-                    jsSetting: true,
-                    buttonGroupOptions: [
-                      {
-                        title: 'Left',
-                        value: 'left',
-                      },
-                      {
-                        title: 'Right',
-                        value: 'right',
-                      },
-                      {
-                        title: 'Top',
-                        value: 'top',
-                      },
-                    ],
-                  })
-                  .addSettingsInput({
-                    id: nanoid(),
-                    inputType: 'switch',
-                    parentId: styleRouterId,
-                    propertyName: 'colon',
-                    label: 'Show Colon',
-                    tooltip: 'Show colon after label text',
-                    jsSetting: true,
-                  })
-                  .addSettingsInput({
-                    id: nanoid(),
-                    inputType: 'numberField',
-                    parentId: styleRouterId,
-                    propertyName: 'labelSpan',
-                    label: 'Label Span',
-                    tooltip: 'Label span on the 24-column grid (content span is the complement)',
-                    jsSetting: true,
-                    min: 0,
-                    max: 24,
-                  })
+                    .addSettingsInput({
+                      id: nanoid(),
+                      inputType: 'radio',
+                      parentId: styleRouterId,
+                      propertyName: 'labelAlign',
+                      label: 'Label Align',
+                      tooltip: 'Removes all visual styling except typography when the component becomes read-only',
+                      jsSetting: true,
+                      buttonGroupOptions: [
+                        {
+                          title: 'Left',
+                          value: 'left',
+                        },
+                        {
+                          title: 'Right',
+                          value: 'right',
+                        },
+                        {
+                          title: 'Top',
+                          value: 'top',
+                        },
+                      ],
+                    })
+                    .addSettingsInput({
+                      id: nanoid(),
+                      inputType: 'switch',
+                      parentId: styleRouterId,
+                      propertyName: 'colon',
+                      label: 'Show Colon',
+                      tooltip: 'Show colon after label text',
+                      jsSetting: true,
+                    })
+                    .addSettingsInput({
+                      id: nanoid(),
+                      inputType: 'numberField',
+                      parentId: styleRouterId,
+                      propertyName: 'labelSpan',
+                      label: 'Label Span',
+                      tooltip: 'Label span on the 24-column grid (content span is the complement)',
+                      jsSetting: true,
+                      min: 0,
+                      max: 24,
+                    })
                     .addCollapsiblePanel({
                       id: nanoid(),
                       propertyName: 'pnlFontStyle',

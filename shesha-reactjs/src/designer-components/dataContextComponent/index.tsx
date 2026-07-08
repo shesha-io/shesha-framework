@@ -35,7 +35,7 @@ const DataContextComponent: IToolboxComponent<IDataContextComponentProps> = {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [model.initialDataCode]);
 
-    
+
     return (
       <DataContextProvider
         {...model}
