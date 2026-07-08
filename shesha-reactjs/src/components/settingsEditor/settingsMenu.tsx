@@ -74,13 +74,13 @@ export const SettingsMenu: FC = () => {
     const getOrAddApplication = (key: string, name: string, app?: IFrontEndApplication): ISettingApplication => {
       let section = appSections.find((s) => s.key === key);
       if (!section) {
-        section = { key, name, app, groups: [] };
+        section = { key, name, groups: [], ...(app ? { app } : {}) };
         appSections.push(section);
       }
       return section;
     };
 
-    const addSetting = (section: ISettingApplication, config: ISettingConfiguration, app: IFrontEndApplication): void => {
+    const addSetting = (section: ISettingApplication, config: ISettingConfiguration, app?: IFrontEndApplication): void => {
       const groupName = config.category ?? '';
       let group = section.groups.find((g) => g.name === groupName);
       if (!group) {
@@ -89,7 +89,7 @@ export const SettingsMenu: FC = () => {
       }
 
       const key = getSettingKey(config, app);
-      const item: ISettingItem = { config, app };
+      const item: ISettingItem = { config, ...(app ? { app } : {}) };
       allSettings[key] = item;
       group.settings.push(item);
     };
@@ -102,7 +102,7 @@ export const SettingsMenu: FC = () => {
         });
       } else {
         // system-wide settings belong to the General section
-        addSetting(getOrAddApplication(GENERAL_APP_KEY, 'General', null), s, null);
+        addSetting(getOrAddApplication(GENERAL_APP_KEY, 'General'), s);
       }
     });
 
@@ -118,7 +118,7 @@ export const SettingsMenu: FC = () => {
 
   const filteredApplications = useMemo<ISettingApplication[]>(() => {
     // show only the section for the application selected in the dropdown
-    const sections = (menuState.applications ?? []).filter((s) => s.key === selectedSectionKey);
+    const sections = menuState.applications.filter((s) => s.key === selectedSectionKey);
     if (!Boolean(searchText)) return sections;
 
     const search = searchText.toLowerCase();
@@ -127,7 +127,7 @@ export const SettingsMenu: FC = () => {
     sections.forEach((section) => {
       const groups: ISettingGroup[] = [];
       section.groups.forEach((group) => {
-        const filteredSettings = group.settings.filter((c) => c.config.name?.toLowerCase().includes(search));
+        const filteredSettings = group.settings.filter((c) => c.config.name.toLowerCase().includes(search));
         if (filteredSettings.length > 0) groups.push({ ...group, settings: filteredSettings });
       });
       if (groups.length > 0) result.push({ ...section, groups });
@@ -142,7 +142,7 @@ export const SettingsMenu: FC = () => {
     if (selectedItem) selectSetting(selectedItem.config, selectedItem.app);
   };
 
-  const selectedKeys = settingSelection
+  const selectedKeys = settingSelection?.setting
     ? [getSettingKey(settingSelection.setting, settingSelection.app)]
     : [];
 

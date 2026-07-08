@@ -82,7 +82,7 @@ const ThemeEditorComponent: IToolboxComponent = {
     };
 
     return (
-      <ConfigurableThemeContent value={form.formData ?? EMPTY_THEME} onChange={onChangeInternal} readOnly={settingsEditor?.editorMode === 'readonly'} />
+      <ConfigurableThemeContent value={form.formData ?? EMPTY_THEME} onChange={onChangeInternal} readonly={settingsEditor?.editorMode === 'readonly'} />
     );
   },
   settingsFormMarkup: settingsForm,

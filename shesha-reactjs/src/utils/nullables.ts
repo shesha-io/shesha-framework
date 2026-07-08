@@ -28,3 +28,19 @@ export const undefinedIfNullOrWhiteSpace = (value: string | null | undefined): s
 export const isNotNullOrWhiteSpace = (value: string | null | undefined): value is string => {
   return !isNullOrWhiteSpace(value);
 };
+
+/**
+ * Coerces an antd `ColorValueType` (string | AggregationColor | gradient | null) into a plain CSS
+ * color string usable in `style` props. Returns undefined for null/gradient/unsupported values.
+ * @param value - The color value to coerce.
+ * @returns A CSS color string, or undefined when there is no usable single color.
+ */
+export const coerceCssColor = (value: unknown): string | undefined => {
+  if (value === null || value === undefined) return undefined;
+  if (typeof value === 'string') return value;
+  // AggregationColor exposes toHexString(); gradients are arrays and have no single CSS color.
+  if (typeof value === 'object' && typeof (value as { toHexString?: unknown }).toHexString === 'function') {
+    return (value as { toHexString: () => string }).toHexString();
+  }
+  return undefined;
+};

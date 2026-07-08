@@ -26,6 +26,7 @@ import { FormFullName, useSheshaApplication, useTheme } from '@/providers';
 import { withAuth } from '@/hocs';
 import { useStyles } from './styles/styles';
 import { ConfigurableForm } from '../configurableForm';
+import { coerceCssColor } from '@/utils/nullables';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -242,7 +243,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
               className={classNames(styles.shaSiteLayoutBackground, headingClass, {
                 [styles.shaSiteLayoutBackgroundNoPadding]: noPadding,
               })}
-              style={{ ...layoutBackgroundStyle, background: themeFromStorage.layoutBackground }}
+              style={{ ...layoutBackgroundStyle, background: coerceCssColor(themeFromStorage.layoutBackground) }}
             >
               {children}
             </div>
