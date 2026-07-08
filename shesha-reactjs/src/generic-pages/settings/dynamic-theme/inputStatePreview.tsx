@@ -5,9 +5,9 @@ import { Form, FormItemProps, Input, Space } from "antd";
 const InputStatesPreview: FC = () => {
   const { theme } = useTheme();
 
-  const componentSpan = theme.layout === "vertical" ? 24 : theme.componentSpan;
+  const componentSpan = theme.layout === "vertical" ? 24 : (theme.componentSpan ?? 18);
   const commonProps: FormItemProps = {
-    ...(theme.layout ? { layout: theme.layout } : {}),
+    ...(theme.layout === 'horizontal' || theme.layout === 'vertical' ? { layout: theme.layout } : {}),
     ...(theme.labelAlign ? { labelAlign: theme.labelAlign } : {}),
     labelCol: theme.labelSpan ? { span: theme.labelSpan } : {},
     wrapperCol: { span: componentSpan },
@@ -23,7 +23,7 @@ const InputStatesPreview: FC = () => {
       >
         <Input placeholder="Placeholder Text" />
       </Form.Item>
-      <Form.Item {...commonProps} label="Warning">
+      <Form.Item {...commonProps} label="Warning" validateStatus="warning">
         <Input
           placeholder="Warning Message"
           prefix={<span style={{ color: "#faad14" }}>⚠</span>}
@@ -32,11 +32,12 @@ const InputStatesPreview: FC = () => {
       <Form.Item
         {...commonProps}
         label="Validating"
+        validateStatus="validating"
         help="Please wait while we validate your input"
       >
         <Input placeholder="Placeholder Text" />
       </Form.Item>
-      <Form.Item {...commonProps} label="Success">
+      <Form.Item {...commonProps} label="Success" validateStatus="success">
         <Input placeholder="Successful Input" />
       </Form.Item>
     </Space>

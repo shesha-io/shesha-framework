@@ -14,12 +14,13 @@ type ColorPickerOnChange = ColorPickerProps['onChange'];
 
 export interface IColorPickerProps {
   value?: ColorValueType | undefined;
-  onChange?: ((color: ColorValueType) => void) | undefined;
+  onChange?: ((color: string | null) => void) | undefined;
   title?: string | undefined;
   presets?: Preset[] | undefined;
   showText?: boolean | undefined;
   allowClear?: boolean | undefined;
   disabledAlpha?: boolean | undefined;
+  disabled?: boolean | undefined;
   readOnly?: boolean | undefined;
   size?: SizeType | undefined;
   style?: CSSProperties | undefined;
@@ -62,6 +63,7 @@ export const ColorPicker: FC<IColorPickerProps> = ({
   showText = false,
   allowClear = false,
   disabledAlpha = false,
+  disabled = false,
   readOnly = false,
   size,
   style,
@@ -148,7 +150,7 @@ export const ColorPicker: FC<IColorPickerProps> = ({
           disabledAlpha={disabledAlpha}
           showText={isDefined(value) && showText}
           allowClear={allowClear}
-          disabled={readOnly}
+          disabled={disabled || readOnly}
           onClear={handleClear}
           size={size}
           style={containerStyle}

@@ -107,11 +107,9 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
   const storedModel = useMemo(() => {
     if (!componentType) return {};
 
-    // Stored per-type theme styles, with the same desktop-base/legacy fallback.
-    const storedBase = theme?.desktop?.components?.[componentType] ?? theme?.components?.[componentType] ?? {};
-    const storedOverlay = (device !== 'desktop' ? theme?.[device]?.components?.[componentType] : undefined) ?? {};
-    const stored = merge(deepCopyViaJson(storedBase) as object, storedOverlay as object);
-
+    const stored = device === 'desktop'
+      ? theme?.desktop?.components?.[componentType] ?? theme?.components?.[componentType] ?? {}
+      : theme?.[device]?.components?.[componentType] ?? {};
     return { [device]: deepCopyViaJson(stored) };
   }, [componentType, theme, device]);
 

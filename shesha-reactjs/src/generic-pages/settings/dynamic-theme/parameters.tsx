@@ -9,10 +9,10 @@ import { useStyles } from './styles/styles';
 import AlertsExample from './alertsPreview';
 import InputStatesPreview from './inputStatePreview';
 import TextsPreview from './textsPreview';
-import { ColorValueType } from 'antd/es/color-picker/interface';
 import { FormLayout } from 'antd/lib/form/Form';
 import { FormLabelAlign } from 'antd/es/form/interface';
 import { useDebouncedCallback } from 'use-debounce';
+import { ColorValueType } from 'antd/es/color-picker/interface';
 
 /** The sections (tabs) of the theme settings screen. */
 export type ThemeSettingsSection = 'theme' | 'input' | 'inline' | 'standard' | 'layout' | 'components';
@@ -31,20 +31,27 @@ const PRESET_COLORS = [
 
 interface ColorCircleProps {
   color?: ColorValueType | undefined;
-  onChange: (color: ColorValueType) => void;
+  onChange: (color: string | undefined) => void;
   label: string;
   readonly?: boolean | undefined;
 }
 
+const toCssColor = (color: ColorValueType | undefined): string | undefined =>
+  typeof color === 'string' ? color : undefined;
+
 const ColorCircle: FC<ColorCircleProps> = ({ color, onChange, label, readonly }) => {
   const { styles } = useStyles();
+
+  const handleColorChange = (cssColor: string | null): void => {
+    onChange(cssColor ?? undefined);
+  };
 
   return (
     <div className={styles.colorCircleContainer}>
       <ColorPicker
-        value={color}
-        onChange={onChange}
-        readOnly={readonly}
+        value={toCssColor(color)}
+        onChange={handleColorChange}
+        disabled={!!readonly}
         allowClear
         presets={[{ label: 'Presets', defaultOpen: true, colors: PRESET_COLORS }]}
         className={styles.colorCircle}

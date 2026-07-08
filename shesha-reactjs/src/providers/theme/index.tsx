@@ -48,10 +48,9 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
   // desktop is the base and the requested device overlays it. Legacy themes stored these at the theme
   // root, so fall back to the deprecated top-level fields.
   const getComponentStyle = useCallback((componentName: string, device: ThemeDevice = 'desktop') => {
-    const base = state.theme.desktop?.components ?? state.theme.components ?? {};
-    const overlay = device === 'desktop' ? {} : state.theme[device]?.components ?? {};
-    const components = deepMergeValues(base, overlay, deepMergeSkipUndefinedFunc) as Record<string, unknown>;
-    return components[componentName] ?? {};
+    const base = (state.theme.desktop?.components ?? state.theme.components ?? {}) as Record<string, unknown>;
+    const overlay = device === 'desktop' ? {} : (state.theme[device]?.components ?? {}) as Record<string, unknown>;
+    return deepMergeValues(base[componentName] ?? {}, overlay[componentName] ?? {}, deepMergeSkipUndefinedFunc) ?? {};
   }, [state.theme]);
 
   const getComponentGroupStyle = useCallback(

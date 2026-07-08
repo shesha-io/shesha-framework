@@ -5,7 +5,7 @@ import { useStyles } from './styles/styles';
 import { IConfigurableTheme } from '@/providers/theme';
 
 export interface IConfigurableThemePageProps {
-  value?: IConfigurableTheme;
+  value: IConfigurableTheme;
   onChange?: (theme: IConfigurableTheme) => void;
   readonly?: boolean;
 }
@@ -34,7 +34,7 @@ export const ConfigurableThemeContent: FC<IConfigurableThemePageProps> = ({ valu
         items={SECTION_TABS.map(({ key, label }) => ({
           key,
           label,
-          children: <ThemeParameters value={value} onChange={onChange} readonly={readonly} section={key} />,
+          children: <ThemeParameters value={value} onChange={(values) => onChange?.(values)} readonly={readonly} section={key} />,
         }))}
         size="small"
         className={styles.themeParameters}
