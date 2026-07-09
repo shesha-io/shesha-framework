@@ -32,9 +32,10 @@ export const PropertiesPanel = <TItem extends ListItemWithId>(props: IProperties
 
   const markup = useMemo(() => {
     const m = settingsMarkupFactory(item);
-    return { ...m, components: cloneDeep(m.components) };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [item]);
+    return Array.isArray(m)
+      ? cloneDeep(m)
+      : { ...m, components: cloneDeep(m.components) };
+  }, [item, settingsMarkupFactory]);
   return (
     <SourceFilesFolderProvider folder={`item-${item.id}`}>
       <ConfigurableForm<TItem>
