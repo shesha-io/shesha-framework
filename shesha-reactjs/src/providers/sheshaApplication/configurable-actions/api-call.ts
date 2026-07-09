@@ -8,12 +8,12 @@ import { IKeyValue } from "@/interfaces/keyValue";
 import { useConfigurableAction } from "@/providers/configurableActionsDispatcher";
 import qs from "qs";
 import { unwrapAbpResponse } from "@/utils/fetchers";
-import { mapKeyValueToDictionary } from "@/utils/dictionary";
 import { getQueryParams } from "@/utils/url";
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { FormMarkupFactory } from '@/interfaces/configurableAction';
 import { IRequestParam, IRequestHeader, IRequestBody, IFormDataField, IResponseTransformationConfiguration, executeResponseTransformation } from '@/components/requestConfigModal';
 import { IDictionary } from '@/interfaces';
+import { IHasVersion } from '@/utils/fluentMigrator/migrator';
 
 // Values are now plain strings (possibly containing {{ }} mustache). The generic evaluator has
 // already resolved them before the executer runs. Legacy configs may still store an IPropertySetting
@@ -27,13 +27,19 @@ const resolveRequestValue = (raw: unknown): string => {
   return String(raw);
 };
 
-export interface IApiCallArguments {
+/** Shape of arguments before the migrator ran (no requestConfig). */
+interface IApiCallArgumentsV0 extends IHasVersion {
   url: string;
   verb: string;
-  parameters: IKeyValue[];
-  headers: IKeyValue[];
+  parameters?: IKeyValue[];
+  headers?: IKeyValue[];
   sendStandardHeaders: boolean;
-  // New structure for enhanced configuration
+}
+
+export interface IApiCallArguments extends IHasVersion {
+  url: string;
+  verb: string;
+  sendStandardHeaders: boolean;
   requestConfig?: {
     params?: IRequestParam[];
     headers?: IRequestHeader[];
@@ -41,6 +47,34 @@ export interface IApiCallArguments {
     responseTransformation?: IResponseTransformationConfiguration;
   };
 }
+
+/** Migrate legacy parameters/headers into requestConfig based on HTTP verb. */
+const migrateV0toV1 = (prev: IApiCallArgumentsV0): IApiCallArguments => {
+  const { parameters, headers, verb, ...rest } = prev;
+
+  const toParams = (items: IKeyValue[] | undefined): IRequestParam[] =>
+    (items ?? []).map((kv) => ({ key: kv.key ?? '', value: String(kv.value ?? ''), enabled: true }));
+
+  const toHeaders = (items: IKeyValue[] | undefined): IRequestHeader[] =>
+    (items ?? []).map((kv) => ({ key: kv.key ?? '', value: String(kv.value ?? ''), enabled: true }));
+
+  const encodeAsQueryString = ['get', 'delete'].includes((verb ?? '').toLowerCase());
+  const migratedParams = toParams(parameters);
+  const migratedHeaders = toHeaders(headers);
+
+  const requestConfig = encodeAsQueryString
+    ? { params: migratedParams, headers: migratedHeaders, body: { type: 'none' as const, content: '' } }
+    : {
+      params: [] as IRequestParam[],
+      headers: migratedHeaders,
+      body: {
+        type: 'form-data' as const,
+        content: (parameters ?? []).map((kv) => ({ key: kv.key ?? '', value: String(kv.value ?? ''), enabled: true })),
+      },
+    };
+
+  return { ...rest, verb, requestConfig };
+};
 
 const HttpVerbs: Method[] = ['get',
   'delete',
@@ -161,6 +195,8 @@ export const useApiCallAction = (): void => {
     sortOrder: 5,
     hasArguments: true,
     argumentsFormMarkup: getApiCallArgumentsForm,
+    migrator: (m) => m
+      .add<IApiCallArgumentsV0>(0, (prev) => migrateV0toV1(prev)),
     // Evaluate arguments normally (params/headers/url get their Mustache resolved), but keep the
     // JSON/raw body template raw. A JSON body is one big string, and letting the generic pass run
     // Mustache over it can blank tags before the body data is available; instead the executer
@@ -295,10 +331,6 @@ export const useApiCallAction = (): void => {
             }
           }
         }
-      } else {
-        // Legacy structure: use old parameters/headers
-        finalParams = mapKeyValueToDictionary(actionArgs.parameters) || {};
-        finalHeaders = mapKeyValueToDictionary(actionArgs.headers) || {};
       }
 
       const standardHeaders = sendStandardHeaders ? httpHeaders : {};
