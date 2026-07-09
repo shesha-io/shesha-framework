@@ -60,7 +60,7 @@ const migrateV0toV1 = (prev: IApiCallArgumentsV0): IApiCallArguments => {
 
   const safeParams = parameters ?? [];
   const safeHeaders = headers ?? [];
-  const encodeAsQueryString = ['get', 'delete'].includes(verb.toLowerCase());
+  const encodeAsQueryString = ['get', 'delete'].includes(((verb as unknown) ?? '').toString().toLowerCase());
   const migratedHeaders = toHeaders(safeHeaders);
 
   const requestConfig = encodeAsQueryString
@@ -70,7 +70,7 @@ const migrateV0toV1 = (prev: IApiCallArgumentsV0): IApiCallArguments => {
       headers: migratedHeaders,
       body: {
         type: 'form-data' as const,
-        content: safeParams.map((kv) => ({ key: kv.key, value: String(kv.value), enabled: true })),
+        content: toParams(safeParams),
       },
     };
 
