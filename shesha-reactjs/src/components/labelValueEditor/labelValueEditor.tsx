@@ -17,6 +17,8 @@ import { ListEditor } from '@/components/listEditor';
 import { ItemChangeDetails } from '../listEditor';
 import { getStringPropertyOrUndefined } from '@/utils/object';
 import { isDefined } from '@/utils/nullables';
+import { ExpressionEditor } from '@/components/expressionEditor';
+import { useExpressionEditorContext } from '@/components/expressionEditor/useExpressionEditorContext';
 
 export interface ILabelValueItem {
   [key: string]: string;
@@ -63,6 +65,30 @@ export const InputPropertyEditor = <TItem extends object>(props: InputPropertyEd
   );
 };
 
+/**
+ * Value-column cell backed by the mustache-aware ExpressionEditor. Isolated into its own
+ * component so its metadata/constants hooks only run when the value editor is actually in
+ * expression mode — plain-input consumers never mount this and are unaffected.
+ */
+const ExpressionValueCell = <TItem extends object>(props: InputPropertyEditorProps<TItem>): ReactElement => {
+  const { item, propertyName, itemOnChange, readOnly, placeholder } = props;
+  const context = useExpressionEditorContext();
+  return (
+    <ExpressionEditor
+      value={getStringPropertyOrUndefined(item, propertyName) ?? ''}
+      onChange={(newValue) => {
+        itemOnChange({ ...item, [propertyName]: newValue }, { isReorder: false });
+      }}
+      context={context}
+      placeholder={placeholder}
+      disabled={readOnly}
+      focusRows={6}
+      inline
+      allowExpand
+    />
+  );
+};
+
 const EMPTY_VALUE: ILabelValueItem[] = [];
 
 const LabelValueEditor: FC<ILabelValueEditorProps> = ({
@@ -76,6 +102,7 @@ const LabelValueEditor: FC<ILabelValueEditorProps> = ({
   mode = 'dialog',
   exposedVariables,
   readOnly = false,
+  valueEditor = 'input',
 }) => {
   const [showModal, setShowModal] = useState(false);
 
@@ -134,7 +161,9 @@ const LabelValueEditor: FC<ILabelValueEditorProps> = ({
                 <InputPropertyEditor<ILabelValueItem> item={item} itemOnChange={itemOnChange} propertyName={labelName} readOnly={readOnly} placeholder={labelTitle} />
               </Col>
               <Col span={12}>
-                <InputPropertyEditor<ILabelValueItem> item={item} itemOnChange={itemOnChange} propertyName={valueName} readOnly={readOnly} placeholder={valueTitle} />
+                {valueEditor === 'expression'
+                  ? <ExpressionValueCell<ILabelValueItem> item={item} itemOnChange={itemOnChange} propertyName={valueName} readOnly={readOnly} placeholder={valueTitle} />
+                  : <InputPropertyEditor<ILabelValueItem> item={item} itemOnChange={itemOnChange} propertyName={valueName} readOnly={readOnly} placeholder={valueTitle} />}
               </Col>
             </Row>
           );

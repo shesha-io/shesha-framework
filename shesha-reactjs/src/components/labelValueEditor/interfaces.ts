@@ -16,4 +16,9 @@ export interface ILabelValueEditorPropsBase {
   colorTitle?: string | undefined;
   iconTitle?: string | undefined;
   dropdownOptions?: IDropdownOption[] | undefined;
+  /**
+   * Renderer for the value column. Defaults to 'input' (a plain text field).
+   * When set to 'expression' the value cell uses the mustache-aware ExpressionEditor.
+   */
+  valueEditor?: 'input' | 'expression' | undefined;
 }

@@ -403,6 +403,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               valueTitle: 'Value',
                               labelName: 'key',
                               valueName: 'value',
+                              valueEditor: 'expression',
                               tooltip:
                                 'Additional properties you want to be passed when the form gets submitted like parentId in the case where the modal is used in a childTable. ' +
                                 'Also note you can use Mustache expression like {{id}} for value property. \n\n' +
