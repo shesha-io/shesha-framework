@@ -52,24 +52,25 @@ export interface IApiCallArguments extends IHasVersion {
 const migrateV0toV1 = (prev: IApiCallArgumentsV0): IApiCallArguments => {
   const { parameters, headers, verb, ...rest } = prev;
 
-  const toParams = (items: IKeyValue[] | undefined): IRequestParam[] =>
-    (items ?? []).map((kv) => ({ key: kv.key ?? '', value: String(kv.value ?? ''), enabled: true }));
+  const toParams = (items: IKeyValue[]): IRequestParam[] =>
+    items.map((kv) => ({ key: kv.key, value: String(kv.value), enabled: true }));
 
-  const toHeaders = (items: IKeyValue[] | undefined): IRequestHeader[] =>
-    (items ?? []).map((kv) => ({ key: kv.key ?? '', value: String(kv.value ?? ''), enabled: true }));
+  const toHeaders = (items: IKeyValue[]): IRequestHeader[] =>
+    items.map((kv) => ({ key: kv.key, value: String(kv.value), enabled: true }));
 
-  const encodeAsQueryString = ['get', 'delete'].includes((verb ?? '').toLowerCase());
-  const migratedParams = toParams(parameters);
-  const migratedHeaders = toHeaders(headers);
+  const safeParams = parameters ?? [];
+  const safeHeaders = headers ?? [];
+  const encodeAsQueryString = ['get', 'delete'].includes(verb.toLowerCase());
+  const migratedHeaders = toHeaders(safeHeaders);
 
   const requestConfig = encodeAsQueryString
-    ? { params: migratedParams, headers: migratedHeaders, body: { type: 'none' as const, content: '' } }
+    ? { params: toParams(safeParams), headers: migratedHeaders, body: { type: 'none' as const, content: '' } }
     : {
       params: [] as IRequestParam[],
       headers: migratedHeaders,
       body: {
         type: 'form-data' as const,
-        content: (parameters ?? []).map((kv) => ({ key: kv.key ?? '', value: String(kv.value ?? ''), enabled: true })),
+        content: safeParams.map((kv) => ({ key: kv.key, value: String(kv.value), enabled: true })),
       },
     };
 
