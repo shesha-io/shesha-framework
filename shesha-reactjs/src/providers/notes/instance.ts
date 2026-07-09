@@ -28,6 +28,10 @@ export class NotesEditorInstance implements INotesEditorActions, INotesEditorSta
 
   #isPostingNotes = false;
 
+  #postingNotesCount = 0;
+
+  #fetchNotesRequestId = 0;
+
   constructor(args: NotesEditorInstanceArgs) {
     this.#httpClient = args.httpClient;
   }
@@ -50,6 +54,7 @@ export class NotesEditorInstance implements INotesEditorActions, INotesEditorSta
 
   private fetchNotesAsync = async (): Promise<void> => {
     const reference = this.getValidNoteReference();
+    const requestId = ++this.#fetchNotesRequestId;
 
     const url = buildUrl<GetNotesListPayload>(NOTES_URLS.GET_LIST, {
       ownerId: reference.ownerId,
@@ -62,12 +67,15 @@ export class NotesEditorInstance implements INotesEditorActions, INotesEditorSta
       const response = await this.#httpClient.get<IAjaxResponse<NoteDto[]>>(url);
       const noteDtos = extractAjaxResponse(response.data);
       const noteModels = noteDtos.map(noteDto2NoteModel);
-      this.updateNotes(() => noteModels);
+      // ignore stale responses when the reference changed while this request was in flight
+      if (requestId === this.#fetchNotesRequestId)
+        this.updateNotes(() => noteModels);
     } catch (error) {
       console.error(error);
       // TODO: handle errors
     } finally {
-      this.setIsFetchingNotes(false);
+      if (requestId === this.#fetchNotesRequestId)
+        this.setIsFetchingNotes(false);
     }
   };
 
@@ -87,16 +95,13 @@ export class NotesEditorInstance implements INotesEditorActions, INotesEditorSta
       parentId: args.parentId,
       noteText: args.noteText,
     };
-    this.setIsPostingNotes(true);
-    try {
+    await this.runPostingNotes(async () => {
       const response = await this.#httpClient.post<IAjaxResponse<NoteDto>>(NOTES_URLS.NOTE_CREATE, payload);
       const noteDto = extractAjaxResponse(response.data);
       const noteModel = noteDto2NoteModel(noteDto);
       this.updateNotes((notes) => [...notes, noteModel]);
-      this.#eventHandlers.onCreated?.(noteDto);
-    } finally {
-      this.setIsPostingNotes(false);
-    }
+      this.notifyEventHandler('onCreated', () => this.#eventHandlers.onCreated?.(noteDto));
+    });
   };
 
   updateNoteAsync = async (args: UpdateNoteArgs): Promise<void> => {
@@ -105,30 +110,55 @@ export class NotesEditorInstance implements INotesEditorActions, INotesEditorSta
       throw new Error('Note not found.');
 
     const payload = { ...note, noteText: args.noteText };
-    try {
-      const response = await this.#httpClient.put<IAjaxResponse<NoteDto>>(NOTES_URLS.NOTE_UPDATE, payload);
-      const updatedNote = extractAjaxResponse(response.data);
-      const updatedNoteModel = noteDto2NoteModel(updatedNote);
-      this.updateNotes((notes) => notes.map((n) => n.id === note.id ? updatedNoteModel : n));
-      this.#eventHandlers.onUpdated?.(updatedNote);
-    } catch (error) {
-      console.error(error);
-      // TODO: handle errors
-    }
+    await this.runPostingNotes(async () => {
+      try {
+        const response = await this.#httpClient.put<IAjaxResponse<NoteDto>>(NOTES_URLS.NOTE_UPDATE, payload);
+        const updatedNote = extractAjaxResponse(response.data);
+        const updatedNoteModel = noteDto2NoteModel(updatedNote);
+        this.updateNotes((notes) => notes.map((n) => n.id === note.id ? updatedNoteModel : n));
+        this.notifyEventHandler('onUpdated', () => this.#eventHandlers.onUpdated?.(updatedNote));
+      } catch (error) {
+        console.error(error);
+        // TODO: handle errors
+      }
+    });
   };
 
   deleteNoteAsync = async (args: DeleteNoteArgs): Promise<void> => {
     const deletedNote = this.#notes.find((n) => n.id === args.id);
     const url = buildUrl(NOTES_URLS.NOTE_DELETE, { id: args.id });
-    const response = await this.#httpClient.delete<IAjaxResponse<void>>(url);
+    await this.runPostingNotes(async () => {
+      try {
+        const response = await this.#httpClient.delete<IAjaxResponse<void>>(url);
+        extractAjaxResponse(response.data);
+        this.updateNotes((notes) => notes.filter((n) => n.id !== args.id));
+        if (deletedNote)
+          this.notifyEventHandler('onDeleted', () => this.#eventHandlers.onDeleted?.(deletedNote));
+      } catch (error) {
+        console.error(error);
+        // TODO: handle errors
+      }
+    });
+  };
+
+  private runPostingNotes = async (operation: () => Promise<void>): Promise<void> => {
+    this.#postingNotesCount += 1;
+    this.setIsPostingNotes(true);
     try {
-      extractAjaxResponse(response.data);
-      this.updateNotes((notes) => notes.filter((n) => n.id !== args.id));
-      if (deletedNote)
-        this.#eventHandlers.onDeleted?.(deletedNote);
+      await operation();
+    } finally {
+      this.#postingNotesCount -= 1;
+      if (this.#postingNotesCount === 0)
+        this.setIsPostingNotes(false);
+    }
+  };
+
+  private notifyEventHandler = (eventName: keyof NotesEventHandlers, invoke: () => void): void => {
+    // event-handler failures must never change the outcome of the CRUD operation
+    try {
+      invoke();
     } catch (error) {
-      console.error(error);
-      // TODO: handle errors
+      console.error(`Notes event handler ${eventName} failed`, error);
     }
   };
 

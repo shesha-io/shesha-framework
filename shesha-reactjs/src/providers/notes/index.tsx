@@ -35,12 +35,14 @@ const NotesEditorProvider: FC<PropsWithChildren<NotesProviderProps>> = ({
 }) => {
   const instance = useNotesEditorInstance();
 
-  // keep the latest handlers on the instance (closures change on every render)
-  instance.setEventHandlers({
-    onCreated: onCreatedAction,
-    onUpdated: onUpdatedAction,
-    onDeleted: onDeletedAction,
-  });
+  // keep the latest handlers on the instance without mutating shared state during render
+  useEffect(() => {
+    instance.setEventHandlers({
+      onCreated: onCreatedAction,
+      onUpdated: onUpdatedAction,
+      onDeleted: onDeletedAction,
+    });
+  }, [instance, onCreatedAction, onUpdatedAction, onDeletedAction]);
 
   useEffect(() => {
     instance.init({ ownerId, ownerType, category });
