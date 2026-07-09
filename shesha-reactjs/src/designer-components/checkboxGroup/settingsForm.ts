@@ -155,7 +155,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       labelName: 'label',
                       valueTitle: 'Value',
                       valueName: 'value',
-                      valueEditor: 'expression',
                       mode: 'dialog',
                       jsSetting: true,
                     },
