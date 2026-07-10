@@ -119,7 +119,7 @@ const toRenderable = (found: IFoundProperty): IConfigurableFormComponent => {
   return {
     id: nanoid(),
     type: 'settingsInputRow',
-    propertyName: `appearanceExtra_${(clone["propertyName"] as string) ?? nanoid()}`,
+    propertyName: `appearanceExtra_${(clone["propertyName"] as string | undefined) ?? nanoid()}`,
     parentId: 'root',
     hidden: false,
     inputs: [clone],

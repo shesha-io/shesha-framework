@@ -2,12 +2,11 @@ import { createNamedContext } from '@/utils/react';
 import { Theme } from 'antd/lib/config-provider/context';
 import { FormLayout } from 'antd/lib/form/Form';
 import { FormLabelAlign } from 'antd/lib/form/interface';
-import { ColorValueType } from 'antd/es/color-picker/interface';
 
 interface ITextTheme {
-  default?: ColorValueType;
-  secondary?: ColorValueType;
-  link?: ColorValueType;
+  default?: string | undefined;
+  secondary?: string | undefined;
+  link?: string | undefined;
 }
 
 export type SidebarTheme = 'dark' | 'light';
@@ -17,7 +16,7 @@ export interface IComponentGroupBaseSettings {
   /** Margin/padding values as a styleBox JSON string (same format as designer `stylingBox`). */
   stylingBox?: string;
   /** Allow any additional properties for the enhanced theme system. */
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 /** Group-level defaults for input components (text fields, dropdowns, checkboxes, ...). */
@@ -88,7 +87,7 @@ export interface IConfigurableTheme {
   application?: Theme | undefined;
   sidebar?: SidebarTheme | undefined;
   sidebarBackground?: string | undefined;
-  layoutBackground?: ColorValueType | undefined;
+  layoutBackground?: string | undefined;
   text?: ITextTheme | undefined;
   labelSpan?: number | undefined;
   componentSpan?: number | undefined;

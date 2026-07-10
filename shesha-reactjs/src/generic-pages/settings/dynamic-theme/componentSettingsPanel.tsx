@@ -251,9 +251,9 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
         <Card>
           {componentType && previewConfig && (
             <div>
-              <h4 style={{ marginBottom: 4 }}>{selectedNode?.title || 'Select a Component'}</h4>
+              <h4 style={{ marginBottom: 4 }}>{selectedNode.title || 'Select a Component'}</h4>
               <span style={{ color: '#999', fontSize: '12px' }}>
-                Preview of {selectedNode?.title?.toLowerCase() || 'the component'} with sample data
+                Preview of {selectedNode.title.toLowerCase() || 'the component'} with sample data
               </span>
               {/* The preview markup itself carries any required context (e.g. a Data Context bound to
                   Shesha.Core.DummyTable for tables/datalists — see buildPreviewComponents), so the

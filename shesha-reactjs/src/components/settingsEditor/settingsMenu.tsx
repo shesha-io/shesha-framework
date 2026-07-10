@@ -127,7 +127,9 @@ export const SettingsMenu: FC = () => {
     sections.forEach((section) => {
       const groups: ISettingGroup[] = [];
       section.groups.forEach((group) => {
-        const filteredSettings = group.settings.filter((c) => c.config.name.toLowerCase().includes(search));
+        const filteredSettings = group.settings.filter((c) =>
+          (c.config.label ?? c.config.name).toLowerCase().includes(search),
+        );
         if (filteredSettings.length > 0) groups.push({ ...group, settings: filteredSettings });
       });
       if (groups.length > 0) result.push({ ...section, groups });
@@ -152,7 +154,7 @@ export const SettingsMenu: FC = () => {
         <AppSelector />
         <SearchBox value={searchText} onChange={setSearchText} placeholder="Search setting" />
       </div>
-      <Spin spinning={configsLoadingState === 'loading'} rootClassName={styles.shaSettingsEditorToolboxList}>
+      <Spin spinning={configsLoadingState !== 'success' || applicationsLoadingState !== 'success'} rootClassName={styles.shaSettingsEditorToolboxList}>
         {filteredApplications.length > 0 &&
           filteredApplications.map((section) => (
             <div key={section.key} className={styles.shaSettingsAppSection}>

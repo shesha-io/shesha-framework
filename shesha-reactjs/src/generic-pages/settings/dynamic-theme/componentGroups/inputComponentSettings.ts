@@ -22,7 +22,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
         size: 'small',
         tabs: [
           {
-            key: '1',
+            key: 'appearance',
             title: 'Appearance',
             id: appearanceTabId,
             components: [...fbf()
@@ -465,6 +465,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       label: 'Margin & Padding',
                       labelAlign: 'right',
                       ghost: true,
+                      parentId: styleRouterId,
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
@@ -496,6 +497,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             propertyName: 'style',
                             hideLabel: false,
                             label: 'Style',
+                            parentId: styleRouterId,
                             description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
                           })
                           .toJson(),

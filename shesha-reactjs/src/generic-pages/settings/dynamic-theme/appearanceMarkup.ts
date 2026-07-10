@@ -56,18 +56,16 @@ export const getAppearanceMarkup = (componentType: string | undefined): IAppeara
   }
 
   // Handle both FormRawMarkup (array) and FormMarkupWithSettings (object with components)
-  const components: IConfigurableFormComponent[] | undefined = Array.isArray(settingsFormMarkup)
+  const components: IConfigurableFormComponent[] = Array.isArray(settingsFormMarkup)
     ? settingsFormMarkup
-    : settingsFormMarkup?.components;
-  const formSettings = Array.isArray(settingsFormMarkup) ? undefined : settingsFormMarkup?.formSettings;
-
-  if (!components) return null;
+    : settingsFormMarkup.components;
+  const formSettings = Array.isArray(settingsFormMarkup) ? undefined : settingsFormMarkup.formSettings;
 
   const searchableTabs = components.find(isSearchableTabsMarkup);
   if (!searchableTabs) return null;
 
   const appearanceTab = searchableTabs.tabs.find(
-    (tab) => tab.key === 'appearance' || tab.title?.toLowerCase() === 'appearance',
+    (tab) => tab.key === 'appearance' || tab.title.toLowerCase() === 'appearance',
   );
 
   const tabComponents: unknown = appearanceTab?.components;
@@ -94,4 +92,4 @@ export const getAppearanceMarkup = (componentType: string | undefined): IAppeara
  * Component Defaults panel). Used to filter the component menu.
  */
 export const hasAppearanceSettings = (componentType: string | undefined): boolean =>
-  !!getAppearanceMarkup(componentType)?.components?.length;
+  !!getAppearanceMarkup(componentType)?.components.length;

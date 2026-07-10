@@ -55,7 +55,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
   useDeepCompareEffect(() => {
     if (Boolean(toolboxComponent.allowInherit)) {
       const defaultComponentStyle = toolboxComponent.getDefaultStyles?.() ?? {};
-      defaultModel?.setDefaultModel('Default comonent Style', { ['desktop']: defaultComponentStyle } as TModel);
+      defaultModel?.setDefaultModel('Default component Style', { ['desktop']: defaultComponentStyle } as TModel);
       // Group tier sits between the hardcoded defaults and the per-type theme overrides. Theme styles are
       // device-scoped; the desktop tier reads the desktop base.
       const groupStyle = getComponentGroupStyle(toolboxComponent.themeGroup, 'desktop');
@@ -67,7 +67,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
         // inherit mobile and tablet styles from desktop styles; overlay the active device's theme styles
         const deviceGroupStyle = getComponentGroupStyle(toolboxComponent.themeGroup, designerDevice as ThemeDevice);
         const deviceThemeStyle = getComponentStyle(toolboxComponent.type, designerDevice as ThemeDevice);
-        defaultModel?.setDefaultModel('Default comonent Style', { [designerDevice]: defaultComponentStyle } as unknown as TModel);
+        defaultModel?.setDefaultModel('Default component Style', { [designerDevice]: defaultComponentStyle } as unknown as TModel);
         defaultModel?.setDefaultModel('Group component Style', { [designerDevice]: deviceGroupStyle } as unknown as TModel);
         defaultModel?.setDefaultModel('Theme component Style', { [designerDevice]: deviceThemeStyle } as unknown as TModel);
         const model = defaultModel?.getModel();

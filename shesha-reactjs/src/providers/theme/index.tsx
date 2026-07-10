@@ -3,7 +3,7 @@ import React, { FC, PropsWithChildren, useCallback, useContext, useMemo, useStat
 import { IComponentGroupsSettings, IConfigurableTheme, IThemeActionsContext, IThemeStateContext, THEME_CONTEXT_INITIAL_STATE, ThemeComponentGroup, ThemeDevice, UiActionsContext, UiStateContext } from './contexts';
 import { defaultRequiredMark } from './shaRequiredMark';
 import { useSettings, useSheshaApplication } from '..';
-import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
+import { coerceCssColor, isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
 import { deepMergeSkipUndefinedFunc, deepMergeValues } from '@/utils/object';
 
 export interface ThemeProviderProps {
@@ -50,7 +50,7 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
   const getComponentStyle = useCallback((componentName: string, device: ThemeDevice = 'desktop') => {
     const base = (state.theme.desktop?.components ?? state.theme.components ?? {}) as Record<string, unknown>;
     const overlay = device === 'desktop' ? {} : (state.theme[device]?.components ?? {}) as Record<string, unknown>;
-    return deepMergeValues(base[componentName] ?? {}, overlay[componentName] ?? {}, deepMergeSkipUndefinedFunc) ?? {};
+    return deepMergeValues(base[componentName] ?? {}, overlay[componentName] ?? {}, deepMergeSkipUndefinedFunc);
   }, [state.theme]);
 
   const getComponentGroupStyle = useCallback(
@@ -68,13 +68,19 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
     const appTheme = state.theme.application;
     const themeDefaults: ThemeConfig['token'] = {};
 
+    const primaryColor = coerceCssColor(appTheme?.primaryColor);
+    const infoColor = coerceCssColor(appTheme?.infoColor);
+    const successColor = coerceCssColor(appTheme?.successColor);
+    const errorColor = coerceCssColor(appTheme?.errorColor);
+    const warningColor = coerceCssColor(appTheme?.warningColor);
+
     const theme: Partial<ThemeConfig['token']> = appTheme
       ? {
-        ...(isNotNullOrWhiteSpace(appTheme.primaryColor) ? { colorPrimary: appTheme.primaryColor, colorLink: appTheme.primaryColor } : {}),
-        ...(isNotNullOrWhiteSpace(appTheme.infoColor) ? { colorInfo: appTheme.infoColor } : {}),
-        ...(isNotNullOrWhiteSpace(appTheme.successColor) ? { colorSuccess: appTheme.successColor } : {}),
-        ...(isNotNullOrWhiteSpace(appTheme.errorColor) ? { colorError: appTheme.errorColor } : {}),
-        ...(isNotNullOrWhiteSpace(appTheme.warningColor) ? { colorWarning: appTheme.warningColor } : {}),
+        ...(isNotNullOrWhiteSpace(primaryColor) ? { colorPrimary: primaryColor, colorLink: primaryColor } : {}),
+        ...(isNotNullOrWhiteSpace(infoColor) ? { colorInfo: infoColor } : {}),
+        ...(isNotNullOrWhiteSpace(successColor) ? { colorSuccess: successColor } : {}),
+        ...(isNotNullOrWhiteSpace(errorColor) ? { colorError: errorColor } : {}),
+        ...(isNotNullOrWhiteSpace(warningColor) ? { colorWarning: warningColor } : {}),
       }
       : {};
 

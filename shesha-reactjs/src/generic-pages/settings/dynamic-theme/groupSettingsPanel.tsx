@@ -4,6 +4,7 @@ import { IConfigurableTheme, IThemeDeviceStyles } from '@/providers/theme/contex
 import { useStyles } from './styles/styles';
 import { ConfigurableForm } from '@/components/configurableForm';
 import { FormMarkup } from '@/providers/form/models';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 import { useFormBuilderFactory } from '@/form-factory/hooks';
 import { deepCopyViaJson, deepMergeSkipUndefinedFunc, deepMergeValues } from '@/utils/object';
 import { getSettings as getInputSettings } from './componentGroups/inputComponentSettings';
@@ -17,7 +18,7 @@ import { DeviceTypes } from '@/providers/canvas/contexts';
 
 export type ComponentGroupKey = 'input' | 'layout' | 'standard' | 'inline';
 
-const GROUP_SETTINGS_FACTORIES: Record<ComponentGroupKey, (args: { fbf: any }) => FormMarkup> = {
+const GROUP_SETTINGS_FACTORIES: Record<ComponentGroupKey, SettingsFormMarkupFactory> = {
   input: getInputSettings,
   layout: getLayoutSettings,
   standard: getStandardSettings,

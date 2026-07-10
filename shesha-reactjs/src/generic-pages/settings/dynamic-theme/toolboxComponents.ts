@@ -47,7 +47,7 @@ const EXCLUDED_COMPONENT_TYPES = new Set<string>([
  * excluded and exposes an Appearance tab in its settings (i.e. it is actually styleable).
  */
 const isStyleableComponent = (component: IToolboxComponent): boolean => {
-  if (!component?.type) return false;
+  if (!component.type) return false;
   if (component.isHidden) return false;
   if (EXCLUDED_COMPONENT_TYPES.has(component.type)) return false;
   return hasAppearanceSettings(component.type);
