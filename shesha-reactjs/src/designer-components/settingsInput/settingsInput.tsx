@@ -43,9 +43,12 @@ export const SettingInput: FCUnwrapped<ISettingsInputProps> = (props) => {
   } as BaseInputProps;
 
   const style = useMemo(() => {
+    // Inline inputs with an explicit width must not flex-grow, otherwise a single
+    // width-constrained field (e.g. a radius/width box) stretches to fill the whole row.
+    const grow = inline && width != null ? 0 : 1;
     return unwrappedType === 'button' || unwrappedType === 'radio' || unwrappedType === 'iconPicker' || unwrappedType === 'colorPicker' || unwrappedType === 'multiColorPicker'
       ? { width: 'auto' }
-      : { flex: `1 1 ${inline ? (width ?? 'auto') : '120px'}`, width };
+      : { flex: `${grow} 1 ${inline ? (width ?? 'auto') : '120px'}`, width };
   }, [unwrappedType, inline, width]);
 
   return isHidden ? null

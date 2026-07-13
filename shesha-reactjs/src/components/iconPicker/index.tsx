@@ -145,7 +145,9 @@ const IconPicker: FC<IIconPickerProps> = ({
               className={styles.shaIconPicker}
               iconName={localSelectedIcon}
               {...props}
-              style={{ fontSize: iconSize || 24, color: twoToneColor }}
+              // Merge, don't replace: props.style carries the computed font styles (size, colour,
+              // alignment) and must win over these fallbacks so configured Icon styles take effect.
+              style={{ fontSize: iconSize || 24, color: twoToneColor, ...props.style }}
               name={localSelectedIcon}
             />
           ) : (

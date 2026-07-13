@@ -143,6 +143,10 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
       --ant-button-content-font-size: ${fontSize} !important;
       --ant-button-font-weight: ${fontWeight} !important;
       --ant-font-family: ${fontFamily} !important;
+      /* Container must be a block box: it wraps block-level upload content (e.g. the Dragger),
+         and as an inline <span> width/height:100% are ignored, so the content overflows and
+         overlaps sibling fields. */
+      display: block;
       height: ${layout ? (height ?? '54px') : '100%'} !important;
       width: ${layout ? (width ?? '54px') : '100%'} !important;
       max-height: ${layout ? (maxHeight ?? 'auto') : '100%'} !important;

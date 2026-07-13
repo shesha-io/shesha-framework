@@ -70,7 +70,7 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
 
   return (
     <Tooltip title={props.description}>
-      <div style={(defaultValue || value) ? { display: 'grid', placeItems: textAlign } : {}}>
+      <div style={(defaultValue || value) ? { textAlign: (fullStyles?.textAlign ?? textAlign) as CSSProperties['textAlign'] } : {}}>
         <IconPicker
           value={iconValue as ShaIconTypes}
           onIconChange={onIconChange}

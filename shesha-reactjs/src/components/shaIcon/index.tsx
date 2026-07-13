@@ -19,7 +19,10 @@ export const ShaIcon: FC<IShaIconProps> = ({ iconName = 'WarningFilled', ...prop
   if (!IconComponent)
     return undefined;
 
-  props.twoToneColor = theme.application?.primaryColor || '#1890ff';
+  // Two-tone icons need a secondary colour; honour an explicitly supplied one and fall back to the theme.
+  props.twoToneColor = props.twoToneColor ?? (theme.application?.primaryColor || '#1890ff');
 
-  return <IconComponent />;
+  // Must spread props so style (size/colour), className and twoToneColor reach the rendered icon.
+  // These were dropped during the strict-null-checks refactor, which broke every icon's styling.
+  return <IconComponent {...props} />;
 };

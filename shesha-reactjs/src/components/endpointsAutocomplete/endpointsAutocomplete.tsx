@@ -160,17 +160,11 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
       {...(props.dropdownStyle ? { styles: { popup: { root: props.dropdownStyle } } } : {})}
       popupMatchSelectWidth={false}
     >
-      {!isNullOrWhiteSpace(props.prefix) || !isNullOrWhiteSpace(props.suffix)
-        ? (
-          <Space.Compact>
-            {!isNullOrWhiteSpace(props.prefix) && <span>{props.prefix}</span>}
-            <Input size={props.size} />
-            {!isNullOrWhiteSpace(props.suffix) && <span>{props.suffix}</span>}
-          </Space.Compact>
-        )
-        : (
-          <Input size={props.size} />
-        )}
+      <Input
+        size={props.size}
+        prefix={!isNullOrWhiteSpace(props.prefix) ? <span style={{ color: 'rgba(0,0,0,0.45)' }}>{props.prefix}</span> : undefined}
+        suffix={!isNullOrWhiteSpace(props.suffix) ? <span style={{ color: 'rgba(0,0,0,0.45)' }}>{props.suffix}</span> : undefined}
+      />
     </AutoComplete>
   );
 

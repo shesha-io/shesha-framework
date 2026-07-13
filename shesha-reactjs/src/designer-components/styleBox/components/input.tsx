@@ -8,7 +8,7 @@ import { useDefaultModelPropertyUpdateSubscription, useDefaultModelActionsOrUnde
 import { useStyles } from '@/designer-components/_settings/styles/styles';
 import { getValueByPropertyName } from '@/utils/object';
 import { useFormItem } from '@/providers';
-import { isNotNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
 
 interface IProps {
   direction: keyof IInputDirection;
@@ -34,7 +34,8 @@ const BoxInput: FC<IProps> = ({ direction, onChange, readOnly, type, value, prop
   const defaultValue = getValueByPropertyName(defaultModel?.getDefaultModel() as Record<string, unknown>, defaultName) as string | undefined;
   const className = valueInfo?.state === 'usedDefault' ? styles.inheritedValue : valueInfo?.state === 'usedModel' ? styles.overriddenValue : '';
 
-  const localValue: string | undefined = defaultModel?.getValueInfo(defaultName)?.state === 'usedDefault' ? defaultValue : String(value?.[propertyName]);
+  const currentValue = defaultModel?.getValueInfo(defaultName)?.state === 'usedDefault' ? defaultValue : value?.[propertyName];
+  const localValue: string | undefined = isDefined(currentValue) ? String(currentValue) : undefined;
 
   const internalOnChange = (val: string | undefined): void => {
     if ((!val || val.length < 4) && onChange)

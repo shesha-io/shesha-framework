@@ -5,7 +5,7 @@ import {
   InboxOutlined,
   LoadingOutlined,
 } from '@ant-design/icons';
-import { Form, Spin, Upload, UploadProps } from 'antd';
+import { Spin, Upload, UploadProps } from 'antd';
 import { nanoid } from '@/utils/uuid';
 import { RcFile, UploadFile } from 'antd/lib/upload/interface';
 import { useHttpClient } from '@/providers';
@@ -128,7 +128,9 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
 
   return (
     <Spin spinning={isImporting} description="Importing...">
-      <Form>
+      {/* Plain container: the previous <Form> wrapper had no fields and antd's default
+          horizontal form layout misaligned the nested filter/pager/table content. */}
+      <div>
         <Dragger
           accept=".shaconfig"
           customRequest={onUploadRequest}
@@ -147,7 +149,7 @@ export const ConfigurationItemsImport: FC<IConfigurationItemsImportProps> = (pro
         {packageContent && (
           <PackageContent packageState={packageContent} onChangeSelection={onChangeSelection} />
         )}
-      </Form>
+      </div>
     </Spin>
   );
 };
