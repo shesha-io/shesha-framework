@@ -708,27 +708,29 @@ namespace Shesha.Users
 
         public async Task<bool> ChangePasswordAsync(ChangePasswordDto input)
         {
-            if (_abpSession.UserId != null)
+            if (_abpSession.UserId == null)
             {
-                long userId = _abpSession.UserId.Value;
-                var user = await _userManager.GetUserByIdAsync(userId);
-                var loginAsync = await _logInManager.LoginAsync(user.UserName, input.CurrentPassword, shouldLockout: false);
-                if (loginAsync.Result != ShaLoginResultType.Success)
-                {
-                    throw new UserFriendlyException("Your 'Existing Password' did not match the one on record.  Please try again or contact an administrator for assistance in resetting your password.");
-                }
-                // todo: add new setting for the PasswordRegex and error message
-                if (!new Regex(PasswordRegex).IsMatch(input.NewPassword))
-                {
-                    throw new UserFriendlyException("Passwords must be at least 8 characters, contain a lowercase, uppercase, and number.");
-                }
-
-                user.AddHistoryEvent("Password changed", "Password changed");
-                (await _personRepository.FirstOrDefaultAsync(x => x.User == user))?.AddHistoryEvent("Password changed", "Password changed");
-
-                user.Password = _passwordHasher.HashPassword(user, input.NewPassword);
-                user.RequireChangePassword = false;
+                throw new UserFriendlyException("Please log in before attempting to change your password.");
             }
+
+            long userId = _abpSession.UserId.Value;
+            var user = await _userManager.GetUserByIdAsync(userId);
+            var loginAsync = await _logInManager.LoginAsync(user.UserName, input.CurrentPassword, shouldLockout: false);
+            if (loginAsync.Result != ShaLoginResultType.Success)
+            {
+                throw new UserFriendlyException("Your 'Existing Password' did not match the one on record.  Please try again or contact an administrator for assistance in resetting your password.");
+            }
+            // todo: add new setting for the PasswordRegex and error message
+            if (!new Regex(PasswordRegex).IsMatch(input.NewPassword))
+            {
+                throw new UserFriendlyException("Passwords must be at least 8 characters, contain a lowercase, uppercase, and number.");
+            }
+
+            user.AddHistoryEvent("Password changed", "Password changed");
+            (await _personRepository.FirstOrDefaultAsync(x => x.User == user))?.AddHistoryEvent("Password changed", "Password changed");
+
+            user.Password = _passwordHasher.HashPassword(user, input.NewPassword);
+            user.RequireChangePassword = false;
 
             await CurrentUnitOfWork.SaveChangesAsync();
             return true;
