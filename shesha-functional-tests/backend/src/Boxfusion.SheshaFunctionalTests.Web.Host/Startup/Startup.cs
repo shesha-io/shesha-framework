@@ -38,7 +38,9 @@ using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using Microsoft.Extensions.Hosting;
 using Shesha.Specifications;
 
 namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
@@ -156,11 +158,21 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 				options.UseAbpRequestLocalization = false;
 			}); 
 
+			// Security headers
+			app.UseSecurityHeaders();
+
+			// global cors policy
+			var corsOrigins = _appConfiguration["App:CorsOrigins"]?
+				.Split(",", StringSplitOptions.RemoveEmptyEntries)
+				.Select(o => o.Trim().TrimEnd('/'))
+				.Where(o => !string.IsNullOrEmpty(o))
+				.ToArray() ?? Array.Empty<string>();
 			app.UseCors(x => x
 				.AllowAnyMethod()
 				.AllowAnyHeader()
-				.SetIsOriginAllowed(origin => true) // allow any origin
-				.AllowCredentials()); // allow credentials​
+				.WithOrigins(corsOrigins)
+				.AllowCredentials());
+			
 			app.UseStaticFiles();
 			app.UseAuthentication();
 			app.UseAbpRequestLocalization();
@@ -198,15 +210,16 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 					.GetManifestResourceStream("Boxfusion.SheshaFunctionalTests.Web.Host.wwwroot.swagger.ui.index.html");
 			}); // URL: /swagger​
 			
-			
-			
             app.UseHangfireDashboard("/hangfire",
 				new DashboardOptions
 				{
 					Authorization = new[] { new HangfireAuthorizationFilter() }
 				});
 			app.UseMiddleware<GraphQLMiddleware>();
-			app.UseGraphQLPlayground(); //to explorer API navigate https://*DOMAIN*/ui/playground
+			if (!_hostEnvironment.IsProduction())
+			{
+				app.UseGraphQLPlayground(); //to explorer API navigate https://*DOMAIN*/ui/playground
+			}
 		}
 
 		private void AddApiVersioning(IServiceCollection services)
