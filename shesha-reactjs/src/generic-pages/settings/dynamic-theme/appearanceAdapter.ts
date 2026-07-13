@@ -13,7 +13,7 @@
  * tab.
  */
 
-import { IConfigurableFormComponent } from '@/providers/form/models';
+import { IConfigurableFormComponent, isConfigurableFormComponent } from '@/providers/form/models';
 import { nanoid } from '@/utils/uuid';
 
 /**
@@ -112,18 +112,25 @@ const toRenderable = (found: IFoundProperty): IConfigurableFormComponent => {
 
   if (found.kind === 'component') {
     clone["id"] = nanoid();
-    return clone as unknown as IConfigurableFormComponent;
+    if (!isConfigurableFormComponent(clone)) {
+      throw new Error('Cloned appearance node is not a valid form component');
+    }
+    return clone;
   }
 
   // Row input → wrap in a settingsInputRow so it renders like it does in the settings form.
-  return {
+  const rowMarkup = {
     id: nanoid(),
     type: 'settingsInputRow',
     propertyName: `appearanceExtra_${(clone["propertyName"] as string | undefined) ?? nanoid()}`,
     parentId: 'root',
     hidden: false,
     inputs: [clone],
-  } as unknown as IConfigurableFormComponent;
+  };
+  if (!isConfigurableFormComponent(rowMarkup)) {
+    throw new Error('Constructed settingsInputRow markup is not a valid form component');
+  }
+  return rowMarkup;
 };
 
 /**

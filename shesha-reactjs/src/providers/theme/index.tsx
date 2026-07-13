@@ -56,10 +56,9 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
   const getComponentGroupStyle = useCallback(
     (group: ThemeComponentGroup | undefined, device: ThemeDevice = 'desktop') => {
       if (!isDefined(group)) return {};
-      const base = state.theme.desktop?.componentGroups ?? state.theme.componentGroups ?? {};
-      const overlay = device === 'desktop' ? {} : state.theme[device]?.componentGroups ?? {};
-      const groups = deepMergeValues(base, overlay, deepMergeSkipUndefinedFunc) as IComponentGroupsSettings;
-      return groups[group] ?? {};
+      const baseGroups = (state.theme.desktop?.componentGroups ?? state.theme.componentGroups ?? {}) as IComponentGroupsSettings;
+      const overlayGroups = (device === 'desktop' ? {} : state.theme[device]?.componentGroups ?? {}) as IComponentGroupsSettings;
+      return deepMergeValues(baseGroups[group] ?? {}, overlayGroups[group] ?? {}, deepMergeSkipUndefinedFunc);
     },
     [state.theme],
   );

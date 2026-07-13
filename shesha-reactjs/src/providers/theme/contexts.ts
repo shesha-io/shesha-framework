@@ -100,6 +100,11 @@ export interface IConfigurableTheme {
   desktop?: IThemeDeviceStyles;
   tablet?: IThemeDeviceStyles;
   mobile?: IThemeDeviceStyles;
+  /**
+   * `custom` is not themed on its own, but the dynamic-theme panels index `theme[device]` with the
+   * canvas `DeviceTypes` union (which includes `'custom'`), so the bucket must exist for those lookups
+   * to type-resolve.
+   */
   custom?: IThemeDeviceStyles;
 
   /**
