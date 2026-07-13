@@ -249,7 +249,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
             Dummy content/children/values are injected (see ./previewData) so every component
             shows how it looks by default instead of rendering empty. */}
         <Card>
-          {componentType && previewConfig && selectedNode && (
+          {componentType && previewConfig && (
             <div>
               <h4 style={{ marginBottom: 4 }}>{selectedNode.title}</h4>
               <span style={{ color: '#999', fontSize: '12px' }}>
