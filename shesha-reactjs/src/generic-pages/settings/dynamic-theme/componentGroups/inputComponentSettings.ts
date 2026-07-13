@@ -1,5 +1,5 @@
 import { FormLayout } from 'antd/lib/form/Form';
-import { fontTypes, fontWeightsOptions, textAlignOptions } from '@/designer-components/_settings/utils/font/utils';
+import { fontTypes, fontWeightsOptions, textAlignOptions } from '@/designer-components/_settings/utils';
 import { getBorderInputs, getCornerInputs } from '@/designer-components/_settings/utils/border/utils';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '@/designer-components/_settings/utils/background/utils';
 import { nanoid } from '@/utils/uuid';

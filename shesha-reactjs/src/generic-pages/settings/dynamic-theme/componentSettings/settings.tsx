@@ -30,14 +30,8 @@ export const ComponentDefaultsSettings: FC<IComponentDefaultsSettingsProps> = ({
       : values;
   };
 
-  // The form's data is read live from the (keyed) DefaultModelProvider's merged model, which is seeded
-  // asynchronously after mount — so on a component switch the Ant fields can briefly retain the previous
-  // component's values. Mirror the designer settings form (genericSettingsForm) by explicitly resetting
-  // and repopulating the fields from the newly-selected component's theme slice whenever it changes.
-  useEffect(() => {
-    form.resetFields();
-    form.setFieldsValue(initialModel);
-  }, [form, componentType, initialModel]);
+  // ConfigurableForm remounts on componentType changes via key={componentType} and uses mount-only initialValues,
+  // so manual form synchronization is not needed
 
   return (
     <Card

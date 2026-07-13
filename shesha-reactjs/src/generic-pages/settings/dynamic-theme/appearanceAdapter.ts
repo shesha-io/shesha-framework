@@ -122,7 +122,7 @@ const toRenderable = (found: IFoundProperty): IConfigurableFormComponent => {
   const rowMarkup = {
     id: nanoid(),
     type: 'settingsInputRow',
-    propertyName: `appearanceExtra_${(clone["propertyName"] as string | undefined) ?? nanoid()}`,
+    propertyName: `appearanceExtra_${getPropertyName(clone) ?? nanoid()}`,
     parentId: 'root',
     hidden: false,
     inputs: [clone],
