@@ -1,11 +1,9 @@
-using Shesha.Testing.Fixtures;
 using Xunit;
 
-namespace Shesha.Tests.Fixtures
+namespace Shesha.Testing.Fixtures
 {
     /// <summary>
-    /// xUnit collection definition for Testcontainers-based SQL Server fixture.
-    /// Must be in the same assembly as the tests that use it.
+    /// Shared Sql Server fixture (Testcontainers).
     /// </summary>
     [CollectionDefinition(Name)]
     public class SqlServerCollection : ICollectionFixture<SqlServerFixture>

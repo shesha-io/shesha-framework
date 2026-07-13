@@ -1,11 +1,9 @@
-using Shesha.Testing.Fixtures;
 using Xunit;
 
-namespace Shesha.Tests.Fixtures
+namespace Shesha.Testing.Fixtures
 {
     /// <summary>
-    /// xUnit collection definition for local SQL Server fixture (no Docker).
-    /// Must be in the same assembly as the tests that use it.
+    /// Shared local SQL Server fixture collection.
     /// </summary>
     [CollectionDefinition(Name)]
     public class LocalSqlServerCollection : ICollectionFixture<LocalSqlServerFixture>
