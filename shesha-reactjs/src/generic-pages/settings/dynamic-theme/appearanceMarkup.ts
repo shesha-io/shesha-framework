@@ -65,7 +65,7 @@ export const getAppearanceMarkup = (componentType: string | undefined): IAppeara
   if (!searchableTabs) return null;
 
   const appearanceTab = searchableTabs.tabs.find(
-    (tab) => tab.key === 'appearance' || tab.title?.toLowerCase() === 'appearance',
+    (tab) => tab.key === 'appearance' || tab.title.toLowerCase() === 'appearance',
   );
 
   const tabComponents: unknown = appearanceTab?.components;

@@ -1,6 +1,6 @@
 import { ConfigurableForm } from "../../../../components/configurableForm";
 import { FormMarkupWithSettings } from "@/providers";
-import React, { FC, useEffect } from "react";
+import React, { FC } from "react";
 import { useStyles } from "../styles/styles";
 import { Card, Form } from "antd";
 import { useDefaultModelActionsOrUndefined } from "@/designer-components/_settings/defaultModelProvider/defaultModelProvider";
