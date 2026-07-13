@@ -3,6 +3,7 @@ using Abp.Authorization;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Exceptions;
@@ -46,7 +47,7 @@ namespace Shesha.ConfigurationStudio
         {
             var moduleId = await ModuleManager.GetModuleIdAsync(request.Module);
 
-            var item = await ItemRepo.GetAll().Where(e => e.Module != null && e.Module.Id == moduleId && e.Name == request.Name && e.ItemType == request.ItemType).FirstOrDefaultAsync();
+            var item = await ItemRepo.FirstOrDefaultAsync(e => e.Module != null && e.Module.Id == moduleId && e.Name == request.Name && e.ItemType == request.ItemType);
             if (item == null)
                 throw new ConfigurationItemNotFoundException(request.ItemType, request.Module, request.Name, null);
 
@@ -229,7 +230,7 @@ namespace Shesha.ConfigurationStudio
 
         public async Task<GetItemRevisionsResponse> GetItemRevisionsAsync(GetItemRevisionsRequest request) 
         {
-            var revisions = await HistoryRepo.GetAll().Where(e => e.ConfigurationItemId == request.ItemId).OrderByDescending(e => e.CreationTime).ToListAsync();
+            var revisions = await (await HistoryRepo.GetAllAsync()).Where(e => e.ConfigurationItemId == request.ItemId).OrderByDescending(e => e.CreationTime).ToListAsync();
 
             var dtos = revisions.Select(e => new ConfigurationItemRevisionDto
             {
@@ -272,12 +273,17 @@ namespace Shesha.ConfigurationStudio
             item.Module?.EnsureEditable();
 
             var revision = await RevisionRepo.GetAsync(request.RevisionId);
-            if (revision.ConfigurationItem != item)
-                throw new AbpValidationException("Selected revision doesn't belong to the item");
+            if (revision.ConfigurationItem != item) 
+            {
+                var closestParent = item.Closest(e => e.ExposedFrom, e => e == revision.ConfigurationItem);
+                if (closestParent == null)
+                    throw new AbpValidationException("Selected revision doesn't belong to the item hierarchy");
+            }
+                
             
             var manager = CiHelper.GetManagerByDiscriminator(item.ItemType);
 
-            await manager.RestoreRevisionAsync(revision);
+            await manager.RestoreRevisionAsync(item, revision);
         }
 
         /// <summary>
@@ -298,6 +304,7 @@ namespace Shesha.ConfigurationStudio
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public Task<GetModulesResponse> GetModulesAsync() 
         {
             var modules = ModuleManager.GetModuleInfos();

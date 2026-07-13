@@ -204,6 +204,7 @@ namespace Shesha.Authorization.Users
         /// <param name="lastname"></param>
         /// <param name="mobileNumber"></param>
         /// <param name="emailAddress"></param>
+        /// <param name="requireChangePassword"></param>
         /// <param name="supportedPasswordResetMethods"></param>
         /// <returns>Returns the User object representing the newly created User Account. If parameters were incorrect will through 
         /// a AbpValidationException exception that can be allowed through to the calling web app.</returns>
@@ -215,7 +216,8 @@ namespace Shesha.Authorization.Users
             string? firstname, 
             string? lastname, 
             string? mobileNumber, 
-            string? emailAddress, 
+            string? emailAddress,
+            bool requireChangePassword,
             long? supportedPasswordResetMethods = null
         )
         {
@@ -255,6 +257,7 @@ namespace Shesha.Authorization.Users
                 //UserName ??= "", // just to prevent crash in the ABP layer, it should be validated before
                 Name = firstname, // todo: make a decision how to handle duplicated properties in the User and Person classes (option 1 - use Person as a source and sync onw way, option 2 - remove duplicates from User, but in some cases we needn't Person for a user)
                 Surname = lastname,
+                RequireChangePassword = requireChangePassword,
                 SupportedPasswordResetMethods = supportedPasswordResetMethods
             };
 

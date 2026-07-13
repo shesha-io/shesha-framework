@@ -1,11 +1,12 @@
-import React, { FC, useMemo } from 'react';
+import React, { FC } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
-import { ConfigurableForm } from '@/components';
-import { ITableViewProps } from '@/providers/dataTable/filters/models';
+import { ConfigurableForm } from '@/components/configurableForm';
 import { getFiltersSettingsForm } from './filterItemSettings';
 import { useFormViaFactory } from '@/form-factory/hooks';
+import { IStoredFilter } from '@/interfaces';
+import { OnFormValuesChangeHandler } from '@/components/configurableForm/models';
 
-export type BaseFilterProperties = Omit<ITableViewProps, "expression">;
+export type BaseFilterProperties = Omit<IStoredFilter, "expression">;
 
 export interface IFilterItemPropertiesProps {
   value?: BaseFilterProperties;
@@ -14,8 +15,8 @@ export interface IFilterItemPropertiesProps {
 }
 
 export const FilterItemProperties: FC<IFilterItemPropertiesProps> = ({ value, onChange, readOnly }) => {
-  const debouncedSave = useDebouncedCallback(
-    (values) => {
+  const debouncedSave = useDebouncedCallback<OnFormValuesChangeHandler<BaseFilterProperties>>(
+    (_, values) => {
       onChange({ ...value, ...values });
     },
     // delay in ms
@@ -24,20 +25,14 @@ export const FilterItemProperties: FC<IFilterItemPropertiesProps> = ({ value, on
 
   const formMarkup = useFormViaFactory(getFiltersSettingsForm);
 
-  const editor = useMemo(() => {
-    return (
-      <ConfigurableForm
-        labelCol={{ span: 24 }}
-        wrapperCol={{ span: 24 }}
-        mode={readOnly ? 'readonly' : 'edit'}
-        markup={formMarkup}
-        initialValues={value}
-        onValuesChange={debouncedSave}
-      />
-    );
-  }, []);
-
   return (
-    <>{editor}</>
+    <ConfigurableForm
+      labelCol={{ span: 24 }}
+      wrapperCol={{ span: 24 }}
+      mode={readOnly ? 'readonly' : 'edit'}
+      markup={formMarkup}
+      initialValues={value}
+      onValuesChange={debouncedSave}
+    />
   );
 };

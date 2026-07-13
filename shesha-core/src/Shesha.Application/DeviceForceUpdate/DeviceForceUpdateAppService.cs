@@ -1,6 +1,5 @@
 ﻿using Abp.Domain.Repositories;
 using Shesha.DeviceForceUpdate.Dto;
-using Shesha.Extensions;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,8 +16,7 @@ namespace Shesha.DeviceForceUpdate
 
         public async override Task<DeviceForceUpdateDto> CreateAsync(DeviceForceUpdateDto input)
         {
-            var storedForceUpdates = await Repository.GetAll().ToListAsync();
-            var activeForceUpdates = storedForceUpdates.Where(r => r.OSType == input.OSType);
+            var activeForceUpdates = await Repository.GetAllListAsync(r => r.OSType == input.OSType);
             foreach (var item in activeForceUpdates)
                await Repository.DeleteAsync(item);
 
@@ -29,7 +27,7 @@ namespace Shesha.DeviceForceUpdate
 
         public async Task<DeviceForceUpdateDto?> GetForceUpdateByOSTypeAsync(int osType)
         {
-            var items = await Repository.GetAll().Where(r => r.OSType == osType && !r.IsDeleted).ToListAsync();
+            var items = await Repository.GetAllListAsync(r => r.OSType == osType && !r.IsDeleted);
             var currentForceUpdate = items.FirstOrDefault();
             if (currentForceUpdate != null)
                 return ObjectMapper.Map<DeviceForceUpdateDto>(currentForceUpdate);

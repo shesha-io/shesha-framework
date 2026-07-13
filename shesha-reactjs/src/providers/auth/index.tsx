@@ -1,4 +1,4 @@
-import React, { FC, MutableRefObject, PropsWithChildren, useContext } from 'react';
+import React, { FC, RefObject, PropsWithChildren, useContext, useLayoutEffect } from 'react';
 import { URL_HOME_PAGE, URL_LOGIN_PAGE } from '@/shesha-constants';
 import { useShaRouting } from '@/providers/shaRouting';
 import { useAuthenticatorInstance } from './authenticator';
@@ -24,14 +24,14 @@ interface IAuthProviderProps {
   /**
    * URL that that the user should be redirected to if they're not authorized. Default is /login
    */
-  unauthorizedRedirectUrl?: string;
+  unauthorizedRedirectUrl?: string | undefined;
 
   /**
    * Home page url. Default is `/`
    */
-  homePageUrl?: string;
+  homePageUrl?: string | undefined;
 
-  authRef?: MutableRefObject<IAuthProviderRefProps>;
+  authRef?: RefObject<IAuthProviderRefProps | undefined> | undefined;
 }
 
 const AuthenticatorContext = React.createContext<IAuthenticator | undefined>(undefined);
@@ -61,15 +61,17 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
       app.setRequestHeaders(headers);
     },
     onTokenExpired: () => {
-      notification.info({ message: 'Your session has expired. Please log in again.' });
+      notification.info({ title: 'Your session has expired. Please log in again.' });
     },
   });
 
-  if (authRef)
-    authRef.current = {
-      anyOfPermissionsGranted: authenticator.anyOfPermissionsGranted,
-      getIsLoggedIn: () => authenticator.isLoggedIn,
-    };
+  useLayoutEffect(() => {
+    if (authRef)
+      authRef.current = {
+        anyOfPermissionsGranted: authenticator.anyOfPermissionsGranted,
+        getIsLoggedIn: () => authenticator.isLoggedIn,
+      };
+  }, [authRef, authenticator]);
 
   return (
     <AuthenticatorContext.Provider value={authenticator}>

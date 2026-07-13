@@ -4,15 +4,15 @@ import { IErrorInfo } from '@/interfaces/errorInfo';
 import { ButtonShape, ButtonType } from 'antd/es/button/buttonHelpers';
 
 export interface IActionButtonProps {
-  type?: ButtonType;
-  shape?: ButtonShape;
+  type?: ButtonType | undefined;
+  shape?: ButtonShape | undefined;
   title: string;
-  icon?: React.ReactNode;
+  icon?: React.ReactNode | undefined;
   executer: () => void;
-  confirmationText?: string;
+  confirmationText?: string | undefined;
   isVisible: boolean;
-  loading?: boolean;
-  error?: IErrorInfo;
+  loading?: boolean | undefined;
+  error?: IErrorInfo | undefined;
 }
 
 const ActionButton: FC<IActionButtonProps> = ({
@@ -38,7 +38,7 @@ const ActionButton: FC<IActionButtonProps> = ({
           executer();
         }}
       title={title}
-      loading={loading}
+      loading={loading ?? false}
       danger={Boolean(error)}
       className="sha-link sha-action-button"
     />

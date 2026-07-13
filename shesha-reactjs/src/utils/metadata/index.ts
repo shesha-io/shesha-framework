@@ -2,7 +2,7 @@ import { IMetadataBuilder, IObjectMetadataBuilder, MetadataBuilder } from './met
 import { StringBuilder } from './stringBuilder';
 import { TypesImporter } from './typesImporter';
 import { useMetadataBuilderFactory } from './hooks';
-import { IMetadata } from '@/publicJsApis/metadata';
+import { IMetadata } from '@/publicJsApis/apis/metadata';
 
 export {
   StringBuilder,

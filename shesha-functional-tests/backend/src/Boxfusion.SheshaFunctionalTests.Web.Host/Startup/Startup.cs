@@ -34,6 +34,7 @@ using Shesha.GraphQL.Swagger;
 using Shesha.Identity;
 using Shesha.Notifications;
 using Shesha.Notifications.SMS;
+using Shesha.RateLimiting;
 using Shesha.Scheduler.Extensions;
 using Shesha.Specifications;
 using Shesha.Startup;
@@ -58,7 +59,7 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 			_hostEnvironment = hostEnvironment;
 		}
 
-		public IServiceProvider ConfigureServices(IServiceCollection services)
+		public void ConfigureServices(IServiceCollection services)
 		{
 			services.UseDynamicWebApi();
 
@@ -68,6 +69,8 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 			});
             
             services.AddSheshaElmah(_appConfiguration);
+
+            services.AddSheshaRateLimiting(opts => _appConfiguration.GetSection("RateLimiting").Bind(opts));
 
             services.AddMvcCore(options =>
 			{
@@ -134,7 +137,7 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 
 			// Add ABP and initialize 
 			// Configure Abp and Dependency Injection
-			return services.AddAbp<SheshaWebHostModule>(
+			services.AddAbpWithoutCreatingServiceProvider<SheshaWebHostModule>(
 				options =>
 				{
 					// Configure Log4Net logging
@@ -168,9 +171,10 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 				.SetIsOriginAllowed(origin => true) // allow any origin
 				.AllowCredentials()); // allow credentials​
 			app.UseStaticFiles();
+			app.UseRouting();
+			app.UseRateLimiter();
 			app.UseAuthentication();
 			app.UseAbpRequestLocalization();
-			app.UseRouting();
 			app.UseAuthorization();
 
 			app.UseEndpoints(endpoints =>

@@ -1,17 +1,16 @@
 ﻿using Abp.Domain.Entities.Auditing;
 using Abp.Domain.Repositories;
 using FluentValidation;
-using Shesha.Domain;
 using Shesha.Domain.Attributes;
+using Shesha.Extensions;
 using Shesha.Scheduler.Domain.Enums;
 using Shesha.Scheduler.Utilities;
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.Threading.Tasks;
-using System.Threading;
-using System.Linq;
-using Shesha.Extensions;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Shesha.Scheduler.Domain
 {
@@ -65,7 +64,7 @@ namespace Shesha.Scheduler.Domain
             if (string.IsNullOrWhiteSpace(cronString))
                 return true;
 
-            var alreadyExist = await _repository.GetAll().Where(m => m.Job == trigger.Job && m.CronString == cronString && m.Id != trigger.Id).AnyAsync();
+            var alreadyExist = await (await _repository.GetAllAsync()).Where(m => m.Job == trigger.Job && m.CronString == cronString && m.Id != trigger.Id).AnyAsync();
             return !alreadyExist;
         }
     }

@@ -1,15 +1,17 @@
-import { useFormState } from '@/providers/form';
-import { useSubForm } from '@/providers/subForm';
+import { useFormStateOrUndefined } from '@/providers/form';
+import { useSubFormOrUndefined } from '@/providers/subForm';
+
+const EMPTY_OBJECT = {};
 
 /**
  * Hook that returns the form data based on the context
  * If the item is rendered within the SubForm, the value that gets returned is the value of the SubForm, else it will the main form's data
  */
-export const useFormData = (): any => {
-  const form = useFormState(false);
-  const subForm = useSubForm(false);
+export const useFormData = (): { data: object } => {
+  const form = useFormStateOrUndefined();
+  const subForm = useSubFormOrUndefined();
 
-  const data = subForm?.value ?? form?.formData;
+  const data = subForm?.value ?? form?.formData ?? EMPTY_OBJECT;
 
   return { data };
 };

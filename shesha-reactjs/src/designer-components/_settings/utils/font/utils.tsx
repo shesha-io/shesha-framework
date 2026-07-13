@@ -1,36 +1,39 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { IFontValue } from './interfaces';
+import { AlignCenterOutlined, AlignLeftOutlined, AlignRightOutlined } from '@ant-design/icons';
+import { SectionSeparator } from '@/components/sectionSeparator';
+import { isDefined } from '@/utils/nullables';
 
 export const getFontStyle = (input?: IFontValue): React.CSSProperties => {
   if (!input) return {};
 
   const style: React.CSSProperties = {};
 
-  if (input?.size) {
-    const size = input?.size;
+  if (isDefined(input.size)) {
+    const size = input.size;
     if (size) {
       style.fontSize = size + 'px';
     }
   }
 
-  if (input?.type) {
-    style.fontFamily = input?.type;
+  if (isDefined(input.type)) {
+    style.fontFamily = input.type;
   }
 
-  if (input?.weight) {
-    style.fontWeight = input?.weight?.split(' - ')?.[0] || 400;
+  if (isDefined(input.weight)) {
+    style.fontWeight = (input.weight.split(' - ')[0] ?? '400') || 400;
   }
 
-  if (input?.color) {
-    style.color = input?.color;
+  if (isDefined(input.color)) {
+    style.color = input.color;
   }
 
-  if (input?.align) {
-    style.textAlign = input?.align;
+  if (isDefined(input.align)) {
+    style.textAlign = input.align;
   }
 
-  if (input?.transform) {
-    style.transform = input?.transform;
+  if (isDefined(input.transform)) {
+    style.transform = input.transform;
   }
 
   return style;
@@ -69,17 +72,25 @@ export const fontTypes = [
   { value: 'PT Serif', label: 'PT serif' },
 ];
 
+const FontWeightItem: FC<{ value: string; lineThickness: number }> = ({ value, lineThickness }) => {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', minHeight: '24px', paddingTop: '8px' }}>
+      <span style={{ marginTop: '-8px', marginRight: '4px' }}>{value}</span>
+      <SectionSeparator lineColor="black" lineThickness={lineThickness} />
+    </div>
+  );
+};
 
 export const fontWeightsOptions = [
-  { value: '100', label: 'sectionSeparator' },
-  { value: '400', label: 'sectionSeparator' },
-  { value: '500', label: 'sectionSeparator' },
-  { value: '700', label: 'sectionSeparator' },
-  { value: '900', label: 'sectionSeparator' },
+  { value: '100', label: <FontWeightItem value="100" lineThickness={1} /> },
+  { value: '400', label: <FontWeightItem value="400" lineThickness={2} /> },
+  { value: '500', label: <FontWeightItem value="500" lineThickness={3} /> },
+  { value: '700', label: <FontWeightItem value="700" lineThickness={4} /> },
+  { value: '900', label: <FontWeightItem value="900" lineThickness={5} /> },
 ];
 
 export const textAlignOptions = [
-  { value: 'left', label: 'AlignLeftOutlined' },
-  { value: 'center', label: 'AlignCenterOutlined' },
-  { value: 'right', label: 'AlignRightOutlined' },
+  { value: 'left', label: <AlignLeftOutlined /> },
+  { value: 'center', label: <AlignCenterOutlined /> },
+  { value: 'right', label: <AlignRightOutlined /> },
 ];

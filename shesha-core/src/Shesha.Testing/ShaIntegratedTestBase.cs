@@ -70,14 +70,14 @@ namespace Shesha.Testing
         }
 
         /// <summary>
-        /// This method can be overrided to replace some services with fakes.
+        /// This method can be overridden to replace some services with fakes.
         /// </summary>
         protected virtual void PreInitialize()
         {
         }
 
         /// <summary>
-        /// This method can be overrided to replace some services with fakes.
+        /// This method can be overridden to replace some services with fakes.
         /// </summary>
         protected virtual void PostInitialize()
         {

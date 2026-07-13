@@ -1,7 +1,6 @@
 import { ColProps, FormInstance } from 'antd';
 import { FormLayout } from 'antd/lib/form/Form';
-import { InternalNamePath } from 'rc-field-form/lib/interface';
-import { FC, MutableRefObject, ReactNode } from 'react';
+import { FC, RefObject, ReactNode } from 'react';
 import { ConfigurableFormInstance } from '@/providers/form/contexts';
 import {
   FormMarkup,
@@ -10,9 +9,9 @@ import {
   IFormComponentContainer,
   IFormSettings,
 } from '@/providers/form/models';
-import { Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
+import { IHasVersion, Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 import { IModelMetadata, IPropertyMetadata } from './metadata';
-import { IAjaxResponseBase, IApplicationContext, IErrorInfo } from '..';
+import { IAjaxResponseBase, IApplicationContext, IDimensionsValue, IErrorInfo, IObjectMetadata, IStyleValue, UnwrapCodeEvaluators } from '..';
 import { ISheshaApplicationInstance } from '@/providers/sheshaApplication/application';
 import { AxiosResponse } from 'axios';
 import { FormBuilderFactory } from '@/form-factory/interfaces';
@@ -33,37 +32,45 @@ export const DEFAULT_FORM_LAYOUT_SETTINGS: IFormLayoutSettings = {
   wrapperCol: { span: 24 },
 };
 
-export interface ISettingsFormFactoryArgs<TModel = IConfigurableFormComponent> {
+export interface ISettingsFormFactoryArgs<TModel extends object = object> {
   readOnly: boolean;
   model: TModel;
+  defaultConfig?: TModel | undefined;
   onSave: (values: TModel) => void;
   onCancel: () => void;
-  onValuesChange?: (changedValues: any, values: TModel) => void;
-  toolboxComponent: IToolboxComponentBase;
-  formRef?: MutableRefObject<ISettingsFormInstance | null>;
-  propertyFilter?: (name: string) => boolean;
-  layoutSettings?: IFormLayoutSettings;
-  isInModal?: boolean;
+  onValuesChange?: ((changedValues: Partial<TModel>, values: TModel) => void) | undefined;
+  formRef?: RefObject<ISettingsFormInstance | null> | undefined;
+  propertyFilter?: ((name: string) => boolean) | undefined;
+  layoutSettings?: IFormLayoutSettings | undefined;
+  isInModal?: boolean | undefined;
+  availableConstants?: IObjectMetadata | undefined;
 }
 
-export type ISettingsFormFactory<TModel = IConfigurableFormComponent> = FC<ISettingsFormFactoryArgs<TModel>>;
+export type IComponentSettingsFormFactoryArgs<TModel extends IConfigurableFormComponent = IConfigurableFormComponent> = ISettingsFormFactoryArgs<TModel> & {
+  toolboxComponent?: IToolboxComponent<TModel> | undefined;
+};
+
+export type ISettingsFormFactory<TModel extends IConfigurableFormComponent = IConfigurableFormComponent> = FC<ISettingsFormFactoryArgs<TModel>>;
+
+export type IComponentSettingsFormFactory<TModel extends IConfigurableFormComponent = IConfigurableFormComponent> = FC<IComponentSettingsFormFactoryArgs<TModel>>;
 
 export type SettingsFormMarkupFactoryArgs = {
   fbf: FormBuilderFactory;
+  removeStyleRouter?: boolean;
 };
 export type SettingsFormMarkupFactory = (args: SettingsFormMarkupFactoryArgs) => FormMarkup;
 
-export interface ComponentFactoryArguments<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> {
-  model: TModel;
-  children?: JSX.Element;
-  calculatedModel?: TCalculatedModel;
+export interface ComponentFactoryArguments<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = never> {
+  model: UnwrapCodeEvaluators<TModel>;
+  children?: React.JSX.Element;
+  calculatedModel: TCalculatedModel;
   shaApplication?: ISheshaApplicationInstance;
 
   // for backward compatibility
   form: FormInstance;
 }
 
-export type FormFactory<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> = FC<ComponentFactoryArguments<TModel, TCalculatedModel>>;
+export type FormFactory<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = never> = FC<ComponentFactoryArguments<TModel, TCalculatedModel>>;
 
 export type PropertyInclusionPredicate = (name: string) => boolean;
 
@@ -79,10 +86,16 @@ export type ToolboxComponentAsTemplate = {
   build?: never;
 };
 
-export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> = {
-/**
- * Type of the component. Must be unique in the project.
- */
+export type IToolboxComponentBase = {
+  // ToDo: AS - remove after all components are migrated to inheritance
+  /**
+   * If true, indicates that the component properties can be inherited
+   */
+  allowInherit?: boolean;
+
+  /**
+   * Type of the component. Must be unique in the project.
+   */
   type: string;
   /**
    * If true, indicates that the component has data bindings and can be used as an input. Note: not all form components can be bound to the model (layout components etc.)
@@ -113,9 +126,60 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
    */
   isHidden?: boolean;
   /**
+   * Name of the child component containers. Note: may be changed in the future releases
+   */
+  customContainerNames?: string[] | undefined;
+  /**
+   * Markup of the settings form. Applied when the @settingsFormFactory is not specified, in this case you can render settings for in the designer itself
+   */
+  settingsFormMarkup?: FormMarkup | SettingsFormMarkupFactory;
+  /**
+   * Return true to indicate that the data type is supported by the component
+   */
+  dataTypeSupported?: (dataTypeInfo: { dataType: string; dataFormat: string | undefined }) => boolean;
+  /**
+   * Returns true if the property should be calculated for the actual model (calculated from JS code)
+   */
+  actualModelPropertyFilter?: (name: string, value: unknown) => boolean;
+
+  editorAdapter?: IEditorAdapter;
+
+  /**
+   * Controls dimension preservation in designer mode.
+   * - `true`: Preserve all original dimensions (width, height, min/max)
+   * - `false` or `undefined`: Fill 100% of wrapper (default behavior)
+   * - Array of dimension names: Preserve only specified dimensions (e.g., ['height'] preserves only height)
+   *
+   * Use this for components that need to preserve specific dimensions in designer mode,
+   * such as textArea which typically needs to preserve height while filling width.
+   *
+   * @example
+   * ```typescript
+   * preserveDimensionsInDesigner: true,        // Preserve all dimensions
+   * preserveDimensionsInDesigner: ['height'],  // Preserve only height
+   * preserveDimensionsInDesigner: ['width', 'height'], // Preserve width and height
+   * ```
+   */
+  preserveDimensionsInDesigner?: boolean | Array<'width' | 'height' | 'minWidth' | 'maxWidth' | 'minHeight' | 'maxHeight'>;
+  /**
+   * Optional function to customize how component dimensions are calculated in designer mode.
+   * This allows components to define their own sizing behavior instead of relying on generic logic.
+   *
+   * @param originalDims - The original dimensions from the component model
+   * @param deviceDims - The default device dimensions (usually 100% width/height)
+   * @returns The calculated dimensions for designer mode, or undefined to use default behavior
+   */
+  getDesignerDimensions?: (
+    originalDims: IDimensionsValue | undefined,
+    deviceDims: IDimensionsValue | undefined,
+  ) => IDimensionsValue | undefined;
+};
+
+export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = never> = IToolboxComponentBase & {
+  /**
    * Component factory. Renders the component according to the passed model (props)
    */
-  Factory?: FormFactory<TModel, TCalculatedModel>;
+  Factory: FormFactory<TModel, TCalculatedModel>;
   /**
    * A Hook for calculating component-specific values (executed before calculateModel)
    * @param model - component model
@@ -130,41 +194,39 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
    * @param allData - application context
    * @returns - calculated model
    */
-  calculateModel?: (model: TModel, allData: IApplicationContext, useCalculatedModel?: TCalculatedModel) => TCalculatedModel;
+  calculateModel?: ((model: TModel, allData: IApplicationContext, useCalculatedModel?: TCalculatedModel) => TCalculatedModel) | undefined;
   /**
-   * @deprecated - use `migrator` instead
    * Fills the component properties with some default values. Fired when the user drops a component to the form
    */
   initModel?: (model: TModel) => TModel;
+  /**
+   * Returns default component styles
+   */
+  getDefaultStyles?: (model?: TModel) => IStyleValue;
   /**
    * Link component to a model metadata
    */
   linkToModelMetadata?: (model: TModel, metadata: IPropertyMetadata) => TModel;
   /**
+   * Init model from metadata. Fired when the user drops a component to the form and bind component to the Entity property
+   * @param currentModel - current component model
+   * @param newModel - new component model
+   * @param metadata - property metadata
+   * @returns - component model
+   */
+  initModelFromMetadata?: (currentModel: TModel, newModel: TModel, metadata: IPropertyMetadata) => Promise<TModel>;
+  /**
    * Returns nested component containers. Is used in the complex components like tabs, panels etc.
    */
   getContainers?: ((model: TModel) => IFormComponentContainer[]) | undefined;
   /**
-   * Name of the child component containers. Note: may be changed in the future releases
-   */
-  customContainerNames?: string[] | undefined;
-  /**
    * Settings form factory. Renders the component settings form
    */
-  settingsFormFactory?: ISettingsFormFactory<TModel>;
-  /**
-   * Markup of the settings form. Applied when the @settingsFormFactory is not specified, in this case you can render settings for in the designer itself
-   */
-  settingsFormMarkup?: FormMarkup | SettingsFormMarkupFactory;
+  settingsFormFactory?: IComponentSettingsFormFactory<TModel>;
   /**
    * Settings validator
    */
-  validateSettings?: ((model: TModel) => Promise<any>) | undefined;
-
-  /**
-   * Return true to indicate that the data type is supported by the component
-   */
-  dataTypeSupported?: (dataTypeInfo: { dataType: string; dataFormat?: string }) => boolean;
+  validateSettings?: ((model: TModel) => Promise<unknown>) | undefined;
 
   /**
    * Settings migrations. Returns last version of settings
@@ -174,7 +236,7 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
   /**
    * Returns fields to fetch, used when it is necessary to get additional fields, and not just what is specified in the propertyName field
    */
-  getFieldsToFetch?: (propertyName: string, rawModel: TModel, metadata: IModelMetadata) => string[];
+  getFieldsToFetch?: ((propertyName: string, rawModel: TModel, metadata: IModelMetadata) => string[]) | undefined;
 
   /**
    * Validate model before rendering a component, used to add user-friendly messages about the need to correctly configure the component fields in the designer
@@ -182,52 +244,41 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
   validateModel?: (model: TModel, addModelError: (propertyName: string, error: string) => void) => void;
 
   /**
-   * Returns true if the property should be calculated for the actual model (calculated from JS code)
+   * Configuration is used to show a preview of the component in the some places (like theme component configurator)
    */
-  actualModelPropertyFilter?: (name: string, value: any) => boolean;
-
-  editorAdapter?: IEditorAdapter;
+  previewConfiguration?: TModel;
 } & ToolboxComponentAsTemplate;
 
-export type ComponentDefinition<TType extends string = string, TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel = any> =
+export type ComponentDefinition<TType extends string = string, TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = object> =
   Omit<IToolboxComponent<TModel, TCalculatedModel>, 'type'> & {
     type: TType;
   } & ToolboxComponentAsTemplate;
 
-export type IToolboxComponentBase = IToolboxComponent;
-
 export interface SettingsMigrationContext {
-  formSettings?: IFormSettings;
+  formSettings?: IFormSettings | undefined;
   flatStructure: IFlatComponentsStructure;
   componentId: string;
-  isNew?: boolean;
+  isNew?: boolean | undefined;
 }
 
 /**
  * Settings migrator
  */
-export type SettingsMigrator<TSettings> = (
+export type SettingsMigrator<TSettings extends IHasVersion = IHasVersion> = (
   migrator: Migrator<IConfigurableFormComponent, TSettings, SettingsMigrationContext>,
 ) => MigratorFluent<TSettings, TSettings, SettingsMigrationContext>;
 
 export interface IToolboxComponentGroup {
   name: string;
   visible?: boolean;
-  components: IToolboxComponentBase[];
+  components: IToolboxComponent[];
 }
 
 export interface IToolboxComponents {
-  [key: string]: IToolboxComponentBase;
+  [key: string]: IToolboxComponent;
 }
 
 export { type IConfigurableFormComponent as IConfigurableFormComponent, type IFormComponentContainer };
-
-export interface IFieldValidationErrors {
-  name: InternalNamePath;
-  errors: string[];
-}
-
-export { type ValidateErrorEntity } from 'rc-field-form/lib/interface';
 
 export interface IAsyncValidationError {
   field: string;
@@ -240,7 +291,7 @@ export { type ConfigurableFormInstance };
 
 export interface IComponentsContainerBaseProps {
   containerId: string;
-  readOnly?: boolean;
+  readOnly?: boolean | undefined;
 }
 
 export type YesNoInherit = 'yes' | 'no' | 'inherit';

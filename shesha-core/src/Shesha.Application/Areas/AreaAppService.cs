@@ -33,7 +33,7 @@ namespace Shesha.Areas
             if (parentAreaId.HasValue)
             {
                 // when parentAreaId is specified - use alternative approach
-                var areas = await _areaHierarchyItemRepository.GetAll()
+                var areas = await (await _areaHierarchyItemRepository.GetAllAsync())
                     .Where(p => (p.Name ?? "").ToLower().Contains(term) && (areaType == null || p.AreaType == areaType) && (parentAreaId == null || p.AncestorId == parentAreaId))
                     .Select(p => p.Area)
                     .OrderBy(p => p.Name)
@@ -50,7 +50,7 @@ namespace Shesha.Areas
             }
             else
             {
-                var areas = await Repository.GetAll()
+                var areas = await (await Repository.GetAllAsync())
                     .Where(p => (p.Name ?? "").ToLower().Contains(term) && (areaType == null || p.AreaType == areaType) && (parentAreaId == null || p.ParentArea != null && p.ParentArea.Id == parentAreaId))
                     .OrderBy(p => p.Name)
                     .Take(10)
@@ -71,7 +71,7 @@ namespace Shesha.Areas
             if (parentAreaId.HasValue)
             {
                 // when parentAreaId is specified - use alternative approach
-                var areas = await _areaHierarchyItemRepository.GetAll()
+                var areas = await (await _areaHierarchyItemRepository.GetAllAsync())
                     .Where(p => (areaType == null || p.AreaType == areaType) && (parentAreaId == null || p.AncestorId == parentAreaId))
                     .Select(p => p.Area)
                     .OrderBy(p => p.Name)
@@ -87,7 +87,7 @@ namespace Shesha.Areas
             }
             else
             {
-                var areas = await Repository.GetAll()
+                var areas = await (await Repository.GetAllAsync())
                     .Where(p => (areaType == null || p.AreaType == areaType) && (parentAreaId == null || p.ParentArea != null && p.ParentArea.Id == parentAreaId))
                     .OrderBy(p => p.Name)
                     .Select(p => new AutocompleteItemDto
@@ -120,7 +120,7 @@ namespace Shesha.Areas
         [HttpPost]
         public async Task<List<AreaTreeItemDto>> GetChildTreeItemsAsync(GetChildAreasInput input)
         {
-            var areas = await _areaTreeItemRepository.GetAll().Where(e => e.ParentId == input.Id).OrderBy(e => e.Name).ToListAsync();
+            var areas = await (await _areaTreeItemRepository.GetAllAsync()).Where(e => e.ParentId == input.Id).OrderBy(e => e.Name).ToListAsync();
             return areas.Select(a => ObjectMapper.Map<AreaTreeItemDto>(a)).ToList();
         }
 
@@ -155,7 +155,7 @@ namespace Shesha.Areas
         /// <returns></returns>
         private async Task DeleteChildAreasAsync(Area area)
         {
-            var childs = await Repository.GetAll().Where(a => a.ParentArea == area).ToListAsync();
+            var childs = await Repository.GetAllListAsync(a => a.ParentArea == area);
             foreach (var child in childs)
             {
                 await DeleteChildAreasAsync(child);

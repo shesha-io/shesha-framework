@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useState } from 'react';
+import React, { FC } from 'react';
 import { Button } from 'antd';
 import { SidebarContainer } from '@/components/';
 import { ToolbarItemProperties } from './itemProperties';
@@ -12,7 +12,6 @@ export const PropertiesEditorRenderer: FC<IPropertiesEditorProps> = ({
 }) => {
   const { items, addItem, selectedItemRef } = usePropertiesEditor();
   const { styles } = useStyles();
-  const [rightWidth, setRightWidth] = useState<number | undefined>(undefined);
 
   const onAddClick = (): void => {
     addItem().then((_item) => {
@@ -24,26 +23,16 @@ export const PropertiesEditorRenderer: FC<IPropertiesEditorProps> = ({
         const top = element.getBoundingClientRect().top;
         const isVisible = top + offset >= 0 && top - offset <= window.innerHeight;
         if (!isVisible)
-          element?.scrollIntoView({
+          element.scrollIntoView({
             behavior: 'smooth',
             block: 'start',
           });
       }
+    }).catch((error) => {
+      console.error('Failed to add item', error);
+      throw error;
     });
   };
-
-  const onDragEnd = (sizes: number[]): void => {
-    setRightWidth(sizes[1]);
-  };
-
-  const rightSidebar = useMemo(() => {
-    return {
-      open: true,
-      title: 'Properties',
-      content: <ToolbarItemProperties />,
-      width: rightWidth,
-    };
-  }, [rightWidth]);
 
   return (
     <div className={styles.shaToolbarConfigurator}>
@@ -56,11 +45,14 @@ export const PropertiesEditorRenderer: FC<IPropertiesEditorProps> = ({
       )}
 
       <SidebarContainer
-        onDragEnd={onDragEnd}
-        rightSidebarProps={rightSidebar}
+        rightSidebarProps={{
+          open: true,
+          title: 'Properties',
+          content: <ToolbarItemProperties />,
+        }}
       >
         <div>
-          <ItemsContainer items={items} index={[]} />
+          <ItemsContainer items={items} />
         </div>
       </SidebarContainer>
     </div>

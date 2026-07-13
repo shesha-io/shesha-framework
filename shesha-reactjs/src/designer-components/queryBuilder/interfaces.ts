@@ -1,11 +1,16 @@
 import { ComponentDefinition } from '@/interfaces';
-import { IConfigurableFormComponent } from '@/providers/form/models';
+import { IConfigurableFormComponent, UnwrapCodeEvaluators } from '@/providers/form/models';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
 export interface IQueryBuilderComponentProps extends IConfigurableFormComponent {
-  jsonExpanded?: boolean;
-  modelType?: string | IEntityTypeIdentifier;
-  fieldsUnavailableHint?: string;
+  jsonExpanded?: boolean | undefined;
+  modelType?: string | IEntityTypeIdentifier | undefined;
+  fieldsUnavailableHint?: string | undefined;
 }
+export type IQueryBuilderComponentPropsUnwrapped = UnwrapCodeEvaluators<IQueryBuilderComponentProps>;
 
-export type QueryBuilderComponentDefinition = ComponentDefinition<"queryBuilder", IQueryBuilderComponentProps>;
+export type QueryBuilderCalculatedProps = {
+  modelType: string | IEntityTypeIdentifier | undefined;
+};
+
+export type QueryBuilderComponentDefinition = ComponentDefinition<"queryBuilder", IQueryBuilderComponentProps, QueryBuilderCalculatedProps>;

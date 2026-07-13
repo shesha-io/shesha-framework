@@ -1,13 +1,6 @@
-import { ConfigurableFormItem } from '@/components';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import KanbanReactComponent from '@/components/kanban';
-import { IKanbanProps } from '@/components/kanban/model';
-import {
-  getStyle,
-  IToolboxComponent,
-  useDataTableStore,
-  useSheshaApplication,
-  validateConfigurableComponentSettings,
-} from '@/index';
+import { IKanbanButton, IKanbanProps } from '@/components/kanban/model';
 import { RefListItemGroupConfiguratorProvider } from '@/components/refListSelectorDisplay/provider';
 import { removeUndefinedProps } from '@/utils/object';
 import { FormOutlined } from '@ant-design/icons';
@@ -19,7 +12,12 @@ import { getShadowStyle } from '../_settings/utils/shadow/utils';
 import { getSettings } from './settingsForm';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultColumnStyles, defaultStyles } from './utils';
+import { IToolboxComponent } from '@/interfaces/formDesigner';
+import { useDataTableStoreOrUndefined } from '@/providers/dataTable/hooks';
+import { useSheshaApplication } from '@/providers/sheshaApplication';
+import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 
+const EMPTY_ITEMS: IKanbanButton[] = [];
 const KanbanComponent: IToolboxComponent<IKanbanProps> = {
   type: 'kanban',
   isInput: false,
@@ -27,13 +25,13 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
   icon: <FormOutlined />,
 
   Factory: ({ model }) => {
-    const store = useDataTableStore(false);
+    const store = useDataTableStoreOrUndefined();
     const data = model;
     const { httpHeaders, backendUrl } = useSheshaApplication();
-    const { background: columnBackground, border: columnBorder, shadow: columnShadow } = model.columnStyles;
+    const { background: columnBackground, border: columnBorder, shadow: columnShadow } = model.columnStyles ?? {};
     const { shadow, border, background } = model;
-    const headerStyle = getStyle(model?.headerStyles as string, data);
-    const columnStyle = getStyle(model?.columnStyle as string, data);
+    const headerStyle = getStyle(model.headerStyles as string, data);
+    const columnStyle = getStyle(model.columnStyle as string, data);
     const borderStyles = useMemo(() => getBorderStyle(border, headerStyle), [border, headerStyle]);
     const columnBorderStyles = useMemo(() => getBorderStyle(columnBorder, columnStyle), [columnBorder, columnStyle]);
     const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
@@ -49,7 +47,11 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
 
         setBackgroundStyles((prev) => (JSON.stringify(prev) !== JSON.stringify(style) ? style : prev));
       };
-      fetchStyles();
+      fetchStyles().catch((error) => {
+        console.error('Failed to fetch styles', error);
+      });
+      // TODO V1: review styles
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [background, backendUrl, httpHeaders]);
 
     useEffect(() => {
@@ -59,7 +61,11 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
 
         setColumnBackgroundStyle((prev) => (JSON.stringify(prev) !== JSON.stringify(style) ? style : prev));
       };
-      fetchStyles();
+      fetchStyles().catch((error) => {
+        console.error('Failed to fetch styles', error);
+      });
+      // TODO V1: review styles
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [columnBackground, backendUrl, httpHeaders]);
 
     const additionalColumnStyles: CSSProperties = removeUndefinedProps({
@@ -79,11 +85,10 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
     return (
       <div>
         <ConfigurableFormItem model={model}>
-          {(value) => {
+          {(_value) => {
             return store ? (
               <RefListItemGroupConfiguratorProvider
-                value={value}
-                items={model.items}
+                items={model.items ?? EMPTY_ITEMS}
                 referenceList={model.referenceList}
                 readOnly={model.readOnly}
               >
@@ -96,7 +101,7 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
             ) : (
               <Alert
                 className="sha-designer-warning"
-                message="Kanban must be used within a Data Table Context"
+                title="Kanban must be used within a Data Table Context"
                 type="warning"
               />
             );

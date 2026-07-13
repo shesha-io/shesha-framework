@@ -1,3 +1,1 @@
-export interface IAnyObject {
-  [name: string]: any;
-}
+export type IAnyObject = Record<PropertyKey, unknown>;

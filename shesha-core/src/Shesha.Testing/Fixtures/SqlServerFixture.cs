@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Testcontainers.MsSql;
 using Xunit;
 
@@ -21,9 +21,9 @@ namespace Shesha.Testing.Fixtures
         public SqlServerFixture()
         {
             _mssqlContainer = new MsSqlBuilder()
-                .WithImage("boxfusionregistry.azurecr.io/shesha-framework-mssql:1.0")
-                .WithPassword(Password)
-                .WithExposedPort(1433)
+                .WithImage("iilyichev/shesha-framework-mssql:0.43") // Specify the SQL Server image
+                .WithPassword(Password) // Set the SA password
+                .WithExposedPort(1433) // Expose the default SQL Server port
                 .Build();
         }
 

@@ -8,10 +8,7 @@ import { SettingsFormMarkupFactory } from '@/interfaces';
 export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
-  const validationTabId = nanoid();
-  const eventsTabId = nanoid();
   const appearanceTabId = nanoid();
-  const securityTabId = nanoid();
   const styleRouterId = nanoid();
   const backgroundStylePnlId = nanoid();
   const pnlMenuStylesId = nanoid();
@@ -65,25 +62,28 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
           },
           {
             key: '2',
-            title: 'Validation',
-            id: validationTabId,
-            components: [...fbf()
-              .toJson(),
-            ],
-          },
-          {
-            key: '3',
-            title: 'Events',
-            id: eventsTabId,
-            components: [...fbf()
-              .toJson(),
-            ],
-          },
-          {
-            key: '4',
             title: 'Appearance',
             id: appearanceTabId,
             components: [...fbf()
+              .addSettingsInputRow({
+                id: nanoid(),
+                parentId: appearanceTabId,
+                inputs: [
+                  {
+                    type: 'dropdown',
+                    id: nanoid(),
+                    propertyName: 'menuOverflow',
+                    label: 'Overflow',
+                    size: 'small',
+                    jsSetting: true,
+                    dropdownOptions: [
+                      { label: 'Dropdown', value: 'dropdown' },
+                      { label: 'Menu', value: 'menu' },
+                      { label: 'Scroll', value: 'scroll' },
+                    ],
+                  },
+                ],
+              })
               .addPropertyRouter({
                 id: styleRouterId,
                 propertyName: 'propertyRouter1',
@@ -96,7 +96,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   _mode: "code",
                   _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
                   _value: "",
-                } as any,
+                },
                 components: [
                   ...fbf()
                     .addCollapsiblePanel({
@@ -110,25 +110,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       content: {
                         id: pnlMenuStylesId,
                         components: [...fbf()
-                          .addSettingsInputRow({
-                            id: nanoid(),
-                            parentId: pnlMenuStylesId,
-                            inputs: [
-                              {
-                                type: 'dropdown',
-                                id: nanoid(),
-                                propertyName: 'overflow',
-                                label: 'Overflow',
-                                size: 'small',
-                                jsSetting: true,
-                                dropdownOptions: [
-                                  { label: 'Dropdown', value: 'dropdown' },
-                                  { label: 'Menu', value: 'menu' },
-                                  { label: 'Scroll', value: 'scroll' },
-                                ],
-                              },
-                            ],
-                          })
                           .addCollapsiblePanel({
                             id: nanoid(),
                             propertyName: 'pnlColors',
@@ -314,75 +295,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           })
                           .addCollapsiblePanel({
                             id: nanoid(),
-                            propertyName: 'pnlMenuItemShadowStyle',
-                            label: 'Shadow',
-                            labelAlign: 'right',
-                            ghost: true,
-                            parentId: pnlMenuStylesId,
-                            collapsible: 'header',
-                            content: {
-                              id: nanoid(),
-                              components: [...fbf()
-                                .addSettingsInputRow({
-                                  id: nanoid(),
-                                  parentId: pnlMenuStylesId,
-                                  inline: true,
-                                  inputs: [
-                                    {
-                                      type: 'numberField',
-                                      id: nanoid(),
-                                      label: 'Offset X',
-                                      hideLabel: true,
-                                      tooltip: 'Offset X',
-                                      width: 80,
-                                      icon: "offsetHorizontalIcon",
-                                      propertyName: 'menuItemShadow.offsetX',
-                                    },
-                                    {
-                                      type: 'numberField',
-                                      id: nanoid(),
-                                      label: 'Offset Y',
-                                      hideLabel: true,
-                                      tooltip: 'Offset Y',
-                                      width: 80,
-                                      icon: 'offsetVerticalIcon',
-                                      propertyName: 'menuItemShadow.offsetY',
-                                    },
-                                    {
-                                      type: 'numberField',
-                                      id: nanoid(),
-                                      label: 'Blur',
-                                      hideLabel: true,
-                                      tooltip: 'Blur Radius',
-                                      width: 80,
-                                      icon: 'blurIcon',
-                                      propertyName: 'menuItemShadow.blurRadius',
-                                    },
-                                    {
-                                      type: 'numberField',
-                                      id: nanoid(),
-                                      label: 'Spread',
-                                      hideLabel: true,
-                                      tooltip: 'Spread Radius',
-                                      width: 80,
-                                      icon: 'spreadIcon',
-                                      propertyName: 'menuItemShadow.spreadRadius',
-                                    },
-                                    {
-                                      type: 'colorPicker',
-                                      id: nanoid(),
-                                      label: 'Color',
-                                      hideLabel: true,
-                                      propertyName: 'menuItemShadow.color',
-                                    },
-                                  ],
-                                })
-                                .toJson(),
-                              ],
-                            },
-                          })
-                          .addCollapsiblePanel({
-                            id: nanoid(),
                             propertyName: 'pnlCustomStyle',
                             label: 'Custom Styles',
                             parentId: pnlMenuStylesId,
@@ -399,7 +311,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   label: 'Style',
                                   mode: 'dialog',
                                   description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                                 })
                                 .addSettingsInput({
                                   id: nanoid(),
@@ -408,7 +320,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   label: 'Style On Hover',
                                   mode: 'dialog',
                                   description: 'A script that returns the hover style of the element as an object. This should conform to CSSProperties',
-                                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                                 })
                                 .addSettingsInput({
                                   id: nanoid(),
@@ -417,7 +329,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   label: 'Style On Selected',
                                   mode: 'dialog',
                                   description: 'A script that returns the selected style of the element as an object. This should conform to CSSProperties',
-                                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                                 })
                                 .addSettingsInput({
                                   id: nanoid(),
@@ -426,7 +338,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   label: 'Style On Sub Menu',
                                   mode: 'dialog',
                                   description: 'A script that returns the sub menu style of the element as an object. This should conform to CSSProperties',
-                                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                                 })
                                 .toJson(),
                               ],
@@ -588,7 +500,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                       hideLabel: true,
                                       jsSetting: false,
                                     }],
-                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
+                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false },
                                   })
                                   .addSettingsInputRow({
                                     id: nanoid(),
@@ -600,7 +512,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                       label: "Colors",
                                       jsSetting: false,
                                     }],
-                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
+                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false },
                                     hideLabel: true,
                                   })
                                   .addSettingsInputRow({
@@ -613,7 +525,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                       jsSetting: false,
                                       label: "URL",
                                     }],
-                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
+                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false },
                                   })
                                   .addSettingsInputRow({
                                     id: nanoid(),
@@ -625,12 +537,12 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                       label: "Image",
                                       jsSetting: false,
                                     }],
-                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
+                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false },
                                   })
                                   .addSettingsInputRow({
                                     id: nanoid(),
                                     parentId: backgroundStylePnlId,
-                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
+                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false },
                                     inputs: [
                                       {
                                         type: 'textField',
@@ -645,7 +557,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     id: nanoid(),
                                     parentId: backgroundStylePnlId,
                                     inline: true,
-                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
                                     inputs: [
                                       {
                                         type: 'customDropdown',
@@ -655,7 +567,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                         propertyName: "background.size",
                                         customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
                                         dropdownOptions: sizeOptions,
-                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
                                       },
                                       {
                                         type: 'customDropdown',
@@ -679,7 +591,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                       propertyName: 'background.repeat',
                                       buttonGroupOptions: repeatOptions,
                                     }],
-                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                    hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
                                   })
                                   .toJson(),
                               ],
@@ -793,7 +705,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   label: 'Style',
                                   mode: 'dialog',
                                   description: 'A script that returns the style of the container element as an object. This should conform to CSSProperties',
-                                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                                 })
                                 .toJson(),
                               ],
@@ -806,14 +718,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     .toJson(),
                 ],
               }).toJson(),
-            ],
-          },
-          {
-            key: '5',
-            title: 'Security',
-            id: securityTabId,
-            components: [...fbf()
-              .toJson(),
             ],
           },
         ],

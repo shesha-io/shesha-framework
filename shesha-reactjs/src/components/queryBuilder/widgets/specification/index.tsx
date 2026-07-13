@@ -1,8 +1,8 @@
 import React from 'react';
-import { BaseWidget, BasicConfig, SelectFieldSettings } from '@react-awesome-query-builder/antd';
+import { BasicConfig, SelectFieldSettings, TextWidget } from '@react-awesome-query-builder/antd';
 import { SpecificationConditionEditor } from './specificationConditionEditor';
 
-type SpecificationWidgetType = BaseWidget & SelectFieldSettings;
+type SpecificationWidgetType = TextWidget & SelectFieldSettings;
 const SpecificationWidget: SpecificationWidgetType = {
   ...BasicConfig.widgets.select,
   type: 'specification',
@@ -11,7 +11,7 @@ const SpecificationWidget: SpecificationWidgetType = {
 
     return (
       <SpecificationConditionEditor
-        value={value}
+        value={value ?? ""}
         onChange={(value) => {
           setValue(value);
         }}

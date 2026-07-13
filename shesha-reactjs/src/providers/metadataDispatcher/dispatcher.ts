@@ -5,7 +5,7 @@ import { IEntityMetadataFetcher } from "./entities/models";
 import camelcase from 'camelcase';
 import { asPropertiesArray, IHasEntityType, isDataPropertyMetadata, isEntityReferenceArrayPropertyMetadata, isObjectReferencePropertyMetadata } from "@/interfaces/metadata";
 import { MetadataDtoAjaxResponse, MetadataGetQueryParams, PropertyMetadataDto } from "@/apis/metadata";
-import { HttpClientApi } from "@/publicJsApis/httpClient";
+import { HttpClientApi } from "@/publicJsApis/apis/httpClient";
 import qs from "qs";
 import { isAjaxErrorResponse } from "@/interfaces/ajaxResponse";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
@@ -117,7 +117,10 @@ export class MetadataDispatcher implements IMetadataDispatcher {
             prefix,
             containerType: containerType ?? '',
             itemsType: itemsType ? mapProperty(itemsType) : undefined,
+            entityModule: property.entityModule ?? undefined,
             entityType: property.entityType ?? '',
+            referenceListModule: property.referenceListModule ?? undefined,
+            referenceListName: property.referenceListName ?? undefined,
             properties: properties
               ? properties.map((child) => mapProperty(child, property.path))
               : undefined,
@@ -272,5 +275,9 @@ export class MetadataDispatcher implements IMetadataDispatcher {
 
   updateModel = (modelType: string, model: Promise<IModelMetadata>): void => {
     this.#models[modelType] = model;
+  };
+
+  clearModels = (): void => {
+    this.#models = {};
   };
 }

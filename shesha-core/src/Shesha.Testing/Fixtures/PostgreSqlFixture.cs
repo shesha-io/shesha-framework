@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Testcontainers.PostgreSql;
 using Xunit;
 
@@ -23,11 +23,11 @@ namespace Shesha.Testing.Fixtures
         public PostgreSqlFixture()
         {
             _postgresContainer = new PostgreSqlBuilder()
-                .WithImage("boxfusionregistry.azurecr.io/shesha-framework-postgresql:1.0")
-                .WithDatabase(DbName)
-                .WithUsername(Login)
-                .WithPassword(Password)
-                .WithExposedPort(5432)
+                .WithImage("iilyichev/shesha-framework-postgresql:0.43") // Use the latest PostgreSQL image
+                .WithDatabase(DbName) // Set the database name
+                .WithUsername(Login) // Set the username
+                .WithPassword(Password) // Set the password
+                .WithExposedPort(5432) // Expose the default PostgreSQL port
                 .Build();
         }
 

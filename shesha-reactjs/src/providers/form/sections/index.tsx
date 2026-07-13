@@ -1,12 +1,13 @@
 import React, { FC, PropsWithChildren, useContext } from 'react';
 import { IFormSections } from '../models';
 import { createNamedContext } from '@/utils/react';
+import { throwError } from '@/utils/errors';
 
 export interface ConfigurableFormSectionsProviderProps {
-  sections?: IFormSections;
+  sections?: IFormSections | undefined;
 }
 
-export const ConfigurableFormSectionsContext = createNamedContext<IFormSections>(undefined, "ConfigurableFormSectionsContext");
+export const ConfigurableFormSectionsContext = createNamedContext<IFormSections | undefined>(undefined, "ConfigurableFormSectionsContext");
 
 export const ConfigurableFormSectionsProvider: FC<PropsWithChildren<ConfigurableFormSectionsProviderProps>> = ({ sections, children }) => {
   return (
@@ -16,12 +17,7 @@ export const ConfigurableFormSectionsProvider: FC<PropsWithChildren<Configurable
   );
 };
 
-export const useConfigurableFormSections = (required: boolean = true): IFormSections => {
-  const context = useContext(ConfigurableFormSectionsContext);
 
-  if (required && context === undefined) {
-    throw new Error('useConfigurableFormSections must be used within a ConfigurableFormSectionsProvider');
-  }
+export const useConfigurableFormSectionsOrUndefined = (): IFormSections | undefined => useContext(ConfigurableFormSectionsContext);
 
-  return context;
-};
+export const useConfigurableFormSections = (): IFormSections => useConfigurableFormSectionsOrUndefined() ?? throwError("useConfigurableFormSections must be used within a ConfigurableFormSectionsProvider");

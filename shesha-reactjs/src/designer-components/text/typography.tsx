@@ -2,14 +2,14 @@ import React, { FC } from 'react';
 import { Alert } from 'antd';
 import { evaluateString } from '@/providers/form/utils';
 import { GenericText } from './genericText';
-import { ITextTypographyProps } from './models';
+import { ITextComponentProps } from './models';
 import { useForm, useFormData } from '@/providers';
 import {
   getContent,
 } from './utils';
 import { isMoment } from 'moment';
 
-const TypographyComponent: FC<ITextTypographyProps> = ({
+const TypographyComponent: FC<ITextComponentProps> = ({
   contentDisplay,
   dataType,
   dateFormat,
@@ -35,7 +35,7 @@ const TypographyComponent: FC<ITextTypographyProps> = ({
   const content = getContent(contentEvaluation, { dataType, dateFormat, numberFormat });
 
   if (!content && contentDisplay === 'content' && formMode === 'designer') {
-    return <Alert type="warning" message="Please make sure you enter the content to be displayed here!" />;
+    return <Alert type="warning" title="Please make sure you enter the content to be displayed here!" />;
   }
 
   return (

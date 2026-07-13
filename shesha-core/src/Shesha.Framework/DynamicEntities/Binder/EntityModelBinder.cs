@@ -700,7 +700,6 @@ namespace Shesha.DynamicEntities.Binder
                     var child = prop.GetValue(entity, null);
                     if (child != null)
                     {
-                        prop.SetValue(entity, null);
                         result |= await DeleteUnreferencedEntityAsync(child, entity);
                     }
                 }
@@ -714,7 +713,9 @@ namespace Shesha.DynamicEntities.Binder
             var typeShortAlias = entity.GetType().GetCustomAttribute<EntityAttribute>()?.TypeShortAlias;
             var entityType = entity.GetType().StripCastleProxyType();
             var entityTypeName = entityType.FullName;
-            var references = _entityPropertyRepository.GetAll().Where(x => x.EntityFullClassName == typeShortAlias || x.EntityFullClassName == entityTypeName);
+            var references = (await _entityPropertyRepository.GetAllAsync()).Where(x =>
+                x.DataType == DataTypes.EntityReference &&
+                (typeShortAlias != null && x.EntityFullClassName == typeShortAlias || x.EntityFullClassName == entityTypeName));
             if (!await references.AnyAsync())
                 return false;
 
@@ -729,29 +730,60 @@ namespace Shesha.DynamicEntities.Binder
             var any = false;
             foreach (var reference in references)
             {
-                var entityConfig = await _entityConfigRepository.GetAsync(reference.EntityConfig.Id);
+                var isList = reference.ParentProperty?.DataType == DataTypes.Array;
 
+                // ToDo: AS - think how to check nested properties of objects since it can lead to data inconsistent
+                if (reference.EntityConfig.IsDeleted || isList && reference.ParentProperty?.DataFormat != ArrayFormats.ManyToManyEntities)
+                    continue;
+
+                var entityConfig = await _entityConfigRepository.GetAsync(reference.EntityConfig.Id);
                 var refType = _typeFinder.Find(x => x.Namespace == entityConfig.Namespace
                     && (x.Name == entityConfig.ClassName || x.GetTypeShortAliasOrNull() == entityConfig.ClassName))
                     .FirstOrDefault();
                 // Do not raise error becase some EntityConfig can be irrelevant
-                if (refType == null || !refType.IsEntityType() || string.IsNullOrWhiteSpace(reference.Name)) 
+                if (refType == null || !refType.IsEntityType() || string.IsNullOrWhiteSpace(reference.Name))
                     continue;
 
-                var refParam = Expression.Parameter(refType);
-                var query = Expression.Lambda(
-                    Expression.Equal(
-                        Expression.Property(Expression.Property(refParam, reference.Name), "Id"),
-                        Expression.Constant(id is Guid ? (Guid)id : id is long ? (long)id : id.ToString())
-                        ),
-                    refParam);
+                LambdaExpression? lambda = null;
+
+                var refParam = Expression.Parameter(refType, "x");
+                var idConst = Expression.Constant(id is Guid ? (Guid)id : id is long ? (long)id : id.ToString());
+                if (isList)
+                {
+                    // (x => x.propName.Any(z => z.Id == id))
+                    var listParam = Expression.Parameter(entityType, "y");
+                    var listIdProperty = Expression.Property(listParam, "Id");
+                    var collectionProperty = Expression.Property(refParam, reference.Name);
+                    var asQueryableMethod = typeof(Queryable)
+                        .GetMethods(BindingFlags.Public | BindingFlags.Static)
+                        .First(m => m.Name == nameof(Queryable.AsQueryable) && m.IsGenericMethod)
+                        .MakeGenericMethod(entityType);
+                    var queryableCollection = Expression.Call(asQueryableMethod, collectionProperty);
+                    var anyExpression = Expression.Quote(Expression.Lambda(Expression.Equal(listIdProperty, idConst), listParam));
+                    var anyMethod = typeof(Queryable)
+                        .GetMethods(BindingFlags.Public | BindingFlags.Static)
+                        .First(m => m.Name == nameof(Queryable.Any) && m.GetParameters().Length == 2)
+                        .MakeGenericMethod(entityType);
+                    lambda = Expression.Lambda(
+                        Expression.Call(anyMethod, queryableCollection, anyExpression),
+                        refParam
+                    );
+                }
+                else
+                {
+                    // (x => x.propName.Id == id)
+                    lambda = Expression.Lambda(
+                        Expression.Equal(Expression.Property(Expression.Property(refParam, reference.Name), "Id"), idConst),
+                        refParam
+                    );
+                }
 
                 var idType = refType.GetProperty("Id")?.PropertyType;
                 if (idType == null) continue;
                 var repoType = typeof(IRepository<,>).MakeGenericType(refType, idType);
                 var repo = _iocManager.Resolve(repoType);
                 var getAllMethodName = nameof(IRepository<IEntity<Guid>, Guid>.GetAll);
-                var where = (repoType.GetRequiredMethod(getAllMethodName).Invoke(repo, null) as IQueryable).NotNull().Where(query);
+                var where = (repoType.GetRequiredMethod(getAllMethodName).Invoke(repo, null) as IQueryable).NotNull().Where(lambda);
 
                 if (refType.IsAssignableFrom(parentEntity.GetType()))
                 {

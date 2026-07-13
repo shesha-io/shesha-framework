@@ -1,18 +1,21 @@
 import { IPasswordSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
 import { Input } from 'antd';
-import React, { FC } from 'react';
+import React from 'react';
+import { FCUnwrapped } from '@/providers/form/models';
 
 const { Password } = Input;
 
-export const PasswordWrapper: FC<IPasswordSettingsInputProps> = (props) => {
-  const { value, onChange, readOnly, size, variant } = props;
+export const PasswordWrapper: FCUnwrapped<IPasswordSettingsInputProps> = (props) => {
+  const { value, onChange, readOnly = false, size, variant } = props;
   return (
     <Password
       value={value}
-      onChange={onChange}
+      onChange={(event) => {
+        onChange?.(event.target.value);
+      }}
       readOnly={readOnly}
       size={size}
-      variant={variant}
+      {...(variant ? { variant } : {})}
     />
   );
 };

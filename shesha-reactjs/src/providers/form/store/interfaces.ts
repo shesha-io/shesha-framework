@@ -8,73 +8,85 @@ import { ISetFormDataPayload } from "../contexts";
 import { IEntityEndpoints } from "@/providers/sheshaApplication/publicApi/entities/entityTypeAccessor";
 import { ExpressionCaller, IDataArguments, SubmitCaller } from "../submitters/interfaces";
 import { ShaFormSubscriptionType } from "./shaFormInstance";
+import { RecursivePartial } from "@/interfaces/entity";
 
 export type LoaderType = 'gql' | 'custom' | 'none';
 export type SubmitType = 'gql' | 'custom' | 'none';
 
-export interface InitByFormIdPayload {
-  formId: FormIdentifier;
-  formArguments?: any;
-  initialValues?: any;
+export interface InitFormDataPayload<Values extends object = object> {
+  formArguments?: object | undefined;
+  initialValues?: Partial<Values> | undefined;
+  lazyLoadData?: boolean | undefined;
 }
 
-export interface InitByRawMarkupPayload {
+export interface InitByFormIdPayload<Values extends object = object> extends InitFormDataPayload<Values> {
+  formId: FormIdentifier;
+}
+
+export interface InitByRawMarkupPayload<Values extends object = object> extends InitFormDataPayload<Values> {
   rawMarkup: FormMarkup;
-  cacheKey?: string;
-  formArguments?: any;
-  initialValues: any;
-  isSettingsForm?: boolean;
+  cacheKey?: string | undefined;
+  isSettingsForm?: boolean | undefined;
 }
 
 export interface InitByMarkupPayload {
   formSettings: IFormSettings;
   formFlatMarkup: IFlatComponentsStructure;
-  formArguments?: any;
+  formArguments?: object | undefined;
 }
 
-export interface LoadFormByIdPayload {
-  skipCache?: boolean;
-  initialValues?: any;
+export interface LoadFormByIdPayload<Values extends object = object> {
+  skipCache?: boolean | undefined;
+  initialValues?: Partial<Values> | undefined;
 }
 
 export type LoadingStatus = 'waiting' | 'loading' | 'ready' | 'failed';
 export interface ProcessingState {
   status: LoadingStatus;
-  hint?: string;
-  error?: IErrorInfo;
+  hint?: string | undefined;
+  error?: IErrorInfo | undefined;
 }
 
-export type SubmitHandler<Values = any> = (values: Values) => void;
-export type AfterSubmitHandler<Values = any> = (values: Values, response?: any, options?: object) => void;
+export type SubmitHandler<Values extends object = object> = (values: Values) => void;
+export type AfterSubmitHandler<Values extends object = object> = (values: Values, response?: unknown, options?: object) => void;
 
 export type SubmitDataPayload = {
   customSubmitCaller?: SubmitCaller;
 };
 
-export type OnValuesChangeHandler<Values extends object = object> = (changedValues: any, values: Values) => void;
+export type OnValuesChangeHandler<Values extends object = object> = (changedValues: Partial<Values>, values: Values) => void;
 export type OnMarkupLoadedHandler<Values extends object = object> = (shaForm: IShaFormInstance<Values>) => Promise<void>;
 
 export interface IDataSubmitContext {
-  getDelayedUpdates: () => IDelayedUpdateGroup[];
+  getDelayedUpdates: (() => IDelayedUpdateGroup[] | undefined) | undefined;
 }
 
 export type ForceUpdateTrigger = () => void;
 
 export interface IShaFormInstance<Values extends object = object> {
-  applyMarkupAsync(args: { formFlatMarkup: IFlatComponentsStructure; formSettings: any }): unknown;
+  applyMarkupAsync(args: { formFlatMarkup: IFlatComponentsStructure; formSettings: IFormSettings }): unknown;
   setDataSubmitContext: (context: IDataSubmitContext) => void;
-  setInitialValues: (values: Values) => void;
-  setSubmitHandler: (handler: SubmitHandler<Values>) => void;
-  setAfterSubmitHandler: (handler: AfterSubmitHandler<Values>) => void;
-  setOnValuesChange: (handler: OnValuesChangeHandler<Values>) => void;
-  setOnMarkupLoaded: (handler: OnMarkupLoadedHandler<Values>) => void;
+  setInitialValues: (values: Partial<Values>) => void;
+  setSubmitHandler: (handler: SubmitHandler<Values> | undefined) => void;
+  setAfterSubmitHandler: (handler: AfterSubmitHandler<Values> | undefined) => void;
+  setOnValuesChange: (handler: OnValuesChangeHandler<Values> | undefined) => void;
+  setOnMarkupLoaded: (handler: OnMarkupLoadedHandler<Values> | undefined) => void;
 
-  initByRawMarkup: (payload: InitByRawMarkupPayload) => Promise<void>;
-  initByMarkup: (payload: InitByMarkupPayload) => Promise<void>;
-  initByFormId: (payload: InitByFormIdPayload) => Promise<void>;
+  initFormByRawMarkup: (payload: InitByRawMarkupPayload<Values>) => Promise<void>;
+  initFormByMarkup: (payload: InitByMarkupPayload) => Promise<void>;
+  initFormByFormId: (payload: InitByFormIdPayload<Values>) => Promise<void>;
   reloadMarkup: () => Promise<void>;
 
-  loadData: (formArguments: any) => Promise<Values>;
+  /** Loads form data based on the current form configuration and arguments. */
+  initLoadData: () => Promise<void>;
+  /** Initializes the form with initial data values. */
+  initInitialData: () => Promise<void>;
+  /** Triggers configured form Before and After dataload events */
+  triggerEvents: () => Promise<void>;
+  triggerAfterDataLoad: () => Promise<void>;
+
+
+  loadData: (formArguments: object) => Promise<Values>;
   submitData: (payload?: SubmitDataPayload) => Promise<Values>;
   fetchData: () => Promise<Values>;
 
@@ -84,56 +96,56 @@ export interface IShaFormInstance<Values extends object = object> {
   readonly dataLoadingState: ProcessingState;
   readonly dataSubmitState: ProcessingState;
 
-  readonly form?: FormInfo;
-  readonly formId?: FormIdentifier;
-  readonly settings?: IFormSettings;
-  readonly flatStructure?: IFlatComponentsStructure;
-  readonly initialValues?: Values;
-  readonly parentFormValues?: any;
-  readonly formArguments?: any;
-  readonly formData?: any;
+  readonly form?: FormInfo | undefined;
+  readonly formId?: FormIdentifier | undefined;
+  readonly settings?: IFormSettings | undefined;
+  readonly flatStructure?: IFlatComponentsStructure | undefined;
+  readonly initialValues?: Partial<Values> | undefined;
+  readonly parentFormValues?: object | undefined;
+  readonly formArguments?: object | undefined;
+  readonly formData?: Values | undefined;
   readonly isDataModified: boolean;
   readonly formMode: FormMode;
   readonly antdForm: FormInstance;
   readonly defaultApiEndpoints: IEntityEndpoints;
-  readonly modelMetadata?: IModelMetadata;
-  readonly validationErrors?: IFormValidationErrors;
+  readonly modelMetadata?: IModelMetadata | undefined;
+  readonly validationErrors?: IFormValidationErrors | undefined;
 
   setFormMode: (formMode: FormMode) => void;
-  setFormData: (payload: ISetFormDataPayload) => void;
-  setParentFormValues: (values: any) => void;
-  setValidationErrors: (payload: IFormValidationErrors) => void;
+  setFormData: (payload: ISetFormDataPayload<Values>) => void;
+  setParentFormValues: (values: object | undefined) => void;
+  setValidationErrors: (payload: IFormValidationErrors | undefined) => void;
 
-  onFinish?: (values: Values) => void;
+  onFinish?: ((values: Values) => void) | undefined;
 
   setLogEnabled: (enabled: boolean) => void;
   getPublicFormApi: () => IFormApi<Values>;
 
   //#region antd methods
   submit: () => void;
-  setFieldsValue: (values: Partial<Values>) => void;
+  setFieldsValue: (values: RecursivePartial<Values>) => void;
   resetFields: () => void;
   getFieldsValue: () => Values;
   validateFields: () => Promise<Values>;
   //#endregion
 
-  updateData: () => void;
+  updateData?: (() => void) | undefined;
   subscribe(type: ShaFormSubscriptionType, callback: () => void): () => void;
 }
 
-export interface SubmitRelatedEvents<Values = any> {
-  onPrepareSubmitData?: ExpressionCaller<IDataArguments<Values>, Promise<Values>>;
-  onBeforeSubmit?: ExpressionCaller<IDataArguments<Values>, Promise<void>>;
-  onSubmitSuccess?: () => Promise<void>;
-  onSubmitFailed?: () => Promise<void>;
+export interface SubmitRelatedEvents<Values extends object = object> {
+  onPrepareSubmitData?: ExpressionCaller<IDataArguments<Values>, Promise<Values>> | undefined;
+  onBeforeSubmit?: ExpressionCaller<IDataArguments<Values>, Promise<void>> | undefined;
+  onSubmitSuccess?: (() => Promise<void>) | undefined;
+  onSubmitFailed?: (() => Promise<void>) | undefined;
 }
 
-export interface LiveFormEvents<Values = any> {
-  onBeforeDataLoad?: () => Promise<void>;
-  onAfterDataLoad?: () => Promise<void>;
-  onValuesUpdate?: ExpressionCaller<IDataArguments<Values>, Promise<void>>;
+export interface LiveFormEvents<Values extends object = object> {
+  onBeforeDataLoad?: (() => Promise<void>) | undefined;
+  onAfterDataLoad?: (() => Promise<void>) | undefined;
+  onValuesUpdate?: ExpressionCaller<IDataArguments<Values>, Promise<void>> | undefined;
 }
 
-export interface FormEvents<Values = any> extends LiveFormEvents<Values>, SubmitRelatedEvents<Values> {
+export interface FormEvents<Values extends object = object> extends LiveFormEvents<Values>, SubmitRelatedEvents<Values> {
 
 }

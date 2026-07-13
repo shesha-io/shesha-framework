@@ -1,34 +1,21 @@
-import { handleActions } from 'redux-actions';
-import { MainMenuActionEnums } from './actions';
-import { IConfigurableMainMenu, IMainMenuStateContext, MAIN_MENU_CONTEXT_INITIAL_STATE } from './contexts';
-import { ISidebarMenuItem } from '@/interfaces/sidebar';
+import { createReducer } from '@reduxjs/toolkit';
+import { setItemsAction, setLoadedMenuAction } from './actions';
+import { MAIN_MENU_CONTEXT_INITIAL_STATE } from './contexts';
 
-export const uiReducer = handleActions<IMainMenuStateContext, any>(
-  {
-    [MainMenuActionEnums.SetLoadedMenu]: (
-      state: IMainMenuStateContext,
-      action: ReduxActions.Action<IConfigurableMainMenu>,
-    ) => {
-      const { payload } = action;
-
+export const reducer = createReducer(MAIN_MENU_CONTEXT_INITIAL_STATE, (builder) => {
+  builder
+    .addCase(setLoadedMenuAction, (state, { payload }) => {
       return {
         ...state,
         loadedMenu: payload,
       };
-    },
-
-    [MainMenuActionEnums.SetItems]: (
-      state: IMainMenuStateContext,
-      action: ReduxActions.Action<ISidebarMenuItem[]>,
-    ) => {
-      const { payload } = action;
-
+    })
+    .addCase(setItemsAction, (state, { payload }) => {
       return {
         ...state,
-        items: payload,
+        items: payload.items,
+        originalItems: payload.originalItems,
       };
-    },
-  },
-
-  MAIN_MENU_CONTEXT_INITIAL_STATE,
-);
+    })
+  ;
+});

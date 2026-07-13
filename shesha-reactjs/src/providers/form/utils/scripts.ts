@@ -9,28 +9,30 @@ type FunctionWithArgs<TArgs, TResult> = (args: TArgs) => TResult;
 export function executeScriptSync<TResult, TArgs = unknown>(expression: string, context: TArgs): TResult | undefined {
   if (!expression) throw new Error('Expression must be defined');
 
-  try {
-    const functionBody = `
+  const functionBody = `
     with(context) {
       ${expression}
     }
   `;
+
+  try {
     const dynamicFunction = new Function('context', functionBody) as FunctionWithArgs<TArgs, TResult>;
 
     return dynamicFunction(context);
   } catch (error) {
-    console.error(`executeScriptSync error`, error);
+    // console.error(`executeScriptSync error: ${functionBody}:`, error);
+    console.error('executeScriptSync error:', error);
     return undefined;
   }
 };
 
-export type IExpressionExecuterFailedHandler<TResult> = (error: unknown) => TResult;
+export type IExpressionExecuterFailedHandler<TResult> = (error: unknown) => TResult | null;
 export function executeExpression<TResult>(
   expression: string,
   expressionArgs: IExpressionExecuterArguments,
-  defaultValue: TResult,
-  onFail: IExpressionExecuterFailedHandler<TResult>,
-): TResult {
+  defaultValue: TResult | null,
+  onFail?: IExpressionExecuterFailedHandler<TResult> | undefined,
+): TResult | null {
   if (expression) {
     try {
       let argsDefinition = '';
@@ -85,26 +87,12 @@ export const executeScript = async <TResult, TArgs extends object = object>(
     throw new Error('Expression must be defined');
 
   const functionBody = `
-    with(context) {
+    with(argsDefinition) {
       ${expression}
     }
   `;
-  const argsDefinition = 'context';
 
-  /*
-  let argsDefinition = '';
-  const argList: unknown[] = [];
-  for (const argumentName in expressionArgs) {
-    if (expressionArgs.hasOwnProperty(argumentName)) {
-      argsDefinition += (argsDefinition ? ', ' : '') + argumentName;
-      argList.push(expressionArgs[argumentName]);
-    }
-  }
-  */
-
-  const asyncFn = new AsyncFunction(argsDefinition, functionBody) as AsyncFunctionWithArgs<TArgs, TResult>;
-
+  const asyncFn = new AsyncFunction('argsDefinition', functionBody) as AsyncFunctionWithArgs<TArgs, TResult>;
   const awaiter = asyncFn.apply(null, [expressionArgs]) as Promise<TResult>;
-
   return await awaiter;
 };

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { IPropertyMetadata } from "@/interfaces/metadata";
 import { SheshaCommonContexts } from "@/providers/dataContextManager/models";
-import { useDataContextManagerActions } from "@/providers/dataContextManager";
+import { useDataContextManagerActions } from "@/providers/dataContextManager/hooks";
 
 export const useGlobalConstants = (): IPropertyMetadata[] => {
   const { getDataContext } = useDataContextManagerActions();

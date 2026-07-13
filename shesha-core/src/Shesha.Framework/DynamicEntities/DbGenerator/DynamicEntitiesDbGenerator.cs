@@ -6,7 +6,6 @@ using Shesha.Domain.EntityPropertyConfiguration;
 using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Enums;
 using Shesha.DynamicEntities.ErrorHandler;
-using Shesha.Extensions;
 using Shesha.Generators;
 using Shesha.Metadata;
 using Shesha.Reflection;
@@ -76,12 +75,10 @@ namespace Shesha.DynamicEntities.DbGenerator
                 // Get force to skip exist checks for new tables
                 var force = await UseSchemaAndTableAsync(entityConfig);
 
-                var props = await _entityPropertyRepository.GetAll()
-                    .Where(x =>
+                var props = await _entityPropertyRepository.GetAllListAsync(x =>
                         x.EntityConfig.Id == entityConfig.Id
                         && x.InitStatus.HasFlag(EntityInitFlags.DbActionRequired)
-                        && x.ParentProperty == null)
-                    .ToListAsync();
+                        && x.ParentProperty == null);
 
                 foreach (var property in props)
                 {
@@ -260,7 +257,7 @@ namespace Shesha.DynamicEntities.DbGenerator
 
         private async Task UpdateInheritedProperttiesAsync(EntityProperty property)
         {
-            var inheritedProps = await _entityPropertyRepository.GetAll().Where(x => x.InheritedFrom == property).ToListAsync();
+            var inheritedProps = await _entityPropertyRepository.GetAllListAsync(x => x.InheritedFrom == property);
 
             foreach (var inheritedProp in inheritedProps)
             {

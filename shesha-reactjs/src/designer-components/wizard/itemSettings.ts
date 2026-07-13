@@ -153,6 +153,17 @@ export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormCompo
               validate: {},
               jsSetting: true,
             })
+            .addSettingsInput({
+              inputType: 'switch',
+              id: nanoid(),
+              propertyName: 'hasCustomFooter',
+              label: 'Custom Footer',
+              labelAlign: 'right',
+              parentId: commonTabId,
+              hidden: false,
+              validate: {},
+              jsSetting: true,
+            })
             .addCollapsiblePanel({
               id: nanoid(),
               propertyName: 'nextButtonCollapsiblePanel',
@@ -160,6 +171,7 @@ export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormCompo
               labelAlign: 'right',
               parentId: commonTabId,
               ghost: true,
+              hidden: { _code: 'return getSettingValue(data?.hasCustomFooter) === true;', _mode: 'code', _value: false },
               collapsible: 'header',
               content: {
                 id: nextButtonContentId,
@@ -222,6 +234,7 @@ export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormCompo
               labelAlign: 'right',
               parentId: commonTabId,
               ghost: true,
+              hidden: { _code: 'return getSettingValue(data?.hasCustomFooter) === true;', _mode: 'code', _value: false },
               collapsible: 'header',
               content: {
                 id: backButtonContentId,
@@ -289,6 +302,7 @@ export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormCompo
               labelAlign: 'right',
               parentId: commonTabId,
               ghost: true,
+              hidden: { _code: 'return getSettingValue(data?.hasCustomFooter) === true;', _mode: 'code', _value: false },
               collapsible: 'header',
               content: {
                 id: doneButtonContentId,
@@ -358,6 +372,7 @@ export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormCompo
               labelAlign: 'right',
               parentId: commonTabId,
               ghost: true,
+              hidden: { _code: 'return getSettingValue(data?.hasCustomFooter) === true;', _mode: 'code', _value: false },
               collapsible: 'header',
               content: {
                 id: cancelButtonContentId,
@@ -549,7 +564,7 @@ export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormCompo
                 label: 'Border',
                 labelAlign: 'right',
                 ghost: true,
-                hidden: { _code: 'return  ["dashed","text", "link", "ghost"].includes(getSettingValue(data?.buttonType));', _mode: 'code', _value: false } as any,
+                hidden: { _code: 'return  ["dashed","text", "link", "ghost"].includes(getSettingValue(data?.buttonType));', _mode: 'code', _value: false },
                 parentId: appearanceTabId,
                 collapsible: 'header',
                 content: {
@@ -577,7 +592,7 @@ export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormCompo
                 ghost: true,
                 parentId: appearanceTabId,
                 collapsible: 'header',
-                hidden: { _code: 'return  ["text", "link", "ghost", "primary"].includes(getSettingValue(data?.buttonType));', _mode: 'code', _value: false } as any,
+                hidden: { _code: 'return  ["text", "link", "ghost", "primary"].includes(getSettingValue(data?.buttonType));', _mode: 'code', _value: false },
                 content: {
                   id: backgroundStylePnlId,
                   components: [
@@ -603,7 +618,7 @@ export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormCompo
                           hideLabel: true,
                           jsSetting: false,
                         }],
-                        hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
+                        hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "color";', _mode: 'code', _value: false },
                       })
                       .addSettingsInputRow({
                         id: nanoid(),
@@ -616,7 +631,7 @@ export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormCompo
                           jsSetting: false,
                         },
                         ],
-                        hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
+                        hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "gradient";', _mode: 'code', _value: false },
                         hideLabel: true,
                       })
                       .addSettingsInputRow({
@@ -629,7 +644,7 @@ export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormCompo
                           jsSetting: false,
                           label: "URL",
                         }],
-                        hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
+                        hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "url";', _mode: 'code', _value: false },
                       })
                       .addSettingsInputRow({
                         id: nanoid(),
@@ -641,12 +656,12 @@ export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormCompo
                           label: "Image",
                           jsSetting: false,
                         }],
-                        hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
+                        hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "image";', _mode: 'code', _value: false },
                       })
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: backgroundStylePnlId,
-                        hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
+                        hidden: { _code: 'return  getSettingValue(data?.background?.type) !== "storedFile";', _mode: 'code', _value: false },
                         inputs: [
                           {
                             type: 'textField',
@@ -661,7 +676,7 @@ export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormCompo
                         id: nanoid(),
                         parentId: backgroundStylePnlId,
                         inline: true,
-                        hidden: { _code: 'return  getSettingValue(data?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                        hidden: { _code: 'return  getSettingValue(data?.background?.type) === "color";', _mode: 'code', _value: false },
                         inputs: [
                           {
                             type: 'customDropdown',
@@ -696,7 +711,7 @@ export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormCompo
                           propertyName: 'background.repeat',
                           buttonGroupOptions: repeatOptions,
                         }],
-                        hidden: { _code: 'return  getSettingValue(data?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                        hidden: { _code: 'return  getSettingValue(data?.background?.type) === "color";', _mode: 'code', _value: false },
                       })
                       .toJson(),
                   ],
@@ -708,7 +723,7 @@ export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormCompo
                 label: 'Shadow',
                 labelAlign: 'right',
                 ghost: true,
-                hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data?.buttonType));', _mode: 'code', _value: false } as any,
+                hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data?.buttonType));', _mode: 'code', _value: false },
                 parentId: appearanceTabId,
                 collapsible: 'header',
                 content: {

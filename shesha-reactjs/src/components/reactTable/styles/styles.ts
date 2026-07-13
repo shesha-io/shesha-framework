@@ -1,8 +1,7 @@
 import { createStyles, SerializedStyles } from 'antd-style';
-import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
-import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
 import { getBorderStyle } from '@/designer-components/_settings/utils/border/utils';
 import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
+import { TableStyleProps } from '../interfaces';
 
 const tableClassNames = {
   shaTable: 'sha-table',
@@ -40,12 +39,17 @@ export const useStyles = (): typeof tableStyles => {
   return tableStyles;
 };
 
+type StylesArgs = TableStyleProps & {
+  freezeHeaders?: boolean | undefined;
+};
+
 export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }, {
   rowBackgroundColor,
   rowAlternateBackgroundColor,
   rowHoverBackgroundColor,
   rowSelectedBackgroundColor,
   border,
+  dimensions,
   backgroundColor,
   headerFontFamily,
   headerFontSize,
@@ -75,43 +79,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   freezeHeaders,
   actionIconSize,
   actionIconColor,
-}: {
-  rowBackgroundColor?: string;
-  rowAlternateBackgroundColor?: string;
-  rowHoverBackgroundColor?: string;
-  rowSelectedBackgroundColor?: string;
-  border?: IBorderValue;
-  backgroundColor?: string;
-  headerFontFamily?: string;
-  headerFontSize?: string;
-  headerFontWeight?: string;
-  headerBackgroundColor?: string;
-  headerTextColor?: string;
-  headerTextAlign?: string;
-  bodyTextAlign?: string;
-  rowHeight?: string;
-  rowPadding?: string;
-  rowBorder?: string;
-  rowBorderStyle?: IBorderValue;
-  boxShadow?: string;
-  sortableIndicatorColor?: string;
-  striped?: boolean;
-  cellBorderColor?: string;
-  cellBorders?: boolean;
-  cellPadding?: string;
-  headerBorder?: IBorderValue;
-  cellBorder?: IBorderValue;
-  headerShadow?: IShadowValue;
-  rowShadow?: IShadowValue;
-  rowDividers?: boolean;
-  bodyFontFamily?: string;
-  bodyFontSize?: string;
-  bodyFontWeight?: number & {} | string;
-  bodyFontColor?: string;
-  freezeHeaders?: boolean;
-  actionIconSize?: string | number;
-  actionIconColor?: string;
-}) => {
+}: StylesArgs) => {
   const {
     shaTable,
     thead,
@@ -196,7 +164,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
        */
       display: inline-block;
       width: calc(100% - 16px);
-      overflow-x: auto;
       /* These styles are required for a horizontaly scrollable table overflow */
       /* IMPORTANT: freezeHeaders requires overflow: auto for position: sticky to work */
       overflow-y: ${freezeHeaders ? 'auto' : (boxShadow ? 'visible' : 'auto')};
@@ -216,6 +183,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         position: relative;
       ` : ''}
 
+
+      ${dimensions?.height ? `height: ${dimensions.height};` : ''}
+      ${dimensions?.minHeight ? `min-height: ${dimensions.minHeight};` : ''}
+      ${dimensions?.maxHeight ? `max-height: ${dimensions.maxHeight};` : ''}
+
       .${shaSpanCenterVertically} {
         display: flex;
         align-items: center;
@@ -230,6 +202,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         border-spacing: 0;
         display: inline-block;
         min-width: 100%;
+        box-sizing: border-box;
+        
         /* Background applied to table ensures it covers all rows when scrolling with freezeHeaders */
         ${backgroundColor ? `background: ${backgroundColor};` : 'background: white;'}
 
@@ -316,7 +290,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             ${headerFontWeight ? `font-weight: ${headerFontWeight} !important;` : ''}
             ${headerTextColor ? `color: ${headerTextColor};` : 'color: #000000ff !important;'}
             ${Object.entries(headerBorderStyles).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
-            ${Object.entries(headerShadowStyles || {}).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
+            ${Object.entries(headerShadowStyles).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
 
             /* Apply text alignment to header cells */
             .${th} {
@@ -352,7 +326,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               return rowBorder ? `border: ${rowBorder};` : '';
             })()}
             ${rowBackgroundColor ? `background: ${rowBackgroundColor} !important;` : 'background: transparent !important;'}
-            ${Object.entries(rowShadowStyles || {}).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
+            ${Object.entries(rowShadowStyles).map(([key, value]) => `${key.replace(/([A-Z])/g, '-$1').toLowerCase()}: ${value};`).join(' ')}
             ${rowDividers ? `border-bottom: 1px solid ${token.colorBorderSecondary};` : 'border-bottom: none;'}
 
             /* Apply text alignment and font styles to body cells */
@@ -837,6 +811,13 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         /* Table body cell-specific padding from rowPadding prop */
         .${td} {
           ${effectivePadding ? `padding: ${effectivePadding};` : ''}
+        }
+
+        /* Top-align siblings of a tall form cell so CRUD/data cells don't drift to the middle (issue #4054) */
+        .${tr}:has(.sha-form-cell) {
+          .${th}, .${td} {
+            align-items: flex-start !important;
+          }
         }
       }
     `,

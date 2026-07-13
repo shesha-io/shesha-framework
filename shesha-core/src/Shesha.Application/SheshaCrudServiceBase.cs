@@ -14,6 +14,7 @@ using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Exceptions;
 using Shesha.Extensions;
+using Shesha.GraphQL.Helpers;
 using Shesha.GraphQL.Middleware;
 using Shesha.GraphQL.Mvc;
 using Shesha.GraphQL.Provider;
@@ -258,7 +259,7 @@ namespace Shesha
                     { "filter", input.Filter },
                     { "specifications", input.Specifications },
                     { "quickSearch", input.QuickSearch },
-                    { "quickSearchProperties", ExtractProperties(properties) },
+                    { "quickSearchProperties", ExtractPropertiesInDotNotation(properties) },
                     { "sorting", input.Sorting },
                     { "skipCount", input.SkipCount },
                     { "maxResultCount", input.MaxResultCount },
@@ -284,10 +285,11 @@ namespace Shesha
             return new GraphQLDataResult<PagedResultDto<TEntity>>(result);
         }
 
-        private List<string> ExtractProperties(string properties)
+        private List<string> ExtractPropertiesInDotNotation(string properties)
         {
-            var regex = new Regex(@"\s");
-            return regex.Split(properties).ToList();
+            return string.IsNullOrWhiteSpace(properties)
+                ? new List<string>()
+                : GraphQLHelper.GraphQLSelectionSetToDotNotation(properties);
         }
 
         private async Task<string> CleanupPropertiesAsync(string properties)

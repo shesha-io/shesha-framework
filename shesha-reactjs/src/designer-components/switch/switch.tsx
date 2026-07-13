@@ -1,13 +1,12 @@
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IInputStyles } from '@/providers';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { SwitcherOutlined } from '@ant-design/icons';
 import { Switch } from 'antd';
-import { SwitchChangeEventHandler, SwitchSize } from 'antd/lib/switch';
-import React, { useMemo } from 'react';
+import { SwitchSize } from 'antd/lib/switch';
+import React from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { ISwitchComponentProps, SwitchComponentDefinition } from './interfaces';
 import { getSettings } from './settingsForm';
@@ -19,32 +18,25 @@ const SwitchComponent: SwitchComponentDefinition = {
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
-  calculateModel: (model, allData) => ({ eventHandlers: getAllEventHandlers(model, allData) }),
-  Factory: ({ model, calculatedModel }) => {
-    const finalStyle = useMemo(() => !model.enableStyleOnReadonly && model.readOnly ? {
-      ...model.allStyles.fontStyles,
-      ...model.allStyles.dimensionsStyles,
-    } : model.allStyles.fullStyle, [model.enableStyleOnReadonly, model.readOnly, model.allStyles]);
-
-
+  preserveDimensionsInDesigner: true,
+  Factory: ({ model }) => {
     return (
-      <ConfigurableFormItem model={model} valuePropName="checked">
-        {(value, onChange) => {
-          const customEvents = calculatedModel.eventHandlers;
-          const onChangeInternal: SwitchChangeEventHandler = (checked: boolean, event) => {
-            customEvents.onChange({ value: checked }, event);
-            if (typeof onChange === 'function') onChange(checked);
-          };
-
-
+      <ConfigurableFormItem<boolean> model={model} valuePropName="checked">
+        {(value, onChange, _, ctx) => {
           return (
             <Switch
               className="sha-switch"
-              disabled={model.readOnly}
-              style={finalStyle}
+              disabled={model.readOnly ?? false}
+              {...(model.allStyles?.jsStyle ? { style: model.allStyles.jsStyle } : {})}
               size={model.size as SwitchSize}
-              checked={value}
-              onChange={onChangeInternal}
+              checked={value ?? false}
+
+              // TODO EVENTS
+              onChange={(checked, event) => {
+                ctx?.handleEvent(event, { value: checked }, model.onChangeCustom);
+                onChange(checked);
+              }}
+              onClick={(checked, event) => ctx?.handleEvent(event, { value: checked }, model.onClickCustom)}
             />
           );
         }}

@@ -63,7 +63,7 @@ export const FormManager: FC<PropsWithChildren> = ({ children }) => {
   const getFormByIdLoader = (payload: GetFormByIdPayload): FormLoadingItem => {
     const cacheKey = getFormCacheKey(payload.formId);
 
-    if (!payload.skipCache) {
+    if (!payload.skipCache && cacheKey) {
       const cachedItem = cacheById.current[cacheKey];
       if (cachedItem)
         return cachedItem;
@@ -71,14 +71,16 @@ export const FormManager: FC<PropsWithChildren> = ({ children }) => {
 
     const item = makeFormByIdLoader(payload);
 
-    cacheById.current[cacheKey] = item;
+    if (cacheKey)
+      cacheById.current[cacheKey] = item;
 
     return item;
   };
 
   const clearCache = (formId: FormIdentifier): void => {
     const cacheKey = getFormCacheKey(formId);
-    delete cacheById.current[cacheKey];
+    if (cacheKey)
+      delete cacheById.current[cacheKey];
   };
 
   const getFormById = (payload: GetFormByIdPayload): Promise<UpToDateForm> => {
@@ -99,6 +101,9 @@ export const FormManager: FC<PropsWithChildren> = ({ children }) => {
       access: null,
       permissions: null,
       readOnly: true,
+      label: null,
+      description: undefined,
+      modelType: null,
     };
     const upToDateForm = migrateFormSettings(dto, designerComponents);
     const flatStructure = convertFormMarkupToFlatStructure(upToDateForm.markup ?? [], upToDateForm.settings, designerComponents);
@@ -135,7 +140,7 @@ export const FormManager: FC<PropsWithChildren> = ({ children }) => {
       return makeFormByMarkupLoader(payload);
     }
 
-    const cachedItem = cacheByMarkup.current[payload.key];
+    const cachedItem = cacheByMarkup.current[cacheKey];
     if (cachedItem)
       return cachedItem;
 

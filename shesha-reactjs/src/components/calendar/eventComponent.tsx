@@ -1,7 +1,7 @@
 
 import React, { FC } from 'react';
 import { useActualContextExecution } from '@/hooks';
-import ShaIcon from '../shaIcon';
+import { ShaIcon } from '../shaIcon';
 import { IEventComponentProps } from './interfaces';
 
 // Custom Event Component with Icon

@@ -526,17 +526,10 @@
       "displayName": "DEFAULT_FORM_SETTINGS",
       "props": {}
     },
-    "access": null,
-    "permissions": null,
     "version": 6,
     "dataLoaderType": "none",
     "dataSubmitterType": "none",
     "onBeforeDataLoad": "    form.setFieldsValue({...form.formArguments});",
-    "onAfterDataLoad": null,
-    "onPrepareSubmitData": null,
-    "onBeforeSubmit": null,
-    "onSubmitSuccess": null,
-    "onSubmitFailed": null,
     "dataSubmittersSettings": {
       "gql": {
         "endpointType": "default",

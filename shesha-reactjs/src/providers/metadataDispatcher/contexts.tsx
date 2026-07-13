@@ -38,6 +38,7 @@ export interface IMetadataDispatcher {
   getContainerMetadata: (payload: IGetNestedPropertiesPayload) => Promise<IModelMetadata | null>;
   registerModel: (modeltype: string, model: Promise<IModelMetadata>) => void;
   updateModel: (modeltype: string, model: Promise<IModelMetadata>) => void;
+  clearModels: () => void;
 }
 
 export type NestedPropertyMetadatAccessor = (propertyPath: string) => Promise<IPropertyMetadata | null>;

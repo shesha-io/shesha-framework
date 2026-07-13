@@ -69,7 +69,7 @@ namespace Shesha.ShaRoleAppointedPersons
                 validationResults.Add(new ValidationResult("Person is mandatory"));
 
             if (role != null && person != null &&
-                await Repository.GetAll().AnyAsync(a => a.Role == role && a.Person == person && a.Id != entity.Id))
+                await Repository.AnyAsync(a => a.Role == role && a.Person == person && a.Id != entity.Id))
                 validationResults.Add(new ValidationResult("Selected person already in the list"));
 
             validationResults.ThrowValidationExceptionIfAny(L);

@@ -6,37 +6,37 @@ import { IFieldComponentProps } from '@/providers/datatableColumnsConfigurator/m
 import { InlineEditMode } from '@/components/reactTable/interfaces';
 
 export interface IHasColumnConfig<TConfig extends ITableColumn> {
-  columnConfig?: TConfig;
+  columnConfig: TConfig;
 }
 export interface IHasPropertyMetadata {
-  propertyMeta?: IPropertyMetadata;
+  propertyMeta?: IPropertyMetadata | undefined;
 }
 export interface IConfigurableCellProps<TConfig extends ITableColumn>
   extends IHasPropertyMetadata,
   IHasColumnConfig<TConfig> { }
 
-export interface ICommonCellProps<TConfig extends ITableColumn, D extends object = object, V = any>
+export interface ICommonCellProps<TConfig extends ITableColumn, D extends object = object, V = unknown>
   extends CellProps<D, V>,
   IConfigurableCellProps<TConfig> { }
 
-export type IDataCellProps<D extends object = object, V = any> = ICommonCellProps<ITableDataColumn, D, V>;
+export type IDataCellProps<D extends object = object, V = unknown> = ICommonCellProps<ITableDataColumn, D, V>;
 
-export type IRendererCellProps<D extends object = object, V = any> = ICommonCellProps<ITableDataColumn, D, V>;
+export type IRendererCellProps<D extends object = object, V = unknown> = ICommonCellProps<ITableDataColumn, D, V>;
 
-export interface IFormCellProps<D extends object = object, V = any> extends ICommonCellProps<ITableFormColumn, D, V> {
+export interface IFormCellProps<D extends object = object, V = unknown> extends ICommonCellProps<ITableFormColumn, D, V> {
   /** FormId GUID */
-  parentFormId?: string;
+  parentFormId?: string | undefined;
   /** `Module`/`FormName` */
-  parentFormName?: string;
+  parentFormName?: string | undefined;
 }
 
 export interface IComponentWrapperProps {
   customComponent: IFieldComponentProps;
   columnConfig: ITableDataColumn;
-  propertyMeta?: IPropertyMetadata;
-  defaultRow?: { [key in string]?: any };
-  defaultValue?: any;
-  readOnly?: boolean;
+  propertyMeta?: IPropertyMetadata | undefined;
+  defaultRow?: { [key in string]?: unknown };
+  defaultValue?: unknown | undefined;
+  readOnly?: boolean | undefined;
 }
 
 export interface ITableCrudOptions {

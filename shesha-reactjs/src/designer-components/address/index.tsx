@@ -2,16 +2,16 @@ import { HomeOutlined } from '@ant-design/icons';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import AutoCompletePlacesControl from './control';
 import { IAddressCompomentProps } from './models';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './formSettings';
-import { getEventHandlers, useAvailableConstantsData } from '@/index';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
+import { isIAddressAndCoords } from '@/components/googlePlacesAutocomplete';
 
 const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
   type: 'address',
@@ -19,21 +19,31 @@ const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
   isInput: true,
   isOutput: true,
   icon: <HomeOutlined />,
+  preserveDimensionsInDesigner: true,
   Factory: ({ model }) => {
-    const allData = useAvailableConstantsData();
-    const customEvents = getEventHandlers(model, allData);
-
-    const finalStyle = !model.enableStyleOnReadonly && model.readOnly ? {
-      ...model.allStyles.fontStyles,
-      ...model.allStyles.dimensionsStyles,
-    } : model.allStyles.fullStyle;
+    const finalStyle = model.enableStyleOnReadonly !== true && model.readOnly === true ? {
+      ...model.allStyles?.fontStyles,
+      ...model.allStyles?.dimensionsStyles,
+    } : model.allStyles?.fullStyle;
 
     return (
-      <ConfigurableFormItem model={model}>
-        {(value, onChange) => {
-          return model.readOnly
+      <ConfigurableFormItem<string> model={model}>
+        {(value, onChange, _, ctx) => {
+          return model.readOnly === true
             ? <ReadOnlyDisplayFormItem value={value} style={finalStyle} />
-            : <AutoCompletePlacesControl {...model} value={value} onChange={onChange} onFocusCustom={customEvents.onFocus} />;
+            : (
+              <AutoCompletePlacesControl
+                {...model}
+                value={value ?? ""}
+                onChange={(newValue) => {
+                  ctx?.handleEvent(undefined, { value: newValue }, model.onChangeCustom);
+                  onChange(newValue);
+                }}
+                onFocus={(event) => ctx?.handleEvent(event, { value }, model.onFocusCustom)}
+                onSelect={(event) => ctx?.handleEvent(undefined, { value: isIAddressAndCoords(event) ? event.address : undefined, event }, model.onSelectCustom)}
+                style={model.allStyles?.fullStyle}
+              />
+            );
         }}
       </ConfigurableFormItem>
     );

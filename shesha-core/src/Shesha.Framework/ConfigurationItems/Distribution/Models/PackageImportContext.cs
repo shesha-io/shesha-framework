@@ -1,5 +1,6 @@
 ﻿using Castle.Core.Logging;
 using Shesha.Domain;
+using Shesha.Domain.Enums;
 using System;
 using System.Threading;
 
@@ -41,8 +42,8 @@ namespace Shesha.ConfigurationItems.Distribution
         public ILogger Logger { get; set; } = NullLogger.Instance;
 
         /// <summary>
-        /// If true, indicates that current import is a migration
+        /// Revision creation method
         /// </summary>
-        public bool IsMigrationImport { get; init; }
+        public ConfigurationItemRevisionCreationMethod RevisionCreationMethod { get; init; } = ConfigurationItemRevisionCreationMethod.ManualImport;
     }
 }

@@ -1,4 +1,3 @@
-using Abp.AspNetCore;
 using Abp.AspNetCore.Configuration;
 using Abp.AutoMapper;
 using Abp.Configuration.Startup;
@@ -14,7 +13,6 @@ using Microsoft.Extensions.Hosting;
 using Moq;
 using Shesha.Configuration.Startup;
 using Shesha.FluentMigrator;
-using Shesha.NHibernate;
 using Shesha.Services;
 using Shesha.Testing.DependencyInjection;
 using Shesha.Testing.Fixtures;
@@ -93,7 +91,6 @@ namespace Shesha.Testing
 
             // --- Unit of Work ---
             configuration.UnitOfWork.Timeout = TimeSpan.FromMinutes(30);
-            configuration.UnitOfWork.IsTransactional = false;
 
             // --- Disable features that interfere with testing ---
             configuration.Modules.AbpAutoMapper().UseStaticMapper = false;

@@ -1,11 +1,11 @@
 import React from 'react';
 import { SecurityScanOutlined } from '@ant-design/icons';
-import { ConfigurableFormItem } from '@/components';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
-import { FormMarkup } from '@/index';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 import settingsFormJson from './settingsForm.json';
 import { IPermissionAutocompleteComponentProps, PermissionAutocompleteComponentDefinition } from './interfaces';
+import { FormMarkup } from '@/providers/form/models';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
@@ -19,8 +19,8 @@ const PermissionAutocompleteComponent: PermissionAutocompleteComponentDefinition
   Factory: ({ model }) => {
     if (model.hidden) return null;
     return (
-      <ConfigurableFormItem model={model}>
-        {(value, onChange) => <PermissionAutocomplete value={value} onChange={onChange} readOnly={model.readOnly} />}
+      <ConfigurableFormItem<string[]> model={model}>
+        {(value, onChange) => <PermissionAutocomplete value={value ?? undefined} onChange={onChange} readOnly={model.readOnly} />}
       </ConfigurableFormItem>
     );
   },

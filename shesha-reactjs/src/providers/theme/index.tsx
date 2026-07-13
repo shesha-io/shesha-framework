@@ -1,10 +1,9 @@
 import { App, ConfigProvider, ThemeConfig } from 'antd';
-import React, { FC, PropsWithChildren, useCallback, useContext, useMemo, useReducer, useRef } from 'react';
-import { setThemeAction } from './actions';
+import React, { FC, PropsWithChildren, useCallback, useContext, useMemo, useState } from 'react';
 import { IConfigurableTheme, IThemeActionsContext, IThemeStateContext, THEME_CONTEXT_INITIAL_STATE, UiActionsContext, UiStateContext } from './contexts';
-import { uiReducer } from './reducer';
 import { defaultRequiredMark } from './shaRequiredMark';
 import { useSettings, useSheshaApplication } from '..';
+import { isNotNullOrWhiteSpace } from '@/utils/nullables';
 
 export interface ThemeProviderProps {
   prefixCls?: string;
@@ -17,56 +16,57 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
   iconPrefixCls = 'anticon',
   prefixCls = 'ant',
 }) => {
-  const [state, dispatch] = useReducer(uiReducer, {
+  const [state, setState] = useState<IThemeStateContext>({
     ...THEME_CONTEXT_INITIAL_STATE,
     prefixCls: prefixCls,
     iconPrefixCls: iconPrefixCls,
   });
 
-  const applicationTheme = useRef<IConfigurableTheme>();
-
   const settings = useSettings();
   const application = useSheshaApplication();
   application.registerInitialization('theme', async () => {
     // load theme settings
-    const theme = await settings.getSetting({ module: 'Shesha', name: 'Shesha.ThemeSettings' }) as IConfigurableTheme;
-    dispatch(setThemeAction(theme));
-    applicationTheme.current = theme;
+    const theme = await settings.getSetting<IConfigurableTheme>({ module: 'Shesha', name: 'Shesha.ThemeSettings' });
+    setState((prev) => ({ ...prev, theme: theme, initialTheme: theme }));
   });
 
   const changeTheme = useCallback((theme: IConfigurableTheme, isApplication: boolean = false) => {
     // save theme to the state
-    dispatch(setThemeAction(theme));
-    if (isApplication)
-      applicationTheme.current = theme;
-  }, [dispatch, applicationTheme]);
+    setState((prev) => ({
+      ...prev,
+      theme: theme,
+      initialTheme: isApplication ? { ...theme } : prev.initialTheme,
+    }));
+  }, []);
 
   const resetToApplicationTheme = useCallback(() => {
-    // save theme to the state
-    dispatch(setThemeAction(applicationTheme.current));
-  }, [dispatch]);
+    setState((prev) => ({ ...prev, theme: { ...prev.initialTheme } }));
+  }, []);
+
+  const getComponentStyle = useCallback((componentName: string) => state.theme.components?.[componentName] ?? {}, [state.theme.components]);
 
   const themeConfig = useMemo<ThemeConfig>(() => {
-    const appTheme = state.theme?.application;
+    const appTheme = state.theme.application;
     const themeDefaults: ThemeConfig['token'] = {};
 
-    const theme: ThemeConfig['token'] = appTheme
+    const theme: Partial<ThemeConfig['token']> = appTheme
       ? {
-        colorPrimary: appTheme.primaryColor,
-        colorLink: appTheme.primaryColor,
-        colorInfo: appTheme.infoColor,
-        colorSuccess: appTheme.successColor,
-        colorError: appTheme.errorColor,
-        colorWarning: appTheme.warningColor,
+        ...(isNotNullOrWhiteSpace(appTheme.primaryColor) ? { colorPrimary: appTheme.primaryColor, colorLink: appTheme.primaryColor } : {}),
+        ...(isNotNullOrWhiteSpace(appTheme.infoColor) ? { colorInfo: appTheme.infoColor } : {}),
+        ...(isNotNullOrWhiteSpace(appTheme.successColor) ? { colorSuccess: appTheme.successColor } : {}),
+        ...(isNotNullOrWhiteSpace(appTheme.errorColor) ? { colorError: appTheme.errorColor } : {}),
+        ...(isNotNullOrWhiteSpace(appTheme.warningColor) ? { colorWarning: appTheme.warningColor } : {}),
       }
       : {};
 
     const result: ThemeConfig = {
-      cssVar: true,
+      cssVar: {
+        prefix: 'ant',
+      },
       token: { ...themeDefaults, ...theme },
       components: {
         Menu: {
-          itemHeight: 'clamp(40px, 40px, 100%)' as any,
+          itemHeight: 'clamp(40px, 40px, 100%)',
         },
       },
     };
@@ -79,6 +79,7 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
         value={{
           changeTheme,
           resetToApplicationTheme,
+          getComponentStyle,
         }}
       >
         <ConfigProvider
@@ -123,7 +124,7 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
   );
 };
 
-function useThemeState(): IThemeStateContext | undefined {
+function useThemeState(): IThemeStateContext {
   const context = useContext(UiStateContext);
 
   if (context === undefined) {
@@ -132,7 +133,7 @@ function useThemeState(): IThemeStateContext | undefined {
   return context;
 }
 
-function useThemeActions(): IThemeActionsContext | undefined {
+function useThemeActions(): IThemeActionsContext {
   const context = useContext(UiActionsContext);
 
   if (context === undefined) {
@@ -142,7 +143,7 @@ function useThemeActions(): IThemeActionsContext | undefined {
   return context;
 }
 
-function useTheme(): IThemeStateContext & IThemeActionsContext | undefined {
+function useTheme(): IThemeStateContext & IThemeActionsContext {
   return { ...useThemeState(), ...useThemeActions() };
 }
 

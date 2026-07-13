@@ -1,13 +1,16 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { Tabs, Input, Empty } from 'antd';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { Tabs, Input, Empty, InputRef } from 'antd';
 import ParentProvider from '@/providers/parentProvider';
-import { ComponentsContainer } from '@/components';
+import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { useStyles } from './style';
 import { SearchOutlined } from '@ant-design/icons';
 import { filterDynamicComponents } from './utils';
-import { IPropertiesTabsComponentProps } from './models';
-import { useFormState, useFormActions } from '@/providers/form';
+import { ITabPaneProps, IPropertiesTabsComponentProps } from './models';
+import { IConfigurableFormComponent } from '@/interfaces';
+import { useFormActionsOrUndefined } from '@/providers/form';
 import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider';
+import { useFormDesignerOrUndefined } from '@/providers/formDesigner';
+import { isNonEmptyArray } from '@/utils/array';
 
 interface SearchableTabsProps {
   model: IPropertiesTabsComponentProps;
@@ -15,27 +18,33 @@ interface SearchableTabsProps {
 
 const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
   const { tabs } = model;
+  const formDesigner = useFormDesignerOrUndefined();
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeTabKey, setActiveTabKey] = useState('1');
-  const searchRefs = useRef(new Map());
+  // Chrome skips its load-time credential autofill for read-only fields, so keep the
+  // search box read-only until the user focuses it. This prevents the saved username
+  // (e.g. "admin") being injected, which would filter out every property and collapse
+  // the settings panel.
+  const [autofillGuard, setAutofillGuard] = useState(true);
+  const [localActiveTabKey, setLocalActiveTabKey] = useState<string>(formDesigner?.activeSettingsTabKey ?? '1');
   const { styles } = useStyles();
 
-  const formState = useFormState(false);
-  const formActions = useFormActions(false);
+  const formActions = useFormActionsOrUndefined();
 
   useShaFormDataUpdate();
+
+  const searchInputRef = useRef<InputRef>(null);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setSearchQuery(e.target.value);
   };
 
   const renderSearchInput = (options?: {
-    ref?: (el: any) => void;
+    ref?: React.RefObject<InputRef | null>;
     className?: string;
     style?: React.CSSProperties;
     autoFocus?: boolean;
     wrapperStyle?: React.CSSProperties;
-  }): JSX.Element => {
+  }): React.JSX.Element => {
     const input = (
       <Input
         type="search"
@@ -44,6 +53,9 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
         placeholder="Search properties"
         value={searchQuery}
         onChange={handleSearchChange}
+        readOnly={autofillGuard}
+        onFocus={() => setAutofillGuard(false)}
+        autoComplete="new-password"
         suffix={<SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />}
         ref={options?.ref}
         className={options?.className}
@@ -59,66 +71,67 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
     ) : input;
   };
 
-  const focusActiveTabSearch = useCallback(() => {
-    const activeSearchInput = searchRefs.current.get(activeTabKey);
-    if (activeSearchInput) {
-      // Small delay to ensure the tab is rendered
-      setTimeout(() => {
-        activeSearchInput.focus();
-      }, 50);
-    }
-  }, [activeTabKey]);
+  const handleTabChange = useCallback((newActiveKey: string): void => {
+    formDesigner?.setActiveSettingsTabKey(newActiveKey);
+    setLocalActiveTabKey(newActiveKey);
+  }, [formDesigner]);
 
-  const handleTabChange = (newActiveKey: string): void => {
-    setActiveTabKey(newActiveKey);
+  // Applies the form-level component filter (e.g. permissions / modal settings)
+  // on top of the search filter. For components that hold a list of `inputs`
+  // (such as settingsInputRow), it prunes the inputs to only those allowed so
+  // that non-matching/non-permitted inputs never leak through. Returns the
+  // (possibly pruned) component, or null when nothing should remain visible.
+  const applyComponentFilter = (
+    component: IConfigurableFormComponent & { inputs?: IConfigurableFormComponent[] },
+  ): (IConfigurableFormComponent & { inputs?: IConfigurableFormComponent[] }) | null => {
+    if (!formActions?.isComponentFiltered) return component;
+
+    const isComponentFiltered = formActions.isComponentFiltered;
+
+    if (component.inputs) {
+      const visibleInputs = component.inputs.filter((input) => {
+        if (!input.propertyName) return true;
+        return isComponentFiltered(input);
+      });
+      if (visibleInputs.length === 0) return null;
+      return { ...component, inputs: visibleInputs };
+    }
+
+    return isComponentFiltered(component) ? component : null;
   };
 
-  // Focus search input when search query changes and we have matching results
-  useEffect(() => {
-    if (searchQuery) {
-      focusActiveTabSearch();
+  const isSearching = searchQuery.trim() !== '';
+
+  // While searching we render the *filtered* component models directly instead
+  // of letting the designer re-read the original (unfiltered) models from the
+  // form markup store. Marking the components as dynamic forces
+  // ConfigurableFormComponent to use the model we pass in (with its pruned
+  // children/inputs) rather than re-fetching the original by id.
+  const markDynamic = (component: IConfigurableFormComponent): IConfigurableFormComponent & { isDynamic: true } => {
+    const c: IConfigurableFormComponent & {
+      isDynamic: true;
+      components?: IConfigurableFormComponent[];
+      content?: { components?: IConfigurableFormComponent[] };
+    } = { ...component, isDynamic: true };
+    if (Array.isArray(c.components)) c.components = c.components.map(markDynamic);
+    if (c.content && Array.isArray(c.content.components)) {
+      c.content = { ...c.content, components: c.content.components.map(markDynamic) };
     }
-  }, [searchQuery, focusActiveTabSearch]);
-
-  // Focus search input when tab changes
-  useEffect(() => {
-    focusActiveTabSearch();
-  }, [activeTabKey, focusActiveTabSearch]);
-
-  const isComponentHidden = (component): boolean => {
-    if (formState.name === "modalSettings") {
-      if (component.inputs) {
-        const visibleInputs = component.inputs.filter((input) => {
-          if (!input.propertyName) return true;
-          return formActions.isComponentFiltered(input);
-        });
-
-        if (visibleInputs.length === 0) {
-          return false;
-        }
-
-        component.inputs = visibleInputs;
-
-        return visibleInputs.length > 0;
-      }
-
-      return formActions.isComponentFiltered(component);
-    } else {
-      return true;
-    }
+    return c;
   };
+
+  type TabItem = ITabPaneProps & { children?: IConfigurableFormComponent[] };
 
   const newFilteredTabs = tabs
-    .map((tab: any, index: number) => {
-      const filteredComponents = tab.children ?? filterDynamicComponents(tab.components, searchQuery);
+    .map((tab: TabItem, index: number) => {
+      const searchFiltered = filterDynamicComponents(tab.components ?? [], searchQuery);
 
-      const visibleComponents = Array.isArray(filteredComponents)
-        ? filteredComponents.filter((comp) => isComponentHidden(comp))
-        : filteredComponents;
+      const visibleComponents = searchFiltered
+        .map((comp) => applyComponentFilter(comp))
+        .filter((comp): comp is IConfigurableFormComponent => comp !== null)
+        .map((comp) => (isSearching ? markDynamic(comp) : comp));
 
-      const hasVisibleComponents = Array.isArray(visibleComponents)
-        ? visibleComponents.length > 0
-        : !!visibleComponents;
+      const hasVisibleComponents = visibleComponents.length > 0;
 
       const tabKey = tab.key || (index + 1).toString();
 
@@ -127,71 +140,59 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
         key: tabKey,
         label: tab.label ?? tab.title,
         components: visibleComponents,
-        children: visibleComponents.length === 0
+        children: !hasVisibleComponents
           ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Properties not found" />
           : (
             <ParentProvider model={model}>
-              {renderSearchInput({
-                ref: (el) => {
-                  if (el) {
-                    searchRefs.current.set(tabKey, el);
-                  } else {
-                    searchRefs.current.delete(tabKey);
-                  }
-                },
-                className: styles.searchField,
-              })}
               <ComponentsContainer
                 containerId={tab.id + tab.key}
                 dynamicComponents={visibleComponents}
               />
             </ParentProvider>
           ),
-        forceRender: true,
-        hidden: tab.hidden || !hasVisibleComponents,
+        forceRender: false,
+        hidden: tab.hidden || (searchQuery.trim() !== '' && !hasVisibleComponents),
       };
     })
     .filter((tab) => !tab.hidden);
 
-  // Auto-switch to the first tab that has visible components when searching
-  useEffect(() => {
-    if (searchQuery && newFilteredTabs.length > 0) {
-      const firstVisibleTab = newFilteredTabs.find((tab) =>
-        Array.isArray(tab.components) ? tab.components.length > 0 : !!tab.components,
-      );
-      if (firstVisibleTab && firstVisibleTab.key !== activeTabKey) {
-        setActiveTabKey(firstVisibleTab.key);
-      }
+  const effectiveActiveKey = useMemo(() => {
+    if (!isNonEmptyArray(newFilteredTabs)) {
+      return undefined;
     }
-  }, [searchQuery, newFilteredTabs, activeTabKey]);
 
-  // Ensure we have a valid active tab key
-  useEffect(() => {
-    if (newFilteredTabs.length > 0 && !newFilteredTabs.find((tab) => tab.key === activeTabKey)) {
-      setActiveTabKey(newFilteredTabs[0].key);
+    const persistedKey = formDesigner?.activeSettingsTabKey ?? localActiveTabKey;
+
+    if (newFilteredTabs.some((tab) => tab.key === persistedKey)) {
+      return persistedKey;
     }
-  }, [newFilteredTabs, activeTabKey]);
 
+    return newFilteredTabs[0].key;
+  }, [newFilteredTabs, formDesigner, localActiveTabKey]);
+
+  const localTabs = useMemo(() => (
+    <Tabs
+      key="searchable-tabs"
+      {...(effectiveActiveKey ? { defaultActiveKey: effectiveActiveKey } : {})}
+      onChange={handleTabChange}
+      size={model.size}
+      type={model.tabType || 'card'}
+      tabPlacement={model.position ?? 'top'}
+      items={newFilteredTabs}
+      className={styles.content}
+    />
+  ), [effectiveActiveKey, handleTabChange, model.size, model.tabType, newFilteredTabs, styles.content, model.position]);
 
   return (
     <>
-      {newFilteredTabs.length === 0 &&
-        renderSearchInput({
-          autoFocus: true,
-        })}
+      {renderSearchInput({
+        ref: searchInputRef,
+        autoFocus: newFilteredTabs.length === 0,
+        className: styles.searchField,
+      })}
       {newFilteredTabs.length === 0 && searchQuery
         ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Property Not Found" />
-        : (
-          <Tabs
-            activeKey={activeTabKey}
-            onChange={handleTabChange}
-            size={model.size}
-            type={model.tabType || 'card'}
-            tabPosition={model.position || 'top'}
-            items={newFilteredTabs}
-            className={styles.content}
-          />
-        )}
+        : localTabs}
     </>
   );
 };

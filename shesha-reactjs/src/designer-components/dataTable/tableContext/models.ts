@@ -4,6 +4,7 @@ import {
   FilterExpression,
   GroupingItem,
   ISortingItem,
+  ITableRowData,
   SortMode,
 } from '@/providers/dataTable/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
@@ -12,38 +13,38 @@ import { IConfigurableActionConfiguration } from '@/interfaces/configurableActio
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
 export interface ITableContextComponentProps extends Omit<IConfigurableFormComponent, 'description'> {
-  sourceType?: 'Form' | 'Entity' | 'Url';
-  entityType?: string | IEntityTypeIdentifier;
-  endpoint?: string;
-  customReorderEndpoint?: string;
-  components?: IConfigurableFormComponent[]; // If isDynamic we wanna
-  dataFetchingMode?: DataFetchingMode;
-  defaultPageSize?: number;
-  grouping?: GroupingItem[];
-  sortMode?: SortMode;
-  strictSortBy?: string;
-  strictSortOrder?: ColumnSorting;
-  standardSorting?: ISortingItem[];
-  allowReordering?: YesNoInherit;
-  permanentFilter?: FilterExpression;
-  disableRefresh?: string;
-  onBeforeRowReorder?: IConfigurableActionConfiguration;
-  onAfterRowReorder?: IConfigurableActionConfiguration;
+  sourceType?: 'Form' | 'Entity' | 'Url' | undefined;
+  entityType?: string | IEntityTypeIdentifier | undefined;
+  endpoint?: string | undefined;
+  customReorderEndpoint?: string | undefined;
+  components?: IConfigurableFormComponent[] | undefined; // If isDynamic we wanna
+  dataFetchingMode?: DataFetchingMode | undefined;
+  defaultPageSize?: number | undefined;
+  grouping?: GroupingItem[] | undefined;
+  sortMode?: SortMode | undefined;
+  strictSortBy?: string | undefined;
+  strictSortOrder?: ColumnSorting | undefined;
+  standardSorting?: ISortingItem[] | undefined;
+  allowReordering?: YesNoInherit | undefined;
+  permanentFilter?: FilterExpression | undefined;
+  disableRefresh?: string | undefined;
+  onBeforeRowReorder?: IConfigurableActionConfiguration | undefined;
+  onAfterRowReorder?: IConfigurableActionConfiguration | undefined;
 }
 
 export interface IBeforeRowReorderArguments {
   oldIndex: number;
   newIndex: number;
-  rowData: any;
-  allData: any[];
+  rowData: ITableRowData | undefined;
+  allData: ITableRowData[];
 }
 
 export interface IAfterRowReorderArguments {
   oldIndex: number;
   newIndex: number;
-  rowData: any;
-  allData: any[];
-  response?: any;
+  rowData: ITableRowData | undefined;
+  allData: ITableRowData[];
+  response?: void;
 }
 
 /**

@@ -20,6 +20,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
 using Shesha.Authorization;
 using Shesha.Configuration;
 using Shesha.DynamicEntities;
@@ -31,8 +32,9 @@ using Shesha.GraphQL;
 using Shesha.GraphQL.Middleware;
 using Shesha.GraphQL.Swagger;
 using Shesha.Identity;
-using Shesha.Notifications.SMS;
 using Shesha.Notifications;
+using Shesha.Notifications.SMS;
+using Shesha.RateLimiting;
 using Shesha.Scheduler.Extensions;
 using Shesha.Scheduler.Hangfire;
 using Shesha.Specifications;
@@ -56,7 +58,7 @@ namespace Shesha.Web.Host.Startup
             _hostEnvironment = hostEnvironment;
         }
 
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             // Should be before AddMvcCore
             services.AddSingleton<IActionDescriptorChangeProvider>(SheshaActionDescriptorChangeProvider.Instance);
@@ -71,6 +73,8 @@ namespace Shesha.Web.Host.Startup
             });
 
             services.AddSheshaElmah(_appConfiguration);
+
+            services.AddSheshaRateLimiting(opts => _appConfiguration.GetSection("RateLimiting").Bind(opts));
 
             services.AddMvcCore(options =>
                 {
@@ -90,6 +94,7 @@ namespace Shesha.Web.Host.Startup
                 .AddNewtonsoftJson(options =>
                 {
                     options.UseCamelCasing(true);
+                    options.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
                 });
 
             IdentityRegistrar.Register(services);
@@ -122,6 +127,9 @@ namespace Shesha.Web.Host.Startup
                             });
                             break;
                         }
+                    case DbmsType.NotSpecified:
+                    default:
+                        throw new InvalidOperationException($"Unsupported DbmsType '{dbms}' for Hangfire storage configuration. Supported types are SQLServer and PostgreSQL.");
                 }
             });
             services.AddHangfireServer(config => {
@@ -132,7 +140,7 @@ namespace Shesha.Web.Host.Startup
 
             // Add ABP and initialize 
             // Configure Abp and Dependency Injection
-            return services.AddAbp<SheshaWebHostModule>(
+            services.AddAbpWithoutCreatingServiceProvider<SheshaWebHostModule>(
                 options =>
                 {
                     // Configure Log4Net logging
@@ -145,6 +153,9 @@ namespace Shesha.Web.Host.Startup
 
         public void Configure(IApplicationBuilder app, IBackgroundJobClient backgroundJobs)
         {
+            // Security headers (registered first so they apply to all responses)
+            app.UseSecurityHeaders();
+
             app.UseSheshaElmah();
 
             // note: already registered in the ABP
@@ -155,15 +166,21 @@ namespace Shesha.Web.Host.Startup
             app.UseAbp(options => { options.UseAbpRequestLocalization = false; }); // Initializes ABP framework.
 
             // global cors policy
+            var corsOrigins = _appConfiguration["App:CorsOrigins"]?
+                .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                .Select(o => o.Trim().TrimEnd('/'))
+                .Where(o => !string.IsNullOrEmpty(o))
+                .ToArray() ?? Array.Empty<string>();
             app.UseCors(x => x
                 .AllowAnyMethod()
                 .AllowAnyHeader()
-                .SetIsOriginAllowed(origin => true) // allow any origin
-                .AllowCredentials()); // allow credentials
+                .WithOrigins(corsOrigins)
+                .AllowCredentials());
             app.UseStaticFiles();
+            app.UseRouting();
+            app.UseRateLimiter();
             app.UseAuthentication();
             app.UseAbpRequestLocalization();
-            app.UseRouting();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

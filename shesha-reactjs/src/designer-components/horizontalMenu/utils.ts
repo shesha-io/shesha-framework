@@ -1,6 +1,6 @@
-import { IStyleType } from "@/index";
+import { IStyleValue } from '@/providers/form/models';
 
-export const defaultStyles = (): IStyleType => {
+export const defaultStyles = (): IStyleValue => {
   return {
     background: { type: 'color' },
     font: { weight: '400', size: 14, color: '#000', type: 'Segoe UI' },
@@ -17,13 +17,6 @@ export const defaultStyles = (): IStyleType => {
       radiusType: 'all',
     },
     shadow: {
-      color: '#000000',
-      offsetX: 0,
-      offsetY: 0,
-      blurRadius: 0,
-      spreadRadius: 0,
-    },
-    menuItemShadow: {
       color: '#000000',
       offsetX: 0,
       offsetY: 0,

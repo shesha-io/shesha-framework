@@ -77,6 +77,24 @@ namespace Shesha.Reflection
             return memberInfo.GetAttributeOrNull<T>() != null;
         }
 
+        /// <summary>
+        /// Returns true if the specified <paramref name="memberInfo"/> is marked with a JsonIgnore attribute
+        /// that causes the property to be unconditionally omitted from JSON serialization. Matches
+        /// Newtonsoft's <see cref="Newtonsoft.Json.JsonIgnoreAttribute"/> (always ignores) and
+        /// <see cref="System.Text.Json.Serialization.JsonIgnoreAttribute"/> with
+        /// <see cref="System.Text.Json.Serialization.JsonIgnoreCondition.Always"/> (the default).
+        /// Conditional STJ variants (<c>Never</c>, <c>WhenWritingNull</c>, <c>WhenWritingDefault</c>) do not count.
+        /// </summary>
+        public static bool IsJsonIgnored(this MemberInfo memberInfo)
+        {
+            if (memberInfo.HasAttribute<Newtonsoft.Json.JsonIgnoreAttribute>())
+                return true;
+
+            var stjIgnore = memberInfo.GetAttributeOrNull<System.Text.Json.Serialization.JsonIgnoreAttribute>();
+            return stjIgnore != null
+                && stjIgnore.Condition == System.Text.Json.Serialization.JsonIgnoreCondition.Always;
+        }
+
         public static T? GetUniqueAttribute<T>(this MemberInfo memberInfo) where T : Attribute
         {
             return GetAttributeOrNull<T>(memberInfo);
@@ -560,11 +578,25 @@ namespace Shesha.Reflection
         /// <param name="type">Root type</param>
         /// <param name="propertyName">Name of property, supports dot notation</param>
         /// <param name="useCamelCase">Set to true to compare property names in camel case</param>
-        /// <returns></returns>
+        /// <returns>Property info</returns>
         public static PropertyInfo? GetProperty(this Type type, string propertyName, bool useCamelCase = false)
+        {
+            var propWithPath = GetPropertyWithPath(type, propertyName, useCamelCase);
+            return propWithPath?.PropertyInfo;
+        }
+
+        /// <summary>
+        /// Search property with specified name in the current type. Supports dot notation
+        /// </summary>
+        /// <param name="type">Root type</param>
+        /// <param name="propertyName">Name of property, supports dot notation</param>
+        /// <param name="useCamelCase">Set to true to compare property names in camel case</param>
+        /// <returns>Property info and relative path to property (without case conversion of name)</returns>
+        public static PropertyInfoWithPath? GetPropertyWithPath(this Type type, string propertyName, bool useCamelCase = false) 
         {
             var propTokens = propertyName.Split('.');
             var currentType = type;
+            var path = new List<string>();
 
             for (int i = 0; i < propTokens.Length; i++)
             {
@@ -577,9 +609,10 @@ namespace Shesha.Reflection
                         var props = containerType.GetProperties().Where(p => p.Name.ToCamelCase() == propTokens[i].ToCamelCase()).ToList();
                         if (props.Count() > 1)
                             throw new AmbiguousMatchException();
-                        
+
                         propInfo = props.FirstOrDefault();
-                    } else
+                    }
+                    else
                         propInfo = containerType.GetProperty(propTokens[i]);
                 }
                 catch (AmbiguousMatchException)
@@ -591,10 +624,12 @@ namespace Shesha.Reflection
 
                 if (propInfo == null)
                     return null;
+                
+                path.Add(propInfo.Name);
 
                 if (i == propTokens.Length - 1)
                 {
-                    return propInfo;
+                    return new PropertyInfoWithPath(propInfo, path);
                 }
                 else
                 {
@@ -866,6 +901,22 @@ namespace Shesha.Reflection
                     ? 1 // y is more derived
                     :  -1;
             }
+        }
+
+        public static bool IsCollectionType(this Type type, [NotNullWhen(true)] out Type? elementType)
+        {
+            if (type.IsGenericType && (
+                    type.ImplementsGenericInterface(typeof(IList<>)) ||
+                    type.ImplementsGenericInterface(typeof(IEnumerable<>)) ||
+                    type.ImplementsGenericInterface(typeof(ICollection<>))
+                ))
+            {
+                elementType = type.GetGenericArguments()[0];
+                return true;
+            }
+            
+            elementType = null;
+            return false;
         }
     }
 }

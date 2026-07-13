@@ -5,6 +5,7 @@ import { ShaFormProvider } from '@/providers/form/providers/shaFormProvider';
 import { useShaForm } from '@/providers/form/store/shaFormInstance';
 import { FormDesignerProvider, useFormDesignerMarkup, useFormDesignerSettings } from '@/providers/formDesigner';
 import { FormPersisterProvider, useFormPersisterState } from '@/providers/formPersisterProvider';
+import { isDefined } from '@/utils/nullables';
 import {
   Form,
   FormInstance,
@@ -12,7 +13,7 @@ import {
   Skeleton,
 } from 'antd';
 import { ResultStatusType } from 'antd/lib/result';
-import React, { FC, PropsWithChildren } from 'react';
+import React, { FC, PropsWithChildren, useEffect } from 'react';
 
 export interface IFormProviderWrapperProps {
   formId: FormIdentifier;
@@ -27,13 +28,22 @@ const FormProviderWrapperInner: FC<PropsWithChildren<{ form: FormInstance }>> = 
     antdForm: form,
     init: (shaForm) => {
       shaForm.setFormMode("designer");
-      shaForm.initByMarkup({
+      shaForm.initFormByMarkup({
         formSettings,
         formFlatMarkup,
         formArguments: undefined,
+      }).catch((error) => {
+        console.error('Failed to init form', error);
+        throw error;
       });
     },
   });
+
+  // init form data
+  useEffect(() => {
+    if (shaForm.markupLoadingState.status === 'ready' && shaForm.dataLoadingState.status === 'waiting')
+      void shaForm.triggerEvents();
+  }, [shaForm, shaForm.markupLoadingState.status, shaForm.dataLoadingState.status]);
 
   return (
     <ShaFormProvider shaForm={shaForm}>
@@ -46,15 +56,13 @@ const FormProviderWrapperInner: FC<PropsWithChildren<{ form: FormInstance }>> = 
           form={form}
           shaForm={shaForm}
         >
-          <>
-            {formSettings.modelType ? (
-              <MetadataProvider id="designer" modelType={formSettings.modelType}>
-                {children}
-              </MetadataProvider>
-            ) : (
-              <>{children}</>
-            )}
-          </>
+          {formSettings.modelType ? (
+            <MetadataProvider id="designer" modelType={formSettings.modelType}>
+              {children}
+            </MetadataProvider>
+          ) : (
+            <>{children}</>
+          )}
         </FormProvider>
       </ShaForm.MarkupProvider>
     </ShaFormProvider>
@@ -68,7 +76,7 @@ const FormPersisterStateConsumer: FC<PropsWithChildren> = ({ children }) => {
   if (formStore.loading)
     return (<Skeleton loading active />);
 
-  if (formStore.loaded) {
+  if (formStore.loaded && isDefined(formStore.formProps)) {
     const { flatStructure, settings, readOnly } = formStore.formProps;
     return (
       <FormDesignerProvider

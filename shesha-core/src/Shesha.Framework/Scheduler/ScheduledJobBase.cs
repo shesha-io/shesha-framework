@@ -153,12 +153,7 @@ namespace Shesha.Scheduler
         /// <summary>
         /// Reference to the logger to write logs.
         /// </summary>
-        protected ILogger Logger => _defaultLogger ??= IocManager.Resolve<ILogger>();
-
-        /// <summary>
-        /// Default logger, it used when instance logger is not set
-        /// </summary>
-        private ILogger? _defaultLogger;
+        protected ILogger Logger => Log;
 
         public ILogger Log { get; set; } = NullLogger.Instance;
 
@@ -270,6 +265,8 @@ namespace Shesha.Scheduler
 
             await UpdateExecutionInfoAsync(execution =>
             {
+                this.TriggerId = execution.Trigger?.Id;
+
                 execution.Status = ExecutionStatus.InProgress;
 
                 LogFileName = !string.IsNullOrWhiteSpace(execution.LogFilePath) ? Path.GetFileName(execution.LogFilePath) : null;

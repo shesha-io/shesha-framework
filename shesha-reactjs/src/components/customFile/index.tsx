@@ -1,92 +1,89 @@
 import React, { CSSProperties, FC } from 'react';
-import { IUploadFilePayload } from '@/providers/storedFiles/contexts';
 import { IconType, StoredFilesRendererBase } from '@/components/';
-import { IInputStyles, IStyleType, useSheshaApplication, useStoredFilesStore } from '@/providers';
-import { layoutType, listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
+import { IInputStyles, IStyleValue, useAttachmentsEditorActions, useAttachmentsEditorState } from '@/providers';
+import { LayoutType, ListType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { FormIdentifier } from '@/providers/form/models';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
 
+// TODO V1: review all properties and remove unused ones
 export interface ICustomFileProps extends IInputStyles {
-  id?: string;
-  ownerId?: string;
-  uploadFile?: (payload: IUploadFilePayload) => void;
-  maxCount?: number;
-  allowAdd?: boolean;
-  allowReplace?: boolean;
-  allowDelete?: boolean;
-  allowRename?: boolean;
-  allowViewHistory?: boolean;
-  customActions?: ButtonGroupItemProps[];
-  hasExtraContent?: boolean;
-  extraFormSelectionMode?: 'name' | 'dynamic';
-  extraFormId?: FormIdentifier;
-  extraFormType?: string;
-  isStub?: boolean;
-  disabled?: boolean;
-  allowedFileTypes?: string[];
-  maxHeight?: string;
-  isDragger?: boolean;
-  downloadZip?: boolean;
-  filesLayout?: layoutType;
-  listType?: listType;
-  thumbnailWidth?: string;
-  thumbnailHeight?: string;
-  borderRadius?: number;
-  hideFileName?: boolean;
-  container?: IStyleType;
-  primaryColor?: string;
-  enableStyleOnReadonly?: boolean;
-  downloadedFileStyles?: CSSProperties;
-  styleDownloadedFiles?: boolean;
-  downloadedIcon?: IconType;
+  id?: string | undefined;
+  ownerId?: string | undefined;
+  maxCount?: number | undefined;
+  allowAdd?: boolean | undefined;
+  allowReplace?: boolean | undefined;
+  allowDelete?: boolean | undefined;
+  allowRename?: boolean | undefined;
+  allowViewHistory?: boolean | undefined;
+  customActions?: ButtonGroupItemProps[] | undefined;
+  hasExtraContent?: boolean | undefined;
+  extraFormSelectionMode?: 'name' | 'dynamic' | undefined;
+  extraFormId?: FormIdentifier | undefined;
+  extraFormType?: string | undefined;
+  isStub?: boolean | undefined;
+  disabled?: boolean | undefined;
+  allowedFileTypes?: string[] | undefined;
+  maxHeight?: string | undefined;
+  isDragger?: boolean | undefined;
+  downloadZip?: boolean | undefined;
+  filesLayout?: LayoutType | undefined;
+  listType?: ListType | undefined;
+  thumbnailWidth?: string | undefined;
+  thumbnailHeight?: string | undefined;
+  borderRadius?: number | undefined;
+  hideFileName?: boolean | undefined;
+  container?: IStyleValue | undefined;
+  primaryColor?: string | undefined;
+  enableStyleOnReadonly?: boolean | undefined;
+  downloadedFileStyles?: CSSProperties | undefined;
+  styleDownloadedFiles?: boolean | undefined;
+  downloadedIcon?: IconType | undefined;
 }
 
 export const CustomFile: FC<ICustomFileProps> = (props) => {
   const {
-    fileList,
-    // downloadFile,
     deleteFile,
     uploadFile,
     replaceFile,
     downloadZipFile,
     downloadFile,
-    isInProgress: { downloadZip },
-    succeeded: { downloadZip: downloadZipSuccess },
-  } = useStoredFilesStore();
-
-  const { backendUrl } = useSheshaApplication();
+  } = useAttachmentsEditorActions();
+  const files = useAttachmentsEditorState();
 
   return (
     <StoredFilesRendererBase
       {...props}
       isStub={props.isStub}
+      isDragger={props.isDragger}
+
       disabled={props.disabled || !props.allowAdd}
-      isDragger={props?.isDragger}
-      fileList={fileList?.map(({ url, ...rest }) => ({ url: `${backendUrl}${url}`, ...rest }))}
-      allowUpload={false}
-      allowDelete={props.allowDelete}
-      deleteFile={deleteFile}
-      allowViewHistory={props.allowViewHistory}
+      allowUpload={props.allowAdd ?? false}
+      allowDelete={props.allowDelete ?? false}
+      allowViewHistory={props.allowViewHistory ?? false}
+      allowReplace={props.allowReplace ?? false}
+      allowDownloadZip={props.downloadZip ?? false}
+      allowedFileTypes={props.allowedFileTypes}
+
       customActions={props.customActions}
-      allowReplace={props.allowReplace}
-      uploadFile={props.uploadFile ?? uploadFile}
-      replaceFile={replaceFile}
-      downloadZipFile={downloadZipFile}
-      downloadZip={props.downloadZip}
-      downloadFile={downloadFile}
-      isDownloadingFileListZip={downloadZip}
-      isDownloadZipSucceeded={downloadZipSuccess}
-      allowedFileTypes={props?.allowedFileTypes}
-      maxHeight={props?.maxHeight}
-      layout={props?.filesLayout}
-      listType={props?.listType}
+      maxHeight={props.maxHeight}
+      layout={props.filesLayout ?? "vertical"}
+      listType={props.listType ?? "text"}
+
       hasExtraContent={props.hasExtraContent}
       extraFormSelectionMode={props.extraFormSelectionMode}
       extraFormId={props.extraFormId}
       extraFormType={props.extraFormType}
-      downloadedFileStyles={props?.downloadedFileStyles}
-      styleDownloadedFiles={props?.styleDownloadedFiles}
-      downloadedIcon={props?.downloadedIcon}
+
+      downloadedFileStyles={props.downloadedFileStyles}
+      styleDownloadedFiles={props.styleDownloadedFiles}
+      downloadedIcon={props.downloadedIcon}
+
+      fileList={files}
+      uploadFile={uploadFile}
+      replaceFile={replaceFile}
+      deleteFile={deleteFile}
+      downloadZipFile={downloadZipFile}
+      downloadFile={downloadFile}
     />
   );
 };

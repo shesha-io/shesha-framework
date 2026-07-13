@@ -1,7 +1,6 @@
 import { editor, Range as MonacoRange } from "monaco-editor";
-import constrainedEditor from "constrained-editor-plugin";
+import constrainedEditor, { ConstrainedInstance } from "constrained-editor-plugin";
 import { Monaco } from "@monaco-editor/react";
-import { ConstrainedInstance } from "./utils";
 
 export const constrainedMonaco = (editor: Monaco): ConstrainedInstance => {
   return constrainedEditor(editor);
@@ -12,7 +11,7 @@ export interface ValueInEditableRanges {
 };
 
 export interface EditableRange {
-  allowMultiline: Boolean;
+  allowMultiline: boolean;
   range: MonacoRange;
   originalRange: number[];
 };
@@ -28,5 +27,5 @@ export interface ConstrainedTextModel extends editor.ITextModel {
 }
 
 export const isConstrainedTextModel = (model: editor.ITextModel): model is ConstrainedTextModel => {
-  return (model as ConstrainedTextModel).onDidChangeContentInEditableRange !== undefined;
+  return (model as Partial<ConstrainedTextModel>).onDidChangeContentInEditableRange !== undefined;
 };

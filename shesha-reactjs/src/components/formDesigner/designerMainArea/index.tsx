@@ -1,16 +1,14 @@
-import { ConfigurableFormRenderer, SidebarContainer } from '@/components';
 import ConditionalWrap from '@/components/conditionalWrapper';
-import { DataContextProvider, MetadataProvider, useDataContextManager, useShaFormInstance } from '@/providers';
-import { useFormDesignerFormMode, useFormDesignerIsDebug, useFormDesignerReadOnly, useFormDesignerSettings } from '@/providers/formDesigner';
-import ParentProvider from '@/providers/parentProvider';
-import React, { FC, useMemo, useEffect } from 'react';
+import { ConditionalMetadataProvider, useShaFormInstance } from '@/providers';
+import { useFormDesigner, useFormDesignerFormMode, useFormDesignerReadOnly, useFormDesignerSelectedComponent, useFormDesignerSettings } from '@/providers/formDesigner';
+import React, { FC, useMemo, useEffect, useCallback } from 'react';
 import { ComponentPropertiesPanel } from '../componentPropertiesPanel';
 import { ComponentPropertiesTitle } from '../componentPropertiesTitle';
-import { DebugPanel } from '../debugPanel';
 import { useStyles } from '../styles/styles';
 import Toolbox from '../toolbox';
-import { SheshaCommonContexts } from '@/providers/dataContextManager/models';
 import { IViewType } from '@/providers/canvas/contexts';
+import { SidebarContainer } from '@/components/sidebarContainer';
+import { ConfigurableFormRenderer } from '@/components/configurableForm/configurableFormRenderer';
 
 const rightSidebarProps = {
   title: () => <ComponentPropertiesTitle />,
@@ -19,28 +17,49 @@ const rightSidebarProps = {
 };
 
 export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'configStudio' }) => {
-  const isDebug = useFormDesignerIsDebug();
   const readOnly = useFormDesignerReadOnly();
   const formSettings = useFormDesignerSettings();
   const formMode = useFormDesignerFormMode();
-
-  const shaForm = useShaFormInstance();
-  const { antdForm: form } = shaForm;
+  const { antdForm } = useShaFormInstance();
   const { styles } = useStyles();
+  const { deleteComponent, settingsPanelElement } = useFormDesigner();
+  const component = useFormDesignerSelectedComponent();
 
-  const noPageContext = !Boolean(useDataContextManager().getPageContext());
+  const selectedComponentId = component?.id;
+
+  const handleKeyDown = useCallback((event: KeyboardEvent) => {
+    if (readOnly || formMode !== 'designer' || event.repeat) return;
+
+    const isDelete = event.key === 'Delete';
+    const isBackspace = event.key === 'Backspace';
+    if (!isDelete && !isBackspace) return;
+
+    // Ignore if user is typing in an input, textarea, or contenteditable element
+    const target = event.target as HTMLElement;
+    const isEditing = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
+    if (isEditing) return;
+
+    // Ignore if focus is inside the properties/settings panel
+    if (settingsPanelElement && settingsPanelElement.contains(target))
+      return;
+
+    if (selectedComponentId) {
+      event.preventDefault();
+      deleteComponent({ componentId: selectedComponentId });
+    }
+  }, [readOnly, formMode, selectedComponentId, deleteComponent, settingsPanelElement]);
 
   useEffect(() => {
-    if (shaForm) {
-      shaForm.applyMarkupAsync({
-        formFlatMarkup: shaForm.flatStructure,
-        formSettings: formSettings,
-      });
-    }
-  }, [formSettings, shaForm]);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleKeyDown]);
 
   const leftSidebarProps = useMemo(() =>
-    readOnly ? null : { title: 'Builder Components', content: () => <Toolbox />, placeholder: 'Builder Components' },
+    readOnly
+      ? undefined
+      : { title: 'Builder Components', content: () => <Toolbox />, placeholder: 'Builder Components' },
   [readOnly]);
 
   return (
@@ -67,45 +86,10 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
           </SidebarContainer>
         )}
       >
-        <ConditionalWrap
-          condition={Boolean(formSettings?.modelType)}
-          wrap={(children) => (<MetadataProvider modelType={formSettings?.modelType}>{children}</MetadataProvider>)}
-        >
-          {/* Use special format of parent properties to avoid adding form context */}
-          <ParentProvider model={null} formMode="designer" name="designer" isScope addContext={false}>
-            {/* pageContext has added only to customize the designed form. It is not used as a data context.*/}
-            {/* formContext has added only to customize the designed form. It is not used as a data context.*/}
-            <ConditionalWrap
-              condition={noPageContext}
-              wrap={(children) => (
-                <DataContextProvider
-                  id="designerPageContext"
-                  description="Designer Page context"
-                  name={SheshaCommonContexts.PageContext}
-                  type="page"
-                  webStorageType="sessionStorage"
-                >
-                  <DataContextProvider
-                    id="designerFormContext"
-                    description="Designer Form context"
-                    name={SheshaCommonContexts.FormContext}
-                    type="form"
-                    webStorageType="sessionStorage"
-                  >
-                    {children}
-                  </DataContextProvider>
-                </DataContextProvider>
-              )}
-            >
-              <ConfigurableFormRenderer form={form} className={formMode === 'designer' ? styles.designerWorkArea : undefined}>
-                {isDebug && (
-                  <DebugPanel />
-                )}
-              </ConfigurableFormRenderer>
-            </ConditionalWrap>
-          </ParentProvider>
-        </ConditionalWrap>
-
+        <ConditionalMetadataProvider modelType={formSettings.modelType}>
+          <ConfigurableFormRenderer form={antdForm} className={formMode === 'designer' ? styles.designerWorkArea : undefined}>
+          </ConfigurableFormRenderer>
+        </ConditionalMetadataProvider>
       </ConditionalWrap>
     </div>
   );

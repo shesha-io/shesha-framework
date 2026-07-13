@@ -1,9 +1,6 @@
 import ConfigurationItemsExport, { IExportInterface } from '@/components/configurationFramework/itemsExport';
 import React, {
-  FC,
-  MutableRefObject,
-  useRef,
-  useState,
+  FC, useState,
 } from 'react';
 import { Button, App } from 'antd';
 import { ExportOutlined } from '@ant-design/icons';
@@ -12,38 +9,43 @@ import { nanoid } from '@/utils/uuid';
 import { SheshaActionOwners } from '../../configurableActionsDispatcher/models';
 import { useAppConfiguratorState, useDynamicModals } from '@/providers';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
-import { ValidationErrors } from '@/components';
-import _ from 'lodash';
+import { ValidationErrors } from '@/components/validationErrors';
 import { isDefined } from '@/utils/nullables';
+import { MutableApi } from '@/configuration-studio/cs/utils';
 
 const actionsOwner = 'Configuration Items';
 
 interface IConfigurationItemsExportFooterProps {
   hideModal: () => void;
-  exporterRef: MutableRefObject<IExportInterface | undefined>;
+  exporterApi: MutableApi<IExportInterface>;
 }
 
 export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterProps> = (props) => {
   const [inProgress, setInProgress] = useState(false);
   const { notification } = App.useApp();
-  const { hideModal, exporterRef } = props;
+  const { hideModal, exporterApi } = props;
 
   const onExport = (): void => {
-    setInProgress(true);
-
-    if (!isDefined(exporterRef.current))
+    const exporter = exporterApi.getApi();
+    if (!isDefined(exporter))
       throw new Error('exporterRef is not defined');
 
-    exporterRef.current.exportExecuter().then(() => {
+    if (!exporter.canExport())
+      return;
+
+    setInProgress(true);
+    exporter.exportExecuter().then(() => {
       hideModal();
-    }).catch((error) => {
+    }).catch((error: unknown) => {
       notification.error({
-        message: "Failed to export package",
+        title: "Failed to export package",
         icon: null,
         description: <ValidationErrors error={error} renderMode="raw" defaultMessage="" />,
       });
-      setInProgress(false);
-    });
+    })
+      .finally(() => {
+        setInProgress(false);
+      });
   };
 
   return (
@@ -57,7 +59,7 @@ export const ConfigurationItemsExportFooter: FC<IConfigurationItemsExportFooterP
 export const useConfigurationItemsExportAction = (): void => {
   const { createModal, removeModal } = useDynamicModals();
   const appConfigState = useAppConfiguratorState();
-  const exporterRef = useRef<IExportInterface>();
+  const [exporterApi] = useState<MutableApi<IExportInterface>>(() => new MutableApi<IExportInterface>());
 
   useConfigurableAction({
     name: 'Export items',
@@ -85,15 +87,15 @@ export const useConfigurationItemsExportAction = (): void => {
           isVisible: true,
           showModalFooter: false,
           width: "60%",
-          onClose: (positive, result) => {
+          onClose: (positive = false, result) => {
             if (positive) {
               resolve(result);
             } else {
               reject();
             }
           },
-          content: <ConfigurationItemsExport onExported={onExported} exportRef={exporterRef} />,
-          footer: <ConfigurationItemsExportFooter hideModal={hideModal} exporterRef={exporterRef} />,
+          content: <ConfigurationItemsExport onExported={onExported} setExporterApi={(exporter) => (exporterApi.setApi(exporter))} />,
+          footer: <ConfigurationItemsExportFooter hideModal={hideModal} exporterApi={exporterApi} />,
         };
         createModal({ ...modalProps });
       });

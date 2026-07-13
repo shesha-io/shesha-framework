@@ -1,8 +1,9 @@
-import { IDeviceTypes, IViewType } from "./contexts";
+import { deepMergeValues } from "@/utils/object";
+import { DeviceTypes, ICanvasStateContext, IViewType } from "./contexts";
 import { DesktopOutlined, MobileOutlined, TabletOutlined } from '@ant-design/icons';
-import { MutableRefObject, useCallback, useEffect, useRef } from 'react';
+import { RefObject, useCallback, useEffect, useRef } from 'react';
 
-export const getDeviceTypeByWidth = (width: number): IDeviceTypes => {
+export const getDeviceTypeByWidth = (width: number): DeviceTypes => {
   return width > 724
     ? 'desktop'
     : width > 599
@@ -10,7 +11,7 @@ export const getDeviceTypeByWidth = (width: number): IDeviceTypes => {
       : 'mobile';
 };
 
-export const getWidthByDeviceType = (deviceType: IDeviceTypes): string => {
+export const getWidthByDeviceType = (deviceType: DeviceTypes): string => {
   return deviceType === 'desktop'
     ? '1024px'
     : deviceType === 'tablet'
@@ -18,7 +19,7 @@ export const getWidthByDeviceType = (deviceType: IDeviceTypes): string => {
       : '599px';
 };
 
-export const getBiggerDevice = (a: IDeviceTypes, b: IDeviceTypes): IDeviceTypes => {
+export const getBiggerDevice = (a: DeviceTypes, b: DeviceTypes): DeviceTypes => {
   return a === 'desktop' || b === 'desktop'
     ? 'desktop'
     : a === 'tablet' || b === 'tablet'
@@ -26,7 +27,7 @@ export const getBiggerDevice = (a: IDeviceTypes, b: IDeviceTypes): IDeviceTypes 
       : 'mobile';
 };
 
-export const getSmallerDevice = (a: IDeviceTypes, b: IDeviceTypes): IDeviceTypes => {
+export const getSmallerDevice = (a: DeviceTypes, b: DeviceTypes): DeviceTypes => {
   return a === 'mobile' || b === 'mobile'
     ? 'mobile'
     : a === 'tablet' || b === 'tablet'
@@ -35,26 +36,40 @@ export const getSmallerDevice = (a: IDeviceTypes, b: IDeviceTypes): IDeviceTypes
 };
 
 
-export function widthRelativeToCanvas(width: string | number, canvasWidth: string = '100vw'): string {
-  if (typeof width === 'number') {
-    return `${width}px`;
+/**
+ * Converts viewport units (vw/vh) to be relative to a specific canvas dimension
+ * @param dimension - The dimension value (e.g., "50vw", "100vh", "100px", 300)
+ * @param canvasDimension - The canvas dimension to calculate relative to (e.g., '100vw', '1024px')
+ * @param unit - The unit type to convert ('vw' or 'vh')
+ * @returns The converted dimension string
+ */
+export const dimensionRelativeToCanvas = (
+  dimension: string | number,
+  canvasDimension: string,
+  unit: 'vw' | 'vh',
+): string => {
+  if (typeof dimension === 'number') {
+    return `${dimension}px`;
   }
 
-  const trimmed = String(width).trim();
-  const vwRegex = /^([\d.]+)\s*vw$/i;
-  const vwMatch = vwRegex.exec(trimmed);
+  const trimmed = String(dimension).trim();
+  const unitRegex = new RegExp(`^([\\d.]+)\\s*${unit}$`, 'i');
+  const unitMatch = unitRegex.exec(trimmed);
 
-  if (vwMatch && vwMatch[1] !== undefined) {
-    const percentageOfCanvas = parseFloat(vwMatch[1]);
+  if (unitMatch && unitMatch[1] !== undefined) {
+    const percentageOfCanvas = parseFloat(unitMatch[1]);
     if (!Number.isNaN(percentageOfCanvas)) {
-      return `calc((${percentageOfCanvas} * ${canvasWidth}) / 100)`;
+      return `calc((${percentageOfCanvas} * ${canvasDimension}) / 100)`;
     }
   }
 
   return trimmed;
-}
+};
 
 export const defaultDesignerWidth = `${(typeof window !== 'undefined' ? window.screen.availWidth : 1024)}px`;
+
+/** Sentinel value for the responsive Canvas preset in the dropdown */
+export const CANVAS_PRESET_SENTINEL = '__CANVAS_RESPONSIVE__' as const;
 
 export interface IAutoZoomParams {
   currentZoom: number;
@@ -65,14 +80,23 @@ export interface IAutoZoomParams {
   viewType?: IViewType;
 };
 
+/**
+ * Predefined zoom levels (percentages) that the +/- buttons step through.
+ * Direct numeric entry in the zoom input is free-form within [minZoom, maxZoom]
+ * and is not restricted to these levels.
+ */
+export const ZOOM_LEVELS = [25, 50, 75, 80, 100, 125, 150, 200] as const;
+
 export const DEFAULT_OPTIONS = {
-  minZoom: 25,
-  maxZoom: 200,
+  minZoom: 10,
+  maxZoom: 400,
+  defaultZoom: 80,
   sizes: [25, 50, 25],
   configTreePanelWidth: (val: number = 20): number => typeof window !== 'undefined' ? (val / 100) * window.innerWidth : 200,
   gutter: 4,
   designerWidth: defaultDesignerWidth,
   zoomStep: 1,
+  zoomLevels: ZOOM_LEVELS,
   modalMargins: 32,
 };
 
@@ -98,7 +122,7 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
   // 2 elements: sizes[0] is main area (no left panel)
   // 3 elements: sizes[1] is main area (standard case)
   const mainAreaIndex = sizes.length <= 2 ? 0 : 1;
-  const availableWidthPercent = sizes[mainAreaIndex];
+  const availableWidthPercent = sizes[mainAreaIndex] ?? 50;
 
   if (typeof window === 'undefined') {
     return 100;
@@ -113,10 +137,8 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
     offset = configTreePanelSize;
   } else if (viewType === 'page') {
     offset = isSidebarCollapsed ? SIDEBAR_WIDTH.COLLAPSED : SIDEBAR_WIDTH.EXPANDED;
-  } else if (viewType === 'modal') {
-    offset = DEFAULT_OPTIONS.modalMargins;
   } else {
-    offset = SIDEBAR_WIDTH.MINIMAL;
+    offset = DEFAULT_OPTIONS.modalMargins;
   }
 
   const viewportWidth = Math.max(0, windowWidth - offset - guttersAndScrollersSize);
@@ -142,7 +164,7 @@ export const usePinchZoom = (
   minZoom: number = DEFAULT_OPTIONS.minZoom,
   maxZoom: number = DEFAULT_OPTIONS.maxZoom,
   isAutoWidth: boolean = false,
-): MutableRefObject<HTMLDivElement> => {
+): RefObject<HTMLDivElement | null> => {
   const elementRef = useRef<HTMLDivElement>(null);
   const lastDistance = useRef<number>(0);
   const initialZoom = useRef<number>(currentZoom);
@@ -195,7 +217,7 @@ export const usePinchZoom = (
 
 
   useEffect(() => {
-    const element = elementRef?.current;
+    const element = elementRef.current;
     if (!element) return undefined;
 
     // Wheel zoom (ctrl + wheel)
@@ -249,9 +271,25 @@ export const screenSizeOptions = [
     label: 'Desktop 1440', value: '1440px', icon: DesktopOutlined,
   },
   {
-    label: 'Desktop 1920', value: '1920px', icon: DesktopOutlined,
+    label: 'Full HD 1920x1080', value: '1920px', icon: DesktopOutlined,
   },
   {
-    label: 'Default', value: defaultDesignerWidth, icon: DesktopOutlined,
+    label: 'Canvas', value: CANVAS_PRESET_SENTINEL, icon: DesktopOutlined,
   },
 ];
+
+export const getDeviceStyle = (data: Record<string, object | undefined> | undefined, device: DeviceTypes | undefined, defaultDevice: DeviceTypes = 'desktop'): object | undefined => {
+  if (!data) return {};
+  if (!device) return data[defaultDevice] ?? {};
+  return deepMergeValues(data[defaultDevice] ?? {}, data[device] ?? {});
+};
+
+
+export const applyCanvasSize = (state: ICanvasStateContext, width: number | string, deviceType: DeviceTypes): ICanvasStateContext => {
+  return {
+    ...state,
+    designerWidth: typeof width === 'string' ? width : `${width}px`,
+    designerDevice: deviceType,
+    activeDevice: getSmallerDevice(deviceType, state.physicalDevice ?? "desktop"),
+  };
+};

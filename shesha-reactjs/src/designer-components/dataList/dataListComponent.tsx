@@ -6,12 +6,14 @@ import { migrateCustomFunctions, migratePropertyName } from '@/designer-componen
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IDataListComponentProps } from './model';
 import DataListControl from './dataListControl';
-import { useDataTableStore } from '@/providers';
+import { useDataTableStoreOrUndefined } from '@/providers';
 import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { isConfigurableActionConfiguration } from '@/interfaces/configurableAction';
+import { isDefined } from '@/utils/nullables';
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   type: 'datalist',
@@ -20,7 +22,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   icon: <UnorderedListOutlined />,
   Factory: ({ model }) => {
     const ds = useDataSources();
-    const dts = useDataTableStore(false);
+    const dts = useDataTableStoreOrUndefined();
 
     const dataSource = model.dataSource
       ? ds.getDataSource(model.dataSource)?.dataSource
@@ -30,10 +32,14 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
     // In designer mode, if no data source is configured and none is available from context, show error
     if (model.hidden) return null;
 
+    // TODO: review validation
+    if (!isDefined(dataSource))
+      throw new Error('No data source is available for this list');
+
     return (
       <DataListControl
         {...model}
-        dataSourceInstance={dataSource ?? null}
+        dataSourceInstance={dataSource}
       />
     );
   },
@@ -58,7 +64,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
         canDeleteInline: 'no',
         inlineEditMode: 'one-by-one',
         inlineSaveMode: 'manual',
-        dblClickActionConfiguration: prev['actionConfiguration'],
+        dblClickActionConfiguration: "actionConfiguration" in prev && isConfigurableActionConfiguration(prev.actionConfiguration) ? prev.actionConfiguration : undefined,
         showEditIcons: true,
       };
     })
@@ -72,7 +78,8 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
     .add<IDataListComponentProps>(9, (prev) => {
       return {
         ...prev,
-        desktop: { ...prev.desktop,
+        desktop: {
+          ...prev.desktop,
           gap: prev.cardSpacing,
           dimensions: {
             ...prev.desktop?.dimensions,
@@ -80,7 +87,8 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
             maxWidth: prev.cardMaxWidth,
             width: prev.customWidth,
             height: prev.cardHeight,
-          } },
+          },
+        },
       };
     }).add<IDataListComponentProps>(10, (prev) => {
       const cardSpacing = prev.cardSpacing || '0px';

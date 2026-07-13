@@ -1,11 +1,10 @@
 import { Form } from 'antd';
-import React, { FC, PropsWithChildren, useCallback, useContext, useEffect, useRef } from 'react';
+import React, { PropsWithChildren, useCallback, useContext, useEffect, useReducer, useRef } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { RowDataInitializer } from '@/components/reactTable/interfaces';
-import useThunkReducer from '@/hooks/thunkReducer';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import { FormProvider, ShaForm, useForm } from '@/providers';
-import { DEFAULT_FORM_SETTINGS, IFlatComponentsStructure, IFormSettings } from '@/providers/form/models';
+import { DEFAULT_FORM_SETTINGS, EMPTY_FLAT_COMPONENTS_STRUCTURE, IFlatComponentsStructure, IFormSettings } from '@/providers/form/models';
 import {
   deleteFailedAction,
   deleteStartedAction,
@@ -30,64 +29,74 @@ import { filterDataByOutputComponents } from '../form/api';
 import { useFormDesignerComponents } from '../form/hooks';
 import { removeGhostKeys } from '@/utils/form';
 import { IDelayedUpdateGroup } from '../delayedUpdateProvider/models';
-import { ConfigurableFormInstance } from '../form/contexts';
+import { IFormActionsContext } from '../form/contexts';
 import { ShaFormProvider } from '../form/providers/shaFormProvider';
 import { useShaForm } from '../form/store/shaFormInstance';
+import { extractErrorInfo, throwError } from '@/utils/errors';
 
-export type DataProcessor = (data: any) => Promise<any>;
+export type DataProcessor<TData extends object = object> = (data: TData) => Promise<TData>;
 
-export interface ICrudProviderProps {
+export interface ICrudProviderProps<TData extends object = object> {
   isNewObject: boolean;
   allowEdit: boolean;
   allowDelete: boolean;
-  mode?: CrudMode;
+  mode?: CrudMode | undefined;
   allowChangeMode: boolean;
-  data: object | RowDataInitializer;
-  updater?: DataProcessor;
-  creater?: DataProcessor;
-  deleter?: () => Promise<any>;
-  onSave?: DataProcessor;
-  autoSave?: boolean;
-  editorComponents?: IFlatComponentsStructure;
-  displayComponents?: IFlatComponentsStructure;
-  formSettings?: IFormSettings;
+  data: TData | RowDataInitializer<TData>;
+  updater?: DataProcessor<TData> | undefined;
+  creater?: DataProcessor<TData> | undefined;
+  deleter?: (() => Promise<void>) | undefined;
+  onSave?: DataProcessor<TData> | undefined;
+  autoSave?: boolean | undefined;
+  editorComponents?: IFlatComponentsStructure | undefined;
+  displayComponents?: IFlatComponentsStructure | undefined;
+  formSettings?: IFormSettings | undefined;
 }
 
-interface IInternalCrudProviderProps extends ICrudProviderProps {
+interface IInternalCrudProviderProps<TData extends object = object> extends ICrudProviderProps<TData> {
   context: ICrudContext;
   onValuesChange: () => void;
   setInitialValues: (values: object) => void;
   setInitialValuesLoading: (loading: boolean) => void;
-  delayedUpdate: React.MutableRefObject<IDelayedUpdateGroup[]>;
+  delayedUpdate: React.RefObject<IDelayedUpdateGroup[] | undefined> | undefined;
 }
 
-const InternalCrudProvider: FC<PropsWithChildren<IInternalCrudProviderProps>> = (props) => {
+const InternalCrudProvider = <TData extends object = object>(props: PropsWithChildren<IInternalCrudProviderProps<TData>>): React.ReactElement => {
   const {
     data,
     children,
+    setInitialValuesLoading,
+    setInitialValues,
   } = props;
 
-  const form = useForm();
+  const { form, setFormData } = useForm();
 
   useEffect(() => {
     if (typeof data === 'function') {
-      props.setInitialValuesLoading(true);
+      setInitialValuesLoading(true);
       const dataResponse = data();
 
       Promise.resolve(dataResponse).then((response) => {
-        props.setInitialValues(response);
-        form.form.setFieldsValue(response);
-      });
+        setInitialValues(response);
+        form?.setFieldsValue(response);
+      }).catch((error) => {
+        console.error('Failed to fetch initial values', error);
+        throw error;
+      }); ;
     } else {
-      props.setInitialValues(data);
+      setInitialValues(data);
 
-      form.setFormData({ values: data, mergeValues: true });
+      setFormData({ values: data, mergeValues: true });
     }
-  }, [data]);
+  }, [form, setFormData, data, setInitialValuesLoading, setInitialValues]);
 
   return (
     <CrudContext.Provider value={props.context}>
-      <ParentProvider model={{ readOnly: props.context.mode === 'read' }} formMode={props.context.mode === 'read' ? 'readonly' : 'edit'}>
+      <ParentProvider
+        name="InternalCrudProvider"
+        model={{ readOnly: props.context.mode === 'read' }}
+        formMode={props.context.mode === 'read' ? 'readonly' : 'edit'}
+      >
         {children}
       </ParentProvider>
     </CrudContext.Provider>
@@ -95,7 +104,7 @@ const InternalCrudProvider: FC<PropsWithChildren<IInternalCrudProviderProps>> = 
 };
 
 
-const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
+const CrudProvider = <TData extends object = object>(props: PropsWithChildren<ICrudProviderProps<TData>>): React.ReactElement => {
   const {
     data,
     updater,
@@ -110,7 +119,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     autoSave = false,
     formSettings = DEFAULT_FORM_SETTINGS,
   } = props;
-  const [state, dispatch] = useThunkReducer(reducer, {
+  const [state, dispatch] = useReducer(reducer, {
     ...CRUD_CONTEXT_INITIAL_STATE,
     isNewObject,
     allowEdit,
@@ -122,9 +131,9 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
   });
 
   const toolboxComponents = useFormDesignerComponents();
-  const delayedUpdate = useRef<IDelayedUpdateGroup[]>();
+  const delayedUpdate = useRef<IDelayedUpdateGroup[]>(undefined);
 
-  const formRef = useRef<ConfigurableFormInstance>(null);
+  const formRef = useRef<IFormActionsContext<TData>>(undefined);
 
   const switchModeInternal = (mode: CrudMode, allowChangeMode: boolean): void => {
     dispatch(switchModeAction({ mode, allowChangeMode }));
@@ -136,7 +145,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
 
   useEffect(() => {
     if (autoSave !== state.autoSave) dispatch(setAutoSaveAction(autoSave));
-  }, [autoSave]);
+  }, [autoSave, state.autoSave]);
 
   useEffect(() => {
     // to restore the edit pen when toggling between inLine edit mode(all-at-once/one-by-one)
@@ -144,17 +153,17 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
 
     if (state.allowChangeMode !== allowChangeMode || state.mode !== modeToUse)
       switchModeInternal(modeToUse, allowChangeMode);
-  }, [mode, allowChangeMode]);
+  }, [mode, allowChangeMode, state.mode, state.allowChangeMode]);
 
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<TData>();
 
-  const setInitialValuesLoading = (loading: boolean): void => {
+  const setInitialValuesLoading = useCallback((loading: boolean): void => {
     dispatch(setInitialValuesLoadingAction(loading));
-  };
+  }, []);
 
-  const setInitialValues = (values: object): void => {
+  const setInitialValues = useCallback((values: object): void => {
     dispatch(setInitialValuesAction(values));
-  };
+  }, []);
 
   //#region Allow Edit/Delete/Create
 
@@ -164,7 +173,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
 
   useEffect(() => {
     if (state.allowEdit !== allowEdit) setAllowEdit(allowEdit);
-  }, [allowEdit]);
+  }, [allowEdit, state.allowEdit]);
 
   const setAllowDelete = (allowDelete: boolean): void => {
     dispatch(setAllowDeleteAction(allowDelete));
@@ -172,7 +181,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
 
   useEffect(() => {
     if (state.allowDelete !== allowDelete) setAllowDelete(allowDelete);
-  }, [allowDelete]);
+  }, [allowDelete, state.allowDelete]);
 
   //#endregion
 
@@ -180,16 +189,15 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     dispatch(resetErrorsAction());
   };
 
-  const getErrorInfo = (error: any, message: string): IErrorInfo => {
+  const getErrorInfo = (error: unknown, message: string): IErrorInfo => {
+    const errorInfo = extractErrorInfo(error);
     return {
       message: message,
-      ...error,
+      ...errorInfo,
     };
   };
 
-  const performSave = (processor: DataProcessor, updateType: string): Promise<void> => {
-    if (!processor) return Promise.reject('`processor` must be defined');
-
+  const performSave = (processor: DataProcessor<TData>, updateType: string): Promise<void> => {
     dispatch(saveStartedAction());
 
     return form
@@ -200,11 +208,11 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
 
         const postData = filterDataByOutputComponents(
           removeGhostKeys(mergedData), // TODO: temporary use ghost keys for file upload components, form colums still not provide components structure
-          props.editorComponents.allComponents,
+          props.editorComponents?.allComponents ?? {},
           toolboxComponents,
-        );
+        ) as TData;
         // send data of stored files
-        if (Boolean(delayedUpdate)) postData._delayedUpdate = delayedUpdate.current;
+        if (Boolean(delayedUpdate)) (postData as Record<string, unknown>)['_delayedUpdate'] = delayedUpdate.current;
 
         const finalDataPromise = onSave ? Promise.resolve(onSave(postData)) : Promise.resolve(postData);
 
@@ -262,11 +270,11 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     resetErrors();
   };
 
-  const getFormData = (): any => {
+  const getFormData = (): TData => {
     return form.getFieldsValue();
   };
-  const getInitialData = (): any => {
-    return state.initialValues;
+  const getInitialData = (): TData => {
+    return state.initialValues as TData;
   };
 
   const onValuesChange = useCallback(() => {
@@ -274,7 +282,9 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
 
     if (!form.isFieldsTouched()) return;
 
-    debouncedUpdate();
+    debouncedUpdate()?.catch((error) => {
+      console.error('Failed to auto-save', error);
+    });
   }, [state.autoSave, state.mode, form, debouncedUpdate]);
 
   // Cancel pending auto-save when mode changes or component unmounts
@@ -296,24 +306,39 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     getInitialData,
   };
 
-  const flatMarkup = state.mode === 'read' ? props.displayComponents : props.editorComponents;
+  const flatMarkup = (state.mode === 'read' ? props.displayComponents : props.editorComponents) ?? EMPTY_FLAT_COMPONENTS_STRUCTURE;
 
-  const [shaForm] = useShaForm({
+  const [shaForm] = useShaForm<TData>({
     antdForm: form,
     form: undefined,
     init: (form) => {
-      form.initByMarkup({
+      form.initFormByMarkup({
         formFlatMarkup: flatMarkup,
         formSettings: formSettings,
+      }).catch((error) => {
+        console.error('Failed to init form', error);
+        throw error;
       });
     },
   });
+
+  // init form data
+  useEffect(() => {
+    if (shaForm.markupLoadingState.status === 'ready' && shaForm.dataLoadingState.status === 'waiting')
+      void shaForm.triggerEvents();
+  }, [shaForm, shaForm.markupLoadingState.status, shaForm.dataLoadingState.status]);
+
   return (
     <ShaFormProvider shaForm={shaForm}>
       <ShaForm.MarkupProvider markup={flatMarkup}>
         {/* Use ParentProvider to provide correct formApi */}
-        <ParentProvider formApi={shaForm.getPublicFormApi()} formFlatMarkup={flatMarkup} model={undefined}>
-          <FormProvider
+        <ParentProvider<TData>
+          name="CrudProvider"
+          formApi={shaForm.getPublicFormApi()}
+          formFlatMarkup={flatMarkup}
+          model={undefined}
+        >
+          <FormProvider<TData>
             key={state.mode} /* important for re-rendering of the provider after mode change */
             form={form}
             name=""
@@ -346,14 +371,6 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
   );
 };
 
-function useCrud(require: boolean = true): ICrudContext | undefined {
-  const context = useContext(CrudContext);
-
-  if (context === undefined && require) {
-    throw new Error('useCrud must be used within a CrudProvider');
-  }
-
-  return context;
-}
+const useCrud = (): ICrudContext => useContext(CrudContext) ?? throwError("useCrud must be used within a CrudProvider");
 
 export { CrudProvider, useCrud };

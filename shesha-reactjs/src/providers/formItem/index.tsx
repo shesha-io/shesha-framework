@@ -3,9 +3,9 @@ import React, { FC, PropsWithChildren, useContext } from 'react';
 import { FormItemStateContext, IFormItemStateContext } from './contexts';
 
 export interface FormItemProviderProps {
-  labelCol?: ColProps;
-  wrapperCol?: ColProps;
-  namePrefix?: string;
+  labelCol?: ColProps | undefined;
+  wrapperCol?: ColProps | undefined;
+  namePrefix?: string | undefined;
 }
 
 const FormItemProvider: FC<PropsWithChildren<FormItemProviderProps>> = ({

@@ -1,36 +1,35 @@
-import { Collapse } from 'antd';
-import React, { FC, useMemo } from 'react';
-import { ICodeExposedVariable } from '@/components/codeVariablesTable';
+import { useFormBuilderFactory } from '@/form-factory/hooks';
+import { FormBuilderFactory } from '@/form-factory/interfaces';
+import { IObjectMetadata } from '@/interfaces';
 import {
   FormMarkupFactory,
   IConfigurableActionArgumentsFormFactory,
   IConfigurableActionDescriptor,
 } from '@/interfaces/configurableAction';
-import { FormMarkup } from '@/providers/form/models';
-import GenericArgumentsEditor from './genericArgumentsEditor';
-import { IObjectMetadata } from '@/interfaces';
 import { getActualActionArguments } from '@/providers/configurableActionsDispatcher';
+import { ActionParametersDictionary, FormMarkup } from '@/providers/form/models';
+import { Collapse } from 'antd';
+import React, { ReactNode, useMemo } from 'react';
 import { useStyles } from '../_settings/styles/styles';
-import { wrapDisplayName } from '@/utils/react';
-import { useFormBuilderFactory } from '@/form-factory/hooks';
-import { FormBuilderFactory } from '@/form-factory/interfaces';
+import GenericArgumentsEditor from './genericArgumentsEditor';
+import { isDefined } from '@/utils/nullables';
 
-export interface IActionArgumentsEditorProps {
-  action: IConfigurableActionDescriptor;
-  value?: any;
-  onChange?: (value: any) => void;
+export interface IActionArgumentsEditorProps<TArguments extends ActionParametersDictionary = ActionParametersDictionary> {
+  action: IConfigurableActionDescriptor<TArguments>;
+  value?: TArguments;
+  onChange?: (value: TArguments) => void;
   readOnly?: boolean;
-  exposedVariables?: ICodeExposedVariable[];
   availableConstants?: IObjectMetadata;
 }
 
-const getDefaultFactory = (
+const getDefaultFactory = <TArguments extends ActionParametersDictionary = ActionParametersDictionary>(
   fbf: FormBuilderFactory,
-  action: IConfigurableActionDescriptor,
+  action: IConfigurableActionDescriptor<TArguments>,
   readOnly: boolean,
-): IConfigurableActionArgumentsFormFactory => {
+): IConfigurableActionArgumentsFormFactory<TArguments> => {
   const { argumentsFormMarkup: markup } = action;
-  return wrapDisplayName(({ model, onSave, onCancel, onValuesChange, exposedVariables, availableConstants }) => {
+
+  const factory: IConfigurableActionArgumentsFormFactory<TArguments> = ({ model, onSave, onCancel, onValuesChange, availableConstants }) => {
     const markupFactory = typeof markup === 'function'
       ? (markup as FormMarkupFactory)
       : () => markup as FormMarkup;
@@ -38,9 +37,9 @@ const getDefaultFactory = (
       ? `${action.ownerUid}-${action.name}-args`
       : undefined;
 
-    const formMarkup = markupFactory({ fbf, exposedVariables, availableConstants });
+    const formMarkup = markupFactory({ fbf, availableConstants });
     return (
-      <GenericArgumentsEditor
+      <GenericArgumentsEditor<TArguments>
         model={model}
         onSave={onSave}
         onCancel={onCancel}
@@ -50,17 +49,17 @@ const getDefaultFactory = (
         cacheKey={cacheKey}
       />
     );
-  }, "defaultArguments");
+  };
+  return factory;
 };
 
-export const ActionArgumentsEditor: FC<IActionArgumentsEditorProps> = ({
+export const ActionArgumentsEditor = <TArguments extends ActionParametersDictionary = ActionParametersDictionary>({
   action,
   value,
   onChange,
   readOnly = false,
-  exposedVariables,
   availableConstants,
-}) => {
+}: IActionArgumentsEditorProps<TArguments>): ReactNode => {
   const { styles } = useStyles();
   const fbf = useFormBuilderFactory();
 
@@ -68,22 +67,22 @@ export const ActionArgumentsEditor: FC<IActionArgumentsEditorProps> = ({
     const settingsFormFactory = action.argumentsFormFactory
       ? action.argumentsFormFactory
       : action.argumentsFormMarkup
-        ? getDefaultFactory(fbf, action, readOnly)
+        ? getDefaultFactory<TArguments>(fbf, action, readOnly)
         : null;
 
     const onCancel = (): void => {
       //
     };
 
-    const onSave = (values): void => {
+    const onSave = (values: TArguments): void => {
       if (onChange) onChange(values);
     };
 
-    const onValuesChange = (_changedValues, values): void => {
+    const onValuesChange = (_changedValues: Partial<TArguments>, values: TArguments): void => {
       if (onChange) onChange(values);
     };
 
-    const actualValue = getActualActionArguments(action, value);
+    const actualValue = getActualActionArguments(action, value) ?? {} as TArguments;
 
     return settingsFormFactory
       ? settingsFormFactory({
@@ -92,13 +91,14 @@ export const ActionArgumentsEditor: FC<IActionArgumentsEditorProps> = ({
         onCancel,
         onValuesChange,
         readOnly,
-        exposedVariables,
         availableConstants,
       })
       : null;
-  }, [action]);
+  // Disable eslint verification to avoid unnecessary re-creation of the argument editor.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [action, readOnly]);
 
-  if (!argumentsEditor) return null;
+  if (!isDefined(argumentsEditor)) return null;
 
   return (
     <Collapse

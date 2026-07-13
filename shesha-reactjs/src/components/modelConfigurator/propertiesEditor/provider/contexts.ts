@@ -1,4 +1,4 @@
-import { MutableRefObject } from 'react';
+import { RefObject } from 'react';
 import { IModelItem } from '@/interfaces/modelConfigurator';
 import { createNamedContext } from '@/utils/react';
 
@@ -8,7 +8,7 @@ export interface IUpdateChildItemsPayload {
 }
 
 export interface IAddItemPayload {
-  parentId?: string;
+  parentId?: string | undefined;
   item: IModelItem;
 }
 
@@ -19,9 +19,9 @@ export interface IUpdateItemSettingsPayload {
 
 export interface IPropertiesEditorStateContext {
   items: IModelItem[];
-  selectedItemId?: string;
-  onChange?: (items: IModelItem[]) => void;
-  selectedItemRef?: MutableRefObject<any>;
+  selectedItemId?: string | undefined;
+  onChange?: ((items: IModelItem[]) => void) | undefined;
+  selectedItemRef?: RefObject<HTMLDivElement | null>;
 }
 
 export interface IPropertiesEditorActionsContext {
@@ -29,7 +29,7 @@ export interface IPropertiesEditorActionsContext {
   deleteItem: (uid: string) => void;
   selectItem: (uid: string) => void;
   updateChildItems: (payload: IUpdateChildItemsPayload) => void;
-  getItem: (uid: string) => IModelItem;
+  getItem: (uid: string) => IModelItem | undefined;
   updateItem: (payload: IUpdateItemSettingsPayload) => void;
 
   /* NEW_ACTION_ACTION_DECLARATIOS_GOES_HERE */
@@ -39,9 +39,9 @@ export const PROPERTIES_EDITOR_CONTEXT_INITIAL_STATE: IPropertiesEditorStateCont
   items: [],
 };
 
-export const PropertiesEditorStateContext = createNamedContext<IPropertiesEditorStateContext>(
+export const PropertiesEditorStateContext = createNamedContext<IPropertiesEditorStateContext | undefined>(
   PROPERTIES_EDITOR_CONTEXT_INITIAL_STATE,
   "PropertiesEditorStateContext",
 );
 
-export const PropertiesEditorActionsContext = createNamedContext<IPropertiesEditorActionsContext>(undefined, "PropertiesEditorActionsContext");
+export const PropertiesEditorActionsContext = createNamedContext<IPropertiesEditorActionsContext | undefined>(undefined, "PropertiesEditorActionsContext");

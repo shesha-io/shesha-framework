@@ -1,5 +1,5 @@
-import { createAction } from 'redux-actions';
-import { ICanvasWidthProps, IDeviceTypes, IViewType } from './contexts';
+import { createAction } from '@reduxjs/toolkit';
+import { ICanvasWidthProps, DeviceTypes, IViewType } from './contexts';
 
 export enum CanvasConfigActionEnums {
   SetCanvasWidth = 'SET_FORM_WIDTH',
@@ -7,22 +7,24 @@ export enum CanvasConfigActionEnums {
   SetDesignerDevice = 'SET_DESIGNER_DEVICE',
   SetScreenWidth = 'SET_SCREEN_WIDTH',
   SetCanvasAutoZoom = 'SET_AUTO_ZOOM',
+  SetManualZoom = 'SET_MANUAL_ZOOM',
   SetConfigTreePanelSize = 'SET_CONFIG_TREE_PANEL_SIZE',
   SetViewType = 'SET_VIEW_TYPE',
-  /* NEW_ACTION_TYPE_GOES_HERE */
 }
 
-export const setCanvasZoomAction = createAction<number, number>(CanvasConfigActionEnums.SetCanvasZoom, (p) => p);
+export const setCanvasZoomAction = createAction<number>(CanvasConfigActionEnums.SetCanvasZoom);
 
-export const setCanvasWidthAction = createAction<ICanvasWidthProps, ICanvasWidthProps>(CanvasConfigActionEnums.SetCanvasWidth, (p) => p);
+export const setCanvasWidthAction = createAction<ICanvasWidthProps>(CanvasConfigActionEnums.SetCanvasWidth);
 
-export const setScreenWidthAction = createAction<number, number>(CanvasConfigActionEnums.SetScreenWidth, (p) => p);
+export const setScreenWidthAction = createAction<number>(CanvasConfigActionEnums.SetScreenWidth);
 
-export const setDesignerDeviceAction = createAction<IDeviceTypes, IDeviceTypes>(CanvasConfigActionEnums.SetDesignerDevice, (p) => p);
+export const setDesignerDeviceAction = createAction<DeviceTypes>(CanvasConfigActionEnums.SetDesignerDevice);
 
-export const SetCanvasAutoZoomAction = createAction(CanvasConfigActionEnums.SetCanvasAutoZoom);
+export const setCanvasAutoZoomAction = createAction<boolean | undefined>(CanvasConfigActionEnums.SetCanvasAutoZoom);
 
-export const SetConfigTreePanelSizeAction = createAction(CanvasConfigActionEnums.SetConfigTreePanelSize);
+// Sets an explicit zoom value and switches the canvas into manual mode (disables auto-zoom).
+export const setManualZoomAction = createAction<number>(CanvasConfigActionEnums.SetManualZoom);
 
-export const setViewTypeAction = createAction<IViewType, IViewType>(CanvasConfigActionEnums.SetViewType, (p) => p);
-/* NEW_ACTION_GOES_HERE */
+export const setConfigTreePanelSizeAction = createAction<number>(CanvasConfigActionEnums.SetConfigTreePanelSize);
+
+export const setViewTypeAction = createAction<IViewType>(CanvasConfigActionEnums.SetViewType);

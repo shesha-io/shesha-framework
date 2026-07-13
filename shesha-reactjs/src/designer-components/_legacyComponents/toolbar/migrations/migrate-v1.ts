@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-deprecated */
 import { ButtonType } from 'antd/lib/button';
 import { FormIdentifier } from '@/providers/form/models';
 import { getClosestTableId } from '@/providers/form/utils';
@@ -12,12 +13,12 @@ interface IShowModalActionArguments {
   modalTitle: string;
   formId: FormIdentifier;
   showModalFooter: boolean;
-  additionalProperties?: IKeyValue[];
-  modalWidth?: number;
+  additionalProperties?: IKeyValue[] | undefined;
+  modalWidth?: number | undefined;
   /**
    * What http verb to use when submitting the form
    */
-  submitHttpVerb?: 'POST' | 'PUT';
+  submitHttpVerb?: 'POST' | 'PUT' | undefined;
 }
 
 const makeAction = (props: Pick<IConfigurableActionConfiguration, 'actionName' | 'actionOwner' | 'actionArguments' | 'onSuccess'>): IConfigurableActionConfiguration => {
@@ -32,9 +33,9 @@ const makeAction = (props: Pick<IConfigurableActionConfiguration, 'actionName' |
   };
 };
 
-const getActionConfiguration = (buttonProps: IToolbarButtonV0, context: SettingsMigrationContext): IConfigurableActionConfiguration => {
-  if (buttonProps['actionConfiguration'])
-    return buttonProps['actionConfiguration'] as IConfigurableActionConfiguration;
+const getActionConfiguration = (buttonProps: IToolbarButtonV0, context: SettingsMigrationContext): IConfigurableActionConfiguration | undefined => {
+  if ("actionConfiguration" in buttonProps && typeof buttonProps.actionConfiguration === "object")
+    return buttonProps.actionConfiguration as IConfigurableActionConfiguration;
 
   switch (buttonProps.buttonAction) {
     case "cancelFormEdit": {
@@ -79,10 +80,10 @@ const getActionConfiguration = (buttonProps: IToolbarButtonV0, context: Settings
       const propsWithModal = buttonProps as IToolbarButtonTableDialogPropsV0;
 
       const modalArguments: IShowModalActionArguments = {
-        modalTitle: buttonProps.modalTitle,
-        formId: buttonProps.modalFormId,
+        modalTitle: buttonProps.modalTitle ?? "",
+        formId: buttonProps.modalFormId ?? "",
 
-        showModalFooter: propsWithModal.showModalFooter,
+        showModalFooter: propsWithModal.showModalFooter ?? false,
         submitHttpVerb: propsWithModal.submitHttpVerb,
         additionalProperties: propsWithModal.additionalProperties,
         modalWidth: propsWithModal.width,
@@ -102,7 +103,7 @@ const getActionConfiguration = (buttonProps: IToolbarButtonV0, context: Settings
       if (propsWithModal.refreshTableOnSuccess) {
         actionConfig.handleSuccess = true;
         actionConfig.onSuccess = makeAction({
-          actionOwner: getClosestTableId(context),
+          actionOwner: getClosestTableId(context) ?? "",
           actionName: 'Refresh table',
         });
       }
@@ -120,31 +121,31 @@ const getActionConfiguration = (buttonProps: IToolbarButtonV0, context: Settings
     case "executeFormAction": {
       if (buttonProps.formAction === 'exportToExcel' || buttonProps.formAction === 'EXPORT_TO_EXCEL') {
         return makeAction({
-          actionOwner: getClosestTableId(context),
+          actionOwner: getClosestTableId(context) ?? "",
           actionName: 'Export to Excel',
         });
       }
       if (buttonProps.formAction === 'TOGGLE_COLUMNS_SELECTOR' || buttonProps.customAction === 'toggleColumnsSelector') {
         return makeAction({
-          actionOwner: getClosestTableId(context),
+          actionOwner: getClosestTableId(context) ?? "",
           actionName: 'Toggle Columns Selector',
         });
       }
       if (buttonProps.formAction === 'TOGGLE_ADVANCED_FILTER' || buttonProps.customAction === 'toggleAdvancedFilter') {
         return makeAction({
-          actionOwner: getClosestTableId(context),
+          actionOwner: getClosestTableId(context) ?? "",
           actionName: 'Toggle Advanced Filter',
         });
       }
       if (buttonProps.formAction === 'REFRESH_TABLE' || buttonProps.customAction === 'refresh') {
         return makeAction({
-          actionOwner: getClosestTableId(context),
+          actionOwner: getClosestTableId(context) ?? "",
           actionName: 'Refresh table',
         });
       }
     }
   }
-  return null;
+  return undefined;
 };
 
 
@@ -265,7 +266,7 @@ interface IModalPropsV0 {
   /**
    * A callback to execute when the form has been submitted
    */
-  onSubmitted?: (values?: any) => void;
+  onSubmitted?: (values?: object) => void;
 
   /**
    * If passed, the user will be redirected to this url on success
@@ -290,9 +291,9 @@ interface IModalPropsV0 {
 //#endregion
 
 export const migrateV0toV1 = (model: IToolbarPropsV0, context: SettingsMigrationContext): IToolbarProps => {
-  const items = (model.items ?? []).map<ToolbarItemProps>((item) => {
+  const items = model.items.map<ToolbarItemProps>((item) => {
     if (item.itemType === "item") {
-      if (item['actionConfiguration'])
+      if ("actionConfiguration" in item)
         return item;
       const buttonProps = item as IToolbarButtonV0;
       if (buttonProps.itemSubType === 'button') {

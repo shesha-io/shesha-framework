@@ -66,12 +66,12 @@
         </member>
         <member name="M:Shesha.Testing.ShaIntegratedTestBase`1.PreInitialize">
             <summary>
-            This method can be overrided to replace some services with fakes.
+            This method can be overridden to replace some services with fakes.
             </summary>
         </member>
         <member name="M:Shesha.Testing.ShaIntegratedTestBase`1.PostInitialize">
             <summary>
-            This method can be overrided to replace some services with fakes.
+            This method can be overridden to replace some services with fakes.
             </summary>
         </member>
         <member name="M:Shesha.Testing.ShaIntegratedTestBase`1.Resolve``1">

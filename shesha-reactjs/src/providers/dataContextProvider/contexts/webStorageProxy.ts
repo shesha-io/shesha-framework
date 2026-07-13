@@ -1,4 +1,5 @@
 import { isDefined } from "@/utils/nullables";
+import { hasProperty } from "@/utils/object";
 
 export interface IWebStorageProxy {
   updateOnChangeHandler: (func: () => void) => void;
@@ -18,13 +19,18 @@ export class WebStorageProxy {
   }
 
   private deserialize(value: string | null | undefined): unknown {
-    return isDefined(value)
-      ? value === 'undefined'
-        ? undefined
-        : value === 'null'
-          ? null
-          : JSON.parse(value)
-      : value;
+    try {
+      return isDefined(value)
+        ? value === 'undefined'
+          ? undefined
+          : value === 'null'
+            ? null
+            : JSON.parse(value)
+        : value;
+    } catch {
+      // hide error and return original value becsuse it's not json
+      return value;
+    }
   }
 
   setItem(key: string, value: unknown): void {
@@ -63,8 +69,8 @@ export class WebStorageProxy {
     this._prefix = prefix;
     return new Proxy(this, {
       get(target, name) {
-        if (name in target) {
-          const result = target[name as keyof IWebStorageProxy];
+        if (hasProperty(target, name)) {
+          const result = target[name];
           return typeof result === 'function'
             ? result.bind(target)
             : result;

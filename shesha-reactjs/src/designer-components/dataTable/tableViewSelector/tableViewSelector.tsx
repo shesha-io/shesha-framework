@@ -1,10 +1,9 @@
 import _ from 'lodash';
-import React, { FC, useEffect } from 'react';
+import React, { FC } from 'react';
 import TableViewSelectorRenderer from '@/components/tableViewSelectorRenderer';
 import { evaluateDynamicFilters } from '@/utils/datatable';
 import { ITableViewSelectorComponentProps } from './models';
 import {
-  useDataContextManagerOrUndefined,
   useDataFetchDependency,
   useDataTableStore,
   useGlobalState,
@@ -15,6 +14,7 @@ import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { useShaFormDataUpdate, useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 import { useDataContextOrUndefined } from '@/providers/dataContextProvider/contexts';
 import { useStyles } from '../tableContext/styles';
+import { useDataContextManagerOrUndefined } from '@/providers/dataContextManager/hooks';
 
 type ITableViewSelectorProps = ITableViewSelectorComponentProps;
 
@@ -22,7 +22,6 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
   id,
   filters,
   hidden,
-  persistSelectedFilters,
   showIcon,
 }) => {
   const {
@@ -30,13 +29,11 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
     selectedStoredFilterIds,
     setPredefinedFilters,
     predefinedFilters,
-    changePersistedFiltersToggle,
     modelType,
   } = useDataTableStore();
 
   const { styles } = useStyles();
 
-  // ToDo: AS - need to optimize
   useShaFormDataUpdate();
 
   const application = useSheshaApplication();
@@ -63,7 +60,7 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
     if (dataContextManager)
       match.push({ match: 'contexts', data: dataContextManager.getDataContextsData(dataContext?.id) });
 
-    const permissionedFilters = filters.filter((f) => !f.permissions || (f.permissions && application.anyOfPermissionsGranted(f.permissions)));
+    const permissionedFilters = filters.filter((f) => !f.permissions || application.anyOfPermissionsGranted(f.permissions));
 
     evaluateDynamicFilters(
       permissionedFilters,
@@ -72,19 +69,19 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
     ).then((evaluatedFilters) => {
       dataFetchDep.ready();
       setPredefinedFilters(evaluatedFilters);
+    }).catch((error) => {
+      console.error('Failed to evaluate dynamic filters', error);
+      throw error;
     });
   };
 
   useDeepCompareEffect(() => {
     debounceEvaluateDynamicFiltersHelper();
-  }, [filters, formData, globalState, dataContextManager.lastUpdate]);
+  }, [filters, formData, globalState, dataContextManager?.lastUpdate]);
 
-  useEffect(() => {
-    changePersistedFiltersToggle(persistSelectedFilters);
-  }, [persistSelectedFilters]);
   //#endregion
 
-  const changeSelectedFilter = (id: string): void => {
+  const changeSelectedFilter = (id: string | undefined): void => {
     changeSelectedStoredFilterIds(id ? [id] : []);
   };
 
@@ -112,7 +109,7 @@ export const TableViewSelector: FC<ITableViewSelectorProps> = ({
       hidden={hidden && !isDesignerMode}
       filters={predefinedFilters || []}
       onSelectFilter={changeSelectedFilter}
-      selectedFilterId={selectedFilterId}
+      selectedFilterId={selectedFilterId ?? undefined}
       showIcon={showIcon}
     />
   );

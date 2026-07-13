@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Binder;
+using Shesha.Reflection;
 using Shesha.Services;
 using System;
 using System.Collections.Generic;
@@ -48,7 +49,7 @@ namespace Shesha.JsonEntities.Proxy
 
         public static object GetUnproxiedInstance(object pobj)
         {
-            return ProxyUtil.IsProxy(pobj) ? ProxyUtil.GetUnproxiedInstance(pobj) : pobj;
+            return ProxyUtil.IsProxy(pobj) ? ProxyUtil.GetUnproxiedInstance(pobj).NotNull("Failed to get proxy instance") : pobj;
         }
 
         public static JObject GetJson(object proxyObj, JObject? jObj = null)

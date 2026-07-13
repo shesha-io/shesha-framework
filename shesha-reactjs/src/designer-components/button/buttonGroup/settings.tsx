@@ -6,12 +6,10 @@ import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 import { ButtonGroupConfigurator } from '../../../components/buttonGroupConfigurator';
 import { Checkbox, Input, Select } from 'antd';
 import { IButtonGroupComponentProps } from './models';
-import { ISettingsFormFactoryArgs } from '@/interfaces';
+import { IComponentSettingsFormFactoryArgs } from '@/interfaces';
 import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
-const { Option } = Select;
-
-const ButtonGroupSettings: FC<ISettingsFormFactoryArgs<IButtonGroupComponentProps>> = (props) => {
+const ButtonGroupSettings: FC<IComponentSettingsFormFactoryArgs<IButtonGroupComponentProps>> = (props) => {
   const { readOnly } = props;
 
   return (
@@ -26,19 +24,25 @@ const ButtonGroupSettings: FC<ISettingsFormFactoryArgs<IButtonGroupComponentProp
         </SettingsFormItem>
 
         <SettingsFormItem name="size" label="Size" tooltip="This will set the size for all buttons" jsSetting>
-          <Select disabled={readOnly}>
-            <Option value="small">Small</Option>
-            <Option value="middle">Middle</Option>
-            <Option value="large">Large</Option>
-          </Select>
+          <Select
+            disabled={readOnly}
+            options={[
+              { value: 'small', label: 'Small' },
+              { value: 'middle', label: 'Middle' },
+              { value: 'large', label: 'Large' },
+            ]}
+          />
         </SettingsFormItem>
 
         <SettingsFormItem name="spaceSize" label="Space size" tooltip="This will be the gap size between the buttons" jsSetting>
-          <Select disabled={readOnly}>
-            <Option value="small">Small</Option>
-            <Option value="middle">Middle</Option>
-            <Option value="large">Large</Option>
-          </Select>
+          <Select
+            disabled={readOnly}
+            options={[
+              { value: 'small', label: 'Small' },
+              { value: 'middle', label: 'Middle' },
+              { value: 'large', label: 'Large' },
+            ]}
+          />
         </SettingsFormItem>
 
         <SettingsFormItem name="editMode" label="Edit mode" jsSetting>
@@ -71,7 +75,7 @@ const ButtonGroupSettings: FC<ISettingsFormFactoryArgs<IButtonGroupComponentProp
   );
 };
 
-export const ButtonGroupSettingsForm: FC<ISettingsFormFactoryArgs<IButtonGroupComponentProps>> = (props) => {
+export const ButtonGroupSettingsForm: FC<IComponentSettingsFormFactoryArgs<IButtonGroupComponentProps>> = (props) => {
   return (
     SettingsForm<IButtonGroupComponentProps>({ ...props, children: <ButtonGroupSettings {...props} /> })
   );

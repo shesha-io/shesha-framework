@@ -28,11 +28,7 @@ export const EntityDocumentDefinition: DocumentDefinition = {
     useEffect(() => {
       cs.setDocumentModified(doc.itemId, isModified);
     }, [cs, doc, isModified]);
-    return (
-      <div>
-        <ModelConfiguratorRenderer />
-      </div>
-    );
+    return <ModelConfiguratorRenderer />;
   },
   Provider: ({ children, doc: document }: ProviderRendererProps): ReactNode => {
     const [form] = Form.useForm();
@@ -45,7 +41,7 @@ export const EntityDocumentDefinition: DocumentDefinition = {
   Toolbar: (_props: ItemEditorProps): ReactNode => {
     return (
       <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'nowrap', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Space direction="horizontal" size={5}>
+        <Space orientation="horizontal" size={5}>
           <EntityToolbar />
         </Space>
       </div>

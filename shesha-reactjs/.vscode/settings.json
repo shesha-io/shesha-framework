@@ -35,8 +35,8 @@
     "eslint.codeAction.showDocumentation": {
         "enable": true
     },
-    // "eslint.workingDirectories": [
-    //     "."
-    // ],
-    // "eslint.useESLintClass": true,
+    "js/ts.preferences.autoImportSpecifierExcludeRegexes": [
+        "^@\/index$",
+        "^@\/components$"
+    ]
 }

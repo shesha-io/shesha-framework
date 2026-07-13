@@ -11,15 +11,7 @@ export interface ISourceFilesFolderProviderProps {
  * @param {boolean} require - specifies whether the SourcesFolderContext is required
  * @return {ISourcesFolderContext} the SourcesFolderContext
  */
-export const useSourcesFolder = (require: boolean): ISourcesFolderContext => {
-  const context = useContext(SourcesFolderContext);
-
-  if (context === undefined && require) {
-    throw new Error('useSourcesFolder must be used within a SourcesFolderContext');
-  }
-
-  return context;
-};
+export const useSourcesFolderOrUndefined = (): ISourcesFolderContext | undefined => useContext(SourcesFolderContext);
 
 /**
  * Returns the full path of a file or folder within the sources folder.
@@ -28,7 +20,7 @@ export const useSourcesFolder = (require: boolean): ISourcesFolderContext => {
  * @return {string} The full path of the file or folder.
  */
 export const useSourceFullPath = (fileOrFolderName: string): string => {
-  const parentContext = useSourcesFolder(false);
+  const parentContext = useSourcesFolderOrUndefined();
   return parentContext ? parentContext.path + '/' + fileOrFolderName : fileOrFolderName;
 };
 

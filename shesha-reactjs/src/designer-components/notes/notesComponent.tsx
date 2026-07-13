@@ -2,11 +2,11 @@ import { DataTypes, IToolboxComponent } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { FormOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';
-import { NotesRenderer } from '@/components';
-import { useForm, useFormData, useGlobalState, useHttpClient } from '@/providers';
-import { evaluateValueAsString, executeScript, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { NotesRenderer } from '@/components/notesRenderer';
+import { useFormData, useGlobalState } from '@/providers';
+import { evaluateString, executeScript, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import React from 'react';
-import NotesProvider from '@/providers/notes';
+import { NotesEditorProvider, OnNoteCreatedFunc, OnNoteDeletedFunc, OnNoteUpdatedFunc } from '@/providers/notes';
 import {
   migrateCustomFunctions,
   migrateFunctionToProp,
@@ -15,12 +15,9 @@ import {
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { getFormApi } from '@/providers/form/formApi';
-import { App } from 'antd';
-import moment from 'moment';
-import { INote } from '@/providers/notes/contexts';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { AdvancedFormats } from '@/interfaces/dataTypes';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 export interface INotesProps extends IConfigurableFormComponent {
   ownerId: string;
@@ -46,80 +43,70 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
   icon: <FormOutlined />,
   dataTypeSupported: (dataTypeInfo) => dataTypeInfo.dataType === DataTypes.advanced && dataTypeInfo.dataFormat === AdvancedFormats.notes,
   Factory: ({ model }) => {
-    const httpClient = useHttpClient();
-    const form = useForm();
     const { data } = useFormData();
-    const { globalState, setState: setGlobalState } = useGlobalState();
-    const { message } = App.useApp();
+    const { globalState } = useGlobalState();
+    const executionContext = useAvailableConstantsData();
+
 
     if (model.hidden) return null;
 
-    const ownerId = evaluateValueAsString(`${model.ownerId}`, { data: data, globalState });
+    const ownerId = evaluateString(model.ownerId, { data: data, globalState }) || '';
 
-    const handleCreateAction = (createdNotes: Array<any>): void => {
+    const handleCreateAction: OnNoteCreatedFunc = (note) => {
       if (!model.onCreateAction) return;
 
-      executeScript<void>(model?.onCreateAction, {
-        createdNotes,
-        data,
-        form: getFormApi(form),
-        globalState,
-        http: httpClient,
-        message,
-        moment,
-        setGlobalState,
+      executeScript<void>(model.onCreateAction, {
+        createdNotes: [note],
+        ...executionContext,
+      }).catch((error) => {
+        console.error('Failed to execute onCreateAction', error);
+        throw error;
       });
     };
-    const handleDeleteAction = (note: INote): void => {
+    const handleDeleteAction: OnNoteDeletedFunc = (note) => {
       if (!model.onDeleteAction) return;
 
       executeScript<void>(model.onDeleteAction, {
-        note: {
-          ...note,
-          creationTime: note.creationTime || null,
-          priority: note.priority || null,
-          parentId: note.parentId || null,
-        },
-        data,
-        form: getFormApi(form),
-        globalState,
-        http: httpClient,
-        message,
-        moment,
-        setGlobalState,
+        note,
+        ...executionContext,
+      }).catch((error) => {
+        console.error('Failed to execute onDeleteAction', error);
+        throw error;
       });
     };
-    const handleUpdateAction = (note: INote): void => {
+    const handleUpdateAction: OnNoteUpdatedFunc = (note) => {
       if (!model.onUpdateAction) return;
 
       executeScript<void>(model.onUpdateAction, {
         note,
-        data,
-        form: getFormApi(form),
-        globalState,
-        http: httpClient,
-        message,
-        moment,
-        setGlobalState,
+        ...executionContext,
+      }).catch((error) => {
+        console.error('Failed to execute onUpdateAction', error);
+        throw error;
       });
     };
 
     return (
-      <NotesProvider ownerId={ownerId} ownerType={model?.ownerType} category={model?.category}>
+      <NotesEditorProvider
+        ownerId={ownerId}
+        ownerType={model.ownerType}
+        category={model.category}
+        onCreatedAction={handleCreateAction}
+        onUpdatedAction={handleUpdateAction}
+        onDeletedAction={handleDeleteAction}
+      >
         <NotesRenderer
-          showCommentBox={!model.readOnly}
-          buttonPostion={model?.savePlacement}
-          autoSize={model?.autoSize}
+          allowCreate={!model.readOnly}
+          allowUpdate={model.allowEdit}
           allowDelete={model.allowDelete}
-          onCreateAction={handleCreateAction}
+
+          buttonPostion={model.savePlacement}
+          autoSize={model.autoSize}
           showCharCount={model.showCharCount}
           minLength={model.minLength}
           maxLength={model.maxLength}
-          onDeleteAction={handleDeleteAction}
-          allowEdit={model.allowEdit}
-          onUpdateAction={handleUpdateAction}
         />
-      </NotesProvider>
+      </NotesEditorProvider>
     );
   },
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
@@ -136,7 +123,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
   linkToModelMetadata: (model, metadata) => ({
     ...model,
     ownerId: '{data.id}',
-    ownerType: metadata.entityType && { module: metadata.entityModule, name: metadata.entityType },
+    ownerType: !isNullOrWhiteSpace(metadata.entityType) ? { module: metadata.entityModule ?? "", name: metadata.entityType } : "",
     category: metadata.path,
   }),
   getFieldsToFetch: () => [],

@@ -8,7 +8,6 @@ using Castle.Core.Logging;
 using Hangfire;
 using Hangfire.Storage;
 using Newtonsoft.Json;
-using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Scheduler.Attributes;
 using Shesha.Scheduler.Domain;
@@ -61,9 +60,7 @@ namespace Shesha.Scheduler
         {
             try
             {
-                var activeTriggers = await _triggerRepository.GetAll()
-                    .Where(t => !t.Job.IsDeleted && t.Job.JobStatus == JobStatus.Active && t.Job.StartupMode == StartUpMode.Automatic && t.Status == TriggerStatus.Enabled)
-                    .ToListAsync();
+                var activeTriggers = await _triggerRepository.GetAllListAsync(t => !t.Job.IsDeleted && t.Job.JobStatus == JobStatus.Active && t.Job.StartupMode == StartUpMode.Automatic && t.Status == TriggerStatus.Enabled);
 
                 // remove all unused triggers
                 using (var storageConnection = JobStorage.Current.GetConnection()) 

@@ -1,7 +1,7 @@
-import { IHasFullEntityType, IPropertyMetadata, ITypeDefinitionLoadingContext, SourceFile, TypeDefinition, isEntityReferencePropertyMetadata, isPropertiesArray } from "@/interfaces/metadata";
+import { IHasFullEntityType, IPropertyMetadata, ITypeDefinitionLoadingContext, SourceFile, TypeDefinition, isEntityReferencePropertyMetadata, isHasFullyQualifiedEntityType, isPropertiesArray } from "@/interfaces/metadata";
 import { IObjectMetadataBuilder } from "@/utils/metadata/metadataBuilder";
 import { EntitiesManager } from "./manager";
-import { HttpClientApi } from "@/publicJsApis/httpClient";
+import { HttpClientApi } from "@/publicJsApis/apis/httpClient";
 import { EntityConfigurationDto } from "./models";
 import { DataTypes } from "@/interfaces";
 import { StringBuilder } from "@/utils/metadata/stringBuilder";
@@ -9,8 +9,11 @@ import { TypesImporter } from "@/utils/metadata/typesImporter";
 import { getEntityIdJsType } from "@/utils/metadata";
 import camelcase from "camelcase";
 import { EOL } from "@/utils/metadata/models";
+import { isDefined } from "@/utils/nullables";
 
 type EntityItemType = 'module' | 'entityType';
+
+const UNKNOWN_TYPE = 'unknown';
 
 export interface IEntityPropertyMetadata extends IPropertyMetadata {
   entityItemType: EntityItemType;
@@ -177,29 +180,34 @@ const entitiesConfigurationToTypeDefinition = async (configurations: EntityConfi
 
     sb.incIndent();
 
-    let baseTypesImported = false;
-
     const sortedProps = sortByPath(property.properties);
     for (const prop of sortedProps) {
-      if ((prop as IEntityPropertyMetadata).entityItemType === 'entityType' && isEntityReferencePropertyMetadata(prop)) {
-        if (!baseTypesImported) {
+      if ((prop as IEntityPropertyMetadata).entityItemType === 'entityType' && isEntityReferencePropertyMetadata(prop) && isHasFullyQualifiedEntityType(prop)) {
+        try {
           typesImporter.import({ typeName: "EntityAccessor", filePath: BASE_ENTITY_MODULE });
-        }
 
-        const typeDef = await typesBuilder.getEntityType({ name: prop.entityType, module: prop.entityModule });
-        if (typeDef) {
-          typesImporter.import(typeDef);
+          const typeDef = await typesBuilder.getEntityType({ name: prop.entityType, module: prop.entityModule });
 
-          const idType = getEntityIdJsType(typeDef.metadata);
-          if (!idType)
-            throw new Error(`Failed to find identifier type for entity '${prop.entityModule}:${prop.entityType}'`);
+          if (typeDef) {
+            typesImporter.import(typeDef);
 
-          if (prop.description)
-            sb.append(`/** ${prop.description} */`);
-          sb.append(`${prop.path}: EntityAccessor<${idType}, ${typeDef.typeName}>;`);
-        } else {
-          console.error(`Failed to find entity type '${prop.entityModule}:${prop.entityType}' for (property '${prop.path}')`);
-          sb.append(`${prop.path}: any;`);
+            if (!isDefined(typeDef.metadata)) {
+              console.error(`Metadata is not defined for entity '${prop.entityModule}:${prop.entityType}'`);
+              continue;
+            }
+
+            const idType = getEntityIdJsType(typeDef.metadata) ?? UNKNOWN_TYPE;
+            if (idType === UNKNOWN_TYPE)
+              console.warn(`Could not find id type for entity '${prop.entityModule}:${prop.entityType}'. Replaced with '${UNKNOWN_TYPE}'`);
+
+            if (prop.description)
+              sb.append(`/** ${prop.description} */`);
+            sb.append(`${prop.path}: EntityAccessor<${idType}, ${typeDef.typeName}>;`);
+          } else {
+            sb.append(`${prop.path}: any;`);
+          }
+        } catch (error) {
+          console.error(`Failed to build entity accessor for '${prop.path}'`, error);
         }
       }
     }

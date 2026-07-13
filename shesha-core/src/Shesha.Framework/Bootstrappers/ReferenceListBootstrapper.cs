@@ -187,7 +187,7 @@ namespace Shesha.Bootstrappers
                 ? await _moduleManager.GetOrCreateModuleAsync(moduleName)
                 : module;
 
-            var listInDb = await _listRepo.GetAll()
+            var listInDb = await (await _listRepo.GetAllAsync())
                 .Where(l => l.Name == list.RefListId.Name && l.Module == listModule)
                 .OrderBy(l => !l.IsDeleted ? 0 : 1)
                 .FirstOrDefaultAsync();
@@ -223,9 +223,7 @@ namespace Shesha.Bootstrappers
                 }
             }
 
-            var itemsInDb = await _listItemRepo.GetAll()
-                .Where(i => i.ReferenceList == listInDb)
-                .ToListAsync();
+            var itemsInDb = await _listItemRepo.GetAllListAsync(i => i.ReferenceList == listInDb);
 
             LogInfo($"  items in the DB: {itemsInDb.Count()}");
 

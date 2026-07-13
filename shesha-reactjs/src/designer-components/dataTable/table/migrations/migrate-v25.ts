@@ -16,11 +16,11 @@ export const migrateV24toV25 = (props: ITableComponentProps, _context: SettingsM
     // Font defaults
     if (result[device].font) {
       result[device].font = {
-        type: result[device].font.type ?? defaults.font.type,
-        size: result[device].font.size ?? defaults.font.size,
-        weight: result[device].font.weight ?? defaults.font.weight,
-        color: result[device].font.color ?? defaults.font.color,
-        align: result[device].font.align ?? defaults.font.align,
+        type: result[device].font.type ?? defaults.font?.type,
+        size: result[device].font.size ?? defaults.font?.size,
+        weight: result[device].font.weight ?? defaults.font?.weight,
+        color: result[device].font.color ?? defaults.font?.color,
+        align: result[device].font.align ?? defaults.font?.align,
       };
     } else {
       result[device].font = { ...defaults.font };
@@ -29,12 +29,12 @@ export const migrateV24toV25 = (props: ITableComponentProps, _context: SettingsM
     // Dimensions defaults
     if (result[device].dimensions) {
       result[device].dimensions = {
-        width: result[device].dimensions.width ?? defaults.dimensions.width,
-        height: result[device].dimensions.height ?? defaults.dimensions.height,
-        minWidth: result[device].dimensions.minWidth ?? defaults.dimensions.minWidth,
-        maxWidth: result[device].dimensions.maxWidth ?? defaults.dimensions.maxWidth,
-        minHeight: result[device].dimensions.minHeight ?? defaults.dimensions.minHeight,
-        maxHeight: result[device].dimensions.maxHeight ?? defaults.dimensions.maxHeight,
+        width: result[device].dimensions.width ?? defaults.dimensions?.width,
+        height: result[device].dimensions.height ?? defaults.dimensions?.height,
+        minWidth: result[device].dimensions.minWidth ?? defaults.dimensions?.minWidth,
+        maxWidth: result[device].dimensions.maxWidth ?? defaults.dimensions?.maxWidth,
+        minHeight: result[device].dimensions.minHeight ?? defaults.dimensions?.minHeight,
+        maxHeight: result[device].dimensions.maxHeight ?? defaults.dimensions?.maxHeight,
       };
     } else {
       result[device].dimensions = { ...defaults.dimensions };
@@ -43,8 +43,8 @@ export const migrateV24toV25 = (props: ITableComponentProps, _context: SettingsM
     // Background defaults
     if (result[device].background) {
       result[device].background = {
-        type: result[device].background.type ?? defaults.background.type,
-        color: result[device].background.color ?? defaults.background.color,
+        type: result[device].background.type ?? defaults.background?.type,
+        color: result[device].background.color ?? defaults.background?.color,
       };
     } else {
       result[device].background = { ...defaults.background };
@@ -53,11 +53,11 @@ export const migrateV24toV25 = (props: ITableComponentProps, _context: SettingsM
     // Shadow defaults
     if (result[device].shadow) {
       result[device].shadow = {
-        offsetX: result[device].shadow.offsetX ?? defaults.shadow.offsetX,
-        offsetY: result[device].shadow.offsetY ?? defaults.shadow.offsetY,
-        blurRadius: result[device].shadow.blurRadius ?? defaults.shadow.blurRadius,
-        spreadRadius: result[device].shadow.spreadRadius ?? defaults.shadow.spreadRadius,
-        color: result[device].shadow.color ?? defaults.shadow.color,
+        offsetX: result[device].shadow.offsetX ?? defaults.shadow?.offsetX,
+        offsetY: result[device].shadow.offsetY ?? defaults.shadow?.offsetY,
+        blurRadius: result[device].shadow.blurRadius ?? defaults.shadow?.blurRadius,
+        spreadRadius: result[device].shadow.spreadRadius ?? defaults.shadow?.spreadRadius,
+        color: result[device].shadow.color ?? defaults.shadow?.color,
       };
     } else {
       result[device].shadow = { ...defaults.shadow };

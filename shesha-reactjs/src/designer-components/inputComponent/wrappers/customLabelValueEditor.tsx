@@ -1,8 +1,9 @@
 import { ICustomLabelValueEditorSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React, { FC } from 'react';
+import React from 'react';
+import { FCUnwrapped } from '@/providers/form/models';
 import { CustomLabelValueEditorInputs } from '../utils';
 
 
-export const CustomLabelValueEditorWrapper: FC<ICustomLabelValueEditorSettingsInputProps> = (props) => {
-  return <CustomLabelValueEditorInputs {...props} exposedVariables={null} />;
+export const CustomLabelValueEditorWrapper: FCUnwrapped<ICustomLabelValueEditorSettingsInputProps> = (props) => {
+  return <CustomLabelValueEditorInputs {...props} />;
 };

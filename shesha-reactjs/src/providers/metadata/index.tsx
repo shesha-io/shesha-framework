@@ -14,10 +14,12 @@ import metadataReducer from './reducer';
 import camelcase from 'camelcase';
 import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
 import { isEntityTypeIdEmpty } from '../metadataDispatcher/entities/utils';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { throwError } from '@/utils/errors';
 
 export interface IMetadataProviderProps {
-  id?: string;
-  modelType: string | IEntityTypeIdentifier;
+  id?: string | undefined;
+  modelType: string | IEntityTypeIdentifier | undefined;
   dataType?: MetadataType;
 }
 
@@ -25,7 +27,7 @@ const MetadataProvider: FC<PropsWithChildren<IMetadataProviderProps>> = ({ id = 
   const initial: IMetadataStateContext = {
     ...METADATA_CONTEXT_INITIAL_STATE,
     id,
-    modelType,
+    modelType: modelType ?? null,
     dataType,
   };
 
@@ -38,6 +40,8 @@ const MetadataProvider: FC<PropsWithChildren<IMetadataProviderProps>> = ({ id = 
     if (!isEntityTypeIdEmpty(modelType)) {
       getMetadata({ modelType, dataType }).then((meta) => {
         dispatch(setMetadataAction({ metadata: meta, dataType, modelType }));
+      }).catch((error) => {
+        console.error('Failed to fetch metadata', error);
       });
     }
   }, [modelType, dataType, getMetadata, dispatch]);
@@ -57,20 +61,17 @@ const MetadataProvider: FC<PropsWithChildren<IMetadataProviderProps>> = ({ id = 
   return <MetadataContext.Provider value={contextValue}>{children}</MetadataContext.Provider>;
 };
 
-const useMetadata = (require: boolean): IMetadataContext | undefined => {
-  const context = useContext(MetadataContext);
+const useMetadataOrUndefined = (): IMetadataContext | undefined => useContext(MetadataContext);
 
-  if (context === undefined && require) {
-    throw new Error('useMetadata must be used within a MetadataProvider');
-  }
+const useMetadata = (): IMetadataContext => useMetadataOrUndefined() ?? throwError("useMetadata must be used within a MetadataProvider");
 
-  return context;
+type ConditionalMetadataProviderProps = Omit<IMetadataProviderProps, 'modelType'> & {
+  modelType?: string | IEntityTypeIdentifier | undefined | null;
 };
-
-const ConditionalMetadataProvider: FC<PropsWithChildren<IMetadataProviderProps>> = (props) => {
-  return props.modelType
+const ConditionalMetadataProvider: FC<PropsWithChildren<ConditionalMetadataProviderProps>> = (props) => {
+  return isDefined(props.modelType) && !(typeof (props.modelType) === "string" && isNullOrWhiteSpace(props.modelType))
     ? (
-      <MetadataProvider {...props}>
+      <MetadataProvider {...props} modelType={props.modelType}>
         {props.children}
       </MetadataProvider>
     )
@@ -81,4 +82,4 @@ const ConditionalMetadataProvider: FC<PropsWithChildren<IMetadataProviderProps>>
     );
 };
 
-export { MetadataProvider, ConditionalMetadataProvider, useMetadata };
+export { MetadataProvider, ConditionalMetadataProvider, useMetadata, useMetadataOrUndefined };

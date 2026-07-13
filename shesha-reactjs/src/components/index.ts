@@ -1,22 +1,30 @@
 export { default as BasicDisplayFormItem, type IBasicDisplayFormItemProps } from './basicDisplayFormItem';
-export { default as ConfigurableLogo } from './configurableLogo';
+export {
+  ExpressionEditor,
+  buildExpressionContextFromPaths,
+  type ExpressionContext,
+  type ExpressionContextValue,
+  type ExpressionEditorProps,
+  type ExpressionFunctionDefinition,
+  type BuildExpressionContextFromPathsOptions,
+} from './expressionEditor';
+export {
+  buildExpressionContextFromMetadata,
+  buildExpressionContextFromProperties,
+  mergeExpressionContexts,
+  type ExpressionContextTree,
+} from './expressionEditor/contextMetadata';
 export { default as FileUpload, type IFileUploadProps } from './fileUpload';
 export { ConfigurableFormRenderer } from './configurableForm/configurableFormRenderer';
 export { default as MultiCheckBoxRefList, type IMultiCheckBoxRefListProps } from './multiCheckBoxRefList';
-export {
-  default as MultiReadCheckBoxRefList,
-  type IMultiReadCheckBoxRefListProps,
-  binaryToList,
-} from './multiReadCheckBoxrefList';
 export { ReactTable } from './reactTable';
 export { type IReactTableProps } from './reactTable/interfaces';
 export {
   ConfigurableFormComponent,
   type IConfigurableFormComponentProps,
 } from './formDesigner/configurableFormComponent';
-export { default as ConfigurableFormItem } from './formDesigner/components/formItem';
+export { ConfigurableFormItem } from './formDesigner/components/formItem';
 export { type IConfigurableFormItemProps } from './formDesigner/components/model';
-export { default as BooleanDropDown } from './booleanDropDown';
 export { SidebarContainer } from './sidebarContainer';
 export { default as AutoCompletePlaces } from './googlePlacesAutocomplete';
 export { EndpointsAutocomplete } from './endpointsAutocomplete/endpointsAutocomplete';
@@ -35,10 +43,7 @@ export { default as ColumnItemFilter, type IColumnItemFilterProps } from './colu
 export { default as columnsFilterSelect } from './columnsFilterSelect';
 export { default as columnsFilterSelectBase, type IColumnsFilterSelectBaseProps } from './columnsFilterSelectBase';
 export { default as DateDisplay, type IDateDisplayProps } from './dateDisplay';
-export { default as EditableDisplayFormItem, type IEditableDisplayLabelProps } from './editableDisplayFormItem';
-export { default as DisplayFormItem, type IDisplayFormItemProps } from './displayFormItem';
 export { default as EntityPicker } from './entityPicker';
-export { default as FormComponent, type IFormComponentProps } from './formComponent';
 export { default as GlobalTableFilter, type IGlobalTableFilterProps } from './globalTableFilter';
 export { default as GlobalTableFilterBase, type IGlobalTableFilterBaseProps } from './globalTableFilterBase';
 export { default as GooglePlacesAutocomplete, type IGooglePlacesAutocompleteProps } from './googlePlacesAutocomplete';
@@ -73,7 +78,7 @@ export { default as TablePager, type ITablePagerProps } from './tablePager';
 export { default as TablePaging, type ITablePagerBaseProps } from './tablePager/tablePaging';
 export { default as StatusLabel, type IStatusLabelProps } from './statusLabel';
 export { default as ValidationErrors, type IValidationErrorsProps } from './validationErrors';
-export { default as ShaIcon, type IShaIconProps, type IconType } from './shaIcon';
+export { ShaIcon, type IShaIconProps, type IconType } from './shaIcon';
 export { default as IconPicker, type IIconPickerProps } from './iconPicker';
 export { default as EmptyState, type IEmptyStateProps } from './emptyState';
 export {
@@ -89,13 +94,10 @@ export { type IConfigurableFormRendererProps, type IConfigurableFormProps } from
 export { default as Show, type IShowProps } from './show';
 export { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
 export { type ICodeEditorProps, type GetResultTypeFunc, type GetAvailableConstantsFunc } from '@/designer-components/codeEditor/interfaces';
-export { default as ModelConfigurator } from './modelConfigurator';
-export { ConfigurableApplicationComponent, type IConfigurableApplicationComponentProps } from './configurableComponent';
 export { Autocomplete, type IAutocompleteProps } from './autocomplete';
 export { Page } from './page';
 export { default as EditableTagGroup, type IEditableTagGroupProps } from './editableTagGroup';
 export { default as QuickView, type IQuickViewProps } from './quickView';
-export { default as CurrencyConverter, type ICurrencyConverterProps } from './currencyConverter';
 export { SidebarConfigurator } from './configurableSidebarMenu/configurator';
 export { ConfigurableSidebarMenu } from './configurableSidebarMenu';
 export { ComponentSettingsModal } from './configurableSidebarMenu/settingsModal';

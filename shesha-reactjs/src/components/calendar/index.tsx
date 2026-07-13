@@ -1,27 +1,34 @@
 import { DownOutlined } from '@ant-design/icons';
 import { Checkbox, Dropdown, Empty, Menu } from 'antd';
-import moment from 'moment/min/moment-with-locales';
+import moment from "moment";
+import "moment/min/locales"; // Imports ALL locales
 import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Calendar, momentLocalizer, SlotInfo, View } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { useDeepCompareEffect } from 'react-use';
+import { useDeepCompareEffect, useEffectOnce } from 'react-use';
 import { EventComponent } from './eventComponent';
 import { useCalendarLayers } from './hooks';
 import { getLayerOptions, getLayerEvents, isDateDisabled, getDayStyles } from './utils';
 import { useCalendarStyles } from './styles/styles';
-import {
-  evaluateString,
-  useActualContextExecution,
-  useAvailableConstantsData,
-  useConfigurableActionDispatcher,
-  useFormState,
-  useTheme,
-} from '@/index';
 import { ICalendarProps } from '@/designer-components/calendar/interfaces';
 import { DataContextProvider } from '@/providers/dataContextProvider';
 import { ICalendarEvent } from '@/providers/layersProvider/models';
-import { useCanvas } from '../../providers';
+import { evaluateString, useAvailableConstantsData } from '@/providers/form/utils';
+import { useActualContextExecution } from '@/hooks/formComponentHooks';
+import { useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
+import { useTheme } from '@/providers/theme';
+import { useCanvas } from '@/providers/canvas';
+import { useFormState } from '@/providers/form';
+import { isDefined } from '@/utils/nullables';
+import { isNonEmptyArray } from '@/utils/array';
 
+type CalendarExposedData = {
+  events: ICalendarEvent[];
+  defaultView: View | undefined;
+  startDate: string | undefined;
+  endDate: string | undefined;
+  visibleLayers: string[];
+};
 
 export const CalendarControl: FC<ICalendarProps> = (props) => {
   const {
@@ -46,23 +53,23 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
   const { styles: calendarStyles } = useCalendarStyles();
   const { layerEvents, fetchData, fetchDefaultCalendarView, updateDefaultCalendarView } = useCalendarLayers(items);
 
-  const [events, setEvents] = useState<any>([]);
-  const [defaultView, setDefaultView] = useState<View>(displayPeriod?.[0]);
+  const [events, setEvents] = useState<ICalendarEvent[]>([]);
+  const [defaultView, setDefaultView] = useState<View | undefined>(displayPeriod?.[0]);
   const [localeLoaded, setLocaleLoaded] = useState(false);
 
   const clickTimeoutRef = useRef<number | null>(null);
   const lastClickedEventRef = useRef<ICalendarEvent | null>(null);
 
-  const primaryColor = theme.application.primaryColor;
-  const defaultVisibleLayers = getLayerOptions(items)?.map((item) => item.value);
+  const primaryColor = theme.application?.primaryColor;
+  const defaultVisibleLayers = getLayerOptions(items).map((item) => item.value);
 
   const canvasContext = useCanvas();
-  const canvasZoom = canvasContext?.zoom ?? 100;
+  const canvasZoom = canvasContext.zoom;
   const { formMode } = useFormState();
   const isDesignerMode = formMode === 'designer';
 
-  const startDate = useActualContextExecution(externalStartDate, {}, undefined);
-  const endDate = useActualContextExecution(externalEndDate, {}, undefined);
+  const startDate = useActualContextExecution<string | undefined>(externalStartDate, {}, undefined);
+  const endDate = useActualContextExecution<string | undefined>(externalEndDate, {}, undefined);
 
   // Set locale (all locales bundled via moment-with-locales)
   useEffect(() => {
@@ -78,9 +85,10 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     setMomentLocale();
   }, [momentLocale]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const localizer = useMemo(() => momentLocalizer(moment), [localeLoaded]);
 
-  const dummyEvent =
+  const dummyEvent: ICalendarEvent | null =
     startDate
       ? (() => {
         const s = new Date(startDate);
@@ -98,12 +106,19 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
           ? endMoment.clone().add(1, 'day').startOf('day').toDate()
           : e;
 
-        return { start: s, end: adjustedEnd, color: dummyEventColor || primaryColor };
+        const dummy: ICalendarEvent = {
+          id: '',
+          title: '',
+          start: s,
+          end: adjustedEnd,
+          color: dummyEventColor || primaryColor,
+        };
+        return dummy;
       })()
       : null;
 
-  const updatedEvents = useMemo(() =>
-    events.map((event: any) => ({
+  const updatedEvents = useMemo<ICalendarEvent[]>(() =>
+    events.map<ICalendarEvent>((event) => ({
       ...event,
       title: evaluateString(event.titleTemplate || event.title, event),
     })),
@@ -116,11 +131,12 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
   }, [fetchData]);
 
   // Load saved default calendar view
-  useEffect(() => {
+  useEffectOnce(() => {
+    const defaultView = isNonEmptyArray(displayPeriod) ? displayPeriod[0] : undefined;
     fetchDefaultCalendarView()
-      .then((response) => setDefaultView(response?.result ?? displayPeriod?.[0]))
-      .catch(() => setDefaultView(displayPeriod?.[0]));
-  }, []);
+      .then((view) => setDefaultView(view ?? defaultView))
+      .catch(() => setDefaultView(defaultView));
+  });
 
   // Ensure default view is valid
   useEffect(() => {
@@ -149,7 +165,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
 
   const handleCustomSelect = (event: ICalendarEvent): void => {
     // Prevent selection if the event date is disabled
-    if (event.start && isDateDisabled(event.start, minDate, maxDate)) {
+    if (isDefined(event.start) && isDateDisabled(event.start, minDate, maxDate)) {
       return;
     }
 
@@ -165,23 +181,25 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     clickTimeoutRef.current = window.setTimeout((): void => {
       // Only execute if this is still the last clicked event (no double click occurred)
       if (lastClickedEventRef.current === event) {
-        const evaluationContext = {
-          ...allData,
-          events,
-          selectedRow: event,
-        };
+        if (isDefined(event.onSelect)) {
+          const evaluationContext = {
+            ...allData,
+            events,
+            selectedRow: event,
+          };
 
-        executeAction({
-          actionConfiguration: event.onSelect,
-          argumentsEvaluationContext: evaluationContext,
-        });
+          void executeAction({
+            actionConfiguration: event.onSelect,
+            argumentsEvaluationContext: evaluationContext,
+          });
+        }
       }
     }, 300); // 300ms delay to detect double clicks
   };
 
   const handleCustomDoubleClick = (event: ICalendarEvent): void => {
     // Prevent double click if the event date is disabled
-    if (event.start && isDateDisabled(event.start, minDate, maxDate)) {
+    if (isDefined(event.start) && isDateDisabled(event.start, minDate, maxDate)) {
       return;
     }
 
@@ -194,28 +212,31 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     // Clear the last clicked event reference
     lastClickedEventRef.current = null;
 
-    const evaluationContext = {
-      ...allData,
-      events,
-      selectedRow: event,
-      event,
-    };
-
-    executeAction({
-      actionConfiguration: event.onDblClick,
-      argumentsEvaluationContext: evaluationContext,
-    });
+    if (isDefined(event.onDblClick)) {
+      const evaluationContext = {
+        ...allData,
+        events,
+        selectedRow: event,
+        event,
+      };
+      void executeAction({
+        actionConfiguration: event.onDblClick,
+        argumentsEvaluationContext: evaluationContext,
+      });
+    }
   };
 
   const handleViewChange = (view: View): void => {
-    const evaluationContext = {
-      ...allData,
-      event: view,
-    };
-    executeAction({
-      actionConfiguration: onViewChange,
-      argumentsEvaluationContext: evaluationContext,
-    });
+    if (isDefined(onViewChange)) {
+      const evaluationContext = {
+        ...allData,
+        event: view,
+      };
+      void executeAction({
+        actionConfiguration: onViewChange,
+        argumentsEvaluationContext: evaluationContext,
+      });
+    }
   };
 
   const handleSlotClick = (slotInfo: SlotInfo): void => {
@@ -223,6 +244,8 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     if (isDateDisabled(slotInfo.start, minDate, maxDate)) {
       return;
     }
+    if (!isDefined(onSlotClick))
+      return;
 
     // Detect if this is an all-day selection (month view)
     // react-big-calendar sets end date to midnight of the next day for all-day selections
@@ -245,7 +268,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
       ...allData,
       event: adjustedSlotInfo,
     };
-    executeAction({
+    void executeAction({
       actionConfiguration: onSlotClick,
       argumentsEvaluationContext: evaluationContext,
     });
@@ -264,7 +287,7 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     [calendarStyles.calendarMenu, items, onChange, defaultVisibleLayers],
   );
 
-  const renderLegend = (): JSX.Element => (
+  const renderLegend = (): React.JSX.Element => (
     <div className={calendarStyles.calendarLegendContainer}>
       {items?.map((layer) =>
         layer.showLegend ? (
@@ -289,10 +312,10 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     </div>
   );
 
-  const renderHeader = (): JSX.Element => (
+  const renderHeader = (): React.JSX.Element => (
     <div className={calendarStyles.calendarHeader}>
       {renderLegend()}
-      <Dropdown menu={menuItems} dropdownRender={(): JSX.Element => dropdownContent}>
+      <Dropdown menu={menuItems} popupRender={(): React.JSX.Element => dropdownContent}>
         <a className="ant-dropdown-link" onClick={(e): void => e.preventDefault()}>
           Views <DownOutlined />
         </a>
@@ -300,21 +323,15 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
     </div>
   );
 
-  const exposedData = useMemo((): Promise<{
-    events: any[];
-    defaultView: View;
-    startDate: string;
-    endDate: string;
-    visibleLayers: string[];
-  }> => Promise.resolve({
+  const exposedData = useMemo((): Promise<CalendarExposedData> => Promise.resolve({
     events: updatedEvents,
     defaultView,
     startDate: startDate,
     endDate: endDate,
     visibleLayers: defaultVisibleLayers,
-  }), [updatedEvents, defaultView, startDate, endDate, defaultVisibleLayers]);
+  } satisfies CalendarExposedData), [updatedEvents, defaultView, startDate, endDate, defaultVisibleLayers]);
 
-  const calendarContent = (): JSX.Element => {
+  const calendarContent = (): React.JSX.Element => {
     if (!displayPeriod?.length) {
       return <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No Selected Calendar Views!" />;
     }
@@ -323,17 +340,24 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
       <>
         {renderHeader()}
         <Calendar
-          views={displayPeriod as any}
+          views={displayPeriod}
           onView={(view) => {
-            updateDefaultCalendarView(view);
+            updateDefaultCalendarView(view).catch((error) => {
+              console.error('Failed to update default calendar view', error);
+              throw error;
+            });
             setDefaultView(view);
             handleViewChange(view);
           }}
           selectable
           localizer={localizer}
           defaultDate={new Date()}
-          view={displayPeriod?.includes(defaultView) ? defaultView : displayPeriod?.[0]}
-          events={dummyEvent ? updatedEvents.concat(dummyEvent) : updatedEvents}
+          view={isDefined(displayPeriod)
+            ? isDefined(defaultView) && displayPeriod.includes(defaultView)
+              ? defaultView
+              : displayPeriod[0]
+            : undefined}
+          events={isDefined(dummyEvent) ? updatedEvents.concat(dummyEvent) : updatedEvents}
           style={{
             ...styles,
             ...(isDesignerMode && canvasZoom ? { zoom: 100 / canvasZoom } : {}),
@@ -341,8 +365,8 @@ export const CalendarControl: FC<ICalendarProps> = (props) => {
           onSelectEvent={handleCustomSelect}
           onDoubleClickEvent={handleCustomDoubleClick}
           onSelectSlot={handleSlotClick}
-          eventPropGetter={(event: any) => ({
-            style: { backgroundColor: event.color || primaryColor, height: '100%' },
+          eventPropGetter={(event) => ({
+            style: { backgroundColor: event.color || primaryColor },
           })}
           components={{
             event: EventComponent,

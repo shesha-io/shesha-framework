@@ -120,9 +120,9 @@ namespace Shesha.Tests.DomainModel
             {
                 _repo = repo;
             }
-            public Task TryFetchAsync() 
+            public async Task TryFetchAsync() 
             {
-                return _repo.GetAll().OrderBy(e => e.Id).FirstOrDefaultAsync();
+                await (await _repo.GetAllAsync()).OrderBy(e => e.Id).FirstOrDefaultAsync();
             }
         }
     }

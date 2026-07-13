@@ -23,7 +23,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
 
   const sidebarContainer = cx("sidebar-container", css`
       width: 100%;
-      overflow-x: hidden;
+      overflow: hidden;
 
       .${sidebarContainerMainAreaBody}{
         overflow: auto;
@@ -162,9 +162,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
             margin-bottom: 16px;
           }
     
-          .${prefixCls}-form-item-label {
-            padding-bottom: 4px;
-          }
         }
 
         .${sidebarContainerMainArea} {
@@ -181,6 +178,23 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
           height: 100%;
           overflow: auto;
           transform-origin: top left;
+        }
+
+        /* When the designer canvas is empty (no components dropped yet), the
+           zoomed canvas collapses to a short, top-aligned box, leaving the
+           empty-state hint above the vertical midpoint. Center the zoomed
+           canvas within the (non-zoomed) wrapper so the hint sits mid-screen.
+           Scoped to the designer canvas + empty state so other sidebar
+           consumers and non-empty forms keep their normal top-aligned flow. */
+        .${sidebarContainerMainArea}.${canvasWrapper}:has(.${designerCanvas}):not(:has(.sha-component)) {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+
+          .${designerCanvas} {
+            height: auto;
+          }
         }
       }
 

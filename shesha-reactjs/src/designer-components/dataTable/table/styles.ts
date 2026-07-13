@@ -1,6 +1,19 @@
 import { createStyles } from '@/styles';
+import { CSSProperties } from 'react';
 
-export const useStyles = createStyles(({ css, cx, token }, {
+type StylesArgs = Pick<CSSProperties, "fontWeight" | "fontFamily" | "textAlign" | "color" | "fontSize"> & {
+  striped: boolean;
+  hoverHighlight: boolean;
+  rowBackgroundColor: string | undefined;
+  rowAlternateBackgroundColor: string | undefined;
+  rowHoverBackgroundColor: string | undefined;
+  rowSelectedBackgroundColor: string | undefined;
+  borderRadius?: string | undefined;
+};
+type StylesResponse = {
+  dataTable: string;
+};
+export const useStyles = createStyles<StylesArgs, StylesResponse>(({ css, cx, token }, {
   fontWeight,
   fontFamily,
   textAlign,

@@ -2,15 +2,17 @@ import React, { FC } from 'react';
 import { Statistic, StatisticProps } from 'antd';
 import { useStyles } from './styles/styles';
 import classNames from 'classnames';
+import { StatisticSemanticStyles } from 'antd/lib/statistic';
 
 export interface IShaStatisticProps extends StatisticProps {
   onClick?: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
 }
 
 export const ShaStatistic: FC<IShaStatisticProps> = ({ className, ...rest }) => {
+  const fontSize = (rest.styles as StatisticSemanticStyles | undefined)?.content?.fontSize;
   const { styles } = useStyles({
     token: {
-      fontSize: rest.valueStyle?.fontSize,
+      fontSize: fontSize,
     },
   });
 
@@ -25,18 +27,18 @@ export const ShaStatistic: FC<IShaStatisticProps> = ({ className, ...rest }) => 
     : {};
 
   const restStyle = rest.style ? { ...rest.style } : {};
-  if (restStyle) {
-    delete restStyle.margin;
-    delete restStyle.marginRight;
-    delete restStyle.marginLeft;
-    delete restStyle.marginTop;
-    delete restStyle.marginBottom;
-  }
 
+  delete restStyle.margin;
+  delete restStyle.marginRight;
+  delete restStyle.marginLeft;
+  delete restStyle.marginTop;
+  delete restStyle.marginBottom;
+
+  const { onClick } = rest;
   return (
     <div
-      className={classNames(styles['container-div-zero-padding-margin'], styles['content-box'])}
-      onClick={rest.onClick ? (e) => rest.onClick(e) : undefined}
+      className={classNames(styles.containerDivZeroPaddingMargin, styles.contentBox)}
+      {...(onClick ? { onClick } : {})}
       style={{
         ...marginStyles,
       }}

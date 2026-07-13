@@ -270,7 +270,7 @@ namespace Shesha.CodeGeneration
                 .ToList();
             if (declaredOnly && entityType.BaseType != null)
             {
-                // filter out `overrided` properties
+                // filter out `overridden` properties
                 properties = properties.Where(p => entityType.BaseType.GetProperty(p.Name, BindingFlags.GetProperty | BindingFlags.Public | BindingFlags.Instance) == null).ToList();
             }
 

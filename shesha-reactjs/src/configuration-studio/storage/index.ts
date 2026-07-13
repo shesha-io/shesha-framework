@@ -50,7 +50,7 @@ class AsyncLocalStorage implements IAsyncStorage {
     return new Promise((resolve) => {
       try {
         if (!isDefined(value)) {
-          this.removeAsync(key).then(resolve);
+          void this.removeAsync(key).then(resolve);
           return;
         }
 

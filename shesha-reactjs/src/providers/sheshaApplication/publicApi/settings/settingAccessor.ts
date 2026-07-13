@@ -3,14 +3,14 @@ import { SettingsManager } from "./manager";
 /**
  * Setting value accessor. It allows to read and write specified setting value.
  */
-export interface ISettingAccessor<Value = any> {
-  getValueAsync: () => Promise<Value>;
+export interface ISettingAccessor<Value = unknown> {
+  getValueAsync: () => Promise<Value | undefined>;
   setValueAsync: (value: Value) => Promise<void>;
 }
 /**
  * Setting value accessor. It allows to read and write specified setting value.
  */
-export class SettingAccessor<Value = any> implements ISettingAccessor<Value> {
+export class SettingAccessor<Value = unknown> implements ISettingAccessor<Value> {
   readonly _name: string;
 
   readonly _moduleAccessor: string;
@@ -31,7 +31,7 @@ export class SettingAccessor<Value = any> implements ISettingAccessor<Value> {
    *
    * @returns setting value
    */
-  getValueAsync(): Promise<Value> {
+  getValueAsync(): Promise<Value | undefined> {
     return this._settingManager.getValueAsync<Value>({ module: this._moduleAccessor, category: this._categoryAccessor, name: this._name });
   };
 

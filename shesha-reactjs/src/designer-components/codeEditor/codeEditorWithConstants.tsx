@@ -3,8 +3,12 @@ import { CodeEditor } from './codeEditor';
 import { ICodeEditorProps } from './interfaces';
 import { useAvailableStandardConstantsMetadata } from '@/utils/metadata/hooks';
 
-export const CodeEditorWithStandardConstants: FC<ICodeEditorProps> = (props) => {
-  const standardConstants = useAvailableStandardConstantsMetadata();
+export interface ICodeEditorWithStandardConstantsProps extends ICodeEditorProps {
+  makeComponentsNullable?: boolean;
+}
+
+export const CodeEditorWithStandardConstants: FC<ICodeEditorWithStandardConstantsProps> = (props) => {
+  const standardConstants = useAvailableStandardConstantsMetadata(props.makeComponentsNullable);
   return (
     <CodeEditor {...props} availableConstants={standardConstants} />
   );

@@ -5,8 +5,8 @@ import {
 } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { createNamedContext } from '@/utils/react';
-import { MutableRefObject } from 'react';
 import { DEFAULT_FORM_SETTINGS, FormMode, IConfigurableFormComponent, IFlatComponentsStructure, IFormSettings, ROOT_COMPONENT_KEY } from "../form/models";
+import { IComponentUpdatePayload } from './contexts';
 
 /** Named Data Source */
 export interface IDataSource {
@@ -28,7 +28,7 @@ export type IComponentSettingsEditorsCache = Record<string, ISettingsFormFactory
 export type RerenderTrigger = () => void;
 
 export type FormDesignerSubscription = (designer: IFormDesignerInstance) => void;
-export type FormDesignerSubscriptionType = 'markup' | 'selection' | 'readonly' | 'mode' | 'debug' | 'history' | 'data-modified';
+export type FormDesignerSubscriptionType = 'markup' | 'selection' | 'readonly' | 'mode' | 'debug' | 'history' | 'data-modified' | 'settings-tab';
 
 export interface AddComponentPayloadBase {
   index: number;
@@ -58,11 +58,6 @@ export interface IComponentDeletePayload {
 
 export interface IComponentDuplicatePayload {
   componentId: string;
-}
-
-export interface IComponentUpdatePayload {
-  componentId: string;
-  settings: IConfigurableFormComponent;
 }
 
 export interface IComponentUpdateSettingsValidationPayload {
@@ -99,7 +94,7 @@ export type FormDesignerState = {
   readOnly: boolean;
   formMode: FormMode;
 
-  settingsPanelRef: MutableRefObject<HTMLDivElement | undefined>;
+  settingsPanelElement: HTMLDivElement | null;
 };
 
 export type FormDesignerActions = {
@@ -128,9 +123,11 @@ export type FormDesignerActions = {
   setReadOnly: (value: boolean) => void;
   setFormMode: (value: FormMode) => void;
 
-  getCachedComponentEditor: (type: string, evaluator: () => ISettingsFormFactory) => ISettingsFormFactory;
+  getCachedComponentEditor: (type: string, evaluator: () => ISettingsFormFactory) => ISettingsFormFactory | undefined;
 
   subscribe: (type: FormDesignerSubscriptionType, callback: FormDesignerSubscription) => void;
+
+  setSettingsPanelElement: (element: HTMLDivElement | null) => void;
 };
 
 

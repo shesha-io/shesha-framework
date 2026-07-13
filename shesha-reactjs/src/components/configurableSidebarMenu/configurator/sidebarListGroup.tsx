@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import ShaIcon, { IconType } from '@/components/shaIcon';
+import { ShaIcon, IconType } from '@/components/shaIcon';
 import { ISidebarGroup, ISidebarMenuItem } from '@/interfaces/sidebar';
 import { useStyles } from '@/components/listEditor/styles/styles';
 import { ItemChangeDetails } from '@/components/listEditor';
@@ -10,12 +10,12 @@ import { useActualContextData } from '@/hooks';
 export interface IContainerRenderArgs {
   id?: string;
   items: ISidebarMenuItem[];
-  onChange: (newValue: ISidebarMenuItem[], changeDetails: ItemChangeDetails) => void;
+  onChange: (newValue: ISidebarMenuItem[], changeDetails?: ItemChangeDetails | undefined) => void;
 }
 
 export interface ISidebarMenuGroupProps {
   item: ISidebarGroup;
-  onChange: (newValue: ISidebarGroup, changeDetails: ItemChangeDetails) => void;
+  onChange: (newValue: ISidebarGroup, changeDetails?: ItemChangeDetails | undefined) => void;
   containerRendering: (args: IContainerRenderArgs) => React.ReactNode;
 }
 

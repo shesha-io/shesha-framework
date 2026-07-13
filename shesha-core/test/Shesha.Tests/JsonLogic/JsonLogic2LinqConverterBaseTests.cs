@@ -46,7 +46,7 @@ namespace Shesha.Tests.JsonLogic
             var asyncExecuter = LocalIocManager.Resolve<IAsyncQueryableExecuter>();
 
             return WithUnitOfWorkAsync(async () => {
-                var query = repository.GetAll().Where(expression);
+                var query = (await repository.GetAllAsync()).Where(expression);
 
                 if (prepareQueryable != null)
                     query = prepareQueryable.Invoke(query);

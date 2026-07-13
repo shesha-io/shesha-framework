@@ -3,7 +3,7 @@ import { FormIdentifier, FormRawMarkup, IFormSettings } from "../form/models";
 import { createNamedContext } from "@/utils/react";
 
 export type GetFormByMarkupPayload = {
-  key: string;
+  key: string | undefined;
   markup: FormRawMarkup;
   formSettings: IFormSettings;
   isSettingsForm?: boolean;

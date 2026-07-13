@@ -76,7 +76,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       type: 'switch',
                       jsSetting: true,
                       description: 'Where the uploader should show a dragger instead of a button',
-                      hidden: { _code: 'return getSettingValue(data?.listType) === "thumbnail";', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return getSettingValue(data?.listType) === "thumbnail";', _mode: 'code', _value: false },
                     },
                   ],
                 })
@@ -93,7 +93,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         { label: 'File name', value: 'text' },
                         { label: 'Thumbnail', value: 'thumbnail' },
                       ],
-                      hidden: { _code: 'return getSettingValue(data?.isDragger);', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return getSettingValue(data?.isDragger);', _mode: 'code', _value: false },
                       jsSetting: true,
                     },
                     {
@@ -102,7 +102,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       label: 'Hide File Name',
                       type: 'switch',
                       jsSetting: true,
-                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false },
                     },
                   ],
                 })
@@ -136,14 +136,14 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       label: 'Allow Add',
                       type: 'switch',
                       jsSetting: true,
-                      hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false },
                     },
                     {
                       id: nanoid(),
                       propertyName: 'allowDelete',
                       label: 'Allow Remove',
                       type: 'switch',
-                      hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false },
                       jsSetting: true,
                     },
                   ],
@@ -158,7 +158,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       label: 'Allow Replace',
                       type: 'switch',
                       jsSetting: true,
-                      hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false },
                     },
                     {
                       id: nanoid(),
@@ -232,7 +232,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             { label: "Name", value: "name" },
                             { label: "Dynamic", value: "dynamic" },
                           ],
-                          hidden: { _code: 'return !getSettingValue(data?.customContent);', _mode: 'code', _value: false } as any,
+                          hidden: { _code: 'return !getSettingValue(data?.customContent);', _mode: 'code', _value: false },
                         })
                         .addSettingsInputRow({
                           id: nanoid(),
@@ -246,7 +246,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               jsSetting: true,
                             },
                           ],
-                          hidden: { _code: 'return !getSettingValue(data?.customContent) || getSettingValue(data?.extraFormSelectionMode) !== "dynamic";', _mode: 'code', _value: false } as any,
+                          hidden: { _code: 'return !getSettingValue(data?.customContent) || getSettingValue(data?.extraFormSelectionMode) !== "dynamic";', _mode: 'code', _value: false },
                         })
                         .addSettingsInputRow({
                           id: nanoid(),
@@ -260,7 +260,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               jsSetting: true,
                             },
                           ],
-                          hidden: { _code: 'return !getSettingValue(data?.customContent) || getSettingValue(data?.extraFormSelectionMode) === "dynamic";', _mode: 'code', _value: false } as any,
+                          hidden: { _code: 'return !getSettingValue(data?.customContent) || getSettingValue(data?.extraFormSelectionMode) === "dynamic";', _mode: 'code', _value: false },
                         })
                         .toJson(),
                     ],
@@ -419,7 +419,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   _mode: "code",
                   _code: "return contexts.canvasContext?.designerDevice || 'desktop';",
                   _value: "",
-                } as any,
+                },
                 components: [
                   ...fbf()
                     .addSettingsInput({
@@ -503,7 +503,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       labelAlign: 'right',
                       ghost: true,
                       collapsible: 'header',
-                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false },
                       content: {
                         id: styleDimensionsPnlId,
                         components: [...fbf()
@@ -587,7 +587,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       ghost: true,
                       parentId: styleRouterId,
                       collapsible: 'header',
-                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false },
                       content: {
                         id: pnlBorderStyle,
                         components: [...fbf()
@@ -613,7 +613,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       ghost: true,
                       parentId: styleRouterId,
                       collapsible: 'header',
-                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false },
                       content: {
                         id: pnlBackgroundStyle,
                         components: [
@@ -665,7 +665,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 hideLabel: true,
                                 jsSetting: false,
                               }],
-                              hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false },
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
@@ -677,7 +677,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 label: "Colors",
                                 jsSetting: false,
                               }],
-                              hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false },
                               hideLabel: true,
                             })
                             .addSettingsInputRow({
@@ -690,7 +690,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 jsSetting: false,
                                 label: "URL",
                               }],
-                              hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false },
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
@@ -702,12 +702,12 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 label: "Image",
                                 jsSetting: false,
                               }],
-                              hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false },
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: pnlBackgroundStyle,
-                              hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false },
                               inputs: [
                                 {
                                   type: 'textField',
@@ -722,7 +722,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               id: nanoid(),
                               parentId: pnlBackgroundStyle,
                               inline: true,
-                              hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
                               inputs: [
                                 {
                                   type: 'customDropdown',
@@ -755,7 +755,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 propertyName: 'background.repeat',
                                 buttonGroupOptions: repeatOptions,
                               }],
-                              hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
                             })
                             .toJson(),
                         ],
@@ -769,7 +769,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       ghost: true,
                       parentId: styleRouterId,
                       collapsible: 'header',
-                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false },
                       content: {
                         id: pnlShadowStyleId,
                         components: [...fbf()
@@ -835,7 +835,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       ghost: true,
                       parentId: styleRouterId,
                       collapsible: 'header',
-                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false },
                       content: {
                         id: customStylePnlId,
                         components: [...fbf()
@@ -878,7 +878,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   { label: 'Grid', value: 'grid' },
                                 ],
                                 jsSetting: true,
-                                hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail" || getSettingValue(data?.isDragger);', _mode: 'code', _value: false } as any,
+                                hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail" || getSettingValue(data?.isDragger);', _mode: 'code', _value: false },
                               },
                               {
                                 id: nanoid(),
@@ -887,7 +887,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 type: 'numberField',
                                 description: 'The gap between the thumbnails.',
                                 jsSetting: true,
-                                hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false } as any,
+                                hidden: { _code: 'return getSettingValue(data?.listType) !== "thumbnail";', _mode: 'code', _value: false },
                               },
                             ],
                           })
@@ -906,7 +906,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   id: nanoid(),
                                   parentId: containerDimensionsStylePnlId,
                                   inline: true,
-                                  hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.filesLayout) === "vertical";', _mode: 'code', _value: false } as any,
+                                  hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.filesLayout) === "vertical";', _mode: 'code', _value: false },
                                   inputs: [
                                     {
                                       type: 'textField',
@@ -941,7 +941,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   id: nanoid(),
                                   parentId: styleRouterId,
                                   inline: true,
-                                  hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.filesLayout) === "horizontal";', _mode: 'code', _value: false } as any,
+                                  hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.filesLayout) === "horizontal";', _mode: 'code', _value: false },
                                   inputs: [
                                     {
                                       type: 'textField',
@@ -1052,7 +1052,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               type: 'iconPicker',
                               label: 'Icon',
                               propertyName: 'downloadedIcon',
-                              hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false },
                             },
                             ],
                           })
@@ -1064,7 +1064,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             parentId: downloadedStylesPnlId,
                             ghost: true,
                             collapsible: 'header',
-                            hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
+                            hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false },
                             content: {
                               id: pnlDownloadedFileFontStylesId,
                               components: [...fbf()
@@ -1130,7 +1130,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             ghost: true,
                             parentId: downloadedStylesPnlId,
                             collapsible: 'header',
-                            hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false } as any,
+                            hidden: { _code: 'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);', _mode: 'code', _value: false },
                             content: {
                               id: 'pnlDownloadedFileCustomStylePanel',
                               components: [...fbf()

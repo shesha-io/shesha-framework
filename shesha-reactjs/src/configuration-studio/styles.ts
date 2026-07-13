@@ -13,13 +13,18 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
   const csWorkArea = "sha-cs-work-area";
   const csNavPanelSpinner = "sha-cs-tree-spinner";
   const csNavPanelContent = "sha-cs-nav-content";
+  const csNavPanelTitle = 'sha-cs-nav-content-title';
+  const csNavPanelTitleText = 'sha-cs-nav-content-title-text';
+  const csNavPanelToggle = 'sha-cs-nav-content-toggle';
   const csNavPanelHeader = 'sha-cs-nav-content-hd';
   const csNavPanelTree = 'sha-cs-nav-content-tree';
   const csQuickInfoIcons = 'sha-cs-quick-info-icons';
   const csDocTabs = 'sha-cs-doc-tabs';
   const csDocEditor = 'sha-cs-doc-editor';
+  const csWorkAreaEmpty = 'sha-cs-work-area-empty';
 
   const headerHeight = 60;
+  const tabCardHeight = 40;
 
   const configStudio = cx("sha-config-studio", css`
 
@@ -55,7 +60,9 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
         }
         .${csTreeArea}{
             height: calc(100vh - ${headerHeight}px);
-            overflow: auto;
+            overflow: hidden;
+            background: ${token.colorBgContainer};
+            border-right: 1px solid ${token.colorBorderSecondary};
             .${csNavPanelSpinner}{
                 height: 100%;
                 >.${prefixCls}-spin-container {
@@ -66,18 +73,84 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
                 display: flex;
                 flex-direction: column;
                 height: 100%;
+                padding-right: ${sheshaStyles.paddingMD}px;
+                .${csNavPanelTitle}{
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    height: 35px;
+                    flex-grow: 0;
+                    padding: 0 ${sheshaStyles.paddingLG}px;
+                    font-weight: 500;
+                    font-size: 14px;
+                    border-bottom: 1px solid ${token.colorBorderSecondary};
+                    .${csNavPanelTitleText}{
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                    }
+                    .${csNavPanelToggle}{
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        height: 24px;
+                        width: 24px;
+                        margin-left: auto;
+                        cursor: pointer;
+                        border-radius: ${token.borderRadius}px;
+                        color: ${token.colorTextSecondary};
+                    }
+                }
+                &.collapsed{
+                    padding-right: 0;
+                    .${csNavPanelTitle}{
+                        padding: 0;
+                        justify-content: center;
+                    }
+                    .${csNavPanelToggle}{
+                        margin-left: 0;
+                    }
+                }
                 .${csNavPanelHeader}{
                     margin-bottom: 8px;
                     flex-grow: 0;
+                    padding: ${sheshaStyles.paddingLG}px ${sheshaStyles.paddingLG}px 0;
                 }
                 .${csNavPanelTree}{
                     flex-grow: 1;
+                    overflow: auto;
+                    padding: 0 ${sheshaStyles.paddingLG}px ${sheshaStyles.paddingLG}px;
+                    ${sheshaStyles.thinScrollbars}
                     >.${prefixCls}-tree{
                         height:100%;
                     }
                     .${prefixCls}-tree-treenode {
+                      width: 100%;
+                      max-width: 100%;
                       .${prefixCls}-tree-draggable-icon {
                         display: none;
+                      }
+                      /* Keep long labels on a single line, clipped at the panel
+                         edge instead of wrapping (File Explorer behaviour).
+                         The content wrapper becomes a flex row so the type icon
+                         stays inline and only the title truncates; min-width: 0
+                         lets the title shrink below its content width so the
+                         ellipsis actually triggers. */
+                      .${prefixCls}-tree-node-content-wrapper {
+                        display: flex;
+                        align-items: center;
+                        min-width: 0;
+                        overflow: hidden;
+                        .${prefixCls}-tree-iconEle {
+                          flex: none;
+                        }
+                        .${prefixCls}-tree-title {
+                          flex: 1 1 auto;
+                          min-width: 0;
+                          overflow: hidden;
+                          white-space: nowrap;
+                          text-overflow: ellipsis;
+                        }
                       }
                     }
                 }
@@ -99,9 +172,18 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
                 }
             }
         }
-            .${csDocEditor}{
-                padding: 0;
-            }
+        .${csDocEditor}{
+            padding: 0;
+            overflow: auto;
+            height: calc(100vh - ${headerHeight}px - ${tabCardHeight}px);
+        }
+        .${csWorkAreaEmpty}{
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
   `);
 
   return {
@@ -116,10 +198,14 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
     csWorkArea,
     csNavPanelSpinner,
     csNavPanelContent,
+    csNavPanelTitle,
+    csNavPanelTitleText,
+    csNavPanelToggle,
     csNavPanelHeader,
     csNavPanelTree,
     csQuickInfoIcons,
     csDocTabs,
     csDocEditor,
+    csWorkAreaEmpty,
   };
 });

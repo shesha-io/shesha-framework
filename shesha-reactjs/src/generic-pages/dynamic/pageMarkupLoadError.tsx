@@ -1,4 +1,4 @@
-import { ValidationErrors } from '@/components';
+import { ValidationErrors } from '@/components/validationErrors';
 import { MarkupLoadingErrorRenderProps } from '@/components/configurableForm/models';
 import { getFormForbiddenMessage } from '@/providers/configurationItemsLoader/utils';
 import { App, Button, Result } from 'antd';
@@ -13,7 +13,7 @@ export const PageMarkupLoadingError: FC<MarkupLoadingErrorRenderProps> = ({ form
       notification.error({
         message: 'Sorry! An error occurred.',
         icon: null,
-        description: <ValidationErrors error={markupLoadingState.error} renderMode="raw" defaultMessage={null} />,
+        description: <ValidationErrors error={markupLoadingState.error} renderMode="raw" />,
       });
     }
   }, [notification, markupLoadingState]);

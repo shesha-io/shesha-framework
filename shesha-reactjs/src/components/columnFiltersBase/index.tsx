@@ -7,12 +7,13 @@ import {
   ITableFilter,
 } from '@/providers/dataTable/interfaces';
 import { getTableDataColumns } from '@/providers/dataTable/utils';
+import { isDefined } from '@/utils/nullables';
 
 export interface IColumnFiltersBaseProps {
   columns: ITableColumn[];
-  currentFilter?: ITableFilter[];
+  currentFilter?: ITableFilter[] | undefined;
   changeFilterOption: (filterColumnId: string, filterOptionValue: IndexColumnFilterOption) => void;
-  changeFilter: (filterColumnId: string, filterValue: any) => void;
+  changeFilter: (filterColumnId: string, filterValue: ColumnFilter) => void;
   toggleColumnFilter: (columnIds: string[]) => void;
   applyFilters: () => void;
 }
@@ -25,9 +26,11 @@ export const ColumnFiltersBase: FC<IColumnFiltersBaseProps> = ({
   applyFilters,
   currentFilter,
 }) => {
-  const filterableColumns = getTableDataColumns(columns).filter((c) =>
-    Boolean(currentFilter.find((f) => f.columnId === c.id)),
-  );
+  const filterableColumns = currentFilter
+    ? getTableDataColumns(columns).filter((c) =>
+      Boolean(currentFilter.find((f) => f.columnId === c.id)),
+    )
+    : [];
 
   return (
     <div style={{ flex: 1 }}>
@@ -45,24 +48,24 @@ export const ColumnFiltersBase: FC<IColumnFiltersBaseProps> = ({
         }) => {
           if (isFilterable) {
             const onRemoveFilter = (idOfFilter: string): void => {
-              const newIds = currentFilter.filter((f) => f.columnId !== idOfFilter).map((f) => f.columnId);
+              const newIds = currentFilter?.filter((f) => f.columnId !== idOfFilter).map((f) => f.columnId) ?? [];
 
               toggleColumnFilter(newIds);
             };
 
             const onChangeFilterOption = (filterId: string, fOption: IndexColumnFilterOption): void => {
-              if (changeFilterOption) {
+              if (isDefined(changeFilterOption)) {
                 changeFilterOption(filterId, fOption);
               }
             };
 
             const onChangeFilter = (filterId: string, fltr: ColumnFilter): void => {
-              if (changeFilter) {
+              if (isDefined(changeFilter)) {
                 changeFilter(filterId, fltr);
               }
             };
 
-            const existingFilter = currentFilter.find((f) => f.columnId === id);
+            const existingFilter = currentFilter?.find((f) => f.columnId === id);
 
             return (
               <ColumnItemFilter

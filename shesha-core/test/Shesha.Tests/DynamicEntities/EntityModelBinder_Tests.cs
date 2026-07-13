@@ -1,6 +1,4 @@
-﻿using Abp.Auditing;
-using Abp.Domain.Repositories;
-using Abp.Domain.Uow;
+﻿using Abp.Domain.Repositories;
 using Newtonsoft.Json.Linq;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
@@ -21,13 +19,11 @@ namespace Shesha.Tests.DynamicEntities
     [Collection(SqlServerCollection.Name)]
     public class EntityModelBinder_Tests : SheshaNhTestBase
     {
-        private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IEntityModelBinder _entityModelBinder;
         private readonly IRepository<Person, Guid> _personRepo;
 
         public EntityModelBinder_Tests(SqlServerFixture fixture) : base(fixture)
         {
-            _unitOfWorkManager = Resolve<IUnitOfWorkManager>();
             _entityModelBinder = Resolve<IEntityModelBinder>();
             _personRepo = Resolve<IRepository<Person, Guid>>();
         }
@@ -108,10 +104,10 @@ namespace Shesha.Tests.DynamicEntities
                     Assert.True(testResult1);
                     await testOrgRepo.InsertAsync(newTestOrg1);
                     await uow.SaveChangesAsync();
-                    newTestOrg1 = testOrgRepo.GetAll().FirstOrDefault(x => x.Name == "TestOrganisation");
+                    newTestOrg1 = await testOrgRepo.FirstOrDefaultAsync(x => x.Name == "TestOrganisation");
                     Assert.True(newTestOrg1 != null);
 
-                    newTestPerson1 = _personRepo.GetAll().FirstOrDefault(x => x.FirstName == "TestPerson");
+                    newTestPerson1 = await _personRepo.FirstOrDefaultAsync(x => x.FirstName == "TestPerson");
                     Assert.True(newTestPerson1 != null);
                     Assert.True(string.IsNullOrEmpty(newTestOrg1.Description));
                     Assert.True(string.IsNullOrEmpty(newTestPerson1.CustomShortName));
@@ -189,9 +185,9 @@ namespace Shesha.Tests.DynamicEntities
                     Assert.True(testResult1);
                     await testOrgRepo.InsertAsync(newTestOrg1);
                     await uow.SaveChangesAsync();
-                    newTestOrg1 = testOrgRepo.GetAll().FirstOrDefault(x => x.Name == "TestOrganisation");
+                    newTestOrg1 = await testOrgRepo.FirstOrDefaultAsync(x => x.Name == "TestOrganisation");
                     Assert.NotNull(newTestOrg1);
-                    newTestPerson1 = _personRepo.GetAll().FirstOrDefault(x => x.FirstName == "TestPerson");
+                    newTestPerson1 = await _personRepo.FirstOrDefaultAsync(x => x.FirstName == "TestPerson");
                     Assert.True(newTestPerson1 != null);
                     // Check for prepared value
                     Assert.StartsWith("This is prepared value", newTestPerson1.MiddleName);
@@ -216,7 +212,7 @@ namespace Shesha.Tests.DynamicEntities
                     Assert.True(newTestOrg3.PrimaryContact.Id == newTestPerson1?.Id);
 
                     // Child creation is allowed and choosing by FirstName with updating child LastName
-                    var lastName = _personRepo.GetAll().FirstOrDefault(x => x.FirstName == "TestPerson")?.LastName;
+                    var lastName = (await _personRepo.FirstOrDefaultAsync(x => x.FirstName == "TestPerson"))?.LastName;
                     var testErrors4 = new List<ValidationResult>();
                     newTestOrg4 = new TestOrganisationAllowContactUpdate();
                     var json4 = @"{ 'name': 'TestOrganisation4', 'primaryContact': { 'firstName': 'TestPerson', 'lastName': 'TestLastName' } }";
@@ -225,19 +221,19 @@ namespace Shesha.Tests.DynamicEntities
                     Assert.True(testResult4);
                     await testOrgRepo.InsertAsync(newTestOrg4);
                     await uow.SaveChangesAsync();
-                    newTestOrg4 = testOrgRepo.GetAll().FirstOrDefault(x => x.Name == "TestOrganisation4");
+                    newTestOrg4 = await testOrgRepo.FirstOrDefaultAsync(x => x.Name == "TestOrganisation4");
                     Assert.NotNull(newTestOrg4);
                     Assert.True(newTestOrg4.PrimaryContact.Id == newTestPerson1?.Id);
                     Assert.True(newTestOrg4.PrimaryContact.LastName == "TestLastName");
                     Assert.True(newTestOrg4.PrimaryContact.LastName != lastName);
-                    newTestPerson1 = _personRepo.GetAll().FirstOrDefault(x => x.FirstName == "TestPerson");
+                    newTestPerson1 = await _personRepo.FirstOrDefaultAsync(x => x.FirstName == "TestPerson");
                     Assert.True(newTestPerson1 != null);
 
                     // Create test person 2
                     newTestPerson2 = new Person() { FirstName = "TestPerson2" };
                     await _personRepo.InsertAsync(newTestPerson2);
                     await uow.SaveChangesAsync();
-                    newTestPerson2 = _personRepo.GetAll().FirstOrDefault(x => x.FirstName == "TestPerson2");
+                    newTestPerson2 = await _personRepo.FirstOrDefaultAsync(x => x.FirstName == "TestPerson2");
                     Assert.NotNull(newTestPerson2);
 
                     // Change child by Id and check if TestPerson1 is not deleted by DeleteUnreferenced because is referenced to TestOrganisation3 and TestOrganisation4
@@ -290,8 +286,8 @@ namespace Shesha.Tests.DynamicEntities
                     Assert.True(testResult8);
                     await uow.SaveChangesAsync();
                     newTestOrg8 = await testOrgRepo.GetAsync(newTestOrg4.Id);
-                    newTestPerson1 = _personRepo.GetAll().FirstOrDefault(x => x.FirstName == "TestPerson1");
-                    newTestPerson2 = _personRepo.GetAll().FirstOrDefault(x => x.FirstName == "TestPerson22");
+                    newTestPerson1 = await _personRepo.FirstOrDefaultAsync(x => x.FirstName == "TestPerson1");
+                    newTestPerson2 = await _personRepo.FirstOrDefaultAsync(x => x.FirstName == "TestPerson22");
                     Assert.NotNull(newTestPerson2);
                     Assert.True(newTestPerson1 == null);
                     Assert.True(newTestOrg8.Name == "TestOrganisation4");

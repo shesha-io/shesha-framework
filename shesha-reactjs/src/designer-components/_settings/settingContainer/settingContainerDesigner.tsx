@@ -9,8 +9,9 @@ import { useStyles } from '../../../components/formDesigner/styles/styles';
 import { useParent } from '@/providers/parentProvider';
 import _ from 'lodash';
 import { getAlignmentStyle } from '@/components/formDesigner/containers/util';
-import { ConfigurableFormComponentDesigner } from '@/components/formDesigner/configurableFormComponent';
 import { ISettingContainerProps } from './settingComponentContainer';
+import { isDefined } from '@/utils/nullables';
+import DesignerFormComponent from '@/components/formDesigner/formComponent/designerFormComponent';
 
 export const SettingContainerDesigner: FC<ISettingContainerProps> = (props) => {
   const {
@@ -30,18 +31,20 @@ export const SettingContainerDesigner: FC<ISettingContainerProps> = (props) => {
   const formDesigner = useFormDesigner();
   const { addComponent, startDragging, endDragging } = formDesigner;
 
-  const childIds = ShaForm.useChildComponentIds(containerId.replace(`${parent?.subFormIdPrefix}.`, ''));
+  const childIds = ShaForm.useChildComponentIds(containerId.replace(`${parent.subFormIdPrefix}.`, ''));
 
-  const onSetList = (newState: ItemInterface[], _sortable, _store): void => {
+  const onSetList = (newState: ItemInterface[]): void => {
     if (!formDesigner.hasDragged) return;
 
-    if (newState?.length === 2) {
+    if (newState.length === 2) {
       return;
     }
     const newComponentIndex = newState.findIndex((item) => item['type'] === TOOLBOX_COMPONENT_DROPPABLE_KEY);
     if (newComponentIndex > -1) {
       // add new component
       const toolboxComponent = newState[newComponentIndex];
+      if (!isDefined(toolboxComponent))
+        throw new Error("toolboxComponent is undefined, cannot add component");
 
       addComponent({
         containerId,
@@ -61,7 +64,7 @@ export const SettingContainerDesigner: FC<ISettingContainerProps> = (props) => {
     startDragging();
   };
 
-  const onDragEnd = (_evt): void => {
+  const onDragEnd = (): void => {
     endDragging();
   };
 
@@ -69,7 +72,7 @@ export const SettingContainerDesigner: FC<ISettingContainerProps> = (props) => {
 
   return (
     <ConditionalWrap
-      condition={!noDefaultStyling}
+      condition={noDefaultStyling !== true}
       wrap={(content) => (
         <div className={classNames(styles.shaComponentsContainer, direction, className)} style={wrapperStyle}>
           {content}
@@ -77,7 +80,6 @@ export const SettingContainerDesigner: FC<ISettingContainerProps> = (props) => {
       )}
     >
       <>
-        {childIds.length === 0 && <div className={styles.shaDropHint}>Drag and Drop form component</div>}
         <ReactSortable
           disabled={readOnly}
           onStart={onDragStart}
@@ -98,10 +100,11 @@ export const SettingContainerDesigner: FC<ISettingContainerProps> = (props) => {
           scroll={true}
           bubbleScroll={true}
           direction={direction}
-          className={noDefaultStyling ? '' : styles.shaComponentsContainerInner}
+          className={noDefaultStyling === true ? '' : styles.shaComponentsContainerInner}
           style={{ ...style, ...incomingStyle }}
         >
-          {component?.id && <ConfigurableFormComponentDesigner componentModel={component} />}
+          {childIds.length === 0 && <div className={styles.shaDropHint}>Drag and Drop form component</div>}
+          {component.id && <DesignerFormComponent componentModel={component} />}
         </ReactSortable>
       </>
     </ConditionalWrap>

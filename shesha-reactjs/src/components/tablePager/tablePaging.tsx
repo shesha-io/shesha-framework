@@ -1,11 +1,11 @@
-import React, { CSSProperties, FC, useEffect } from 'react';
+import React, { CSSProperties, FC } from 'react';
 import { Pagination, Select } from 'antd';
 import { useMedia } from 'react-use';
 import { useStyles } from './style';
 
 export interface ITablePagerBaseProps {
   /** Whether this component */
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 
   /** The options for page sizes */
   pageSizeOptions: number[];
@@ -20,17 +20,17 @@ export interface ITablePagerBaseProps {
   selectedPageSize: number;
 
   /** show size changer of the table */
-  showSizeChanger?: boolean;
+  showSizeChanger?: boolean | undefined;
 
   /** show size of table rows */
-  showTotalItems?: boolean;
+  showTotalItems?: boolean | undefined;
 
   /** A function to set the page the table should be on */
   setCurrentPage: (page: number) => void;
 
   /** A function to change  */
   changePageSize: (size: number) => void;
-  style?: CSSProperties;
+  style?: CSSProperties | undefined;
 }
 
 export const TablePaging: FC<ITablePagerBaseProps> = ({
@@ -48,12 +48,12 @@ export const TablePaging: FC<ITablePagerBaseProps> = ({
   const isWider = useMedia('(min-width: 1202px)');
   const { styles } = useStyles({ style });
 
-  const onPageNumberChange = (page: number, pageSize?: number): void => {
+  const onPageNumberChange = (page: number, pageSize: number): void => {
     setCurrentPage(page);
     changePageSize(pageSize);
   };
 
-  const onShowSizeChange = (current: number, size?: number): void => {
+  const onShowSizeChange = (current: number, size: number): void => {
     changePageSize(size);
     setCurrentPage(current);
   };
@@ -66,10 +66,6 @@ export const TablePaging: FC<ITablePagerBaseProps> = ({
     return null;
   };
 
-  useEffect(() => {
-    if (!isNaN(selectedPageSize)) onShowSizeChange(1, selectedPageSize);
-  }, [showSizeChanger]);
-
   if (!isWider) return null;
 
   return (
@@ -78,7 +74,7 @@ export const TablePaging: FC<ITablePagerBaseProps> = ({
         className={styles.pager}
         size="small"
         total={totalRows}
-        pageSizeOptions={(pageSizeOptions || []).map((s) => `${s}`)}
+        pageSizeOptions={pageSizeOptions.map((s) => `${s}`)}
         current={currentPage}
         pageSize={selectedPageSize}
         showSizeChanger={false}

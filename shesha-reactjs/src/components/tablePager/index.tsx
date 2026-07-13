@@ -1,7 +1,7 @@
 import React, { CSSProperties, FC } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import { PHONE_SIZE_QUERY } from '@/shesha-constants/media-queries';
-import { useComponentValidation, useDataTable } from '@/providers';
+import { useComponentValidation, useDataTableStoreOrUndefined } from '@/providers';
 import TablePaging from './tablePaging';
 import TableNoPaging from './tableNoPaging';
 import { IFontValue } from '@/designer-components/_settings/utils/font/interfaces';
@@ -11,6 +11,7 @@ import { IBorderValue } from '@/designer-components/_settings/utils/border/inter
 import { Pagination } from 'antd';
 import { useStyles } from '@/designer-components/dataTable/tableContext/styles';
 import { validationError } from '@/designer-components/dataTable/utils';
+import { isDefined } from '@/utils/nullables';
 
 const outsideContextValidationError = validationError('Table Pager');
 
@@ -25,7 +26,7 @@ export interface ITablePagerProps {
 }
 
 type EmptyPagerProps = {
-  style?: CSSProperties;
+  style?: CSSProperties | undefined;
 };
 
 const EmptyPager: FC<EmptyPagerProps> = ({ style }) => {
@@ -52,7 +53,7 @@ const EmptyPager: FC<EmptyPagerProps> = ({ style }) => {
 };
 
 export const TablePager: FC<ITablePagerProps> = ({ showSizeChanger, showTotalItems, style }) => {
-  const dataTableContext = useDataTable(false);
+  const dataTableContext = useDataTableStoreOrUndefined();
 
   useComponentValidation(
     () => !dataTableContext ? outsideContextValidationError : undefined,
@@ -79,7 +80,7 @@ export const TablePager: FC<ITablePagerProps> = ({ showSizeChanger, showTotalIte
   } = dataTableContext;
 
   // Fallback UI when in Data Context but no configured DataTable/DataList
-  if (totalRows === undefined || totalRows === null) {
+  if (!isDefined(totalRows)) {
     return (<EmptyPager style={style} />);
   }
 

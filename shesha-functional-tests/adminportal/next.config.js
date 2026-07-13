@@ -56,7 +56,7 @@ const nextConfig = () => {
     poweredByHeader: false,
     productionBrowserSourceMaps: true,
     env,
-    publicRuntimeConfig: env,
+    //publicRuntimeConfig: env,
     compiler: {
       // Remove `console.*` output except `console.error`
       removeConsole: isProd

@@ -6,6 +6,9 @@ import Show from '@/components/show';
 import { useSheshaApplication, useTheme } from '@/providers';
 import StatusTag, { IStatusTagProps } from '@/components/statusTag';
 import { FormIdentifier } from '@/providers/form/models';
+import { ItemType } from 'antd/lib/breadcrumb/Breadcrumb';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { isNonEmptyArray } from '@/utils/array';
 
 export interface IPageHeadProps {
   readonly title?: string;
@@ -44,9 +47,10 @@ export const Page: FC<PropsWithChildren<IPageProps>> = ({
   const { theme } = useTheme();
 
   useEffect(() => {
-    document.title = !!applicationName ? `${applicationName} | ${title}` : title;
+    const prevTitle = document.title;
+    document.title = !isNullOrWhiteSpace(applicationName) ? `${applicationName} | ${title}` : title ?? "";
     return () => {
-      document.title = '';
+      document.title = prevTitle;
     };
   }, [applicationName, title]);
 
@@ -57,7 +61,7 @@ export const Page: FC<PropsWithChildren<IPageProps>> = ({
   const hasStatus = Boolean(status);
 
   return (
-    <section className="sha-page" style={{ background: theme?.layoutBackground }}>
+    <section className="sha-page" style={{ background: theme.layoutBackground }}>
       <ShaSpin spinning={loading || false} tip={loadingText}>
         <Show when={showHeading}>
           <div className="sha-page-heading">
@@ -68,7 +72,7 @@ export const Page: FC<PropsWithChildren<IPageProps>> = ({
                     {title}
 
                     <StatusTag
-                      color={status?.color}
+                      color={status?.color ?? ""}
                       value={status?.value}
                       override={status?.override}
                       mappings={status?.mappings}
@@ -80,13 +84,12 @@ export const Page: FC<PropsWithChildren<IPageProps>> = ({
           </div>
         </Show>
 
-        <Show when={!!breadcrumbItems?.length}>
-          <Breadcrumb className="sha-page-breadcrumb">
-            {breadcrumbItems?.map(({ text, link }, index) => (
-              <Breadcrumb.Item key={index}>{link ? <a href={link}>{text}</a> : text}</Breadcrumb.Item>
-            ))}
-          </Breadcrumb>
-        </Show>
+        {isNonEmptyArray(breadcrumbItems) && (
+          <Breadcrumb
+            className="sha-page-breadcrumb"
+            items={breadcrumbItems.map<ItemType>(({ text, link }) => ({ title: text, href: link ?? "" }))}
+          />
+        )}
 
         <div
           className={classNames('sha-page-content', {

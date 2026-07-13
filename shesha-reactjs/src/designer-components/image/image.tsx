@@ -1,28 +1,33 @@
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { App, Button, Image, Tooltip, Upload, UploadProps } from 'antd';
-import { toBase64, useSheshaApplication, useStoredFile } from '@/index';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
 import { DeleteOutlined, UploadOutlined } from '@ant-design/icons';
+import { useStyles } from './styles';
+import { useFileUploadOrUndefined } from '@/providers/storedFile';
+import { useSheshaApplication } from '@/providers/sheshaApplication';
+import { toBase64 } from '@/providers/form/utils';
 
 export type ImageSourceType = 'url' | 'storedFile' | 'base64';
 
 export interface IImageFieldProps {
-  value?: string;
-  onChange?: (newValue: string) => void;
+  value?: string | undefined;
+  onChange?: ((newValue: string | null) => void) | undefined;
   readOnly: boolean;
-  imageSource: ImageSourceType;
+  imageSource?: ImageSourceType | undefined;
   styles: React.CSSProperties;
-  allowPreview?: boolean;
-  allowedFileTypes?: string[];
-  alt?: string;
+  allowPreview?: boolean | undefined;
+  allowedFileTypes?: string[] | undefined;
+  alt?: string | undefined;
 }
 
 export const ImageField: FC<IImageFieldProps> = (props) => {
   const { imageSource, value, allowPreview = false, styles, onChange, allowedFileTypes } = props;
 
-  const readOnly = props?.readOnly || props.imageSource === 'url';
+  const readOnly = props.readOnly || props.imageSource === 'url';
 
-  const { uploadFile, deleteFile, fileInfo } = useStoredFile(false) ?? {};
+  const { styles: classes } = useStyles();
+
+  const { uploadFile, deleteFile, fileInfo } = useFileUploadOrUndefined() ?? {};
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const { message } = App.useApp();
 
@@ -32,7 +37,7 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
   const isRawUrl = imageSource === 'url' && Boolean(value);
   const isBase64 = imageSource === 'base64' && Boolean(value);
 
-  const fetchStoredFile = (url: string): void => {
+  const fetchStoredFile = useCallback((url: string): void => {
     fetch(`${backendUrl}${url}`,
       { headers: { ...httpHeaders, "Content-Type": "application/octet-stream" } })
       .then((response) => {
@@ -40,18 +45,21 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
       })
       .then((blob) => {
         setFileUrl(URL.createObjectURL(blob));
+      }).catch((error) => {
+        console.error('Failed to fetch stored file', error);
+        throw error;
       });
-  };
+  }, [backendUrl, httpHeaders]);
 
   useEffect(() => {
     if (isStoredFile) {
       if (fileInfo?.url)
-        fetchStoredFile(fileInfo?.url);
+        fetchStoredFile(fileInfo.url);
       else
         if (!fileInfo)
-          setFileUrl(null);
+          setFileUrl(undefined);
     }
-  }, [isStoredFile, fileInfo]);
+  }, [isStoredFile, fileInfo, fetchStoredFile]);
 
   const content = useMemo(() => {
     return isRawUrl
@@ -61,22 +69,25 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
         : isStoredFile && Boolean(fileUrl)
           ? fileUrl
           : null;
-  }, [imageSource, value, fileUrl]);
+  }, [isRawUrl, value, isBase64, isStoredFile, fileUrl]);
 
   const onRemove = (): void => {
     if (imageSource === 'base64') {
       if (onChange)
         onChange(null);
     } else if (imageSource === 'storedFile') {
-      deleteFile();
+      deleteFile?.().catch((error) => {
+        console.error('Failed to delete file', error);
+        throw error;
+      });
     }
   };
 
   const uploadProps: UploadProps = {
-    accept: props.allowedFileTypes?.join(','),
+    ...(props.allowedFileTypes ? { accept: props.allowedFileTypes.join(',') } : {}),
     showUploadList: false,
     beforeUpload: async (file) => {
-      if (!isFileTypeAllowed(file.name, allowedFileTypes)) {
+      if (allowedFileTypes && !isFileTypeAllowed(file.name, allowedFileTypes)) {
         message.error(`File type not allowed. Only ${allowedFileTypes.join(', ')} files are accepted.`);
         return Upload.LIST_IGNORE;
       }
@@ -85,10 +96,7 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
         if (onChange)
           onChange(await toBase64(file));
       } else if (imageSource === 'storedFile') {
-        uploadFile({ file: file }, () => {
-          // if (value)
-          // fetchStoredFile();
-        });
+        await uploadFile?.({ file: file });
       }
       return false;
     },
@@ -96,11 +104,11 @@ export const ImageField: FC<IImageFieldProps> = (props) => {
   };
 
   return (
-    <div style={{ position: 'relative', float: 'left' }}>
+    <div className={classes.imageWrapper}>
       {content && (
         <Image
           src={content}
-          alt={props?.alt}
+          alt={props.alt}
           width={styles.width}
           height={styles.height}
           preview={allowPreview}

@@ -1,11 +1,12 @@
 import React, { FC, useReducer, useContext, PropsWithChildren } from 'react';
-import LayerGroupReducer from './reducers';
+import { reducer } from './reducers';
 import {
   IUpdateItemSettingsPayload,
   LayerGroupConfiguratorActionsContext,
   LayerGroupConfiguratorStateContext,
   LAYER_GROUP_CONTEXT_INITIAL_STATE,
   IUpdateChildItemsPayload,
+  ILayerGroupConfiguratorStateContext,
 } from './contexts';
 import {
   addLayerAction,
@@ -17,6 +18,7 @@ import {
 } from './actions';
 import { LayerGroupItemProps } from './models';
 import { getItemById } from './utils';
+import { throwError } from '@/utils/errors';
 
 export interface ILayerGroupConfiguratorProviderPropsBase {
   baseUrl?: string;
@@ -24,15 +26,15 @@ export interface ILayerGroupConfiguratorProviderPropsBase {
 
 export interface ILayerGroupConfiguratorProviderProps {
   items?: LayerGroupItemProps[];
-  value?: any;
-  onChange?: (value: any) => void;
+  value?: unknown;
+  onChange?: (value: unknown) => void;
   readOnly?: boolean;
 }
 
 const LayerGroupConfiguratorProvider: FC<PropsWithChildren<ILayerGroupConfiguratorProviderProps>> = (props) => {
   const { children, readOnly } = props;
 
-  const [state, dispatch] = useReducer(LayerGroupReducer, {
+  const [state, dispatch] = useReducer(reducer, {
     ...LAYER_GROUP_CONTEXT_INITIAL_STATE,
     items: props.items ?? [],
     readOnly: !!readOnly,
@@ -54,7 +56,7 @@ const LayerGroupConfiguratorProvider: FC<PropsWithChildren<ILayerGroupConfigurat
   };
 
   const getItem = (uid: string): LayerGroupItemProps | null => {
-    return getItemById(state.items ?? [], uid);
+    return getItemById(state.items, uid);
   };
 
   const updateChildItems = (payload: IUpdateChildItemsPayload): void => {
@@ -88,15 +90,7 @@ const LayerGroupConfiguratorProvider: FC<PropsWithChildren<ILayerGroupConfigurat
   );
 };
 
-function useLayerGroupConfiguratorState(): typeof LAYER_GROUP_CONTEXT_INITIAL_STATE {
-  const context = useContext(LayerGroupConfiguratorStateContext);
-
-  if (context === undefined) {
-    throw new Error('useLayerGroupConfiguratorState must be used within a LayerGroupConfiguratorProvider');
-  }
-
-  return context;
-}
+const useLayerGroupConfiguratorState = (): ILayerGroupConfiguratorStateContext => useContext(LayerGroupConfiguratorStateContext) ?? throwError("useLayerGroupConfiguratorState must be used within a LayerGroupConfiguratorProvider");
 
 function useLayerGroupConfiguratorActions(): {
   addLayer: () => void;

@@ -1,4 +1,4 @@
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { IInputStyles } from '@/providers';
@@ -8,18 +8,20 @@ import { LinkOutlined } from '@ant-design/icons';
 import React, { CSSProperties, ReactNode } from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { ILinkProps, LinkComponentDefinition } from './interfaces';
+import { ILinkComponentProps, LinkComponentDefinition } from './interfaces';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
+import { getFirstNonEmptyStringPropertyOrUndefined, getStringPropertyOrUndefined } from '@/utils/object';
 
 const LinkComponent: LinkComponentDefinition = {
   type: 'link',
   isInput: false,
   name: 'link',
+  preserveDimensionsInDesigner: true,
   icon: <LinkOutlined />,
   calculateModel: (model, allData) => ({
-    isDesignerMode: allData.form.formMode === 'designer',
-    href: evaluateString(model.href, allData.data),
+    isDesignerMode: allData.form?.formMode === 'designer',
+    href: evaluateString(model.href, allData.data ?? {}),
   }),
   Factory: ({ model, calculatedModel }) => {
     const {
@@ -49,8 +51,8 @@ const LinkComponent: LinkComponentDefinition = {
         {() => {
           if (!hasChildren) {
             return (
-              <div style={{ ...linkStyle }}>
-                <a href={calculatedModel.href} target={target} className="sha-link" style={model.allStyles.fullStyle}>
+              <div style={{ ...linkStyle, alignItems: 'center', display: 'flex', height: '100%' }}>
+                <a href={calculatedModel.href} target={target} className="sha-link" style={{ ...model.allStyles?.fullStyle, height: 'unset' }}>
                   {content}
                 </a>
               </div>
@@ -58,17 +60,20 @@ const LinkComponent: LinkComponentDefinition = {
           }
 
           const containerHolder = (): ReactNode => (
-            <ParentProvider model={model}>
+            <ParentProvider
+              name={`Link-${model.id}`}
+              model={model}
+            >
               <ComponentsContainer
-                style={{ ...linkStyle, ...model.allStyles.fullStyle }}
+                style={{ ...linkStyle, ...model.allStyles?.fullStyle }}
                 containerId={id}
                 direction={direction}
-                justifyContent={model.direction === 'horizontal' ? model?.justifyContent : null}
-                alignItems={model.direction === 'horizontal' ? model?.alignItems : null}
-                justifyItems={model.direction === 'horizontal' ? model?.justifyItems : null}
+                justifyContent={model.direction === 'horizontal' ? model.justifyContent : undefined}
+                alignItems={model.direction === 'horizontal' ? model.alignItems : undefined}
+                justifyItems={model.direction === 'horizontal' ? model.justifyItems : undefined}
                 className={model.className}
                 itemsLimit={1}
-                dynamicComponents={model?.isDynamic ? model?.components : []}
+                dynamicComponents={model.isDynamic ? model.components : []}
               />
             </ParentProvider>
           );
@@ -86,8 +91,8 @@ const LinkComponent: LinkComponentDefinition = {
   },
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
-  initModel: (model: ILinkProps) => {
-    const customProps: ILinkProps = {
+  initModel: (model: ILinkComponentProps) => {
+    const customProps: ILinkComponentProps = {
       ...model,
       direction: 'vertical',
       target: '_self',
@@ -99,25 +104,25 @@ const LinkComponent: LinkComponentDefinition = {
   },
   migrator: (m) =>
     m
-      .add<ILinkProps>(0, (prev) => ({ ...prev }) as ILinkProps)
-      .add<ILinkProps>(1, (prev) => {
+      .add<ILinkComponentProps>(0, (prev) => ({ ...prev }) as ILinkComponentProps)
+      .add<ILinkComponentProps>(1, (prev) => {
         return {
           ...prev,
-          label: prev.label ?? prev['name'],
+          label: getFirstNonEmptyStringPropertyOrUndefined(prev, ["label", "name"]),
           href: prev.content,
-          content: prev['name'],
+          content: getStringPropertyOrUndefined(prev, "content"),
         };
       })
-      .add<ILinkProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-      .add<ILinkProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) }))
-      .add<ILinkProps>(4, (prev) => {
+      .add<ILinkComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+      .add<ILinkComponentProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) }))
+      .add<ILinkComponentProps>(4, (prev) => {
         const styles: IInputStyles = {
           style: prev.style,
         };
 
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
-      .add<ILinkProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+      .add<ILinkComponentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
 };
 
 export default LinkComponent;

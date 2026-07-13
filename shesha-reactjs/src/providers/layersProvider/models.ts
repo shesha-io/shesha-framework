@@ -1,5 +1,6 @@
 import { FormIdentifier, IConfigurableActionConfiguration } from '@/providers';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { isDefined } from '@/utils/nullables';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export interface ICalendarEvent {
@@ -7,13 +8,14 @@ export interface ICalendarEvent {
   start: Date;
   end: Date;
   title: string;
-  icon?: string;
-  showIcon?: boolean;
-  color?: string;
-  iconColor?: string;
-  onDblClick?: IConfigurableActionConfiguration;
-  onSelect?: IConfigurableActionConfiguration;
-  [key: string]: any; // For additional layer-specific properties
+  icon?: string | undefined;
+  showIcon?: boolean | undefined;
+  color?: string | undefined;
+  iconColor?: string | undefined;
+  onDblClick?: IConfigurableActionConfiguration | undefined;
+  onSelect?: IConfigurableActionConfiguration | undefined;
+  titleTemplate?: string | undefined;
+  [key: string]: unknown; // For additional layer-specific properties
 }
 
 export type LayerGroupItemProps = ILayerFormModel | ILayerGroup;
@@ -59,6 +61,7 @@ export interface ILayerGroup extends ILayerGroupItemBase {
   childItems?: LayerGroupItemProps[];
 }
 
+export const isLayerGroup = (item: ILayerGroupItemBase | undefined): item is ILayerGroup => isDefined(item) && "childItems" in item && isDefined(item.childItems) && Array.isArray(item.childItems);
 
 export interface ICalendarLayersProps {
   id: string;
@@ -66,28 +69,28 @@ export interface ICalendarLayersProps {
   name: string;
   label: string;
   description: string;
-  visible?: boolean;
-  allowChangeVisibility?: boolean;
+  visible?: boolean | undefined;
+  allowChangeVisibility?: boolean | undefined;
   dataSource: 'entity' | 'custom';
-  entityType?: string | IEntityTypeIdentifier;
-  startTime?: string;
-  endTime?: string;
-  title?: string;
-  color?: string;
-  showIcon?: boolean;
-  propertyList?: string[];
-  overfetch?: boolean;
-  customUrl?: string;
-  ownerId?: string;
-  filters: { [key in string]: any };
-  useQuickView?: boolean;
-  quickViewForm?: FormIdentifier;
-  events?: ICalendarEvent[];
-  onSelect?: IConfigurableActionConfiguration;
-  onDblClick?: IConfigurableActionConfiguration;
-  onSlotClick?: IConfigurableActionConfiguration;
-  onViewChange?: IConfigurableActionConfiguration;
-  showLegend?: boolean;
-  icon?: string;
-  iconColor?: string;
+  entityType?: string | IEntityTypeIdentifier | undefined;
+  startTime?: string | undefined;
+  endTime?: string | undefined;
+  title?: string | undefined;
+  color?: string | undefined;
+  showIcon?: boolean | undefined;
+  propertyList?: string[] | undefined;
+  overfetch?: boolean | undefined;
+  customUrl?: string | undefined;
+  ownerId?: string | undefined;
+  filters: { [key in string]: unknown };
+  useQuickView?: boolean | undefined;
+  quickViewForm?: FormIdentifier | undefined;
+  events?: ICalendarEvent[] | undefined;
+  onSelect?: IConfigurableActionConfiguration | undefined;
+  onDblClick?: IConfigurableActionConfiguration | undefined;
+  onSlotClick?: IConfigurableActionConfiguration | undefined;
+  onViewChange?: IConfigurableActionConfiguration | undefined;
+  showLegend?: boolean | undefined;
+  icon?: string | undefined;
+  iconColor?: string | undefined;
 }

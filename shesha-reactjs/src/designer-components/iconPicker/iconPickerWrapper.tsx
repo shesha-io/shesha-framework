@@ -1,32 +1,32 @@
-import IconPicker, { ShaIconTypes } from '@/components/iconPicker';
-import React, { CSSProperties, FC, ReactNode, useState, useRef, useEffect } from 'react';
+import IconPicker, { IIconPickerProps, ShaIconTypes } from '@/components/iconPicker';
+import React, { CSSProperties, FC, useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { IApplicationContext } from '@/providers/form/utils';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { IDimensionsValue } from '../_settings/utils/dimensions/interfaces';
 import { Tooltip } from 'antd';
 
 interface IconPickerWrapperProps {
-  disabled?: boolean; // todo: move to the model level
+  disabled?: boolean | undefined; // todo: move to the model level
   applicationContext: IApplicationContext;
-  value: any;
-  onChange: (...args: any[]) => void;
-  readOnly?: boolean;
-  fontSize?: number;
-  iconSize?: number;
-  selectBtnSize?: SizeType;
-  color?: string;
-  customColor?: string;
-  borderWidth?: number;
-  borderColor?: string;
-  borderRadius?: number;
-  backgroundColor?: string;
-  stylingBox?: string;
-  defaultValue?: ShaIconTypes;
-  textAlign?: string;
-  style?: string;
-  dimensions?: IDimensionsValue;
-  description?: string;
-  fullStyles?: CSSProperties;
+  value: string | null | undefined;
+  onChange: ((newValue: string | null) => void) | undefined;
+  readOnly?: boolean | undefined;
+  fontSize?: number | undefined;
+  iconSize?: number | undefined;
+  selectBtnSize?: SizeType | undefined;
+  color?: string | undefined;
+  customColor?: string | undefined;
+  borderWidth?: number | undefined;
+  borderColor?: string | undefined;
+  borderRadius?: number | undefined;
+  backgroundColor?: string | undefined;
+  stylingBox?: string | undefined;
+  defaultValue?: ShaIconTypes | undefined;
+  textAlign?: string | undefined;
+  style?: string | undefined;
+  dimensions?: IDimensionsValue | undefined;
+  description?: string | undefined;
+  fullStyles?: CSSProperties | undefined;
 }
 
 export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
@@ -42,20 +42,21 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     value,
   } = props;
 
-  const [finalValue, setFinalValue] = useState(null);
+  const [finalValue, setFinalValue] = useState<string | null>(null);
   const hasSaved = useRef(false);
 
 
-  const onIconChange = (_icon: ReactNode, iconName: ShaIconTypes): void => {
+  const onIconChange = useCallback<Required<IIconPickerProps>["onIconChange"]>((_icon, iconName): void => {
     if (onChange) onChange(iconName);
-  };
+  }, [onChange]);
 
   const fontSize = parseFloat(String(fullStyles?.fontSize).replace('px', ''));
 
-  const style: CSSProperties = {
+  const style: CSSProperties = useMemo(() => ({
+    ...fullStyles,
     fontSize: fullStyles?.fontSize || 24,
-    color: fullStyles?.color,
-  };
+    background: 'transparent',
+  }), [fullStyles]);
 
 
   useEffect(() => {
@@ -68,30 +69,19 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
   const iconValue = finalValue ?? defaultValue;
 
   return (
-    <div style={(defaultValue || value) ? { display: 'grid', placeItems: textAlign } : {}}>
-      <Tooltip title={props?.description}>
-        <div
-          style={{
-            ...fullStyles,
-            fontSize: 20,
-            background: 'transparent', // icon should not have background and take the background of the parent like container
-            borderWidth: '0px',
-            borderColor: 'transparent',
-          }}
-        >
-          <IconPicker
-            value={iconValue as ShaIconTypes}
-            defaultValue={iconValue as ShaIconTypes}
-            onIconChange={onIconChange}
-            selectBtnSize={selectBtnSize}
-            iconSize={iconSize ?? fontSize}
-            readOnly={readOnly}
-            style={{ ...style, background: 'transparent' }}
-            color={props.color}
-            twoToneColor={color}
-          />
-        </div>
-      </Tooltip>
-    </div>
+    <Tooltip title={props.description}>
+      <div style={(defaultValue || value) ? { display: 'grid', placeItems: textAlign } : {}}>
+        <IconPicker
+          value={iconValue as ShaIconTypes}
+          onIconChange={onIconChange}
+          selectBtnSize={selectBtnSize}
+          iconSize={iconSize ?? fontSize}
+          readOnly={readOnly}
+          style={style}
+          color={color}
+          twoToneColor={color}
+        />
+      </div>
+    </Tooltip>
   );
 };

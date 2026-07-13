@@ -1,5 +1,5 @@
 import React from 'react';
-import { ConfigurableFormItem } from '@/components';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IToolboxComponent } from '@/interfaces';
 import { BarChartOutlined } from '@ant-design/icons';
@@ -16,12 +16,14 @@ import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider
 import useStyles from './styles';
 import ChartLoader from './components/chartLoader';
 import { useChartFilters } from './hooks/useChartFilters';
+import { isDefined } from '@/utils/nullables';
 
 const BarChartComponent: IToolboxComponent<IChartProps> = {
   type: 'barChart',
   name: 'Bar Chart',
   isInput: false,
   isOutput: true,
+  preserveDimensionsInDesigner: ["height"],
   icon: <BarChartOutlined />,
   Factory: ({ model }) => {
     useShaFormDataUpdate();
@@ -35,7 +37,7 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
       shadowStyles,
       stylingBoxAsCSS,
       jsStyle,
-    } = model.allStyles;
+    } = model.allStyles ?? {};
 
     const wrapperStyles = removeUndefinedProps({
       ...dimensionsStyles,
@@ -54,7 +56,7 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
         <ConfigurableFormItem model={model}>
           <Alert
             showIcon
-            message="Error evaluating filters"
+            title="Error evaluating filters"
             description={filterError}
             type="error"
             style={{ margin: '16px' }}
@@ -66,9 +68,9 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
     // Don't render chart until filters are ready to prevent race conditions
     if (!filtersReady) {
       return (
-        <ConfigurableFormItem model={model}>
+        <ConfigurableFormItem model={model} className={styles.formItem}>
           <div className={cx(styles.loadingContainer)}>
-            <ChartLoader chartType={model.chartType} />
+            {isDefined(model.chartType) && <ChartLoader chartType={model.chartType} />}
             <div className={cx(styles.loadingText)}>Fetching data...</div>
           </div>
         </ConfigurableFormItem>
@@ -76,7 +78,7 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
     }
 
     return (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem model={model} className={styles.formItem}>
         {() => {
           return (
             <ChartDataProvider model={model}>

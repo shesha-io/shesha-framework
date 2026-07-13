@@ -1,23 +1,30 @@
-import _ from 'lodash';
-import React, { FC, useState } from 'react';
+import React, { FC, ReactNode, useState } from 'react';
 import { ButtonGroup } from '@/designer-components/button/buttonGroup/buttonGroup';
 import { ConfigurableForm, IConfigurableFormProps, Show } from '@/components/';
 import { Form, Modal } from 'antd';
 import { IModalWithConfigurableFormProps, IModalWithContentProps } from '@/providers/dynamicModal/models';
 import { useDynamicModals } from '@/providers';
 import { useMedia } from 'react-use';
-import ConditionalWrap from '../conditionalWrapper';
 import { useStyles } from './styles';
+import DOMPurify from 'dompurify';
+import { isDefined } from '@/utils/nullables';
 
 export interface IDynamicModalWithContentProps extends IModalWithContentProps {
   isVisible: boolean;
-  isSubmitted?: boolean;
-  onCancel?: () => void;
-  onOk?: () => void;
-  showCloseIcon?: boolean;
+  isSubmitted?: boolean | undefined;
+  onCancel?: (() => void) | undefined;
+  onOk?: (() => void) | undefined;
+  showCloseIcon?: boolean | undefined;
 }
+
+const renderContent = (content: ReactNode): ReactNode => {
+  return typeof content == 'string'
+    ? <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }} />
+    : content;
+};
+
 export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props) => {
-  const { id, title, isVisible, width, isSubmitted, onCancel, onOk, content, footer, onClose, showCloseIcon } = props;
+  const { id, title, isVisible, width, isSubmitted = false, onCancel, onOk, content, footer, onClose, showCloseIcon } = props;
 
   const { removeModal } = useDynamicModals();
   const isSmall = useMedia('(max-width: 480px)');
@@ -25,7 +32,7 @@ export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props
 
   const hideForm = (): void => {
     if (onClose) onClose();
-    if (Boolean(onCancel)) {
+    if (isDefined(onCancel)) {
       onCancel();
     } else {
       removeModal(id);
@@ -37,32 +44,31 @@ export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props
       key={id}
       title={title}
       open={isVisible}
-      onOk={onOk}
+      {...(onOk ? { onOk } : {})}
       onCancel={hideForm}
-      footer={footer}
+      footer={renderContent(footer)}
       destroyOnHidden
       width={isSmall ? '90%' : width ?? '80vw'}
       centered
       classNames={{ body: styles.dynamicModalBody }}
-      maskClosable={false}
-      closable={showCloseIcon ?? true} // Add this line - default to true for backward compatibility
+      mask={{ closable: false }}
+      closable={showCloseIcon ?? true}
       okButtonProps={{ disabled: isSubmitted, loading: isSubmitted }}
     >
-      {content}
+      {renderContent(content)}
     </Modal>
   );
 };
 
-export interface IDynamicModalWithFormProps extends Omit<IModalWithConfigurableFormProps, 'fetchUrl'> {
+export interface IDynamicModalWithFormProps<Values extends object = object> extends Omit<IModalWithConfigurableFormProps<Values>, 'fetchUrl'> {
   isVisible: boolean;
 }
-export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
+export const DynamicModalWithForm = <Values extends object = object>(props: IDynamicModalWithFormProps<Values>): ReactNode => {
   const {
     id,
     title,
     isVisible,
     formId,
-    showModalFooter,
     formArguments,
     initialValues,
     parentFormValues,
@@ -73,23 +79,21 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
     buttons = [],
     footerButtons = 'default',
     wrapper,
-    showCloseIcon,
+    showCloseIcon = true,
   } = props;
 
   const [form] = Form.useForm();
   const { removeModal } = useDynamicModals();
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
-
-  // `showModalFooter` for now is for backward compatibility
-  const showDefaultSubmitButtons = showModalFooter || footerButtons === 'default';
+  const showDefaultSubmitButtons = footerButtons === 'default';
 
   const closeModal = (): void => {
     removeModal(id);
   };
 
-  const onSubmitted = (_values: any, response: any): void => {
+  const onSubmitted: IConfigurableFormProps<Values>["onSubmitted"] = (_values, response): void => {
     if (props.onSubmitted) {
-      props.onSubmitted(response);
+      props.onSubmitted(response as Values);
     }
 
     closeModal();
@@ -106,9 +110,9 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
 
   const onOk = (): void => {
     if (showDefaultSubmitButtons) {
-      form?.submit();
-      form?.validateFields().then(() => {
-        form?.submit();
+      form.submit();
+      void form.validateFields().then(() => {
+        form.submit();
         setIsSubmitted(true);
       });
     } else {
@@ -116,7 +120,7 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
     }
   };
 
-  const formProps: IConfigurableFormProps = {
+  const formProps: IConfigurableFormProps<Values> = {
     formId: formId,
     formArguments: formArguments,
     form: form,
@@ -131,6 +135,13 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
     // logEnabled: true,
   };
 
+  const content = (
+    <Show when={footerButtons === 'custom' && Boolean(buttons.length)}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <ButtonGroup items={buttons} id="" size="middle" isInline noStyles form={form} />
+      </div>
+    </Show>
+  );
   return (
     <DynamicModalWithContent
       key={id}
@@ -144,17 +155,8 @@ export const DynamicModalWithForm: FC<IDynamicModalWithFormProps> = (props) => {
       footer={showDefaultSubmitButtons ? undefined : null}
       showCloseIcon={showCloseIcon}
       content={(
-        <ConfigurableForm {...formProps}>
-          <ConditionalWrap
-            condition={Boolean(wrapper)}
-            wrap={(content) => (wrapper({ children: content }))}
-          >
-            <Show when={footerButtons === 'custom' && Boolean(buttons?.length)}>
-              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <ButtonGroup items={buttons || []} id="" size="middle" isInline noStyles form={form} />
-              </div>
-            </Show>
-          </ConditionalWrap>
+        <ConfigurableForm<Values> {...formProps}>
+          {isDefined(wrapper) ? wrapper({ children: content }) : content}
         </ConfigurableForm>
       )}
     />

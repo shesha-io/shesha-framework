@@ -300,7 +300,7 @@ namespace Shesha.Import
         }
 
         /// <summary>
-        /// Import process, should be overrided in the derived classes
+        /// Import process, should be overridden in the derived classes
         /// </summary>
         /// <param name="importResult">Detailed results of the import including error message</param>
         /// <param name="cancellationToken"></param>

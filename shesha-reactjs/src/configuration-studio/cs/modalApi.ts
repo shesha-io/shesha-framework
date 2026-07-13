@@ -2,7 +2,7 @@ import { FormFullName, useDynamicModals } from "@/providers";
 import { IModalProps, IModalWithContentProps, ModalFooterButtons } from "@/providers/dynamicModal/models";
 import { nanoid } from "@/utils/uuid";
 import { App } from "antd";
-import { ReactNode, useRef } from "react";
+import { ReactNode, useState } from "react";
 import { HookAPI as ModalHookAPI } from 'antd/lib/modal/useModal';
 
 export interface ShowModalArgs {
@@ -38,8 +38,8 @@ type ModalWarningArgs = {
 };
 
 export interface IModalApi {
-  showModalFormAsync: <TResponse = void>(args: ShowModalFormArgs) => Promise<TResponse | undefined>;
-  showModalContentAsync: <TResponse = void>(executor: ShowModalContentExecutor<TResponse>, modalSettings?: ModalSettings) => Promise<TResponse | undefined>;
+  showModalFormAsync: <TResponse extends object = object>(args: ShowModalFormArgs) => Promise<TResponse | undefined>;
+  showModalContentAsync: <TResponse extends object = object>(executor: ShowModalContentExecutor<TResponse>, modalSettings?: ModalSettings) => Promise<TResponse | undefined>;
   confirmYesNoAsync: (args: ConfirmArgs) => Promise<boolean>;
   warning: (args: ModalWarningArgs) => Promise<void>;
 };
@@ -100,7 +100,7 @@ export class ModalApi implements IModalApi {
     });
   };
 
-  showModalFormAsync = <TResponse = void>(args: ShowModalFormArgs): Promise<TResponse | undefined> => {
+  showModalFormAsync = <TResponse extends object = object>(args: ShowModalFormArgs): Promise<TResponse | undefined> => {
     const modalId = nanoid();
 
     return new Promise((resolve, reject) => {
@@ -131,10 +131,10 @@ export class ModalApi implements IModalApi {
     });
   };
 
-  showModalContentAsync = <TResponse = void>(executor: ShowModalContentExecutor<TResponse>, modalSettings?: ModalSettings): Promise<TResponse | undefined> => {
+  showModalContentAsync = <TResponse extends object = object>(executor: ShowModalContentExecutor<TResponse>, modalSettings?: ModalSettings): Promise<TResponse | undefined> => {
     const modalId = nanoid();
 
-    return new Promise((resolve, reject) => {
+    return new Promise<TResponse | undefined>((resolve, reject) => {
       const removeModal = (): void => {
         this._removeModal(modalId);
       };
@@ -146,7 +146,9 @@ export class ModalApi implements IModalApi {
         content: modalArgs.content,
         footer: modalArgs.footer,
         isVisible: true,
+
         onCancel: () => {
+          removeModal();
           reject("Cancelled");
         },
         onClose: (positive = false, result) => {
@@ -165,15 +167,10 @@ export const useModalApi = (): IModalApi => {
   const { createModal, removeModal } = useDynamicModals();
   const { modal } = App.useApp();
 
-  const apiRef = useRef<IModalApi>();
-  if (!apiRef.current) {
-    const instance = new ModalApi({
-      createModal,
-      removeModal,
-      antdApi: modal,
-    });
-    apiRef.current = instance;
-  }
-
-  return apiRef.current;
+  const [modalApi] = useState<IModalApi>(() => new ModalApi({
+    createModal,
+    removeModal,
+    antdApi: modal,
+  }));
+  return modalApi;
 };

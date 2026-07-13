@@ -56,7 +56,7 @@ export class NotificationApi implements INotificationApi {
 export const useNotificationApi = (): INotificationApi => {
   const { notification } = App.useApp();
 
-  const apiRef = useRef<INotificationApi>();
+  const apiRef = useRef<INotificationApi>(undefined);
   if (!apiRef.current) {
     const instance = new NotificationApi({
       antdApi: notification,

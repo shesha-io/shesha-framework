@@ -1,13 +1,15 @@
 import React, { FC } from 'react';
-import { Button, Popover, Skeleton, Typography, UploadFile } from 'antd';
+import { Button, Popover, Skeleton, Typography } from 'antd';
 import { HistoryOutlined } from '@ant-design/icons';
 import filesize from 'filesize';
-import { ConfigurableForm, DateDisplay } from '@/components';
 import { useStoredFileGetFileVersions, StoredFileVersionInfoDto } from '@/apis/storedFile';
-import { IStoredFile } from '@/providers/storedFiles/contexts';
 import { FormIdentifier } from '@/providers/form/models';
-import { listType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
-import { buildUrl } from '@/utils/url';
+import { ListType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
+import { StoredFileModel } from '@/utils/storedFile/models';
+import { ConfigurableForm } from '../configurableForm';
+import DateDisplay from '../dateDisplay';
+import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
+import { HttpClientApi } from '@/publicJsApis/apis/httpClient';
 
 export interface IFileVersionsButtonProps {
   fileId: string;
@@ -15,17 +17,17 @@ export interface IFileVersionsButtonProps {
 }
 
 export interface IExtraContentProps {
-  file: IStoredFile;
+  file: StoredFileModel;
   formId?: FormIdentifier;
 }
 
 
 /**
- * Creates a placeholder file object for stub/preview rendering in design mode.
+ * Placeholder file object for stub/preview rendering in design mode.
  *
  * @returns A mock IStoredFile with example properties
  */
-export const createPlaceholderFile = (): IStoredFile => ({
+export const PLACEHOLDER_FILE: StoredFileModel = {
   uid: 'placeholder-file-1',
   name: 'example-file.pdf',
   status: 'done',
@@ -36,7 +38,7 @@ export const createPlaceholderFile = (): IStoredFile => ({
   fileCategory: 'documents',
   temporary: false,
   userHasDownloaded: false,
-});
+};
 
 /**
  * Determines the appropriate Ant Design Upload list type based on configuration.
@@ -46,7 +48,7 @@ export const createPlaceholderFile = (): IStoredFile => ({
  * @returns The Upload component list type to use
  */
 export const getListTypeAndLayout = (
-  type: listType | undefined, isDragger: boolean,
+  type: ListType | undefined, isDragger: boolean,
 ): 'text' | 'picture' | 'picture-card' => {
   return type === 'text' || !type || isDragger ? 'text' : 'picture-card';
 };
@@ -69,14 +71,14 @@ export interface IFetchStoredFileResult {
  * the URL is no longer needed to prevent memory leaks. The revoke function is safe to call
  * multiple times.
  *
+ * @param httpClient - The Shesha HTTP client used for the request (handles auth/standard headers)
  * @param url - The file URL to fetch
- * @param httpHeaders - Optional HTTP headers to include in the request
  * @returns A Promise resolving to an object containing the blob URL and revoke function
- * @throws {Error} If the fetch fails (non-ok response status)
+ * @throws {Error} If the request fails
  *
  * @example
  * ```typescript
- * const { url, revoke } = await fetchStoredFile('/api/files/123');
+ * const { url, revoke } = await fetchStoredFile(httpClient, '/api/files/123');
  * try {
  *   // Use the URL...
  *   imgElement.src = url;
@@ -87,20 +89,12 @@ export interface IFetchStoredFileResult {
  * ```
  */
 export const fetchStoredFile = async (
+  httpClient: HttpClientApi,
   url: string,
-  httpHeaders: Record<string, string> = {},
 ): Promise<IFetchStoredFileResult> => {
-  const fetchUrl = buildUrl(url, { skipMarkDownload: 'true' });
-  const response = await fetch(fetchUrl, {
-    headers: { ...httpHeaders },
-  });
+  const response = await httpClient.get<Blob>(url, { responseType: 'blob' });
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch file: ${response.status} ${response.statusText}`);
-  }
-
-  const blob = await response.blob();
-  const objectUrl = URL.createObjectURL(blob);
+  const objectUrl = URL.createObjectURL(response.data);
 
   let revoked = false;
   const revoke = (): void => {
@@ -123,31 +117,33 @@ export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDow
     lazy: true,
   });
 
-  if (fileId == null) return null;
-
   const handleVisibleChange = (visible: boolean): void => {
     if (visible) {
-      fetchHistory();
+      fetchHistory().catch((error) => {
+        console.error('Failed to fetch file history', error);
+        throw error;
+      });
     }
   };
 
-  const uploads = serverData?.success ? serverData.result : [];
+  const uploads = serverData?.success === true ? (serverData.result ?? []) : [];
 
   const handleVersionDownloadClick = (fileVersion: StoredFileVersionInfoDto): void => {
-    onDownload(fileVersion.versionNo, fileVersion.fileName);
+    if (isDefined(fileVersion.versionNo) && isNotNullOrWhiteSpace(fileVersion.fileName))
+      onDownload(fileVersion.versionNo, fileVersion.fileName);
   };
 
   const content = (
     <Skeleton loading={loading}>
       <ul>
-        {uploads &&
+        {uploads.length > 0 &&
           uploads.map((item, i) => (
             <li key={item.versionNo ?? `version-${i}`}>
               <strong>Version {item.versionNo}</strong> Uploaded{' '}
-              {item.dateUploaded && <DateDisplay>{item.dateUploaded}</DateDisplay>} by {item.uploadedBy}
+              {isNotNullOrWhiteSpace(item.dateUploaded) && <DateDisplay>{item.dateUploaded}</DateDisplay>} by {item.uploadedBy}
               <br />
               <Button type="link" onClick={() => handleVersionDownloadClick(item)}>
-                {item.fileName} ({filesize(item.size)})
+                {item.fileName} {isDefined(item.size) && <>({filesize(item.size)})</>}
               </Button>
             </li>
           ))}
@@ -163,7 +159,7 @@ export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDow
 };
 
 export const ExtraContent: FC<IExtraContentProps> = ({ file, formId }) => {
-  if (!formId) {
+  if (!isDefined(formId)) {
     return null;
   }
 
@@ -184,14 +180,14 @@ const formatFileSize = (bytes?: number): string => {
 
 // Helper component to render file name with ellipsis and title
 export const FileNameDisplay: FC<{
-  file: UploadFile;
-  className?: string;
-  icon?: JSX.Element;
+  file: StoredFileModel;
+  className?: string | undefined;
+  icon?: React.JSX.Element | undefined;
   popoverContent?: React.ReactNode;
-  popoverClassName?: string;
+  popoverClassName?: string | undefined;
 }> = ({ file, icon, className, popoverContent, popoverClassName }) => {
   const sizeStr = formatFileSize(file.size);
-  const title = sizeStr ? `${file.name} (${sizeStr})` : file.name;
+  const title = isNotNullOrWhiteSpace(sizeStr) ? `${file.name} (${sizeStr})` : file.name;
 
   const textElement = (
     <Text
@@ -204,8 +200,13 @@ export const FileNameDisplay: FC<{
 
   return (
     <div className={className} style={{ overflow: 'hidden', flex: 1 }}>
-      {popoverContent ? (
-        <Popover content={popoverContent} trigger="hover" placement="top" classNames={{ root: popoverClassName }}>
+      {isDefined(popoverContent) ? (
+        <Popover
+          content={popoverContent}
+          trigger="hover"
+          placement="top"
+          {...(isNotNullOrWhiteSpace(popoverClassName) ? { classNames: { root: popoverClassName } } : {})}
+        >
           {textElement}
         </Popover>
       ) : (

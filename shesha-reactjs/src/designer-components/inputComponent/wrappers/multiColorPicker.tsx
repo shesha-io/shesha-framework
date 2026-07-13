@@ -1,8 +1,9 @@
 import { IMultiColorPickerSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React, { FC } from 'react';
+import React from 'react';
+import { FCUnwrapped } from '@/providers/form/models';
 import { MultiColorInput } from '@/designer-components/multiColorInput';
 
-export const MultiColorPickerWrapper: FC<IMultiColorPickerSettingsInputProps> = (props) => {
+export const MultiColorPickerWrapper: FCUnwrapped<IMultiColorPickerSettingsInputProps> = (props) => {
   const { value, onChange, readOnly, propertyName } = props;
   return (
     <MultiColorInput

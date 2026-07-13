@@ -20,6 +20,7 @@ export const DEFAULT_HOME_PAGE = '/';
 export const URLS = {
   LOGIN: '/api/TokenAuth/Authenticate',
   LOGOFF: '/api/TokenAuth/SignOff',
+  REFRESH_TOKEN: '/api/TokenAuth/RefreshToken',
   GET_CURRENT_LOGIN_INFO: '/api/services/app/Session/GetCurrentLoginInfo',
 };
 
@@ -44,4 +45,10 @@ export interface IAuthenticator {
   anyOfPermissionsGranted: (permissions: string[], permissionedEntities?: IEntityReferenceDto[]) => boolean;
 
   state: AuthenticationState;
+
+  // Update token expiration timer without full re-authentication
+  updateTokenExpiration: (expireOn: string) => void;
+
+  // Refresh HTTP authorization headers after token refresh
+  refreshAuthHeaders: () => void;
 }

@@ -5,76 +5,38 @@ import { NestedPropertyMetadatAccessor } from "@/providers/metadataDispatcher/co
 import { evaluateDynamicFilters } from '@/utils/datatable';
 import { FilterExpression, IStoredFilter } from "../interfaces";
 import { useRef } from "react";
-import { TouchableProxy, makeTouchableProxy } from "@/providers/form/touchableProxy";
+import { useTouchableProxy } from "@/hooks/formComponentHooks";
+import { isDefined } from "@/utils/nullables";
 
 interface IMatchDataWithPreparation extends IMatchData {
-  prepare?: (data: any) => any;
+  prepare?: (data: unknown) => unknown;
 }
 
 export interface UseEvaluatedFilterArgs {
-  filter?: FilterExpression;
+  filter?: FilterExpression | undefined;
   mappings: IMatchDataWithPreparation[];
-  metadataAccessor?: NestedPropertyMetadatAccessor;
-};
-
-export const useEvaluatedFilter = (args: UseEvaluatedFilterArgs): string => {
-  const { filter, mappings, metadataAccessor } = args;
-
-  const evaluatedFilters = useAsyncMemo(async () => {
-    if (!filter) return '';
-
-    const preparedMappings: IMatchData[] = [];
-    mappings.forEach((item) => {
-      const { prepare, ...restItemProps } = item;
-      const preparedData = item.prepare
-        ? item.prepare(item.data)
-        : item.data;
-      preparedMappings.push({ ...restItemProps, data: preparedData });
-    });
-
-    const response = await evaluateDynamicFilters(
-      [{ expression: filter } as IStoredFilter],
-      preparedMappings,
-      metadataAccessor,
-    );
-
-    // note: don't return empty filter to take unevaluated filters into account
-    // if (response.find((f) => f?.unevaluatedExpressions?.length)) return '';
-
-    return JSON.stringify(response[0]?.expression) || '';
-  }, useDeepCompareMemoize([filter, mappings]));
-
-  return evaluatedFilters;
+  metadataAccessor?: NestedPropertyMetadatAccessor | undefined;
 };
 
 export interface UseFormEvaluatedFilterArgs {
-  filter?: FilterExpression;
-  metadataAccessor?: NestedPropertyMetadatAccessor;
+  filter?: FilterExpression | undefined;
+  metadataAccessor?: NestedPropertyMetadatAccessor | undefined;
 };
-export const useFormEvaluatedFilter = (args: UseFormEvaluatedFilterArgs, additionalData?: object): string => {
+export const useFormEvaluatedFilter = (args: UseFormEvaluatedFilterArgs, additionalData?: object): string | undefined => {
   const fullContext = useAvailableConstantsContexts();
   const accessors = wrapConstantsData({ fullContext });
 
-  const contextProxyRef = useRef<TouchableProxy<IApplicationContext>>();
-  if (!contextProxyRef.current) {
-    contextProxyRef.current = makeTouchableProxy<IApplicationContext>(accessors);
-  } else {
-    contextProxyRef.current.refreshAccessors(accessors);
-  }
-  if (additionalData)
-    contextProxyRef.current.setAdditionalData(additionalData);
-
-  contextProxyRef.current.checkChanged();
+  const contextProxyRef = useTouchableProxy<IApplicationContext>(accessors, additionalData);
 
   const prevChanged = useRef<number>(0);
-  if (contextProxyRef.current.changed)
+  if (contextProxyRef.changed)
     prevChanged.current = Date.now();
 
-  var keys = Object.keys({ ...contextProxyRef.current });
-  var mappings = keys.map((key) => ({ match: key, data: contextProxyRef.current[key] }));
+  var keys = Object.keys({ ...contextProxyRef }) as Array<keyof typeof contextProxyRef>;
+  var mappings = keys.map<IMatchData>((key) => ({ match: key, data: contextProxyRef[key] }));
 
   const evaluatedFilters = useAsyncMemo(async () => {
-    if (!args.filter) return '';
+    if (!isDefined(args.filter)) return '';
 
     const response = await evaluateDynamicFilters(
       [{ expression: args.filter } as IStoredFilter],

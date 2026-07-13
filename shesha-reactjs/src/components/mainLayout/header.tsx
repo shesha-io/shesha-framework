@@ -1,13 +1,13 @@
 import React, { FC } from 'react';
 import classNames from 'classnames';
-import { ConfigurableForm } from '@/components';
+import { ConfigurableForm } from '@/components/configurableForm';
 import { useStyles } from './styles/styles';
 import { ACTIVE_HEADER } from './constant';
 import { FormFullName } from '@/providers';
 
 interface ILayoutHeaderProps {
-  collapsed?: boolean;
-  headerFormId?: FormFullName;
+  collapsed?: boolean | undefined;
+  headerFormId?: FormFullName | undefined;
 }
 
 const LayoutHeader: FC<ILayoutHeaderProps> = ({ collapsed, headerFormId }) => {

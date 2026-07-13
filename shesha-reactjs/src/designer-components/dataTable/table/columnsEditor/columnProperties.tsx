@@ -3,10 +3,10 @@ import React, {
   useEffect,
   useMemo,
 } from 'react';
-import { ConfigurableForm } from '@/components';
+import { ConfigurableForm } from '@/components/configurableForm';
 import { Form } from 'antd';
-import { FormMarkup } from '@/providers/form/models';
-import { ColumnsItemProps, IDataColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
+import { FormAction, FormMarkup } from '@/providers/form/models';
+import { ColumnsItemProps } from '@/providers/datatableColumnsConfigurator/models';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { useDebouncedCallback } from 'use-debounce';
 import { sheshaStyles } from '@/styles';
@@ -14,17 +14,19 @@ import { usePrevious } from 'react-use';
 import { IMetadataContext } from '@/providers/metadata/contexts';
 import { getColumnSettings } from './columnSettings';
 import { useFormBuilderFactory } from '@/form-factory/hooks';
+import { OnFormValuesChangeHandler } from '@/components/configurableForm/models';
+import { RecursivePartial } from '@/interfaces/entity';
 
 export interface IColumnPropertiesProps {
-  item?: ColumnsItemProps;
-  onChange?: (item: ColumnsItemProps) => void;
+  item?: ColumnsItemProps | undefined;
+  onChange?: ((item: ColumnsItemProps) => void) | undefined;
   readOnly: boolean;
-  parentComponentType?: string;
-  metadata?: IMetadataContext;
+  parentComponentType?: string | undefined;
+  metadata?: IMetadataContext | undefined;
 }
 
 export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, readOnly, parentComponentType }) => {
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<ColumnsItemProps>();
   const fbf = useFormBuilderFactory();
 
   const columnType = Form.useWatch('columnType', form);
@@ -33,8 +35,8 @@ export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, r
   const prevColumnType = usePrevious(columnType);
   useEffect(() => {
     if (columnType) {
-      const fromDataToAction = !['action', 'crud-operations'].includes(prevColumnType) && ['action', 'crud-operations'].includes(columnType);
-      const fromActionToData = ['action', 'crud-operations'].includes(prevColumnType) && !['action', 'crud-operations'].includes(columnType);
+      const fromDataToAction = !['action', 'crud-operations'].includes(prevColumnType ?? '') && ['action', 'crud-operations'].includes(columnType);
+      const fromActionToData = ['action', 'crud-operations'].includes(prevColumnType ?? '') && !['action', 'crud-operations'].includes(columnType);
 
       if (fromDataToAction) {
         form.setFieldsValue({ minWidth: 35, maxWidth: 35 });
@@ -42,10 +44,10 @@ export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, r
         form.setFieldsValue({ minWidth: 100, maxWidth: 0 });
       }
     }
-  }, [columnType]);
+  }, [columnType, form, prevColumnType]);
 
-  const debouncedSave = useDebouncedCallback(
-    (values) => {
+  const debouncedSave = useDebouncedCallback<OnFormValuesChangeHandler<ColumnsItemProps>>(
+    (_, values) => {
       onChange?.({ ...item, ...values });
     },
     // delay in ms
@@ -54,20 +56,21 @@ export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, r
 
   const linkToModelMetadata = (metadata: IPropertyMetadata): void => {
     if (readOnly) return;
-    const values = form.getFieldsValue() as IDataColumnsProps;
-    const newValues: IDataColumnsProps = {
+    const values = form.getFieldsValue();
+
+    const newValues: ColumnsItemProps = {
       ...values,
       columnType: 'data',
       caption: metadata.label || metadata.path,
-      description: metadata.description,
+      description: metadata.description ?? undefined,
+      permissions: values.permissions ?? [],
     };
-    // TODO: handle editors
-    form.setFieldsValue(newValues);
-    debouncedSave(newValues);
+    form.setFieldsValue(newValues as RecursivePartial<ColumnsItemProps>);
+    debouncedSave(newValues, newValues);
   };
 
   return (
-    <ConfigurableForm
+    <ConfigurableForm<ColumnsItemProps>
       labelCol={{ span: 24 }}
       wrapperCol={{ span: 24 }}
       mode={readOnly ? 'readonly' : 'edit'}
@@ -76,7 +79,7 @@ export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, r
       initialValues={item}
       onValuesChange={debouncedSave}
       actions={{
-        linkToModelMetadata,
+        linkToModelMetadata: linkToModelMetadata as FormAction,
       }}
       className={sheshaStyles.verticalSettingsClass}
     />

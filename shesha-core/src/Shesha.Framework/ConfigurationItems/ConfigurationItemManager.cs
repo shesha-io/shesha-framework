@@ -55,7 +55,7 @@ namespace Shesha.ConfigurationItems
             // ‘{original file name} – copy’
             var baseName = $"{item.Name} - copy";
 
-            var existingNames = await Repository.GetAll()
+            var existingNames = await (await Repository.GetAllAsync())
                 .Where(e => e.Name.StartsWith(baseName))
                 .Select(e => e.Name)
                 .ToListAsync();
@@ -106,6 +106,11 @@ namespace Shesha.ConfigurationItems
         }
 
         protected virtual Task AfterItemDuplicatedAsync(TItem item, TItem duplicate)
+        {
+            return Task.CompletedTask;
+        }
+
+        protected virtual Task AfterItemExposedAsync(TItem exposedItem)
         {
             return Task.CompletedTask;
         }
@@ -166,6 +171,8 @@ namespace Shesha.ConfigurationItems
 
                 await UnitOfWorkManager.Current.SaveChangesAsync();
 
+                await AfterItemExposedAsync(exposedConfig);
+
                 return exposedConfig;
             }            
         }
@@ -190,7 +197,7 @@ namespace Shesha.ConfigurationItems
 
         public async Task<ConfigurationItemInheritance> GetActualInheritanceOrNullAsync(string module, string name)
         {
-            return await InheritanceRepository.GetAll().Where(e => e.ItemType == Discriminator && e.ModuleName == module && e.Name == name)
+            return await (await InheritanceRepository.GetAllAsync()).Where(e => e.ItemType == Discriminator && e.ModuleName == module && e.Name == name)
                 .OrderBy(e => e.ModuleLevel)
                 .FirstOrDefaultAsync();
         }
@@ -208,7 +215,7 @@ namespace Shesha.ConfigurationItems
         public virtual async Task<TItem> CreateItemAsync(CreateItemInput input, object? additionalData = null) 
         {
             var validationResults = new ValidationResults();
-            var alreadyExist = await Repository.GetAll().Where(f => f.Module == input.Module && f.Name == input.Name).AnyAsync();
+            var alreadyExist = await (await Repository.GetAllAsync()).Where(f => f.Module == input.Module && f.Name == input.Name).AnyAsync();
             if (alreadyExist)
                 validationResults.Add($"Form with name `{input.Name}` already exists in module `{input.Module.Name}`");
             validationResults.ThrowValidationExceptionIfAny(L);
@@ -256,9 +263,9 @@ namespace Shesha.ConfigurationItems
         /// <param name="name">Item name</param>
         /// <param name="module">Module</param>
         /// <returns></returns>
-        public Task<bool> ItemExistsAsync(string name, Module module)
+        public async Task<bool> ItemExistsAsync(string name, Module module)
         {
-            return Repository.GetAll().AnyAsync(e => e.Name == name && e.Module == module);
+            return await (await Repository.GetAllAsync()).AnyAsync(e => e.Name == name && e.Module == module);
         }
 
         protected Task CopyRevisionPropertiesBaseAsync(ConfigurationItemRevision srcRevision, ConfigurationItemRevision dstRevision)
@@ -349,11 +356,11 @@ namespace Shesha.ConfigurationItems
             return newRevisionRequired;
         }
 
-        public async Task RestoreRevisionAsync(ConfigurationItemRevision revision)
+        public async Task RestoreRevisionAsync(ConfigurationItem item, ConfigurationItemRevision revision)
         {
-            revision.ConfigurationItem.Module?.EnsureEditable();
+            item.Module?.EnsureEditable();
 
-            if (revision == revision.ConfigurationItem.LatestRevision)
+            if (revision == item.LatestRevision)
                 return;
 
             var importer = IocResolver.GetItemImporter(ItemType);
@@ -362,7 +369,7 @@ namespace Shesha.ConfigurationItems
 
             var distributedItem = await importer.ReadFromJsonAsync(revision.ConfigurationJson);
 
-            await importer.ImportItemAsync(distributedItem, new PackageImportContext());
+            await importer.ImportItemAsync(distributedItem, new PackageImportContext() { RevisionCreationMethod = ConfigurationItemRevisionCreationMethod.ManualRestore }, item);
         }
 
         public virtual Task<string> GetBackwardCompatibleModuleNameAsync(string name)

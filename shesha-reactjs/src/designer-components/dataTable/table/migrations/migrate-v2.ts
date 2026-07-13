@@ -2,11 +2,12 @@ import { ITableComponentProps } from "../models";
 import { SettingsMigrationContext } from "@/interfaces";
 import { upgradeActionConfig } from '@/components/formDesigner/components/_common-migrations/upgrade-action-owners';
 import { IConfigurableActionColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
+import { isDefined } from "@/utils/nullables";
 
 export const migrateV1toV2 = (props: ITableComponentProps, context: SettingsMigrationContext): ITableComponentProps => {
   const { items } = props;
 
-  const newItems = items?.map((item) => {
+  const newItems = (isDefined(items) ? items : []).map((item) => {
     if (item.itemType !== "item")
       return item;
 
@@ -14,8 +15,8 @@ export const migrateV1toV2 = (props: ITableComponentProps, context: SettingsMigr
     if (column.columnType !== 'action')
       return item;
 
-    return { ...column, actionConfiguration: upgradeActionConfig(column.actionConfiguration, context) };
+    return { ...column, actionConfiguration: isDefined(column.actionConfiguration) ? upgradeActionConfig(column.actionConfiguration, context) : undefined };
   });
 
-  return { ...props, items: newItems ?? [] };
+  return { ...props, items: newItems };
 };

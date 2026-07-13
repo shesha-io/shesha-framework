@@ -7,8 +7,9 @@ export interface IConfigurableMainMenu {
 }
 
 export interface IMainMenuStateContext {
-  loadedMenu?: IConfigurableMainMenu;
-  items?: ISidebarMenuItem[];
+  loadedMenu?: IConfigurableMainMenu | undefined;
+  items?: ISidebarMenuItem[] | undefined;
+  originalItems?: ISidebarMenuItem[] | undefined;
 }
 
 export interface IMainMenuActionsContext {
@@ -24,6 +25,6 @@ export const MAIN_MENU_CONTEXT_INITIAL_STATE: IMainMenuStateContext = {
   },
 };
 
-export const MainMenuStateContext = createNamedContext<IMainMenuStateContext>(MAIN_MENU_CONTEXT_INITIAL_STATE, "MainMenuStateContext");
+export const MainMenuStateContext = createNamedContext<IMainMenuStateContext | undefined>(undefined, "MainMenuStateContext");
 
-export const MainMenuActionsContext = createNamedContext<IMainMenuActionsContext>(undefined, "MainMenuActionsContext");
+export const MainMenuActionsContext = createNamedContext<IMainMenuActionsContext | undefined>(undefined, "MainMenuActionsContext");

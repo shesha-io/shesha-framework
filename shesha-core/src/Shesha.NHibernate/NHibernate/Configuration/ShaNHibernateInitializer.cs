@@ -64,6 +64,8 @@ namespace Shesha.NHibernate.Configuration
             if (_configuration.CustomDialect != null)
                 nhConfig.Properties[NhEnvironment.Dialect] = _configuration.CustomDialect.AssemblyQualifiedName;
 
+            nhConfig.LinqQueryProvider<SheshaLinqQueryProvider>();
+
             // register linq extensions
             nhConfig.LinqToHqlGeneratorsRegistry<SheshaLinqToHqlGeneratorsRegistry>();
 

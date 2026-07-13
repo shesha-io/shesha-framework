@@ -398,7 +398,7 @@ namespace Shesha.Services.StoredFiles
         /// <returns></returns>
         public async Task<List<StoredFileVersion>> GetFileVersionsAsync(StoredFile file)
         {
-            return await VersionRepository.GetAll()
+            return await (await VersionRepository.GetAllAsync())
                 .Where(v => v.File == file)
                 .OrderByDescending(v => v.VersionNo)
                 .ToListAsync();
@@ -559,9 +559,7 @@ namespace Shesha.Services.StoredFiles
         /// inheritedDoc
         public async Task DeleteAsync(StoredFile storedFile)
         {
-            var versions = await VersionRepository.GetAll()
-                .Where(v => v.File == storedFile)
-                .ToListAsync();
+            var versions = await VersionRepository.GetAllListAsync(v => v.File == storedFile);
 
             foreach (var version in versions)
             {

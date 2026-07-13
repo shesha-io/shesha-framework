@@ -37,7 +37,7 @@ const useConfigurationStudioSingletone = (): [IConfigurationStudio] => {
       logEnabled: false,
     });
 
-    instance.init();
+    void instance.init();
     return instance;
   });
 
@@ -45,7 +45,7 @@ const useConfigurationStudioSingletone = (): [IConfigurationStudio] => {
   const docId = query.get('docId');
   useEffect(() => {
     if (docId)
-      configurationStudio.openDocumentByIdAsync(docId);
+      void configurationStudio.openDocumentByIdAsync(docId);
   }, [configurationStudio, docId]);
 
   useEffect(() => {

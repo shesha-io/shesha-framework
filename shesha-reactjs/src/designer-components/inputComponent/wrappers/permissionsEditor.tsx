@@ -1,8 +1,9 @@
 import { IPermissionsSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React, { FC } from 'react';
-import { PermissionAutocomplete } from '@/components';
+import React from 'react';
+import { FCUnwrapped } from '@/providers/form/models';
+import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 
-export const PermissionsEditorWrapper: FC<IPermissionsSettingsInputProps> = (props) => {
+export const PermissionsEditorWrapper: FCUnwrapped<IPermissionsSettingsInputProps> = (props) => {
   const { value, onChange, readOnly, size } = props;
   return (
     <PermissionAutocomplete

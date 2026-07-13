@@ -59,7 +59,7 @@ export interface IFormFetcherProps {
   lazy: boolean;
 }
 export type UseFormConfigurationArgs = {
-  formId: FormIdentifier;
+  formId: FormIdentifier | undefined;
 } & IFormFetcherProps;
 
 export interface FormInfo {
@@ -74,14 +74,15 @@ export interface FormInfo {
 interface IFieldData {
   name: string;
   child: IFieldData[];
-  property: IPropertyMetadata;
+  property: IPropertyMetadata | undefined;
 }
 
-export const filterDataByOutputComponents = (
-  data: object,
+export const filterDataByOutputComponents = <TData extends object = object>(
+  data: TData,
   components: IComponentsDictionary,
   toolboxComponents: IToolboxComponents,
-): any => {
+): Partial<TData> => {
+  // TODO: AS please review this code, most probably we have another function that handles dot notation as well
   const newData = { ...data };
   for (const key in components) {
     if (components.hasOwnProperty(key)) {
@@ -90,7 +91,7 @@ export const filterDataByOutputComponents = (
         component.type &&
         data.hasOwnProperty(component.propertyName) &&
         !toolboxComponents[component.type]?.isOutput) {
-        delete data[component.propertyName];
+        delete newData[component.propertyName as keyof typeof newData];
       }
     }
   }

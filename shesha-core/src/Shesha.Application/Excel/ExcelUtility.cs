@@ -14,9 +14,11 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace Shesha.Excel
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD103:Call async methods when in an async method", Justification = "<Pending>")]
     public class ExcelUtility: IExcelUtility, ITransientDependency
     {
         #region Constants
@@ -37,7 +39,7 @@ namespace Shesha.Excel
         /// </summary>
         private static void SetSheetName(string excelSpreadSheetName, SpreadsheetDocument spreadSheet)
         {
-            var ss = spreadSheet.WorkbookPart?.Workbook.Descendants<Sheet>().FirstOrDefault(s => s.Name == DefaultSheetName);
+            var ss = spreadSheet.WorkbookPart?.Workbook?.Descendants<Sheet>().FirstOrDefault(s => s.Name == DefaultSheetName);
             if (ss != null)
                 ss.Name = excelSpreadSheetName;
         }
@@ -107,8 +109,8 @@ namespace Shesha.Excel
         /// <param name="workSheetPart">Work sheet.</param>
         private static void AddCellWidthStyles(uint minCol, uint maxCol, int maxWidth, SpreadsheetDocument spreadSheet, WorksheetPart workSheetPart)
         {
-            var cols = new DocumentFormat.OpenXml.Spreadsheet.Columns(new Column { CustomWidth = true, Min = minCol, Max = maxCol, Width = maxWidth, BestFit = false });
-            workSheetPart.Worksheet.InsertBefore(cols, workSheetPart.Worksheet.GetFirstChild<SheetData>());
+            var cols = new Columns(new Column { CustomWidth = true, Min = minCol, Max = maxCol, Width = maxWidth, BestFit = false });
+            workSheetPart.Worksheet?.InsertBefore(cols, workSheetPart.Worksheet.GetFirstChild<SheetData>());
         }
 
         private static readonly Dictionary<int, string> LettersCache = new Dictionary<int, string>();
@@ -149,7 +151,7 @@ namespace Shesha.Excel
 
         #endregion
 
-        public static async Task<MemoryStream> DataToExcelStreamAsync(WriteRowsDelegate writeRows, IList<String> headers, string sheetName, List<int>? columnWidths = null)
+        public static async Task<MemoryStream> DataToExcelStreamAsync(WriteRowsDelegate writeRows, IList<string> headers, string sheetName, List<int>? columnWidths = null)
         {
             var xmlStream = ReportingHelper.GetResourceStream("Shesha.Excel.template.xlsx", typeof(ExcelUtility).Assembly);
 
@@ -169,7 +171,7 @@ namespace Shesha.Excel
                 // Fit to page
                 var sp = new SheetProperties(new PageSetupProperties());
 
-                var ws = worksheetPart.Worksheet;
+                var ws = worksheetPart.Worksheet.NotNull();
                 ws.SheetProperties = sp;
 
                 // Set the FitToPage property to true
@@ -205,8 +207,8 @@ namespace Shesha.Excel
                                 BestFit = false
                             })
                         .ToList();
-                    var cols = new DocumentFormat.OpenXml.Spreadsheet.Columns(columns);
-                    worksheetPart.Worksheet.InsertBefore(cols, worksheetPart.Worksheet.GetFirstChild<SheetData>());
+                    var cols = new Columns(columns);
+                    worksheetPart.Worksheet?.InsertBefore(cols, worksheetPart.Worksheet.GetFirstChild<SheetData>());
                 }
                 else
                 {
@@ -214,11 +216,12 @@ namespace Shesha.Excel
                     AddCellWidthStyles(Convert.ToUInt32(1), Convert.ToUInt32(headers.Count), maxWidth, document, worksheetPart);
                 }
 
-                worksheetPart.Worksheet.Save();
-                workbookPart.Workbook.Save();
+                worksheetPart.Worksheet?.Save();
+                workbookPart.Workbook?.Save();
 
                 using (var xmlReader = OpenXmlReader.Create(worksheetPart))
                 {
+                    var settings = new XmlWriterSettings { Async = true };
                     using (var xmlWriter = OpenXmlWriter.Create(replacementPart))
                     {
                         while (xmlReader.Read())
@@ -261,7 +264,7 @@ namespace Shesha.Excel
                     }
                 }
 
-                var sheet = workbookPart.Workbook.Descendants<Sheet>().First(s => s.Id != null && s.Id.Value != null && s.Id.Value.Equals(originalSheetId));
+                var sheet = workbookPart.Workbook.NotNull().Descendants<Sheet>().First(s => s.Id != null && s.Id.Value != null && s.Id.Value.Equals(originalSheetId));
 
                 sheet.Id.NotNull().Value = replacementPartId;
                 workbookPart.DeletePart(worksheetPart);
@@ -286,7 +289,7 @@ namespace Shesha.Excel
                 };
             }).ToList();
 
-            var result = await DataToExcelStreamAsync(writer =>
+            var result = await DataToExcelStreamAsync((writer) =>
             {
                 var r = new Row();
                 var c = new Cell(new CellValue());
@@ -308,7 +311,6 @@ namespace Shesha.Excel
 
                     writer.WriteEndElement();
                 }
-
                 return Task.CompletedTask;
             }, headers, sheetName);
 

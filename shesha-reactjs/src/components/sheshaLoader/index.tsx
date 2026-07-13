@@ -1,4 +1,3 @@
-import { Flex } from 'antd';
 import React, { FC } from 'react';
 
 interface ISheshaLoader {
@@ -6,10 +5,10 @@ interface ISheshaLoader {
 }
 
 const SheshaLoader: FC<ISheshaLoader> = ({ message = 'Initializing...' }) => (
-  <Flex vertical justify="center" align="center" style={{ height: '100vh' }}>
+  <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
     <img src="/images/SheshaLoadingAnimation.gif" alt="Shesha Loading Animation" />
     <div>{message}</div>
-  </Flex>
+  </div>
 );
 
 export default SheshaLoader;

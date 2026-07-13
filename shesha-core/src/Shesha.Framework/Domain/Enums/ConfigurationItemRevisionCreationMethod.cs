@@ -17,5 +17,8 @@ namespace Shesha.Domain.Enums
 
         [Display(Name = "Migration import")]
         MigrationImport = 3,
+
+        [Display(Name = "Manual restore")]
+        ManualRestore = 4,
     }
 }

@@ -1,6 +1,6 @@
-import { IStyleType } from "@/index";
+import { IStyleValue } from "@/providers/form/models";
 
-export const initialStyles = (): IStyleType => {
+export const initialStyles = (): IStyleValue => {
   return {
     border: {
       hideBorder: false,
