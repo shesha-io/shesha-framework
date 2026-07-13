@@ -16,7 +16,6 @@ namespace Shesha.Settings
         private readonly IRepository<SettingConfiguration, Guid> _settingConfigurationRepository;
         private readonly ISettingDefinitionManager _settingDefinitionManager;
         private readonly IUnitOfWorkManager _uowManager;
-        
 
         public DynamicSettingDefinitionProvider(IRepository<SettingConfiguration, Guid> settingConfigurationRepository, ISettingDefinitionManager settingDefinitionManager, IUnitOfWorkManager uowManager)
         {
@@ -32,7 +31,7 @@ namespace Shesha.Settings
             using (var uow = _uowManager.Begin()) 
             {
                 var settings = context.GetAll();
-                var dbSettings = _settingConfigurationRepository.GetAll().Where(sc => sc.Module != null).ToList();
+                var dbSettings = _settingConfigurationRepository.GetAll().Where(sc => sc.Module != null && sc.Module.IsEnabled && !sc.Module.IsDeleted).ToList();
 
                 var dynamicallyCreatedSettings = dbSettings
                     .Where(c => !settings.Any(d => d.Value.Name == c.Name && d.Value.ModuleName == c.Module.NotNull().Name))
@@ -40,6 +39,9 @@ namespace Shesha.Settings
 
                 foreach (var setting in dynamicallyCreatedSettings)
                 {
+                    if (string.IsNullOrWhiteSpace(setting.Name))
+                        continue;
+
                     var definition = _settingDefinitionManager.CreateUserSettingDefinition(setting.Module.NotNull().Name, setting.Name, setting.DataType, null);
 
                     var id = new SettingIdentifier(definition.ModuleName, definition.Name);
