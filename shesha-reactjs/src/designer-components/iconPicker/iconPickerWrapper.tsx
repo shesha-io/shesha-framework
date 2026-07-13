@@ -22,7 +22,7 @@ interface IconPickerWrapperProps {
   backgroundColor?: string | undefined;
   stylingBox?: string | undefined;
   defaultValue?: ShaIconTypes | undefined;
-  textAlign?: string | undefined;
+  textAlign?: CSSProperties['textAlign'] | undefined;
   style?: string | undefined;
   dimensions?: IDimensionsValue | undefined;
   description?: string | undefined;
@@ -70,7 +70,7 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
 
   return (
     <Tooltip title={props.description}>
-      <div style={(defaultValue || value) ? { textAlign: (fullStyles?.textAlign ?? textAlign) as CSSProperties['textAlign'] } : {}}>
+      <div style={(defaultValue || value) ? { textAlign: fullStyles?.textAlign ?? textAlign } : {}}>
         <IconPicker
           value={iconValue as ShaIconTypes}
           onIconChange={onIconChange}
