@@ -7,6 +7,7 @@ using Abp.Localization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Configuration.Security;
+using Shesha.Domain.Enums;
 using Shesha.Extensions;
 using Shesha.Permissions;
 using Shesha.Reflection;
@@ -44,9 +45,8 @@ namespace Shesha.Authorization
                 return;
             }
 
-            if (type.HasAttribute<AllowAnonymousAttribute>() || methodInfo.HasAttribute<AllowAnonymousAttribute>()
-                || type.HasAttribute<AbpAllowAnonymousAttribute>() || methodInfo.HasAttribute<AbpAllowAnonymousAttribute>())
-                return;
+            var hasCodeAllowAnonymous = type.HasAttribute<AllowAnonymousAttribute>() || methodInfo.HasAttribute<AllowAnonymousAttribute>()
+                || type.HasAttribute<AbpAllowAnonymousAttribute>() || methodInfo.HasAttribute<AbpAllowAnonymousAttribute>();
 
             var controllerType = typeof(ControllerBase);
             if (type == null || !controllerType.IsAssignableFrom(type) && !type.HasInterface(typeof(IApplicationService)))
@@ -60,10 +60,16 @@ namespace Shesha.Authorization
                 return;
 
             var securitySettings = await _securitySettings?.SecuritySettings?.GetValueAsync();
-            var settings = securitySettings?.DefaultEndpointAccess;
+            var defaultAccess = securitySettings?.DefaultEndpointAccess;
 
-            if (settings == null)
+            if (defaultAccess == null)
                 throw new NullReferenceException("Cannot get DefaultEndpointAccess");
+
+            // If code-level [AllowAnonymous] is present, use it as the fallback for Inherited.
+            // Database configuration with an explicit access level will still take precedence.
+            var replaceInherited = hasCodeAllowAnonymous
+                ? RefListPermissionedAccess.AllowAnonymous
+                : defaultAccess;
 
             // Note: requireAll is intentionally false — multiple permissions are OR'd (any single permission grants access)
             await _objectPermissionChecker.AuthorizeAsync(
@@ -72,7 +78,7 @@ namespace Shesha.Authorization
                 methodName,
                 ShaPermissionedObjectsTypes.WebApiAction,
                 AbpSession.UserId.HasValue,
-                settings
+                replaceInherited
             );
         }
     }
