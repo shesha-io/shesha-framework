@@ -73,7 +73,7 @@ namespace Shesha.EntityHistory
             var models = new List<ModelDto>();
             foreach (var provider in _modelProviders)
             {
-                models.AddRange(await provider.GetModelsAsync());
+                models.AddRange(await provider.GetModelsListAsync());
             }
 
             return _models = models.Where(x => !x.Suppress).ToList();

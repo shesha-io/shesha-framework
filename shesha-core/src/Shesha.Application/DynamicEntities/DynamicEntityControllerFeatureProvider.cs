@@ -49,7 +49,9 @@ namespace Shesha.DynamicEntities
             using (var uow = _unitOfWorkManager.Begin())
             {
                 var entityConfigRepo = _iocManager.Resolve<IRepository<EntityConfig, Guid>>();
-                var entityToApp = entityConfigRepo.GetAll().ToList();
+                var entityToApp = entityConfigRepo.GetAll()
+                    .Where(x => x.GenerateAppService)
+                    .ToList();
                 foreach (var entityConfig in entityToApp)
                 {
                     try

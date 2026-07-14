@@ -9,7 +9,6 @@ using Intent.RoslynWeaver.Attributes;
 using ShaCompanyName.ShaProjectName.Domain;
 using Shesha;
 using Shesha.Modules;
-using Shesha.Startup;
 using Shesha.Web.FormsDesigner;
 
 [assembly: IntentTemplate("Boxfusion.Modules.Application.Services.AppService", Version = "1.0")]
@@ -50,26 +49,6 @@ namespace ShaCompanyName.ShaProjectName.Application
         public override void PreInitialize()
         {
             base.PreInitialize();
-
-            Configuration.Modules.AbpAspNetCore()
-                .CreateControllersForAppServices(
-                    typeof(SheshaCoreModule).GetAssembly()
-                );
-
-            Configuration.Modules.AbpAspNetCore()
-                 .CreateControllersForAppServices(
-                     typeof(SheshaApplicationModule).GetAssembly()
-                 );
-
-            Configuration.Modules.AbpAspNetCore()
-                 .CreateControllersForAppServices(
-                     typeof(SheshaFormsDesignerModule).GetAssembly()
-                 );
-
-            Configuration.Modules.AbpAspNetCore()
-                 .CreateControllersForAppServices(
-                     typeof(SheshaFrameworkModule).GetAssembly()
-                 );
 
             Configuration.Modules.AbpAspNetCore().CreateControllersForAppServices(
                typeof(ShaProjectNameApplicationModule).Assembly,

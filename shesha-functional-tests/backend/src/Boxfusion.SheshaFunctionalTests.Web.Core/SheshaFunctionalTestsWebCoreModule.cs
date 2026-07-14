@@ -6,7 +6,6 @@ using Castle.MicroKernel.Registration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using NHibernate.Spatial.Linq.Functions;
 using Shesha;
 using Shesha.Authentication.JwtBearer;
 using Shesha.Authorization;

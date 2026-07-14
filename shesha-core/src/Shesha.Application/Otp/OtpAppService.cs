@@ -1,6 +1,9 @@
 ﻿using Abp.Dependency;
 using Abp.Net.Mail;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shesha.Authorization;
+using Shesha.Domain.Enums;
 using Shesha.Otp.Configuration;
 using Shesha.Otp.Dto;
 using Shesha.Sms;
@@ -8,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Otp
 {
+    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, "pages:maintenance")]
     public class OtpAppService : SheshaAppServiceBase, IOtpAppService, ITransientDependency
     {
         private readonly IOtpSettings _otpSettings;
@@ -23,6 +27,7 @@ namespace Shesha.Otp
         /// <summary>
         /// Send one-time-pin
         /// </summary>
+        [AllowAnonymous]
         public async Task<ISendPinResponse> SendPinAsync(SendPinInput input)
         {
             return await _otpManager.SendPinAsync(input);
@@ -31,6 +36,7 @@ namespace Shesha.Otp
         /// <summary>
         /// Resend one-time-pin
         /// </summary>
+        [AllowAnonymous]
         public async Task<ISendPinResponse> ResendPinAsync(ResendPinInput input)
         {
             return await _otpManager.ResendPinAsync(input);
@@ -40,6 +46,7 @@ namespace Shesha.Otp
         /// <summary>
         /// Verify one-time-pin
         /// </summary>
+        [AllowAnonymous]
         public async Task<IVerifyPinResponse> VerifyPinAsync(VerifyPinInput input)
         {
             return await _otpManager.VerifyPinAsync(input);
@@ -57,6 +64,8 @@ namespace Shesha.Otp
                 IgnoreOtpValidation = input.IgnoreOtpValidation,
                 DefaultEmailBodyTemplate = input.EmailBodyTemplate,
                 DefaultEmailSubjectTemplate = input.EmailSubject,
+                DefaultRegistrationEmailSubjectTemplate = input.RegistrationEmailSubject,
+                DefaultRegistrationEmailBodyTemplate = input.RegistrationEmailBodyTemplate,
             });
 
             return true;
@@ -76,6 +85,8 @@ namespace Shesha.Otp
                 IgnoreOtpValidation = emailSettings.IgnoreOtpValidation,
                 EmailSubject = emailSettings.DefaultEmailSubjectTemplate,
                 EmailBodyTemplate = emailSettings.DefaultEmailBodyTemplate,
+                RegistrationEmailSubject = emailSettings.DefaultRegistrationEmailSubjectTemplate,
+                RegistrationEmailBodyTemplate = emailSettings.DefaultRegistrationEmailBodyTemplate,
             };
             
             return settings;

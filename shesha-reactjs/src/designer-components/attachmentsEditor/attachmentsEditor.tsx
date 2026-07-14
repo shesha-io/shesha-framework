@@ -110,7 +110,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
           return (
             <StoredFilesProvider
               name={model.componentName}
-              ownerId={Boolean(ownerId) ? ownerId : Boolean(data?.id) ? data?.id : ''}
+              ownerId={Boolean(model.ownerId) ? ownerId : Boolean(data?.id) ? data?.id : ''}
               ownerType={
                 Boolean(model.ownerType) ? model.ownerType : Boolean(form?.formSettings?.modelType) ? form?.formSettings?.modelType : ''
               }

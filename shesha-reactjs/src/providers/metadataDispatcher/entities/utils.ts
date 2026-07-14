@@ -12,6 +12,7 @@ const wrapModuleName = (name: string) => (name ?? NO_MODULE);
 const unwrapModuleName = (name: string) => (name === NO_MODULE ? null : name);
 
 const CURRENT_SYNC_VERSION = '2';
+const CLIENT_SNAPSHOT_HASH = 'ENTITIES_SYNC_SNAPSHOT_HASH';
 const ENTITIES_SYNC_VERSION_FIELD_NAME = "ENTITIES_SYNC_VERSION";
 
 const URLS = {
@@ -32,6 +33,17 @@ const setEntitiesSyncVersion = async (cacheProvider: ICacheProvider, value: stri
     const cache = cacheProvider.getCache(CACHE.MISC);
     return cache.setItem<string>(ENTITIES_SYNC_VERSION_FIELD_NAME, value);
 };
+
+const getClientSnapshotHash = async (cacheProvider: ICacheProvider): Promise<string> => {
+    const cache = cacheProvider.getCache(CACHE.MISC);
+    return cache.getItem<string>(CLIENT_SNAPSHOT_HASH);
+};
+
+const setClientSnapshotHash = async (cacheProvider: ICacheProvider, value: string): Promise<string> => {
+    const cache = cacheProvider.getCache(CACHE.MISC);
+    return cache.setItem<string>(CLIENT_SNAPSHOT_HASH, value);
+};
+
 
 const getEntitiesSyncRequest = async (context: ISyncEntitiesContext): Promise<SyncAllRequest> => {
     const modulesMap = new Map<string, ModuleSyncRequest>();
@@ -71,9 +83,11 @@ const getEntitiesSyncRequest = async (context: ISyncEntitiesContext): Promise<Sy
         });
     }
     await setEntitiesSyncVersion(context.cacheProvider, CURRENT_SYNC_VERSION);
+    const clientSnapshotHash = await getClientSnapshotHash(context.cacheProvider);
 
     const request: SyncAllRequest = {
         modules: [],
+        clientSnapshotHash,
     };
     modulesMap.forEach(m => request.modules.push(m));
     return request;
@@ -88,6 +102,8 @@ export const syncEntities = async (context: ISyncEntitiesContext): Promise<void>
             if (response.data?.success) {
                 const promises: Promise<any>[] = [];
                 const data = response.data.result;
+
+                promises.push(setClientSnapshotHash(context.cacheProvider, data.serverSnapshotHash));
 
                 const metadataCache = context.cacheProvider.getCache(CACHE.ENTITIES);
                 data.modules.forEach(m => {

@@ -47,10 +47,6 @@ namespace Shesha.Domain
         /// </summary>
         public virtual string SenderTypeName { get; set; }
         /// <summary>
-        /// The default priority of the message unless overridden during the send operation
-        /// </summary>
-        public virtual RefListNotificationPriority? DefaultPriority { get; set; }
-        /// <summary>
         /// Enabled, Disabled, Suppressed - if suppressed will 'pretend' like the notification will be send, but will simply not send the message
         /// </summary>
         public virtual RefListNotificationChannelStatus? Status { get; set; }

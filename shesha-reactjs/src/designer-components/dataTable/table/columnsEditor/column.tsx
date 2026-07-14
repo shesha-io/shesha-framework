@@ -1,7 +1,7 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import React, { FC } from 'react';
-import { IconType, ShaIcon } from '@/components';
+import { ShaIcon } from '@/components';
 import {
   ColumnsItemProps,
   IConfigurableActionColumnsProps,
@@ -19,7 +19,7 @@ export const Column: FC<IProps> = ({ item }) => {
 
   return (
     <>
-      {actionProps && actionProps.icon && <ShaIcon iconName={actionProps.icon as IconType} />}
+      {actionProps && actionProps.icon && <ShaIcon iconName={actionProps.icon} />}
       <span className={styles.listItemName}>{item.caption}</span>
       {item.description && (
         <Tooltip title={item.description}>

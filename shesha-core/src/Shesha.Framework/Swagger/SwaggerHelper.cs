@@ -163,7 +163,7 @@ namespace Shesha.Swagger
                     return modelType.Name;
             }
 
-            if (!modelType.IsConstructedGenericType) return modelType.Name.Replace("[]", "Array");
+            if (!modelType.IsConstructedGenericType) return (modelType.FullName ?? modelType.Name).Replace("[]", "Array");
 
             var prefix = modelType.GetGenericArguments()
                 .Select(genericArg => GetSchemaId(genericArg))

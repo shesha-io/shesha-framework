@@ -1,6 +1,8 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Reflection;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Application.Services.Dto;
 using Shesha.AutoMapper.Dto;
@@ -169,12 +171,23 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
     }
 
     [HttpPost]
+    [AllowAnonymous]
+    [AbpAllowAnonymous]
     public async Task<SyncAllResponse> SyncClientApiAsync(SyncAllRequest input)
     {
         var metadataService = IocManager.Resolve<IMetadataAppService>();
 
         var entityModelProvider = IocManager.Resolve<IEntityModelProvider>();
-        var models = await entityModelProvider.GetModelsAsync();
+
+        if (!string.IsNullOrWhiteSpace(input.ClientSnapshotHash)) {
+            var serverSnapshotHash = await entityModelProvider.GetModelsSnapshotHashOrNullAsync();
+            if (serverSnapshotHash == input.ClientSnapshotHash)
+                return new SyncAllResponse { ServerSnapshotHash = serverSnapshotHash };
+        }            
+
+        var modelsResponse = await entityModelProvider.GetModelsAsync();
+        var models = modelsResponse.Models;
+
         var groupped = models.GroupBy(e => e.ModuleAccessor, (moduleAccessor, entities) => {
             return new {
                 Module = moduleAccessor,
@@ -182,7 +195,9 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
             };
         }).ToList();
 
-        var response = new SyncAllResponse();
+        var response = new SyncAllResponse() { 
+            ServerSnapshotHash = modelsResponse.SnapshotHash
+        };
 
         foreach (var module in input.Modules)
         {
@@ -246,7 +261,7 @@ public class EntityConfigAppService : SheshaCrudServiceBase<EntityConfig, Entity
                 responseModule.Entities.Add(new OutOfDateEntitySyncResponse { 
                     Accessor = entity.Accessor,
                     Status = SyncStatus.OutOfDate,
-                    Metadata = await metadataService.GetAsync(entity.ClassName),
+                    Metadata = entity.Metadata
                 });
             }
         }

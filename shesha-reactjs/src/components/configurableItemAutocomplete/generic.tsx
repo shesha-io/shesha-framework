@@ -8,7 +8,7 @@ import { IAbpWrappedGetEntityListResponse, IGenericGetAllPayload } from '@/inter
 import HelpTextPopover from '@/components/helpTextPopover';
 import { ConfigurableItemFullName, ConfigurableItemIdentifier, isConfigurableItemFullName, isConfigurableItemRawId, isEntityMetadata } from '@/interfaces';
 import { MetadataProvider, useMetadata } from '@/providers';
-import { StandardEntityActions } from '@/interfaces/metadata';
+import { IApiEndpoint, StandardEntityActions } from '@/interfaces/metadata';
 
 interface EditorProps<TValue> {
     value?: TValue;
@@ -22,6 +22,7 @@ export type StandardAutocompleteProps = {
     readOnly?: boolean;
     maxResultCount?: number;
     filter?: object;
+    preferGenericEndpoint?: boolean;
 };
 type EditorWithMode<TValue> = SingleEditorProps<TValue> | MultipleEditorProps<TValue>;
 
@@ -182,11 +183,15 @@ export const GenericConfigurableItemAutocompleteInternal = <TValue extends Confi
         value,
         onChange,
         filter,
+        preferGenericEndpoint = true,
     } = props;
 
     const { metadata } = useMetadata(true);
     const endpoints = isEntityMetadata(metadata) ? metadata.apiEndpoints : {};
-    const listEndpoint = endpoints[StandardEntityActions.list] ?? { httpVerb: 'get', url: `${GENERIC_ENTITIES_ENDPOINT}/GetAll` };
+    const genericEndpoint: IApiEndpoint = { httpVerb: 'get', url: `${GENERIC_ENTITIES_ENDPOINT}/GetAll` };
+    const listEndpoint = preferGenericEndpoint 
+        ? genericEndpoint 
+        : endpoints[StandardEntityActions.list] ?? genericEndpoint;
 
     const listFetcher = useGet<IAbpWrappedGetEntityListResponse<IResponseItem>, any, IGenericGetAllPayload>(
         listEndpoint.url,

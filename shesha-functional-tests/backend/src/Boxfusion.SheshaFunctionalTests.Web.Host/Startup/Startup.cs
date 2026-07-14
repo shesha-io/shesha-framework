@@ -1,11 +1,9 @@
 using Abp.AspNetCore;
 using Abp.AspNetCore.SignalR.Hubs;
 using Abp.Castle.Logging.Log4Net;
-using Abp.Extensions;
 using Abp.PlugIns;
 using Boxfusion.SheshaFunctionalTests.Hangfire;
 using Castle.Facilities.Logging;
-using ElmahCore.Mvc;
 using GraphQL;
 using Hangfire;
 using Hangfire.PostgreSql;
@@ -40,7 +38,9 @@ using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using Microsoft.Extensions.Hosting;
 using Shesha.Specifications;
 
 namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
@@ -158,11 +158,21 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 				options.UseAbpRequestLocalization = false;
 			}); 
 
+			// Security headers
+			app.UseSecurityHeaders();
+
+			// global cors policy
+			var corsOrigins = _appConfiguration["App:CorsOrigins"]?
+				.Split(",", StringSplitOptions.RemoveEmptyEntries)
+				.Select(o => o.Trim().TrimEnd('/'))
+				.Where(o => !string.IsNullOrEmpty(o))
+				.ToArray() ?? Array.Empty<string>();
 			app.UseCors(x => x
 				.AllowAnyMethod()
 				.AllowAnyHeader()
-				.SetIsOriginAllowed(origin => true) // allow any origin
-				.AllowCredentials()); // allow credentials​
+				.WithOrigins(corsOrigins)
+				.AllowCredentials());
+			
 			app.UseStaticFiles();
 			app.UseAuthentication();
 			app.UseAbpRequestLocalization();
@@ -181,7 +191,11 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 				endpoints.MapControllers();
 				endpoints.MapSignalRHubs();
 			});
-
+			
+			
+			// Block access to Swagger UI when the setting is disabled
+			app.UseMiddleware<SwaggerUiAccessMiddleware>();
+			
 			// Enable middleware to serve generated Swagger as a JSON endpoint
 			app.UseSwagger();
 
@@ -202,7 +216,10 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 					Authorization = new[] { new HangfireAuthorizationFilter() }
 				});
 			app.UseMiddleware<GraphQLMiddleware>();
-			app.UseGraphQLPlayground(); //to explorer API navigate https://*DOMAIN*/ui/playground
+			if (!_hostEnvironment.IsProduction())
+			{
+				app.UseGraphQLPlayground(); //to explorer API navigate https://*DOMAIN*/ui/playground
+			}
 		}
 
 		private void AddApiVersioning(IServiceCollection services)
@@ -222,7 +239,7 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
                 options.SchemaFilter<DynamicDtoSchemaFilter>();
                 options.OperationFilter<SwaggerOperationFilter>();
 				options.DocumentFilter<SwaggerDocumentFilter>();
-
+				
 				options.CustomSchemaIds(type => SwaggerHelper.GetSchemaId(type));
 
 				options.CustomOperationIds(desc => desc.ActionDescriptor is ControllerActionDescriptor d
@@ -239,7 +256,7 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 					In = ParameterLocation.Header,
 					Type = SecuritySchemeType.ApiKey
 				});
-				//options.SchemaFilter<DynamicDtoSchemaFilter>();
+				
 			});
 			services.Replace(ServiceDescriptor.Transient<ISwaggerProvider, CachingSwaggerProvider>());
 

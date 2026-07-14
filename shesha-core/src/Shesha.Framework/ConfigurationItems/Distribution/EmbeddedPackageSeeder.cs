@@ -54,6 +54,8 @@ namespace Shesha.ConfigurationItems.Distribution
 
             var imported = false;
 
+            var moduleName = context.Assembly.GetConfigurableModuleName();
+
             foreach (var embeddedPackage in embeddedPackages)
             {
                 context.CancellationToken.ThrowIfCancellationRequested();
@@ -86,6 +88,10 @@ namespace Shesha.ConfigurationItems.Distribution
                                 CreateModules = false,
                                 Logger = context.Logger,
                                 ImportResult = importResult,
+                                /* temporary disabled filtering to prevent issues in projects
+                                ShouldImportItem = (item) => { 
+                                    return item.ModuleName == moduleName;
+                                }*/
                             };
                             try
                             {

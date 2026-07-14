@@ -1,5 +1,4 @@
-﻿using Shesha.Domain.Enums;
-using System;
+﻿using System;
 
 namespace Shesha.Metadata.Dtos
 {

@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
@@ -121,6 +122,9 @@ namespace Shesha.Web.Host.Startup
                             });
                             break;
                         }
+                    case DbmsType.NotSpecified:
+                    default:
+                        throw new InvalidOperationException($"Unsupported DbmsType '{dbms}' for Hangfire storage configuration. Supported types are SQLServer and PostgreSQL.");
                 }
             });
             services.AddHangfireServer(config => {
@@ -153,12 +157,20 @@ namespace Shesha.Web.Host.Startup
 
             app.UseAbp(options => { options.UseAbpRequestLocalization = false; }); // Initializes ABP framework.
 
+            // Security headers
+            app.UseSecurityHeaders();
+
             // global cors policy
+            var corsOrigins = _appConfiguration["App:CorsOrigins"]?
+                .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                .Select(o => o.Trim().TrimEnd('/'))
+                .Where(o => !string.IsNullOrEmpty(o))
+                .ToArray() ?? Array.Empty<string>();
             app.UseCors(x => x
                 .AllowAnyMethod()
                 .AllowAnyHeader()
-                .SetIsOriginAllowed(origin => true) // allow any origin
-                .AllowCredentials()); // allow credentials
+                .WithOrigins(corsOrigins)
+                .AllowCredentials());
             app.UseStaticFiles();
             app.UseAuthentication();
             app.UseAbpRequestLocalization();
@@ -177,6 +189,9 @@ namespace Shesha.Web.Host.Startup
                 endpoints.MapControllers();
                 endpoints.MapSignalRHubs();
             });
+
+            // Block access to Swagger UI when the setting is disabled
+            app.UseMiddleware<SwaggerUiAccessMiddleware>();
 
             // Enable middleware to serve generated Swagger as a JSON endpoint
             app.UseSwagger();
@@ -197,7 +212,10 @@ namespace Shesha.Web.Host.Startup
             });
 
             app.UseMiddleware<GraphQLMiddleware>();
-            app.UseGraphQLPlayground(); //to explorer API navigate https://*DOMAIN*/ui/playground
+            if (!_hostEnvironment.IsProduction())
+            {
+                app.UseGraphQLPlayground(); //to explorer API navigate https://*DOMAIN*/ui/playground
+            }
         }
 
         private void AddApiVersioning(IServiceCollection services)
@@ -217,7 +235,6 @@ namespace Shesha.Web.Host.Startup
                 options.SchemaFilter<GraphQLSchemaFilter>();
                 options.SchemaFilter<DynamicDtoSchemaFilter>();
                 options.OperationFilter<SwaggerOperationFilter>();
-
                 options.CustomSchemaIds(type => SwaggerHelper.GetSchemaId(type));
 
                 options.CustomOperationIds(desc => desc.ActionDescriptor is ControllerActionDescriptor d

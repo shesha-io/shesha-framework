@@ -3,7 +3,7 @@ using RedLockNet.SERedis.Configuration;
 using Shesha.Locks;
 using StackExchange.Redis;
 
-namespace Shesha.Redis
+namespace Shesha.Redis.Locking
 {
     /// <summary>
     /// Redis lock factory

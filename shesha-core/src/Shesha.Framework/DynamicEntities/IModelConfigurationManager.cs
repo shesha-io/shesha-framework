@@ -1,9 +1,7 @@
 ﻿using Shesha.Domain;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Metadata.Dtos;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Shesha.DynamicEntities
@@ -46,7 +44,5 @@ namespace Shesha.DynamicEntities
         /// <param name="input">Model configuration Dto</param>
         /// <returns></returns>
         Task<ModelConfigurationDto> UpdateAsync(ModelConfigurationDto input);
-
-
     }
 }

@@ -94,7 +94,6 @@ namespace Shesha.Notifications
         /// <param name="sender"></param>
         /// <param name="receiver"></param>
         /// <param name="data"></param>
-        /// <param name="priority"></param>
         /// <param name="attachments"></param>
         /// <param name="cc"></param>
         /// <param name="triggeringEntity"></param>
@@ -106,7 +105,6 @@ namespace Shesha.Notifications
             IMessageSender? sender,
             IMessageReceiver receiver,
             TData data,
-            RefListNotificationPriority priority,
             List<NotificationAttachmentDto>? attachments = null,
             string? cc = null,
             GenericEntityReference? triggeringEntity = null,
@@ -123,6 +121,8 @@ namespace Shesha.Notifications
                 if (optedOut)
                     return;
             }
+
+            var priority = type.DefaultPriority ?? RefListNotificationPriority.Medium;
 
             var notification = await _notificationRepository.InsertAsync(new Notification()
             {
@@ -146,7 +146,7 @@ namespace Shesha.Notifications
             else
             {
                 // Send notification to all determined channels
-                var channels = await _notificationManager.GetChannelsAsync(type, receiver, (RefListNotificationPriority)priority);
+                var channels = await _notificationManager.GetChannelsAsync(type, receiver, priority);
 
                 foreach (var channelConfig in channels)
                 {
@@ -363,7 +363,6 @@ namespace Shesha.Notifications
             Person? senderPerson,
             Person receiverPerson,
             TData data,
-            RefListNotificationPriority priority,
             List<NotificationAttachmentDto>? attachments = null,
             string? cc = null,
             GenericEntityReference? triggeringEntity = null,
@@ -374,7 +373,7 @@ namespace Shesha.Notifications
                 ? new PersonMessageParticipant(senderPerson)
                 : null;
             var receiver = new PersonMessageParticipant(receiverPerson);
-            await SendNotificationAsync(type, sender, receiver, data, priority, attachments, cc, triggeringEntity, channel, category);
+            await SendNotificationAsync(type, sender, receiver, data, attachments, cc, triggeringEntity, channel, category);
         }
     }
 #nullable restore

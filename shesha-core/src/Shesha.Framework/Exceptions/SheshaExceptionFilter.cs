@@ -1,5 +1,6 @@
 ﻿using Abp.AspNetCore.Configuration;
 using Abp.AspNetCore.Mvc.ExceptionHandling;
+using Abp.Authorization;
 using Abp.Web.Configuration;
 using Abp.Web.Models;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -30,6 +31,17 @@ namespace Shesha.Exceptions
             // prevent `Writing to the response body is invalid for responses with status code 304.` exception
             if (context.HttpContext.Response.StatusCode == (int)HttpStatusCode.NotModified)
                 context.Result = null;
+
+            if (context.Exception is AbpAuthorizationException
+                && context.HttpContext.Response.StatusCode != (int)HttpStatusCode.Unauthorized
+                && context.HttpContext.Response.StatusCode != (int)HttpStatusCode.Forbidden
+                )
+            {
+                context.HttpContext.Response.StatusCode = context.HttpContext.User.Identity.IsAuthenticated
+                    ? (int)HttpStatusCode.Forbidden
+                    : (int)HttpStatusCode.Unauthorized;
+                context.ExceptionHandled = true;
+            }
         }
     }
 }

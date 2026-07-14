@@ -106,13 +106,13 @@ namespace Shesha.NHibernate.EntityHistory
                 return null;
             }
 
-            var entityConfig = AsyncHelper.RunSync(async () => await _modelConfigurationManager.GetModelConfigurationOrNullAsync(typeOfEntity.Namespace, typeOfEntity.Name));
-
             var isTracked = IsTypeOfTrackedEntity(typeOfEntity);
             if (isTracked != null && !isTracked.Value) return null;
 
             var isAudited = IsTypeOfAuditedEntity(typeOfEntity);
             if (isAudited != null && !isAudited.Value) return null;
+
+            var entityConfig = AsyncHelper.RunSync(async () => await _modelConfigurationManager.GetModelConfigurationOrNullAsync(typeOfEntity.Namespace, typeOfEntity.Name));
 
             if (entityConfig != null && isAudited == null && isTracked == null)
             {

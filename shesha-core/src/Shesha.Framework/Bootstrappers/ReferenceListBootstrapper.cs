@@ -167,17 +167,18 @@ namespace Shesha.Bootstrappers
                 ? await _moduleManager.GetOrCreateModuleAsync(refListId.Module)
                 : module;
 
-            var listInDb = searchByNamespaceOnly
-                ? await _listRepo.GetAll()
-                    .Where(l => l.Name == list.Attribute.FullName)
+            var listInDbQuery = searchByNamespaceOnly
+                ? _listRepo.GetAll()
+                    .Where(l => l.Name == list.Attribute.FullName && (l.Module == null || l.Module == listModule))
                     .OrderBy(l => l.Module == null ? 0 : 1)
-                    .ThenBy(l => !l.IsDeleted ? 0 : 1)
-                    .FirstOrDefaultAsync()
-                : await _listRepo.GetAll()
-                    .Where(l => l.Name == list.Attribute.FullName &&
-                        l.Module == listModule)
-                    .OrderBy(l => !l.IsDeleted ? 0 : 1)
-                .FirstOrDefaultAsync();
+                    .ThenByDescending(e => e.VersionNo)
+                : _listRepo.GetAll()
+                    .Where(l => l.Name == list.Attribute.FullName && l.Module == listModule)
+                    .OrderByDescending(e => e.VersionNo);
+            var latestNonDeleted = await listInDbQuery.Where(e => !e.IsDeleted).FirstOrDefaultAsync();
+            var listInDb = latestNonDeleted != null
+                ? latestNonDeleted
+                : await listInDbQuery.Where(e => e.IsDeleted).FirstOrDefaultAsync();
 
             if (listInDb == null)
             {

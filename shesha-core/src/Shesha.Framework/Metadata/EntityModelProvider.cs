@@ -5,7 +5,6 @@ using Abp.Events.Bus.Handlers;
 using Abp.Runtime.Caching;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Metadata.Dtos;
 using Shesha.Reflection;
@@ -18,7 +17,7 @@ namespace Shesha.Metadata
 {
     public class EntityModelProvider : BaseModelProvider<EntityModelDto>, IEntityModelProvider, ISingletonDependency,
         IAsyncEventHandler<EntityChangedEventData<EntityProperty>>,
-        IAsyncEventHandler<EntityChangingEventData<ConfigurationItem>>
+        IAsyncEventHandler<EntityChangingEventData<EntityConfig>>
     {
         private readonly IRepository<EntityConfig, Guid> _entityConfigRepository;
         private readonly IEntityConfigurationStore _entityConfigurationStore;
@@ -38,12 +37,12 @@ namespace Shesha.Metadata
 
         public async Task HandleEventAsync(EntityChangedEventData<EntityProperty> eventData)
         {
-            await Cache.ClearAsync();
+            await ClearCacheAsync();
         }
 
-        public async Task HandleEventAsync(EntityChangingEventData<ConfigurationItem> eventData)
+        public async Task HandleEventAsync(EntityChangingEventData<EntityConfig> eventData)
         {
-            await Cache.ClearAsync();
+            await ClearCacheAsync();
         }
 
         protected async override Task<List<EntityModelDto>> FetchModelsAsync()
@@ -54,8 +53,7 @@ namespace Shesha.Metadata
                 {
                     var config = _entityConfigurationStore.GetOrNull(t.FullClassName);
 
-                    if (t.Source == Domain.Enums.MetadataSourceType.ApplicationCode
-                        && (config == null || config.EntityType.FullName != t.FullClassName /*skip aliases*/))
+                    if (config == null || config.EntityType.FullName != t.FullClassName /*skip aliases*/)
                         return null;
 
                     var metadata = await _metadataProvider.GetAsync(config.EntityType, t.FullClassName);

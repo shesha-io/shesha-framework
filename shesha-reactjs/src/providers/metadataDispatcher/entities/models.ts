@@ -18,6 +18,7 @@ export interface ModuleSyncRequest {
 
 export interface SyncAllRequest {
     modules: ModuleSyncRequest[];
+    clientSnapshotHash: string | undefined;
 }
 
 export type EntityOutOfDateResponse = {
@@ -43,6 +44,7 @@ export interface ModuleSyncResponse {
 
 export interface SyncAllResponse {
     modules: ModuleSyncResponse[];
+    serverSnapshotHash: string;
 }
 
 export interface ICacheProvider {

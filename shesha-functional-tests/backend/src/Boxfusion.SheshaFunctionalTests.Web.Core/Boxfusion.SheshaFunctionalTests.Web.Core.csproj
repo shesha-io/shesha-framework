@@ -40,7 +40,6 @@
     <PackageReference Include="Abp.AspNetCore.SignalR" Version="9.0.0" />
     <PackageReference Include="Abp.HangFire.AspNetCore" Version="9.0.0" />
     <PackageReference Include="Abp.AspNetCore" Version="9.0.0" />
-    <PackageReference Include="Abp.RedisCache" Version="9.0.0" />
     <PackageReference Include="Abp.ZeroCore" Version="9.0.0" />
     <PackageReference Include="AsyncFixer" Version="1.6.0">
       <PrivateAssets>all</PrivateAssets>

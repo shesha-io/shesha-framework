@@ -134,7 +134,9 @@ namespace Shesha
                     DefaultSubjectTemplate = OtpDefaults.DefaultSubjectTemplate,
                     DefaultBodyTemplate = OtpDefaults.DefaultBodyTemplate,
                     DefaultEmailSubjectTemplate = OtpDefaults.DefaultEmailSubjectTemplate,
-                    DefaultEmailBodyTemplate = OtpDefaults.DefaultEmailBodyTemplate
+                    DefaultEmailBodyTemplate = OtpDefaults.DefaultEmailBodyTemplate,
+                    DefaultRegistrationEmailSubjectTemplate = OtpDefaults.DefaultRegistrationEmailSubjectTemplate,
+                    DefaultRegistrationEmailBodyTemplate = OtpDefaults.DefaultRegistrationEmailBodyTemplate
                 });
             });
 

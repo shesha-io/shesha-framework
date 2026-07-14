@@ -59,6 +59,7 @@ namespace Shesha.Configuration.Runtime
                     Label = x.Label,
 
                     VersionStatus = x.VersionStatus,
+                    GenerateAppService = x.GenerateAppService,
                 }).ToListAsync();
             return implemented ?? false
                 ? result.Where(x => !x.NotImplemented).ToList()

@@ -1,11 +1,12 @@
 ﻿using Abp.Dependency;
 using Abp.Runtime.Caching.Configuration;
-using Abp.Runtime.Caching.Redis;
 using Castle.MicroKernel.Registration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Shesha.Configuration;
 using Shesha.Locks;
+using Shesha.Redis.Caching;
+using Shesha.Redis.Locking;
 using Shesha.Reflection;
 using System.Configuration;
 
@@ -54,13 +55,13 @@ namespace Shesha.Redis
         /// </summary>
         /// <param name="cachingConfiguration">The caching configuration.</param>
         /// <param name="optionsAction">An action to get/set options</param>
-        public static void UseSheshaRedis(this ICachingConfiguration cachingConfiguration, Action<AbpRedisCacheOptions> optionsAction)
+        public static void UseSheshaRedis(this ICachingConfiguration cachingConfiguration, Action<ShaRedisCacheOptions> optionsAction)
         {
             var iocManager = cachingConfiguration.AbpConfiguration.IocManager;
 
             cachingConfiguration.UseRedis(options => {
                 var sheshaOptions = GetRedisOptions(iocManager);
-                options.ConnectionString = sheshaOptions.ConnectionString;
+                options.ConnectionString = sheshaOptions.ConnectionString ?? "";
                 options.DatabaseId = sheshaOptions.DatabaseId ?? 0;
 
                 optionsAction.Invoke(options);

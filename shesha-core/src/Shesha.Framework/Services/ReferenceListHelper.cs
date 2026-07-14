@@ -267,7 +267,9 @@ namespace Shesha.Services
             var modes = Enum.GetValues(typeof(ConfigurationItemViewMode)).Cast<ConfigurationItemViewMode>().ToList();
             var refListId = refList.GetReferenceListIdentifier();
             var keys = modes.Select(mode => GetListIdCacheKey(refListId, mode)).ToArray();
-            _listIdsCache.Remove(keys);
+            // note: remove items in a separate operations as a temporary workaround to prevent "Multi-key operations must involve a single slot" exception on Redis
+            foreach (var key in keys)
+                _listIdsCache.Remove(key);
 
             // clear client-side cache
             AsyncHelper.RunSync(async () =>

@@ -13,6 +13,8 @@ using Shesha.Migrations;
 using Shesha.NHibernate.Maps;
 using Shesha.NHibernate.Session;
 using Shesha.Reflection;
+using Shesha.Authorization;
+using Shesha.Domain.Enums;
 using Shesha.Services.Dtos;
 using System;
 using System.Collections;
@@ -25,6 +27,7 @@ namespace Shesha.Services
     /// <summary>
     /// NHibernate application service
     /// </summary>
+    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, "app:Configurator")]
     public class NHibernateAppService: IApplicationService
     {
         private readonly IUnitOfWorkManager _unitOfWorkManager;

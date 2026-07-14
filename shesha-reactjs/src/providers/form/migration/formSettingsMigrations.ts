@@ -19,6 +19,7 @@ const formSettingsMigrations = (migrator: Migrator<IFormSettings, IFormSettings>
     .add(4, (prev) => migrateDefaultApiEndpoints(prev))
     .add(5, (prev) => migrateFieldsToFetchAndOnDataLoad(prev))
     .add(6, (prev) => migrateGqlCustomEndpoint(prev))
+    .add(7, (prev) => ({ ...prev, layout: prev.layout ?? 'horizontal' }))
   ;
 
 export const migrateFormSettings = (form: IFormDto) => {

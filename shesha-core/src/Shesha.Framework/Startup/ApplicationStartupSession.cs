@@ -4,6 +4,7 @@ using Abp.Domain.Uow;
 using Abp.Reflection;
 using Castle.Core.Logging;
 using Shesha.Domain;
+using SheshaModule = Shesha.Domain.ConfigurationItems.Module;
 using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.Utilities;
@@ -21,6 +22,7 @@ namespace Shesha.Startup
     {
         private readonly IRepository<ApplicationStartup, Guid> _startupRepository;
         private readonly IRepository<ApplicationStartupAssembly, Guid> _assemblyRepository;
+        private readonly IRepository<SheshaModule, Guid> _moduleRepository;
         private readonly IAssemblyFinder _assemblyFinder;
         private readonly IUnitOfWorkManager _uowManager;
 
@@ -40,12 +42,14 @@ namespace Shesha.Startup
         public ApplicationStartupSession(
             IRepository<ApplicationStartup, Guid> startupRepository,
             IRepository<ApplicationStartupAssembly, Guid> assemblyRepository,
+            IRepository<SheshaModule, Guid> moduleRepository,
             IAssemblyFinder assemblyFinder,
             IUnitOfWorkManager uowManager
         )
         {
             _startupRepository = startupRepository;
             _assemblyRepository = assemblyRepository;
+            _moduleRepository = moduleRepository;
             _assemblyFinder = assemblyFinder;
             _uowManager = uowManager;
 
@@ -87,6 +91,7 @@ namespace Shesha.Startup
                     FileMD5 = assemblyDto.FileMD5,
                     FileVersion = assemblyDto.FileVersion,
                     ProductVersion = assemblyDto.ProductVersion,
+                    BuildId = assemblyDto.BuildId,
                 };
                 await _assemblyRepository.InsertAsync(startupAssembly);
                 assemblies.Add(startupAssembly);
@@ -104,6 +109,8 @@ namespace Shesha.Startup
         private AssemblyDto GetAssemblyDto(Assembly assembly)
         {
             var fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
+            var buildId = assembly.GetCustomAttributes<System.Reflection.AssemblyMetadataAttribute>()
+                              .FirstOrDefault(a => a.Key == "BuildId")?.Value;
 
             return new AssemblyDto
             {
@@ -112,6 +119,7 @@ namespace Shesha.Startup
                 FileMD5 = FileHelper.GetMD5(assembly.Location),
                 FileVersion = fileVersionInfo.FileVersion,
                 ProductVersion = fileVersionInfo.ProductVersion,
+                BuildId = buildId,
             };
         }
 
@@ -255,6 +263,39 @@ namespace Shesha.Startup
             var fileName = Path.GetFileName(assembly.Location);
 
             return _unchangedAssemblies.Any(a => a.FileName == fileName);
+        }
+
+        public async Task MarkAsReleaseAsync(string mainModuleVersion)
+        {
+            if (CurrentStartup == null)
+                return;
+
+            using (var uow = _uowManager.Begin())
+            {
+                await _startupRepository.UpdateAsync(CurrentStartup.Id, startup =>
+                {
+                    startup.HasModulesChanged = true;
+                    startup.MainModuleVersion = mainModuleVersion;
+                    return Task.CompletedTask;
+                });
+                await uow.CompleteAsync();
+            }
+        }
+
+        public async Task LinkAssemblyToModuleAsync(string assemblyFileName, Guid moduleId)
+        {
+            if (CurrentStartup == null)
+                return;
+
+            var assembly = await _assemblyRepository.GetAll()
+                .FirstOrDefaultAsync(a => a.ApplicationStartup.Id == CurrentStartup.Id && a.FileName == assemblyFileName);
+
+            if (assembly != null)
+            {
+                var module = await _moduleRepository.GetAsync(moduleId);
+                assembly.Module = module;
+                await _assemblyRepository.UpdateAsync(assembly);
+            }
         }
     }
 }

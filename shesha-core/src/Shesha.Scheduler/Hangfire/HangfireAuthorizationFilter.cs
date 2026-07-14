@@ -5,6 +5,7 @@ using Hangfire.Dashboard;
 using Shesha.Authentication.JwtBearer;
 using Shesha.Authorization;
 using Shesha.Authorization.Users;
+using Shesha.Services;
 
 namespace Shesha.Scheduler.Hangfire
 {
@@ -17,17 +18,17 @@ namespace Shesha.Scheduler.Hangfire
             if (string.IsNullOrEmpty(username) || string.IsNullOrWhiteSpace(username))
                 return false;
 
-            var userManager = IocManager.Instance.Resolve<UserManager>();
+            var userManager = StaticContext.IocManager.Resolve<UserManager>();
             var user = userManager.FindByNameOrEmail(username);
 
             if (user == null) 
                 return false;
 
-            var session = IocManager.Instance.Resolve<IAbpSession>();
+            var session = StaticContext.IocManager.Resolve<IAbpSession>();
             var isGranted = false;
             using (session.Use(user.TenantId, user.Id))
             {
-                var permissionChecker = IocManager.Instance.Resolve<IPermissionChecker>();
+                var permissionChecker = StaticContext.IocManager.Resolve<IPermissionChecker>();
                 if (permissionChecker == null)
                     return false;
 

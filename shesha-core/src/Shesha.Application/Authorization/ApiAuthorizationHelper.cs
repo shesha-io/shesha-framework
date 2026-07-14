@@ -48,15 +48,14 @@ namespace Shesha.Authorization
             var hasCodeAllowAnonymous = type.HasAttribute<AllowAnonymousAttribute>() || methodInfo.HasAttribute<AllowAnonymousAttribute>()
                 || type.HasAttribute<AbpAllowAnonymousAttribute>() || methodInfo.HasAttribute<AbpAllowAnonymousAttribute>();
 
-            var shaServiceType = typeof(ApplicationService);
             var controllerType = typeof(ControllerBase);
-            if (type == null || !shaServiceType.IsAssignableFrom(type) && !controllerType.IsAssignableFrom(type))
+            if (type == null || !controllerType.IsAssignableFrom(type) && !type.HasInterface(typeof(IApplicationService)))
                 return;
 
             var typeName = type.FullName;
             var methodName = methodInfo.Name.RemovePostfix("Async");
 
-            var isCrud = type.FindBaseGenericType(typeof(AbpCrudAppService<,,,,,>)) != null;
+            var isCrud = type.IsSheshaDynamicCrudAppService();
             if (isCrud && PermissionedObjectManager.CrudMethods.ContainsKey(methodName))
                 return;
 

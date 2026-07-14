@@ -8,7 +8,6 @@ using Abp.ObjectMapping;
 using Abp.Reflection;
 using Abp.Runtime.Caching;
 using Shesha.Domain;
-using Shesha.Domain.ConfigurationItems;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
 using System;
@@ -21,7 +20,7 @@ namespace Shesha.DynamicEntities.Cache
     public class EntityConfigCache : IEntityConfigCache, ITransientDependency,
         IEventHandler<EntityChangedEventData<EntityProperty>>,
         IEventHandler<EntityChangedEventData<EntityConfig>>,
-        IEventHandler<EntityChangingEventData<ConfigurationItem>>
+        IEventHandler<EntityChangingEventData<EntityConfig>>
     {
         private readonly IRepository<EntityProperty, Guid> _propertyRepository;
         private readonly IRepository<EntityConfig, Guid> _configReprository;
@@ -140,7 +139,7 @@ namespace Shesha.DynamicEntities.Cache
             _propertyCache.Remove(GetCacheKey(eventData.Entity.EntityConfig));
         }
 
-        public void HandleEvent(EntityChangingEventData<ConfigurationItem> eventData)
+        public void HandleEvent(EntityChangingEventData<EntityConfig> eventData)
         {
             var conf = _configReprository.GetAll().FirstOrDefault(x => x.Id == eventData.Entity.Id);
             if (conf != null)

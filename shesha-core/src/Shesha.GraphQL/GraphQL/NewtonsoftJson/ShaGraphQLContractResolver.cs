@@ -54,12 +54,6 @@ namespace Shesha.GraphQL.NewtonsoftJson
         protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
         {
             var property = base.CreateProperty(member, memberSerialization);
-            /*
-            if (property.DeclaringType == typeof(Instrumentation.ApolloTrace) || property.DeclaringType?.DeclaringType == typeof(Instrumentation.ApolloTrace))
-            {
-                property.PropertyName = _camelCase.GetPropertyName(member.Name, false);
-            }
-            */
             return property;
         }
 
