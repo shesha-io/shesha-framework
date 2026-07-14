@@ -32,6 +32,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   },
   initModel: (model) => ({
     ...model,
+    persistCurrentStep: model.persistCurrentStep ?? true,
     steps: isDefined(model.steps)
       ? model.steps.map((step) => ({
         ...step,
@@ -117,7 +118,9 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
             },
           }))
           : [],
-      })),
+      }))
+      // Step persistence is enabled by default; existing wizards without the flag opt in.
+      .add<IWizardComponentProps>(10, (prev) => ({ ...prev, persistCurrentStep: prev.persistCurrentStep ?? true })),
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 

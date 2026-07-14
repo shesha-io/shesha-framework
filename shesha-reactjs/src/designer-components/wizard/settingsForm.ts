@@ -120,6 +120,20 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   },
                 ],
               })
+              .addSettingsInputRow({
+                id: nanoid(),
+                inputs: [
+                  {
+                    id: nanoid(),
+                    propertyName: 'persistCurrentStep',
+                    label: 'Persist Current Step',
+                    parentId: 'root',
+                    type: 'switch',
+                    tooltip: 'Keep the user on the same step after a page refresh (restored per browser tab).',
+                    jsSetting: true,
+                  },
+                ],
+              })
               .addSettingsInputRow(
                 {
                   id: nanoid(),
