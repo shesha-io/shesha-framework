@@ -30,6 +30,7 @@ import { ISetFormDataPayload } from "../contexts";
 import { deepMergeValues, setValueByPropertyName } from "@/utils/object";
 import { makeObservableProxy } from "../observableProxy";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
+import { isEntityTypeIdEmpty } from "@/providers/metadataDispatcher/entities/utils";
 import { IEntityEndpoints } from "@/providers/sheshaApplication/publicApi/entities/entityTypeAccessor";
 import { DataContextTopLevels, useMetadataDispatcher } from "@/providers";
 import { isEmpty } from 'lodash';
@@ -489,7 +490,10 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
       this.events.onValuesUpdate = makeCaller<IDataArguments<Values>, void>(settings.onValuesUpdate);
     }
 
-    this.modelMetadata = isDefined(settings?.modelType)
+    // Guard against empty modelType: forms not bound to an entity carry `modelType: ''`, and
+    // `isDefined('')` is true, which would fetch metadata for an empty type and 400. isEntityTypeIdEmpty
+    // also covers identifier objects (missing/blank name) as well as null/undefined/whitespace strings.
+    this.modelMetadata = !isEntityTypeIdEmpty(settings?.modelType)
       ? await this.metadataDispatcher.getMetadata({ modelType: settings.modelType, dataType: DataTypes.entityReference }) ?? undefined
       : undefined;
   };

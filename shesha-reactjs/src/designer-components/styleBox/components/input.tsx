@@ -34,7 +34,10 @@ const BoxInput: FC<IProps> = ({ direction, onChange, readOnly, type, value, prop
   const defaultValue = getValueByPropertyName(defaultModel?.getDefaultModel() as Record<string, unknown>, defaultName) as string | undefined;
   const className = valueInfo?.state === 'usedDefault' ? styles.inheritedValue : valueInfo?.state === 'usedModel' ? styles.overriddenValue : '';
 
-  const localValue: string | undefined = defaultModel?.getValueInfo(defaultName)?.state === 'usedDefault' ? defaultValue : String(value?.[propertyName]);
+  // Don't coerce with String() directly: String(undefined) === 'undefined', which would render
+  // the literal text "undefined" in unset margin/padding inputs. Only stringify a present value.
+  const rawValue = defaultModel?.getValueInfo(defaultName)?.state === 'usedDefault' ? defaultValue : value?.[propertyName];
+  const localValue: string | undefined = rawValue == null ? undefined : String(rawValue);
 
   const internalOnChange = (val: string | undefined): void => {
     if ((!val || val.length < 4) && onChange)
