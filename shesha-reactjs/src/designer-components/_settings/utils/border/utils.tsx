@@ -26,21 +26,19 @@ const isZeroWidth = (width: string | number | undefined): boolean => {
   return strWidth === '0' || strWidth === '0px' || strWidth === '0em' || strWidth === '0rem' || strWidth === '0%';
 };
 
-export const getBorderStyle = (input: IBorderValue | undefined, jsStyle: React.CSSProperties = {}, theme?: IConfigurableTheme): React.CSSProperties => {
+export const getBorderStyle = (input: IBorderValue | undefined, _jsStyle: React.CSSProperties = {}, theme?: IConfigurableTheme): React.CSSProperties => {
   if (!input) return {};
 
   const style: React.CSSProperties & IAnyObject = {};
   const border = input.border || {};
   const { all = {}, top = {}, right = {}, bottom = {}, left = {} } = border;
 
-  const jsStyleDict = jsStyle as React.CSSProperties & IAnyObject;
-
   const handleBorderPart = (part: BorderStyle | undefined, prefix: string, theme?: IConfigurableTheme): void => {
     // Hide border if: no color, no width, width is "0px", or style is explicitly "none"
     const hideBorder = !part?.color || !part.width || isZeroWidth(part.width) || (input.borderType && input.borderType !== "custom" && input.border?.[input.borderType]?.style === 'none');
-    if (part?.width && !jsStyleDict[prefix] && !jsStyleDict[`${prefix}Width`]) style[`${prefix}Width`] = addPx(part.width || all.width);
-    if (part?.style && !jsStyleDict[prefix] && !jsStyleDict[`${prefix}Style`]) style[`${prefix}Style`] = hideBorder ? 'none' : part.style ?? all.style;
-    if (part?.color && !jsStyleDict[prefix] && !jsStyleDict[`${prefix}Color`]) style[`${prefix}Color`] = hideBorder ? 'transparent' : part.color || all.color;
+    if (part?.width) style[`${prefix}Width`] = addPx(part.width || all.width);
+    if (part?.style) style[`${prefix}Style`] = hideBorder ? 'none' : part.style ?? all.style;
+    if (part?.color) style[`${prefix}Color`] = hideBorder ? 'transparent' : part.color || all.color;
 
     if (theme && readThemeColor(theme)[`${input.border?.all?.color}`]) {
       style[`borderColor`] = readThemeColor(theme)[`${input.border?.all?.color}`];
@@ -70,17 +68,14 @@ export const getBorderStyle = (input: IBorderValue | undefined, jsStyle: React.C
     }
   };
 
-
-  if (!jsStyle.border) {
-    if (input.borderType === 'all') {
-      handleBorderPart(all, 'border', theme);
-    } else {
-      handleBorderPart(top, 'borderTop', theme);
-      handleBorderPart(right, 'borderRight', theme);
-      handleBorderPart(bottom, 'borderBottom', theme);
-      handleBorderPart(left, 'borderLeft', theme);
-    }
-  };
+  if (input.borderType === 'all') {
+    handleBorderPart(all, 'border', theme);
+  } else {
+    handleBorderPart(top, 'borderTop', theme);
+    handleBorderPart(right, 'borderRight', theme);
+    handleBorderPart(bottom, 'borderBottom', theme);
+    handleBorderPart(left, 'borderLeft', theme);
+  }
 
   if (input.radius) {
     const { all = 0, topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0 } = input.radius;
