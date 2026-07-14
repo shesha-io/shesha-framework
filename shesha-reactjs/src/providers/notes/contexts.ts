@@ -3,6 +3,7 @@ import { CreateNoteArgs, DeleteNoteArgs, NoteModel, NotesReference, UpdateNoteAr
 
 export type INotesEditorActions = {
   init: (notesReference: NotesReference) => void;
+  setDesignerMode: (isDesignerMode: boolean) => void;
   createNoteAsync: (args: CreateNoteArgs) => Promise<void>;
   updateNoteAsync: (args: UpdateNoteArgs) => Promise<void>;
   deleteNoteAsync: (args: DeleteNoteArgs) => Promise<void>;

@@ -12,6 +12,7 @@ import {
   useSheshaApplication,
 } from '@/providers';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
+import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { ModalFooterButtons } from '@/providers/dynamicModal/models';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { App, Button, Spin } from 'antd';
@@ -101,6 +102,17 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const { getMetadata } = useMetadataDispatcher();
   const executionContext = useAvailableConstantsData();
 
+  // Style used only for the empty-state buttons (no value / not configured). With no content and
+  // the default `width: auto`, the link button collapses to a thin sliver, so any configured
+  // background/border renders as a small blob (most visible in the designer and preview, where
+  // there is no bound value). When the width would collapse, fall back to full width so the empty
+  // field reads as a proper box like its siblings. An explicitly configured width is respected,
+  // and the with-value rendering is left untouched.
+  const emptyStateStyle = useMemo((): CSSProperties | undefined => {
+    const width = props.style?.width;
+    return width == null || width === 'auto' ? { ...props.style, width: '100%' } : props.style;
+  }, [props.style]);
+
   const [formIdentifier, setFormIdentifier] = useState<FormIdentifier | undefined>(() =>
     props.formSelectionMode === 'name' && isDefined(props.formIdentifier)
       ? props.formIdentifier
@@ -140,7 +152,10 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
   const { styles } = useStyles();
 
-  useEffect(() => {
+  // Deep-compare deps: `entityType` is an object that gets a fresh reference on every
+  // designer re-render (e.g. when unrelated Appearance/Quickview-width properties change),
+  // which would otherwise re-fire this effect and trigger a redundant GetEntityConfigForm call.
+  useDeepCompareEffect(() => {
     const fetchFormId = async (): Promise<void> => {
       if (
         props.formSelectionMode === 'dynamic' &&
@@ -160,7 +175,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       console.error('Failed to fetch form ID', error);
       throw error;
     });
-  }, [entityType, formType, props.formSelectionMode, props.entityReferenceType, getEntityFormIdAsync]);
+  }, [entityType, formType, props.formSelectionMode, props.entityReferenceType]);
 
   useEffect(() => {
     const fetchMetadata = async (): Promise<void> => {
@@ -372,7 +387,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
   if (props.formSelectionMode === 'name' && !props.formIdentifier)
     return (
-      <Button type="link" disabled className={styles.innerEntityReferenceButtonBoxStyle} style={props.style}>
+      <Button type="link" disabled className={styles.innerEntityReferenceButtonBoxStyle} style={emptyStateStyle}>
         <span className={styles.innerEntityReferenceSpanBoxStyle} title="Form identifier is not configured">Form identifier is not configured</span>
       </Button>
     );
@@ -380,7 +395,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   // Handle empty/null/undefined values - works for both string and object formats
   if (!props.value || !entityId)
     return (
-      <Button type="link" disabled className={styles.innerEntityReferenceButtonBoxStyle} style={props.style}>
+      <Button type="link" disabled className={styles.innerEntityReferenceButtonBoxStyle} style={emptyStateStyle}>
         <span className={styles.innerEntityReferenceSpanBoxStyle} title={typeof displayText === 'string' ? displayText : undefined}>{displayText as string}</span>
       </Button>
     );

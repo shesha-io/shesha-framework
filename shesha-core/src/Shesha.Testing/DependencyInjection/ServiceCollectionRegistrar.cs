@@ -1,9 +1,9 @@
-﻿using Abp.Dependency;
+using Abp.Dependency;
 using Castle.Windsor.MsDependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Shesha.Identity;
 
-namespace Shesha.Tests.DependencyInjection
+namespace Shesha.Testing.DependencyInjection
 {
     public static class ServiceCollectionRegistrar
     {

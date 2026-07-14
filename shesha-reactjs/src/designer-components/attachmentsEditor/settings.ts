@@ -221,19 +221,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             },
                           ],
                         })
-                        .addSettingsInput({
-                          id: nanoid(),
-                          inputType: "dropdown",
-                          propertyName: "extraFormSelectionMode",
-                          parentId: customActionsPnId,
-                          label: "Form Selection Mode",
-                          tooltip: "Choose how to select the form for custom content",
-                          dropdownOptions: [
-                            { label: "Name", value: "name" },
-                            { label: "Dynamic", value: "dynamic" },
-                          ],
-                          hidden: { _code: 'return !getSettingValue(data?.customContent);', _mode: 'code', _value: false },
-                        })
                         .addSettingsInputRow({
                           id: nanoid(),
                           parentId: customActionsPnId,
@@ -247,20 +234,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             },
                           ],
                           hidden: { _code: 'return !getSettingValue(data?.customContent) || getSettingValue(data?.extraFormSelectionMode) !== "dynamic";', _mode: 'code', _value: false },
-                        })
-                        .addSettingsInputRow({
-                          id: nanoid(),
-                          parentId: customActionsPnId,
-                          inputs: [
-                            {
-                              id: nanoid(),
-                              type: "formAutocomplete",
-                              propertyName: "extraFormId",
-                              label: "Form",
-                              jsSetting: true,
-                            },
-                          ],
-                          hidden: { _code: 'return !getSettingValue(data?.customContent) || getSettingValue(data?.extraFormSelectionMode) === "dynamic";', _mode: 'code', _value: false },
                         })
                         .toJson(),
                     ],
