@@ -1,4 +1,5 @@
 ﻿using Shesha.EntityReferences;
+using Shesha.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,7 +33,8 @@ namespace Shesha.NHibernate
         {
             var groups = propertyPaths
                 .Select(path => new { Path = path, Parts = path.Split('.') })
-                .GroupBy(g => g.Parts[0]);
+                .GroupBy(g => g.Parts[0])
+                .ToList();
 
             var bindings = new List<MemberBinding>();
 
@@ -53,6 +55,10 @@ namespace Shesha.NHibernate
                     bindings.Add(Expression.Bind(topPropInfo, valueExpr));
                     continue;
                 }
+
+                var isList = topPropInfo.PropertyType.IsListType();
+                if (isList)
+                    continue;
 
                 // Nested: collect sub-paths (e.g., "City", "Id" for "Address.City", "Address.Id")
                 var subPaths = group
@@ -82,7 +88,8 @@ namespace Shesha.NHibernate
             // Group sub-paths by the immediate next property
             var groups = subPaths
                 .Select(path => new { Path = path, Parts = path.Split('.') })
-                .GroupBy(g => g.Parts[0]);
+                .GroupBy(g => g.Parts[0])
+                .ToList();
 
             var bindings = new List<MemberBinding>();
 

@@ -3,7 +3,6 @@ using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -845,11 +844,7 @@ namespace Shesha.Utilities
 
         public static bool IsValidEmail([NotNullWhen(true)]this string? inputEmail)
         {
-            if (string.IsNullOrWhiteSpace(inputEmail))
-                return false;
-
-            var emailAttribute = new EmailAddressAttribute();
-            return emailAttribute.IsValid(inputEmail);
+            return IsEmail(inputEmail);
         }
 
         [DebuggerStepThrough]

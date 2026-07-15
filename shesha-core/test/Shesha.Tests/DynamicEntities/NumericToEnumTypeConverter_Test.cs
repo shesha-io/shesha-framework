@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Mapper;
-using Shesha.Tests.Fixtures;
+using Shesha.Testing.Fixtures;
 using System;
 using Xunit;
 

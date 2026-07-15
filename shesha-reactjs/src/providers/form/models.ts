@@ -306,6 +306,10 @@ export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles =
   /** Validation rules */
   validate?: IComponentValidationRules | undefined;
 
+  /** Names of other fields whose changes should re-trigger this field's validation
+   * (maps to antd Form.Item `dependencies`). Use for cross-field conditional `required` rules. */
+  validationDependencies?: string[] | undefined;
+
   /** If true, indicates that component is read-only and can't be edited anyway */
   readOnly?: boolean | undefined;
 

@@ -49,7 +49,7 @@ const FileUploadComponent: FileUploadComponentDefinition = {
     const enabled = !model.readOnly;
 
     return (
-      <ConfigurableFormItem<FileUploadValue> model={model}>
+      <ConfigurableFormItem<FileUploadValue> model={model} autoAlignLabel={false}>
         {(value, onChange) => {
           return (
             <FileUploadProvider
