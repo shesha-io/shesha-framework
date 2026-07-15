@@ -390,7 +390,11 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
   const handleStringFilter = (changeValue: ChangeEvent<HTMLInputElement>): void => {
     const value = (changeValue as ChangeEvent<HTMLInputElement>).target.value;
     if (value === '') {
-      removeColumnFilter?.(id);
+      if (removeColumnFilter) {
+        removeColumnFilter(id);
+      } else {
+        onChangeFilter?.(id, '');
+      }
       return;
     }
     onChangeFilter?.(id, value);
