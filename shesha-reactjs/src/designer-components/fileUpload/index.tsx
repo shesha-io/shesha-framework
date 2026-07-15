@@ -36,10 +36,22 @@ const FileUploadComponent: FileUploadComponentDefinition = {
   preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.file,
   Factory: ({ model }) => {
-    const finalStyle = (!model.enableStyleOnReadonly && model.readOnly) ? {
-      ...model.allStyles?.fontStyles,
-      ...model.allStyles?.dimensionsStyles,
-    } : model.allStyles?.fullStyle;
+    const isReadonlyWithoutStyle = !model.enableStyleOnReadonly && model.readOnly;
+    // In thumbnail mode the configured background/border/shadow describe the thumbnail tile and
+    // must render identically in read-only and edit mode, so keep the appearance styles even when
+    // styling-on-readonly is disabled (only the interactive upload controls are hidden).
+    const isThumbnail = model.listType === 'thumbnail';
+    const finalStyle = isReadonlyWithoutStyle
+      ? {
+        ...model.allStyles?.fontStyles,
+        ...model.allStyles?.dimensionsStyles,
+        ...(isThumbnail ? {
+          ...model.allStyles?.borderStyles,
+          ...model.allStyles?.backgroundStyles,
+          ...model.allStyles?.shadowStyles,
+        } : {}),
+      }
+      : model.allStyles?.fullStyle;
     // TODO: refactor and implement a generic way for values evaluation
     const { formSettings, formMode } = useForm();
     const { data } = useFormData();

@@ -211,7 +211,18 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       ...stylingBoxAsCSS,
     },
     style: !enableStyleOnReadonly && disabled === true
-      ? { ...(model.allStyles?.dimensionsStyles ?? {}), ...(model.allStyles?.fontStyles ?? {}), border: `${defaultBorder.width} ${defaultBorder.style} ${defaultBorder.color}` }
+      // In thumbnail mode the configured background/border/shadow describe the thumbnail tile and
+      // must render identically in read-only and edit mode, so keep the appearance styles even when
+      // styling-on-readonly is disabled. In text mode fall back to the plain default border.
+      ? listType === 'thumbnail'
+        ? {
+          ...(model.allStyles?.dimensionsStyles ?? {}),
+          ...(model.allStyles?.fontStyles ?? {}),
+          ...(model.allStyles?.borderStyles ?? {}),
+          ...(model.allStyles?.backgroundStyles ?? {}),
+          ...(model.allStyles?.shadowStyles ?? {}),
+        }
+        : { ...(model.allStyles?.dimensionsStyles ?? {}), ...(model.allStyles?.fontStyles ?? {}), border: `${defaultBorder.width} ${defaultBorder.style} ${defaultBorder.color}` }
       : { ...(model.allStyles?.fullStyle ?? {}) },
     model: {
       gap: addPx(gap, allData) ?? '0px',

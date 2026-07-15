@@ -233,7 +233,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               jsSetting: true,
                             },
                           ],
-                          hidden: { _code: 'return !getSettingValue(data?.customContent) || getSettingValue(data?.extraFormSelectionMode) !== "dynamic";', _mode: 'code', _value: false },
+                          hidden: { _code: 'return !getSettingValue(data?.customContent);', _mode: 'code', _value: false },
                         })
                         .toJson(),
                     ],
