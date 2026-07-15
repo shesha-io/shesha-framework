@@ -58,7 +58,7 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     <Tooltip title={props.description}>
       <div style={(defaultValue || value) ? { textAlign: fullStyles?.textAlign ?? textAlign } : {}}>
         <IconPicker
-          value={value ?? undefined}
+          value={value ?? defaultValue ?? undefined}
           onIconChange={onIconChange}
           selectBtnSize={selectBtnSize}
           iconSize={iconSize ?? fontSize}
