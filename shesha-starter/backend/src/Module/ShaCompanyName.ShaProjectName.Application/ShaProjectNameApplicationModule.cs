@@ -9,7 +9,6 @@ using Intent.RoslynWeaver.Attributes;
 using ShaCompanyName.ShaProjectName.Domain;
 using Shesha;
 using Shesha.Modules;
-using Shesha.Startup;
 using Shesha.Web.FormsDesigner;
 
 [assembly: IntentTemplate("Boxfusion.Modules.Application.Services.AppService", Version = "1.0")]

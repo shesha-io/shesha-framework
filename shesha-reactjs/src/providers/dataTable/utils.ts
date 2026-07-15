@@ -14,6 +14,7 @@ import {
   ColumnSorting,
   DataTableColumnDto,
   IColumnSorting,
+  IndexColumnFilterOption,
   isDataColumn,
   isFormColumn,
   ISortingItem,
@@ -101,6 +102,41 @@ const convertFilterValue = (value: unknown, column: ITableDataColumn): unknown =
   return value;
 };
 
+export const getDefaultFilterOptionForDataType = (dataType: ProperyDataType | undefined): IndexColumnFilterOption | undefined => {
+  if (dataType === 'reference-list-item') return 'contains';
+  if (dataType === 'array') return 'contains';
+  if (dataType === 'entity') return 'equals';
+  if (dataType === 'boolean') return 'equals';
+  return undefined;
+};
+
+// Expand selected bitmask values to all OR-combinations so that rows with multiple stored values
+// are matched by the backend's equality-based IN check.
+// e.g. [1, 4] → [1, 4, 5] because 5 = 1|4 and a row with both bits set stores 5.
+const isNumberArray = (value: unknown[]): value is number[] => value.every((item) => typeof item === 'number');
+
+const expandBitmaskSubsets = (values: number[]): number[] => {
+  const n = values.length;
+  // Enumerating all OR-combinations is O(2ⁿ); cap to avoid freezing the UI.
+  const MAX_EXPANDABLE = 12;
+  if (n > MAX_EXPANDABLE) {
+    console.warn(`expandBitmaskSubsets: skipping OR-combination expansion for ${n} selected values (max ${MAX_EXPANDABLE}); rows whose stored bitmask combines multiple selected values may not be matched.`);
+    return Array.from(new Set(values));
+  }
+  const result = new Set<number>();
+  const totalSubsets = Math.pow(2, n);
+  for (let mask = 1; mask < totalSubsets; mask++) {
+    let combined = 0;
+    for (let i = 0; i < n; i++) {
+      // Check bit i without bitwise operators to satisfy no-bitwise lint rule.
+      // += is safe here because multivalue ref-list item values are always powers of 2 (disjoint bits).
+      if (Math.floor(mask / Math.pow(2, i)) % 2 !== 0) combined += values[i] ?? 0;
+    }
+    result.add(combined);
+  }
+  return Array.from(result);
+};
+
 export const advancedFilter2JsonLogic = (advancedFilter: ITableFilter[], columns: ITableColumn[]): JsonLogicFilter[] | null => {
   if (advancedFilter.length === 0) return null;
 
@@ -117,9 +153,7 @@ export const advancedFilter2JsonLogic = (advancedFilter: ITableFilter[], columns
 
       let filterOption = f.filterOption;
       if (isNullOrWhiteSpace(filterOption)) {
-        if (column.dataType === 'reference-list-item') filterOption = 'contains';
-        if (column.dataType === 'entity') filterOption = 'equals';
-        if (column.dataType === 'boolean') filterOption = 'equals';
+        filterOption = getDefaultFilterOptionForDataType(column.dataType);
       }
 
       switch (filterOption) {
@@ -128,9 +162,15 @@ export const advancedFilter2JsonLogic = (advancedFilter: ITableFilter[], columns
             '==': [property, filterValues],
           };
         case 'contains':
-          return column.dataType === 'string'
-            ? { in: [filterValues, property] /* for strings arguments are reversed */ }
-            : { in: [property, filterValues] };
+          if (column.dataType === 'string') return { in: [filterValues, property] /* for strings arguments are reversed */ };
+          if (column.dataType === 'array' && column.dataFormat === 'multivalue-reference-list' && Array.isArray(filterValues) && isNumberArray(filterValues))
+            // Bitmask storage: expand selected values to all OR-combinations so the backend equality
+            // check (col == v1 OR col == v2 ...) also matches rows that store multiple selected values.
+            // e.g. [1, 4] → [1, 4, 5] so stored value 5 (= 1|4) is caught.
+            // Limitation: rows with a selected value plus an unselected one (e.g. stored=3 = 1|2 where 2 is not in the filter)
+            // still won't match — that case requires a backend bitmask fix.
+            return { in: [property, expandBitmaskSubsets(filterValues)] };
+          return { in: [property, filterValues] };
         case 'greaterThan':
           return {
             '>': [property, filterValues],

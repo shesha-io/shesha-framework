@@ -104,7 +104,14 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   labelAlign: 'right',
                   parentId: dataTabId,
                   hidden: false,
-                  validate: { required: true },
+                  validate: {
+                    required: {
+                      _code: 'return !getSettingValue(data?.getEntityUrl);',
+                      _mode: 'code',
+                      _value: true,
+                    },
+                  },
+                  validationDependencies: ['getEntityUrl'],
                   settingsValidationErrors: [],
                   jsSetting: true,
                 })
@@ -125,6 +132,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       _value: true,
                     },
                   },
+                  validationDependencies: ['entityType'],
                   dataSourceUrl: '/api/services/app/Api/Endpoints',
                   settingsValidationErrors: [],
                   useRawValues: true,
@@ -370,7 +378,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 { value: 'PUT', label: 'PUT' },
                               ],
                               hidden: {
-                                _code: 'return getSettingValue(data?.footerButtons) === "default";',
+                                _code: 'return getSettingValue(data?.footerButtons) !== "default";',
                                 _mode: 'code',
                                 _value: false,
                               },

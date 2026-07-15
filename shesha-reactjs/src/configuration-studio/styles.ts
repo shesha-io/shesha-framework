@@ -21,6 +21,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
   const csQuickInfoIcons = 'sha-cs-quick-info-icons';
   const csDocTabs = 'sha-cs-doc-tabs';
   const csDocEditor = 'sha-cs-doc-editor';
+  const csWorkAreaEmpty = 'sha-cs-work-area-empty';
 
   const headerHeight = 60;
   const tabCardHeight = 40;
@@ -124,8 +125,32 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
                         height:100%;
                     }
                     .${prefixCls}-tree-treenode {
+                      width: 100%;
+                      max-width: 100%;
                       .${prefixCls}-tree-draggable-icon {
                         display: none;
+                      }
+                      /* Keep long labels on a single line, clipped at the panel
+                         edge instead of wrapping (File Explorer behaviour).
+                         The content wrapper becomes a flex row so the type icon
+                         stays inline and only the title truncates; min-width: 0
+                         lets the title shrink below its content width so the
+                         ellipsis actually triggers. */
+                      .${prefixCls}-tree-node-content-wrapper {
+                        display: flex;
+                        align-items: center;
+                        min-width: 0;
+                        overflow: hidden;
+                        .${prefixCls}-tree-iconEle {
+                          flex: none;
+                        }
+                        .${prefixCls}-tree-title {
+                          flex: 1 1 auto;
+                          min-width: 0;
+                          overflow: hidden;
+                          white-space: nowrap;
+                          text-overflow: ellipsis;
+                        }
                       }
                     }
                 }
@@ -152,6 +177,13 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
             overflow: auto;
             height: calc(100vh - ${headerHeight}px - ${tabCardHeight}px);
         }
+        .${csWorkAreaEmpty}{
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
   `);
 
   return {
@@ -174,5 +206,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
     csQuickInfoIcons,
     csDocTabs,
     csDocEditor,
+    csWorkAreaEmpty,
   };
 });

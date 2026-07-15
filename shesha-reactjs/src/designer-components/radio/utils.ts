@@ -4,11 +4,15 @@ import { DataSourceType, ILabelValue } from '@/designer-components/dropdown/mode
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { getFirstNonEmptyStringPropertyOrUndefined } from '@/utils/object';
 
+type UrlDataItem = ILabelValue<unknown> & { itemValue?: unknown; item?: string };
+
+const isNonEmpty = (v: unknown): boolean => v != null && String(v).trim() !== '';
+
 export const getDataSourceList = (
   dataSource: DataSourceType,
   values: ILabelValue[],
   refList: ReferenceListItemDto[] | undefined,
-  urlList: ILabelValue[] | undefined = [],
+  urlList: UrlDataItem[] | undefined = [],
 ): ILabelValue[] => {
   switch (dataSource) {
     case 'values':
@@ -19,7 +23,8 @@ export const getDataSourceList = (
       const items: ILabelValue[] = [];
       urlList.forEach((item) => {
         const label = getFirstNonEmptyStringPropertyOrUndefined(item, ['label', 'item']);
-        const value = getFirstNonEmptyStringPropertyOrUndefined(item, ['value', 'itemValue']);
+        const rawValue = isNonEmpty(item.value) ? item.value : item.itemValue;
+        const value = rawValue != null ? String(rawValue) : undefined;
         if (!isNullOrWhiteSpace(label) && !isNullOrWhiteSpace(value)) {
           const id = getFirstNonEmptyStringPropertyOrUndefined(item, ['id']) ?? nanoid();
           items.push({ label, value, id });

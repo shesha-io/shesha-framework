@@ -6,7 +6,7 @@ using Shesha.DynamicEntities.TypeFinder;
 using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Services;
-using Shesha.Tests.Fixtures;
+using Shesha.Testing.Fixtures;
 using Shouldly;
 using System;
 using System.Collections.Generic;

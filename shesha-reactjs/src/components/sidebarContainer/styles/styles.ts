@@ -179,6 +179,23 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
           overflow: auto;
           transform-origin: top left;
         }
+
+        /* When the designer canvas is empty (no components dropped yet), the
+           zoomed canvas collapses to a short, top-aligned box, leaving the
+           empty-state hint above the vertical midpoint. Center the zoomed
+           canvas within the (non-zoomed) wrapper so the hint sits mid-screen.
+           Scoped to the designer canvas + empty state so other sidebar
+           consumers and non-empty forms keep their normal top-aligned flow. */
+        .${sidebarContainerMainArea}.${canvasWrapper}:has(.${designerCanvas}):not(:has(.sha-component)) {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+
+          .${designerCanvas} {
+            height: auto;
+          }
+        }
       }
 
       .${canvasPopupContainer} {

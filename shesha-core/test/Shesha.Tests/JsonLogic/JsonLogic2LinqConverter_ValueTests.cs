@@ -5,7 +5,7 @@ using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.JsonLogic;
 using Shesha.Services;
-using Shesha.Tests.Fixtures;
+using Shesha.Testing.Fixtures;
 using Shesha.Tests.JsonLogic.Models;
 using Shesha.Utilities;
 using System;

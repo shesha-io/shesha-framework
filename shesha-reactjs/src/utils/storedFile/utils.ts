@@ -5,9 +5,16 @@ import { StoredFileDto } from "./api-models";
 import { ownerTypeToString } from "../entity";
 import { UploadFile } from "antd";
 
+const GUID_REGEX = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+
 export const validateFileReference = (fileReference: FileReference): void => {
   if (isNullOrWhiteSpace(fileReference.ownerId))
     throw new Error('ownerId is required');
+  // ownerId must be a well-formed GUID before it is sent to the back-end. A partially typed or
+  // malformed value would otherwise reach api/StoredFile/EntityProperty and fail server-side with
+  // "Unrecognized Guid format".
+  if (!GUID_REGEX.test(fileReference.ownerId))
+    throw new Error('ownerId is not a valid GUID');
   if (isEntityTypeIdEmpty(fileReference.ownerType))
     throw new Error('ownerType is required');
   if (isNullOrWhiteSpace(fileReference.propertyName))

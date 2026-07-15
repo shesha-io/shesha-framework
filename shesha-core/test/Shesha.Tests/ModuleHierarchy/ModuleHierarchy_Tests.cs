@@ -1,6 +1,6 @@
 ﻿using Abp.Domain.Uow;
 using Shesha.ConfigurationItems;
-using Shesha.Tests.Fixtures;
+using Shesha.Testing.Fixtures;
 using Shesha.Tests.ModuleA;
 using Shesha.Tests.ModuleB;
 using Shesha.Web.FormsDesigner.Services;

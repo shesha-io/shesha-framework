@@ -15,6 +15,12 @@ import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/uti
 import { useMetadataDispatcher } from '@/providers/metadataDispatcher/provider';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { useForm } from '@/providers';
+
+const DESIGNER_SAMPLE_DATA: IChartData = {
+  labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+  datasets: [{ label: 'Sample', data: [12, 19, 7, 15, 9, 14], backgroundColor: '#4e79a7', borderColor: '#4e79a7' }],
+};
 
 const chartInnerStyle = {
   width: '100%',
@@ -49,6 +55,9 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
     requestTimeout = 5000, // Default 5 seconds
     ...state
   } = useChartDataStateContext();
+
+  const { formMode } = useForm();
+  const isDesignMode = formMode === 'designer';
 
   const { refetch } = useGet<IAbpWrappedGetEntityListResponse>({ path: '', lazy: true });
   const { getMetadata } = useMetadataDispatcher();
@@ -449,6 +458,17 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
     );
   }, [chartType, cx, styles.loadingContainer, styles.loadingText, setIsLoaded, setMetadataProcessed]);
 
+  // In designer mode render sample data immediately — no fetch, no loaders
+  if (isDesignMode) {
+    return (
+      <div style={chartContainerStyle}>
+        <div style={chartInnerStyle}>
+          {renderChart(chartType ?? 'line', DESIGNER_SAMPLE_DATA)}
+        </div>
+      </div>
+    );
+  }
+
   // Early returns with memoized components
   if (error) {
     return errorAlert;
@@ -461,6 +481,17 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
   // Show loader only if we don't have any data yet
   if (!state.isLoaded || !metadataProcessed) {
     return loaderComponent;
+  }
+
+  if (data.labels.length === 0) {
+    return (
+      <Alert
+        showIcon
+        title="No data"
+        description="The chart returned no results for the current configuration and filters."
+        type="info"
+      />
+    );
   }
 
   return (
