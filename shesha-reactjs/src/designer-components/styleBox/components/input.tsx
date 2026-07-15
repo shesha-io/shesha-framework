@@ -8,7 +8,7 @@ import { useDefaultModelPropertyUpdateSubscription, useDefaultModelActionsOrUnde
 import { useStyles } from '@/designer-components/_settings/styles/styles';
 import { getValueByPropertyName } from '@/utils/object';
 import { useFormItem } from '@/providers';
-import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
+import { isNotNullOrWhiteSpace } from '@/utils/nullables';
 
 interface IProps {
   direction: keyof IInputDirection;

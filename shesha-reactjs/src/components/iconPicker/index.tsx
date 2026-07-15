@@ -141,8 +141,6 @@ const IconPicker: FC<IIconPickerProps> = ({
               iconName={value}
               {...props}
               style={{ fontSize: iconSize || 24, color: twoToneColor, ...props.style }}
-              name={localSelectedIcon}
-              style={{ fontSize: iconSize, color: twoToneColor }}
               name={value}
             />
           ) : (

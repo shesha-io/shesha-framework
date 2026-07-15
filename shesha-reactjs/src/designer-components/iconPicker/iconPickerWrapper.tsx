@@ -4,7 +4,6 @@ import { IApplicationContext } from '@/providers/form/utils';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { IDimensionsValue } from '../_settings/utils/dimensions/interfaces';
 import { Tooltip } from 'antd';
-import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 interface IconPickerWrapperProps {
   disabled?: boolean | undefined; // todo: move to the model level
