@@ -55,7 +55,6 @@ export const SettingsControl = <Value = unknown>(props: ISettingsControlProps<Va
   const resultType = useResultTypeEvaluator({ resultTypeExpression: props.resultTypeExpression });
 
   const setting = getPropertySettingsFromValue<Value>(props.value);
-  // const { _mode: mode, _code: code } = setting;
 
   const { styles } = useStyles();
 
