@@ -39,6 +39,7 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     fullStyles,
     iconSize,
     value,
+    defaultValue,
   } = props;
 
   const onIconChange = useCallback<Required<IIconPickerProps>["onIconChange"]>((_icon, iconName): void => {
