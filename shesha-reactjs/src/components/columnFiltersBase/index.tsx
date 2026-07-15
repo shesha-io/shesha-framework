@@ -42,6 +42,7 @@ export const ColumnFiltersBase: FC<IColumnFiltersBaseProps> = ({
           accessor,
           header,
           dataType,
+          dataFormat,
           isFilterable,
           referenceListName,
           referenceListModule,
@@ -78,6 +79,7 @@ export const ColumnFiltersBase: FC<IColumnFiltersBaseProps> = ({
                 filterName={header}
                 accessor={accessor}
                 dataType={dataType}
+                dataFormat={dataFormat}
                 filter={existingFilter?.filter}
                 filterOption={existingFilter?.filterOption}
                 applyFilters={applyFilters}
