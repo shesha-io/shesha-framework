@@ -1,11 +1,13 @@
 ﻿using Abp.Application.Services;
 using Abp.Reflection;
+using FirebirdSql.Data.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using Shesha.Application.Services;
 using Shesha.Domain;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Dtos;
@@ -58,11 +60,10 @@ namespace Shesha.Swagger
             }
             else
             {
-                var types = ServiceTypes.Value;
-                var serviceNames = types.Select(t => MvcHelper.GetControllerName(t)).OrderBy(s => s).ToList();
-                foreach (var serviceName in serviceNames)
+                var types = ServiceTypes.Value.OrderBy(MvcHelper.GetControllerName).ToList();
+                foreach (var service in types)
                 {
-                    options.SwaggerEndpoint($"swagger/{GetDocumentNameForService(serviceName)}/swagger.json", serviceName);
+                    options.SwaggerEndpoint($"swagger/{GetDocumentNameForService(service)}/swagger.json", MvcHelper.GetControllerName(service));
                 }
             }
         }
@@ -84,7 +85,7 @@ namespace Shesha.Swagger
             foreach (var controller in controllers)
             {
                 var serviceName = MvcHelper.GetControllerName(controller);
-                docs.Add(GetDocumentNameForService(serviceName), new OpenApiInfo() { Title = $"{serviceName} (ControllerBase)", Version = "v1" });
+                docs.Add(GetDocumentNameForService(controller), new OpenApiInfo() { Title = $"{serviceName} (ControllerBase)", Version = "v1" });
             }
 
             // 2. add application services
@@ -92,7 +93,7 @@ namespace Shesha.Swagger
             foreach (var service in appServices)
             {
                 var serviceName = MvcHelper.GetControllerName(service);
-                docs.Add(GetDocumentNameForService(serviceName), new OpenApiInfo() { Title = $"API {serviceName} (IApplicationService)", Version = "v1" });
+                docs.Add(GetDocumentNameForService(service), new OpenApiInfo() { Title = $"API {serviceName} (IApplicationService)", Version = "v1" });
             }
 
             var entityTypes = EntityTypesFunc();
@@ -112,6 +113,22 @@ namespace Shesha.Swagger
             }
 
             options.DocInclusionPredicate(ApiExplorerGroupPerControllerConvention.GroupInclusionPredicate);
+        }
+
+        public static string GetFullNameService(Type service)
+        {
+            string? prefix = null;
+            if (service.ImplementsGenericInterface(typeof(IEntityAppService<,>)))
+                prefix = service.GetGenericInterfaces(typeof(IEntityAppService<,>)).FirstOrDefault()?.GetGenericArguments().FirstOrDefault()?.Assembly.GetName().Name;
+            // Add prefix for all EntityAppServices to process later in GroupInclusionPredicate
+            prefix = prefix == null ? "" : prefix + ":";
+            var serviceName = prefix + MvcHelper.GetControllerName(service);
+            return serviceName;
+        }
+
+        public static string GetDocumentNameForService(Type service)
+        {
+            return GetDocumentNameForService(GetFullNameService(service));
         }
 
         public static string GetDocumentNameForService(string serviceName)
@@ -145,19 +162,22 @@ namespace Shesha.Swagger
         {
             if (modelType.IsDynamicDto())
             {
+                var typeName = String.Concat(modelType.Name.TakeWhile(x => x != '`'));
+                var entityType = modelType;
                 if (modelType.IsConstructedGenericType)
                 {
-                    var typeName = String.Concat(modelType.Name.TakeWhile(x => x != '`'));
-                    var test = typeName + modelType.GetGenericArguments().Select(genericArg => GetSchemaId(genericArg)).Aggregate((previous, current) => previous + current);
-                    return test;
+                    entityType = modelType.GetGenericArguments().FirstOrDefault();
+                    typeName = typeName + modelType.GetGenericArguments().Select(genericArg => GetSchemaId(genericArg)).Aggregate((previous, current) => previous + current);
                 }
                 else if (modelType.HasInterface(typeof(IDynamicDtoProxy)) && modelType.BaseType != null)
-                    return "Proxy" + GetSchemaId(modelType.BaseType);
+                    typeName = "Proxy" + GetSchemaId(modelType.BaseType);
                 else
-                    return modelType.Name;
+                    typeName = modelType.Name;
+                return entityType?.Assembly.GetName().Name + ":" + typeName;
             }
 
-            if (!modelType.IsConstructedGenericType) return modelType.Name.Replace("[]", "Array");
+            if (!modelType.IsConstructedGenericType)
+                return modelType.Name.Replace("[]", "Array");
 
             var prefix = modelType.GetGenericArguments()
                 .Select(genericArg => GetSchemaId(genericArg))
