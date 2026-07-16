@@ -14,11 +14,17 @@ export const RefListItemGroupReducer = createReducer(REF_LIST_ITEM_GROUP_CONTEXT
       // Preserve any per-item configuration (Hide/Events) the user already set, matched by itemValue,
       // so re-fetching the reference list does not wipe saved settings (the cause of #5125).
       const priorByValue = new Map<number, RefListGroupItemProps>();
-      state.items.forEach((prior) => {
-        const value = (prior as Partial<IReferenceListItem>).itemValue;
-        if (isDefined(value))
-          priorByValue.set(value, prior);
-      });
+      const indexPriorItems = (items: RefListGroupItemProps[]): void => {
+        items.forEach((prior) => {
+          const value = (prior as Partial<IReferenceListItem>).itemValue;
+          if (isDefined(value))
+            priorByValue.set(value, prior);
+          // grouped items keep their settings under childItems, so recurse to preserve nested config too
+          if (isIRefListItemGroup(prior) && isDefined(prior.childItems))
+            indexPriorItems(prior.childItems);
+        });
+      };
+      indexPriorItems(state.items);
       return {
         ...state,
         items: payload.map<RefListGroupItemProps>((item) => {
