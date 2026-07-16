@@ -95,7 +95,7 @@ namespace Shesha.ConfigurationStudio
         private async Task DeleteFolderRecursiveAsync(ConfigurationItemFolder folder) 
         {
             // delete items
-            var items = ItemRepo.DeleteAsync(e => e.Folder == folder);
+            await ItemRepo.DeleteAsync(e => e.Folder == folder);
 
             // process subfolders
             var subFolders = await FolderRepository.GetAllListAsync(e => e.Parent == folder);

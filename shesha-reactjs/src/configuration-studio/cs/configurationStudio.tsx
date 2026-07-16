@@ -1041,7 +1041,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
       return {
         title: 'Import Configuration',
         content: <ConfigurationItemsImport onImported={onImported} setImporterApi={(api) => importerApi.setApi(api)} />,
-        footer: <ConfigurationItemsImportFooter hideModal={hideModal} importerApi={importerApi} />,
+        footer: <ConfigurationItemsImportFooter hideModal={hideModal} importerApi={importerApi} onImported={onImported} />,
       };
     });
 
