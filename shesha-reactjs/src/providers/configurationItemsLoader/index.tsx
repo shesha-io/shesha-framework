@@ -170,7 +170,10 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
     const { refListId, configurationItemMode } = payload;
 
     const refListPromise = new Promise<IReferenceList>((resolve, reject) => {
-      if (!isValidRefListId(refListId)) reject('Reference List identifier must be specified');
+      if (!isValidRefListId(refListId)) {
+        reject('Reference List identifier must be specified');
+        return;
+      }
 
       const cacheKey = getRefListCacheKey(refListId, configurationItemMode);
 
