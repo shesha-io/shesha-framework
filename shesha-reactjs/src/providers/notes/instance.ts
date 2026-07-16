@@ -41,7 +41,14 @@ export class NotesEditorInstance implements INotesEditorActions, INotesEditorSta
   }
 
   setDesignerMode = (isDesignerMode: boolean): void => {
+    const wasDesignerMode = this.#isDesignerMode;
     this.#isDesignerMode = isDesignerMode;
+
+    if (wasDesignerMode && !isDesignerMode && isDefined(this.#notesReference) && isOwnerReferenceValid(this.#notesReference))
+      this.fetchNotesAsync()
+        .catch((error) => {
+          console.error('Failed to fetch notes', error);
+        });
   };
 
   init = (notesReference: NotesReference): void => {
@@ -105,11 +112,16 @@ export class NotesEditorInstance implements INotesEditorActions, INotesEditorSta
       noteText: args.noteText,
     };
     await this.runPostingNotes(async () => {
-      const response = await this.#httpClient.post<IAjaxResponse<NoteDto>>(NOTES_URLS.NOTE_CREATE, payload);
-      const noteDto = extractAjaxResponse(response.data);
-      const noteModel = noteDto2NoteModel(noteDto);
-      this.updateNotes((notes) => [...notes, noteModel]);
-      this.notifyEventHandler('onCreated', () => this.#eventHandlers.onCreated?.(noteDto));
+      try {
+        const response = await this.#httpClient.post<IAjaxResponse<NoteDto>>(NOTES_URLS.NOTE_CREATE, payload);
+        const noteDto = extractAjaxResponse(response.data);
+        const noteModel = noteDto2NoteModel(noteDto);
+        this.updateNotes((notes) => [...notes, noteModel]);
+        this.notifyEventHandler('onCreated', () => this.#eventHandlers.onCreated?.(noteDto));
+      } catch (error) {
+        console.error(error);
+        // TODO: handle errors
+      }
     });
   };
 
