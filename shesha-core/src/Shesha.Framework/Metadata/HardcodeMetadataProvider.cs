@@ -8,7 +8,6 @@ using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.DynamicEntities;
-using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.Metadata.Dtos;
 using Shesha.Reflection;
@@ -141,7 +140,7 @@ namespace Shesha.Metadata
                 IsFilterable = epc != null && epc.IsMapped,
                 IsSortable = epc != null && epc.IsMapped,
             };
-            FillEntityRelatedProperties(result, GetEntityReferenceTargetType(property, dataType), dataType);
+            FillEntityRelatedProperties(result, property.PropertyType, dataType);
 
             if (dataType.DataType == DataTypes.Array)
             {
@@ -158,19 +157,6 @@ namespace Shesha.Metadata
             context.ProcessedTypes.Add(property.PropertyType);
 
             return result;
-        }
-
-        private Type GetEntityReferenceTargetType(PropertyInfo property, DataTypeInfo dataType)
-        {
-            var propertyType = ReflectionHelper.GetUnderlyingTypeIfNullable(property.PropertyType);
-            if (dataType.DataType != DataTypes.EntityReference || !propertyType.IsEntityReferenceType())
-                return property.PropertyType;
-
-            var allowableTypes = property.GetAttribute<EntityReferenceAttribute>()?.AllowableTypes;
-            if (allowableTypes == null || allowableTypes.Length != 1)
-                return property.PropertyType;
-
-            return _entityConfigurationStore.GetOrNull(allowableTypes[0])?.EntityType ?? property.PropertyType;
         }
 
         private void FillEntityRelatedProperties(PropertyMetadataDto propertyDto, Type propertyType, DataTypeInfo dataType)
