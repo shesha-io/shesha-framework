@@ -1,5 +1,5 @@
 import { IItemListConfiguratorModalSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { FCUnwrapped, FormMarkup } from '@/providers/form/models';
 import { ItemListConfiguratorModal } from '@/designer-components/itemListConfigurator/itemListConfiguratorModal';
 import { Alert } from 'antd';
@@ -11,6 +11,15 @@ const EMPTY_VALUE: ListItemWithId[] = [];
 export const ItemListConfiguratorModalWrapper: FCUnwrapped<IItemListConfiguratorModalSettingsInputProps> = (props) => {
   const { value, onChange, readOnly, size, onAddNewItem, listItemSettingsMarkup, buttonText, buttonTextReadOnly, modalSettings, modalReadonlySettings } = props;
   const activeModalSettings = readOnly ? modalReadonlySettings : modalSettings;
+  const settingsMarkupFactory = useCallback((): FormMarkup => ({
+    components: listItemSettingsMarkup ?? [],
+    formSettings: {
+      colon: false,
+      layout: 'vertical',
+      labelCol: { span: 24 },
+      wrapperCol: { span: 24 },
+    },
+  }), [listItemSettingsMarkup]);
   return (
     <ItemListConfiguratorModal
       value={value ?? EMPTY_VALUE}
@@ -18,17 +27,7 @@ export const ItemListConfiguratorModalWrapper: FCUnwrapped<IItemListConfigurator
       readOnly={readOnly ?? false}
       initNewItem={onAddNewItem}
       size={size}
-      settingsMarkupFactory={() => {
-        return {
-          components: listItemSettingsMarkup ?? [],
-          formSettings: {
-            colon: false,
-            layout: 'vertical',
-            labelCol: { span: 24 },
-            wrapperCol: { span: 24 },
-          },
-        } satisfies FormMarkup;
-      }}
+      settingsMarkupFactory={settingsMarkupFactory}
       itemRenderer={({ item }) => ({
         ...item,
         label: getFirstNonEmptyStringPropertyOrUndefined(item, ["title", "label", "name"]) ?? "",
