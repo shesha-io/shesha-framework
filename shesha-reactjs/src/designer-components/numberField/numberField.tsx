@@ -97,8 +97,8 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
       suffix,
       stringMode: true,
       controls: false,
-      ...(isDefined(model.validate?.maxValue) ? { max: model.validate.maxValue } : {}),
-      ...(isDefined(model.validate?.minValue) ? { min: model.validate.minValue } : {}),
+      // ...(isDefined(model.validate?.maxValue) ? { max: model.validate.maxValue } : {}),
+      // ...(isDefined(model.validate?.minValue) ? { min: model.validate.minValue } : {}),
       ...(isDefined(model.styleJson) ? { style: model.styleJson } : {}),
     };
 

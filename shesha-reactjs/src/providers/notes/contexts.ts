@@ -14,6 +14,7 @@ export type NotesEventHandlers = {
 
 export type INotesEditorActions = {
   init: (notesReference: NotesReference) => void;
+  setDesignerMode: (isDesignerMode: boolean) => void;
   setEventHandlers: (handlers: NotesEventHandlers) => void;
   subscribe: (callback: () => void) => () => void;
   createNoteAsync: (args: CreateNoteArgs) => Promise<void>;

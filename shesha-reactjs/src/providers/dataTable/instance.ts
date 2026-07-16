@@ -35,7 +35,7 @@ import {
 import { IDataTableStateContext } from "./interfaces.state";
 import { DatatableInitArgs, IDatasetInstance } from "./models";
 import { IRepository } from "./repository/interfaces";
-import { advancedFilter2JsonLogic, getCurrentSorting, getTableDataColumn, getTableDataColumns, getTableFormColumns, sortingItems2ColumnSorting } from "./utils";
+import { advancedFilter2JsonLogic, getCurrentSorting, getDefaultFilterOptionForDataType, getTableDataColumn, getTableDataColumns, getTableFormColumns, sortingItems2ColumnSorting } from "./utils";
 
 export type DataTableInstanceArgs = {
   repository: IRepository;
@@ -482,7 +482,7 @@ export class DatasetInstance implements IDatasetInstance {
           : [];
         return {
           columnId: id,
-          filterOption: filterOptions.length > 0 ? filterOptions[0] : undefined,
+          filterOption: filterOptions.length > 0 ? filterOptions[0] : getDefaultFilterOptionForDataType(column?.dataType),
           filter: undefined,
         };
       });
