@@ -7,7 +7,7 @@ import { getEntityTypeIdentifierQueryParams } from "../metadataDispatcher/entiti
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { extractAjaxResponse, IAjaxResponse } from "@/interfaces";
 import { noteDto2NoteModel, notesReferenceEqual } from "./utils";
-import { INotesEditorActions, INotesEditorState } from "./contexts";
+import { INotesEditorActions, INotesEditorState, NotesEventHandlers } from "./contexts";
 
 export type NotesEditorInstanceArgs = {
   httpClient: HttpClientApi;
@@ -23,13 +23,32 @@ export class NotesEditorInstance implements INotesEditorActions, INotesEditorSta
 
   #isDesignerMode: boolean;
 
+  #eventHandlers: NotesEventHandlers = {};
+
+  #subscribers = new Set<() => void>();
+
+  #isFetchingNotes = false;
+
+  #isPostingNotes = false;
+
+  #postingNotesCount = 0;
+
+  #fetchNotesRequestId = 0;
+
   constructor(args: NotesEditorInstanceArgs) {
     this.#httpClient = args.httpClient;
     this.#isDesignerMode = args.isDesignerMode ?? false;
   }
 
   setDesignerMode = (isDesignerMode: boolean): void => {
+    const wasDesignerMode = this.#isDesignerMode;
     this.#isDesignerMode = isDesignerMode;
+
+    if (wasDesignerMode && !isDesignerMode && isDefined(this.#notesReference) && isOwnerReferenceValid(this.#notesReference))
+      this.fetchNotesAsync()
+        .catch((error) => {
+          console.error('Failed to fetch notes', error);
+        });
   };
 
   init = (notesReference: NotesReference): void => {
@@ -45,8 +64,13 @@ export class NotesEditorInstance implements INotesEditorActions, INotesEditorSta
         });
   };
 
+  setEventHandlers = (handlers: NotesEventHandlers): void => {
+    this.#eventHandlers = handlers;
+  };
+
   private fetchNotesAsync = async (): Promise<void> => {
     const reference = this.getValidNoteReference();
+    const requestId = ++this.#fetchNotesRequestId;
 
     const url = buildUrl<GetNotesListPayload>(NOTES_URLS.GET_LIST, {
       ownerId: reference.ownerId,
@@ -54,14 +78,20 @@ export class NotesEditorInstance implements INotesEditorActions, INotesEditorSta
       category: reference.category,
       allCategories: isNullOrWhiteSpace(reference.category),
     });
+    this.setIsFetchingNotes(true);
     try {
       const response = await this.#httpClient.get<IAjaxResponse<NoteDto[]>>(url);
       const noteDtos = extractAjaxResponse(response.data);
       const noteModels = noteDtos.map(noteDto2NoteModel);
-      this.updateNotes(() => noteModels);
+      // ignore stale responses when the reference changed while this request was in flight
+      if (requestId === this.#fetchNotesRequestId)
+        this.updateNotes(() => noteModels);
     } catch (error) {
       console.error(error);
       // TODO: handle errors
+    } finally {
+      if (requestId === this.#fetchNotesRequestId)
+        this.setIsFetchingNotes(false);
     }
   };
 
@@ -81,10 +111,18 @@ export class NotesEditorInstance implements INotesEditorActions, INotesEditorSta
       parentId: args.parentId,
       noteText: args.noteText,
     };
-    const response = await this.#httpClient.post<IAjaxResponse<NoteDto>>(NOTES_URLS.NOTE_CREATE, payload);
-    const noteDto = extractAjaxResponse(response.data);
-    const noteModel = noteDto2NoteModel(noteDto);
-    this.updateNotes((notes) => [...notes, noteModel]);
+    await this.runPostingNotes(async () => {
+      try {
+        const response = await this.#httpClient.post<IAjaxResponse<NoteDto>>(NOTES_URLS.NOTE_CREATE, payload);
+        const noteDto = extractAjaxResponse(response.data);
+        const noteModel = noteDto2NoteModel(noteDto);
+        this.updateNotes((notes) => [...notes, noteModel]);
+        this.notifyEventHandler('onCreated', () => this.#eventHandlers.onCreated?.(noteDto));
+      } catch (error) {
+        console.error(error);
+        // TODO: handle errors
+      }
+    });
   };
 
   updateNoteAsync = async (args: UpdateNoteArgs): Promise<void> => {
@@ -93,36 +131,95 @@ export class NotesEditorInstance implements INotesEditorActions, INotesEditorSta
       throw new Error('Note not found.');
 
     const payload = { ...note, noteText: args.noteText };
-    try {
-      const response = await this.#httpClient.put<IAjaxResponse<NoteDto>>(NOTES_URLS.NOTE_UPDATE, payload);
-      const updatedNote = extractAjaxResponse(response.data);
-      const updatedNoteModel = noteDto2NoteModel(updatedNote);
-      this.updateNotes((notes) => notes.map((n) => n.id === note.id ? updatedNoteModel : n));
-    } catch (error) {
-      console.error(error);
-      // TODO: handle errors
-    }
+    await this.runPostingNotes(async () => {
+      try {
+        const response = await this.#httpClient.put<IAjaxResponse<NoteDto>>(NOTES_URLS.NOTE_UPDATE, payload);
+        const updatedNote = extractAjaxResponse(response.data);
+        const updatedNoteModel = noteDto2NoteModel(updatedNote);
+        this.updateNotes((notes) => notes.map((n) => n.id === note.id ? updatedNoteModel : n));
+        this.notifyEventHandler('onUpdated', () => this.#eventHandlers.onUpdated?.(updatedNote));
+      } catch (error) {
+        console.error(error);
+        // TODO: handle errors
+      }
+    });
   };
 
   deleteNoteAsync = async (args: DeleteNoteArgs): Promise<void> => {
+    const deletedNote = this.#notes.find((n) => n.id === args.id);
     const url = buildUrl(NOTES_URLS.NOTE_DELETE, { id: args.id });
-    const response = await this.#httpClient.delete<IAjaxResponse<void>>(url);
+    await this.runPostingNotes(async () => {
+      try {
+        const response = await this.#httpClient.delete<IAjaxResponse<void>>(url);
+        extractAjaxResponse(response.data);
+        this.updateNotes((notes) => notes.filter((n) => n.id !== args.id));
+        if (deletedNote)
+          this.notifyEventHandler('onDeleted', () => this.#eventHandlers.onDeleted?.(deletedNote));
+      } catch (error) {
+        console.error(error);
+        // TODO: handle errors
+      }
+    });
+  };
+
+  private runPostingNotes = async (operation: () => Promise<void>): Promise<void> => {
+    this.#postingNotesCount += 1;
+    this.setIsPostingNotes(true);
     try {
-      extractAjaxResponse(response.data);
-      this.updateNotes((notes) => notes.filter((n) => n.id !== args.id));
-    } catch (error) {
-      console.error(error);
-      // TODO: handle errors
+      await operation();
+    } finally {
+      this.#postingNotesCount -= 1;
+      if (this.#postingNotesCount === 0)
+        this.setIsPostingNotes(false);
     }
   };
 
-  private updateNotes = (updater: (files: NoteModel[]) => NoteModel[]): void => {
-    this.#notes = updater(this.#notes);
-    // TODO: notify subscribers
-    // this.notifySubscribers(['notes']);
+  private notifyEventHandler = (eventName: keyof NotesEventHandlers, invoke: () => void): void => {
+    // event-handler failures must never change the outcome of the CRUD operation
+    try {
+      invoke();
+    } catch (error) {
+      console.error(`Notes event handler ${eventName} failed`, error);
+    }
   };
 
-  get notes(): NoteDto[] {
+  private setIsFetchingNotes = (value: boolean): void => {
+    if (this.#isFetchingNotes === value) return;
+    this.#isFetchingNotes = value;
+    this.notifySubscribers();
+  };
+
+  private setIsPostingNotes = (value: boolean): void => {
+    if (this.#isPostingNotes === value) return;
+    this.#isPostingNotes = value;
+    this.notifySubscribers();
+  };
+
+  private updateNotes = (updater: (notes: NoteModel[]) => NoteModel[]): void => {
+    this.#notes = updater(this.#notes);
+    this.notifySubscribers();
+  };
+
+  subscribe = (callback: () => void): (() => void) => {
+    this.#subscribers.add(callback);
+    return () => {
+      this.#subscribers.delete(callback);
+    };
+  };
+
+  private notifySubscribers = (): void => {
+    this.#subscribers.forEach((callback) => callback());
+  };
+
+  get notes(): NoteModel[] {
     return this.#notes;
+  }
+
+  get isFetchingNotes(): boolean {
+    return this.#isFetchingNotes;
+  }
+
+  get isPostingNotes(): boolean {
+    return this.#isPostingNotes;
   }
 }
