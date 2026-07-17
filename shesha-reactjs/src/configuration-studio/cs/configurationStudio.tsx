@@ -314,7 +314,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
   };
 
   private loadQuickSearchAsync = async (): Promise<void> => {
-    this._quickSearch = await this.storage.getAsync<string>(STORAGE_KEYS.QUICK_SEARCH) ?? "";
+    this._quickSearch = await this.storage.getAsync<string>(STORAGE_KEYS.QUICK_SEARCH, false) ?? "";
   };
 
   private loadTreeStateAsync = async (): Promise<void> => {

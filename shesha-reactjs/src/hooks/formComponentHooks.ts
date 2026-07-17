@@ -285,11 +285,13 @@ export const useFormComponentStyles = <TModel extends IStyleValue & Pick<IConfig
   const jsStyle = useActualContextExecution(styleSource, undefined, {}); // use default style if empty or error
   const { designerWidth } = useCanvas();
 
-  const { dimensions, border, font, shadow, background, stylingBox, overflow } = model;
+  const { dimensions, border, font, shadow, background, stylingBox, stylingBoxJson, overflow } = model;
 
   const backgroundLocal = useMemo(() => getBackgroundStyle(background, jsStyle, background?.url), [background, jsStyle]);
 
-  const stylingBoxParsed = useMemo(() => !isNullOrWhiteSpace(stylingBox) ? jsonSafeParse<StyleBoxValue>(stylingBox) : {}, [stylingBox]);
+  const stylingBoxParsed = useMemo(() =>
+    stylingBoxJson ?? (!isNullOrWhiteSpace(stylingBox) ? jsonSafeParse<StyleBoxValue>(stylingBox) : {}),
+  [stylingBoxJson, stylingBox]);
 
   const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
   const fontStyles = useMemo(() => getFontStyle(font), [font]);
