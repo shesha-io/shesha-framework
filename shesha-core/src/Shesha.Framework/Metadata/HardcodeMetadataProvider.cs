@@ -8,6 +8,7 @@ using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.DynamicEntities;
+using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.Metadata.Dtos;
 using Shesha.Reflection;
@@ -140,7 +141,9 @@ namespace Shesha.Metadata
                 IsFilterable = epc != null && epc.IsMapped,
                 IsSortable = epc != null && epc.IsMapped,
             };
-            FillEntityRelatedProperties(result, property.PropertyType, dataType);
+
+            var entityType = property.GetAttribute<EntityReferenceTypeAttribute>()?.EntityType ?? property.PropertyType;
+            FillEntityRelatedProperties(result, entityType, dataType);
 
             if (dataType.DataType == DataTypes.Array)
             {
@@ -351,7 +354,7 @@ namespace Shesha.Metadata
             if (propInfo != null && propInfo.IsReferenceListProperty())
                 return new DataTypeInfo(DataTypes.ReferenceListItem);
 
-            if (propType.IsEntityType() || propType.IsEntityReferenceType())
+            if (propType.IsEntityType() || propType.IsEntityReferenceType() || propType.IsEntityReferenceDtoType())
                 return new DataTypeInfo(DataTypes.EntityReference);
 
             // note: numeric datatypes mapping is based on the OpenApi 3

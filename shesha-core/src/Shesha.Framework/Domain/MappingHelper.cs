@@ -1,5 +1,6 @@
 ﻿using Abp.Domain.Entities;
 using PluralizeService.Core;
+using Shesha.AutoMapper.Dto;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Conventions;
 using Shesha.Domain.Interfaces;
@@ -321,10 +322,22 @@ namespace Shesha.Domain
             return type == typeof(GenericEntityReference);
         }
 
-        /// <summary>
-        /// Returns true if the specified type is an Json entity type
-        /// </summary>
-        public static bool IsJsonEntity(Type type)
+        public static bool IsEntityReferenceDtoType(Type type)
+        {
+            for (var current = type; current != null; current = current.BaseType)
+            {
+                if (current.IsGenericType
+                    && current.GetGenericTypeDefinition() == typeof(EntityReferenceDto<>))
+                    return true;
+            }
+
+            return false;
+        }
+
+/// <summary>
+/// Returns true if the specified type is an Json entity type
+/// </summary>
+public static bool IsJsonEntity(Type type)
         {
             // todo: use global helper
             return type != null &&
