@@ -63,17 +63,11 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
     borderColor = '#d9d9d9',
     borderTopStyle,
     borderTopColor,
-    borderTop,
     boxShadow,
-    borderBottom,
     borderBottomColor,
     borderBottomStyle,
-    borderRight,
     borderRightWidth,
     backgroundColor,
-    backgroundPosition,
-    backgroundRepeat,
-    backgroundSize,
     borderStyle = 'solid',
     color,
     fontFamily = 'Segoe UI',
@@ -153,26 +147,55 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
       --ant-button-content-font-size: ${fontSize} !important;
       --ant-button-font-weight: ${fontWeight} !important;
       --ant-font-family: ${fontFamily} !important;
-      height: ${layout ? (height ?? '54px') : '100%'} !important;
-      width: ${layout ? (width ?? '54px') : '100%'} !important;
+      --thumbnail-item-height: ${hideFileName ? 'var(--thumbnail-height)' : 'calc(var(--thumbnail-height) + 32px)'};
+      display: inline-block;
+      vertical-align: top;
+      height: ${layout ? 'var(--thumbnail-item-height)' : '100%'} !important;
+      width: ${layout ? 'var(--thumbnail-width)' : '100%'} !important;
       max-height: ${layout ? (maxHeight ?? 'auto') : '100%'} !important;
-      min-height: ${layout ? (minHeight) : '100%'} !important;
-      max-width: ${layout ? (maxWidth) : '100%'} !important;
-      min-width: ${layout ? (minWidth) : '100%'} !important;
+      min-height: ${layout ? (minHeight ?? 'auto') : '100%'} !important;
+      max-width: ${layout ? (maxWidth ?? 'auto') : '100%'} !important;
+      min-width: ${layout ? (minWidth ?? 'auto') : '100%'} !important;
       ${isThumbnail ? `
-      background: ${backgroundImage ?? backgroundColor ?? background};
-      ${backgroundPosition ? `background-position: ${backgroundPosition};` : ''}
-      ${backgroundRepeat ? `background-repeat: ${backgroundRepeat};` : ''}
-      ${backgroundSize ? `background-size: ${backgroundSize};` : ''}
-      ` : ''}
+      .ant-upload-list-picture-card {
+        min-height: 0 !important;
+      }
 
-      ${isThumbnail ? `
-      .ant-upload-list-item {
+      .ant-upload-list-item-container {
         width: var(--thumbnail-width) !important;
-        height: ${hideFileName ? 'var(--thumbnail-height)' : 'calc(var(--thumbnail-height) + 32px)'} !important;
-        border-top: ${borderTop} !important;
-        border-bottom: ${borderBottom} !important;
-        border-right: ${borderRight} !important;
+        height: var(--thumbnail-item-height) !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+        display: inline-block !important;
+      }
+
+      .ant-upload-list-item-container > div {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* The empty upload tile (no file yet) must match the thumbnail size and carry the configured
+         border/background/radius so it looks identical to the file tiles. The designer stub renders
+         .thumbnail-stub, but the live uploader renders .ant-upload-select, which otherwise keeps
+         antd's default (mismatched size, dashed default border) in the dynamic/end-user view. */
+      .${prefixCls}-upload-select,
+      .${prefixCls}-upload.${prefixCls}-upload-select {
+        width: var(--thumbnail-width) !important;
+        height: var(--thumbnail-height) !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+        background: ${backgroundImage ?? backgroundColor ?? background};
+        ${commonBorderStyles}
+        ${borderRadiusCss}
+        ${extraStyles}
+      }
+
+      .${prefixCls}-upload-select .${prefixCls}-upload {
+        width: 100% !important;
+        height: 100% !important;
       }
       ` : ''}
 
@@ -212,14 +235,32 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
       .ant-upload-list-item-thumbnail {
         ${extraStyles}
         ${borderRadiusCss}
+        box-sizing: border-box !important;
         padding: 0 !important;
         ${commonBorderStyles}
       }
 
       .thumbnail-item-name {
         ${commonTextStyles}
+        ${isThumbnail ? (hideFileName ? 'display: none !important;' : `
+        display: block;
+        width: 100%;
+        height: 32px;
+        line-height: 32px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        `) : ''}
+
         a {
           ${commonTextStyles}
+          ${isThumbnail ? `
+          display: inline-block;
+          max-width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          ` : ''}
         }
         .ant-space {
           .anticon {
@@ -237,15 +278,11 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
         ${borderRadiusCss}
         ${commonBorderStyles}
         ${commonTextStyles}
+        box-sizing: border-box !important;
       }
 
       .ant-upload-list-text {
         ${commonTextStyles}
-        max-height: calc(var(--container-max-height) - calc(${fontSize} * 4)) !important;
-        min-height: calc(var(--container-min-height) - 32px) !important;
-        width: calc(var(--container-width) - 32px) !important;
-        max-width: calc(var(--container-max-width) - 32px) !important;
-        min-width: calc(var(--container-min-width) - 32px) !important;
       }
 
       .ant-upload-drag:hover:not(.ant-upload-disabled) {
@@ -290,12 +327,6 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
       }
 
       .ant-upload-list-item-container {
-        height: calc(var(--container-height) - 32px) !important;
-        max-height: calc(var(--container-max-height) - calc(${fontSize} * 4)) !important;
-        min-height: calc(var(--container-min-height) - 32px) !important;
-        width: calc(var(--container-width) - 32px) !important;
-        max-width: calc(var(--container-max-width) - 32px) !important;
-        min-width: calc(var(--container-min-width) - 32px) !important;
         margin: 0 !important;
         padding: 0 !important;
         &.ant-upload-animate-inline-appear,
@@ -325,12 +356,18 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
   const thumbnailControls = cx(
     'thumbnail-controls',
     css`
-      width: var(--thumbnail-width, 54px) !important;
-      height: var(--thumbnail-height, 54px) !important;
+      width: 100% !important;
+      height: 100% !important;
       ${borderRadiusCss}
-      object-fit: cover !important;
-      display: flex !important;
-      justify-content: center !important;
+      display: block !important;
+      overflow: hidden !important;
+
+      .ant-image-img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        display: block !important;
+      }
     `,
   );
 
@@ -338,13 +375,14 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
     'overlay-thumbnail-controls',
     css`
       position: absolute;
-      top: 0;
-      left: 0;
+      inset: 0;
       background: rgba(0, 0, 0, 0.6);
-      height: ${height ?? '54px'} !important;
-      width: ${width ?? '54px'} !important;
+      /* Fill the positioned thumbnail tile exactly instead of re-deriving width/height (an empty
+         configured dimension would collapse the overlay and push it off to the side). */
+      height: 100% !important;
+      width: 100% !important;
       opacity: 0;
-      border-radius: 8px;
+      ${borderRadiusCss}
       transition: opacity 0.3s ease;
       display: flex;
       justify-content: center;
@@ -371,9 +409,11 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
       ${commonTextStyles}
       ${borderRadiusCss}
       padding: 0 !important;
+      box-sizing: border-box !important;
+      overflow: hidden !important;
       background: ${backgroundImage ?? backgroundColor ?? background};
-      width: ${width || '54px'} !important;
-      height: ${height || '54px'} !important;
+      width: var(--thumbnail-width, ${width || '54px'}) !important;
+      height: var(--thumbnail-height, ${height || '54px'}) !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;

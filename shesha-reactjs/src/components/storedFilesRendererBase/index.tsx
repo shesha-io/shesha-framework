@@ -161,12 +161,33 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   // of the same file reuse the already-downloaded image instead of hitting the server again.
   // Entries are revoked on unmount.
   const previewImageCache = useRef<Map<string, string>>(new Map());
+  // Content fingerprint of the thumbnail currently cached in `imageUrls` for each file uid.
+  // A file's uid/id stay the same when its content is replaced (upload new version), so keying
+  // the "reuse existing thumbnail" guard on uid alone would keep showing the stale image. Tracking
+  // a content fingerprint (size + url) lets us detect a replace and re-fetch a fresh thumbnail.
+  const thumbnailFingerprints = useRef<Map<string, string>>(new Map());
+  // Per-file-id cache-buster bumped on each replace. The thumbnail endpoint is keyed only by
+  // file id + dimensions, so its URL is byte-identical after a replace and the browser's HTTP
+  // cache would serve the stale image even on a fresh request. Appending this token to the URL
+  // makes a replaced file request a new URL (cache miss) while unchanged files stay cacheable.
+  const thumbnailCacheBusters = useRef<Map<string, number>>(new Map());
   const model = rest;
 
   // Handler for replacing a file
   const handleReplaceFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const file = e.target.files?.[0];
     if (file && fileToReplace) {
+      // A replaced file keeps the same uid/id, so any cached thumbnail/preview for it now shows the
+      // old content. Invalidate those caches up front so the new version is re-fetched fresh (the
+      // fingerprint guard below also covers this, but the backend may reuse the url for the file id).
+      thumbnailFingerprints.current.delete(fileToReplace.uid);
+      // Bump the cache-buster so the re-fetched thumbnail URL differs from the browser-cached one.
+      thumbnailCacheBusters.current.set(fileToReplace.id, (thumbnailCacheBusters.current.get(fileToReplace.id) ?? 0) + 1);
+      const cachedPreview = previewImageCache.current.get(fileToReplace.id);
+      if (isNotNullOrWhiteSpace(cachedPreview)) {
+        URL.revokeObjectURL(cachedPreview);
+        previewImageCache.current.delete(fileToReplace.id);
+      }
       try {
         // This uses the StoredFilesProvider's replaceFile action which manages state properly
         replaceFile({
@@ -290,14 +311,28 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       }
 
       const newImageUrls: { [key: string]: string } = {};
+      // Blob URLs owned by the upload cache must never be revoked here; that cache manages them.
+      const uploadedFileBlobUrlSet = new Set(uploadedFileBlobUrls.current.values());
       for (const file of fileList) {
         if (isImageType(file.type ?? "") && !isNullOrWhiteSpace(file.url)) {
-          // Preserve existing URL to avoid unnecessary re-fetches
+          // A file keeps the same uid/id when its content is replaced (upload new version), so the
+          // cached thumbnail must only be reused while the file's content is unchanged. Fingerprint
+          // the content (size + url) so a replace invalidates the stale thumbnail and re-fetches.
+          const fingerprint = `${file.size ?? ''}_${file.url}`;
+          // Preserve existing URL to avoid unnecessary re-fetches, but only when the content matches.
           const existingUrl = imageUrlsRef.current[file.uid];
-          if (isNotNullOrWhiteSpace(existingUrl)) {
+          if (isNotNullOrWhiteSpace(existingUrl) && thumbnailFingerprints.current.get(file.uid) === fingerprint) {
             newImageUrls[file.uid] = existingUrl;
             continue;
           }
+
+          // Content changed (e.g. replaced): drop the stale thumbnail so a fresh one is fetched.
+          // Only revoke blob URLs we own here; raw server URLs (initial state) and blobs owned by
+          // uploadedFileBlobUrls are left alone (the latter is managed by that cache).
+          if (isNotNullOrWhiteSpace(existingUrl) && existingUrl.startsWith('blob:') && !uploadedFileBlobUrlSet.has(existingUrl)) {
+            URL.revokeObjectURL(existingUrl);
+          }
+          thumbnailFingerprints.current.delete(file.uid);
 
           // Check for blob URL from recent upload (avoids server round-trip immediately after upload).
           // The entry is kept for the lifetime of the component (cleaned up on unmount or when the
@@ -307,6 +342,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           const blobUrl = uploadedFileBlobUrls.current.get(tempKey);
           if (isNotNullOrWhiteSpace(blobUrl)) {
             newImageUrls[file.uid] = blobUrl;
+            thumbnailFingerprints.current.set(file.uid, fingerprint);
             continue;
           }
 
@@ -316,11 +352,15 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             }
             // The backend returns a degenerate 1x1 thumbnail when width/height are omitted, so always
             // send concrete dimensions derived from the configured thumbnail size (with a safe default).
+            // `v` is a cache-buster that only changes when the file is replaced (see above), so the
+            // browser HTTP cache serves unchanged thumbnails but re-downloads a replaced one.
+            const cacheBuster = thumbnailCacheBusters.current.get(file.id);
             const thumbnailUrl = buildUrl(STORED_FILE_URLS.DOWNLOAD_THUMBNAIL, {
               id: file.id,
               width: resolveThumbnailSize(model.thumbnailWidth ?? `${model.allStyles?.dimensionsStyles.width ?? ''}`),
               height: resolveThumbnailSize(model.thumbnailHeight ?? `${model.allStyles?.dimensionsStyles.height ?? ''}`),
               fitOption: 1, // 1: FitToHeight
+              ...(isDefined(cacheBuster) && cacheBuster > 0 ? { v: cacheBuster } : {}),
             });
 
             const { url: imageUrl, revoke } = await fetchStoredFile(httpClient, thumbnailUrl);
@@ -332,6 +372,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             // Track revoke callback for cleanup
             revokeCallbacks.push(revoke);
             newImageUrls[file.uid] = imageUrl;
+            thumbnailFingerprints.current.set(file.uid, fingerprint);
           } catch (error) {
             console.error(`Failed to fetch image for file ${file.name} (${file.uid}):`, error);
             // Don't add to newImageUrls or revokeCallbacks - this file will not have a thumbnail
