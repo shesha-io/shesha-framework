@@ -147,6 +147,10 @@ export const advancedFilter2JsonLogic = (advancedFilter: ITableFilter[], columns
       // skip incorrect columns
       if (!column || !isDataColumn(column)) return null;
 
+      // skip filters with no value
+      if (f.filter === null || f.filter === undefined || f.filter === '' || (Array.isArray(f.filter) && f.filter.length === 0))
+        return null;
+
       const filterValues = Array.isArray(f.filter)
         ? f.filter.map((filterValue) => convertFilterValue(filterValue, column))
         : convertFilterValue(f.filter, column);
