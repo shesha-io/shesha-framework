@@ -4,7 +4,7 @@ using Abp.Json;
 using Shesha.Domain;
 using Shesha.EntityReferences;
 using Shesha.Reflection;
-using Shesha.Tests.Fixtures;
+using Shesha.Testing.Fixtures;
 using Shesha.Utilities;
 using Shouldly;
 using Stubble.Core.Builders;

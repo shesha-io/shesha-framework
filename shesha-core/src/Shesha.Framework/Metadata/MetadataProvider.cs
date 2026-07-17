@@ -210,12 +210,12 @@ namespace Shesha.Metadata
                 return Task.FromResult(result);
 
             var entityConfig = _entityConfigurationStore.Get(containerType);
-            if (entityConfig.ApplicationServiceType == null)
+            if (entityConfig.DefaultAppServiceType == null)
                 return Task.FromResult(result);
 
             var actionDescriptors = _actionDescriptorCollectionProvider.ActionDescriptors
                     .Items
-                    .Where(x => x is ControllerActionDescriptor actionDescriptor && actionDescriptor.ControllerTypeInfo.AsType() == entityConfig.ApplicationServiceType)
+                    .Where(x => x is ControllerActionDescriptor actionDescriptor && actionDescriptor.ControllerTypeInfo.AsType() == entityConfig.DefaultAppServiceType)
                     .Cast<ControllerActionDescriptor>()
                     .ToList();
             foreach (var actionDescriptor in actionDescriptors)

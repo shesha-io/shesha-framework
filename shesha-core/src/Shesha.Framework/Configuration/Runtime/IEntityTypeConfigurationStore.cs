@@ -46,6 +46,13 @@ namespace Shesha.Configuration.Runtime
         /// <param name="applicationServiceType"></param>
         void SetDefaultAppService(Type entityType, Type applicationServiceType);
 
+        /// <summary>
+        /// Register dynamic application service for entity type
+        /// </summary>
+        /// <param name="entityType"></param>
+        /// <param name="applicationServiceType"></param>
+        void SetDynamicAppService(Type entityType, Type applicationServiceType);
+
         Task ReInitializeAsync();
     }
 }

@@ -726,6 +726,7 @@ namespace Shesha.Users
 
             user.Password = _passwordHasher.HashPassword(user, input.NewPassword);
             user.RequireChangePassword = false;
+
             await CurrentUnitOfWork.SaveChangesAsync();
             return true;
         }

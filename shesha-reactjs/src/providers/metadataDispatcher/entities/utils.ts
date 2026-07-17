@@ -113,7 +113,7 @@ export const syncEntities = async (context: ISyncEntitiesContext): Promise<void>
 
         promises.push(setClientSnapshotHash(context.cacheProvider, data.serverSnapshotHash));
 
-        if (!isNonEmptyArray(data.modules)) {
+        if (isNonEmptyArray(data.modules)) {
           const metadataCache = context.cacheProvider.getCache(ENTITY_CACHE.ENTITIES);
           data.modules.forEach((m) => {
             m.entities.forEach((e) => {
@@ -151,14 +151,14 @@ export const syncEntities = async (context: ISyncEntitiesContext): Promise<void>
           });
         }
 
-        if (!isNonEmptyArray(data.lookups)) {
+        if (isNonEmptyArray(data.lookups)) {
           const lookupCache = context.cacheProvider.getCache(ENTITY_CACHE.ENTITIES_LOOKUP);
           await lookupCache.clear().catch((error) => {
             console.error('Failed to populate lookup cache', error);
             return Promise.reject(error);
           });
           data.lookups.forEach((m) => {
-            if (m.items.length) {
+            if (isNonEmptyArray(m.items)) {
               const key = getEntityMetadataCacheKey({ module: m.module ?? '', name: m.name ?? '' });
 
               const data = {} as { [key: string]: string };
@@ -170,18 +170,18 @@ export const syncEntities = async (context: ISyncEntitiesContext): Promise<void>
               promises.push(lookupCache.setItem(key, data));
 
               // Add lookup for Full Class Name
-              if (m.id)
+              if (!isNullOrWhiteSpace(m.id))
                 promises.push(lookupCache.setItem(m.id, { module: data['_default'] ?? '', name: m.name }));
-              if (m.aliases?.length) {
+              if (isNonEmptyArray(m.aliases)) {
                 m.aliases.forEach((alias) => {
                   promises.push(lookupCache.setItem(alias, { module: data['_default'] ?? '', name: m.name }));
                 });
               }
             } else {
             // Add lookup for Full Class Name without lookup data
-              if (m.id)
+              if (!isNullOrWhiteSpace(m.id))
                 promises.push(lookupCache.setItem(m.id, { module: m.module ?? '', name: m.name ?? '' }));
-              if (m.aliases?.length) {
+              if (isNonEmptyArray(m.aliases)) {
                 m.aliases.forEach((alias) => {
                   promises.push(lookupCache.setItem(alias, { module: m.module ?? '', name: m.name ?? '' }));
                 });

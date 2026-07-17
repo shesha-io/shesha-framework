@@ -9,7 +9,7 @@ namespace Shesha.Domain
     [Entity(
         FriendlyName = "List of Values",
         TypeShortAlias = "Shesha.Framework.ReferenceList", 
-        GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService
+        GenerateApplicationService = GenerateApplicationServiceState.AlwaysGenerateApplicationService
     )]
     [FixedView(ConfigurationItemsViews.Create, SheshaFrameworkModule.ModuleName, "cs-reflist-create")]
     [JoinedProperty("reference_lists", Schema = "frwk")]

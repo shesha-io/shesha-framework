@@ -172,7 +172,16 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   }, [formId, formConfig.formId, formSelectionMode]);
 
   useEffect(() => {
+    // A selection-mode change invalidates the previously resolved form. Reset all derived state
+    // (render guard, per-entity-type cache and the resolved formConfig) so the mode-specific
+    // effects re-resolve from scratch instead of racing on values left over from the other mode.
+    // Without this the subform gets stuck on the previous form - or blanks out - after switching
+    // between 'name' and 'dynamic' (#5087).
     prevRenderedEntityTypeForm.current = null;
+    entityTypeFormCache.current = {};
+    setFormConfig({ formId: formSelectionMode === 'dynamic' ? undefined : formId, lazy: true });
+    // only react to mode changes here; formId changes are handled by the sync effect above
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formSelectionMode]);
 
   const setMarkup = useCallback((payload: IPersistedFormPropsWithComponents): void => {

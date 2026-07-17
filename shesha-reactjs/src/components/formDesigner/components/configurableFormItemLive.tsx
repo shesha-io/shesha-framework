@@ -59,6 +59,7 @@ export const ConfigurableFormItemLive = <TValue = unknown>({
     initialValue: initialValue,
     tooltip: isNotNullOrWhiteSpace(model.description) ? model.description : undefined,
     rules: getValidationRules(model, { getFormData }),
+    ...(model.validationDependencies?.length ? { dependencies: model.validationDependencies } : {}),
     name: isNotNullOrWhiteSpace(model.context) ? undefined : getFieldNameFromExpression(propName),
     style: {
       marginTop: addPx(marginTop, allData),

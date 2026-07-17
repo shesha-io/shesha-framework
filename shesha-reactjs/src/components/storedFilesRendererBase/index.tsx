@@ -30,7 +30,7 @@ import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models
 import { ButtonGroup } from '@/designer-components/button/buttonGroup/buttonGroup';
 import { FormIdentifier } from '@/providers/form/models';
 import { DataContextProvider } from '@/providers/dataContextProvider';
-import { FileVersionsButton, ExtraContent, PLACEHOLDER_FILE, getListTypeAndLayout, fetchStoredFile, FileNameDisplay } from './utils';
+import { FileVersionsButton, ExtraContent, PLACEHOLDER_FILE, getListTypeAndLayout, fetchStoredFile, FileNameDisplay, resolveThumbnailSize } from './utils';
 import classNames from 'classnames';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
 import { ShaIcon, IconType } from '@/components/shaIcon';
@@ -303,18 +303,14 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             if (isNullOrWhiteSpace(file.id)) {
               continue;
             }
-            const queryParams = {
+            // The backend returns a degenerate 1x1 thumbnail when width/height are omitted, so always
+            // send concrete dimensions derived from the configured thumbnail size (with a safe default).
+            const thumbnailUrl = buildUrl(STORED_FILE_URLS.DOWNLOAD_THUMBNAIL, {
               id: file.id,
-              width: isDefined(model.dimensions?.width) ? parseFloat(`${model.dimensions.width}`) : undefined,
-              height: isDefined(model.dimensions?.height) ? parseFloat(`${model.dimensions.height}`) : undefined,
-            };
-
-            // Filter out undefined/NaN values
-            const cleanedParams = Object.fromEntries(
-              Object.entries(queryParams).filter(([_, v]) => v !== undefined && !Number.isNaN(v)),
-            );
-
-            const thumbnailUrl = buildUrl(STORED_FILE_URLS.DOWNLOAD_THUMBNAIL, cleanedParams);
+              width: resolveThumbnailSize(model.thumbnailWidth ?? `${model.allStyles?.dimensionsStyles.width ?? ''}`),
+              height: resolveThumbnailSize(model.thumbnailHeight ?? `${model.allStyles?.dimensionsStyles.height ?? ''}`),
+              fitOption: 1, // 1: FitToHeight
+            });
 
             const { url: imageUrl, revoke } = await fetchStoredFile(httpClient, thumbnailUrl);
             if (isCancelled) {
@@ -363,7 +359,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       // Call all revoke functions to clean up blob URLs
       revokeCallbacks.forEach((revoke) => revoke());
     };
-  }, [fileList, httpClient, model.dimensions?.width, model.dimensions?.height, listType]);
+  }, [fileList, httpClient, model.thumbnailWidth, model.thumbnailHeight, model.allStyles?.dimensionsStyles.width, model.allStyles?.dimensionsStyles.height, listType]);
 
   // Clean up uploaded blob URLs on component unmount to prevent memory leaks
   useEffect(() => {
@@ -802,10 +798,18 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                       {fileList.length === 0 ? (
                         <DraggerStub styles={styles} />
                       ) : (
-                        <div>
-                          {renderUploadContent()}
+                        <div style={{ pointerEvents: 'none' }}>
+                          <Button
+                            type="link"
+                            icon={<UploadOutlined />}
+                            disabled={disabled ?? false}
+                            className={styles.uploadButton}
+                            style={{ pointerEvents: 'auto', marginBottom: '8px' }}
+                          >
+                            (Click or drag to upload)
+                          </Button>
                           {fileList.map((file) => (
-                            <div key={file.uid}>
+                            <div key={file.uid} style={{ pointerEvents: 'auto' }}>
                               {itemRenderFunction(<></>, file as UploadFile)}
                             </div>
                           ))}

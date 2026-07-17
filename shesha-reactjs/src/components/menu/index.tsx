@@ -208,7 +208,9 @@ export const LayoutMenu: FC<IProps> = ({
 
         const newItem = { ...item };
 
-        if (newItem.type === "submenu" && newItem.children.length > 0) {
+        const hasChildren = (i: MenuItem): i is MenuItem & { children: MenuItem[]; popupClassName?: string } =>
+          i !== null && 'children' in i && Array.isArray(i.children) && i.children.length > 0;
+        if (hasChildren(newItem)) {
           newItem.popupClassName = `horizontal-menu-${menuId}-dropdown`;
           newItem.children = newItem.children.map(addDropdownClassName);
         }

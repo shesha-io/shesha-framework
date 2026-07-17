@@ -143,7 +143,9 @@ export const WorkArea: FC = () => {
 
   if (treeTabs.length === 0)
     return (
-      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Please select a node to begin editing" />
+      <div className={styles.csWorkAreaEmpty}>
+        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Please select a node to begin editing" />
+      </div>
     );
 
   const placeholderStyle = getPlaceholderPosition();

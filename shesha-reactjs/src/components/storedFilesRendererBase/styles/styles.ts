@@ -181,6 +181,9 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
 
     .ant-upload-wrapper {
       flex: 1 !important;
+      .ant-upload-list-picture-card {
+       min-height: 0px !important;
+      }
     }
 
     .ant-upload:not(.ant-upload-disabled) {
