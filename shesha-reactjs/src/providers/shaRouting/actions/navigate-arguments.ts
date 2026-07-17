@@ -54,6 +54,7 @@ export const getNavigateArgumentsForm: FormMarkupFactory = ({ fbf }) => {
       labelTitle: 'Key',
       valueName: 'value',
       valueTitle: 'Value',
+      valueEditor: 'expression',
     })
     .toJson();
 };

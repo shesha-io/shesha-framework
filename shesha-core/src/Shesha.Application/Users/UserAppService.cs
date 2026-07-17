@@ -708,12 +708,7 @@ namespace Shesha.Users
 
         public async Task<bool> ChangePasswordAsync(ChangePasswordDto input)
         {
-            if (_abpSession.UserId == null)
-            {
-                throw new UserFriendlyException("Please log in before attempting to change your password.");
-            }
-
-            long userId = _abpSession.UserId.Value;
+            long userId = _abpSession.GetUserId();
             var user = await _userManager.GetUserByIdAsync(userId);
             var loginAsync = await _logInManager.LoginAsync(user.UserName, input.CurrentPassword, shouldLockout: false);
             if (loginAsync.Result != ShaLoginResultType.Success)
