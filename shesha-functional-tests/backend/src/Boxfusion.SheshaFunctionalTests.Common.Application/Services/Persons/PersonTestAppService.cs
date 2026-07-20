@@ -4,15 +4,11 @@ using Abp.Domain.Repositories;
 using Shesha;
 using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
-using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
-using Shesha.Specifications;
-using Shesha.Reflection;
-using System.ComponentModel.DataAnnotations;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services.Persons
 {
@@ -51,9 +47,9 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services.Persons
         {
         }
 
-        public async Task<List<PersonTestDto>> GetPersons()
+        public async Task<List<PersonTestDto>> GetPersonsAsync()
         {
-            var pers = await Repository.GetAll().Where(x =>
+            var pers = await (await Repository.GetAllAsync()).Where(x =>
                 x.PrimaryOrganisation != null
                 && x.Gender != null
                 && x.PrimaryOrganisation.Parent == null
@@ -70,15 +66,6 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services.Persons
                     : null,
                 Gender = x.Gender
             }).ToList();
-        }
-
-        public async Task TestPersonAsync(PersonTestDto input)
-        {
-            var p = new Person();
-            //await MapDynamicDtoToEntityAsync<PersonTestDto, Person, Guid>(input, p);
-            var pp = new Person();
-            var v = new List<ValidationResult>();
-            //await MapJObjectToEntityAsync<Person, Guid>(input._jObject, pp, v);
         }
 
         public override async Task<DynamicDto<Person, Guid>> UpdateAsync([DynamicBinder(UseDtoForEntityReferences = true, UseDynamicDtoProxy = true)] DynamicDto<Person, Guid> input)
