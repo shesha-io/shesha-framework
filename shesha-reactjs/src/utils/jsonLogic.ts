@@ -2,6 +2,8 @@ import { DataTypes } from '@/interfaces/dataTypes';
 import { evaluateComplexStringWithResult, IEvaluateComplexStringResult, IMatchData } from '@/providers/form/utils';
 import { executeFunction } from '@/utils';
 import { isDefined, isNullOrWhiteSpace } from './nullables';
+import { JsonLogicFilter } from '@/interfaces/jsonLogic';
+import { isNonEmptyArray } from './array';
 
 export type EvaluationType = 'mustache' | 'javascript';
 export interface IEvaluateNodeArgs {
@@ -434,3 +436,13 @@ export interface IMustacheEvaluateNodeArgs {
 export interface IMustacheEvaluateNode {
   evaluate: IMustacheEvaluateNodeArgs[];
 }
+
+export const combineExpressionsWithAnd = (filters: JsonLogicFilter[]): JsonLogicFilter | undefined => {
+  return isNonEmptyArray(filters)
+    ? filters.length > 1
+      ? {
+        and: filters,
+      }
+      : filters[0]
+    : undefined;
+};

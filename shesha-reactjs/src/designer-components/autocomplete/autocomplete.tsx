@@ -18,7 +18,7 @@ import { isNonEmptyArray } from '@/utils/array';
 import { getNestedStringOrUndefined } from '@/utils/dotnotation';
 import { isEntityReferenceId } from '@/utils/entity';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
-import { getBooleanPropertyOrUndefined, getStringEnumOrDefault, getStringPropertyOrUndefined, getValueByPropertyName } from '@/utils/object';
+import { getBooleanPropertyOrUndefined, getStringEnumOrDefault, getStringPropertyOrUndefined, getValueByPropertyName, pick } from '@/utils/object';
 import { FileSearchOutlined } from '@ant-design/icons';
 import React, { useCallback } from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
@@ -57,12 +57,17 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
 
     const keyValueFunc = useCallback<KayValueFunc>((value, args) => {
       if (!isDefined(value))
-        return value;
+        return undefined;
       if (model.valueFormat === 'custom' && !isNullOrWhiteSpace(model.keyValueFunc))
-        return executeExpression<string>(model.keyValueFunc, { ...args, value }, null, undefined);
+        return executeExpression<string>(model.keyValueFunc, { ...args, value }, null, undefined) ?? undefined;
       if (model.valueFormat === 'entityReference' && isEntityReferenceId(value))
         return value.id;
-      return typeof (value) === 'object' ? getValueByPropertyName(value as Record<string, unknown>, keyPropName) : value;
+      const result = typeof (value) === 'object'
+        ? getValueByPropertyName(value as Record<string, unknown>, keyPropName)
+        : value;
+      return typeof (result) === "object"
+        ? undefined
+        : result?.toString();
     }, [model.valueFormat, model.keyValueFunc, keyPropName]);
 
     const outcomeValueFunc = useCallback<OutcomeValueFunc>((item, args) => {
@@ -137,10 +142,24 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
               onChange(value);
           };
           */
+          const autocompleteProps = pick(model, [
+            "dataSourceType",
+            "dataSourceUrl",
+            "entityType",
+            "filter",
+            "queryParams",
+            "grouping",
+            "sorting",
+            "readOnly",
+            "keyPropName",
+            "displayPropName",
+            "mode",
+            // "displayValueFunc",
+          ]);
 
           return (
             <Autocomplete
-              {...model}
+              {...autocompleteProps}
               filter={model.filter}
               grouping={isNonEmptyArray(model.grouping) ? model.grouping[0] : undefined}
               keyValueFunc={keyValueFunc}
