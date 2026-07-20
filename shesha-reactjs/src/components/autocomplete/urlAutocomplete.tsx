@@ -84,6 +84,8 @@ export const UrlAutocomplete = <TValue = unknown>(props: UrlAutocompleteProps<TV
       onChange={props.onChange}
       mode={props.mode}
       readOnly={props.readOnly}
+      allowFreeText={props.allowFreeText}
+      allowClear={props.allowClear}
 
       outcomeValueFunc={props.outcomeValueFunc}
       filterKeysFunc={props.filterKeysFunc}

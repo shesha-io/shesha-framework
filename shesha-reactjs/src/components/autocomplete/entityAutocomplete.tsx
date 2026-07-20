@@ -76,6 +76,8 @@ export const EntityAutocomplete = <TValue = unknown>(props: EntityAutocompletePr
       grouping={props.grouping}
       sorting={props.sorting}
       itemsToOptions={itemsToOptions}
+      allowFreeText={props.allowFreeText}
+      allowClear={props.allowClear}
 
       outcomeValueFunc={props.outcomeValueFunc}
       filterKeysFunc={props.filterKeysFunc}
