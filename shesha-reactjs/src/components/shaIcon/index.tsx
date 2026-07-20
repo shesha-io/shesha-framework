@@ -12,7 +12,7 @@ export interface IShaIconProps extends IconBaseProps {
   style?: CSSProperties | undefined;
 }
 
-export const ShaIcon: FC<IShaIconProps> = ({ iconName = 'WarningFilled', style, className, twoToneColor }) => {
+export const ShaIcon: FC<IShaIconProps> = ({ iconName = 'WarningFilled', style, className, twoToneColor, ...rest }) => {
   const { theme } = useThemeState();
 
   const IconComponent = isDefined(iconName) ? AntdIcons[iconName as IconType] as FC<IconBaseProps & { twoToneColor?: string }> : undefined;
@@ -24,5 +24,5 @@ export const ShaIcon: FC<IShaIconProps> = ({ iconName = 'WarningFilled', style, 
     ? twoToneColor
     : isNullOrWhiteSpace(primaryColor) ? '#1890ff' : primaryColor;
 
-  return <IconComponent style={style} className={className} twoToneColor={resolvedTwoToneColor} />;
+  return <IconComponent {...rest} style={style} className={className} twoToneColor={resolvedTwoToneColor} />;
 };
