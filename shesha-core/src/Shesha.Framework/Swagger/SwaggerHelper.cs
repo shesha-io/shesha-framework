@@ -1,6 +1,5 @@
 ﻿using Abp.Application.Services;
 using Abp.Reflection;
-using FirebirdSql.Data.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
@@ -85,7 +84,9 @@ namespace Shesha.Swagger
             foreach (var controller in controllers)
             {
                 var serviceName = MvcHelper.GetControllerName(controller);
-                docs.Add(GetDocumentNameForService(controller), new OpenApiInfo() { Title = $"{serviceName} (ControllerBase)", Version = "v1" });
+                var documentName = GetDocumentNameForService(controller);
+                if (!docs.ContainsKey(documentName))
+                    docs.Add(documentName, new OpenApiInfo() { Title = $"{serviceName} (ControllerBase)", Version = "v1" });
             }
 
             // 2. add application services
@@ -93,7 +94,10 @@ namespace Shesha.Swagger
             foreach (var service in appServices)
             {
                 var serviceName = MvcHelper.GetControllerName(service);
-                docs.Add(GetDocumentNameForService(service), new OpenApiInfo() { Title = $"API {serviceName} (IApplicationService)", Version = "v1" });
+                var documentName = GetDocumentNameForService(service);
+
+                if (!docs.ContainsKey(documentName))
+                    docs.Add(documentName, new OpenApiInfo() { Title = $"API {serviceName} (IApplicationService)", Version = "v1" });
             }
 
             var entityTypes = EntityTypesFunc();
@@ -102,8 +106,9 @@ namespace Shesha.Swagger
             foreach (var entity in entityTypes)
             {
                 var serviceName = entity.Name + "Crud";
-                if (!docs.ContainsKey(GetDocumentNameForService(serviceName)))
-                    docs.Add(GetDocumentNameForService(serviceName), new OpenApiInfo() { Title = $"API {serviceName} (IApplicationService)", Version = "v1" });
+                var documentName = GetDocumentNameForService(serviceName);
+                if (!docs.ContainsKey(documentName))
+                    docs.Add(documentName, new OpenApiInfo() { Title = $"API {serviceName} (IApplicationService)", Version = "v1" });
             }
 
             options.SwaggerGeneratorOptions.SwaggerDocs.Clear();
