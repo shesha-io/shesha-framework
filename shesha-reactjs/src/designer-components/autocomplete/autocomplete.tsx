@@ -104,18 +104,19 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
     } = model;
 
     const filterKeysFunc: FilterSelectedFunc = useCallback((value) => {
-      if (isNullOrWhiteSpace(filterKeysFuncExpression))
-        return {} as JsonLogicFilter;
-      if (!isDefined(value)) return {};
+      if (model.valueFormat !== 'custom' || isNullOrWhiteSpace(filterKeysFuncExpression))
+        return undefined;
+
+      if (!isDefined(value)) return undefined;
 
       const localValue = Array.isArray(value) && isNonEmptyArray<object>(value) && value.length === 1
         ? value[0]
         : value;
-      const result: JsonLogicFilter = Array.isArray(localValue)
+      const result: JsonLogicFilter | undefined = Array.isArray(localValue)
         ? { or: localValue.map((x) => executeExpression(filterKeysFuncExpression, { value: x }, null, undefined)) }
-        : executeExpression<JsonLogicFilter>(filterKeysFuncExpression, { value: localValue }, null, undefined) ?? {};
+        : executeExpression<JsonLogicFilter>(filterKeysFuncExpression, { value: localValue }, null, undefined) ?? undefined;
       return result;
-    }, [filterKeysFuncExpression]);
+    }, [filterKeysFuncExpression, model.valueFormat]);
 
     const finalStyle = !enableStyleOnReadonly && readOnly
       ? {

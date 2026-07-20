@@ -34,6 +34,7 @@ const Autocomplete = <TValue = unknown>(props: IAutocompleteProps<TValue>): Reac
         sorting={props.sorting}
         grouping={props.grouping}
         filter={props.filter}
+        filterKeysFunc={props.filterKeysFunc}
 
         displayPropName={props.displayPropName}
         onChange={props.onChange}
@@ -49,6 +50,7 @@ const Autocomplete = <TValue = unknown>(props: IAutocompleteProps<TValue>): Reac
       <UrlAutocomplete
         dataSourceUrl={props.dataSourceUrl}
         queryParams={props.queryParams}
+        filterKeysFunc={props.filterKeysFunc}
 
         fields={fields}
 
