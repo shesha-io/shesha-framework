@@ -152,14 +152,14 @@ namespace Shesha.Metadata
                 OrderIndex = property.GetAttributeOrNull<DisplayAttribute>()?.GetOrder() ?? -1,
                 IsFrameworkRelated = IsFrameworkRelatedProperty(property),
                 IsNullable = property.IsNullable(),
-                //ConfigurableByUser = property.GetAttribute<BindableAttribute>()?.Bindable ?? true,
+                //ConfigurableByUser = property.GetAttributeOrNull<BindableAttribute>()?.Bindable ?? true,
                 //GroupName = ReflectionHelper.get(declaredProperty ?? property),
                 IsFilterable = epc != null && epc.IsMapped,
                 IsSortable = epc != null && epc.IsMapped,
             };
 
             // use specified entity type or property type
-            FillEntityRelatedProperties(result, property.GetAttribute<EntityReferenceTypeAttribute>()?.EntityType ?? property.PropertyType, dataType);
+            FillEntityRelatedProperties(result, property.GetAttributeOrNull<EntityReferenceTypeAttribute>()?.EntityType ?? property.PropertyType, dataType);
 
             if (dataType.DataType == DataTypes.Array)
             {
@@ -266,7 +266,7 @@ namespace Shesha.Metadata
             var propType = ReflectionHelper.GetUnderlyingTypeIfNullable(property.PropertyType);
             if (propType.IsListType())
             {
-                var paramType = property.GetAttribute<EntityReferenceTypeAttribute>()?.EntityType ?? GetListElementType(propType);
+                var paramType = property.GetAttributeOrNull<EntityReferenceTypeAttribute>()?.EntityType ?? GetListElementType(propType);
                 if (paramType == null)
                     throw new NullReferenceException("Unable to get list element type");
                 var dataType = GetDataTypeByPropertyType(paramType, property, context.MainType);
