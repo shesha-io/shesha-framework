@@ -382,7 +382,6 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
       height: 100% !important;
       width: 100% !important;
       opacity: 0;
-      ${borderRadiusCss}
       transition: opacity 0.3s ease;
       display: flex;
       justify-content: center;
@@ -419,6 +418,10 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
       justify-content: center !important;
       position: relative !important;
 
+      .ant-image  {
+        width: 100% !important;
+        height: 100% !important;
+      }
       .anticon {
         img {
           object-fit: cover !important;

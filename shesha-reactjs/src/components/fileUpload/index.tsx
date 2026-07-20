@@ -403,10 +403,10 @@ export const FileUpload: FC<IFileUploadProps> = ({
     return (
       <div>
         {showThumbnailControls && styledfileControls()}
-        <span title={file.name}>
+        {hideFileName ? null : <span title={file.name}>
           <Space>
             <div className="thumbnail-item-name">
-              {(listType === 'text' || !hideFileName) && (
+              {(listType === 'text') && (
                 <a
                   style={{ marginRight: '5px' }}
                   onClick={isImageType(file.type ?? "")
@@ -416,13 +416,13 @@ export const FileUpload: FC<IFileUploadProps> = ({
                         void downloadFile({ fileId: file.id, fileName: file.name });
                     }}
                 >
-                  {listType !== 'thumbnail' && getFileIcon(file.type ?? "")} {`${file.name} (${filesize(isDefined(file.size) ? file.size : 0)})`}
+                  {getFileIcon(file.type ?? "")} {`${file.name} (${filesize(isDefined(file.size) ? file.size : 0)})`}
                 </a>
               )}
               {showTextControls && fileControls(appPrimaryColor)}
             </div>
           </Space>
-        </span>
+        </span>}
       </div>
     );
   };
