@@ -34,7 +34,6 @@ import { FileVersionsButton, ExtraContent, PLACEHOLDER_FILE, getListTypeAndLayou
 import classNames from 'classnames';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
 import { ShaIcon, IconType } from '@/components/shaIcon';
-import { defaultStyles } from '@/designer-components/attachmentsEditor/utils';
 import { calculateFileUploadStyles } from '@/utils/fileUploadStyles';
 import { getFileExtension } from '@/utils/storedFile/utils';
 import { DownloadFileArgs, ReplaceFilePayload, StoredFileModel } from '@/utils/storedFile/models';

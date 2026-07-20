@@ -40,7 +40,6 @@ const FileUploadComponent: FileUploadComponentDefinition = {
     const finalStyle = calculateFileUploadStyles({
       enableStyleOnReadonly: model.enableStyleOnReadonly,
       isReadOnly: model.readOnly,
-      isDisabled: model.disabled,
       listType: model.listType,
       allStyles: model.allStyles,
     });

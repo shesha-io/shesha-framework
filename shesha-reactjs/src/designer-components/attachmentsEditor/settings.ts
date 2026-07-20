@@ -227,13 +227,13 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           inputs: [
                             {
                               id: nanoid(),
-                              type: "formTypeAutocomplete",
-                              propertyName: "extraFormType",
-                              label: "Form Type",
+                              type: "formAutocomplete",
+                              propertyName: "extraFormId",
+                              label: "Form",
                               jsSetting: true,
                             },
                           ],
-                          hidden: { _code: 'return !getSettingValue(data?.customContent);', _mode: 'code', _value: false },
+                          hidden: { _code: 'return !getSettingValue(data?.customContent) || getSettingValue(data?.extraFormSelectionMode) === "dynamic";', _mode: 'code', _value: false },
                         })
                         .toJson(),
                     ],

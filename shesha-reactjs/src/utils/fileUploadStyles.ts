@@ -3,11 +3,10 @@ import { IFormComponentStyles } from '@/providers';
 import { defaultStyles } from '@/designer-components/attachmentsEditor/utils';
 
 export interface IFileUploadStyleOptions {
-  enableStyleOnReadonly?: boolean;
-  isReadOnly?: boolean;
-  isDisabled?: boolean;
-  listType?: 'text' | 'thumbnail';
-  allStyles?: IFormComponentStyles;
+  enableStyleOnReadonly?: boolean | undefined;
+  isReadOnly?: boolean | undefined;
+  listType?: 'text' | 'thumbnail' | undefined;
+  allStyles?: IFormComponentStyles | undefined;
 }
 
 /**
@@ -18,12 +17,11 @@ export const calculateFileUploadStyles = (options: IFileUploadStyleOptions): CSS
   const {
     enableStyleOnReadonly = true,
     isReadOnly = false,
-    isDisabled = false,
     listType = 'text',
-    allStyles
+    allStyles,
   } = options;
 
-  const isReadonlyOrDisabled = isReadOnly || isDisabled;
+  const isReadonlyOrDisabled = isReadOnly;
   const isReadonlyWithoutStyle = !enableStyleOnReadonly && isReadonlyOrDisabled;
 
   if (isReadonlyWithoutStyle) {
