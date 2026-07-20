@@ -109,7 +109,7 @@ export const AutocompleteWithRepository = <TValue = unknown>(props: Autocomplete
   }), [props.outcomeValueFunc, props.dataSourceType, props.keyPropName, displayPropName, keyPropName]);
 
   // init state
-  const [_autocompleteText, setAutocompleteText] = useState<string>("");
+  const [autocompleteText, setAutocompleteText] = useState<string>("");
 
   const dataColumns = useAsyncMemo<ITableDataColumn[]>(async (): Promise<ITableDataColumn[]> => {
     if (!isNonEmptyArray(props.fields))
@@ -293,12 +293,18 @@ export const AutocompleteWithRepository = <TValue = unknown>(props: Autocomplete
 
   const options = useMemo<ISelectOption[]>(() => {
     const missingSelection = selection.filter((x) => !list.some((y) => isEqual(outcomeValueFunc(y), outcomeValueFunc(x))));
-    const fullList = [...list, ...missingSelection];
+    const freeTextItems: ITableRowData[] = allowFreeText && !isNullOrWhiteSpace(autocompleteText)
+      ? list.some((x) => x[keyPropName] === autocompleteText)
+        ? []
+        : [{ id: "freeText", [keyPropName]: autocompleteText, [displayPropName]: autocompleteText }]
+      : [];
+
+    const fullList = [...freeTextItems, ...list, ...missingSelection];
 
     return isDefined(itemsToOptions)
       ? itemsToOptions(fullList, outcomeValueFunc, keyValueFunc, displayValueFunc)
       : fullList.map<ISelectOption>((row, index) => rowToOption(row, outcomeValueFunc, keyValueFunc, displayValueFunc, index));
-  }, [displayValueFunc, itemsToOptions, keyValueFunc, list, outcomeValueFunc, selection]);
+  }, [allowFreeText, autocompleteText, displayPropName, displayValueFunc, itemsToOptions, keyPropName, keyValueFunc, list, outcomeValueFunc, selection]);
 
   // Show loading when actively fetching data
   if (selectionLoadingState === 'loading') {

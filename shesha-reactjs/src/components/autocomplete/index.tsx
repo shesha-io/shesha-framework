@@ -41,6 +41,8 @@ const Autocomplete = <TValue = unknown>(props: IAutocompleteProps<TValue>): Reac
         mode={props.mode}
         readOnly={props.readOnly}
         outcomeValueFunc={props.outcomeValueFunc}
+        allowClear={props.allowClear}
+        allowFreeText={props.allowFreeText}
       />
     )
     : (
@@ -57,6 +59,8 @@ const Autocomplete = <TValue = unknown>(props: IAutocompleteProps<TValue>): Reac
         mode={props.mode}
         readOnly={props.readOnly}
         outcomeValueFunc={props.outcomeValueFunc}
+        allowClear={props.allowClear}
+        allowFreeText={props.allowFreeText}
       />
     );
 };

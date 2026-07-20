@@ -127,21 +127,6 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
     return (
       <ConfigurableFormItem {...{ model }}>
         {(value, onChange, _, ctx) => {
-          /* TODO EVENTS: review data type
-          const customEvent = customDropDownEventHandler(model, allData);
-          type StructuredValue = { id?: unknown; _displayName?: unknown; _className?: unknown };
-          const isStructuredValue = (v: unknown): v is StructuredValue =>
-            typeof v === 'object' && v !== null && !Array.isArray(v) &&
-            ('id' in v || '_displayName' in v || '_className' in v);
-          const isStructuredValueOrArray = (v: unknown): v is StructuredValue | StructuredValue[] =>
-            isStructuredValue(v) || (Array.isArray(v) && v.every(isStructuredValue));
-          const onChangeInternal = (value: unknown, option?: unknown): void => {
-            if (isStructuredValueOrArray(value))
-              customEvent.onChange(value, option);
-            if (typeof onChange === 'function')
-              onChange(value);
-          };
-          */
           const autocompleteProps = pick(model, [
             "dataSourceType",
             "dataSourceUrl",
@@ -154,7 +139,6 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
             "keyPropName",
             "displayPropName",
             "mode",
-            // "displayValueFunc",
           ]);
 
           return (
