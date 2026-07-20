@@ -21,5 +21,5 @@ export const ShaIcon: FC<IShaIconProps> = ({ iconName = 'WarningFilled', ...prop
 
   props.twoToneColor = theme.application?.primaryColor || '#1890ff';
 
-  return <IconComponent />;
+  return <IconComponent {...props} />;
 };
