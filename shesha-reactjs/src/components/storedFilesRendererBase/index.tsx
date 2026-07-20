@@ -231,7 +231,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     },
     style: calculateFileUploadStyles({
       enableStyleOnReadonly,
-      isDisabled: disabled,
       listType,
       allStyles: model.allStyles,
     }),
@@ -377,6 +376,32 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           if (!liveKeys.has(key)) {
             URL.revokeObjectURL(url);
             uploadedFileBlobUrls.current.delete(key);
+          }
+        });
+
+        // Clean up thumbnail fingerprints, cache busters, and preview cache for files no longer in the list
+        const liveUids = new Set(fileList.map((f) => f.uid));
+        const liveIds = new Set(fileList.map((f) => f.id).filter((id) => isNotNullOrWhiteSpace(id)));
+
+        // Prune thumbnail fingerprints for deleted files
+        thumbnailFingerprints.current.forEach((_, uid) => {
+          if (!liveUids.has(uid)) {
+            thumbnailFingerprints.current.delete(uid);
+          }
+        });
+
+        // Prune thumbnail cache busters for deleted files
+        thumbnailCacheBusters.current.forEach((_, id) => {
+          if (!liveIds.has(id)) {
+            thumbnailCacheBusters.current.delete(id);
+          }
+        });
+
+        // Prune preview image cache for deleted files
+        previewImageCache.current.forEach((url, id) => {
+          if (!liveIds.has(id)) {
+            URL.revokeObjectURL(url);
+            previewImageCache.current.delete(id);
           }
         });
 
