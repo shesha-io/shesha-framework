@@ -119,17 +119,19 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
     border-bottom-left-radius: ${normalizeRadius(borderBottomLeftRadius)} !important;
   `;
 
-  const commonBorderStyles = css`
-    border-top: ${borderTopWidth || borderWidth} ${borderTopStyle || borderStyle} ${borderTopColor || borderColor};
+  const commonBorderStyles = `
+    border: ${borderWidth} ${borderStyle} ${borderColor};
     border-right: ${borderRightWidth || borderWidth} ${borderRightStyle || borderStyle}
       ${borderRightColor || borderColor};
     border-left: ${borderLeftWidth || borderWidth} ${borderLeftStyle || borderStyle} ${borderLeftColor || borderColor};
     border-bottom: ${borderBottomWidth || borderWidth} ${borderBottomStyle || borderStyle}
       ${borderBottomColor || borderColor};
+    border-top: ${borderTopWidth || borderWidth} ${borderTopStyle || borderStyle} ${borderTopColor || borderColor};
+    ${borderRadiusCss}
     box-shadow: ${boxShadow};
   `;
 
-  const commonTextStyles = css`
+  const commonTextStyles = `
     color: ${color || token.colorPrimary};
     font-family: ${fontFamily};
     font-size: ${fontSize};
@@ -150,20 +152,20 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
       --thumbnail-item-height: ${hideFileName ? 'var(--thumbnail-height)' : 'calc(var(--thumbnail-height) + 32px)'};
       display: inline-block;
       vertical-align: top;
-      height: ${layout ? 'var(--thumbnail-item-height)' : '100%'} !important;
+      height: ${layout ? hideFileName ? 'var(--thumbnail-height)' : 'calc(var(--thumbnail-height) + 32px)' : '100%'} !important;
       width: ${layout ? 'var(--thumbnail-width)' : '100%'} !important;
       max-height: ${layout ? (maxHeight ?? 'auto') : '100%'} !important;
       min-height: ${layout ? (minHeight ?? 'auto') : '100%'} !important;
       max-width: ${layout ? (maxWidth ?? 'auto') : '100%'} !important;
       min-width: ${layout ? (minWidth ?? 'auto') : '100%'} !important;
       ${isThumbnail ? `
+        display: flex;
+        flex-direction: column;
       .ant-upload-list-picture-card {
         min-height: 0 !important;
       }
 
       .ant-upload-list-item-container {
-        width: var(--thumbnail-width) !important;
-        height: var(--thumbnail-item-height) !important;
         margin: 0 !important;
         padding: 0 !important;
         box-sizing: border-box !important;
@@ -177,20 +179,29 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
         flex-direction: column;
       }
 
-      /* The empty upload tile (no file yet) must match the thumbnail size and carry the configured
-         border/background/radius so it looks identical to the file tiles. The designer stub renders
-         .thumbnail-stub, but the live uploader renders .ant-upload-select, which otherwise keeps
-         antd's default (mismatched size, dashed default border) in the dynamic/end-user view. */
       .${prefixCls}-upload-select,
       .${prefixCls}-upload.${prefixCls}-upload-select {
         width: var(--thumbnail-width) !important;
         height: var(--thumbnail-height) !important;
         margin: 0 !important;
         box-sizing: border-box !important;
-        background: ${backgroundImage ?? backgroundColor ?? background};
         ${commonBorderStyles}
         ${borderRadiusCss}
         ${extraStyles}
+      }
+
+      >.thumbnail-stub {
+        padding: 0 !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+        background: ${backgroundImage ?? backgroundColor ?? background};
+          width: 100% !important;
+          height: 100% !important;
+        display: flex !important;
+        align-items: center !important;
+        ${extraStyles}
+        ${commonBorderStyles}
+        ${commonTextStyles}
       }
 
       .${prefixCls}-upload-select .${prefixCls}-upload {
@@ -219,8 +230,6 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
         --ant-font-size: ${fontSize} !important;
         display: flex;
         ${isThumbnail ? `
-        ${borderRadiusCss}
-        border: ${borderWidth} ${borderStyle} ${borderColor} !important;
 
         :before {
           top: 0;
@@ -234,7 +243,6 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
 
       .ant-upload-list-item-thumbnail {
         ${extraStyles}
-        ${borderRadiusCss}
         box-sizing: border-box !important;
         padding: 0 !important;
         ${commonBorderStyles}
@@ -267,18 +275,6 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
             color: ${color} !important;
           }
         }
-      }
-
-      .thumbnail-stub {
-        ${extraStyles}
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        ${borderRadiusCss}
-        ${commonBorderStyles}
-        ${commonTextStyles}
-        box-sizing: border-box !important;
       }
 
       .ant-upload-list-text {
@@ -406,7 +402,6 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
     css`
       ${commonBorderStyles}
       ${commonTextStyles}
-      ${borderRadiusCss}
       padding: 0 !important;
       box-sizing: border-box !important;
       overflow: hidden !important;
@@ -419,9 +414,15 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
       position: relative !important;
 
       .ant-image  {
+        object-fit: cover !important;
         width: 100% !important;
         height: 100% !important;
+        img {
+          object-fit: cover !important;
+          
+        }
       }
+
       .anticon {
         img {
           object-fit: cover !important;

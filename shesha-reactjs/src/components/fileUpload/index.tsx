@@ -396,30 +396,30 @@ export const FileUpload: FC<IFileUploadProps> = ({
       </div>
     );
 
-  const renderFileItem = (file: UploadFile): React.JSX.Element => {
+  const renderFileItem = (file: UploadFile & { id?: string }): React.JSX.Element => {
     const showThumbnailControls = listType === 'thumbnail';
     const showTextControls = listType === 'text';
 
     return (
       <div>
         {showThumbnailControls && styledfileControls()}
-        {hideFileName ? null : (
+        {!hideFileName && (
           <span title={file.name}>
             <Space>
               <div className="thumbnail-item-name">
-                {(listType === 'text') && (
-                  <a
-                    style={{ marginRight: '5px' }}
-                    onClick={isImageType(file.type ?? "")
-                      ? onPreview
-                      : () => {
-                        if (!isNullOrWhiteSpace(file.id))
-                          void downloadFile({ fileId: file.id, fileName: file.name });
-                      }}
-                  >
-                    {getFileIcon(file.type ?? "")} {`${file.name} (${filesize(isDefined(file.size) ? file.size : 0)})`}
-                  </a>
-                )}
+                <a
+                  style={{ marginRight: '5px' }}
+                  onClick={isImageType(file.type ?? "")
+                    ? onPreview
+                    : () => {
+                      // Use file.id if available (from stored file), otherwise use uid
+                      const fileId = file.id || file.uid;
+                      if (!isNullOrWhiteSpace(fileId))
+                        void downloadFile({ fileId, fileName: file.name });
+                    }}
+                >
+                  {`${file.name} (${filesize(isDefined(file.size) ? file.size : 0)})`}
+                </a>
                 {showTextControls && fileControls(appPrimaryColor)}
               </div>
             </Space>

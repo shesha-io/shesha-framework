@@ -35,6 +35,7 @@ import classNames from 'classnames';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
 import { ShaIcon, IconType } from '@/components/shaIcon';
 import { defaultStyles } from '@/designer-components/attachmentsEditor/utils';
+import { calculateFileUploadStyles } from '@/utils/fileUploadStyles';
 import { getFileExtension } from '@/utils/storedFile/utils';
 import { DownloadFileArgs, ReplaceFilePayload, StoredFileModel } from '@/utils/storedFile/models';
 import { useHttpClient } from '@/providers/sheshaApplication/publicApi/http/hooks';
@@ -220,8 +221,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const hasFiles = !!fileList.length;
 
   const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS } = useFormComponentStyles({ ...model.container });
-  const defaultBorder = defaultStyles().border?.border?.all ?? {};
-
   const { styles } = useStyles({
     downloadedFileStyles: downloadedFileStyles ?? {},
     containerStyles: {
@@ -231,20 +230,12 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       ...containerJsStyle,
       ...stylingBoxAsCSS,
     },
-    style: !enableStyleOnReadonly && disabled === true
-      // In thumbnail mode the configured background/border/shadow describe the thumbnail tile and
-      // must render identically in read-only and edit mode, so keep the appearance styles even when
-      // styling-on-readonly is disabled. In text mode fall back to the plain default border.
-      ? listType === 'thumbnail'
-        ? {
-          ...(model.allStyles?.dimensionsStyles ?? {}),
-          ...(model.allStyles?.fontStyles ?? {}),
-          ...(model.allStyles?.borderStyles ?? {}),
-          ...(model.allStyles?.backgroundStyles ?? {}),
-          ...(model.allStyles?.shadowStyles ?? {}),
-        }
-        : { ...(model.allStyles?.dimensionsStyles ?? {}), ...(model.allStyles?.fontStyles ?? {}), border: `${defaultBorder.width} ${defaultBorder.style} ${defaultBorder.color}` }
-      : { ...(model.allStyles?.fullStyle ?? {}) },
+    style: calculateFileUploadStyles({
+      enableStyleOnReadonly,
+      isDisabled: disabled,
+      listType,
+      allStyles: model.allStyles,
+    }),
     model: {
       gap: addPx(gap, allData) ?? '0px',
       layout: listType === 'thumbnail' && !isDragger,
