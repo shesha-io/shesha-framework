@@ -8,7 +8,7 @@ import {
   isFormColumnProps,
   isRendererColumnProps,
 } from '@/providers/datatableColumnsConfigurator/models';
-import { camelcaseDotNotation } from '@/utils/string';
+import { camelcaseDotNotation, firstNonEmptyStringOrUndefined } from '@/utils/string';
 import { IDataTableStateContext, IDataTableUserConfig, MIN_COLUMN_WIDTH } from './contexts';
 import {
   ColumnSorting,
@@ -403,4 +403,114 @@ export const sortingItems2ColumnSorting = (items: ISortingItem[] | undefined): I
   return items
     ? items.map<IColumnSorting>((item) => ({ id: item.propertyName, desc: item.sorting === 'desc' }))
     : [];
+};
+
+
+export const prepareTableColumn = (column: IConfigurableColumnsProps, repoColOverrides: DataTableColumnDto[], userConfig: IDataTableUserConfig | undefined): ITableColumn | undefined => {
+  const resolvedPropertyName = isDataColumnProps(column)
+    ? firstNonEmptyStringOrUndefined(column.propertyName, column.accessor, column.id)
+    : undefined;
+  const userColumnId = isDataColumnProps(column) ? resolvedPropertyName : column.id;
+  const userColumn = userConfig?.columns?.find((c) => c.id === userColumnId);
+
+  const baseProps: ITableColumn = {
+    id: column.id,
+    accessor: column.id,
+    columnId: column.id,
+    columnType: column.columnType,
+    anchored: column.anchored,
+    header: column.caption,
+    caption: column.caption,
+    minWidth: column.minWidth ?? MIN_COLUMN_WIDTH,
+    maxWidth: column.maxWidth,
+    width: userColumn?.width,
+    isVisible: column.isVisible,
+    show: column.isVisible,
+    isFilterable: false,
+    isSortable: false,
+    allowShowHide: false,
+    backgroundColor: column.backgroundColor,
+    description: column.description,
+  };
+
+  if (isDataColumnProps(column)) {
+    const colVisibility = userColumn && isDefined(userColumn.show) ? userColumn.show : column.isVisible;
+
+    const srvColumn = !isNullOrWhiteSpace(resolvedPropertyName)
+      ? repoColOverrides.find((c) => !isNullOrWhiteSpace(c.propertyName) && camelcaseDotNotation(c.propertyName) === camelcaseDotNotation(resolvedPropertyName))
+      : {};
+
+    const dataCol: ITableDataColumn = {
+      ...baseProps,
+      id: !isNullOrWhiteSpace(resolvedPropertyName) ? resolvedPropertyName : column.id,
+      accessor: !isNullOrWhiteSpace(resolvedPropertyName) ? camelcaseDotNotation(resolvedPropertyName) : column.accessor ?? "",
+      propertyName: resolvedPropertyName,
+
+      propertiesToFetch: resolvedPropertyName,
+      isEntity: srvColumn?.dataType === 'entity',
+
+      createComponent: column.createComponent,
+      editComponent: column.editComponent,
+      displayComponent: column.displayComponent,
+
+      dataType: srvColumn?.dataType as ProperyDataType,
+      dataFormat: srvColumn?.dataFormat ?? undefined,
+      isSortable: column.allowSorting && Boolean(srvColumn?.isSortable),
+      isFilterable: srvColumn?.isFilterable ?? false,
+      entityTypeName: srvColumn?.entityTypeName ?? undefined,
+      entityTypeModule: srvColumn?.entityTypeModule ?? undefined,
+      referenceListName: srvColumn?.referenceListName ?? undefined,
+      referenceListModule: srvColumn?.referenceListModule ?? undefined,
+      allowInherited: srvColumn?.allowInherited ?? false,
+      description: column.description,
+      allowShowHide: true,
+      show: colVisibility,
+      metadata: srvColumn?.metadata ?? undefined,
+    };
+    return dataCol;
+  }
+
+  if (isActionColumnProps(column)) {
+    const { icon, actionConfiguration } = column;
+
+    const actionColumn: ITableActionColumn = {
+      ...baseProps,
+      icon,
+      actionConfiguration,
+    };
+
+    return actionColumn;
+  }
+
+  if (isFormColumnProps(column)) {
+    const formColumn: ITableFormColumn = {
+      ...baseProps,
+      accessor: '',
+      propertiesToFetch: column.propertiesNames,
+      propertiesNames: column.propertiesNames,
+
+      displayFormId: column.displayFormId,
+      createFormId: column.createFormId,
+      editFormId: column.editFormId,
+
+      minHeight: column.minHeight,
+    };
+    return formColumn;
+  }
+
+  if (isRendererColumnProps(column)) {
+    const rendererColumn: ITableRendererColumn = {
+      ...baseProps,
+      renderCell: column.renderCell,
+    };
+    return rendererColumn;
+  }
+
+  if (isCrudOperationsColumnProps(column)) {
+    return {
+      ...baseProps,
+    };
+  }
+
+  return undefined;
 };
