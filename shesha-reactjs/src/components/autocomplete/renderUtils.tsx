@@ -12,6 +12,7 @@ export const rowToOption = (row: ITableRowData,
   const value = outcomeValueFunc(row);
   const key = keyValueFunc(value);
   const rawLabel = displayValueFunc(row);
+
   const label = isNullOrWhiteSpace(rawLabel) || typeof rawLabel === 'object'
     ? ''
     : String(rawLabel);

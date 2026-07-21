@@ -146,6 +146,7 @@ export const AutocompleteWithRepository = <TValue = unknown>(props: Autocomplete
   const [selectionLoadingState, setSelectionLoadingState] = useState<LoadingState>('waiting');
   const [selection, setSelection] = useState<Array<ITableRowData>>([]);
   const [listLoadingState, setListLoadingState] = useState<LoadingState>('waiting');
+  const [listLoadingHash, setListLoadingHash] = useState<string>('');
   const [list, setList] = useState<Array<ITableRowData>>([]);
   const [totalFound, setTotalFound] = useState<number | undefined>(undefined);
 
@@ -243,6 +244,8 @@ export const AutocompleteWithRepository = <TValue = unknown>(props: Autocomplete
     try {
       setListLoadingState("loading");
       const response = await repository.fetch(payload);
+      if (repository.fetchingSettingsHash !== listLoadingHash)
+        setListLoadingHash(repository.fetchingSettingsHash);
 
       setList(response.rows);
       setTotalFound(response.totalRows);
@@ -318,7 +321,7 @@ export const AutocompleteWithRepository = <TValue = unknown>(props: Autocomplete
 
   const onDropdownOpenChange: OnOpenChangeHandler = (visible) => {
     if (visible) {
-      if (listLoadingState !== "loading" && listLoadingState !== "success")
+      if ((listLoadingState !== "loading" && listLoadingState !== "success") || repository.fetchingSettingsHash !== listLoadingHash)
         debouncedSearch("");
     }
   };
