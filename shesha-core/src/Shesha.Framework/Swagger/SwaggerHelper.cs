@@ -48,6 +48,7 @@ namespace Shesha.Swagger
                 .Distinct(new AssemblyFullNameComparer())
                 .Where(a => a.GetTypes().Any(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t)))
                 .SelectMany(a => a.GetTypes().Where(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t)))
+                .OrderBy(t => t.Name)
                 .ToList();
         }
 
@@ -80,7 +81,7 @@ namespace Shesha.Swagger
             var docs = new Dictionary<string, OpenApiInfo>();
 
             // 1. add controllers
-            var controllers = types.Where(t => typeof(ControllerBase).IsAssignableFrom(t)).ToList();
+            var controllers = types.Where(t => typeof(ControllerBase).IsAssignableFrom(t)).OrderBy(t => t.Name).ToList();
             foreach (var controller in controllers)
             {
                 var serviceName = MvcHelper.GetControllerName(controller);
@@ -90,7 +91,7 @@ namespace Shesha.Swagger
             }
 
             // 2. add application services
-            var appServices = types.Where(t => typeof(IApplicationService).IsAssignableFrom(t)).ToList();
+            var appServices = types.Where(t => typeof(IApplicationService).IsAssignableFrom(t)).OrderBy(t => t.Name).ToList();
             foreach (var service in appServices)
             {
                 var serviceName = MvcHelper.GetControllerName(service);
@@ -127,6 +128,7 @@ namespace Shesha.Swagger
                 prefix = service.GetGenericInterfaces(typeof(IEntityAppService<,>)).FirstOrDefault()?.GetGenericArguments().FirstOrDefault()?.Assembly.GetName().Name;
             // Add prefix for all EntityAppServices to process later in GroupInclusionPredicate
             prefix = prefix == null ? "" : prefix + ":";
+            
             var serviceName = prefix + MvcHelper.GetControllerName(service);
             return serviceName;
         }
