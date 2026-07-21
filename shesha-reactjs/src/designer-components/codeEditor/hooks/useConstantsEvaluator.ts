@@ -1,9 +1,9 @@
 import { isEmptyString } from "@/utils/string";
 import { GetAvailableConstantsArgs, GetAvailableConstantsFunc } from "../interfaces";
 import { useCallback } from "react";
-import { useMetadataBuilderFactory } from "@/utils";
+import { isDefined, useMetadataBuilderFactory } from "@/utils";
 import { executeScript } from '@/providers/form/utils';
-import { useFormData, useShaFormInstance } from '@/providers';
+import { useFormData, useShaFormInstanceOrUndefined } from '@/providers';
 import { IObjectMetadata } from "@/interfaces";
 
 export interface UseResultTypeEvaluatorArgs {
@@ -16,14 +16,14 @@ export type ConstantsEvaluator = () => Promise<IObjectMetadata>;
 export const useConstantsEvaluator = (model: UseResultTypeEvaluatorArgs): ConstantsEvaluator | undefined => {
   const metadataBuilderFactory = useMetadataBuilderFactory(model.makeComponentsNullable);
   const { data: formData } = useFormData();
-  const shaFormInstance = useShaFormInstance();
+  const shaFormInstance = useShaFormInstanceOrUndefined();
 
-  const availableConstantsExpression = Boolean(model.availableConstantsExpression) && !isEmptyString(model.availableConstantsExpression)
+  const availableConstantsExpression = isDefined(model.availableConstantsExpression) && !isEmptyString(model.availableConstantsExpression)
     ? model.availableConstantsExpression
     : undefined;
 
   const constantsAccessor = useCallback((): Promise<IObjectMetadata> => {
-    if (!availableConstantsExpression)
+    if (!isDefined(availableConstantsExpression))
       return Promise.reject("AvailableConstantsExpression is mandatory");
 
     const metadataBuilder = metadataBuilderFactory();
@@ -37,7 +37,7 @@ export const useConstantsEvaluator = (model: UseResultTypeEvaluatorArgs): Consta
       : availableConstantsExpression(getConstantsArgs);
   }, [availableConstantsExpression, metadataBuilderFactory, formData, shaFormInstance]);
 
-  return availableConstantsExpression
+  return isDefined(availableConstantsExpression)
     ? constantsAccessor
     : undefined;
 };

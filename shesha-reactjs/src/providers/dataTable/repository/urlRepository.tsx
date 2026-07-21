@@ -10,8 +10,8 @@ import { convertDotNotationPropertiesToGraphQL } from '@/providers/form/utils';
 import { IMetadataDispatcher } from '@/providers/metadataDispatcher/contexts';
 import { buildUrl } from '@/utils';
 import { isNonEmptyArray } from '@/utils/array';
-import { isNullOrWhiteSpace } from '@/utils/nullables';
-import { camelcaseDotNotation } from '@/utils/string';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { camelcaseDotNotation, firstNonEmptyString } from '@/utils/string';
 import {
   DataTableColumnDto,
   IGetDataFromUrlPayload,
@@ -23,6 +23,7 @@ import {
 } from '../interfaces';
 import { DataTableProviderWithRepository, IDataTableProviderWithRepositoryProps } from '../provider';
 import { IRepository, RowsReorderPayload } from './interfaces';
+import hash from 'object-hash';
 
 export interface IWithUrlRepositoryArgs {
   getListUrl: string;
@@ -66,7 +67,7 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
   const getPropertyNamesForFetching = (columns: ITableDataFetchColumn[]): string[] => {
     const result: string[] = [];
     columns.forEach((column) => {
-      if (!column.propertiesToFetch)
+      if (!isDefined(column.propertiesToFetch))
         return;
       // Skip collection-of-entity columns. The backend auto-expands them to `{ id _className _displayName }`
       // and then trips ProjectionHelper.BuildNestedMemberInit looking for `Id` on `IList<T>`.
@@ -82,7 +83,7 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
       } else {
         result.push(column.propertiesToFetch);
         // special handling for entity references: expand properties list to include `id` and `_displayName`
-        if (column.isEntity) {
+        if (column.isEntity === true) {
           const requiredProps = [`${column.propertiesToFetch}.Id`, `${column.propertiesToFetch}._displayName`];
           requiredProps.forEach((rp) => {
             if (!result.includes(rp))
@@ -106,7 +107,7 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
       sorting: isNonEmptyArray(payload.sorting)
         ? payload.sorting
           .filter((s) => Boolean(s.id))
-          .map((s) => camelcaseDotNotation(s.id) + (s.desc ? ' desc' : ''))
+          .map((s) => camelcaseDotNotation(s.id) + (s.desc === true ? ' desc' : ''))
           .join(',')
         : undefined,
       filter: payload.filter,
@@ -150,7 +151,7 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
     const dataTableColumns = configurableColumns
       .filter((c): c is IUrlExtendedDataColumn => isDataColumnProps(c))
       .map<DataTableColumnDto>((col) => {
-        const name = col.propertyName || col.accessor || col.caption;
+        const name = firstNonEmptyString(col.propertyName, col.accessor, col.caption);
         return {
           propertyName: name,
           name,
@@ -192,6 +193,13 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
     return Promise.reject(`Reordering is not supported by the repository '${UrlRepositoryType}'`);
   };
 
+  const getFetcherHash = (): string => {
+    return hash({
+      getListUrl,
+    }, { algorithm: 'md5', encoding: 'hex' });
+  };
+
+
   const repository: IUrlRepository = {
     repositoryType: UrlRepositoryType,
     fetch,
@@ -201,6 +209,7 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
     performCreate,
     performUpdate,
     performDelete,
+    fetchingSettingsHash: getFetcherHash(),
   };
   return repository;
 };

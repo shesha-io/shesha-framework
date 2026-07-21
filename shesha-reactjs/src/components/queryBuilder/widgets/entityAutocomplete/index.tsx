@@ -19,7 +19,6 @@ const EntityAutocompleteWidget: EntityAutocompleteWidgetType = {
         displayPropName="_displayName"
         keyPropName="id"
         mode="single"
-        allowInherited={customSettings.allowInherited}
         value={value}
         onChange={(newValue) => {
           setValue(typeof (newValue) === "string" ? newValue : undefined);

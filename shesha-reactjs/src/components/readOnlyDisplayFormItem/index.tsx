@@ -132,7 +132,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = <TValu
                   return (
                     <ReflistTag
                       key={value}
-                      value={value}
+                      value={value ?? undefined}
                       color={color}
                       icon={icon}
                       description={description}
