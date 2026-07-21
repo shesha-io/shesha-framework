@@ -111,6 +111,7 @@ import ChevronComponent from '@/designer-components/chevron/chevron';
 import KanbanComponent from '@/designer-components/kanban';
 import ChartComponent from '@/designer-components/charts';
 import { ConfigurableItemAutocompleteComponent } from '@/designer-components/configurableItemAutocomplete';
+import YoutubeVideoComponent from '@/designer-components/youtubeVideo';
 
 export const getToolboxComponents = (
   devMode: boolean,
@@ -141,7 +142,7 @@ export const getToolboxComponents = (
     {
       name: 'Data display',
       visible: true,
-      components: [Alert, Link, Statistic, Text, ValidationErrors, ChartComponent],
+      components: [Alert, Link, Statistic, Text, ValidationErrors, ChartComponent, YoutubeVideoComponent],
     },
     {
       name: 'Advanced',
