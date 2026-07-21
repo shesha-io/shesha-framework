@@ -2,7 +2,7 @@ import { isSubFormComponent } from '@/designer-components/subForm';
 import { useActualContextData, useDeepCompareMemo } from '@/hooks';
 import { useActualContextExecution, useBackgroundStoredFile, useCalculatedModel, useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
-import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
+import { IApiContext, IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
 import { IStyleValue, useCanvas, useForm, useShaFormInstance, useSheshaApplication, useTheme } from '@/providers';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { formComponentActualModelPropertyFilter, isFormFullName } from '@/providers/form/utils';
@@ -17,7 +17,7 @@ import { isValidGuid } from '../components/utils';
 import { getStyleBoxValue } from '@/designer-components/styleBox/utils';
 import { stylingUtils } from '@/components/formDesigner/utils/stylingUtils';
 import { IFormComponentProps } from './formComponent';
-import { updateApi } from './formComponentApi';
+import { updateApi, updateApiModel } from './formComponentApi';
 
 type CustomHtmlAttributes = {
   "data-sha-c-id"?: string | undefined;
@@ -153,6 +153,8 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
   }, [componentApi, actualModel, actualApiModel, isInput, shaForm]);
   useEffectOnce(() => () => componentApi?.removeApi(actualModel.id));
 
+  const apiContext: IApiContext<IConfigurableFormComponent> = useMemo(() => ({ updateApiModel: (model) => updateApiModel(setApiModel, model) }), []);
+
   const control = useMemo(() => {
     return (
       <toolboxComponent.Factory
@@ -160,10 +162,11 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
         model={actualApiModel}
         calculatedModel={calculatedModel}
         shaApplication={shaApplication}
+        apiContext={apiContext}
         key={actualModel.id}
       />
     );
-  }, [toolboxComponent, shaForm.antdForm, actualApiModel, calculatedModel, shaApplication, actualModel.id]);
+  }, [toolboxComponent, shaForm.antdForm, actualApiModel, calculatedModel, shaApplication, actualModel.id, apiContext]);
 
   // Run validation in both designer and runtime modes
   // Collect errors from:

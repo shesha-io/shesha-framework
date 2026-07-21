@@ -55,7 +55,7 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
       executeCustomFormat: (value: unknown, code: string): string => executeScriptSync(code, addContextData(allData, { value })) ?? "",
     };
   },
-  Factory: ({ model, calculatedModel }) => {
+  Factory: ({ model, calculatedModel, apiContext }) => {
     const [, forceRefresh] = useState({});
 
     const componentApi = useComponentApi();
@@ -66,9 +66,13 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
         componentName: model.componentName ?? "",
         level: 3,
         typeDefinition: { typeName: 'NumberFieldApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+        properties: [
+          { name: 'min', getter: () => model.validate?.minValue, setter: (value) => apiContext?.updateApiModel({ validate: { minValue: value } }) },
+          { name: 'max', getter: () => model.validate?.maxValue, setter: (value) => apiContext?.updateApiModel({ validate: { maxValue: value } }) },
+        ],
         api: { focus: () => inputRef.current?.focus() },
       });
-    }, [componentApi, model.componentName, model.id]);
+    }, [apiContext, componentApi, model.componentName, model.id, model.validate?.minValue, model.validate?.maxValue]);
     useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
     const { styles } = useStyles(model);
@@ -99,7 +103,10 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
       controls: false,
       // ...(isDefined(model.validate?.maxValue) ? { max: model.validate.maxValue } : {}),
       // ...(isDefined(model.validate?.minValue) ? { min: model.validate.minValue } : {}),
+
       ...(isDefined(model.styleJson) ? { style: model.styleJson } : {}),
+      className: styles.numberStyles,
+
     };
 
     // ToDo: AS - implement custom number formatting
