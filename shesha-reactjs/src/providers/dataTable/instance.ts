@@ -295,9 +295,9 @@ export class DatasetInstance implements IDatasetInstance {
         })
         : [];
 
-    const selectedStoredFilterIds = isNonEmptyArray(state.selectedStoredFilterIds)
-      ? [...state.selectedStoredFilterIds]
-      : [...userFilters];
+      const selectedStoredFilterIds = isNonEmptyArray(state.selectedStoredFilterIds)
+        ? [...state.selectedStoredFilterIds]
+        : [...userFilters];
 
       if (selectedStoredFilterIds.length === 0 && isNonEmptyArray(predefinedFilters))
         selectedStoredFilterIds.push(predefinedFilters[0].id);
