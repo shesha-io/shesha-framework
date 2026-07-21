@@ -165,9 +165,15 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   const entityTypeFormCache = useRef<Record<string, IFormDto>>({});
 
   useEffect(() => {
+    if (formSelectionMode === 'dynamic')
+      return;
     if (formConfig.formId !== formId)
       setFormConfig({ formId, lazy: true });
-  }, [formId, formConfig.formId]);
+  }, [formId, formConfig.formId, formSelectionMode]);
+
+  useEffect(() => {
+    prevRenderedEntityTypeForm.current = null;
+  }, [formSelectionMode]);
 
   const setMarkup = useCallback((payload: IPersistedFormPropsWithComponents): void => {
     const flatStructure = componentsTreeToFlatStructure(designerComponents, payload.components);

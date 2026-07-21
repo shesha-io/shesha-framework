@@ -43,7 +43,7 @@ const DropdownComponent: DropdownComponentDefinition = {
       : { ...model.allStyles?.fullStyle, overflow: 'auto' };
 
     return (
-      <ConfigurableFormItem<number | number[]> model={model}>
+      <ConfigurableFormItem<number | number[] | string | string[] | (number | string)[]> model={model}>
         {(value, onChange, _, ctx) => {
           return (
             <Dropdown

@@ -90,7 +90,12 @@ export function getLastSection(separator: string, value: string): string {
 
 export const getNumberOrUndefined = (value: unknown | undefined): number | undefined => {
   try {
-    return isDefined(value) ? Number(value) : undefined;
+    if (typeof value === 'string' && value.trim() === '')
+      return undefined;
+    const res = isDefined(value) ? Number(value) : undefined;
+    if (isDefined(res) && isNaN(res))
+      return undefined;
+    return res;
   } catch {
     return undefined;
   }
@@ -148,7 +153,7 @@ export function toCamelCase(str: undefined, options?: CamelCaseOptions): undefin
 export function toCamelCase(str: string | null | undefined, options?: CamelCaseOptions): string | null | undefined {
   const text = str?.trim();
 
-  if (!text) return text;
+  if (isNullOrWhiteSpace(text)) return text;
 
   // The camelCase and PascalCase standards remove the leading separators.
   // But we need it for using special fields like `_className` and `_displayName`
@@ -165,29 +170,27 @@ export function toCamelCase(str: string | null | undefined, options?: CamelCaseO
   return leadingSeparators + result; // restore the leading separators if needed
 }
 
-export function numberToFormattedString(str: string, format: string | undefined): string {
-  if (!isNullOrWhiteSpace(str)) {
-    const value = parseFloat(str);
+export function numberToFormattedString(str: string | null | undefined, format: string | undefined): string {
+  if (isNullOrWhiteSpace(str)) return '';
+  const value = parseFloat(str.trim());
 
-    switch (format) {
-      case 'currency':
-        return new Intl.NumberFormat('en-ZA', {
-          style: 'currency',
-          currency: 'ZAR',
-        }).format(value);
+  switch (format) {
+    case 'currency':
+      return new Intl.NumberFormat('en-ZA', {
+        style: 'currency',
+        currency: 'ZAR',
+      }).format(value);
 
-      case 'round':
-        return value.toFixed();
+    case 'round':
+      return value.toFixed();
 
-      case 'thousandSeparator':
-        return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    case 'thousandSeparator':
+      const parts = value.toString().split('.');
+      return parts.length > 1 ? `${parts[0]?.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}.${parts[1]}` : parts[0]?.replace(/\B(?=(\d{3})+(?!\d))/g, ',') ?? '';
 
-      default:
-        return str;
-    }
+    default:
+      return str;
   }
-
-  return str;
 }
 
 /* Convert string to camelCase */
@@ -263,7 +266,7 @@ export const incrementStringNumber = (input: string): string => {
   const regex = / (\d+)$/;
   const match = input.match(regex);
 
-  if (match && match[1]) {
+  if (isDefined(match) && isDefined(match[1])) {
     const prefix = input.slice(0, match.index);
     const currentNumber = parseInt(match[1], 10);
     const incrementedNumber = currentNumber + 1;
@@ -272,4 +275,10 @@ export const incrementStringNumber = (input: string): string => {
 
   // No trailing number found, append " 1"
   return `${input} 1`;
+};
+
+export const firstNonEmptyString = (...args: (string | null | undefined)[]): string => firstNonEmptyStringOrUndefined(...args) ?? '';
+
+export const firstNonEmptyStringOrUndefined = (...args: (string | null | undefined)[]): string | undefined => {
+  return args.find((s) => !isNullOrWhiteSpace(s));
 };

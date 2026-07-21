@@ -12,7 +12,7 @@ import { GetResultTypeFunc } from '../codeEditor/interfaces';
 import { CodeLanguages } from '../codeEditor/types';
 import { IConfigurableActionConfiguratorComponentProps } from '../configurableActionsConfigurator/interfaces';
 import { IItemListConfiguratorModalProps } from '../itemListConfigurator/itemListConfiguratorModal';
-import { ButtonGroupItemProps, EditMode, FormFullName, IConfigurableActionConfiguration } from '@/providers';
+import { ButtonGroupItemProps, EditMode, FormFullName, IConfigurableActionConfiguration, InteractionType } from '@/providers';
 import { ISortingItem, IStoredFilter } from '@/providers/dataTable/interfaces';
 import { ListItemWithId } from '@/components/listEditor/models';
 import { ILayerFormModel } from '@/providers/layersProvider/models';
@@ -413,6 +413,7 @@ export interface IFiltersListSettingsInputProps extends ISettingsInputBase<IStor
 // Edit Mode Selector
 export interface IEditModeSelectorSettingsInputProps extends ISettingsInputBase<EditMode> {
   type: 'editModeSelector';
+  interactionType?: InteractionType | undefined;
 }
 
 // Three State Switch

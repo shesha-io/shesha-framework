@@ -8,10 +8,13 @@ import {
   IStyleValue,
   ProxyPropertiesAccessors,
   StyleBoxValue,
+  TypedProxy,
   UnwrapCodeEvaluators,
   executeScriptSync,
   getActualModel,
+  getParentDisabled,
   getParentReadOnly,
+  isConfigurableFormComponent,
   pickStyleFromModel,
   useAvailableConstantsContexts,
   useAvailableConstantsContextsNoRefresh,
@@ -33,6 +36,8 @@ import { getOverflowStyle } from "@/designer-components/_settings/utils/overflow
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { useIsFirstRender } from "./useIsFirstRender";
 import { ISheshaApplicationInstance } from "@/providers/sheshaApplication/application";
+import { getDisabledAndReadOnly, IDisabledAndReadOnly } from "@/components/formDesigner/formComponent/formComponentApi";
+import { isHasEditMode } from "@/providers/form/utils/js-settings";
 
 type MayHaveEditMode<T> = T & {
   editMode?: unknown | undefined;
@@ -59,49 +64,68 @@ export const useTouchableProxy = <T>(accessors: ProxyPropertiesAccessors<T>, add
 
 const unwrapModel = <T extends object = object>(
   model: T,
-  contextProxy: TouchableProxy<IApplicationContext>,
+  contextProxy: TypedProxy<IApplicationContext>,
   propertyFilter?: (name: string, value: unknown) => boolean,
-  executor?: (data: T, context: TouchableProxy<IApplicationContext>) => UnwrapCodeEvaluators<T>,
-  parentReadonly?: boolean,
+  executor?: (data: T, context: TypedProxy<IApplicationContext>) => UnwrapCodeEvaluators<T>,
+  parentDisabledAndReadOnly?: IDisabledAndReadOnly,
 ): UnwrapCodeEvaluators<T> => {
+  const hasEditMode = model.hasOwnProperty('editMode');
+
   const preparedData: MayHaveEditMode<T> = Array.isArray(model)
     ? model
-    : { ...model,
-      editMode: model.hasOwnProperty('editMode')
-        ? (model as MayHaveEditMode<T>).editMode
-        : undefined, // add editMode property if not exists
+    : {
+      ...model,
+      editMode: hasEditMode ? (model as MayHaveEditMode<T>).editMode : undefined, // add editMode property if not exists (with undefined value)
     };
 
   const actualModel: UnwrapCodeEvaluators<T> = executor
     ? executor(preparedData, contextProxy)
-    : getActualModel(preparedData, contextProxy, parentReadonly, propertyFilter);
+    : getActualModel<T>(preparedData, contextProxy, parentDisabledAndReadOnly, propertyFilter, undefined, (m) => {
+      const newModel = m as object;
+      if (isHasEditMode(newModel)) {
+        const parentReadOnly = !isDefined(parentDisabledAndReadOnly?.readOnly)
+          ? contextProxy.form?.formMode === 'readonly'
+          : parentDisabledAndReadOnly.readOnly;
+        const disabledAndReadOnly =
+          // Calculate disabled and readOnly, use parent values if editMode is not set or Inherited
+          isConfigurableFormComponent(newModel) && isDefined(newModel.editMode) && newModel.editMode !== 'inherited' && newModel.editMode !== true
+            ? getDisabledAndReadOnly(newModel.editMode)
+            : { disabled: parentDisabledAndReadOnly?.disabled ?? false, readOnly: parentReadOnly };
+        newModel.readOnly = disabledAndReadOnly.readOnly;
+        newModel.disabled = disabledAndReadOnly.disabled;
+      }
+    });
   return actualModel;
 };
 
 export function useActualContextData<T extends object = object>(
   model: T,
-  parentReadonly?: boolean,
+  parentDisabledAndReadOnly?: IDisabledAndReadOnly,
   additionalData?: object,
   propertyFilter?: (name: string, value: unknown) => boolean,
-  executor?: (data: T, context: TouchableProxy<IApplicationContext>) => UnwrapCodeEvaluators<T>,
+  executor?: (data: T, context: TypedProxy<IApplicationContext>) => UnwrapCodeEvaluators<T>,
 ): UnwrapCodeEvaluators<T> {
   const parent = useParentOrUndefined();
   const fullContext = useAvailableConstantsContexts();
   const accessors = wrapConstantsData({ fullContext, topContextId: DataContextTopLevels.All });
 
   const contextProxy = useTouchableProxy<IApplicationContext>(accessors, additionalData);
+  const context = contextProxy as unknown as TypedProxy<IApplicationContext>;
 
-  const pReadonly = parentReadonly ?? getParentReadOnly(parent, contextProxy);
+  const pDisabledAndReadOnly: IDisabledAndReadOnly = {
+    readOnly: parentDisabledAndReadOnly?.readOnly ?? getParentReadOnly(parent, context),
+    disabled: parentDisabledAndReadOnly?.disabled ?? getParentDisabled(parent),
+  };
 
-  const prevParentReadonly = useRef(pReadonly);
+  const prevParentReadonly = useRef<IDisabledAndReadOnly>(pDisabledAndReadOnly);
   const prevModel = useRef<T>(undefined);
   const actualModelRef = useRef<UnwrapCodeEvaluators<T> | undefined>(undefined);
   const prevActualModelRef = useRef<string>('');
 
   let actualModel: UnwrapCodeEvaluators<T> | undefined = undefined;
   const modelChanged = !isEqual(prevModel.current, model);
-  if (!isDefined(actualModelRef.current) || contextProxy.changed || modelChanged || !isEqual(prevParentReadonly.current, pReadonly)) {
-    actualModel = unwrapModel(model, contextProxy, propertyFilter, executor, pReadonly);
+  if (!isDefined(actualModelRef.current) || contextProxy.changed || modelChanged || !isEqual(prevParentReadonly.current, pDisabledAndReadOnly)) {
+    actualModel = unwrapModel(model, context, propertyFilter, executor, pDisabledAndReadOnly);
 
     // ToDo: AS - review copy and compare for performance and reliability
     const actualModelJson = JSON.stringify(actualModel);
@@ -109,7 +133,7 @@ export function useActualContextData<T extends object = object>(
       actualModelRef.current = actualModel;
     }
     prevActualModelRef.current = actualModelJson;
-    prevParentReadonly.current = pReadonly;
+    prevParentReadonly.current = pDisabledAndReadOnly;
   }
 
   if (modelChanged)

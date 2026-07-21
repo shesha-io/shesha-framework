@@ -127,7 +127,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       label: 'Entity Filter',
                       modelType: '{{data.entityType}}',
                       hidden: {
-                        _code: 'return getSettingValue(data?.dataSource) !== "entity"',
+                        _code: 'return getSettingValue(data?.dataSource) !== "entity" || !getSettingValue(data?.entityType)',
                         _mode: 'code',
                         _value: false,
                       },

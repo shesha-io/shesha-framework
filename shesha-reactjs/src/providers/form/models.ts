@@ -114,7 +114,9 @@ export interface IComponentValidationRules {
   validator?: string | undefined;
 }
 
-export type EditMode = 'editable' | 'readOnly' | 'inherited' | boolean;
+export type InteractionType = 'full' | 'disabling';
+export type EditMode = 'editable' | 'readOnly' | 'disabled' | 'inherited' | boolean;
+
 export type PositionType = 'relative' | 'fixed';
 export interface IStyleValue {
   border?: IBorderValue | undefined;
@@ -217,13 +219,20 @@ export interface IComponentRuntimeProps {
   /** Custom onSelect handler */
   onSelectCustom?: string | undefined;
 
-  // html components don't have onHover, use onMouseMove instead
-  /** Custom onHover handler */
-  onHoverCustom?: string | undefined;
+  /** Custom onMouseEnter handler */
+  onMouseEnterCustom?: string | undefined;
 
-  // onKeyPress is deprecated, use onKeyDown instead
-  /** Custom onKeyPress handler */
-  onKeyPressCustom?: string | undefined;
+  /** Custom onMouseMove handler */
+  onMouseMoveCustom?: string | undefined;
+
+  /** Custom onMouseLeave handler */
+  onMouseLeaveCustom?: string | undefined;
+
+  /** Custom onKeyDown handler */
+  onKeyDownCustom?: string | undefined;
+
+  /** Custom onKeyUp handler */
+  onKeyUpCustom?: string | undefined;
 }
 
 export interface IComponentBindingProps {
@@ -297,8 +306,11 @@ export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles =
   /** Validation rules */
   validate?: IComponentValidationRules | undefined;
 
-  /** Whether the component is read-only */
-  readOnly?: boolean | IPropertySetting<boolean> | undefined;
+  /** If true, indicates that component is read-only and can't be edited anyway */
+  readOnly?: boolean | undefined;
+
+  /** If true, indicates that edited or actioned are disabled for now but may be enabled */
+  disabled?: boolean | undefined;
 
   /** Component edit/action mode */
   editMode?: EditMode | IPropertySetting<EditMode> | undefined;
@@ -355,13 +367,18 @@ export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles =
   jsStyle?: CSSProperties | undefined;
 }
 
-export const isConfigurableFormComponent = (component: unknown): component is IConfigurableFormComponent =>
+export const isHasEditMode = (value: object): value is { editMode: EditMode | undefined; readOnly: boolean | undefined; disabled: boolean | undefined } => 'editMode' in value;
+
+export const isConfigurableFormComponent = (component: unknown): component is UnwrapCodeEvaluators<IConfigurableFormComponent> =>
   isDefined(component) && typeof (component) === "object" && ['id', 'type'].every((key) => (key in component && typeof component[key as keyof typeof component] === 'string'));
 
 export interface IConfigurableFormComponentWithReadOnly extends Omit<IConfigurableFormComponent, 'editMode'> {
   /** Whether the component is read-only */
   readOnly?: boolean;
 }
+
+export const isComponentsContainer = (obj: unknown): obj is IComponentsContainer =>
+  isDefined(obj) && typeof obj === "object" && "id" in obj && typeof (obj.id) === "string" && "components" in obj && Array.isArray(obj.components);
 
 export interface IComponentsContainer {
   id: string;
@@ -372,9 +389,6 @@ export type IObjectWithStringId = {
   id: string;
 };
 export const isObjectWithStringId = (obj: unknown): obj is IObjectWithStringId => isDefined(obj) && typeof (obj) === "object" && "id" in obj && typeof (obj.id) === "string";
-
-export const isComponentsContainer = (obj: unknown): obj is IComponentsContainer =>
-  isDefined(obj) && typeof obj === "object" && "id" in obj && typeof (obj.id) === "string" && "components" in obj && Array.isArray(obj.components);
 
 export type IRawComponentsContainer = IFormComponentContainer & {
   components: IConfigurableFormComponent[];

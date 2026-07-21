@@ -11,7 +11,7 @@ import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/e
 import { isDefined } from '@/utils/nullables';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { View } from 'react-big-calendar';
-import { evaluateFilters, getCalendarDataUrl, getLayerEventsData } from './utils';
+import { evaluateFilters, getCalendarDataUrl, getLayerEventsData, isLayerFetchable } from './utils';
 import { ILayerWithMetadata } from './interfaces';
 
 interface IGetData {
@@ -78,6 +78,9 @@ export const useCalendarLayers = (layers: ICalendarLayersProps[] | undefined): I
     Promise.allSettled(
       layerWithMetadata.map(async (item) => {
         try {
+          if (!isLayerFetchable(item))
+            return null;
+
           const filter = await evaluateFilters(item, formData, globalState, item.metadata);
           const evalCustomUrl = evaluateString(item.customUrl, { data: formData, globalState });
 

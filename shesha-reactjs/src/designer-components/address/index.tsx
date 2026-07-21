@@ -40,7 +40,7 @@ const AddressCompoment: IToolboxComponent<IAddressCompomentProps> = {
                   onChange(newValue);
                 }}
                 onFocus={(event) => ctx?.handleEvent(event, { value }, model.onFocusCustom)}
-                onSelect={(event) => ctx?.handleEvent(undefined, { value: isIAddressAndCoords(event) ? event.address : undefined, extraValue: event }, model.onSelectCustom)}
+                onSelect={(event) => ctx?.handleEvent(undefined, { value: isIAddressAndCoords(event) ? event.address : undefined, event }, model.onSelectCustom)}
                 style={model.allStyles?.fullStyle}
               />
             );

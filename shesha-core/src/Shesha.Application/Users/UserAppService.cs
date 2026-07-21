@@ -569,7 +569,7 @@ namespace Shesha.Users
 
             var successResponse = new ResetPasswordVerifyOtpResponse();
             ObjectMapper.Map(VerifyPinResponse.Success(), successResponse);
-            successResponse.Token = user.PasswordResetCode;
+            successResponse.Token = user.PasswordResetCode!;
             return successResponse;
         }
 
@@ -631,7 +631,7 @@ namespace Shesha.Users
                 await _userManager.UpdateAsync(user);
                 
                 // real password reset will be done using token
-                response.Token = user.PasswordResetCode;
+                response.Token = user.PasswordResetCode!;
                 response.Username = user.UserName;
             }
 
@@ -706,13 +706,8 @@ namespace Shesha.Users
 
         #endregion
 
-        [AbpAllowAnonymous]
         public async Task<bool> ChangePasswordAsync(ChangePasswordDto input)
         {
-            if (_abpSession.UserId == null)
-            {
-                throw new UserFriendlyException("Please log in before attempting to change password.");
-            }
             long userId = _abpSession.UserId.Value;
             var user = await _userManager.GetUserByIdAsync(userId);
             var loginAsync = await _logInManager.LoginAsync(user.UserName, input.CurrentPassword, shouldLockout: false);
