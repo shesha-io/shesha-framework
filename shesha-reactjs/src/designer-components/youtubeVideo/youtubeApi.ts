@@ -40,6 +40,9 @@ export const loadYouTubeIframeApi = (): Promise<YTNamespace> => {
 
       const fail = (error: Error) => {
         clearTimeout(timeoutId);
+        // Remove the failed tag too, otherwise the getElementById guard below would skip
+        // re-appending it and the "retry" would be a no-op.
+        document.getElementById(API_SCRIPT_ID)?.remove();
         apiPromise = null; // clear the cache so a later call can retry
         reject(error);
       };
