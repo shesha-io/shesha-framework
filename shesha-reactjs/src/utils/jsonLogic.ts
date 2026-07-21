@@ -21,7 +21,7 @@ export interface IEvaluateJsonLogicNode {
 }
 
 const isEvaluateJsonLogicNode = (node: object): node is IEvaluateJsonLogicNode => {
-  if ('evaluate' in node && Array.isArray(node.evaluate) && node.evaluate.length === 1) {
+  if (isDefined(node) && 'evaluate' in node && Array.isArray(node.evaluate) && node.evaluate.length === 1) {
     const evaluateNode: unknown = node.evaluate[0];
     return isDefined(evaluateNode) && typeof (evaluateNode) === 'object' && 'expression' in evaluateNode && typeof evaluateNode.expression === 'string';
   } else
