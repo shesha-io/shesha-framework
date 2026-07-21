@@ -23,6 +23,7 @@ import {
 } from '../interfaces';
 import { DataTableProviderWithRepository, IDataTableProviderWithRepositoryProps } from '../provider';
 import { IRepository, RowsReorderPayload } from './interfaces';
+import hash from 'object-hash';
 
 export interface IWithUrlRepositoryArgs {
   getListUrl: string;
@@ -192,6 +193,13 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
     return Promise.reject(`Reordering is not supported by the repository '${UrlRepositoryType}'`);
   };
 
+  const getFetcherHash = (): string => {
+    return hash({
+      getListUrl,
+    }, { algorithm: 'md5', encoding: 'hex' });
+  };
+
+
   const repository: IUrlRepository = {
     repositoryType: UrlRepositoryType,
     fetch,
@@ -201,6 +209,7 @@ const createRepository = (args: ICreateUrlRepositoryArgs): IUrlRepository => {
     performCreate,
     performUpdate,
     performDelete,
+    fetchingSettingsHash: getFetcherHash(),
   };
   return repository;
 };
