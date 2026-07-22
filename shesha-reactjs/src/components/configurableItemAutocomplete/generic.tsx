@@ -209,7 +209,7 @@ export const GenericConfigurableItemAutocompleteInternal = <TValue extends Confi
       const result: IOption[] = [];
       fetchedItems.forEach((item) => {
         const moduleName = getItemModuleName(item.module);
-        const moduleDto = typeof item.module === 'object' && item.module
+        const moduleDto = typeof item.module === 'object'
           ? item.module
           : moduleName
             ? { name: moduleName, id: moduleName }
