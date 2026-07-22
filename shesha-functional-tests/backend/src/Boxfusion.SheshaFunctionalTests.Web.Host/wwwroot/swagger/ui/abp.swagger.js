@@ -58,7 +58,6 @@ var abp = abp || {};
         xhr.open('POST', '/api/TokenAuth/Authenticate', true);
         xhr.setRequestHeader('Abp.TenantId', tenantId);
         xhr.setRequestHeader('Content-type', 'application/json');
-        //xhr.send("{" + "usernameOrEmailAddress:'" + usernameOrEmailAddress + "'," + "password:'" + password + "'}");
         xhr.send("{\"userNameOrEmailAddress\":\"" + usernameOrEmailAddress + "\",\"password\":\"" + password + "\"}");
     };
 
@@ -88,8 +87,32 @@ var abp = abp || {};
         }
     };
 
-    abp.swagger.logout = function () {
-        abp.auth.clearToken();
+    abp.swagger.callSignOff = function (callback) {
+        var authToken = abp.auth.getToken();
+        if (authToken) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/api/TokenAuth/SignOff', true);
+            xhr.setRequestHeader(abp.auth.tokenHeaderName, 'Bearer ' + authToken);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        callback();
+                    } else {
+                        alert('SignOff failed !');
+                    }
+                }
+            };
+
+            xhr.send();
+        } else
+            callback();
+    };
+
+    abp.swagger.logout = function (callback) {
+        abp.swagger.callSignOff(() => {
+            abp.auth.clearToken();
+            callback();
+        });
     }
 
     abp.swagger.closeAuthDialog = function () {

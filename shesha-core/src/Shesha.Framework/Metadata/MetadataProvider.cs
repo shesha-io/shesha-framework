@@ -11,6 +11,7 @@ using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.DynamicEntities;
+using Shesha.DynamicEntities.Enums;
 using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.Metadata.Dtos;
@@ -75,6 +76,7 @@ namespace Shesha.Metadata
 
             var dto = new MetadataDto
             {
+                InitStatus = entityConfig?.InitStatus,
                 EntityConfigType = entityConfig?.EntityConfigType ?? Domain.Enums.EntityConfigTypes.Class,
                 IsExposed = entityConfig?.IsExposed ?? false,
                 DataType = isEntity
@@ -89,9 +91,13 @@ namespace Shesha.Metadata
                 Module = entityConfig?.Module?.Name ?? null,
                 ModuleAccessor = entityConfig?.Module?.Accessor ?? null,
 
-                Name = containerType.Name,
+                Name = entityConfig?.Name ?? containerType.Name,
                 Label = entityConfig?.Label,
                 Description = entityConfig?.Description,
+
+                InheritedFromModule = entityConfig?.InheritedFrom?.Module?.Name,
+                InheritedFromName = entityConfig?.InheritedFrom?.Name,
+                InheritedFromFullClassName = entityConfig?.InheritedFrom?.FullClassName,
             };
 
             UpdateMd5(dto);
@@ -126,7 +132,7 @@ namespace Shesha.Metadata
                 .Where(m => !m.GetGenericArguments().Any() && !m.HasAttribute<ObsoleteAttribute>() &&
                     MethodSupported(m, (type) =>
                     {
-                        var dt = _hardcodeMetadataProvider.GetDataTypeByPropertyType(type, null);
+                        var dt = _hardcodeMetadataProvider.GetDataTypeByPropertyType(type, null, containerType);
                         if (dt == null)
                             return false;
 
@@ -175,7 +181,7 @@ namespace Shesha.Metadata
 
         private Task<DataTypeInfo?> GetMethodReturnTypeAsync(MethodInfo method)
         {
-            var result = _hardcodeMetadataProvider.GetDataTypeByPropertyType(method.ReturnType, null);
+            var result = _hardcodeMetadataProvider.GetDataTypeByPropertyType(method.ReturnType, null, method.DeclaringType.NotNull());
             return Task.FromResult(result);
         }
 
@@ -190,7 +196,7 @@ namespace Shesha.Metadata
                     result.Add(new VariableDef
                     {
                         Name = parameter.Name,
-                        DataType = _hardcodeMetadataProvider.GetDataTypeByPropertyType(parameter.ParameterType, null).NotNull(),
+                        DataType = _hardcodeMetadataProvider.GetDataTypeByPropertyType(parameter.ParameterType, null, method.DeclaringType.NotNull()).NotNull(),
                     });
             }
 
@@ -204,12 +210,12 @@ namespace Shesha.Metadata
                 return Task.FromResult(result);
 
             var entityConfig = _entityConfigurationStore.Get(containerType);
-            if (entityConfig.ApplicationServiceType == null)
+            if (entityConfig.DefaultAppServiceType == null)
                 return Task.FromResult(result);
 
             var actionDescriptors = _actionDescriptorCollectionProvider.ActionDescriptors
                     .Items
-                    .Where(x => x is ControllerActionDescriptor actionDescriptor && actionDescriptor.ControllerTypeInfo.AsType() == entityConfig.ApplicationServiceType)
+                    .Where(x => x is ControllerActionDescriptor actionDescriptor && actionDescriptor.ControllerTypeInfo.AsType() == entityConfig.DefaultAppServiceType)
                     .Cast<ControllerActionDescriptor>()
                     .ToList();
             foreach (var actionDescriptor in actionDescriptors)
@@ -292,27 +298,34 @@ namespace Shesha.Metadata
             if (modelConfig != null)
             {
                 var idx = 0;
-                var props = hardCodedProps?.Select(p =>
+                var props = modelConfig.Properties.Select(dbProp =>
                     {
-                        var dbProp = modelConfig.Properties.FirstOrDefault(pp => pp.Name == p.Path);
+                        var hProp = hardCodedProps?.FirstOrDefault(p => dbProp.Name == p.Path);
 
-                        // If there is no Property Configuration then skip the property in metadata
-                        if (dbProp == null)
+                        // If the propeerty need to be initialized or initialized failed then skip the property in metadata 
+                        if (dbProp.InitStatus == null
+                            || dbProp.InitStatus.Value.HasFlag(EntityInitFlags.InitializationRequired)
+                            || dbProp.InitStatus.Value.HasFlag(EntityInitFlags.InitializationFailed)
+                        )
                             return null;
-                        
+
                         idx = dbProp.SortOrder != null ? dbProp.SortOrder.Value : idx + 1;
 
                         var prop = _mapper.Map<PropertyMetadataDto>(dbProp);
                         prop.ContainerType = containerType.FullName ?? "";
-                        prop.EnumType = p?.EnumType;
-                        prop.IsNullable = p?.IsNullable ?? false;
+                        prop.EnumType = hProp?.EnumType;
+                        prop.IsNullable = hProp?.IsNullable ?? false;
                         prop.OrderIndex = idx;
-                        prop.GroupName = p?.GroupName;
+                        prop.GroupName = hProp?.GroupName;
+
+                        prop.IsVisible = !(dbProp.Suppress ?? false);
 
                         return prop;
                     })
+                    .Where(p => p != null)
                     .OrderBy(p => p?.OrderIndex)
                     .ToList();
+
                 result = props?.Select(RemoveSuppressed).WhereNotNull().ToList() ?? new List<PropertyMetadataDto>();
             }
             else
@@ -350,8 +363,11 @@ namespace Shesha.Metadata
         public async Task<Type?> GetContainerTypeOrNullAsync(string? moduleName, string container)
         {
             var allModels = await GetAllModelsAsync();
+            
+            // Get models by Name of FullClassName or Alias
             var models = allModels.Where(m => m.Name == container || m.Alias == container || m.FullClassName == container).ToList();
-            if (!string.IsNullOrWhiteSpace(moduleName))
+            // Filter by Module
+            if (models.Count > 1 && !string.IsNullOrWhiteSpace(moduleName))
             {
                 models = models.Where(m => m is EntityModelDto em
                         ? em.Module == moduleName || em.ModuleAccessor == moduleName
@@ -359,6 +375,9 @@ namespace Shesha.Metadata
                     )
                     .ToList();
             }
+            // Get base model if more than one
+            if (models.Count > 1)
+                models = models.Where(x => !x.IsExposed).ToList();
 
             if (models.Count() > 1)
                 throw new DuplicateModelsException(models);
@@ -382,7 +401,7 @@ namespace Shesha.Metadata
             var modelProviders = _iocResolver.ResolveAll<IModelProvider>();
             foreach (var provider in modelProviders)
             {
-                models.AddRange(await provider.GetModelsAsync());
+                models.AddRange(await provider.GetModelsListAsync());
             }
             return models.Distinct(new ModelDtoTypeComparer()).Where(x => !x.Suppress).ToList();
         }

@@ -6,6 +6,7 @@ using Abp.Runtime.Caching;
 using Microsoft.Extensions.Configuration;
 using Shesha.Attributes;
 using Shesha.Bootstrappers;
+using Shesha.Configuration.Runtime;
 using Shesha.ConfigurationItems;
 using Shesha.FluentMigrator;
 using Shesha.Locks;
@@ -147,6 +148,8 @@ namespace Shesha.NHibernate
 
         public async Task BootstrapDatabaseAsync()
         {
+            await _ioc.Resolve<IEntityTypeConfigurationStore>().InitializeHardcodedAsync();
+
             var skipBootstrappers = _configuration.GetValue<bool>(SkipBootstrappersSetting);
 
             if (skipBootstrappers)

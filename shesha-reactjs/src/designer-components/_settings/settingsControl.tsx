@@ -1,8 +1,6 @@
-import React, { ReactElement, ReactNode, useEffect } from 'react';
-import { getPropertySettingsFromValue } from './utils';
-import { CodeEditor, IPropertySetting, PropertySettingMode } from '@/index';
+import React, { ReactElement, useCallback } from 'react';
+import { getPropertySettingsFromValue } from './utils/utils';
 import { useStyles } from './styles/styles';
-import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import camelcase from 'camelcase';
 import { GetAvailableConstantsFunc, GetResultTypeFunc, ICodeEditorProps } from '../codeEditor/interfaces';
 import { CodeEditorWithStandardConstants } from '../codeEditor/codeEditorWithConstants';
@@ -10,74 +8,71 @@ import { useConstantsEvaluator } from '../codeEditor/hooks/useConstantsEvaluator
 import { useResultTypeEvaluator } from '../codeEditor/hooks/useResultType';
 import { Button } from 'antd';
 import { CodeOutlined, CodeFilled } from '@ant-design/icons';
+import { IPropertySetting, PropertySettingMode } from '@/providers/form/models';
+import { CodeEditor } from '../codeEditor/codeEditor';
+import { useDeepCompareMemo } from '@/hooks';
+import { isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 
-export type SettingsControlChildrenType = (value: any, onChange: (val: any) => void, propertyName: string) => ReactElement | ReactNode;
+export type SettingsControlChildrenFunc<T = unknown> = (value: T | undefined, onChange: (val: T) => void, propertyName?: string | undefined) => ReactElement;
+export type SettingsControlChildrenType<T = unknown> = SettingsControlChildrenFunc<T> | ReactElement;
 
-export interface ISettingsControlProps<Value = any> {
+export interface ISettingsControlProps<Value = unknown> {
+  enabled?: boolean;
   propertyName: string;
-  readOnly?: boolean;
-  value?: IPropertySetting<Value>;
-  setHasCode?: (hasCode: boolean) => void;
-  hasCode?: boolean;
+  readOnly?: boolean | undefined;
+  value?: Value | IPropertySetting<Value> | null | undefined;
+  setHasCode?: (hasCode: boolean) => void | undefined;
+  hasCode?: boolean | undefined;
   mode: PropertySettingMode;
-  onChange?: (value: IPropertySetting<Value>) => void;
-  readonly children?: SettingsControlChildrenType;
-  availableConstantsExpression?: string | GetAvailableConstantsFunc;
-  resultTypeExpression?: string | GetResultTypeFunc;
-  useAsyncEvaluation?: boolean;
+  onChange?: ((value: Value | IPropertySetting<Value> | undefined) => void) | undefined;
+  readonly children?: SettingsControlChildrenFunc<Value> | undefined;
+  availableConstantsExpression?: string | GetAvailableConstantsFunc | undefined;
+  resultTypeExpression?: string | GetResultTypeFunc | undefined;
+  useAsyncEvaluation?: boolean | undefined;
+  lazy?: boolean | undefined;
 }
 
-export const defaultExposedVariables: ICodeExposedVariable[] = [
-  { name: "data", description: "Selected form values", type: "object" },
-  { name: "pageContext", description: "Contexts data of current page", type: "object" },
-  { name: "contexts", description: "Contexts data", type: "object" },
-  { name: "globalState", description: "Global state", type: "object" },
-  { name: "setGlobalState", description: "Functiont to set globalState", type: "function" },
-  { name: "formMode", description: "Form mode", type: "'designer' | 'edit' | 'readonly'" },
-  { name: "form", description: "Form instance", type: "object" },
-  { name: "selectedRow", description: "Selected row of nearest table (null if not available)", type: "object" },
-  { name: "moment", description: "moment", type: "object" },
-  { name: "http", description: "axiosHttp", type: "object" },
-  { name: "message", description: "message framework", type: "object" },
-];
+export const SettingsControl = <Value = unknown>(props: ISettingsControlProps<Value>): ReactElement => {
+  const { onChange } = props;
 
-export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>): ReactElement => {
-  const constantsEvaluator = useConstantsEvaluator({ availableConstantsExpression: props.availableConstantsExpression });
+  const constantsEvaluator = useConstantsEvaluator({ availableConstantsExpression: props.availableConstantsExpression, makeComponentsNullable: true });
   const resultType = useResultTypeEvaluator({ resultTypeExpression: props.resultTypeExpression });
 
-  const setting = getPropertySettingsFromValue(props.value);
-  const { _mode: mode, _code: code } = setting;
+  const setting = getPropertySettingsFromValue<Value>(props.value);
 
   const { styles } = useStyles();
 
-  const onInternalChange = (value: IPropertySetting, m?: PropertySettingMode): void => {
-    const newSetting = { ...value, _mode: (m ?? mode) };
-    const newValue = !!newSetting._code || newSetting._mode === 'code' ? newSetting : value._value;
-    if (props.onChange)
-      props.onChange(newValue);
-  };
+  const onInternalChange = useCallback((value: IPropertySetting<Value>, m?: PropertySettingMode | undefined): void => {
+    const newSetting: IPropertySetting<Value> = { ...value, _mode: (m ?? setting._mode) };
+    const newValue = isNotNullOrWhiteSpace(newSetting._code) || newSetting._mode === 'code'
+      ? newSetting
+      : newSetting._value;
+    onChange?.(newValue);
+  }, [onChange, setting._mode]);
 
-  useEffect(() => {
-    onInternalChange({ ...setting, _mode: mode }, mode);
-  }, [mode]);
-
-  const codeOnChange = (val: any): void => {
-    const newValue = { ...setting, _code: val };
+  const codeOnChange = (val: string | null): void => {
+    const newValue: IPropertySetting<Value> = { ...setting, _code: val, _lazy: props.lazy ?? setting._lazy } as IPropertySetting<Value>;
     onInternalChange(newValue);
   };
 
-  const valueOnChange = (val: any): void => {
-    const newValue = { ...setting, _value: val };
-    onInternalChange(newValue);
-  };
+  const valueOnChange = useDeepCompareMemo(() => {
+    return (val: Value): void => {
+      const newValue = { ...setting, _value: val };
+      onInternalChange(newValue);
+    };
+  }, [setting, onInternalChange]);
 
   const onSwitchMode = (): void => {
-    const newMode = mode === 'code' ? 'value' : 'code';
+    const newMode = setting._mode === 'code' ? 'value' : 'code';
     onInternalChange(setting, newMode);
   };
 
+  // Skip setting control if disabled
+  if (props.enabled === false)
+    return <>{props.children?.(setting._value, valueOnChange, props.propertyName)}</>;
+  // --------------------------------
 
-  const propertyName = !!setting._code || setting._mode === 'code' ? `${props.propertyName}._value` : props.propertyName;
+  const propertyName = isNotNullOrWhiteSpace(setting._code) || setting._mode === 'code' ? `${props.propertyName}._value` : props.propertyName;
   const functionName = `get${camelcase(props.propertyName, { pascalCase: true })}`;
 
   const codeEditorProps: ICodeEditorProps = {
@@ -93,33 +88,29 @@ export const SettingsControl = <Value = any>(props: ISettingsControlProps<Value>
       functionName: functionName,
       useAsyncDeclaration: props.useAsyncEvaluation,
     },
-    type: 'text',
     label: ' ',
-    ghost: true,
-    exposedVariables: defaultExposedVariables,
-    hidden: !setting._code && props.readOnly,
+    hidden: isNullOrWhiteSpace(setting._code) && props.readOnly,
   };
 
   const editor = constantsEvaluator
-
     ? <CodeEditor {...codeEditorProps} availableConstants={constantsEvaluator} resultType={resultType} />
-    : <CodeEditorWithStandardConstants {...codeEditorProps} resultType={resultType} />;
+    : <CodeEditorWithStandardConstants {...codeEditorProps} resultType={resultType} makeComponentsNullable={true} />;
 
   return (
-    <div className={mode === 'code' ? styles.contentCode : styles.contentJs}>
+    <div className={setting._mode === 'code' ? styles.contentCode : styles.contentJs}>
       <Button
         hidden={props.readOnly}
         className={`${styles.jsSwitch} inlineJS`}
         type="text"
-        danger={mode === 'value' && !!code}
+        danger={setting._mode === 'value' && isNotNullOrWhiteSpace(setting._code)}
         size="small"
-        icon={mode === 'code' && !!code ? <CodeFilled /> : !!code ? <CodeFilled /> : <CodeOutlined />}
+        icon={isNotNullOrWhiteSpace(setting._code) ? <CodeFilled /> : <CodeOutlined />}
         onClick={onSwitchMode}
       />
-      {mode === 'code' && editor}
-      {mode === 'value' && (
+      {setting._mode === 'code' && editor}
+      {setting._mode === 'value' && (
         <div className={styles.jsContent} style={{ marginLeft: 0 }}>
-          {props.children(setting?._value, valueOnChange, propertyName)}
+          {props.children?.(setting._value, valueOnChange, propertyName)}
         </div>
       )}
     </div>

@@ -1,13 +1,11 @@
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import React from 'react';
-import { customDropDownEventHandler } from '@/components/formDesigner/components/utils';
 import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { DownSquareOutlined } from '@ant-design/icons';
 import { IInputStyles } from '@/providers/form/models';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
-import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { IDropdownComponentProps } from './model';
-import { IToolboxComponent } from '@/interfaces';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { DataSourceType, DropdownComponentDefinition, IDropdownComponentProps } from './model';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { Dropdown } from '@/components/dropdown/dropdown';
@@ -15,15 +13,11 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { migratePrevStyles, migrateStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles, defaultTagStyles } from './utils';
-import { CustomLabeledValue } from '@/components/refListDropDown/models';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { getBooleanPropertyOrUndefined } from '@/utils/object';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
-interface ITextFieldComponentCalulatedValues {
-  eventHandlers?: { onChange: (value: CustomLabeledValue<any>, option: any) => any };
-  defaultValue?: any;
-}
-
-const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldComponentCalulatedValues> = {
+const DropdownComponent: DropdownComponentDefinition = {
   type: 'dropdown',
   isInput: true,
   isOutput: true,
@@ -31,64 +25,58 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
   isHidden: false,
   name: 'Dropdown',
   icon: <DownSquareOutlined />,
+  preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.referenceListItem || (dataType === DataTypes.array && dataFormat === ArrayFormats.multivalueReferenceList),
-  calculateModel: (model, allData) => ({
-    eventHandlers: customDropDownEventHandler(model, allData),
-    // quick fix not to default to empty string or null while working with multi-mode
-    defaultValue: Array.isArray(model.defaultValue)
-      ? model.defaultValue
-      : model.defaultValue
-        ? evaluateString(model.defaultValue, { formData: allData.data, formMode: allData.form.formMode, globalState: allData.globalState }) || undefined
-        : undefined,
-  }),
-  Factory: ({ model, calculatedModel }) => {
-    const initialValue = model?.defaultValue ? { initialValue: model.defaultValue } : {};
+  Factory: ({ model }) => {
     const tagStyle = useFormComponentStyles({ ...model.tag }).fullStyle;
+    const {
+      readOnly = false,
+      enableStyleOnReadonly = false,
+    } = model;
 
-    const finalStyle = model.readOnly
-      ? model.enableStyleOnReadonly
-        ? { ...model.allStyles.fontStyles, ...model.allStyles.dimensionsStyles }
-        : { ...model.allStyles.fontStyles, ...model.allStyles.dimensionsStyles, ...model.allStyles.backgroundStyles, width: '100%', height: '100%', overflow: 'hidden' }
-      : { ...model.allStyles.fullStyle, width: '100%', height: '100%', overflow: 'hidden' };
+    // When enableStyleOnReadonly is true, apply all configured styles in readonly mode
+    // When enableStyleOnReadonly is false, apply only minimal styles (font + dimensions)
+    const finalStyle = readOnly
+      ? enableStyleOnReadonly
+        ? { ...model.allStyles?.fullStyle, overflow: 'auto' }
+        : { ...model.allStyles?.fontStyles, ...model.allStyles?.dimensionsStyles }
+      : { ...model.allStyles?.fullStyle, overflow: 'auto' };
 
     return (
-      <ConfigurableFormItem model={model} {...initialValue}>
-        {(value, onChange) => {
-          const customEvent = calculatedModel.eventHandlers;
-          const onChangeInternal = (...args: any[]): void => {
-            customEvent.onChange(args[0], args[1]);
-            if (typeof onChange === 'function')
-              onChange(...args);
-          };
-
+      <ConfigurableFormItem<number | number[] | string | string[] | (number | string)[]> model={model}>
+        {(value, onChange, _, ctx) => {
           return (
             <Dropdown
               {...model}
               style={finalStyle}
-              {...customEvent}
-              defaultValue={calculatedModel.defaultValue}
-              value={value}
-              size={model?.size}
+              value={value ?? undefined}
+              size={model.size}
               tagStyle={{ ...tagStyle, alignContent: 'center', justifyContent: tagStyle.textAlign }}
-              onChange={onChangeInternal}
+              onChange={(newValue) => {
+                // value: CustomLabeledValue<T>, option: any
+                // TODO: EVENTS add option to context
+                // addContextData(context, { option, value })
+                ctx?.handleEvent(undefined, { value: newValue }, model.onChangeCustom);
+                onChange(newValue ?? null);
+              }}
             />
           );
         }}
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
     .add<IDropdownComponentProps>(0, (prev) => ({
       ...prev,
-      dataSourceType: prev['dataSourceType'] ?? 'values',
-      useRawValues: prev['useRawValues'] ?? false,
+      dataSourceType: "dataSourceType" in prev && typeof (prev.dataSourceType) === "string" && ['simple', 'listItem', 'custom'].includes(prev.dataSourceType) ? prev.dataSourceType as DataSourceType : 'values',
+      useRawValues: getBooleanPropertyOrUndefined(prev, "useRawValues") ?? false,
     }))
     .add<IDropdownComponentProps>(1, (prev) => {
       return {
         ...prev,
-        referenceListId: getLegacyReferenceListIdentifier(prev.referenceListNamespace, prev.referenceListName),
+        referenceListId: getLegacyReferenceListIdentifier(prev.referenceListNamespace, prev.referenceListName) ?? undefined,
       };
     })
     .add<IDropdownComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
@@ -97,12 +85,12 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
     .add<IDropdownComponentProps>(5, (prev, context) => ({
       ...prev,
       valueFormat: prev.valueFormat ??
-        context.isNew
-        ? 'simple'
-        : prev['useRawValue'] === true
+        (context.isNew === true
           ? 'simple'
-          : 'listItem',
-      editMode: prev?.editMode ?? 'inherited',
+          : getBooleanPropertyOrUndefined(prev, "useRawValue") === true
+            ? 'simple'
+            : 'listItem'),
+      editMode: prev.editMode ?? 'inherited',
     }))
     .add<IDropdownComponentProps>(6, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
     .add<IDropdownComponentProps>(7, (prev) => {
@@ -112,7 +100,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
         style: prev.style,
       };
 
-      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
+      return { ...prev, desktop: { ...prev.desktop, ...styles }, tablet: { ...prev.tablet, ...styles }, mobile: { ...prev.mobile, ...styles } };
     })
     .add<IDropdownComponentProps>(8, (prev) => {
       const styles: IInputStyles = {
@@ -128,7 +116,7 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
         backgroundColor: prev.backgroundColor,
         stylingBox: prev.stylingBox,
       };
-      return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
+      return { ...prev, desktop: { ...prev.desktop, ...styles }, tablet: { ...prev.tablet, ...styles }, mobile: { ...prev.mobile, ...styles } };
     })
     .add<IDropdownComponentProps>(9, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
     .add<IDropdownComponentProps>(10, (prev) => {
@@ -145,7 +133,18 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
         tablet: { ...prev.tablet, tag: { ...initTagStyle } },
         mobile: { ...prev.mobile, tag: { ...initTagStyle } },
       };
-    }),
+    })
+    .add<IDropdownComponentProps>(11, (prev) => {
+      const result = { ...prev };
+      delete result['referenceListNamespace'];
+      delete result['referenceListName'];
+      const { referenceListId } = result;
+      const knownPrefixes = ["Shesha.Framework", "Shesha.Core", "Shesha.Scheduler"];
+      if (referenceListId && referenceListId.name && !referenceListId.module && knownPrefixes.some((p) => referenceListId.name.startsWith(p)))
+        result.referenceListId = { module: "Shesha", name: referenceListId.name };
+      return result;
+    })
+    .add<IDropdownComponentProps>(12, (prev) => ({ ...prev, mode: prev.mode ?? 'single' })),
   linkToModelMetadata: (model, metadata): IDropdownComponentProps => {
     const isSingleRefList = metadata.dataType === DataTypes.referenceListItem;
     const isMultipleRefList = metadata.dataType === DataTypes.array && metadata.dataFormat === ArrayFormats.multivalueReferenceList;
@@ -153,10 +152,12 @@ const DropdownComponent: IToolboxComponent<IDropdownComponentProps, ITextFieldCo
     return {
       ...model,
       dataSourceType: isSingleRefList || isMultipleRefList ? 'referenceList' : 'values',
-      referenceListId: {
-        module: metadata.referenceListModule,
-        name: metadata.referenceListName,
-      },
+      referenceListId: !isNullOrWhiteSpace(metadata.referenceListModule) && !isNullOrWhiteSpace(metadata.referenceListName)
+        ? {
+          module: metadata.referenceListModule,
+          name: metadata.referenceListName,
+        }
+        : undefined,
       mode: isMultipleRefList ? 'multiple' : 'single',
       valueFormat: 'simple',
     };

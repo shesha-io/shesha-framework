@@ -5,13 +5,14 @@ import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/s
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 import { Button, Input, Modal } from 'antd';
 import { ConfigurableActionConfigurator } from '@/designer-components/configurableActionsConfigurator/configurator';
-import { IDataContextComponentProps } from '.';
 import { IModelItem } from '@/interfaces/modelConfigurator';
 import { IPropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
-import { ISettingsFormFactoryArgs } from '@/interfaces';
+import { IComponentSettingsFormFactoryArgs, ISettingsFormFactoryArgs } from '@/interfaces';
 import { PropertiesEditor } from '@/components/modelConfigurator/propertiesEditor';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/hooks';
 import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
+import { IDataContextComponentProps } from './interfaces';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 type IDataContextSettingsState = IDataContextComponentProps;
 
@@ -22,24 +23,32 @@ const convertPropertyMetadataToModelItem = (property: IPropertyMetadata): IModel
     ...commonProps,
     id: path,
     name: path,
+    columnName: commonProps.columnName ?? undefined,
     itemsType: itemsType ? convertPropertyMetadataToModelItem(itemsType) : undefined,
     properties: isPropertiesArray(properties)
       ? properties.map((item) => convertPropertyMetadataToModelItem(item))
       : undefined,
+    entityType: isDefined(property.entityType) && !isNullOrWhiteSpace(property.entityType)
+      ? { module: property.entityModule ?? null, name: property.entityType }
+      : undefined,
+    inheritedFromId: commonProps.inheritedFromId ?? undefined,
   } satisfies IModelItem;
 };
 
 const convertModelItemToPropertyMetadata = (item: IModelItem): IPropertyMetadata => {
-  const { name, properties, itemsType, ...commonProps } = item;
+  const { name, properties, itemsType, entityType, ...commonProps } = item;
   return {
     ...commonProps,
-    path: name,
+    path: name ?? "",
     properties: properties?.map((item) => convertModelItemToPropertyMetadata(item)),
     itemsType: itemsType ? convertModelItemToPropertyMetadata(itemsType) : undefined,
-  };
+    entityType: entityType?.name,
+    entityModule: entityType?.module ?? undefined,
+    isVisible: true,
+  } satisfies IPropertyMetadata;
 };
 
-const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProps>> = (props) => {
+const DataContextSettings: FC<IComponentSettingsFormFactoryArgs<IDataContextComponentProps>> = (props) => {
   const { readOnly } = props;
   const { values, onValuesChange } = useSettingsForm<IDataContextComponentProps>();
 
@@ -51,7 +60,7 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
   const [properties, setProperties] = useState<IPropertyMetadata[]>([]);
 
   const openModal = (): void => {
-    if (Array.isArray(values.items))
+    if (values && Array.isArray(values.items))
       setProperties([...values.items]);
     setOpen(true);
   };
@@ -70,10 +79,10 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
           {(value) => (
             <Input
               readOnly={readOnly}
-              value={value}
+              value={value as string}
               onChange={(e) => {
                 const name = e.target.value;
-                onValuesChange({ componentName: name, propertyName: name });
+                onValuesChange?.({ componentName: name, propertyName: name });
               }}
             />
           )}
@@ -101,61 +110,22 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
               useAsyncDeclaration: true,
             }}
             availableConstants={constants}
-            exposedVariables={[
-              { name: "data", description: "Form values", type: "object" },
-              { name: "contexts", description: "Contexts data", type: "object" },
-              { name: "pageContext", description: "Data of page", type: "object" },
-              { name: "globalState", description: "Global state", type: "object" },
-              { name: "setGlobalState", description: "Functiont to set globalState", type: "function" },
-              { name: "formMode", description: "Form mode", type: "'designer' | 'edit' | 'readonly'" },
-              { name: "form", description: "Form instance", type: "object" },
-              { name: "selectedRow", description: "Selected row of nearest table (null if not available)", type: "object" },
-              { name: "moment", description: "moment", type: "object" },
-              { name: "http", description: "axiosHttp", type: "object" },
-              { name: "message", description: "message framework", type: "object" },
-            ]}
           />
         </SettingsFormItem>
 
         <SettingsFormItem name="onInitAction" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}>
           <ConfigurableActionConfigurator
-            editorConfig={null}
+            editorConfig={undefined}
             level={1}
             label="On init data context"
-            exposedVariables={[
-              { name: "changedData", description: "Data context changed data", type: "object" },
-              { name: "data", description: "Selected form values", type: "object" },
-              { name: "contexts", description: "Contexts data", type: "object" },
-              { name: "globalState", description: "Global state", type: "object" },
-              { name: "setGlobalState", description: "Functiont to set globalState", type: "function" },
-              { name: "formMode", description: "Form mode", type: "'designer' | 'edit' | 'readonly'" },
-              { name: "form", description: "Form instance", type: "object" },
-              { name: "selectedRow", description: "Selected row of nearest table (null if not available)", type: "object" },
-              { name: "moment", description: "moment", type: "object" },
-              { name: "http", description: "axiosHttp", type: "object" },
-              { name: "message", description: "message framework", type: "object" },
-            ]}
           />
         </SettingsFormItem>
 
         <SettingsFormItem name="onChangeAction" labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}>
           <ConfigurableActionConfigurator
-            editorConfig={null}
+            editorConfig={undefined}
             level={1}
             label="On data context changed"
-            exposedVariables={[
-              { name: "changedData", description: "Data context changed data", type: "object" },
-              { name: "data", description: "Selected form values", type: "object" },
-              { name: "contexts", description: "Contexts data", type: "object" },
-              { name: "globalState", description: "Global state", type: "object" },
-              { name: "setGlobalState", description: "Functiont to set globalState", type: "function" },
-              { name: "formMode", description: "Form mode", type: "'designer' | 'edit' | 'readonly'" },
-              { name: "form", description: "Form instance", type: "object" },
-              { name: "selectedRow", description: "Selected row of nearest table (null if not available)", type: "object" },
-              { name: "moment", description: "moment", type: "object" },
-              { name: "http", description: "axiosHttp", type: "object" },
-              { name: "message", description: "message framework", type: "object" },
-            ]}
           />
         </SettingsFormItem>
 
@@ -177,7 +147,7 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
         title="Configure metadata"
         open={open}
         onCancel={() => {
-          onValuesChange({ items: [...properties] });
+          onValuesChange?.({ items: [...properties] });
           setOpen(false);
         }}
         onOk={() => setOpen(false)}
@@ -187,7 +157,7 @@ const DataContextSettings: FC<ISettingsFormFactoryArgs<IDataContextComponentProp
           allowAdd
           value={items}
           onChange={(value) => {
-            onValuesChange({ items: value?.map((item) => convertModelItemToPropertyMetadata(item)) });
+            onValuesChange?.({ items: value.map((item) => convertModelItemToPropertyMetadata(item)) });
           }}
         />
       </Modal>

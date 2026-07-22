@@ -6,6 +6,22 @@ namespace Shesha.Extensions
 {
     public static class TypeExtensions
     {
+        /// <summary>
+        /// Check if the type is SheshaDynamicCrudAppService (implement IDynamicCrudAppService)
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static bool IsSheshaDynamicCrudAppService(this Type type)
+        {
+            return type.ImplementsGenericInterface(typeof(IDynamicCrudAppService<,,>));
+        }
+
+        /// <summary>
+        /// Get base generic type for this type
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="baseGenericType"></param>
+        /// <returns></returns>
         public static Type? FindBaseGenericType(this Type type, Type baseGenericType)
         {
             var btype = type;
@@ -16,7 +32,6 @@ namespace Shesha.Extensions
 
             return btype;
         }
-
 
         /// <summary>
         /// Return <see cref="Type.FullName"/> of the specified <paramref name="type"/>. Throws exception if it's null or empty

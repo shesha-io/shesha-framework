@@ -18,7 +18,7 @@ const ReferenceListDispatcherProvider: FC<PropsWithChildren> = ({
 
 
   const getReferenceList = (payload: IGetReferenceListPayload): PromisedValue<IReferenceList> => {
-    return loader.getRefList({
+    return loader.getRefListAsync({
       refListId: payload.refListId,
       skipCache: false,
     });
@@ -66,9 +66,9 @@ const makeRefListIdNotSpecifiedPromise = (): PromisedValue<IReferenceList> => {
   return new StatefulPromise(Promise.reject<IReferenceList>("Reference List identifier must be specified"));
 };
 
-const useReferenceList = (refListId: IReferenceListIdentifier): ILoadingState<IReferenceList> => {
+const useReferenceList = (refListId: IReferenceListIdentifier | undefined): ILoadingState<IReferenceList> => {
   const { getReferenceList } = useReferenceListDispatcher();
-  const failedPromise = useRef<PromisedValue<IReferenceList>>();
+  const failedPromise = useRef<PromisedValue<IReferenceList>>(undefined);
 
   const refListPromise = isDefined(refListId)
     ? getReferenceList({ refListId: refListId })
@@ -106,7 +106,7 @@ const useReferenceList = (refListId: IReferenceListIdentifier): ILoadingState<IR
 };
 
 const useReferenceListItem = (
-  moduleName: string,
+  moduleName: string | null,
   listName: string,
   itemValue?: number,
 ): ILoadingState<IReferenceListItem> => {
@@ -123,12 +123,16 @@ const useReferenceListItem = (
     refListPromise.promise.then((list) => {
       const item = getRefListItemByValue(list, itemValue);
       setData(item);
+    }).catch((error) => {
+      console.error('Failed to fetch reference list', error);
     });
 
   useEffect(() => {
     refListPromise.promise.then((list) => {
       const item = getRefListItemByValue(list, itemValue);
       setData(item);
+    }).catch((error) => {
+      console.error('Failed to fetch reference list (from useEffect)', error);
     });
   }, [itemValue, refListPromise.promise]);
 

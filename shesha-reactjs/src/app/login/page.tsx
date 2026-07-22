@@ -1,13 +1,11 @@
 'use client';
 
-import React from 'react';
-import { ConfigurableForm } from '@/components';
-import { LOGIN_CONFIGURATION } from '@/components/mainLayout/constant';
-import { FormFullName } from '@/providers';
-import { PageWithLayout } from '@/index';
+import React, { FC } from 'react';
+import { ACTIVE_LOGIN } from '@/components/mainLayout/constant';
+import { ConfigurableForm } from '@/components/configurableForm';
 
-const Login: PageWithLayout = () => (
-  <ConfigurableForm mode="edit" formId={LOGIN_CONFIGURATION as FormFullName} />
+const Login: FC = () => (
+  <ConfigurableForm mode="edit" formId={ACTIVE_LOGIN} />
 );
 
 export default Login;

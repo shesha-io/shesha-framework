@@ -3,7 +3,7 @@ import { FormIdentifier, FormRawMarkup, IFormSettings } from "../form/models";
 import { createNamedContext } from "@/utils/react";
 
 export type GetFormByMarkupPayload = {
-  key: string;
+  key: string | undefined;
   markup: FormRawMarkup;
   formSettings: IFormSettings;
   isSettingsForm?: boolean;
@@ -17,6 +17,7 @@ export type GetFormByIdPayload = {
 export interface IFormManagerActionsContext {
   getFormById: (payload: GetFormByIdPayload) => Promise<UpToDateForm>;
   getFormByIdLoader: (payload: GetFormByIdPayload) => FormLoadingItem;
+  clearCache: (formId: FormIdentifier) => void;
 
   getFormByMarkup: (payload: GetFormByMarkupPayload) => Promise<UpToDateForm>;
   getFormByMarkupLoader: (payload: GetFormByMarkupPayload) => FormLoadingItem;

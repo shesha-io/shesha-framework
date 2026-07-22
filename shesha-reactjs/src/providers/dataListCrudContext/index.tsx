@@ -1,9 +1,7 @@
 import { Form } from 'antd';
-import React, { FC, PropsWithChildren, useContext, useEffect, useRef } from 'react';
+import React, { PropsWithChildren, ReactNode, useCallback, useContext, useEffect, useReducer, useRef } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { RowDataInitializer } from '@/components/reactTable/interfaces';
-import useThunkReducer from '@/hooks/thunkReducer';
-import { IErrorInfo } from '@/interfaces/errorInfo';
 import { FormProvider, ShaForm, useForm } from '@/providers/index';
 import { IFlatComponentsStructure, IFormSettings } from '@/providers/form/models';
 import {
@@ -24,35 +22,37 @@ import {
 import { CRUD_CONTEXT_INITIAL_STATE, CrudContext, ICrudContext } from '../crudContext/contexts';
 import { CrudMode } from '../crudContext/models';
 import reducer from '../crudContext/reducer';
-import { useDelayedUpdate } from '../delayedUpdateProvider/index';
+import { addDelayedUpdateProperty, useDelayedUpdateOrUndefined } from '../delayedUpdateProvider/index';
 import ParentProvider from '../parentProvider/index';
 import { filterDataByOutputComponents } from '../form/api';
 import { useFormDesignerComponents } from '../form/hooks';
 import { removeGhostKeys } from '@/utils/form';
 import { ShaFormProvider } from '../form/providers/shaFormProvider';
 import { useShaForm } from '../form/store/shaFormInstance';
+import { makeErrorWithMessage, throwError } from '@/utils/errors';
+import { isDefined } from '@/utils/nullables';
 
-export type DataProcessor = (data: any) => Promise<any>;
+export type DataProcessor<TData extends object = object> = (data: TData) => Promise<TData>;
 
-export interface ICrudProviderProps {
-  id?: string;
+export interface ICrudProviderProps<TValue extends object = object> {
+  id?: string | undefined;
   isNewObject: boolean;
   allowEdit: boolean;
   allowDelete: boolean;
-  mode?: CrudMode;
+  mode?: CrudMode | undefined;
   allowChangeMode: boolean;
-  data: object | RowDataInitializer;
-  updater?: DataProcessor;
-  creater?: DataProcessor;
-  deleter?: () => Promise<any>;
-  onSave?: DataProcessor;
-  autoSave?: boolean;
-  formFlatMarkup?: IFlatComponentsStructure;
-  formSettings?: IFormSettings;
-  itemListId?: string;
+  data?: TValue | RowDataInitializer<TValue> | undefined;
+  updater?: DataProcessor<TValue> | undefined;
+  creater?: DataProcessor<TValue> | undefined;
+  deleter?: (() => Promise<void>) | undefined;
+  onSave?: DataProcessor<TValue> | undefined;
+  autoSave?: boolean | undefined;
+  formFlatMarkup: IFlatComponentsStructure;
+  formSettings: IFormSettings;
+  itemListId?: string | undefined;
 }
 
-const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
+const CrudProvider = <TValue extends object = object>(props: PropsWithChildren<ICrudProviderProps<TValue>>): ReactNode => {
   const {
     id,
     children,
@@ -69,7 +69,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     autoSave = false,
   } = props;
 
-  const [state, dispatch] = useThunkReducer(reducer, {
+  const [state, dispatch] = useReducer(reducer, {
     ...CRUD_CONTEXT_INITIAL_STATE,
     id,
     isNewObject,
@@ -81,74 +81,71 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     initialValues: typeof data !== 'function' ? data : undefined,
   });
 
-  const { form, setFormData, setFormMode } = useForm();
+  const { form, setFormData, setFormMode } = useForm<TValue>();
 
-  const { getPayload: getDelayedUpdate } = useDelayedUpdate(false) ?? {};
+  const { getPayload: getDelayedUpdate } = useDelayedUpdateOrUndefined() ?? {};
   const toolboxComponents = useFormDesignerComponents();
 
-  const switchModeInternal = (mode: CrudMode, allowChangeMode: boolean): void => {
+  const switchModeInternal = useCallback((mode: CrudMode, allowChangeMode: boolean): void => {
     if (mode === 'read')
       setFormMode('readonly');
     if (mode === 'update' || mode === 'create')
       setFormMode('edit');
     dispatch(switchModeAction({ mode, allowChangeMode }));
-  };
+  }, [dispatch, setFormMode]);
 
-  const switchMode = (mode: CrudMode): void => {
-    if (state.allowChangeMode) switchModeInternal(mode, state.allowChangeMode);
-  };
+  const switchMode = useCallback((mode: CrudMode): void => {
+    if (state.allowChangeMode)
+      switchModeInternal(mode, state.allowChangeMode);
+  }, [state.allowChangeMode, switchModeInternal]);
 
   useEffect(() => {
-    if (autoSave !== state.autoSave) dispatch(setAutoSaveAction(autoSave));
-  }, [autoSave]);
+    dispatch(setAutoSaveAction(autoSave));
+  }, [autoSave, dispatch]);
 
   useEffect(() => {
     const modeToUse = allowChangeMode ? state.mode : mode;
 
     if (state.allowChangeMode !== allowChangeMode || state.mode !== modeToUse)
       switchModeInternal(modeToUse, allowChangeMode);
-  }, [mode, allowChangeMode]);
+  }, [mode, allowChangeMode, state.mode, state.allowChangeMode, switchModeInternal]);
 
-  const setInitialValuesLoading = (loading: boolean): void => {
+  const setInitialValuesLoading = useCallback((loading: boolean): void => {
     dispatch(setInitialValuesLoadingAction(loading));
-  };
+  }, [dispatch]);
 
-  const setInitialValues = (values: object): void => {
+  const setInitialValues = useCallback((values: object): void => {
     dispatch(setInitialValuesAction(values));
-  };
+  }, [dispatch]);
 
   useEffect(() => {
-    if (typeof data === 'function') {
-      setInitialValuesLoading(true);
-      const dataResponse = data();
-
-      Promise.resolve(dataResponse).then((response) => {
-        setInitialValues(response);
-        setFormData({ values: response, mergeValues: true });
-      });
-    } else {
+    if (typeof data === 'object') {
       setInitialValues(data);
       setFormData({ values: data, mergeValues: true });
+    } else {
+      if (typeof data === 'function') {
+        setInitialValuesLoading(true);
+        const dataResponse = data();
+
+        Promise.resolve(dataResponse).then((response) => {
+          setInitialValues(response);
+          setFormData({ values: response, mergeValues: true });
+        }).catch((error) => {
+          console.error('Failed to fetch data', error);
+        });
+      }
     }
-  }, [data]);
+  }, [data, setFormData, setInitialValues, setInitialValuesLoading]);
 
   //#region Allow Edit/Delete/Create
 
-  const setAllowEdit = (allowEdit: boolean): void => {
+  useEffect(() => {
     dispatch(setAllowEditAction(allowEdit));
-  };
+  }, [allowEdit, dispatch]);
 
   useEffect(() => {
-    if (state.allowEdit !== allowEdit) setAllowEdit(allowEdit);
-  }, [allowEdit]);
-
-  const setAllowDelete = (allowDelete: boolean): void => {
     dispatch(setAllowDeleteAction(allowDelete));
-  };
-
-  useEffect(() => {
-    if (state.allowDelete !== allowDelete) setAllowDelete(allowDelete);
-  }, [allowDelete]);
+  }, [allowDelete, dispatch]);
 
   //#endregion
 
@@ -156,55 +153,43 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     dispatch(resetErrorsAction());
   };
 
-  const getErrorInfo = (error: any, message: string): IErrorInfo => {
-    return {
-      message: message,
-      ...error,
-    };
-  };
-
-  const performSave = (processor: DataProcessor, updateType: string): Promise<any> => {
-    if (!processor) return Promise.reject('`processor` must be defined');
+  const performSave = async (processor: DataProcessor<TValue>, updateType: string): Promise<void> => {
+    if (!isDefined(form))
+      throw new Error('performSave must be used within a ShaFormProvider');
 
     dispatch(saveStartedAction());
 
-    return form
-      .validateFields()
-      .then((values) => {
-        // TODO: call common data preparation code (check configurableFormRenderer)
-        const mergedData = { ...state.initialValues, ...values };
+    try {
+      const values = await form.validateFields();
 
-        const postData = removeGhostKeys(
-          filterDataByOutputComponents(
-            mergedData,
-            props.formFlatMarkup.allComponents,
-            toolboxComponents,
-          ),
-        );
-        // send data of stored files
-        const delayedUpdate = typeof getDelayedUpdate === 'function' ? getDelayedUpdate() : null;
-        if (Boolean(delayedUpdate)) postData['_delayedUpdate'] = delayedUpdate;
+      // TODO: call common data preparation code (check configurableFormRenderer)
+      const mergedData = { ...state.initialValues, ...values };
 
-        const finalDataPromise = onSave ? Promise.resolve(onSave(postData)) : Promise.resolve(postData);
+      const postData = removeGhostKeys(
+        filterDataByOutputComponents<TValue>(
+          mergedData,
+          props.formFlatMarkup.allComponents,
+          toolboxComponents,
+        ),
+      ) as TValue;
+      // send data of stored files
+      const delayedUpdate = typeof getDelayedUpdate === 'function' ? getDelayedUpdate() : undefined;
+      if (delayedUpdate)
+        addDelayedUpdateProperty(postData, delayedUpdate);
 
-        return finalDataPromise.then((finalData) => {
-          return processor(finalData)
-            .then(() => {
-              dispatch(saveSuccessAction());
-            })
-            .catch((error) => {
-              dispatch(saveFailedAction(getErrorInfo(error, `${updateType} failed`)));
-              throw error;
-            });
-        });
-      })
-      .catch((validationErrors) => {
-        dispatch(saveFailedAction(getErrorInfo(validationErrors, `${updateType} failed`)));
-        throw validationErrors;
-      });
+      const finalData = onSave
+        ? await onSave(postData)
+        : postData;
+      await processor(finalData);
+
+      dispatch(saveSuccessAction());
+    } catch (error) {
+      dispatch(saveFailedAction(makeErrorWithMessage(error, `${updateType} failed`)));
+      throw error;
+    }
   };
 
-  const performUpdate = (): Promise<any> => {
+  const performUpdate = (): Promise<void> => {
     if (!updater) return Promise.reject('CrudProvider: `updater` property is not specified');
 
     return performSave(updater, 'Update');
@@ -212,13 +197,15 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
 
   const debouncedUpdate = useDebouncedCallback(
     () => {
-      performUpdate();
+      performUpdate().catch((error) => {
+        console.error('Failed to update', error);
+      });
     },
     // delay in ms
     300,
   );
 
-  const performCreate = (): Promise<any> => {
+  const performCreate = (): Promise<void> => {
     if (!creater) return Promise.reject('CrudProvider: `creater` property is not specified');
 
     return performSave(creater, 'Create');
@@ -233,39 +220,42 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
       await deleter();
       dispatch(deleteSuccessAction());
     } catch (error) {
-      dispatch(deleteFailedAction(getErrorInfo(error, 'Failed to delete row')));
+      dispatch(deleteFailedAction(makeErrorWithMessage(error, 'Failed to delete row')));
       throw error;
     }
   };
 
   const reset = async (): Promise<void> => {
+    if (!form) throw new Error('reset must be used within a ShaFormProvider');
     await form.resetFields();
     resetErrors();
   };
 
   const getFormData = (): object => {
+    if (!form) throw new Error('reset must be used within a ShaFormProvider');
     return form.getFieldsValue();
   };
-  const getInitialData = (): any => {
+  const getInitialData = (): object | undefined => {
     return state.initialValues;
   };
 
   const autoSaveEnqueued = useRef<boolean>(false);
 
-  const handleFocusIn = (): void => {
+  const handleFocusIn = useCallback((): void => {
     if (autoSaveEnqueued.current === true) {
       autoSaveEnqueued.current = false;
       // auto save
       debouncedUpdate();
     }
-  };
+  }, [debouncedUpdate]);
 
-  const onValuesChangeInternal = (_changedValues: any, values: any): void => {
+  const onValuesChangeInternal = (_changedValues: Partial<TValue>, values: TValue): void => {
     // recalculate components visibility
     setFormData({ values, mergeValues: true });
 
     if (!state.autoSave || state.mode !== 'update') return;
 
+    if (!form) throw new Error("form is not defined");
     if (!form.isFieldsTouched()) return;
 
     autoSaveEnqueued.current = true;
@@ -276,7 +266,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
     return () => {
       document.removeEventListener('focusin', handleFocusIn);
     };
-  }, []);
+  }, [handleFocusIn]);
 
 
   const contextValue: ICrudContext = {
@@ -294,15 +284,19 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
 
   return (
     <CrudContext.Provider value={contextValue}>
-      <Form
+      <Form<TValue>
         key={state.mode}
         component={false}
-        form={form}
-        initialValues={state.initialValues}
+        {... (form ? { form } : {})}
         onValuesChange={onValuesChangeInternal}
         {...props.formSettings}
+        initialValues={state.initialValues ? state.initialValues as Record<string, unknown> : {}}
       >
-        <ParentProvider model={{ componentName: 'ListItem', editMode: parentMode, readOnly: state.mode === "read" }} isScope>
+        <ParentProvider
+          name={`CrudProvider-${id}`}
+          model={{ componentName: 'ListItem', editMode: parentMode, readOnly: state.mode === "read" }}
+          isScope
+        >
           {children}
         </ParentProvider>
       </Form>
@@ -310,7 +304,7 @@ const CrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
   );
 };
 
-const DataListCrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) => {
+const DataListCrudProvider = <TValue extends object = object>(props: PropsWithChildren<ICrudProviderProps<TValue>>): ReactNode => {
   const {
     children,
     mode = 'read',
@@ -323,12 +317,20 @@ const DataListCrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) 
     antdForm: form,
     form: undefined,
     init: (form) => {
-      form.initByMarkup({
+      form.initFormByMarkup({
         formFlatMarkup: formFlatMarkup,
         formSettings: formSettings,
+      }).catch((error) => {
+        console.error('Failed to init form', error);
       });
     },
   });
+
+  // init form data
+  useEffect(() => {
+    if (shaForm.markupLoadingState.status === 'ready' && shaForm.dataLoadingState.status === 'waiting')
+      void shaForm.triggerEvents();
+  }, [shaForm, shaForm.markupLoadingState.status, shaForm.dataLoadingState.status]);
 
   return (
     <ShaFormProvider shaForm={shaForm}>
@@ -350,14 +352,6 @@ const DataListCrudProvider: FC<PropsWithChildren<ICrudProviderProps>> = (props) 
   );
 };
 
-function useDataListCrud(require: boolean = true): ICrudContext | undefined {
-  const context = useContext(CrudContext);
-
-  if (context === undefined && require) {
-    throw new Error('useDataListCrud must be used within a DataListCrudProvider');
-  }
-
-  return context;
-}
+const useDataListCrud = (): ICrudContext => useContext(CrudContext) ?? throwError("useDataListCrud must be used within a DataListCrudProvider");
 
 export { DataListCrudProvider, useDataListCrud };

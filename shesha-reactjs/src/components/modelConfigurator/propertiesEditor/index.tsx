@@ -3,18 +3,20 @@ import { Form } from 'antd';
 import { IModelItem } from '@/interfaces/modelConfigurator';
 import { PropertiesEditorProvider } from './provider';
 import { PropertiesEditorRenderer } from './renderer';
-import { useModelConfigurator } from '@/index';
 import { MetadataSourceTypeUseDefined } from '@/apis/modelConfigurations';
+import { useModelConfigurator } from '@/providers/modelConfigurator';
 
 export interface IPropertiesEditorProps {
-  allowAdd?: Boolean;
-  value?: IModelItem[];
-  onChange?: (value: IModelItem[]) => void;
+  allowAdd?: boolean | undefined;
+  value?: IModelItem[] | undefined;
+  onChange?: ((value: IModelItem[]) => void) | undefined;
 }
+
+const EMPTY_VALUE: IModelItem[] = [];
 
 export const PropertiesEditor: FC<IPropertiesEditorProps> = (props) => {
   return (
-    <PropertiesEditorProvider items={props.value} onChange={props.onChange}>
+    <PropertiesEditorProvider items={props.value ?? EMPTY_VALUE} onChange={props.onChange}>
       <PropertiesEditorRenderer allowAdd={props.allowAdd} />
     </PropertiesEditorProvider>
   );

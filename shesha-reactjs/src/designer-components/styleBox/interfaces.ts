@@ -1,7 +1,9 @@
+import { ComponentDefinition } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 
 export interface IStyleBoxComponentProps extends IConfigurableFormComponent {
   noMargin?: boolean;
+  format?: 'string' | 'json';
 }
 
 export interface IInputDirection {
@@ -15,3 +17,5 @@ export interface IValue {
   padding?: IInputDirection;
   margin?: IInputDirection;
 }
+
+export type StyleBoxDefinition = ComponentDefinition<"styleBox", IStyleBoxComponentProps>;

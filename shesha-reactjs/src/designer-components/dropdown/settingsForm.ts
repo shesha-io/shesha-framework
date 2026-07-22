@@ -1,14 +1,12 @@
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
-import { IDropdownComponentProps } from './model';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { nanoid } from '@/utils/uuid';
 import { presetColors } from './utils';
-import { FormMarkupWithSettings } from '@/interfaces';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();
@@ -26,7 +24,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
   const tagShadowStyleId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -40,7 +38,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
             key: '1',
             title: 'Common',
             id: commonTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addContextPropertyAutocomplete({
                 id: nanoid(),
                 propertyName: 'propertyName',
@@ -110,11 +108,11 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
             key: '2',
             title: 'Data',
             id: dataTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: commonTabId,
-                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) !== "tags";', _mode: 'code', _value: false } as any,
+                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) !== "tags";', _mode: 'code', _value: false },
                 inputs: [
                   {
                     id: nanoid(),
@@ -132,7 +130,6 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                     label: 'Show Icon',
                     size: 'small',
                     jsSetting: true,
-                    defaultValue: true,
                     tooltip: 'When checked the icon will display on the left side of the DisplayName',
                   },
 
@@ -148,7 +145,6 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                     propertyName: "mode",
                     type: "dropdown",
                     size: "small",
-                    defaultValue: "single",
                     jsSetting: true,
                     dropdownOptions: [
                       {
@@ -195,7 +191,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                 direction: 'vertical',
                 justifyContent: 'left',
                 settingsValidationErrors: [],
-                components: [...new DesignerToolbarSettings()
+                components: [...fbf()
                   .addSettingsInput({
                     id: nanoid(),
                     parentId: dataContainerId,
@@ -224,7 +220,6 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                     inputType: "dropdown",
                     size: "small",
                     jsSetting: true,
-                    defaultValue: 'simple',
                     dropdownOptions: [
                       {
                         value: "simple",
@@ -256,7 +251,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                           _code: "return  getSettingValue(data?.valueFormat) !== 'custom';",
                           _mode: "code",
                           _value: false,
-                        } as any,
+                        },
                       },
                       {
                         id: nanoid(),
@@ -270,7 +265,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                           _code: "return  getSettingValue(data?.valueFormat) !== 'custom';",
                           _mode: "code",
                           _value: false,
-                        } as any,
+                        },
                       },
                     ],
                   })
@@ -317,7 +312,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                           _code: "return  !getSettingValue(data.disableItemValue);",
                           _mode: 'code',
                           _value: false,
-                        } as any,
+                        },
                         tooltip: 'Pass an array of positive integers to disable specific values. For example: [1, 2, 3].',
                       },
                     ],
@@ -388,7 +383,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
             key: '3',
             title: 'Validation',
             id: validationTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'switch',
@@ -406,7 +401,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
             key: '4',
             title: 'Events',
             id: eventsTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'codeEditor',
@@ -423,7 +418,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
             key: '5',
             title: 'Appearance',
             id: appearanceTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addPropertyRouter({
                 id: styleRouterId,
                 propertyName: 'propertyRouter1',
@@ -438,7 +433,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                   _value: "",
                 },
                 components: [
-                  ...new DesignerToolbarSettings()
+                  ...fbf()
                     .addSettingsInputRow({
                       id: nanoid(),
                       parentId: styleRouterId,
@@ -456,7 +451,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                         _code: 'return  getSettingValue(data?.mode) === "single" && getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags";',
                         _mode: 'code',
                         _value: false,
-                      } as any,
+                      },
                     })
                     .addSettingsInput({
                       id: nanoid(),
@@ -483,10 +478,10 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                       parentId: styleRouterId,
                       ghost: true,
                       collapsible: 'header',
-                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false },
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: nanoid(),
@@ -548,11 +543,11 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                       parentId: styleRouterId,
                       labelAlign: 'right',
                       ghost: true,
-                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false },
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: nanoid(),
@@ -633,21 +628,21 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                       label: 'Border',
                       labelAlign: 'right',
                       ghost: true,
-                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false },
                       parentId: styleRouterId,
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addContainer({
                             id: nanoid(),
                             parentId: nanoid(),
-                            components: getBorderInputs() as any,
+                            components: getBorderInputs(fbf),
                           })
                           .addContainer({
                             id: nanoid(),
                             parentId: nanoid(),
-                            components: getCornerInputs() as any,
+                            components: getCornerInputs(fbf),
                           })
                           .toJson(),
                         ],
@@ -659,13 +654,13 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                       label: 'Background',
                       labelAlign: 'right',
                       ghost: true,
-                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false },
                       parentId: styleRouterId,
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
                         components: [
-                          ...new DesignerToolbarSettings()
+                          ...fbf()
                             .addSettingsInput({
                               id: nanoid(),
                               parentId: nanoid(),
@@ -687,7 +682,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                                 hideLabel: true,
                                 jsSetting: false,
                               }],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false },
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
@@ -700,7 +695,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                                 jsSetting: false,
                               },
                               ],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false },
                               hideLabel: true,
                             })
                             .addSettingsInputRow({
@@ -713,7 +708,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                                 jsSetting: false,
                                 label: "URL",
                               }],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false },
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
@@ -725,12 +720,12 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                                 label: "Image",
                                 jsSetting: false,
                               }],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false },
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: nanoid(),
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false },
                               inputs: [
                                 {
                                   type: 'textField',
@@ -745,7 +740,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                               id: nanoid(),
                               parentId: nanoid(),
                               inline: true,
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
                               inputs: [
                                 {
                                   type: 'customDropdown',
@@ -776,10 +771,9 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                                 label: 'Repeat',
                                 hideLabel: true,
                                 propertyName: 'background.repeat',
-                                inputType: 'radio',
                                 buttonGroupOptions: repeatOptions,
                               }],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
                             })
                             .toJson(),
                         ],
@@ -791,12 +785,12 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                       label: 'Shadow',
                       labelAlign: 'right',
                       ghost: true,
-                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false },
                       parentId: styleRouterId,
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: nanoid(),
@@ -861,11 +855,11 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                       label: 'Margin & Padding',
                       labelAlign: 'right',
                       ghost: true,
-                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false },
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addStyleBox({
                             id: nanoid(),
                             label: 'Margin Padding',
@@ -882,12 +876,12 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                       label: 'Custom Styles',
                       labelAlign: 'right',
                       ghost: true,
-                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) === "tags" && getSettingValue(data.mode) === "single";', _mode: 'code', _value: false },
                       parentId: styleRouterId,
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInput({
                             id: nanoid(),
                             inputType: 'codeEditor',
@@ -905,12 +899,12 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                       label: 'Custom Tag Styles',
                       labelAlign: 'right',
                       ghost: true,
-                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) !== "tags";', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.displayStyle) !== "tags";', _mode: 'code', _value: false },
                       collapsible: 'header',
                       content: {
                         id: DefaultTagStyleId,
                         components: [
-                          ...new DesignerToolbarSettings()
+                          ...fbf()
                             .addCollapsiblePanel({
                               id: nanoid(),
                               propertyName: 'tagFontStyle',
@@ -921,7 +915,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                               parentId: DefaultTagStyleId,
                               content: {
                                 id: nanoid(),
-                                components: [...new DesignerToolbarSettings()
+                                components: [...fbf()
                                   .addSettingsInputRow({
                                     id: nanoid(),
                                     parentId: nanoid(),
@@ -985,7 +979,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                               parentId: DefaultTagStyleId,
                               content: {
                                 id: nanoid(),
-                                components: [...new DesignerToolbarSettings()
+                                components: [...fbf()
                                   .addSettingsInputRow({
                                     id: nanoid(),
                                     parentId: nanoid(),
@@ -1069,16 +1063,16 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                               parentId: DefaultTagStyleId,
                               content: {
                                 id: tagBorderStyleId,
-                                components: [...new DesignerToolbarSettings()
+                                components: [...fbf()
                                   .addContainer({
                                     id: nanoid(),
                                     parentId: tagBorderStyleId,
-                                    components: getBorderInputs('tag') as any,
+                                    components: getBorderInputs(fbf, 'tag'),
                                   })
                                   .addContainer({
                                     id: nanoid(),
                                     parentId: tagBorderStyleId,
-                                    components: getCornerInputs('tag') as any,
+                                    components: getCornerInputs(fbf, 'tag'),
                                   })
                                   .toJson(),
                                 ],
@@ -1095,7 +1089,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                               content: {
                                 id: tagBackgroundStyleId,
                                 components: [
-                                  ...new DesignerToolbarSettings()
+                                  ...fbf()
                                     .addSettingsInput({
                                       id: nanoid(),
                                       inputType: 'switch',
@@ -1125,7 +1119,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                                         hideLabel: true,
                                         jsSetting: false,
                                       }],
-                                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.tag?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
+                                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.tag?.background?.type) !== "color";', _mode: 'code', _value: false },
                                     })
                                     .addSettingsInputRow({
                                       id: nanoid(),
@@ -1138,7 +1132,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                                         jsSetting: false,
                                       },
                                       ],
-                                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.tag?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
+                                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.tag?.background?.type) !== "gradient";', _mode: 'code', _value: false },
                                       hideLabel: true,
                                     })
                                     .addSettingsInputRow({
@@ -1151,7 +1145,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                                         jsSetting: false,
                                         label: "URL",
                                       }],
-                                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.tag?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
+                                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.tag?.background?.type) !== "url";', _mode: 'code', _value: false },
                                     })
                                     .addSettingsInputRow({
                                       id: nanoid(),
@@ -1163,12 +1157,12 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                                         label: "Image",
                                         jsSetting: false,
                                       }],
-                                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.tag?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
+                                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.tag?.background?.type) !== "image";', _mode: 'code', _value: false },
                                     })
                                     .addSettingsInputRow({
                                       id: nanoid(),
                                       parentId: tagBackgroundStyleId,
-                                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.tag?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
+                                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.tag?.background?.type) !== "storedFile";', _mode: 'code', _value: false },
                                       inputs: [
                                         {
                                           type: 'textField',
@@ -1183,7 +1177,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                                       id: nanoid(),
                                       parentId: tagBackgroundStyleId,
                                       inline: true,
-                                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.tag?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.tag?.background?.type) === "color";', _mode: 'code', _value: false },
                                       inputs: [
                                         {
                                           type: 'customDropdown',
@@ -1214,10 +1208,9 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                                         label: 'Repeat',
                                         hideLabel: true,
                                         propertyName: 'tag.background.repeat',
-                                        inputType: 'radio',
                                         buttonGroupOptions: repeatOptions,
                                       }],
-                                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.tag?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.tag?.background?.type) === "color";', _mode: 'code', _value: false },
                                     })
                                     .toJson(),
                                 ],
@@ -1233,7 +1226,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                               collapsible: 'header',
                               content: {
                                 id: tagShadowStyleId,
-                                components: [...new DesignerToolbarSettings()
+                                components: [...fbf()
                                   .addSettingsInputRow({
                                     id: nanoid(),
                                     parentId: tagShadowStyleId,
@@ -1302,7 +1295,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
                               parentId: DefaultTagStyleId,
                               content: {
                                 id: tagCustomStyleId,
-                                components: [...new DesignerToolbarSettings()
+                                components: [...fbf()
                                   .addSettingsInput({
                                     id: nanoid(),
                                     inputType: 'codeEditor',
@@ -1325,7 +1318,7 @@ export const getSettings = (data: IDropdownComponentProps): FormMarkupWithSettin
             key: '6',
             title: 'Security',
             id: securityTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'permissions',

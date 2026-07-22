@@ -6,19 +6,23 @@ import { SidebarPanel } from './sidebarPanel';
 import { useStyles } from './styles/styles';
 import { SizableColumns } from '../sizableColumns';
 import { getPanelSizes } from './utilis';
-import { SIDEBAR_COLLAPSE, useCanvas, useLocalStorage, useShaFormInstance } from '@/index';
 import { calculateAutoZoom, DEFAULT_OPTIONS, defaultDesignerWidth, usePinchZoom } from '@/providers/canvas/utils';
 import { IViewType } from '@/providers/canvas/contexts';
-export interface ISidebarContainerProps extends PropsWithChildren<any> {
-  leftSidebarProps?: ISidebarProps;
-  rightSidebarProps?: ISidebarProps;
-  header?: ReactNode | (() => ReactNode);
-  sideBarWidth?: number;
-  allowFullCollapse?: boolean;
-  canZoom?: boolean;
-  configTreePanelSize?: string | number;
-  noPadding?: boolean;
-  viewType?: IViewType;
+import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
+import { useCanvas } from '@/providers/canvas';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { SIDEBAR_COLLAPSE } from '../mainLayout/constant';
+import { isDefined } from '@/utils/nullables';
+export interface ISidebarContainerProps extends PropsWithChildren {
+  leftSidebarProps?: ISidebarProps | undefined;
+  rightSidebarProps?: ISidebarProps | undefined;
+  header?: ReactNode | (() => ReactNode) | undefined;
+  sideBarWidth?: number | undefined;
+  allowFullCollapse?: boolean | undefined;
+  canZoom?: boolean | undefined;
+  configTreePanelSize?: string | number | undefined;
+  noPadding?: boolean | undefined;
+  viewType?: IViewType | undefined;
 }
 
 export const SidebarContainer: FC<ISidebarContainerProps> = ({
@@ -66,7 +70,8 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   // Track window resize
   useEffect(() => {
     const handleResize = (): void => {
-      setWindowSize({ width: (window?.innerWidth ?? parseInt(defaultDesignerWidth, 10)) + 'px' });
+      const innerWidth = isDefined(window) ? window.innerWidth : undefined;
+      setWindowSize({ width: (innerWidth ?? parseInt(defaultDesignerWidth, 10)) + 'px' });
     };
 
     window.addEventListener('resize', handleResize);
@@ -89,7 +94,8 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
         }
       }
     }
-  }, [canZoom, autoZoom, windowSize.width, designerWidth, currentSizes, configTreePanelSize, zoom, setCanvasZoom, viewType, isSidebarCollapsed]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canZoom, autoZoom, windowSize.width, designerWidth, currentSizes, configTreePanelSize, setCanvasZoom, viewType, isSidebarCollapsed]);
 
   useEffect(() => {
     setCurrentSizes(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
@@ -101,7 +107,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
 
   const isDesigner = formMode === 'designer';
 
-  const renderSidebar = (side: SidebarPanelPosition): JSX.Element => {
+  const renderSidebar = (side: SidebarPanelPosition): ReactNode => {
     const sidebarProps = side === 'left' ? leftSidebarProps : rightSidebarProps;
     const hideFullCollapse = allowFullCollapse && !sidebarProps?.open;
 
@@ -123,8 +129,8 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
       <SizableColumns
         sizes={currentSizes}
         expandToMin={false}
-        minSize={sizes?.minSizes}
-        maxSize={sizes?.maxSizes}
+        {...(sizes.minSizes ? { minSize: sizes.minSizes } : {})}
+        {...(sizes.maxSizes ? { maxSize: sizes.maxSizes } : {})}
         onDrag={handleDragSizesChange}
         onDragEnd={handleDragSizesChange}
         gutterSize={DEFAULT_OPTIONS.gutter}
@@ -166,6 +172,16 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
         </div>
         {renderSidebar('right')}
       </SizableColumns>
+      {/* Dedicated popup container for canvas components - applies zoom transformation */}
+      {isDesigner && canZoom && (
+        <div
+          id="canvas-popup-container"
+          className={styles.canvasPopupContainer}
+          style={{
+            zoom: `${zoom}%`,
+          }}
+        />
+      )}
     </div>
   );
 };

@@ -1,6 +1,6 @@
-import { IStyleType } from "@/index";
+import { IStyleValue } from "@/providers/form/models";
 
-export const defaultStyles = (): IStyleType => {
+export const defaultStyles = (): IStyleValue => {
   return {
     border: { hideBorder: false, radiusType: 'all', borderType: 'all', border: { all: { width: '1px', style: 'solid', color: '#d9d9d9' } }, radius: { all: 8 } },
     dimensions: { width: '54px', height: '54px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
@@ -12,8 +12,6 @@ export const defaultStyles = (): IStyleType => {
       position: 'center',
       gradient: { direction: 'to right', colors: {} },
       url: '',
-      storedFile: { id: null },
-      uploadFile: null,
     },
     font: {
       type: 'Segoe UI',
@@ -31,7 +29,7 @@ export const defaultStyles = (): IStyleType => {
   };
 };
 
-export const containerDefaultStyles = (): IStyleType => {
+export const containerDefaultStyles = (): IStyleValue => {
   return {
     dimensions: {
       width: 'auto',
@@ -40,6 +38,18 @@ export const containerDefaultStyles = (): IStyleType => {
       maxHeight: '140px',
       minWidth: '0px',
       maxWidth: 'auto',
+    },
+  };
+};
+
+export const downloadedFileDefaultStyles = (): IStyleValue => {
+  return {
+    font: {
+      type: 'Segoe UI',
+      align: 'left',
+      size: 14,
+      weight: '400',
+      color: '#52c41a',
     },
   };
 };

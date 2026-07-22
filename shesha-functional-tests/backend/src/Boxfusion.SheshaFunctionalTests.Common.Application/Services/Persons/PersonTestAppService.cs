@@ -1,27 +1,34 @@
-﻿using Abp.Auditing;
-using Abp.Authorization;
+﻿using Abp.Authorization;
 using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Shesha;
+using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
+using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Dtos;
-using Shesha.Reflection;
-using Shesha.Specifications;
-using System.ComponentModel.DataAnnotations;
+using Shesha.EntityReferences;
+using Shesha.Extensions;
 
 namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services.Persons
 {
 
-    public class PersonTestDto : DynamicDto<Person, Guid>
+    public class PersonTestDto //: DynamicDto<Person, Guid>
     {
-        public virtual string FirstName { get; set; }
+        public virtual string? FirstName { get; set; }
 
-        public virtual string LastName { get; set; }
+        public virtual string? LastName { get; set; }
 
-        public virtual string MiddleName { get; set; }
+        public virtual string? MiddleName { get; set; }
 
-        public virtual Guid Address { get; set; }
+        public virtual Guid? Address { get; set; }
+
+        [EntityReferenceType(typeof(Organisation))]
+        public EntityReferenceDto<Guid>? Organisation { get; set; }
+
+        public string? OrganisationName { get; set; }
+
+        public RefListGender? Gender { get; set; }
     }
 
 
@@ -40,35 +47,30 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services.Persons
         {
         }
 
-        public async Task TestPersonAsync(PersonTestDto input)
+        public async Task<List<PersonTestDto>> GetPersonsAsync()
         {
-            var p = new Person();
-            await MapDynamicDtoToEntityAsync<PersonTestDto, Person, Guid>(input, p);
-            var pp = new Person();
-            var v = new List<ValidationResult>();
-            await MapJObjectToEntityAsync<Person, Guid>(input._jObject.NotNull(), pp, v);
+            var pers = await (await Repository.GetAllAsync()).Where(x =>
+                x.PrimaryOrganisation != null
+                && x.Gender != null
+                && x.PrimaryOrganisation.Parent == null
+                && x.PrimaryOrganisation.PrimaryContact == null).Take(5).ToListAsync();
+
+            return pers.Select(x => new PersonTestDto()
+            {
+                FirstName = x.FirstName,
+                LastName = x.LastName,
+                MiddleName = x.MiddleName,
+                OrganisationName = x.PrimaryOrganisation.Name,
+                Organisation = x.PrimaryOrganisation != null
+                    ? new EntityReferenceDto<Guid>(x.PrimaryOrganisation)
+                    : null,
+                Gender = x.Gender
+            }).ToList();
         }
 
         public override async Task<DynamicDto<Person, Guid>> UpdateAsync([DynamicBinder(UseDtoForEntityReferences = true, UseDynamicDtoProxy = true)] DynamicDto<Person, Guid> input)
         {
             return await base.UpdateAsync(input);
-        }
-
-        [DisableSpecifications]
-        public async Task GetUnfilteredAsync()
-        {
-            var persons = await AsyncQueryableExecuter.ToListAsync(Repository.GetAll());
-        }
-
-        public async Task GetDefaultFilteredAsync()
-        {
-            var persons = await AsyncQueryableExecuter.ToListAsync(Repository.GetAll());
-        }
-
-        //[ApplySpecifications(typeof(Age18PlusSpecification), typeof(HasNoAccountSpecification))]
-        public async Task GetFilteredAsync()
-        {
-            var persons = await AsyncQueryableExecuter.ToListAsync(Repository.GetAll());
         }
     }
 }

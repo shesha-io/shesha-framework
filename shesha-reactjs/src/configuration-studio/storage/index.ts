@@ -3,7 +3,7 @@ import { isDefined } from "../../utils/nullables";
 type StorageValue = string | number | boolean | object | null;
 
 export interface IAsyncStorage {
-  getAsync<T extends StorageValue>(key: string): Promise<T | undefined>;
+  getAsync<T extends StorageValue>(key: string, parseJson?: boolean): Promise<T | undefined>;
   setAsync<T extends StorageValue>(key: string, value: T | undefined): Promise<void>;
   removeAsync(key: string): Promise<void>;
   clearAsync(): Promise<void>;
@@ -25,7 +25,7 @@ class AsyncLocalStorage implements IAsyncStorage {
     return AsyncLocalStorage.instance;
   }
 
-  public getAsync<T extends StorageValue>(key: string): Promise<T | undefined> {
+  public getAsync<T extends StorageValue>(key: string, parseJson: boolean = true): Promise<T | undefined> {
     return new Promise((resolve) => {
       try {
         const item = localStorage.getItem(key);
@@ -35,7 +35,10 @@ class AsyncLocalStorage implements IAsyncStorage {
         }
 
         try {
-          resolve(JSON.parse(item) as T);
+          const result = parseJson
+            ? JSON.parse(item) as T
+            : item as unknown as T;
+          resolve(result);
         } catch {
           resolve(item as unknown as T);
         }
@@ -50,7 +53,7 @@ class AsyncLocalStorage implements IAsyncStorage {
     return new Promise((resolve) => {
       try {
         if (!isDefined(value)) {
-          this.removeAsync(key).then(resolve);
+          void this.removeAsync(key).then(resolve);
           return;
         }
 

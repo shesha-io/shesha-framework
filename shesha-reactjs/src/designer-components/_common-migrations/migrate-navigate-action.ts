@@ -2,20 +2,21 @@ import { IConfigurableActionConfiguration } from "@/interfaces/configurableActio
 import { StandardNodeTypes } from "@/interfaces/formComponent";
 import { FormIdentifier } from "@/interfaces";
 import { IKeyValue } from "@/interfaces/keyValue";
-import { INavigateActoinArguments as INavigateActionArguments } from "@/providers/shaRouting/index";
+import { INavigateActoinArguments as INavigateActionArguments, INavigateActoinArguments, isNavigationActionConfiguration } from "@/providers/shaRouting/index";
 import { getQueryString, getUrlWithoutQueryParams } from "@/utils/url";
+import { isNonEmptyArray } from "@/utils/array";
 
 interface DynamicUrlParsingResponse {
   isDynamic: boolean;
-  formId?: FormIdentifier;
-  url?: string;
-  queryParams?: IKeyValue[];
+  formId?: FormIdentifier | undefined;
+  url?: string | undefined;
+  queryParams?: IKeyValue[] | undefined;
 }
 const parseDynamicUrl = (url: string): DynamicUrlParsingResponse => {
   const urlWithoutQuery = getUrlWithoutQueryParams(url);
 
   const urlParts = urlWithoutQuery.split('/').filter((e) => Boolean(e));
-  const isDynamic = (urlParts.length === 2 || urlParts.length === 3) && urlParts[0].toLowerCase() === 'dynamic';
+  const isDynamic = isNonEmptyArray(urlParts) && (urlParts.length === 2 || urlParts.length === 3) && urlParts[0].toLowerCase() === 'dynamic';
   const moduleName = isDynamic && urlParts.length === 3 ? urlParts[1] : undefined;
   const form = isDynamic
     ? urlParts.length === 3 ? urlParts[2] : urlParts[1]
@@ -26,13 +27,13 @@ const parseDynamicUrl = (url: string): DynamicUrlParsingResponse => {
 
   const queryParams = queryParts.map<IKeyValue>((part) => {
     const keyValue = part.split('=');
-    const value = keyValue.length > 1 ? keyValue[1] : undefined;
-    return { key: keyValue[0], value };
+    const value = keyValue.length > 1 ? keyValue[1] ?? "" : "";
+    return { key: keyValue[0] ?? "", value };
   });
 
   const result: DynamicUrlParsingResponse = {
     isDynamic: isDynamic,
-    formId: form ? { name: form, module: moduleName } : undefined,
+    formId: form ? { name: form, module: moduleName ?? null } : undefined,
     url: urlWithoutQuery,
     queryParams: queryParams,
   };
@@ -40,7 +41,7 @@ const parseDynamicUrl = (url: string): DynamicUrlParsingResponse => {
   return result;
 };
 
-export const getNavigationActionArgumentsByUrl = (url: string): INavigateActionArguments => {
+export const getNavigationActionArgumentsByUrl = (url: string): INavigateActionArguments | undefined => {
   if (!url)
     return undefined;
 
@@ -56,14 +57,14 @@ export const getNavigationActionArgumentsByUrl = (url: string): INavigateActionA
   return newArgs;
 };
 
-const migrateNavigateArgs = (args: INavigateActionArguments): INavigateActionArguments => {
-  if (args && typeof (args['target']) === 'string') {
-    return getNavigationActionArgumentsByUrl(args['target']);
+const migrateNavigateArgs = (args: INavigateActionArguments | undefined): INavigateActionArguments | undefined => {
+  if (args && "target" in args && typeof (args.target) === 'string') {
+    return getNavigationActionArgumentsByUrl(args.target);
   } else
     return { ...args, navigationType: "url" };
 };
 
-const updateActionRecursive = (prev: IConfigurableActionConfiguration, updater: (currentAction: IConfigurableActionConfiguration) => IConfigurableActionConfiguration): IConfigurableActionConfiguration => {
+const updateActionRecursive = (prev: IConfigurableActionConfiguration | undefined, updater: (currentAction: IConfigurableActionConfiguration) => IConfigurableActionConfiguration): IConfigurableActionConfiguration | undefined => {
   if (!prev)
     return prev;
 
@@ -76,17 +77,17 @@ const updateActionRecursive = (prev: IConfigurableActionConfiguration, updater: 
   };
 };
 
-const migrateNavigateProps = (prev: IConfigurableActionConfiguration): IConfigurableActionConfiguration => {
-  var args = prev?.actionArguments as INavigateActionArguments;
+const migrateNavigateProps = (prev: IConfigurableActionConfiguration<INavigateActoinArguments>): IConfigurableActionConfiguration<INavigateActoinArguments> => {
+  var args = prev.actionArguments as INavigateActionArguments;
 
   const newArgs = migrateNavigateArgs(args);
 
   return { ...prev, actionArguments: newArgs, version: 2 };
 };
 
-export const migrateNavigateAction = (prev: IConfigurableActionConfiguration): IConfigurableActionConfiguration => {
+export const migrateNavigateAction = (prev: IConfigurableActionConfiguration | undefined): IConfigurableActionConfiguration | undefined => {
   return updateActionRecursive(prev, (action) => {
-    return (action.actionOwner === 'shesha.common' && action.actionName === 'Navigate')
+    return isNavigationActionConfiguration(action)
       ? migrateNavigateProps(action)
       : action;
   });

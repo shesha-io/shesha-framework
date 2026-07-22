@@ -6,10 +6,11 @@ import RefListItemsContainer from './refListItemsContainer';
 import { useStyles } from './styles/styles';
 import { IRefListItemFormModel } from '../provider/models';
 import { RefListItemGroupConfiguratorProvider, useRefListItemGroupConfigurator } from '../provider';
+import { IReferenceListIdentifier } from '@/interfaces';
 
 interface IFiltersListProps {
   items?: IRefListItemFormModel[];
-  showModal?: () => void;
+  showModal: () => void;
   readOnly?: boolean;
 }
 
@@ -34,10 +35,10 @@ export const RefListItemsListInner: FC<Omit<IFiltersListProps, 'items'>> = ({ sh
 export interface ITableViewSelectorSettingsModal {
   visible: boolean;
   hideModal: () => void;
-  value?: object;
-  onChange?: any;
+  value?: IRefListItemFormModel[] | null | undefined;
+  onChange?: ((newValue: IRefListItemFormModel[] | null) => void) | undefined;
   readOnly: boolean;
-  referenceList?: any;
+  referenceList?: IReferenceListIdentifier | undefined;
 }
 
 export const TableViewSelectorSettingsModalInner: FC<ITableViewSelectorSettingsModal> = ({
@@ -47,7 +48,7 @@ export const TableViewSelectorSettingsModalInner: FC<ITableViewSelectorSettingsM
 }) => {
   const { items, readOnly } = useRefListItemGroupConfigurator();
   useDeepCompareEffect(() => {
-    onChange(items);
+    onChange?.(items);
   }, [items]);
 
   const updateFilters = (): void => {
@@ -71,6 +72,7 @@ export const TableViewSelectorSettingsModalInner: FC<ITableViewSelectorSettingsM
   );
 };
 
+const EMPTY_ITEMS: IRefListItemFormModel[] = [];
 export const RefListItemSelectorSettingsModal: FC<Omit<ITableViewSelectorSettingsModal, 'visible' | 'hideModal'>> = (
   props,
 ) => {
@@ -80,7 +82,7 @@ export const RefListItemSelectorSettingsModal: FC<Omit<ITableViewSelectorSetting
 
   const hideModal = (): void => setModalVisible(false);
 
-  const items = (props.value as IRefListItemFormModel[]) || [];
+  const items = props.value ?? EMPTY_ITEMS;
 
   return (
     <RefListItemGroupConfiguratorProvider referenceList={props.referenceList} items={items} readOnly={props.readOnly}>

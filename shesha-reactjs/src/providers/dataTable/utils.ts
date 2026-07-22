@@ -8,14 +8,16 @@ import {
   isFormColumnProps,
   isRendererColumnProps,
 } from '@/providers/datatableColumnsConfigurator/models';
-import { camelcaseDotNotation } from '@/utils/string';
+import { camelcaseDotNotation, firstNonEmptyStringOrUndefined } from '@/utils/string';
 import { IDataTableStateContext, IDataTableUserConfig, MIN_COLUMN_WIDTH } from './contexts';
 import {
   ColumnSorting,
   DataTableColumnDto,
   IColumnSorting,
+  IndexColumnFilterOption,
   isDataColumn,
   isFormColumn,
+  ISortingItem,
   IStoredFilter,
   ITableActionColumn,
   ITableColumn,
@@ -23,23 +25,30 @@ import {
   ITableFilter,
   ITableFormColumn,
   ITableRendererColumn,
+  JsonLogicFilter,
   SortDirection,
 } from './interfaces';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isNonEmptyArray } from '@/utils/array';
 
 // Filters should read properties as camelCase ?:(
 export const hasDynamicFilter = (filters: IStoredFilter[]): boolean => {
-  if (filters?.length === 0) return false;
+  if (filters.length === 0) return false;
 
-  const found = filters?.find(({ expression }) => {
-    const stringExpression = typeof expression === 'string' ? expression : JSON.stringify(expression);
+  const found = filters.some(({ expression }) => {
+    const stringExpression = isDefined(expression)
+      ? typeof expression === 'string'
+        ? expression
+        : JSON.stringify(expression)
+      : undefined;
 
-    return stringExpression?.includes('{{') && stringExpression?.includes('}}');
+    return !isNullOrWhiteSpace(stringExpression) && stringExpression.includes('{{') && stringExpression.includes('}}');
   });
 
-  return Boolean(found);
+  return found;
 };
 
-export const sortDirection2ColumnSorting = (value?: SortDirection): ColumnSorting => {
+export const sortDirection2ColumnSorting = (value?: SortDirection): ColumnSorting | null => {
   switch (value) {
     case 0:
       return 'asc';
@@ -49,7 +58,7 @@ export const sortDirection2ColumnSorting = (value?: SortDirection): ColumnSortin
       return null;
   }
 };
-export const columnSorting2SortDirection = (value?: ColumnSorting): SortDirection => {
+export const columnSorting2SortDirection = (value?: ColumnSorting): SortDirection | null => {
   switch (value) {
     case 'asc':
       return 0;
@@ -64,7 +73,7 @@ export const ADVANCEDFILTER_DATE_FORMAT = 'DD/MM/YYYY';
 export const ADVANCEDFILTER_DATETIME_FORMAT = 'DD/MM/YYYY HH:mm';
 export const ADVANCEDFILTER_TIME_FORMAT = 'HH:mm';
 
-export const getMoment = (value: unknown, format: string): Moment => {
+export const getMoment = (value: unknown, format: string): Moment | undefined => {
   if (value === null || value === undefined) return undefined;
 
   if (isMoment(value)) return value;
@@ -72,7 +81,7 @@ export const getMoment = (value: unknown, format: string): Moment => {
   return moment(value as string, format).isValid() ? moment.utc(value as string, format) : undefined;
 };
 
-export const getDuration = (value: unknown): Duration => {
+export const getDuration = (value: unknown): Duration | undefined => {
   if (value === null || value === undefined) return undefined;
 
   if (isDuration(value)) return value;
@@ -81,8 +90,8 @@ export const getDuration = (value: unknown): Duration => {
   return durationValue.isValid() ? durationValue : undefined;
 };
 
-const convertFilterValue = (value: any, column: ITableDataColumn): any => {
-  switch (column?.dataType) {
+const convertFilterValue = (value: unknown, column: ITableDataColumn): unknown => {
+  switch (column.dataType) {
     case 'date':
       return getMoment(value, ADVANCEDFILTER_DATE_FORMAT)?.format();
     case 'date-time':
@@ -93,25 +102,62 @@ const convertFilterValue = (value: any, column: ITableDataColumn): any => {
   return value;
 };
 
-export const advancedFilter2JsonLogic = (advancedFilter: ITableFilter[], columns: ITableColumn[]): object[] => {
-  if (!advancedFilter || advancedFilter.length === 0) return null;
+export const getDefaultFilterOptionForDataType = (dataType: ProperyDataType | undefined): IndexColumnFilterOption | undefined => {
+  if (dataType === 'reference-list-item') return 'contains';
+  if (dataType === 'array') return 'contains';
+  if (dataType === 'entity') return 'equals';
+  if (dataType === 'boolean') return 'equals';
+  return undefined;
+};
+
+// Expand selected bitmask values to all OR-combinations so that rows with multiple stored values
+// are matched by the backend's equality-based IN check.
+// e.g. [1, 4] → [1, 4, 5] because 5 = 1|4 and a row with both bits set stores 5.
+const isNumberArray = (value: unknown[]): value is number[] => value.every((item) => typeof item === 'number');
+
+const expandBitmaskSubsets = (values: number[]): number[] => {
+  const n = values.length;
+  // Enumerating all OR-combinations is O(2ⁿ); cap to avoid freezing the UI.
+  const MAX_EXPANDABLE = 12;
+  if (n > MAX_EXPANDABLE) {
+    console.warn(`expandBitmaskSubsets: skipping OR-combination expansion for ${n} selected values (max ${MAX_EXPANDABLE}); rows whose stored bitmask combines multiple selected values may not be matched.`);
+    return Array.from(new Set(values));
+  }
+  const result = new Set<number>();
+  const totalSubsets = Math.pow(2, n);
+  for (let mask = 1; mask < totalSubsets; mask++) {
+    let combined = 0;
+    for (let i = 0; i < n; i++) {
+      // Check bit i without bitwise operators to satisfy no-bitwise lint rule.
+      // += is safe here because multivalue ref-list item values are always powers of 2 (disjoint bits).
+      if (Math.floor(mask / Math.pow(2, i)) % 2 !== 0) combined += values[i] ?? 0;
+    }
+    result.add(combined);
+  }
+  return Array.from(result);
+};
+
+export const advancedFilter2JsonLogic = (advancedFilter: ITableFilter[], columns: ITableColumn[]): JsonLogicFilter[] | null => {
+  if (advancedFilter.length === 0) return null;
 
   const filterItems = advancedFilter
-    .map((f) => {
+    .map<JsonLogicFilter | null>((f) => {
       const property = { var: f.columnId };
-      const column = columns.find((c) => c.id === f.columnId && c.columnType === 'data') as ITableDataColumn;
+      const column = columns.find((c) => c.id === f.columnId);
       // skip incorrect columns
-      if (!column || !column.dataType) return null;
+      if (!column || !isDataColumn(column)) return null;
+
+      // skip filters with no value
+      if (f.filter === null || f.filter === undefined || f.filter === '' || (Array.isArray(f.filter) && f.filter.length === 0))
+        return null;
 
       const filterValues = Array.isArray(f.filter)
         ? f.filter.map((filterValue) => convertFilterValue(filterValue, column))
         : convertFilterValue(f.filter, column);
 
       let filterOption = f.filterOption;
-      if (!filterOption) {
-        if (column.dataType === 'reference-list-item') filterOption = 'contains';
-        if (column.dataType === 'entity') filterOption = 'equals';
-        if (column.dataType === 'boolean') filterOption = 'equals';
+      if (isNullOrWhiteSpace(filterOption)) {
+        filterOption = getDefaultFilterOptionForDataType(column.dataType);
       }
 
       switch (filterOption) {
@@ -120,9 +166,15 @@ export const advancedFilter2JsonLogic = (advancedFilter: ITableFilter[], columns
             '==': [property, filterValues],
           };
         case 'contains':
-          return column.dataType === 'string'
-            ? { in: [filterValues, property] /* for strings arguments are reversed */ }
-            : { in: [property, filterValues] };
+          if (column.dataType === 'string') return { in: [filterValues, property] /* for strings arguments are reversed */ };
+          if (column.dataType === 'array' && column.dataFormat === 'multivalue-reference-list' && Array.isArray(filterValues) && isNumberArray(filterValues))
+            // Bitmask storage: expand selected values to all OR-combinations so the backend equality
+            // check (col == v1 OR col == v2 ...) also matches rows that store multiple selected values.
+            // e.g. [1, 4] → [1, 4, 5] so stored value 5 (= 1|4) is caught.
+            // Limitation: rows with a selected value plus an unselected one (e.g. stored=3 = 1|2 where 2 is not in the filter)
+            // still won't match — that case requires a backend bitmask fix.
+            return { in: [property, expandBitmaskSubsets(filterValues)] };
+          return { in: [property, filterValues] };
         case 'greaterThan':
           return {
             '>': [property, filterValues],
@@ -159,7 +211,7 @@ export const advancedFilter2JsonLogic = (advancedFilter: ITableFilter[], columns
 
       return null;
     })
-    .filter((f) => Boolean(f));
+    .filter(isDefined);
 
   return filterItems;
 };
@@ -167,9 +219,12 @@ export const advancedFilter2JsonLogic = (advancedFilter: ITableFilter[], columns
 export const prepareColumn = (
   column: IConfigurableColumnsProps,
   columns: DataTableColumnDto[],
-  userConfig: IDataTableUserConfig,
-): ITableColumn => {
-  const userColumnId = isDataColumnProps(column) ? column.propertyName : column.id;
+  userConfig: IDataTableUserConfig | undefined,
+): ITableColumn | undefined => {
+  const resolvedPropertyName = isDataColumnProps(column)
+    ? (column.propertyName || column.accessor || column.id)
+    : undefined;
+  const userColumnId = isDataColumnProps(column) ? resolvedPropertyName : column.id;
   const userColumn = userConfig?.columns?.find((c) => c.id === userColumnId);
 
   const baseProps: ITableColumn = {
@@ -180,7 +235,7 @@ export const prepareColumn = (
     anchored: column.anchored,
     header: column.caption,
     caption: column.caption,
-    minWidth: column.minWidth || MIN_COLUMN_WIDTH,
+    minWidth: column.minWidth ?? MIN_COLUMN_WIDTH,
     maxWidth: column.maxWidth,
     width: userColumn?.width,
     isVisible: column.isVisible,
@@ -193,38 +248,38 @@ export const prepareColumn = (
   };
 
   if (isDataColumnProps(column)) {
-    const colVisibility =
-      userColumn?.show === null || userColumn?.show === undefined ? column.isVisible : userColumn?.show;
+    const colVisibility = userColumn && isDefined(userColumn.show) ? userColumn.show : column.isVisible;
 
-    const srvColumn = column.propertyName
-      ? columns.find((c) => camelcaseDotNotation(c.propertyName) === camelcaseDotNotation(column.propertyName))
+    const srvColumn = resolvedPropertyName
+      ? columns.find((c) => !isNullOrWhiteSpace(c.propertyName) && camelcaseDotNotation(c.propertyName) === camelcaseDotNotation(resolvedPropertyName))
       : {};
 
     const dataCol: ITableDataColumn = {
       ...baseProps,
-      id: column.propertyName,
-      accessor: camelcaseDotNotation(column?.propertyName),
-      propertyName: column.propertyName,
+      id: resolvedPropertyName || column.id,
+      accessor: resolvedPropertyName ? camelcaseDotNotation(resolvedPropertyName) : column.accessor ?? "",
+      propertyName: resolvedPropertyName,
 
-      propertiesToFetch: column.propertyName,
-      isEnitty: srvColumn?.dataType === 'entity',
+      propertiesToFetch: resolvedPropertyName,
+      isEntity: srvColumn?.dataType === 'entity',
 
       createComponent: column.createComponent,
       editComponent: column.editComponent,
       displayComponent: column.displayComponent,
 
       dataType: srvColumn?.dataType as ProperyDataType,
-      dataFormat: srvColumn?.dataFormat,
+      dataFormat: srvColumn?.dataFormat ?? undefined,
       isSortable: column.allowSorting && Boolean(srvColumn?.isSortable),
-      isFilterable: srvColumn?.isFilterable,
-      entityReferenceTypeShortAlias: srvColumn?.entityReferenceTypeShortAlias,
-      referenceListName: srvColumn?.referenceListName,
-      referenceListModule: srvColumn?.referenceListModule,
-      allowInherited: srvColumn?.allowInherited,
-      description: column?.description,
+      isFilterable: srvColumn?.isFilterable ?? false,
+      entityTypeName: srvColumn?.entityTypeName ?? undefined,
+      entityTypeModule: srvColumn?.entityTypeModule ?? undefined,
+      referenceListName: srvColumn?.referenceListName ?? undefined,
+      referenceListModule: srvColumn?.referenceListModule ?? undefined,
+      allowInherited: srvColumn?.allowInherited ?? false,
+      description: column.description,
       allowShowHide: true,
       show: colVisibility,
-      metadata: srvColumn?.metadata,
+      metadata: srvColumn?.metadata ?? undefined,
     };
     return dataCol;
   }
@@ -270,7 +325,7 @@ export const prepareColumn = (
     };
   }
 
-  return null;
+  return undefined;
 };
 
 /**
@@ -293,9 +348,9 @@ export const getTableFormColumns = (columns: ITableColumn[]): ITableDataColumn[]
   return result;
 };
 
-export const getTableDataColumn = (columns: ITableColumn[], id: string): ITableDataColumn => {
+export const getTableDataColumn = (columns: ITableColumn[], id: string): ITableDataColumn | undefined => {
   const column = columns.find((c) => c.id === id);
-  return isDataColumn(column) ? column : null;
+  return isDataColumn(column) ? column : undefined;
 };
 
 export const isStandardSortingUsed = (state: IDataTableStateContext): boolean => {
@@ -307,13 +362,14 @@ export const isStandardSortingUsed = (state: IDataTableStateContext): boolean =>
  * @param state Data table state
  * @returns Array of sorting column or null
  */
-const getEffectiveUserSorting = (state: IDataTableStateContext): IColumnSorting[] => {
-  if (!state.userSorting) return null;
+const getEffectiveUserSorting = (state: IDataTableStateContext): IColumnSorting[] | undefined => {
+  if (!isNonEmptyArray(state.userSorting)) return undefined;
 
   return state.userSorting.filter((s) => {
-    if (!s.id) return false;
+    if (isNullOrWhiteSpace(s.id))
+      return false;
     const column = state.columns.find((c) => c.id === s.id);
-    return column && column.isSortable;
+    return isDefined(column) && column.isSortable;
   });
 };
 
@@ -325,7 +381,7 @@ export const getCurrentSorting = (state: IDataTableStateContext, groupingSupport
           id: item.propertyName,
           desc: item.sorting === 'desc',
         }));
-        if (state.sortMode === 'standard' && state.standardSorting.length > 0) {
+        if (isNonEmptyArray(state.standardSorting)) {
           state.standardSorting.forEach((item) => {
             if (!groupSorting.find((c) => c.id === item.id)) groupSorting.push(item);
           });
@@ -334,11 +390,131 @@ export const getCurrentSorting = (state: IDataTableStateContext, groupingSupport
       }
 
       const userSorting = getEffectiveUserSorting(state);
-      return userSorting && userSorting.length > 0 ? userSorting : state.standardSorting;
+      return userSorting && userSorting.length > 0
+        ? userSorting
+        : state.standardSorting;
     }
     case 'strict': {
-      return [{ id: state.strictSortBy, desc: state.strictSortOrder === 'desc' }];
+      return !isNullOrWhiteSpace(state.strictSortBy)
+        ? [{ id: state.strictSortBy, desc: state.strictSortOrder === 'desc' }]
+        : [];
     }
   }
   return [];
+};
+
+export const sortingItems2ColumnSorting = (items: ISortingItem[] | undefined): IColumnSorting[] => {
+  return items
+    ? items.map<IColumnSorting>((item) => ({ id: item.propertyName, desc: item.sorting === 'desc' }))
+    : [];
+};
+
+
+export const prepareTableColumn = (column: IConfigurableColumnsProps, repoColOverrides: DataTableColumnDto[], userConfig: IDataTableUserConfig | undefined): ITableColumn | undefined => {
+  const resolvedPropertyName = isDataColumnProps(column)
+    ? firstNonEmptyStringOrUndefined(column.propertyName, column.accessor, column.id)
+    : undefined;
+  const userColumnId = isDataColumnProps(column) ? resolvedPropertyName : column.id;
+  const userColumn = userConfig?.columns?.find((c) => c.id === userColumnId);
+
+  const baseProps: ITableColumn = {
+    id: column.id,
+    accessor: column.id,
+    columnId: column.id,
+    columnType: column.columnType,
+    anchored: column.anchored,
+    header: column.caption,
+    caption: column.caption,
+    minWidth: column.minWidth ?? MIN_COLUMN_WIDTH,
+    maxWidth: column.maxWidth,
+    width: userColumn?.width,
+    isVisible: column.isVisible,
+    show: column.isVisible,
+    isFilterable: false,
+    isSortable: false,
+    allowShowHide: false,
+    backgroundColor: column.backgroundColor,
+    description: column.description,
+  };
+
+  if (isDataColumnProps(column)) {
+    const colVisibility = userColumn && isDefined(userColumn.show) ? userColumn.show : column.isVisible;
+
+    const srvColumn = !isNullOrWhiteSpace(resolvedPropertyName)
+      ? repoColOverrides.find((c) => !isNullOrWhiteSpace(c.propertyName) && camelcaseDotNotation(c.propertyName) === camelcaseDotNotation(resolvedPropertyName))
+      : {};
+
+    const dataCol: ITableDataColumn = {
+      ...baseProps,
+      id: !isNullOrWhiteSpace(resolvedPropertyName) ? resolvedPropertyName : column.id,
+      accessor: !isNullOrWhiteSpace(resolvedPropertyName) ? camelcaseDotNotation(resolvedPropertyName) : column.accessor ?? "",
+      propertyName: resolvedPropertyName,
+
+      propertiesToFetch: resolvedPropertyName,
+      isEntity: srvColumn?.dataType === 'entity',
+
+      createComponent: column.createComponent,
+      editComponent: column.editComponent,
+      displayComponent: column.displayComponent,
+
+      dataType: srvColumn?.dataType as ProperyDataType,
+      dataFormat: srvColumn?.dataFormat ?? undefined,
+      isSortable: column.allowSorting && Boolean(srvColumn?.isSortable),
+      isFilterable: srvColumn?.isFilterable ?? false,
+      entityTypeName: srvColumn?.entityTypeName ?? undefined,
+      entityTypeModule: srvColumn?.entityTypeModule ?? undefined,
+      referenceListName: srvColumn?.referenceListName ?? undefined,
+      referenceListModule: srvColumn?.referenceListModule ?? undefined,
+      allowInherited: srvColumn?.allowInherited ?? false,
+      description: column.description,
+      allowShowHide: true,
+      show: colVisibility,
+      metadata: srvColumn?.metadata ?? undefined,
+    };
+    return dataCol;
+  }
+
+  if (isActionColumnProps(column)) {
+    const { icon, actionConfiguration } = column;
+
+    const actionColumn: ITableActionColumn = {
+      ...baseProps,
+      icon,
+      actionConfiguration,
+    };
+
+    return actionColumn;
+  }
+
+  if (isFormColumnProps(column)) {
+    const formColumn: ITableFormColumn = {
+      ...baseProps,
+      accessor: '',
+      propertiesToFetch: column.propertiesNames,
+      propertiesNames: column.propertiesNames,
+
+      displayFormId: column.displayFormId,
+      createFormId: column.createFormId,
+      editFormId: column.editFormId,
+
+      minHeight: column.minHeight,
+    };
+    return formColumn;
+  }
+
+  if (isRendererColumnProps(column)) {
+    const rendererColumn: ITableRendererColumn = {
+      ...baseProps,
+      renderCell: column.renderCell,
+    };
+    return rendererColumn;
+  }
+
+  if (isCrudOperationsColumnProps(column)) {
+    return {
+      ...baseProps,
+    };
+  }
+
+  return undefined;
 };

@@ -1,14 +1,11 @@
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
-
-import { IDateFieldProps } from './interfaces';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { nanoid } from '@/utils/uuid';
-import { FormMarkupWithSettings } from '@/interfaces';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();
@@ -19,7 +16,7 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
   const styleRouterId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -33,7 +30,7 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
             key: '1',
             title: 'Common',
             id: commonTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addContextPropertyAutocomplete({
                 id: nanoid(),
                 propertyName: 'propertyName',
@@ -106,7 +103,6 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                     id: nanoid(),
                     type: 'editModeSelector',
                     propertyName: 'editMode',
-                    defaultValue: 'inherited',
                     label: 'Edit Mode',
                     size: 'small',
                     jsSetting: true,
@@ -120,7 +116,7 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
             key: '2',
             title: 'Data',
             id: dataTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: dataTabId,
@@ -170,7 +166,7 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: dataTabId,
-                hidden: { _code: 'return getSettingValue(data?.picker) !== "date"', _mode: 'code', _value: false } as any,
+                hidden: { _code: 'return getSettingValue(data?.picker) !== "date"', _mode: 'code', _value: false },
                 inputs: [
                   {
                     id: nanoid(),
@@ -186,16 +182,15 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                     propertyName: 'defaultToMidnight',
                     label: 'Default time to midnight',
                     size: 'small',
-                    defaultValue: true,
                     jsSetting: true,
-                    hidden: { _code: 'return !getSettingValue(data?.showTime);', _mode: 'code', _value: false } as any,
+                    hidden: { _code: 'return !getSettingValue(data?.showTime);', _mode: 'code', _value: false },
                   },
                 ],
               })
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: dataTabId,
-                hidden: { _code: 'return getSettingValue(data?.picker) !== "date"', _mode: 'code', _value: false } as any,
+                hidden: { _code: 'return getSettingValue(data?.picker) !== "date"', _mode: 'code', _value: false },
                 inputs:
                                     [
                                       {
@@ -222,7 +217,6 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                     propertyName: 'disabledDateMode',
                     label: 'Disabled Date Mode',
                     parentId: dataTabId,
-                    defaultValue: 'none',
                     dropdownOptions: [
                       { value: 'none', label: 'None' },
                       { value: 'functionTemplate', label: 'Function template' },
@@ -235,7 +229,7 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                     propertyName: 'disabledDateTemplate',
                     label: 'Disabled Date Templates',
                     parentId: dataTabId,
-                    hidden: { _code: "return  getSettingValue(data.disabledDateMode) !== 'functionTemplate'", _mode: 'code', _value: false } as any,
+                    hidden: { _code: "return  getSettingValue(data.disabledDateMode) !== 'functionTemplate'", _mode: 'code', _value: false },
                     dropdownOptions: [
                       { value: "return current && current < moment().startOf('day');", label: 'Disable past dates' },
                       { value: "return current && current > moment().endOf('day');", label: 'Disable future dates' },
@@ -247,7 +241,7 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                     propertyName: 'disabledDateFunc',
                     label: 'Disabled Date Func',
                     description: "Enter disabled date code. You must return true to hide the date. Two objects are exposed to work with, namely 'current' and 'moment'. Use these variables to write the code that will hide the dates you want.",
-                    hidden: { _code: "return  getSettingValue(data.disabledDateMode) !== 'customFunction'", _mode: 'code', _value: false } as any,
+                    hidden: { _code: "return  getSettingValue(data.disabledDateMode) !== 'customFunction'", _mode: 'code', _value: false },
                   },
                 ],
               })
@@ -260,7 +254,6 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                     type: 'dropdown',
                     propertyName: 'disabledTimeMode',
                     label: 'Disabled Time Mode',
-                    defaultValue: 'none',
                     dropdownOptions: [
                       { value: 'none', label: 'None' },
                       { value: 'timeFunctionTemplate', label: 'Function template' },
@@ -270,7 +263,7 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                       _code: 'return  !getSettingValue(data?.showTime);',
                       _mode: 'code',
                       _value: false,
-                    } as any,
+                    },
                   },
                   {
                     id: nanoid(),
@@ -281,7 +274,7 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                       _code: "return  getSettingValue(data.disabledTimeMode) !== 'timeFunctionTemplate';",
                       _mode: 'code',
                       _value: false,
-                    } as any,
+                    },
                     dropdownOptions: [
                       { value: "disabledPastTime", label: 'Disable past times' },
                       { value: "disabledFutureTime", label: 'Disable future times' },
@@ -292,7 +285,7 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                     type: 'codeEditor',
                     propertyName: 'disabledTimeFunc',
                     label: 'Disabled Time Func',
-                    hidden: { _code: "return  getSettingValue(data.disabledTimeMode) !== 'customTimeFunction';", _mode: 'code', _value: false } as any,
+                    hidden: { _code: "return  getSettingValue(data.disabledTimeMode) !== 'customTimeFunction';", _mode: 'code', _value: false },
                   },
                 ],
               })
@@ -301,7 +294,7 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: dataTabId,
-                hidden: { _code: 'return getSettingValue(data?.picker) !== "date"', _mode: 'code', _value: false } as any,
+                hidden: { _code: 'return getSettingValue(data?.picker) !== "date"', _mode: 'code', _value: false },
                 inputs: [
                   {
                     id: nanoid(),
@@ -310,7 +303,6 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                     size: 'small',
                     jsSetting: true,
                     type: "textField",
-                    defaultValue: "DD/MM/YYYY",
                     parentId: dataTabId,
                   },
                 ],
@@ -318,7 +310,7 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: dataTabId,
-                hidden: { _code: 'return getSettingValue(data?.picker) !== "date"', _mode: 'code', _value: false } as any,
+                hidden: { _code: 'return getSettingValue(data?.picker) !== "date"', _mode: 'code', _value: false },
                 inputs: [
                   {
                     id: nanoid(),
@@ -327,13 +319,12 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                     size: 'small',
                     jsSetting: true,
                     type: "textField",
-                    defaultValue: "HH:mm:ss",
                     parentId: dataTabId,
                     hidden: {
                       _code: 'return  !getSettingValue(data?.showTime);',
                       _mode: 'code',
                       _value: false,
-                    } as any,
+                    },
                   },
                 ],
               })
@@ -350,9 +341,8 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                     size: 'small',
                     jsSetting: true,
                     type: "textField",
-                    defaultValue: "YYYY",
                     parentId: dataTabId,
-                    hidden: { _code: 'return getSettingValue(data?.picker) !== "year"', _mode: 'code', _value: false } as any,
+                    hidden: { _code: 'return getSettingValue(data?.picker) !== "year"', _mode: 'code', _value: false },
 
                   },
                   {
@@ -362,9 +352,8 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                     size: 'small',
                     jsSetting: true,
                     type: "textField",
-                    defaultValue: "YYYY-\\QQ",
                     parentId: dataTabId,
-                    hidden: { _code: 'return getSettingValue(data?.picker) !== "quarter"', _mode: 'code', _value: false } as any,
+                    hidden: { _code: 'return getSettingValue(data?.picker) !== "quarter"', _mode: 'code', _value: false },
 
                   },
                   {
@@ -375,9 +364,8 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                     size: 'small',
                     jsSetting: true,
                     type: "textField",
-                    defaultValue: "YYYY-MM",
                     parentId: dataTabId,
-                    hidden: { _code: 'return getSettingValue(data?.picker) !== "month"', _mode: 'code', _value: false } as any,
+                    hidden: { _code: 'return getSettingValue(data?.picker) !== "month"', _mode: 'code', _value: false },
 
                   },
                   {
@@ -387,9 +375,8 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                     size: 'small',
                     jsSetting: true,
                     type: "textField",
-                    defaultValue: "YYYY-wo",
                     parentId: dataTabId,
-                    hidden: { _code: 'return getSettingValue(data?.picker) !== "week"', _mode: 'code', _value: false } as any,
+                    hidden: { _code: 'return getSettingValue(data?.picker) !== "week"', _mode: 'code', _value: false },
 
                   },
 
@@ -405,7 +392,7 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
             key: '4',
             title: 'Events',
             id: eventsTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'codeEditor',
@@ -441,7 +428,7 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
             key: '5',
             title: 'Validation',
             id: validationTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'switch',
@@ -459,7 +446,7 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
             key: '6',
             title: 'Appearance',
             id: appearanceTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addPropertyRouter({
                 id: styleRouterId,
                 propertyName: 'propertyRouter1',
@@ -474,7 +461,7 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                   _value: "",
                 },
                 components: [
-                  ...new DesignerToolbarSettings()
+                  ...fbf()
                     .addSettingsInput({
                       id: nanoid(),
                       parentId: styleRouterId,
@@ -494,7 +481,7 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: nanoid(),
@@ -559,7 +546,7 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: nanoid(),
@@ -643,16 +630,16 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addContainer({
                             id: nanoid(),
                             parentId: nanoid(),
-                            components: getBorderInputs() as any,
+                            components: getBorderInputs(fbf),
                           })
                           .addContainer({
                             id: nanoid(),
                             parentId: nanoid(),
-                            components: getCornerInputs() as any,
+                            components: getCornerInputs(fbf),
                           })
                           .toJson(),
                         ],
@@ -669,7 +656,7 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                       content: {
                         id: nanoid(),
                         components: [
-                          ...new DesignerToolbarSettings()
+                          ...fbf()
                             .addSettingsInput({
                               id: nanoid(),
                               parentId: nanoid(),
@@ -691,7 +678,7 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                                 hideLabel: true,
                                 jsSetting: false,
                               }],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false },
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
@@ -704,7 +691,7 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                                 jsSetting: false,
                               },
                               ],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false },
                               hideLabel: true,
                             })
                             .addSettingsInputRow({
@@ -717,7 +704,7 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                                 jsSetting: false,
                                 label: "URL",
                               }],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false },
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
@@ -729,12 +716,12 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                                 label: "Image",
                                 jsSetting: false,
                               }],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false },
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: nanoid(),
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false },
                               inputs: [
                                 {
                                   type: 'textField',
@@ -748,7 +735,7 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: nanoid(),
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
                               inline: true,
                               inputs: [
                                 {
@@ -778,10 +765,9 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                                 label: 'Repeat',
                                 hideLabel: true,
                                 propertyName: 'background.repeat',
-                                inputType: 'radio',
                                 buttonGroupOptions: repeatOptions,
                               }],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
                             })
                             .toJson(),
                         ],
@@ -797,7 +783,7 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: nanoid(),
@@ -865,7 +851,7 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addStyleBox({
                             id: nanoid(),
                             label: 'Margin Padding',
@@ -886,7 +872,7 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInput({
                             id: nanoid(),
                             inputType: 'codeEditor',
@@ -905,7 +891,7 @@ export const getSettings = (data: IDateFieldProps): FormMarkupWithSettings => {
             key: '7',
             title: 'Security',
             id: securityTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'permissions',

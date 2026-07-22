@@ -17,14 +17,21 @@ namespace Shesha.ConfigurationItems
         /// <summary>
         /// Get configuration item manager for the specified item type
         /// </summary>
-        /// <param name="itemType">Item type (discriminator) of the configuration item</param>
-        IConfigurationItemManager GetManager(string itemType);
+        /// <param name="discriminator">Item type (discriminator) of the configuration item</param>
+        IConfigurationItemManager GetManagerByDiscriminator(string discriminator);
 
         /// <summary>
-        /// Get configuration item type by discriminator (item type) value
+        /// Get C# type of the configuration item by discriminator
         /// </summary>
-        /// <param name="itemType">Discriminator value</param>
-        Type GetTypeByDiscriminator(string itemType);
+        /// <param name="discriminator">Discriminator value</param>
+        Type GetTypeByDiscriminator(string discriminator);
+
+        /// <summary>
+        /// Get string item type of the configuration item by discriminator
+        /// </summary>
+        /// <param name="discriminator"></param>
+        /// <returns></returns>
+        string GetItemTypeByDiscriminator(string discriminator);
 
         /// <summary>
         /// Get discriminator by configuration item type

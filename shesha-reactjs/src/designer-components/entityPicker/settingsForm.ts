@@ -1,12 +1,11 @@
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { nanoid } from '@/utils/uuid';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
-import { FormMarkupWithSettings } from '@/index';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings = (data: object): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();
@@ -26,7 +25,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
   const dataPanelContainerId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -40,7 +39,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             key: '1',
             title: 'Common',
             id: commonTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addContextPropertyAutocomplete({
                 id: nanoid(),
                 propertyName: 'propertyName',
@@ -86,7 +85,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     propertyName: 'editMode',
                     label: 'Edit Mode',
                     size: 'small',
-                    defaultValue: 'inherited',
                     jsSetting: true,
                   },
                   {
@@ -106,11 +104,11 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             key: '2',
             title: 'Data',
             id: dataTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addContainer({
                 id: dataPanelContainerId,
                 parentId: dataTabId,
-                components: [...new DesignerToolbarSettings()
+                components: [...fbf()
                   .addSettingsInputRow({
                     id: nanoid(),
                     parentId: dataPanelContainerId,
@@ -148,7 +146,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     id: nanoid(),
                     parentId: dataPanelContainerId,
                     readOnly: false,
-                    hidden: { _code: 'return !getSettingValue(data?.entityType);', _mode: 'code', _value: false } as any,
+                    hidden: { _code: 'return !getSettingValue(data?.entityType);', _mode: 'code', _value: false },
                     inputs: [
                       {
                         type: 'propertyAutocomplete',
@@ -163,8 +161,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         modelType: {
                           _code: 'return getSettingValue(data?.entityType);',
                           _mode: 'code',
-                          _value: false,
-                        } as any,
+                        },
                         autoFillProps: false,
                         settingsValidationErrors: [],
                       },
@@ -183,9 +180,12 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         isDynamic: false,
                         validate: {},
                         settingsValidationErrors: [],
-                        modelType: '{{data.entityType}}',
+                        modelType: {
+                          _code: 'return getSettingValue(data?.entityType);',
+                          _mode: 'code',
+                        },
                         fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
-                        hidden: { _code: 'return !getSettingValue(data?.entityType);', _mode: 'code', _value: false } as any,
+                        hidden: { _code: 'return !getSettingValue(data?.entityType);', _mode: 'code', _value: false },
                       },
                     ],
                   })
@@ -210,12 +210,11 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         value: 'custom',
                       },
                     ],
-                    defaultValue: ['simple'],
                   })
                   .addSettingsInputRow({
                     id: nanoid(),
                     parentId: dataPanelContainerId,
-                    hidden: { _code: 'return getSettingValue(data?.valueFormat) !== "custom";', _mode: 'code', _value: false } as any,
+                    hidden: { _code: 'return getSettingValue(data?.valueFormat) !== "custom";', _mode: 'code', _value: false },
                     inputs: [
                       {
                         type: 'codeEditor',
@@ -245,12 +244,10 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     propertyName: 'items',
                     parentId: dataPanelContainerId,
                     label: 'Columns',
-                    items: [],
                     modelType: {
                       _code: 'return getSettingValue(data?.entityType);',
                       _mode: 'code',
-                      _value: false,
-                    } as any,
+                    },
                     parentComponentType: 'entityPicker',
                     jsSetting: true,
                   }).toJson()],
@@ -270,10 +267,10 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                 parentId: dataTabId,
                 collapsible: 'header',
                 ghost: true,
-                hidden: { _code: 'return !getSettingValue(data?.allowNewRecord);', _mode: 'code', _value: false } as any,
+                hidden: { _code: 'return !getSettingValue(data?.allowNewRecord);', _mode: 'code', _value: false },
                 content: {
                   id: modalSettingsPnlId,
-                  components: [...new DesignerToolbarSettings()
+                  components: [...fbf()
                     .addSettingsInputRow({
                       id: nanoid(),
                       parentId: modalSettingsPnlId,
@@ -321,12 +318,11 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                           { label: 'Custom', value: 'custom' },
                           { label: 'None', value: 'none' },
                         ],
-                        defaultValue: 'default',
                       },
                       {
                         type: 'dropdown',
                         id: nanoid(),
-                        hidden: { _code: 'return !(getSettingValue(data?.showModalFooter) === true || getSettingValue(data?.footerButtons) === "default");', _mode: 'code', _value: false } as any,
+                        hidden: { _code: 'return !(getSettingValue(data?.showModalFooter) === true || getSettingValue(data?.footerButtons) === "default");', _mode: 'code', _value: false },
                         propertyName: 'submitHttpVerb',
                         label: 'Submit HTTP Verb',
                         jsSetting: true,
@@ -334,12 +330,11 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                           { label: 'POST', value: 'POST' },
                           { label: 'PUT', value: 'PUT' },
                         ],
-                        defaultValue: 'POST',
                       },
                       {
                         id: nanoid(),
                         propertyName: 'buttons',
-                        hidden: { _code: 'return !(getSettingValue(data?.footerButtons) === "custom");', _mode: 'code', _value: false } as any,
+                        hidden: { _code: 'return !(getSettingValue(data?.footerButtons) === "custom");', _mode: 'code', _value: false },
                         label: 'Configure Modal Buttons',
                         type: 'buttonGroupConfigurator',
                         jsSetting: true,
@@ -380,7 +375,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             key: '3',
             title: 'Validation',
             id: validationTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 propertyName: 'validate.required',
@@ -398,7 +393,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             key: '4',
             title: 'Events',
             id: eventsTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'codeEditor',
@@ -415,7 +410,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             key: '5',
             title: 'Appearance',
             id: appearanceTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addPropertyRouter({
                 id: styleRouterId,
                 propertyName: 'propertyRouter1',
@@ -430,7 +425,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                   _value: "",
                 },
                 components: [
-                  ...new DesignerToolbarSettings()
+                  ...fbf()
                     .addSettingsInput({
                       id: nanoid(),
                       parentId: styleRouterId,
@@ -450,7 +445,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       collapsible: 'header',
                       content: {
                         id: fontStylePnlId,
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: fontStylePnlId,
@@ -498,7 +493,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                 hideLabel: true,
                                 width: 60,
                                 dropdownOptions: textAlignOptions,
-                                hidden: { _code: 'return  getSettingValue(data?.mode) === "multiple";', _mode: 'code', _value: false } as any,
+                                hidden: { _code: 'return  getSettingValue(data?.mode) === "multiple";', _mode: 'code', _value: false },
                               },
                             ],
                           })
@@ -516,7 +511,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       collapsible: 'header',
                       content: {
                         id: dimensionsStylePnlId,
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: dimensionsStylePnlId,
@@ -600,16 +595,16 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       collapsible: 'header',
                       content: {
                         id: borderStylePnlId,
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addContainer({
                             id: nanoid(),
                             parentId: borderStylePnlId,
-                            components: getBorderInputs('', true, true) as any,
+                            components: getBorderInputs(fbf, '', true, true),
                           })
                           .addContainer({
                             id: nanoid(),
                             parentId: borderStylePnlId,
-                            components: getCornerInputs() as any,
+                            components: getCornerInputs(fbf),
                           })
                           .toJson(),
                         ],
@@ -627,7 +622,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       content: {
                         id: backgroundStylePnlId,
                         components: [
-                          ...new DesignerToolbarSettings()
+                          ...fbf()
                             .addSettingsInput({
                               id: nanoid(),
                               parentId: backgroundStylePnlId,
@@ -637,7 +632,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               inputType: "radio",
                               tooltip: "Select a type of background",
                               buttonGroupOptions: backgroundTypeOptions,
-                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
@@ -650,7 +645,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                 hideLabel: true,
                                 jsSetting: false,
                               }],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false },
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
@@ -663,7 +658,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                 jsSetting: false,
                               },
                               ],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false },
                               hideLabel: true,
                             })
                             .addSettingsInputRow({
@@ -676,7 +671,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                 jsSetting: false,
                                 label: "URL",
                               }],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false },
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
@@ -688,12 +683,12 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                 label: "Image",
                                 jsSetting: false,
                               }],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false },
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: backgroundStylePnlId,
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false },
                               inputs: [
                                 {
                                   type: 'textField',
@@ -708,8 +703,8 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               id: backgroundStyleRowId,
                               parentId: backgroundStylePnlId,
                               inline: true,
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
-                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
+                              readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                               inputs: [
                                 {
                                   type: 'customDropdown',
@@ -740,10 +735,9 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                 label: 'Repeat',
                                 hideLabel: true,
                                 propertyName: 'background.repeat',
-                                inputType: 'radio',
                                 buttonGroupOptions: repeatOptions,
                               }],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
                             })
                             .toJson(),
                         ],
@@ -759,7 +753,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       collapsible: 'header',
                       content: {
                         id: shadowStylePnlId,
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: shadowStylePnlId,
@@ -823,7 +817,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addStyleBox({
                             id: nanoid(),
                             label: 'Margin Padding',
@@ -844,7 +838,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInput({
                             id: nanoid(),
                             inputType: 'codeEditor',
@@ -863,7 +857,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             key: '6',
             title: 'Security',
             id: securityTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'permissions',

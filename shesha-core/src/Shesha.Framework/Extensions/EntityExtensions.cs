@@ -229,7 +229,7 @@ namespace Shesha.Extensions
             catch (Exception ex)
             {
                 throw new Exception(
-                    $"An error occured whilst trying to retrieve DisplayText of property '{propertyName}' on type of '{entity.GetType().FullName}'.", ex);
+                    $"An error occurred whilst trying to retrieve DisplayText of property '{propertyName}' on type of '{entity.GetType().FullName}'.", ex);
             }
         }
 
@@ -344,6 +344,31 @@ namespace Shesha.Extensions
                 currentEntity = parent != null && !chain.Contains(parent) ? parent : null;
             }
             return chain;
+        }
+
+        /// <summary>
+        /// Searches for a loop in the entity hierarchy
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="entity"></param>
+        /// <param name="parentFunc"></param>
+        /// <returns></returns>
+        public static bool HasLoops<T>(this T entity, Func<T, T?> parentFunc) where T : IEntity
+        {
+            var scanned = new List<T>();
+            var currentEntity = entity;
+            while (currentEntity != null)
+            {
+                scanned.Add(currentEntity);
+
+                var parent = parentFunc.Invoke(currentEntity);
+
+                if (parent != null && scanned.Contains(parent))
+                    return true;
+
+                currentEntity = parent;
+            }
+            return false;
         }
 
         public static T? Closest<T>(this T? entity, Func<T, T?> parentFunc, Func<T, bool> condition) where T : class

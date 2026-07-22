@@ -1,4 +1,5 @@
 ﻿using Shesha.Domain;
+using Shesha.Domain.Enums;
 using System.Threading;
 
 namespace Shesha.ConfigurationItems.Distribution
@@ -29,8 +30,8 @@ namespace Shesha.ConfigurationItems.Distribution
         public CancellationToken CancellationToken { get; }
 
         /// <summary>
-        /// If true, indicates that current import is a migration
+        /// Revision creation method
         /// </summary>
-        public bool IsMigrationImport { get; }
+        public ConfigurationItemRevisionCreationMethod RevisionCreationMethod { get; }
     }
 }

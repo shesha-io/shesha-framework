@@ -1,5 +1,7 @@
 ﻿using Abp.Authorization;
+using Abp.Domain.Entities;
 using Abp.Events.Bus;
+using Microsoft.AspNetCore.Mvc;
 using Shesha.ConfigurationItems.Cache;
 using Shesha.ConfigurationItems.Dtos;
 using Shesha.ConfigurationItems.Events;
@@ -11,6 +13,7 @@ namespace Shesha.ConfigurationItems
     /// <summary>
     /// Common Configuration Item application service
     /// </summary>
+    [Authorization.SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.RequiresPermissions, "app:Configurator")]
     public class ConfigurationItemAppService: SheshaAppServiceBase
     {
         private readonly IConfigurationItemClientSideCache _clientSideCache;
@@ -25,8 +28,16 @@ namespace Shesha.ConfigurationItems
             _ciHelper = ciHelper;
         }
 
+        [AbpAllowAnonymous]
         public async Task<GetCurrentResponse> GetCurrentAsync(GetCurrentRequest input)
         {
+            var manager = _ciHelper.GetManagerByDiscriminator(input.ItemType);
+
+            if (string.IsNullOrWhiteSpace(input.Module))
+            {
+                input.Module = await manager.GetBackwardCompatibleModuleNameAsync(input.Name);
+            }
+            
             // check cache
             if (!string.IsNullOrWhiteSpace(input.Md5))
             {
@@ -35,14 +46,15 @@ namespace Shesha.ConfigurationItems
                     throw new ContentNotModifiedException("Not changed");
             }
 
-            var manager = _ciHelper.GetManager(input.ItemType);
-
             var resolvedItem = await manager.ResolveItemAsync(input.Module, input.Name);
 
-            var hasAccess = await manager.CurrentUserHasAccessToAsync(input.Module, input.Name);
-            if (!hasAccess)
-                throw new AbpAuthorizationException("You are not authorized to access the requested configuration.");
+            if (resolvedItem == null)
+                throw new EntityNotFoundException($"Requested configuration not found ({input.ItemType} - {input.Module}: {input.Name})");
 
+            var hasAccess = await manager.CurrentUserHasAccessToAsync(resolvedItem.Module?.Name ?? string.Empty, resolvedItem.Name);
+            if (!hasAccess)
+                throw new AbpAuthorizationException($"You are not authorized to access the requested configuration ({resolvedItem.ItemType} - {resolvedItem.Module?.Name}: {resolvedItem.Name}).");
+            
             var dto = await manager.MapToDtoAsync(resolvedItem);
 
             var cacheMd5 = await manager.GetCacheMD5Async(dto);
@@ -57,6 +69,7 @@ namespace Shesha.ConfigurationItems
             };
         }
 
+        [AbpAllowAnonymous]
         public async Task<GetCurrentResponse> GetAsync(GetConfigurationRequest input) 
         {
             if (!string.IsNullOrWhiteSpace(input.Md5))
@@ -66,13 +79,16 @@ namespace Shesha.ConfigurationItems
                     throw new ContentNotModifiedException("Not changed");
             }
 
-            var manager = _ciHelper.GetManager(input.ItemType);
+            var manager = _ciHelper.GetManagerByDiscriminator(input.ItemType);
 
             var item = await manager.GetAsync(input.Id);
 
+            if (item == null)
+                throw new EntityNotFoundException($"Requested configuration not found ({input.ItemType} - {input.Id})");
+
             var hasAccess = await manager.CurrentUserHasAccessToAsync(item.Module?.Name ?? string.Empty, item.Name);
             if (!hasAccess)
-                throw new AbpAuthorizationException("You are not authorized to access the requested configuration.");
+                throw new AbpAuthorizationException($"You are not authorized to access the requested configuration ({item.ItemType} - {item.Module?.Name}: {item.Name}).");
 
             var dto = await manager.MapToDtoAsync(item);
 
@@ -87,6 +103,11 @@ namespace Shesha.ConfigurationItems
             };
         }
 
+        [HttpPost]
+        public async Task CleanClientSideCacheAsync() 
+        {
+            await _clientSideCache.ClearAsync();
+        }
 
         public Task TriggerConfigurationChangedEventAsync(TriggerConfigurationChangedEventRequest  request)
         {

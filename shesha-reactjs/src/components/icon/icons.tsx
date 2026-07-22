@@ -19,11 +19,6 @@ export const customIcons = {
       />
     </svg>
   ),
-  editIcon: (
-    <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="currentColor">
-      <path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z" />
-    </svg>
-  ),
   heightIcon: (
     <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
       <mask id="mask0_5_99" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
@@ -237,7 +232,12 @@ export const customIcons = {
       </g>
     </svg>
   ),
-  readonlyIcon: (
+  editIcon: (
+    <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="currentColor">
+      <path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z" />
+    </svg>
+  ),
+  editDisableIcon: (
     <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
       <mask id="mask0_10_13" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
         <rect width="20" height="20" fill="currentColor" />
@@ -255,6 +255,11 @@ export const customIcons = {
         />
         <line x1="5.35355" y1="4.64645" x2="19.3536" y2="18.6464" stroke="currentColor" />
       </g>
+    </svg>
+  ),
+  editLockIcon: (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 -280 2048 2328" fill="currentColor">
+      <path d="M2048 256v865q-20-50-53-92t-75-74V384H128v1152h1024v128H0V256zm-384 768q53 0 99 20t82 55t55 81t20 100v128h128v640h-768v-640h128v-128q0-53 20-99t55-82t81-55t100-20m-128 384h256v-128q0-27-10-50t-27-40t-41-28t-50-10q-27 0-50 10t-40 27t-28 41t-10 50zm384 128h-512v384h512z" />
     </svg>
   ),
   flex: (

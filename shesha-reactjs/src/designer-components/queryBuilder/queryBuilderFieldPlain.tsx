@@ -1,21 +1,22 @@
 import { Alert, Typography } from 'antd';
-import { useForm, useQueryBuilder } from '@/providers';
+import { useForm, useQueryBuilderOrUndefined } from '@/providers';
 import React, { FC } from 'react';
 import { IQueryBuilderProps } from './models';
 import QueryBuilderPlain from './queryBuilderPlain';
+import { isDefined } from '@/utils/nullables';
 
 export const QueryBuilderPlainRenderer: FC<IQueryBuilderProps> = (props) => {
   const { fieldsUnavailableHint } = props;
 
-  const queryBuilder = useQueryBuilder(false);
+  const queryBuilder = useQueryBuilderOrUndefined();
   const { formMode } = useForm();
 
-  const fieldsAvailable = Boolean(queryBuilder);
+  const fieldsAvailable = isDefined(queryBuilder);
   if (!fieldsAvailable && formMode === 'designer' && !fieldsUnavailableHint)
     return (
       <Alert
         className="sha-designer-warning"
-        message="Fields are not available. Wrap Query Builder with a QueryBuilderProvider/MetadataProvider or specify `Entity`"
+        title="Fields are not available. Wrap Query Builder with a QueryBuilderProvider/MetadataProvider or specify `Entity`"
         type="warning"
       />
     );
@@ -24,8 +25,8 @@ export const QueryBuilderPlainRenderer: FC<IQueryBuilderProps> = (props) => {
     <Typography.Text type="secondary">{fieldsUnavailableHint}</Typography.Text>
   ) : (
     <QueryBuilderPlain
-      onChange={props?.onChange}
-      value={props?.value}
+      onChange={props.onChange}
+      value={props.value}
       readOnly={props.readOnly}
     />
   );

@@ -6,16 +6,16 @@ export interface EntityApiItem {
 
 export interface DataTypeInfo {
   dataType: string;
-  dataFormat?: string;
-  objectType?: string;
+  dataFormat?: string | null | undefined;
+  objectType?: string | undefined;
 }
 
 export interface EntityConfigurationDto extends EntityApiItem {
   module: EntityApiItem;
-  entityType: EntityApiItem;
+  fullClassName: string;
 }
 
-export interface IEntityTypeIndentifier {
+export interface IEntityTypeIdentifier {
   module: string | null;
   name: string;
 }

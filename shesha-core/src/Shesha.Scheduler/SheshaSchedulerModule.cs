@@ -6,6 +6,7 @@ using Abp.Reflection.Extensions;
 using Shesha.Modules;
 using Shesha.NHibernate;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Shesha.Scheduler
 {
@@ -33,6 +34,11 @@ namespace Shesha.Scheduler
                 typeof(SheshaSchedulerModule).GetAssembly(),
                 moduleName: "Scheduler",
                 useConventionalHttpVerbs: true);
+        }
+
+        public override async Task<bool> InitializeConfigurationAsync()
+        {
+            return await ImportConfigurationAsync();
         }
     }
 }

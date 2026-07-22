@@ -3,33 +3,36 @@ import { ToolboxComponents } from './toolboxComponents';
 import { ToolboxDataSources } from './toolboxDataSources';
 import { useStyles } from './styles/styles';
 import { Tabs } from 'antd';
-import { useFormDesignerStateSelector } from '@/providers/formDesigner';
 import { isEntityMetadata, isPropertiesArray } from '@/interfaces/metadata';
-import { useMetadata } from '@/providers';
+import { useMetadataOrUndefined } from '@/providers';
+import { IDataSource } from '@/providers/formDesigner/models';
 
 const Toolbox: FC = () => {
   const { styles } = useStyles();
-  const formDs = useFormDesignerStateSelector((x) => x.dataSources);
-  const currentMeta = useMetadata(false);
+  const currentMeta = useMetadataOrUndefined();
+
+  const currentMetaId = currentMeta?.id;
+  const metadata = currentMeta?.metadata;
 
   const builderItems = useMemo(() => {
-    const dataSources = [...formDs];
+    const dataSources: IDataSource[] = [];
 
     const defaultItems = [{ key: '1', label: 'Components', children: <ToolboxComponents /> }];
 
-    if (isEntityMetadata(currentMeta?.metadata))
+    if (isEntityMetadata(metadata))
       dataSources.push({
-        id: currentMeta.id,
-        name: currentMeta.metadata.name,
-        containerType: currentMeta.metadata.entityType,
-        items: isPropertiesArray(currentMeta.metadata.properties) ? currentMeta.metadata.properties : [],
+        id: currentMetaId ?? "",
+        name: metadata.name,
+        module: metadata.module,
+        containerType: metadata.fullClassName,
+        items: isPropertiesArray(metadata.properties) ? metadata.properties : [],
       });
     if (dataSources.length > 0) {
       return [...defaultItems, { key: '2', label: 'Data', children: <ToolboxDataSources dataSources={dataSources} /> }];
     } else {
       return [...defaultItems];
     }
-  }, [formDs, currentMeta?.metadata, currentMeta?.id]);
+  }, [metadata, currentMetaId]);
 
   return (
     <div className={styles.shaDesignerToolbox}>

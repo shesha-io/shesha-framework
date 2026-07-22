@@ -6,18 +6,29 @@ import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { TOOLBOX_COMPONENT_DROPPABLE_KEY } from '@/providers/form/models';
 import { IToolboxComponentGroup } from '@/interfaces';
 import { SearchBox } from './toolboxSearchBox';
-import { useFormDesignerActions, useFormDesignerStateSelector } from '@/providers/formDesigner';
+import { useFormDesigner } from '@/providers/formDesigner';
 import { useStyles } from './styles/styles';
+import { useFormDesignerComponentGroups } from '@/providers/form/hooks';
+import { isDefined } from '@/utils/nullables';
 
-type PanelType = CollapseProps['items'][number];
+type PanelType = Required<CollapseProps>['items'][number];
+
+type ToolboxDroppableComponent = ItemInterface & {
+  id: string;
+  parent_id: string | null;
+  type: string;
+};
+export const isToolboxDroppableComponent = (item: ItemInterface | undefined): item is ToolboxDroppableComponent => {
+  return isDefined(item) && item['type'] === TOOLBOX_COMPONENT_DROPPABLE_KEY;
+};
 
 export const ToolboxComponents: FC = () => {
   const [openedKeys, setOpenedKeys] = useLocalStorage('shaDesigner.toolbox.components.openedKeys', ['']);
   const [searchText, setSearchText] = useLocalStorage('shaDesigner.toolbox.components.search', '');
   const { styles } = useStyles();
 
-  const toolboxComponentGroups = useFormDesignerStateSelector((state) => state.toolboxComponentGroups);
-  const { startDraggingNewItem, endDraggingNewItem } = useFormDesignerActions();
+  const toolboxComponentGroups = useFormDesignerComponentGroups();
+  const { startDraggingNewItem, endDraggingNewItem } = useFormDesigner();
 
   const filteredGroups = useMemo<IToolboxComponentGroup[]>(() => {
     if (!Boolean(searchText)) return [...toolboxComponentGroups];
@@ -26,7 +37,7 @@ export const ToolboxComponents: FC = () => {
 
     toolboxComponentGroups.forEach((group) => {
       const filteredComponents = group.components.filter((c) =>
-        c.name?.toLowerCase().includes(searchText?.toLowerCase()),
+        c.name.toLowerCase().includes(searchText.toLowerCase()),
       );
       if (filteredComponents.length > 0) result.push({ ...group, components: filteredComponents });
     });
@@ -41,14 +52,14 @@ export const ToolboxComponents: FC = () => {
     startDraggingNewItem();
   };
 
-  const onDragEnd = (_evt): void => {
+  const onDragEnd = (): void => {
     endDraggingNewItem();
   };
 
   let idx = 0;
   const componentGroups = filteredGroups
     .filter(({ visible }) => visible)
-    .map<PanelType>((group, groupIndex) => {
+    .map<PanelType | undefined>((group, groupIndex) => {
       const visibleComponents = group.components.filter((c) => c.isHidden !== true);
 
       const sortableItems = visibleComponents.map<ItemInterface>((component) => {
@@ -60,7 +71,7 @@ export const ToolboxComponents: FC = () => {
       });
 
       return visibleComponents.length === 0
-        ? null
+        ? undefined
         : {
           key: groupIndex.toString(),
           label: group.name,
@@ -97,7 +108,7 @@ export const ToolboxComponents: FC = () => {
           ),
         };
     })
-    .filter((item) => Boolean(item));
+    .filter(isDefined);
 
   return (
     <div className={styles.shaToolboxComponents}>

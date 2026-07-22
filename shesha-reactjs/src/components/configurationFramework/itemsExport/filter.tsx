@@ -13,7 +13,7 @@ type FilterModeButtonProps = {
   filter: FilterState;
   onChange: (newValue: FilterState) => void;
 };
-const FilterModeButton = ({ label, mode, filter, onChange }: FilterModeButtonProps): JSX.Element => {
+const FilterModeButton = ({ label, mode, filter, onChange }: FilterModeButtonProps): React.JSX.Element => {
   return (
     <Button
       type={mode === filter.mode ? 'primary' : 'default'}
@@ -39,7 +39,7 @@ export const ExportFilter: FC<IExportFilterProps> = ({ value: filterValue, onCha
       <Col span={12}>
         <Input.Search
           placeholder="search"
-          value={filterValue?.quickSearch}
+          value={filterValue.quickSearch}
           onChange={(e) => {
             const { value } = e.target;
             onFilterChange({ ...filterValue, quickSearch: value });

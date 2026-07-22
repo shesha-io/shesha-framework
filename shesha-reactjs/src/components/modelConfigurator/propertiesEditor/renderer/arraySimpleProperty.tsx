@@ -3,16 +3,16 @@ import { Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { IModelItem } from '@/interfaces/modelConfigurator';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
-import { DataTypes, getIconByDataType } from '@/index';
-import { NumberFormats } from '@/interfaces/dataTypes';
+import { DataTypes, NumberFormats } from '@/interfaces/dataTypes';
 import PropertyWrapper from './propertyWrapper';
+import { getIconByDataType } from '@/utils/metadata/helpers';
 
 export interface IProps extends IModelItem {
   index: number[];
-  parent?: IModelItem;
+  parent?: IModelItem | undefined;
 }
 
-const getListType = (itemsType: IModelItem): string => {
+const getListType = (itemsType: IModelItem | undefined): string => {
   if (itemsType) {
     switch (itemsType.dataType) {
       case DataTypes.string: return 'string';
@@ -23,12 +23,13 @@ const getListType = (itemsType: IModelItem): string => {
           case NumberFormats.float: return 'float';
           case NumberFormats.double: return 'double';
           case NumberFormats.decimal: return 'decimal';
+          default: return 'undefined';
         }
       case DataTypes.dateTime: return 'date time';
       case DataTypes.date: return 'date';
       case DataTypes.time: return 'time';
       case DataTypes.boolean: return 'boolean';
-      case DataTypes.referenceListItem: return itemsType.referenceListId?.name ? itemsType.referenceListId?.name : 'reference list item';
+      case DataTypes.referenceListItem: return itemsType.referenceListId?.name ? itemsType.referenceListId.name : 'reference list item';
       case DataTypes.geometry: return 'geometry';
     }
   }

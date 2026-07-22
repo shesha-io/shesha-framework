@@ -1,9 +1,8 @@
-import { FormRawMarkup } from '@/interfaces';
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 
-export const getSettings = (): FormRawMarkup =>
-  new DesignerToolbarSettings()
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
+  return fbf()
     .addCollapsiblePanel({
       id: '11114bf6-f76d-4139-a850-c99bf06c8b69',
       propertyName: 'pnl',
@@ -15,15 +14,19 @@ export const getSettings = (): FormRawMarkup =>
       collapsible: 'header',
       content: {
         id: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
-        components: [...new DesignerToolbarSettings()
+        components: [...fbf()
           .addContextPropertyAutocomplete({
             id: '5c813b1a-04c5-4658-ac0f-cbcbae6b3bd4',
             propertyName: 'propertyName',
+            label: 'Property Name',
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
-            label: 'Property name',
+            description: "If left empty, the field will not be included in the submitted payload",
+            size: 'small',
+            styledLabel: true,
             validate: {
               required: true,
             },
+            jsSetting: true,
           })
           .addTextField({
             id: '46d07439-4c18-468c-89e1-60c002ce96c5',
@@ -75,7 +78,7 @@ export const getSettings = (): FormRawMarkup =>
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
             label: 'Hide Label',
           })
-          .addEditMode({
+          .addEditModeSelector({
             id: '24a8be15-98eb-40f7-99ea-ebb602693e9c',
             propertyName: 'editMode',
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
@@ -86,7 +89,7 @@ export const getSettings = (): FormRawMarkup =>
             propertyName: 'allowUpload',
             label: 'Allow Upload',
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
-            hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } as any,
+            hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false },
             validate: {},
           })
           .addCheckbox({
@@ -94,7 +97,7 @@ export const getSettings = (): FormRawMarkup =>
             propertyName: 'allowReplace',
             label: 'Allow Replace',
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
-            hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } as any,
+            hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false },
             validate: {},
           })
           .addCheckbox({
@@ -102,7 +105,7 @@ export const getSettings = (): FormRawMarkup =>
             propertyName: 'allowDelete',
             label: 'Allow Delete',
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
-            hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false } as any,
+            hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false },
             validate: {},
           }).toJson(),
         ],
@@ -120,7 +123,7 @@ export const getSettings = (): FormRawMarkup =>
       collapsible: 'header',
       content: {
         id: 'abc5bfe4-ee69-431e-931b-b0e0b9ceee6f',
-        components: [...new DesignerToolbarSettings()
+        components: [...fbf()
           .addCheckbox({
             id: 'abc5bfe4-ee69-431e-931b-b0e0b9ceee6f',
             propertyName: 'validate.required',
@@ -142,7 +145,7 @@ export const getSettings = (): FormRawMarkup =>
       collapsible: 'header',
       content: {
         id: 'abc8b8f9-ec00-4d0a-9d2a-44a630cb2dcb',
-        components: [...new DesignerToolbarSettings()
+        components: [...fbf()
           .addCheckbox({
             id: 'af3d9a3f-f47e-48ae-b4c3-f5cc36e534d9',
             propertyName: 'useSync',
@@ -162,7 +165,7 @@ export const getSettings = (): FormRawMarkup =>
             label: 'Owner Type',
             labelAlign: 'right',
           })
-          .addEditableTagGroupProps({
+          .addEditableTagGroup({
             id: nanoid(),
             propertyName: 'allowedFileTypes',
             label: 'Allowed File Types',
@@ -183,7 +186,7 @@ export const getSettings = (): FormRawMarkup =>
       collapsible: 'header',
       content: {
         id: 'pnl24bf6-f76d-4139-a850-c99bf06c8b71',
-        components: [...new DesignerToolbarSettings()
+        components: [...fbf()
           .addPermissionAutocomplete({
             id: '4d81ae9d-d222-4fc1-85b2-4dc3ee6a3721',
             propertyName: 'permissions',
@@ -198,3 +201,4 @@ export const getSettings = (): FormRawMarkup =>
       },
     })
     .toJson();
+};

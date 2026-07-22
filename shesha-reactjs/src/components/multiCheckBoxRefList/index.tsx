@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { Checkbox, Col, Row } from 'antd';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
-import { ShaSpin } from '@/components';
+import { ShaSpin } from '@/components/shaSpin';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
 
 export interface IMultiCheckBoxRefListProps {
@@ -18,14 +18,14 @@ export const MultiCheckBoxRefList: FC<IMultiCheckBoxRefListProps> = ({
   onChange,
   columns = 3,
 }) => {
-  const { data: refList, loading: refListLoading } = useReferenceList(getLegacyReferenceListIdentifier(listNamespace, listName));
+  const { data: refList, loading: refListLoading } = useReferenceList(getLegacyReferenceListIdentifier(listNamespace, listName) ?? undefined);
 
   return (
     <ShaSpin spinning={refListLoading}>
       <Row>
-        {refList?.items?.map(({ item, itemValue }) => (
+        {refList?.items.map(({ item, itemValue }) => (
           <Col key={itemValue} span={24 / columns}>
-            <Checkbox key={itemValue} onChange={(e) => onChange(e, itemValue)}>
+            <Checkbox key={itemValue} onChange={(e) => onChange?.(e, itemValue)}>
               {item}
             </Checkbox>
           </Col>

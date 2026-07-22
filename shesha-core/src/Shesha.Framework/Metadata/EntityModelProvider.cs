@@ -17,7 +17,7 @@ namespace Shesha.Metadata
 {
     public class EntityModelProvider : BaseModelProvider<EntityModelDto>, IEntityModelProvider, ISingletonDependency,
         IAsyncEventHandler<EntityChangedEventData<EntityProperty>>,
-        IAsyncEventHandler<EntityChangingEventData<ConfigurationItem>>
+        IAsyncEventHandler<EntityChangingEventData<EntityConfig>>
     {
         private readonly IRepository<EntityConfig, Guid> _entityConfigRepository;
         private readonly IEntityTypeConfigurationStore _entityTypesConfigurationStore;
@@ -37,18 +37,18 @@ namespace Shesha.Metadata
 
         public Task HandleEventAsync(EntityChangedEventData<EntityProperty> eventData)
         {
-            return Cache.ClearAsync();
+            return ClearCacheAsync();
         }
 
-        public Task HandleEventAsync(EntityChangingEventData<ConfigurationItem> eventData)
+        public Task HandleEventAsync(EntityChangingEventData<EntityConfig> eventData)
         {
-            return Cache.ClearAsync();
+            return ClearCacheAsync();
         }
 
         protected async override Task<List<EntityModelDto>> FetchModelsAsync()
         {
             // Get all Entity configurations from DB (include exposed Entities)
-            var entityConfigs = await _entityConfigRepository.GetAll().ToListAsync();
+            var entityConfigs = await _entityConfigRepository.GetAllListAsync();
             var dtos = (await entityConfigs
                 .SelectAsync(async entityConfig =>
                 {
@@ -69,13 +69,14 @@ namespace Shesha.Metadata
                         Id = entityConfig.Id.ToString(),
                         Suppress = entityConfig.Suppress,
                         FullClassName = entityConfig.FullClassName,
-                        Name = entityConfig.ClassName,
+                        Name = entityConfig.Name,
                         Type = config.EntityType,
                         Description = entityConfig.Description ?? (config.EntityType != null ? ReflectionHelper.GetDescription(config.EntityType) : ""),
                         Alias = string.IsNullOrWhiteSpace(entityConfig.TypeShortAlias) ? config.SafeTypeShortAlias : entityConfig.TypeShortAlias,
                         Accessor = entityConfig.Accessor,
                         Module = entityConfig.Module?.Name,
                         ModuleAccessor = entityConfig.Module?.Accessor,
+                        ModuleIsEnabled = entityConfig.Module?.IsEnabled ?? false,
                         Md5 = metadata.Md5,
                         ModificationTime = metadata.ChangeTime,
                         Metadata = metadata,

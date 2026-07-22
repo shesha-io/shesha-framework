@@ -20,8 +20,9 @@ namespace Shesha.ConfigurationItems.Distribution
         /// </summary>
         /// <param name="item">Item to be imported</param>
         /// <param name="context">Import context</param>
+        /// <param name="explicitItem"></param>
         /// <returns></returns>
-        Task<ConfigurationItem> ImportItemAsync(DistributedConfigurableItemBase item, IConfigurationItemsImportContext context);
+        Task<ConfigurationItem> ImportItemAsync(DistributedConfigurableItemBase item, IConfigurationItemsImportContext context, ConfigurationItem? explicitItem = null);
 
         /// <summary>
         /// Read item from json stream
@@ -41,6 +42,13 @@ namespace Shesha.ConfigurationItems.Distribution
         /// <param name="items"></param>
         /// <returns></returns>
         Task<List<DistributedConfigurableItemBase>> SortItemsAsync(List<DistributedConfigurableItemBase> items);
+
+        /// <summary>
+        /// Get importer for a subtype (if applicable). Is used when single importer supports multiple item subtypes
+        /// </summary>
+        /// <param name="distributedItem"></param>
+        /// <returns></returns>
+        IConfigurableItemImport GetSubtypeImporter(DistributedConfigurableItemBase distributedItem);
     }
 
     public interface IConfigurableItemImport<TItem> : IConfigurableItemImport where TItem : ConfigurationItem 

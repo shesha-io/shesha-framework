@@ -1,13 +1,12 @@
 import { FileAddOutlined } from '@ant-design/icons';
 import React from 'react';
-import { FileUpload } from '@/components';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { DataTypes, IFormItem, IToolboxComponent } from '@/interfaces';
-import { IStyleType, StoredFileProvider, useFormData, useGlobalState, useSheshaApplication } from '@/providers';
+import { FileUpload } from '@/components/fileUpload';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
+import { DataTypes } from '@/interfaces';
+import { FileUploadProvider, useFormData, useGlobalState } from '@/providers';
 import { useForm } from '@/providers/form';
-import { IConfigurableFormComponent } from '@/providers/form/models';
 import {
-  evaluateValueAsString,
+  evaluateString,
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
 import {
@@ -19,60 +18,48 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
-import { listType } from '../attachmentsEditor/attachmentsEditor';
+import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { FileUploadComponentDefinition, IFileUploadProps } from './interfaces';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { getIdOrUndefined } from '@/utils/entity';
+import { getFirstNonEmptyStringPropertyOrUndefined, getStringPropertyOrUndefined } from '@/utils/object';
+import { FileUploadValue } from '@/providers/storedFile/models';
 
-export interface IFileUploadProps extends IConfigurableFormComponent, Omit<IFormItem, 'name'>, IStyleType {
-  ownerId: string;
-  ownerType: string;
-  allowUpload?: boolean;
-  allowReplace?: boolean;
-  allowDelete?: boolean;
-  useSync?: boolean;
-  allowedFileTypes?: string[];
-  isDragger?: boolean;
-  listType?: listType;
-  thumbnailWidth?: string;
-  thumbnailHeight?: string;
-  borderRadius?: number;
-  hideFileName?: boolean;
-}
-
-const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
+const FileUploadComponent: FileUploadComponentDefinition = {
   type: 'fileUpload',
   name: 'File',
   icon: <FileAddOutlined />,
   isInput: true,
   isOutput: true,
+  // FileUpload has its own intrinsic size and should not be forced to fill wrapper
+  preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.file,
   Factory: ({ model }) => {
-    const { backendUrl } = useSheshaApplication();
-
-    const finalStyle = (!model.enableStyleOnReadonly && model.readOnly) || model.listType === 'text' ? {
-      ...model.allStyles.fontStyles,
-      ...model.allStyles.dimensionsStyles,
-    } : model.allStyles.fullStyle;
+    const finalStyle = (!model.enableStyleOnReadonly && model.readOnly) ? {
+      ...model.allStyles?.fontStyles,
+      ...model.allStyles?.dimensionsStyles,
+    } : model.allStyles?.fullStyle;
     // TODO: refactor and implement a generic way for values evaluation
     const { formSettings, formMode } = useForm();
     const { data } = useFormData();
     const { globalState } = useGlobalState();
-    const ownerId = evaluateValueAsString(model.ownerId, { data, globalState });
+    const ownerId = evaluateString(model.ownerId, { data, globalState });
 
     const enabled = !model.readOnly;
 
     return (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem<FileUploadValue> model={model} autoAlignLabel={false}>
         {(value, onChange) => {
           return (
-            <StoredFileProvider
+            <FileUploadProvider
               value={value}
               onChange={onChange}
-              fileId={model.value?.Id ?? model.value}
-              baseUrl={backendUrl}
-              ownerId={Boolean(ownerId) ? ownerId : Boolean(data?.id) ? data?.id : ''}
-              ownerType={Boolean(model.ownerType)
+              ownerId={!isNullOrWhiteSpace(ownerId) ? ownerId : getIdOrUndefined(data) ?? ""}
+              ownerType={!isEntityTypeIdEmpty(model.ownerType)
                 ? model.ownerType
-                : Boolean(formSettings?.modelType)
-                  ? formSettings?.modelType
+                : !isEntityTypeIdEmpty(formSettings?.modelType)
+                  ? formSettings.modelType
                   : ''}
               propertyName={model.propertyName}
               uploadMode={model.useSync ? 'sync' : 'async'}
@@ -83,11 +70,11 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
                 allowUpload={enabled && model.allowUpload}
                 allowDelete={enabled && model.allowDelete}
                 allowReplace={enabled && model.allowReplace}
-                allowedFileTypes={model?.allowedFileTypes}
-                isDragger={model?.isDragger}
+                allowedFileTypes={model.allowedFileTypes}
+                isDragger={model.isDragger}
                 styles={finalStyle}
               />
-            </StoredFileProvider>
+            </FileUploadProvider>
           );
         }}
       </ConfigurableFormItem>
@@ -116,14 +103,16 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
           allowDelete: true,
           allowUpload: true,
           hideFileName: true,
-          ownerId: prev['ownerId'],
-          ownerType: prev['ownerType'],
-          owner: prev['owner'],
-        } as IFileUploadProps;
+          ownerId: getStringPropertyOrUndefined(prev, 'ownerId') ?? "",
+          ownerType: getStringPropertyOrUndefined(prev, 'ownerType') ?? "",
+        };
       })
-      .add<IFileUploadProps>(1, (prev, context) => ({ ...prev, useSync: !Boolean(context.formSettings?.modelType) }))
+      .add<IFileUploadProps>(1, (prev, context) => ({
+        ...prev,
+        useSync: prev.useSync === undefined ? isEntityTypeIdEmpty(context.formSettings?.modelType) : prev.useSync,
+      }))
       .add<IFileUploadProps>(2, (prev) => {
-        const pn = prev['name'] ?? prev.propertyName;
+        const pn = getFirstNonEmptyStringPropertyOrUndefined(prev, ['name', 'propertyName']);
         const model = migratePropertyName(migrateCustomFunctions(prev));
         model.propertyName = pn;
         return model;
@@ -131,15 +120,9 @@ const FileUploadComponent: IToolboxComponent<IFileUploadProps> = {
       .add<IFileUploadProps>(3, (prev) => migrateVisibility(prev))
       .add<IFileUploadProps>(4, (prev) => migrateReadOnly(prev))
       .add<IFileUploadProps>(5, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-      .add<IFileUploadProps>(6, (prev) => ({
-        ...prev,
-        ...defaultStyles(),
-        desktop: { ...defaultStyles() },
-        mobile: { ...defaultStyles() },
-        tablet: { ...defaultStyles() },
-      })),
-  settingsFormMarkup: getSettings(),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
+      .add<IFileUploadProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 };
 
 export default FileUploadComponent;

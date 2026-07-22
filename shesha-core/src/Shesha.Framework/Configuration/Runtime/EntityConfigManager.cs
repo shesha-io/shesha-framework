@@ -1,6 +1,6 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
-using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Abp.Extensions;
 using Shesha.ConfigurationItems;
 using Shesha.Domain;
 using Shesha.DynamicEntities.Dtos;
@@ -22,10 +22,17 @@ namespace Shesha.Configuration.Runtime
             PropertyConfigRepo = propertyConfigRepo;
         }
 
+        public async Task<EntityConfig?> GetByEntityTypeIdAsync(EntityTypeIdentifier entityId)
+        {
+            return entityId.FullClassName.IsNullOrEmpty()
+                ? await Repository.FirstOrDefaultAsync(x => x.Module != null && entityId.Module != null && x.Module.Name == entityId.Module && x.Name == entityId.Name)
+                : await Repository.FirstOrDefaultAsync(x => x.FullClassName == entityId.FullClassName || x.TypeShortAlias == entityId.FullClassName);
+        }
+
         public async Task<List<EntityConfigDto>> GetMainDataListAsync(IQueryable<EntityConfig>? query = null, bool? implemented = null)
         {
             // Do not change to Mapper to avoid performance issues
-            var result = await (query ?? Repository.GetAll())
+            var result = await (query ?? await Repository.GetAllAsync())
                 .Where(x => !x.IsDeleted && x.Module != null)
                 .Select(x => new EntityConfigDto()
                 {
@@ -46,6 +53,8 @@ namespace Shesha.Configuration.Runtime
                     TypeShortAlias = x.TypeShortAlias,
 
                     Source = x.Source,
+
+                    GenerateAppService = x.GenerateAppService,
                 }).ToListAsync();
 
             return implemented ?? false
@@ -96,7 +105,11 @@ namespace Shesha.Configuration.Runtime
                     CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced,
 
                     ColumnName = src.ColumnName,
+                    
+                    InitStatus = src.InitStatus,
+                    InitMessage = src.InitMessage,
                     CreatedInDb = src.CreatedInDb,
+
                     Formatting = src.Formatting,
                     InheritedFrom = src.InheritedFrom,
                     ListConfiguration = src.ListConfiguration,

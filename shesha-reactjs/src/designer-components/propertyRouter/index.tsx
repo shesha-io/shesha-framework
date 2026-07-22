@@ -1,18 +1,13 @@
+import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
+import { FormItemProvider, IConfigurableFormComponent } from '@/providers';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import ParentProvider from '@/providers/parentProvider/index';
 import { GroupOutlined } from '@ant-design/icons';
 import React from 'react';
-import { IToolboxComponent } from '@/interfaces';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { IPropertyRouterComponentProps, PropertyRouterComponentDefinition } from './interfaces';
 import { getSettings } from './settingsForm';
-import { FormItemProvider, IConfigurableFormComponent } from '@/providers';
-import { ComponentsContainer } from '@/components';
-import ParentProvider from '@/providers/parentProvider/index';
 
-export interface IPropertyRouterComponent extends IConfigurableFormComponent {
-  propertyRouteName?: string;
-  components?: IConfigurableFormComponent[];
-}
-
-const PropertyRouterComponent: IToolboxComponent<IPropertyRouterComponent> = {
+const PropertyRouterComponent: PropertyRouterComponentDefinition = {
   type: 'propertyRouter',
   isInput: false,
   name: 'Property router',
@@ -21,17 +16,20 @@ const PropertyRouterComponent: IToolboxComponent<IPropertyRouterComponent> = {
     return model.hidden
       ? null
       : (
-        <ParentProvider model={model}>
+        <ParentProvider
+          name={`PropertyRouter-${model.id}`}
+          model={model}
+        >
           <FormItemProvider namePrefix={model.propertyRouteName}>
-            <ComponentsContainer containerId={model.id} dynamicComponents={model?.isDynamic ? model?.components : []} />
+            <ComponentsContainer containerId={model.id} dynamicComponents={model.isDynamic ? model.components : []} />
           </FormItemProvider>
         </ParentProvider>
       );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 };
 
-export const isPropertyRouterComponent = (component: IConfigurableFormComponent): component is IPropertyRouterComponent => component.type === PropertyRouterComponent.type;
+export const isPropertyRouterComponent = (component: IConfigurableFormComponent): component is IPropertyRouterComponentProps => component.type === PropertyRouterComponent.type;
 
 export default PropertyRouterComponent;

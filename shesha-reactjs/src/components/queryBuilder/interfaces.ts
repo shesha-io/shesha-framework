@@ -25,7 +25,7 @@ export interface IQueryBuilderColumn extends ITableColumn {
 }
 
 export interface IQueryBuilderProps {
-  value?: JsonLogicResult;
+  value?: JsonLogicResult | undefined;
   onChange?: (result: JsonLogicResult) => void;
   columns?: IQueryBuilderColumn[];
   showActionBtnOnHover?: boolean;

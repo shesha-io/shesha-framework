@@ -1,31 +1,46 @@
 import {
-  IRefListItemGroupConfiguratorStateContext,
-  ISettingsUpdatePayload,
-  IUpdateChildItemsPayload,
-  IUpdateItemSettingsPayload,
   REF_LIST_ITEM_GROUP_CONTEXT_INITIAL_STATE,
-} from '@/components/refListSelectorDisplay/provider/contexts';
-import { RefListItemGroupActionEnums } from '@/components/refListSelectorDisplay/provider/actions';
-import { IRefListItemGroup } from '@/components/refListSelectorDisplay/provider/models';
-import { handleActions } from 'redux-actions';
+} from './contexts';
+import { isIRefListItemGroup, RefListGroupItemProps } from '@/components/refListSelectorDisplay/provider/models';
 import { getItemPositionById } from '@/components/refListSelectorDisplay/provider/utils';
+import { createReducer } from '@reduxjs/toolkit';
+import { setItems, selectItemAction, updateItemAction, updateChildItemsAction, storeSettingsAction } from './actions';
+import { isDefined } from '@/utils/nullables';
+import { IReferenceListItem } from '@/interfaces/referenceList';
 
-const RefListItemGroupReducer = handleActions<IRefListItemGroupConfiguratorStateContext, any>(
-  {
-    [RefListItemGroupActionEnums.SetItems]: (state: IRefListItemGroupConfiguratorStateContext,
-      action: ReduxActions.Action<any[]>,
-    ) => {
-      const { payload } = action;
+export const RefListItemGroupReducer = createReducer(REF_LIST_ITEM_GROUP_CONTEXT_INITIAL_STATE, (builder) => {
+  builder
+    .addCase(setItems, (state, { payload }) => {
+      // Preserve any per-item configuration (Hide/Events) the user already set, matched by itemValue,
+      // so re-fetching the reference list does not wipe saved settings (the cause of #5125).
+      const priorByValue = new Map<number, RefListGroupItemProps>();
+      const indexPriorItems = (items: RefListGroupItemProps[]): void => {
+        items.forEach((prior) => {
+          const value = (prior as Partial<IReferenceListItem>).itemValue;
+          if (isDefined(value))
+            priorByValue.set(value, prior);
+          // grouped items keep their settings under childItems, so recurse to preserve nested config too
+          if (isIRefListItemGroup(prior) && isDefined(prior.childItems))
+            indexPriorItems(prior.childItems);
+        });
+      };
+      indexPriorItems(state.items);
       return {
         ...state,
-        items: payload,
+        items: payload.map<RefListGroupItemProps>((item) => {
+          const prior = priorByValue.get(item.itemValue);
+          return {
+            ...item,
+            item: item.item ?? undefined,
+            color: item.color ?? undefined,
+            icon: item.icon ?? undefined,
+            ...(isDefined(prior?.hidden) ? { hidden: prior.hidden } : {}),
+            ...(isDefined(prior?.actionConfiguration) ? { actionConfiguration: prior.actionConfiguration } : {}),
+          };
+        }),
       };
-    },
-    [RefListItemGroupActionEnums.StoreSettings]: (
-      state: IRefListItemGroupConfiguratorStateContext,
-      action: ReduxActions.Action<ISettingsUpdatePayload>,
-    ) => {
-      const { payload } = action;
+    })
+    .addCase(storeSettingsAction, (state, { payload }) => {
       return {
         ...state,
         userSettings: {
@@ -35,25 +50,14 @@ const RefListItemGroupReducer = handleActions<IRefListItemGroupConfiguratorState
           [payload.columnId]: payload.isCollapsed,
         },
       };
-    },
-
-    [RefListItemGroupActionEnums.SelectItem]: (
-      state: IRefListItemGroupConfiguratorStateContext,
-      action: ReduxActions.Action<string>,
-    ) => {
-      const { payload } = action;
-
+    })
+    .addCase(selectItemAction, (state, { payload }) => {
       return {
         ...state,
         selectedItemId: payload,
       };
-    },
-
-    [RefListItemGroupActionEnums.UpdateItem]: (
-      state: IRefListItemGroupConfiguratorStateContext,
-      action: ReduxActions.Action<IUpdateItemSettingsPayload>,
-    ) => {
-      const { payload } = action;
+    })
+    .addCase(updateItemAction, (state, { payload }) => {
       const newItems = [...state.items];
 
       const position = getItemPositionById(newItems, payload.id);
@@ -69,15 +73,9 @@ const RefListItemGroupReducer = handleActions<IRefListItemGroupConfiguratorState
         ...state,
         items: newItems,
       };
-    },
-
-    [RefListItemGroupActionEnums.UpdateChildItems]: (
-      state: IRefListItemGroupConfiguratorStateContext,
-      action: ReduxActions.Action<IUpdateChildItemsPayload>,
-    ) => {
-      const {
-        payload: { index, childs: childIds },
-      } = action;
+    })
+    .addCase(updateChildItemsAction, (state, { payload }) => {
+      const { index, childs: childIds } = payload;
       if (!Boolean(index) || index.length === 0) {
         return {
           ...state,
@@ -90,21 +88,24 @@ const RefListItemGroupReducer = handleActions<IRefListItemGroupConfiguratorState
       const blockIndex = [...index];
       // lastIndex - index of the current element in its' parent
       const lastIndex = blockIndex.pop();
+      if (!lastIndex) return state;
 
       // search for a parent item
-      const lastArr = blockIndex.reduce((arr, i) => (arr[i] as IRefListItemGroup).childItems, newItems);
+      // const lastArr = blockIndex.reduce((arr, i) => (arr[i] as IRefListItemGroup).childItems, newItems);
+      const lastArr = blockIndex.reduce((arr, i) => isDefined(arr[i]) && isIRefListItemGroup(arr[i]) ? arr[i].childItems ?? [] : [], newItems);
+
+      const parent = lastArr[lastIndex];
 
       // and set a list of childs
-      (lastArr[lastIndex] as IRefListItemGroup).childItems = childIds;
+      if (isDefined(parent) && isIRefListItemGroup(parent))
+        parent.childItems = childIds;
 
       return {
         ...state,
         items: newItems,
       };
-    },
-  },
-
-  REF_LIST_ITEM_GROUP_CONTEXT_INITIAL_STATE,
-);
+    })
+  ;
+});
 
 export default RefListItemGroupReducer;

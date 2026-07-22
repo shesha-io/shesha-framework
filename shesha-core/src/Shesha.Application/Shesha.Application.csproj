@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <AssemblyName>Shesha.Application</AssemblyName>
         <PackageId>Shesha.Application</PackageId>
@@ -99,82 +99,112 @@
         <None Remove="ConfigMigrations\package20251027_1622.shaconfig" />
         <None Remove="ConfigMigrations\package20251028_1950.shaconfig" />
         <None Remove="ConfigMigrations\package20251030_1025.shaconfig" />
+        <None Remove="ConfigMigrations\package20251113_2148.shaconfig" />
+        <None Remove="ConfigMigrations\package20251127_1643.shaconfig" />
+        <None Remove="ConfigMigrations\package20251204_0017.shaconfig" />
+        <None Remove="ConfigMigrations\package20251218_1817.shaconfig" />
+        <None Remove="ConfigMigrations\package20251226_1112.shaconfig" />
+        <None Remove="ConfigMigrations\package20251229_0936.shaconfig" />
+        <None Remove="ConfigMigrations\package20251229_1151.shaconfig" />
+        <None Remove="ConfigMigrations\package20260112_2017.shaconfig" />
+        <None Remove="ConfigMigrations\package20260115_1424.shaconfig" />
+        <None Remove="ConfigMigrations\package20260127_0953.shaconfig" />
+        <None Remove="ConfigMigrations\package20260129_2214.shaconfig" />
+        <None Remove="ConfigMigrations\package20260202_1055.shaconfig" />
+        <None Remove="ConfigMigrations\package20260209_2056.shaconfig" />
+        <None Remove="ConfigMigrations\package20260225_1631.shaconfig" />
+        <None Remove="ConfigMigrations\package20260304_1119.shaconfig" />
+        <None Remove="ConfigMigrations\package20260306_1033.shaconfig" />
+        <None Remove="ConfigMigrations\package20260306_1109.shaconfig" />
+        <None Remove="ConfigMigrations\package20260306_1135.shaconfig" />
+        <None Remove="ConfigMigrations\package20260309_1350.shaconfig" />
+        <None Remove="ConfigMigrations\package20260309_1427.shaconfig" />
+        <None Remove="ConfigMigrations\package20260309_1622.shaconfig" />
+        <None Remove="ConfigMigrations\package20260310_1015.shaconfig" />
+        <None Remove="ConfigMigrations\package20260310_1617.shaconfig" />
+        <None Remove="ConfigMigrations\package20260311_1518.shaconfig" />
+        <None Remove="ConfigMigrations\package20260312_1234.shaconfig" />
+        <None Remove="ConfigMigrations\package20260316_1451.shaconfig" />
+        <None Remove="ConfigMigrations\package20260317_1559.shaconfig" />
+        <None Remove="ConfigMigrations\package20260318_0850.shaconfig" />
+        <None Remove="ConfigMigrations\package20260318_1254.shaconfig" />
+        <None Remove="ConfigMigrations\package20260323_1136.shaconfig" />
+        <None Remove="ConfigMigrations\package20260324_1606.shaconfig" />
+        <None Remove="ConfigMigrations\package20260402_1531.shaconfig" />
+        <None Remove="ConfigMigrations\package20260409_1436.shaconfig" />
+        <None Remove="ConfigMigrations\package20260413_1715.shaconfig" />
+        <None Remove="ConfigMigrations\package20260414_0821.shaconfig" />
+        <None Remove="ConfigMigrations\package20260414_1015.shaconfig" />
+        <None Remove="ConfigMigrations\package20260415_1614.shaconfig" />
+        <None Remove="ConfigMigrations\package20260420_1550.shaconfig" />
+        <None Remove="ConfigMigrations\package20260504_1113.shaconfig" />
+        <None Remove="ConfigMigrations\package20260609_1414.shaconfig" />
+        <None Remove="ConfigMigrations\package20260610_2044.shaconfig" />
+        <None Remove="ConfigMigrations\package20260615_1217.shaconfig" />
         <None Remove="Excel\template.xlsx" />
         <None Remove="ConfigMigrations\package20230324_1835.shaconfig" />
         <None Remove="ConfigMigrations\package20230411_1238.shaconfig" />
         <None Remove="ConfigMigrations\package20231105_1942.shaconfig" />
         <None Remove="ConfigMigrations\package20250805_1824.shaconfig" />
+        <None Remove="ConfigMigrations\package20260119_1719.shaconfig" />
+        <None Remove="ConfigMigrations\package20260114_1027.shaconfig" />
+        <None Remove="ConfigMigrations\package20260514_0839.shaconfig" />
     </ItemGroup>
     <ItemGroup>
-        <EmbeddedResource Include="ConfigMigrations\package20240201_1221.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20240208_1429.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20240216_0954.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20240506_0847.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20240521_0550.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20240607_1046.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20240612_1013.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20240617_1445.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20240710_1635.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20240717_0924.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20240717_0925.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20240718_0640.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20240718_0641.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20240815_1811.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20240823_2001.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20240828_1347.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20240828_1548.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20240830_1554.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20240903_1611.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20240904_1418.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20240910_0924.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20240918_1815.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20241006_0651.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20241014_0926.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20241104_1722.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20241113_1549.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20241125_1110.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20241203_1422.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20241211_1520.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20241210_2046.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20241211_1616.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20241218_1705.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20250121_1158.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20250127_1206.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20250127_1510.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20250130_1900.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20250212_0911.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20250228_1711.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20250618_1441.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20250704_1203.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20250801_0955.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20250805_0851.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20251027_1622.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20251030_1025.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20260225_1631.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20260304_1119.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20260306_1033.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20260306_1109.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20260306_1135.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20260309_1350.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20260309_1427.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20260309_1622.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20260310_1015.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20260310_1617.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20260311_1518.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20260312_1234.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20260316_1451.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20260317_1559.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20260318_0850.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20260318_1254.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20260323_1136.shaconfig">
+          <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+        </EmbeddedResource>
+        <EmbeddedResource Include="ConfigMigrations\package20260324_1606.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20260402_1531.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20260409_1436.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20260414_0821.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20260414_1015.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20260415_1614.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20260420_1550.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20260504_1113.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20260514_0839.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20260609_1414.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20260610_2044.shaconfig" />
+        <EmbeddedResource Include="ConfigMigrations\package20260615_1217.shaconfig" />
         <EmbeddedResource Include="Excel\template.xlsx" />
-        <EmbeddedResource Include="ConfigMigrations\package20230324_1835.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20230411_1238.shaconfig" />
-        <EmbeddedResource Include="ConfigMigrations\package20250805_1824.shaconfig" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="AsyncFixer" Version="1.6.0">
+        <PackageReference Include="AsyncFixer">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="DocumentFormat.OpenXml" Version="3.0.0" />
-        <PackageReference Include="Hangfire.Core" Version="1.8.6" />
-        <PackageReference Include="IDisposableAnalyzers" Version="4.0.8">
+        <PackageReference Include="DocumentFormat.OpenXml" />
+        <PackageReference Include="Hangfire.Core" />
+        <PackageReference Include="IDisposableAnalyzers">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="MediaTypeMap.Core" Version="2.3.3" />
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
-        <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.13.2">
+        <PackageReference Include="MediaTypeMap.Core" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" />
+        <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="NETStandard.Library" Version="2.0.3" />
-        <PackageReference Include="SkiaSharp" Version="3.116.1" />
-        <PackageReference Include="Stubble.Core" Version="1.10.8" />
+        <PackageReference Include="NETStandard.Library" />
+        <PackageReference Include="SkiaSharp" />
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux" />
+        <PackageReference Include="Stubble.Core" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Shesha.Core\Shesha.Core.csproj" />
@@ -184,6 +214,9 @@
         <ProjectReference Include="..\Shesha.NHibernate\Shesha.NHibernate.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
+        <PackageReference Include="Microsoft.SourceLink.GitHub">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
     </ItemGroup>
 </Project>

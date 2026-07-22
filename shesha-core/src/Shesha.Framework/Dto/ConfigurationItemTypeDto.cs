@@ -21,5 +21,8 @@ namespace Shesha.Dto
         public FormIdentifier? CreateFormId { get; init; }
 
         public FormIdentifier? RenameFormId { get; init; }
+
+        public string? ParentType { get; init; }
+        public string Discriminator { get; init; }
     }
 }

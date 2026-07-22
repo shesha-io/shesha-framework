@@ -1,64 +1,69 @@
-import { CalendarOutlined } from '@ant-design/icons';
-import React, { Fragment, useMemo } from 'react';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { customDateEventHandler } from '@/components/formDesigner/components/utils';
-import { IToolboxComponent } from '@/interfaces';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
+import { DATE_TIME_FORMATS } from '@/constants/formats';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers/form/models';
-import { useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { IDateFieldProps } from './interfaces';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { CalendarOutlined } from '@ant-design/icons';
+import React, { Fragment, useMemo } from 'react';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { DatePickerWrapper } from './datePickerWrapper';
+import { DateFieldDefinition, DateFieldValueType, IDateFieldProps, NoUndefinedRangeValueType } from './interfaces';
+import { getSettings } from './settingsForm';
 import {
-  DATE_TIME_FORMATS,
   defaultStyles,
 } from './utils';
-import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
-import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { DatePickerWrapper } from './datePickerWrapper';
-import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { getSettings } from './settingsForm';
-import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 
 
-const DateField: IToolboxComponent<IDateFieldProps> = {
+const DateField: DateFieldDefinition = {
   type: 'dateField',
   name: 'Date field',
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
   icon: <CalendarOutlined />,
+  preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.date || dataType === DataTypes.dateTime,
   Factory: ({ model }) => {
-    const allData = useAvailableConstantsData();
     const finalStyle = useMemo(() => !model.enableStyleOnReadonly && model.readOnly ? {
-      ...model.allStyles.fontStyles,
-      ...model.allStyles.dimensionsStyles,
-    } : model.allStyles.fullStyle, [model.enableStyleOnReadonly, model.readOnly, model.allStyles]);
+      ...model.allStyles?.fontStyles,
+      ...model.allStyles?.dimensionsStyles,
+    } : model.allStyles?.fullStyle, [model.enableStyleOnReadonly, model.readOnly, model.allStyles]);
 
     return (
       <Fragment>
-        <ConfigurableFormItem model={model}>
-          {(value, onChange) => {
-            const customEvent = customDateEventHandler(model, allData);
-            const onChangeInternal = (...args: any[]): void => {
-              customEvent.onChange(args[0], args[1]);
-              if (typeof onChange === 'function')
-                onChange(...args);
-            };
-
-            return <DatePickerWrapper {...model} additionalStyles={finalStyle} {...customEvent} value={value} onChange={onChangeInternal} />;
+        <ConfigurableFormItem<DateFieldValueType> model={model}>
+          {(value, onChange, _, ctx) => {
+            return (
+              <DatePickerWrapper
+                {...model}
+                additionalStyles={finalStyle}
+                value={value}
+                onChange={(value: string | NoUndefinedRangeValueType<string> | null, _dateString: string | [string, string] | null) => {
+                  // TODO: EVENTS: pass dateString to event handler
+                  // addContextData(context, { dateString, value }),
+                  ctx?.handleEvent(undefined, { value }, model.onChangeCustom);
+                  onChange(value);
+                }}
+                onFocus={(event) => ctx?.handleEvent(event, { value }, model.onFocusCustom)}
+                onBlur={(event) => ctx?.handleEvent(event, { value }, model.onBlurCustom)}
+              />
+            );
           }}
         </ConfigurableFormItem>
       </Fragment>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   initModel: (model) => {
     const customModel: IDateFieldProps = {
       ...model,
       picker: 'date',
       showTime: false,
-      dateFormat: DATE_TIME_FORMATS?.date,
+      dateFormat: DATE_TIME_FORMATS.date,
       timeFormat: DATE_TIME_FORMATS.time,
       defaultToMidnight: true,
     };
@@ -103,7 +108,7 @@ const DateField: IToolboxComponent<IDateFieldProps> = {
     return {
       ...model,
       dateFormat: !!metadata.dataFormat ? metadata.dataFormat : model.dateFormat,
-      showTime: metadata.dataType === DataTypes.date ? false : model.showTime,
+      showTime: metadata.dataType === DataTypes.dateTime ? true : metadata.dataType === DataTypes.date ? false : model.showTime,
     };
   },
 };

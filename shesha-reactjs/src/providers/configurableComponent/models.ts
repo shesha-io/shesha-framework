@@ -4,7 +4,7 @@ export interface IConfigurableComponentProps {
   description?: string;
 }
 
-export declare type StoreValue = any;
+export declare type StoreValue = unknown;
 export interface Store {
   [name: string]: StoreValue;
 }

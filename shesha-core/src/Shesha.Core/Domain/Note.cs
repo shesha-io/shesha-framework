@@ -11,7 +11,7 @@ namespace Shesha.Domain
         [StringLength(50)]
         public virtual string? Category { get; set; }
 
-        public virtual Note Parent { get; set; }
+        public virtual Note? Parent { get; set; }
 
         [StringLength(int.MaxValue, MinimumLength = 3)]
         public virtual string NoteText { get; set; }

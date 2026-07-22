@@ -1,23 +1,24 @@
-import React, { FC, MutableRefObject, PropsWithChildren, useContext, useEffect, useRef, useState } from "react";
+import React, { RefObject, PropsWithChildren, ReactNode, useContext, useEffect, useRef, useState } from "react";
 import { IShaFormInstance } from '../store/interfaces';
 import { DelayedUpdateProvider } from "../../delayedUpdateProvider";
 import { ShaFormDataUpdateContext, ShaFormInstanceContext } from "../providers/contexts";
 import { ShaFormSubscriptionType } from "../store/shaFormInstance";
 
-export interface IShaFormProviderProps {
-  shaForm: IShaFormInstance;
+export interface IShaFormProviderProps<TValues extends object = object> {
+  shaForm: IShaFormInstance<TValues>;
 }
 
-const ShaFormProvider: FC<PropsWithChildren<IShaFormProviderProps>> = ({ children, shaForm }) => {
+const ShaFormProvider = <TValues extends object = object>({ children, shaForm }: PropsWithChildren<IShaFormProviderProps<TValues>>): ReactNode => {
   const [state, setState] = React.useState({});
 
   // force update context on change form data
   useEffect(() => {
     shaForm.updateData = () => setState({});
-  }, []);
+  }, [shaForm]);
 
+  // TODO V1: replace with generic provider and remove unsafe type cast
   return (
-    <ShaFormInstanceContext.Provider value={shaForm}>
+    <ShaFormInstanceContext.Provider value={shaForm as unknown as IShaFormInstance}>
       <ShaFormDataUpdateContext.Provider value={state}>
         {children}
       </ShaFormDataUpdateContext.Provider>
@@ -25,7 +26,7 @@ const ShaFormProvider: FC<PropsWithChildren<IShaFormProviderProps>> = ({ childre
   );
 };
 
-const FormProviderWithDelayedUpdates: FC<PropsWithChildren<IShaFormProviderProps>> = ({ children, ...props }) => {
+const FormProviderWithDelayedUpdates = <TValues extends object = object>({ children, ...props }: PropsWithChildren<IShaFormProviderProps<TValues>>): ReactNode => {
   return (
     <DelayedUpdateProvider>
       <ShaFormProvider {...props}>
@@ -35,18 +36,18 @@ const FormProviderWithDelayedUpdates: FC<PropsWithChildren<IShaFormProviderProps
   );
 };
 
-const useShaFormRef = <Values extends object = object>(): MutableRefObject<IShaFormInstance<Values>> => {
-  return useRef<IShaFormInstance<Values>>();
+const useShaFormRef = <Values extends object = object>(): RefObject<IShaFormInstance<Values> | undefined> => {
+  return useRef<IShaFormInstance<Values>>(undefined);
 };
 
-const useShaFormDataUpdate = (): object => useContext(ShaFormDataUpdateContext);
+const useShaFormDataUpdate = (): object | undefined => useContext(ShaFormDataUpdateContext);
 
-const useShaFormInstanceOrUndefined = (): IShaFormInstance | undefined => {
-  return useContext(ShaFormInstanceContext);
+const useShaFormInstanceOrUndefined = <Values extends object = object>(): IShaFormInstance<Values> | undefined => {
+  return useContext(ShaFormInstanceContext) as IShaFormInstance<Values> | undefined;
 };
 
-const useShaFormInstance = (): IShaFormInstance => {
-  const context = useShaFormInstanceOrUndefined();
+const useShaFormInstance = <Values extends object = object>(): IShaFormInstance<Values> => {
+  const context = useShaFormInstanceOrUndefined<Values>();
   if (context === undefined)
     throw new Error('useShaFormInstance must be used within a ShaFormProvider');
 

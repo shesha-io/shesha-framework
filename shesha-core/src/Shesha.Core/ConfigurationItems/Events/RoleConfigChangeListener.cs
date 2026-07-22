@@ -9,7 +9,7 @@ namespace Shesha.ConfigurationItems.Events
     /// Listener for <see cref="ShaRole"/> changes
     /// Detects changes and adds them to the configuration changes collector (<see cref="IConfigurationChangesCollector"/>)
     /// </summary>
-    public class RoleConfigChangeListener : IEventHandler<EntityChangingEventData<ShaRole>>,
+    public class RoleConfigChangeListener : 
         IEventHandler<EntityChangingEventData<ShaRolePermission>>,
         IEventHandler<EntityCreatingEventData<ShaRolePermission>>,
         IEventHandler<EntityDeletingEventData<ShaRolePermission>>,
@@ -20,11 +20,6 @@ namespace Shesha.ConfigurationItems.Events
         public RoleConfigChangeListener(IConfigurationChangesCollector configurationChangesCollector)
         {
             _configurationChangesCollector = configurationChangesCollector;
-        }
-
-        public void HandleEvent(EntityChangingEventData<ShaRole> eventData)
-        {
-            _configurationChangesCollector.AddUpdate(eventData.Entity);
         }
 
         public void HandleEvent(EntityChangingEventData<ShaRolePermission> eventData)

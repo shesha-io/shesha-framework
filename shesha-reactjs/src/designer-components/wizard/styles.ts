@@ -1,16 +1,17 @@
 import { createStyles } from '@/styles';
+import { CSSObject } from 'antd-style';
 import { CSSProperties } from 'react';
 
 interface IWizardStylesProps {
   styles: CSSProperties;
   colors: {
-    primaryTextColor: string;
-    secondaryTextColor: string;
-    primaryBgColor: string;
-    secondaryBgColor: string;
+    primaryTextColor: string | undefined;
+    secondaryTextColor: string | undefined;
+    primaryBgColor: string | undefined;
+    secondaryBgColor: string | undefined;
   };
   activeStepStyle: CSSProperties;
-  stepWidth: string;
+  stepWidth: string | undefined;
   overflow: CSSProperties;
 }
 
@@ -25,7 +26,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors,
   const { ...overflowStyle } = overflow;
   const shaWizard = cx("sha-wizard", css`
 
-    ${rest}
+    ${rest as CSSObject}
     .ant-steps-item-container {
       --ant-color-primary: ${primaryBgColor};
       --ant-color-text-description: ${activeStepStyle.color ?? color}75;
@@ -90,7 +91,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { styles, colors,
       .${shaStepsContent} {
         flex: 1 1 auto;
         margin: 20px 0;
-        ${overflowStyle}
+        ${overflowStyle as CSSObject}
       }
   
       &.vertical {

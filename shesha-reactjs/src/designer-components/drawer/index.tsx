@@ -26,12 +26,12 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
       backgroundStyles: headerBackgroundStyles,
       shadowStyles: headerShadowStyles,
       jsStyle: headerJsStyle,
-    } = useFormComponentStyles(headerStyles);
+    } = useFormComponentStyles(headerStyles ?? {});
     const {
       backgroundStyles: footerBackgroundStyles,
       shadowStyles: footerShadowStyles,
       jsStyle: footerJsStyle,
-    } = useFormComponentStyles(footerStyles);
+    } = useFormComponentStyles(footerStyles ?? {});
 
     const additionalHeaderStyles: CSSProperties = removeUndefinedProps({
       ...headerShadowStyles,
@@ -57,7 +57,7 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
       />
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
+  settingsFormMarkup: getSettings,
   migrator: (m) =>
     m
       .add<IDrawerProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
@@ -107,7 +107,7 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
     };
     return customProps;
   },
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 };
 
 export default DrawerComponent;

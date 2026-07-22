@@ -1,6 +1,19 @@
 import { createStyles } from '@/styles';
+import { CSSProperties } from 'react';
 
-export const useStyles = createStyles(({ css, cx, token }, {
+type StylesArgs = Pick<CSSProperties, "fontWeight" | "fontFamily" | "textAlign" | "color" | "fontSize"> & {
+  striped: boolean;
+  hoverHighlight: boolean;
+  rowBackgroundColor: string | undefined;
+  rowAlternateBackgroundColor: string | undefined;
+  rowHoverBackgroundColor: string | undefined;
+  rowSelectedBackgroundColor: string | undefined;
+  borderRadius?: string | undefined;
+};
+type StylesResponse = {
+  dataTable: string;
+};
+export const useStyles = createStyles<StylesArgs, StylesResponse>(({ css, cx, token }, {
   fontWeight,
   fontFamily,
   textAlign,
@@ -8,7 +21,6 @@ export const useStyles = createStyles(({ css, cx, token }, {
   fontSize,
   striped,
   hoverHighlight,
-  stickyHeader,
   rowBackgroundColor,
   rowAlternateBackgroundColor,
   rowHoverBackgroundColor,
@@ -25,11 +37,6 @@ export const useStyles = createStyles(({ css, cx, token }, {
         color: ${color};
         text-align: ${textAlign};
       }
-
-      .ant-table-thead > tr > th {
-        ${stickyHeader ? 'position: sticky; top: 0; z-index: 1;' : ''}
-      }
-
       /* React Table specific row styling */
       .sha-react-table .sha-table .tr.tr-body {
         ${rowBackgroundColor ? `background-color: ${rowBackgroundColor} !important;` : ''}
@@ -51,7 +58,7 @@ export const useStyles = createStyles(({ css, cx, token }, {
         }
       ` : hoverHighlight ? `
         .sha-react-table .sha-table .tbody .tr.tr-body:hover {
-          background-color: ${token.colorPrimaryBg} !important;
+          background-color: ${token.colorPrimary} !important;
         }
       ` : ''}
 
@@ -59,7 +66,17 @@ export const useStyles = createStyles(({ css, cx, token }, {
         .sha-react-table .sha-table .tr.tr-body.sha-tr-selected {
           background-color: ${rowSelectedBackgroundColor} !important;
         }
-      ` : ''}
+        /* Ensure selected row styling always takes priority over striped rows */
+        .sha-react-table .sha-table .tr.tr-body.tr-odd.sha-tr-selected {
+          background-color: ${rowSelectedBackgroundColor} !important;
+        }
+      ` : `
+        /* Ensure selected row styling always takes priority over striped rows */
+        .sha-react-table .sha-table .tr.tr-body.tr-odd.sha-tr-selected {
+          background-color: ${token.colorPrimary} !important;
+          color: white !important;
+        }
+      `}
 
       .ant-table-thead > tr > th {
         border-bottom: 1px solid ${token.colorBorder};

@@ -1,125 +1,175 @@
-import { componentsTreeToFlatStructure, useAvailableConstantsData } from '@/providers/form/utils';
+import { componentsTreeToFlatStructure, executeScriptSync, useAvailableConstantsData } from '@/providers/form/utils';
 import { getStepDescritpion, getWizardStep } from './utils';
-import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
-import { IConfigurableFormComponent, useForm, useSheshaApplication } from '@/providers';
+import { IActionExecutionContext, IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
+import { IConfigurableFormComponent, isConfigurableFormComponent, useForm, useSheshaApplication, ShaForm } from '@/providers';
 import { IWizardComponentProps, IWizardStepProps } from './models';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { useEffect, useMemo, useState } from 'react';
+import { useDeepCompareMemo } from '@/hooks';
 import { useFormExpression } from '@/hooks';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { useValidator } from '@/providers/validateProvider';
+import { useClosestModal } from '@/providers/dynamicModal';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isNonEmptyArray } from '@/utils/array';
+import { ValidateErrorEntity } from '../..';
 
 interface IWizardComponent {
   back: () => void;
-  components: IConfigurableFormComponent[];
+  close: () => void;
+  components: IConfigurableFormComponent[] | undefined;
   current: number;
-  currentStep: IWizardStepProps;
+  currentStep: IWizardStepProps | undefined;
   cancel: () => void;
   done: () => void;
   content: (description: string, index: number) => string;
+  executeBooleanExpression: (expression: string | undefined | null, returnBoolean?: boolean) => boolean;
   next: () => void;
-  setStep: (stepIndex) => void;
+  reset: () => void;
+  setStep: (stepIndex: number) => void;
   visibleSteps: IWizardStepProps[];
 }
 
-export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardComponent => {
+type IValidatable = IActionExecutionContext & { validate: (() => Promise<void>) | undefined };
+
+const getDefaultStepIndex = (tabs: IWizardStepProps[], i: number | string | undefined): number => {
+  if (typeof (i) === 'number' && i >= 0 && tabs.length > i)
+    return i;
+
+  if (typeof (i) === 'string') {
+    const index = tabs.findIndex((item) => item.id === i);
+    if (index > -1)
+      return index;
+  }
+
+  return 0;
+};
+
+export const useWizard = (model: IWizardComponentProps): IWizardComponent => {
   const { anyOfPermissionsGranted } = useSheshaApplication();
-  const allData = useAvailableConstantsData();
+  const allData = useAvailableConstantsData({ topContextId: 'ctx_' + model.id });
   const toolbox = useFormDesignerComponents();
   const validator = useValidator(false);
+  const closestModal = useClosestModal();
 
-  const formMode = useForm(false).formMode;
+  const formMode = useForm().formMode;
 
-  const { executeBooleanExpression, executeActionViaPayload } = useFormExpression();
+  const { executeActionViaPayload } = useFormExpression();
+
+  const executeBooleanExpression = (expression: string | undefined | null, returnBoolean = true): boolean => {
+    if (isNullOrWhiteSpace(expression)) return returnBoolean;
+    const evaluated = executeScriptSync(expression, allData);
+    return typeof evaluated === 'boolean' ? evaluated : true;
+  };
 
   const {
-    componentName: actionOwnerName,
+    componentName,
     id: actionsOwnerId,
     steps: tabs,
     defaultActiveStep = 0,
-    showStepStatus,
+    showStepStatus = false,
     sequence,
-  } = (model as IWizardComponentProps) || {};
-
-  const getDefaultStepIndex = (i): number => {
-    if (i) {
-      const t = tabs[i] ??
-        tabs?.find((item) => item?.id === i); // for backward compatibility
-      return !!t ? tabs.indexOf(t) : 0;
-    }
-    return 0;
-  };
+  } = model;
+  const actionOwnerName = componentName ?? "";
 
   const [current, setCurrent] = useState(() => {
-    return getDefaultStepIndex(defaultActiveStep);
+    return getDefaultStepIndex(tabs, defaultActiveStep);
   });
 
-  // Remove every tab from the equation that isn't visible either by customVisibility or permissions
-  const visibleSteps = useMemo(
+  const { componentRelations, allComponents } = ShaForm.useMarkup();
+
+  const visibleSteps = useDeepCompareMemo(
     () =>
       tabs
         .filter(({ customVisibility, permissions }) => {
           const granted = anyOfPermissionsGranted(permissions || []);
           const isVisibleByCondition = executeBooleanExpression(customVisibility, true);
 
-          return !((!granted || !isVisibleByCondition) && allData.form?.formMode !== 'designer');
+          return !((!granted || !isVisibleByCondition) && formMode !== 'designer');
+        })
+        .map((step) => {
+          // Get footer id - use existing or generate fallback
+          const footerId = step.stepFooter?.id ?? (step.hasCustomFooter ? `${step.id}_footer` : undefined);
+
+          if (step.hasCustomFooter && footerId) {
+            const footerComponentIds = componentRelations[footerId] || [];
+            const footerComponents = footerComponentIds
+              .map((id) => allComponents[id])
+              .filter(isConfigurableFormComponent);
+
+            return {
+              ...step,
+              stepFooter: {
+                ...step.stepFooter,
+                id: footerId,
+                components: footerComponents,
+              },
+            };
+          }
+          return step;
         }),
-    [tabs],
+    [tabs, formMode, componentRelations, allComponents],
   );
 
   const currentStep = visibleSteps[current];
   const components = currentStep?.components;
   const componentsNames = useMemo(() => {
-    if (!components) return null;
+    if (!components) return [];
     const flat = componentsTreeToFlatStructure(toolbox, components);
     const properties = [];
     for (const comp in flat.allComponents)
       if (Object.hasOwn(flat.allComponents, comp)) {
         const component = flat.allComponents[comp];
-        if (component.propertyName && !component.context)
+        if (isConfigurableFormComponent(component) && component.propertyName && !component.context)
           properties.push(component.propertyName.split("."));
       }
     return properties;
-  }, [currentStep]);
+  }, [components, toolbox]);
 
+  var formInstance = allData.form?.formInstance;
   useEffect(() => {
     if (validator)
       validator.registerValidator({
         id: model.id,
         validate: () => {
-          var formInstance = allData?.form?.formInstance;
-          return formInstance?.validateFields(componentsNames, { recursive: false })
-            .catch((e) => {
-              if (e.errorFields?.length > 0)
-                throw e;
-              return null;
-            });
+          return isDefined(formInstance)
+            ? formInstance.validateFields(componentsNames, { recursive: false })
+              .then(() => {
+
+              })
+              .catch((e: ValidateErrorEntity) => {
+                if (isNonEmptyArray(e.errorFields))
+                  throw e;
+              })
+            : Promise.resolve();
         },
       });
-  }, [componentsNames]);
+  }, [model.id, componentsNames, formInstance, validator]);
 
   const argumentsEvaluationContext = { ...allData, fieldsToValidate: componentsNames, validate: validator?.validate };
 
   useEffect(() => {
-    setCurrent(getDefaultStepIndex(defaultActiveStep));
-  }, [defaultActiveStep]);
+    setCurrent(getDefaultStepIndex(tabs, defaultActiveStep));
+  }, [defaultActiveStep, tabs]);
 
   useEffect(() => {
     const actionConfiguration = currentStep?.onBeforeRenderActionConfiguration;
 
-    if (!!actionConfiguration?.actionName) {
+    if (actionConfiguration) {
       executeActionViaPayload({
         actionConfiguration: actionConfiguration,
         argumentsEvaluationContext,
       });
     }
-  }, [current]);
+    // TODO V1: move to event handlers
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentStep]);
 
-  const onAfterCallback = (callback: () => void, after?: (step: IWizardStepProps) => void): void => {
+  const onAfterCallback = (callback: () => void, after?: () => void): void => {
     try {
       callback();
     } finally {
-      if (after) after(currentStep);
+      if (after) after();
     }
   };
 
@@ -135,25 +185,27 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
   /// NAVIGATION
   const executeActionIfConfigured = (
-    beforeAccessor: (step: IWizardStepProps) => IConfigurableActionConfiguration,
-    afterAccessor: (step: IWizardStepProps) => IConfigurableActionConfiguration,
-    success?: (actionResponse: any) => void,
+    beforeAccessor: (step: IWizardStepProps) => IConfigurableActionConfiguration | undefined,
+    afterAccessor: (step: IWizardStepProps) => IConfigurableActionConfiguration | undefined,
+    success?: (actionResponse: unknown) => void,
   ): void => {
-    if (!formMode || formMode === 'designer') {
+    if (isNullOrWhiteSpace(formMode) || formMode === 'designer') {
       if (success) success(null);
       return;
     }
 
-    const beforeAction = beforeAccessor(currentStep);
+    const beforeAction = isDefined(currentStep) ? beforeAccessor(currentStep) : undefined;
 
-    const successFunc = (response: any): void => {
+    const successFunc = (response: unknown): void => {
       onAfterCallback(
         () => {
           if (success) success(response);
         },
         () => {
+          if (!currentStep)
+            return;
           const afterAction = afterAccessor(currentStep);
-          if (!!afterAction?.actionName)
+          if (afterAction)
             executeActionViaPayload({
               actionConfiguration: afterAction,
               argumentsEvaluationContext,
@@ -197,10 +249,15 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       );
   };
 
+  const close = (): void => {
+    closestModal?.close();
+  };
+
   const cancel = (): void =>
     executeActionIfConfigured(
       (tab) => tab.beforeCancelActionConfiguration,
       (tab) => tab.afterCancelActionConfiguration,
+      () => close(),
     );
 
   const done = (): void => {
@@ -214,7 +271,11 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     }
   };
 
-  const setStep = (stepIndex): void => {
+  const reset = (): void => {
+    successCallback('reset');
+  };
+
+  const setStep = (stepIndex: number): void => {
     if (stepIndex < 0 || stepIndex >= visibleSteps.length)
       throw `Step with index ${stepIndex} is not available`;
     setCurrent(stepIndex);
@@ -267,6 +328,20 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
   useConfigurableAction(
     {
+      name: 'Close',
+      owner: actionOwnerName,
+      ownerUid: actionsOwnerId,
+      hasArguments: false,
+      executer: () => {
+        close();
+        return Promise.resolve();
+      },
+    },
+    actionDependencies,
+  );
+
+  useConfigurableAction(
+    {
       name: 'Done',
       owner: actionOwnerName,
       ownerUid: actionsOwnerId,
@@ -293,7 +368,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
     actionDependencies,
   );
 
-  useConfigurableAction(
+  useConfigurableAction<object, unknown, IValidatable>(
     {
       name: 'Validate',
       description: 'Validate the Wizard step data and show validation errors if any',
@@ -301,7 +376,7 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
       ownerUid: actionsOwnerId,
       hasArguments: false,
       executer: (_, actionContext) => {
-        if (actionContext?.validate) {
+        if (actionContext.validate) {
           return actionContext.validate();
         }
         return Promise.resolve();
@@ -313,5 +388,5 @@ export const useWizard = (model: Omit<IWizardComponentProps, 'size'>): IWizardCo
 
   const content = getStepDescritpion(showStepStatus, sequence, current);
 
-  return { components, current, currentStep, visibleSteps, back, cancel, done, content, next, setStep };
+  return { components, current, currentStep, visibleSteps, back, cancel, close, done, content, executeBooleanExpression, next, reset, setStep };
 };

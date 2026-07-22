@@ -1,8 +1,11 @@
 ﻿using Abp.Application.Services;
 using Abp.Application.Services.Dto;
 using Shesha.Authorization;
+using Shesha.Domain;
+using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
 using Shesha.QuickSearch;
+using Shesha.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,9 +31,36 @@ namespace Shesha.EntityHistory
             _quickSearcher = quickSearcher;
         }
 
-        public async Task<PagedResultDto<EntityHistoryItemDto>> GetAuditTrailAsync(EntityHistoryResultRequestDto input, string entityId, string entityTypeFullName, bool includeEventsOnChildEntities)
+        /// <summary>
+        /// Get Audit Trail
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="entityId"></param>
+        /// <param name="entityTypeId"></param>
+        /// <param name="includeEventsOnChildEntities"></param>
+        /// <param name="entityTypeFullName">For backward compatibility (use entityTypeId instead)</param>
+        /// <returns></returns>
+        public async Task<PagedResultDto<EntityHistoryItemDto>> GetAuditTrailAsync(
+            EntityHistoryResultRequestDto input,
+            string entityId,
+            EntityTypeIdInput? entityTypeId,
+            bool includeEventsOnChildEntities,
+            string? entityTypeFullName // for backward compatibility
+        )
         {
-            var history = await _entityHistoryProvider.GetAuditTrailAsync(entityId, entityTypeFullName, includeEventsOnChildEntities);
+            if (entityTypeId?.EntityType == null
+                && entityTypeId?.Name == null
+                && entityTypeFullName == null
+            )
+                throw new ArgumentNullException("`entityType` or `name` or `entityTypeFullName` should not be null");
+
+
+            var history = await _entityHistoryProvider.GetAuditTrailAsync(
+                entityId,
+                entityTypeId?.Module,
+                entityTypeId?.Name ?? entityTypeId?.EntityType ?? entityTypeFullName.NotNull(),
+                includeEventsOnChildEntities
+            );
 
             var totalRowsBeforeFilter = history.Count();
 

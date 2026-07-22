@@ -6,7 +6,7 @@ using System.ComponentModel;
 namespace Shesha.Domain
 {
     /// <summary>
-    /// Identifier oif the configuration item
+    /// Identifier of the configuration item
     /// </summary>
     public abstract class ConfigurationItemIdentifier: IEquatable<ConfigurationItemIdentifier>
     {
@@ -79,7 +79,9 @@ namespace Shesha.Domain
         {
         }
 
+        [JsonIgnore]
         public override Type ItemType => typeof(TItem);
+        [JsonIgnore]
         public override string ItemTypeName => ItemType.Name;
     }
 

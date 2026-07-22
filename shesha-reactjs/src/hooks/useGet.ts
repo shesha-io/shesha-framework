@@ -28,28 +28,28 @@ export interface UseGetProps<TData, TQueryParams, TPathParams> {
   /**
    * Path Parameters
    */
-  pathParams?: TPathParams;
+  pathParams?: TPathParams | undefined;
   /**
    * Query parameters
    */
-  queryParams?: TQueryParams;
+  queryParams?: TQueryParams | undefined;
   /**
    * A function to resolve data return from the backend, most typically
    * used when the backend response needs to be adapted in some way.
    */
-  resolve?: (data: unknown) => TData;
+  resolve?: ((data: unknown) => TData) | undefined;
   /**
    * Should we fetch data at a later stage?
    */
-  lazy?: boolean;
+  lazy?: boolean | undefined;
   /**
    * An escape hatch and an alternative to `path` when you'd like
    * to fetch from an entirely different URL.
    *
    */
-  base?: string;
+  base?: string | undefined;
 
-  headers?: IHttpHeadersDictionary;
+  headers?: IHttpHeadersDictionary | undefined;
 }
 
 type RefetchOptions<TData, TQueryParams, TPathParams> = Partial<
@@ -105,7 +105,11 @@ export const useGetInternal = <TData = unknown, TError = unknown, TQueryParams =
   );
 
   useDeepCompareEffect(() => {
-    if (!props.lazy) refetch(props);
+    if (!props.lazy)
+      refetch(props).catch((error) => {
+        console.error('Failed to fetch', error);
+        throw error;
+      });
   }, [props.lazy, props.path, props.base, props.queryParams, props.pathParams, backendUrl, httpHeaders]);
 
   return {
@@ -116,12 +120,12 @@ export const useGetInternal = <TData = unknown, TError = unknown, TQueryParams =
 
 export function useGet<TData = unknown, TError = unknown, TQueryParams = IQueryParams, TPathParams = unknown>(
   path: UseGetProps<TData, TQueryParams, TPathParams>['path'],
-  props: Omit<UseGetProps<TData, TQueryParams, TPathParams>, 'path'>
+  props: Omit<UseGetProps<TData, TQueryParams, TPathParams>, 'path'>,
 ): UseGetReturn<TData, TError, TQueryParams, TPathParams>;
 
 // eslint-disable-next-line no-redeclare
 export function useGet<TData = unknown, TError = unknown, TQueryParams = IQueryParams, TPathParams = unknown>(
-  props: UseGetProps<TData, TQueryParams, TPathParams>
+  props: UseGetProps<TData, TQueryParams, TPathParams>,
 ): UseGetReturn<TData, TError, TQueryParams, TPathParams>;
 
 // eslint-disable-next-line no-redeclare

@@ -1,43 +1,43 @@
 import React from 'react';
-import { IToolboxComponent } from '@/interfaces';
 import { FormMarkup } from '@/providers/form/models';
 import { CodeSandboxOutlined } from '@ant-design/icons';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { CodeEditor } from './codeEditor';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
-import { ICodeEditorComponentProps, ICodeEditorProps } from './interfaces';
+import { CodeEditorComponentDefinition, ICodeEditorComponentProps, ICodeEditorProps } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { CodeEditorWithStandardConstants } from './codeEditorWithConstants';
 import { useResultTypeEvaluator } from './hooks/useResultType';
 import { useConstantsEvaluator } from './hooks/useConstantsEvaluator';
-import { Environment } from '@/publicJsApis/metadataBuilder';
+import { Environment } from '@/publicJsApis/apis/metadataBuilder';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
-const CodeEditorComponent: IToolboxComponent<ICodeEditorComponentProps> = {
+const CodeEditorComponent: CodeEditorComponentDefinition = {
   type: 'codeEditor',
   name: 'Code Editor',
   icon: <CodeSandboxOutlined />,
   isInput: true,
   isOutput: true,
+  preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string && (dataFormat === StringFormats.javascript || dataFormat === StringFormats.json),
   Factory: ({ model }) => {
     const editorProps: ICodeEditorProps = {
-      ...model as any,
+      ...model,
     };
     const constantsEvaluator = useConstantsEvaluator({ availableConstantsExpression: model.availableConstantsExpression });
 
     const resultType = useResultTypeEvaluator({ resultTypeExpression: model.resultTypeExpression });
 
     return (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem<string> model={model}>
         {(value, onChange) => {
           const props: ICodeEditorProps = {
-            value: value,
+            value: value ?? undefined,
             onChange: onChange,
             language: "typescript",
             ...editorProps,

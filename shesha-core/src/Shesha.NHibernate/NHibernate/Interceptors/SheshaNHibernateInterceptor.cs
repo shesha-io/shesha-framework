@@ -41,7 +41,7 @@ namespace Shesha.NHibernate.Interceptors
 
         public SheshaNHibernateInterceptor(IIocManager iocManager)
         {
-            EntityChangeEventHelper = default!;
+            EntityChangeEventHelper = NullEntityChangeEventHelper.Instance;
             _iocManager = iocManager;
 
             _abpSession =
@@ -103,8 +103,8 @@ namespace Shesha.NHibernate.Interceptors
                 }
             }
 
-            EntityChangeEventHelper.TriggerEntityCreatingEvent(entity);
-            EntityChangeEventHelper.TriggerEntityCreatedEventOnUowCompleted(entity);
+            EntityChangeEventHelper?.TriggerEntityCreatingEvent(entity);
+            EntityChangeEventHelper?.TriggerEntityCreatedEventOnUowCompleted(entity);
 
             TriggerDomainEvents(entity);
             EntityHistoryHelper?.AddEntityChange(entity);
@@ -141,7 +141,7 @@ namespace Shesha.NHibernate.Interceptors
                 }
             }
 
-            if (entity is ISoftDelete && entity.As<ISoftDelete>().IsDeleted)
+            if (entity is ISoftDelete && entity.As<ISoftDelete>().IsDeleted && previousState != null)
             {
                 //Is deleted before? Normally, a deleted entity should not be updated later but I preferred to check it.
                 var previousIsDeleted = false;
@@ -182,19 +182,19 @@ namespace Shesha.NHibernate.Interceptors
                         }
                     }
 
-                    EntityChangeEventHelper.TriggerEntityDeletingEvent(entity);
-                    EntityChangeEventHelper.TriggerEntityDeletedEventOnUowCompleted(entity);
+                    EntityChangeEventHelper?.TriggerEntityDeletingEvent(entity);
+                    EntityChangeEventHelper?.TriggerEntityDeletedEventOnUowCompleted(entity);
                 }
                 else
                 {
-                    EntityChangeEventHelper.TriggerEntityUpdatingEvent(entity);
-                    EntityChangeEventHelper.TriggerEntityUpdatedEventOnUowCompleted(entity);
+                    EntityChangeEventHelper?.TriggerEntityUpdatingEvent(entity);
+                    EntityChangeEventHelper?.TriggerEntityUpdatedEventOnUowCompleted(entity);
                 }
             }
             else
             {
-                EntityChangeEventHelper.TriggerEntityUpdatingEvent(entity);
-                EntityChangeEventHelper.TriggerEntityUpdatedEventOnUowCompleted(entity);
+                EntityChangeEventHelper?.TriggerEntityUpdatingEvent(entity);
+                EntityChangeEventHelper?.TriggerEntityUpdatedEventOnUowCompleted(entity);
             }
 
             TriggerDomainEvents(entity);
@@ -206,8 +206,8 @@ namespace Shesha.NHibernate.Interceptors
 
         public override void OnDelete(object entity, object id, object[] state, string[] propertyNames, IType[] types)
         {
-            EntityChangeEventHelper.TriggerEntityDeletingEvent(entity);
-            EntityChangeEventHelper.TriggerEntityDeletedEventOnUowCompleted(entity);
+            EntityChangeEventHelper?.TriggerEntityDeletingEvent(entity);
+            EntityChangeEventHelper?.TriggerEntityDeletedEventOnUowCompleted(entity);
 
             TriggerDomainEvents(entity);
 

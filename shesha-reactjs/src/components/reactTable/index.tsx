@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useState, useRef, ChangeEvent, CSSProperties, ReactElement } from 'react';
+import React, { useEffect, useMemo, useState, useRef, ChangeEvent, CSSProperties, ReactElement, ReactNode, useCallback, RefObject } from 'react';
 import classNames from 'classnames';
 import {
   useResizeColumns,
@@ -9,6 +9,7 @@ import {
   Row,
   useTable,
   Column,
+  CellProps,
 } from 'react-table';
 import { LoadingOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { App, Spin, Tooltip } from 'antd';
@@ -26,30 +27,29 @@ import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { IConfigurableActionConfiguration, useConfigurableActionDispatcher, useDataTableStore, useShaFormInstanceOrUndefined } from '@/providers';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { useStyles, useMainStyles } from './styles/styles';
-import { IAnchoredColumnProps } from '@/providers/dataTable/interfaces';
+import { IAnchoredColumnProps, ISelectionProps, ITableRowData } from '@/providers/dataTable/interfaces';
 import { DataTableColumn } from '../dataTable/interfaces';
 import { EmptyState } from '..';
 import { ErrorDetails } from '@/utils/configurationFramework/actions';
-import axios from 'axios';
-import { isAxiosResponse } from '@/interfaces/ajaxResponse';
 import { useCanvasStateOrUndefined } from '@/providers/canvas';
+import { makeErrorWithMessage, RowReorderValidationError } from '@/utils/errors';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
-interface IReactTableState {
-  allRows: any[];
-  allColumns: Column<any>[];
+interface IReactTableState<T extends ITableRowData = ITableRowData> {
+  allRows: T[];
+  allColumns: Column<T>[];
 }
 
-export const ReactTable: FC<IReactTableProps> = ({
+export const ReactTable = <TData extends ITableRowData = ITableRowData>({
   columns = [],
   data = [],
-  useMultiSelect = false,
-  selectionMode,
+  selectionMode = "none",
   loading = false,
   defaultSorting = [],
   defaultCanSort = false,
   manualPagination = true,
   manualSortBy = true,
-  manualFilters,
+  manualFilters = false,
   disableSortBy = false,
   pageCount,
   onFetchData,
@@ -61,6 +61,10 @@ export const ReactTable: FC<IReactTableProps> = ({
   onSelectedIdsChanged,
   onMultiRowSelect,
   onSort,
+  onRowClickAction,
+  onRowHoverAction,
+  onRowSelectAction: _onRowSelectAction,
+  onSelectionChangeAction: _onSelectionChangeAction,
   scrollBodyHorizontally = false,
   height = 250,
   allowReordering = false,
@@ -90,49 +94,98 @@ export const ReactTable: FC<IReactTableProps> = ({
   onRowsRendering,
   onRowsReordered,
   showExpandedView,
-
   rowBackgroundColor,
   rowAlternateBackgroundColor,
   rowHoverBackgroundColor,
   rowSelectedBackgroundColor,
   backgroundColor,
   border,
+  headerFontFamily,
   headerFontSize,
   headerFontWeight,
   headerBackgroundColor,
   headerTextColor,
+  headerTextAlign,
+  bodyTextAlign,
+  textAlign,
   rowHeight,
   rowPadding,
   rowBorder,
+  rowBorderStyle,
   boxShadow,
+  dimensions,
   sortableIndicatorColor,
-}) => {
-  const [componentState, setComponentState] = useState<IReactTableState>({
+  striped,
+  cellBorderColor,
+  cellBorders,
+  cellPadding,
+  headerBorder,
+  cellBorder,
+  headerShadow,
+  rowShadow,
+  rowDividers,
+  bodyFontFamily,
+  bodyFontSize,
+  bodyFontWeight,
+  bodyFontColor,
+  actionIconSize,
+  actionIconColor,
+}: IReactTableProps<TData>): ReactNode => {
+  const [componentState, setComponentState] = useState<IReactTableState<TData>>({
     allRows: data,
     allColumns: columns,
   });
+  const mode = selectionMode;
+  const multiSelect = mode === 'multiple';
+
   const { notification } = App.useApp();
 
-  const [activeCell, setActiveCell] = useState();
-  const [allowExpandedView, setAllowExpandedView] = useState<Boolean>(false);
-  const [isCellContentOverflowing, setIsCellContentOverflowing] = useState<Boolean>(false);
+  const [activeCell, setActiveCell] = useState<RefObject<HTMLDivElement | null>>();
+  const [allowExpandedView, setAllowExpandedView] = useState<boolean>(false);
+  const [isCellContentOverflowing, setIsCellContentOverflowing] = useState<boolean>(false);
   const { styles } = useStyles();
+
+  // Compute effective alignment values with backward compatibility
+  const effectiveHeaderTextAlign = headerTextAlign ?? textAlign;
+  const effectiveBodyTextAlign = bodyTextAlign ?? textAlign;
+
   const { styles: mainStyles } = useMainStyles({
     rowBackgroundColor,
     rowAlternateBackgroundColor,
     rowHoverBackgroundColor,
     rowSelectedBackgroundColor,
     border,
+    dimensions,
     backgroundColor,
+    headerFontFamily,
     headerFontSize,
     headerFontWeight,
     headerBackgroundColor,
     headerTextColor,
+    headerTextAlign: effectiveHeaderTextAlign,
+    bodyTextAlign: effectiveBodyTextAlign,
     rowHeight,
     rowPadding,
     rowBorder,
+    rowBorderStyle,
     boxShadow,
     sortableIndicatorColor,
+    striped,
+    cellBorderColor,
+    cellBorders,
+    cellPadding,
+    headerBorder,
+    cellBorder,
+    headerShadow,
+    rowShadow,
+    rowDividers,
+    bodyFontFamily,
+    bodyFontSize,
+    bodyFontWeight,
+    bodyFontColor,
+    freezeHeaders,
+    actionIconSize,
+    actionIconColor,
   });
 
   const { setDragState } = useDataTableStore();
@@ -142,57 +195,78 @@ export const ReactTable: FC<IReactTableProps> = ({
 
   const { allColumns, allRows } = componentState;
 
+  // Event dispatcher for configurable actions
+  const { executeAction } = useConfigurableActionDispatcher();
+  const allData = useAvailableConstantsData();
+
+  const dispatchRowEvent = useCallback((
+    actionConfig: IConfigurableActionConfiguration | undefined,
+    rowData: ITableRowData,
+    rowIndex: number,
+    overrideSelectedRow?: { index: number; row: TData; id: string },
+  ): void => {
+    if (!actionConfig) return;
+
+    // Create context with the clicked row data
+    // If overrideSelectedRow is provided, use it as selectedRow in the context
+    const context = overrideSelectedRow
+      ? { ...allData, row: rowData, rowIndex, selectedRow: overrideSelectedRow }
+      : { ...allData, row: rowData, rowIndex };
+
+    void executeAction({
+      actionConfiguration: actionConfig,
+      argumentsEvaluationContext: context,
+    });
+  }, [allData, executeAction]);
+
   const defaultColumn = React.useMemo(
     () => ({
-      // When using the useFlexLayout:
-      minWidth: 30, // minWidth is only used as a limit for resizing
-      width: 150, // width is used for both the flex-basis and flex-grow
-      // maxWidth: 200, // maxWidth is only used as a limit for resizing
+      minWidth: 30,
+      width: 150,
     }),
     [],
   );
 
-  const onChangeHeader = (callback: (...args: any) => void, rows: Row<any>[] | Row) => (e: ChangeEvent) => {
-    callback(e);
+  const onChangeHeader = useCallback((callback: ((e: ChangeEvent) => void) | undefined, rows: Row<TData>[] | Row<TData>) => (e: ChangeEvent) => {
+    callback?.(e);
+
+    const typedEvent = e as ChangeEvent<HTMLInputElement>;
 
     if (onMultiRowSelect) {
-      const isSelected = !!(e.target as any)?.checked;
-      let selectedRows: Row<any>[] | Row;
+      const isSelected = typedEvent.target.checked;
+      let selectedRows: Row<TData>[] | Row<TData>;
 
       if (Array.isArray(rows)) {
-        selectedRows = getPlainValue(rows).map((i) => ({ ...i, isSelected }));
+        selectedRows = getPlainValue(rows).map<Row<TData>>((i) => ({ ...i, isSelected }));
       } else {
         selectedRows = { ...getPlainValue(rows), isSelected };
       }
 
       onMultiRowSelect(selectedRows);
+
+      if (Array.isArray(rows)) {
+        rows.forEach((row) => {
+          const rowIndex = allRows.findIndex((r) => r === row.original);
+          if (isSelected) {
+            dispatchRowEvent(_onRowSelectAction, row.original, rowIndex);
+          }
+          dispatchRowEvent(_onSelectionChangeAction, row.original, rowIndex);
+        });
+      } else {
+        const rowIndex = allRows.findIndex((r) => r === rows.original);
+        if (isSelected) {
+          dispatchRowEvent(_onRowSelectAction, rows.original, rowIndex);
+        }
+        dispatchRowEvent(_onSelectionChangeAction, rows.original, rowIndex);
+      }
     }
-  };
+  }, [_onRowSelectAction, _onSelectionChangeAction, allRows, dispatchRowEvent, onMultiRowSelect]);
 
-  const toggleAllRowsRef = useRef<((value?: boolean) => void) | null>(null);
-
-  const createOnSingleRowToggle = (callback: (...args: any) => void, row: Row<any>) => (e: ChangeEvent) => {
-    const isSelected = !!(e.target as any)?.checked;
-
-    // For single selection mode, first clear all selections if this row is being selected
-    if (isSelected && selectionMode === 'single' && toggleAllRowsRef.current) {
-      // Clear all other selections first
-      toggleAllRowsRef.current(false);
-    }
-
-    callback(e);
-
-    if (onMultiRowSelect) {
-      const selectedRows = { ...getPlainValue(row), isSelected };
-      onMultiRowSelect(selectedRows);
-    }
-  };
-
-  const preparedColumns = useMemo(() => {
+  const preparedColumns = useMemo<Column<TData>[]>(() => {
     const localColumns = [...allColumns];
 
-    if (useMultiSelect) {
-      localColumns.unshift({
+    if (multiSelect) {
+      const checkboxColumn: Column<TData> = {
         id: 'selection',
         // isVisible: true,
         disableResizing: true,
@@ -200,45 +274,44 @@ export const ReactTable: FC<IReactTableProps> = ({
         width: 37,
         maxWidth: 37,
         disableSortBy: true,
-        // The header can use the table's getToggleAllRowsSelectedProps method
-        // to render a checkbox (only for multiple selection mode)
-        Header: ({ getToggleAllRowsSelectedProps: toggleProps, rows }) => (
-          <span className={styles.shaSpanCenterVertically}>
-            {selectionMode === 'multiple' && (
-              <IndeterminateCheckbox {...toggleProps()} onChange={onChangeHeader(toggleProps().onChange, rows)} />
-            )}
-          </span>
-        ),
-        // The cell can use the individual row's getToggleRowSelectedProps method
-        // to the render a checkbox
-        Cell: ({ row }) => (
-          <span className={styles.shaSpanCenterVertically}>
+
+        Header: ({ getToggleAllRowsSelectedProps: toggleProps, rows }) => {
+          return (
+            <span className={styles.shaSpanCenterVertically} onClick={(e) => e.stopPropagation()}>
+              <IndeterminateCheckbox
+                {...toggleProps()}
+                onChange={onChangeHeader(toggleProps().onChange, rows as unknown as Row<TData>[] | Row<TData>)} // TODO: review types generic TData doesn't work
+              />
+            </span>
+          );
+        },
+        Cell: ({ row }: CellProps<TData>): ReactNode => (
+          <span className={styles.shaSpanCenterVertically} onClick={(e) => e.stopPropagation()}>
             <IndeterminateCheckbox
               {...row.getToggleRowSelectedProps()}
-              onChange={selectionMode === 'single'
-                ? createOnSingleRowToggle(row.getToggleRowSelectedProps().onChange, row)
-                : onChangeHeader(row.getToggleRowSelectedProps().onChange, row)}
+              onChange={onChangeHeader(row.getToggleRowSelectedProps().onChange, row)}
             />
           </span>
         ),
-      });
+      };
+      localColumns.unshift(checkboxColumn as Column<TData>);
     }
 
     if (allowReordering) {
-      localColumns.unshift({
+      const dragHandleColumn: Column<TData> = {
         accessor: nanoid(),
-        // id: accessor, // This needs to be fixed
         Header: '',
         width: 35,
         minWidth: 35,
         maxWidth: 35,
         disableSortBy: true,
         disableResizing: true,
-        Cell: ({ row }) => <RowDragHandle row={row} />,
-      });
+        Cell: ({ row: _ }: CellProps<TData>): ReactNode => <RowDragHandle />,
+      };
+      localColumns.unshift(dragHandleColumn as Column<TData>);
     }
 
-    return localColumns.sort((a: DataTableColumn<any>, b: DataTableColumn<any>) => {
+    const result = localColumns.sort((a: DataTableColumn<TData>, b: DataTableColumn<TData>) => {
       if (a.anchored === 'left' && b.anchored !== 'left') return -1;
       if (a.anchored === 'right' && b.anchored !== 'right') return 1;
       if (b.anchored === 'left' && a.anchored !== 'left') return 1;
@@ -246,18 +319,18 @@ export const ReactTable: FC<IReactTableProps> = ({
 
       return 0;
     });
-  }, [allColumns, allowReordering, useMultiSelect, selectionMode]);
+    return result;
+  }, [allColumns, allowReordering, multiSelect, onChangeHeader, styles.shaSpanCenterVertically]);
 
-  const getColumnAccessor = (cid): string => {
+  const getColumnAccessor = useCallback((cid: string): string => {
     const column = columns.find((c) => c.id === cid);
-    return column ? column.accessor.toString() : '';
-  };
+    return column && column.accessor ? column.accessor.toString() : '';
+  }, [columns]);
 
   const initialSorting = useMemo(() => {
-    if (!defaultSorting) return [];
     const result = defaultSorting.map((s) => ({ ...s, id: getColumnAccessor(s.id) })).filter((s) => Boolean(s.id));
     return result;
-  }, [defaultSorting]);
+  }, [defaultSorting, getColumnAccessor]);
 
   useDeepCompareEffect(() => {
     setComponentState((prev) => ({ ...prev, allRows: data }));
@@ -273,6 +346,14 @@ export const ReactTable: FC<IReactTableProps> = ({
     allRowsRef.current = allRows;
   }, [allRows]);
 
+  const hiddenColumns = columns
+    .map((column) => {
+      return column.isVisible === false || column.show === false
+        ? typeof (column.accessor) === "string" ? column.accessor : column.id
+        : undefined;
+    })
+    .filter(isDefined);
+
   const {
     getTableProps,
     getTableBodyProps,
@@ -281,26 +362,23 @@ export const ReactTable: FC<IReactTableProps> = ({
     state,
     rows,
     columns: tableColumns,
+    toggleRowSelected,
     toggleAllRowsSelected,
-  } = useTable(
+  } = useTable<TData>(
     {
       columns: preparedColumns,
       data: allRows,
       defaultColumn,
       initialState: {
         sortBy: initialSorting,
-        hiddenColumns: columns
-          .map((column: any) => {
-            if ([column.isVisible, column.show].includes(false)) return column.accessor || column.id;
-          })
-          ?.filter(Boolean),
+        hiddenColumns: hiddenColumns,
       },
       defaultCanSort,
       manualFilters,
       manualPagination,
       manualSortBy,
       disableSortBy,
-      pageCount,
+      pageCount: pageCount ?? 0,
     },
     useSortBy,
     useResizeColumns,
@@ -309,8 +387,8 @@ export const ReactTable: FC<IReactTableProps> = ({
     useRowSelect,
     // useBlockLayout,
     ({ useInstanceBeforeDimensions }) => {
-      if (useMultiSelect) {
-        useInstanceBeforeDimensions?.push(({ headerGroups: localHeaderGroups }) => {
+      if (multiSelect) {
+        useInstanceBeforeDimensions.push(({ headerGroups: localHeaderGroups }) => {
           if (Array.isArray(localHeaderGroups)) {
             // fix the parent group of the selection button to not be resizable
             const selectionGroupHeader = localHeaderGroups[0]?.headers[0];
@@ -325,36 +403,40 @@ export const ReactTable: FC<IReactTableProps> = ({
 
   const { pageIndex, pageSize, selectedRowIds, sortBy } = state;
 
-  // Assign the toggleAllRowsSelected function to the ref so it can be used in createOnSingleRowToggle
-  useEffect(() => {
-    toggleAllRowsRef.current = toggleAllRowsSelected;
-  }, [toggleAllRowsSelected]);
-
   const previousSortBy = usePrevious(sortBy);
+  const previousMode = usePrevious(mode);
+
+  // Clear all row selections when selection mode changes
+  useEffect(() => {
+    // Only clear if mode actually changed
+    if (previousMode !== undefined && previousMode !== mode && isDefined(toggleAllRowsSelected)) {
+      toggleAllRowsSelected(false);
+    }
+  }, [mode, previousMode, toggleAllRowsSelected]);
 
   useEffect(() => {
     if (onSort && !_.isEqual(_.sortBy(previousSortBy), _.sortBy(sortBy))) {
       onSort(sortBy);
     }
-  }, [sortBy]);
+  }, [onSort, previousSortBy, sortBy]);
 
   useEffect(() => {
-    if (selectedRowIds && typeof onSelectedIdsChanged === 'function') {
+    if (multiSelect && isDefined(selectedRowIds) && typeof onSelectedIdsChanged === 'function') {
       const arrays: string[] = allRows
-        ?.map(({ id }, index) => {
+        .map(({ id }, index) => {
           if (selectedRowIds[index]) {
             return id;
           }
 
           return null;
         })
-        ?.filter(Boolean);
+        .filter(isDefined);
 
       onSelectedIdsChanged(arrays);
     }
-  }, [selectedRowIds]);
+  }, [selectedRowIds, multiSelect, onSelectedIdsChanged, allRows]);
 
-  const onSetList = (newState: ItemInterface[], _sortable, _store): void => {
+  const onSetList = (newState: (ItemInterface & Row<TData>)[]): void => {
     if (!onRowsReordered) {
       console.error('Datatable: re-ordering logic is not specified');
       return;
@@ -365,8 +447,8 @@ export const ReactTable: FC<IReactTableProps> = ({
 
     if (rows.length === newState.length) {
       const changedIndex = newState.find((item, index) => {
-        const typedRow = item as Row<any>;
-        return typedRow.original !== rows[index].original;
+        const typedRow = item;
+        return typedRow.original !== rows[index]?.original;
       });
       if (changedIndex) {
         const oldRows = rows.map((row) => row.original);
@@ -386,7 +468,7 @@ export const ReactTable: FC<IReactTableProps> = ({
           }
         }
 
-        const payload: OnRowsReorderedArgs = {
+        const payload: OnRowsReorderedArgs<TData> = {
           getOld: () => rows.map((row) => row.original),
           getNew: () => newState.map((row) => row.original),
           applyOrder: (orderedItems) => {
@@ -397,9 +479,12 @@ export const ReactTable: FC<IReactTableProps> = ({
         };
 
         onRowsReordered(payload).catch((error) => {
-          const unwrappedError = axios.isAxiosError(error) && isAxiosResponse(error.response) && error.response.data?.error
-            ? error.response.data.error
-            : error;
+          if (error instanceof RowReorderValidationError) {
+            console.warn('Row reorder validation failed:', error.message);
+            return;
+          }
+
+          const unwrappedError = makeErrorWithMessage(error, "Reordering failed with unknown error.");
           notification.error({
             message: 'Sorry! An error occurred.',
             icon: null,
@@ -417,62 +502,93 @@ export const ReactTable: FC<IReactTableProps> = ({
     }
   }, [onFetchData, pageIndex, pageSize, sortBy]);
 
-  const onResizeClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => event?.stopPropagation();
+  const onResizeClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => event.stopPropagation();
 
-  const handleSelectRow = (row: Row<object>): void => {
-    if (!omitClick && !(canEditInline || canDeleteInline) && onSelectRow) {
-      onSelectRow(row?.index, row?.original);
+  const handleSelectRow = (rowIndex: number) => (row: Row<TData>): void => {
+    if (mode === 'none') return;
+    if (!omitClick) {
+      // In multiple selection mode, toggle the checkbox selection
+      if (mode === 'multiple' && row.id) {
+        const isCurrentlySelected = row.isSelected;
+        const willBeSelected = !isCurrentlySelected;
+
+        toggleRowSelected(row.id, willBeSelected);
+
+        // Sync with store - same format as checkbox behavior
+        if (onMultiRowSelect) {
+          const selectedRow = {
+            ...getPlainValue(row),
+            isSelected: willBeSelected,
+          };
+          onMultiRowSelect(selectedRow);
+        }
+
+        // Dispatch row select action when transitioning to selected state
+        if (willBeSelected) {
+          dispatchRowEvent(_onRowSelectAction, row.original, rowIndex);
+        }
+
+        // Dispatch selection change action on any selection change
+        dispatchRowEvent(_onSelectionChangeAction, row.original, rowIndex);
+      }
+
+      // Call the onSelectRow callback
+      if (onSelectRow) {
+        onSelectRow(rowIndex, row.original);
+      }
     }
   };
 
   useEffect(() => {
     if (onResizedChange) {
-      onResizedChange(tableColumns, state?.columnResizing);
+      onResizedChange(tableColumns, state.columnResizing);
     }
-  }, [state?.columnResizing]);
+  }, [onResizedChange, state.columnResizing, tableColumns]);
 
-  const { executeAction } = useConfigurableActionDispatcher();
-  const allData = useAvailableConstantsData();
   const performOnRowDoubleClick = useMemo(() => {
     if (!onRowDoubleClick)
       return () => {
-        /* nop*/
+        /* noop */
       };
 
-    return (data) => {
+    return (rowData: TData, rowIndex: number, selectedRow: ISelectionProps) => {
       const evaluationContext = {
         ...allData,
-        data,
-        selectedRow: data?.original,
+        row: rowData,
+        rowIndex,
+        selectedRow: selectedRow,
       };
 
-      executeAction({
+      void executeAction({
         actionConfiguration: onRowDoubleClick as IConfigurableActionConfiguration,
         argumentsEvaluationContext: evaluationContext,
       });
     };
-  }, [onRowDoubleClick, allData]);
+  }, [onRowDoubleClick, allData, executeAction]);
 
-  const handleDoubleClickRow = (row, index): void => {
+  const handleDoubleClickRow = (row: Row<TData>, index: number): void => {
     if (typeof onRowDoubleClick === 'object') {
-      performOnRowDoubleClick(row);
+      const currentSelectedRow: ISelectionProps = { index, row: row.original, id: row.original.id };
+      performOnRowDoubleClick(row.original, index, currentSelectedRow);
     } else if (typeof onRowDoubleClick === 'function') {
-      onRowDoubleClick(row?.original, index);
+      onRowDoubleClick(row.original, index);
     }
   };
 
   const Row = useMemo(() => (allowReordering ? SortableRow : TableRow), [allowReordering]);
 
-  const renderNewRowEditor = (): JSX.Element => (
-    <NewTableRowEditor
-      columns={tableColumns}
-      creater={createAction}
-      headerGroups={headerGroups}
-      onInitData={newRowInitData}
-      components={inlineCreatorComponents}
-      parentFormId={shaForm?.formId}
-    />
-  );
+  const renderNewRowEditor = (): ReactNode => isDefined(createAction) && isDefined(newRowInitData)
+    ? (
+      <NewTableRowEditor
+        columns={tableColumns}
+        creater={createAction}
+        headerGroups={headerGroups}
+        onInitData={newRowInitData}
+        components={inlineCreatorComponents}
+        parentFormId={shaForm?.formId}
+      />
+    )
+    : undefined;
 
   const containerStyleFinal = useMemo<CSSProperties>(() => {
     const result = { ...containerStyle };
@@ -480,21 +596,25 @@ export const ReactTable: FC<IReactTableProps> = ({
     if (maxHeight) result.maxHeight = `${maxHeight}px`;
 
     // to allow the table to overflow the container on y-axis
-    if (freezeHeaders && !result.maxHeight) {
-      result.maxHeight = '80vh';
+    if (freezeHeaders) {
+      if (!result.maxHeight) {
+        result.maxHeight = '80vh';
+      }
+      // Ensure overflow is set for sticky headers to work
+      result.overflow = 'auto';
     }
 
     return result;
-  }, [containerStyle, minHeight, maxHeight]);
+  }, [containerStyle, minHeight, maxHeight, freezeHeaders]);
 
-  const renderExpandedContentView = (cellRef): JSX.Element => {
+  const renderExpandedContentView = (cellRef: RefObject<HTMLDivElement | null> | undefined): React.JSX.Element => {
     const cellRect = cellRef?.current?.getBoundingClientRect();
 
     const getSmartPosition = (): { top: number; left: number } => {
       if (!cellRect) return { top: 0, left: 0 };
 
       // Get the canvas zoom level (default to 100 if not available)
-      const zoomLevel = canvasState?.zoom ?? 100;
+      const zoomLevel = shaForm?.formMode === "designer" ? canvasState?.zoom ?? 100 : 100;
       const zoomScale = Math.max(0.01, zoomLevel / 100);
 
       const viewport = {
@@ -546,7 +666,7 @@ export const ReactTable: FC<IReactTableProps> = ({
         onMouseLeave={(event) => {
           event.stopPropagation();
           setAllowExpandedView(false);
-          setActiveCell(null);
+          setActiveCell(undefined);
           setIsCellContentOverflowing(false);
         }}
         style={{
@@ -559,12 +679,12 @@ export const ReactTable: FC<IReactTableProps> = ({
           maxWidth: Math.min(cellRect?.width || 200, window.innerWidth - 40),
           width: cellRect?.width,
           borderRadius: 8,
-          padding: activeCell !== null && allowExpandedView && 10,
+          padding: isDefined(activeCell) && allowExpandedView ? 10 : undefined,
           top: `${position.top}px`,
           left: `${position.left}px`,
           zIndex: 50,
           transformOrigin: 'center',
-          pointerEvents: activeCell !== null && allowExpandedView ? 'auto' : 'none',
+          pointerEvents: isDefined(activeCell) && allowExpandedView ? 'auto' : 'none',
         }}
       >
         <div
@@ -588,38 +708,47 @@ export const ReactTable: FC<IReactTableProps> = ({
     );
   };
 
-  const renderRow = (row: Row<any>, rowIndex: number): JSX.Element => {
-    const id = row.original?.id;
+  const renderRow = (row: Row<TData>, rowIndex: number): React.JSX.Element => {
+    const id = row.original.id;
     return (
-      <Row
-        key={id ?? rowIndex}
+      <Row<TData>
+        key={!isNullOrWhiteSpace(id) ? id : rowIndex}
         prepareRow={prepareRow}
-        onClick={handleSelectRow}
+        onClick={handleSelectRow(rowIndex)}
         onDoubleClick={() => handleDoubleClickRow(row, rowIndex)}
-        onRowClick={onRowClick ? () => onRowClick(rowIndex, row.original) : undefined}
-        onRowHover={onRowHover ? () => onRowHover(rowIndex, row.original) : undefined}
+        onRowClick={() => {
+          if (onRowClick) onRowClick(rowIndex, row.original);
+          const currentSelectedRow = { index: rowIndex, row: row.original, id: row.original.id };
+          dispatchRowEvent(onRowClickAction, row.original, rowIndex, currentSelectedRow);
+        }}
+        onRowHover={() => {
+          if (onRowHover) onRowHover(rowIndex, row.original);
+          const currentSelectedRow = { index: rowIndex, row: row.original, id: row.original.id };
+          dispatchRowEvent(onRowHoverAction, row.original, rowIndex, currentSelectedRow);
+        }}
         row={row}
         showExpandedView={showExpandedView}
         index={rowIndex}
         selectedRowIndex={selectedRowIndex}
         allowEdit={canEditInline}
-        updater={(rowData) => updateAction(rowIndex, rowData)}
+        updater={updateAction ? (rowData) => updateAction(rowIndex, rowData) : undefined}
         allowDelete={canDeleteInline}
-        deleter={() => deleteAction(rowIndex, row.original)}
+        deleter={deleteAction ? () => deleteAction(rowIndex, row.original).then() : undefined}
         allowChangeEditMode={inlineEditMode === 'one-by-one'}
         editMode={canEditInline && inlineEditMode === 'all-at-once' ? 'edit' : undefined}
         inlineSaveMode={inlineSaveMode}
         inlineEditorComponents={inlineEditorComponents}
         inlineDisplayComponents={inlineDisplayComponents}
+        striped={striped}
         onMouseOver={(activeCell, isContentOverflowing) => {
+          setIsCellContentOverflowing(isContentOverflowing === true && !isNullOrWhiteSpace(activeCell?.current?.innerText));
           setActiveCell(activeCell);
-          setIsCellContentOverflowing(isContentOverflowing && activeCell?.current?.innerText);
           if (activeCell && isContentOverflowing) {
             setAllowExpandedView(true);
           }
         }}
         onMouseLeave={() => {
-          setActiveCell(null);
+          setActiveCell(undefined);
           setAllowExpandedView(false);
           setIsCellContentOverflowing(false);
         }}
@@ -633,8 +762,8 @@ export const ReactTable: FC<IReactTableProps> = ({
       : rows.map((row, rowIndex) => renderRow(row, rowIndex));
   };
 
-  const fixedHeadersStyle: React.CSSProperties = freezeHeaders
-    ? { position: 'sticky', top: 0, zIndex: 15, background: 'white', opacity: 1 }
+  const fixedHeadersStyle: CSSProperties | null = freezeHeaders
+    ? { position: 'sticky', top: 0, zIndex: 15, background: headerBackgroundColor || 'white', opacity: 1 }
     : null;
 
   return (
@@ -649,7 +778,7 @@ export const ReactTable: FC<IReactTableProps> = ({
     >
       <div className={mainStyles.shaReactTable} style={containerStyleFinal}>
         <div {...getTableProps()} className={styles.shaTable} style={tableStyle}>
-          {columns?.length > 0 &&
+          {columns.length > 0 &&
             headerGroups.map((headerGroup) => {
               const { key, ...headerGroupProps } = headerGroup.getHeaderGroupProps();
               return (
@@ -659,55 +788,51 @@ export const ReactTable: FC<IReactTableProps> = ({
                   className={classNames(styles.tr, styles.trHead)}
                   style={{ ...fixedHeadersStyle, display: 'flex' }} // Make the header row sticky
                 >
-                  {headerGroup?.headers?.map((column, index) => {
-                    const anchored = getColumnAnchored((column as any)?.anchored);
+                  {headerGroup.headers.map((column, index) => {
+                    const anchored = getColumnAnchored(column.anchored);
                     let leftColumn: IAnchoredColumnProps = { shift: 0, shadowPosition: 0 };
                     let rightColumn: IAnchoredColumnProps = { shift: 0, shadowPosition: 0 };
 
-                    if (anchored?.isFixed && index > 0) {
-                      // use first row cell values to calculate the left shift
-
-                      if (anchored?.direction === 'right') {
-                        const totalColumns = headerGroup?.headers?.length;
+                    if (anchored.isFixed && index > 0) {
+                      if (anchored.direction === 'right') {
+                        const totalColumns = headerGroup.headers.length;
                         rightColumn.shift = (
-                          rows[0]?.cells?.slice(index, totalColumns - 1)?.map((col) => {
-                            const isLessThanMinWidth = (col?.column?.width as number) < col?.column?.minWidth;
+                          rows[0]?.cells.slice(index, totalColumns - 1).map((col) => {
+                            const isLessThanMinWidth = isDefined(col.column.minWidth) && (col.column.width as number) < col.column.minWidth;
 
-                            return isLessThanMinWidth ? col?.column?.minWidth : col?.column?.width;
+                            return isLessThanMinWidth ? col.column.minWidth : col.column.width;
                           }) as Array<number>
-                        )?.reduce((acc, curr) => (acc as number) + curr, 0);
+                        ).reduce((acc, curr) => (acc as number) + curr, 0);
                         rightColumn.shadowPosition =
-                          headerGroup?.headers?.length -
-                          headerGroup?.headers?.filter(
-                            (col: any) => getColumnAnchored((col as any)?.anchored).direction === 'right',
+                          headerGroup.headers.length -
+                          headerGroup.headers.filter(
+                            (col) => getColumnAnchored(col.anchored).direction === 'right',
                           ).length;
-                      } else if (anchored?.direction === 'left') {
+                      } else if (anchored.direction === 'left') {
                         leftColumn.shift = (
-                          rows[0]?.cells?.slice(0, index)?.map((col) => {
-                            const isLessThanMinWidth = (col?.column?.width as number) < col?.column?.minWidth;
+                          rows[0]?.cells.slice(0, index).map((col) => {
+                            const isLessThanMinWidth = isDefined(col.column.minWidth) && (col.column.width as number) < col.column.minWidth;
 
-                            return isLessThanMinWidth ? col?.column?.minWidth : col?.column?.width;
+                            return isLessThanMinWidth ? col.column.minWidth : col.column.width;
                           }) as Array<number>
-                        )?.reduce((acc, curr) => (acc as number) + curr, 0);
+                        ).reduce((acc, curr) => (acc as number) + curr, 0);
 
                         leftColumn.shadowPosition =
-                          headerGroup?.headers?.filter(
-                            (col: any) => getColumnAnchored((col as any)?.anchored).direction === 'left',
+                          headerGroup.headers.filter(
+                            (col) => getColumnAnchored(col.anchored).direction === 'left',
                           ).length - 1;
                       }
                     }
 
-                    const direction = anchored?.direction === 'left' ? 'left' : 'right';
+                    const direction = anchored.direction === 'left' ? 'left' : 'right';
 
                     const shiftedBy = leftColumn.shift || rightColumn.shift;
 
                     const { key, ...headerProps } = { ...column.getHeaderProps(column.getSortByToggleProps()) };
 
-                    delete headerProps.style.position;
-
                     const numOfFixed = leftColumn.shadowPosition || rightColumn.shadowPosition;
 
-                    const hasShadow = numOfFixed === index && anchored?.isFixed;
+                    const hasShadow = numOfFixed === index && anchored.isFixed;
 
                     return (
                       <div
@@ -716,20 +841,31 @@ export const ReactTable: FC<IReactTableProps> = ({
                         className={classNames(styles.th, {
                           [styles.sortedAsc]: !column.disableSortBy && column.isSorted && column.isSortedDesc,
                           [styles.sortedDesc]: !column.disableSortBy && column.isSorted && !column.isSortedDesc,
-                          [anchored?.isFixed ? styles.fixedColumn : styles.relativeColumn]: true,
-                          [anchored?.direction === 'right' ? styles.boxShadowRight : styles.boxShadowLeft]: hasShadow,
+                          [anchored.isFixed ? styles.fixedColumn : styles.relativeColumn]: true,
+                          [anchored.direction === 'right' ? styles.boxShadowRight : styles.boxShadowLeft]: hasShadow,
                         })}
                         style={{
-                          ...headerProps?.style,
-                          [direction]: shiftedBy,
+                          ...headerProps.style,
+                          ...(anchored.isFixed && {
+                            position: 'sticky',
+                            [direction]: shiftedBy,
+                          }),
                           backgroundColor: 'white',
                           borderBottom: '1px solid #f0f0f0',
                           fontWeight: '600',
+                          display: 'flex',
+                          alignItems: 'center',
+                          // Map headerTextAlign to justify-content for flex container
+                          justifyContent:
+                            effectiveHeaderTextAlign === 'center' ? 'center'
+                              : effectiveHeaderTextAlign === 'right' ? 'flex-end'
+                                : effectiveHeaderTextAlign === 'justify' ? 'space-between'
+                                  : 'flex-start', // default for 'left' or undefined
                         }}
                       >
                         {column.render('Header')}
-                        {(column as any)?.columnType === 'data' && (column as any)?.description && (
-                          <Tooltip title={(column as any)?.description}>
+                        {column.columnType === 'data' && column.description && (
+                          <Tooltip title={column.description}>
                             <QuestionCircleOutlined className={styles.shaTooltipIcon} />
                           </Tooltip>
                         )}
@@ -753,20 +889,20 @@ export const ReactTable: FC<IReactTableProps> = ({
           <div
             className={styles.tbody}
             style={{
-              height: scrollBodyHorizontally ? height || 250 : 'unset',
-              overflowY: scrollBodyHorizontally ? 'auto' : 'unset',
+              height: (scrollBodyHorizontally && !freezeHeaders) ? height || 250 : 'unset',
+              overflowY: (scrollBodyHorizontally && !freezeHeaders) ? 'auto' : 'unset',
               overflowX: 'unset',
             }}
             {...getTableBodyProps()}
           >
-            {rows?.length === 0 && !loading && (
+            {rows.length === 0 && !loading && (
               <EmptyState noDataIcon={noDataIcon} noDataSecondaryText={noDataSecondaryText} noDataText={noDataText} />
             )}
 
             <ConditionalWrap
               condition={allowReordering}
               wrap={(children) => (
-                <ReactSortable
+                <ReactSortable<Row<TData>>
                   onUnchoose={(_evt) => {
                     setDragState('finished');
                   }}

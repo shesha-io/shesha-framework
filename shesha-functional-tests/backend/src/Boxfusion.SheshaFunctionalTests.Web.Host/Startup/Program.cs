@@ -1,5 +1,7 @@
-using Microsoft.AspNetCore;
+using Abp.AspNetCore.Dependency;
+using Abp.Dependency;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 {
@@ -7,16 +9,18 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            CreateHostBuilder(args).Build().Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args)
-        {
-            return WebHost.CreateDefaultBuilder(args)
-                .CaptureStartupErrors(true)
-                .UseSetting("detailedErrors", "true")
-                .UseStartup<Startup>()
-                .Build();
-        }
+        internal static IHostBuilder CreateHostBuilder(string[] args) =>
+            Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder
+                    .CaptureStartupErrors(true)
+                    .UseSetting("detailedErrors", "true")
+                    .UseStartup<Startup>();
+                })
+                .UseCastleWindsor(IocManager.Instance.IocContainer);
     }
 }

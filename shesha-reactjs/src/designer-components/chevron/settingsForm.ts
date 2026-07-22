@@ -1,7 +1,7 @@
-import { DesignerToolbarSettings, FormMarkupWithSettings } from '@/index';
 import { nanoid } from '@/utils/uuid';
 import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
 import { FormLayout } from 'antd/es/form/Form';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
 const searchableTabsId = nanoid();
 const commonTabId = nanoid();
@@ -12,9 +12,9 @@ const styleRouterId = nanoid();
 const pnlFontStyleId = nanoid();
 const dimensionsStylePnlId = nanoid();
 
-export const getSettings = (data: object): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -29,7 +29,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Common',
             id: commonTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addContextPropertyAutocomplete({
                   id: nanoid(),
                   propertyName: 'propertyName',
@@ -84,7 +84,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Data',
             id: itemsTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   parentId: itemsTabId,
@@ -103,8 +103,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                   referenceList: {
                     _code: 'return getSettingValue(data?.referenceList);',
                     _mode: 'code',
-                    _value: false,
-                  } as any,
+                  },
                   inputType: 'RefListItemSelectorSettingsModal',
                 })
                 .toJson(),
@@ -115,7 +114,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Appearance',
             id: appearanceTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addPropertyRouter({
                   id: styleRouterId,
                   propertyName: 'propertyRouter1',
@@ -130,7 +129,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     _value: '',
                   },
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addCollapsiblePanel({
                         id: nanoid(),
                         propertyName: 'pnlFontStyle',
@@ -142,7 +141,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         content: {
                           id: pnlFontStyleId,
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: pnlFontStyleId,
@@ -162,7 +161,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                     id: nanoid(),
                                     label: 'Size',
                                     propertyName: 'font.size',
-                                    defaultValue: 14,
                                     hideLabel: true,
                                     width: 50,
                                   },
@@ -209,7 +207,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         content: {
                           id: dimensionsStylePnlId,
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInputRow({
                                 id: nanoid(),
                                 parentId: dimensionsStylePnlId,
@@ -223,7 +221,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                     propertyName: 'width',
                                     icon: 'widthIcon',
                                     tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
-                                    defaultValue: '150px',
                                   },
                                   {
                                     type: 'textField',
@@ -233,7 +230,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                     propertyName: 'height',
                                     icon: 'heightIcon',
                                     tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
-                                    defaultValue: '35px',
                                   },
                                 ],
                               })
@@ -251,7 +247,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         content: {
                           id: nanoid(),
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addStyleBox({
                                 id: nanoid(),
                                 label: 'Margin Padding',
@@ -276,7 +272,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                   content: {
                     id: nanoid(),
                     components: [
-                      ...new DesignerToolbarSettings()
+                      ...fbf()
                         .addSettingsInput({
                           id: nanoid(),
                           propertyName: 'colorSource',
@@ -285,7 +281,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                           jsSetting: true,
                           tooltip: 'Hex and RGB colors are supported',
                           parentId: styleRouterId,
-                          defaultValue: 'primary',
                           dropdownOptions: [
                             { value: 'primary', label: 'Primary color' },
                             { value: 'custom', label: 'Custom color' },
@@ -299,7 +294,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             _code: 'return  getSettingValue(data?.colorSource) !== "custom";',
                             _mode: 'code',
                             _value: false,
-                          } as any,
+                          },
                           inputs: [
                             {
                               id: nanoid(),
@@ -330,7 +325,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Security',
             id: securityTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'permissions',

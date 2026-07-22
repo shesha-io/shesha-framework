@@ -1,8 +1,9 @@
 import { createStyles, sheshaStyles } from '@/styles';
+import { LAYOUT_CONSTANTS } from '../../../shesha-constants';
 
 export const useStyles = createStyles(({ css, cx, prefixCls }) => {
-  const leftSidebarWidth = "550px";
-  const sidebarBtnHeight = "35px";
+  const LEFT_SIDEBAR_WIDTH = "550px";
+  const { SIDEBAR_BTN_HEIGHT, TOOLBAR_HEIGHT, HEADER_HEIGHT } = LAYOUT_CONSTANTS;
 
   const sidebarContainerHeader = "sidebar-container-header";
   const sidebarContainerBody = "sidebar-container-body";
@@ -18,15 +19,16 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
   const sidebarContainerRight = "sidebar-container-right";
   const canvasWrapper = "canvas-wrapper";
   const designerCanvas = "designer-canvas";
+  const canvasPopupContainer = "canvas-popup-container";
 
   const sidebarContainer = cx("sidebar-container", css`
       width: 100%;
-      overflow-x: hidden;
+      overflow: hidden;
 
       .${sidebarContainerMainAreaBody}{
         overflow: auto;
         height: 100%;
-
+        ${sheshaStyles.thinScrollbars}
       }
     
       .${sidebarContainerHeader} {
@@ -48,15 +50,17 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
           }
     
           &.open {
-            width: ${leftSidebarWidth};
+            width: ${LEFT_SIDEBAR_WIDTH};
             display: block;
+            overflow: auto;
+            ${sheshaStyles.thinScrollbars}
 
             .${sidebarHeader} {
               .sidebar-header-title {
                 display: flex;
                 width:100%;
               }
-            
+
             }
           }
     
@@ -76,7 +80,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
             display: flex;
     
             .sidebar-header-title {
-              width: calc(${leftSidebarWidth} - ${sidebarBtnHeight});
+              width: calc(${LEFT_SIDEBAR_WIDTH} - ${SIDEBAR_BTN_HEIGHT});
               display: none;
               align-items: center;
               padding: 0 ${sheshaStyles.paddingLG}px;
@@ -85,8 +89,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
             }
     
             .${sidebarHeaderBtn} {
-              height: ${sidebarBtnHeight};
-              width: ${sidebarBtnHeight};
+              height: ${SIDEBAR_BTN_HEIGHT};
+              width: ${SIDEBAR_BTN_HEIGHT};
               display: flex;
               justify-content: center;
               align-items: center;
@@ -99,8 +103,10 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
             overflow-x: hidden;
             overflow-y: auto;
             display: flex;
+            height: calc(100vh - ${HEADER_HEIGHT} - ${TOOLBAR_HEIGHT} - ${SIDEBAR_BTN_HEIGHT});
             padding: ${sheshaStyles.paddingLG}px;
             flex: 1;
+            ${sheshaStyles.thinScrollbars}
     
             .sidebar-body-content {
               width: 100%;
@@ -108,12 +114,11 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     
               &.open {
                 display: block;
-                height: 85vh;
               }
             }
     
             .sidebar-body-placeholder {
-              width: ${sidebarBtnHeight};
+              width: ${SIDEBAR_BTN_HEIGHT};
     
               &.open {
                 width: 0;
@@ -124,7 +129,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     
         .${sidebarContainerLeft} {
           border-right: 1px solid lightgrey;
-          min-height: calc(100vh - 102px);
     
           &.open {
             .toggle-open-btn {
@@ -135,7 +139,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     
         .${sidebarContainerRight} {
           border-left: 1px solid lightgrey;
-          min-height: calc(100vh - 102px);
     
           &.open {
             .toggle-open-btn {
@@ -159,27 +162,11 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
             margin-bottom: 16px;
           }
     
-          .${prefixCls}-form-item-label {
-            padding-bottom: 4px;
-          }
-        }
-    
-        .${canvasWrapper} {
-          height: calc(100vh - 120px);
-          overflow: scroll;
-        }
-        
-        [data-sha-c-type="datatable"] {
-          .${canvasWrapper} {
-          height: 100%;
-          display: flex;
-          flex-direction: column;
-          overflow: auto;
-        }
         }
 
         .${sidebarContainerMainArea} {
           width: 100%;
+          overflow: auto;
 
           &::not(.no-padding) {
             padding: ${sheshaStyles.paddingLG}px;
@@ -189,7 +176,40 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
         .${designerCanvas} {
           margin: 0 auto;
           height: 100%;
+          overflow: auto;
           transform-origin: top left;
+        }
+
+        /* When the designer canvas is empty (no components dropped yet), the
+           zoomed canvas collapses to a short, top-aligned box, leaving the
+           empty-state hint above the vertical midpoint. Center the zoomed
+           canvas within the (non-zoomed) wrapper so the hint sits mid-screen.
+           Scoped to the designer canvas + empty state so other sidebar
+           consumers and non-empty forms keep their normal top-aligned flow. */
+        .${sidebarContainerMainArea}.${canvasWrapper}:has(.${designerCanvas}):not(:has(.sha-component)) {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+
+          .${designerCanvas} {
+            height: auto;
+          }
+        }
+      }
+
+      .${canvasPopupContainer} {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        transform-origin: top left;
+        z-index: 100;
+
+        > * {
+          pointer-events: auto;
         }
       }
     `);
@@ -210,5 +230,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     sidebarContainerRight,
     designerCanvas,
     canvasWrapper,
+    canvasPopupContainer,
   };
 });

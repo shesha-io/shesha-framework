@@ -4,9 +4,11 @@ using Abp.Domain.Uow;
 using Castle.Core.Logging;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using Microsoft.AspNetCore.Mvc.Controllers;
+using Shesha.Application.Services;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Extensions;
+using Shesha.Reflection;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
@@ -33,54 +35,73 @@ namespace Shesha.DynamicEntities
         {
             var entityConfigurationStore = _iocManager.Resolve<IEntityTypeConfigurationStore>();
 
+            // All existing controllers
             var existingControllers = feature.Controllers.ToDictionary(MvcHelper.GetControllerName).OrderBy(x => x.Key).ToDictionary();
+            // Existing entity controllers
+            var entityControllers = existingControllers.Where(c => c.Value.ImplementsGenericInterface(typeof(IEntityAppService<,>))).ToDictionary();
 
             // configured registrations
             var _unitOfWorkManager = _iocManager.Resolve<IUnitOfWorkManager>();
             using (var uow = _unitOfWorkManager.Begin())
             {
                 var entityConfigRepo = _iocManager.Resolve<IRepository<EntityConfig, Guid>>();
-                var entityToApp = entityConfigRepo.GetAll().ToList();
+                // Get ALL entity configs
+                var entityToApp = entityConfigRepo.GetAll().Where(x => x.ExposedFrom == null).ToList();
 
                 _logger.Warn($"Create AppServices: {entityToApp.Count}");
                 foreach (var entityConfig in entityToApp)
                 {
                     try
                     {
+                        // Get EntityType and skip if not found
                         var entityConfiguration = entityConfigurationStore.GetOrNull($"{entityConfig.FullClassName}");
                         var entityType = entityConfiguration?.EntityType;
-                        if (entityType == null) 
+                        if (entityType == null)
                             continue;
 
-                        var appServiceType = entityConfiguration?.ApplicationServiceType;
-
-                        if (appServiceType == null)
+                        // Get default AppServiceType
+                        var defaultAppServiceType = entityConfiguration?.DefaultAppServiceType;
+                        if (defaultAppServiceType == null)
                         {
-                            appServiceType = DynamicAppServiceHelper.MakeApplicationServiceType(entityType);
-                            if (appServiceType == null)
-                                continue;
-                            if (entityConfig.Source == Domain.Enums.MetadataSourceType.UserDefined)
-                                _logger.Warn($"Create AppServices for dynamic entity: {entityConfig.FullClassName} - {appServiceType.Name}");
+                            // try to find hardcoded controller
+                            defaultAppServiceType = entityControllers.FirstOrDefault(x =>
+                                x.Value.GetGenericInterfaces(typeof(IEntityAppService<,>)).FirstOrDefault()?.GetGenericArguments().FirstOrDefault() == entityType
+                            ).Value;
+                        }
+
+                        // get dynamic AppServiceType
+                        var dynamicAppServiceType = entityConfiguration?.DynamicAppServiceType;
+                        if (dynamicAppServiceType == null)
+                        {
+                            if (entityConfig.GenerateAppService)
+                            {
+                                // create dynamic AppService if not exist and needed
+                                dynamicAppServiceType = DynamicAppServiceHelper.MakeApplicationServiceType(entityType);
+                                if (dynamicAppServiceType != null)
+                                    defaultAppServiceType = dynamicAppServiceType;
+                                if (dynamicAppServiceType != null && entityConfig.Source == Domain.Enums.MetadataSourceType.UserDefined)
+                                    _logger.Warn($"Create AppServices for dynamic entity: {entityConfig.FullClassName} - {dynamicAppServiceType.Name}");
+                            }
                         }
                         else
                             if (entityConfig.Source == Domain.Enums.MetadataSourceType.UserDefined)
-                                _logger.Warn($"AppServices for dynamic entity: {entityConfig.FullClassName} is already exist {entityConfiguration?.ApplicationServiceType?.Name}");
+                                _logger.Warn($"AppServices for dynamic entity: {entityConfig.FullClassName} is already exist {dynamicAppServiceType.Name}");
 
-                        var controllerName = MvcHelper.GetControllerName(appServiceType);
-                        var controller = existingControllers.TryGetValue(controllerName, out TypeInfo? value) ? value : null;
-                        if (controller != null)
+                        // Set default AppService if exist
+                        if (defaultAppServiceType != null)
+                            entityConfigurationStore.SetDefaultAppService(entityType, defaultAppServiceType);
+
+                        // register dynamic AppService if exist
+                        if (dynamicAppServiceType != null)
                         {
-                            feature.Controllers.Remove(controller);
+                            var controller = dynamicAppServiceType.GetTypeInfo();
+                            if (!feature.Controllers.Contains(controller))
+                                feature.Controllers.Add(controller);
+                            entityConfigurationStore.SetDynamicAppService(entityType, dynamicAppServiceType);
+
+                            if (!_iocManager.IsRegistered(dynamicAppServiceType))
+                                _iocManager.Register(dynamicAppServiceType, lifeStyle: DependencyLifeStyle.Transient);
                         }
-                        controller = appServiceType.GetTypeInfo();
-                        entityConfigurationStore.SetDefaultAppService(entityType, appServiceType);
-                        feature.Controllers.Add(controller);
-
-                        if (!_iocManager.IsRegistered(appServiceType))
-                            _iocManager.Register(appServiceType, lifeStyle: DependencyLifeStyle.Transient);
-
-                        // NOTE: temp fix to. Alex, please remove this line after proper fix 
-                        existingControllers.Add(controllerName, controller);
                     }
                     catch { }
                 }

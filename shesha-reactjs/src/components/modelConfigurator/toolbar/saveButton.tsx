@@ -7,7 +7,7 @@ import {
   Button,
   ButtonProps,
 } from 'antd';
-import { useModelConfigurator } from '@/index';
+import { useModelConfigurator } from '@/providers/modelConfigurator';
 
 export interface ISaveButtonProps extends Pick<ButtonProps, 'size' | 'type'> {
   onSaved?: () => void;
@@ -16,7 +16,6 @@ export interface ISaveButtonProps extends Pick<ButtonProps, 'size' | 'type'> {
 export const SaveButton: FC<ISaveButtonProps> = (props) => {
   const configurator = useModelConfigurator();
   const { message } = App.useApp();
-  const isModified = true;
 
   const onSaveClick = (): void => {
     message.loading('Saving model..', 0);
@@ -40,9 +39,9 @@ export const SaveButton: FC<ISaveButtonProps> = (props) => {
     <Button
       icon={<SaveOutlined />}
       onClick={onSaveClick}
-      type={props.type}
+      type={props.type ?? "default"}
       size={props.size}
-      disabled={!isModified}
+      disabled={!configurator.isModified || configurator.isSaving || configurator.isLoading}
     />
   );
 };

@@ -1,42 +1,42 @@
-import { MutableRefObject } from 'react';
+import { FC, RefObject } from 'react';
 import { ColProps } from 'antd/lib/col';
 import { FormInstance, FormProps } from 'antd/lib/form';
 import { FormLayout } from 'antd/lib/form/Form';
-import { ConfigurableFormInstance } from '@/providers/form/contexts';
-import { FormMode, Store, HasFormIdOrMarkup, IFormActions, IFormSections, FormIdentifier } from '@/providers/form/models';
+import { IFormActionsContext } from '@/providers/form/contexts';
+import { FormMode, HasFormIdOrMarkup, IFormActions, IFormSections, FormIdentifier } from '@/providers/form/models';
 import { IConfigurableFormComponent, ValidateErrorEntity } from '@/interfaces';
-import { IShaFormInstance, ProcessingState } from '@/providers/form/store/interfaces';
+import { AfterSubmitHandler, IShaFormInstance, OnMarkupLoadedHandler, ProcessingState, SubmitHandler } from '@/providers/form/store/interfaces';
 
 type SizeType = FormProps['size'];
 
-export interface IConfigurableFormRendererProps<Values = any, _FieldData = any> {
-  size?: SizeType;
-  showDataSubmitIndicator?: boolean;
-  labelCol?: ColProps;
-  wrapperCol?: ColProps;
-  layout?: FormLayout;
-  initialValues?: Store;
-  parentFormValues?: Store;
-  className?: string;
-  onValuesChange?: (changedValues: any, values: Values) => void;
+export interface IConfigurableFormRendererProps<Values extends object = object> {
+  size?: SizeType | undefined;
+  showDataSubmitIndicator?: boolean | undefined;
+  labelCol?: ColProps | undefined;
+  wrapperCol?: ColProps | undefined;
+  layout?: FormLayout | undefined;
+  initialValues?: Partial<Values> | undefined;
+  parentFormValues?: object | undefined;
+  className?: string | undefined;
+  onValuesChange?: ((changedValues: Partial<Values>, values: Values) => void) | undefined;
 
   /**
    * Trigger after submitting the form and verifying data successfully. Note: this parameter overrides default behavoiur of the form.
    *
    * @param values form data
    */
-  onFinish?: (values: Values, options?: object) => void;
+  onFinish?: ((values: Values, options?: object) => void) | undefined;
 
   /**
    * Trigger after submitting the form and verifying data failed
    */
-  onFinishFailed?: (errorInfo: ValidateErrorEntity<Values>) => void;
+  onFinishFailed?: ((errorInfo: ValidateErrorEntity<Values>) => void) | undefined;
 
   /**
    * If specified, the form will only be submitted if this function return true
    * Note: doesn't work when the `onFinish` is specified
    */
-  beforeSubmit?: (values: Values) => Promise<boolean>;
+  beforeSubmit?: ((values: Values) => Promise<boolean>) | undefined;
 
   /**
    * Returns the form data and the response data as well, only if an API was made and came back successful
@@ -45,68 +45,64 @@ export interface IConfigurableFormRendererProps<Values = any, _FieldData = any> 
    * @param values form data before being submitted
    * @param response response data
    */
-  onSubmitted?: (values: Values, response?: any, options?: object) => void;
+  onSubmitted?: ((values: Values, response?: unknown, options?: object) => void) | undefined;
 
-  form?: FormInstance<any>;
-  actions?: IFormActions;
-  sections?: IFormSections;
-  context?: any; // TODO: make generic
-
-  /**
-   * External data fetcher, is used to refresh form data from the back-end.
-   */
-  refetchData?: () => Promise<any>;
+  form?: FormInstance<Values> | undefined;
+  actions?: IFormActions | undefined;
+  sections?: IFormSections | undefined;
 
   /**
    * External form and data fetcher, is used to refresh form (both markup and data) from the back-end
    */
-  refetcher?: () => void;
+  refetcher?: (() => void) | undefined;
 
   /**
    * Triggered when the form is submitted successfully but the response is not successful
    **/
-  onSubmittedFailed?: () => void;
-
+  onSubmittedFailed?: (() => void) | undefined;
 }
 
-export type IConfigurableFormRuntimeProps<Values extends object = object> = {
-  shaForm?: IShaFormInstance<Values>;
+export type OnFormValuesChangeHandler<TValues extends object = object> = (changedValues: Partial<TValues>, values: TValues) => void;
+export type OnFormFinishFailedHandler<TValues extends object = object> = (errorInfo: ValidateErrorEntity<TValues>) => void;
+
+export type IConfigurableFormRuntimeProps<TValues extends object = object> = {
+  shaForm?: IShaFormInstance<TValues>;
 
   formName?: string;
 
-  form?: FormInstance<any>;
+  form?: FormInstance<TValues>;
   /**
    * Trigger after submitting the form and verifying data successfully. Note: this parameter overrides default behavoiur of the form.
    *
    * @param values form data
    */
-  onFinish?: (values: Values, options?: object) => void;
+  onFinish?: SubmitHandler<TValues> | undefined;
   /**
    * Trigger after submitting the form and verifying data failed
    */
-  onFinishFailed?: (errorInfo: ValidateErrorEntity<Values>) => void;
+  onFinishFailed?: OnFormFinishFailedHandler<TValues> | undefined;
 
   /**
    * Form argurments
    */
-  formArguments?: any;
+  formArguments?: object | undefined;
 
   /**
    * Form initial values
    */
-  initialValues?: Store;
+  initialValues?: Partial<TValues> | undefined;
   /**
    * Parent form values. Note: is used for backward compatibility only
    */
-  parentFormValues?: Store;
-  labelCol?: ColProps;
-  wrapperCol?: ColProps;
-  onValuesChange?: (changedValues: any, values: Values) => void;
+  parentFormValues?: object | undefined;
+  labelCol?: ColProps | undefined;
+  wrapperCol?: ColProps | undefined;
+  onValuesChange?: OnFormValuesChangeHandler<TValues> | undefined;
   /**
    * If specified, the form will only be submitted if this function return true
    * Note: doesn't work when the `onFinish` is specified
    */
-  beforeSubmit?: (values: Values) => Promise<boolean>;
+  beforeSubmit?: ((values: TValues) => Promise<boolean>) | undefined;
 
   /**
    * Returns the form data and the response data as well, only if an API was made and came back successful
@@ -115,42 +111,45 @@ export type IConfigurableFormRuntimeProps<Values extends object = object> = {
    * @param values form data before being submitted
    * @param response response data
    */
-  onSubmitted?: (values: Values, response?: any, options?: object) => void;
+  onSubmitted?: AfterSubmitHandler<TValues> | undefined;
 
   /**
    * Fires after loading of the form markup. Can be used for additional initialization purposes.
    * @returns Promise<void>
    */
-  onMarkupLoaded?: (shaForm: IShaFormInstance<Values>) => Promise<void>;
+  onMarkupLoaded?: OnMarkupLoadedHandler<TValues> | undefined;
 
-  layout?: FormLayout;
-  size?: SizeType;
+  layout?: FormLayout | undefined;
+  size?: SizeType | undefined;
 
   /**
    * External form and data fetcher, is used to refresh form (both markup and data) from the back-end
    */
-  refetcher?: () => void;
+  refetcher?: (() => void) | undefined;
 
   /**
    * Triggered when the form is submitted successfully but the response is not successful
    **/
-  onSubmittedFailed?: () => void;
+  onSubmittedFailed?: (() => void) | undefined;
 
   /**/
 
   mode: FormMode;
-  formRef?: MutableRefObject<Partial<ConfigurableFormInstance> | null>;
-  className?: string;
-  isActionsOwner?: boolean;
-  propertyFilter?: (name: string) => boolean;
+  formRef?: RefObject<IFormActionsContext<TValues> | undefined> | undefined;
+  className?: string | undefined;
+  isActionsOwner?: boolean | undefined;
+  propertyFilter?: ((name: string) => boolean) | undefined;
 };
 
 export type MarkupLoadingErrorRenderProps = {
-  formId: FormIdentifier;
+  formId: FormIdentifier | undefined;
   markupLoadingState: ProcessingState;
 };
+export type DataLoadingErrorRenderProps = {
+  dataLoadingState: ProcessingState;
+};
 export type IConfigurableFormRenderingProps = {
-  markupLoadingError?: (args: MarkupLoadingErrorRenderProps) => React.ReactNode;
+  markupLoadingError?: FC<MarkupLoadingErrorRenderProps> | undefined;
 };
 
 export type IConfigurableFormProps<Values extends object = object> = HasFormIdOrMarkup & IConfigurableFormRuntimeProps<Values> & IConfigurableFormRenderingProps & {

@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using Shesha.Domain;
 using Shesha.Domain.EntityPropertyConfiguration;
 using Shesha.Domain.Enums;
+using Shesha.DynamicEntities.Enums;
 using System;
 using System.Collections.Generic;
 
@@ -16,6 +17,10 @@ namespace Shesha.DynamicEntities.Dtos
     public class ModelPropertyDto : EntityDto<string>
     {
         public string? ColumnName { get; set; }
+
+        public EntityInitFlags? InitStatus { get; set; }
+        public string? InitMessage { get; set; }
+
         public bool CreatedInDb { get; set; }
         public Guid? InheritedFromId { get; set; }
 

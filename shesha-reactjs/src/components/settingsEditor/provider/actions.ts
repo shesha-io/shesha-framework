@@ -1,4 +1,4 @@
-import { createAction } from 'redux-actions';
+import { createAction } from '@reduxjs/toolkit';
 import { FormMode } from '@/interfaces';
 import {
   IEditorBridge,
@@ -26,54 +26,20 @@ export enum SettingsEditorActionEnums {
 }
 
 /* NEW_ACTION_GOES_HERE */
+export const fetchConfigurationsAction = createAction<void>(SettingsEditorActionEnums.FetchConfigurations);
+export const fetchConfigurationsSuccessAction = createAction<IFetchConfigurationsSuccessPayload>(SettingsEditorActionEnums.FetchConfigurationsSuccess);
+export const fetchConfigurationsErrorAction = createAction<IFetchConfigurationsErrorPayload>(SettingsEditorActionEnums.FetchConfigurationsError);
 
-export const fetchConfigurationsAction = createAction<void, void>(
-  SettingsEditorActionEnums.FetchConfigurations,
-  (p) => p,
-);
-export const fetchConfigurationsSuccessAction = createAction<IFetchConfigurationsSuccessPayload, IFetchConfigurationsSuccessPayload>(
-  SettingsEditorActionEnums.FetchConfigurationsSuccess,
-  (p) => p,
-);
-export const fetchConfigurationsErrorAction = createAction<IFetchConfigurationsErrorPayload, IFetchConfigurationsErrorPayload>(
-  SettingsEditorActionEnums.FetchConfigurationsError,
-  (p) => p,
-);
+export const fetchApplicationsAction = createAction<void>(SettingsEditorActionEnums.FetchApplications);
+export const fetchApplicationsSuccessAction = createAction<IFetchApplicationsSuccessPayload>(SettingsEditorActionEnums.FetchApplicationsSuccess);
+export const fetchApplicationsErrorAction = createAction<IFetchApplicationsErrorPayload>(SettingsEditorActionEnums.FetchApplicationsError);
 
-export const fetchApplicationsAction = createAction<void, void>(
-  SettingsEditorActionEnums.FetchApplications,
-  (p) => p,
-);
-export const fetchApplicationsSuccessAction = createAction<IFetchApplicationsSuccessPayload, IFetchApplicationsSuccessPayload>(
-  SettingsEditorActionEnums.FetchApplicationsSuccess,
-  (p) => p,
-);
-export const fetchApplicationsErrorAction = createAction<IFetchApplicationsErrorPayload, IFetchApplicationsErrorPayload>(
-  SettingsEditorActionEnums.FetchApplicationsError,
-  (p) => p,
-);
+export const selectSettingAction = createAction<ISettingSelection>(SettingsEditorActionEnums.SelectSetting);
 
-export const selectSettingAction = createAction<ISettingSelection, ISettingSelection>(
-  SettingsEditorActionEnums.SelectSetting,
-  (p) => p,
-);
+export const selectApplicationAction = createAction<ISettingSelection>(SettingsEditorActionEnums.SelectApplication);
 
-export const selectApplicationAction = createAction<ISettingSelection, ISettingSelection>(
-  SettingsEditorActionEnums.SelectApplication,
-  (p) => p,
-);
+export const setEditorModeAction = createAction<FormMode>(SettingsEditorActionEnums.SetEditorMode);
 
-export const setEditorModeAction = createAction<FormMode, FormMode>(
-  SettingsEditorActionEnums.SetEditorMode,
-  (p) => p,
-);
+export const setEditorBridgeAction = createAction<IEditorBridge>(SettingsEditorActionEnums.SetEditorBridge);
 
-export const setEditorBridgeAction = createAction<IEditorBridge, IEditorBridge>(
-  SettingsEditorActionEnums.SetEditorBridge,
-  (p) => p,
-);
-
-export const setSaveStatusAction = createAction<SaveStatus, SaveStatus>(
-  SettingsEditorActionEnums.setSaveStatus,
-  (p) => p,
-);
+export const setSaveStatusAction = createAction<SaveStatus>(SettingsEditorActionEnums.setSaveStatus);

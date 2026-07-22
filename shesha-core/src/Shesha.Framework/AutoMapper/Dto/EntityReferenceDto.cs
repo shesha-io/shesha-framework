@@ -16,8 +16,7 @@ namespace Shesha.AutoMapper.Dto
 
         }
 
-        // ToDo: AS - swap displayName and className
-        public EntityReferenceDto(TPrimaryKey id, string? displayName, string className)
+        public EntityReferenceDto(TPrimaryKey id, string className, string? displayName = null)
         {
             Id = id;
             _displayName = displayName;
@@ -28,7 +27,7 @@ namespace Shesha.AutoMapper.Dto
         {
             if (entity != null)
             {
-                Id = entity.GetId<TPrimaryKey>();
+                Id = entity.GetId();
                 _displayName = entity.GetDisplayName();
                 _className = entity.GetType().GetRequiredFullName();
             }

@@ -15,7 +15,6 @@ namespace Shesha.Domain
     [Entity(TypeShortAlias = "Shesha.Framework.StoredFileVersion", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
     public class StoredFileVersion : FullAuditedEntity<Guid>, IMayHaveTenant
     {
-
         /// <summary>
         /// Stored file
         /// </summary>
@@ -63,5 +62,6 @@ namespace Shesha.Domain
         /// Note: updated by triggers in sql server side
         /// </summary>
         public virtual bool IsLast { get; set; }
+
     }
 }

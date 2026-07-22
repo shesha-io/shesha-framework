@@ -32,7 +32,7 @@ namespace Shesha.Tests.SolutionGenerator
 
                         var entry = zip.CreateEntry(file.Value);
 
-                        using (var dstStream = entry.Open())
+                        using (var dstStream = await entry.OpenAsync())
                         {
                             await PrepareFileAndCopyAsync(file.Key, dstStream, tags, cancellationToken);
                         }
@@ -50,9 +50,9 @@ namespace Shesha.Tests.SolutionGenerator
                 {
                     using (var sw = new StreamWriter(dstStream))
                     {
-                        while (!sr.EndOfStream) 
+                        string? line;
+                        while ((line = await sr.ReadLineAsync()) is not null) 
                         {
-                            var line = await sr.ReadLineAsync();
                             var newLine = line.ReplaceTags(tags);
                             await sw.WriteLineAsync(newLine);
                         }

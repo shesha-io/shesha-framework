@@ -1,10 +1,9 @@
-import { DesignerToolbarSettings, FormMarkupWithSettings } from "@/index";
 import { nanoid } from "@/utils/uuid";
-import { FormLayout } from "antd/lib/form/Form";
 import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from "../_settings/utils/border/utils";
+import { SettingsFormMarkupFactory } from "@/interfaces";
 
-export const getSettings = (data: object): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();
@@ -19,7 +18,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
   const shadowStylePnlId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -34,7 +33,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Common',
             id: commonTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: propertyNameId,
                   inputType: 'textField',
@@ -63,7 +62,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Data',
             id: dataTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'sizableColumnsConfig',
@@ -82,7 +81,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Appearance',
             id: appearanceId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addPropertyRouter({
                   id: styleRouterId,
                   propertyName: 'propertyRouter1',
@@ -97,7 +96,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                     _value: "",
                   },
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addCollapsiblePanel({
                         id: 'dimensionsStyleCollapsiblePanel',
                         propertyName: 'pnlDimensions',
@@ -108,7 +107,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         collapsible: 'header',
                         content: {
                           id: dimensionsStylePnlId,
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: dimensionsStylePnlId,
@@ -191,17 +190,17 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         collapsible: 'header',
                         content: {
                           id: borderStylePnlId,
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
 
                             .addContainer({
                               id: 'borderStyleRow',
                               parentId: 'borderStylePnl',
-                              components: getBorderInputs() as any,
+                              components: getBorderInputs(fbf),
                             })
                             .addContainer({
                               id: 'borderRadiusStyleRow',
                               parentId: 'borderStylePnl',
-                              components: getCornerInputs() as any,
+                              components: getCornerInputs(fbf),
                             })
                             .toJson(),
                           ],
@@ -218,7 +217,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         content: {
                           id: 'backgroundStylePnl',
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInput({
                                 id: "backgroundStyleRow-selectType",
                                 parentId: "backgroundStylePnl",
@@ -266,7 +265,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                   hideLabel: true,
                                   jsSetting: false,
                                 }],
-                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false },
                               })
                               .addSettingsInputRow({
                                 id: "backgroundStyle-gradientColors",
@@ -279,7 +278,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                   jsSetting: false,
                                 },
                                 ],
-                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false },
                                 hideLabel: true,
                               })
                               .addSettingsInputRow({
@@ -292,7 +291,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                   jsSetting: false,
                                   label: "URL",
                                 }],
-                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false },
                               })
                               .addSettingsInputRow({
                                 id: "backgroundStyle-image",
@@ -305,12 +304,12 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                     label: "Image",
                                     jsSetting: false,
                                   }],
-                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false },
                               })
                               .addSettingsInputRow({
                                 id: "backgroundStyleRow-storedFile",
                                 parentId: 'backgroundStylePnl',
-                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false },
                                 inputs: [
                                   {
                                     type: 'textField',
@@ -325,7 +324,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                 id: "backgroundStyleRow-controls",
                                 parentId: 'backgroundStyleRow',
                                 inline: true,
-                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
                                 inputs: [
                                   {
                                     type: 'customDropdown',
@@ -356,10 +355,9 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                   label: 'Repeat',
                                   hideLabel: true,
                                   propertyName: 'background.repeat',
-                                  inputType: 'radio',
                                   buttonGroupOptions: repeatOptions,
                                 }],
-                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
                               })
                               .toJson(),
                           ],
@@ -375,7 +373,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         collapsible: 'header',
                         content: {
                           id: shadowStylePnlId,
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: shadowStylePnlId,
@@ -443,7 +441,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         collapsible: 'header',
                         content: {
                           id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addStyleBox({
                               id: nanoid(),
                               label: 'Margin Padding',
@@ -464,7 +462,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                         collapsible: 'header',
                         content: {
                           id: nanoid(),
-                          components: [...new DesignerToolbarSettings()
+                          components: [...fbf()
                             .addSettingsInput({
                               id: nanoid(),
                               inputType: 'codeEditor',
@@ -486,7 +484,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             key: 'security',
             title: 'Security',
             id: securityId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'permissions',
@@ -505,7 +503,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
       .toJson(),
     formSettings: {
       colon: false,
-      layout: 'vertical' as FormLayout,
+      layout: 'vertical',
       labelCol: { span: 24 },
       wrapperCol: { span: 24 },
     },

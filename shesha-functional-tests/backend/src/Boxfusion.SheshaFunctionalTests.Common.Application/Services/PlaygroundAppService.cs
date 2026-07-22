@@ -1,13 +1,14 @@
 ﻿using Abp.Domain.Repositories;
 using Abp.Json;
 using Boxfusion.SheshaFunctionalTests.Common.Domain.Domain;
+using ElmahCore;
 using Microsoft.AspNetCore.Routing;
 using Newtonsoft.Json;
 using Shesha;
 using Shesha.Domain;
-using Shesha.DynamicEntities.EntityTypeBuilder;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
+using Shesha.Reflection;
 using Shesha.Services;
 using Shesha.Services.Urls;
 
@@ -17,27 +18,17 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
     {
 
         private readonly IRepository<TestClass, Guid> _testClassRepo;
-        private readonly DynamicEntityTypeBuilder _dynamicEntityTypeBuilder;
 
         public PlaygroundAppService(
-            IRepository<TestClass, Guid> testClassRepo,
-            DynamicEntityTypeBuilder dynamicEntityTypeBuilder
+            IRepository<TestClass, Guid> testClassRepo
             )
         {
             _testClassRepo = testClassRepo;
-            _dynamicEntityTypeBuilder = dynamicEntityTypeBuilder;
         }
 
         public string CreateType()
         {
             return "Ok";
-            /*var type = _dynamicEntityTypeBuilder.CreateType(new EntityConfig
-            {
-                Namespace = "TestNamespace",
-                ClassName = "TestClassName"
-            }, null);
-
-            return type.Name;*/
         }
 
         public class TestDto
@@ -48,11 +39,11 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
 
         public async Task<string> TestGenericEntityReferenceAsync()
         {
-            var test = await _testClassRepo.GetAll().FirstOrDefaultAsync();
+            var test = await _testClassRepo.FirstOrDefaultAsync();
             var dto = new TestDto
             {
                 Name = "Test",
-                Test = test
+                Test = test.NotNull()
             };
 
             var json = dto.ToJsonString();
@@ -104,5 +95,11 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
 
             return Task.FromResult(JsonConvert.SerializeObject(linkGeneratorContext.State) ?? string.Empty);
         }        
+
+        public async Task TestElmahAsync()
+        {
+            ElmahExtensions.RiseError(new Exception("Shurik"));
+            await Task.CompletedTask;
+        }
     }
 }

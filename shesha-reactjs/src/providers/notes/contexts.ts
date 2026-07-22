@@ -1,58 +1,33 @@
-import { NoteDto } from '@/apis/note';
-import { IFlagsSetters, IFlagsState } from '@/interfaces';
 import { createNamedContext } from '@/utils/react';
+import { NoteDto } from './api-models';
+import { CreateNoteArgs, DeleteNoteArgs, NoteModel, NotesReference, UpdateNoteArgs } from './models';
 
-export type IFlagProgressFlags = 'fetchNotes' | 'postNotes' | 'deleteNotes';
-export type IFlagSucceededFlags = 'fetchNotes' | 'postNotes' | 'deleteNotes';
-export type IFlagErrorFlags = 'fetchNotes' | 'postNotes' | 'deleteNotes';
-export type IFlagActionedFlags = '__DEFAULT__';
+export type OnNoteCreatedFunc = (note: NoteDto) => void;
+export type OnNoteUpdatedFunc = (note: NoteDto) => void;
+export type OnNoteDeletedFunc = (note: NoteDto) => void;
 
-export interface INoteSettings {
-  ownerId: string;
-  ownerType: string;
-  category?: string;
-  allCategories?: boolean;
-}
-
-export type INote = NoteDto;
-
-export interface ICreateNotePayload {
-  ownerId?: string;
-  ownerType?: string;
-  category?: string;
-  priority?: number;
-  parentId?: string;
-  noteText: string;
-  id?: string;
-}
-
-export interface INotesStateContext
-  extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
-  notes?: INote[];
-  newNotes?: ICreateNotePayload | INote;
-  commentIdToBeDeleted?: string;
-  errorInfo?: any;
-  settings?: INoteSettings;
-}
-
-export interface INotesActionsContext
-  extends IFlagsSetters<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags> {
-  fetchNotesRequest: () => void;
-  postNotes: (payload: ICreateNotePayload) => void;
-  deleteNotes: (selectedCommentId: string) => void;
-  refreshNotes: () => void;
-  /* NEW_ACTION_ACTION_DECLARATIO_GOES_HERE */
-  updateNotes: (payload: ICreateNotePayload) => void;
-}
-
-export const COMMENTS_CONTEXT_INITIAL_STATE: INotesStateContext = {
-  isInProgress: {},
-  succeeded: {},
-  error: {},
-  actioned: {},
-  notes: [],
+export type NotesEventHandlers = {
+  onCreated?: OnNoteCreatedFunc | undefined;
+  onUpdated?: OnNoteUpdatedFunc | undefined;
+  onDeleted?: OnNoteDeletedFunc | undefined;
 };
 
-export const NotesStateContext = createNamedContext<INotesStateContext>(COMMENTS_CONTEXT_INITIAL_STATE, "NotesStateContext");
+export type INotesEditorActions = {
+  init: (notesReference: NotesReference) => void;
+  setDesignerMode: (isDesignerMode: boolean) => void;
+  setEventHandlers: (handlers: NotesEventHandlers) => void;
+  subscribe: (callback: () => void) => () => void;
+  createNoteAsync: (args: CreateNoteArgs) => Promise<void>;
+  updateNoteAsync: (args: UpdateNoteArgs) => Promise<void>;
+  deleteNoteAsync: (args: DeleteNoteArgs) => Promise<void>;
+};
 
-export const NotesActionsContext = createNamedContext<INotesActionsContext>(undefined, "NotesActionsContext");
+export type INotesEditorState = {
+  readonly notes: NoteModel[];
+  readonly isFetchingNotes: boolean;
+  readonly isPostingNotes: boolean;
+};
+
+export type INotesEditorInstance = INotesEditorActions & INotesEditorState;
+
+export const NotesEditorInstanceContext = createNamedContext<INotesEditorInstance | undefined>(undefined, "NotesEditorInstanceContext");

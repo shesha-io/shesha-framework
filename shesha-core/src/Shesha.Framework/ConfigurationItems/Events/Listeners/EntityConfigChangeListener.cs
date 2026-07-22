@@ -9,7 +9,7 @@ namespace Shesha.ConfigurationItems.Events.Listeners
     /// Listener for <see cref="EntityConfig"/> changes
     /// Detects changes and adds them to the configuration changes collector (<see cref="IConfigurationChangesCollector"/>)
     /// </summary>
-    public class EntityConfigChangeListener : IEventHandler<EntityChangingEventData<EntityConfig>>,
+    public class EntityConfigChangeListener : 
         IEventHandler<EntityChangingEventData<EntityProperty>>,
         IEventHandler<EntityCreatingEventData<EntityProperty>>,
         IEventHandler<EntityDeletingEventData<EntityProperty>>,
@@ -20,11 +20,6 @@ namespace Shesha.ConfigurationItems.Events.Listeners
         public EntityConfigChangeListener(IConfigurationChangesCollector configurationChangesCollector)
         {
             _configurationChangesCollector = configurationChangesCollector;
-        }
-
-        public void HandleEvent(EntityChangingEventData<EntityConfig> eventData)
-        {
-            _configurationChangesCollector.AddUpdate(eventData.Entity);
         }
 
         public void HandleEvent(EntityChangingEventData<EntityProperty> eventData)

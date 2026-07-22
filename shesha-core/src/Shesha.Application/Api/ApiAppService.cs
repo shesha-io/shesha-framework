@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Hosting.Internal;
 using Shesha.Api.Dto;
+using Shesha.Authorization;
 using Shesha.AutoMapper.Dto;
+using Shesha.Domain.Enums;
 using Shesha.Permissions;
 using System;
 using System.Collections.Generic;
@@ -19,7 +21,8 @@ namespace Shesha.Api
     /// <summary>
     /// API application service
     /// </summary>
-    public class ApiAppService : SheshaAppServiceBase//, IApiAppService
+    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, "app:Configurator")]
+    public class ApiAppService: SheshaAppServiceBase//, IApiAppService
     {
         private readonly IApiDescriptionGroupCollectionProvider _apiDescriptionsProvider;
         private readonly IPermissionedObjectManager _permissionedObjectManager;
@@ -41,8 +44,6 @@ namespace Shesha.Api
         public async Task<List<AutocompleteItemDto>> EndpointsAsync(string? term, string? verb, int maxResultCount = 10)
         {
             var actionDescriptors = _apiDescriptionsProvider.ApiDescriptionGroups.Items.SelectMany(g => g.Items.Select(gi => gi.ActionDescriptor)).ToList();
-
-            // ToDo: AS - make endpoints list cachable
 
             var permissioned = new List<ActionDescriptor>();
             foreach (var actionDescriptor in actionDescriptors)

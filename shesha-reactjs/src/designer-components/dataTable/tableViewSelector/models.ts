@@ -1,8 +1,10 @@
 import { IConfigurableFormComponent } from '@/providers/form/models';
-import { ITableViewProps } from '@/providers/dataTable/filters/models';
+import { ComponentDefinition, IStoredFilter } from '@/interfaces';
 
 export interface ITableViewSelectorComponentProps extends IConfigurableFormComponent {
-  filters: ITableViewProps[];
+  filters: IStoredFilter[];
   persistSelectedFilters?: boolean;
   showIcon?: boolean;
 }
+
+export type TableViewSelectorComponentDefinition = ComponentDefinition<"tableViewSelector", ITableViewSelectorComponentProps>;

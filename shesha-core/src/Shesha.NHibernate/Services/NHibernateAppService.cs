@@ -15,6 +15,8 @@ using Shesha.Mvc;
 using Shesha.NHibernate.Maps;
 using Shesha.NHibernate.Session;
 using Shesha.Reflection;
+using Shesha.Authorization;
+using Shesha.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +28,7 @@ namespace Shesha.Services
     /// <summary>
     /// NHibernate application service
     /// </summary>
+    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, "app:Configurator")]
     public class NHibernateAppService: IApplicationService
     {
         private readonly IUnitOfWorkManager _unitOfWorkManager;

@@ -1,12 +1,11 @@
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
 import { nanoid } from '@/utils/uuid';
-import { FormMarkupWithSettings } from '@/interfaces';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings = (): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   // Generate unique IDs for main sections
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
@@ -15,7 +14,7 @@ export const getSettings = (): FormMarkupWithSettings => {
   const styleRouterId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings()
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -29,7 +28,7 @@ export const getSettings = (): FormMarkupWithSettings => {
             id: commonTabId,
             key: '1',
             title: 'Common',
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 inputType: 'textField',
                 id: nanoid(),
@@ -40,28 +39,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                   required: true,
                 },
                 jsSetting: false,
-              })
-              .addSettingsInputRow({
-                id: nanoid(),
-                parentId: commonTabId,
-                inputs: [
-                  {
-                    type: 'textField',
-                    id: nanoid(),
-                    propertyName: 'label',
-                    parentId: commonTabId,
-                    label: 'Label',
-                    jsSetting: true,
-                  },
-                  {
-                    id: nanoid(),
-                    propertyName: 'hasCustomHeader',
-                    parentId: commonTabId,
-                    label: 'Custom Header',
-                    type: 'switch',
-                    jsSetting: true,
-                  },
-                ],
               })
               .addSettingsInputRow({
                 id: nanoid(),
@@ -167,7 +144,7 @@ export const getSettings = (): FormMarkupWithSettings => {
             key: '2',
             title: 'Appearance',
             id: appearanceTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addPropertyRouter({
                 id: styleRouterId,
                 propertyName: 'propertyRouter1',
@@ -182,12 +159,12 @@ export const getSettings = (): FormMarkupWithSettings => {
                   _value: "",
                 },
                 components: [
-                  ...new DesignerToolbarSettings()
+                  ...fbf()
                     .addSettingsInputRow({
                       id: nanoid(),
                       propertyName: 'ghost',
                       parentId: styleRouterId,
-                      readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                      readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                       inputs: [
                         {
                           id: nanoid(),
@@ -210,7 +187,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                     .addSettingsInputRow({
                       id: nanoid(),
                       parentId: styleRouterId,
-                      readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                      readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                       inputs: [
                         {
                           id: nanoid(),
@@ -245,7 +222,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: styleRouterId,
@@ -326,19 +303,19 @@ export const getSettings = (): FormMarkupWithSettings => {
                       ghost: true,
                       parentId: styleRouterId,
                       collapsible: 'header',
-                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.ghost) || getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.isSimpleDesign);', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.ghost) || getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.isSimpleDesign);', _mode: 'code', _value: false },
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addContainer({
                             id: nanoid(),
                             parentId: styleRouterId,
-                            components: getBorderInputs() as any,
+                            components: getBorderInputs(fbf),
                           })
                           .addContainer({
                             id: nanoid(),
                             parentId: styleRouterId,
-                            components: getCornerInputs() as any,
+                            components: getCornerInputs(fbf),
                           })
                           .toJson(),
                         ],
@@ -352,11 +329,11 @@ export const getSettings = (): FormMarkupWithSettings => {
                       ghost: true,
                       parentId: styleRouterId,
                       collapsible: 'header',
-                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.ghost) || getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.isSimpleDesign);', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.ghost) || getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.isSimpleDesign);', _mode: 'code', _value: false },
                       content: {
                         id: nanoid(),
                         components: [
-                          ...new DesignerToolbarSettings()
+                          ...fbf()
                             .addSettingsInput({
                               id: nanoid(),
                               parentId: styleRouterId,
@@ -378,7 +355,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                                 hideLabel: true,
                                 jsSetting: false,
                               }],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false },
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
@@ -391,7 +368,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                                 jsSetting: false,
                               },
                               ],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false },
                               hideLabel: true,
                             })
                             .addSettingsInputRow({
@@ -404,7 +381,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                                 jsSetting: false,
                                 label: "URL",
                               }],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false },
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
@@ -416,12 +393,12 @@ export const getSettings = (): FormMarkupWithSettings => {
                                 label: "Image",
                                 jsSetting: false,
                               }],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false },
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: styleRouterId,
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false },
                               inputs: [
                                 {
                                   type: 'textField',
@@ -436,7 +413,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                               id: nanoid(),
                               parentId: styleRouterId,
                               inline: true,
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
                               inputs: [
                                 {
                                   type: 'customDropdown',
@@ -515,10 +492,9 @@ export const getSettings = (): FormMarkupWithSettings => {
                                 label: 'Repeat',
                                 hideLabel: true,
                                 propertyName: 'background.repeat',
-                                inputType: 'radio',
                                 buttonGroupOptions: repeatOptions,
                               }],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
                             })
                             .toJson(),
                         ],
@@ -530,12 +506,12 @@ export const getSettings = (): FormMarkupWithSettings => {
                       label: 'Shadow',
                       labelAlign: 'right',
                       ghost: true,
-                      hidden: { _code: 'return  getSettingValue(data?.ghost) || getSettingValue(data?.isSimpleDesign);', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return  getSettingValue(data?.ghost) || getSettingValue(data?.isSimpleDesign);', _mode: 'code', _value: false },
                       parentId: styleRouterId,
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: styleRouterId,
@@ -604,7 +580,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addStyleBox({
                             id: nanoid(),
                             label: 'Margin Padding',
@@ -625,7 +601,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInput({
                             id: nanoid(),
                             inputType: 'codeEditor',
@@ -649,7 +625,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                       parentId: styleRouterId,
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addCollapsiblePanel({
                             id: nanoid(),
                             propertyName: 'pnlFontStyle',
@@ -661,7 +637,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                             collapsible: 'header',
                             content: {
                               id: nanoid(),
-                              components: [...new DesignerToolbarSettings()
+                              components: [...fbf()
                                 .addSettingsInputRow({
                                   id: nanoid(),
                                   parentId: styleRouterId,
@@ -726,7 +702,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                             collapsible: 'header',
                             content: {
                               id: nanoid(),
-                              components: [...new DesignerToolbarSettings()
+                              components: [...fbf()
                                 .addSettingsInputRow({
                                   id: nanoid(),
                                   parentId: styleRouterId,
@@ -777,14 +753,14 @@ export const getSettings = (): FormMarkupWithSettings => {
                                 ' || getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.accentStyle)' +
                                 ' || getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.isSimpleDesign);',
                               _mode: 'code', _value: false,
-                            } as any,
+                            },
                             content: {
                               id: nanoid(),
-                              components: [...new DesignerToolbarSettings()
+                              components: [...fbf()
                                 .addContainer({
                                   id: nanoid(),
                                   parentId: styleRouterId,
-                                  components: getBorderInputs('headerStyles', true) as any,
+                                  components: getBorderInputs(fbf, 'headerStyles', true),
                                 })
                                 .toJson()],
                             },
@@ -796,12 +772,12 @@ export const getSettings = (): FormMarkupWithSettings => {
                             labelAlign: 'right',
                             collapsedByDefault: true,
                             ghost: true,
-                            hidden: { _code: 'return  getSettingValue(data?.ghost) || getSettingValue(data?.isSimpleDesign);', _mode: 'code', _value: false } as any,
+                            hidden: { _code: 'return  getSettingValue(data?.ghost) || getSettingValue(data?.isSimpleDesign);', _mode: 'code', _value: false },
                             parentId: styleRouterId,
                             collapsible: 'header',
                             content: {
                               id: nanoid(),
-                              components: [...new DesignerToolbarSettings()
+                              components: [...fbf()
                                 .addSettingsInput({
                                   id: nanoid(),
                                   parentId: styleRouterId,
@@ -849,7 +825,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                                     hideLabel: true,
                                     jsSetting: false,
                                   }],
-                                  hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
+                                  hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "color";', _mode: 'code', _value: false },
                                 })
                                 .addSettingsInputRow({
                                   id: nanoid(),
@@ -862,7 +838,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                                     jsSetting: false,
                                   },
                                   ],
-                                  hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
+                                  hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "gradient";', _mode: 'code', _value: false },
                                   hideLabel: true,
                                 })
                                 .addSettingsInputRow({
@@ -875,7 +851,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                                     jsSetting: false,
                                     label: "URL",
                                   }],
-                                  hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
+                                  hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "url";', _mode: 'code', _value: false },
                                 })
                                 .addSettingsInputRow({
                                   id: nanoid(),
@@ -887,12 +863,12 @@ export const getSettings = (): FormMarkupWithSettings => {
                                     label: "Image",
                                     jsSetting: false,
                                   }],
-                                  hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
+                                  hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "image";', _mode: 'code', _value: false },
                                 })
                                 .addSettingsInputRow({
                                   id: nanoid(),
                                   parentId: styleRouterId,
-                                  hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
+                                  hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "storedFile";', _mode: 'code', _value: false },
                                   inputs: [
                                     {
                                       type: 'textField',
@@ -907,7 +883,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                                   id: nanoid(),
                                   parentId: styleRouterId,
                                   inline: true,
-                                  hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                  hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) === "color";', _mode: 'code', _value: false },
                                   inputs: [
                                     {
                                       type: 'customDropdown',
@@ -936,10 +912,9 @@ export const getSettings = (): FormMarkupWithSettings => {
                                     label: 'Repeat',
                                     hideLabel: true,
                                     propertyName: 'headerStyles.background.repeat',
-                                    inputType: 'radio',
                                     buttonGroupOptions: repeatOptions,
                                   }],
-                                  hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                  hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) === "color";', _mode: 'code', _value: false },
                                 })
                                 .toJson(),
                               ],
@@ -955,7 +930,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                             collapsible: 'header',
                             content: {
                               id: nanoid(),
-                              components: [...new DesignerToolbarSettings()
+                              components: [...fbf()
                                 .addStyleBox({
                                   id: nanoid(),
                                   label: 'Margin Padding',
@@ -976,7 +951,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                             collapsible: 'header',
                             content: {
                               id: nanoid(),
-                              components: [...new DesignerToolbarSettings()
+                              components: [...fbf()
                                 .addSettingsInput({
                                   id: nanoid(),
                                   inputType: 'codeEditor',
@@ -998,7 +973,7 @@ export const getSettings = (): FormMarkupWithSettings => {
             key: '3',
             title: 'Security',
             id: securityTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'permissions',

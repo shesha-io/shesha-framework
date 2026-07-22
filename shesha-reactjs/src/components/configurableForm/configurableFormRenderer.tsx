@@ -1,25 +1,24 @@
-import _ from 'lodash';
-import classNames from 'classnames';
-import ComponentsContainer from '../formDesigner/containers/componentsContainer';
-import React, {
-  FC,
-  PropsWithChildren,
-} from 'react';
-import { ComponentsContainerForm } from '../formDesigner/containers/componentsContainerForm';
-import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
-import { Button, Form, Result } from 'antd';
 import { ValidateErrorEntity } from '@/interfaces';
-import { IConfigurableFormRendererProps } from './models';
+import { DEFAULT_FORM_SETTINGS, useSheshaApplication } from '@/providers';
+import { useDelayedUpdateOrUndefined } from '@/providers/delayedUpdateProvider';
 import { ROOT_COMPONENT_KEY } from '@/providers/form/models';
-import { useFormDesignerStateSelector } from '@/providers/formDesigner';
-import { useSheshaApplication } from '@/providers';
-import { useStyles } from './styles/styles';
-import Link from 'next/link';
-import { useDelayedUpdate } from '@/providers/delayedUpdateProvider';
+import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
 import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
+import { Button, Form, Result } from 'antd';
+import classNames from 'classnames';
+import Link from 'next/link';
+import React, {
+  PropsWithChildren,
+  ReactNode,
+} from 'react';
 import { ShaSpin } from '..';
+import ComponentsContainer from '../formDesigner/containers/componentsContainer';
+import { ComponentsContainerForm } from '../formDesigner/containers/componentsContainerForm';
+import { IConfigurableFormRendererProps } from './models';
+import { useStyles } from './styles/styles';
+import { extractErrorInfo } from '@/utils/errors';
 
-export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRendererProps>> = ({
+export const ConfigurableFormRenderer = <Values extends object = object>({
   children,
   form,
   parentFormValues,
@@ -30,40 +29,34 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
   onSubmittedFailed,
   showDataSubmitIndicator = true,
   ...props
-}) => {
-  const { getPayload: getDelayedUpdates } = useDelayedUpdate(false) ?? {};
+}: PropsWithChildren<IConfigurableFormRendererProps<Values>>): ReactNode => {
+  const { getPayload: getDelayedUpdates } = useDelayedUpdateOrUndefined() ?? {};
 
   const shaForm = useShaFormInstance();
-  const { settings: formSettings, setValidationErrors } = shaForm;
+  const { settings: formSettings = DEFAULT_FORM_SETTINGS, setValidationErrors } = shaForm;
   shaForm.setDataSubmitContext({ getDelayedUpdates });
 
   const { styles } = useStyles();
   const { anyOfPermissionsGranted } = useSheshaApplication();
-  const isDragging = useFormDesignerStateSelector((x) => x.isDragging) ?? false;
 
-  const onValuesChangeInternal = (_changedValues: any, values: any): void => {
+  const onValuesChangeInternal = (_changedValues: Partial<Values>, values: Values): void => {
     shaForm.setFormData({ values: values, mergeValues: true });
   };
 
   const onFinishInternal = async (): Promise<void> => {
-    setValidationErrors(null);
-
-    if (!shaForm)
-      return;
+    setValidationErrors(undefined);
 
     try {
       await shaForm.submitData();
     } catch (error) {
       onSubmittedFailed?.();
-      setValidationErrors(error instanceof Error
-        ? error.message
-        : error?.data?.error || error);
+      setValidationErrors(extractErrorInfo(error));
       console.error('Submit failed: ', error);
     }
   };
 
-  const onFinishFailedInternal = (errorInfo: ValidateErrorEntity): void => {
-    setValidationErrors(null);
+  const onFinishFailedInternal = (errorInfo: ValidateErrorEntity<Values>): void => {
+    setValidationErrors(undefined);
     onFinishFailed?.(errorInfo);
   };
 
@@ -74,7 +67,7 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     colon: formSettings.colon,
   };
 
-  if (formSettings?.access === 4 && !anyOfPermissionsGranted(formSettings?.permissions || [])) {
+  if (formSettings.access === 4 && !anyOfPermissionsGranted(formSettings.permissions || [])) {
     return (
       <Result
         status="403"
@@ -92,23 +85,27 @@ export const ConfigurableFormRenderer: FC<PropsWithChildren<IConfigurableFormRen
     );
   }
 
-  const { /* dataLoadingState,*/ dataSubmitState } = shaForm ?? {};
+  const { dataSubmitState } = shaForm;
 
   return (
     <ComponentsContainerProvider ContainerComponent={ComponentsContainerForm}>
-      <ShaSpin spinning={showDataSubmitIndicator && dataSubmitState?.status === 'loading'} tip="Saving data...">
+      <ShaSpin spinning={showDataSubmitIndicator && dataSubmitState.status === 'loading'} tip="Saving data...">
         <Form
-          form={form}
+          {...(form ? { form } : {})}
           labelWrap
           size={props.size}
           onFinish={onFinishInternal}
           onFinishFailed={onFinishFailedInternal}
           onValuesChange={onValuesChangeInternal}
-          initialValues={initialValues}
-          className={classNames(styles.shaForm, { 'sha-dragging': isDragging }, props.className)}
+          {...(initialValues ? { initialValues } : {})}
+          className={classNames(styles.shaForm, props.className)}
           {...mergedProps}
-          data-sha-form-id={shaForm.form.id}
-          data-sha-form-name={`${shaForm.form.module}/${shaForm.form.name}`}
+          {...(shaForm.form
+            ? {
+              "data-sha-form-id": shaForm.form.id,
+              "data-sha-form-name": `${shaForm.form.module}/${shaForm.form.name}`,
+            }
+            : {})}
         >
           <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
           {children}

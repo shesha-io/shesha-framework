@@ -1,6 +1,6 @@
 
-import React, { FC, PropsWithChildren, useContext } from 'react';
-import { useHttpClient } from '@/providers';
+import React, { FC, PropsWithChildren, useContext, useState } from 'react';
+import { useConfigurationItemsLoader, useHttpClient } from '@/providers';
 import {
   FormIdentifier,
 } from '../form/models';
@@ -13,8 +13,8 @@ import {
   IFormPersisterStateContext,
 } from './contexts';
 import { useFormManager } from '../formManager';
-import { useRefInitialized } from '@/hooks';
 import { FormPersister } from './formPersister';
+import { throwError } from '@/utils/errors';
 
 export interface IFormProviderProps {
   formId: FormIdentifier;
@@ -24,8 +24,9 @@ export interface IFormProviderProps {
 const FormPersisterProvider: FC<PropsWithChildren<IFormProviderProps>> = ({ children, ...props }) => {
   const formManager = useFormManager();
   const httpClient = useHttpClient();
+  const configurationItemsLoader = useConfigurationItemsLoader();
   const [, forceUpdate] = React.useState({});
-  const persisterRef = useRefInitialized(() => {
+  const [persister] = useState(() => {
     const forceReRender = (): void => {
       forceUpdate({});
     };
@@ -35,9 +36,9 @@ const FormPersisterProvider: FC<PropsWithChildren<IFormProviderProps>> = ({ chil
       formId: props.formId,
       formManager: formManager,
       httpClient: httpClient,
+      configurationItemsLoader: configurationItemsLoader,
     });
   });
-  const persister = persisterRef.current;
 
   return (
     <FormPersisterStateContext.Provider value={persister.state}>
@@ -49,29 +50,15 @@ const FormPersisterProvider: FC<PropsWithChildren<IFormProviderProps>> = ({ chil
 };
 
 
-function useFormPersisterState(require: boolean = true): IFormPersisterStateContext | undefined {
-  const context = useContext(FormPersisterStateContext);
+const useFormPersisterStateOrUndefined = (): IFormPersisterStateContext | undefined => useContext(FormPersisterStateContext);
+const useFormPersisterState = (): IFormPersisterStateContext => useFormPersisterStateOrUndefined() ?? throwError("useFormPersisterState must be used within a FormPersisterProvider");
 
-  if (require && context === undefined) {
-    throw new Error('useFormPersisterState must be used within a FormPersisterProvider');
-  }
+const useFormPersisterActionsOrUndefined = (): IFormPersisterActionsContext | undefined => useContext(FormPersisterActionsContext);
+const useFormPersisterActions = (): IFormPersisterActionsContext => useFormPersisterActionsOrUndefined() ?? throwError("useFormPersisterActions must be used within a FormPersisterProvider");
 
-  return context;
-}
-
-function useFormPersisterActions(require: boolean = true): IFormPersisterActionsContext | undefined {
-  const context = useContext(FormPersisterActionsContext);
-
-  if (require && context === undefined) {
-    throw new Error('useFormPersisterActions must be used within a FormPersisterProvider');
-  }
-
-  return context;
-}
-
-const useFormPersisterIfAvailable = (require: boolean = false): IFormPersisterContext | undefined => {
-  const actionsContext = useFormPersisterActions(require);
-  const stateContext = useFormPersisterState(require);
+const useFormPersisterIfAvailable = (): IFormPersisterContext | undefined => {
+  const actionsContext = useFormPersisterActionsOrUndefined();
+  const stateContext = useFormPersisterStateOrUndefined();
 
   // useContext() returns initial state when provider is missing
   // initial context state is useless especially when require == true
@@ -81,6 +68,6 @@ const useFormPersisterIfAvailable = (require: boolean = false): IFormPersisterCo
     : undefined;
 };
 
-const useFormPersister = (): IFormPersisterContext => useFormPersisterIfAvailable(true)!;
+const useFormPersister = (): IFormPersisterContext => useFormPersisterIfAvailable() ?? throwError("useFormPersister must be used within a FormPersisterProvider");
 
-export { FormPersisterProvider, useFormPersister, useFormPersisterIfAvailable, useFormPersisterState };
+export { FormPersisterProvider, useFormPersister, useFormPersisterIfAvailable, useFormPersisterState, useFormPersisterActions };

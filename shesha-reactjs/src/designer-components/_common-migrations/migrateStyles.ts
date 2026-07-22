@@ -1,9 +1,11 @@
 import { nanoid } from "@/utils/uuid";
 import { addPx } from '@/utils/style';
-import { ICommonContainerProps, IConfigurableFormComponent, IInputStyles, IStyleType } from "@/interfaces";
-import { IBorderType } from "../_settings/utils/border/interfaces";
+import { ICommonContainerProps, IConfigurableFormComponent, IInputStyles, IStyleValue } from "@/interfaces";
+import { BorderType, IBorderType } from "../_settings/utils/border/interfaces";
+import { getNumberOrUndefined } from "@/utils/string";
+import { isNullOrWhiteSpace } from "@/utils/nullables";
 
-type ExtendedType = IInputStyles & Omit<IConfigurableFormComponent, 'type' | 'id'> & { block?: boolean; type?: string };
+type ExtendedType = IInputStyles & Omit<IConfigurableFormComponent, 'type' | 'id'> & { block?: boolean | undefined; type?: string | undefined };
 
 type BorderCssProps = {
   width: string | number | undefined;
@@ -11,20 +13,24 @@ type BorderCssProps = {
   color: string | undefined;
 };
 
-const inputTypes = ['textField', 'numberField', 'passwordCombo', 'dropdown', 'autocomplete', 'timePicker', 'dateField', 'button', 'entityPicker'];
-const isInputField = (prev: ExtendedType): boolean => inputTypes.includes(prev.type);
-export const migrateStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<ICommonContainerProps, 'style' | 'id' | 'label'>, screen?: 'desktop' | 'tablet' | 'mobile'): IStyleType => {
-  const prevStyles: IInputStyles = screen && prev[`${screen}`] ? prev[`${screen}`] : prev;
+const stringOrUndefined = (value: unknown): string | undefined => typeof (value) === 'string' ? value : undefined;
 
-  const border = (side: string): BorderCssProps => ({
-    ...prev?.border?.border?.[side],
-    width: prevStyles?.borderSize ?? prevStyles?.borderWidth ?? prev?.border?.border?.[side]?.width ?? defaults?.border?.border?.[side]?.width,
-    style: prevStyles?.borderType ?? prevStyles?.borderStyle ?? prev?.border?.border?.[side]?.style ?? defaults?.border?.border?.[side]?.style,
-    color: prevStyles?.borderColor ?? prev?.border?.border?.[side]?.color ?? defaults?.border?.border?.[side]?.color,
+const inputTypes = ['textField', 'numberField', 'passwordCombo', 'dropdown', 'autocomplete', 'timePicker', 'dateField', 'button', 'entityPicker'];
+const isInputField = (prev: ExtendedType): boolean => !isNullOrWhiteSpace(prev.type) && inputTypes.includes(prev.type);
+export const migrateStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<ICommonContainerProps, 'style' | 'id' | 'label'>, screen?: 'desktop' | 'tablet' | 'mobile'): IStyleValue => {
+  const prevStyles: IInputStyles = screen && prev[screen] ? prev[screen] : prev;
+
+  const border = (side: BorderType): BorderCssProps => ({
+    ...defaults?.border?.border?.[side],
+    ...prev.border?.border?.[side],
+    ...prevStyles.border?.border?.[side],
+    width: prevStyles.border?.border?.[side]?.width ?? prevStyles.borderSize ?? prevStyles.borderWidth ?? prev.border?.border?.[side]?.width ?? defaults?.border?.border?.[side]?.width,
+    style: prevStyles.border?.border?.[side]?.style ?? prevStyles.borderType ?? prevStyles.borderStyle ?? prev.border?.border?.[side]?.style ?? defaults?.border?.border?.[side]?.style,
+    color: prevStyles.border?.border?.[side]?.color ?? prevStyles.borderColor ?? prev.border?.border?.[side]?.color ?? defaults?.border?.border?.[side]?.color,
   });
 
-  const heightFromSize = !isInputField(prev) ? null : prevStyles?.size === 'small' ? '24px' : prevStyles?.size === 'large' ? '40px' : null;
-  const fontSizeFromSize = prevStyles?.size === 'small' ? 14 : prevStyles?.size === 'large' ? 16 : null;
+  const heightFromSize = !isInputField(prev) ? null : prevStyles.size === 'small' ? '24px' : prevStyles.size === 'large' ? '40px' : null;
+  const fontSizeFromSize = prevStyles.size === 'small' ? 14 : prevStyles.size === 'large' ? 16 : null;
   const isColor = prevStyles.backgroundType === 'color' || prev.backgroundType === 'color';
   const isBase64 = prevStyles.backgroundDataSource === 'base64' || prev.backgroundDataSource === 'base64';
   const isUrl = prevStyles.backgroundDataSource === 'url' || prev.backgroundDataSource === 'url';
@@ -39,11 +45,11 @@ export const migrateStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<I
   const backgroundCover = prevStyles.backgroundCover || prev.backgroundCover;
 
   return {
-    size: prevStyles?.size,
+    size: prevStyles.size ?? prev.size,
     border: {
-      hideBorder: prevStyles?.hideBorder || defaults?.hideBorder || false,
-      radiusType: defaults?.border?.radiusType || 'all',
-      borderType: defaults?.border?.borderType || 'all',
+      hideBorder: prevStyles.hideBorder ?? prev.hideBorder ?? defaults?.hideBorder ?? false,
+      radiusType: prevStyles.border?.radiusType ?? prev.border?.radiusType ?? defaults?.border?.radiusType ?? 'all',
+      borderType: prevStyles.border?.borderType ?? prev.border?.borderType ?? defaults?.border?.borderType ?? 'all',
       border: {
         all: border('all'),
         top: border('top'),
@@ -52,48 +58,49 @@ export const migrateStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<I
         right: border('right'),
       },
       radius: {
-        all: prevStyles?.borderRadius || defaults?.border?.radius?.all,
-        topLeft: defaults?.border?.radius?.topLeft,
-        topRight: defaults?.border?.radius?.topRight,
-        bottomLeft: defaults?.border?.radius?.bottomLeft,
-        bottomRight: defaults?.border?.radius?.bottomRight,
+        all: prevStyles.border?.radius?.all ?? prevStyles.borderRadius ?? prev.border?.radius?.all ?? prev.borderRadius ?? defaults?.border?.radius?.all,
+        topLeft: prevStyles.border?.radius?.topLeft ?? prev.border?.radius?.topLeft ?? defaults?.border?.radius?.topLeft,
+        topRight: prevStyles.border?.radius?.topRight ?? prev.border?.radius?.topRight ?? defaults?.border?.radius?.topRight,
+        bottomLeft: prevStyles.border?.radius?.bottomLeft ?? prev.border?.radius?.bottomLeft ?? defaults?.border?.radius?.bottomLeft,
+        bottomRight: prevStyles.border?.radius?.bottomRight ?? prev.border?.radius?.bottomRight ?? defaults?.border?.radius?.bottomRight,
       },
     },
     background: {
-      type: backgroundType,
-      color: backgroundColor || defaults?.background?.color,
-      repeat: backgroundRepeat || defaults?.background?.repeat || 'no-repeat',
-      size: backgroundCover || defaults?.background?.size || 'auto',
-      position: 'center',
-      gradient: { direction: 'to right', colors: {} },
-      url: backgroundUrl || defaults?.background?.url || '',
-      storedFile: { id: backgroundStoredFileId || null },
-      uploadFile: backgroundBase64 ? { uid: nanoid(), name: '', url: backgroundBase64 } : null,
+      type: prevStyles.background?.type ?? prev.background?.type ?? backgroundType,
+      color: prevStyles.background?.color ?? prev.background?.color ?? backgroundColor ?? defaults?.background?.color,
+      repeat: prevStyles.background?.repeat ?? prev.background?.repeat ?? backgroundRepeat ?? defaults?.background?.repeat ?? 'no-repeat',
+      size: prevStyles.background?.size ?? prev.background?.size ?? backgroundCover ?? defaults?.background?.size ?? 'auto',
+      position: prevStyles.background?.position ?? prev.background?.position ?? 'center',
+      gradient: prevStyles.background?.gradient ?? prev.background?.gradient ?? { direction: 'to right', colors: {} },
+      url: prevStyles.background?.url ?? prev.background?.url ?? backgroundUrl ?? defaults?.background?.url ?? '',
+      storedFile: prevStyles.background?.storedFile ?? prev.background?.storedFile ?? (backgroundStoredFileId ? { id: backgroundStoredFileId } : undefined),
+      uploadFile: prevStyles.background?.uploadFile ?? prev.background?.uploadFile ?? (backgroundBase64 ? { uid: nanoid(), name: '', url: backgroundBase64 } : undefined),
     },
     font: {
-      color: prevStyles?.fontColor || prevStyles.color || defaults?.font?.color,
-      type: prevStyles?.font?.type || defaults?.font?.type,
-      align: prevStyles?.font?.align || defaults?.font?.align || 'left',
-      size: prevStyles?.fontSize as number || fontSizeFromSize || defaults?.font?.size,
-      weight: prevStyles?.fontWeight as string || defaults?.font?.weight || '400',
+      color: prevStyles.font?.color ?? prevStyles.fontColor ?? prevStyles.color ?? prev.font?.color ?? prev.fontColor ?? prev.color ?? defaults?.font?.color,
+      type: prevStyles.font?.type ?? prev.font?.type ?? defaults?.font?.type,
+      align: prevStyles.font?.align ?? prev.font?.align ?? defaults?.font?.align ?? 'left',
+      size: prevStyles.font?.size ?? getNumberOrUndefined(prevStyles.fontSize) ?? prev.font?.size ?? getNumberOrUndefined(prev.fontSize) ?? fontSizeFromSize ?? defaults?.font?.size,
+      weight: prevStyles.font?.weight ?? stringOrUndefined(prevStyles.fontWeight) ?? prev.font?.weight ?? stringOrUndefined(prev.fontWeight) ?? defaults?.font?.weight ?? '400',
     },
     dimensions: {
-      width: prev.block ? '100%' : addPx(prevStyles?.width) ?? addPx(prev?.width) ?? addPx(prev?.dimensions?.width) ?? defaults?.dimensions?.width,
-      height: addPx(prevStyles?.height) ?? addPx(prev?.height) ?? heightFromSize ?? addPx(prev?.dimensions?.height) ?? defaults?.dimensions?.height,
-      minHeight: addPx(prev?.dimensions?.minHeight) ?? defaults?.dimensions?.minHeight,
-      maxHeight: addPx(prev?.dimensions?.maxHeight) ?? defaults?.dimensions?.maxHeight,
-      minWidth: addPx(prev?.dimensions?.minWidth) ?? defaults?.dimensions?.minWidth,
-      maxWidth: addPx(prev?.dimensions?.maxWidth) ?? defaults?.dimensions?.maxWidth,
+      width: prevStyles.dimensions?.width ?? prev.dimensions?.width ?? (prev.block ? '100%' : (addPx(prevStyles.width) ?? addPx(prev.width) ?? defaults?.dimensions?.width)),
+      height: prevStyles.dimensions?.height ?? prev.dimensions?.height ?? addPx(prevStyles.height) ?? addPx(prev.height) ?? heightFromSize ?? defaults?.dimensions?.height,
+      minHeight: prevStyles.dimensions?.minHeight ?? prev.dimensions?.minHeight ?? defaults?.dimensions?.minHeight,
+      maxHeight: prevStyles.dimensions?.maxHeight ?? prev.dimensions?.maxHeight ?? defaults?.dimensions?.maxHeight,
+      minWidth: prevStyles.dimensions?.minWidth ?? prev.dimensions?.minWidth ?? defaults?.dimensions?.minWidth,
+      maxWidth: prevStyles.dimensions?.maxWidth ?? prev.dimensions?.maxWidth ?? defaults?.dimensions?.maxWidth,
     },
     shadow: {
-      offsetX: defaults?.shadow?.offsetX || 0,
-      offsetY: defaults?.shadow?.offsetY || 0,
-      color: defaults?.shadow?.color || '#000',
-      blurRadius: defaults?.shadow?.blurRadius || 0,
-      spreadRadius: defaults?.shadow?.spreadRadius || 0,
+      offsetX: prevStyles.shadow?.offsetX ?? prev.shadow?.offsetX ?? defaults?.shadow?.offsetX ?? 0,
+      offsetY: prevStyles.shadow?.offsetY ?? prev.shadow?.offsetY ?? defaults?.shadow?.offsetY ?? 0,
+      color: prevStyles.shadow?.color ?? prev.shadow?.color ?? defaults?.shadow?.color ?? '#000',
+      blurRadius: prevStyles.shadow?.blurRadius ?? prev.shadow?.blurRadius ?? defaults?.shadow?.blurRadius ?? 0,
+      spreadRadius: prevStyles.shadow?.spreadRadius ?? prev.shadow?.spreadRadius ?? defaults?.shadow?.spreadRadius ?? 0,
     },
-    ...(defaults?.display && { display: defaults?.display || 'block' }),
-    stylingBox: prev?.stylingBox || defaults?.stylingBox || '{}',
+    overflow: prevStyles.overflow ?? prev.overflow ?? defaults?.overflow,
+    ...(defaults?.display && { display: defaults.display ?? 'block' }),
+    stylingBox: prevStyles.stylingBox ?? prev.stylingBox ?? defaults?.stylingBox ?? '{}',
   };
 };
 
@@ -101,9 +108,9 @@ export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Om
   const result: T = {
     ...prev,
     enableStyleOnReadonly: prev.enableStyleOnReadonly || false,
-    desktop: { ...prev.desktop, ...migrateStyles(prev, defaults, 'desktop'), enableStyleOnReadonly: prev.desktop?.enableStyleOnReadonly || false },
-    tablet: { ...prev.tablet, ...migrateStyles(prev, defaults, 'tablet'), enableStyleOnReadonly: prev.tablet?.enableStyleOnReadonly || false },
-    mobile: { ...prev.mobile, ...migrateStyles(prev, defaults, 'mobile'), enableStyleOnReadonly: prev.mobile?.enableStyleOnReadonly || false },
+    desktop: { ...prev.desktop, ...migrateStyles(prev, defaults, 'desktop'), enableStyleOnReadonly: (prev.desktop as IInputStyles | undefined)?.enableStyleOnReadonly ?? false },
+    tablet: { ...prev.tablet, ...migrateStyles(prev, defaults, 'tablet'), enableStyleOnReadonly: (prev.tablet as IInputStyles | undefined)?.enableStyleOnReadonly ?? false },
+    mobile: { ...prev.mobile, ...migrateStyles(prev, defaults, 'mobile'), enableStyleOnReadonly: (prev.mobile as IInputStyles | undefined)?.enableStyleOnReadonly ?? false },
   };
 
   return result;

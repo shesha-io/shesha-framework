@@ -1,0 +1,60 @@
+import { ITextFieldSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
+import React, { useMemo } from 'react';
+import Icon from '@/components/icon/Icon';
+import { useStyles } from '../styles';
+import { Input } from 'antd';
+import { FCUnwrapped } from '@/providers/form/models';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+
+export const TextFieldWrapper: FCUnwrapped<ITextFieldSettingsInputProps> = (props) => {
+  const { className, value, readOnly, size, variant, placeholder, icon, textType, tooltip, label, width, onChange, regExp } = props;
+  const { styles } = useStyles();
+
+  const regExpObj = useMemo(() => {
+    if (!regExp) return null;
+    try {
+      return new RegExp(regExp, 'g');
+    } catch (error) {
+      console.warn(`Invalid regExp pattern for '${props.propertyName}':`, regExp, error);
+      return null;
+    }
+  }, [props.propertyName, regExp]);
+
+  const suffix = useMemo(() => {
+    return icon && (
+      <Icon icon={icon} hint={tooltip || (typeof label === 'string' ? label : undefined)} className={styles.icon} />
+    );
+  }, [icon, tooltip, label, styles.icon]);
+
+  return (
+    <Input
+      size={size}
+      onChange={(e) => {
+        if (!isDefined(onChange))
+          return;
+
+        const inputValue: string | undefined = e.target.value;
+        const isEmpty = isNullOrWhiteSpace(inputValue);
+        const isRegExpMatch = regExpObj && Boolean(inputValue.match(regExpObj));
+        if ((!isEmpty && isRegExpMatch) || !regExpObj || isEmpty) {
+          onChange(inputValue);
+        } else {
+          // Workaround because if the value is undefined, input component leave the inputed value
+          // Rendering of the component is not called
+          // And there is a discrepancy - the value is undefined, but the some text is displayed in the component
+          if (Boolean(regExpObj) && value === undefined && typeof onChange === 'function') {
+            onChange('');
+          }
+        }
+      }}
+      readOnly={readOnly}
+      {...(variant ? { variant } : {})}
+      placeholder={placeholder}
+      style={{ width: width ?? "100%" }}
+      suffix={suffix}
+      value={value as string}
+      {...(textType ? { type: textType } : {})}
+      className={className}
+    />
+  );
+};

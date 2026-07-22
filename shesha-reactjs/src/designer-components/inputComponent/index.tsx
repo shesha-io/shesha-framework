@@ -1,456 +1,97 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, AutoComplete, Button, Input, InputNumber, Radio, Select, Switch } from "antd";
-import { EditableTagGroup, EndpointsAutocomplete, FormComponentSelector, ButtonGroupConfigurator, ColorPicker, FormAutocomplete, LabelValueEditor, PermissionAutocomplete } from '@/components';
-import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
-import { IObjectMetadata } from '@/interfaces/metadata';
-import { evaluateString, evaluateValueAsString, executeScript, useAvailableConstantsData, useMetadata, useShaFormInstance } from '@/index';
-import { ICodeEditorProps } from '@/designer-components/codeEditor/interfaces';
-import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
-import camelcase from 'camelcase';
-import { MultiColorInput } from '@/designer-components/multiColorInput';
-import { useStyles } from './styles';
-import { defaultExposedVariables } from '../_settings/settingsControl';
-import CustomDropdown from '../_settings/utils/CustomDropdown';
-import { Autocomplete } from '@/components/autocomplete';
-import { ContextPropertyAutocomplete } from '../contextPropertyAutocomplete';
-import { IDropdownOption, ISettingsInputProps } from '../settingsInput/interfaces';
-import { QueryBuilder } from '../queryBuilder/queryBuilder';
-import { ColumnsConfig } from '../dataTable/table/columnsEditor/columnsConfig';
-import { DynamicActionsConfigurator } from '../dynamicActionsConfigurator/configurator';
-import { ImagePicker } from '../imagePicker';
-import ReferenceListAutocomplete from '@/components/referenceListAutocomplete';
-import { IconPickerWrapper } from '../iconPicker/iconPickerWrapper';
-import ColumnsList from '../columns/columnsList';
-import KeyInformationBarColumnsList from '../keyInformationBar/columnsList';
-import SizableColumnsList from '../sizableColumns/sizableColumnList';
-import { FiltersList } from '../dataTable/tableViewSelector/filters/filtersList';
-import { ItemListConfiguratorModal } from '../itemListConfigurator/itemListConfiguratorModal';
-import { ConfigurableActionConfigurator } from '../configurableActionsConfigurator/configurator';
-import { formTypes } from '../entityReference/settings';
-import { SortingEditor } from '@/components/dataTable/sortingConfigurator';
-import RefListItemSelectorSettingsModal from '@/components/refListSelectorDisplay/options/modal';
-import { FormLayout } from 'antd/es/form/Form';
-import { CustomLabelValueEditorInputs, getEditor } from './utils';
-import EditModeSelector from '@/components/editModeSelector';
-import Icon from '@/components/icon/Icon';
-import { IQueryBuilderComponentProps } from '../queryBuilder/interfaces';
-import { IDynamicActionsConfiguratorComponentProps } from '../dynamicActionsConfigurator/interfaces';
-import { DatePickerWrapper } from '../dateField/datePickerWrapper';
-import { EntityTypeAutocomplete } from '@/components/configurableItemAutocomplete/entityTypeAutocomplete';
+import React, { FC, ReactNode, useCallback, useMemo, useRef } from 'react';
+import { editorRegistry } from './wrappers';
+import { BaseInputProps } from '../settingsInput/interfaces';
+import { useFormItem, useShaFormInstance } from '@/providers';
+import { Button, Divider, Popover } from 'antd';
+import { RollbackOutlined, SyncOutlined } from '@ant-design/icons';
+import { useDefaultModelActionsOrUndefined, useDefaultModelPropertyUpdateSubscription } from '../_settings/defaultModelProvider/defaultModelProvider';
+import { getValueByPropertyName, setValueByPropertyName } from '@/utils/object';
+import { convertValueToFriendlyString } from './utils';
 
-const { Password } = Input;
-
-export const InputComponent: FC<Omit<ISettingsInputProps, 'hidden'>> = (props) => {
-  const { styles } = useStyles();
-
-  const [formTypesOptions, setFormTypesOptions] = useState<{ value: string }[]>(
-    formTypes.map((i) => {
-      return { value: i };
-    }),
-  );
-
-  const metadataBuilderFactory = useMetadataBuilderFactory();
-  const { formData, setFormData } = useShaFormInstance();
-  const { size, className, value, placeholder, type, dropdownOptions, buttonGroupOptions, defaultValue, componentType, tooltipAlt, iconSize,
-    propertyName, tooltip: description, onChangeSetting, onChange, readOnly, label, availableConstantsExpression, noSelectionItemText, noSelectionItemValue,
-    allowClear, dropdownMode, variant, icon, iconAlt, tooltip, dataSourceType, dataSourceUrl, onAddNewItem, listItemSettingsMarkup, propertyAccessor,
-    referenceList, textType, defaultChecked, showSearch = true, id, templateSettings, regExp,
-  } = props;
-
-  const allData = useAvailableConstantsData();
-
-  const constantsAccessor = useCallback((): Promise<IObjectMetadata> => {
-    if (!availableConstantsExpression?.trim())
-      return Promise.reject("AvailableConstantsExpression is mandatory");
-
-    const metadataBuilder = metadataBuilderFactory();
-
-    return executeScript<IObjectMetadata>(availableConstantsExpression, { data: formData, metadataBuilder });
-  }, [availableConstantsExpression, metadataBuilderFactory, formData]);
-
-  const regExpObj = useMemo(() => {
-    if (!regExp) return null;
-    try {
-      return new RegExp(regExp, 'g');
-    } catch (error) {
-      console.warn('Invalid regExp pattern:', regExp, error);
-      return null;
-    }
-  }, [regExp]);
-
-  const functionName = `get${camelcase(label ?? propertyName, { pascalCase: true })}`;
-
-  const codeEditorProps: ICodeEditorProps = {
-    readOnly: readOnly,
-    description: description,
-    mode: props.mode ?? 'dialog',
-    language: props.language ?? 'typescript',
-    fileName: propertyName,
-    label: label ?? propertyName,
-    wrapInTemplate: props.wrapInTemplate ?? true,
-    value: value,
-    onChange: onChange,
-    templateSettings: templateSettings ?? { functionName: functionName },
-    exposedVariables: defaultExposedVariables,
-  };
-
-  const property = propertyAccessor
-    ? evaluateString(propertyAccessor, { data: formData })
-    : null;
-
-  const meta = useMetadata(false);
-
-  useEffect(() => {
-    if (defaultValue && !value) {
-      onChange(defaultValue);
-    }
-  }, [defaultValue]);
-
-  const propertyMeta = property && meta
-    ? meta.getPropertyMeta(property)
-    : null;
-
-  const verb = props.httpVerb ? evaluateValueAsString(props.httpVerb, { data: formData }) : props.httpVerb;
-
-  const internalOnChange = (v: any): void => {
-    onChangeSetting?.(v, formData, setFormData);
-    onChange?.(v);
-  };
-
-  switch (type) {
-    case 'tooltip':
-      return <Icon icon={icon} hint={tooltip} styles={styles} />;
-    case 'dataSortingEditor':
-      return <SortingEditor value={value} onChange={internalOnChange} readOnly={readOnly} maxItemsCount={props.maxItemsCount} />;
-    case 'colorPicker':
-      return <ColorPicker size={size} value={value} readOnly={readOnly} allowClear onChange={internalOnChange} showText={props.showText} />;
-    case 'dropdown': {
-      const options = dropdownOptions as IDropdownOption[];
-      return (
-        <Select
-          size={size}
-          mode={dropdownMode}
-          allowClear={allowClear ?? true}
-          disabled={readOnly}
-          variant={variant}
-          className={className}
-          showSearch={showSearch}
-          value={!value ? defaultValue : value}
-          defaultValue={defaultValue}
-          style={{ width: props.width ?? "100%" }}
-          onChange={internalOnChange}
-          onSelect={internalOnChange}
-          placeholder={placeholder}
-          options={[...(options || [])].map((option) => ({ ...option, label: <Icon icon={option.label} size={option.value} styles={styles} hint={tooltip} /> }))}
-        />
-      );
-    }
-    case 'radio':
-      return (
-        <Radio.Group buttonStyle="solid" defaultValue={defaultValue} value={value || defaultValue} onChange={internalOnChange} size={size} disabled={readOnly}>
-          {
-            buttonGroupOptions.map(({ value, icon, title }) => {
-              return <Radio.Button key={value} value={value}>{icon ? <Icon icon={icon || title} hint={title} styles={styles} /> : title}</Radio.Button>;
-            })
-          }
-        </Radio.Group>
-      );
-    case 'switch':
-      /* Handle cases where defaultValue is used in place of defaultChecked*/
-      return (
-        <Switch
-          disabled={readOnly}
-          size="small"
-          defaultChecked={defaultChecked ?? defaultValue}
-          onChange={internalOnChange}
-          value={value}
-        />
-      );
-    case 'numberField':
-      return (
-        <InputNumber
-          placeholder={placeholder}
-          controls={!icon}
-          defaultValue={defaultValue}
-          variant={variant}
-          readOnly={readOnly}
-          size={size}
-          value={value}
-          style={{ width: "100%" }}
-          min={props.min}
-          onChange={internalOnChange}
-          addonAfter={icon ? <Icon icon={icon} hint={tooltip || label} styles={styles} /> : null}
-        />
-      );
-    case 'customDropdown': {
-      const options = dropdownOptions as IDropdownOption[];
-
-      return (
-        <CustomDropdown
-          value={value || defaultValue}
-          placeholder={placeholder}
-          defaultValue={defaultValue}
-          options={options.map((option) => ({ ...option, label: <Icon icon={option.label} hint={tooltip} styles={styles} /> }))}
-          readOnly={readOnly}
-          onChange={internalOnChange}
-          size={size}
-          customTooltip={props.customTooltip}
-        />
-      );
-    }
-    case 'customLabelValueEditor': {
-      return <CustomLabelValueEditorInputs {...props} exposedVariables={null} />;
-    }
-    case 'textArea':
-      return (
-        <Input.TextArea
-          rows={2}
-          placeholder={placeholder}
-          value={value || defaultValue}
-          defaultValue={defaultValue}
-          readOnly={readOnly}
-          size={size}
-          onChange={internalOnChange}
-          style={{ top: '4px' }}
-        />
-      );
-    case 'codeEditor':
-      return getEditor(availableConstantsExpression, codeEditorProps, constantsAccessor);
-    case 'iconPicker':
-      return <IconPickerWrapper iconSize={iconSize ?? 20} selectBtnSize={size} defaultValue={value} value={value || defaultValue} readOnly={readOnly} onChange={internalOnChange} applicationContext={allData} />;
-    case 'imageUploader':
-      return (
-        <ImagePicker
-          value={value || defaultValue}
-          readOnly={readOnly}
-          onChange={internalOnChange}
-        />
-      );
-    case 'button':
-      return (
-        <Button
-          style={{ maxWidth: "100%" }}
-          disabled={readOnly}
-          defaultValue={defaultValue}
-          type={value === true ? 'primary' : 'default'}
-          size={size}
-          icon={!value ? <Icon icon={icon} hint={tooltip} styles={styles} /> : <Icon icon={iconAlt || icon} hint={tooltipAlt || tooltip} styles={styles} />}
-          onClick={() => onChange(!value)}
-        />
-      );
-    case 'filtersList':
-      return <FiltersList readOnly={readOnly} {...props} />;
-    case 'buttonGroupConfigurator':
-      return <ButtonGroupConfigurator readOnly={readOnly} size={size} value={value} onChange={internalOnChange} />;
-    case 'editModeSelector':
-      return <EditModeSelector readOnly={readOnly} value={value} onChange={internalOnChange} size={size} />;
-    case 'dynamicItemsConfigurator':
-      return <DynamicActionsConfigurator editorConfig={{ ...props } as IDynamicActionsConfiguratorComponentProps} readOnly={readOnly} value={value} onChange={internalOnChange} size={size} />;
-    case 'autocomplete':
-      return (
-        <Autocomplete
-          dataSourceType={dataSourceType}
-          dataSourceUrl={dataSourceUrl}
-          readOnly={readOnly}
-          value={value || defaultValue}
-          placeholder={placeholder}
-          defaultValue={defaultValue}
-          size={size}
-          {...props}
-          style={{}}
-        />
-      );
-    case 'endpointsAutocomplete':
-      return <EndpointsAutocomplete {...props} size={size} httpVerb={verb} value={value} onChange={internalOnChange} />;
-    case 'referenceListAutocomplete':
-      return <ReferenceListAutocomplete value={value} onChange={internalOnChange} readOnly={readOnly} size={size} />;
-    case 'queryBuilder':
-      return <QueryBuilder {...props as IQueryBuilderComponentProps} hideLabel={true} defaultValue={defaultValue} readOnly={props.readOnly} />;
-    case 'columnsConfig':
-      return <ColumnsConfig size={size} {...props} />;
-    case 'columnsList':
-      return <ColumnsList {...props} readOnly={readOnly} value={value} onChange={internalOnChange} />;
-    case 'keyInformationBarColumnsList':
-      return <KeyInformationBarColumnsList {...props} size={size} readOnly={readOnly} value={value} onChange={internalOnChange} />;
-    case 'sizableColumnsConfig':
-      return <SizableColumnsList {...props} readOnly={readOnly} />;
-    case 'editableTagGroupProps':
-      return <EditableTagGroup value={value} defaultValue={defaultValue} onChange={internalOnChange} readOnly={props.readOnly} />;
-    case 'propertyAutocomplete':
-      return (
-        <PropertyAutocomplete
-          value={value}
-          onChange={internalOnChange}
-          id={props.id}
-          size={size}
-          mode={props.mode}
-          readOnly={readOnly}
-          autoFillProps={props.autoFillProps ?? true}
-          allowClear={props.allowClear ?? true}
-        />
-      );
-    case 'contextPropertyAutocomplete':
-      return (
-        <ContextPropertyAutocomplete
-          {...{ ...props }}
-          onValuesChange={internalOnChange}
-          style={{}}
-          readOnly={readOnly}
-          defaultModelType="defaultType"
-          id="contextPropertyAutocomplete"
-          componentName={formData.componentName}
-          propertyName={formData.propertyName}
-          contextName={formData.context}
-        />
-      );
-    case 'formAutocomplete':
-      return (
-        <FormAutocomplete
-          readOnly={readOnly}
-          size={props.size ?? 'small'}
-          value={value}
-          onChange={internalOnChange}
-        />
-      );
-    case 'labelValueEditor':
-      return <LabelValueEditor {...props} exposedVariables={codeEditorProps.exposedVariables} />;
-    case 'permissions':
-      return <PermissionAutocomplete value={value} readOnly={readOnly} onChange={internalOnChange} size={size} />;
-    case 'multiColorPicker':
-      return <MultiColorInput value={value} onChange={internalOnChange} readOnly={readOnly} propertyName={propertyName} />;
-    case 'itemListConfiguratorModal':
-      return (
-        <ItemListConfiguratorModal
-          readOnly={readOnly}
-          initNewItem={onAddNewItem}
-          value={value}
-          onChange={internalOnChange}
-          size={size}
-          settingsMarkupFactory={() => {
-            return {
-              components: listItemSettingsMarkup,
-              formSettings: {
-                colon: false,
-                layout: 'vertical' as FormLayout,
-                labelCol: { span: 24 },
-                wrapperCol: { span: 24 },
-              },
-            };
-          }}
-          itemRenderer={({ item }) => ({
-            ...item,
-            label: item.title || item.label || item.name,
-            description: item.tooltip,
-          })}
-          buttonText={readOnly ? props.buttonTextReadOnly : props.buttonText}
-          modalSettings={{
-            title: readOnly ? props.modalReadonlySettings.title : props.modalSettings.title,
-            header: <Alert message={readOnly ? props.modalReadonlySettings.header : props.modalSettings.header} />,
-          }}
-        />
-      );
-    case 'formTypeAutocomplete':
-      return (
-        <AutoComplete
-          disabled={readOnly}
-          options={formTypesOptions}
-          size={size ?? 'small'}
-          value={value}
-          onChange={internalOnChange}
-          onSearch={(t) =>
-            setFormTypesOptions(
-              (t
-                ? formTypes.filter((f) => {
-                  return f.toLowerCase().includes(t.toLowerCase());
-                })
-                : formTypes
-              ).map((i) => {
-                return { value: i };
-              }),
-            )}
-        />
-      );
-    case 'configurableActionConfigurator':
-      return <ConfigurableActionConfigurator value={value} onChange={internalOnChange} editorConfig={null} level={0} label={label} allowedActions={props.allowedActions} hideLabel={props.hideLabel} />;
-    case 'entityTypeAutocomplete':
-      return (
-        <EntityTypeAutocomplete
-          type={props.entityAutocompleteType}
-          readOnly={readOnly}
-          size={size}
-          value={value}
-          onChange={internalOnChange}
-        />
-      );
-    case 'componentSelector':
-      return (
-        <FormComponentSelector
-          componentType={componentType}
-          noSelectionItem={noSelectionItemText ? { label: noSelectionItemText, value: noSelectionItemValue } : undefined}
-          readOnly={readOnly}
-          size={size}
-          value={value}
-          onChange={internalOnChange}
-          propertyMeta={propertyMeta}
-        />
-      );
-    case 'RefListItemSelectorSettingsModal':
-      return <RefListItemSelectorSettingsModal {...props} onChange={(e) => onChange(e)} referenceList={referenceList} readOnly={false} />;
-
-    case 'Password':
-      return (
-        <Password
-          value={value || defaultValue}
-          onChange={internalOnChange}
-          size={size}
-          readOnly={readOnly}
-          variant={variant}
-        />
-      );
-
-    case 'date':
-      return (
-        <DatePickerWrapper
-          type="date"
-          id={id}
-          propertyName={propertyName}
-          value={value}
-          defaultValue={defaultValue}
-          onChange={onChange}
-          readOnly={readOnly}
-          hideBorder={false}
-          range={false}
-          showTime={false}
-          showNow={false}
-          picker="date"
-          defaultToMidnight={false}
-          resolveToUTC={false}
-          dateFormat={undefined}
-          timeFormat={undefined}
-          additionalStyles={undefined}
-        />
-      );
-    default:
-      return (
-        <Input
-          size={size}
-          onChange={(e) => {
-            const inputValue: string | undefined = e.target.value?.toString();
-            if (regExpObj && inputValue)
-              onChange(inputValue.replace(regExpObj, ''));
-            else
-              onChange(inputValue);
-          }}
-          readOnly={readOnly}
-          defaultValue={defaultValue}
-          variant={variant}
-          placeholder={placeholder}
-          style={{ width: props.width ?? "100%" }}
-          suffix={<span style={{ height: '20px' }}><Icon icon={icon} hint={tooltip} styles={styles} /></span>}
-          value={value}
-          type={textType}
-        />
-      );
-  }
+// make value unknown to process any type of value (InputComponent is not generic)
+export type InputComponentProps<TValue = unknown> = Omit<BaseInputProps, 'value' | 'onChange'> & {
+  value: TValue | undefined;
+  onChange?: ((value: TValue | undefined) => void) | undefined;
+  skipInheritance?: boolean;
 };
 
+export const InputComponent = <TValue = string>(props: InputComponentProps<TValue>): ReactNode => {
+  const { onChange, onChangeSetting, propertyName } = props;
+  const Editor = editorRegistry[props.type] as FC<BaseInputProps> | undefined;
+  const tempData = useRef<unknown>(null);
+  const [popupOpen, setPopupOpen] = React.useState(false);
+  const { formData, setFormData } = useShaFormInstance();
+  const defaultModel = useDefaultModelActionsOrUndefined();
+  const { namePrefix } = useFormItem();
+
+  const defaultModelPropertyName = Boolean(namePrefix) ? namePrefix + '.' + props.propertyName : props.propertyName;
+
+  useDefaultModelPropertyUpdateSubscription(defaultModelPropertyName);
+
+  // do not memoize because default model can be not initialized
+  const defaultValue = defaultModel
+    ? getValueByPropertyName(defaultModel.getDefaultModel() as Record<string, unknown>, defaultModelPropertyName) as TValue | undefined
+    : undefined;
+
+  const internalOnChange = useCallback((v: TValue | undefined): void => {
+    tempData.current = onChangeSetting?.(v, formData, setFormData, tempData.current);
+    onChange?.(v);
+  }, [onChange, onChangeSetting, formData, setFormData]);
+
+  const setOverride = useCallback((): void => {
+    internalOnChange(defaultValue);
+    const values = setValueByPropertyName({}, propertyName, defaultValue);
+    setFormData({ values, mergeValues: true });
+    setPopupOpen(false);
+  }, [setFormData, propertyName, defaultValue, internalOnChange]);
+  const resetToDefault = useCallback((): void => {
+    internalOnChange(undefined);
+    const values = setValueByPropertyName({}, propertyName, undefined);
+    setFormData({ values, mergeValues: true });
+    setPopupOpen(false);
+  }, [internalOnChange, propertyName, setFormData]);
+
+  const valueInfo = defaultModel?.getValueInfo(defaultModelPropertyName);
+  const isInherited = valueInfo?.state === 'usedDefault';
+  const isOverridden = valueInfo?.state === 'usedModel';
+  const additionalInfo = defaultModel?.getCurrentValueAdditionalInfo(defaultModelPropertyName);
+
+  // ToDo: AS - review memoize
+  const content = useMemo(() => {
+    const addInfo = Boolean(additionalInfo) ? (<div>{additionalInfo}</div>) : null;
+    const inheritanceInfo1 = isInherited ? `This value inherits from ${valueInfo.latestDefaultModelName}` : isOverridden ? `This value is overridden.` : null;
+    const inheritanceInfo2 = isOverridden ? `Inherited value: ${convertValueToFriendlyString(defaultValue)}` : null;
+    return Boolean(inheritanceInfo1) || Boolean(inheritanceInfo2) ? (
+      <div style={{ width: '100%' }}>
+        {Boolean(props.tooltip) && <div>{props.tooltip}</div>}
+        {(Boolean(props.tooltip) && (Boolean(addInfo) || Boolean(inheritanceInfo1) || Boolean(inheritanceInfo2))) && <Divider size="small" />}
+        {addInfo}
+        {(Boolean(addInfo) && (Boolean(inheritanceInfo1) || Boolean(inheritanceInfo2))) && <Divider size="small" />}
+        {Boolean(inheritanceInfo1) && <div>{inheritanceInfo1}</div>}
+        {Boolean(inheritanceInfo2) && <div>{inheritanceInfo2}</div>}
+        <div>{isInherited
+          ? <Button type="link" onClick={() => setOverride()}><SyncOutlined /> Override inheritance</Button>
+          : isOverridden && <Button type="link" onClick={() => resetToDefault()}><RollbackOutlined /> Reset to default</Button>}
+        </div>
+      </div>
+    ) : null;
+  }, [props.tooltip, additionalInfo, isInherited, valueInfo?.latestDefaultModelName, isOverridden, defaultValue, setOverride, resetToDefault]);
+
+  const newProps = { ...props, defaultModelPropertyName, onChange: internalOnChange } as BaseInputProps;
+
+  if (!Editor) return null;
+
+  if (content && !Boolean(props.skipInheritance)) {
+    return (
+      <Popover content={content} trigger="hover" onOpenChange={setPopupOpen} open={popupOpen} autoAdjustOverflow={true} placement="topLeft">
+        <div> {/* div is required to make Popover work for some input components */}
+          <Editor key={newProps.id} {...newProps} />
+        </div>
+      </Popover>
+    );
+  }
+
+  return (
+    <Editor {...newProps} />
+  );
+};

@@ -1,12 +1,10 @@
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
-import { IButtonGroupComponentProps } from './models';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '@/designer-components/_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '@/designer-components/_settings/utils/border/utils';
 import { nanoid } from '@/utils/uuid';
-import { FormMarkupWithSettings } from '@/interfaces';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings = (data: IButtonGroupComponentProps): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   // Generate unique IDs for main sections
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
@@ -15,7 +13,7 @@ export const getSettings = (data: IButtonGroupComponentProps): FormMarkupWithSet
   const styleRouterId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -29,9 +27,10 @@ export const getSettings = (data: IButtonGroupComponentProps): FormMarkupWithSet
             key: 'common',
             title: 'Common',
             id: commonTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
+                inputType: 'textField',
                 propertyName: 'propertyName',
                 label: 'Component Name',
                 parentId: commonTabId,
@@ -91,7 +90,7 @@ export const getSettings = (data: IButtonGroupComponentProps): FormMarkupWithSet
             key: 'appearance',
             title: 'Appearance',
             id: appearanceTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addPropertyRouter({
                 id: styleRouterId,
                 propertyName: 'propertyRouter1',
@@ -106,11 +105,11 @@ export const getSettings = (data: IButtonGroupComponentProps): FormMarkupWithSet
                   _value: "",
                 },
                 components: [
-                  ...new DesignerToolbarSettings()
+                  ...fbf()
                     .addSettingsInputRow({
                       id: nanoid(),
                       parentId: styleRouterId,
-                      readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                      readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                       inputs: [
                         {
                           type: 'dropdown',
@@ -146,7 +145,7 @@ export const getSettings = (data: IButtonGroupComponentProps): FormMarkupWithSet
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: styleRouterId,
@@ -229,16 +228,16 @@ export const getSettings = (data: IButtonGroupComponentProps): FormMarkupWithSet
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addContainer({
                             id: nanoid(),
                             parentId: styleRouterId,
-                            components: getBorderInputs() as any,
+                            components: getBorderInputs(fbf),
                           })
                           .addContainer({
                             id: nanoid(),
                             parentId: styleRouterId,
-                            components: getCornerInputs() as any,
+                            components: getCornerInputs(fbf),
                           })
                           .toJson(),
                         ],
@@ -252,11 +251,11 @@ export const getSettings = (data: IButtonGroupComponentProps): FormMarkupWithSet
                       ghost: true,
                       parentId: styleRouterId,
                       collapsible: 'header',
-                      hidden: { _code: 'return getSettingValue(data?.tabType) === "line";', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return getSettingValue(data?.tabType) === "line";', _mode: 'code', _value: false },
                       content: {
                         id: nanoid(),
                         components: [
-                          ...new DesignerToolbarSettings()
+                          ...fbf()
                             .addSettingsInput({
                               id: nanoid(),
                               parentId: styleRouterId,
@@ -278,7 +277,7 @@ export const getSettings = (data: IButtonGroupComponentProps): FormMarkupWithSet
                                 hideLabel: true,
                                 jsSetting: false,
                               }],
-                              hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false },
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
@@ -290,7 +289,7 @@ export const getSettings = (data: IButtonGroupComponentProps): FormMarkupWithSet
                                 label: "Colors",
                                 jsSetting: false,
                               }],
-                              hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false },
                               hideLabel: true,
                             })
                             .addSettingsInputRow({
@@ -303,7 +302,7 @@ export const getSettings = (data: IButtonGroupComponentProps): FormMarkupWithSet
                                 jsSetting: false,
                                 label: "URL",
                               }],
-                              hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false },
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
@@ -315,12 +314,12 @@ export const getSettings = (data: IButtonGroupComponentProps): FormMarkupWithSet
                                 label: "Image",
                                 jsSetting: false,
                               }],
-                              hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false },
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: styleRouterId,
-                              hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false },
                               inputs: [
                                 {
                                   type: 'textField',
@@ -335,7 +334,7 @@ export const getSettings = (data: IButtonGroupComponentProps): FormMarkupWithSet
                               id: nanoid(),
                               parentId: styleRouterId,
                               inline: true,
-                              hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
                               inputs: [
                                 {
                                   type: 'customDropdown',
@@ -366,10 +365,9 @@ export const getSettings = (data: IButtonGroupComponentProps): FormMarkupWithSet
                                 label: 'Repeat',
                                 hideLabel: true,
                                 propertyName: 'background.repeat',
-                                inputType: 'radio',
                                 buttonGroupOptions: repeatOptions,
                               }],
-                              hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
                             })
                             .toJson(),
                         ],
@@ -385,7 +383,7 @@ export const getSettings = (data: IButtonGroupComponentProps): FormMarkupWithSet
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: styleRouterId,
@@ -454,7 +452,7 @@ export const getSettings = (data: IButtonGroupComponentProps): FormMarkupWithSet
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addStyleBox({
                             id: nanoid(),
                             label: 'Margin Padding',
@@ -475,7 +473,7 @@ export const getSettings = (data: IButtonGroupComponentProps): FormMarkupWithSet
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInput({
                             id: nanoid(),
                             inputType: 'codeEditor',
@@ -496,7 +494,7 @@ export const getSettings = (data: IButtonGroupComponentProps): FormMarkupWithSet
             key: 'security',
             title: 'Security',
             id: securityTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'permissions',

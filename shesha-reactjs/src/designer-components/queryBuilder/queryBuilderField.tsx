@@ -3,29 +3,31 @@ import { JsonLogicResult } from '@react-awesome-query-builder/antd';
 import { Button, Collapse, Modal, Space } from 'antd';
 import React, { FC, useState } from 'react';
 import { useMedia } from 'react-use';
-import { QueryBuilder, Show } from '@/components';
 import { CodeEditor } from '@/components/codeEditor/codeEditor';
 import { IQueryBuilderFieldProps } from './models';
 import { useStyles } from './styles/styles';
+import { QueryBuilder } from '@/components/queryBuilder';
+import { Show } from '@/components/show';
+import { isDefined } from '@/utils/nullables';
 
 export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
   const { styles } = useStyles();
   const [modalVisible, setModalVisible] = useState(false);
-  const [jsonLogicResult, setJsonLogicResult] = useState<JsonLogicResult>(undefined);
+  const [jsonLogicResult, setJsonLogicResult] = useState<JsonLogicResult | undefined>(undefined);
   const [jsonExpanded, setJsonExpanded] = useState(props.jsonExpanded ?? false);
   const isSmall = useMedia('(max-width: 480px)');
 
   const { readOnly = false } = props;
 
   const onOkClick = (): void => {
-    if (jsonLogicResult) {
-      if (jsonLogicResult && jsonLogicResult.errors && jsonLogicResult.errors.length > 0) {
+    if (isDefined(jsonLogicResult)) {
+      if (jsonLogicResult.errors && jsonLogicResult.errors.length > 0) {
         // show errors
         return;
       }
 
       if (props.onChange) {
-        props.onChange(jsonLogicResult?.logic);
+        props.onChange(jsonLogicResult.logic ?? null);
       }
     }
     setModalVisible(false);
@@ -39,14 +41,14 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
     setJsonExpanded(!jsonExpanded);
   };
 
-  const hasValue = Boolean(props?.value);
+  const hasValue = Boolean(props.value);
 
   return (
     <div className={styles.shaQueryBuilderMarginTop8}>
       <Collapse
         className={styles.shaQueryBuilderField}
-        activeKey={jsonExpanded ? '1' : null}
-        expandIconPosition="end"
+        {...(jsonExpanded ? { activeKey: '1' } : {})}
+        expandIconPlacement="end"
         bordered={false}
         ghost={true}
         expandIcon={({ isActive }) =>
@@ -74,7 +76,7 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
                     size="small"
                     danger
                     onClick={() => {
-                      if (props?.onChange) props.onChange(null);
+                      if (props.onChange) props.onChange(null);
                     }}
                   >
                     Clear

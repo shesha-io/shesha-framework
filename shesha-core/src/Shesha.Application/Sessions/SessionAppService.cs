@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Shesha.Authorization;
 using Shesha.AutoMapper.Dto;
 using Shesha.Domain;
+using Shesha.DynamicEntities.ErrorHandler;
 using Shesha.Extensions;
 using Shesha.Sessions.Dto;
 using System;
@@ -18,13 +19,19 @@ namespace Shesha.Sessions
     {
         private readonly IRepository<ShaRoleAppointedPerson, Guid> _roleAppointmentRepository;
         private readonly IShaPermissionChecker _permissionChecker;
+        private readonly IDynamicEntitiesErrorHandler _dynamicEntitiesErrorHandler;
 
         public IHomePageRouter HomePageRouter { get; set; } = new NullHomePageRouter();
 
-        public SessionAppService(IRepository<ShaRoleAppointedPerson, Guid> roleAppointmentRepository, IShaPermissionChecker permissionChecker)
+        public SessionAppService(
+            IRepository<ShaRoleAppointedPerson, Guid> roleAppointmentRepository,
+            IShaPermissionChecker permissionChecker,
+            IDynamicEntitiesErrorHandler dynamicEntitiesErrorHandler
+        )
         {
             _roleAppointmentRepository = roleAppointmentRepository;
             _permissionChecker = permissionChecker;
+            _dynamicEntitiesErrorHandler = dynamicEntitiesErrorHandler;
         }
 
         [AllowAnonymous]
@@ -56,8 +63,17 @@ namespace Shesha.Sessions
                     MobileNumber = user.PhoneNumber,
                     GrantedPermissions = await GetGrantedPermissionsAsync(),
                     PersonId = person.Id,
-                    HomeUrl = homeUrl
+                    HomeUrl = homeUrl,
+                    RequireChangePassword = user.RequireChangePassword
                 };
+
+                // Send initialization errors only for Application Configurators
+                if (await _permissionChecker.IsGrantedAsync(ShaPermissionNames.Application_Configurator))
+                    output.InitializationErrors = new InitializationErrorsInfoDto()
+                    {
+                        LastInitialization = _dynamicEntitiesErrorHandler.LastComplete,
+                        Errors = _dynamicEntitiesErrorHandler.Exceptions.Select(x => x.Message).ToList(),
+                    };
             }
 
             return output;
@@ -73,46 +89,29 @@ namespace Shesha.Sessions
                 if (currentUser == null)
                     return grantedPermissions;
 
-                var roles = await _roleAppointmentRepository.GetAll().Where(a => a.Person == currentUser).ToListAsync();
-                var allPermissionNames = PermissionManager.GetAllPermissions(false).Select(p => p.Name).ToList();
+                var roles = await _roleAppointmentRepository.GetAllListAsync(a => a.Person == currentUser);
+                var allPermissionNames = (await PermissionManager.GetAllPermissionsAsync(false)).Select(p => p.Name).ToList();
 
                 foreach (var permissionName in allPermissionNames)
                 {
                     if (await PermissionChecker.IsGrantedAsync(permissionName))
                     {
-                        var permissionRoles = roles.Where(x => x.Role != null && x.Role.Permissions.Any(p => p.Permission == permissionName)).ToList();
+                        var permissionRoles = roles.Where(x => x.Role.Permissions.Any(p => p.Permission == permissionName)).ToList();
                         grantedPermissions.Add(new GrantedPermissionDto
                         {
                             Permission = permissionName,
                             PermissionedEntity = permissionRoles.Any(x => !x.PermissionedEntities.Any())
                                 ? new List<EntityReferenceDto<string>>()
                                 : permissionRoles.SelectMany(x => x.PermissionedEntities).Distinct()
-                                    .Select(x => new EntityReferenceDto<string>(x.Id, x._displayName, x._className))
+                                    .Select(x => new EntityReferenceDto<string>(x.Id, x._className, x._displayName))
                                     .ToList()
-                        }); ;
-                    }
-                }
-
-                foreach(var role in roles)
-                {
-                    var permissions = role.Role?.Permissions;
-                    if (permissions == null || permissions.Any())
-                        continue;
-
-                    foreach (var permission in permissions.Where(x => x.IsGranted))
-                    {
-                        var grantedPermission = new GrantedPermissionDto
-                        {
-                            Permission = permission.Permission,
-                            PermissionedEntity = role.PermissionedEntities.Select(x => new EntityReferenceDto<string>(x.Id, x._displayName, x._className)).ToList(),
-                        };
+                        });
                     }
                 }
             }
 
             return grantedPermissions;
         }
-
 
         /// <summary>
         /// I am using this method to get user roles and it is being used on login of a user and also when changing work Order Type, Please contact me(Moses) before removing it
@@ -126,9 +125,9 @@ namespace Shesha.Sessions
                 : null;
             if (currentUser == null)
                 return new List<string>();
-            var roles = await _roleAppointmentRepository.GetAll()
-                .Where(a => a.Person == currentUser && a.Role != null)
-                .Select(a => a.Role!.Name)
+            var roles = await (await _roleAppointmentRepository.GetAllAsync())
+                .Where(a => a.Person == currentUser)
+                .Select(a => a.Role.Name)
                 .Distinct()
                 .ToListAsync();
             return roles;

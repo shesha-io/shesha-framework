@@ -30,10 +30,14 @@ using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.GraphQL;
 using Shesha.GraphQL.Middleware;
+using Shesha.GraphQL.Swagger;
 using Shesha.Identity;
-using Shesha.Notifications.SMS;
 using Shesha.Notifications;
+using Shesha.Notifications.SMS;
+using Shesha.RateLimiting;
 using Shesha.Scheduler.Extensions;
+using Shesha.Specifications;
+using Shesha.Startup;
 using Shesha.Swagger;
 using Shesha.Web;
 using Swashbuckle.AspNetCore.Swagger;
@@ -41,8 +45,6 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.IO;
 using System.Reflection;
-using Shesha.Specifications;
-using Shesha.Startup;
 
 namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 {
@@ -57,7 +59,7 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 			_hostEnvironment = hostEnvironment;
 		}
 
-		public IServiceProvider ConfigureServices(IServiceCollection services)
+		public void ConfigureServices(IServiceCollection services)
 		{
 			services.UseDynamicWebApi();
 
@@ -67,6 +69,8 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 			});
             
             services.AddSheshaElmah(_appConfiguration);
+
+            services.AddSheshaRateLimiting(opts => _appConfiguration.GetSection("RateLimiting").Bind(opts));
 
             services.AddMvcCore(options =>
 			{
@@ -90,7 +94,9 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 			IdentityRegistrar.Register(services);
 			AuthConfigurer.Configure(services, _appConfiguration);
 
-			services.AddSignalR();
+			services.AddSignalR(options => { 
+				options.EnableDetailedErrors = true;
+			});
 
 			services.AddCors();
 			
@@ -131,7 +137,7 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 
 			// Add ABP and initialize 
 			// Configure Abp and Dependency Injection
-			return services.AddAbp<SheshaWebHostModule>(
+			services.AddAbpWithoutCreatingServiceProvider<SheshaWebHostModule>(
 				options =>
 				{
 					// Configure Log4Net logging
@@ -165,9 +171,10 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 				.SetIsOriginAllowed(origin => true) // allow any origin
 				.AllowCredentials()); // allow credentials​
 			app.UseStaticFiles();
+			app.UseRouting();
+			app.UseRateLimiter();
 			app.UseAuthentication();
 			app.UseAbpRequestLocalization();
-			app.UseRouting();
 			app.UseAuthorization();
 
 			app.UseEndpoints(endpoints =>
@@ -220,6 +227,8 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 				options.IgnoreObsoleteActions();
 				options.AddXmlDocuments();
 
+                options.SchemaFilter<JsonIgnoreSchemaFilter>();
+                options.SchemaFilter<GraphQLSchemaFilter>();
                 options.SchemaFilter<DynamicDtoSchemaFilter>();
                 options.OperationFilter<SwaggerOperationFilter>();
 				options.DocumentFilter<SwaggerDocumentFilter>();
@@ -240,7 +249,6 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 					In = ParameterLocation.Header,
 					Type = SecuritySchemeType.ApiKey
 				});
-				//options.SchemaFilter<DynamicDtoSchemaFilter>();
 			});
 			services.Replace(ServiceDescriptor.Transient<ISwaggerProvider, CachingSwaggerProvider>());
 

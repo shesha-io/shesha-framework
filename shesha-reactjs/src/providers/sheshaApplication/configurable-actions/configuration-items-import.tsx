@@ -1,9 +1,6 @@
 import { ConfigurationItemsImport, IImportInterface } from '@/components/configurationFramework/itemsImport';
 import React, {
-  FC,
-  MutableRefObject,
-  useRef,
-  useState,
+  FC, useState,
 } from 'react';
 import { Button, App } from 'antd';
 import { ICommonModalProps } from '../../dynamicModal/models';
@@ -12,31 +9,34 @@ import { nanoid } from '@/utils/uuid';
 import { SheshaActionOwners } from '../../configurableActionsDispatcher/models';
 import { useAppConfiguratorState, useDynamicModals } from '@/providers';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
-import { ValidationErrors } from '@/components';
+import { ValidationErrors } from '@/components/validationErrors';
+import { throwError } from '@/utils/errors';
+import { MutableApi } from '@/configuration-studio/cs/utils';
 
 const actionsOwner = 'Configuration Items';
 
 interface IConfigurationItemsImportFooterProps {
   hideModal: () => void;
-  importerRef: MutableRefObject<IImportInterface | undefined>;
+  importerApi: MutableApi<IImportInterface>;
 }
 
 export const ConfigurationItemsImportFooter: FC<IConfigurationItemsImportFooterProps> = (props) => {
   const [inProgress, setInProgress] = useState(false);
-  const { hideModal, importerRef: exporterRef } = props;
+  const { hideModal, importerApi } = props;
   const { message, notification } = App.useApp();
 
   const onImport = (): void => {
     setInProgress(true);
 
-    exporterRef.current.importExecuter().then(() => {
+    const importer = importerApi.getApi() ?? throwError("importerRef is not defined");
+    importer.importExecuter().then(() => {
       message.info('Items imported successfully');
       hideModal();
-    }).catch((error) => {
+    }).catch((error: unknown) => {
       notification.error({
-        message: "Failed to import package",
+        title: "Failed to import package",
         icon: null,
-        description: <ValidationErrors error={error} renderMode="raw" defaultMessage={null} />,
+        description: <ValidationErrors error={error} renderMode="raw" defaultMessage="" />,
       });
       setInProgress(false);
     });
@@ -53,7 +53,7 @@ export const ConfigurationItemsImportFooter: FC<IConfigurationItemsImportFooterP
 export const useConfigurationItemsImportAction = (): void => {
   const { createModal, removeModal } = useDynamicModals();
   const appConfigState = useAppConfiguratorState();
-  const exporterRef = useRef<IImportInterface>();
+  const [importerApi] = useState<MutableApi<IImportInterface>>(() => new MutableApi<IImportInterface>());
 
   useConfigurableAction({
     name: 'Import items',
@@ -80,7 +80,7 @@ export const useConfigurationItemsImportAction = (): void => {
           title: "Import Configuration",
           width: "60%",
           isVisible: true,
-          onClose: (positive, result) => {
+          onClose: (positive = false, result) => {
             if (positive) {
               resolve(result);
             } else {
@@ -88,8 +88,8 @@ export const useConfigurationItemsImportAction = (): void => {
             }
           },
           showModalFooter: false,
-          content: <ConfigurationItemsImport onImported={onImported} importRef={exporterRef} />,
-          footer: <ConfigurationItemsImportFooter hideModal={hideModal} importerRef={exporterRef} />,
+          content: <ConfigurationItemsImport onImported={onImported} setImporterApi={importerApi.setApi} />,
+          footer: <ConfigurationItemsImportFooter hideModal={hideModal} importerApi={importerApi} />,
         };
         createModal({ ...modalProps });
       });

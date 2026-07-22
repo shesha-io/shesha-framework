@@ -7,8 +7,6 @@ using Shesha.Scheduler.Attributes;
 using Shesha.Scheduler.Domain.Enums;
 using Shesha.Services;
 using System;
-using System.Linq;
-using System.Linq.Dynamic.Core;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -31,7 +29,7 @@ namespace Shesha.DelayedUpdate
         public async override Task DoExecuteAsync(CancellationToken cancellationToken)
         {
             var date = DateTime.Now.AddDays(-2);
-            var files = _fileRepository.GetAll().Where(x => x.Temporary && x.CreationTime < date).ToList();
+            var files = await _fileRepository.GetAllListAsync(x => x.Temporary && x.CreationTime < date);
 
             for (int i = 0; i < files.Count; i++)
             {

@@ -1,7 +1,7 @@
-import { IStyleType } from "@/index";
+import { IStyleValue } from "@/providers/form/models";
 import { ICollapsiblePanelComponentProps } from "./interfaces";
 
-export const defaultStyles = (prev: ICollapsiblePanelComponentProps): IStyleType => {
+export const defaultStyles = (prev: ICollapsiblePanelComponentProps): IStyleValue => {
   const bodyColor = prev.bodyColor || '#fff';
   const { ghost, borderRadius } = prev;
 
@@ -23,12 +23,12 @@ export const defaultStyles = (prev: ICollapsiblePanelComponentProps): IStyleType
       radius: { all: borderRadius || 8 },
     },
     shadow: { blurRadius: 0, color: 'rgba(0, 0, 0, 0.15)', offsetX: 0, offsetY: 0, spreadRadius: 0 },
-    stylingBox: '{"marginBottom":"5","paddingLeft":"8","paddingBottom":"8","paddingTop":"8","paddingRight":"8"}',
+    stylingBox: '{"paddingLeft":"8","paddingBottom":"8","paddingTop":"8","paddingRight":"8","marginLeft":"0","marginBottom":"5","marginTop":"0","marginRight":"0"}',
   };
 };
 
-export const defaultHeaderStyles = (prev: ICollapsiblePanelComponentProps): IStyleType => {
-  const headerBgColor = prev?.headerColor || '#fff';
+export const defaultHeaderStyles = (prev: ICollapsiblePanelComponentProps): IStyleValue => {
+  const headerBgColor = prev.headerColor || '#fff';
   const { isSimpleDesign, borderRadius } = prev;
 
   return {
@@ -49,7 +49,7 @@ export const defaultHeaderStyles = (prev: ICollapsiblePanelComponentProps): ISty
       },
       radius: { all: borderRadius || 8 },
     },
-    stylingBox: '{"paddingLeft":"8","paddingBottom":"8","paddingTop":"8","paddingRight":"8"}',
+    stylingBox: '{"paddingLeft":"8","paddingBottom":"8","paddingTop":"8","paddingRight":"8","marginLeft":"0","marginBottom":"0","marginTop":"0","marginRight":"0"}',
   };
 };
 

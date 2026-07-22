@@ -1,4 +1,4 @@
-import { PropsWithChildren, ReactNode } from 'react';
+import { FC, PropsWithChildren, ReactNode } from 'react';
 import { ValidateErrorEntity } from '@/interfaces';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
@@ -20,18 +20,22 @@ export interface IModalBaseProps {
    */
   isVisible: boolean;
 
-  destroyOnClose?: boolean;
+  destroyOnClose?: boolean | undefined;
 
-  width?: number | string;
+  width?: number | string | undefined;
 
-  onCancel?: () => void;
+  onCancel?: (() => void) | undefined;
 
-  showCloseIcon?: boolean;
+  showCloseIcon?: boolean | undefined;
 }
 
 export type ModalFooterButtons = 'default' | 'custom' | 'none';
 
-export interface IModalWithConfigurableFormProps<Values = any> extends IModalBaseProps {
+export interface IClosableModalProps<Values extends object = object> {
+  onClose?: ((positive?: boolean, result?: Values | undefined) => void) | undefined;
+}
+
+export interface IModalWithConfigurableFormProps<Values extends object = object> extends IModalBaseProps, IClosableModalProps<Values> {
   /**
    * Id of the form to be rendered on the markup
    */
@@ -40,19 +44,19 @@ export interface IModalWithConfigurableFormProps<Values = any> extends IModalBas
   /**
    * Mode of the form: "designer" | "edit" | "readonly"
    */
-  mode?: FormMode;
+  mode?: FormMode | undefined;
 
   /**
    * Form argurments
    */
-  formArguments?: any;
+  formArguments?: object | undefined;
 
   /**
    * Initial values of the modal
    */
-  initialValues?: any;
+  initialValues?: object | undefined;
 
-  parentFormValues?: any;
+  parentFormValues?: object | undefined;
 
   /**
    * Whether the modal footer should be shown. The modal footer shows default buttons Submit and Cancel.
@@ -62,44 +66,44 @@ export interface IModalWithConfigurableFormProps<Values = any> extends IModalBas
    * @deprecated - use `footerButtons` instead
    */
 
-  showModalFooter?: boolean;
+  showModalFooter?: boolean | undefined;
 
   /**
    * A callback to execute when the form has been submitted
    */
-  onSubmitted?: (values?: Values) => void;
+  onSubmitted?: ((values?: Values) => void) | undefined;
 
-  onFailed?: (errorInfo: ValidateErrorEntity<any>) => void;
+  onFailed?: ((errorInfo: ValidateErrorEntity<Values>) => void) | undefined;
 
   footerButtons?: ModalFooterButtons | undefined;
 
-  buttons?: ButtonGroupItemProps[];
+  buttons?: ButtonGroupItemProps[] | undefined;
 
-  wrapper?: (props: PropsWithChildren) => React.ReactNode;
+  wrapper?: FC<PropsWithChildren> | undefined;
   /**
    * Whether to show the close icon in the modal header
    * @default true
    */
-  showCloseIcon?: boolean;
+  showCloseIcon?: boolean | undefined;
 }
 
-export interface IModalWithContentProps<Values = any> extends IModalBaseProps {
-  footer?: ReactNode;
-  content: ReactNode;
-  onClose?: (positive?: boolean, result?: Values) => void;
+export interface IModalWithContentProps<Values extends object = object> extends IModalBaseProps, IClosableModalProps<Values> {
+  footer?: ReactNode | string | undefined;
+  content: ReactNode | string;
 }
 /**
  * Dynamic Modal properties
  */
-export interface IModalProps<Values = any> extends IModalWithConfigurableFormProps<Values> {
-  onClose?: (positive?: boolean, result?: Values) => void;
+export interface IModalProps<Values extends object = object> extends IModalWithConfigurableFormProps<Values>, IClosableModalProps<Values> {
+
 };
-export type ICommonModalProps<Values = any> = IModalWithContentProps<Values> | IModalWithConfigurableFormProps<Values>;
+
+export type ICommonModalProps<Values extends object = object> = IModalWithContentProps<Values> | IModalWithConfigurableFormProps<Values>;
 
 /**
  * Modal dialog instance
  */
-export interface IModalInstance {
+export interface IModalInstance<Values extends object = object> {
   id: string;
   isVisible: boolean;
   props: ICommonModalProps;
@@ -107,9 +111,9 @@ export interface IModalInstance {
   /**
    * Useful if you want to close the latest dialog using an action
    */
-  index?: number;
+  index: number;
 
-  onClose?: (positive?: boolean, result?: any) => void;
+  onClose?: ((positive?: boolean, result?: Values) => void) | undefined;
 }
 
 /**

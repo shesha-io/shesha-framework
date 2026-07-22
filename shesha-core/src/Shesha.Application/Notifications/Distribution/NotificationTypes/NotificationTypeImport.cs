@@ -2,7 +2,6 @@
 using Abp.Domain.Repositories;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
-using Shesha.Extensions;
 using Shesha.Notifications.Distribution.NotificationTypes.Dto;
 using Shesha.Services.ConfigurationItems;
 using System;
@@ -32,7 +31,7 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
             _manager = manager;           
         }
 
-        public string ItemType => NotificationTypeConfig.ItemTypeName;
+        public override string ItemType => NotificationTypeConfig.ItemTypeName;
 
         protected override async Task AfterImportAsync(NotificationTypeConfig item, DistributedNotificationType distributedItem, IConfigurationItemsImportContext context)
         {
@@ -41,7 +40,7 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
 
         private async Task ImportTemplatesAsync(NotificationTypeConfig item, List<DistributedNotificationTemplateDto> templates)
         {
-            var dbTemplates = await _templateRepo.GetAll().Where(e => e.PartOf == item).ToListAsync();
+            var dbTemplates = await _templateRepo.GetAllListAsync(e => e.PartOf == item);
 
             foreach (var templateDto in templates) 
             {
@@ -74,14 +73,14 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
                 item.AllowAttachments == distributedItem.AllowAttachments &&
                 item.Disable == distributedItem.Disable &&
                 item.CanOptOut == distributedItem.CanOptOut &&
-                item.Category == distributedItem.Category &&
-                item.OverrideChannels == distributedItem.OverrideChannels;
+                (item.Category ?? string.Empty) == (distributedItem.Category ?? string.Empty) &&
+                IdListsEqual(item.OverrideChannels ?? new List<ConfigurationItemIdentifierDto>(), distributedItem.OverrideChannels ?? new List<ConfigurationItemIdentifierDto>());
 
             if (!equals)
                 return false;
 
             // compare templates
-            var dbTemplates = await _templateRepo.GetAll().Where(e => e.PartOf == item).ToListAsync();
+            var dbTemplates = await _templateRepo.GetAllListAsync(e => e.PartOf == item);
             if (dbTemplates.Count() != distributedItem.Templates.Count)
                 return false;
 
@@ -97,6 +96,11 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
                     return false;
             }
             return true;
+        }
+
+        private bool IdListsEqual(IList<ConfigurationItemIdentifierDto> listA, IList<ConfigurationItemIdentifierDto> listB)
+        { 
+            return listA.Count == listB.Count && listA.All(listB.Contains);
         }
 
         protected override Task MapCustomPropsToItemAsync(NotificationTypeConfig item, DistributedNotificationType distributedItem)

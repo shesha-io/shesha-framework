@@ -2,7 +2,7 @@ import { Form, FormProps } from 'antd';
 import React, { FC, Fragment, PropsWithChildren } from 'react';
 
 interface IProps {
-  readonly formProps?: FormProps;
+  readonly formProps?: FormProps | undefined;
 }
 
 export const PasswordComboWrapper: FC<PropsWithChildren<IProps>> = ({ children, formProps }) => {

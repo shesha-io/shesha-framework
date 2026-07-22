@@ -1,9 +1,12 @@
-import { IActionExecutionContext } from "@/interfaces/configurableAction";
-import { executeScript } from "../form/utils";
+import { IModalInstance } from "./models";
 
-export const prepareDialogArguments = (expression: string, context: IActionExecutionContext): Promise<any> => {
-  if (!expression?.trim())
-    return Promise.resolve({});
+export const getLatestInstance = (instances: { [index: string]: IModalInstance }, predicate: (instance: IModalInstance) => boolean): IModalInstance | undefined => {
+  let highestInstance: IModalInstance | undefined = undefined;
 
-  return executeScript(expression, context);
+  for (const key of Object.keys(instances)) {
+    const instance = instances[key];
+    if (instance && predicate(instance) && (highestInstance === undefined || instance.index > highestInstance.index))
+      highestInstance = instance;
+  }
+  return highestInstance;
 };

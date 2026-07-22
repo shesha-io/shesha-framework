@@ -1,22 +1,28 @@
 import { useCallback } from "react";
-import { isPropertiesArray } from "@/interfaces/metadata";
+import { IPropertyMetadata, isPropertiesArray, isPropertiesLoader } from "@/interfaces/metadata";
 import { SheshaCommonContexts } from "@/providers/dataContextManager/models";
-import { useDataContextManagerActions } from "@/providers/dataContextManager";
+import { useDataContextManagerActions } from "@/providers/dataContextManager/hooks";
 import { IObjectMetadataBuilder, MetadataBuilderAction } from "../metadataBuilder";
 
 export const useAppContextRegistration = (): MetadataBuilderAction => {
   const { getDataContext } = useDataContextManagerActions();
 
-  const action = useCallback((builder: IObjectMetadataBuilder) => {
+  return useCallback((builder: IObjectMetadataBuilder) => {
     const appContext = getDataContext(SheshaCommonContexts.ApplicationContext);
-    if (appContext?.metadata) {
-      builder.addObject(SheshaCommonContexts.ApplicationContext, "", (builder) => {
-        if (isPropertiesArray(appContext.metadata.properties))
-          builder.setProperties(appContext.metadata.properties);
-        return builder;
+    const metadata = appContext?.metadata;
+    if (metadata && isPropertiesArray(metadata.properties)) {
+      // Strip lazy-loaded properties (e.g. entities, settings) to prevent HTTP fetches
+      // when the expression editor builds its autocomplete context.
+      const safeProperties = metadata.properties.map((prop): IPropertyMetadata => {
+        if (!isPropertiesLoader(prop.properties)) return prop;
+        const safe: IPropertyMetadata = { ...prop, properties: undefined };
+        Reflect.deleteProperty(safe, 'typeDefinitionLoader');
+        return safe;
+      });
+      builder.addObject(SheshaCommonContexts.ApplicationContext, "", (b) => {
+        b.setProperties(safeProperties);
+        return b;
       });
     }
-  }, []);
-
-  return action;
+  }, [getDataContext]);
 };

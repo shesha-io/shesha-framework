@@ -15,7 +15,7 @@ export interface IRefListDropDownOption {
   value?: Key;
 }
 
-export interface IRefListRadioButtonsProps extends RadioGroupProps {
+export interface IRefListRadioButtonsProps extends Omit<RadioGroupProps, "orientation"> {
   /** Reference list name */
   listName: string;
 
@@ -50,7 +50,7 @@ const RefListRadioButtons: FC<IRefListRadioButtonsProps> = ({
   ...rest
 }) => {
   const { styles } = useStyles();
-  const { data: refList } = useReferenceList(getLegacyReferenceListIdentifier(listNamespace, listName));
+  const { data: refList } = useReferenceList(getLegacyReferenceListIdentifier(listNamespace, listName) ?? undefined);
 
   const filter = ({ itemValue }: ReferenceListItemDto): boolean => {
     return filters.includes(itemValue);
@@ -58,7 +58,7 @@ const RefListRadioButtons: FC<IRefListRadioButtonsProps> = ({
 
   const numericValue = typeof value === 'number' ? value : value?.itemValue;
 
-  const options = filters?.length ? refList?.items?.filter(filter) : refList?.items;
+  const options = filters.length ? refList?.items.filter(filter) : refList?.items;
 
   const radioProps = { ...rest, value: options ? numericValue : null };
 
@@ -69,7 +69,7 @@ const RefListRadioButtons: FC<IRefListRadioButtonsProps> = ({
 
   const handleChange = (event: RadioChangeEvent): void => {
     if (onSelectionChange) {
-      onSelectionChange(event?.target?.value, event);
+      onSelectionChange(event.target.value as number, event);
     }
 
     if (onChange) {

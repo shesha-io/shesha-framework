@@ -13,6 +13,7 @@ namespace Shesha.Domain
     public class PermissionDefinition : ConfigurationItem
     {
         public const string ItemTypeName = "permission-definition";
+        public override string ItemType => ItemTypeName;
 
         /// <summary>
         /// Parent of this permission if one exists.

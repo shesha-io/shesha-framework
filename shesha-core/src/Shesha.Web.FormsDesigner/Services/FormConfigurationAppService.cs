@@ -5,7 +5,6 @@ using Abp.Runtime.Validation;
 using Abp.Threading;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
 using Shesha.ConfigurationItems.Cache;
@@ -17,7 +16,6 @@ using Shesha.Extensions;
 using Shesha.Mvc;
 using Shesha.Permissions;
 using Shesha.Reflection;
-using Shesha.Utilities;
 using Shesha.Web.FormsDesigner.Dtos;
 using Shesha.Web.FormsDesigner.Dtos.Forms;
 using Shesha.Web.FormsDesigner.Exceptions;
@@ -190,8 +188,7 @@ namespace Shesha.Web.FormsDesigner.Services
             var moduleEntity = await GetModuleAsync(input.Module);
 
             // todo: move to a generic method
-            var query = Repository.GetAll().Where(f => f.Module == moduleEntity &&
-                f.Name == input.Name);
+            var query = (await Repository.GetAllAsync()).Where(f => f.Module == moduleEntity && f.Name == input.Name);
 
             var form = await AsyncQueryableExecuter.FirstOrDefaultAsync(query);
 
@@ -235,12 +232,6 @@ namespace Shesha.Web.FormsDesigner.Services
             return dto;
         }
 
-        private string GetMd5(FormConfigurationDto dto)
-        {
-            var json = JsonConvert.SerializeObject(dto);
-            return json.ToMd5Fingerprint();
-        }
-
         /// <summary>
         /// Update form markup
         /// </summary>
@@ -251,9 +242,10 @@ namespace Shesha.Web.FormsDesigner.Services
         {
             // todo: check rights
             var form = await Repository.GetAsync(input.Id);
+            form.Module?.EnsureEditable();
 
             form.Markup = input.Markup;
-            await Repository.UpdateAsync(form);
+            form.ModelType = input.ModelType;
 
             await Repository.UpdateAsync(form);
 
@@ -297,6 +289,7 @@ namespace Shesha.Web.FormsDesigner.Services
         public async Task<FormConfigurationDto> ImportJsonAsync([FromForm] ImportFormJsonInput input)
         {
             var item = await Repository.GetAsync(input.ItemId);
+            item.Module?.EnsureEditable();
             
             var validationResults = new List<ValidationResult>();
 
@@ -334,7 +327,7 @@ namespace Shesha.Web.FormsDesigner.Services
 
             var validationResults = new List<ValidationResult>();
 
-            var alreadyExist = await Repository.GetAll().Where(f => f.Id != input.Id && f.Module != null && f.Module.Name == input.ModelType && f.Name == input.Name).AnyAsync();
+            var alreadyExist = await Repository.AnyAsync(f => f.Id != input.Id && f.Module != null && f.Module.Name == input.ModelType && f.Name == input.Name);
             if (alreadyExist)
                 validationResults.Add(new ValidationResult(
                     input.ModelType != null
@@ -347,14 +340,15 @@ namespace Shesha.Web.FormsDesigner.Services
                 throw new AbpValidationException("Please correct the errors and try again", validationResults);
 
             var entity = await GetEntityByIdAsync(input.Id);
+            entity.Module?.EnsureEditable();
 
             entity.Name = input.Name;
 
             entity.Label = input.Label;
             entity.Description = input.Description;
             entity.Markup = input.Markup;
-            entity.ModelType = input.ModelType;
             entity.ConfigurationForm =  new FormIdentifier(input.ConfigurationFormModule, input.ConfigurationFormName!);
+            entity.ModelType = input.ModelType;
             entity.GenerationLogicTypeName = input.GenerationLogicTypeName;
             entity.GenerationLogicExtensionJson = input.GenerationLogicExtensionJson;
             entity.PlaceholderIcon = input.PlaceholderIcon;
@@ -373,7 +367,7 @@ namespace Shesha.Web.FormsDesigner.Services
         private async Task<Module?> GetModuleAsync(string? moduleName) 
         {
             return !string.IsNullOrWhiteSpace(moduleName)
-                ? await AsyncQueryableExecuter.FirstOrDefaultAsync(_moduleRepository.GetAll().Where(m => m.Name == moduleName))
+                ? await _moduleRepository.FirstOrDefaultAsync(m => m.Name == moduleName)
                 : null;
         }
 

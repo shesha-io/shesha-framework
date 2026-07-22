@@ -1,3 +1,5 @@
+import { IEntityTypeIdentifier } from "../../entities/models";
+
 export interface CreateViewExtensionJson {
-  modelType?: string;
+  modelType?: string | IEntityTypeIdentifier;
 }

@@ -3,7 +3,6 @@ using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -565,36 +564,10 @@ namespace Shesha.Utilities
         /// <summary>
         /// Converts string to camel case (taken from the Newtonsoft.Json.Utilities.StringUtils)
         /// </summary>
-        public static string ToCamelCase(this string s)
+        public static string ToCamelCase(this string input)
         {
-            if (string.IsNullOrEmpty(s) || !char.IsUpper(s[0]))
-                return s;
-
-            char[] chars = s.ToCharArray();
-
-            for (int i = 0; i < chars.Length; i++)
-            {
-                if (i == 1 && !char.IsUpper(chars[i]))
-                {
-                    break;
-                }
-
-                bool hasNext = (i + 1 < chars.Length);
-                if (i > 0 && hasNext && !char.IsUpper(chars[i + 1]))
-                {
-                    break;
-                }
-
-                char c;
-#if HAVE_CHAR_TO_STRING_WITH_CULTURE
-                c = char.ToLower(chars[i], CultureInfo.InvariantCulture);
-#else
-                c = char.ToLowerInvariant(chars[i]);
-#endif
-                chars[i] = c;
-            }
-
-            return new string(chars);
+            // The camelCase and PascalCase standards remove the leading separators. But we need it for using special fields like `_className` and `_displayName`
+            return CamelCaseHelper.Convert(input, new CamelCaseHelper.ConvertOptions() { KeepLeadingSeparators = true });
         }
 
         public static string? ToCamelCaseOrNull(this string? s) 
@@ -871,11 +844,7 @@ namespace Shesha.Utilities
 
         public static bool IsValidEmail([NotNullWhen(true)]this string? inputEmail)
         {
-            if (string.IsNullOrWhiteSpace(inputEmail))
-                return false;
-
-            var emailAttribute = new EmailAddressAttribute();
-            return emailAttribute.IsValid(inputEmail);
+            return IsEmail(inputEmail);
         }
 
         [DebuggerStepThrough]

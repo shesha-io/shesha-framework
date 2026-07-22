@@ -1,11 +1,10 @@
-import { FormMarkupWithSettings } from '@/interfaces';
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 
-export const getSettings = (): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   return {
-    components: new DesignerToolbarSettings()
+    components: fbf()
       .addSearchableTabs({
         id: nanoid(),
         propertyName: 'settingsTabs',
@@ -19,7 +18,7 @@ export const getSettings = (): FormMarkupWithSettings => {
             key: 'common',
             title: 'Common',
             id: nanoid(),
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: 'cfd7d45e-c7e3-4a27-987b-dc525c412448',
                 propertyName: 'hidden',
@@ -34,7 +33,7 @@ export const getSettings = (): FormMarkupWithSettings => {
             key: 'events',
             title: 'Events',
             id: nanoid(),
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addConfigurableActionConfigurator({
                 id: 'F3B46A95-703F-4465-96CA-A58496A5F78C',
                 propertyName: 'actionConfiguration',

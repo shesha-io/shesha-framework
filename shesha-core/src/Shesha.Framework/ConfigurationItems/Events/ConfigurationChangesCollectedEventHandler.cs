@@ -36,7 +36,7 @@ namespace Shesha.ConfigurationItems.Events
                 {
                     foreach (var update in updates)
                     {
-                        var manager = _ciHelper.GetManager(update.ItemType);
+                        var manager = _ciHelper.GetManagerByDiscriminator(update.ItemType);
 
                         var item = await manager.GetAsync(update.Module, update.Name);
 

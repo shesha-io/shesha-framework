@@ -19,7 +19,7 @@ namespace Shesha.DynamicEntities.Distribution
     /// inheritedDoc
     public class EntityConfigImport : ConfigurationItemImportBase<EntityConfig, DistributedEntityConfig>, IEntityConfigImport, ITransientDependency
     {
-        public string ItemType => EntityConfig.ItemTypeName;
+        public override string ItemType => EntityConfig.ItemTypeName;
 
         private readonly IRepository<EntityProperty, Guid> _propertyConfigRepo;
         private readonly IPermissionedObjectManager _permissionedObjectManager;

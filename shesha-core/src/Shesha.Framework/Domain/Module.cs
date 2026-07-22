@@ -15,7 +15,7 @@ namespace Shesha.Domain
     /// <summary>
     /// Module
     /// </summary>
-    [Entity(GenerateApplicationService = GenerateApplicationServiceState.AlwaysGenerateApplicationService)]
+    [Entity(GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
     [Table("modules", Schema = "frwk")]
     [SnakeCaseNaming]
     public class Module: FullAuditedEntity<Guid>
@@ -105,7 +105,7 @@ namespace Shesha.Domain
             if (string.IsNullOrWhiteSpace(name))
                 return true;
 
-            var alreadyExist = await _repository.GetAll().Where(m => m.Name.ToLower() == name.ToLower() && m.Id != module.Id).AnyAsync();
+            var alreadyExist = await (await _repository.GetAllAsync()).Where(m => m.Name.ToLower() == name.ToLower() && m.Id != module.Id).AnyAsync();
             return !alreadyExist;
         }
     }

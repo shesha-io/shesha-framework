@@ -1,10 +1,9 @@
 "use client";
 
-import React from 'react';
-import { PageWithLayout } from '@/interfaces';
+import React, { FC } from 'react';
 import ConfigurationStudio from '@/configuration-studio';
 
-const Page: PageWithLayout = () => {
+const Page: FC = () => {
   return (
     <ConfigurationStudio />
   );

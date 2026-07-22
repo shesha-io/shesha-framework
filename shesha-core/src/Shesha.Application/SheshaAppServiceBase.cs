@@ -7,10 +7,12 @@ using Abp.Linq;
 using Abp.Runtime.Session;
 using Abp.UI;
 using FluentValidation;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Routing;
 using Newtonsoft.Json.Linq;
 using Shesha.Authorization.Users;
 using Shesha.DelayedUpdate;
@@ -96,12 +98,28 @@ namespace Shesha
             {
                 if (_url == null)
                 {
-                    var actionContextAccessor = IocManager.Resolve<IActionContextAccessor>();
-                    var urlHelperFactory = IocManager.Resolve<IUrlHelperFactory>();
-                    if (actionContextAccessor.ActionContext == null)
-                        throw new Exception("ActionContext is not available");
+                    var httpContextAccessor = IocManager.Resolve<IHttpContextAccessor>();
+                    var httpContext = httpContextAccessor.HttpContext;
 
-                    _url = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
+                    if (httpContext == null)
+                        throw new InvalidOperationException("No HTTP context available.");
+
+                    // Get route data and action descriptor from the endpoint
+                    var routeData = httpContext.GetRouteData();
+                    var endpoint = httpContext.GetEndpoint();
+                    if (endpoint == null)
+                        throw new InvalidOperationException("No endpoint available.");
+
+                    var actionDescriptor = endpoint.Metadata.GetMetadata<ActionDescriptor>();
+                    if (actionDescriptor == null)
+                        throw new InvalidOperationException("No action descriptor available.");                    
+
+                    // Build an ActionContext
+                    var actionContext = new ActionContext(httpContext, routeData, actionDescriptor);
+
+                    var urlHelperFactory = IocManager.Resolve<IUrlHelperFactory>();
+
+                    _url = urlHelperFactory.GetUrlHelper(actionContext);
                 }
 
                 return _url;
@@ -115,7 +133,7 @@ namespace Shesha
         protected virtual async Task<Domain.Person> GetCurrentPersonAsync()
         {
             var personRepository = IocManager.Resolve<IRepository<Domain.Person, Guid>>();
-            var person = await personRepository.GetAll().FirstOrDefaultAsync(p => p.User != null && p.User.Id == AbpSession.GetUserId());
+            var person = await personRepository.FirstOrDefaultAsync(p => p.User != null && p.User.Id == AbpSession.GetUserId());
             return person;
         }
 
@@ -294,8 +312,8 @@ namespace Shesha
             await FluentValidationsOnEntityAsync(entity, validationResults);
             var result = !validationResults.Any();
             if (ValidatorManager != null)
-                result = result && await ValidatorManager.ValidateObjectAsync(entity, validationResults);
-            return result && Validator.TryValidateObject(entity, new ValidationContext(entity), validationResults);
+                result = await ValidatorManager.ValidateObjectAsync(entity, validationResults) && result;
+            return Validator.TryValidateObject(entity, new ValidationContext(entity), validationResults) && result;
         }
 
         /// <summary>
@@ -429,19 +447,18 @@ namespace Shesha
             var jObject = dto._jObject;
 
             var result = new DynamicDtoMapingResult();
-            bool mapResult = true;
             if (jObject != null)
             {
                 // Update the Jobject from the input because it might have changed
                 ObjectToJsonExtension.ObjectToJObject(dto, jObject);
-                mapResult = await MapJObjectToStaticPropertiesEntityAsync<TEntity, TPrimaryKey>(jObject, entity, result.ValidationResults);
+                await MapJObjectToStaticPropertiesEntityAsync<TEntity, TPrimaryKey>(jObject, entity, result.ValidationResults);
             }
             else
             {
                 await MapStaticPropertiesToEntityDtoAsync<TDynamicDto, TEntity, TPrimaryKey>(dto, entity);
             }
 
-            mapResult = mapResult && await ValidateEntityAsync<TEntity>(entity, result.ValidationResults);
+            await ValidateEntityAsync(entity, result.ValidationResults);
 
             if (result.HasValidationError)
                 return result;
@@ -451,16 +468,6 @@ namespace Shesha
 
             if (result.HasValidationError)
                 return result;
-            
-            // ToDo: AS - V1 remove after implementation Entity Configuration
-            /*if (jObject != null)
-            {
-                await MapJObjectToDynamicPropertiesEntityAsync<TEntity, TPrimaryKey>(jObject, entity, result.ValidationResults);
-            }
-            else
-            {
-                await MapDynamicPropertiesToEntityAsync<TDynamicDto, TEntity, TPrimaryKey>(dto, entity);
-            }*/
 
             return result;
         }
@@ -485,12 +492,6 @@ namespace Shesha
             result = result && await ValidateEntityAsync<TEntity>(entity, validationResult);
 
             return result;
-
-            // ToDo: AS - V1 remove after implementation Entity Configuration
-            /*if (!result) return false;
-             
-            return await MapJObjectToDynamicPropertiesEntityAsync<TEntity, TPrimaryKey>(jObject, entity, validationResult);
-            */
         }
 
         /// <summary>

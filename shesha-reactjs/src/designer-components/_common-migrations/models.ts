@@ -1,4 +1,5 @@
-import { IFormDto, IToolboxComponents } from "@/index";
+import { IToolboxComponents } from "@/interfaces/formDesigner";
+import { IFormDto } from "@/providers/form/models";
 
 export interface IFormMigrationContext {
   form: IFormDto;

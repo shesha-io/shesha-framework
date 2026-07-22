@@ -1,10 +1,12 @@
-﻿using Abp.Dependency;
+﻿using Abp.Authorization;
+using Abp.Dependency;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Dto.Interfaces;
 using Shesha.Permissions;
+using Shesha.Reflection;
 using Shesha.Web.FormsDesigner.Dtos;
 using Shesha.Web.FormsDesigner.Models;
 using System.Collections.Generic;
@@ -18,15 +20,42 @@ namespace Shesha.Web.FormsDesigner.Services
     public class FormManager : ConfigurationItemManager<FormConfiguration>, IFormManager, ITransientDependency
     {
         private readonly IPermissionedObjectManager _permissionedObjectManager;
-        
-        public FormManager(IPermissionedObjectManager permissionedObjectManager) : base()
+        private readonly IPermissionChecker _permissionChecker;
+
+
+        public FormManager(
+            IPermissionedObjectManager permissionedObjectManager,
+            IPermissionChecker permissionChecker
+        ) : base()
         {
             _permissionedObjectManager = permissionedObjectManager;
+            _permissionChecker = permissionChecker;
         }
 
         public static string GetFormPermissionedObjectName(string? module, string name)
         {
             return $"{module}.{name}";
+        }
+
+        public override async Task<bool> CurrentUserHasAccessToAsync(string module, string name)
+        {
+            var permission = await _permissionedObjectManager.GetOrDefaultAsync(
+                GetFormPermissionedObjectName(module, name),
+                ShaPermissionedObjectsTypes.Form
+            );
+
+            var access = permission?.Access == null || permission.Access < RefListPermissionedAccess.AnyAuthenticated
+                ? RefListPermissionedAccess.AnyAuthenticated
+                : permission.Access;
+            if (AbpSession.UserId == null
+                && (access == RefListPermissionedAccess.AnyAuthenticated || access == RefListPermissionedAccess.RequiresPermissions))
+                return false;
+            if (access == RefListPermissionedAccess.RequiresPermissions)
+            {
+                var permissions = permission?.Permissions?.ToArray() ?? [];
+                return await _permissionChecker.IsGrantedAsync(false, permissions);
+            }
+            return true;
         }
 
         public Task<List<FormConfiguration>> GetAllAsync()
@@ -62,7 +91,7 @@ namespace Shesha.Web.FormsDesigner.Services
             return await base.CreateItemAsync(baseInput, additionalData);
         }
 
-        protected override Task HandleAdditionalPropertiesAsync(FormConfiguration form, object additionalData)
+        protected override Task BeforeCreateAsync(FormConfiguration form, object? additionalData)
         {
             if (additionalData is FormCreationData data)
             {
@@ -88,6 +117,17 @@ namespace Shesha.Web.FormsDesigner.Services
             await _permissionedObjectManager.CopyAsync(
                 GetFormPermissionedObjectName(item.Module?.Name, item.Name),
                 GetFormPermissionedObjectName(duplicate.Module?.Name, duplicate.Name),
+                ShaPermissionedObjectsTypes.Form
+            );
+        }
+
+        protected override async Task AfterItemExposedAsync(FormConfiguration exposedItem)
+        {
+            var sourceItem = exposedItem.ExposedFrom.NotNull();
+
+            await _permissionedObjectManager.CopyAsync(
+                GetFormPermissionedObjectName(sourceItem.Module?.Name, sourceItem.Name),
+                GetFormPermissionedObjectName(exposedItem.Module?.Name, exposedItem.Name),
                 ShaPermissionedObjectsTypes.Form
             );
         }

@@ -1,21 +1,24 @@
 import { DocumentInstance } from "@/configuration-studio/cs/documentInstance";
-import { DocumentDefinition, ItemEditorProps, ProviderRendererProps } from "@/configuration-studio/models";
-import { ConfigurableItemIdentifierToString, FormFullName } from "@/interfaces";
+import { DocumentDefinition, IDocumentInstance, ItemEditorProps, ProviderRendererProps } from "@/configuration-studio/models";
+import { configurableItemIdentifierToString, FormFullName } from "@/interfaces";
 import { ShaFormProvider } from "@/providers/form/providers/shaFormProvider";
 import { useShaForm } from "@/providers/form/store/shaFormInstance";
 import ParentProvider from "@/providers/parentProvider";
 import { Form, Result } from "antd";
-import React, { FC, PropsWithChildren, ReactNode, useEffect } from "react";
+import React, { ReactNode, useEffect } from "react";
 import { ConfigurableEditor } from ".";
 import { GenericToolbar } from "./toolbar";
 import { useConfigurationStudio } from "@/configuration-studio/cs/contexts";
+import { FileUnknownOutlined } from "@ant-design/icons";
 
 export interface DummyEditorProps {
-  formId: FormFullName;
+  icon?: ReactNode;
+  formId?: FormFullName;
 }
 
-const EmptyProvider: FC<PropsWithChildren> = ({ children }) => (<>{children}</>);
-const EditorNotAvailable: FC = () => {
+const EmptyProvider = <TDoc extends IDocumentInstance = IDocumentInstance>({ children }: ProviderRendererProps<TDoc>): ReactNode => (<>{children}</>);
+
+const EditorNotAvailable = (): ReactNode => {
   return (
     <Result
       status="404"
@@ -24,16 +27,18 @@ const EditorNotAvailable: FC = () => {
     />
   );
 };
-const EmptyComponent: FC = () => null;
+const EmptyComponent = (): ReactNode => null;
+
 
 export const getUnknownDocumentDefinition = (itemType: string): DocumentDefinition => {
   const definition: DocumentDefinition = {
     documentType: itemType,
+    icon: <FileUnknownOutlined />,
     Provider: EmptyProvider,
     Editor: EditorNotAvailable,
     Toolbar: EmptyComponent,
     documentInstanceFactory: (args) => {
-      return new DocumentInstance({ ...args, itemType, definition });
+      return new DocumentInstance({ ...args, itemType, discriminator: itemType, definition });
     },
   };
   return definition;
@@ -46,6 +51,7 @@ export const getGenericDefinition = (itemType: string, editorProps?: DummyEditor
 
   const definition: DocumentDefinition = {
     documentType: itemType,
+    icon: editorProps.icon,
 
     Provider: (props: ProviderRendererProps): ReactNode => {
       const { children, doc } = props;
@@ -77,11 +83,11 @@ export const getGenericDefinition = (itemType: string, editorProps?: DummyEditor
       return (
         <ShaFormProvider shaForm={shaForm}>
           <ParentProvider
-            model={null}
+            model={undefined}
             formMode={shaForm.formMode}
             formFlatMarkup={shaForm.flatStructure}
             formApi={shaForm.getPublicFormApi()}
-            name={ConfigurableItemIdentifierToString(formId)}
+            name={configurableItemIdentifierToString(formId)}
             isScope
           >
             {children}
@@ -104,7 +110,7 @@ export const getGenericDefinition = (itemType: string, editorProps?: DummyEditor
       );
     },
     documentInstanceFactory: (args) => {
-      return new DocumentInstance({ ...args, definition, itemType });
+      return new DocumentInstance({ ...args, definition, itemType, discriminator: args.discriminator });
     },
   };
   return definition;

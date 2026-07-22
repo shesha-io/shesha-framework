@@ -6,7 +6,7 @@ using Abp.Timing;
 using Newtonsoft.Json.Linq;
 using Shesha.JsonLogic;
 using Shesha.Reflection;
-using Shesha.Tests.Fixtures;
+using Shesha.Testing.Fixtures;
 using Shesha.Tests.TestingUtils;
 using System;
 using System.Collections.Generic;
@@ -46,7 +46,7 @@ namespace Shesha.Tests.JsonLogic
             var asyncExecuter = LocalIocManager.Resolve<IAsyncQueryableExecuter>();
 
             return WithUnitOfWorkAsync(async () => {
-                var query = repository.GetAll().Where(expression);
+                var query = (await repository.GetAllAsync()).Where(expression);
 
                 if (prepareQueryable != null)
                     query = prepareQueryable.Invoke(query);

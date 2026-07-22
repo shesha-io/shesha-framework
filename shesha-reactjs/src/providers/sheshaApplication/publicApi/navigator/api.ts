@@ -15,6 +15,10 @@ export interface INavigatorApi {
    * Get form url
    */
   getFormUrl: (formId: FormIdentifier) => string;
+  /**
+   * Prepare url (apply conventions)
+   */
+  prepareUrl: (url: string) => string;
 }
 
 export class NavigatorApi implements INavigatorApi {
@@ -24,8 +28,11 @@ export class NavigatorApi implements INavigatorApi {
     this.#shaRouter = shaRouter;
   }
 
+  prepareUrl = (url: string): string => this.#shaRouter.prepareUrl(url);
+
   navigateToUrl = (url: string, queryParameters?: Record<string, string>): void => {
-    const finalUrl = buildUrl(url, queryParameters);
+    const urlWithQuery = buildUrl(url, queryParameters);
+    const finalUrl = this.prepareUrl(urlWithQuery);
     void this.#shaRouter.goingToRoute(finalUrl);
   };
 

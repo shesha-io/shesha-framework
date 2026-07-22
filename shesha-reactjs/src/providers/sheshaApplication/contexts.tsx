@@ -18,7 +18,7 @@ export interface ISheshaApplicationStateContext {
   httpHeaders: IHttpHeadersDictionary;
   formDesignerComponentGroups?: IToolboxComponentGroup[];
   routes: ISheshaRoutes;
-  globalVariables?: { [key in string]: any };
+  globalVariables?: { [key in string]: unknown };
   formDesignerComponentRegistrations: IDictionary<IToolboxComponentGroup[]>;
 }
 
@@ -39,7 +39,7 @@ export interface ISheshaApplicationActionsContext {
   changeBackendUrl?: (backendUrl: string) => void;
   setRequestHeaders?: (headers: IRequestHeaders) => void;
   anyOfPermissionsGranted?: (permissions: string[]) => boolean;
-  setGlobalVariables?: (values: { [x: string]: any }) => void;
+  setGlobalVariables?: (values: { [x: string]: unknown }) => void;
   registerFormDesignerComponents: (owner: string, components: IToolboxComponentGroup[]) => void;
 }
 

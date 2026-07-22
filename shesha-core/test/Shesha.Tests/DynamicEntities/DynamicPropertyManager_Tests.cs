@@ -6,10 +6,11 @@ using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Dtos;
+using Shesha.Extensions;
 using Shesha.Metadata;
 using Shesha.Reflection;
 using Shesha.Services;
-using Shesha.Tests.Fixtures;
+using Shesha.Testing.Fixtures;
 using Shouldly;
 using System;
 using System.Collections.Generic;
@@ -121,7 +122,7 @@ namespace Shesha.Tests.DynamicEntities
                 // Create temporary Entity Properties configs
                 var entityConfigRepo = Resolve<IRepository<EntityConfig, Guid>>();
                 var entityPropRepo = Resolve<IRepository<EntityProperty, Guid>>();
-                var config = entityConfigRepo.GetAll().First(x => x.TypeShortAlias == typeof(Person).GetEntityConfiguration().TypeShortAlias);
+                var config = await entityConfigRepo.FirstAsync(x => x.TypeShortAlias == typeof(Person).GetEntityConfiguration().TypeShortAlias);
                 foreach (var prop in props)
                 {
                     var propConf = new EntityProperty()

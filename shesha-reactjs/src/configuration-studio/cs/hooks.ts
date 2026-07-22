@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
-import { CloseDocumentResponse, ConfigItemTreeNode, DocumentDefinition, IDocumentInstance, TreeNode } from "../models";
-import { CsSubscriptionType, ProcessingState } from "./configurationStudio";
+import { CloseDocumentResponse, ConfigItemTreeNode, IDocumentInstance, TreeNode } from "../models";
+import { CsSubscriptionType, ProcessingState } from "./interfaces";
 import { useConfigurationStudio, useConfigurationStudioIfAvailable } from "./contexts";
 import { TreeProps } from "antd";
 import { isDefined } from "../../utils/nullables";
@@ -35,6 +35,7 @@ export type UseCsTreeResponse = {
   setQuickSearch: (value: string) => void;
   expandedKeys: ExpandedKeys;
   selectedKeys: SeletcedKeys;
+  selectedNodes: TreeNode[];
   selectedItemNode?: ConfigItemTreeNode | undefined;
   onNodeExpand: OnTreeExpand;
 };
@@ -51,6 +52,7 @@ export const useCsTree = (): UseCsTreeResponse => {
     setQuickSearch: cs.setQuickSearch,
     expandedKeys: cs.treeExpandedKeys,
     selectedKeys: cs.treeSelectedKeys,
+    selectedNodes: cs.treeSelectedNodes,
     selectedItemNode: cs.treeSelectedItemNode,
     onNodeExpand: cs.onTreeNodeExpand,
   };
@@ -113,18 +115,4 @@ export const useActiveDoc = (): UseActiveDocResponse => {
   return cs.activeDocument;
 };
 
-export const useConfigurationStudioDocumentDefinitions = (definitions: DocumentDefinition[]): void => {
-  const cs = useConfigurationStudio();
 
-  useEffect(() => {
-    definitions.forEach((definition) => {
-      cs.registerDocumentDefinition(definition);
-    });
-
-    return (): void => {
-      definitions.forEach((definition) => {
-        cs.unregisterDocumentDefinition(definition);
-      });
-    };
-  }, [cs, definitions]);
-};

@@ -1,22 +1,20 @@
+import { IConfigurableActionConfiguration, useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
+import { useAvailableConstantsData } from '@/providers/form/utils';
+import { IFullAuditedEntity } from '@/publicJsApis/apis/entities';
 import {
-  ConfigurableForm,
-  FormIdentifier,
+  ButtonGroupItemProps,
   IButtonGroup,
-  IConfigurableFormComponent,
-  IToolboxComponent,
-  useAuth,
-  useForm,
-  useFormExpression,
-  useGlobalState,
-  useSidebarMenu,
-} from '@/index';
+  IButtonGroupItemBase,
+  isGroup,
+  isItem,
+} from '@/providers/buttonGroupConfigurator/models';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { DownOutlined, UserOutlined } from '@ant-design/icons';
+import { DownOutlined, LoginOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Dropdown, Popover } from 'antd';
 import React, { CSSProperties, useMemo, useState } from 'react';
 import { getSettings } from './settingsForm';
 import { useStyles } from './styles';
-import { getAccountMenuItems, getMenuItem } from './utils';
+import { getMenuItem } from './utils';
 import {
   getDynamicActionsItemsLevel,
   getItemsWithResolved,
@@ -25,9 +23,18 @@ import {
 } from '@/providers/dynamicActions/evaluator/utils';
 import { SingleDynamicItemEvaluator } from '@/providers/dynamicActions/evaluator/singleDynamicItemEvaluator';
 import ConditionalWrap from '@/components/conditionalWrapper';
+import { migrateButtonGroupDynamicItems } from '../_common-migrations/migrateButtonGroupDynamicItems';
+import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces/formDesigner';
+import { FormIdentifier } from '@/providers/form/models';
+import { useAuth } from '@/providers/auth';
+import { useForm } from '@/providers/form';
+import { useGlobalState } from '@/providers/globalState';
+import { useSheshaApplication } from '@/providers/sheshaApplication';
+import { ConfigurableForm } from '@/components/configurableForm';
+import { isDefined } from '@/utils/nullables';
 
 interface IProfileDropdown extends IConfigurableFormComponent {
-  items?: IButtonGroup[];
+  items?: IButtonGroupItemBase[];
   subText?: string;
   subTextColor?: string;
   subTextFontSize?: string;
@@ -58,7 +65,7 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
       subTextFontFamily,
       subTextTextAlign,
       subTextStyle,
-      showUserInfo,
+      showUserInfo = false,
       popOverTitle,
       popOverFormId,
       popOverContentStyle,
@@ -70,10 +77,9 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
     const { loginInfo, logoutUser } = useAuth();
     const { formData } = useForm();
     const { globalState } = useGlobalState();
-    const { executeActionViaConfiguration } = useFormExpression();
-
-    const sidebar = useSidebarMenu(false);
-    const { accountDropdownListItems } = sidebar || {};
+    const { executeAction } = useConfigurableActionDispatcher();
+    const { anyOfPermissionsGranted } = useSheshaApplication();
+    const allData = useAvailableConstantsData();
 
     const subTextStyling = {
       color: subTextColor,
@@ -96,12 +102,60 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
     }, [model.items]);
 
     const finalItems = useMemo(() => {
-      return getItemsWithResolved(evaluation.items);
+      return getItemsWithResolved(evaluation.items, numResolved);
     }, [evaluation.items, numResolved]);
 
-    const menuItems = getMenuItem(finalItems, executeActionViaConfiguration);
+    const isVisibleBase = (item: ButtonGroupItemProps): boolean => {
+      const { permissions, hidden } = item;
+      if (hidden)
+        return false;
 
-    const accountMenuItems = getAccountMenuItems(accountDropdownListItems, logoutUser);
+      const granted = anyOfPermissionsGranted(permissions || []);
+      return granted;
+    };
+
+    type ItemVisibilityFunc = (item: ButtonGroupItemProps) => boolean;
+
+    const isGroupVisible = (group: IButtonGroup, itemVisibilityFunc: ItemVisibilityFunc): boolean => {
+      if (!isVisibleBase(group))
+        return false;
+
+      if (group.hideWhenEmpty) {
+        const firstVisibleItem = group.childItems?.find((item) => {
+          // analyze buttons and groups only
+          const isButton = isItem(item) && (item.itemSubType === 'button');
+          return (isButton || isGroup(item)) && itemVisibilityFunc(item);
+        });
+        if (!firstVisibleItem)
+          return false;
+      }
+
+      return true;
+    };
+
+    const getIsVisible = (item: ButtonGroupItemProps): boolean => {
+      return (isItem(item) && isVisibleBase(item)) || (isGroup(item) && isGroupVisible(item, getIsVisible));
+    };
+
+    // Custom execute function that includes dynamicItem in the context
+    const executeActionWithDynamicContext = (actionConfiguration: IConfigurableActionConfiguration, dynamicItem?: IFullAuditedEntity): void => {
+      if (isDefined(actionConfiguration)) {
+        void executeAction({
+          actionConfiguration,
+          argumentsEvaluationContext: { ...allData, dynamicItem },
+        });
+      }
+    };
+
+    const menuItems = getMenuItem(finalItems, executeActionWithDynamicContext, getIsVisible);
+
+    const accountMenuItems = [
+      {
+        key: 'logout',
+        onClick: logoutUser,
+        label: <><LoginOutlined /> Logout</>,
+      },
+    ];
 
     const onDynamicItemEvaluated = (): void => {
       setNumResolved((prev) => prev + 1);
@@ -136,7 +190,7 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
               );
             }}
           >
-            <Dropdown menu={{ items: [...menuItems, ...accountMenuItems] }} trigger={['click']}>
+            <Dropdown menu={{ items: [...menuItems, ...accountMenuItems], className: styles.shaProfileMenu }} trigger={['click']}>
               <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
                 {loginInfo?.fullName} <DownOutlined />
               </a>
@@ -147,7 +201,7 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
       </div>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
+  settingsFormMarkup: getSettings,
   migrator: (m) => m
     .add<IProfileDropdown>(1, (prev) => (
       {
@@ -157,8 +211,9 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
         subTextColor: '#000000',
         subTextFontSize: '12px',
       }
-    )),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+    ))
+    .add<IProfileDropdown>(2, (prev) => ({ ...prev, items: migrateButtonGroupDynamicItems(prev.items) })),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 };
 
 export default ProfileDropdown;

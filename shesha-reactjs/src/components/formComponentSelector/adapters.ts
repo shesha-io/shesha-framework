@@ -11,10 +11,10 @@ import { TimeFieldComponent } from '@/designer-components/timeField';
 import { IDictionary, IEditorAdapter, PropertyInclusionPredicate } from '@/interfaces';
 import AutocompleteComponent from '@/designer-components/autocomplete/autocomplete';
 
-export const updateModelExcludeFiltered = (model: object, updatedModel: object, filter: PropertyInclusionPredicate): any => {
+export const updateModelExcludeFiltered = <T extends object = object>(model: T, updatedModel: T, filter: PropertyInclusionPredicate): T => {
   Object.keys(updatedModel).forEach((key) => {
     if (!filter(key)) {
-      model[key] = updatedModel[key];
+      model[key as keyof T] = updatedModel[key as keyof T];
     }
   });
   return model;
@@ -55,7 +55,6 @@ export const editorAdapters: IDictionary<IEditorAdapter> = {
     propertiesFilter: getAllExceptPredicate([
       ...allBaseProperties,
       ...styleProperties,
-      'mode',
       'dataSourceType',
       'dataSourceUrl',
       'entityType',
@@ -68,8 +67,7 @@ export const editorAdapters: IDictionary<IEditorAdapter> = {
     ]),
   },
   [CheckboxComponent.type]: {
-    propertiesFilter: getAllExceptPredicate([...allBaseProperties, ...styleProperties,
-    ]),
+    propertiesFilter: getAllExceptPredicate([...allBaseProperties, ...styleProperties]),
   },
   [TimeFieldComponent.type]: {
     propertiesFilter: getAllExceptPredicate([...allBaseProperties, ...styleProperties, 'range', 'picker']),

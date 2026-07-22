@@ -46,7 +46,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
 
   const commentList = cx(css`
     max-height: 480px;
-    overflow-y: scroll;
+    overflow-y: auto;
   `);
 
   const commentItemBody = css`
@@ -77,6 +77,10 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
 
       .${prefixCls}-comment-content-author {
         margin-block: 10px;
+
+        .${prefixCls}-comment-content-author-name {
+          padding-right: 8px;
+        }
       }
     }
   `;

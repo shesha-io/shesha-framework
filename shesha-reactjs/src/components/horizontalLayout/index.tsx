@@ -10,11 +10,11 @@ import React, {
 } from 'react';
 import { IHtmlHeadProps } from '@/components/htmlHead';
 import { Layout } from 'antd';
-import { useTheme } from '@/providers';
+import { FormFullName, useTheme } from '@/providers';
 import { withAuth } from '@/hocs';
 import { useStyles } from './styles';
 import { ConfigurableForm } from '../configurableForm';
-import { FOOTER_CONFIGURATION, HEADER_CONFIGURATION } from '../mainLayout/constant';
+import { ACTIVE_FOOTER, ACTIVE_HEADER } from '../mainLayout/constant';
 
 const { Content, Footer } = Layout;
 
@@ -25,6 +25,8 @@ export interface IHorizontalLayoutProps extends IHtmlHeadProps {
   layoutBackgroundStyle?: CSSProperties;
   headerStyle?: CSSProperties;
   footerStyle?: CSSProperties;
+  headerFormId?: FormFullName;
+  footerFormId?: FormFullName;
   footer?: ReactNodeOrFunc;
   heading?: ReactNodeOrFunc;
   fixHeading?: boolean;
@@ -41,6 +43,8 @@ const DefaultHorizontalLayout: FC<PropsWithChildren<IHorizontalLayoutProps>> = (
     contentStyle,
     layoutBackgroundStyle = {},
     footerStyle,
+    headerFormId,
+    footerFormId,
     heading,
     fixHeading = false,
     showHeading = true,
@@ -74,7 +78,7 @@ const DefaultHorizontalLayout: FC<PropsWithChildren<IHorizontalLayoutProps>> = (
       <div>
         <ConfigurableForm
           mode="readonly"
-          formId={HEADER_CONFIGURATION}
+          formId={headerFormId ?? ACTIVE_HEADER}
           showFormInfoOverlay={false}
           showDataLoadingIndicator={false}
           showMarkupLoadingIndicator={false}
@@ -85,24 +89,24 @@ const DefaultHorizontalLayout: FC<PropsWithChildren<IHorizontalLayoutProps>> = (
       <Content className={styles.content} style={contentStyle}>
         <NodeOrFuncRenderer>
           {breadcrumb}
-          <div
-            className={classNames(styles.layoutBackground, headingClass, {
-              [styles.layoutBackgroundNoPadding]: noPadding,
-            })}
-            style={{ ...layoutBackgroundStyle, background: themeFromStorage?.layoutBackground }}
-          >
-            {(hasHeading || isFixedHeading) && (
-              <div className={isFixedHeading ? 'fixed-heading-wrapper' : 'heading-wrapper'}>
-                {heading ? (
-                  <NodeOrFuncRenderer>{heading}</NodeOrFuncRenderer>
-                ) : (
-                  title && showHeading && <h2>{title}</h2>
-                )}
-              </div>
-            )}
-            {children}
-          </div>
         </NodeOrFuncRenderer>
+        <div
+          className={classNames(styles.layoutBackground, headingClass, {
+            [styles.layoutBackgroundNoPadding]: noPadding,
+          })}
+          style={{ ...layoutBackgroundStyle, background: themeFromStorage.layoutBackground }}
+        >
+          {(hasHeading || isFixedHeading) && (
+            <div className={isFixedHeading ? 'fixed-heading-wrapper' : 'heading-wrapper'}>
+              {heading ? (
+                <NodeOrFuncRenderer>{heading}</NodeOrFuncRenderer>
+              ) : (
+                title && showHeading && <h2>{title}</h2>
+              )}
+            </div>
+          )}
+          {children}
+        </div>
       </Content>
 
       <Footer className={styles.footer} style={footerStyle}>
@@ -111,7 +115,7 @@ const DefaultHorizontalLayout: FC<PropsWithChildren<IHorizontalLayoutProps>> = (
         ) : (
           <ConfigurableForm
             mode="readonly"
-            formId={FOOTER_CONFIGURATION}
+            formId={footerFormId ?? ACTIVE_FOOTER}
             showFormInfoOverlay={false}
             showDataLoadingIndicator={false}
             showMarkupLoadingIndicator={false}
@@ -123,7 +127,7 @@ const DefaultHorizontalLayout: FC<PropsWithChildren<IHorizontalLayoutProps>> = (
 };
 
 
-export const getHorizontalLayout = (page: ReactElement): JSX.Element => {
+export const getHorizontalLayout = (page: ReactElement): React.JSX.Element => {
   const AuthedLayout: FC<PropsWithChildren<IHorizontalLayoutProps>> = withAuth(DefaultHorizontalLayout);
   return (
     <AuthedLayout noPadding>

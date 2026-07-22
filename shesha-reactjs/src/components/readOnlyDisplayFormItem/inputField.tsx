@@ -1,22 +1,36 @@
-import React from 'react';
-import { useStyles } from './styles/styles';
+import React, { ReactNode } from 'react';
 
 interface IInputFieldProps {
   value?: string | number | React.ReactNode;
-  style?: React.CSSProperties;
+  style?: React.CSSProperties | undefined;
   children?: React.ReactNode;
+  className?: string;
 }
 
-function InputField({ value, style, children }: IInputFieldProps): JSX.Element {
-  const { styles } = useStyles();
+function InputField({ value, style, children, className }: IInputFieldProps): ReactNode {
+  const { height } = style || {};
 
-  const { fontSize, fontWeight, color, fontFamily, textAlign, height } = style || {};
+  const strValue = String(value ?? '');
 
-  return value || children ? (
-    <div style={{ padding: '4px', ...style, height: height, display: 'flex', alignItems: 'center', justifyContent: textAlign }}>
-      <div className={styles.inputField} style={{ fontSize, fontWeight, color, fontFamily, whiteSpace: height === 'auto' ? 'pre-wrap' : 'nowrap', flex: 'none' }}>{value || children}</div>
+  // Apply all styles to single container to avoid double borders
+  return (
+    <div
+      className={className}
+      style={{
+        ...style,
+        whiteSpace: height === 'auto' ? 'pre-wrap' : 'nowrap',
+        display: 'flex',
+        alignItems: 'center',
+        boxSizing: 'border-box',
+      }}
+    >
+      {
+        (!strValue ? ' ' : value) || // add space if value is empty to keep base comopnent style
+        children ||
+        null
+      }
     </div>
-  ) : null;
+  );
 }
 
 export default InputField;

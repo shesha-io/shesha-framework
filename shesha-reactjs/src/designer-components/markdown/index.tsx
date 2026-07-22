@@ -1,4 +1,4 @@
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IToolboxComponent } from '@/interfaces';
@@ -12,6 +12,7 @@ import { IMarkdownProps } from './interfaces';
 import Markdown from './markdown';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 const MarkdownComponent: IToolboxComponent<IMarkdownProps> = {
   type: 'markdown',
@@ -32,23 +33,25 @@ const MarkdownComponent: IToolboxComponent<IMarkdownProps> = {
     });
 
     return (
-      <ConfigurableFormItem model={{ ...model, label: undefined, hideLabel: true }}>
+      <ConfigurableFormItem<string> model={{ ...model, label: undefined, hideLabel: true }}>
         {(value) => {
           const content = contentProp || value;
           return (
             <div style={{ ...allStyles?.dimensionsStyles }}>
-              <Markdown {...model} content={content} style={{ ...additionalStyles }} />
+              <Markdown {...model} content={content ?? ""} style={{ ...additionalStyles }} />
             </div>
           );
         }}
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   initModel: (model) => ({
     ...model,
-    content: (model.content?.trim() ? model.content : `
+    content: (!isNullOrWhiteSpace(model.content)
+      ? model.content
+      : `
 # Markdown Example
 
 ## Basic Text

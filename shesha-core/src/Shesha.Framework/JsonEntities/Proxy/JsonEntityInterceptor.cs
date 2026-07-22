@@ -1,12 +1,10 @@
 ﻿using Abp.Dependency;
 using Abp.Extensions;
-using Abp.Reflection;
 using Castle.DynamicProxy;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.Reflection;
 using Shesha.Services;
-using System.Linq;
 
 namespace Shesha.JsonEntities.Proxy
 {
@@ -36,7 +34,7 @@ namespace Shesha.JsonEntities.Proxy
             if (proxy != null)
             {
                 if (!proxy._isInitialized)
-                    proxy._initialize(invocation.InvocationTarget);
+                    proxy._initialize(GetInvocationTarget(invocation));
 
                 // capture changes for further serialization
                 if (invocation.Method.Name.StartsWith("set_"))
@@ -46,7 +44,7 @@ namespace Shesha.JsonEntities.Proxy
                     && (invocation.Method.GetParameters()[0].ParameterType.IsEntityType() || invocation.Method.GetParameters()[0].ParameterType == typeof(GenericEntityReference)))
                 {
                     var propName = invocation.Method.Name.Substring(4, invocation.Method.Name.Length - 4);
-                    var objType = invocation.InvocationTarget.GetType();
+                    var objType = GetInvocationTarget(invocation).GetType();
                     var property = objType.GetProperty(propName);
                     if (property != null)
                     {
@@ -77,7 +75,7 @@ namespace Shesha.JsonEntities.Proxy
                     && (invocation.Method.ReturnType.IsEntityType() || invocation.Method.ReturnType == typeof(GenericEntityReference)))
                 {
                     var propName = invocation.Method.Name.Substring(4, invocation.Method.Name.Length - 4);
-                    var objType = invocation.InvocationTarget.GetType();
+                    var objType = GetInvocationTarget(invocation).GetType();
                     var property = objType.GetProperty(propName);
                     if (property != null)
                     {
@@ -103,5 +101,7 @@ namespace Shesha.JsonEntities.Proxy
 
             invocation.Proceed();
         }
+
+        private object GetInvocationTarget(IInvocation invocation) => invocation.InvocationTarget.NotNull("InvocationTarget is not available");
     }
 }

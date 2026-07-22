@@ -89,12 +89,13 @@ namespace Shesha.Services.ConfigurationItems
         }
     }
 
-    public abstract class ConfigurationItemImportBase<TItem, TDistributedItem> : ConfigurationItemImportBase
+    public abstract class ConfigurationItemImportBase<TItem, TDistributedItem> : ConfigurationItemImportBase, IConfigurableItemImport
         where TItem : ConfigurationItem, new()
         where TDistributedItem : DistributedConfigurableItemBase
     {
         protected IRepository<TItem, Guid> Repository { get; private set; }
         public IRepository<ConfigurationItemRevision, Guid> RevisionRepository { get; set; }
+        public abstract string ItemType { get; }
 
         protected ConfigurationItemImportBase(
             IRepository<TItem, Guid> repository,
@@ -105,22 +106,44 @@ namespace Shesha.Services.ConfigurationItems
         }
 
         /// <summary>
+        /// Get importer for a subtype (if applicable). Is used when single importer supports multiple item subtypes
+        /// </summary>
+        /// <param name="distributedItem"></param>
+        /// <returns></returns>
+        public virtual IConfigurableItemImport GetSubtypeImporter(DistributedConfigurableItemBase distributedItem) 
+        {
+            return this;
+        }
+
+        /// <summary>
         /// Reads configuration item from json stream
         /// </summary>
         public virtual async Task<DistributedConfigurableItemBase> ReadFromJsonAsync(Stream jsonStream)
         {
+            var json = await ReadJsonAsync(jsonStream);
+            return await ReadFromJsonAsync(json);
+        }
+
+        protected async Task<string> ReadJsonAsync(Stream jsonStream)
+        {
             using (var reader = new StreamReader(jsonStream))
             {
-                var json = await reader.ReadToEndAsync();
-
-                return await ReadFromJsonAsync(json);
+                return await reader.ReadToEndAsync();
             }
         }
 
         /// <summary>
         /// Reads configuration item from json
         /// </summary>
-        public virtual Task<DistributedConfigurableItemBase> ReadFromJsonAsync(string json) 
+        public virtual async Task<DistributedConfigurableItemBase> ReadFromJsonAsync(string json) 
+        {
+            return await ReadDistributedItemFromJsonAsync(json);
+        }
+
+        /// <summary>
+        /// Reads configuration item from json
+        /// </summary>
+        protected virtual Task<TDistributedItem> ReadDistributedItemFromJsonAsync(string json)
         {
             var result = !string.IsNullOrWhiteSpace(json)
                     ? JsonConvert.DeserializeObject<TDistributedItem>(json)
@@ -129,7 +152,7 @@ namespace Shesha.Services.ConfigurationItems
             if (result == null)
                 throw new Exception($"Failed to read {typeof(TDistributedItem).FullName} from json");
 
-            return Task.FromResult<DistributedConfigurableItemBase>(result);
+            return Task.FromResult(result);
         }
 
         /// <summary>
@@ -137,26 +160,33 @@ namespace Shesha.Services.ConfigurationItems
         /// </summary>
         /// <param name="item">Item to import</param>
         /// <param name="context">Import context</param>
+        /// <param name="explicitItem"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="NotSupportedException"></exception>
-        public async Task<ConfigurationItem> ImportItemAsync(DistributedConfigurableItemBase item, IConfigurationItemsImportContext context)
+        public async Task<ConfigurationItem> ImportItemAsync(DistributedConfigurableItemBase item, IConfigurationItemsImportContext context, ConfigurationItem? explicitItem = null)
         {
             if (item == null)
                 throw new ArgumentNullException(nameof(item));
 
             if (!(item is TDistributedItem itemConfig))
-                throw new NotSupportedException($"{this.GetType().FullName} supports only items of type {typeof(TDistributedItem).FullName}. Actual type is {item.GetType().FullName}");
+                throw new NotSupportedException($"{this.GetType().FullName} supports only distributed items of type {typeof(TDistributedItem).FullName}. Actual type is {item.GetType().FullName}");
 
-            return await ImportAsync(itemConfig, context);
+            var explicitItemTyped = explicitItem as TItem;
+            if (explicitItem != null && explicitItemTyped == null)
+                throw new NotSupportedException($"{this.GetType().FullName} supports only items of type {typeof(TItem).FullName}. Actual type is {explicitItem.GetType().FullName}");
+
+            return await ImportAsync(itemConfig, context, explicitItemTyped);
         }
 
-        protected virtual async Task<TItem> ImportAsync(TDistributedItem distributedItem, IConfigurationItemsImportContext context) 
+        protected virtual TItem CreateNew(TDistributedItem distributedItem) => new TItem();
+
+        protected virtual async Task<TItem> ImportAsync(TDistributedItem distributedItem, IConfigurationItemsImportContext context, TItem? explicitItem = null) 
         {
             using (CfRuntime.DisableConfigurationTracking()) 
             {
                 // check if form exists
-                var item = await Repository.FirstOrDefaultAsync(f => f.Name == distributedItem.Name && (f.Module == null && distributedItem.ModuleName == null || f.Module != null && f.Module.Name == distributedItem.ModuleName));
+                var item = explicitItem ?? await Repository.FirstOrDefaultAsync(f => f.Name == distributedItem.Name && (f.Module == null && distributedItem.ModuleName == null || f.Module != null && f.Module.Name == distributedItem.ModuleName));
 
                 if (await SkipImportAsync(item, distributedItem))
                     return item;
@@ -164,12 +194,10 @@ namespace Shesha.Services.ConfigurationItems
                 var isNew = item == null;
                 if (item == null)
                 {
-                    item = new TItem
-                    {
-                        Module = await GetModuleAsync(distributedItem.ModuleName, context),
-                        Application = await GetFrontEndAppAsync(distributedItem.FrontEndApplication, context),
-                        Name = distributedItem.Name,
-                    };
+                    item = CreateNew(distributedItem);
+                    item.Module = await GetModuleAsync(distributedItem.ModuleName, context);
+                    item.Application = await GetFrontEndAppAsync(distributedItem.FrontEndApplication, context);
+                    item.Name = distributedItem.Name;
                 }
 
                 await MapStandardPropsToItemAsync(item, distributedItem);
@@ -181,10 +209,7 @@ namespace Shesha.Services.ConfigurationItems
                 else
                     await Repository.UpdateAsync(item);
 
-                var revision = item.MakeNewRevision(context.IsMigrationImport
-                    ? ConfigurationItemRevisionCreationMethod.MigrationImport
-                    : ConfigurationItemRevisionCreationMethod.ManualImport
-                );
+                var revision = item.MakeNewRevision(context.RevisionCreationMethod);
                 revision.CreatedByImport = context.ImportResult;
 
                 await RevisionRepository.InsertAsync(revision);

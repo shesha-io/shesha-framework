@@ -1,7 +1,7 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx }) => {
-  const innerEntityReferenceSpanBoxStyle = cx('sha-entity-reference-inner-entity-reference-span-box', css`
+export const useStyles = createStyles(({ css }) => {
+  const innerEntityReferenceSpanBoxStyle = css`
     width: 100%;
     margin: 0;
     padding: 0;
@@ -9,10 +9,10 @@ export const useStyles = createStyles(({ css, cx }) => {
     overflow: hidden;
     white-space: nowrap;
     display: inline-block;
-  `);
+  `;
 
 
-  const innerEntityReferenceButtonBoxStyle = cx('sha-entity-reference-inner-entity-reference-button-box', css`
+  const innerEntityReferenceButtonBoxStyle = css`
     background-color: transparent;
     white-space: nowrap;
     overflow: hidden;
@@ -24,18 +24,18 @@ export const useStyles = createStyles(({ css, cx }) => {
     display: inline-flex;
     align-items: center;
     justify-content: flex-start;
-  `);
+  `;
 
-  const spin = cx('sha-entity-reference-spin', css`
+  const spin = css`
     margin-right: 8px;
     display: inline-block;
     vertical-align: middle;
-  `);
+  `;
 
-  const inlineBlock = cx('sha-entity-reference-inline-block', css`
+  const inlineBlock = css`
     display: inline-block;
     vertical-align: middle;
-  `);
+  `;
 
   return {
     innerEntityReferenceSpanBoxStyle,

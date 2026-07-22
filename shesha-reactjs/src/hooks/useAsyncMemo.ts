@@ -16,6 +16,8 @@ export function useAsyncMemo<T>(factory: () => Promise<T> | undefined | null, de
       if (!cancel && newVal !== val) {
         setVal(newVal);
       }
+    }).catch((error) => {
+      console.error('Failed to fetch data', error);
     });
 
     return () => {
@@ -42,6 +44,8 @@ export function useAsyncDeepCompareMemo<T>(factory: () => Promise<T> | undefined
       if (!cancel && newVal !== val) {
         setVal(newVal);
       }
+    }).catch((error) => {
+      console.error('Failed to fetch data', error);
     });
 
     return () => {

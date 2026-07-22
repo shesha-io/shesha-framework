@@ -1,13 +1,11 @@
-import { IKanbanProps } from '@/components/kanban/model';
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
 import { fontTypes, fontWeightsOptions } from '../_settings/utils/font/utils';
-import { FormMarkupWithSettings } from '@/interfaces';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   // Generate unique IDs for top-level components
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
@@ -68,7 +66,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
   const colCustomStyleContentId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -83,9 +81,10 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
             title: 'Common',
             id: commonTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
+                  inputType: 'textField',
                   propertyName: 'componentName',
                   label: 'Component Name',
                   parentId: commonTabId,
@@ -133,7 +132,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                         _code: 'return getSettingValue(data?.kanbanReadonly);',
                         _mode: 'code',
                         _value: false,
-                      } as any,
+                      },
                     },
                     {
                       type: 'switch',
@@ -158,7 +157,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                         _code: 'return getSettingValue(data?.kanbanReadonly);',
                         _mode: 'code',
                         _value: false,
-                      } as any,
+                      },
                     },
                     {
                       type: 'switch',
@@ -183,7 +182,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                         _code: 'return getSettingValue(data?.kanbanReadonly);',
                         _mode: 'code',
                         _value: false,
-                      } as any,
+                      },
                     },
                     {
                       type: 'formAutocomplete',
@@ -196,7 +195,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                           'return !getSettingValue(data?.allowNewRecord) || getSettingValue(data?.kanbanReadonly);',
                         _mode: 'code',
                         _value: false,
-                      } as any,
+                      },
                       validate: {
                         required: true,
                       },
@@ -217,7 +216,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                         _code: 'return getSettingValue(data?.kanbanReadonly);',
                         _mode: 'code',
                         _value: false,
-                      } as any,
+                      },
                     },
                     {
                       type: 'formAutocomplete',
@@ -229,7 +228,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                         _code: 'return !getSettingValue(data?.allowEdit) || getSettingValue(data?.kanbanReadonly);',
                         _mode: 'code',
                         _value: false,
-                      } as any,
+                      },
                       validate: {
                         required: true,
                       },
@@ -244,7 +243,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
             title: 'Data',
             id: columnsTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   parentId: columnsTabId,
@@ -263,8 +262,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                   referenceList: {
                     _code: 'return getSettingValue(data?.referenceList);',
                     _mode: 'code',
-                    _value: false,
-                  } as any,
+                  },
                   inputType: 'RefListItemSelectorSettingsModal',
                 })
                 .toJson(),
@@ -275,7 +273,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
             title: 'Appearance',
             id: appearanceTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addPropertyRouter({
                   id: styleRouterId,
                   propertyName: 'propertyRouter1',
@@ -290,7 +288,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                     _value: '',
                   },
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addCollapsiblePanel({
                         id: headerStylesPanelId,
                         propertyName: 'headerStyles',
@@ -302,7 +300,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                         content: {
                           id: headerStylesContentId,
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addCollapsiblePanel({
                                 id: fontStylePanelId,
                                 propertyName: 'pnlFontStyle',
@@ -314,7 +312,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                 content: {
                                   id: fontStyleContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addSettingsInputRow({
                                         id: fontStyleRowId,
                                         parentId: fontStyleContentId,
@@ -371,7 +369,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                 content: {
                                   id: bgStyleContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addSettingsInput({
                                         id: nanoid(),
                                         parentId: bgStyleContentId,
@@ -400,7 +398,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                             'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";',
                                           _mode: 'code',
                                           _value: false,
-                                        } as any,
+                                        },
                                       })
                                       .addSettingsInputRow({
                                         id: nanoid(),
@@ -419,7 +417,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                             'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";',
                                           _mode: 'code',
                                           _value: false,
-                                        } as any,
+                                        },
                                         hideLabel: true,
                                       })
                                       .addSettingsInputRow({
@@ -439,7 +437,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                             'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";',
                                           _mode: 'code',
                                           _value: false,
-                                        } as any,
+                                        },
                                       })
                                       .addSettingsInputRow({
                                         id: nanoid(),
@@ -458,7 +456,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                             'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";',
                                           _mode: 'code',
                                           _value: false,
-                                        } as any,
+                                        },
                                       })
                                       .addSettingsInputRow({
                                         id: nanoid(),
@@ -468,7 +466,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                             'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";',
                                           _mode: 'code',
                                           _value: false,
-                                        } as any,
+                                        },
                                         inputs: [
                                           {
                                             type: 'textField',
@@ -483,7 +481,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                         id: nanoid(),
                                         parentId: styleRouterId,
                                         inline: true,
-                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
                                         inputs: [
                                           {
                                             type: 'customDropdown',
@@ -493,7 +491,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                             propertyName: "background.size",
                                             customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
                                             dropdownOptions: sizeOptions,
-                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                            hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
                                           },
                                           {
                                             type: 'customDropdown',
@@ -515,10 +513,9 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                           label: 'Repeat',
                                           hideLabel: true,
                                           propertyName: 'background.repeat',
-                                          inputType: 'radio',
                                           buttonGroupOptions: repeatOptions,
                                         }],
-                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                        hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
                                       })
                                       .toJson(),
                                   ],
@@ -535,7 +532,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                 content: {
                                   id: shadowStyleContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addSettingsInputRow({
                                         id: shadowStyleRowId,
                                         parentId: shadowStyleContentId,
@@ -605,18 +602,18 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                 content: {
                                   id: borderStyleContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addContainer({
                                         id: borderStyleRowId,
                                         parentId: borderStyleContentId,
                                         propertyName: 'borderContainer',
-                                        components: getBorderInputs() as any,
+                                        components: getBorderInputs(fbf),
                                       })
                                       .addContainer({
                                         id: borderRadiusRowId,
                                         parentId: borderStyleContentId,
                                         propertyName: 'borderRadiusContainer',
-                                        components: getCornerInputs() as any,
+                                        components: getCornerInputs(fbf),
                                       })
                                       .toJson(),
                                   ],
@@ -633,7 +630,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                 content: {
                                   id: customStyleContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addSettingsInput({
                                         id: nanoid(),
                                         inputType: 'codeEditor',
@@ -662,7 +659,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                         content: {
                           id: columnStylesContentId,
                           components: [
-                            ...new DesignerToolbarSettings()
+                            ...fbf()
                               .addSettingsInput({
                                 id: nanoid(),
                                 propertyName: 'gap',
@@ -682,7 +679,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                 content: {
                                   id: colDimensionsContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addSettingsInputRow({
                                         id: colDimensionsWidthRowId,
                                         parentId: colDimensionsContentId,
@@ -768,7 +765,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                 content: {
                                   id: colBgContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addSettingsInput({
                                         id: nanoid(),
                                         parentId: colBgContentId,
@@ -797,7 +794,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                             'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnStyles.background?.type) !== "color";',
                                           _mode: 'code',
                                           _value: false,
-                                        } as any,
+                                        },
                                       })
                                       .addSettingsInputRow({
                                         id: nanoid(),
@@ -816,7 +813,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                             'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnStyles.background?.type) !== "gradient";',
                                           _mode: 'code',
                                           _value: false,
-                                        } as any,
+                                        },
                                         hideLabel: true,
                                       })
                                       .addSettingsInputRow({
@@ -836,7 +833,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                             'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnStyles.background?.type) !== "url";',
                                           _mode: 'code',
                                           _value: false,
-                                        } as any,
+                                        },
                                       })
                                       .addSettingsInputRow({
                                         id: nanoid(),
@@ -855,7 +852,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                             'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnStyles.background?.type) !== "image";',
                                           _mode: 'code',
                                           _value: false,
-                                        } as any,
+                                        },
                                       })
                                       .addSettingsInputRow({
                                         id: nanoid(),
@@ -865,7 +862,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                             'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnStyles.background?.type) !== "storedFile";',
                                           _mode: 'code',
                                           _value: false,
-                                        } as any,
+                                        },
                                         inputs: [
                                           {
                                             type: 'textField',
@@ -884,7 +881,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                             'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnStyles.background?.type) === "color";',
                                           _mode: 'code',
                                           _value: false,
-                                        } as any,
+                                        },
                                         inline: true,
                                         inputs: [
                                           {
@@ -915,7 +912,6 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                             label: 'Repeat',
                                             hideLabel: true,
                                             propertyName: 'columnStyles.background.repeat',
-                                            inputType: 'radio',
                                             buttonGroupOptions: repeatOptions,
                                           },
                                         ],
@@ -924,7 +920,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                             'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnStyles.background?.type) === "color";',
                                           _mode: 'code',
                                           _value: false,
-                                        } as any,
+                                        },
                                       })
                                       .toJson(),
                                   ],
@@ -941,7 +937,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                 content: {
                                   id: colShadowContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addSettingsInputRow({
                                         id: colShadowRowId,
                                         parentId: colShadowContentId,
@@ -1011,7 +1007,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                 content: {
                                   id: colBorderContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addSettingsInputRow({
                                         id: colBorderStyleId,
                                         parentId: colBorderContentId,
@@ -1020,7 +1016,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                             'return !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.columnStyles.border?.hideBorder);',
                                           _mode: 'code',
                                           _value: false,
-                                        } as any,
+                                        },
                                         inputs: [
                                           {
                                             type: 'button',
@@ -1036,12 +1032,12 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                       .addContainer({
                                         id: colBorderContainerId,
                                         parentId: colBorderContentId,
-                                        components: getBorderInputs('columnStyles', true) as any,
+                                        components: getBorderInputs(fbf, 'columnStyles', true),
                                       })
                                       .addContainer({
                                         id: colBorderRadiusRowId,
                                         parentId: colBorderContentId,
-                                        components: getCornerInputs('columnStyles', true) as any,
+                                        components: getCornerInputs(fbf, 'columnStyles', true),
                                       })
                                       .toJson(),
                                   ],
@@ -1057,7 +1053,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                 content: {
                                   id: colMarginPaddingContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addStyleBox({
                                         id: nanoid(),
                                         label: 'Margin Padding',
@@ -1079,7 +1075,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
                                 content: {
                                   id: colCustomStyleContentId,
                                   components: [
-                                    ...new DesignerToolbarSettings()
+                                    ...fbf()
                                       .addSettingsInput({
                                         id: nanoid(),
                                         inputType: 'codeEditor',
@@ -1108,7 +1104,7 @@ export const getSettings = (data: IKanbanProps): FormMarkupWithSettings => {
             title: 'Security',
             id: securityTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'permissions',

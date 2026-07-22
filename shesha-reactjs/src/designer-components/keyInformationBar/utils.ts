@@ -1,6 +1,6 @@
-import { IStyleType } from "@/index";
+import { IStyleValue } from "@/providers/form/models";
 
-export const defaultStyles = (): IStyleType => {
+export const defaultStyles = (): IStyleValue => {
   return {
     background: { type: 'color', color: '#fff' },
     border: {

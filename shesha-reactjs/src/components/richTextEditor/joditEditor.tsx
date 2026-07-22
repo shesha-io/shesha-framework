@@ -1,55 +1,38 @@
-import React, { FC, lazy, useState, useEffect } from 'react';
+import React, { FC, lazy, useMemo } from 'react';
 import { Skeleton } from 'antd';
+import { JoditEditorProps } from "jodit-react";
+import DOMPurify from 'dompurify';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
-let defaultOptions = {};
+export type JoditConfig = JoditEditorProps["config"];
+
 const JoditEditor = lazy(async () => {
-  const jodit = await import("jodit");
-  defaultOptions = jodit.Jodit.defaultOptions;
-
+  await import("jodit");
+  const joditReact = await import('jodit-react');
   // temporary disable ace editor because of conflicts with code editor
-  defaultOptions['sourceEditor'] = 'area';
+  joditReact.Jodit.defaultOptions.sourceEditor = 'area';
 
-  return (await import('jodit-react') as any);
+  return joditReact;
 });
 
 export interface IJoditEditorProps {
-  value?: string;
-  onChange?: (value: string) => void;
-  config?: any;
+  value?: string | undefined;
+  onChange?: ((value: string) => void) | undefined;
+  config?: JoditConfig | undefined;
 }
 
 export const JoditEditorWrapper: FC<IJoditEditorProps> = (props) => {
   const { config, value, onChange } = props;
 
-  const getPlaceholder = (text: string): string | undefined => {
-    return !text ? config?.placeholder : "";
-  };
-
-  const [fullConfig, setFullConfig] = useState<any>(() => {
-    const result = {
-      ...defaultOptions,
-      ...config,
-      placeholder: getPlaceholder(value),
-    };
-    return result;
-  });
-
-  const updateConfig = (newConfig: any): void => {
-    setFullConfig({ ...defaultOptions, ...newConfig, placeholder: fullConfig.placeholder });
-  };
-
-  useEffect(() => {
-    updateConfig(config);
-  }, [config]);
+  const sanitizedValue = useMemo(() => (!isNullOrWhiteSpace(value) ? DOMPurify.sanitize(value, { USE_PROFILES: { html: true } }) : ""),
+    [value],
+  );
 
   const handleBlur = (newValue: string): void => {
-    onChange?.(newValue);
-  };
-
-  const handleChange = (newValue: string): void => {
-    // Apply value to restore placeholder
-    if (!newValue && !fullConfig.placeholder && config.placeholder)
-      onChange?.(newValue);
+    const cleanValue = typeof newValue === 'string'
+      ? DOMPurify.sanitize(newValue, { USE_PROFILES: { html: true } })
+      : newValue;
+    onChange?.(cleanValue);
   };
 
   const isSSR = typeof window === 'undefined';
@@ -59,10 +42,9 @@ export const JoditEditorWrapper: FC<IJoditEditorProps> = (props) => {
   ) : (
     <React.Suspense fallback={<div>Loading editor...</div>}>
       <JoditEditor
-        value={value}
-        config={fullConfig}
+        value={sanitizedValue}
+        {...(config ? { config } : {})}
         onBlur={handleBlur} // preferred to use only this option to update the content for performance reasons
-        onChange={handleChange}
       />
     </React.Suspense>
   );

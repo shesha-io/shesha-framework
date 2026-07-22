@@ -1,24 +1,25 @@
-import { Menu, MenuProps } from "antd";
+import { DrawerProps, Menu, MenuProps } from "antd";
 import React, { FC } from "react";
-import { ShaMenuDrawerStyledWrapper } from "./styles";
+import { ShaMenuDrawerStyledWrapper } from "./styledDrawer";
 import { ILayoutColor } from "../menu/model";
 import { ScopedMenuStyles } from "../menu/styles";
-import { convertJsonToCss } from "@/utils";
+import { convertJsonToCss, convertJsonToCssWithImportant } from "@/utils";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
 interface IProps {
   items: MenuItem[];
   open: boolean;
-  onClose?: (
-    e: React.MouseEvent<Element, MouseEvent> | React.KeyboardEvent<Element>
-  ) => void;
-  colors?: ILayoutColor;
-  fontStyles?: React.CSSProperties;
-  styleOnHover?: React.CSSProperties;
-  styleOnSelected?: React.CSSProperties;
-  styleOnSubMenu?: React.CSSProperties;
-  menuId?: string;
+  onClose?: DrawerProps["onClose"] | undefined;
+  colors?: ILayoutColor | undefined;
+  padding?: { x: number; y: number } | undefined;
+  fontStyles?: React.CSSProperties | undefined;
+  itemStyle?: React.CSSProperties | undefined;
+  styleOnHover?: React.CSSProperties | undefined;
+  styleOnSelected?: React.CSSProperties | undefined;
+  styleOnSubMenu?: React.CSSProperties | undefined;
+  menuItemStyle?: React.CSSProperties | undefined;
+  menuId?: string | undefined;
 }
 
 const ShaMenuDrawer: FC<IProps> = ({
@@ -26,60 +27,71 @@ const ShaMenuDrawer: FC<IProps> = ({
   open,
   onClose,
   colors,
+  padding,
   fontStyles,
+  itemStyle,
   styleOnHover,
   styleOnSelected,
   styleOnSubMenu,
+  menuItemStyle,
   menuId,
-}) => (
-  <ShaMenuDrawerStyledWrapper
-    title=""
-    placement="left"
-    closable={false}
-    onClose={onClose}
-    open={open}
-    className={menuId ? `horizontal-menu-drawer-${menuId}` : undefined}
-    styles={{
-      body: {
-        backgroundColor: colors?.itemBackground || 'transparent',
-        padding: 0,
-      },
-      header: {
-        backgroundColor: colors?.itemBackground || 'transparent',
-        color: colors?.itemColor,
-        fontFamily: fontStyles?.fontFamily,
-        fontWeight: fontStyles?.fontWeight,
-        textAlign: fontStyles?.textAlign as any,
-        borderBottom: 'none',
-      },
-    }}
-    style={{
-      backgroundColor: colors?.itemBackground || 'transparent',
-    }}
-  >
-    {colors && menuId && (
-      <ScopedMenuStyles
-        colors={colors}
-        styleOnHover={convertJsonToCss(styleOnHover)}
-        styleOnSelected={convertJsonToCss(styleOnSelected)}
-        styleOnSubMenu={convertJsonToCss(styleOnSubMenu)}
-        fontStyles={fontStyles}
-        menuId={menuId}
-      />
-    )}
-    <Menu
-      mode="inline"
-      items={items}
-      style={{
-        backgroundColor: colors?.itemBackground || 'transparent',
-        color: colors?.itemColor,
-        fontFamily: fontStyles?.fontFamily,
-        fontWeight: fontStyles?.fontWeight,
-        textAlign: fontStyles?.textAlign as any,
-        border: 'none',
+}) => {
+  const backgroundColor = itemStyle?.backgroundColor || colors?.itemBackground || 'transparent';
+  const textAlign = typeof fontStyles?.textAlign === 'string' ? fontStyles.textAlign : undefined;
+
+  return (
+    <ShaMenuDrawerStyledWrapper
+      title=""
+      placement="left"
+      closable={false}
+      {...(onClose ? { onClose: onClose } : {})}
+      open={open}
+      {...(menuId ? { className: `horizontal-menu-drawer-${menuId}` } : {})}
+      styles={{
+        body: {
+          backgroundColor,
+          padding: 0,
+        },
+        header: {
+          backgroundColor,
+          color: colors?.itemColor,
+          fontFamily: fontStyles?.fontFamily,
+          fontWeight: fontStyles?.fontWeight,
+          textAlign,
+          borderBottom: 'none',
+        },
       }}
-    />
-  </ShaMenuDrawerStyledWrapper>
-);
+      style={{
+        backgroundColor,
+      }}
+    >
+      {colors && menuId && (
+        <ScopedMenuStyles
+          colors={colors}
+          padding={padding}
+          itemStyle={convertJsonToCss(itemStyle)}
+          styleOnHover={convertJsonToCssWithImportant(styleOnHover)}
+          styleOnSelected={convertJsonToCssWithImportant(styleOnSelected)}
+          styleOnSubMenu={convertJsonToCssWithImportant(styleOnSubMenu)}
+          menuItemStyle={convertJsonToCss(menuItemStyle)}
+          fontStyles={fontStyles}
+          menuId={menuId}
+        />
+      )}
+      <Menu
+        mode="inline"
+        items={items}
+        style={{
+          backgroundColor,
+          color: colors?.itemColor,
+          fontFamily: fontStyles?.fontFamily,
+          fontWeight: fontStyles?.fontWeight,
+          textAlign,
+          border: 'none',
+        }}
+      />
+    </ShaMenuDrawerStyledWrapper>
+  );
+};
 
 export default ShaMenuDrawer;

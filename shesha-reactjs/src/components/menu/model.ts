@@ -1,8 +1,10 @@
 export interface ILayoutColor {
-  selectedItemColor?: string;
-  selectedItemBackground?: string;
-  itemColor?: string;
-  itemBackground?: string;
-  hoverItemColor?: string;
-  hoverItemBackground?: string;
+  selectedItemColor?: string | undefined;
+  selectedItemBackground?: string | undefined;
+  itemColor?: string | undefined;
+  itemBackground?: string | undefined;
+  hoverItemColor?: string | undefined;
+  hoverItemBackground?: string | undefined;
+  subItemColor?: string | undefined;
+  subItemBackground?: string | undefined;
 }

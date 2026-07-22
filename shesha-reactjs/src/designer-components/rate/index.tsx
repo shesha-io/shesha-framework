@@ -1,7 +1,6 @@
 import _ from 'lodash';
 import classNames from 'classnames';
 import React from 'react';
-import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import { getSettings } from './settingsForm';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IconType } from '@/components/shaIcon';
@@ -11,15 +10,13 @@ import { Rate } from 'antd';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IConfigurableFormComponent } from '@/providers';
-import {
-  ConfigurableFormItem,
-  ShaIcon,
-} from '@/components';
+import { ShaIcon } from '@/components/shaIcon';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
+import { isDefined } from '@/utils/nullables';
 
 export interface IRateProps extends IConfigurableFormComponent {
   value?: number;
-  defaultValue?: number;
   allowClear?: boolean;
   allowHalf?: boolean;
   icon?: string;
@@ -35,37 +32,32 @@ const RateComponent: IToolboxComponent<IRateProps> = {
   icon: <LikeOutlined />,
   isInput: true,
   isOutput: true,
-  calculateModel: (model, allData) => ({
-    eventHandlers: getAllEventHandlers(model, allData),
-  }),
-  Factory: ({ model, calculatedModel }) => {
+  preserveDimensionsInDesigner: true,
+  Factory: ({ model }) => {
     const { allowClear, icon, count, tooltips, className, readOnly } = model;
     const localCount = !_.isNaN(count) ? count : 5;
 
     return model.hidden
       ? null
       : (
-        <ConfigurableFormItem model={model}>
-          {(value, onChange) => {
-            const customEvent = calculatedModel.eventHandlers;
-            const onChangeInternal = (value: number): void => {
-              customEvent.onChange({ value });
-              if (typeof onChange === 'function') onChange(value);
-            };
-
+        <ConfigurableFormItem<number> model={model}>
+          {(value, onChange, _, ctx) => {
             return (
               <Rate
-                allowClear={allowClear}
-                // allowHalf={allowHalf}
+                allowClear={allowClear ?? false}
                 character={icon ? <ShaIcon iconName={icon as IconType} /> : <StarFilled />}
-                disabled={readOnly}
+                disabled={readOnly ?? false}
                 count={localCount ?? 5}
-                tooltips={tooltips}
+                {...(isDefined(tooltips) ? { tooltips } : {})}
                 className={classNames(className, 'sha-rate')}
-                style={model.allStyles.fullStyle}
-                {...customEvent}
-                value={value}
-                onChange={onChangeInternal}
+                style={{ ...model.allStyles?.fullStyle, display: 'flex', alignItems: 'center' }}
+                {...(isDefined(value) ? { value } : {})}
+                onChange={(newValue) => {
+                  ctx?.handleEvent(undefined, { value: newValue }, model.onChangeCustom);
+                  onChange(newValue);
+                }}
+                onFocus={() => ctx?.handleEvent(undefined, { value }, model.onFocusCustom)}
+                onBlur={() => ctx?.handleEvent(undefined, { value }, model.onBlurCustom)}
               />
             );
           }}
@@ -73,8 +65,8 @@ const RateComponent: IToolboxComponent<IRateProps> = {
       )
     ;
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
     .add<IRateProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IRateProps>(1, (prev) => migrateVisibility(prev))

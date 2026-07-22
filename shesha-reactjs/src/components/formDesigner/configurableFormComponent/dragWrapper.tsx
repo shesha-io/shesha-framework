@@ -1,20 +1,21 @@
 import React, { FC, PropsWithChildren, useMemo, useState } from 'react';
 import { ShaForm } from '@/providers/form';
-import { Button, Tooltip } from 'antd';
-import { useFormDesignerState, useFormDesignerActions } from '@/providers/formDesigner';
-import { DeleteFilled, FunctionOutlined } from '@ant-design/icons';
+import { Tooltip } from 'antd';
+import { useFormDesigner, useFormDesignerSelectedComponentId, useFormDesignerIsDebug } from '@/providers/formDesigner';
+import { FunctionOutlined } from '@ant-design/icons';
 import { useStyles } from '../styles/styles';
 
 interface IDragWrapperProps {
   componentId: string;
-  readOnly?: boolean;
+  readOnly?: boolean | undefined;
 }
 
 export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => {
   const { styles } = useStyles();
 
-  const { selectedComponentId, isDebug } = useFormDesignerState();
-  const { setSelectedComponent, deleteComponent } = useFormDesignerActions();
+  const selectedComponentId = useFormDesignerSelectedComponentId();
+  const isDebug = useFormDesignerIsDebug();
+  const { setSelectedComponent } = useFormDesigner();
   const [isOpen, setIsOpen] = useState(false);
 
   const componentModel = ShaForm.useComponentModel(props.componentId);
@@ -40,7 +41,7 @@ export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => 
         <div><strong>Component name: </strong>{componentModel.componentName}</div>
       )}
     </div>
-  ), [componentModel]);
+  ), [componentModel.componentName, componentModel.id, componentModel.propertyName, componentModel.type, isDebug]);
 
   const onClick = (event: React.MouseEvent<HTMLElement>): void => {
     event.stopPropagation();
@@ -60,18 +61,9 @@ export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => 
     event.stopPropagation();
     setIsOpen(false);
   };
-  const onDeleteClick = (): void => {
-    deleteComponent({ componentId: componentModel.id });
-  };
 
   return (
     <div className={styles.componentDragHandle} onClick={onClick} onMouseOver={onMouseOver} onMouseOut={onMouseOut}>
-      {!props?.readOnly && isOpen && (
-        <div className={styles.shaComponentControls}>
-          <Button icon={<DeleteFilled color="red" />} onClick={onDeleteClick} size="small" danger />
-        </div>
-      )}
-
       <Tooltip title={tooltip} placement="right" open={isOpen}>
         {props.children}
       </Tooltip>

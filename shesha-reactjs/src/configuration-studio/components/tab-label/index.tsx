@@ -1,3 +1,4 @@
+import { useConfigurationStudioEnvironment } from '@/configuration-studio/cs-environment/contexts';
 import { IDocumentInstance, isCIDocument, isCustomDocument, TreeNodeType } from '@/configuration-studio/models';
 import { getCustomIcon, getIcon } from '@/configuration-studio/tree-utils';
 import React, { FC, MouseEventHandler } from 'react';
@@ -8,8 +9,9 @@ export interface ITabLabelProps {
 }
 
 export const TabLabel: FC<ITabLabelProps> = ({ doc, onContextMenu }) => {
+  const csEnv = useConfigurationStudioEnvironment();
   const icon = isCIDocument(doc)
-    ? getIcon(TreeNodeType.ConfigurationItem, doc.itemType)
+    ? getIcon(csEnv, TreeNodeType.ConfigurationItem, doc.itemType)
     : isCustomDocument(doc)
       ? getCustomIcon(doc)
       : undefined;

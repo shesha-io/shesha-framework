@@ -1,24 +1,16 @@
-import {
-  DesignerToolbarSettings,
-} from '@/interfaces/toolbarSettings';
-import {
-  FormLayout,
-} from 'antd/lib/form/Form';
-import {
-  nanoid,
-} from '@/utils/uuid';
-import { filterDynamicComponents } from '@/designer-components/propertiesTabs/utils';
-import { FormMarkupWithSettings } from '@/interfaces';
+import { SettingsFormMarkupFactory } from '@/interfaces';
+import { nanoid } from '@/utils/uuid';
+import { FormLayout } from 'antd/lib/form/Form';
 
-export const getSettings = (): FormMarkupWithSettings => {
+export const showDialogArgumentsFormFactory: SettingsFormMarkupFactory = ({ fbf }) => {
   return {
-    components: new DesignerToolbarSettings()
+    components: fbf()
       .addSettingsInputRow({
         id: nanoid(),
         parentId: 'root',
         readOnly: {
           _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false,
-        } as any,
+        },
         inputs: [
           {
             type: 'textField',
@@ -47,7 +39,7 @@ export const getSettings = (): FormMarkupWithSettings => {
         parentId: 'root',
         readOnly: {
           _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false,
-        } as any,
+        },
         inputs: [
           {
             type: 'radio',
@@ -63,7 +55,7 @@ export const getSettings = (): FormMarkupWithSettings => {
               {
                 title: "Read only",
                 value: "readonly",
-                icon: "readonlyIcon",
+                icon: "editDisableIcon",
               },
             ],
             jsSetting: true,
@@ -106,9 +98,11 @@ export const getSettings = (): FormMarkupWithSettings => {
           useAsyncDeclaration: true,
           functionName: 'getArguments',
         },
+        language: 'typescript',
+        resultTypeExpression: '    return metadataBuilder.anyObject();',
         readOnly: {
           _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false,
-        } as any,
+        },
       })
       .addCollapsiblePanel({
         id: nanoid(),
@@ -121,20 +115,19 @@ export const getSettings = (): FormMarkupWithSettings => {
         collapsible: 'header',
         content: {
           id: nanoid(),
-          components: [...new DesignerToolbarSettings()
+          components: [...fbf()
             .addSettingsInputRow({
               id: nanoid(),
               parentId: 'root',
               readOnly: {
                 _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false,
-              } as any,
+              },
               inputs: [
                 {
                   type: 'dropdown',
                   id: nanoid(),
                   propertyName: 'footerButtons',
                   label: 'Action Buttons',
-                  defaultValue: 'default',
                   dropdownOptions: [
                     {
                       label: "Default",
@@ -156,7 +149,6 @@ export const getSettings = (): FormMarkupWithSettings => {
                   id: nanoid(),
                   propertyName: 'showCloseIcon',
                   label: 'Show Close Icon',
-                  defaultValue: true,
                   jsSetting: true,
                 },
                 {
@@ -166,7 +158,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                   label: 'Configure Modal Buttons',
                   hidden: {
                     _code: 'return !(getSettingValue(data?.footerButtons) === "custom");', _mode: 'code', _value: false,
-                  } as any,
+                  },
                   jsSetting: true,
                 },
               ],
@@ -188,5 +180,3 @@ export const getSettings = (): FormMarkupWithSettings => {
     },
   };
 };
-
-export const showDialogComponents = filterDynamicComponents(getSettings().components, '');

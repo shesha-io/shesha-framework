@@ -1,72 +1,44 @@
-import { Space, Tooltip } from 'antd';
+import { Tooltip } from 'antd';
 import React, { ReactNode } from 'react';
-import ShaIcon, { IconType } from '../shaIcon';
-import SectionSeparator from '../sectionSeparator';
+import { ShaIcon } from '../shaIcon';
 import { customIcons } from './icons';
-import { startCase } from 'lodash';
 import * as antdIcons from '@ant-design/icons';
+import { isKeyOf } from '@/utils/object';
+
+type IconProps = {
+  icon: string | React.ReactNode;
+  hint?: string | undefined;
+  style?: React.CSSProperties | undefined;
+  className?: string | undefined;
+};
 
 export const Icon = ({
   icon,
-  size,
   hint,
   style,
-  styles,
-  propertyName,
-}: {
-  icon: string | React.ReactNode;
-  size?: any;
-  hint?: string;
-  style?: React.CSSProperties;
-  styles?: any;
-  propertyName?: string;
-}): ReactNode => {
+  className,
+}: IconProps): ReactNode => {
   const icons = antdIcons;
 
   if (typeof icon !== 'string') {
+    if (React.isValidElement(icon))
+      return <Tooltip title={hint}><span style={style} className={className}>{icon}</span></Tooltip>;
     return icon;
   }
 
-  if (icons[icon]) {
+  if (isKeyOf(icon, icons)) {
     return (
       <Tooltip title={hint}>
-        <ShaIcon iconName={icon as IconType} style={style} />
+        <span style={style}><ShaIcon iconName={icon} style={style} /></span>
       </Tooltip>
     );
   }
 
-  if (customIcons[icon]) {
+  if (isKeyOf(icon, customIcons)) {
     return (
-      <Tooltip title={hint ?? startCase(propertyName?.split('.')[1])}>
+      <Tooltip title={hint}>
         <span style={style}>{customIcons[icon]}</span>
       </Tooltip>
-    );
-  }
-
-  if (icon === 'sectionSeparator') {
-    return (
-      <div style={{
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        verticalAlign: 'middle',
-        top: 10,
-      }}
-      >
-        <Space>
-          {size}
-          <Tooltip className={styles.icon} title={hint}>
-            <SectionSeparator
-              containerStyle={{ margin: 0 }}
-              lineThickness={Number(size[0]) / 2}
-              lineWidth="20"
-              lineColor="#000"
-              fontSize={14}
-              marginBottom="0px"
-            />
-          </Tooltip>
-        </Space>
-      </div>
     );
   }
 

@@ -1,14 +1,14 @@
 import React, { FC } from 'react';
 import { Modal } from 'antd';
-import { ConfigurableForm } from '@/components';
-import { FormMarkup } from '@/providers/form/models';
-import { useFormDesignerActions, useFormDesignerStateSelector } from '@/providers/formDesigner';
+import { ConfigurableForm } from '@/components/configurableForm';
+import { useFormDesigner, useFormDesignerSettings } from '@/providers/formDesigner';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { useFormPersister } from '@/providers/formPersisterProvider';
 import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';
 import { getSettings } from './formSettings';
-
-const formSettingsMarkup = getSettings() as FormMarkup;
+import { useFormViaFactory } from '@/form-factory/hooks';
+import { SubmitHandler } from '@/providers/form/store/interfaces';
+import { IFormSettings } from '../..';
 
 export interface IFormSettingsEditorProps {
   isVisible: boolean;
@@ -17,19 +17,20 @@ export interface IFormSettingsEditorProps {
 }
 
 export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, close, readOnly }) => {
-  const formSettings = useFormDesignerStateSelector((x) => x.formSettings);
-  const { updateFormSettings } = useFormDesignerActions();
+  const formSettings = useFormDesignerSettings();
+  const { updateFormSettings } = useFormDesigner();
   const { formProps } = useFormPersister();
-  const formRef = useShaFormRef();
+  const formRef = useShaFormRef<IFormSettings>();
+  const formSettingsMarkup = useFormViaFactory(getSettings);
 
-  const onSave = (values): void => {
+  const onSave: SubmitHandler<IFormSettings> = (values) => {
     if (!readOnly) {
       updateFormSettings(values);
       close();
     }
   };
 
-  const sourcesFolder = `/forms/${formProps.module}/${formProps.name}`;
+  const sourcesFolder = formProps ? `/forms/${formProps.module}/${formProps.name}` : "";
 
   return (
     <Modal
@@ -45,7 +46,7 @@ export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, cl
       cancelText={readOnly ? 'Close' : undefined}
     >
       <SourceFilesFolderProvider folder={sourcesFolder}>
-        <ConfigurableForm
+        <ConfigurableForm<IFormSettings>
           layout="vertical"
           labelCol={{ span: 24 }}
           wrapperCol={{ span: 24 }}

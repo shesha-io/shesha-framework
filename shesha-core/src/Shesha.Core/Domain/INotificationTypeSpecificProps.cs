@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Shesha.Domain
@@ -28,7 +29,7 @@ namespace Shesha.Domain
         /// List of NotificationChannelConfigs
         /// </summary>
         [MaxLength(int.MaxValue)]
-        public string OverrideChannels { get; set; }
+        public IList<ConfigurationItemIdentifierDto>? OverrideChannels { get; set; }
 
         /// <summary>
         ///  messages without which the user should not proceed in any case e.g. OTP

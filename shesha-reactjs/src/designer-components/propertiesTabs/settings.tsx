@@ -3,24 +3,43 @@ import React, { FC } from 'react';
 import SettingsForm from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 import { Alert, Checkbox, Input, Select } from 'antd';
-import { CodeEditor, PermissionAutocomplete } from '@/components';
+import { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
+import { PermissionAutocomplete } from '@/components/permissionAutocomplete';
 import { FormMarkup } from '@/providers/form/models';
 import { ISettingsFormFactoryArgs } from '@/interfaces';
-import { ITabPaneProps, ITabsComponentProps } from './models';
+import { ITabPaneProps, IPropertiesTabsComponentProps } from './models';
 import { nanoid } from '@/utils/uuid';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
 import { ItemListConfiguratorModal } from '@/designer-components/itemListConfigurator/itemListConfiguratorModal';
 import StyleBox from '@/designer-components/styleBox/components/box';
-
-const { Option } = Select;
+import { DefaultOptionType } from 'antd/lib/select';
+import { getFirstNonEmptyStringPropertyOrUndefined } from '@/utils/object';
 
 const tabSettingsMarkup = itemSettings as FormMarkup;
+const tabSettingsMarkupFactory = (): FormMarkup => tabSettingsMarkup;
 
-const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = (props) => {
+const TAB_TYPES: DefaultOptionType[] = [
+  { value: 'line', label: 'Line' },
+  { value: 'card', label: 'Card' },
+];
+const SIZES: DefaultOptionType[] = [
+  { value: 'small', label: 'Small' },
+  { value: 'middle', label: 'Middle' },
+  { value: 'large', label: 'Large' },
+];
+
+const POSITIONS: DefaultOptionType[] = [
+  { value: 'top', label: 'Top' },
+  { value: 'bottom', label: 'Bottom' },
+  { value: 'start', label: 'Start' },
+  { value: 'end', label: 'End' },
+];
+
+const TabSettings: FC<ISettingsFormFactoryArgs<IPropertiesTabsComponentProps>> = (props) => {
   const { readOnly } = props;
 
-  const onAddNewItem = (items): ITabPaneProps => {
-    const count = (items ?? []).length;
+  const onAddNewItem = (items: ITabPaneProps[]): ITabPaneProps => {
+    const count = items.length;
     const id = nanoid();
     const buttonProps: ITabPaneProps = {
       id: id,
@@ -47,27 +66,15 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = (props) =
         </SettingsFormItem>
 
         <SettingsFormItem name="tabType" label="Tab Type">
-          <Select allowClear>
-            <Option value="line">Line</Option>
-            <Option value="card">Card</Option>
-          </Select>
+          <Select allowClear options={TAB_TYPES} />
         </SettingsFormItem>
 
         <SettingsFormItem name="size" label="Size" tooltip="This will set the size for all buttons" jsSetting>
-          <Select>
-            <Option value="small">Small</Option>
-            <Option value="middle">Middle</Option>
-            <Option value="large">Large</Option>
-          </Select>
+          <Select options={SIZES} />
         </SettingsFormItem>
 
         <SettingsFormItem name="position" label="Position" tooltip="This will set the size for all buttons" jsSetting>
-          <Select>
-            <Option value="top">Top</Option>
-            <Option value="bottom">Bottom</Option>
-            <Option value="left">Left</Option>
-            <Option value="right">Right</Option>
-          </Select>
+          <Select options={POSITIONS} />
         </SettingsFormItem>
 
         <SettingsFormItem name="hidden" label="Hidden" valuePropName="checked" jsSetting>
@@ -79,16 +86,16 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = (props) =
           <ItemListConfiguratorModal<ITabPaneProps>
             readOnly={readOnly}
             initNewItem={onAddNewItem}
-            settingsMarkupFactory={() => tabSettingsMarkup}
+            settingsMarkupFactory={tabSettingsMarkupFactory}
             itemRenderer={({ item }) => ({
-              label: item.title || item.label || item.name,
+              label: getFirstNonEmptyStringPropertyOrUndefined(item, ["title", "label", "name"]) ?? "",
               description: item.tooltip,
               icon: item.icon,
             })}
             buttonText={readOnly ? "View Tab Panes" : "Configure Tab Panes"}
             modalSettings={{
               title: readOnly ? "View Tab Panes" : "Configure Tab Panes",
-              header: <Alert message={readOnly ? 'Here you can view tab panes configuration.' : 'Here you can configure the tab panes by adjusting their settings and ordering.'} />,
+              header: <Alert title={readOnly ? 'Here you can view tab panes configuration.' : 'Here you can configure the tab panes by adjusting their settings and ordering.'} />,
             }}
           >
           </ItemListConfiguratorModal>
@@ -107,25 +114,11 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = (props) =
             mode="dialog"
             label="Style"
             description="A script that returns the style of the element as an object. This should conform to CSSProperties"
-            exposedVariables={[
-              {
-                id: 'f9f25102-bdc7-41bc-b4bc-87eea6a86fc5',
-                name: 'data',
-                description: 'Selected form values',
-                type: 'object',
-              },
-              {
-                id: '6374545e-4848-4e92-9846-27f2a7884c41',
-                name: 'globalState',
-                description: 'The global state of the application',
-                type: 'object',
-              },
-            ]}
           />
         </SettingsFormItem>
 
         <SettingsFormItem name="stylingBox">
-          <StyleBox />
+          <StyleBox readOnly={false} value={undefined} propertyName="stylingBox" />
         </SettingsFormItem>
       </SettingsCollapsiblePanel>
 
@@ -144,6 +137,6 @@ const TabSettings: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = (props) =
   );
 };
 
-export const TabSettingsForm: FC<ISettingsFormFactoryArgs<ITabsComponentProps>> = (props) => {
-  return SettingsForm<ITabsComponentProps>({ ...props, children: <TabSettings {...props} /> });
+export const TabSettingsForm: FC<ISettingsFormFactoryArgs<IPropertiesTabsComponentProps>> = (props) => {
+  return SettingsForm<IPropertiesTabsComponentProps>({ ...props, children: <TabSettings {...props} /> });
 };

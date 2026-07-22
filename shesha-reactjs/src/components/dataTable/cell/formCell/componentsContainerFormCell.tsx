@@ -4,16 +4,15 @@ import { IComponentsContainerBaseProps } from '@/interfaces';
 import { removeUndefinedProperties } from '@/utils/array';
 import { useParent } from '@/providers/parentProvider/index';
 import { getAlignmentStyle } from '@/components/formDesigner/containers/util';
-import FormComponent from '@/components/formDesigner/formComponent';
+import FormComponent from '@/components/formDesigner/formComponent/formComponent';
 
 interface IComponentsContainerFormCellProps extends IComponentsContainerBaseProps, ICommonContainerProps { }
 
 export const ComponentsContainerFormCell: FC<IComponentsContainerFormCellProps> = (props) => {
   const { containerId, readOnly } = props;
-  const { getChildComponents } = useParent() ?? {};
 
   const parent = useParent();
-  const components = getChildComponents(containerId.replace(`${parent?.subFormIdPrefix}.`, ''));
+  const components = parent.getChildComponents(containerId.replace(`${parent.subFormIdPrefix}.`, ''));
 
   const style = getAlignmentStyle(props);
 
@@ -27,17 +26,17 @@ export const ComponentsContainerFormCell: FC<IComponentsContainerFormCellProps> 
 
   return (
     <div style={containerStyle}>
-      {components?.map((model) => {
+      {components.map((model) => {
         return (
           <FormComponent
             componentModel={{
               ...model,
               context: model.context,
               isDynamic: true,
-              readOnly: readOnly === true ? true : model?.readOnly,
+              readOnly: readOnly === true ? true : model.readOnly,
               customEnabled: '',
             }}
-            key={model?.id}
+            key={model.id}
           />
         );
       })}

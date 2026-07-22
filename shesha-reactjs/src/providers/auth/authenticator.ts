@@ -2,9 +2,9 @@ import { getAccessToken, removeAccessToken, saveUserToken } from '@/utils/auth';
 import { DEFAULT_ACCESS_TOKEN_NAME } from '../sheshaApplication/contexts';
 import { URL_HOME_PAGE, URL_LOGIN_PAGE } from '@/shesha-constants';
 import { IEntityReferenceDto, IErrorInfo, ILoginForm, toErrorInfo } from '@/interfaces';
-import { HttpClientApi, HttpResponse } from '@/publicJsApis/httpClient';
-import { AuthenticateModel, AuthenticateResultModelAjaxResponse } from '@/apis/tokenAuth';
-import { GetCurrentLoginInfoOutput, GetCurrentLoginInfoOutputAjaxResponse, UserLoginInfoDto } from '@/apis/session';
+import { HttpClientApi } from '@/publicJsApis/apis/httpClient';
+import { AuthenticateResultModelAjaxResponse } from '@/apis/tokenAuth';
+import { GetCurrentLoginInfoOutput, GetCurrentLoginInfoOutputAjaxResponse, InitializationErrorsInfoDto, UserLoginInfoDto } from '@/apis/session';
 import { getQueryParam, isSameUrls, removeURLParameter } from '@/utils/url';
 import { IRouter } from '../shaRouting';
 import React from 'react';
@@ -22,9 +22,11 @@ import {
   LoginUserResponse,
   URLS,
 } from './models';
-import { ISettingsActionsContext } from '../settings/contexts';
+import { ISettingsClientContext } from '../settings/contexts';
 import { extractAjaxResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { IShaRouter } from '../shaRouting/contexts';
+import { extractErrorInfo } from '@/utils/errors';
 
 type RerenderTrigger = () => void;
 
@@ -38,8 +40,8 @@ const enum AuthenticateResultType {
 
 export interface AuthenticatorArgs {
   httpClient: HttpClientApi;
-  router: IRouter;
-  settings: ISettingsActionsContext;
+  shaRouter: IShaRouter;
+  settings: ISettingsClientContext;
   tokenName?: string;
   unauthorizedRedirectUrl?: string;
   homePageUrl?: string;
@@ -47,14 +49,22 @@ export interface AuthenticatorArgs {
    * A callback for when the request headers are changed
    */
   onSetRequestHeaders?: ((headers: IHttpHeaders) => void) | undefined;
+  /**
+   * A callback that is called on token expiration
+   */
+  onTokenExpired?: () => void;
 }
 
 export class Authenticator implements IAuthenticator {
   #httpClient: HttpClientApi;
 
-  #settings: ISettingsActionsContext;
+  #settings: ISettingsClientContext;
 
-  #router: IRouter;
+  #shaRouter: IShaRouter;
+
+  get #router(): IRouter {
+    return this.#shaRouter.router;
+  };
 
   #rerender: RerenderTrigger;
 
@@ -66,12 +76,18 @@ export class Authenticator implements IAuthenticator {
 
   #homePageUrl: string;
 
+  #onTokenExpired: (() => void) | undefined;
+
   #loginInfo: GetCurrentLoginInfoOutput | undefined;
 
   state: AuthenticationState;
 
   get loginInfo(): UserLoginInfoDto | undefined {
     return this.#loginInfo?.user;
+  }
+
+  get errorsInfo(): InitializationErrorsInfoDto | undefined {
+    return this.#loginInfo?.initializationErrors;
   }
 
   get isLoggedIn(): boolean {
@@ -81,7 +97,7 @@ export class Authenticator implements IAuthenticator {
   constructor(args: AuthenticatorArgs, forceRootUpdate: RerenderTrigger) {
     this.#httpClient = args.httpClient;
     this.#settings = args.settings;
-    this.#router = args.router;
+    this.#shaRouter = args.shaRouter;
     this.#rerender = forceRootUpdate;
     this.state = { status: 'waiting' };
 
@@ -89,10 +105,18 @@ export class Authenticator implements IAuthenticator {
     this.#unauthorizedRedirectUrl = args.unauthorizedRedirectUrl || URL_LOGIN_PAGE;
     this.#homePageUrl = args.homePageUrl || URL_HOME_PAGE;
     this.#onSetRequestHeaders = args.onSetRequestHeaders;
+    this.#onTokenExpired = args.onTokenExpired;
   }
 
-  applyRouter = (router: IRouter): void => {
-    this.#router = router;
+  refetchProfileAsync = async (headersOverride?: IHttpHeaders): Promise<void> => {
+    try {
+      // fetch user profile
+      const userProfile = await this.#fetchUserInfoHttp(headersOverride);
+      this.#loginInfo = userProfile;
+    } catch (error) {
+      this.#updateState('failed', ERROR_MESSAGES.USER_PROFILE_LOADING, extractErrorInfo(error));
+      throw error;
+    }
   };
 
   #redirect = (url: string): void => {
@@ -121,10 +145,13 @@ export class Authenticator implements IAuthenticator {
 
   #saveUserToken = (token: IAccessToken): void => {
     saveUserToken(token, this.#tokenName);
+    // set token expiration timer
+    this.#startTokenExpirationTimer(token.expireOn);
   };
 
   #clearAccessToken = (): void => {
     removeAccessToken(this.#tokenName);
+    this.#clearTokenExpirationTimer();
   };
 
   #checkRegistrationCompletion = (
@@ -157,8 +184,8 @@ export class Authenticator implements IAuthenticator {
 
   #loginUserHttp = async (loginFormData: ILoginForm): Promise<void> => {
     const httpResponse = await this.#httpClient.post<
-      AuthenticateModel,
-      HttpResponse<AuthenticateResultModelAjaxResponse>
+      AuthenticateResultModelAjaxResponse,
+      ILoginForm
     >(URLS.LOGIN, loginFormData);
     const { data: response } = httpResponse;
 
@@ -170,19 +197,20 @@ export class Authenticator implements IAuthenticator {
 
     if (token && token.accessToken) {
       // save token to the localStorage
-      this.#saveUserToken(token);
-      // update http headers
+      this.#saveUserToken({
+        accessToken: token.accessToken,
+        expireInSeconds: token.expireInSeconds,
+        expireOn: token.expireOn,
+      });
     } else {
       throw new Error(ERROR_MESSAGES.GENERIC);
     }
   };
 
-  #fetchUserInfoHttp = async (): Promise<GetCurrentLoginInfoOutput> => {
-    const headers = this.#getHttpHeaders();
-    const httpResponse = await this.#httpClient.get<void, HttpResponse<GetCurrentLoginInfoOutputAjaxResponse>>(
-      URLS.GET_CURRENT_LOGIN_INFO,
-      { headers: headers },
-    );
+  #fetchUserInfoHttp = async (headersOverride?: IHttpHeaders): Promise<GetCurrentLoginInfoOutput> => {
+    const headers = { ...this.#getHttpHeaders(), ...headersOverride };
+
+    const httpResponse = await this.#httpClient.get<GetCurrentLoginInfoOutputAjaxResponse>(URLS.GET_CURRENT_LOGIN_INFO, { headers: headers });
     const response = extractAjaxResponse(httpResponse.data, 'Failed to get user profile');
 
     this.#onSetRequestHeaders?.(headers);
@@ -247,21 +275,80 @@ export class Authenticator implements IAuthenticator {
     }
   };
 
-  #logoutUserHttp = async (): Promise<void> => {
-    await this.#httpClient.post<void, void>(URLS.LOGOFF, {});
-  };
-
   logoutUser = async (): Promise<void> => {
-    await this.#logoutUserHttp();
+    if (!await this.#shaRouter.validateNavigation(this.#unauthorizedRedirectUrl))
+      return;
+
+    // Get the current token before clearing (needed for logout API call)
+    const currentToken = this.#getToken();
+
+    // Clear token from localStorage FIRST - this ensures any component that tries
+    // to read it after this point will not find it
     this.#clearAccessToken();
+
+    // Clear login info to ensure anyOfPermissionsGranted returns false
+    this.#loginInfo = undefined;
+
+    // Immediately refresh auth headers to clear Authorization header
+    // This propagates the cleared state to all components before logout API call
+    this.refreshAuthHeaders();
+
+    // Now make the logout API call with the token we saved earlier
+    // We pass the token explicitly in headers since it's no longer in localStorage
+    try {
+      if (currentToken?.accessToken) {
+        await this.#httpClient.post<void>(
+          URLS.LOGOFF,
+          {},
+          { headers: { Authorization: `Bearer ${currentToken.accessToken}` } },
+        );
+      }
+    } catch (error) {
+      // Ignore logout API errors - we've already cleared everything locally
+      console.warn('Logout API call failed, but local session is cleared:', error);
+    }
 
     this.#updateState('waiting');
 
     this.#redirect(this.#unauthorizedRedirectUrl);
   };
 
+  #timer: NodeJS.Timeout | undefined;
+
+  #startTokenExpirationTimer = (expireOn: string | undefined): void => {
+    this.#clearTokenExpirationTimer();
+
+    if (expireOn) {
+      const expirationDate = new Date(expireOn);
+      const timeUntilExpiration = expirationDate.getTime() - Date.now();
+      if (timeUntilExpiration > 0) {
+        this.#timer = setTimeout(() => {
+          this.#clearAccessToken();
+          this.#loginInfo = undefined;
+          this.#updateState('waiting');
+          this.#redirect(this.#unauthorizedRedirectUrl);
+          this.#onTokenExpired?.();
+          this.#timer = undefined;
+        }, timeUntilExpiration);
+      }
+    }
+  };
+
+  #clearTokenExpirationTimer = (): void => {
+    if (this.#timer) {
+      clearTimeout(this.#timer);
+      this.#timer = undefined;
+    }
+  };
+
+  #isTokenExpired = (): boolean => {
+    const token = this.#getToken();
+    return isDefined(token?.expireOn) && new Date(token.expireOn) < new Date();
+  };
+
   checkAuthAsync = async (notAuthorizedRedirectUrl: string): Promise<void> => {
-    if (this.loginInfo) return;
+    if (this.loginInfo && !this.#isTokenExpired())
+      return;
 
     const getRedirectUrlAsync = async (): Promise<string> => {
       const currentPath = this.#router.path;
@@ -293,6 +380,7 @@ export class Authenticator implements IAuthenticator {
         if (userProfile.user) {
           this.#loginInfo = userProfile;
           this.#updateState('ready');
+          this.#startTokenExpirationTimer(token.expireOn);
         } else {
           this.#updateState('waiting');
           this.#router.push(await getRedirectUrlAsync());
@@ -301,7 +389,21 @@ export class Authenticator implements IAuthenticator {
         this.#updateState('failed', ERROR_MESSAGES.USER_PROFILE_LOADING, toErrorInfo(error));
         this.#router.push(await getRedirectUrlAsync());
       }
-    } else this.#router.push(await getRedirectUrlAsync());
+    } else
+      this.#router.push(await getRedirectUrlAsync());
+  };
+
+  updateTokenExpiration = (expireOn: string): void => {
+    // Update the token expiration timer
+    // This is called when a token is refreshed externally (e.g., from idle timer)
+    this.#startTokenExpirationTimer(expireOn);
+  };
+
+  refreshAuthHeaders = (): void => {
+    // Get fresh headers including the updated token from localStorage
+    const headers = this.#getHttpHeaders();
+    // Notify the application to update the httpClient's cached headers
+    this.#onSetRequestHeaders?.(headers);
   };
 
   anyOfPermissionsGranted = (permissions: string[], permissionedEntities?: IEntityReferenceDto[]): boolean => {
@@ -327,7 +429,7 @@ export class Authenticator implements IAuthenticator {
 }
 
 export const useAuthenticatorInstance = (args: AuthenticatorArgs): [IAuthenticator] => {
-  const authenticatorRef = React.useRef<IAuthenticator>();
+  const authenticatorRef = React.useRef<IAuthenticator>(undefined);
   const [, forceUpdate] = React.useState({});
 
   if (!authenticatorRef.current) {
@@ -338,8 +440,6 @@ export const useAuthenticatorInstance = (args: AuthenticatorArgs): [IAuthenticat
     const instance = new Authenticator(args, forceReRender);
 
     authenticatorRef.current = instance as IAuthenticator;
-  } else {
-    authenticatorRef.current.applyRouter(args.router);
   }
 
   const authenticator = authenticatorRef.current;

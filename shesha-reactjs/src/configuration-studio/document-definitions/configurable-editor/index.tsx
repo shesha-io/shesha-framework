@@ -1,4 +1,4 @@
-import { ConfigurableForm } from '@/components';
+import { ConfigurableForm } from '@/components/configurableForm';
 import { IDocumentInstance } from '@/configuration-studio/models';
 import { FormFullName } from '@/interfaces';
 import { useShaFormInstance } from '@/providers';

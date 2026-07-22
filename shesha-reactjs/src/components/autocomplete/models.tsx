@@ -1,15 +1,18 @@
-import { FormIdentifier, IEntityReferenceDto } from "@/index";
+import { FormIdentifier, IEntityReferenceDto } from "@/interfaces";
 import { IDataColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
 import { Key, ReactNode } from "react";
-import { GroupingItem, ISortingItem } from "@/providers/dataTable/interfaces";
+import { GroupingItem, ISortingItem, ITableRowData, JsonLogicFilter } from "@/providers/dataTable/interfaces";
 import { SizeType } from "antd/lib/config-provider/SizeContext";
+import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
+import { StringSubtype } from "@/interfaces/utilityTypes";
+import { BaseOptionType } from "antd/lib/select";
 
 /**
  * Converts array of strings into IDataColumnsProps array
  * @param fields - array of strings
  * @returns IDataColumnsProps array
  */
-export function getColumns(fields: string[]): IDataColumnsProps[] {
+export function getColumns(fields: string[] | undefined): IDataColumnsProps[] {
   return (fields ?? []).map((field, index) => {
     return {
       id: `${index}`,
@@ -24,21 +27,30 @@ export function getColumns(fields: string[]): IDataColumnsProps[] {
   });
 }
 
-export type AutocompleteDataSourceType = 'entitiesList' | 'url';
+export const AUTOCOMPLETE_DATA_SOURCE_TYPE = ["entitiesList", "url"] as const;
+export type AutocompleteDataSourceType = StringSubtype<typeof AUTOCOMPLETE_DATA_SOURCE_TYPE>;
 
-export type QueryParamFunc = (searchText: string, selected: any[]) => object;
-export type FilterSelectedFunc = (value: any) => object;
-export type KayValueFunc = (value: any, args: any) => string;
-export type DisplayValueFunc = (value: any, args: any) => string;
-export type OutcomeValueFunc = (value: any, args: any) => string | string[] | IEntityReferenceDto | IEntityReferenceDto[] | any;
+export type QueryParamFunc = (searchText: string, selected: unknown[]) => object;
+export type FilterSelectedFunc = (value: unknown | unknown[] | undefined) => JsonLogicFilter | undefined;
+export type KayValueFunc = (value: unknown, args?: object) => string | undefined;
+export type DisplayValueFunc = (value: unknown, args?: object) => string;
+export type OutcomeValueFunc = (value: unknown, args?: object) => string | string[] | IEntityReferenceDto | IEntityReferenceDto[] | unknown;
 
-export interface ISelectOption<TValue = any> {
-  // TODO: make generic
-  value: string | number;
+/*
+export interface DefaultOptionType extends BaseOptionType {
+    label?: React.ReactNode;
+    value?: string | number | null;
+    children?: Omit<DefaultOptionType, 'children'>[];
+}
+*/
+
+export interface ISelectOption extends BaseOptionType {
+  value: string | number | null;
   label: string | React.ReactNode;
-  data: TValue;
+  data: ITableRowData | null;
   color?: string;
   icon?: string;
+  description?: string;
 }
 
 interface IQueryParamProp {
@@ -47,85 +59,88 @@ interface IQueryParamProp {
   value?: Key;
 }
 
-export interface IAutocompleteBaseProps {
-  disableRefresh?: (value) => void;
-
-  uid: string;
-  onChange?: (value: any) => void;
-  onSearch?: (searchText: string) => void;
-  value?: any;
-
+export type EntityAutocompleteProps = {
   /** Type of entity */
-  entityType?: string;
-  /** Data source type */
-  dataSourceType: AutocompleteDataSourceType;
+  entityType?: string | IEntityTypeIdentifier | undefined;
+  /** Sorting */
+  sorting?: ISortingItem[] | undefined;
+  /** Grouping */
+  grouping?: GroupingItem | undefined;
+};
+
+export type UrlAutocompleteProps = {
   /** Data source URL (required for dataSourceType === 'url', alternative for dataSourceType === 'entitiesList') */
-  dataSourceUrl?: string;
-  /** Placeholder */
-  placeholder?: string;
-  /** Hide border */
-  hideBorder?: boolean;
-  /** A property used as label */
-  displayPropName?: string;
-  /** A property used as key/value */
-  keyPropName?: string;
-  /** Permanent filter (json logig) */
-  filter?: object;
-  /** Read only */
-  readOnly?: boolean;
-  /** Disable text search */
-  disableSearch?: boolean;
-  /** Selection mode */
-  mode?: 'single' | 'multiple';
-  /** Fields to fetch */
-  fields?: string[];
+  dataSourceUrl?: string | undefined;
   /** Query params, applicable only for dataSourceType === 'url' */
-  queryParams?: IQueryParamProp[];
+  queryParams?: IQueryParamProp[] | undefined;
+};
 
-  /** Quickview setting */
+type AutocompleteQuickViewProps = {
   /** Use Quickview */
-  quickviewEnabled?: boolean;
+  quickviewEnabled?: boolean | undefined;
   /** Form path */
-  quickviewFormPath?: FormIdentifier;
+  quickviewFormPath?: FormIdentifier | undefined;
   /** A property used as label, шf empty, the displayPropName field is used. */
-  quickviewDisplayPropertyName?: string;
+  quickviewDisplayPropertyName?: string | undefined;
   /** Get Entity details Url */
-  quickviewGetEntityUrl?: string;
+  quickviewGetEntityUrl?: string | undefined;
   /** Quickview form width */
-  quickviewWidth?: string | number;
+  quickviewWidth?: string | number | undefined;
+};
 
+type AutocompleteDisplayProps = {
+  /** Placeholder */
+  placeholder?: string | undefined;
+  /** Hide border */
+  hideBorder?: boolean | undefined;
+  /** Read only */
+  readOnly?: boolean | undefined;
   /** Not found content */
   notFoundContent?: ReactNode;
   /** Style */
-  style?: React.CSSProperties;
-  /** Filter (json logic) that used for filter selected values */
-  filterKeysFunc?: FilterSelectedFunc | null | undefined;
-  /** Function for get key (string) from value (outcome value format) */
-  keyValueFunc?: KayValueFunc | null | undefined;
-  /** Function for get label from item (received from the backend)*/
-  displayValueFunc?: DisplayValueFunc | null | undefined;
-  /** Function for get value (outcome value format) from item (received from the backend) */
-  outcomeValueFunc?: OutcomeValueFunc | null | undefined;
-  /** Sorting */
-  sorting?: ISortingItem[];
-  /** Grouping */
-  grouping?: GroupingItem;
+  style?: React.CSSProperties | undefined;
   /** Size */
-  size?: SizeType;
+  size?: SizeType | undefined;
+};
 
-  allowFreeText?: boolean;
-  allowClear?: boolean;
+type AutocompleteDataProps = {
+  /** A property used as label */
+  displayPropName?: string | undefined;
+  /** A property used as key/value */
+  keyPropName?: string | undefined;
+  /** Fields to fetch */
+  fields?: string[] | undefined;
+  /** Permanent filter (json logig) */
+  filter?: JsonLogicFilter | undefined;
 
-  // not implemented
-  defaultValue?: any | any[];
+  /** Filter (json logic) that used for filter selected values */
+  filterKeysFunc?: FilterSelectedFunc | undefined;
+  /** Function for get key (string) from value (outcome value format) */
+  keyValueFunc?: KayValueFunc | undefined;
+  /** Function for get label from item (received from the backend)*/
+  displayValueFunc?: DisplayValueFunc | undefined;
+  /** Function for get value (outcome value format) from item (received from the backend) */
+  outcomeValueFunc?: OutcomeValueFunc | undefined;
+};
 
-  // need to review (not used)
-  allowInherited?: boolean;
+export type IAutocompleteBaseProps<TValue = unknown> =
+  EntityAutocompleteProps &
+  UrlAutocompleteProps &
+  AutocompleteQuickViewProps &
+  AutocompleteDisplayProps &
+  AutocompleteDataProps & {
 
-  /**
-   * @deprecated
-   */
-  typeShortAlias?: string;
-}
+    onChange?: ((value: TValue | TValue[] | null) => void) | undefined;
+    value?: TValue | undefined;
 
-export type IAutocompleteProps = Omit<IAutocompleteBaseProps, 'uid'>;
+    /** Data source type */
+    dataSourceType: AutocompleteDataSourceType;
+
+    /** Selection mode */
+    mode?: 'single' | 'multiple' | undefined;
+
+    allowFreeText?: boolean | undefined;
+    allowClear?: boolean | undefined;
+  };
+
+export type IAutocompleteProps<TValue = unknown> = Omit<IAutocompleteBaseProps<TValue>, 'uid'>;

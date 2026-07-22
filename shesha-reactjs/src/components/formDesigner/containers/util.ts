@@ -25,8 +25,8 @@ export const getAlignmentStyle = ({
   gridColumnsCount,
   display,
   flexDirection,
-  justifySelf,
-  alignSelf,
+  justifySelf: _justifySelf,
+  alignSelf: _alignSelf,
   textJustify,
   gap,
   flexWrap,
@@ -35,15 +35,15 @@ export const getAlignmentStyle = ({
     display,
   };
 
-  const gridTemplateColumns = Array(gridColumnsCount).fill('auto')?.join(' ');
+  const gridTemplateColumns = Array(gridColumnsCount).fill('auto').join(' ');
 
   if (direction === 'horizontal' || display !== 'block') {
     style['justifyContent'] = justifyContent;
     style['alignItems'] = alignItems;
     style['justifyItems'] = justifyItems;
-    style['justifySelf'] = justifySelf;
-    style['alignSelf'] = alignSelf;
-    style['textJustify'] = textJustify as any;
+    // Note: justifySelf and alignSelf should be applied to the wrapper element, not the inner container
+    // They are handled in the wrapperStyle in containerComponent.tsx
+    style['textJustify'] = textJustify;
     style['gap'] = gap;
   }
 

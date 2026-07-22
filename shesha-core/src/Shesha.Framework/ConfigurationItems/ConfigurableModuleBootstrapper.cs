@@ -76,7 +76,7 @@ namespace Shesha.ConfigurationItems
             {
                 using (_unitOfWorkManager.Current.DisableFilter(AbpDataFilters.SoftDelete))
                 {
-                    var dbModules = await _moduleRepo.GetAll().ToListAsync();
+                    var dbModules = await _moduleRepo.GetAllListAsync();
                     var moduleTypes = _moduleManager.GetModuleTypes();
                     foreach (var type in moduleTypes) 
                     {
@@ -190,7 +190,8 @@ namespace Shesha.ConfigurationItems
                     var submodulesInitialized = false;
                     foreach (var submodule in submodules)
                     {
-                        submodulesInitialized = submodulesInitialized || await submodule.InitializeConfigurationAsync();
+                        if (await submodule.InitializeConfigurationAsync())
+                            submodulesInitialized = true;
                     }
 
                     if (mainModuleInitialized || submodulesInitialized)
@@ -213,7 +214,7 @@ namespace Shesha.ConfigurationItems
 
         private async Task FillModuleHierarchyAsync(Module module) 
         {
-            var dbRelations = await _moduleRelationRepo.GetAll().Where(e => e.Module == module).ToListAsync();
+            var dbRelations = await _moduleRelationRepo.GetAllListAsync(e => e.Module == module);
 
             var level = 0;
             var baseModulesOld = _moduleHierarchyProvider.GetBaseModules(module.Name)

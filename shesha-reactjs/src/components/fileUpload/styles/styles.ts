@@ -1,10 +1,54 @@
 import { createStyles } from '@/styles';
+import { addPx } from '@/utils/style';
+import { CSSProperties } from 'react';
+import { CSSInterpolation } from '@emotion/serialize';
 
-export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, model }) => {
+interface ModelProps {
+  layout?: boolean | undefined;
+  isDragger?: boolean | undefined;
+  hideFileName?: boolean | undefined;
+  listType?: 'text' | 'picture' | 'picture-card' | 'thumbnail' | undefined;
+}
+
+interface FileUploadStylesParams {
+  style?: CSSProperties | undefined;
+  model: ModelProps;
+}
+
+type TextAlignType = 'left' | 'right' | 'center' | 'justify';
+
+/**
+ * Converts React CSSProperties to Emotion CSSInterpolation.
+ * Spreading CSSProperties into a new object is safe at runtime and produces
+ * a shape compatible with Emotion's CSSObject. The type assertion is necessary
+ * because CSSInterpolation is a union type that doesn't directly accept the spread.
+ */
+const toCssInterpolation = (style: CSSProperties | undefined): CSSInterpolation => {
+  return (style ? { ...style } : {}) as CSSInterpolation;
+};
+
+export type FileUploadStylesResponse = {
+  shaStoredFilesRenderer?: string;
+  storedFilesRendererBtnContainer?: string;
+  storedFilesRendererNoFiles?: string;
+  antUploadDragIcon?: string;
+  antPreviewDownloadIcon?: string;
+  thumbnailControls?: string;
+  overlayThumbnailControls?: string;
+  antUploadText?: string;
+  antUploadHint?: string;
+  styledFileControls?: string;
+};
+
+export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesResponse>(({ token, css, cx, prefixCls }, { style, model }) => {
   const {
     background = 'transparent',
     backgroundImage,
     borderRadius = '8px',
+    borderTopLeftRadius,
+    borderTopRightRadius,
+    borderBottomLeftRadius,
+    borderBottomRightRadius,
     borderWidth = '0',
     borderTopWidth,
     width,
@@ -43,14 +87,21 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
 
   const { layout, isDragger, hideFileName, listType } = model;
 
-  const justifyContentMap = {
+  // The configured component styles (background, border, shadow, dimensions) describe the
+  // thumbnail tile, so they must only be applied in thumbnail mode. In text mode the file is
+  // shown as a plain filename and must not pick up the thumbnail's shadow/border/box styling.
+  const isThumbnail = listType === 'thumbnail';
+  const extraStyles = isThumbnail ? toCssInterpolation(style) : {};
+
+  const justifyContentMap: Record<TextAlignType, string> = {
     left: 'flex-start',
     right: 'flex-end',
     center: 'center',
     justify: 'space-between',
   };
 
-  const justifyContentValue = justifyContentMap[textAlign] || textAlign;
+  const textAlignValue = (typeof textAlign === 'string' ? textAlign : 'left') as TextAlignType;
+  const justifyContentValue = justifyContentMap[textAlignValue] || textAlignValue;
 
   const antUploadDragIcon = `${prefixCls}-upload-drag-icon`;
   const antUploadText = `${prefixCls}-upload-text`;
@@ -59,8 +110,22 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
   const storedFilesRendererBtnContainer = 'stored-files-renderer-btn-container';
   const storedFilesRendererNoFiles = 'stored-files-renderer-no-files';
 
+  const normalizeRadius = (value: unknown): string => {
+    const scalar = typeof value === 'string' || typeof value === 'number'
+      ? value
+      : typeof borderRadius === 'string' || typeof borderRadius === 'number'
+        ? borderRadius
+        : undefined;
+    return addPx(scalar) ?? '0';
+  };
+  const borderRadiusCss = `
+    border-top-left-radius: ${normalizeRadius(borderTopLeftRadius)} !important;
+    border-top-right-radius: ${normalizeRadius(borderTopRightRadius)} !important;
+    border-bottom-right-radius: ${normalizeRadius(borderBottomRightRadius)} !important;
+    border-bottom-left-radius: ${normalizeRadius(borderBottomLeftRadius)} !important;
+  `;
+
   const commonBorderStyles = css`
-    border: ${borderWidth} ${borderStyle} ${borderColor};
     border-top: ${borderTopWidth || borderWidth} ${borderTopStyle || borderStyle} ${borderTopColor || borderColor};
     border-right: ${borderRightWidth || borderWidth} ${borderRightStyle || borderStyle}
       ${borderRightColor || borderColor};
@@ -94,29 +159,23 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       min-height: ${layout ? (minHeight) : '100%'} !important;
       max-width: ${layout ? (maxWidth) : '100%'} !important;
       min-width: ${layout ? (minWidth) : '100%'} !important;
+      ${isThumbnail ? `
+      background: ${backgroundImage ?? backgroundColor ?? background};
+      ${backgroundPosition ? `background-position: ${backgroundPosition};` : ''}
+      ${backgroundRepeat ? `background-repeat: ${backgroundRepeat};` : ''}
+      ${backgroundSize ? `background-size: ${backgroundSize};` : ''}
+      ` : ''}
 
-      .ant-upload-select-picture-card {
-        width: var(--thumbnail-width) !important;
-        height: var(--thumbnail-height) !important;
-        background-position: ${backgroundPosition} !important;
-        background-repeat: ${backgroundRepeat} !important;
-        background-size: ${backgroundSize} !important;
-      }
-
+      ${isThumbnail ? `
       .ant-upload-list-item {
         width: var(--thumbnail-width) !important;
-        height: calc(var(--thumbnail-height) + 32px) !important;
+        height: ${hideFileName ? 'var(--thumbnail-height)' : 'calc(var(--thumbnail-height) + 32px)'} !important;
         border-top: ${borderTop} !important;
         border-bottom: ${borderBottom} !important;
         border-right: ${borderRight} !important;
       }
+      ` : ''}
 
-      .ant-upload-list-picture-card {
-        height: ${hideFileName
-          ? 'var(--thumbnail-height)'
-          : `calc(var(--thumbnail-height) + ${fontSize} * 2 + 32px)`} !important;
-        padding-bottom: 1rem;
-      }
 
       .ant-upload-list-item-image {
         object-fit: contain !important;
@@ -135,24 +194,26 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         --ant-padding-xs: 0px !important;
         --font-size: ${fontSize} !important;
         --ant-font-size: ${fontSize} !important;
-        border-radius: ${borderRadius} !important;
-        border: 1px dashed ${borderColor} !important;
         display: flex;
+        ${isThumbnail ? `
+        ${borderRadiusCss}
+        border: ${borderWidth} ${borderStyle} ${borderColor} !important;
 
         :before {
           top: 0;
           width: 100% !important;
-          border-radius: ${borderRadius} !important;
-          border: 1px dashed ${borderColor} !important;
+          ${borderRadiusCss}
+          border: ${borderWidth} ${borderStyle} ${borderColor} !important;
           height: 100% !important;
         }
+        ` : ''}
       }
 
       .ant-upload-list-item-thumbnail {
-        border-radius: ${borderRadius} !important;
+        ${extraStyles}
+        ${borderRadiusCss}
         padding: 0 !important;
         ${commonBorderStyles}
-        ${style}
       }
 
       .thumbnail-item-name {
@@ -165,16 +226,17 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
             color: ${color} !important;
           }
         }
-        ${listType !== 'thumbnail' && style?.jsStyle}
       }
 
       .thumbnail-stub {
+        ${extraStyles}
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        border: 1px ${borderStyle} ${borderColor} !important;
-        ${style}
+        ${borderRadiusCss}
+        ${commonBorderStyles}
+        ${commonTextStyles}
       }
 
       .ant-upload-list-text {
@@ -191,10 +253,8 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
       }
 
       .${prefixCls}-upload {
-
-        width: ${layout && !isDragger ? 'var(--thumbnail-width)' : '100%'} !important;
-        height: ${layout && !isDragger ? 'var(--thumbnail-height)' : '100%'} !important;
-        border-radius: ${borderRadius} !important;
+        ${isDragger ? `min-height: ${minHeight ?? '120px'} !important;` : ''}
+        ${borderRadiusCss}
         align-items: center;
 
         &.${prefixCls}-upload-btn {
@@ -208,6 +268,12 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         }
       }
 
+      ${listType !== 'thumbnail' ? `
+        .ant-upload-select {
+          border: none !important;
+        }
+      ` : ''}
+
       .ant-btn {
         color: ${color || token.colorPrimary} !important;
         ${commonTextStyles}
@@ -217,17 +283,21 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
         * {
           ${commonTextStyles}
         }
-        ${listType === 'thumbnail' && style}
-        width: 100%;
-        height: 100%;
+        width: 100% !important;
+        height: 100% !important;
+        border: none !important;
+        background: transparent !important;
       }
 
       .ant-upload-list-item-container {
-        background: ${backgroundImage ?? backgroundColor} !important;
-        width: var(--thumbnail-width) !important;
-        height: var(--thumbnail-height) !important;
-        border-radius: ${borderRadius} !important;
-        border: ${borderWidth} ${listType === 'thumbnail' ? borderStyle : 'none'} ${borderColor} !important;
+        height: calc(var(--container-height) - 32px) !important;
+        max-height: calc(var(--container-max-height) - calc(${fontSize} * 4)) !important;
+        min-height: calc(var(--container-min-height) - 32px) !important;
+        width: calc(var(--container-width) - 32px) !important;
+        max-width: calc(var(--container-max-width) - 32px) !important;
+        min-width: calc(var(--container-min-width) - 32px) !important;
+        margin: 0 !important;
+        padding: 0 !important;
         &.ant-upload-animate-inline-appear,
         &.ant-upload-animate-inline-appear-active,
         &.ant-upload-animate-inline {
@@ -235,7 +305,6 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
           animation: none !important;
           transition: none !important;
         }
-        ${listType !== 'thumbnail' && style}
       }
     `,
   );
@@ -258,7 +327,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     css`
       width: var(--thumbnail-width, 54px) !important;
       height: var(--thumbnail-height, 54px) !important;
-      border-radius: ${borderRadius} !important;
+      ${borderRadiusCss}
       object-fit: cover !important;
       display: flex !important;
       justify-content: center !important;
@@ -300,32 +369,24 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     css`
       ${commonBorderStyles}
       ${commonTextStyles}
-      border-radius: ${borderRadius} !important;
+      ${borderRadiusCss}
       padding: 0 !important;
-      background: ${background ?? backgroundImage ?? backgroundColor} !important;
+      background: ${backgroundImage ?? backgroundColor ?? background};
       width: ${width || '54px'} !important;
       height: ${height || '54px'} !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
+      position: relative !important;
 
       .anticon {
         img {
           object-fit: cover !important;
         }
       }
-      ${style}
+      ${extraStyles}
     `,
   );
-
-  const thumbnailReadOnly = cx("ant-upload-list-item thumbnail-readonly", css`
-      text-align: center;
-      align-items: center;
-      justify-content: center;
-      background-color: #00000005 !important;
-      border: 1px dashed #d9d9d9 !important;
-      border-radius: 8px !important;
-  `);
 
   return {
     shaStoredFilesRenderer,
@@ -338,6 +399,5 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style, m
     antUploadText,
     antUploadHint,
     styledFileControls,
-    thumbnailReadOnly,
   };
 });

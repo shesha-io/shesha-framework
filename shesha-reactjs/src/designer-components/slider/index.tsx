@@ -1,42 +1,47 @@
 import { Slider } from 'antd';
 import React from 'react';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
-import { IToolboxComponent } from '@/interfaces';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { useFormData } from '@/providers';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { SlidersFilled } from '@ant-design/icons';
-import { ISliderComponentProps } from './interfaces';
+import { ISliderComponentProps, ISliderComponentPropsV0, SliderComponentDefinition } from './interfaces';
 import { getSettings } from './settingsForm';
+import { useStyles } from './styles';
+import { DataTypes } from '@/interfaces';
+import { NumberFormats } from '@/interfaces/dataTypes';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
-const SwitchComponent: IToolboxComponent<ISliderComponentProps> = {
+const SliderComponent: SliderComponentDefinition = {
   type: 'slider',
   name: 'Slider',
   icon: <SlidersFilled />,
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
+  preserveDimensionsInDesigner: true,
+  dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.number && !isNullOrWhiteSpace(dataFormat) && [NumberFormats.int64, NumberFormats.int32].includes(dataFormat),
   Factory: ({ model }) => {
     const { data: formData } = useFormData();
-    const defaultValue = model?.defaultValue ? parseInt(model.defaultValue, 10) : undefined;
-    const min = model?.min ? parseInt(model.min, 10) : undefined;
-    const max = model?.max ? parseInt(model.max, 10) : undefined;
+    const { styles } = useStyles();
 
     return (
-      <ConfigurableFormItem model={model} initialValue={defaultValue}>
-        {(value, onChange) => (
-          <Slider
-            className="sha-slider"
-            defaultValue={defaultValue}
-            min={min}
-            max={max}
-            onChange={onChange}
-            value={value}
-            style={{ ...(!model.enableStyleOnReadonly && model.readOnly
-              ? {} : getStyle(model?.style, formData)), ...(model.readOnly
-              ? { pointerEvents: 'none' } : {}) }}
-          />
-        )}
-      </ConfigurableFormItem>
+      <div className={styles.sliderWrapper}>
+        <ConfigurableFormItem<number> model={model}>
+          {(value, onChange) => (
+            <Slider
+              range={false}
+              className="sha-slider"
+              {...(isDefined(model.min) ? { min: model.min } : {})}
+              {...(isDefined(model.max) ? { max: model.max } : {})}
+              onChange={(newValue) => onChange(newValue)}
+              {...(isDefined(value) ? { value } : {})}
+              style={{ ...(!model.enableStyleOnReadonly && model.readOnly
+                ? {} : getStyle(model.style, formData)), ...(model.readOnly
+                ? { pointerEvents: 'none' } : {}) }}
+            />
+          )}
+        </ConfigurableFormItem>
+      </div>
     );
   },
   initModel: (model) => {
@@ -45,8 +50,16 @@ const SwitchComponent: IToolboxComponent<ISliderComponentProps> = {
       label: 'Slider',
     };
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  linkToModelMetadata: (model, propMetadata) => ({ ...model, min: propMetadata.min ?? undefined, max: propMetadata.max ?? undefined }),
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+  migrator: (m) =>
+    m.add<ISliderComponentPropsV0>(0, (prev) => ({ ...prev }))
+      .add<ISliderComponentProps>(1, (prev) => ({
+        ...prev,
+        min: prev.min && prev.min !== '' ? parseInt(prev.min, 10) : undefined,
+        max: prev.max && prev.max !== '' ? parseInt(prev.max, 10) : undefined,
+      })),
 };
 
-export default SwitchComponent;
+export default SliderComponent;

@@ -1,21 +1,7 @@
-import {
-  IConfigurableActionConfiguration,
-  convertJsonToCss,
-  evaluateString,
-  isNavigationActionConfiguration,
-  normalizeUrl,
-  sidebarMenuItemToMenuItem,
-  useAvailableConstantsData,
-  useConfigurableActionDispatcher,
-  useDeepCompareMemo,
-  useLocalStorage,
-  useMainMenu,
-  useShaRouting,
-} from "@/index";
 import { ISidebarButton, ISidebarMenuItem } from "@/interfaces/sidebar";
-import { getSelectedKeys } from "@/utils";
+import { convertJsonToCss, convertJsonToCssWithImportant, getSelectedKeys, normalizeUrl } from "@/utils";
 import { MenuOutlined } from "@ant-design/icons";
-import { Button, Menu } from "antd";
+import { Button, Menu, MenuProps } from "antd";
 import classNames from "classnames";
 import React, {
   FC,
@@ -27,37 +13,53 @@ import React, {
 import ShaMenuDrawer from "../menuDrawer";
 import { ILayoutColor } from "./model";
 import OverflowedIndicator, { getMutatedMenuItem } from "./overflowedIndicator";
-import { ScrollControls } from "./scrolls";
+import { ScrollButton } from "./scrolls";
 import { GlobalMenuStyles, ScopedMenuStyles, useStyles } from "./styles";
 import { useHorizontalMenuDropdownStyles } from "./useHorizontalMenuDropdownStyles";
+import { IConfigurableActionConfiguration, useConfigurableActionDispatcher } from "@/providers/configurableActionsDispatcher";
+import { useDeepCompareMemo } from "@/hooks/useDeepCompareMemo";
+import { sidebarMenuItemToMenuItem } from "../sidebarMenu/utils";
+import { evaluateString, useAvailableConstantsData } from "@/providers/form/utils";
+import { isNavigationActionConfiguration, useShaRouting } from "@/providers/shaRouting";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
+import { useMainMenu } from "@/providers/mainMenu";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 
 interface IProps {
-  colors?: ILayoutColor;
-  fontSize?: string;
+  colors?: ILayoutColor | undefined;
+  fontSize?: string | undefined;
   overflow: "dropdown" | "menu" | "scroll";
-  style?: React.CSSProperties;
-  padding?: { x: string; y: string };
-  styleOnHover?: React.CSSProperties;
-  styleOnSelected?: React.CSSProperties;
-  styleOnSubMenu?: React.CSSProperties;
-  width?: string;
-  fontStyles?: React.CSSProperties;
-  menuId?: string;
+  style?: React.CSSProperties | undefined;
+  itemStyle?: React.CSSProperties | undefined;
+  padding?: { x: number; y: number } | undefined;
+  dropdownPadding?: string | undefined;
+  styleOnHover?: React.CSSProperties | undefined;
+  styleOnSelected?: React.CSSProperties | undefined;
+  styleOnSubMenu?: React.CSSProperties | undefined;
+  menuItemStyle?: React.CSSProperties | undefined;
+  width?: string | undefined;
+  fontStyles?: React.CSSProperties | undefined;
+  menuId?: string | undefined;
 }
 
-const isSidebarButton = (item: ISidebarMenuItem): item is ISidebarButton => {
-  return item && item.itemType === "button";
+const isSidebarButton = (item: ISidebarMenuItem | undefined): item is ISidebarButton => {
+  return isDefined(item) && item.itemType === "button";
 };
+
+type MenuItem = Required<MenuProps>['items'][number];
 
 export const LayoutMenu: FC<IProps> = ({
   colors,
   fontSize,
   overflow,
   padding,
+  dropdownPadding,
   style,
+  itemStyle,
   styleOnHover,
   styleOnSelected,
   styleOnSubMenu,
+  menuItemStyle,
   width,
   fontStyles,
   menuId,
@@ -68,13 +70,15 @@ export const LayoutMenu: FC<IProps> = ({
     fontSize,
     isScrolling,
     padding,
-    styleOnHover: convertJsonToCss(styleOnHover),
-    styleOnSelected: convertJsonToCss(styleOnSelected),
+    itemStyle: convertJsonToCss(itemStyle) ?? undefined,
+    styleOnHover: convertJsonToCssWithImportant(styleOnHover) ?? undefined,
+    styleOnSelected: convertJsonToCssWithImportant(styleOnSelected) ?? undefined,
+    menuItemStyle: convertJsonToCss(menuItemStyle) ?? undefined,
     width,
     fontStyles,
   });
 
-  const menuWrapperRef = useRef(null);
+  const menuWrapperRef = useRef<HTMLDivElement>(null);
 
   const { current } = menuWrapperRef;
 
@@ -91,19 +95,21 @@ export const LayoutMenu: FC<IProps> = ({
   useHorizontalMenuDropdownStyles({
     menuId,
     colors,
+    padding: dropdownPadding,
     fontStyles,
-    style,
+    itemStyle,
     styleOnHover,
     styleOnSelected,
     styleOnSubMenu,
+    menuItemStyle,
   });
 
-  const [openedKeys, setOpenedKeys] = useLocalStorage(
+  const [openedKeys, setOpenedKeys] = useLocalStorage<string[]>(
     "openedSidebarKeys",
-    null,
+    [],
   );
 
-  const currentUrl = normalizeUrl(router?.fullPath);
+  const currentUrl = normalizeUrl(router.fullPath);
 
   const [selectedKey, setSelectedKey] = useState<string>();
 
@@ -123,7 +129,8 @@ export const LayoutMenu: FC<IProps> = ({
 
     window.addEventListener("resize", checkOverflow);
     return () => window.removeEventListener("resize", checkOverflow);
-  }, [items.length, current?.clientWidth]);
+  // eslint-disable-next-line react-hooks/refs, react-hooks/exhaustive-deps
+  }, [items?.length, current?.clientWidth]);
 
 
   const scrollRight = useCallback(() => {
@@ -145,7 +152,7 @@ export const LayoutMenu: FC<IProps> = ({
     _itemId: string,
     actionConfiguration: IConfigurableActionConfiguration,
   ): void => {
-    executeAction({
+    void executeAction({
       actionConfiguration: actionConfiguration,
       argumentsEvaluationContext: executionContext,
     });
@@ -157,12 +164,17 @@ export const LayoutMenu: FC<IProps> = ({
         item: getMutatedMenuItem(item),
         onButtonClick,
         getFormUrl: (args) => {
-          const url = getUrlFromNavigationRequest(args?.actionArguments);
-          const href = evaluateString(
-            decodeURIComponent(url),
-            executionContext,
-          );
-          return href;
+          if (isNavigationActionConfiguration(args)) {
+            const url = getUrlFromNavigationRequest(args.actionArguments);
+            const href = !isNullOrWhiteSpace(url)
+              ? evaluateString(
+                decodeURIComponent(url),
+                executionContext,
+              )
+              : "";
+            return href;
+          }
+          return "";
         },
         getUrl: (url) => {
           const href = evaluateString(
@@ -191,12 +203,14 @@ export const LayoutMenu: FC<IProps> = ({
     );
 
     if (menuId) {
-      const addDropdownClassName = (item: any): any => {
+      const addDropdownClassName = (item: MenuItem): MenuItem => {
         if (!item) return item;
 
         const newItem = { ...item };
 
-        if (newItem.children && newItem.children.length > 0) {
+        const hasChildren = (i: MenuItem): i is MenuItem & { children: MenuItem[]; popupClassName?: string } =>
+          i !== null && 'children' in i && Array.isArray(i.children) && i.children.length > 0;
+        if (hasChildren(newItem)) {
           newItem.popupClassName = `horizontal-menu-${menuId}-dropdown`;
           newItem.children = newItem.children.map(addDropdownClassName);
         }
@@ -212,11 +226,11 @@ export const LayoutMenu: FC<IProps> = ({
 
   if (menuItems.length === 0) return null;
 
-  const onOpenChange = (openKeys: React.Key[]): void => {
+  const onOpenChange = (openKeys: string[]): void => {
     setOpenedKeys(openKeys);
   };
 
-  const keys = openedKeys && openedKeys.length > 0 ? openedKeys : undefined;
+  const keys = isDefined(openedKeys) && openedKeys.length > 0 ? openedKeys : undefined;
 
   if (overflow === "menu")
     return (
@@ -227,10 +241,13 @@ export const LayoutMenu: FC<IProps> = ({
           open={open}
           onClose={onClose}
           colors={colors}
+          padding={padding}
           fontStyles={fontStyles}
+          itemStyle={itemStyle}
           styleOnHover={styleOnHover}
           styleOnSelected={styleOnSelected}
           styleOnSubMenu={styleOnSubMenu}
+          menuItemStyle={menuItemStyle}
           menuId={menuId}
         />
       </div>
@@ -241,18 +258,24 @@ export const LayoutMenu: FC<IProps> = ({
       {menuId ? (
         <ScopedMenuStyles
           colors={colors}
-          styleOnHover={convertJsonToCss(styleOnHover)}
-          styleOnSelected={convertJsonToCss(styleOnSelected)}
-          styleOnSubMenu={convertJsonToCss(styleOnSubMenu)}
+          padding={padding}
+          itemStyle={convertJsonToCss(itemStyle)}
+          styleOnHover={convertJsonToCssWithImportant(styleOnHover)}
+          styleOnSelected={convertJsonToCssWithImportant(styleOnSelected)}
+          styleOnSubMenu={convertJsonToCssWithImportant(styleOnSubMenu)}
+          menuItemStyle={convertJsonToCss(menuItemStyle)}
           fontStyles={fontStyles}
           menuId={menuId}
         />
       ) : (
         <GlobalMenuStyles
           colors={colors}
-          styleOnHover={convertJsonToCss(styleOnHover)}
-          styleOnSelected={convertJsonToCss(styleOnSelected)}
-          styleOnSubMenu={convertJsonToCss(styleOnSubMenu)}
+          padding={padding}
+          itemStyle={convertJsonToCss(itemStyle)}
+          styleOnHover={convertJsonToCssWithImportant(styleOnHover)}
+          styleOnSelected={convertJsonToCssWithImportant(styleOnSelected)}
+          styleOnSubMenu={convertJsonToCssWithImportant(styleOnSubMenu)}
+          menuItemStyle={convertJsonToCss(menuItemStyle)}
           fontStyles={fontStyles}
         />
       )}
@@ -267,23 +290,29 @@ export const LayoutMenu: FC<IProps> = ({
         <Menu
           mode="horizontal"
           className={styles.shaMenu}
-          defaultOpenKeys={keys}
+          {...(keys ? { defaultOpenKeys: keys } : {})}
           items={menuItems}
           onOpenChange={onOpenChange}
-          selectedKeys={getSelectedKeys(router?.fullPath, items)}
+          selectedKeys={getSelectedKeys(router.fullPath, items ?? [])}
           overflowedIndicator={<OverflowedIndicator className={styles.shaHamburgerItem} />}
-          overflowedIndicatorPopupClassName={menuId ? `horizontal-menu-${menuId}-dropdown` : undefined}
+          {...(menuId ? { overflowedIndicatorPopupClassName: `horizontal-menu-${menuId}-dropdown` } : {})}
           disabledOverflow={isScrolling}
           style={{ background: 'none' }}
         />
       </div>
-
       {isScrolling && hasOverflow && (
-        <ScrollControls
-          styles={styles}
-          scrollLeft={scrollLeft}
-          scrollRight={scrollRight}
-        />
+        <>
+          <ScrollButton
+            className={styles.scrollButton}
+            onClick={scrollLeft}
+            direction="left"
+          />
+          <ScrollButton
+            className={styles.scrollButton}
+            onClick={scrollRight}
+            direction="right"
+          />
+        </>
       )}
     </div>
   );

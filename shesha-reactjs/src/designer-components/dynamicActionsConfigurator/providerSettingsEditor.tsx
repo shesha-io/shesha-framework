@@ -1,30 +1,36 @@
-import React, { FC, useMemo } from 'react';
+import React, { ReactNode } from 'react';
 import {
   FormMarkupFactory,
   IConfigurableActionArgumentsFormFactory,
 } from '@/interfaces/configurableAction';
 import { FormMarkup } from '@/providers/form/models';
 import { GenericSettingsEditor } from './genericSettingsEditor';
-import { IObjectMetadata } from '@/interfaces';
+import { IObjectMetadata, ISettingsFormFactoryArgs } from '@/interfaces';
 import { IDynamicActionsContext } from '@/providers/dynamicActions/contexts';
-import { CollapsiblePanel } from '@/components';
-export interface IProviderSettingsEditorProps {
-  provider: IDynamicActionsContext;
-  value?: any;
-  onChange?: (value: any) => void;
-  readOnly?: boolean;
-  // exposedVariables?: ICodeExposedVariable[];
-  availableConstants?: IObjectMetadata;
+import { CollapsiblePanel } from '@/components/panel';
+import { FormBuilderFactory } from '@/form-factory/interfaces';
+import { useFormBuilderFactory } from '@/form-factory/hooks';
+import { isDefined } from '@/utils/nullables';
+export interface IProviderSettingsEditorProps<TSettings extends object = object> {
+  provider: IDynamicActionsContext<TSettings>;
+  value?: TSettings;
+  onChange?: (value: TSettings) => void;
+  readOnly?: boolean | undefined;
+  availableConstants?: IObjectMetadata | undefined;
 }
 
-const getDefaultFactory = (
+const getDefaultFactory = <TModel extends object = object>(
+  fbf: FormBuilderFactory,
   markup: FormMarkup | FormMarkupFactory,
   readOnly: boolean,
-): IConfigurableActionArgumentsFormFactory => {
-  const component = ({ model, onSave, onCancel, onValuesChange, exposedVariables, availableConstants }): JSX.Element => {
+): IConfigurableActionArgumentsFormFactory<TModel> => {
+  const component: {
+    ({ model, onSave, onCancel, onValuesChange, availableConstants }: ISettingsFormFactoryArgs<TModel>): ReactNode;
+    displayName: string;
+  } = ({ model, onSave, onCancel, onValuesChange, availableConstants }) => {
     const markupFactory = typeof markup === 'function' ? (markup as FormMarkupFactory) : () => markup as FormMarkup;
 
-    const formMarkup = markupFactory({ exposedVariables, availableConstants });
+    const formMarkup = markupFactory({ fbf, availableConstants });
     return (
       <GenericSettingsEditor
         model={model}
@@ -40,50 +46,34 @@ const getDefaultFactory = (
   return component;
 };
 
-export const ProviderSettingsEditor: FC<IProviderSettingsEditorProps> = ({
+export const ProviderSettingsEditor = <TSettings extends object = object>({
   provider,
   value,
   onChange,
   readOnly = false,
-  // exposedVariables,
   availableConstants,
-}) => {
-  const settingsEditor = useMemo(() => {
-    if (provider) {
-      const settingsFormFactory = provider.settingsFormFactory
-        ? provider.settingsFormFactory
-        : provider.settingsFormMarkup
-          ? getDefaultFactory(provider.settingsFormMarkup, readOnly)
-          : null;
-
-      const onCancel = (): void => {
-        //
-      };
-
-      const onSave = (values): void => {
-        if (onChange) onChange(values);
-      };
-
-      const onValuesChange = (_changedValues, values): void => {
-        if (onChange) onChange(values);
-      };
-
-      return settingsFormFactory
-        ? settingsFormFactory({
-          model: value,
-          onSave,
-          onCancel,
-          onValuesChange,
-          readOnly,
-          // exposedVariables,
-          availableConstants,
-        })
-        : null;
-    }
+}: IProviderSettingsEditorProps<TSettings>): ReactNode => {
+  const fbf = useFormBuilderFactory();
+  if (!isDefined(provider))
     return null;
-  }, [provider]);
 
-  if (!settingsEditor) return null;
+  const settingsFormFactory = provider.settingsFormFactory
+    ? provider.settingsFormFactory
+    : provider.settingsFormMarkup
+      ? getDefaultFactory<TSettings>(fbf, provider.settingsFormMarkup, readOnly)
+      : null;
+
+  const onCancel = (): void => {
+    //
+  };
+
+  const onSave = (values: TSettings): void => {
+    if (onChange) onChange(values);
+  };
+
+  const onValuesChange = (_changedValues: Partial<TSettings>, values: TSettings): void => {
+    if (onChange) onChange(values);
+  };
 
   return (
     <CollapsiblePanel
@@ -108,7 +98,14 @@ export const ProviderSettingsEditor: FC<IProviderSettingsEditorProps> = ({
       }}
       header="Settings"
     >
-      {settingsEditor}
+      {settingsFormFactory && settingsFormFactory({
+        model: value ?? {} as TSettings,
+        onSave,
+        onCancel,
+        onValuesChange,
+        readOnly,
+        availableConstants,
+      })}
     </CollapsiblePanel>
   );
 };

@@ -146,9 +146,9 @@ namespace Shesha.DynamicEntities
                             case NumberFormats.Int64:
                                 return typeof(Int64?);
                             case NumberFormats.Float:
-                                return typeof(float?);
+                                return typeof(double?);
                             case NumberFormats.Double:
-                                return typeof(decimal?);
+                                return typeof(double?);
                             default:
                                 return typeof(decimal?);
                         }

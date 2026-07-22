@@ -13,6 +13,7 @@ namespace Shesha.Dto
         public Guid? FolderId { get; set; }
 
         public string ItemType { get; set; }
+        public string Discriminator { get; set; }
 
         public string Name { get; set; }
 

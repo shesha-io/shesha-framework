@@ -1,7 +1,17 @@
+import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, paddingStyles, shadowStyles } from '@/designer-components/_common/styles/utils';
+import { IStyleValue } from '../../../providers/form/models';
 import { createStyles, sheshaStyles, getTextHoverEffects } from '@/styles';
+import { CSSProperties } from 'react';
 
+interface UseStylesParams {
+  textAlign: CSSProperties['textAlign'] | undefined;
+  styleValue: IStyleValue | undefined;
+  enableFullStyle: boolean | undefined;
+}
 
-export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
+export const useStyles = createStyles(({ css, cx, prefixCls, token }, params: UseStylesParams) => {
+  const { textAlign, styleValue, enableFullStyle } = params;
+
   const readOnlyModeToggler = "read-only-mode-toggler";
   const readOnlyDisplayFormItem = cx("read-only-display-form-item", css`
         width: 100%;
@@ -31,6 +41,22 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             white-space: nowrap;
         }
 
+        /* Allow wrapping for tag containers */
+        > [data-tag-wrapper="true"] {
+            white-space: normal;
+            overflow: visible;
+            width: 100%;
+            max-width: 100%;
+            flex-wrap: wrap;
+
+            /* Override the parent's nowrap/hidden for tags within wrapper */
+            .${prefixCls}-tag {
+                white-space: normal;
+                overflow: visible;
+                height: auto;
+            }
+        }
+
         /* Handle Space component for multiple items */
         .${prefixCls}-space {
             width: 100%;
@@ -38,7 +64,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             overflow: hidden;
         }
 
-        /* Handle tags and other components */
+        /* Handle tags and other components outside tag wrapper */
         .${prefixCls}-tag {
             max-width: 100%;
             overflow: hidden;
@@ -47,18 +73,37 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
   `);
 
   const inputField = css`
-    padding: 0px 8px;
+    padding: 4px 11px;
     margin: 0;
-    margin-right: 8px;
-    align-items: center;
     overflow: hidden;
     text-overflow: ellipsis;
-    // white-space: nowrap;
+    ${dimensionsStyles(styleValue?.dimensions)}
+    ${fontStyles(styleValue?.font)}
+
+    ${Boolean(enableFullStyle)
+        ? borderStyles(styleValue?.border) +
+        backgroundStyles(styleValue?.background) +
+        shadowStyles(styleValue?.shadow) +
+        paddingStyles(styleValue?.stylingBoxJson)
+        : ''
+    }
+
+  `;
+
+  const wrapper = css`
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 4px;
+    box-sizing: border-box;
+    justify-content: ${textAlign === 'center' ? 'center' : textAlign === 'right' ? 'flex-end' : 'flex-start'};
   `;
 
   return {
     readOnlyDisplayFormItem,
     readOnlyModeToggler,
     inputField,
+    wrapper,
   };
 });

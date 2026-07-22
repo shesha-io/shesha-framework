@@ -2,7 +2,6 @@
 using Abp.Domain.Repositories;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
-using Shesha.Extensions;
 using Shesha.Services.ConfigurationItems;
 using System;
 using System.Collections.Generic;
@@ -29,12 +28,12 @@ namespace Shesha.Services.ReferenceLists.Distribution
             _distributionHelper = distributionHelper;
         }
 
-        public string ItemType => ReferenceList.ItemTypeName;
+        public override string ItemType => ReferenceList.ItemTypeName;
 
         protected override async Task AfterImportAsync(ReferenceList item, DistributedReferenceList distributedItem, IConfigurationItemsImportContext context)
         {
             // get all current items
-            var currentItems = await _refListItemRepo.GetAll().Where(e => e.ReferenceList == item).ToListAsync();
+            var currentItems = await _refListItemRepo.GetAllListAsync(e => e.ReferenceList == item);
 
             await ImportListItemLevelAsync(item, distributedItem.Items, null, currentItems);
 

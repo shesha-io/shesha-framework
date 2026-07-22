@@ -1,5 +1,12 @@
-interface IHasEntityType {
-  entityType: string;
+export interface IHasEntityTypeIdPayload {
+  entityType?: string | undefined;
+  module?: string | undefined;
+  name?: string | undefined;
+}
+
+export interface IEntity {
+  id: string;
+  [name: string]: unknown;
 }
 
 /**
@@ -9,14 +16,14 @@ export interface IGetAllPayload {
   readonly maxResultCount: number;
   readonly skipCount: number;
   readonly properties: string;
-  readonly sorting?: string;
-  readonly filter?: string;
-  readonly quickSearch?: string;
+  readonly sorting?: string | undefined;
+  readonly filter?: string | undefined;
+  readonly quickSearch?: string | undefined;
 }
 /**
  * Generic get all payload, is used for the generic entpoint like `/api/services/app/Entities/GetAll`
  */
-export interface IGenericGetAllPayload extends IGetAllPayload, IHasEntityType {}
+export interface IGenericGetAllPayload extends IGetAllPayload, IHasEntityTypeIdPayload {}
 
 /**
  * Get entity payload
@@ -28,7 +35,7 @@ export interface IGetPayload {
 /**
  * Generic get entity payload, is used for the generic entpoint like `/api/services/app/Entities/Get`
  */
-export interface IGenericGetPayload extends IGetPayload, IHasEntityType {}
+export interface IGenericGetPayload extends IGetPayload, IHasEntityTypeIdPayload {}
 
 export interface ValidationErrorInfo {
   message?: string | null;
@@ -42,7 +49,7 @@ export interface ErrorInfo {
   validationErrors?: ValidationErrorInfo[] | null;
 }
 
-export interface AbpWrappedResponse<TData, TError> {
+export interface AbpWrappedResponse<TData, TError = ErrorInfo> {
   targetUrl?: string | null;
   success: boolean;
   error?: TError;
@@ -58,7 +65,7 @@ export interface GetAllResponse<TItem> {
 
 export interface EntityData {
   id: string | number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export type IAbpWrappedResponse<TResponse, TError = ErrorInfo> = AbpWrappedResponse<TResponse, TError>;

@@ -70,9 +70,9 @@ namespace Shesha.UserManagements
 
             // email and mobile number must be unique
             if (await MobileNoAlreadyInUseAsync(input.MobileNumber, null))
-                validationResults.Add(new ValidationResult("Specified mobile number already used by another person"));
+                validationResults.Add(new ValidationResult(User.MobileNoAlreadyInUse));
             if (await EmailAlreadyInUseAsync(input.EmailAddress, null))
-                validationResults.Add(new ValidationResult("Specified email already used by another person"));
+                validationResults.Add(new ValidationResult(User.EmailAlreadyInUse));
 
             validationResults.ThrowValidationExceptionIfAny(L);
 
@@ -106,6 +106,7 @@ namespace Shesha.UserManagements
                 input.LastName,
                 input.MobileNumber,
                 input.EmailAddress,
+                input.RequireChangePassword,
                 defaultMethods);
 
             // Creating Person entity
@@ -171,7 +172,7 @@ namespace Shesha.UserManagements
             if (string.IsNullOrWhiteSpace(mobileNo))
                 return false;
 
-            return await _repository.GetAll()
+            return await (await _repository.GetAllAsync())
                 .Where(e => e.MobileNumber1 == mobileNo)
                 .WhereIf(id.HasValue, e => e.Id != id)
                 .AnyAsync();
@@ -186,7 +187,7 @@ namespace Shesha.UserManagements
             if (string.IsNullOrWhiteSpace(email))
                 return false;
 
-            return await _repository.GetAll()
+            return await (await _repository.GetAllAsync())
                 .Where(e => e.EmailAddress1 == email)
                 .WhereIf(id.HasValue, e => e.Id != id)
                 .AnyAsync();

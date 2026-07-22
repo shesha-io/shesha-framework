@@ -3,7 +3,7 @@ import { DoubleRightOutlined } from '@ant-design/icons';
 import { IConfigurableFormComponent, IFormComponentContainer } from '@/providers/form/models';
 import { IToolboxComponent } from '@/interfaces';
 import { IWizardComponentProps } from './models';
-import { IWizardComponentPropsV0, migrateV0toV1 } from './migrations/migrate-v1';
+import { IWizardComponentPropsV0, IWizardTabPropsV0, migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateWizardActions } from './migrations/migrateWizardActions';
 import { nanoid } from '@/utils/uuid';
 import { Tabs } from './tabs';
@@ -18,6 +18,9 @@ import { getSettings } from './settingsForm';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
+import { isDefined } from '@/utils/nullables';
+import { getStringPropertyOrUndefined } from '@/utils/object';
+import { isNonEmptyArray } from '@/utils/array';
 
 const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   type: 'wizard',
@@ -29,38 +32,46 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   },
   initModel: (model) => ({
     ...model,
-    steps: model.steps?.map((step) => ({
-      ...step,
-      showBackButton: step?.showBackButton ?? true,
-      showDoneButton: step?.showDoneButton ?? true,
-    })) ?? [],
+    steps: isDefined(model.steps)
+      ? model.steps.map((step) => ({
+        ...step,
+        showBackButton: step.showBackButton ?? true,
+        showDoneButton: step.showDoneButton ?? true,
+        hasCustomFooter: step.hasCustomFooter ?? false,
+        stepFooter: step.stepFooter ?? {
+          id: `${step.id}_footer`,
+          components: [],
+        },
+      }))
+      : [],
   }),
+  customContainerNames: ['steps'],
   migrator: (m) =>
     m
       .add<IWizardComponentPropsV0>(0, (prev) => {
         const id = nanoid();
         const model: IWizardComponentPropsV0 = {
           ...prev,
-          name: prev['name'] ?? 'custom Name',
-          tabs: prev['filteredTabs'] ?? [
-            {
-              id: id,
-              name: 'step1',
-              label: 'Step 1',
-              title: 'Step 1',
-              subTitle: 'Sub title 1',
-              description: 'Description 1',
-              sortOrder: 0,
-              allowCancel: false,
-              cancelButtonText: 'Cancel',
-              nextButtonText: 'Next',
-              backButtonText: 'Back',
-              doneButtonText: 'Done',
-              key: id,
-              components: [],
-              itemType: 'item',
-            },
-          ],
+          name: getStringPropertyOrUndefined(prev, "name") ?? 'custom Name',
+          tabs: "filteredTabs" in prev && Array.isArray(prev.filteredTabs) && isNonEmptyArray(prev.filteredTabs)
+            ? prev.filteredTabs
+            : [
+              {
+                id: id,
+                name: 'step1',
+                label: 'Step 1',
+                title: 'Step 1',
+                subTitle: 'Sub title 1',
+                description: 'Description 1',
+                allowCancel: false,
+                cancelButtonText: 'Cancel',
+                nextButtonText: 'Next',
+                backButtonText: 'Back',
+                doneButtonText: 'Done',
+                key: id,
+                components: [],
+              } satisfies IWizardTabPropsV0,
+            ],
         };
         return model;
       })
@@ -93,13 +104,38 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
       .add<IWizardComponentProps>(5, (prev) => ({ ...migrateFormApi.properties(prev) }))
       .add<IWizardComponentProps>(6, (prev) => removeComponents(prev))
       .add<IWizardComponentProps>(7, (prev) => ({ ...migratePrevStyles({ ...prev, primaryTextColor: '#fff' }, defaultStyles()), overflow: true }))
-      .add<IWizardComponentProps>(8, (prev) => ({ ...prev, stepWidth: '200px' })),
-  settingsFormMarkup: () => getSettings(),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
+      .add<IWizardComponentProps>(8, (prev) => ({ ...prev, stepWidth: '200px' }))
+      .add<IWizardComponentProps>(9, (prev) => ({
+        ...prev,
+        steps: isDefined(prev.steps)
+          ? prev.steps.map((step) => ({
+            ...step,
+            hasCustomFooter: step.hasCustomFooter ?? false,
+            stepFooter: step.stepFooter ?? {
+              id: `${step.id}_footer`,
+              components: [],
+            },
+          }))
+          : [],
+      })),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 
-  customContainerNames: ['steps'],
   getContainers: (model) => {
-    return model.steps.map<IFormComponentContainer>((t) => ({ id: t.id }));
+    const containers: IFormComponentContainer[] = [];
+    model.steps.forEach((step) => {
+      containers.push({ id: step.id, parentId: model.id });
+    });
+
+    // Add step footer containers
+    const footerContainers = model.steps
+      .filter((s) => s.hasCustomFooter)
+      .map((s) => ({
+        id: s.stepFooter?.id ?? `${s.id}_footer`,
+        parentId: model.id,
+      }));
+
+    return [...containers, ...footerContainers];
   },
 };
 

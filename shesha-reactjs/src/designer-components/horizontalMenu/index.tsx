@@ -1,75 +1,60 @@
+import { default as ConfigurableComponentRenderer } from "@/components/configurableComponentRenderer";
 import LayoutMenu from "@/components/menu";
 import { ILayoutColor } from "@/components/menu/model";
+import { IConfigurableFormComponent, IToolboxComponent } from "@/interfaces/formDesigner";
+import { IConfigurableComponentContext } from '@/providers/configurableComponent/contexts';
+import { getStyle, validateConfigurableComponentSettings } from "@/providers/form/utils";
+import { useFormData } from "@/providers/formContext";
+import { IConfigurableMainMenu, useMainMenu } from "@/providers/mainMenu";
 import { filterObjFromKeys } from "@/utils";
 import { EditOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
-import {
-  ConfigurableComponentRenderer,
-  getStyle,
-  IConfigurableFormComponent,
-  ISidebarMenuItem,
-  IToolboxComponent,
-  migratePrevStyles,
-  useFormData,
-  useMainMenu,
-  validateConfigurableComponentSettings,
-} from '@/index';
-import React, { CSSProperties, useMemo } from 'react';
-import { IConfigurableComponentContext } from '@/providers/configurableComponent/contexts';
 import { ItemType } from "antd/es/menu/interface";
-
+import React, { CSSProperties, useMemo } from 'react';
+import { migratePrevStyles } from "../_common-migrations/migrateStyles";
 import Editor from "./modal";
 import { getSettings } from "./settings";
 import { defaultStyles } from "./utils";
 
 interface IMenuListProps extends IConfigurableFormComponent, ILayoutColor {
   items?: ItemType[];
-  overflow?: "dropdown" | "menu" | "scroll";
+  menuOverflow?: "dropdown" | "menu" | "scroll";
   fontSize?: string;
   gap?: string;
   height?: string;
+  containerStyle?: string;
   styleOnHover?: string;
   styleOnSelected?: string;
   styleOnSubMenu?: string;
   width?: string;
-  dimensions?: {
-    width?: string;
-    height?: string;
-    minWidth?: string;
-    maxWidth?: string;
-    minHeight?: string;
-    maxHeight?: string;
-  };
-  font?: {
-    type?: string;
-    size?: number;
-    weight?: string;
-    color?: string;
-    align?: string;
-  };
-  background?: {
-    type?: string;
-    color?: string;
-  };
 }
 
-interface ISideBarMenuProps {
-  items: ISidebarMenuItem[];
-}
+type MenuOverflowValue = "dropdown" | "menu" | "scroll";
+
+const resolveMenuOverflow = (
+  value: MenuOverflowValue | string | undefined,
+): "dropdown" | "menu" | "scroll" => {
+  if (value === "dropdown" || value === "menu" || value === "scroll") {
+    return value;
+  }
+
+  return "dropdown";
+};
 
 export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
   type: "menuList",
   name: "Menu List",
   isInput: false,
   isOutput: false,
+  preserveDimensionsInDesigner: true,
   icon: <MenuUnfoldOutlined />,
   Factory: ({ model }) => {
     const { data } = useFormData();
     const { loadedMenu, changeMainMenu, saveMainMenu } = useMainMenu();
 
-    const context: IConfigurableComponentContext<ISideBarMenuProps> = {
+    const context: IConfigurableComponentContext<IConfigurableMainMenu> = {
       settings: loadedMenu,
       load: () => { /* do nothing */ },
-      save: (settings: ISideBarMenuProps) =>
+      save: (settings: IConfigurableMainMenu) =>
         saveMainMenu({ ...loadedMenu, ...settings }).then(() => {
           changeMainMenu({ ...loadedMenu, ...settings });
         }),
@@ -84,10 +69,14 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
       resetAllFlag: () => { /* do nothing */ },
     };
 
-    const fontSize = model?.font?.size || model?.fontSize || "14";
-    const gap = model?.gap || "12";
-    const height = model?.height || "6";
-    const width = model?.dimensions?.width || model?.width || "500px";
+    const fontSize = model.font?.size || model.fontSize || "14";
+    const gap = Number(model.gap || "12");
+    const height = Number(model.height || "6");
+    const dropdownPadding = `${gap}px`;
+
+    // Normalize width: if no unit provided, append 'px'
+    const rawWidth = (model.dimensions?.width || model.width || "500px").toString().trim();
+    const width = /^\d+(\.\d+)?$/.test(rawWidth) ? `${rawWidth}px` : rawWidth;
 
     const colors: ILayoutColor = {
       ...filterObjFromKeys(model, [
@@ -97,28 +86,51 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
         "itemBackground",
         "hoverItemColor",
         "hoverItemBackground",
+        "subItemColor",
+        "subItemBackground",
       ]),
-      // Only set itemBackground for 'color' type or when no type is specified
-      // For other types (gradient, image, url, storedFile), let allStyles.backgroundStyles handle it
-      itemBackground: model.itemBackground || ((!model.background?.type || model.background?.type === 'color') ? model.background?.color : undefined),
+      itemBackground: model.itemBackground || 'white',
       itemColor: model.itemColor || model.font?.color,
     };
 
-    const finalStyle = useMemo(() => {
-      return {
-        ...model.allStyles?.fullStyle,
+    const finalContainerStyle = useMemo(() => {
+      const computedStyle = {
+        ...model.allStyles?.dimensionsStyles,
+        ...model.allStyles?.borderStyles,
         ...model.allStyles?.backgroundStyles,
-        ...(model.style ? getStyle(model.style, data) : {}),
+        ...model.allStyles?.shadowStyles,
+        ...(model.containerStyle ? getStyle(model.containerStyle, data) : {}),
       };
-    }, [model.allStyles, model.style, data]);
+
+      // Set default background color if not defined
+      if (!computedStyle.backgroundColor && !computedStyle.background) {
+        computedStyle.backgroundColor = 'transparent';
+      }
+
+      // Ensure overflow is visible to show borders
+      computedStyle.overflow = 'visible';
+
+      // Convert height to minHeight to allow container to grow for borders
+      if (computedStyle.height) {
+        computedStyle.minHeight = computedStyle.height;
+        delete computedStyle.height;
+      }
+
+      return computedStyle;
+    }, [model.allStyles, model.containerStyle, data]);
+
+    const finalItemStyle = useMemo(() => {
+      // Only use custom styles for items, not all computed styles
+      return model.style ? getStyle(model.style, data) : undefined;
+    }, [model.style, data]);
 
     const finalFontStyles = useMemo(() => {
       return {
-        fontSize: model?.font?.size ? `${model.font.size}px` : `${fontSize}px`,
-        fontFamily: model?.font?.type,
-        fontWeight: model?.font?.weight as CSSProperties['fontWeight'],
-        color: model?.font?.color,
-        textAlign: model?.font?.align as any,
+        fontSize: model.font?.size ? `${model.font.size}px` : `${fontSize}px`,
+        fontFamily: model.font?.type,
+        fontWeight: model.font?.weight as CSSProperties['fontWeight'],
+        color: model.font?.color,
+        textAlign: model.font?.align as CSSProperties['textAlign'],
       };
     }, [model.font, fontSize]);
 
@@ -132,7 +144,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
       >
         {(componentState, BlockOverlay) => {
           return (
-            <div className={`sidebar ${componentState.wrapperClassName}`}>
+            <div className={`sidebar ${componentState.wrapperClassName}`} style={{ overflow: 'visible' }}>
               <BlockOverlay>
                 <EditOutlined className="sha-configurable-sidemenu-button-wrapper" />
               </BlockOverlay>
@@ -140,15 +152,17 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
                 colors={colors}
                 fontSize={typeof fontSize === 'string' ? fontSize : String(fontSize)}
                 padding={{ x: gap, y: height }}
+                dropdownPadding={dropdownPadding}
                 style={{
-                  ...finalStyle,
+                  ...finalContainerStyle,
                   ...finalFontStyles,
                   width: width,
                 } as React.CSSProperties}
-                styleOnHover={getStyle(model?.styleOnHover, data)}
-                styleOnSelected={getStyle(model?.styleOnSelected, data)}
-                styleOnSubMenu={getStyle(model?.styleOnSubMenu, data)}
-                overflow={model.overflow}
+                itemStyle={finalItemStyle}
+                styleOnHover={getStyle(model.styleOnHover, data)}
+                styleOnSelected={getStyle(model.styleOnSelected, data)}
+                styleOnSubMenu={getStyle(model.styleOnSubMenu, data)}
+                overflow={resolveMenuOverflow(model.menuOverflow)}
                 width={width}
                 fontStyles={finalFontStyles as React.CSSProperties}
                 menuId={model.id}
@@ -159,10 +173,27 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
       </ConfigurableComponentRenderer>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
-    .add<IMenuListProps>(0, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+    .add<IMenuListProps>(0, (prev) => ({
+      ...migratePrevStyles(prev, defaultStyles()),
+    }))
+    .add<IMenuListProps>(1, (prev) => {
+      const isValidOverflow = (value: unknown): value is MenuOverflowValue =>
+        value === 'dropdown' || value === 'menu' || value === 'scroll';
+
+      const overflow = isValidOverflow(prev.menuOverflow)
+        ? prev.menuOverflow
+        : isValidOverflow(prev.overflow)
+          ? prev.overflow
+          : undefined;
+
+      return {
+        ...prev,
+        menuOverflow: overflow ?? 'dropdown',
+      };
+    }),
 };
 
 export default MenuListComponent;

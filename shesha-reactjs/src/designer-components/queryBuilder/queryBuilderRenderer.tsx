@@ -1,22 +1,22 @@
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import QueryBuilderField from './queryBuilderField';
 import React, { FC } from 'react';
 import { Alert, Typography } from 'antd';
-import { IQueryBuilderComponentProps } from './interfaces';
-import { useForm, useQueryBuilder } from '@/providers';
+import { IQueryBuilderComponentPropsUnwrapped } from './interfaces';
+import { useForm, useQueryBuilderOrUndefined } from '@/providers';
 
-export const QueryBuilderRenderer: FC<IQueryBuilderComponentProps> = (props) => {
+export const QueryBuilderRenderer: FC<IQueryBuilderComponentPropsUnwrapped> = (props) => {
   const { formMode } = useForm();
   const { fieldsUnavailableHint } = props;
 
-  const queryBuilder = useQueryBuilder(false);
+  const queryBuilder = useQueryBuilderOrUndefined();
   const fieldsAvailable = Boolean(queryBuilder);
 
   if (!fieldsAvailable && formMode === 'designer' && !fieldsUnavailableHint)
     return (
       <Alert
         className="sha-designer-warning"
-        message="Fields are not available. Wrap Query Builder with a QueryBuilderProvider/MetadataProvider or specify `Entity`"
+        title="Fields are not available. Wrap Query Builder with a QueryBuilderProvider/MetadataProvider or specify `Entity`"
         type="warning"
       />
     );
@@ -26,11 +26,11 @@ export const QueryBuilderRenderer: FC<IQueryBuilderComponentProps> = (props) => 
       <Typography.Text type="secondary">{fieldsUnavailableHint}</Typography.Text>
     </ConfigurableFormItem>
   ) : (
-    <ConfigurableFormItem model={props}>
+    <ConfigurableFormItem<object> model={props}>
       {(value, onChange) => {
         return (
           <QueryBuilderField
-            value={value}
+            value={value ?? undefined}
             onChange={onChange}
             jsonExpanded={props.jsonExpanded}
             readOnly={props.readOnly}

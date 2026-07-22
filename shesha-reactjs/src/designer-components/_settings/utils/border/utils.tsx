@@ -1,6 +1,6 @@
 import React from "react";
 
-import { IBorderValue } from "./interfaces";
+import { BorderStyle, IBorderValue } from "./interfaces";
 import {
   MinusOutlined,
   DashOutlined,
@@ -10,68 +10,76 @@ import {
 import { IDropdownOption } from "../background/interfaces";
 import { addPx } from '@/utils/style';
 import { nanoid } from "@/utils/uuid";
-import { DesignerToolbarSettings } from "@/interfaces/toolbarSettings";
 import { IRadioOption } from "@/designer-components/settingsInput/interfaces";
 import { humanizeString } from "@/utils/string";
-import { FormRawMarkup, IConfigurableTheme } from "@/providers";
+import { FormRawMarkup, IConfigurableFormComponent, IConfigurableTheme } from "@/providers";
 import { readThemeColor } from "@/components/colorPicker";
+import { FormBuilderFactory } from "@/form-factory/interfaces";
+import { IAnyObject } from "@/interfaces";
+import { isNonEmptyArray } from "@/utils/array";
+import { throwError } from "@/utils/errors";
 
-export const getBorderStyle = (input: IBorderValue | undefined, jsStyle: React.CSSProperties, theme?: IConfigurableTheme): React.CSSProperties => {
+// Helper to check if a width value is effectively zero
+const isZeroWidth = (width: string | number | undefined): boolean => {
+  if (!width) return true;
+  const strWidth = String(width).trim().toLowerCase();
+  return strWidth === '0' || strWidth === '0px' || strWidth === '0em' || strWidth === '0rem' || strWidth === '0%';
+};
+
+export const getBorderStyle = (input: IBorderValue | undefined, _jsStyle: React.CSSProperties = {}, theme?: IConfigurableTheme): React.CSSProperties => {
   if (!input) return {};
 
-  const style: React.CSSProperties = {};
+  const style: React.CSSProperties & IAnyObject = {};
   const border = input.border || {};
   const { all = {}, top = {}, right = {}, bottom = {}, left = {} } = border;
 
-  const handleBorderPart = (part, prefix: string, theme?: IConfigurableTheme): void => {
-    const hideBorder = !part?.color || !part?.width || input?.border?.[input.borderType]?.style === 'none';
-    if (part?.width && !jsStyle[prefix] && !jsStyle[`${prefix}Width`]) style[`${prefix}Width`] = addPx(part?.width || all?.width);
-    if (part?.style && !jsStyle[prefix] && !jsStyle[`${prefix}Style`]) style[`${prefix}Style`] = hideBorder ? 'none' : part?.style || all?.style;
-    if (part?.color && !jsStyle[prefix] && !jsStyle[`${prefix}Color`]) style[`${prefix}Color`] = part?.color || all?.color;
+  const handleBorderPart = (part: BorderStyle | undefined, prefix: string, theme?: IConfigurableTheme): void => {
+    // Hide border if: no color, no width, width is "0px", or style is explicitly "none"
+    const hideBorder = !part?.color || !part.width || isZeroWidth(part.width) || (input.borderType && input.borderType !== "custom" && input.border?.[input.borderType]?.style === 'none');
+    if (part?.width) style[`${prefix}Width`] = addPx(part.width || all.width);
+    if (part?.style) style[`${prefix}Style`] = hideBorder ? 'none' : part.style ?? all.style;
+    if (part?.color) style[`${prefix}Color`] = hideBorder ? 'transparent' : part.color || all.color;
 
-    if (theme && readThemeColor(theme)[`${input?.border?.all?.color}`]) {
-      style[`borderColor`] = readThemeColor(theme)[`${input?.border?.all?.color}`];
-      style[`borderWidth`] = input?.border?.all?.width;
-      style[`borderStyle`] = input?.border?.all?.style;
+    if (theme && readThemeColor(theme)[`${input.border?.all?.color}`]) {
+      style[`borderColor`] = readThemeColor(theme)[`${input.border?.all?.color}`];
+      style[`borderWidth`] = input.border?.all?.width;
+      style[`borderStyle`] = input.border?.all?.style;
     } else {
-      if (theme && readThemeColor(theme)[`${input?.border?.bottom?.color}`]) {
-        style[`borderBottomColor`] = readThemeColor(theme)[`${input?.border?.bottom?.color}`];
-        style[`borderBottomWidth`] = input?.border?.bottom?.width;
-        style[`borderBottomStyle`] = input?.border?.bottom?.style;
+      if (theme && readThemeColor(theme)[`${input.border?.bottom?.color}`]) {
+        style[`borderBottomColor`] = readThemeColor(theme)[`${input.border?.bottom?.color}`];
+        style[`borderBottomWidth`] = input.border?.bottom?.width;
+        style[`borderBottomStyle`] = input.border?.bottom?.style;
       }
-      if (theme && readThemeColor(theme)[`${input?.border?.left?.color}`]) {
-        style[`borderLeftColor`] = readThemeColor(theme)[`${input?.border?.left?.color}`];
-        style[`borderLeftWidth`] = input?.border?.left?.width;
-        style[`borderLeftStyle`] = input?.border?.left?.style;
+      if (theme && readThemeColor(theme)[`${input.border?.left?.color}`]) {
+        style[`borderLeftColor`] = readThemeColor(theme)[`${input.border?.left?.color}`];
+        style[`borderLeftWidth`] = input.border?.left?.width;
+        style[`borderLeftStyle`] = input.border?.left?.style;
       }
-      if (theme && readThemeColor(theme)[`${input?.border?.right?.color}`]) {
-        style[`borderRightColor`] = readThemeColor(theme)[`${input?.border?.right?.color}`];
-        style[`borderRightWidth`] = input?.border?.right?.width;
-        style[`borderRightStyle`] = input?.border?.right?.style;
+      if (theme && readThemeColor(theme)[`${input.border?.right?.color}`]) {
+        style[`borderRightColor`] = readThemeColor(theme)[`${input.border?.right?.color}`];
+        style[`borderRightWidth`] = input.border?.right?.width;
+        style[`borderRightStyle`] = input.border?.right?.style;
       }
-      if (theme && readThemeColor(theme)[`${input?.border?.top?.color}`]) {
-        style[`borderTopColor`] = readThemeColor(theme)[`${input?.border?.top?.color}`];
-        style[`borderTopWidth`] = input?.border?.top?.width;
-        style[`borderTopStyle`] = input?.border?.top?.style;
+      if (theme && readThemeColor(theme)[`${input.border?.top?.color}`]) {
+        style[`borderTopColor`] = readThemeColor(theme)[`${input.border?.top?.color}`];
+        style[`borderTopWidth`] = input.border?.top?.width;
+        style[`borderTopStyle`] = input.border?.top?.style;
       }
     }
   };
 
+  if (input.borderType === 'all') {
+    handleBorderPart(all, 'border', theme);
+  } else {
+    handleBorderPart(top, 'borderTop', theme);
+    handleBorderPart(right, 'borderRight', theme);
+    handleBorderPart(bottom, 'borderBottom', theme);
+    handleBorderPart(left, 'borderLeft', theme);
+  }
 
-  if (!jsStyle?.border) {
-    if (input.borderType === 'all') {
-      handleBorderPart(all, 'border', theme);
-    } else {
-      handleBorderPart(top, 'borderTop', theme);
-      handleBorderPart(right, 'borderRight', theme);
-      handleBorderPart(bottom, 'borderBottom', theme);
-      handleBorderPart(left, 'borderLeft', theme);
-    }
-  };
-
-  if (input?.radius) {
+  if (input.radius) {
     const { all = 0, topLeft = 0, topRight = 0, bottomLeft = 0, bottomRight = 0 } = input.radius;
-    if (input?.radiusType === 'all') {
+    if (input.radiusType === 'all') {
       style.borderTopRightRadius = addPx(all);
       style.borderBottomRightRadius = addPx(all);
       style.borderBottomLeftRadius = addPx(all);
@@ -133,10 +141,10 @@ const generateCode = (type: string, isCustom: boolean, isResponsive: boolean, pa
   return `return getSettingValue(${devicePath}${path ? '?.' + path : ''}?.border?.${type}) !== "${isCustom ? "custom" : "all"}";`;
 };
 
-export const getBorderInputs = (path = '', isResponsive: boolean = true, hasMiddle: boolean = false): FormRawMarkup => {
+export const getBorderInputs = (fbf: FormBuilderFactory, path = '', isResponsive: boolean = true, hasMiddle: boolean = false): IConfigurableFormComponent[] => {
   const borderProp = path ? `${path}.border.border` : 'border.border';
 
-  return [...new DesignerToolbarSettings()
+  return [...fbf()
     .addSettingsInput({
       id: nanoid(),
       inputType: 'radio',
@@ -147,7 +155,7 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true, hasMidd
     .addSettingsInputRow({
       id: nanoid(),
       inline: true,
-      hidden: { _code: generateCode('borderType', false, isResponsive, path), _mode: 'code', _value: false } as any,
+      hidden: { _code: generateCode('borderType', false, isResponsive, path), _mode: 'code', _value: false },
       inputs: [
         {
           id: nanoid(),
@@ -156,8 +164,8 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true, hasMidd
           hideLabel: true,
           propertyName: '',
           icon: 'BorderOutlined',
-          width: 20,
           tooltip: `Styles will apply to all border`,
+          width: 24,
         },
         {
           id: nanoid(),
@@ -188,11 +196,11 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true, hasMidd
     })
     .addContainer({
       id: nanoid(),
-      hidden: { _code: generateCode('borderType', true, isResponsive, path), _mode: 'code', _value: false } as any,
-      components: borderSides.slice(0, hasMiddle ? 5 : 4).map((sideValue) => {
+      hidden: { _code: generateCode('borderType', true, isResponsive, path), _mode: 'code', _value: false },
+      components: borderSides.slice(0, hasMiddle ? 5 : 4).map<IConfigurableFormComponent>((sideValue) => {
         const side = sideValue.value;
 
-        return new DesignerToolbarSettings()
+        const components = fbf()
           .addSettingsInputRow({
             id: nanoid(),
             inline: true,
@@ -203,11 +211,11 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true, hasMidd
                 label: 'Icon',
                 hideLabel: true,
                 readOnly: true,
-                width: 20,
                 value: sideValue.icon,
                 propertyName: 'bordericon',
                 icon: sideValue.icon,
                 tooltip: `Styles will apply to ${side} border`,
+                width: 24,
               },
               {
                 id: nanoid(),
@@ -235,40 +243,41 @@ export const getBorderInputs = (path = '', isResponsive: boolean = true, hasMidd
                 hideLabel: true,
               },
             ],
-          }).toJson()[0];
+          }).toJson();
+        return isNonEmptyArray(components) ? components[0] : throwError(`Unable to generate border inputs for ${side}`);
       }),
     }).toJson(),
   ];
 };
 
 interface IHideCornerConditions {
-  topLeft?: string;
-  topRight?: string;
-  bottomLeft?: string;
-  bottomRight?: string;
+  topLeft?: string | undefined;
+  topRight?: string | undefined;
+  bottomLeft?: string | undefined;
+  bottomRight?: string | undefined;
 }
 
-export const getCornerInputs = (path = '', isResponsive: boolean = true, hideCornerConditions: IHideCornerConditions = {}): FormRawMarkup => {
-  return [...new DesignerToolbarSettings()
+export const getCornerInputs = (fbf: FormBuilderFactory, path = '', isResponsive: boolean = true, hideCornerConditions: IHideCornerConditions = {}): FormRawMarkup => {
+  return [...fbf()
     .addSettingsInput({
       id: nanoid(),
       inputType: 'radio',
       label: 'Radius Type',
       propertyName: `${path ? path + '.' : ''}border.radiusType`,
-      defaultValue: 'all',
       buttonGroupOptions: radiusConfigType,
+      width: 24,
     })
     .addSettingsInputRow({
       id: nanoid(),
       inline: true,
-      hidden: { _code: generateCode('radiusType', false, isResponsive, path), _mode: 'code', _value: false } as any,
+      hidden: { _code: generateCode('radiusType', false, isResponsive, path), _mode: 'code', _value: false },
       inputs: [
         {
           id: `borderRadiusStyleRow-all`,
           label: "Corner Radius",
           hideLabel: true,
           width: 80,
-          defaultValue: 0,
+          // defaultValue: 0,
           type: 'numberField',
           icon: 'ExpandOutlined',
           tooltip: 'Styles will apply to all corners',
@@ -278,7 +287,7 @@ export const getCornerInputs = (path = '', isResponsive: boolean = true, hideCor
       ],
     })
     .addSettingsInputRow({
-      hidden: { _code: generateCode('radiusType', true, isResponsive, path), _mode: 'code', _value: false } as any,
+      hidden: { _code: generateCode('radiusType', true, isResponsive, path), _mode: 'code', _value: false },
       id: nanoid(),
       inline: true,
       inputs: radiusCorners.map((cornerValue) => {
@@ -289,11 +298,11 @@ export const getCornerInputs = (path = '', isResponsive: boolean = true, hideCor
           label: "Corner Radius",
           hideLabel: true,
           width: 80,
-          defaultValue: 0,
+          // defaultValue: 0,
           type: 'numberField',
           icon: cornerValue.icon,
           placeholder: '0',
-          hidden: { _code: hideCornerConditions[corner], _mode: 'code', _value: false } as any,
+          hidden: { _code: hideCornerConditions[corner as keyof IHideCornerConditions], _mode: 'code', _value: false },
           tooltip: `${humanizeString(corner)} corner`,
           propertyName: path ? `${path}.border.radius.${corner}` : `border.radius.${corner}`,
         };

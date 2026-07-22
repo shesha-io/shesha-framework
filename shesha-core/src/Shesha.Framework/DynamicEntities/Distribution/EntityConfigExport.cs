@@ -4,7 +4,6 @@ using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.DynamicEntities.Distribution.Dto;
 using Shesha.DynamicEntities.Dtos;
-using Shesha.Extensions;
 using Shesha.Permissions;
 using System;
 using System.Collections.Generic;
@@ -58,7 +57,7 @@ namespace Shesha.DynamicEntities.Distribution
 
         private async Task<List<DistributedEntityConfigProperty>> MapPropertiesAsync(EntityConfig entityConfig)
         {
-            var dbProperties = await _entityPropertyRepo.GetAll().Where(p => p.EntityConfig == entityConfig).ToListAsync();
+            var dbProperties = await _entityPropertyRepo.GetAllListAsync(p => p.EntityConfig == entityConfig);
             var properties = new List<DistributedEntityConfigProperty>();
             foreach (var dbProp in dbProperties)
             {

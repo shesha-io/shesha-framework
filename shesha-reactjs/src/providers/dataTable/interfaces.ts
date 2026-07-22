@@ -4,8 +4,11 @@ import { IPropertyMetadata, ProperyDataType } from '@/interfaces/metadata';
 import { Moment } from 'moment';
 import { FormFullName, IDictionary, IPropertySetting } from '@/interfaces';
 import { CSSProperties, ReactNode } from 'react';
+import { IGenericGetAllPayload, IHasEntityTypeIdPayload } from '@/interfaces/gql';
+import { isDefined } from '@/utils/nullables';
+import { Row, SortingRule } from 'react-table';
 
-export type ColumnFilter = string[] | number[] | Moment[] | Date[] | string | number | Moment | Date | boolean;
+export type ColumnFilter = string[] | number[] | Moment[] | Date[] | string | number | Moment | Date | boolean | null | undefined;
 
 export type IndexColumnFilterOption =
   | 'contains' |
@@ -30,30 +33,29 @@ export type IAnchoredDirection = 'left' | 'right';
 export interface ITableColumn {
   columnType: DatatableColumnType;
 
-  id?: string;
-  columnId?: string;
+  id: string;
+  columnId?: string | undefined;
   accessor: string;
   header: string;
-  caption?: string;
-  description?: string;
+  caption?: string | undefined;
+  description?: string | undefined;
 
   isVisible: boolean; // is visible in the table (including columns selector, filter etc.)
-  show?: boolean; // is visible on client
+  show?: boolean | undefined; // is visible on client
   isFilterable: boolean;
   isSortable: boolean;
 
-  minWidth?: number;
-  maxWidth?: number;
-  width?: number;
+  minWidth?: number | undefined;
+  maxWidth?: number | undefined;
+  width?: number | undefined;
 
-  filterOption?: IndexColumnFilterOption;
-  filter?: any;
+  filterOption?: IndexColumnFilterOption | undefined;
 
-  name?: string;
-  allowShowHide?: boolean;
-  metadata?: IPropertyMetadata;
-  backgroundColor?: string | IPropertySetting<string>;
-  anchored?: IAnchoredDirection;
+  name?: string | undefined;
+  allowShowHide?: boolean | undefined;
+  metadata?: IPropertyMetadata | undefined;
+  backgroundColor?: string | IPropertySetting<string> | undefined;
+  anchored?: IAnchoredDirection | undefined;
 }
 
 export interface IAnchoredColumnProps {
@@ -64,59 +66,62 @@ export interface CellStyleFuncArgs {
   /**
    * Row values
    */
-  row: any;
+  row: unknown;
   /**
    * Cell value
    */
-  value: any;
+  value: unknown;
 }
 export type CellStyleFunc = (args: CellStyleFuncArgs) => CSSProperties;
 export type CellStyleAccessor = CSSProperties | CellStyleFunc | undefined;
 
 export interface ITableDataFetchColumn extends ITableColumn {
-  propertiesToFetch?: string | string[];
-  isEnitty?: boolean;
+  propertiesToFetch?: string | string[] | undefined;
+  isEntity?: boolean;
+  dataType?: ProperyDataType | undefined;
+  dataFormat?: string | undefined;
 }
 
 export interface ITableDataColumn extends ITableColumn, ITableDataFetchColumn, IEditableColumnProps {
-  propertyName?: string;
-  dataType?: ProperyDataType;
-  dataFormat?: string;
+  propertyName?: string | undefined;
+  dataType?: ProperyDataType | undefined;
+  dataFormat?: string | undefined;
 
-  referenceListName?: string;
-  referenceListModule?: string;
-  entityReferenceTypeShortAlias?: string;
-  allowInherited?: boolean;
+  referenceListName?: string | undefined;
+  referenceListModule?: string | undefined;
+  entityTypeName?: string | undefined;
+  entityTypeModule?: string | undefined;
+  allowInherited?: boolean | undefined;
 }
 
 export interface ITableFormColumn extends ITableColumn, ITableDataFetchColumn {
-  propertiesNames?: string;
+  propertiesNames?: string | undefined;
 
-  displayFormId?: FormFullName;
-  createFormId?: FormFullName;
-  editFormId?: FormFullName;
+  displayFormId?: FormFullName | undefined;
+  createFormId?: FormFullName | undefined;
+  editFormId?: FormFullName | undefined;
 
-  minHeight?: number;
+  minHeight?: number | undefined;
 }
 
-export const isDataColumn = (column: ITableColumn): column is ITableDataColumn => {
-  return column && column.columnType === 'data';
+export const isDataColumn = (column: ITableColumn | undefined): column is ITableDataColumn => {
+  return isDefined(column) && column.columnType === 'data';
 };
 
-export const isActionColumn = (column: ITableColumn): column is ITableActionColumn => {
-  return column && column.columnType === 'action';
+export const isActionColumn = (column: ITableColumn | undefined): column is ITableActionColumn => {
+  return isDefined(column) && column.columnType === 'action';
 };
 
-export const isCrudOperationsColumn = (column: ITableColumn): column is ITableCrudOperationsColumn => {
-  return column && column.columnType === 'crud-operations';
+export const isCrudOperationsColumn = (column: ITableColumn | undefined): column is ITableCrudOperationsColumn => {
+  return isDefined(column) && column.columnType === 'crud-operations';
 };
 
-export const isFormColumn = (column: ITableColumn): column is ITableFormColumn => {
-  return column && column.columnType === 'form';
+export const isFormColumn = (column: ITableColumn | undefined): column is ITableFormColumn => {
+  return isDefined(column) && column.columnType === 'form';
 };
 
-export const isRendererColumn = (column: ITableColumn): column is ITableRendererColumn => {
-  return column && column.columnType === 'renderer';
+export const isRendererColumn = (column: ITableColumn | undefined): column is ITableRendererColumn => {
+  return isDefined(column) && column.columnType === 'renderer';
 };
 
 export interface ITableActionColumn extends ITableColumn, IActionColumnProps { }
@@ -139,28 +144,15 @@ export interface IFilterItem {
   filter: ColumnFilter;
 }
 
-export interface IColumnSorting {
-  readonly id: string;
-  readonly desc: boolean;
-}
+export type IColumnSorting = SortingRule<ITableRowData>;
 
 export interface IGetDataFromUrlPayload {
   readonly maxResultCount: number;
   readonly skipCount: number;
-  readonly properties: string;
-  readonly sorting?: string;
-  readonly filter?: string;
-  readonly quickSearch?: string;
-}
-
-export interface IGetDataFromBackendPayload {
-  readonly entityType: string;
-  readonly maxResultCount: number;
-  readonly skipCount: number;
-  readonly properties: string;
-  readonly sorting?: string;
-  readonly filter?: string;
-  readonly quickSearch?: string;
+  readonly properties: string | undefined;
+  readonly sorting?: string | undefined;
+  readonly filter?: string | undefined;
+  readonly quickSearch?: string | undefined;
 }
 
 export interface IExcelColumn {
@@ -168,7 +160,8 @@ export interface IExcelColumn {
   readonly label: string;
 }
 
-export interface IExportExcelPayload extends IGetDataFromBackendPayload {
+export interface IExportExcelPayload extends Omit<IGenericGetAllPayload, 'entityType' | 'fullClassName' | 'module' | 'name'> {
+  entityTypeId: IHasEntityTypeIdPayload;
   columns: IExcelColumn[];
 }
 
@@ -180,22 +173,17 @@ export interface IGetListDataPayload {
   /** Data columns to fetch  */
   readonly columns: ITableDataColumn[];
   /** Sorting */
-  readonly sorting?: IColumnSorting[];
+  readonly sorting: IColumnSorting[] | undefined;
   /** Filter in JsonLogic format */
-  readonly filter?: string;
+  readonly filter?: string | undefined;
   /** Quick search (simple text search by all text columns) */
-  readonly quickSearch?: string;
-}
-
-export interface ITableConfigResponse {
-  readonly columns?: any[];
-  readonly storedFilters?: any[];
+  readonly quickSearch?: string | undefined;
 }
 
 export interface ITableFilter {
   readonly columnId: string;
-  readonly filterOption: IndexColumnFilterOption;
-  readonly filter: any;
+  readonly filterOption: IndexColumnFilterOption | undefined;
+  readonly filter: ColumnFilter | undefined;
 }
 
 export interface IQuickFilter {
@@ -204,47 +192,50 @@ export interface IQuickFilter {
   readonly selected?: boolean;
 }
 
-export type FilterExpression = string | object;
+export type JsonLogicFilter = { [key: string]: unknown };
+export type FilterExpression = string | JsonLogicFilter;
 
-export type FilterType = 'predefined' | 'user-defined' | 'quick';
 export interface IStoredFilter {
   id: string;
 
   name: string;
 
-  tooltip?: string;
-  // Exclusive filters cannot be applied on top of other filters. Only one can be selected
+  tooltip?: string | undefined;
 
-  expression?: FilterExpression;
+  expression?: FilterExpression | undefined;
 
-  selected?: boolean;
+  selected?: boolean | undefined;
 
-  defaultSelected?: boolean;
+  defaultSelected?: boolean | undefined;
+
+  sortOrder?: number | undefined; // TODO V1: review and remove
+
+  permissions?: string[] | undefined;
 
   //#region dynamic expressions
-  hasDynamicExpression?: boolean;
+  hasDynamicExpression?: boolean | undefined;
 
-  allFieldsEvaluatedSuccessfully?: boolean;
+  allFieldsEvaluatedSuccessfully?: boolean | undefined;
 
-  unevaluatedExpressions?: string[];
+  unevaluatedExpressions?: string[] | undefined;
   //#endregion
 }
 
 export interface ITableDataResponse {
   readonly totalCount: number;
-  readonly items: object[];
+  readonly items: ITableRowData[];
 }
 
 export interface ITableDataInternalResponse {
   readonly totalPages: number;
   readonly totalRows: number;
   readonly totalRowsBeforeFilter: number;
-  readonly rows: object[];
+  readonly rows: ITableRowData[];
 }
 
 export interface IPublicDataTableActions {
-  refreshTable: () => void;
-  exportToExcel?: () => void;
+  refreshTable: () => Promise<void>;
+  exportToExcel: () => Promise<void>;
 }
 
 export type IDataTableInstance = IPublicDataTableActions;
@@ -260,11 +251,12 @@ export interface DataTableColumnDto {
   dataFormat?: string | null;
   referenceListName?: string | null;
   referenceListModule?: string | null;
-  entityReferenceTypeShortAlias?: string | null;
-  allowInherited?: boolean;
-  isFilterable?: boolean;
-  isSortable?: boolean;
-  metadata?: IPropertyMetadata;
+  entityTypeName?: string | null;
+  entityTypeModule?: string | null;
+  allowInherited?: boolean | null;
+  isFilterable?: boolean | null;
+  isSortable?: boolean | null;
+  metadata?: IPropertyMetadata | null;
 }
 
 export interface ITableColumnsBuilder {
@@ -278,12 +270,12 @@ export interface IActionColumnProps {
   /**
    * Icon, is used for action columns
    */
-  icon?: string;
+  icon?: string | undefined;
 
   /**
    * Configurable action configuration
    */
-  actionConfiguration?: IConfigurableActionConfiguration;
+  actionConfiguration?: IConfigurableActionConfiguration | undefined;
 }
 
 export interface ISortingItem {
@@ -310,3 +302,31 @@ export interface DataFetchDependencyStateSwitcher {
   /** Switch the dependency to the `waiting` state. Note: it doesn't stop current data fetching process but prevents further ones until the dependency is ready */
   waiting: () => void;
 }
+
+/** Represents the shape of a table row with at minimum an id property */
+export type ITableRowData = {
+  id: string;
+  [key: string]: unknown;
+};
+
+export interface IColumnWidth {
+  id: string;
+  width: number;
+}
+
+export type DragState = 'started' | 'finished' | null;
+
+export interface ISelectionProps {
+  index?: number;
+  id?: string;
+  row: ITableRowData;
+}
+
+/** Type guard to check if an object has the required row data shape */
+export const isTableRowData = (obj: unknown): obj is ITableRowData => {
+  return typeof obj === 'object' && obj !== null && 'id' in obj;
+};
+
+export type DatasetEvents = 'data';
+
+export type RowSelection<D extends Record<string, unknown> = Record<string, unknown>> = Pick<Row<D>, 'id' | 'original' | 'isSelected'>;

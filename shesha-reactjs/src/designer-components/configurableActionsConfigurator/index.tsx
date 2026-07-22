@@ -1,15 +1,15 @@
 import React from 'react';
 import { ConfigurableActionConfigurator } from './configurator';
-import { configurableActionsConfiguratorSettingsForm } from './settings';
+import { getSettings } from './settings';
 import { Form } from 'antd';
-import { IConfigurableActionConfiguratorComponentProps } from './interfaces';
-import { IToolboxComponent } from '@/interfaces';
+import { ConfigurableActionConfiguratorComponentDefinition, IConfigurableActionConfiguratorComponentProps } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { ThunderboltOutlined } from '@ant-design/icons';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
-const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableActionConfiguratorComponentProps> = {
+const ConfigurableActionConfiguratorComponent: ConfigurableActionConfiguratorComponentDefinition = {
   type: 'configurableActionConfigurator',
   name: 'Configurable Action Configurator',
   icon: <ThunderboltOutlined />,
@@ -18,14 +18,18 @@ const ConfigurableActionConfiguratorComponent: IToolboxComponent<IConfigurableAc
   Factory: ({ model }) => {
     if (model.hidden) return null;
 
+    if (isNullOrWhiteSpace(model.propertyName)) {
+      console.error('Property name is required for configurableActionConfigurator. Component id: ', model.id);
+      return;
+    }
     return (
       <Form.Item name={model.propertyName} labelCol={{ span: 0 }} wrapperCol={{ span: 24 }} noStyle>
-        <ConfigurableActionConfigurator allowedActions={model?.allowedActions} editorConfig={model} level={1} readOnly={model.readOnly} label={model.label as string} description={model.description} />
+        <ConfigurableActionConfigurator allowedActions={model.allowedActions} editorConfig={model} level={1} readOnly={model.readOnly} label={model.label as string} description={model.description} hideLabel={model.hideLabel} />
       </Form.Item>
     );
   },
-  settingsFormMarkup: configurableActionsConfiguratorSettingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(configurableActionsConfiguratorSettingsForm, model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
     .add<IConfigurableActionConfiguratorComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IConfigurableActionConfiguratorComponentProps>(1, (prev) => migrateVisibility(prev)),

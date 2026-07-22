@@ -5,7 +5,7 @@ import { getFormCacheKey } from '@/utils/form';
 import { useFormDesignerComponents } from '../form/hooks';
 import { useConfigurationItemsLoader } from '../configurationItemsLoader';
 import { convertFormMarkupToFlatStructure } from '../form/utils';
-import { DEFAULT_FORM_SETTINGS, IFormSettings } from '../form/models';
+import { DEFAULT_FORM_SETTINGS, FormIdentifier, IFormDto, IFormSettings } from '../form/models';
 import { useFormById, useFormByMarkup } from './hooks';
 import { migrateFormSettings } from '../form/migration/formSettingsMigrations';
 
@@ -17,19 +17,27 @@ export const FormManager: FC<PropsWithChildren> = ({ children }) => {
   const cacheById = useRef<FormsCache>({});
   const cacheByMarkup = useRef<FormsCache>({});
   const designerComponents = useFormDesignerComponents();
-  const { getForm } = useConfigurationItemsLoader();
+  const { getFormAsync } = useConfigurationItemsLoader();
 
   const getFormByIdAsync = async ({ formId, skipCache }: GetFormByIdPayload): Promise<UpToDateForm> => {
-    const formDto = await getForm({ formId, skipCache });
-    const { markup, settings = DEFAULT_FORM_SETTINGS } = formDto;
+    const formDto = await getFormAsync({ formId, skipCache });
+
+    const markup = formDto.markup ?? [];
+    const settings = formDto.settings ?? DEFAULT_FORM_SETTINGS;
     const flatStructure = convertFormMarkupToFlatStructure(markup, settings, designerComponents);
 
     const result: UpToDateForm = {
       id: formDto.id,
       name: formDto.name,
-      ...formDto,
+      module: formDto.module,
+      label: formDto.label ?? undefined,
+      description: formDto.description ?? undefined,
+      access: formDto.access ?? undefined,
+      permissions: formDto.permissions ?? undefined,
+
       flatStructure,
-      settings: settings,
+      settings,
+      readOnly: formDto.readOnly,
     };
 
     return result;
@@ -55,7 +63,7 @@ export const FormManager: FC<PropsWithChildren> = ({ children }) => {
   const getFormByIdLoader = (payload: GetFormByIdPayload): FormLoadingItem => {
     const cacheKey = getFormCacheKey(payload.formId);
 
-    if (!payload.skipCache) {
+    if (!payload.skipCache && cacheKey) {
       const cachedItem = cacheById.current[cacheKey];
       if (cachedItem)
         return cachedItem;
@@ -63,9 +71,16 @@ export const FormManager: FC<PropsWithChildren> = ({ children }) => {
 
     const item = makeFormByIdLoader(payload);
 
-    cacheById.current[cacheKey] = item;
+    if (cacheKey)
+      cacheById.current[cacheKey] = item;
 
     return item;
+  };
+
+  const clearCache = (formId: FormIdentifier): void => {
+    const cacheKey = getFormCacheKey(formId);
+    if (cacheKey)
+      delete cacheById.current[cacheKey];
   };
 
   const getFormById = (payload: GetFormByIdPayload): Promise<UpToDateForm> => {
@@ -77,12 +92,26 @@ export const FormManager: FC<PropsWithChildren> = ({ children }) => {
       ? { ...formSettings, isSettingsForm: true }
       : formSettings;
 
-    const upToDateForm = migrateFormSettings({ markup, settings }, designerComponents);
-    const flatStructure = convertFormMarkupToFlatStructure(upToDateForm.markup, upToDateForm.settings, designerComponents);
+    const dto: IFormDto = {
+      markup,
+      settings,
+      id: '',
+      name: '',
+      module: '',
+      access: null,
+      permissions: null,
+      readOnly: true,
+      label: null,
+      description: undefined,
+      modelType: null,
+    };
+    const upToDateForm = migrateFormSettings(dto, designerComponents);
+    const flatStructure = convertFormMarkupToFlatStructure(upToDateForm.markup ?? [], upToDateForm.settings, designerComponents);
 
     const result: UpToDateForm = {
       flatStructure,
       settings: upToDateForm.settings,
+      readOnly: true,
     };
     return Promise.resolve(result);
   };
@@ -111,7 +140,7 @@ export const FormManager: FC<PropsWithChildren> = ({ children }) => {
       return makeFormByMarkupLoader(payload);
     }
 
-    const cachedItem = cacheByMarkup.current[payload.key];
+    const cachedItem = cacheByMarkup.current[cacheKey];
     if (cachedItem)
       return cachedItem;
 
@@ -129,6 +158,7 @@ export const FormManager: FC<PropsWithChildren> = ({ children }) => {
   const actions: IFormManagerActionsContext = {
     getFormById,
     getFormByIdLoader,
+    clearCache,
     getFormByMarkup,
     getFormByMarkupLoader,
   };

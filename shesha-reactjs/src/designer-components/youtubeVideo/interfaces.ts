@@ -3,7 +3,7 @@ import { IConfigurableActionConfiguration } from '@/interfaces/configurableActio
 
 export interface IYoutubeVideoComponentProps extends IConfigurableFormComponent {
   // Basic Configuration
-  videoId: string;
+  videoId?: string;
   title?: string;
   description?: string;
 

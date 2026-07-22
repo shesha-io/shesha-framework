@@ -27,16 +27,21 @@ namespace Shesha.Services.StoredFiles
         /// Version repository
         /// </summary>
         protected readonly IRepository<StoredFileVersion, Guid> VersionRepository;
+        /// <summary>
+        /// Repository for tracking file version downloads
+        /// </summary>
+        protected readonly IRepository<StoredFileVersionDownload, Guid> StoredFileVersionDownloadRepository;
 
         /// <summary>
         /// Entity configuration store
         /// </summary>
         public IEntityTypeConfigurationStore EntityConfigurationStore { get; set; }
 
-        protected StoredFileServiceBase(IRepository<StoredFile, Guid> fileService, IRepository<StoredFileVersion, Guid> versionService)
+        protected StoredFileServiceBase(IRepository<StoredFile, Guid> fileService, IRepository<StoredFileVersion, Guid> versionService, IRepository<StoredFileVersionDownload, Guid> storedFileVersionDownloadService)
         {
             FileRepository = fileService;
             VersionRepository = versionService;
+            StoredFileVersionDownloadRepository = storedFileVersionDownloadService; 
         }
 
         #region  GetAttachmentsAsync
@@ -246,7 +251,7 @@ namespace Shesha.Services.StoredFiles
             {
                 var className = config.EntityType.FullName;
 
-                query = VersionRepository.GetAll().Where(e => e.File.Owner != null && e.File.Owner.Id == stringId);
+                query = query.Where(e => e.File.Owner != null && e.File.Owner.Id == stringId);
                 query = config.HasTypeShortAlias
                     ? query.Where(e => e.File.Owner != null && (e.File.Owner._className == className || e.File.Owner._className == config.TypeShortAlias))
                     : query.Where(e => e.File.Owner != null && e.File.Owner._className == className);
@@ -256,7 +261,7 @@ namespace Shesha.Services.StoredFiles
             }
             else
             {
-                query = VersionRepository.GetAll().Where(e => e.File.Owner != null && e.File.Owner.Id == stringId && e.File.Owner._className == typeShortAlias);
+                query = query.Where(e => e.File.Owner != null && e.File.Owner.Id == stringId && e.File.Owner._className == typeShortAlias);
                 if (filterPredicate != null)
                     query = query.Where(filterPredicate);
             }
@@ -264,11 +269,16 @@ namespace Shesha.Services.StoredFiles
             return query;
         }
 
-        public Task MarkDownloadedAsync(StoredFileVersion fileVersion)
+        public async Task MarkDownloadedAsync(StoredFileVersion fileVersion)
         {
-            // todo: implement
+            if (fileVersion == null)
+                throw new ArgumentNullException(nameof(fileVersion));
 
-            return Task.CompletedTask;            
+            var download = new StoredFileVersionDownload()
+            {
+                FileVersion = fileVersion
+            };
+            await StoredFileVersionDownloadRepository.InsertAsync(download);
         }
 
         /// <summary>
@@ -388,7 +398,7 @@ namespace Shesha.Services.StoredFiles
         /// <returns></returns>
         public async Task<List<StoredFileVersion>> GetFileVersionsAsync(StoredFile file)
         {
-            return await VersionRepository.GetAll()
+            return await (await VersionRepository.GetAllAsync())
                 .Where(v => v.File == file)
                 .OrderByDescending(v => v.VersionNo)
                 .ToListAsync();
@@ -549,9 +559,7 @@ namespace Shesha.Services.StoredFiles
         /// inheritedDoc
         public async Task DeleteAsync(StoredFile storedFile)
         {
-            var versions = await VersionRepository.GetAll()
-                .Where(v => v.File == storedFile)
-                .ToListAsync();
+            var versions = await VersionRepository.GetAllListAsync(v => v.File == storedFile);
 
             foreach (var version in versions)
             {

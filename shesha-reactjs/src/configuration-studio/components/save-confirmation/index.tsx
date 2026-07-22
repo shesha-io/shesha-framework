@@ -51,9 +51,9 @@ const SaveConfirmationFooter: FC<SaveConfirmationFooterProps> = ({ onResponse, d
 };
 
 export const confirmSaveDocumentAsync = async (doc: IDocumentInstance, modalApi: IModalApi): Promise<SaveDocumentResponse | undefined> => {
-  return await modalApi.showModalContentAsync<SaveDocumentResponse>(({ resolve, removeModal }) => {
+  const responseData = await modalApi.showModalContentAsync<{ response: SaveDocumentResponse }>(({ resolve, removeModal }) => {
     const onResponse = (response: SaveDocumentResponse): void => {
-      resolve(response);
+      resolve({ response });
       removeModal();
     };
 
@@ -63,4 +63,6 @@ export const confirmSaveDocumentAsync = async (doc: IDocumentInstance, modalApi:
       footer: <SaveConfirmationFooter doc={doc} onResponse={onResponse} />,
     };
   }, { width: '416px', showCloseIcon: false });
+
+  return responseData?.response;
 };

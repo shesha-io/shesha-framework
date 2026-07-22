@@ -13,7 +13,7 @@ namespace Shesha.JsonEntities
             if (jsonEntity is IJsonEntityProxy proxy)
                 return JsonEntityProxy.GetJson(proxy).ToObject<T>();
 
-            return jsonEntity.GetFullCopyViaJson<T>(); ;
+            return jsonEntity.GetFullCopyViaJson<T>();
         }
     }
 }

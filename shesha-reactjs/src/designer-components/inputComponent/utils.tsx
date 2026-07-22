@@ -1,103 +1,155 @@
 import React, { ReactElement } from 'react';
 import { Select, Row } from 'antd';
-import { CodeEditor, ListEditor } from '@/components';
+import { ListEditor } from '@/components/listEditor';
+import { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
 import { CodeEditorWithStandardConstants } from '../codeEditor/codeEditorWithConstants';
 import { ILabelValueEditorProps, ILabelValueItem } from '@/components/labelValueEditor/labelValueEditor';
-import { InputComponent } from '.';
 import { useStyles } from './styles';
-import { getWidth } from '../settingsInput/utils';
-import { IDropdownOption, InputType } from '../settingsInput/interfaces';
 import { ICodeEditorProps } from '../codeEditor/interfaces';
 import { IObjectMetadata } from '@/interfaces';
-export const getEditor = (availableConstantsExpression: string, codeEditorProps: ICodeEditorProps, constantsAccessor: IObjectMetadata | (() => Promise<IObjectMetadata>)): ReactElement => {
-  return availableConstantsExpression?.trim()
-    ? <CodeEditor {...codeEditorProps} availableConstants={constantsAccessor} />
-    : <CodeEditorWithStandardConstants {...codeEditorProps} />;
+import { InputComponent } from '.';
+import { getWidth } from '../settingsInput/utils';
+import { DefaultOptionType } from 'antd/lib/select';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
+
+const stringToFriendlyMap = new Map<string, string>([['true', 'On'], ['false', 'Off'], ['editable', 'Editable'], ['readOnly', 'Read only'], ['inherited', 'Inherited']]);
+
+export const convertValueToFriendlyString = (value: unknown): string => {
+  if (value === null)
+    return 'NULL';
+  if (value === undefined)
+    return 'Undefined';
+  if (typeof value === 'object')
+    return 'Complex value';
+  if (typeof value === 'string')
+    return stringToFriendlyMap.get(value) ?? value;
+  return String(value);
 };
 
-interface InputPropertyEditorProps {
-  item: Record<string, any>;
-  propertyName: string;
-  itemOnChange: (item: any, index: any) => void;
-  placeholder?: string;
-  type: InputType['type'];
-  dropdownOptions?: IDropdownOption[] | string;
-  readOnly?: boolean;
-}
-const InputPropertyEditor = (props: InputPropertyEditorProps): ReactElement => {
-  const { item, propertyName, itemOnChange, placeholder, type, dropdownOptions = [], readOnly } = props;
-  return (
-    type === 'dropdown'
-      ? (
-        <Select
-          size="small"
-          variant="borderless"
-          showSearch
-          value={item[propertyName]}
-          onChange={(value) => {
-            itemOnChange({ ...item, [propertyName]: value }, undefined);
-          }}
-          popupMatchSelectWidth={false}
-          style={{ width: 'max-content' }}
-          labelRender={() => {
-            return '';
-          }}
-          disabled={readOnly}
-        >
-          {Array.isArray(dropdownOptions) ? dropdownOptions.map((option) => (
-            <Select.Option key={option.value} value={option.value}>
-              {option.label}
-            </Select.Option>
-          )) : dropdownOptions}
-        </Select>
-      )
-      : (
-        <InputComponent
-          type={type}
-          placeholder={placeholder}
-          title={placeholder}
-          size="small"
-          label=""
-          id={propertyName}
-          propertyName={propertyName}
-          value={item[propertyName]}
-          iconSize={16}
-          width={getWidth(type, type === 'iconPicker' || type === 'colorPicker' ? 24 : 100)}
-          onChange={(value) => {
-            itemOnChange({ ...item, [propertyName]: value }, undefined);
-          }}
-          dropdownOptions={dropdownOptions}
-        />
-      )
-  );
+export const getEditor = (
+  availableConstantsExpression: string | undefined,
+  codeEditorProps: ICodeEditorProps,
+  constantsAccessor: IObjectMetadata | (() => Promise<IObjectMetadata>),
+  resultTypeAccessor: IObjectMetadata | (() => Promise<IObjectMetadata>) | undefined,
+): ReactElement => {
+  return !isNullOrWhiteSpace(availableConstantsExpression)
+    ? <CodeEditor {...codeEditorProps} availableConstants={constantsAccessor} resultType={resultTypeAccessor} />
+    : <CodeEditorWithStandardConstants {...codeEditorProps} resultType={resultTypeAccessor} />;
 };
+
+const EMPTY_VALUE: ILabelValueItem[] = [];
+const EMPTY_ON_CHANGE = (_: ILabelValueItem[]): void => {
+  // noop
+};
+
 export const CustomLabelValueEditorInputs = (props: ILabelValueEditorProps): ReactElement => {
   const { styles } = useStyles();
-  const { value, onChange, labelName, valueName, readOnly, labelTitle, valueTitle, colorName, iconName, colorTitle, iconTitle, dropdownOptions } = props;
+  const { value = EMPTY_VALUE, onChange = EMPTY_ON_CHANGE, labelName, valueName, readOnly, labelTitle, valueTitle, colorName, iconName, colorTitle, iconTitle, dropdownOptions } = props;
 
   return (
     <ListEditor<ILabelValueItem>
       value={value}
       onChange={onChange}
-      initNewItem={(_items) => ({
-        [labelName]: '',
-        [valueName]: '',
-        [colorName]: '',
-        [iconName]: '',
-      })}
+      initNewItem={(_items) => {
+        const newItem: ILabelValueItem = {};
+        [labelName, valueName, colorName, iconName].forEach((name) => {
+          if (!isNullOrWhiteSpace(name))
+            newItem[name] = '';
+        });
+        return newItem;
+      }}
       readOnly={readOnly}
     >
-      {({ item, itemOnChange, readOnly }) => (
-        <div className={styles.rowInputs} style={{ gap: 8 }}>
-          <InputPropertyEditor type="textField" item={item} itemOnChange={itemOnChange} propertyName={labelName} readOnly={readOnly} placeholder={labelTitle} />
-          <InputPropertyEditor type="textField" item={item} itemOnChange={itemOnChange} propertyName={valueName} readOnly={readOnly} placeholder={valueTitle} />
-          <Row>
-            <InputPropertyEditor type="colorPicker" item={item} itemOnChange={itemOnChange} propertyName={colorName} readOnly={readOnly} placeholder={colorTitle} />
-            <InputPropertyEditor type="dropdown" dropdownOptions={dropdownOptions} item={item} itemOnChange={itemOnChange} propertyName={colorName} readOnly={readOnly} placeholder={colorTitle} />
-          </Row>
-          <InputPropertyEditor type="iconPicker" item={item} itemOnChange={itemOnChange} propertyName={iconName} readOnly={readOnly} placeholder={iconTitle} />
-        </div>
-      )}
+      {({ item, itemOnChange, readOnly }) => {
+        const data = item as Record<string, string | null>;
+        return (
+          <div className={styles.rowInputs} style={{ gap: 8 }}>
+            {!isNullOrWhiteSpace(labelName) && (
+              <InputComponent
+                type="textField"
+                placeholder={labelTitle}
+                size="small"
+                label=""
+                id={labelName}
+                propertyName={labelName}
+                value={data[labelName] ?? ""}
+                width={getWidth("textField", 100)}
+                onChange={(value) => {
+                  itemOnChange({ ...data, [labelName]: value } as ILabelValueItem, undefined);
+                }}
+              />
+            )}
+            {!isNullOrWhiteSpace(valueName) && (
+              <InputComponent
+                type="textField"
+                placeholder={valueTitle}
+                size="small"
+                label=""
+                id={valueName}
+                propertyName={valueName}
+                value={data[valueName]}
+                width={getWidth("textField", 100)}
+                onChange={(value) => {
+                  itemOnChange({ ...data, [valueName]: value } as ILabelValueItem, undefined);
+                }}
+              />
+            )}
+            <Row>
+              {!isNullOrWhiteSpace(colorName) && (
+                <>
+                  <InputComponent
+                    type="colorPicker"
+                    placeholder={colorTitle}
+                    size="small"
+                    label=""
+                    id={colorName}
+                    propertyName={colorName}
+                    value={data[colorName]}
+                    width={getWidth("colorPicker", 24)}
+                    onChange={(value) => {
+                      itemOnChange({ ...data, [colorName]: value } as ILabelValueItem, undefined);
+                    }}
+                  />
+                  <Select
+                    size="small"
+                    variant="borderless"
+                    showSearch
+                    value={data[colorName] ?? null}
+                    onChange={(value) => {
+                      itemOnChange({ ...data, [colorName]: value } as ILabelValueItem, undefined);
+                    }}
+                    popupMatchSelectWidth={false}
+                    style={{ width: 'max-content' }}
+                    labelRender={() => {
+                      return '';
+                    }}
+                    disabled={readOnly}
+                    options={Array.isArray(dropdownOptions)
+                      ? dropdownOptions.map<DefaultOptionType>((option) => ({ label: option.label, value: option.value }))
+                      : []}
+                  />
+                </>
+              )}
+              {!isNullOrWhiteSpace(iconName) && (
+                <InputComponent
+                  type="iconPicker"
+                  placeholder={iconTitle}
+                  readOnly={readOnly}
+                  size="small"
+                  label=""
+                  id={iconName}
+                  propertyName={iconName}
+                  value={data[iconName]}
+                  width={getWidth("iconPicker", 24)}
+                  onChange={(value) => {
+                    itemOnChange({ ...data, [iconName]: value } as ILabelValueItem, undefined);
+                  }}
+                />
+              )}
+            </Row>
+          </div>
+        );
+      }}
     </ListEditor>
   );
 };

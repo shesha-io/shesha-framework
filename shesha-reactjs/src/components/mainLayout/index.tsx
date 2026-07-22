@@ -1,3 +1,5 @@
+"use client";
+
 import classNames from 'classnames';
 import ConfigurableSidebarMenu from '@/components/configurableSidebarMenu';
 import LayoutHeader from './header';
@@ -21,9 +23,9 @@ import { SIDEBAR_COLLAPSE } from './constant';
 import { SIDEBAR_MENU_NAME } from '@/shesha-constants';
 import { useLocalStorage } from '@/hooks';
 import { FormFullName, useSheshaApplication, useTheme } from '@/providers';
-import { useSidebarMenuDefaults } from '@/providers/sidebarMenu';
 import { withAuth } from '@/hocs';
 import { useStyles } from './styles/styles';
+import { ConfigurableForm } from '../configurableForm';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -41,7 +43,7 @@ export interface IMainLayoutProps extends IHtmlHeadProps {
   contentStyle?: CSSProperties;
   layoutBackgroundStyle?: CSSProperties;
   footerStyle?: CSSProperties;
-  footer?: ReactNodeOrFunc;
+  footerFormId?: FormFullName;
   heading?: ReactNodeOrFunc;
   /**
    * @deprecated - if passed it will still be used, but the one from the ThemeProvider is the one being used
@@ -80,7 +82,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
     style,
     contentStyle,
     layoutBackgroundStyle = {},
-    footer,
+    footerFormId,
     footerStyle,
     heading,
     fixHeading = false,
@@ -92,11 +94,10 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
   } = props;
   const { theme: themeFromStorage } = useTheme();
   const { styles } = useStyles();
-  const sidebarDefaults = useSidebarMenuDefaults();
 
   const { setGlobalVariables } = useSheshaApplication();
 
-  const sideMenuTheme = themeFromStorage?.sidebar;
+  const sideMenuTheme = themeFromStorage.sidebar;
 
   const [collapsed, setCollapsed] = useLocalStorage(SIDEBAR_COLLAPSE, true);
 
@@ -163,7 +164,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
     return () => {
       clearTimeout(timeoutId);
       resizeObserver?.disconnect();
-      mutationObserver?.disconnect();
+      mutationObserver.disconnect();
     };
   }, []);
 
@@ -216,13 +217,13 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
         collapsed={collapsed}
         onCollapse={onCollapse}
         trigger={<MenuTrigger collapsed={collapsed} />}
-        theme={sideMenuTheme}
+        {...(sideMenuTheme ? { theme: sideMenuTheme } : {})}
       >
         <ConfigurableSidebarMenu
           theme={sideMenuTheme}
           name={SIDEBAR_MENU_NAME}
           isApplicationSpecific={true}
-          defaultSettings={sidebarDefaults}
+          // defaultSettings={sidebarDefaults}
         />
       </Sider>
 
@@ -232,7 +233,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
         </Header>
         <Content className={classNames(styles.content, { collapsed })} style={contentStyle}>
           <NodeOrFuncRenderer>
-            {breadcrumb}
+            <NodeOrFuncRenderer>{breadcrumb}</NodeOrFuncRenderer>
             <div className={classNames(styles.shaLayoutHeading, headingClass)}>
               {renderPageTitle()} {renderPageControls()}
             </div>
@@ -241,16 +242,16 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
               className={classNames(styles.shaSiteLayoutBackground, headingClass, {
                 [styles.shaSiteLayoutBackgroundNoPadding]: noPadding,
               })}
-              style={{ ...layoutBackgroundStyle, background: themeFromStorage?.layoutBackground }}
+              style={{ ...layoutBackgroundStyle, background: themeFromStorage.layoutBackground }}
             >
               {children}
             </div>
           </NodeOrFuncRenderer>
         </Content>
 
-        {footer && (
+        {footerFormId && (
           <Footer style={footerStyle}>
-            <NodeOrFuncRenderer>{footer}</NodeOrFuncRenderer>
+            <ConfigurableForm mode="edit" formId={footerFormId} />
           </Footer>
         )}
       </Layout>
@@ -265,7 +266,7 @@ const MainLayout = withAuth(DefaultLayout);
  * @param page the page to be rendered within the layout
  * @returns the component wrapped up in a layout
  */
-export const getLayout = (page: ReactElement): JSX.Element => {
+export const getLayout = (page: ReactElement): React.JSX.Element => {
   return (
     <MainLayout noPadding>
       <>{page}</>

@@ -9,6 +9,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         transition: .3s;
         z-index: 6;
         overflow: hidden;
+        pointer-events: none;
         & > :last-child {
             position: fixed;
             display: flex;
@@ -24,6 +25,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
             width: 50px;
             height: 50px;
             margin: 5px;
+            pointer-events: auto;
         }
     `);
 

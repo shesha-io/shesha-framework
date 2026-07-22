@@ -1,3 +1,4 @@
+
 import typescript from '@rollup/plugin-typescript';
 import postCss from 'rollup-plugin-postcss';
 import multi from '@rollup/plugin-multi-entry';
@@ -10,6 +11,7 @@ import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import pkg from './package.json' with { type: 'json' };
 import { codeAsText } from "./src/rollup-plugins/codeAsText.js";
 import { memoryTrace } from "./src/rollup-plugins/memoryTrace.js";
+import { warningHandlerPlugin } from "./src/rollup-plugins/warningHandler.mjs";
 
 export default {
   input: ['src/index.tsx', 'src/providers/index.ts'],
@@ -61,6 +63,13 @@ export default {
     'zlib',
   ],
   plugins: [
+    warningHandlerPlugin({
+      logFile: 'build-warnings.log',
+      logLevel: 'warnings-only',
+      timestampFormat: 'locale',
+      maxFileSize: 5 * 1024 * 1024, // 5MB
+      backupOldLogs: false
+    }),
     memoryTrace(false),
     codeAsText(),
     multi(),

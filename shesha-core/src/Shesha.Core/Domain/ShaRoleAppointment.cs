@@ -17,7 +17,7 @@ namespace Shesha.Domain
         /// <summary>
         /// Role
         /// </summary>
-        public virtual ShaRole? Role { get; set; }
+        public virtual ShaRole Role { get; set; }
 
         [EntityReference(true)]
         public virtual GenericEntityReference? PermissionedEntity1 { get; set; }

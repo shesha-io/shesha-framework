@@ -1,15 +1,15 @@
-import { DesignerToolbarSettings, FormMarkupWithSettings } from '@/index';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 
-export const getSettings = (data: object): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();
   const securityTabId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -24,7 +24,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Common',
             id: commonTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addContextPropertyAutocomplete({
                   id: nanoid(),
                   propertyName: 'propertyName',
@@ -40,7 +40,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: commonTabId,
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                   inputs: [
                     {
                       id: nanoid(),
@@ -49,13 +49,12 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       parentId: commonTabId,
                       label: 'Disable Refresh Data',
                       tooltip:
-                        "Return 'true' if datatableContext is not ready to refresh data (filter data is not ready, etc...)",
+                        "Return 'true' if dataContext is not ready to refresh data (filter data is not ready, etc...)",
                       readOnly: {
                         _code: 'return getSettingValue(data?.readOnly);',
                         _mode: 'code',
                         _value: false,
-                      } as any,
-                      jsSetting: true,
+                      },
                       availableConstantsExpression:
                         '    return metadataBuilder.object("constants").addAllStandard().build();',
                       placeholder: '',
@@ -79,13 +78,13 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Data',
             id: dataTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addContainer({
                   id: nanoid(),
                   parentId: dataTabId,
                   labelAlign: 'left',
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addSettingsInput({
                         id: nanoid(),
                         propertyName: 'sourceType',
@@ -109,7 +108,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                           _value: false,
                           _code: "return getSettingValue(data.sourceType) !== 'Entity';",
                           _mode: 'code',
-                        } as any,
+                        },
                         inputs: [
                           {
                             id: nanoid(),
@@ -134,7 +133,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                           _code:
                             "return getSettingValue(data.sourceType) !== 'Url' && getSettingValue(data.sourceType) !== 'Entity';",
                           _mode: 'code',
-                        } as any,
+                        },
                         inputs: [
                           {
                             id: nanoid(),
@@ -149,15 +148,12 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                 _code: "return getSettingValue(data.sourceType) === 'Url';",
                                 _mode: 'code',
                                 _value: false,
-                              } as any,
+                              } as unknown as boolean,
                             },
-                            dataSourceType: 'url',
-                            dataSourceUrl: '/api/services/app/Api/Endpoints',
                             settingsValidationErrors: [],
-                            useRawValues: true,
                             jsSetting: true,
-                            width: '100%',
                             placeholder: '',
+                            width: '100%',
                           },
                         ],
                       })
@@ -169,7 +165,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                           _code: 'return getSettingValue(data?.readOnly);',
                           _mode: 'code',
                           _value: false,
-                        } as any,
+                        },
                         inputs: [
                           {
                             id: nanoid(),
@@ -194,7 +190,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               _code: 'return getSettingValue(data?.readOnly);',
                               _mode: 'code',
                               _value: false,
-                            } as any,
+                            },
                             jsSetting: true,
                           },
                           {
@@ -207,7 +203,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               _value: false,
                               _code: "return getSettingValue(data.dataFetchingMode) !== 'paging';",
                               _mode: 'code',
-                            } as any,
+                            },
                             dropdownOptions: [
                               {
                                 label: '5',
@@ -238,7 +234,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                                 value: `200`,
                               },
                             ],
-                            mode: ['single'],
                             parentId: dataTabId,
                             validate: { required: true },
                             jsSetting: true,
@@ -248,7 +243,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        inline: true,
                         hidden: {
                           _value: false,
                           _code:
@@ -270,11 +264,11 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             modelType: {
                               _code: 'return getSettingValue(data?.entityType);',
                               _mode: 'code',
-                              _value: false,
-                            } as any,
+                              _value: undefined,
+                            },
                             fieldsUnavailableHint: 'Please select `Entity Type` to be able to configure this filter.',
-                            width: '100%',
                             jsSetting: false,
+                            width: '100%',
                           },
                         ],
                       })
@@ -287,7 +281,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                           _code:
                             "return !getSettingValue(data?.sourceType) || getSettingValue(data.sourceType) === 'Url' || getSettingValue(data.sourceType) === 'Form';",
                           _mode: 'code',
-                        } as any,
+                        },
                         inputs: [
                           {
                             id: nanoid(),
@@ -317,18 +311,17 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        inline: true,
                         hidden: {
                           _value: false,
                           _code:
                             "return !getSettingValue(data?.sortMode) || getSettingValue(data.sortMode) !== 'strict';",
                           _mode: 'code',
-                        } as any,
+                        },
                         validate: {
                           required: {
                             _code: "return getSettingValue(data.sortMode) === 'strict';",
                             _mode: 'code',
-                          } as any,
+                          },
                         },
                         inputs: [
                           {
@@ -346,11 +339,9 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             modelType: {
                               _code: 'return getSettingValue(data?.entityType);',
                               _mode: 'code',
-                              _value: false,
-                            } as any,
+                            },
                             autoFillProps: false,
                             settingsValidationErrors: [],
-                            width: '100%',
                             jsSetting: true,
                           },
                         ],
@@ -363,7 +354,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                           _value: false,
                           _code: "return getSettingValue(data.sortMode) !== 'strict';",
                           _mode: 'code',
-                        } as any,
+                        },
                         inputs: [
                           {
                             id: nanoid(),
@@ -372,14 +363,13 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             label: 'Sort Order',
                             labelAlign: 'right',
                             type: 'dropdown',
-                            inputType: 'dropdown',
                             allowClear: true,
                             validate: {
                               required: {
                                 _code: "return data.sortMode === 'strict';",
                                 _mode: 'code',
                                 _value: false,
-                              } as any,
+                              },
                             },
                             dropdownOptions: [
                               {
@@ -419,15 +409,13 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               _code:
                                 "return !getSettingValue(data?.sortMode) || getSettingValue(data.sortMode) !== 'standard';",
                               _mode: 'code',
-                            } as any,
-                            customVisibility: null,
+                            },
                             isDynamic: false,
                             version: 0,
                             modelType: {
                               _code: 'return getSettingValue(data?.entityType);',
                               _mode: 'code',
-                              _value: false,
-                            } as any,
+                            } as unknown as string,
                             validate: {},
                             settingsValidationErrors: [],
                             jsSetting: true,
@@ -442,7 +430,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                           _code:
                             "return !(getSettingValue(data && data.sourceType) === 'Entity' && getSettingValue(data.sortMode) !== 'strict');",
                           _mode: 'code',
-                        } as any,
+                        },
                         inputs: [
                           {
                             id: nanoid(),
@@ -457,7 +445,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                               _code:
                                 "return !(getSettingValue(data && data.sourceType) === 'Entity' && getSettingValue(data.sortMode) !== 'strict');\n",
                               _mode: 'code',
-                            } as any,
+                            },
                             isDynamic: false,
                             version: 0,
                             validate: {},
@@ -466,8 +454,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             modelType: {
                               _code: 'return getSettingValue(data?.entityType);',
                               _mode: 'code',
-                              _value: false,
-                            } as any,
+                            } as unknown as string,
                           },
                         ],
                       })
@@ -489,7 +476,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             parentId: dataTabId,
                             type: 'dropdown',
                             label: 'Allow Reordering',
-                            inputType: 'dropdown',
                             allowClear: true,
                             dropdownOptions: [
                               {
@@ -514,12 +500,11 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       .addSettingsInputRow({
                         id: nanoid(),
                         parentId: dataTabId,
-                        inline: true,
                         hidden: {
                           _value: false,
                           _code: "return getSettingValue(data?.allowReordering) !== 'yes';",
                           _mode: 'code',
-                        } as any,
+                        },
                         inputs: [
                           {
                             id: nanoid(),
@@ -529,12 +514,8 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                             parentId: dataTabId,
                             type: 'endpointsAutocomplete',
                             description: 'The endpoint to use to reorder data (if not provided, the default endpoint will be used).',
-                            dataSourceType: 'url',
-                            dataSourceUrl: '/api/services/app/Api/Endpoints',
                             settingsValidationErrors: [],
-                            useRawValues: true,
                             jsSetting: true,
-                            width: '100%',
                             placeholder: '',
                           },
                         ],
@@ -546,13 +527,13 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                           _value: false,
                           _code: "return getSettingValue(data?.allowReordering) !== 'yes';",
                           _mode: "code",
-                        } as any,
+                        },
                         inputs: [
                           {
                             id: nanoid(),
                             propertyName: 'onBeforeRowReorder',
                             label: 'On Before Row Reorder',
-                            hideLabel: true,
+                            hideLabel: false,
                             parentId: dataTabId,
                             type: 'configurableActionConfigurator',
                             description: 'Action to execute before row reorder. Can be used for validation and cancellation.',
@@ -567,14 +548,14 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                           _value: false,
                           _code: "return getSettingValue(data?.allowReordering) !== 'yes';",
                           _mode: "code",
-                        } as any,
+                        },
                         inputs: [
                           {
                             id: nanoid(),
                             propertyName: 'onAfterRowReorder',
                             label: 'On After Row Reorder',
                             parentId: dataTabId,
-                            hideLabel: true,
+                            hideLabel: false,
                             type: 'configurableActionConfigurator',
                             description: 'Action to execute after row reorder. Receives the API response data.',
                             placeholder: '',
@@ -592,7 +573,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Security',
             id: securityTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'permissions',

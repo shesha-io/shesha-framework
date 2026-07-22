@@ -1,17 +1,29 @@
-import { createStyles } from '@/styles';
+import { createStyles, sheshaStyles } from '@/styles';
+import { CSSObject } from 'antd-style';
 import { CSSProperties } from 'react';
 
+type StylesArgs = {
+  headerStyle?: CSSProperties | undefined;
+  bodyStyle?: CSSProperties | undefined;
+  hideCollapseContent?: boolean | undefined;
+  isSimpleDesign?: boolean | undefined;
+  ghost?: boolean | undefined;
+  accentStyle?: boolean | undefined;
+  overflow?: CSSProperties | undefined;
+};
+
 export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
-  headerStyle = {} as CSSProperties,
-  bodyStyle = {} as CSSProperties,
-  hideCollapseContent,
+  headerStyle = {},
+  bodyStyle = {},
+  hideCollapseContent = false,
   isSimpleDesign,
   ghost,
   accentStyle,
   overflow,
-}) => {
+}: StylesArgs = {}) => {
   const noContentPadding = "no-content-padding";
   const hideWhenEmpty = "hide-empty";
+  const shaHeaderComponentsContainer = "sha-header-components-container";
 
   const {
     borderWidth,
@@ -96,32 +108,33 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
   const hasBorder = borderWidth || borderTopWidth || borderBottomWidth || borderLeftWidth || borderRightWidth;
 
   const shaCollapsiblePanel = cx("ant-collapse-component", css`
-      &.${hideWhenEmpty}:not(:has(.${prefixCls}-collapse-content .${prefixCls}-form-item:not(.${prefixCls}-form-item-hidden))) {
-        display: none;
-      }
+    &.${hideWhenEmpty}:not(:has(.ant-collapse-body .sha-component)):not(:has(.${prefixCls}-collapse-content-box .sha-component)):not(:has(.ant-collapse-body .ant-form-item)) {
+      display: none;
+    }
     --primary-color: ${token.colorPrimary};
     --ant-line-width: ${hasBorder ? '0px' : '1px'} !important;
-    ${hasBorder && '--ant-line-width: 0px !important;'}
     --ant-collapse-header-bg: transparent !important;
+    ${width ? `width: ${width};` : ''} 
+    ${minWidth ? `min-width: ${minWidth};` : ''}
+    ${maxWidth ? `max-width: ${maxWidth};` : ''}
+    ${height ? `height: ${height};` : ''}
+    ${minHeight ? `min-height: ${minHeight};` : ''}
+    ${maxHeight ? `max-height: ${maxHeight};` : ''}
+    ${marginBottom ? `margin-bottom: ${marginBottom};` : ''}
+    ${marginTop ? `margin-top: ${marginTop};` : ''}
+    ${marginLeft ? `margin-left: ${marginLeft};` : ''}
+    ${marginRight ? `margin-right: ${marginRight};` : ''}
 
     > .ant-collapse-item {
       display: flex;
       flex-direction: column;
       box-shadow: ${boxShadow};
       border-radius: ${borderTopLeftRadius} ${borderTopRightRadius} ${borderBottomRightRadius} ${borderBottomLeftRadius} !important;
-      margin-bottom: ${marginBottom};
-      margin-top: ${marginTop};
-      margin-left: ${marginLeft};
-      margin-right: ${marginRight};
+      height: 100%;
     }
    
-    > .ant-collapse-item > .ant-collapse-content {
-      width: ${width};
-      min-width: ${minWidth};
-      max-width: ${maxWidth};
-      height: ${height};
-      min-height: ${minHeight};
-      max-height: ${maxHeight};
+    > .ant-collapse-item > .ant-collapse-panel {
+      flex: 1;
       background: ${backgroundImage || backgroundColor};
       background-size: ${backgroundSize};
       background-position: ${backgroundPosition};
@@ -136,42 +149,31 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       border-right: ${ghost ? 'none' : borderRightWidth || borderWidth} ${borderRightStyle || borderStyle} ${borderRightColor || borderColor};
       border-left: ${ghost ? 'none' : borderLeftWidth || borderWidth} ${borderLeftStyle || borderStyle} ${borderLeftColor || borderColor};
       border-bottom: ${ghost ? 'none' : borderBottomWidth || borderWidth} ${borderBottomStyle || borderStyle} ${borderBottomColor || borderColor};
+      overflow: auto;
+      ${sheshaStyles.thinScrollbars}
 
       > .ant-collapse-content-box {
         --ant-collapse-content-padding: 0px !important;
         padding: 0px !important;
-        height: 100%;
         width: 100%;
-        overflow: ${overflow?.overflow ?? 'auto'};
-        ${overflow};
+        height: 100%;
+        overflow: ${typeof overflow === 'object' ? (overflow.overflow ?? 'auto') : 'auto'};
       }
     }
 
     > .ant-collapse-item > .ant-collapse-header {
-      border-radius: ${isSimpleDesign || ghost ? 0 : borderTopLeftRadius} ${isSimpleDesign || ghost ? 0 : borderTopRightRadius} ${isSimpleDesign || ghost ? 0 : borderBottomRightRadius} ${isSimpleDesign || ghost ? 0 : borderBottomLeftRadius} !important;
-    }
-    
-    > .ant-collapse-item.ant-collapse-item-active > .ant-collapse-header {
-      border-radius : ${isSimpleDesign || ghost ? '0px' : borderTopLeftRadius ?? '0px'} ${isSimpleDesign || ghost ? '0px' : borderTopRightRadius ?? '0px'} 0px 0px !important;
-    }
-
-    > .ant-collapse-item > .ant-collapse-header {
-      ${headerRest}
+      ${headerRest as CSSObject}
       position: relative;
       visibility: ${hideCollapseContent ? 'hidden' : 'visible'};
       background: ${headerBgImage || headerBgColor};
-      width: ${width};
+      width: 100%;
       background-size: ${headerBackgroundSize};
       background-repeat: ${headerBackgroundRepeat};
       background-position: ${headerBackgroundPosition};
-      min-width: ${minWidth};
-      max-width: ${maxWidth};
       height: ${headerHeight};
       min-height: ${headerMinHeight};
       max-height: ${headerMaxHeight};
-      border-top: ${accentStyle
-        ? `3px` : headerBorderTopWidth || headerBorderWidth} ${headerBorderTopStyle || headerBorderStyle} ${accentStyle
-        ? 'var(--primary-color)' : headerBorderTopColor || headerBorderColor};
+      border-top: ${accentStyle ? '3px' : headerBorderTopWidth || headerBorderWidth} ${headerBorderTopStyle || headerBorderStyle} ${accentStyle ? 'var(--primary-color)' : headerBorderTopColor || headerBorderColor};
       border-right: ${headerBorderRightWidth || headerBorderWidth} ${headerBorderRightStyle || headerBorderStyle} ${headerBorderRightColor || headerBorderColor};
       border-left: ${headerBorderLeftWidth || headerBorderWidth} ${headerBorderLeftStyle || headerBorderStyle} ${headerBorderLeftColor || headerBorderColor};
       border-bottom: ${headerBorderBottomWidth || headerBorderWidth} ${headerBorderBottomStyle || headerBorderStyle} ${headerBorderBottomColor || headerBorderColor};
@@ -179,7 +181,8 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       padding-right: ${headerPaddingRight} !important;
       padding-bottom: ${headerPaddingBottom} !important;
       padding-left: ${headerPaddingLeft} !important;
-      border-radius: ${borderTopLeftRadius} ${borderTopRightRadius} !important;
+      border-radius: ${isSimpleDesign || ghost ? 0 : borderTopLeftRadius} ${isSimpleDesign || ghost ? 0 : borderTopRightRadius} ${isSimpleDesign || ghost ? 0 : borderBottomRightRadius} ${isSimpleDesign || ghost ? 0 : borderBottomLeftRadius} !important;
+      align-items: center !important;
 
       .ant-collapse-header-text {
         color: ${headerColor};
@@ -188,6 +191,16 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
         font-size: ${fontSize};
         font-weight: ${fontWeight};
         align-self: center;
+      }
+
+      .ant-collapse-title {
+        flex: 1;
+        overflow: auto;
+        height: 100%;
+
+        > .${shaHeaderComponentsContainer} > .sha-drop-hint {
+          height: 100% !important;
+        }
       }
 
       .ant-collapse-extra {
@@ -200,20 +213,24 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       }
     }
 
+    > .ant-collapse-item.ant-collapse-item-active > .ant-collapse-header {
+      border-radius: ${isSimpleDesign || ghost ? '0px' : borderTopLeftRadius} ${isSimpleDesign || ghost ? '0px' : borderTopRightRadius} 0px 0px !important;
+    }
+
     &.${prefixCls}-collapse-ghost {
       > .ant-collapse-item {
         > .ant-collapse-header {
           --ant-collapse-header-padding: 5px 0px !important;
-          border-bottom-left-radius: unset;
-          border-bottom-right-radius: unset; 
+          border-radius: 0 !important;
           border: none;
-          ${accentStyle && `border-bottom: 2px solid ${token.colorPrimary};`}
-          ${accentStyle && `border-top: 3px solid var(--primary-color);`}
+          border-bottom: 2px solid ${token.colorPrimary};
+          ${accentStyle && 'border-top: 3px solid var(--primary-color);'}
           font-weight: ${fontWeight || '500'};
-        
         }
+
         > .ant-collapse-content {
           border: none;
+
           > .ant-collapse-content-box {
             padding: 5px 0;
           }
@@ -234,12 +251,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
     }
 
     &.${prefixCls}-collapse-ghost {
-      > .ant-collapse-item {
-        > .ant-collapse-header {
-          --ant-collapse-header-padding: ${headerStyle?.padding || '12px 16px'} !important;
-          padding: 12px 16px !important;
-          font-size: 14px;
-        }
+      > .ant-collapse-item > .ant-collapse-header {
+        --ant-collapse-header-padding: ${headerStyle.padding || '12px 16px'} !important;
+        padding: 12px 16px !important;
+        font-size: 14px;
       }
     }
 
@@ -251,7 +266,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
       height: max-content;
       min-height: ${minHeight};
       max-height: ${maxHeight};
-      overflow: ${overflow ?? 'auto'};
+      overflow: ${typeof overflow === 'object' ? (overflow.overflow ?? 'auto') : 'auto'};
       padding-top: ${paddingTop} !important;
       padding-bottom: ${paddingBottom} !important;
       padding-left: ${paddingLeft} !important;
@@ -260,11 +275,11 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
 
     > .ant-collapse-item > .ant-collapse-header {
       visibility: ${hideCollapseContent ? 'hidden' : 'visible'};
-      ${accentStyle && `border-top: 3px solid var(--primary-color);`}
+      ${accentStyle && 'border-top: 3px solid var(--primary-color);'}
       font-size: 14px;
       height: ${headerHeight};
       min-height: ${headerMinHeight};
-      max-height: ${headerMaxHeight}
+      max-height: ${headerMaxHeight};
       width: ${width};
       min-width: ${minWidth};
       max-width: ${maxWidth};
@@ -276,5 +291,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, {
     noContentPadding,
     hideWhenEmpty,
     shaSimpleDesign,
+    shaHeaderComponentsContainer,
   };
 });

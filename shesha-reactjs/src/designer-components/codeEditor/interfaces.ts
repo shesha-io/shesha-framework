@@ -1,11 +1,10 @@
-import { IConfigurableFormComponent, IShaFormInstance } from '@/interfaces';
+import { ComponentDefinition, IConfigurableFormComponent, IShaFormInstance, UnwrapCodeEvaluators } from '@/interfaces';
 import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { CodeLanguages } from './types';
 import { IMetadata, IObjectMetadata } from '@/interfaces/metadata';
 import { CodeTemplateSettings } from '@/components/codeEditor/models';
-import { Environment, IMetadataBuilder } from '@/publicJsApis/metadataBuilder';
+import { Environment, IMetadataBuilder } from '@/publicJsApis/apis/metadataBuilder';
 import { IObjectMetadataBuilder as IInternalObjectMetadataBuilder } from '@/utils/metadata/metadataBuilder';
-import { BaseButtonProps } from 'antd/lib/button/button';
 
 export interface IExecutableCodeEditor {
   fileName?: string;
@@ -18,41 +17,41 @@ export interface IExecutableCodeEditor {
   exposedVariables?: ICodeExposedVariable[];
 }
 
-export interface ICodeEditorProps extends Omit<IConfigurableFormComponent, 'type' | 'id'>, IExecutableCodeEditor {
-  id?: string;
-  placeholder?: string;
-  value?: string;
-  onChange?: (value: string) => void;
-  mode?: 'inline' | 'dialog';
-  language?: CodeLanguages;
-  type?: BaseButtonProps['type'];
-  className?: string;
-  ghost?: boolean;
-  availableConstants?: IObjectMetadata | (() => Promise<IObjectMetadata>);
-  resultType?: IMetadata | (() => Promise<IMetadata>);
-  environment?: Environment;
+export interface ICodeEditorProps extends Omit<UnwrapCodeEvaluators<IConfigurableFormComponent>, 'type' | 'id'>, IExecutableCodeEditor {
+  id?: string | undefined;
+  placeholder?: string | undefined;
+  value?: string | undefined;
+  onChange?: ((value: string | null) => void) | undefined;
+  mode?: 'inline' | 'dialog' | undefined;
+  language?: CodeLanguages | undefined;
+  className?: string | undefined;
+  availableConstants?: IObjectMetadata | (() => Promise<IObjectMetadata>) | undefined;
+  resultType?: IMetadata | (() => Promise<IMetadata>) | undefined;
+  environment?: Environment | undefined;
 }
 
 export type GetAvailableConstantsArgs = {
-  data: Record<string, any>;
+  data: Record<string, unknown>;
   metadataBuilder: IMetadataBuilder<IInternalObjectMetadataBuilder>;
-  form: IShaFormInstance;
+  form: IShaFormInstance | undefined;
 };
 export type GetAvailableConstantsFunc = (args: GetAvailableConstantsArgs) => Promise<IObjectMetadata>;
 export type GetResultTypeArgs = {
-  data: Record<string, any>;
+  data: Record<string, unknown>;
   metadataBuilder: IMetadataBuilder<IInternalObjectMetadataBuilder>;
-  form: IShaFormInstance;
+  form: IShaFormInstance | undefined;
 };
 export type GetResultTypeFunc = (args: GetResultTypeArgs) => Promise<IMetadata>;
 
 export interface ICodeEditorComponentProps extends IConfigurableFormComponent, IExecutableCodeEditor {
-  mode?: 'dialog' | 'inline';
+  mode?: 'dialog' | 'inline' | undefined;
 
-  environment?: Environment;
-  language?: CodeLanguages;
-  availableConstantsExpression?: string | GetAvailableConstantsFunc;
-  availableConstants?: IObjectMetadata;
+  environment?: Environment | undefined;
+  language?: CodeLanguages | undefined;
+  availableConstantsExpression?: string | GetAvailableConstantsFunc | undefined;
+  availableConstants?: IObjectMetadata | undefined;
 
-  resultTypeExpression?: string | GetResultTypeFunc;
+  resultTypeExpression?: string | GetResultTypeFunc | undefined;
 }
+
+export type CodeEditorComponentDefinition = ComponentDefinition<"codeEditor", ICodeEditorComponentProps>;

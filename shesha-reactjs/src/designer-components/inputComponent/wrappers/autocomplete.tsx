@@ -1,0 +1,20 @@
+import { Autocomplete } from '@/components/autocomplete';
+import { IAutocompleteSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
+import React from 'react';
+import { FCUnwrapped } from '@/providers/form/models';
+
+export const AutocompleteWrapper: FCUnwrapped<IAutocompleteSettingsInputProps> = (props) => {
+  const { value, readOnly, size, placeholder, dataSourceType, dataSourceUrl } = props;
+  return (
+    <Autocomplete
+      {...props}
+      value={value}
+      readOnly={readOnly}
+      dataSourceType={dataSourceType ?? 'entitiesList'}
+      dataSourceUrl={dataSourceUrl}
+      placeholder={placeholder}
+      size={size}
+      style={{}}
+    />
+  );
+};

@@ -1,7 +1,7 @@
 import React, { PropsWithChildren, useCallback, useEffect, useId, useRef, useState } from "react";
-import { IModelMetadata } from "@/interfaces/metadata";
+import { IContextMetadata, IModelMetadata } from "@/interfaces/metadata";
 import { MetadataProvider, useMetadataDispatcher } from "@/providers";
-import { useDataContextManagerActions, useDataContextRegister } from "@/providers/dataContextManager";
+import { useDataContextManagerActions, useDataContextRegister } from "@/providers/dataContextManager/hooks";
 import { getValueByPropertyName, setValueByPropertyName } from "@/utils/object";
 import { DEFAULT_CONTEXT_METADATA } from "../dataContextManager/models";
 import {
@@ -44,7 +44,7 @@ export interface IDataContextBinderProps<TData extends object = object> {
   getFieldValue?: ContextGetFieldValue | undefined;
   setData?: ContextSetData<TData> | undefined;
   setFieldValue?: ContextSetFieldValue<TData> | undefined;
-  onChangeData?: ContextOnChangeData | undefined;
+  onChangeData?: ContextOnChangeData<TData> | undefined;
   actionsOverride?: IDataContextProviderActionsContextOverride | undefined;
 }
 
@@ -71,7 +71,7 @@ const DataContextBinder = <TData extends object = object>(props: PropsWithChildr
     apiRef.current = props.api;
 
   // use ref to get actual data value inside methods
-  const dataRef = useRef<TData>();
+  const dataRef = useRef<TData>(undefined);
   dataRef.current = data;
   useDeepCompareEffect(() => onChangeContextData(), [data]);
 
@@ -82,7 +82,7 @@ const DataContextBinder = <TData extends object = object>(props: PropsWithChildr
     name,
     description,
     type,
-    parentDataContext: parentContext,
+    parent: parentContext,
     metadata: props.metadata ?? Promise.resolve({ ...DEFAULT_CONTEXT_METADATA, name, properties: [] } as IModelMetadata), // set default metadata if empty
   }));
 
@@ -109,7 +109,7 @@ const DataContextBinder = <TData extends object = object>(props: PropsWithChildr
     if (props.setFieldValue) {
       props.setFieldValue(name, value, onChangeContextData);
     } else {
-      const newData = setValueByPropertyName({ ...dataRef.current ?? {} }, name.toString(), value, true);
+      const newData = setValueByPropertyName({ ...dataRef.current ?? {} as TData }, name.toString(), value, true);
       const changedData = setValueByPropertyName({}, name.toString(), value);
 
       if (onChangeData)
@@ -135,9 +135,9 @@ const DataContextBinder = <TData extends object = object>(props: PropsWithChildr
   const getFull: ContextGetFull = () => {
     const data: IDataContextFull = getData();
     const api = getApi();
-    if (api)
-      data.api = api;
-    return data;
+    return api
+      ? { ...data, api }
+      : data;
   };
 
   const actionContext: IDataContextProviderActionsContext = {
@@ -159,7 +159,7 @@ const DataContextBinder = <TData extends object = object>(props: PropsWithChildr
     type,
     parentUid: parentContext?.uid,
     ...actionContext,
-  }, []);
+  });
 
   useEffect(() => {
     setState({ ...state, metadata });
@@ -170,10 +170,12 @@ const DataContextBinder = <TData extends object = object>(props: PropsWithChildr
         name,
         description,
         type,
-        metadata: res,
+        metadata: res as IContextMetadata,
         parentUid: parentContext?.uid,
         ...actionContext,
       });
+    }).catch((error) => {
+      console.error('Failed to fetch metadata', error);
     });
     metadataDispatcher.updateModel(id, metadata);
     // TODO: Alex, please review. List of dependencise shouls be full or there should be a function that updates metadata only

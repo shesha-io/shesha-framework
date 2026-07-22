@@ -4,17 +4,19 @@ import {
   migrateReadOnly,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { StrikethroughOutlined } from '@ant-design/icons';
 import React from 'react';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import Box from './components/box';
-import { IStyleBoxComponentProps } from './interfaces';
+import { IStyleBoxComponentProps, StyleBoxDefinition } from './interfaces';
 import { getSettings } from './settings';
+import { getStyleBoxValue } from './utils';
+import { StyleBoxValue } from '@/providers/form/models';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
-const StyleBox: IToolboxComponent<IStyleBoxComponentProps> = {
+const StyleBox: StyleBoxDefinition = {
   type: 'styleBox',
   name: 'Style Box',
   icon: <StrikethroughOutlined />,
@@ -25,11 +27,17 @@ const StyleBox: IToolboxComponent<IStyleBoxComponentProps> = {
   Factory: ({ model: passedModel }) => {
     const { size, ...model } = passedModel;
 
-    return model.hidden ? null : (
-      <ConfigurableFormItem model={model}>
-        {(value, onChange) => <Box value={value} onChange={onChange} readOnly={model.readOnly} />}
-      </ConfigurableFormItem>
-    );
+    return Boolean(model.hidden) || isNullOrWhiteSpace(model.propertyName)
+      ? null
+      : (
+        <ConfigurableFormItem<string | StyleBoxValue> model={model}>
+          {(value, onChange) => {
+            const json = getStyleBoxValue(value);
+            const internalOnChange = (newValue: StyleBoxValue | undefined): void => onChange(model.format === 'json' ? newValue : JSON.stringify(newValue));
+            return <Box value={json} onChange={internalOnChange} readOnly={model.readOnly ?? false} propertyName={model.propertyName ?? ''} />;
+          }}
+        </ConfigurableFormItem>
+      );
   },
   initModel: (model) => {
     return {
@@ -37,8 +45,8 @@ const StyleBox: IToolboxComponent<IStyleBoxComponentProps> = {
       label: 'Style Box',
     };
   },
-  settingsFormMarkup: getSettings(),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) =>
     m
       .add<IStyleBoxComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))

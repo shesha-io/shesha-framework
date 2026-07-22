@@ -8,7 +8,7 @@ export interface IFlagsState<
 > {
   readonly isInProgress?: { [key in ProgressFlags]?: boolean };
   readonly succeeded?: { [key in SucceededFlags]?: boolean };
-  readonly error?: { [key in ErrorFlags]?: boolean | string | IErrorInfo };
+  readonly error?: { [key in ErrorFlags]?: boolean | string | IErrorInfo | undefined };
   readonly actioned?: { [key in ActionedFlags]?: boolean };
 }
 

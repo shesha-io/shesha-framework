@@ -1,5 +1,3 @@
-import { entitiesGet } from '@/apis/entities';
-import { ShaIcon, ShaLink, ValidationErrors } from '@/components';
 import { GenericQuickView } from '@/components/quickView';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { StandardNodeTypes } from '@/interfaces/formComponent';
@@ -9,111 +7,163 @@ import {
   ButtonGroupItemProps,
   FormIdentifier,
   useConfigurableActionDispatcher,
-  useForm,
-  useGlobalState,
   useHttpClient,
   useMetadataDispatcher,
   useSheshaApplication,
 } from '@/providers';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
+import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { ModalFooterButtons } from '@/providers/dynamicModal/models';
-import { getFormApi } from '@/providers/form/formApi';
 import { useAvailableConstantsData } from '@/providers/form/utils';
-import { get } from '@/utils/fetchers';
 import { App, Button, Spin } from 'antd';
-import moment from 'moment';
-import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
+import React, { CSSProperties, FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { ShaIconTypes } from '../iconPicker';
-import { addPx } from '@/utils/style';
+import { addPx, capPercentageWidth } from '@/utils/style';
 import { useStyles } from './styles/styles';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { getEntityTypeIdentifierQueryParams, isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
+import { buildUrl } from '@/utils';
+import { extractAjaxResponse, IAjaxResponse, IAnyObject } from '@/interfaces';
+import { ShaIcon } from '../shaIcon';
+import ShaLink from '../shaLink';
+import ValidationErrors from '../validationErrors';
+import { getFirstNonEmptyStringPropertyOrUndefined } from '@/utils/object';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { extractErrorInfo } from '@/utils/errors';
+import { isNonEmptyArray } from '@/utils/array';
 
 export type EntityReferenceTypes = 'NavigateLink' | 'Quickview' | 'Dialog';
+
+/**
+ * Represents the possible value types for an entity reference.
+ * Can be a string (GUID), a number (ID), an object with entity metadata, or null/undefined.
+ * When an object, it may include:
+ * - id: The entity's unique identifier
+ * - _className: The entity's type/class name
+ * - _displayName: The entity's display name
+ * - Any additional properties for display (accessed via displayProperty)
+ */
+export type EntityReferenceValue = null | string | { id?: string; _className?: string; _displayName?: string; [key: string]: unknown };
 
 export interface IEntityReferenceProps {
   // common properties
   entityReferenceType: EntityReferenceTypes;
-  value?: any;
-  disabled?: boolean;
-  placeholder?: string;
-  entityType?: string;
+  value?: EntityReferenceValue | undefined;
+  disabled?: boolean | undefined;
+  placeholder?: string | undefined;
+  entityType?: string | IEntityTypeIdentifier | undefined;
   formSelectionMode: 'name' | 'dynamic';
 
   /** The Url that details of the entity are retreived */
-  getEntityUrl?: string;
+  getEntityUrl?: string | undefined;
   /** The property froom the data to use as the label and title for the popover */
-  displayProperty: string;
+  displayProperty: string | undefined;
   /** From identifier for navigate/dialog/quickview  */
-  formIdentifier?: FormIdentifier;
+  formIdentifier?: FormIdentifier | undefined;
   /** View type for navigate/dialog/quickview  */
-  formType?: string;
+  formType?: string | undefined;
 
   // Quickview properties
-  quickviewWidth?: number | string;
+  quickviewWidth?: number | string | undefined;
 
   // Dialog properties
-  modalTitle?: string;
-  showModalFooter?: boolean;
-  additionalProperties?: IKeyValue[];
-  modalWidth?: number | string;
-  footerButtons?: ModalFooterButtons;
-  buttons?: ButtonGroupItemProps[];
+  modalTitle?: string | undefined;
+  showModalFooter?: boolean | undefined;
+  additionalProperties?: IKeyValue[] | undefined;
+  modalWidth?: number | string | undefined;
+  footerButtons?: ModalFooterButtons | undefined;
+  buttons?: ButtonGroupItemProps[] | undefined;
   /**
    * If specified, the form data will not be fetched, even if the GET Url has query parameters that can be used to fetch the data.
    * This is useful in cases whereby one form is used both for create and edit mode
    */
-  skipFetchData?: boolean;
+  skipFetchData?: boolean | undefined;
   /** What http verb to use when submitting the form. Used in conjunction with `showModalFooter` */
-  submitHttpVerb?: 'POST' | 'PUT';
+  submitHttpVerb?: 'POST' | 'PUT' | undefined;
 
   // Dialog action properties
   handleSuccess: boolean;
-  onSuccess?: IConfigurableActionConfiguration;
+  onSuccess?: IConfigurableActionConfiguration | undefined;
   handleFail: boolean;
-  onFail?: IConfigurableActionConfiguration;
-  style?: CSSProperties;
-  displayType?: 'textTitle' | 'icon' | 'displayProperty';
-  iconName?: ShaIconTypes;
-  textTitle?: string;
+  onFail?: IConfigurableActionConfiguration | undefined;
+  style?: CSSProperties | undefined;
+  displayType?: 'textTitle' | 'icon' | 'displayProperty' | undefined;
+  iconName?: ShaIconTypes | undefined;
+  textTitle?: string | undefined;
 }
 
 export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   const { executeAction } = useConfigurableActionDispatcher();
-  const { globalState } = useGlobalState();
-  const { notification, message } = App.useApp();
+  const { notification } = App.useApp();
 
-  const localForm = useForm(false);
-  const formData = localForm?.formData;
-  const formMode = localForm?.formMode;
-
-  const { getEntityFormId } = useConfigurationItemsLoader();
+  const { getEntityFormIdAsync } = useConfigurationItemsLoader();
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const httpClient = useHttpClient();
   const { getMetadata } = useMetadataDispatcher();
   const executionContext = useAvailableConstantsData();
 
-  const [formIdentifier, setFormIdentifier] = useState<FormIdentifier>(
-    props.formSelectionMode === 'name' ? props.formIdentifier : null,
+  // Style used only for the empty-state buttons (no value / not configured). With no content and
+  // the default `width: auto`, the link button collapses to a thin sliver, so any configured
+  // background/border renders as a small blob (most visible in the designer and preview, where
+  // there is no bound value). When the width would collapse, fall back to full width so the empty
+  // field reads as a proper box like its siblings. An explicitly configured width is respected,
+  // and the with-value rendering is left untouched.
+  const emptyStateStyle = useMemo((): CSSProperties | undefined => {
+    const width = props.style?.width;
+    return width == null || width === 'auto' ? { ...props.style, width: '100%' } : props.style;
+  }, [props.style]);
+
+  const [formIdentifier, setFormIdentifier] = useState<FormIdentifier | undefined>(() =>
+    props.formSelectionMode === 'name' && isDefined(props.formIdentifier)
+      ? props.formIdentifier
+      : undefined,
   );
   const [fetched, setFetched] = useState(false);
   const [properties, setProperties] = useState<IPropertyMetadata[]>([]);
 
-  const [displayText, setDisplayText] = useState((!props.value ? props.placeholder : props.value._displayName) ?? '');
+  // Extract entity ID - handles both string (GUID) and object ({id, _className, _displayName}) formats
+  const entityId = useMemo<string | undefined>(() => {
+    if (!props.value) return undefined;
+    if (typeof props.value === 'string') return props.value;
+    if (typeof props.value === 'number') return props.value;
+    // For objects, only return the id (or undefined if missing)
+    return props.value.id;
+  }, [props.value]);
 
-  const entityId = props.value?.id ?? props.value;
-  const entityType = props.entityType ?? props.value?._className;
+  // Extract entity type - handles both string (GUID) and object formats
+  const entityType = useMemo(() => {
+    if (props.entityType) return props.entityType;
+    if (props.value && typeof props.value === 'object') {
+      return props.value._className as string | undefined;
+    }
+    return undefined;
+  }, [props.entityType, props.value]);
+
+  const [displayText, setDisplayText] = useState<string>(() => {
+    if (!props.value)
+      return props.placeholder ?? '';
+    if (typeof props.value === 'string') return ''; // String GUID - will be fetched
+    if (typeof props.value === 'object') {
+      return getFirstNonEmptyStringPropertyOrUndefined(props.value, [props.displayProperty ?? "", "_displayName"]) ?? "";
+    }
+    return '';
+  });
   const formType = props.formType ?? (props.entityReferenceType === 'Quickview' ? 'quickview' : 'details');
 
-  const { styles, cx } = useStyles();
+  const { styles } = useStyles();
 
-  useEffect(() => {
+  // Deep-compare deps: `entityType` is an object that gets a fresh reference on every
+  // designer re-render (e.g. when unrelated Appearance/Quickview-width properties change),
+  // which would otherwise re-fire this effect and trigger a redundant GetEntityConfigForm call.
+  useDeepCompareEffect(() => {
     const fetchFormId = async (): Promise<void> => {
       if (
         props.formSelectionMode === 'dynamic' &&
-        Boolean(entityType) &&
+        !isEntityTypeIdEmpty(entityType) &&
         Boolean(formType)
       ) {
         try {
-          const formid = await getEntityFormId(entityType, formType);
+          const formid = await getEntityFormIdAsync(entityType, formType);
           setFormIdentifier({ name: formid.name, module: formid.module });
         } catch (error) {
           console.error('Error fetching form ID:', error);
@@ -121,12 +171,15 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       }
     };
 
-    fetchFormId();
+    fetchFormId().catch((error) => {
+      console.error('Failed to fetch form ID', error);
+      throw error;
+    });
   }, [entityType, formType, props.formSelectionMode, props.entityReferenceType]);
 
   useEffect(() => {
     const fetchMetadata = async (): Promise<void> => {
-      if (entityType) {
+      if (!isEntityTypeIdEmpty(entityType)) {
         try {
           const res = await getMetadata({ modelType: entityType, dataType: null });
           setProperties(isPropertiesArray(res?.properties) ? res.properties : []);
@@ -136,48 +189,67 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       }
     };
 
-    fetchMetadata();
-  }, [entityType]);
+    fetchMetadata().catch((error) => {
+      console.error('Failed to fetch metadata', error);
+      throw error;
+    });
+  }, [entityType, getMetadata]);
 
   useEffect(() => {
     // Fetch minimal data needed for display text
     // Quickview needs display text for the button/trigger, but the form will handle comprehensive data loading
-    if (!fetched && entityId && (!props.value || typeof props.value !== 'object')) {
+
+    // Determine if we need to fetch: if we don't have display text or if value is not an object with display properties
+    // Handles both binding scenarios:
+    // 1. value as GUID string: "guid-string"
+    // 2. value as object: {id: "guid-string", _className: "EntityName", _displayName: "Display Name"}
+    const needsFetch = entityId && (
+      !props.value || // No value at all
+      typeof props.value === 'string' || // Value is a GUID string (needs fetch for display name)
+      (typeof props.value === 'object' && !props.value._displayName && !isNullOrWhiteSpace(props.displayProperty) && !isDefined(props.value[props.displayProperty])) // Object exists but missing display properties
+    );
+
+    if (!fetched && needsFetch) {
       const queryParams = {
         id: entityId,
         properties: `id ${props.displayProperty ? props.displayProperty : ''} _displayName`,
       };
-      const fetcher = props.getEntityUrl
-        ? get(props.getEntityUrl, queryParams, { base: backendUrl, headers: httpHeaders })
-        : entitiesGet({ ...queryParams, entityType: entityType }, { base: backendUrl, headers: httpHeaders });
 
-      fetcher
+      const url = props.getEntityUrl
+        ? buildUrl(props.getEntityUrl, queryParams)
+        : buildUrl(`/api/services/app/Entities/Get`, { ...queryParams, ...getEntityTypeIdentifierQueryParams(entityType) });
+
+      httpClient.get<IAjaxResponse<IAnyObject>>(url)
         .then((resp) => {
-          const result = resp.result;
-          const displayValue = result[props.displayProperty] || result._displayName || displayText || 'No Display Name';
+          const result = extractAjaxResponse(resp.data, 'Error fetching entity data');
+          const displayValue = getFirstNonEmptyStringPropertyOrUndefined(result, [props.displayProperty ?? "", "_displayName"]) ?? 'No Display Name';
           setDisplayText(displayValue);
           setFetched(true);
         })
-        .catch((reason) => {
-          notification.error({ message: <ValidationErrors error={reason} renderMode="raw" /> });
+        .catch((error) => {
+          notification.error({ message: <ValidationErrors error={extractErrorInfo(error)} renderMode="raw" /> });
           setFetched(true); // Set fetched to true even on error to prevent infinite loading
         });
     } else if (!fetched) {
       // For cases where no data fetch is needed, set fetched to true immediately
       setFetched(true);
     }
-  }, [fetched, entityId, props.getEntityUrl, entityType, backendUrl, displayText, httpHeaders, notification, props.displayProperty, props.value]);
+  }, [fetched, entityId, props.getEntityUrl, entityType, backendUrl, displayText, httpHeaders, notification, props.displayProperty, props.value, httpClient]);
 
   useEffect(() => {
     setFetched(false);
-    // Try to get display text from existing value object
-    if (props?.value && typeof props?.value === 'object') {
-      const displayValue = props.value[props.displayProperty] || props.value._displayName || '';
-      setDisplayText(displayValue);
-    } else {
-      setDisplayText(!props?.value ? (props?.placeholder || '') : '');
+    // Try to get display text from existing value - handles both string (GUID) and object formats
+    let displayValue = '';
+    if (!props.value) {
+      displayValue = props.placeholder ?? '';
+    } else if (typeof props.value === 'string') {
+      displayValue = ''; // String GUID - will be fetched
+    } else if (typeof props.value === 'object') {
+      const propValue = !isNullOrWhiteSpace(props.displayProperty) ? props.value[props.displayProperty] : undefined;
+      displayValue = (typeof propValue === 'string' ? propValue : '') || props.value._displayName || '';
     }
-  }, [entityId, entityType, props?.placeholder, props?.value, props.displayProperty]);
+    setDisplayText(displayValue);
+  }, [entityId, entityType, props.placeholder, props.value, props.displayProperty]);
 
   useEffect(() => {
     if (props.formIdentifier) {
@@ -186,7 +258,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   }, [props.formIdentifier]);
 
   /* Dialog */
-  const dialogExecute = (event: React.MouseEvent<HTMLElement, MouseEvent>): void => {
+  const dialogExecute = useCallback((event: React.MouseEvent<HTMLElement, MouseEvent>): void => {
     event.stopPropagation(); // Don't collapse the CollapsiblePanel when clicked
 
     const actionConfiguration: IConfigurableActionConfiguration = {
@@ -201,12 +273,12 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
         formId: formIdentifier,
         modalTitle: props.modalTitle,
         buttons: props.buttons,
-        footerButtons: props?.footerButtons,
+        footerButtons: props.footerButtons,
         additionalProperties:
-          Boolean(props.additionalProperties) && props.additionalProperties?.length > 0 && props.additionalProperties.some((p) => p.key === 'id')
+          isNonEmptyArray(props.additionalProperties) && props.additionalProperties.some((p) => p.key === 'id')
             ? props.additionalProperties
             : [{ key: 'id', value: '{{entityReference.id}}' }],
-        modalWidth: addPx(props.modalWidth),
+        modalWidth: addPx(props.modalWidth, executionContext),
         skipFetchData: props.skipFetchData ?? false,
         submitHttpVerb: props.submitHttpVerb ?? 'PUT',
       },
@@ -215,37 +287,49 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     const evaluationContext = {
       ...executionContext,
       entityReference: { id: entityId, entity: props.value },
-      data: formData,
-      moment: moment,
-      form: getFormApi(localForm),
-      formMode: formMode,
-      http: httpClient,
-      message: message,
-      globalState: globalState,
     };
 
-    executeAction({
+    void executeAction({
       actionConfiguration: actionConfiguration,
       argumentsEvaluationContext: evaluationContext,
     });
-  };
+  }, [
+    executeAction,
+    executionContext,
+    entityId,
+    props.value,
+    formIdentifier,
+    props.handleSuccess,
+    props.handleFail,
+    props.onFail,
+    props.onSuccess,
+    props.modalTitle,
+    props.buttons,
+    props.footerButtons,
+    props.additionalProperties,
+    props.modalWidth,
+    props.skipFetchData,
+    props.submitHttpVerb,
+  ]);
 
-  const displayTextByType = useMemo(() => {
-    const displayIfNotIcon = props.displayType === 'textTitle' ? props.textTitle : displayText;
+  const displayTextByType = useMemo((): React.ReactNode => {
+    const displayIfNotIcon = props.displayType === 'textTitle' ? props.textTitle : (typeof displayText === 'string' ? displayText : undefined);
 
-    return props.displayType === 'icon' ? (
-      <ShaIcon iconName={props.iconName} style={props.style} />
-    ) : displayIfNotIcon;
+    return props.displayType === 'icon' && !isNullOrWhiteSpace(props.iconName)
+      ? (
+        <ShaIcon iconName={props.iconName} style={props.style} />
+      )
+      : displayIfNotIcon;
   }, [props.displayType, props.iconName, props.style, props.textTitle, displayText]);
 
   const content = useMemo(() => {
     // Show loading state for all modes when data is not yet fetched
     if (!fetched)
       return (
-        <Button type="link" className={cx(styles.innerEntityReferenceButtonBoxStyle)} style={props.style}>
-          <span className={cx(styles.innerEntityReferenceSpanBoxStyle)} title={typeof displayText === 'string' ? displayText : undefined}>
-            <Spin size="small" className={cx(styles.spin)} />
-            <span className={cx(styles.inlineBlock)}>Loading...</span>
+        <Button type="link" className={styles.innerEntityReferenceButtonBoxStyle} style={props.style}>
+          <span className={styles.innerEntityReferenceSpanBoxStyle} title={typeof displayText === 'string' ? displayText : undefined}>
+            <Spin size="small" className={styles.spin} />
+            <span className={styles.inlineBlock}>Loading...</span>
           </span>
         </Button>
       );
@@ -253,7 +337,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     if (props.disabled && props.entityReferenceType !== 'Quickview')
       return (
         <ShaLink disabled={true} linkToForm={formIdentifier} params={{ id: entityId }} style={props.style}>
-          <span className={cx(styles.innerEntityReferenceSpanBoxStyle)} title={props.displayType === 'textTitle' ? props.textTitle : (typeof displayText === 'string' ? displayText : undefined)}>
+          <span className={styles.innerEntityReferenceSpanBoxStyle} title={props.displayType === 'textTitle' ? props.textTitle : (typeof displayText === 'string' ? displayText : undefined)}>
             {displayTextByType}
           </span>
         </ShaLink>
@@ -261,23 +345,26 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
     if (props.entityReferenceType === 'NavigateLink')
       return (
-        <ShaLink linkToForm={formIdentifier} params={{ id: entityId }} style={props?.style}>
-          <span className={cx(styles.innerEntityReferenceSpanBoxStyle)} title={props.displayType === 'textTitle' ? props.textTitle : (typeof displayText === 'string' ? displayText : undefined)}>
+        <ShaLink linkToForm={formIdentifier} params={{ id: entityId }} style={props.style}>
+          <span className={styles.innerEntityReferenceSpanBoxStyle} title={props.displayType === 'textTitle' ? props.textTitle : (typeof displayText === 'string' ? displayText : undefined)}>
             {displayTextByType}
           </span>
         </ShaLink>
       );
 
-    if (props.entityReferenceType === 'Quickview')
+    if (props.entityReferenceType === 'Quickview') {
+      // Cap quickview width at 98% if it's a percentage value
+      const cappedWidth = capPercentageWidth(props.quickviewWidth);
+      const entityId = typeof props.value === 'object' ? props.value?.id : props.value;
       return (
         <GenericQuickView
-          displayProperty={props.displayProperty}
-          displayName={displayText}
+          displayProperty={props.displayProperty ?? ""}
+          displayName={displayText as string}
           dataProperties={properties}
-          entityId={props.value?.id ?? props.value}
-          className={entityType}
+          entityId={entityId}
+          entityType={entityType}
           getEntityUrl={props.getEntityUrl}
-          width={addPx(props.quickviewWidth)}
+          width={addPx(cappedWidth, executionContext)}
           formIdentifier={formIdentifier}
           formType={formType}
           // Pass formArguments with entity ID to enable form's data loader (same algorithm as dialog mode)
@@ -289,25 +376,27 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
           textTitle={props.textTitle}
         />
       );
+    }
 
     return (
-      <Button type="link" onClick={dialogExecute} className={cx(styles.innerEntityReferenceButtonBoxStyle)} style={props.style}>
-        <span className={cx(styles.innerEntityReferenceSpanBoxStyle)} title={props.displayType === 'textTitle' ? props.textTitle : (typeof displayText === 'string' ? displayText : undefined)}>{displayTextByType}</span>
+      <Button type="link" onClick={dialogExecute} className={styles.innerEntityReferenceButtonBoxStyle} style={props.style}>
+        <span className={styles.innerEntityReferenceSpanBoxStyle} title={props.displayType === 'textTitle' ? props.textTitle : (typeof displayText === 'string' ? displayText : undefined)}>{displayTextByType}</span>
       </Button>
     );
-  }, [props.formIdentifier, displayText, entityId, props.disabled, properties.length, displayTextByType, fetched]);
+  }, [fetched, styles, props, displayText, formIdentifier, entityId, displayTextByType, dialogExecute, properties, entityType, formType, executionContext]);
 
   if (props.formSelectionMode === 'name' && !props.formIdentifier)
     return (
-      <Button type="link" disabled className={cx(styles.innerEntityReferenceButtonBoxStyle)} style={props.style}>
-        <span className={cx(styles.innerEntityReferenceSpanBoxStyle)} title="Form identifier is not configured">Form identifier is not configured</span>
+      <Button type="link" disabled className={styles.innerEntityReferenceButtonBoxStyle} style={emptyStateStyle}>
+        <span className={styles.innerEntityReferenceSpanBoxStyle} title="Form identifier is not configured">Form identifier is not configured</span>
       </Button>
     );
 
-  if (!props.value)
+  // Handle empty/null/undefined values - works for both string and object formats
+  if (!props.value || !entityId)
     return (
-      <Button type="link" disabled className={cx(styles.innerEntityReferenceButtonBoxStyle)} style={props.style}>
-        <span className={cx(styles.innerEntityReferenceSpanBoxStyle)} title={typeof displayText === 'string' ? displayText : undefined}>{displayText}</span>
+      <Button type="link" disabled className={styles.innerEntityReferenceButtonBoxStyle} style={emptyStateStyle}>
+        <span className={styles.innerEntityReferenceSpanBoxStyle} title={typeof displayText === 'string' ? displayText : undefined}>{displayText as string}</span>
       </Button>
     );
 

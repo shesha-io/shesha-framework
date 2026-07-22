@@ -1,5 +1,4 @@
 import ConditionalWrap from '@/components/conditionalWrapper';
-import DebugPanel from '@/components/debugPanel';
 import React, { FC, PropsWithChildren, useContext, useEffect, useRef } from 'react';
 import { ApplicationActionsProcessor } from './configurable-actions/applicationActionsProcessor';
 import { ConfigurableActionDispatcherProvider } from '@/providers/configurableActionsDispatcher';
@@ -46,6 +45,8 @@ import { EntityActions } from '../dynamicActions/implementations/dataSourceDynam
 import { UrlActions } from '../dynamicActions/implementations/dataSourceDynamicMenu/urlDynamicMenuItem';
 import { WebStorageContextProvider } from '../dataContextProvider/contexts/webStorageContext';
 import { ProgressBar } from './progressBar';
+import { ConfigurationStudioEnvironmentProvider } from '@/configuration-studio/cs-environment/contexts';
+import { throwError } from '@/utils/errors';
 
 export interface IShaApplicationProviderProps {
   backendUrl: string;
@@ -58,10 +59,11 @@ export interface IShaApplicationProviderProps {
 
   themeProps?: ThemeProviderProps;
 
-  router?: IRouter;
+  router: IRouter;
   routes?: ISheshaRoutes;
   homePageUrl?: string;
-  getFormUrlFunc?: (formId: FormIdentifier) => string;
+  getFormUrlFunc?: ((formId: FormIdentifier, isLoggedIn: boolean) => string) | undefined;
+  urlOverrideFunc?: (url: string) => string;
 
   noAuth?: boolean;
   unauthorizedRedirectUrl?: string;
@@ -71,11 +73,11 @@ export interface IShaApplicationProviderProps {
 const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>> = (props) => {
   const { children, accessTokenName, homePageUrl, router, unauthorizedRedirectUrl, themeProps, getFormUrlFunc } = props;
 
-  const authRef = useRef<IAuthProviderRefProps>();
+  const authRef = useRef<IAuthProviderRefProps>(undefined);
   const application = useSheshaApplicationInstance({ ...props, authorizer: authRef });
   useEffect(() => {
-    application.init();
-  }, []);
+    void application.init();
+  }, [application]);
 
   const {
     initializationState: { status, hint, error },
@@ -89,7 +91,8 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
             <ShaRoutingProvider
               getFormUrlFunc={getFormUrlFunc}
               router={router}
-              getIsLoggedIn={() => authRef?.current?.getIsLoggedIn()}
+              getIsLoggedIn={() => (authRef.current?.getIsLoggedIn() || false)}
+              urlOverrideFunc={props.urlOverrideFunc}
             >
               <DynamicActionsDispatcherProvider>
                 <EntityActions>
@@ -118,48 +121,41 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
                               <EntityMetadataFetcherProvider>
                                 <MetadataDispatcherProvider>
                                   <DataContextManager id={SHESHA_ROOT_DATA_CONTEXT_MANAGER}>
-                                    <ApplicationContextsProvider>
+                                    <DataContextProvider id={SheshaCommonContexts.AppContext} name={SheshaCommonContexts.AppContext} description="Application data store context" type="app" webStorageType="localStorage">
                                       <WebStorageContextProvider>
-                                        <DataContextProvider
-                                          id={SheshaCommonContexts.AppContext}
-                                          name={SheshaCommonContexts.AppContext}
-                                          description="Application data store context"
-                                          type="app"
-                                          webStorageType="localStorage"
-                                        >
-                                          <FormDataLoadersProvider>
-                                            <FormDataSubmittersProvider>
-                                              <CanvasProvider>
-                                                <DataSourcesProvider>
-                                                  <DynamicModalProvider>
-                                                    {(status === 'inprogress' || status === 'waiting') && (
-                                                      <SheshaLoader message={hint || 'Initializing...'} />
-                                                    )}
-                                                    {status === 'ready' && (
-                                                      <DebugPanel>
+                                        <CanvasProvider>
+                                          <ApplicationContextsProvider>
+                                            <ConfigurationStudioEnvironmentProvider>
+                                              <FormDataLoadersProvider>
+                                                <FormDataSubmittersProvider>
+                                                  <DataSourcesProvider>
+                                                    <DynamicModalProvider>
+                                                      {(status === 'inprogress' || status === 'waiting') && (
+                                                        <SheshaLoader message={hint || 'Initializing...'} />
+                                                      )}
+                                                      {status === 'ready' && (
                                                         <ApplicationActionsProcessor>
                                                           <MainMenuProvider>
                                                             <ProgressBar>{children}</ProgressBar>
                                                           </MainMenuProvider>
                                                         </ApplicationActionsProcessor>
-                                                      </DebugPanel>
-                                                    )}
-                                                    {status === 'failed' && (
-                                                      <Result
-                                                        status="500"
-                                                        title="500"
-                                                        subTitle={error?.message || 'Sorry, something went wrong.'}
-                                                        // extra={<Button type="primary">Back Home</Button>}
-                                                      />
-                                                    )}
-                                                  </DynamicModalProvider>
-                                                </DataSourcesProvider>
-                                              </CanvasProvider>
-                                            </FormDataSubmittersProvider>
-                                          </FormDataLoadersProvider>
-                                        </DataContextProvider>
+                                                      )}
+                                                      {status === 'failed' && (
+                                                        <Result
+                                                          status="500"
+                                                          title="500"
+                                                          subTitle={error?.message || 'Sorry, something went wrong.'}
+                                                        />
+                                                      )}
+                                                    </DynamicModalProvider>
+                                                  </DataSourcesProvider>
+                                                </FormDataSubmittersProvider>
+                                              </FormDataLoadersProvider>
+                                            </ConfigurationStudioEnvironmentProvider>
+                                          </ApplicationContextsProvider>
+                                        </CanvasProvider>
                                       </WebStorageContextProvider>
-                                    </ApplicationContextsProvider>
+                                    </DataContextProvider>
                                   </DataContextManager>
                                 </MetadataDispatcherProvider>
                               </EntityMetadataFetcherProvider>
@@ -179,14 +175,8 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
   );
 };
 
-const useSheshaApplication = (require: boolean = true): ISheshaApplicationInstance => {
-  const context = useContext(SheshaApplicationInstanceContext);
-
-  if (require && context === undefined) {
-    throw new Error('useSheshaApplication must be used within a ShaApplicationProvider');
-  }
-
-  return context;
+const useSheshaApplication = (): ISheshaApplicationInstance => {
+  return useContext(SheshaApplicationInstanceContext) ?? throwError('useSheshaApplication must be used within a ShaApplicationProvider');
 };
 
 /**

@@ -1,7 +1,9 @@
 ﻿using Abp.Application.Services.Dto;
+using Abp.Authorization;
 using Abp.Domain.Entities;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Exceptions;
@@ -45,7 +47,7 @@ namespace Shesha.ConfigurationStudio
         {
             var moduleId = await ModuleManager.GetModuleIdAsync(request.Module);
 
-            var item = await ItemRepo.GetAll().Where(e => e.Module != null && e.Module.Id == moduleId && e.Name == request.Name && e.ItemType == request.ItemType).FirstOrDefaultAsync();
+            var item = await ItemRepo.FirstOrDefaultAsync(e => e.Module != null && e.Module.Id == moduleId && e.Name == request.Name && e.ItemType == request.ItemType);
             if (item == null)
                 throw new ConfigurationItemNotFoundException(request.ItemType, request.Module, request.Name, null);
 
@@ -99,13 +101,19 @@ namespace Shesha.ConfigurationStudio
         {
             var moduleId = await ModuleManager.GetModuleIdAsync(request.Module);
 
-            var manager = CiHelper.GetManager(request.ItemType);
+            var manager = CiHelper.GetManagerByDiscriminator(request.ItemType);
 
             var item = await manager.ResolveItemAsync(request.Module, request.Name);
 
-            var dto = await manager.MapToDtoAsync(item);
-
-            return dto;
+            if (item == null)
+                throw new EntityNotFoundException($"Requested configuration not found ({request.ItemType} - {request.Module}: {request.Name})");
+            if (await manager.CurrentUserHasAccessToAsync(item.Module?.Name ?? string.Empty, item.Name))
+            {
+                var dto = await manager.MapToDtoAsync(item);
+                return dto;
+            } 
+            else
+                throw new AbpAuthorizationException($"You are not authorized for this {request.ItemType} {request.Module}: {request.Name}");
         }
 
         public Task<List<IConfigurationItemTypeDto>> GetAvailableItemTypesAsync() 
@@ -121,7 +129,7 @@ namespace Shesha.ConfigurationStudio
             var module = await ModuleManager.GetModuleAsync(request.ModuleId);
             module.EnsureEditable();
 
-            var manager = CiHelper.GetManager(request.ItemType);
+            var manager = CiHelper.GetManagerByDiscriminator(request.Discriminator);
             var folder = request.FolderId != null
                 ? await FolderRepository.GetAsync(request.FolderId.Value)
                 : null;
@@ -148,7 +156,7 @@ namespace Shesha.ConfigurationStudio
 
             await NonGenericUpdateItemAsync(item, request);
 
-            var manager = CiHelper.GetManager(item.ItemType);
+            var manager = CiHelper.GetManagerByDiscriminator(item.ItemType);
             var dto = await manager.MapToDtoAsync(item);
             return dto;
         }
@@ -222,7 +230,7 @@ namespace Shesha.ConfigurationStudio
 
         public async Task<GetItemRevisionsResponse> GetItemRevisionsAsync(GetItemRevisionsRequest request) 
         {
-            var revisions = await HistoryRepo.GetAll().Where(e => e.ConfigurationItemId == request.ItemId).OrderByDescending(e => e.CreationTime).ToListAsync();
+            var revisions = await (await HistoryRepo.GetAllAsync()).Where(e => e.ConfigurationItemId == request.ItemId).OrderByDescending(e => e.CreationTime).ToListAsync();
 
             var dtos = revisions.Select(e => new ConfigurationItemRevisionDto
             {
@@ -265,12 +273,17 @@ namespace Shesha.ConfigurationStudio
             item.Module?.EnsureEditable();
 
             var revision = await RevisionRepo.GetAsync(request.RevisionId);
-            if (revision.ConfigurationItem != item)
-                throw new AbpValidationException("Selected revision doesn't belong to the item");
+            if (revision.ConfigurationItem != item) 
+            {
+                var closestParent = item.Closest(e => e.ExposedFrom, e => e == revision.ConfigurationItem);
+                if (closestParent == null)
+                    throw new AbpValidationException("Selected revision doesn't belong to the item hierarchy");
+            }
+                
             
-            var manager = CiHelper.GetManager(item.ItemType);
+            var manager = CiHelper.GetManagerByDiscriminator(item.ItemType);
 
-            await manager.RestoreRevisionAsync(revision);
+            await manager.RestoreRevisionAsync(item, revision);
         }
 
         /// <summary>
@@ -288,6 +301,25 @@ namespace Shesha.ConfigurationStudio
             var fileName = $"{revision.ConfigurationItem.FullName} (revision {revision.VersionNo})".RemovePathIllegalCharacters() + ".json";
 
             return new ShaFileContentResult(bytes, "application/json") { FileDownloadName = fileName };
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public Task<GetModulesResponse> GetModulesAsync() 
+        {
+            var modules = ModuleManager.GetModuleInfos();
+            var response = new GetModulesResponse
+            {
+                Modules = modules.Select(m => new GetModulesResponse.ModuleInfo
+                {
+                    Name = m.Name,
+                    Description = m.Description,
+                    Alias = m.Alias,
+                    IsEditable = m.IsEditable,
+                }).ToList()
+            };
+
+            return Task.FromResult(response);
         }
     }
 }

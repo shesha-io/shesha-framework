@@ -19,5 +19,12 @@ namespace Shesha.Configuration.Runtime
         /// <param name="implemented"></param>
         /// <returns></returns>
         Task<List<EntityConfigDto>> GetMainDataListAsync(IQueryable<EntityConfig>? query = null, bool? implemented = null);
+
+        /// <summary>
+        /// Get entity config
+        /// </summary>
+        /// <param name="entityId"></param>
+        /// <returns></returns>
+        Task<EntityConfig?> GetByEntityTypeIdAsync(EntityTypeIdentifier entityId);
     }
 }

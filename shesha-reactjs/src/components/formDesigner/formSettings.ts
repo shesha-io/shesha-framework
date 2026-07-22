@@ -1,9 +1,8 @@
-import { FormMarkupWithSettings } from '@/interfaces';
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 
-export const getSettings = (): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const dataTabId = nanoid();
   const appearanceTabId = nanoid();
@@ -11,7 +10,7 @@ export const getSettings = (): FormMarkupWithSettings => {
   const dataLoaderTypeId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings()
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -25,7 +24,7 @@ export const getSettings = (): FormMarkupWithSettings => {
             key: 'data',
             title: 'Data',
             id: dataTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'entityTypeAutocomplete',
@@ -44,14 +43,13 @@ export const getSettings = (): FormMarkupWithSettings => {
                 collapsible: 'header',
                 content: {
                   id: nanoid(),
-                  components: [...new DesignerToolbarSettings()
+                  components: [...fbf()
                     .addSettingsInput({
                       id: nanoid(),
                       inputType: 'radio',
                       propertyName: 'dataLoaderType',
                       label: 'Loader Type',
                       parentId: 'root',
-                      defaultValue: 'gql',
                       buttonGroupOptions: {
                         _mode: 'value',
                         _code: `    const result = [];
@@ -67,7 +65,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                           { title: 'Custom', value: 'custom' },
                           { title: 'None', value: 'none' },
                         ],
-                      } as any,
+                      },
                     })
                     .addContainer({
                       id: dataLoaderTypeId,
@@ -86,7 +84,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                       direction: "vertical",
                       justifyContent: "left",
                       flexWrap: "wrap",
-                      components: [...new DesignerToolbarSettings()
+                      components: [...fbf()
                         .addSettingsInput({
                           id: nanoid(),
                           parentId: 'root',
@@ -114,7 +112,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                                 _mode: "code",
                                 _code: "    return data?.dataLoadersSettings?.gql?.endpointType !== 'static';",
                                 _value: false,
-                              } as any,
+                              },
                               isDynamic: false,
                               prefix: "GET",
                               mode: "url",
@@ -132,7 +130,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                                 _mode: "code",
                                 _code: "    return data?.dataLoadersSettings?.gql?.endpointType !== 'dynamic';",
                                 _value: false,
-                              } as any,
+                              },
                               isDynamic: false,
                               mode: "dialog",
                               version: 3,
@@ -242,7 +240,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                 collapsible: 'header',
                 content: {
                   id: nanoid(),
-                  components: [...new DesignerToolbarSettings()
+                  components: [...fbf()
                     .addSettingsInput({
                       id: nanoid(),
                       inputType: 'radio',
@@ -264,12 +262,12 @@ export const getSettings = (): FormMarkupWithSettings => {
                           { title: 'Custom', value: 'custom' },
                           { title: 'None', value: 'none' },
                         ],
-                      } as any,
+                      },
                     })
                     .addSettingsInputRow({
                       id: nanoid(),
                       parentId: 'root',
-                      hidden: { _code: 'return getSettingValue(data?.dataSubmitterType) !== "gql";', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return getSettingValue(data?.dataSubmitterType) !== "gql";', _mode: 'code', _value: false },
                       inputs: [
                         {
                           type: 'radio',
@@ -301,7 +299,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                             { label: 'PATCH', value: 'patch', id: nanoid() },
                             { label: 'DELETE', value: 'delete', id: nanoid() },
                           ],
-                          hidden: { _code: 'return getSettingValue(data?.dataSubmittersSettings?.gql?.endpointType) !== "static" || getSettingValue(data?.dataSubmitterType) !== "gql";', _mode: 'code', _value: false } as any,
+                          hidden: { _code: 'return getSettingValue(data?.dataSubmittersSettings?.gql?.endpointType) !== "static" || getSettingValue(data?.dataSubmitterType) !== "gql";', _mode: 'code', _value: false },
                         },
                         {
                           type: 'codeEditor',
@@ -320,14 +318,14 @@ export const getSettings = (): FormMarkupWithSettings => {
                                                     .addString("url", "Endpoint Url")
                                                     .addString("httpVerb", "HTTP verb (GET/POST/PUT etc.)")
                                                     .build();`,
-                          hidden: { _code: 'return getSettingValue(data?.dataSubmittersSettings?.gql?.endpointType) !== "dynamic" || getSettingValue(data?.dataSubmitterType) !== "gql";', _mode: 'code', _value: false } as any,
+                          hidden: { _code: 'return getSettingValue(data?.dataSubmittersSettings?.gql?.endpointType) !== "dynamic" || getSettingValue(data?.dataSubmitterType) !== "gql";', _mode: 'code', _value: false },
                         },
                       ],
                     })
                     .addSettingsInputRow({
                       id: nanoid(),
                       parentId: 'root',
-                      hidden: { _code: 'return getSettingValue(data?.dataSubmitterType) !== "gql";', _mode: 'code', _value: false } as any,
+                      hidden: { _code: 'return getSettingValue(data?.dataSubmitterType) !== "gql";', _mode: 'code', _value: false },
                       inputs: [
                         {
                           type: 'switch',
@@ -426,7 +424,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                 collapsible: 'header',
                 content: {
                   id: nanoid(),
-                  components: [...new DesignerToolbarSettings()
+                  components: [...fbf()
                     .addSettingsInput({
                       id: nanoid(),
                       inputType: 'codeEditor',
@@ -452,7 +450,7 @@ export const getSettings = (): FormMarkupWithSettings => {
             key: 'appearance',
             title: 'Appearance',
             id: appearanceTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'dropdown',
@@ -512,7 +510,7 @@ export const getSettings = (): FormMarkupWithSettings => {
             key: 'security',
             title: 'Security',
             id: securityTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'dropdown',
@@ -534,7 +532,7 @@ export const getSettings = (): FormMarkupWithSettings => {
                     propertyName: 'permissions',
                     label: 'Permissions',
                     parentId: securityTabId,
-                    hidden: { _code: 'return data?.access != 4;', _mode: 'code', _value: false } as any,
+                    hidden: { _code: 'return data?.access != 4;', _mode: 'code', _value: false },
                   },
                 ],
               })

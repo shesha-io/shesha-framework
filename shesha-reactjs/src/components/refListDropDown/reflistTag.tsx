@@ -1,34 +1,52 @@
 import { getTagStyle } from '@/utils/style';
-import convertCssColorNameToHex from 'convert-css-color-name-to-hex';
+import convert from 'color-convert';
 import { Tag, Tooltip, TooltipProps } from 'antd';
 import React, { CSSProperties } from 'react';
-import ShaIcon, { IconType } from '../shaIcon';
+import { ShaIcon, IconType } from '../shaIcon';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 interface IReflistTagProps {
-  value?: string | number;
-  description?: string;
-  color?: string;
-  icon?: string;
-  showIcon?: boolean;
-  tagStyle?: CSSProperties;
-  solidColor?: boolean;
-  showItemName?: boolean;
-  label?: string | React.ReactNode;
-  placement?: TooltipProps['placement'];
+  value?: string | number | undefined;
+  description?: string | undefined;
+  color?: string | undefined;
+  icon?: string | undefined;
+  showIcon?: boolean | undefined;
+  tagStyle?: CSSProperties | undefined;
+  solidColor?: boolean | undefined;
+  showItemName?: boolean | undefined;
+  label?: string | React.ReactNode | undefined;
+  placement?: TooltipProps['placement'] | undefined;
 }
-function ReflistTag({ value, description, color, icon, showIcon, tagStyle, solidColor, showItemName, label, placement = 'right' }: IReflistTagProps): JSX.Element {
+
+const tryConvertToHex = (value: string): string => {
+  try {
+    return value.startsWith('#')
+      ? value
+      : convert.keyword.hex(value);
+  } catch {
+    console.warn(`Failed to convert ${value} to hex`);
+    return value;
+  }
+};
+
+function ReflistTag({ value, description, color = "", icon, showIcon = false, tagStyle, solidColor = false, showItemName = false, label, placement = 'right' }: IReflistTagProps): React.JSX.Element {
   const memoizedColor = !solidColor
-    ? color?.toLowerCase()
-    : convertCssColorNameToHex(color ?? '');
+    ? color.toLowerCase()
+    : tryConvertToHex(color.toLowerCase());
 
   const labelToRender = typeof label === 'string' ? label.toUpperCase() : label;
 
   return (
-    <Tooltip trigger={['hover']} title={showItemName ? description : <>{label}<br />{description}</>} placement={placement as TooltipProps['placement']} style={{ cursor: 'pointer', zIndex: 2 }}>
+    <Tooltip
+      trigger={['hover']}
+      title={showItemName ? description : <>{label}<br />{description}</>}
+      placement={placement}
+      style={{ cursor: 'pointer', zIndex: 2 }}
+    >
       <Tag
         key={value}
         color={memoizedColor}
-        icon={(icon && showIcon) && <ShaIcon iconName={icon as IconType} />}
+        icon={(!isNullOrWhiteSpace(icon) && showIcon) && <ShaIcon iconName={icon as IconType} />}
         style={getTagStyle(tagStyle, !!color)}
       >{showItemName && labelToRender}
       </Tag>

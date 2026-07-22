@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Shesha.Domain.Enums;
+using Shesha.DynamicEntities.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
@@ -11,6 +12,8 @@ namespace Shesha.Metadata.Dtos
     /// </summary>
     public class MetadataDto
     {
+        public virtual EntityInitFlags? InitStatus { get; set; }
+
         public EntityConfigTypes EntityConfigType { get; set; }
         public bool IsExposed { get; set; }
 
@@ -73,5 +76,20 @@ namespace Shesha.Metadata.Dtos
         /// Full class name (for backward compatibility)
         /// </summary>
         public List<string> Aliases { get; set; } = new List<string>();
+
+        /// <summary>
+        /// Module name parent model belongs to
+        /// </summary>
+        public string? InheritedFromModule { get; set; }
+
+        /// <summary>
+        /// Name of parent model
+        /// </summary>
+        public string? InheritedFromName { get; set; }
+
+        /// <summary>
+        /// Full class name of parent model
+        /// </summary>
+        public string? InheritedFromFullClassName { get; set; }
     }
 }

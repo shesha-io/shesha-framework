@@ -7,8 +7,11 @@ using Newtonsoft.Json.Linq;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.Domain.Attributes;
+using Shesha.Domain.EntityPropertyConfiguration;
 using Shesha.DynamicEntities;
+using Shesha.EntityReferences;
 using Shesha.Extensions;
+using Shesha.Generators;
 using Shesha.Metadata.Dtos;
 using Shesha.Reflection;
 using Shesha.Utilities;
@@ -28,12 +31,15 @@ namespace Shesha.Metadata
     public class HardcodeMetadataProvider : IHardcodeMetadataProvider, ITransientDependency
     {
         private readonly IEntityTypeConfigurationStore _entityConfigurationStore;
+        private readonly INameGenerator _nameGenerator;
 
         public HardcodeMetadataProvider(
-            IEntityTypeConfigurationStore entityConfigurationStore
+            IEntityTypeConfigurationStore entityConfigurationStore,
+            INameGenerator nameGenerator
         )
         {
             _entityConfigurationStore = entityConfigurationStore;
+            _nameGenerator = nameGenerator;
         }
 
         /// inheritedDoc
@@ -44,7 +50,10 @@ namespace Shesha.Metadata
 
             var flags = BindingFlags.Public | BindingFlags.Instance;
 
-            var allProps = containerType.GetPropertiesWithoutHidden(flags).OrderBy(p => p.Name).ToList();
+            var allProps = containerType.GetPropertiesWithoutHidden(flags)
+                .Where(p => !p.IsJsonIgnored())
+                .OrderBy(p => p.Name)
+                .ToList();
             if (containerType.IsEntityType())
                 allProps = allProps.Where(p => MappingHelper.IsPersistentProperty(p) || p.CanRead && p.HasAttribute<NotMappedAttribute>()).ToList();
 
@@ -53,7 +62,8 @@ namespace Shesha.Metadata
                 var allPropsOld = allProps.Where(p => MappingHelper.IsPersistentProperty(p)).ToList();
             }
 
-            var allPropsMetadata = allProps.Select(p => {
+            var allPropsMetadata = allProps.Select(p =>
+            {
                 // Create new context for each top level properties (avoid infinity loop inside of one proeprty)
                 if (context == null)
                 {
@@ -103,13 +113,11 @@ namespace Shesha.Metadata
                 : null;
             var epc = entityConfig?[property.Name];
 
-            var dataType = GetDataType(property);
+            var refListId = epc == null ? property.GetReferenceListIdentifierOrNull() : null;
+
+            var dataType = GetDataType(property, context.MainType);
             var cascadeAttribute = property.GetAttributeOrNull<CascadeUpdateRulesAttribute>()
                 ?? property.PropertyType.GetCustomAttribute<CascadeUpdateRulesAttribute>();
-
-            if (property.DeclaringType != null && property.DeclaringType.Name.Contains("ReferenceListItem")) 
-            { 
-            }
 
             var result = new PropertyMetadataDto
             {
@@ -138,35 +146,76 @@ namespace Shesha.Metadata
 
                 DataType = dataType.DataType,
                 DataFormat = dataType.DataFormat,
-                ReferenceListModule = epc?.ReferenceListModule,
-                ReferenceListName = epc?.ReferenceListName,
+                ReferenceListModule = epc?.ReferenceListModule ?? refListId?.Module,
+                ReferenceListName = epc?.ReferenceListName ?? refListId?.Name,
                 EnumType = epc?.EnumType,
                 OrderIndex = property.GetAttributeOrNull<DisplayAttribute>()?.GetOrder() ?? -1,
                 IsFrameworkRelated = IsFrameworkRelatedProperty(property),
                 IsNullable = property.IsNullable(),
-                //ConfigurableByUser = property.GetAttribute<BindableAttribute>()?.Bindable ?? true,
+                //ConfigurableByUser = property.GetAttributeOrNull<BindableAttribute>()?.Bindable ?? true,
                 //GroupName = ReflectionHelper.get(declaredProperty ?? property),
                 IsFilterable = epc != null && epc.IsMapped,
                 IsSortable = epc != null && epc.IsMapped,
             };
-            FillEntityRelatedProperties(result, property.PropertyType, dataType);
+
+            // use specified entity type or property type
+            FillEntityRelatedProperties(result, property.GetAttributeOrNull<EntityReferenceTypeAttribute>()?.EntityType ?? property.PropertyType, dataType);
 
             if (dataType.DataType == DataTypes.Array)
             {
                 result.ItemsType = GetItemsType(property, context);
                 if (result.ItemsType != null && result.DataFormat == ArrayFormats.MultivalueReferenceList)
                 {
-                    result.ItemsType.ReferenceListModule = epc?.ReferenceListModule;
-                    result.ItemsType.ReferenceListName = epc?.ReferenceListName;
+                    result.ItemsType.ReferenceListModule = epc?.ReferenceListModule ?? refListId?.Module;
+                    result.ItemsType.ReferenceListName = epc?.ReferenceListName ?? refListId?.Name;
                 }
 
-                var entityType = result.ItemsType?.DataType == DataTypes.EntityReference 
+                var entityType = result.ItemsType?.DataType == DataTypes.EntityReference
                     || result.ItemsType?.DataType == DataTypes.Object && result.ItemsType?.DataFormat == ObjectFormats.Interface
                     ? result.ItemsType
                     : null;
                 result.EntityFullClassName = entityType?.EntityFullClassName;
                 result.EntityType = entityType?.EntityType;
                 result.EntityModule = entityType?.EntityModule;
+
+                if (result.DataFormat == ArrayFormats.EntityReference)
+                {
+                    result.ListConfiguration = entityType?.ListConfiguration ?? new EntityPropertyListConfiguration();
+                    result.ListConfiguration.MappingType = EntityPropertyListConfiguration.ManyToOne;
+                    result.ListConfiguration.ForeignProperty = dataType.ListForeignProperty;
+                }
+                if (result.DataFormat == ArrayFormats.ManyToManyEntities)
+                {
+                    var manyToManyAttribute = property.GetAttributeOrNull<ManyToManyAttribute>();
+                    if (manyToManyAttribute != null)
+                    {
+                        result.ListConfiguration = entityType?.ListConfiguration ?? new EntityPropertyListConfiguration();
+                        result.ListConfiguration.MappingType = EntityPropertyListConfiguration.ManyToMany;
+                        result.ListConfiguration.DbMapping = entityType?.ListConfiguration?.DbMapping ?? new EntityPropertyListDbMapping();
+
+                        string? tableName;
+                        string? parentColumnName;
+                        string? childColumnName;
+
+                        if (manyToManyAttribute.AutoGeneration)
+                        {
+                            (tableName, _, _, parentColumnName, childColumnName) = _nameGenerator.GetAutoManyToManyTableNames(property);
+                            tableName = string.IsNullOrEmpty(_nameGenerator.AutoGeneratorDbSchema)
+                                ? tableName
+                                : $"{_nameGenerator.AutoGeneratorDbSchema}.{tableName}";
+                        }
+                        else
+                        {
+                            tableName = manyToManyAttribute.Table;
+                            parentColumnName = manyToManyAttribute.KeyColumn;
+                            childColumnName = manyToManyAttribute.ChildColumn;
+                        }
+
+                        result.ListConfiguration.DbMapping.ManyToManyTableName = tableName;
+                        result.ListConfiguration.DbMapping.ManyToManyKeyColumnName = parentColumnName;
+                        result.ListConfiguration.DbMapping.ManyToManyChildColumnName = childColumnName;
+                    }
+                }
             }
             else if (!context.ProcessedTypes.Contains(property.PropertyType) && property.PropertyType.IsNotAnyEntityAndSystemType())
             {
@@ -217,8 +266,10 @@ namespace Shesha.Metadata
             var propType = ReflectionHelper.GetUnderlyingTypeIfNullable(property.PropertyType);
             if (propType.IsListType())
             {
-                var paramType = propType.GetGenericArguments()[0];
-                var dataType = GetDataTypeByPropertyType(paramType, null);
+                var paramType = property.GetAttributeOrNull<EntityReferenceTypeAttribute>()?.EntityType ?? GetListElementType(propType);
+                if (paramType == null)
+                    throw new NullReferenceException("Unable to get list element type");
+                var dataType = GetDataTypeByPropertyType(paramType, property, context.MainType);
 
                 if (dataType == null)
                     return null; // skip unsupported types
@@ -327,14 +378,14 @@ namespace Shesha.Metadata
         }
 
         /// inheritedDoc
-        public DataTypeInfo GetDataType(PropertyInfo propInfo)
+        public DataTypeInfo GetDataType(PropertyInfo propInfo, Type entityType)
         {
             var propType = ReflectionHelper.GetUnderlyingTypeIfNullable(propInfo.PropertyType);
 
-            return GetDataTypeByPropertyType(propType, propInfo) ?? throw new NotSupportedException($"Data type not supported: {propType.FullName}");
+            return GetDataTypeByPropertyType(propType, propInfo, entityType) ?? throw new NotSupportedException($"Data type not supported: {propType.FullName} for {entityType}.{propInfo.Name}");
         }
 
-        public DataTypeInfo? GetDataTypeByPropertyType(Type propType, [CanBeNull] MemberInfo? propInfo)
+        public DataTypeInfo? GetDataTypeByPropertyType(Type propType, [CanBeNull] MemberInfo? propInfo, Type entityType)
         {
             if (propType == typeof(Guid))
                 return new DataTypeInfo(DataTypes.Guid);
@@ -372,8 +423,8 @@ namespace Shesha.Metadata
             if (propType == typeof(StoredFile))
                 return new DataTypeInfo(DataTypes.File);
 
-            if (propType.IsEntityType() || propType.IsEntityReferenceType())
-                return new DataTypeInfo(DataTypes.EntityReference);
+            if (propType.IsEntityType() || propType.IsEntityReferenceType() || propType.IsEntityReferenceDtoType())
+                return new DataTypeInfo(DataTypes.EntityReference, propType.IsEntityReferenceType() ? EntityFormats.GenericEntity : null);
 
             // note: numeric datatypes mapping is based on the OpenApi 3
             if (propType == typeof(int) || propType == typeof(byte) || propType == typeof(short))
@@ -388,16 +439,77 @@ namespace Shesha.Metadata
             if (propType == typeof(Single) || propType == typeof(float))
                 return new DataTypeInfo(DataTypes.Number, NumberFormats.Float);
 
-            if (propType == typeof(double) || propType == typeof(decimal))
-                return new DataTypeInfo(DataTypes.Number, NumberFormats.Double);
+            if (propType == typeof(double))
+                return new DataTypeInfo(DataTypes.Number, NumberFormats.Float);
 
-            if (propType.IsListType())
+            if (propType == typeof(decimal))
+                return new DataTypeInfo(DataTypes.Number, NumberFormats.Decimal);
+
+            if (propType.IsListType() || propType.IsArray)
             {
-                var paramType = GetListElementType(propType).NotNull();
+                var paramType = propType.IsArray
+                    ? propType.GetElementType().NotNull()
+                    : GetListElementType(propType).NotNull();
+                var elementDataType = GetDataTypeByPropertyType(paramType, propInfo, entityType);
 
-                var elementDataType = GetDataTypeByPropertyType(paramType, null);
+                if (elementDataType?.DataType == DataTypes.Object)
+                {
+                    return new DataTypeInfo(DataTypes.Array, ArrayFormats.ChildObjects, elementDataType.ObjectType);
+                }
+                if (elementDataType?.DataType == DataTypes.EntityReference)
+                {
+                    var manyToManyAtt = propInfo?.GetAttributeOrNull<ManyToManyAttribute>();
+                    if (manyToManyAtt != null)
+                        return new DataTypeInfo(DataTypes.Array, ArrayFormats.ManyToManyEntities);
 
-                return new DataTypeInfo(DataTypes.Array, elementDataType?.DataType, elementDataType?.DataFormat);
+                    var res = new DataTypeInfo(DataTypes.Array, ArrayFormats.EntityReference);
+                    var inverseAtt = propInfo?.GetAttributeOrNull<InversePropertyAttribute>();
+
+                    var paramProps = paramType.GetProperties();
+                    var refProps = paramProps.Where(x => x.PropertyType.IsAssignableFrom(entityType)).ToList();
+
+                    if (inverseAtt != null)
+                    {
+                        var refProp = refProps.FirstOrDefault(x => 
+                            inverseAtt.Property == (x.Name + "Id")
+                            || inverseAtt.Property == MappingHelper.GetColumnName(x)
+                        );
+                        res.ListForeignProperty = refProp?.Name ?? inverseAtt.Property;
+                    }
+                    else
+                    {
+                        if (refProps.Count == 0)
+                            res.ListForeignProperty = "unknown";
+                            //throw new EntityPropertyInitializationException(null, null, null, $"Error bootstrapping {entityType}.{propInfo?.Name}");
+                        else if (refProps.Count == 1)
+                            res.ListForeignProperty = refProps.FirstOrDefault().NotNull().Name;
+                        else
+                        {
+                            var names = new List<string>();
+                            var t = entityType;
+                            while (t != null)
+                            {
+                                names.Add(t.Name);
+                                t = t.BaseType;
+                            }
+                            PropertyInfo? refProp = null;
+                            foreach (var name in names)
+                            {
+                                refProp = refProps.FirstOrDefault(x => x.Name == name);
+                                if (refProp != null) break;
+                            }
+                            if (refProp == null)
+                                res.ListForeignProperty = "unknown";
+                                //throw new EntityPropertyInitializationException(null, null, null, $"Error bootstrapping {entityType}.{propInfo?.Name}");
+                        }
+
+                    }
+                    return res;
+                }
+
+                //ToDo: AS - implement List<GenericEntityReference>
+
+                return new DataTypeInfo(DataTypes.Array, ArrayFormats.Simple);
             }
             else
                 if (propType.IsClass)

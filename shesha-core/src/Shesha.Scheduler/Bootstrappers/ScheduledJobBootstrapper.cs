@@ -10,7 +10,6 @@ using Shesha.Scheduler.Attributes;
 using Shesha.Scheduler.Domain;
 using Shesha.Scheduler.Domain.Enums;
 using Shesha.Scheduler.Utilities;
-using Shesha.Services;
 using Shesha.Startup;
 using System;
 using System.Linq;
@@ -67,7 +66,7 @@ namespace Shesha.Scheduler.Bootstrappers
                 .ToList();
 
             // deactivate all jobs which are missing in the code
-            var dbItems = await _jobRepo.GetAll().ToListAsync();
+            var dbItems = await _jobRepo.GetAllListAsync();
             var toDelete = dbItems.Where(i => !jobs.Any(j => j.Attribute.Uid == i.Id)).ToList();
             foreach (var scheduledJob in toDelete)
             {
@@ -89,13 +88,17 @@ namespace Shesha.Scheduler.Bootstrappers
                         // note: the user can't create/delete jobs manually, so we assume that the job was inactivated by this bootstrapper
                         if (existingJob != null)
                         {
+                            existingJob.JobName = jobInfo.Class.Name;
+                            existingJob.JobNamespace = jobInfo.Class.Namespace;
+                            existingJob.JobType = jobInfo.Class.GetRequiredFullName();
+
                             if (existingJob.IsDeleted)
                             {
                                 existingJob.IsDeleted = false;
                                 existingJob.DeletionTime = null;
                                 existingJob.DeleterUserId = null;
-                                await _jobRepo.UpdateAsync(existingJob);
                             }
+                            await _jobRepo.UpdateAsync(existingJob);
 
                             continue;
                         }
@@ -136,7 +139,7 @@ namespace Shesha.Scheduler.Bootstrappers
                 }
                 catch (Exception e)
                 {
-                    throw new Exception($"An error occured during bootstrapping of the scheduled job {jobInfo.Attribute.Uid}", e);
+                    throw new Exception($"An error occurred during bootstrapping of the scheduled job {jobInfo.Attribute.Uid}", e);
                 }
             }
 

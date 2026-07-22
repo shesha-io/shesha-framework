@@ -79,7 +79,7 @@ namespace Shesha.Permissions
                     var service = descriptor.ControllerTypeInfo.AsType();
                     var assembly = service.Assembly;
                     var name = service.Name;
-                    var isDynamic = service.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IDynamicCrudAppService<,,>));
+                    var isDynamic = service.IsSheshaDynamicCrudAppService();
 
                     if (isDynamic || skipUnchangedAssembly && _startupSession.AssemblyStaysUnchanged(assembly))
                         continue;

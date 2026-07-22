@@ -34,14 +34,14 @@ class StatefulPromise<T> implements PromisedValue<T> {
     executorOrPromise:
       | ((
         resolve: (value: T | PromiseLike<T>) => void,
-        reject: (reason?: unknown) => void
+        reject: (reason?: unknown) => void,
       ) => void) |
       Promise<T>,
   ) {
     if (executorOrPromise instanceof Promise) {
       // Wrap an existing promise
       this._promise = executorOrPromise;
-      this._attachStateTracking();
+      void this._attachStateTracking();
     } else {
       // Create new promise with executor
       this._promise = new Promise<T>((resolve, reject) => {
@@ -242,7 +242,7 @@ class StatefulPromise<T> implements PromisedValue<T> {
 function createStatefulPromise<T>(
   executor: (
     resolve: (value: T | PromiseLike<T>) => void,
-    reject: (reason?: unknown) => void
+    reject: (reason?: unknown) => void,
   ) => void,
 ): StatefulPromise<T> {
   return new StatefulPromise<T>(executor);
@@ -263,3 +263,13 @@ export function MakePromiseWithState<T>(promise: Promise<T>): StatefulPromise<T>
 
   return result;
 }
+
+/**
+ * Type guard to check if a value is a Promise (or Thenable).
+ */
+export const isPromise = <T>(value: T | Promise<T>): value is Promise<T> => {
+  return value !== null &&
+    typeof value === 'object' &&
+    "then" in value &&
+    typeof (value.then) === 'function';
+};

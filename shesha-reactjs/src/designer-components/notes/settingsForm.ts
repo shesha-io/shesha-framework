@@ -1,8 +1,7 @@
-import { DesignerToolbarSettings, FormMarkupWithSettings } from "@/index";
+import { SettingsFormMarkupFactory } from "@/interfaces";
 import { nanoid } from "@/utils/uuid";
-import { FormLayout } from "antd/lib/form/Form";
 
-export const getSettings = (data: object): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();
@@ -12,7 +11,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
   const validationTabId = nanoid();
 
   return {
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -27,7 +26,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Common',
             id: commonTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: commonTabId,
@@ -88,7 +87,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       propertyName: 'editMode',
                       label: 'Edit Mode',
                       parentId: commonTabId,
-                      defaultValue: 'inherited',
                       jsSetting: true,
                     },
                     {
@@ -127,7 +125,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Data',
             id: dataTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: dataTabId,
@@ -170,7 +168,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Events',
             id: eventsTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'codeEditor',
@@ -206,7 +204,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Validation',
             id: validationTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: validationTabId,
@@ -237,7 +235,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Appearance',
             id: appearanceTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: appearanceTabId,
@@ -248,7 +246,6 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
                       propertyName: 'savePlacement',
                       label: 'Buttons Layout',
                       tooltip: 'This is used to place the save button (Left, Right).',
-                      defaultValue: 'left',
                       jsSetting: true,
                       dropdownOptions: [
                         { value: 'left', label: 'Left' },
@@ -265,7 +262,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
             title: 'Security',
             id: securityTabId,
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: nanoid(),
                   inputType: 'permissions',
@@ -282,7 +279,7 @@ export const getSettings = (data: object): FormMarkupWithSettings => {
       })
       .toJson(),
     formSettings: {
-      layout: 'vertical' as FormLayout,
+      layout: 'vertical',
       colon: false,
       labelCol: { span: 24 },
       wrapperCol: { span: 24 },

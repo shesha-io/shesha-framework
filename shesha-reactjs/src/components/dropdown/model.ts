@@ -1,11 +1,11 @@
-import { IStyleType } from '@/index';
+import { IStyleValue } from "@/providers/form/models";
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
 import { CSSProperties } from 'react';
 
 export type DataSourceType = 'values' | 'referenceList' | 'url';
 
-export interface ILabelValue<TValue = any> {
+export interface ILabelValue<TValue = unknown> {
   id: string;
   label: string;
   value: TValue;
@@ -14,9 +14,11 @@ export interface ILabelValue<TValue = any> {
   description?: string;
 }
 
+export type DropdownValueFormat = 'simple' | 'listItem' | 'custom';
+
 export interface IDropdownProps {
   dataSourceType: DataSourceType;
-  values?: ILabelValue[];
+  values?: ILabelValue<number | string>[];
   /**
    * @deprecated - use referenceListId instead
    */
@@ -24,31 +26,29 @@ export interface IDropdownProps {
   /**
    * @deprecated - use referenceListId instead
    */
-  referenceListName?: string;
-  referenceListId?: IReferenceListIdentifier;
-  value?: any;
-  onChange?: any;
-  hideBorder?: boolean;
-  allowClear?: boolean;
-  mode?: 'single' | 'multiple' | 'tags';
-  tag?: IStyleType;
-  ignoredValues?: number[];
-  placeholder?: string;
-  disabledValues?: number[];
-  disableItemValue?: boolean;
-  valueFormat?: 'simple' | 'listItem' | 'custom';
-  incomeCustomJs?: string;
-  outcomeCustomJs?: string;
-  labelCustomJs?: string;
-
-  defaultValue?: any;
-  size?: SizeType;
-  style?: React.CSSProperties;
-  tagStyle?: CSSProperties;
-  readOnly?: boolean;
-  displayStyle?: 'text' | 'tags';
-  showItemName?: boolean;
-  showIcon?: boolean;
-  solidColor?: boolean;
-  enableStyleOnReadonly?: boolean;
+  referenceListName?: string | undefined;
+  referenceListId?: IReferenceListIdentifier | undefined;
+  value?: number | number[] | string | string[] | (string | number)[] | undefined;
+  onChange?: ((value: number | number[] | string | string[] | (string | number)[] | undefined) => void) | undefined;
+  hideBorder?: boolean | undefined;
+  allowClear?: boolean | undefined;
+  mode?: 'single' | 'multiple' | 'tags' | undefined;
+  tag?: IStyleValue | undefined;
+  ignoredValues?: number[] | undefined;
+  placeholder?: string | undefined;
+  disabledValues?: number[] | undefined;
+  disableItemValue?: boolean | undefined;
+  valueFormat?: DropdownValueFormat | undefined;
+  incomeCustomJs?: string | undefined;
+  outcomeCustomJs?: string | undefined;
+  labelCustomJs?: string | undefined;
+  size?: SizeType | undefined;
+  style?: React.CSSProperties | undefined;
+  tagStyle?: CSSProperties | undefined;
+  readOnly?: boolean | undefined;
+  displayStyle?: 'text' | 'tags' | undefined;
+  showItemName?: boolean | undefined;
+  showIcon?: boolean | undefined;
+  solidColor?: boolean | undefined;
+  enableStyleOnReadonly?: boolean | undefined;
 }

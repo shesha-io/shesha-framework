@@ -12,6 +12,15 @@ export const isNullOrWhiteSpace = (value: string | null | undefined): value is n
 };
 
 /**
+ * Returns the given string if it is not null or white space, otherwise returns undefined.
+ * @param value - The string to check.
+ * @returns The given string if it is not null or white space, otherwise undefined.
+ */
+export const undefinedIfNullOrWhiteSpace = (value: string | null | undefined): string | undefined => {
+  return isNullOrWhiteSpace(value) ? undefined : value;
+};
+
+/**
  * Checks if the given string is not null or white space.
  * @param value - The string to check.
  * @returns True if the string is not null or white space, false otherwise.

@@ -1,20 +1,18 @@
 import { DownOutlined } from '@ant-design/icons';
-import { Button, Dropdown, Empty, MenuProps, Space, theme } from 'antd';
+import { Button, Dropdown, Empty, Space, theme } from 'antd';
 import React, { FC, useMemo } from 'react';
-import { buildCreateNewMenu } from '@/configuration-studio/menu-utils';
+import { buildCreateNewMenu, MenuItemType } from '@/configuration-studio/menu-utils';
 import { useConfigurationStudio } from '@/configuration-studio/cs/contexts';
 import { useCsSubscription } from '@/configuration-studio/cs/hooks';
 
 const { useToken } = theme;
-
-type MenuItems = MenuProps["items"];
 
 export const NewButton: FC = () => {
   const cs = useConfigurationStudio();
   const node = cs.treeSelectedNode;
   useCsSubscription('tree');
 
-  const menuItems = useMemo<MenuItems>(() => {
+  const menuItems = useMemo<MenuItemType[]>(() => {
     return buildCreateNewMenu({ configurationStudio: cs, node: node });
   }, [cs, node]);
   const { token } = useToken();

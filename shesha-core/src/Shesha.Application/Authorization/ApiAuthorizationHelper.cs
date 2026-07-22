@@ -47,23 +47,18 @@ namespace Shesha.Authorization
                 type.HasAttribute<AbpAllowAnonymousAttribute>() || methodInfo.HasAttribute<AbpAllowAnonymousAttribute>())
                 return;
 
-            var shaServiceType = typeof(ApplicationService);
             var controllerType = typeof(ControllerBase);
-            if (!shaServiceType.IsAssignableFrom(type) && !controllerType.IsAssignableFrom(type))
+            if (type == null || !controllerType.IsAssignableFrom(type) && !type.HasInterface(typeof(IApplicationService)))
                 return;
 
             var typeName = type.GetRequiredFullName();
             var methodName = methodInfo.Name.RemovePostfix("Async");
 
-            var isCrud = type.FindBaseGenericType(typeof(AbpCrudAppService<,,,,,>)) != null;
+            var isCrud = type.IsSheshaDynamicCrudAppService();
             if (isCrud && PermissionedObjectManager.CrudMethods.ContainsKey(methodName))
                 return;
 
             var securitySettings = await _securitySettings.SecuritySettings.GetValueOrNullAsync();
-            var settings = securitySettings?.DefaultEndpointAccess;
-
-            if (settings == null)
-                throw new NullReferenceException("Cannot get DefaultEndpointAccess");
 
             // ToDo: add RequireAll flag
             await _objectPermissionChecker.AuthorizeAsync(
@@ -72,7 +67,8 @@ namespace Shesha.Authorization
                 methodName,
                 ShaPermissionedObjectsTypes.WebApiAction,
                 AbpSession.UserId.HasValue,
-                settings
+                securitySettings?.DefaultEndpointAccess ?? Domain.Enums.RefListPermissionedAccess.AnyAuthenticated,
+                securitySettings?.DefaultEndpointPermissions
             );
         }
     }

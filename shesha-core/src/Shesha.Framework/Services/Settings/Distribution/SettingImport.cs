@@ -27,7 +27,7 @@ namespace Shesha.Services.Settings.Distribution
             _settingValueRepo = settingValueRepo;
         }
 
-        public string ItemType => SettingConfiguration.ItemTypeName;
+        public override string ItemType => SettingConfiguration.ItemTypeName;
 
         protected override Task<bool> CustomPropsAreEqualAsync(SettingConfiguration item, DistributedSettingConfiguration distributedItem)
         {
@@ -69,7 +69,7 @@ namespace Shesha.Services.Settings.Distribution
         {
             foreach (var distributedItem in items)
             {
-                var settingValue = await _settingValueRepo.GetAll()
+                var settingValue = await (await _settingValueRepo.GetAllAsync())
                     .Where(v => v.SettingConfiguration == settingConfiguration)
                     .Where(new ByApplicationSpecification<SettingValue>(distributedItem.AppKey).ToExpression())
                     .FirstOrDefaultAsync();

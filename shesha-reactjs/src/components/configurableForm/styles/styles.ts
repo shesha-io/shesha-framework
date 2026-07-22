@@ -31,16 +31,9 @@ export const ShaFormStyles = createGlobalStyle`
         }
     }
     .${formClassNames.shaForm} {
-        .ant-form-item-label {
-            > label {
-                display: inline-flex;
-                align-items: center;
-                height: 100%;
-            }
-        }
-
         .${formClassNames.shaComponentsContainer} {
             min-height: 32px;
+            height: 100%;
             &.horizontal {
                 .${formClassNames.shaComponentsContainerInner} {
                     display: flex;
@@ -50,7 +43,7 @@ export const ShaFormStyles = createGlobalStyle`
                         margin-bottom: unset;
                     }
                 }
-            }
+            }            
             .${formClassNames.shaError} {
                 background: none;
                 border: none;
@@ -75,7 +68,7 @@ export const ShaFormStyles = createGlobalStyle`
         position: absolute;
         top: 0px;
         left: -2px;
-        overflow-x: hidden;
+        overflow: hidden;
     }
 
     .${formClassNames.shaFormInfoCard} {       

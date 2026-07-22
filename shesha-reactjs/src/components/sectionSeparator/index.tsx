@@ -5,28 +5,27 @@ import { Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { addPx } from '@/utils/style';
 import { titleDefaultStyles } from './utils';
+import { useAvailableConstantsData } from '@/providers/form/utils';
 
 export interface ISectionSeparatorProps {
-  id?: string;
   title?: string | ReactNode;
-  containerStyle?: CSSProperties;
-  titleStyle?: CSSProperties;
-  tooltip?: string;
-  inline?: boolean;
-  lineColor?: string;
-  lineThickness?: number;
-  lineWidth?: string;
-  lineHeight?: string;
-  titleMargin?: number;
-  marginBottom?: string | number;
-  labelAlign?: 'left' | 'center' | 'right';
-  orientation?: 'horizontal' | 'vertical';
-  fontSize?: string | number;
-  lineType?: string;
+  containerStyle?: CSSProperties | undefined;
+  titleStyle?: CSSProperties | undefined;
+  tooltip?: string | undefined;
+  inline?: boolean | undefined;
+  lineColor?: string | undefined;
+  lineThickness?: number | undefined;
+  lineWidth?: string | undefined;
+  lineHeight?: string | undefined;
+  titleMargin?: number | undefined;
+  marginBottom?: string | number | undefined;
+  labelAlign?: 'left' | 'center' | 'right' | undefined;
+  orientation?: 'horizontal' | 'vertical' | undefined;
+  fontSize?: string | number | undefined;
+  lineType?: string | undefined;
 }
 
 export const SectionSeparator: FC<ISectionSeparatorProps> = ({
-  id,
   labelAlign = 'left',
   inline,
   lineType = 'solid',
@@ -45,6 +44,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   const { styles } = useStyles();
   const titleRef = useRef<HTMLDivElement>(null);
   const [titleWidth, setTitleWidth] = useState(0);
+  const allData = useAvailableConstantsData();
 
   useEffect(() => {
     if (titleRef.current) {
@@ -105,7 +105,7 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
   return vertical ? (
     <div
       className={styles.vertical}
-      style={{ ...borderStyle, ...containerStyle, width: 'max-content', height: addPx(lineHeight || '0.9em') }}
+      style={{ ...borderStyle, ...containerStyle, width: 'max-content', height: addPx(lineHeight || '0.9em', allData) }}
     >
     </div>
   ) : (
@@ -113,9 +113,8 @@ export const SectionSeparator: FC<ISectionSeparatorProps> = ({
       style={{
         ...containerStyle,
         height: 'max-content',
-        width: addPx(lineWidth),
+        width: addPx(lineWidth, allData) ?? '100%',
       }}
-      key={id}
     >
       <div className={!inline || !title ? styles.shaSectionSeparator : ''} style={borderStyle}>
         {renderTitle()}

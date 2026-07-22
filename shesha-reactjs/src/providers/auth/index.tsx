@@ -1,4 +1,4 @@
-import React, { FC, MutableRefObject, PropsWithChildren, useContext } from 'react';
+import React, { FC, RefObject, PropsWithChildren, useContext, useLayoutEffect } from 'react';
 import { URL_HOME_PAGE, URL_LOGIN_PAGE } from '@/shesha-constants';
 import { useShaRouting } from '@/providers/shaRouting';
 import { useAuthenticatorInstance } from './authenticator';
@@ -6,6 +6,7 @@ import { IAuthenticator } from './models';
 import { useHttpClient } from '../sheshaApplication/publicApi/http/hooks';
 import { useSheshaApplication } from '../sheshaApplication';
 import { useSettings } from '../settings';
+import { App } from 'antd';
 
 export interface IAuthProviderRefProps {
   anyOfPermissionsGranted?: (permissions: string[]) => boolean;
@@ -23,14 +24,14 @@ interface IAuthProviderProps {
   /**
    * URL that that the user should be redirected to if they're not authorized. Default is /login
    */
-  unauthorizedRedirectUrl?: string;
+  unauthorizedRedirectUrl?: string | undefined;
 
   /**
    * Home page url. Default is `/`
    */
-  homePageUrl?: string;
+  homePageUrl?: string | undefined;
 
-  authRef?: MutableRefObject<IAuthProviderRefProps>;
+  authRef?: RefObject<IAuthProviderRefProps | undefined> | undefined;
 }
 
 const AuthenticatorContext = React.createContext<IAuthenticator | undefined>(undefined);
@@ -43,14 +44,15 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   authRef,
 }) => {
   const httpClient = useHttpClient();
-  const { router } = useShaRouting();
+  const shaRouter = useShaRouting();
   const app = useSheshaApplication();
   const settings = useSettings();
+  const { notification } = App.useApp();
 
   const [authenticator] = useAuthenticatorInstance({
     httpClient,
     settings,
-    router,
+    shaRouter: shaRouter,
     tokenName,
     homePageUrl,
     unauthorizedRedirectUrl,
@@ -58,13 +60,18 @@ const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
       // set application headers
       app.setRequestHeaders(headers);
     },
+    onTokenExpired: () => {
+      notification.info({ title: 'Your session has expired. Please log in again.' });
+    },
   });
 
-  if (authRef)
-    authRef.current = {
-      anyOfPermissionsGranted: authenticator.anyOfPermissionsGranted,
-      getIsLoggedIn: () => authenticator.isLoggedIn,
-    };
+  useLayoutEffect(() => {
+    if (authRef)
+      authRef.current = {
+        anyOfPermissionsGranted: authenticator.anyOfPermissionsGranted,
+        getIsLoggedIn: () => authenticator.isLoggedIn,
+      };
+  }, [authRef, authenticator]);
 
   return (
     <AuthenticatorContext.Provider value={authenticator}>

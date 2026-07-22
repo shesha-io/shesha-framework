@@ -4,7 +4,6 @@ import React, { FC, PropsWithChildren } from 'react';
 import {
     GlobalStateProvider,
     ShaApplicationProvider,
-    StoredFilesProvider,
     useNextRouter,
 } from '@shesha-io/reactjs';
 import { OrganisationsActionsProvider } from '@/components/dynamic-list/dynamic-actions';
@@ -31,9 +30,7 @@ export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({ children
                 buildHttpRequestHeaders={buildHttpHeaders}
             >
                 <OrganisationsActionsProvider>
-                    <StoredFilesProvider baseUrl={backendUrl} ownerId={''} ownerType={''}>
-                        {children}
-                    </StoredFilesProvider>
+                    {children}
                 </OrganisationsActionsProvider>
             </ShaApplicationProvider>
         </GlobalStateProvider>

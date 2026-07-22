@@ -1,14 +1,11 @@
-import { DesignerToolbarSettings } from '@/interfaces/toolbarSettings';
 import { FormLayout } from 'antd/lib/form/Form';
 import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
 import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
-
-import { IAutocompleteComponentProps } from './interfaces';
 import { nanoid } from '@/utils/uuid';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
-import { FormMarkupWithSettings } from '@/interfaces';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSettings => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();
@@ -20,7 +17,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
 
   return {
 
-    components: new DesignerToolbarSettings(data)
+    components: fbf()
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
@@ -34,7 +31,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
             key: '1',
             title: 'Common',
             id: commonTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addContextPropertyAutocomplete({
                 id: nanoid(),
                 propertyName: 'propertyName',
@@ -74,12 +71,12 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                     jsSetting: true,
                   },
                 ],
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
               })
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: commonTabId,
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                 inputs: [
                   {
                     id: nanoid(),
@@ -88,7 +85,6 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                     label: 'Edit Mode',
                     size: 'small',
                     jsSetting: true,
-                    defaultValue: 'inherited',
                   },
                   {
                     id: nanoid(),
@@ -107,7 +103,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
             key: '2',
             title: 'Data',
             id: dataTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: dataTabId,
@@ -168,7 +164,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                 direction: 'vertical',
                 justifyContent: 'left',
                 settingsValidationErrors: [],
-                components: [...new DesignerToolbarSettings()
+                components: [...fbf()
                   .addSettingsInput({
                     id: nanoid(),
                     parentId: dataTabId,
@@ -207,7 +203,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                 direction: 'vertical',
                 justifyContent: 'left',
                 settingsValidationErrors: [],
-                components: [...new DesignerToolbarSettings()
+                components: [...fbf()
                   .addSettingsInputRow({
                     id: nanoid(),
                     parentId: dataTabId,
@@ -234,8 +230,8 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                     id: nanoid(),
                     parentId: dataTabId,
                     hidden: {
-                      _code: `return  getSettingValue(data.entityType) == undefined || getSettingValue(data.dataSourceType) !== 'entitiesList';`,
                       _mode: 'code',
+                      _code: `return  getSettingValue(data.entityType) == undefined || getSettingValue(data.dataSourceType) !== 'entitiesList';`,
                       _value: false,
                     },
                     inputs: [
@@ -251,8 +247,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                         modelType: {
                           _code: 'return getSettingValue(data?.entityType);',
                           _mode: 'code',
-                          _value: false,
-                        } as any,
+                        },
                         fieldsUnavailableHint: "Please select `Entity Type` to be able to configure this filter.",
                       },
                     ],
@@ -303,7 +298,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                                                         } else {
                                                             const prevValueFormat = getSettingValue(data?.valueFormat);
                                                             if (prevValueFormat === 'entityReference') {
-                                                                form.setFieldValue('valueFormat', 'simple');
+                                                                setTimeout(() => form.setFieldValue('valueFormat', 'simple'), 0);
                                                             }
                                                             return [
                                                                 {\"label\": \"Simple ID\",\"value\": \"simple\",\"id\": \"1\"},
@@ -311,9 +306,8 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                                                                 ];
                                                         }`,
                           _mode: "code",
-                          _value: false,
-                        } as any,
-                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                        },
+                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                       },
 
                     ],
@@ -321,7 +315,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                   .addSettingsInputRow({
                     id: nanoid(),
                     parentId: dataTabId,
-                    hidden: { _code: "return getSettingValue(data?.valueFormat) !== 'custom';", _mode: 'code', _value: false } as any,
+                    hidden: { _code: "return getSettingValue(data?.valueFormat) !== 'custom';", _mode: 'code', _value: false },
                     inputs: [
                       {
                         id: nanoid(),
@@ -335,7 +329,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                         wrapInTemplate: true,
                         templateSettings: { functionName: 'outcomeValueFunc' },
                         availableConstantsExpression: 'return metadataBuilder.object("constants").addObject("item", "Item of list").build();',
-                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                       },
 
                     ],
@@ -343,7 +337,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                   .addSettingsInputRow({
                     id: nanoid(),
                     parentId: dataTabId,
-                    hidden: { _code: "return getSettingValue(data?.valueFormat) !== 'custom';", _mode: 'code', _value: false } as any,
+                    hidden: { _code: "return getSettingValue(data?.valueFormat) !== 'custom';", _mode: 'code', _value: false },
                     inputs: [
                       {
                         id: nanoid(),
@@ -357,7 +351,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                         wrapInTemplate: true,
                         templateSettings: { functionName: 'keyValueFunc' },
                         availableConstantsExpression: 'return metadataBuilder.object("constants").addObject("value", "Value of item").build();',
-                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                       },
 
                     ],
@@ -379,7 +373,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                         wrapInTemplate: true,
                         templateSettings: { functionName: 'displayValueFunc' },
                         availableConstantsExpression: 'return metadataBuilder.object("constants").addObject("item", "Item of list").build();',
-                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                       },
 
                     ],
@@ -390,21 +384,21 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                     inputs: [
                       {
                         id: nanoid(),
-                        hidden: { _code: "return getSettingValue(data?.valueFormat) !== 'simple';", _mode: 'code', _value: false } as any,
+                        hidden: { _code: "return getSettingValue(data?.valueFormat) !== 'simple';", _mode: 'code', _value: false },
                         type: 'switch',
                         propertyName: 'allowFreeText',
                         label: 'Allow Free Text',
                         labelAlign: 'right',
                         jsSetting: true,
                         tooltip: 'Allow to use free text that is missing on the source',
-                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                       },
                     ],
                   })
                   .addSettingsInputRow({
                     id: nanoid(),
                     parentId: dataTabId,
-                    hidden: { _code: "return getSettingValue(data?.valueFormat) !== 'custom';", _mode: 'code', _value: false } as any,
+                    hidden: { _code: "return getSettingValue(data?.valueFormat) !== 'custom';", _mode: 'code', _value: false },
                     inputs: [
                       {
                         id: nanoid(),
@@ -418,7 +412,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                         wrapInTemplate: true,
                         templateSettings: { functionName: 'filterSelectedFunc' },
                         availableConstantsExpression: 'return metadataBuilder.object("constants").addObject("value", "Value of autocomplete").build();',
-                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                       },
                     ],
                   })
@@ -433,19 +427,27 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                         tooltip: 'Name of the property that should be displayed in the autocomplete. Live empty to use default display property defined on the back-end.',
                         parentId: dataTabId,
                         modelType: {
-                          _code: `    
-                                                         if (getSettingValue(data.dataSourceType) === 'entitiesList'){
-                                                            return getSettingValue(data?.entityType)
-                                                         } else{
-                                                            if (!getSettingValue(data?.dataSourceUrl)){
-                                                                form.setFieldValue('displayPropName', undefined);
-                                                            }
-                                                          return getSettingValue(data?.dataSourceUrl)
-                                                         }
-                                                        `,
+                          _code: `
+                                if (getSettingValue(data.dataSourceType) === 'entitiesList'){
+                                  return getSettingValue(data?.entityType)
+                                } else{
+                                  const url = getSettingValue(data?.dataSourceUrl);
+                                  if (!url){
+                                      // Defer setState to avoid updating during render
+                                      setTimeout(() => form.setFieldValue('displayPropName', undefined), 0);
+                                      return undefined;
+                                  }
+                                  // Parse Shesha dynamic CRUD URL: /api/dynamic/{module}/{entity}/Crud/...
+                                  const dynamicMatch = url.match(/^\\/api\\/dynamic\\/([^\\/]+)\\/([^\\/]+)\\//i);
+                                  if (dynamicMatch){
+                                    return { module: dynamicMatch[1], name: dynamicMatch[2] };
+                                  }
+                                  // Fallback: explicit entityType if user provided one
+                                  return getSettingValue(data?.entityType);
+                                }
+                              `,
                           _mode: 'code',
-                          _value: false,
-                        } as any,
+                        },
                         isDynamic: false,
                         autoFillProps: false,
                         settingsValidationErrors: [],
@@ -458,7 +460,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                   .addSettingsInputRow({
                     id: nanoid(),
                     parentId: dataTabId,
-                    hidden: { _code: "return getSettingValue(data?.valueFormat) === 'entityReference';", _mode: 'code', _value: false } as any,
+                    hidden: { _code: "return getSettingValue(data?.valueFormat) === 'entityReference';", _mode: 'code', _value: false },
                     inputs: [
                       {
                         id: nanoid(),
@@ -469,8 +471,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                         modelType: {
                           _code: 'return getSettingValue(data?.entityType);',
                           _mode: 'code',
-                          _value: false,
-                        } as any,
+                        },
                         isDynamic: false,
                         autoFillProps: false,
                         settingsValidationErrors: [],
@@ -508,9 +509,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                     modelType: {
                       _code: 'return getSettingValue(data?.entityType);',
                       _mode: 'code',
-                      _value: false,
-                    } as any,
-                    fieldsUnavailableHint: "Please select `Entity Type` to be able to configure this filter.",
+                    },
                   },
                 ],
               })
@@ -537,8 +536,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                     modelType: {
                       _code: 'return getSettingValue(data?.entityType);',
                       _mode: 'code',
-                      _value: false,
-                    } as any,
+                    },
                   },
 
                 ],
@@ -567,8 +565,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                     modelType: {
                       _code: 'return getSettingValue(data?.entityType);',
                       _mode: 'code',
-                      _value: false,
-                    } as any,
+                    },
                   },
 
                 ],
@@ -609,7 +606,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                 },
                 content: {
                   id: nanoid(),
-                  components: [...new DesignerToolbarSettings()
+                  components: [...fbf()
                     .addSettingsInputRow({
                       id: nanoid(),
                       parentId: dataTabId,
@@ -659,8 +656,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                           modelType: {
                             _code: 'return getSettingValue(data?.entityType);',
                             _mode: 'code',
-                            _value: false,
-                          } as any,
+                          },
                           isDynamic: false,
                           autoFillProps: false,
                           settingsValidationErrors: [],
@@ -698,9 +694,9 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
             key: '4',
             title: 'Validation',
             id: validationTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                 id: nanoid(),
                 inputType: 'switch',
                 propertyName: 'validate.required',
@@ -717,9 +713,9 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
             key: '5',
             title: 'Events',
             id: eventsTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                 id: nanoid(),
                 inputType: 'codeEditor',
                 propertyName: 'onChangeCustom',
@@ -736,7 +732,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
             key: '6',
             title: 'Appearance',
             id: appearanceTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addPropertyRouter({
                 id: styleRouterId,
                 propertyName: 'propertyRouter1',
@@ -751,7 +747,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                   _value: "",
                 },
                 components: [
-                  ...new DesignerToolbarSettings()
+                  ...fbf()
                     .addSettingsInput({
                       id: nanoid(),
                       parentId: styleRouterId,
@@ -771,7 +767,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: styleRouterId,
@@ -836,7 +832,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: styleRouterId,
@@ -919,17 +915,17 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
 
                           .addContainer({
                             id: nanoid(),
                             parentId: styleRouterId,
-                            components: getBorderInputs() as any,
+                            components: getBorderInputs(fbf),
                           })
                           .addContainer({
                             id: nanoid(),
                             parentId: styleRouterId,
-                            components: getCornerInputs() as any,
+                            components: getCornerInputs(fbf),
                           })
                           .toJson(),
                         ],
@@ -946,7 +942,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                       content: {
                         id: nanoid(),
                         components: [
-                          ...new DesignerToolbarSettings()
+                          ...fbf()
                             .addSettingsInput({
                               id: nanoid(),
                               parentId: styleRouterId,
@@ -968,7 +964,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                                 hideLabel: true,
                                 jsSetting: false,
                               }],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";', _mode: 'code', _value: false },
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
@@ -981,7 +977,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                                 jsSetting: false,
                               },
                               ],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";', _mode: 'code', _value: false },
                               hideLabel: true,
                             })
                             .addSettingsInputRow({
@@ -994,7 +990,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                                 jsSetting: false,
                                 label: "URL",
                               }],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";', _mode: 'code', _value: false },
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
@@ -1006,12 +1002,12 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                                 label: "Image",
                                 jsSetting: false,
                               }],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";', _mode: 'code', _value: false },
                             })
                             .addSettingsInputRow({
                               id: nanoid(),
                               parentId: styleRouterId,
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";', _mode: 'code', _value: false },
                               inputs: [
                                 {
                                   type: 'textField',
@@ -1026,7 +1022,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                               id: nanoid(),
                               parentId: styleRouterId,
                               inline: true,
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
                               inputs: [
                                 {
                                   type: 'customDropdown',
@@ -1036,7 +1032,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                                   propertyName: "background.size",
                                   customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
                                   dropdownOptions: sizeOptions,
-                                  hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                                  hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
                                 },
                                 {
                                   type: 'customDropdown',
@@ -1058,10 +1054,9 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                                 label: 'Repeat',
                                 hideLabel: true,
                                 propertyName: 'background.repeat',
-                                inputType: 'radio',
                                 buttonGroupOptions: repeatOptions,
                               }],
-                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false } as any,
+                              hidden: { _code: 'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";', _mode: 'code', _value: false },
                             })
                             .toJson(),
                         ],
@@ -1077,7 +1072,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: styleRouterId,
@@ -1145,7 +1140,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addStyleBox({
                             id: nanoid(),
                             label: 'Margin Padding',
@@ -1166,7 +1161,7 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
                       collapsible: 'header',
                       content: {
                         id: nanoid(),
-                        components: [...new DesignerToolbarSettings()
+                        components: [...fbf()
                           .addSettingsInput({
                             id: nanoid(),
                             inputType: 'codeEditor',
@@ -1186,9 +1181,9 @@ export const getSettings = (data: IAutocompleteComponentProps): FormMarkupWithSe
             key: '7',
             title: 'Security',
             id: securityTabId,
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addSettingsInput({
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                 id: nanoid(),
                 inputType: 'permissions',
                 propertyName: 'permissions',

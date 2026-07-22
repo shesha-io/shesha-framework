@@ -1,6 +1,5 @@
 import React, { FC, useMemo } from 'react';
 import { Empty } from 'antd';
-import { FormMarkup } from '@/providers/form/models';
 import { useDebouncedCallback } from 'use-debounce';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { ConfigurableForm } from '@/components/configurableForm';
@@ -8,6 +7,8 @@ import { ButtonGroupItemProps } from '@/providers';
 import { sheshaStyles } from '@/styles';
 import { getGroupSettings } from './itemGroupSettings';
 import { getItemSettings } from './itemSettings';
+import { useFormBuilderFactory } from '@/form-factory/hooks';
+import { isDefined } from '@/utils/nullables';
 
 export interface IButtonGroupPropertiesProps {
   item?: ButtonGroupItemProps;
@@ -17,28 +18,29 @@ export interface IButtonGroupPropertiesProps {
 
 export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = ({ item, onChange, readOnly }) => {
   const debouncedSave = useDebouncedCallback(
-    (values) => {
-      onChange?.({ ...item, ...values });
+    (_, values: ButtonGroupItemProps) => {
+      if (isDefined(onChange)) {
+        onChange(values);
+      }
     },
     // delay in ms
     300,
   );
 
-  // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
+  const fbf = useFormBuilderFactory();
+
   const editor = useMemo(() => {
     const emptyEditor = null;
     if (!item) return emptyEditor;
 
-    const markup =
-      item.itemType === 'item'
-        ? (getItemSettings() as FormMarkup)
-        : item.itemType === 'group'
-          ? (getGroupSettings() as FormMarkup)
-          : [];
+    const markup = item.itemType === 'item'
+      ? getItemSettings({ fbf })
+      : item.itemType === 'group'
+        ? getGroupSettings({ fbf })
+        : [];
     return (
       <SourceFilesFolderProvider folder={`button-${item.id}`}>
-        <ConfigurableForm
-          // key={selectedItemId} // rerender for each item to initialize all controls
+        <ConfigurableForm<ButtonGroupItemProps>
           labelCol={{ span: 24 }}
           wrapperCol={{ span: 24 }}
           mode={readOnly ? 'readonly' : 'edit'}
@@ -50,7 +52,7 @@ export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = ({ item, o
         />
       </SourceFilesFolderProvider>
     );
-  }, [item]);
+  }, [debouncedSave, fbf, item, readOnly]);
 
   if (!Boolean(item)) {
     return (

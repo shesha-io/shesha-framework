@@ -14,6 +14,7 @@ using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Exceptions;
 using Shesha.Extensions;
+using Shesha.GraphQL.Helpers;
 using Shesha.GraphQL.Middleware;
 using Shesha.GraphQL.Mvc;
 using Shesha.GraphQL.Provider;
@@ -208,6 +209,9 @@ namespace Shesha
 
             if (result.Errors != null)
             {
+                if (result.Errors.Count() == 1 && result.Errors.First().InnerException is EntityNotFoundException notFoundException)
+                    throw notFoundException;
+
                 var validationResults = result.Errors.Select(e => new ValidationResult(e.FullMessage())).ToList();
                 throw new AbpValidationException(string.Join("\r\n", validationResults.Select(r => r.ErrorMessage)), validationResults);
             }
@@ -255,7 +259,7 @@ namespace Shesha
                     { "filter", input.Filter },
                     { "specifications", input.Specifications },
                     { "quickSearch", input.QuickSearch },
-                    { "quickSearchProperties", ExtractProperties(properties) },
+                    { "quickSearchProperties", ExtractPropertiesInDotNotation(properties) },
                     { "sorting", input.Sorting },
                     { "skipCount", input.SkipCount },
                     { "maxResultCount", input.MaxResultCount },
@@ -281,10 +285,11 @@ namespace Shesha
             return new GraphQLDataResult<PagedResultDto<TEntity>>(result);
         }
 
-        private List<string> ExtractProperties(string properties)
+        private List<string> ExtractPropertiesInDotNotation(string properties)
         {
-            var regex = new Regex(@"\s");
-            return regex.Split(properties).ToList();
+            return string.IsNullOrWhiteSpace(properties)
+                ? new List<string>()
+                : GraphQLHelper.GraphQLSelectionSetToDotNotation(properties);
         }
 
         private async Task<string> CleanupPropertiesAsync(string properties)
@@ -293,12 +298,9 @@ namespace Shesha
                 return properties;
 
             var regex = new Regex(@"[\s,]+");
-            var props = string.Join(' ', regex.Split(properties).Select(p => StringHelper.ToCamelCase(p)));
-
-            var propList = props.Replace("{", " { ").Replace("}", " } ").Split(" ");
+            var propList = regex.Split(properties.Replace("{", " { ").Replace("}", " } ")).Select(p => StringHelper.ToCamelCase(p));
 
             var sb = new StringBuilder();
-
             await AppendPropertiesAsync(sb, typeof(TEntity).GetRequiredFullName(), propList.Where(x => !x.IsNullOrWhiteSpace()).ToList());
 
             return "id " + sb.ToString();
@@ -394,18 +396,6 @@ namespace Shesha
                         // EntityReference
                         sb.AppendLine($"{propertyName}: {propertyName}{nameof(IEntity.Id)}");
                     break;
-                // ToDo: AS - remove after implementation
-                /*case DataTypes.Object:
-                    {
-                        sb.Append(propertyName);
-                        sb.AppendLine("{");
-                        foreach (var subProp in property.Properties)
-                        {
-                            AppendProperty(sb, subProp);
-                        }
-                        sb.AppendLine("}");
-                        break;
-                    }*/
                 default:
                     sb.AppendLine(propertyName);
                     break;
@@ -416,9 +406,16 @@ namespace Shesha
         {
             var sb = new StringBuilder();
             var allEntityProps = await EntityConfigCache.GetEntityPropertiesAsync(typeof(TEntity));
-            var properties = allEntityProps.NotNull().Where(x => !x.Suppress);
+            var properties = allEntityProps.NotNull()
+                .Where(x => !x.Suppress)
+                .ToList();
+            
             foreach (var property in properties)
             {
+                var isEntityList = property.DataType == DataTypes.Array && (property.DataFormat == ArrayFormats.EntityReference || property.DataFormat == ArrayFormats.ManyToManyEntities);
+                if (isEntityList)
+                    continue;
+
                 AppendProperty(sb, property, fullReference);
             }
 

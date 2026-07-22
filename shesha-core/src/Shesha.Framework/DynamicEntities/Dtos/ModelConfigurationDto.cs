@@ -2,6 +2,7 @@
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.Dto.Interfaces;
+using Shesha.DynamicEntities.Enums;
 using Shesha.Permissions;
 using System;
 using System.Collections.Generic;
@@ -16,12 +17,14 @@ namespace Shesha.DynamicEntities.Dtos
     {
         public bool CreatedInDb { get; set; }
 
+        public EntityInitFlags? InitStatus { get; set; }
+        public string? InitMessage { get; set; }
+
         public string? DiscriminatorValue { get; set; }
         
         public string? SchemaName { get; set; }
         public string? TableName { get; set; }
 
-        // ToDo: AS - review if InheritedFrom can be nullable
         public Guid? InheritedFromId { get; set; }
         public string? InheritedFromClassName { get; set; }
         public string? InheritedFromNamespace { get; set; }
@@ -40,7 +43,9 @@ namespace Shesha.DynamicEntities.Dtos
         public string? HardcodedPropertiesMD5 { get; set; }
         public DateTime ChangeTime { get; set; }
 
-        // ConfigurationItem        
+        // ConfigurationItem
+        public Guid? FolderId { get; set; }
+
         public Guid? ModuleId { get; set; }
         public string? Module { get; set; }
         public string Name { get; set; }

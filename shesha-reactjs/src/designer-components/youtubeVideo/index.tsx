@@ -2,15 +2,15 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Typography } from 'antd';
 import { IToolboxComponent } from '@/interfaces';
 import { YoutubeOutlined } from '@ant-design/icons';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { useConfigurableActionDispatcher, useForm, useGlobalState } from '@/providers';
+import { useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { useConfigurableActionDispatcher } from '@/providers';
 import { getSettings } from './settingsForm';
 import { IYouTubeEventData, IYoutubeVideoCalculatedValues, IYoutubeVideoComponentProps } from './interfaces';
 import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeUndefinedProps } from '@/utils/object';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { useStyles } from './styles';
 
 const { Title, Paragraph } = Typography;
@@ -68,11 +68,13 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
     const [hasWatched, setHasWatched] = useState(false);
     const [isCompleted, setIsCompleted] = useState(false);
     const playerRef = useRef<HTMLIFrameElement>(null);
-    const onChangeRef = useRef<((value: boolean) => void) | null>(null);
+    const onChangeRef = useRef<((value: boolean | undefined | null) => void) | null>(null);
 
     const { executeAction } = useConfigurableActionDispatcher();
-    const { formData } = useForm();
-    const { globalState } = useGlobalState();
+    const allConstants = useAvailableConstantsData();
+    // Keep the latest evaluation context in a ref so the message listener isn't re-subscribed on every render.
+    const constantsRef = useRef(allConstants);
+    constantsRef.current = allConstants;
 
     // Resolve thumbnail URL based on source type
     const getThumbnailUrl = (): string | null => {
@@ -99,7 +101,7 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
 
     // Helper to convert any value to percentage
     const toPercentage = (value: string | number | undefined): string | undefined => {
-      if (value === undefined || value === null) {
+      if (value === undefined) {
         return undefined;
       }
 
@@ -112,7 +114,7 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
 
       // Extract numeric part from "500px", "500", etc.
       const match = strValue.match(/^(\d+(?:\.\d+)?)/);
-      if (!match) {
+      if (!match?.[1]) {
         return undefined;
       }
 
@@ -291,12 +293,8 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
         }
 
         const data = parsedData;
-        // Create evaluation context with video and form data
-        const evaluationContext = {
-          videoId,
-          data: formData,
-          globalState,
-        };
+        // Full form/application evaluation context for configurable actions
+        const evaluationContext = constantsRef.current;
 
         // Handle state change events
         if (data.event === 'onStateChange') {
@@ -308,7 +306,7 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
               if (onChangeRef.current) onChangeRef.current(true);
               setHasWatched(true);
               if (onEnd?.actionName) {
-                executeAction({
+                void executeAction({
                   actionConfiguration: onEnd,
                   argumentsEvaluationContext: evaluationContext,
                 });
@@ -317,7 +315,7 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
             case 1: // Playing
               setHasWatched(true);
               if (onPlay?.actionName) {
-                executeAction({
+                void executeAction({
                   actionConfiguration: onPlay,
                   argumentsEvaluationContext: evaluationContext,
                 });
@@ -325,7 +323,7 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
               break;
             case 2: // Paused
               if (onPause?.actionName) {
-                executeAction({
+                void executeAction({
                   actionConfiguration: onPause,
                   argumentsEvaluationContext: evaluationContext,
                 });
@@ -339,7 +337,7 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
         // Handle ready event
         if (data.event === 'onReady') {
           if (onReady?.actionName) {
-            executeAction({
+            void executeAction({
               actionConfiguration: onReady,
               argumentsEvaluationContext: evaluationContext,
             });
@@ -352,7 +350,7 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
       return () => {
         window.removeEventListener('message', handleMessage);
       };
-    }, [onPlay, onPause, onEnd, onReady, formMode, videoId, formData, globalState, executeAction, watchCompletionRequired]);
+    }, [onPlay, onPause, onEnd, onReady, formMode, executeAction, watchCompletionRequired]);
 
     if (hidden) {
       return null;
@@ -377,7 +375,7 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
 
     return (
       <ConfigurableFormItem model={modelWithValidation}>
-        {(value, onChange) => {
+        {(value: boolean | undefined | null, onChange: (newValue: boolean | undefined | null) => void) => {
           // Store onChange in ref for event handler
           onChangeRef.current = onChange;
 
@@ -477,7 +475,7 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
     );
   },
   calculateModel: (_model, allData) => ({
-    formMode: allData.form.formMode,
+    formMode: allData.form?.formMode ?? 'readonly',
   }),
   initModel: (model) => {
     const baseModel = {
@@ -495,11 +493,11 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
   },
 
   migrator: (m) => m
-    .add<IYoutubeVideoComponentProps>(0, (prev: IYoutubeVideoComponentProps) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IYoutubeVideoComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev) as IYoutubeVideoComponentProps))
     .add<IYoutubeVideoComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<IYoutubeVideoComponentProps>(2, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) })),
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
 };
 
 export default YoutubeVideoComponent;

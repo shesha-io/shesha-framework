@@ -3,101 +3,103 @@ import { FilterExpression } from "@/providers/dataTable/interfaces";
 import { IBackgroundValue } from "../_settings/utils/background/interfaces";
 import { IShadowValue } from "../_settings/utils/shadow/interfaces";
 import { IBorderValue } from "../_settings/utils/border/interfaces";
+import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
+import { IDataSet } from "@/providers/chartData/context";
 
 /**
  * Chart data that will go into the actual chart component from ChartJS
  */
 export interface IChartData {
   labels: (string | number | object)[];
-  datasets: object[];
+  datasets: IDataSet[];
 }
 /**
  * Chart props, used in the chart component and some of its children
  */
 export interface IChartsProps {
-  width?: number;
-  height?: number;
-  orderBy?: string;
-  orderDirection?: TOrderDirection;
-  dataMode?: TDataMode;
-  url?: string;
-  additionalProperties?: Array<{ key: string; value: string }>;
-  chartType?: TChartType;
-  isDoughnut?: boolean;
-  showTitle?: boolean;
-  title?: string;
-  name?: string;
-  description?: string;
-  showLegend?: boolean;
-  legendPosition?: TLegendPosition;
-  entityType?: string;
-  valueProperty?: string;
-  axisProperty?: string;
-  isAxisTimeSeries?: boolean;
-  timeSeriesFormat?: TTimeSeriesFormat;
-  groupingProperty?: string;
-  isGroupingTimeSeries?: boolean;
-  groupingTimeSeriesFormat?: TTimeSeriesFormat;
-  allowFilter?: boolean;
-  filterProperties?: string[];
-  xProperty?: string;
-  yProperty?: string;
-  tension?: number;
-  borderWidth?: number; // for migration
-  strokeWidth?: number;
-  strokeColor?: string;
-  simpleOrPivot?: 'simple' | 'pivot';
-  showName?: boolean;
-  showDescription?: boolean;
-  showXAxisScale?: boolean;
-  showXAxisTitle?: boolean;
-  showYAxisScale?: boolean;
-  showYAxisTitle?: boolean;
-  stacked?: boolean;
-  aggregationMethod?: TAggregationMethod;
-  filters?: FilterExpression | FilterExpression[];
+  width?: number | undefined;
+  height?: number | undefined;
+  orderBy?: string | undefined;
+  orderDirection?: TOrderDirection | undefined;
+  dataMode?: TDataMode | undefined;
+  url?: string | undefined;
+  additionalProperties?: Array<{ key: string; value: string }> | undefined;
+  chartType?: TChartType | undefined;
+  isDoughnut?: boolean | undefined;
+  showTitle?: boolean | undefined;
+  title?: string | undefined;
+  name?: string | undefined;
+  description?: string | undefined;
+  showLegend?: boolean | undefined;
+  legendPosition?: TLegendPosition | undefined;
+  entityType?: string | IEntityTypeIdentifier | undefined;
+  valueProperty?: string | undefined;
+  axisProperty?: string | undefined;
+  isAxisTimeSeries?: boolean | undefined;
+  timeSeriesFormat?: TTimeSeriesFormat | undefined;
+  groupingProperty?: string | undefined;
+  isGroupingTimeSeries?: boolean | undefined;
+  groupingTimeSeriesFormat?: TTimeSeriesFormat | undefined;
+  allowFilter?: boolean | undefined;
+  filterProperties?: string[] | undefined;
+  xProperty?: string | undefined;
+  yProperty?: string | undefined;
+  tension?: number | undefined;
+  borderWidth?: number | undefined; // for migration
+  strokeWidth?: number | undefined;
+  strokeColor?: string | undefined;
+  simpleOrPivot?: 'simple' | 'pivot' | undefined;
+  showName?: boolean | undefined;
+  showDescription?: boolean | undefined;
+  showXAxisScale?: boolean | undefined;
+  showXAxisTitle?: boolean | undefined;
+  showYAxisScale?: boolean | undefined;
+  showYAxisTitle?: boolean | undefined;
+  stacked?: boolean | undefined;
+  aggregationMethod?: TAggregationMethod | undefined;
+  filters?: FilterExpression | FilterExpression[] | undefined;
 
-  axisPropertyLabel?: string;
-  valuePropertyLabel?: string;
-  maxResultCount?: number;
-  requestTimeout?: number; // Timeout in milliseconds (default: 5000)
+  axisPropertyLabel?: string | undefined;
+  valuePropertyLabel?: string | undefined;
+  maxResultCount?: number | undefined;
+  requestTimeout?: number | undefined; // Timeout in milliseconds (default: 5000)
 
   // Font configuration properties
   titleFont?: {
-    family?: string;
-    size?: number;
-    weight?: string;
-    color?: string;
-  };
+    family?: string | undefined;
+    size?: number | undefined;
+    weight?: string | undefined;
+    color?: string | undefined;
+  } | undefined;
   axisLabelFont?: {
-    family?: string;
-    size?: number;
-    weight?: string;
-    color?: string;
-  };
+    family?: string | undefined;
+    size?: number | undefined;
+    weight?: string | undefined;
+    color?: string | undefined;
+  } | undefined;
   legendFont?: {
-    family?: string;
-    size?: number;
-    weight?: string;
-    color?: string;
-  };
+    family?: string | undefined;
+    size?: number | undefined;
+    weight?: string | undefined;
+    color?: string | undefined;
+  } | undefined;
   tickFont?: {
-    family?: string;
-    size?: number;
-    weight?: string;
-    color?: string;
-  };
+    family?: string | undefined;
+    size?: number | undefined;
+    weight?: string | undefined;
+    color?: string | undefined;
+  } | undefined;
 }
 
 /**
  * Chart props, used in the Shesha tool box
  */
 export interface IChartProps extends IConfigurableFormComponent, IChartsProps {
-  hidden?: boolean;
+  hidden?: boolean | undefined;
 
-  border?: IBorderValue;
-  shadow?: IShadowValue;
-  background?: IBackgroundValue;
+  border?: IBorderValue | undefined;
+  shadow?: IShadowValue | undefined;
+  background?: IBackgroundValue | undefined;
 }
 
 export interface IChartDataProps extends IChartsProps {

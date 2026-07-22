@@ -7,37 +7,33 @@ import {
   App,
   Button,
   Modal,
-  Tabs,
   Typography,
 } from 'antd';
 import { CodeEditor as BaseCodeEditor } from '@/components/codeEditor/codeEditor';
 import { CodeOutlined, ExclamationCircleFilled } from '@ant-design/icons';
-import { CodeVariablesTables } from '@/components/codeVariablesTable';
 import { ICodeEditorProps } from './interfaces';
-import { Show } from '@/components';
-import { useSourcesFolder } from '@/providers/sourceFileManager/sourcesFolderProvider';
-import type { TabsProps } from 'antd';
+import { Show } from '@/components/show';
+import { useSourcesFolderOrUndefined } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { useStyles } from './styles';
-
-type TabItem = TabsProps['items'][number];
+import classNames from 'classnames';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 export const CodeEditor: FC<ICodeEditorProps> = ({
   mode = 'inline',
-  value,
-  exposedVariables,
+  value = null,
   readOnly = false,
   language = 'typescript',
   environment,
   ...props
 }) => {
-  const [internalValue, setInternalValue] = useState<string>(value); // stores value for the `dialog` mode
+  const [internalValue, setInternalValue] = useState<string | null>(value); // stores value for the `dialog` mode
   const [showDialog, setShowDialog] = useState(false);
   const { modal } = App.useApp();
 
-  const src = useSourcesFolder(false);
+  const src = useSourcesFolderOrUndefined();
   const { styles } = useStyles();
 
-  const onChange = (_value): void => {
+  const onChange = (_value: string | null): void => {
     switch (mode) {
       case 'inline': {
         if (props.onChange) props.onChange(_value);
@@ -50,7 +46,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
     }
   };
 
-  const hasValue = value && typeof (value) === 'string' && Boolean(value?.trim());
+  const hasValue = !isNullOrWhiteSpace(value);
 
   const onClear = (): void => {
     if (hasValue) {
@@ -99,7 +95,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
 
   const effectiveValue = mode === 'inline' ? value : internalValue;
 
-  const renderCodeEditor = (): JSX.Element => (
+  const renderCodeEditor = (): React.JSX.Element => (
     <BaseCodeEditor
       value={effectiveValue}
       onChange={onChange}
@@ -122,25 +118,6 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
   if (mode === 'inline')
     return renderCodeEditor();
 
-  const tabItems: TabItem[] = exposedVariables?.length
-    ? [
-      {
-        key: "code",
-        label: "Code",
-        children: (
-          <div className={styles.codeEditorContainer}>
-            {renderCodeEditor()}
-          </div>
-        ),
-      },
-      {
-        key: "variable",
-        label: "Variables",
-        children: (<CodeVariablesTables data={exposedVariables} />),
-      },
-    ]
-    : undefined;
-
   const buttonValue = value?.replace('return', '').replace(/;+$/, ""); ;
 
   return readOnly && !hasValue
@@ -148,7 +125,7 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
     : (
       <>
         <Button
-          className={props.className}
+          className={classNames(props.className, styles.button)}
           size="small"
           onClick={openEditorDialog}
           style={hasValue ? { fontFamily: 'monospace', fontSize: '12px', width: '100%' } : { width: '100%' }}
@@ -185,16 +162,12 @@ export const CodeEditor: FC<ICodeEditorProps> = ({
               ),
             ]}
           >
-            <Show when={Boolean(props?.description)}>
-              <Alert message={props?.description} />
+            <Show when={Boolean(props.description)}>
+              <Alert title={props.description} />
               <br />
             </Show>
 
-            {tabItems ? (
-              <Tabs items={tabItems} />
-            ) : (
-              <div className={styles.codeEditorContainer}>{renderCodeEditor()}</div>
-            )}
+            <div className={styles.codeEditorContainer}>{renderCodeEditor()}</div>
           </Modal>
         )}
       </>

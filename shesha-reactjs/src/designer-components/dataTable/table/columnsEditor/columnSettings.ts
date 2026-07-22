@@ -1,11 +1,12 @@
-import { FormMarkupWithSettings } from "@/index";
-import { DesignerToolbarSettings } from "@/interfaces/toolbarSettings";
+import { FormBuilderFactory } from "@/form-factory/interfaces";
+import { FormMarkupWithSettings } from "@/providers/form/models";
 import { isDefined } from "@/utils/nullables";
+import { getStringPropertyOrUndefined } from "@/utils/object";
 
-export const getColumnSettings = (data?: object): FormMarkupWithSettings => {
-  const dataType = isDefined(data) ? data['type'] : undefined;
+export const getColumnSettings = (fbf: FormBuilderFactory, data?: object): FormMarkupWithSettings => {
+  const dataType = isDefined(data) ? getStringPropertyOrUndefined(data, "type") : undefined;
   return {
-    components: new DesignerToolbarSettings()
+    components: fbf()
       .addSearchableTabs({
         id: "searchableTabs1",
         propertyName: "settingsTabs",
@@ -20,7 +21,7 @@ export const getColumnSettings = (data?: object): FormMarkupWithSettings => {
             title: "Common",
             id: "commonTab1",
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: "columnType1",
                   inputType: "dropdown",
@@ -59,7 +60,7 @@ export const getColumnSettings = (data?: object): FormMarkupWithSettings => {
                     _value: false,
                   },
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addSettingsInput({
                         id: "propertyName1",
                         inputType: "propertyAutocomplete",
@@ -81,7 +82,7 @@ export const getColumnSettings = (data?: object): FormMarkupWithSettings => {
                     _value: false,
                   },
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addSettingsInput({
                         id: "propertiesNames1",
                         inputType: "propertyAutocomplete",
@@ -131,7 +132,7 @@ export const getColumnSettings = (data?: object): FormMarkupWithSettings => {
                     _value: false,
                   },
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addSettingsInput({
                         id: "icon1",
                         inputType: "iconPicker",
@@ -162,7 +163,7 @@ export const getColumnSettings = (data?: object): FormMarkupWithSettings => {
                     _value: false,
                   },
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addSettingsInput({
                         id: "displayComponent1",
                         inputType: "componentSelector",
@@ -210,7 +211,7 @@ export const getColumnSettings = (data?: object): FormMarkupWithSettings => {
                     _value: false,
                   },
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addSettingsInput({
                         id: "displayFormId1",
                         inputType: "formAutocomplete",
@@ -251,6 +252,7 @@ export const getColumnSettings = (data?: object): FormMarkupWithSettings => {
                       propertyName: "anchored",
                       label: "Anchored",
                       jsSetting: true,
+                      allowDeselect: true,
                       buttonGroupOptions: [
                         {
                           title: "Left",
@@ -263,7 +265,6 @@ export const getColumnSettings = (data?: object): FormMarkupWithSettings => {
                           icon: "RightOutlined",
                         },
                       ],
-                      allowClear: true,
                     },
                     {
                       id: "allowSorting1",
@@ -323,7 +324,7 @@ export const getColumnSettings = (data?: object): FormMarkupWithSettings => {
             forceRender: true,
             title: 'Appearance',
             id: 'elgrlievlfwehhh848r8hsdnflsdnclurbd',
-            components: [...new DesignerToolbarSettings()
+            components: [...fbf()
               .addCollapsiblePanel({
                 id: 'dimensionsStyleCollapsiblePanel',
                 propertyName: 'pnlDimensions',
@@ -333,7 +334,7 @@ export const getColumnSettings = (data?: object): FormMarkupWithSettings => {
                 collapsible: 'header',
                 content: {
                   id: 'dimensionsStylePnl',
-                  components: [...new DesignerToolbarSettings()
+                  components: [...fbf()
                     .addSettingsInputRow({
                       id: 'dimensionsStyleRowWidth',
                       parentId: 'dimensionsStylePnl',
@@ -389,18 +390,17 @@ export const getColumnSettings = (data?: object): FormMarkupWithSettings => {
                 labelAlign: 'right',
                 ghost: true,
                 collapsible: 'header',
-                hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false } as any,
+                hidden: { _code: 'return  ["text", "link", "ghost"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.buttonType));', _mode: 'code', _value: false },
                 content: {
                   id: 'backgroundStylePnl',
                   components: [
-                    ...new DesignerToolbarSettings()
+                    ...fbf()
                       .addSettingsInput(
                         {
                           id: "backgroundColor1",
                           inputType: "colorPicker",
                           propertyName: "backgroundColor",
                           label: "Background Color",
-                          allowClear: true,
                           showText: true,
                           jsSetting: true,
                         })
@@ -415,7 +415,7 @@ export const getColumnSettings = (data?: object): FormMarkupWithSettings => {
             title: "Security",
             id: "securityTab1",
             components: [
-              ...new DesignerToolbarSettings()
+              ...fbf()
                 .addSettingsInput({
                   id: "permissions1",
                   inputType: "permissions",

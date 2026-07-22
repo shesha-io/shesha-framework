@@ -1,0 +1,230 @@
+import React, { FC } from 'react';
+import { Button, Popover, Skeleton, Typography } from 'antd';
+import { HistoryOutlined } from '@ant-design/icons';
+import filesize from 'filesize';
+import { useStoredFileGetFileVersions, StoredFileVersionInfoDto } from '@/apis/storedFile';
+import { FormIdentifier } from '@/providers/form/models';
+import { ListType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
+import { StoredFileModel } from '@/utils/storedFile/models';
+import { ConfigurableForm } from '../configurableForm';
+import DateDisplay from '../dateDisplay';
+import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
+import { HttpClientApi } from '@/publicJsApis/apis/httpClient';
+
+export interface IFileVersionsButtonProps {
+  fileId: string;
+  onDownload: (versionNo: number, fileName: string) => void;
+}
+
+export interface IExtraContentProps {
+  file: StoredFileModel;
+  formId?: FormIdentifier;
+}
+
+
+/**
+ * Placeholder file object for stub/preview rendering in design mode.
+ *
+ * @returns A mock IStoredFile with example properties
+ */
+export const PLACEHOLDER_FILE: StoredFileModel = {
+  uid: 'placeholder-file-1',
+  name: 'example-file.pdf',
+  status: 'done',
+  url: '',
+  type: 'application/pdf',
+  size: 1024000,
+  id: 'placeholder-id',
+  fileCategory: 'documents',
+  temporary: false,
+  userHasDownloaded: false,
+};
+
+/**
+ * Determines the appropriate Ant Design Upload list type based on configuration.
+ *
+ * @param type - The configured list type from component props
+ * @param isDragger - Whether the component is in dragger mode
+ * @returns The Upload component list type to use
+ */
+export const getListTypeAndLayout = (
+  type: ListType | undefined, isDragger: boolean,
+): 'text' | 'picture' | 'picture-card' => {
+  return type === 'text' || !type || isDragger ? 'text' : 'picture-card';
+};
+
+/** Default thumbnail dimension (px) used when no concrete size is configured. */
+export const DEFAULT_THUMBNAIL_SIZE = 160;
+
+/**
+ * Parses a CSS size value (e.g. "54px", "160", 54) into a positive integer pixel value for the
+ * DownloadThumbnail endpoint. The backend returns a 1x1 placeholder when width/height are missing
+ * or non-positive, so this always resolves to a usable size, falling back to DEFAULT_THUMBNAIL_SIZE.
+ */
+export const resolveThumbnailSize = (value: string | number | undefined): number => {
+  const parsed = typeof value === 'number' ? value : parseFloat(`${value ?? ''}`);
+  return Number.isFinite(parsed) && parsed > 0 ? Math.round(parsed) : DEFAULT_THUMBNAIL_SIZE;
+};
+
+
+/**
+ * Result object returned by fetchStoredFile containing the object URL and cleanup function.
+ */
+export interface IFetchStoredFileResult {
+  /** The blob URL that can be used in img src, etc. */
+  url: string;
+  /** Cleanup function that revokes the object URL to prevent memory leaks. Must be called when the URL is no longer needed. */
+  revoke: () => void;
+}
+
+/**
+ * Fetches a stored file and returns a blob URL for display/preview along with a cleanup function.
+ *
+ * **Important**: The returned object contains a `revoke()` function that MUST be called when
+ * the URL is no longer needed to prevent memory leaks. The revoke function is safe to call
+ * multiple times.
+ *
+ * @param httpClient - The Shesha HTTP client used for the request (handles auth/standard headers)
+ * @param url - The file URL to fetch
+ * @returns A Promise resolving to an object containing the blob URL and revoke function
+ * @throws {Error} If the request fails
+ *
+ * @example
+ * ```typescript
+ * const { url, revoke } = await fetchStoredFile(httpClient, '/api/files/123');
+ * try {
+ *   // Use the URL...
+ *   imgElement.src = url;
+ * } finally {
+ *   // Always clean up
+ *   revoke();
+ * }
+ * ```
+ */
+export const fetchStoredFile = async (
+  httpClient: HttpClientApi,
+  url: string,
+): Promise<IFetchStoredFileResult> => {
+  const response = await httpClient.get<Blob>(url, { responseType: 'blob' });
+
+  const objectUrl = URL.createObjectURL(response.data);
+
+  let revoked = false;
+  const revoke = (): void => {
+    if (!revoked) {
+      URL.revokeObjectURL(objectUrl);
+      revoked = true;
+    }
+  };
+
+  return { url: objectUrl, revoke };
+};
+
+export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDownload }) => {
+  const {
+    loading,
+    refetch: fetchHistory,
+    data: serverData,
+  } = useStoredFileGetFileVersions({
+    fileId,
+    lazy: true,
+  });
+
+  const handleVisibleChange = (visible: boolean): void => {
+    if (visible) {
+      fetchHistory().catch((error) => {
+        console.error('Failed to fetch file history', error);
+        throw error;
+      });
+    }
+  };
+
+  const uploads = serverData?.success === true ? (serverData.result ?? []) : [];
+
+  const handleVersionDownloadClick = (fileVersion: StoredFileVersionInfoDto): void => {
+    if (isDefined(fileVersion.versionNo) && isNotNullOrWhiteSpace(fileVersion.fileName))
+      onDownload(fileVersion.versionNo, fileVersion.fileName);
+  };
+
+  const content = (
+    <Skeleton loading={loading}>
+      <ul>
+        {uploads.length > 0 &&
+          uploads.map((item, i) => (
+            <li key={item.versionNo ?? `version-${i}`}>
+              <strong>Version {item.versionNo}</strong> Uploaded{' '}
+              {isNotNullOrWhiteSpace(item.dateUploaded) && <DateDisplay>{item.dateUploaded}</DateDisplay>} by {item.uploadedBy}
+              <br />
+              <Button type="link" onClick={() => handleVersionDownloadClick(item)}>
+                {item.fileName} {isDefined(item.size) && <>({filesize(item.size)})</>}
+              </Button>
+            </li>
+          ))}
+      </ul>
+    </Skeleton>
+  );
+
+  return (
+    <Popover content={content} title="History" trigger="hover" onOpenChange={handleVisibleChange}>
+      <Button size="small" icon={<HistoryOutlined />} title="View history" />
+    </Popover>
+  );
+};
+
+export const ExtraContent: FC<IExtraContentProps> = ({ file, formId }) => {
+  if (!isDefined(formId)) {
+    return null;
+  }
+
+  return <ConfigurableForm formId={formId} mode="readonly" initialValues={file} />;
+};
+
+
+const { Text } = Typography;
+
+// Helper function to format file size
+const formatFileSize = (bytes?: number): string => {
+  if (bytes === undefined) return '';
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
+  if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+  return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+};
+
+// Helper component to render file name with ellipsis and title
+export const FileNameDisplay: FC<{
+  file: StoredFileModel;
+  className?: string | undefined;
+  icon?: React.JSX.Element | undefined;
+  popoverContent?: React.ReactNode;
+  popoverClassName?: string | undefined;
+}> = ({ file, icon, className, popoverContent, popoverClassName }) => {
+  const sizeStr = formatFileSize(file.size);
+  const title = isNotNullOrWhiteSpace(sizeStr) ? `${file.name} (${sizeStr})` : file.name;
+
+  const textElement = (
+    <Text
+      ellipsis
+      title={title}
+    >
+      {icon} {file.name}
+    </Text>
+  );
+
+  return (
+    <div className={className} style={{ overflow: 'hidden', flex: 1 }}>
+      {isDefined(popoverContent) ? (
+        <Popover
+          content={popoverContent}
+          trigger="hover"
+          placement="top"
+          {...(isNotNullOrWhiteSpace(popoverClassName) ? { classNames: { root: popoverClassName } } : {})}
+        >
+          {textElement}
+        </Popover>
+      ) : (
+        textElement
+      )}
+    </div>
+  );
+};

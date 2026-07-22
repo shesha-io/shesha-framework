@@ -16,7 +16,7 @@ export const RefListItemGroupConfigurator: FC<IRefListItemGroupConfiguratorProps
   return (
     <div className={styles.shaToolbarConfigurator}>
       <Alert
-        message={readOnly ? 'Here you can view your component configurations.' : 'Here you can configure the component step configurations.'}
+        title={readOnly ? 'Here you can view your component configurations.' : 'Here you can configure the component step configurations.'}
         className={styles.shaToolbarConfiguratorAlert}
       />
       <RefListItemProperties />

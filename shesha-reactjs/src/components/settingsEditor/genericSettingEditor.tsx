@@ -1,12 +1,12 @@
 import { ConfigurableForm } from '@/components/configurableForm';
 import React, { useEffect, useMemo, FC } from 'react';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { DesignerToolbarSettings, FormMarkup } from '@/interfaces';
-
+import { FormMarkup } from '@/interfaces';
 import { ISettingIdentifier, SettingValue } from './provider/models';
 import { useSettingsEditor } from './provider';
 import { ISettingEditorWithValueProps } from './models';
 import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';
+import { useFormBuilderFactory } from '@/form-factory/hooks';
 
 type FormType = { value: SettingValue };
 
@@ -17,15 +17,17 @@ export const GenericSettingEditor: FC<ISettingEditorWithValueProps> = (props) =>
 
   const { setEditor, saveSettingValue, editorMode } = useSettingsEditor();
 
-  const startSave = (): Promise<SettingValue> => {
-    return formRef.current?.validateFields().then((values) => {
+  const startSave = (): Promise<void> => {
+    if (!formRef.current)
+      return Promise.reject("No form ref");
+    return formRef.current.validateFields().then((values) => {
       const settingId: ISettingIdentifier = {
         name: selection.setting.name,
         module: selection.setting.module,
         appKey: selection.app?.appKey,
       };
 
-      return saveSettingValue(settingId, values.value);
+      return saveSettingValue(settingId, values.value).then();
     });
   };
 
@@ -35,14 +37,17 @@ export const GenericSettingEditor: FC<ISettingEditorWithValueProps> = (props) =>
 
   useEffect(() => {
     setEditor({ save: startSave, cancel });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selection]);
 
   const model = useMemo(() => {
     return { value: value };
   }, [value]);
 
+  const fbf = useFormBuilderFactory();
+
   const formMarkup: FormMarkup = useMemo(() => {
-    const builder = new DesignerToolbarSettings({});
+    const builder = fbf();
     if (configuration.description) {
       builder.addAlert({
         id: 'descriptionAlert',
@@ -81,11 +86,11 @@ export const GenericSettingEditor: FC<ISettingEditorWithValueProps> = (props) =>
       }
     }
     return builder.toJson();
-  }, [configuration]);
+  }, [configuration.dataType, configuration.description, configuration.label, fbf]);
 
   return (
     <ConfigurableForm<FormType>
-      mode={editorMode}
+      mode={editorMode ?? "readonly"}
       shaFormRef={formRef}
       markup={formMarkup}
       initialValues={model}

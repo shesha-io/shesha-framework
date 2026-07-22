@@ -1,58 +1,71 @@
-import { IConfigurableFormComponent, IStyleType } from '@/interfaces';
+import { IConfigurableFormComponent, IStyleValue } from '@/interfaces';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
-import { FormInstance, StepProps } from 'antd';
+import { FormInstance } from 'antd';
+import { Steps } from 'antd';
+import { ComponentProps } from 'react';
 
-export interface IWizardStepProps extends IStyleType {
+type StepsProps = ComponentProps<typeof Steps>;
+type StepProps = Required<StepsProps>['items'][number];
+type StepStatus = 'wait' | 'process' | 'finish' | 'error';
+
+export interface IStepFooterContainer {
   id: string;
-  icon?: string;
+  components?: IConfigurableFormComponent[];
+}
+
+export interface IWizardStepProps extends IStyleValue {
+  id: string;
+  icon?: string | undefined;
   key: string;
   title: string;
   subTitle: string;
   description: string;
-  allowCancel?: boolean;
-  status?: StepProps['status'];
+  allowCancel?: boolean | undefined;
+  status?: StepStatus | undefined;
 
-  label?: string;
-  name?: string;
-  tooltip?: string;
+  label?: string | undefined;
+  name?: string | undefined;
+  tooltip?: string | undefined;
 
-  cancelButtonText?: string;
-  nextButtonText?: string;
-  backButtonText?: string;
-  doneButtonText?: string;
+  cancelButtonText?: string | undefined;
+  nextButtonText?: string | undefined;
+  backButtonText?: string | undefined;
+  doneButtonText?: string | undefined;
 
-  cancelButtonCustomEnabled?: string;
-  nextButtonCustomEnabled?: string;
-  backButtonCustomEnabled?: string;
-  doneButtonCustomEnabled?: string;
+  cancelButtonCustomEnabled?: string | undefined;
+  nextButtonCustomEnabled?: string | undefined;
+  backButtonCustomEnabled?: string | undefined;
+  doneButtonCustomEnabled?: string | undefined;
 
-  showBackButton?: boolean;
-  showDoneButton?: boolean;
+  showBackButton?: boolean | undefined;
+  showDoneButton?: boolean | undefined;
+  hasCustomFooter?: boolean | undefined;
 
-  cancelButtonActionConfiguration?: IConfigurableActionConfiguration;
-  nextButtonActionConfiguration?: IConfigurableActionConfiguration;
-  backButtonActionConfiguration?: IConfigurableActionConfiguration;
-  doneButtonActionConfiguration?: IConfigurableActionConfiguration;
+  cancelButtonActionConfiguration?: IConfigurableActionConfiguration | undefined;
+  nextButtonActionConfiguration?: IConfigurableActionConfiguration | undefined;
+  backButtonActionConfiguration?: IConfigurableActionConfiguration | undefined;
+  doneButtonActionConfiguration?: IConfigurableActionConfiguration | undefined;
 
-  customVisibility?: string;
-  customEnabled?: string;
-  permissions?: string[];
-  components?: IConfigurableFormComponent[];
-  childItems?: IWizardStepProps[];
+  customVisibility?: string | undefined;
+  customEnabled?: string | undefined;
+  permissions?: string[] | undefined;
+  components?: IConfigurableFormComponent[] | undefined;
+  childItems?: IWizardStepProps[] | undefined;
+  stepFooter?: IStepFooterContainer | undefined;
 
-  onBeforeRenderActionConfiguration?: IConfigurableActionConfiguration;
+  onBeforeRenderActionConfiguration?: IConfigurableActionConfiguration | undefined;
 
-  beforeNextActionConfiguration?: IConfigurableActionConfiguration;
-  afterNextActionConfiguration?: IConfigurableActionConfiguration;
+  beforeNextActionConfiguration?: IConfigurableActionConfiguration | undefined;
+  afterNextActionConfiguration?: IConfigurableActionConfiguration | undefined;
 
-  beforeBackActionConfiguration?: IConfigurableActionConfiguration;
-  afterBackActionConfiguration?: IConfigurableActionConfiguration;
+  beforeBackActionConfiguration?: IConfigurableActionConfiguration | undefined;
+  afterBackActionConfiguration?: IConfigurableActionConfiguration | undefined;
 
-  beforeCancelActionConfiguration?: IConfigurableActionConfiguration;
-  afterCancelActionConfiguration?: IConfigurableActionConfiguration;
+  beforeCancelActionConfiguration?: IConfigurableActionConfiguration | undefined;
+  afterCancelActionConfiguration?: IConfigurableActionConfiguration | undefined;
 
-  beforeDoneActionConfiguration?: IConfigurableActionConfiguration;
-  afterDoneActionConfiguration?: IConfigurableActionConfiguration;
+  beforeDoneActionConfiguration?: IConfigurableActionConfiguration | undefined;
+  afterDoneActionConfiguration?: IConfigurableActionConfiguration | undefined;
 }
 
 export interface IWizardSequence {
@@ -62,25 +75,27 @@ export interface IWizardSequence {
 }
 
 export interface IStepProps extends StepProps {
-  content?: JSX.Element;
+  content?: string;
+  bodyContent?: React.JSX.Element;
 }
 
-export interface IWizardComponentProps extends Omit<IConfigurableFormComponent, 'size'>, Pick<StepProps, 'status'>, Omit<IStyleType, 'size'> {
+export interface IWizardComponentProps extends Omit<IConfigurableFormComponent, 'size'>, Omit<IStyleValue, 'size'> {
+  status?: StepStatus | undefined;
   steps: IWizardStepProps[];
-  wizardType?: 'default' | 'navigation';
-  form?: FormInstance<any>;
-  hidden?: boolean;
-  customVisibility?: string;
-  defaultActiveStep?: string;
-  defaultActiveValue?: string;
-  direction?: 'vertical' | 'horizontal';
-  labelPlacement?: 'vertical' | 'horizontal';
-  buttonsLayout?: 'left' | 'right' | 'spaceBetween';
-  showStepStatus?: boolean;
-  sequence?: IWizardSequence;
-  primaryTextColor?: React.CSSProperties['color'];
-  primaryBgColor?: React.CSSProperties['color'];
-  secondaryBgColor?: React.CSSProperties['color'];
-  secondaryTextColor?: React.CSSProperties['color'];
-  stepWidth?: string;
+  wizardType?: 'default' | 'navigation' | undefined;
+  form?: FormInstance | undefined;
+  hidden?: boolean | undefined;
+  customVisibility?: string | undefined;
+  defaultActiveStep?: string | number | undefined;
+  defaultActiveValue?: string | undefined;
+  direction?: 'vertical' | 'horizontal' | undefined;
+  labelPlacement?: 'vertical' | 'horizontal' | undefined;
+  buttonsLayout?: 'left' | 'right' | 'spaceBetween' | undefined;
+  showStepStatus?: boolean | undefined;
+  sequence?: IWizardSequence | undefined;
+  primaryTextColor?: React.CSSProperties['color'] | undefined;
+  primaryBgColor?: React.CSSProperties['color'] | undefined;
+  secondaryBgColor?: React.CSSProperties['color'] | undefined;
+  secondaryTextColor?: React.CSSProperties['color'] | undefined;
+  stepWidth?: string | undefined;
 }

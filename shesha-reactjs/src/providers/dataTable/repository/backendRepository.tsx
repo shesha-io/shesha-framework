@@ -1,30 +1,35 @@
-import { HttpClientApi, IHasEntityDataSourceConfig, useHttpClient, useMetadataDispatcher } from "@/providers";
-import { IResult } from "@/interfaces/result";
-import qs from "qs";
-import React, { ComponentType, useMemo, FC } from "react";
-
-import { camelcaseDotNotation } from "@/utils/string";
-import { DataTableColumnDto, IExcelColumn, IExportExcelPayload, IGetDataFromBackendPayload, IGetListDataPayload, ITableDataFetchColumn, ITableDataInternalResponse, ITableDataResponse } from "../interfaces";
-import { IRepository, IHasRepository, IHasModelType, RowsReorderPayload, EntityReorderPayload, EntityReorderItem, EntityReorderResponse, SupportsReorderingArgs, SupportsGroupingArgs } from "./interfaces";
-import { convertDotNotationPropertiesToGraphQL } from "@/providers/form/utils";
-import { IConfigurableColumnsProps, IDataColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
-import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
 import { IEntityEndpointsEvaluator, useModelApiHelper } from "@/components/configurableForm/useActionEndpoint";
-import { IApiEndpoint, isEntityReferencePropertyMetadata, StandardEntityActions } from "@/interfaces/metadata";
-import { IUseMutateResponse, useMutate } from "@/hooks/useMutate";
-import { IErrorInfo } from "@/interfaces/errorInfo";
-import { IAjaxResponse, isAjaxErrorResponse, isAjaxSuccessResponse, isAxiosResponse } from "@/interfaces/ajaxResponse";
-import FileSaver from "file-saver";
+import { extractAjaxResponse, IAjaxResponse, isAjaxSuccessResponse } from "@/interfaces/ajaxResponse";
 import { DataTypes } from "@/interfaces/dataTypes";
+import { IGenericGetAllPayload } from "@/interfaces/gql";
+import { IApiEndpoint, isEntityReferencePropertyMetadata, StandardEntityActions } from "@/interfaces/metadata";
+import { HttpClientApi, IHasEntityDataSourceConfig, useHttpClient, useMetadataDispatcher } from "@/providers";
+import { IConfigurableColumnsProps, IDataColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
+import { convertDotNotationPropertiesToGraphQL } from "@/providers/form/utils";
+import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
+import { getEntityTypeIdentifierQueryParams, isEntityTypeId } from "@/providers/metadataDispatcher/entities/utils";
+import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
 import { GENERIC_ENTITIES_ENDPOINT } from "@/shesha-constants";
-import { wrapDisplayName } from "@/utils/react";
+import { buildUrl } from "@/utils";
+import { isNonEmptyArray } from "@/utils/array";
+import { getIdOrUndefined } from "@/utils/entity";
+import { extractErrorInfo } from "@/utils/errors";
+import { callApiEndpoint } from "@/utils/fetchers";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
+import { camelcaseDotNotation, getNumberOrUndefined } from "@/utils/string";
+import FileSaver from "file-saver";
+import React, { FC, PropsWithChildren, useMemo } from "react";
+import { DataTableColumnDto, IExcelColumn, IExportExcelPayload, IGetListDataPayload, isDataColumn, ITableDataFetchColumn, ITableDataInternalResponse, ITableDataResponse } from "../interfaces";
+import { DataTableProviderWithRepository, IDataTableProviderWithRepositoryProps } from "../provider";
+import { EntityReorderItem, EntityReorderPayload, EntityReorderResponse, IRepository, RowsReorderPayload, SupportsGroupingArgs, SupportsReorderingArgs } from "./interfaces";
+import hash from 'object-hash';
 
 export interface IWithBackendRepositoryArgs {
-  entityType: string;
+  entityType: string | IEntityTypeIdentifier;
   getListUrl: string;
-  customCreateUrl?: string;
-  customUpdateUrl?: string;
-  customDeleteUrl?: string;
+  customCreateUrl?: string | undefined;
+  customUpdateUrl?: string | undefined;
+  customDeleteUrl?: string | undefined;
 }
 
 export const BackendRepositoryType = 'backend-repository';
@@ -40,33 +45,38 @@ export interface IDeleteOptions {
 }
 
 export interface IBackendRepository extends IRepository<ICreateOptions, IUpdateOptions, IDeleteOptions> {
-  entityType: string;
+  entityType: string | IEntityTypeIdentifier;
 }
 
 interface ICreateBackendRepositoryArgs extends IWithBackendRepositoryArgs {
   httpClient: HttpClientApi;
   metadataDispatcher: IMetadataDispatcher;
   apiHelper: IEntityEndpointsEvaluator;
-  mutator: IUseMutateResponse<any>;
 }
 
 const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepository => {
-  const { httpClient, getListUrl, entityType, metadataDispatcher, apiHelper, mutator } = args;
+  const { httpClient, getListUrl, entityType, metadataDispatcher, apiHelper } = args;
 
   const getPropertyNamesForFetching = (columns: ITableDataFetchColumn[]): string[] => {
     const result: string[] = [];
     columns.forEach((column) => {
-      if (!column.propertiesToFetch)
+      if (!isDefined(column.propertiesToFetch))
+        return;
+      // Skip collection-of-entity columns. The backend auto-expands them to `{ id _className _displayName }`
+      // and then trips ProjectionHelper.BuildNestedMemberInit looking for `Id` on `IList<T>`.
+      // See https://github.com/shesha-io/shesha-framework/issues/4961.
+      if (column.dataType === 'array' &&
+        (column.dataFormat === 'entity' || column.dataFormat === 'many-entity' || column.dataFormat === 'child-entity'))
         return;
       if (Array.isArray(column.propertiesToFetch)) {
         column.propertiesToFetch.forEach((p) => {
-          if (!!p)
+          if (!isNullOrWhiteSpace(p))
             result.push(p);
         });
       } else {
         result.push(column.propertiesToFetch);
         // special handling for entity references: expand properties list to include `id` and `_displayName`
-        if (column.isEnitty) {
+        if (column.isEntity ?? false) {
           const requiredProps = [`${column.propertiesToFetch}.Id`, `${column.propertiesToFetch}._displayName`];
           requiredProps.forEach((rp) => {
             if (!result.includes(rp))
@@ -79,55 +89,45 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
   };
 
   /** Convert common payload to a form that uses the back-end */
-  const convertPayload = (payload: IGetListDataPayload): IGetDataFromBackendPayload => {
+  const convertPayload = (payload: IGetListDataPayload): IGenericGetAllPayload => {
     const properties = getPropertyNamesForFetching(payload.columns);
 
-    const result: IGetDataFromBackendPayload = {
-      entityType: entityType,
+    const result: IGenericGetAllPayload = {
+      ...getEntityTypeIdentifierQueryParams(entityType),
       maxResultCount: payload.pageSize,
       skipCount: (payload.currentPage - 1) * payload.pageSize,
       properties: convertDotNotationPropertiesToGraphQL(properties),
       quickSearch: payload.quickSearch,
-      sorting: payload.sorting
-        .filter((s) => Boolean(s.id))
-        .map((s) => camelcaseDotNotation(s.id) + (s.desc ? ' desc' : ''))
-        .join(','),
+      sorting: isNonEmptyArray(payload.sorting)
+        ? payload.sorting
+          .filter((s) => Boolean(s.id))
+          .map((s) => camelcaseDotNotation(s.id) + ((s.desc ?? false) ? ' desc' : ''))
+          .join(',')
+        : undefined,
       filter: payload.filter,
     };
 
     return result;
   };
 
-  /** Convert back-end response to a form that is used by the data source */
-  const convertListDataResponse = (
-    response: IResult<ITableDataResponse>,
-    pageSize: number,
-  ): ITableDataInternalResponse => {
-    if (!isAjaxSuccessResponse(response))
-      throw 'Failed to fetch data';
+  const fetch = async (payload: IGetListDataPayload): Promise<ITableDataInternalResponse> => {
+    const getDataPayload = await convertPayload(payload);
 
-    const items = response.result.items ?? (Array.isArray(response.result) ? response.result : null);
-    const totalCount = response.result.totalCount ?? items?.length;
+    const getDataUrl = buildUrl(getListUrl || `${GENERIC_ENTITIES_ENDPOINT}/GetAll`, getDataPayload);
 
-    const internalResult: ITableDataInternalResponse = {
+    const response = await httpClient.get<IAjaxResponse<ITableDataResponse>>(getDataUrl);
+    const dataResponse = extractAjaxResponse(response.data);
+
+    const { pageSize } = payload;
+    const { items, totalCount } = dataResponse;
+
+    const result: ITableDataInternalResponse = {
       totalRows: totalCount,
       totalPages: Math.ceil(totalCount / pageSize),
       rows: items,
       totalRowsBeforeFilter: 0,
     };
-
-    return internalResult;
-  };
-
-  const fetch = async (payload: IGetListDataPayload): Promise<ITableDataInternalResponse> => {
-    const getDataPayload = convertPayload(payload);
-
-    const getDataUrl = `${getListUrl || `${GENERIC_ENTITIES_ENDPOINT}/GetAll`}?${qs.stringify(
-      getDataPayload,
-    )}`;
-
-    const response = await httpClient.get<IAjaxResponse<ITableDataResponse>>(getDataUrl);
-    return convertListDataResponse(response.data, payload.pageSize);
+    return result;
   };
 
   const getPropertyNames = (columns: IConfigurableColumnsProps[]): string[] => {
@@ -143,10 +143,10 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
   };
 
   const prepareColumns = (configurableColumns: IConfigurableColumnsProps[]): Promise<DataTableColumnDto[]> => {
-    if (!entityType)
+    if (!isEntityTypeId(entityType))
       return Promise.resolve([]);
 
-    const dataProperties = getPropertyNames(configurableColumns ?? []);
+    const dataProperties = getPropertyNames(configurableColumns);
     if (dataProperties.length === 0)
       return Promise.resolve([]);
 
@@ -159,22 +159,26 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
             name: p,
           };
           const propMeta = response[p];
-          return propMeta
-            ? {
-              ...baseProps,
-              caption: propMeta.label,
-              description: propMeta.description,
-              dataType: propMeta.dataType,
-              dataFormat: propMeta.dataFormat,
-              referenceListName: propMeta.referenceListName,
-              referenceListModule: propMeta.referenceListModule,
-              entityReferenceTypeShortAlias: isEntityReferencePropertyMetadata(propMeta) ? propMeta.entityType : undefined,
-              allowInherited: false, // TODO: add to metadata
-              isFilterable: true, // TODO: add to metadata
-              isSortable: true, // TODO: add to metadata
-              metadata: propMeta,
-            }
-            : baseProps;
+          if (!propMeta)
+            return baseProps;
+
+          const fullProps: DataTableColumnDto = {
+            ...baseProps,
+            caption: propMeta.label ?? null,
+            description: propMeta.description ?? null,
+            dataType: propMeta.dataType,
+            dataFormat: propMeta.dataFormat ?? null,
+            referenceListName: propMeta.referenceListName ?? null,
+            referenceListModule: propMeta.referenceListModule ?? null,
+            entityTypeName: isEntityReferencePropertyMetadata(propMeta) ? propMeta.entityType ?? null : null,
+            entityTypeModule: isEntityReferencePropertyMetadata(propMeta) ? propMeta.entityModule ?? null : null,
+            allowInherited: false, // TODO: add to metadata
+            isFilterable: true, // TODO: add to metadata
+            isSortable: true, // TODO: add to metadata
+            metadata: propMeta,
+          };
+
+          return fullProps;
         });
       }).catch((e) => {
         // TODO: return error and handle on the upper level
@@ -183,100 +187,108 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
       });
   };
 
-  const convertError = (error: any): IErrorInfo => {
-    return isAxiosResponse(error) && isAjaxErrorResponse(error.data)
-      ? error.data.error
-      : error;
+  const mutate = async <TData extends object = object, TResponse extends object = object>(endpoint: IApiEndpoint, data?: TData): Promise<TResponse> => {
+    return await callApiEndpoint(httpClient, endpoint, data);
   };
 
-  const performUpdate = (_rowIndex: number, data: any, options: IUpdateOptions): Promise<any> => {
-    const endpointResolver: Promise<IApiEndpoint> = options?.customUrl
-      ? Promise.resolve({ httpVerb: 'PUT', url: options.customUrl })
-      : apiHelper.getDefaultActionUrl({ modelType: entityType, actionName: StandardEntityActions.update });
+  const performUpdate = async <TData extends object = object>(_rowIndex: number, data: TData, options?: IUpdateOptions): Promise<TData> => {
+    const endpoint: IApiEndpoint | undefined = !isNullOrWhiteSpace(options?.customUrl)
+      ? { httpVerb: 'PUT', url: options.customUrl }
+      : await apiHelper.getDefaultActionUrl({ modelType: entityType, actionName: StandardEntityActions.update });
 
-    return endpointResolver.then((endpoint) => {
-      return mutator.mutate(endpoint, data).then((response) => {
-        return response;
-      }).catch((error) => {
-        throw convertError(error);
-      });
-    });
+    if (!isDefined(endpoint))
+      throw new Error('Failed to determine update endpoint');
+    try {
+      return await mutate(endpoint, data);
+    } catch (error) {
+      throw extractErrorInfo(error);
+    }
   };
 
-  const performDelete = (_rowIndex: number, data: any, options: IDeleteOptions): Promise<any> => {
-    const id = data['id'];
-    if (!id)
+  const performDelete = async <TData extends object = object>(_rowIndex: number, data: TData, options?: IDeleteOptions): Promise<TData> => {
+    const id = getIdOrUndefined(data);
+    if (isNullOrWhiteSpace(id))
       return Promise.reject('Failed to determine `Id` of the object');
 
-    const endpointResolver: Promise<IApiEndpoint> = options?.customUrl
-      ? Promise.resolve({ httpVerb: 'DELETE', url: options.customUrl })
-      : apiHelper.getDefaultActionUrl({ modelType: entityType, actionName: StandardEntityActions.delete });
+    const endpoint: IApiEndpoint | undefined = !isNullOrWhiteSpace(options?.customUrl)
+      ? { httpVerb: 'DELETE', url: options.customUrl }
+      : await apiHelper.getDefaultActionUrl({ modelType: entityType, actionName: StandardEntityActions.delete });
 
-    return endpointResolver.then((endpoint) => {
-      const useQueryString = endpoint.httpVerb?.toUpperCase() === 'DELETE';
+    if (!isDefined(endpoint))
+      throw new Error('Failed to determine delete endpoint');
 
-      const url = useQueryString
-        ? `${endpoint.url}?${qs.stringify({ id })}`
-        : endpoint.url;
-      const data = useQueryString
-        ? undefined
-        : { id };
-
-      return mutator.mutate({ ...endpoint, url }, data).then((response) => {
-        return response;
-      }).catch((error) => {
-        throw convertError(error);
-      });
-    });
+    try {
+      return await mutate(endpoint, { id });
+    } catch (error) {
+      throw extractErrorInfo(error);
+    }
   };
 
-  const performCreate = (_rowIndex: number, data: any, options: ICreateOptions): Promise<any> => {
-    const endpointResolver: Promise<IApiEndpoint> = options?.customUrl
-      ? Promise.resolve({ httpVerb: 'POST', url: options.customUrl })
-      : apiHelper.getDefaultActionUrl({ modelType: entityType, actionName: StandardEntityActions.create });
+  const performCreate = async <TData extends object = object>(_rowIndex: number, data: TData, options?: ICreateOptions): Promise<TData> => {
+    const endpoint: IApiEndpoint | undefined = !isNullOrWhiteSpace(options?.customUrl)
+      ? { httpVerb: 'POST', url: options.customUrl }
+      : await apiHelper.getDefaultActionUrl({ modelType: entityType, actionName: StandardEntityActions.create });
 
-    return endpointResolver.then((endpoint) => {
-      return mutator.mutate(endpoint, data).then((response) => {
-        return response;
-      }).catch((error) => {
-        throw convertError(error);
-      });
-    });
+    if (!isDefined(endpoint))
+      throw new Error('Failed to determine create endpoint');
+
+    try {
+      return await mutate(endpoint, data);
+    } catch (error) {
+      throw extractErrorInfo(error);
+    }
   };
 
   const exportToExcel = async (payload: IGetListDataPayload): Promise<void> => {
-    let excelColumns = payload.columns
-      .map<IExcelColumn>((c) => ({ propertyName: c.propertyName, label: c.caption }));
+    let excelColumns: IExcelColumn[] = [];
+
+    for (const prop of payload.columns) {
+      if (isDataColumn(prop) && !isNullOrWhiteSpace(prop.propertyName))
+        excelColumns.push({ propertyName: prop.propertyName, label: prop.caption ?? "" });
+    }
 
     if (excelColumns.findIndex((c) => c.propertyName === 'id') === -1) {
       excelColumns = [{ propertyName: 'id', label: 'Id' }, ...excelColumns];
     }
 
-    const getDataPayload = convertPayload(payload);
+    const getDataPayload = await convertPayload(payload);
 
     const excelPayload: IExportExcelPayload = {
-      ...getDataPayload,
+      entityTypeId: getEntityTypeIdentifierQueryParams(entityType),
+      skipCount: getDataPayload.skipCount,
+      properties: getDataPayload.properties,
+      quickSearch: getDataPayload.quickSearch,
+      sorting: getDataPayload.sorting,
+      filter: getDataPayload.filter,
       maxResultCount: 2147483647,
       columns: excelColumns,
     };
 
     const excelEndpoint = `${GENERIC_ENTITIES_ENDPOINT}/ExportToExcel`;
 
-    const response = await httpClient.post(excelEndpoint, excelPayload, { responseType: 'blob' });
-    FileSaver.saveAs(new Blob([response.data]), 'Export.xlsx');
+    const response = await httpClient.post<BlobPart>(excelEndpoint, excelPayload, { responseType: 'blob' });
+    FileSaver(new Blob([response.data]), 'Export.xlsx', { autoBom: false });
   };
 
   const reorder = async (payload: RowsReorderPayload): Promise<void> => {
     let reorderUrl = `${GENERIC_ENTITIES_ENDPOINT}/Reorder`;
-    if (payload.customReorderEndpoint?.trim().length > 0)
+    if (!isNullOrWhiteSpace(payload.customReorderEndpoint))
       reorderUrl = payload.customReorderEndpoint;
 
     const oldRows = payload.getOld();
     const newRows = payload.getNew();
     const reorderedRows: EntityReorderItem[] = [];
     newRows.forEach((row, index) => {
-      if (row !== oldRows[index])
-        reorderedRows.push({ id: row['id'], orderIndex: row[payload.propertyName] });
+      if (row !== oldRows[index]) {
+        const id = getIdOrUndefined(row);
+        if (isNullOrWhiteSpace(id))
+          throw new Error('Failed to determine `Id` of the object');
+        const orderIndex = getNumberOrUndefined((row as Record<string, unknown>)[payload.propertyName]);
+        if (!isDefined(orderIndex))
+          throw new Error('Failed to determine `orderIndex` of the object');
+
+        reorderedRows.push({ id, orderIndex });
+      }
     });
 
     const reorderPayload: EntityReorderPayload = {
@@ -293,8 +305,9 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
       if (isAjaxSuccessResponse(response.data)) {
         const responseItems = response.data.result.items;
         const orderedRows = newRows.map((row) => {
-          const newOrder = responseItems[row['id']];
-          return newOrder
+          const rowId = getIdOrUndefined(row);
+          const newOrder = !isNullOrWhiteSpace(rowId) ? responseItems[rowId] : undefined;
+          return isDefined(newOrder)
             ? { ...row, [payload.propertyName]: newOrder }
             : row;
         });
@@ -309,13 +322,20 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
 
 
   const supportsReordering = (args: SupportsReorderingArgs): string | true => {
-    return args.sortMode !== 'strict' || !args.strictSortBy
+    return args.sortMode !== 'strict' || isNullOrWhiteSpace(args.strictSortBy)
       ? '`sortMode` and `strictSortBy` properties are mandatory for the generic reordering functionality'
       : true;
   };
 
   const supportsGrouping = (args: SupportsGroupingArgs): boolean => {
     return args.sortMode === "standard" && Boolean(entityType);
+  };
+
+  const getFetcherHash = (): string => {
+    return hash({
+      entityType,
+      getListUrl,
+    }, { algorithm: 'md5', encoding: 'hex' });
   };
 
   const repository: IBackendRepository = {
@@ -330,6 +350,7 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
     performDelete,
     supportsReordering,
     supportsGrouping,
+    fetchingSettingsHash: getFetcherHash(),
   };
   return repository;
 };
@@ -338,26 +359,24 @@ export const useBackendRepository = (args: IWithBackendRepositoryArgs): IBackend
   const httpClient = useHttpClient();
   const metadataDispatcher = useMetadataDispatcher();
   const apiHelper = useModelApiHelper();
-  const mutator = useMutate();
+  const { entityType, getListUrl, customCreateUrl, customUpdateUrl, customDeleteUrl } = args;
 
   const repository = useMemo<IBackendRepository>(() => {
     return createRepository({
-      ...args,
+      entityType, getListUrl, customCreateUrl, customUpdateUrl, customDeleteUrl,
       httpClient,
       metadataDispatcher,
       apiHelper,
-      mutator,
     });
-  }, [args.entityType, httpClient]);
+  }, [apiHelper, entityType, getListUrl, customCreateUrl, customUpdateUrl, customDeleteUrl, httpClient, metadataDispatcher]);
 
   return repository;
 };
 
-export function withBackendRepository<WrappedProps>(WrappedComponent: ComponentType<WrappedProps & IHasRepository & IHasModelType>): FC<WrappedProps> {
-  return wrapDisplayName((props) => {
-    const { entityType, getDataPath } = props as IHasEntityDataSourceConfig;
+export const BackendDataSourceTable: FC<IHasEntityDataSourceConfig & PropsWithChildren<Omit<IDataTableProviderWithRepositoryProps, 'repository'>>> = (props) => {
+  const { entityType, getDataPath, ...restProps } = props;
 
-    const repository = useBackendRepository({ entityType, getListUrl: getDataPath });
-    return (<WrappedComponent {...props} repository={repository} modelType={entityType} />);
-  }, "withBackendRepository");
+  const repository = useBackendRepository({ entityType, getListUrl: getDataPath ?? "" });
+
+  return <DataTableProviderWithRepository {...restProps} repository={repository} />;
 };

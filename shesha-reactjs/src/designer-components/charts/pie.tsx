@@ -1,5 +1,5 @@
 import React from 'react';
-import { ConfigurableFormItem } from '@/components';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IToolboxComponent } from '@/interfaces';
 import { PieChartOutlined } from '@ant-design/icons';
@@ -16,12 +16,14 @@ import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider
 import useStyles from './styles';
 import ChartLoader from './components/chartLoader';
 import { useChartFilters } from './hooks/useChartFilters';
+import { isDefined } from '@/utils/nullables';
 
 const PieChartComponent: IToolboxComponent<IChartProps> = {
   type: 'pieChart',
   name: 'Pie Chart',
   isInput: false,
   isOutput: true,
+  preserveDimensionsInDesigner: ["height"],
   icon: <PieChartOutlined />,
   Factory: ({ model }) => {
     useShaFormDataUpdate();
@@ -35,7 +37,7 @@ const PieChartComponent: IToolboxComponent<IChartProps> = {
       shadowStyles,
       stylingBoxAsCSS,
       jsStyle,
-    } = model.allStyles;
+    } = model.allStyles ?? {};
 
     const wrapperStyles = removeUndefinedProps({
       ...dimensionsStyles,
@@ -51,10 +53,10 @@ const PieChartComponent: IToolboxComponent<IChartProps> = {
     // Show error alert if there was an error evaluating filters
     if (filterError) {
       return (
-        <ConfigurableFormItem model={model}>
+        <ConfigurableFormItem model={model} className={styles.formItem}>
           <Alert
             showIcon
-            message="Error evaluating filters"
+            title="Error evaluating filters"
             description={filterError}
             type="error"
             style={{ margin: '16px' }}
@@ -66,9 +68,9 @@ const PieChartComponent: IToolboxComponent<IChartProps> = {
     // Don't render chart until filters are ready to prevent race conditions
     if (!filtersReady) {
       return (
-        <ConfigurableFormItem model={model}>
+        <ConfigurableFormItem model={model} className={styles.formItem}>
           <div className={cx(styles.loadingContainer)}>
-            <ChartLoader chartType={model.chartType} />
+            {isDefined(model.chartType) && <ChartLoader chartType={model.chartType} />}
             <div className={cx(styles.loadingText)}>Fetching data...</div>
           </div>
         </ConfigurableFormItem>
@@ -76,7 +78,7 @@ const PieChartComponent: IToolboxComponent<IChartProps> = {
     }
 
     return (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem model={model} className={styles.formItem}>
         {() => {
           return (
             <ChartDataProvider model={model}>
@@ -97,8 +99,8 @@ const PieChartComponent: IToolboxComponent<IChartProps> = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
     .add<IChartProps>(0, (prev) => ({
       chartType: 'pie',
@@ -138,6 +140,21 @@ const PieChartComponent: IToolboxComponent<IChartProps> = {
       maxResultCount: 250,
       requestTimeout: 15000,
       orderDirection: 'asc',
+    }))
+    .add<IChartProps>(9, (prev) => ({
+      ...prev,
+      titleFont: prev.titleFont ?? {
+        family: 'Segoe UI',
+        size: 16,
+        weight: 'bold',
+        color: '#000000',
+      },
+      legendFont: prev.legendFont ?? {
+        family: 'Segoe UI',
+        size: 12,
+        weight: '400',
+        color: '#000000',
+      },
     })),
 };
 

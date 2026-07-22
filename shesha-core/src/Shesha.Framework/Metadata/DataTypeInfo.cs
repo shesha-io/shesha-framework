@@ -20,6 +20,8 @@
         /// </summary>
         public string? ObjectType { get; set; }
 
+        public string? ListForeignProperty { get; set; }
+
         public DataTypeInfo(string dataType)
         {
             DataType = dataType;

@@ -5,13 +5,15 @@ import { useDataSources } from '@/providers/dataSourcesProvider';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IDataListComponentProps } from './model';
-import DataListControl, { NotConfiguredWarning } from './dataListControl';
-import { useDataTableStore } from '@/providers';
+import DataListControl from './dataListControl';
+import { useDataTableStoreOrUndefined } from '@/providers';
 import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { isConfigurableActionConfiguration } from '@/interfaces/configurableAction';
+import { isDefined } from '@/utils/nullables';
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   type: 'datalist',
@@ -20,19 +22,36 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   icon: <UnorderedListOutlined />,
   Factory: ({ model }) => {
     const ds = useDataSources();
-    const dts = useDataTableStore(false);
-    if (model.hidden) return null;
+    const dts = useDataTableStoreOrUndefined();
 
     const dataSource = model.dataSource
       ? ds.getDataSource(model.dataSource)?.dataSource
       : dts;
 
-    return dataSource
-      ? <DataListControl {...model} dataSourceInstance={dataSource} />
-      : <NotConfiguredWarning />;
+    // Check if there's a real data source available
+    // In designer mode, if no data source is configured and none is available from context, show error
+    if (model.hidden) return null;
+
+    // TODO: review validation
+    if (!isDefined(dataSource))
+      throw new Error('No data source is available for this list');
+
+    return (
+      <DataListControl
+        {...model}
+        dataSourceInstance={dataSource}
+      />
+    );
   },
   migrator: (m) => m
-    .add<IDataListComponentProps>(0, (prev) => ({ ...prev, formSelectionMode: 'name', selectionMode: 'none', items: [] }))
+    .add<IDataListComponentProps>(0, (prev) => ({
+      ...prev,
+      formSelectionMode: 'name',
+      selectionMode: 'single',
+      items: [],
+      // Set default form to the starter template
+      formId: { name: 'dummy-datalist-item', module: 'Shesha' },
+    }))
     .add<IDataListComponentProps>(1, (prev) => ({ ...prev, orientation: 'vertical', listItemWidth: 1 }))
     .add<IDataListComponentProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IDataListComponentProps>(3, (prev) => migrateVisibility(prev))
@@ -45,8 +64,8 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
         canDeleteInline: 'no',
         inlineEditMode: 'one-by-one',
         inlineSaveMode: 'manual',
-        dblClickActionConfiguration: prev['actionConfiguration'],
-
+        dblClickActionConfiguration: "actionConfiguration" in prev && isConfigurableActionConfiguration(prev.actionConfiguration) ? prev.actionConfiguration : undefined,
+        showEditIcons: true,
       };
     })
     .add<IDataListComponentProps>(6, (prev) => ({ ...prev, dblClickActionConfiguration: migrateNavigateAction(prev.dblClickActionConfiguration) }))
@@ -59,15 +78,17 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
     .add<IDataListComponentProps>(9, (prev) => {
       return {
         ...prev,
-        desktop: { ...prev.desktop,
+        desktop: {
+          ...prev.desktop,
           gap: prev.cardSpacing,
           dimensions: {
-            ...prev.desktop.dimensions,
+            ...prev.desktop?.dimensions,
             minWidth: prev.cardMinWidth,
             maxWidth: prev.cardMaxWidth,
             width: prev.customWidth,
             height: prev.cardHeight,
-          } },
+          },
+        },
       };
     }).add<IDataListComponentProps>(10, (prev) => {
       const cardSpacing = prev.cardSpacing || '0px';
@@ -93,7 +114,26 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
       };
     })
     .add<IDataListComponentProps>(11, (prev) => ({ ...prev, showEditIcons: true })),
-  settingsFormMarkup: (data) => getSettings(data),
+  settingsFormMarkup: getSettings,
+  validateModel: (model, addModelError) => {
+    if (model.formSelectionMode === "name") {
+      if (!model.formId) {
+        addModelError('formId', 'This Data List has no form selected.\nSelecting a Form tells the Data List what data structure it should use when rendering items.');
+      } else if (typeof model.formId === 'string' && model.formId.trim() === '') {
+        addModelError('formId', 'This Data List has an invalid form selected (empty form name).\nPlease select a valid form.');
+      } else if (typeof model.formId === 'object' && (!model.formId.name || model.formId.name.trim() === '')) {
+        addModelError('formId', 'This Data List has an invalid form selected (empty form name).\nPlease select a valid form.');
+      }
+    }
+
+    if (model.formSelectionMode === "view" && (!model.formType || model.formType.trim() === '')) {
+      addModelError('formType', 'This Data List has no form type specified.\nSelecting a Form Type tells the Data List what data structure it should use when rendering items.');
+    }
+
+    if (model.formSelectionMode === "expression" && (!model.formIdExpression || model.formIdExpression.trim() === '')) {
+      addModelError('formIdExpression', 'This Data List has no form identifier expression configured.\nConfiguring an expression tells the Data List how to dynamically determine which form to use.');
+    }
+  },
 };
 
 export default DataListComponent;

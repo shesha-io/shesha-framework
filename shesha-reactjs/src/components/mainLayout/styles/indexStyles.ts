@@ -78,8 +78,8 @@ export const GlobalSheshaStyles = createGlobalStyle`
     white-space: normal;
     font-weight: bold;
   }
+    
   .${(p) => p.theme.prefixCls}-form-item {
-    margin-bottom: 0 !important;
   
     .${(p) => p.theme.prefixCls}-row {
       &.${(p) => p.theme.prefixCls}-form-item-row {
@@ -90,12 +90,10 @@ export const GlobalSheshaStyles = createGlobalStyle`
 
   .sha-form-settings-editor .ant-form-item .ant-row.ant-form-item-row {
    margin-bottom: 0px !important;
-   .ant-form-item-control-input{
+   .${(p) => p.theme.prefixCls}-form-item-control-input {
      display: inline !important;
     }
   }
-
-
 
   .sha-form-designer {
     .sha-index-toolbar {
@@ -131,11 +129,7 @@ export const GlobalSheshaStyles = createGlobalStyle`
   body {
     margin: 0;
     div {
-      .ant-tabs-dropdown {
-      --ant-tabs-z-index-popup: 2000 !important;
-      z-index: 2000 !important;
-      }
-      .ant-dropdown-menu-submenu-title {
+      .${(p) => p.theme.prefixCls}-dropdown-menu-submenu-title {
         display: flex !important;
         align-items: center !important;
       }
@@ -149,7 +143,6 @@ export const GlobalSheshaStyles = createGlobalStyle`
     display: inline-block;
     width: 0;
     visibility: hidden;
-    content: '\a0';
   }
   .sha-required-mark {
     margin-left: 4px;
@@ -166,6 +159,13 @@ export const GlobalSheshaStyles = createGlobalStyle`
         text-overflow: ellipsis;
         white-space: nowrap;
         }
-       
+
     }
+
+  .${(p) => p.theme.prefixCls}-modal-root {
+    .${(p) => p.theme.prefixCls}-modal {
+      top: 100px !important;
+      vertical-align: top !important;
+    }
+  }
 `;

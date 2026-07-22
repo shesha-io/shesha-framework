@@ -1,123 +1,186 @@
-import { FileSearchOutlined } from '@ant-design/icons';
-import React, { useCallback } from 'react';
+import { Autocomplete } from '@/components/autocomplete';
+import { AUTOCOMPLETE_DATA_SOURCE_TYPE, AutocompleteDataSourceType, DisplayValueFunc, FilterSelectedFunc, KayValueFunc, OutcomeValueFunc } from '@/components/autocomplete/models';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
-import { IToolboxComponent } from '@/interfaces';
-import { DataTypes } from '@/interfaces/dataTypes';
+import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { useAsyncMemo } from '@/hooks/useAsyncMemo';
+import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
+import { JsonLogicFilter } from '@/interfaces/jsonLogic';
+import { isEntityMetadata, isEntityReferenceArrayPropertyMetadata, isEntityReferencePropertyMetadata, isHasFilter } from '@/interfaces/metadata';
+import { useMetadataDispatcher } from '@/providers';
 import { IInputStyles } from '@/providers/form/models';
 import {
-  executeExpression,
-  useAvailableConstantsData,
-  validateConfigurableComponentSettings,
+  executeExpression, validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
-import { IAutocompleteComponentProps } from './interfaces';
-import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
-import { isEntityReferenceArrayPropertyMetadata, isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
-import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
+import { isNonEmptyArray } from '@/utils/array';
+import { getNestedStringOrUndefined } from '@/utils/dotnotation';
+import { isEntityReferenceId } from '@/utils/entity';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { getBooleanPropertyOrUndefined, getStringEnumOrDefault, getStringPropertyOrUndefined, getValueByPropertyName, pick } from '@/utils/object';
+import { FileSearchOutlined } from '@ant-design/icons';
+import React, { useCallback } from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { ConfigurableFormItem } from '@/components';
-import { customDropDownEventHandler } from '@/components/formDesigner/components/utils';
-import { getValueByPropertyName } from '@/utils/object';
-import { FilterSelectedFunc, KayValueFunc, OutcomeValueFunc } from '@/components/autocomplete/models';
-import { Autocomplete } from '@/components/autocomplete';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { AutocompleteComponentDefinition, IAutocompleteComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
-import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 
-const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
+const AutocompleteComponent: AutocompleteComponentDefinition = {
   type: 'autocomplete',
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
   name: 'Autocomplete',
   icon: <FileSearchOutlined />,
-  dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
+  preserveDimensionsInDesigner: true,
+  dataTypeSupported: ({ dataType, dataFormat }) =>
+    dataType === DataTypes.entityReference ||
+    (dataType === DataTypes.array && isDefined(dataFormat) && [ArrayFormats.entityReference, ArrayFormats.manyToManyEntities].includes(dataFormat)),
   Factory: ({ model }) => {
-    const allData = useAvailableConstantsData();
+    const { getMetadata } = useMetadataDispatcher();
 
-    const keyPropName = model.keyPropName || (model.dataSourceType === 'entitiesList' ? 'id' : 'value');
-    const displayPropName = model.displayPropName || (model.dataSourceType === 'entitiesList' ? '_displayName' : 'displayText');
+    const entityMetadata = useAsyncMemo(async () => {
+      if (isEntityTypeIdEmpty(model.entityType))
+        return null;
+      const meta = await getMetadata({ modelType: model.entityType, dataType: DataTypes.entityReference });
+      return isEntityMetadata(meta) ? meta : null;
+    }, [model.entityType]);
 
-    const keyValueFunc: KayValueFunc = useCallback((value: any, args: any) => {
-      if (model.valueFormat === 'custom' && model.keyValueFunc)
-        return executeExpression<string>(model.keyValueFunc, { ...args, value }, null, null);
-      if (model.valueFormat === 'entityReference')
-        return value?.id;
-      return typeof (value) === 'object' ? getValueByPropertyName(value, keyPropName) : value;
+    const keyPropName = !isNullOrWhiteSpace(model.keyPropName)
+      ? model.keyPropName
+      : (model.dataSourceType === 'entitiesList' ? 'id' : 'value');
+    const displayPropName = !isNullOrWhiteSpace(model.displayPropName)
+      ? model.displayPropName
+      : (model.dataSourceType === 'entitiesList' ? '_displayName' : 'displayText');
+
+    const keyValueFunc = useCallback<KayValueFunc>((value, args) => {
+      if (!isDefined(value))
+        return undefined;
+      if (model.valueFormat === 'custom' && !isNullOrWhiteSpace(model.keyValueFunc))
+        return executeExpression<string>(model.keyValueFunc, { ...args, value }, null, undefined) ?? undefined;
+      if (model.valueFormat === 'entityReference' && isEntityReferenceId(value))
+        return value.id;
+      const result = typeof (value) === 'object'
+        ? getValueByPropertyName(value as Record<string, unknown>, keyPropName)
+        : value;
+      return typeof (result) === "object"
+        ? undefined
+        : result?.toString();
     }, [model.valueFormat, model.keyValueFunc, keyPropName]);
 
-    const outcomeValueFunc: OutcomeValueFunc = useCallback((item: any, args: any) => {
+    const outcomeValueFunc = useCallback<OutcomeValueFunc>((item, args) => {
+      if (!isDefined(item)) return item;
       if (model.valueFormat === 'entityReference')
-        return Boolean(item)
-          ? { id: item.id, _displayName: item._displayName || getValueByPropertyName(item, displayPropName), _className: model.entityType }
-          : null;
-      if (model.valueFormat === 'custom' && model.outcomeValueFunc)
-        return executeExpression(model.outcomeValueFunc, { ...args, item: item }, null, null);
-      return typeof (item) === 'object' ? getValueByPropertyName(item, keyPropName) : item;
-    }, [model.valueFormat, model.outcomeValueFunc, keyPropName, displayPropName, model.entityType]);
+        return isEntityReferenceId(item)
+          ? {
+            id: item.id,
+            _displayName: getNestedStringOrUndefined(item, displayPropName) ?? item._displayName,
+            _className: (!isNullOrWhiteSpace(item._className) ? item._className : entityMetadata?.fullClassName) ?? undefined,
+          }
+          : typeof (item) !== 'object'
+            ? { id: item, _displayName: item.toString(), _className: undefined }
+            : item;
+      if (model.valueFormat === 'custom' && !isNullOrWhiteSpace(model.outcomeValueFunc))
+        return executeExpression(model.outcomeValueFunc, { ...args, item: item }, null, undefined);
+      return typeof (item) === 'object' ? getValueByPropertyName(item as Record<string, unknown>, keyPropName) : item;
+    }, [model.valueFormat, model.outcomeValueFunc, keyPropName, displayPropName, entityMetadata]);
 
-    const displayValueFunc: OutcomeValueFunc = useCallback((value: any, args: any) => {
-      if (model.displayValueFunc)
-        return executeExpression(model.displayValueFunc, { ...args, item: value }, null, null);
-      return getValueByPropertyName(value, displayPropName) || '';
+    const displayValueFunc = useCallback<DisplayValueFunc>((value, args) => {
+      if (!isDefined(value)) return '';
+      const raw = !isNullOrWhiteSpace(model.displayValueFunc)
+        ? executeExpression(model.displayValueFunc, { ...args, item: value }, null, undefined)
+        : (typeof (value) === 'object' ? getValueByPropertyName(value as Record<string, unknown>, displayPropName) : value);
+      if (raw === null || raw === undefined) return '';
+      return typeof raw === 'object' ? '' : String(raw);
     }, [model.displayValueFunc, displayPropName]);
 
-    const filterKeysFunc: FilterSelectedFunc = useCallback((value: any | any[]) => {
-      const localValue = value?.length === 1 ? value[0] : value;
-      return Array.isArray(localValue)
-        ? { or: localValue.map((x) => executeExpression(model.filterKeysFunc, { value: x }, null, null)) }
-        : executeExpression(model.filterKeysFunc, { value: localValue }, null, null);
-    }, [model.filterKeysFunc]);
+    const {
+      filterKeysFunc: filterKeysFuncExpression,
+      allowFreeText = false,
+      enableStyleOnReadonly = false,
+      readOnly = false,
+    } = model;
 
-    const finalStyle = !model.enableStyleOnReadonly && model.readOnly ? {
-      ...model.allStyles.fontStyles,
-      ...model.allStyles.dimensionsStyles,
-    } : model.allStyles.fullStyle;
+    const filterKeysFunc: FilterSelectedFunc = useCallback((value) => {
+      if (model.valueFormat !== 'custom' || isNullOrWhiteSpace(filterKeysFuncExpression))
+        return undefined;
+
+      if (!isDefined(value)) return undefined;
+
+      const localValue = Array.isArray(value) && isNonEmptyArray<object>(value) && value.length === 1
+        ? value[0]
+        : value;
+      const result: JsonLogicFilter | undefined = Array.isArray(localValue)
+        ? { or: localValue.map((x) => executeExpression(filterKeysFuncExpression, { value: x }, null, undefined)) }
+        : executeExpression<JsonLogicFilter>(filterKeysFuncExpression, { value: localValue }, null, undefined) ?? undefined;
+      return result;
+    }, [filterKeysFuncExpression, model.valueFormat]);
+
+    const finalStyle = !enableStyleOnReadonly && readOnly
+      ? {
+        ...model.allStyles?.fontStyles,
+        ...model.allStyles?.dimensionsStyles,
+      }
+      : model.allStyles?.fullStyle;
 
     return (
       <ConfigurableFormItem {...{ model }}>
-        {(value, onChange) => {
-          const customEvent = customDropDownEventHandler(model, allData);
-          const onChangeInternal = (...args: any[]): void => {
-            customEvent.onChange(args[0], args[1]);
-            if (typeof onChange === 'function')
-              onChange(...args);
-          };
-
+        {(value, onChange, _, ctx) => {
+          const autocompleteProps = pick(model, [
+            "dataSourceType",
+            "dataSourceUrl",
+            "entityType",
+            "filter",
+            "queryParams",
+            "grouping",
+            "sorting",
+            "readOnly",
+            "keyPropName",
+            "displayPropName",
+            "mode",
+          ]);
 
           return (
             <Autocomplete
-              {...model}
-              grouping={model.grouping?.length > 0 ? model.grouping[0] : undefined}
+              {...autocompleteProps}
+              filter={model.filter}
+              grouping={isNonEmptyArray(model.grouping) ? model.grouping[0] : undefined}
               keyValueFunc={keyValueFunc}
               outcomeValueFunc={outcomeValueFunc}
               displayValueFunc={displayValueFunc}
-              filterKeysFunc={model.filterKeysFunc ? filterKeysFunc : undefined}
+              filterKeysFunc={!isNullOrWhiteSpace(filterKeysFuncExpression) ? filterKeysFunc : undefined}
               style={finalStyle}
-              size={model?.size ?? 'middle'}
+              size={model.size ?? 'middle'}
               value={value}
-              onChange={onChangeInternal}
-              allowFreeText={model.allowFreeText && model.valueFormat === 'simple'}
+              onChange={(newValue) => {
+                ctx?.handleEvent(undefined, { value: newValue }, model.onChangeCustom);
+                onChange(newValue);
+              }}
+              allowFreeText={allowFreeText && model.valueFormat === 'simple'}
             />
           );
         }}
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
+  settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
     .add<IAutocompleteComponentProps>(0, (prev) => ({
       ...prev,
-      dataSourceType: prev['dataSourceType'] ?? 'entitiesList',
-      useRawValues: prev['useRawValues'] ?? false,
+      dataSourceType: getStringEnumOrDefault<AutocompleteDataSourceType>(prev, "dataSourceType", AUTOCOMPLETE_DATA_SOURCE_TYPE) ?? "entitiesList",
+      useRawValues: getBooleanPropertyOrUndefined(prev, "useRawValues") ?? false,
     }))
     .add<IAutocompleteComponentProps>(1, (prev) => {
       const result = { ...prev };
-      const useExpression = Boolean(result['useExpression']);
-      delete result['useExpression'];
+      const useExpression = getBooleanPropertyOrUndefined(prev, "useExpression") ?? false;
+      if ("useExpression" in result)
+        delete result['useExpression'];
 
       if (useExpression) {
-        const migratedExpression = migrateDynamicExpression(prev.filter);
+        const migratedExpression = isDefined(prev.filter) ? migrateDynamicExpression(prev.filter) as JsonLogicFilter : undefined;
         result.filter = migratedExpression;
       }
 
@@ -128,7 +191,6 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
     .add<IAutocompleteComponentProps>(4, (prev) => migrateReadOnly(prev))
     .add<IAutocompleteComponentProps>(5, (prev) => ({
       ...migrateFormApi.eventsAndProperties(prev),
-      defaultValue: migrateFormApi.withoutFormData(prev?.defaultValue),
     }))
     .add<IAutocompleteComponentProps>(6, (prev) => {
       const styles: IInputStyles = {
@@ -147,19 +209,20 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
     .add<IAutocompleteComponentProps>(7, (prev) => {
+      const useRawValues = getBooleanPropertyOrUndefined(prev, 'useRawValues') === true;
       return {
         ...prev,
         mode: prev.mode || 'single',
-        entityType: prev.entityType || prev['entityTypeShortAlias'],
+        entityType: prev.entityType ?? getStringPropertyOrUndefined(prev, "entityTypeShortAlias"),
         valueFormat: prev.dataSourceType === 'entitiesList'
-          ? prev['useRawValues'] ? 'simple' : 'entityReference'
+          ? useRawValues ? 'simple' : 'entityReference'
           : 'simple',
         displayPropName: prev.dataSourceType === 'entitiesList'
-          ? prev['entityDisplayProperty']
-          : prev['useRawValues']
-            ? prev['valuePropName'] || 'displayText'
-            : prev['valuePropName'],
-        keyPropName: prev.dataSourceType === 'url' && prev['useRawValues'] ? prev.keyPropName || 'value' : prev.keyPropName,
+          ? getStringPropertyOrUndefined(prev, 'entityDisplayProperty')
+          : useRawValues
+            ? getStringPropertyOrUndefined(prev, "valuePropName") ?? 'displayText'
+            : getStringPropertyOrUndefined(prev, "valuePropName"),
+        keyPropName: prev.dataSourceType === 'url' && useRawValues ? prev.keyPropName ?? 'value' : prev.keyPropName,
       };
     })
     .add<IAutocompleteComponentProps>(8, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
@@ -168,21 +231,21 @@ const AutocompleteComponent: IToolboxComponent<IAutocompleteComponentProps> = {
       ...model,
       dataSourceType: 'entitiesList',
       mode: isEntityReferenceArrayPropertyMetadata(propMetadata) ? 'multiple' : 'single',
-      entityType: isEntityReferencePropertyMetadata(propMetadata)
-        ? propMetadata.entityType
-        : isEntityReferenceArrayPropertyMetadata(propMetadata)
-          ? propMetadata.entityType
+      entityType: isEntityReferencePropertyMetadata(propMetadata) && !isNullOrWhiteSpace(propMetadata.entityType)
+        ? { name: propMetadata.entityType, module: propMetadata.entityModule ?? null }
+        : isEntityReferenceArrayPropertyMetadata(propMetadata) && !isNullOrWhiteSpace(propMetadata.itemsType.entityType)
+          ? { name: propMetadata.itemsType.entityType, module: propMetadata.itemsType.entityModule ?? null }
           : undefined,
       valueFormat: isEntityReferencePropertyMetadata(propMetadata) || isEntityReferenceArrayPropertyMetadata(propMetadata)
         ? 'entityReference'
         : 'simple',
-      filter: typeof propMetadata.formatting?.filter === 'object' && propMetadata.formatting?.filter
-        ? { ...propMetadata.formatting?.filter }
-        : null,
+      filter: isHasFilter(propMetadata.formatting)
+        ? { ...propMetadata.formatting.filter }
+        : undefined,
     };
   },
   actualModelPropertyFilter: (propName) => propName !== 'queryParams',
-  getFieldsToFetch(propertyName, rawModel) {
+  getFieldsToFetch: (propertyName, rawModel) => {
     return rawModel.valueFormat === 'entityReference'
       ? [`${propertyName}.id`, `${propertyName}._className`, `${propertyName}._displayName`]
       : [propertyName];

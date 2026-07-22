@@ -15,6 +15,11 @@ namespace Shesha.Authorization
 
             // Shesha part
             context.CreatePermission(ShaPermissionNames.Application_Configurator, L("ApplicationConfigurator"));
+            context.CreatePermission(ShaPermissionNames.Pages_LogonAudit, L("LogonAudit"));
+            context.CreatePermission(ShaPermissionNames.Pages_OtpAudit, L("OtpAudit"));
+            context.CreatePermission(ShaPermissionNames.Pages_NotificationsAudit, L("NotificationsAudit"));
+            context.CreatePermission(ShaPermissionNames.Pages_DataAudit, L("DataAudit"));
+
             context.CreatePermission(ShaPermissionNames.Pages_Persons, L("Persons"));
             context.CreatePermission(ShaPermissionNames.Pages_ShaRoles, L("ShaRoles"));
             context.CreatePermission(ShaPermissionNames.Pages_ApplicationSettings, L("ApplicationSettings"));

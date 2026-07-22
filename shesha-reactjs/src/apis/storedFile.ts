@@ -1,6 +1,7 @@
 import { useMutateForEndpoint } from '@/hooks';
 import { useGet, UseGetProps } from '@/hooks/useGet';
 import { IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
+import { IEntityTypeIdentifierQueryParams } from '@/interfaces/metadata';
 
 export interface StoredFileDeleteQueryParams {
   /**
@@ -14,7 +15,7 @@ export interface StoredFileDeleteQueryParams {
   /**
    * Type short alias of the owner entity
    */
-  ownerType?: string;
+  ownerType?: IEntityTypeIdentifierQueryParams;
   /**
    * File category
    */
@@ -98,7 +99,7 @@ export interface StoredFileGetEntityPropertyQueryParams {
   /**
    * Type short alias of the owner entity
    */
-  ownerType: string;
+  ownerType: IEntityTypeIdentifierQueryParams;
   /**
    * File category 
    */
@@ -164,7 +165,9 @@ export const useStoredFileGetFileVersions = ({ fileId, ...props }: UseStoredFile
     StoredFileGetFileVersionsQueryParams,
     StoredFileGetFileVersionsPathParams
   >(
-    (paramsInPath: StoredFileGetFileVersionsPathParams) => `/api/StoredFile/StoredFile/${paramsInPath.fileId}/Versions`,
+    (paramsInPath) => {
+      return `/api/StoredFile/StoredFile/${paramsInPath?.fileId}/Versions`;
+    },
     { pathParams: { fileId }, ...props }
   );
 
@@ -172,4 +175,4 @@ export interface DeleteFileByIdInput {
   id: string;
 }
 export const useDeleteFileById = () =>
-  useMutateForEndpoint<DeleteFileByIdInput>({ url: (data) => `/api/StoredFile?id=${data.id}`, httpVerb: 'DELETE' });
+  useMutateForEndpoint<DeleteFileByIdInput>({ url: (data) => `/api/StoredFile?id=${data?.id}`, httpVerb: 'DELETE' });

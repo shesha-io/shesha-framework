@@ -1,7 +1,7 @@
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
 import { useDynamicActionsDispatcher } from '@/providers/index';
 import { FC, useEffect } from 'react';
-import { DYNAMIC_ACTIONS_CONTEXT_INITIAL_STATE, IDynamicActionsContext } from '../contexts';
+import { IDynamicActionsContext, isDynamicActionsContext } from '../contexts';
 import { IResolvedDynamicItem } from './utils';
 
 interface SingleDynamicItemEvaluatorProps {
@@ -9,9 +9,11 @@ interface SingleDynamicItemEvaluatorProps {
   onEvaluated: (response: ButtonGroupItemProps[]) => void;
 }
 
-const EMPTY_ITEMS = [];
+const EMPTY_ITEMS: ButtonGroupItemProps[] = [];
 const DEFAULT_DYNAMIC_EVALUATOR: IDynamicActionsContext = {
-  ...DYNAMIC_ACTIONS_CONTEXT_INITIAL_STATE,
+  id: "unknown",
+  name: "unknown",
+  hasArguments: false,
   useEvaluator: () => EMPTY_ITEMS, // note: it's important to use constant to prevent infinite re-calculation ([] !== [])
 };
 
@@ -27,15 +29,18 @@ export const getDynamicItemKey = (item: IResolvedDynamicItem): string => {
 export const SingleDynamicItemEvaluator: FC<SingleDynamicItemEvaluatorProps> = ({ item, onEvaluated }) => {
   const dispatcher = useDynamicActionsDispatcher();
 
-  const { providerUid } = item.dynamicItemsConfiguration ?? {};
+  const { providerUid, settings } = item.dynamicItemsConfiguration ?? {};
   const providers = dispatcher.getProviders();
   const provider = providerUid ? providers[providerUid] : undefined;
   const actionsContext = provider ? provider.contextValue : DEFAULT_DYNAMIC_EVALUATOR;
+  const useEvaluator = isDynamicActionsContext(actionsContext) // should always be true
+    ? actionsContext.useEvaluator
+    : DEFAULT_DYNAMIC_EVALUATOR.useEvaluator;
 
   // call a hook
-  const evaluatedItems = actionsContext.useEvaluator({
+  const evaluatedItems = useEvaluator({
     item,
-    settings: item?.dynamicItemsConfiguration?.settings,
+    settings: settings,
   });
 
   useEffect(() => {
@@ -44,8 +49,7 @@ export const SingleDynamicItemEvaluator: FC<SingleDynamicItemEvaluatorProps> = (
       item.isResolved = true;
       onEvaluated(evaluatedItems);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [evaluatedItems, item.resolvedItems]);
+  }, [evaluatedItems, item, item.resolvedItems, onEvaluated]);
 
   return null;
 };

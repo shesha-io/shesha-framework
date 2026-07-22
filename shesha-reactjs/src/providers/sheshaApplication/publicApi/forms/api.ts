@@ -1,7 +1,6 @@
 import qs from "qs";
-import { HttpClientApi } from "@/publicJsApis/httpClient";
+import { HttpClientApi } from "@/publicJsApis/apis/httpClient";
 import { FormsManager } from "./manager";
-import { AxiosResponse } from "axios";
 import { IAbpWrappedGetEntityResponse } from "@/interfaces/gql";
 import { FormConfigurationDto } from "@/providers/form/api";
 import { evaluateString } from "@/providers/form/utils";
@@ -9,6 +8,7 @@ import { nanoid } from "@/utils/uuid";
 import { GenerationLogicFactory } from "./generation-logic/factory";
 import { FormMetadataHelper } from "./generation-logic/formMetadataHelper";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
+import { FormBuilderFactory } from "@/form-factory/interfaces";
 
 export interface IFormsApi {
   /**
@@ -38,16 +38,15 @@ export class FormsApi implements IFormsApi {
 
   readonly _entityMetadataHelper: FormMetadataHelper;
 
-  constructor(httpClient: HttpClientApi, metadataDispatcher: IMetadataDispatcher) {
+  constructor(httpClient: HttpClientApi, metadataDispatcher: IMetadataDispatcher, fbf: FormBuilderFactory) {
     this._formsManager = new FormsManager(httpClient);
     this._httpClient = httpClient;
-    this._generationLogicFactory = new GenerationLogicFactory();
+    this._generationLogicFactory = new GenerationLogicFactory(fbf);
 
     this._entityMetadataHelper = new FormMetadataHelper(metadataDispatcher);
   }
 
-
-  prepareTemplateAsync = (templateId: string, replacements: object): Promise<string> => {
+  prepareTemplateAsync = (templateId: string, replacements: object | undefined): Promise<string> => {
     if (!templateId)
       return Promise.resolve('');
 
@@ -57,7 +56,7 @@ export class FormsApi implements IFormsApi {
 
     const url = `/api/dynamic/Shesha/FormConfiguration/Crud/Get?${qs.stringify(payload)}`;
     return this._httpClient
-      .get<any, AxiosResponse<IAbpWrappedGetEntityResponse<FormConfigurationDto>>>(url)
+      .get<IAbpWrappedGetEntityResponse<FormConfigurationDto>>(url)
       .then(async (response) => {
         const template = response.data.result;
         if (!template) {

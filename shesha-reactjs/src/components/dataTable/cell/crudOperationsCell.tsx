@@ -1,5 +1,5 @@
 import { CloseCircleOutlined, DeleteOutlined, EditOutlined, PlusCircleOutlined, SaveOutlined } from '@ant-design/icons';
-import React, { FC, useMemo } from 'react';
+import React, { FC } from 'react';
 import { useCrud } from '@/providers/crudContext';
 import ActionButton, { IActionButtonProps } from '@/components/actionButton/index';
 
@@ -16,7 +16,6 @@ export const CrudOperationsCell: FC = () => {
     allowDelete,
     saveError,
     allowChangeMode,
-    autoSave,
     isSaving,
     isDeleting,
     deletingError,
@@ -50,10 +49,13 @@ export const CrudOperationsCell: FC = () => {
   };
 
   const onDeleteClick = (): void => {
-    performDelete();
+    performDelete().catch((error) => {
+      console.error('Failed to delete row', error);
+      throw error;
+    });
   };
 
-  const buttons = useMemo<IActionButtonProps[]>(() => {
+  const getButtons = (): IActionButtonProps[] => {
     const allButtons: IActionButtonProps[] = [
       {
         title: 'Add',
@@ -72,7 +74,7 @@ export const CrudOperationsCell: FC = () => {
       {
         title: 'Save',
         executer: () => {
-          onSaveUpdateClick();
+          void onSaveUpdateClick();
         },
         icon: <SaveOutlined />,
         isVisible: /* !autoSave &&*/ allowEdit && mode === 'update',
@@ -82,7 +84,7 @@ export const CrudOperationsCell: FC = () => {
       {
         title: 'Cancel edit',
         executer: () => {
-          onCancelEditClick();
+          void onCancelEditClick();
         },
         icon: <CloseCircleOutlined />,
         isVisible: /* !autoSave &&*/ allowEdit && mode === 'update' && allowChangeMode,
@@ -90,7 +92,7 @@ export const CrudOperationsCell: FC = () => {
       {
         title: 'Reset',
         executer: () => {
-          onCancelEditClick();
+          void onCancelEditClick();
         },
         icon: <CloseCircleOutlined />,
         isVisible: /* !autoSave &&*/ isNewObject || (allowEdit && mode === 'update' && !allowChangeMode),
@@ -106,19 +108,8 @@ export const CrudOperationsCell: FC = () => {
       },
     ];
     return allButtons.filter((b) => b.isVisible);
-  }, [
-    isNewObject,
-    allowDelete,
-    allowEdit,
-    mode,
-    performCreate,
-    allowChangeMode,
-    autoSave,
-    isSaving,
-    saveError,
-    isDeleting,
-    deletingError,
-  ]);
+  };
+  const buttons = getButtons();
 
   return (
     <div className="sha-crud-cell">

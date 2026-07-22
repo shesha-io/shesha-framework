@@ -113,6 +113,13 @@ namespace Shesha.ConfigurationItems
         /// <summary>
         /// Restore configuration item state from a revision
         /// </summary>
-        Task RestoreRevisionAsync(ConfigurationItemRevision revision);
+        Task RestoreRevisionAsync(ConfigurationItem item, ConfigurationItemRevision revision);
+
+        /// <summary>
+        /// Get backward compatible module name when module is not provided
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        Task<string> GetBackwardCompatibleModuleNameAsync(string name);
     }
 }

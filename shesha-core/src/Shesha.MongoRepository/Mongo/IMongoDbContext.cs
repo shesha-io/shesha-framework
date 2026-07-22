@@ -1,8 +1,9 @@
 ﻿using MongoDB.Driver;
+using System;
 
 namespace Shesha.MongoRepository.Mongo
 {
-    public interface IMongoDbContext
+    public interface IMongoDbContext: IDisposable
     {
         string ConnectionString { get; }
         string DatabaseName { get; }

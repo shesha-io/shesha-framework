@@ -2,14 +2,13 @@
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 
+RUN apt-get update && apt-get install -y libfontconfig1 && rm -rf /var/lib/apt/lists/*
+
 ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 
-#Install dependencies
-RUN apt-get update
-RUN apt-get update && apt-get install -y libfontconfig1
-
 WORKDIR /app
+
 COPY . /app
 
 USER $APP_UID

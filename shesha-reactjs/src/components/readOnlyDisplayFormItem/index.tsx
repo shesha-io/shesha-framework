@@ -7,10 +7,12 @@ import { IReadOnlyDisplayFormItemProps } from './models';
 import { useStyles } from './styles/styles';
 import ReflistTag from '../refListDropDown/reflistTag';
 import InputField from './inputField';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
+import { getClassNameOrUndefined, getIdOrUndefined } from '@/utils/entity';
+import { getFirstNonEmptyStringPropertyOrUndefined } from '@/utils/object';
+import { findMap, isNonEmptyArray } from '@/utils/array';
 
-type AutocompleteType = ISelectOption;
-
-export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props) => {
+export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = <TValue = unknown>(props: IReadOnlyDisplayFormItemProps<TValue>) => {
   const {
     value,
     type = 'string',
@@ -18,11 +20,9 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
     timeFormat = 'hh:mm',
     dropdownDisplayMode = 'raw',
     render,
-    checked,
-    defaultChecked,
     quickviewEnabled,
     quickviewFormPath,
-    quickviewDisplayPropertyName,
+    quickviewDisplayPropertyName = "",
     quickviewGetEntityUrl,
     quickviewWidth,
     style,
@@ -30,32 +30,41 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
     showIcon,
     solidColor,
     showItemName,
+    styleValue,
+    enableFullStyle,
   } = props;
 
-  const { styles } = useStyles({ textAlign: style?.textAlign || 'left' });
+  // ToDo: remove `textAlign` after migrate all components to the new styles
+  const { styles } = useStyles({ styleValue, enableFullStyle, textAlign: styleValue?.font?.align || style?.textAlign || 'left' });
 
   const renderValue = useMemo(() => {
-    if (render) {
+    if (isDefined(render)) {
       return typeof render === 'function' ? render() : render;
     }
 
-    if ((typeof value === 'undefined' || value === null) && (type === 'dropdown' || type === 'dropdownMultiple')) {
+    if (!isDefined(value) || (typeof (value) === "string" && isNullOrWhiteSpace(value)))
       return '';
-
-      // eliminating null values
-    } else if ((typeof value === 'undefined' || value === null) && type === 'string') {
-      return '';
-    }
-
-    const entityId = typeof value === 'object' ? value?.id ?? value?.data?.id ?? value?.data : value;
-    const className = value?._className ?? value?.data?._className;
-    const displayName = value?.label || value?._displayName || value?.data?._displayName;
 
     switch (type) {
       case 'dropdown':
         if (!Array.isArray(value)) {
-          if (quickviewEnabled && quickviewFormPath) {
-            return quickviewFormPath && quickviewGetEntityUrl
+          const innerData = typeof value === 'object' && "data" in value && typeof (value.data) === 'object' && isDefined(value.data)
+            ? value.data
+            : undefined;
+
+          const entityId = typeof value === 'object'
+            ? getIdOrUndefined(value) ?? getIdOrUndefined(innerData)
+            : typeof (value) === "string"
+              ? value
+              : undefined;
+          const className = getClassNameOrUndefined(value) ?? getClassNameOrUndefined(innerData);
+          const displayName = findMap([value, innerData], (p) => typeof (p) === "object"
+            ? getFirstNonEmptyStringPropertyOrUndefined(value, ["label", "_displayName"])
+            : undefined,
+          );
+
+          if (Boolean(quickviewEnabled) && isDefined(quickviewFormPath)) {
+            return isNotNullOrWhiteSpace(quickviewGetEntityUrl)
               ? (
                 <QuickView
                   entityId={entityId}
@@ -68,45 +77,62 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
               : (
                 <GenericQuickView
                   entityId={entityId}
-                  className={className}
+                  entityType={className}
+                  formIdentifier={quickviewFormPath}
                   displayName={displayName}
                   displayProperty={quickviewDisplayPropertyName}
                   width={quickviewWidth}
                 />
               );
           } else {
-            return dropdownDisplayMode === 'tags'
-              ? (
+            if (dropdownDisplayMode === 'tags') {
+              const rawValue = typeof (value) === "string" || typeof (value) === "number" ? value : undefined;
+              const objValue = typeof (value) === "object" ? value as unknown as ISelectOption : undefined;
+              return (
                 <ReflistTag
-                  value={value}
-                  color={value?.color}
-                  icon={value?.icon}
+                  value={rawValue}
+                  color={objValue?.color}
+                  icon={objValue?.icon}
                   showIcon={showIcon}
                   tagStyle={tagStyle}
-                  description={value?.description}
+                  description={objValue?.description}
                   solidColor={solidColor}
                   showItemName={showItemName}
                   label={displayName}
                 />
-              )
-              : <InputField style={style} value={displayName ?? (typeof value === 'object' ? null : value)} />;
+              );
+            } else
+              return <InputField className={styles.inputField} style={style} value={displayName ?? (typeof value === 'object' ? null : value as string)} />;
           }
         }
         return null;
 
       case 'dropdownMultiple': {
-        if (Array.isArray(value)) {
-          const values = (value as AutocompleteType[])?.map(({ label }) => label);
+        const typedValue = Array.isArray(value) && (!isNonEmptyArray(value) || typeof (value[0]) === "object")
+          ? (value as ISelectOption[]).filter(isDefined)
+          : undefined;
+        if (typedValue) {
+          const values = typedValue.map(({ label }) => label);
 
           return dropdownDisplayMode === 'raw'
-            ? <InputField style={style} value={values?.join(', ')} />
+            ? <InputField className={styles.inputField} style={style} value={values.join(', ')} />
             : (
-              <div style={{ padding: '0px 4px', ...style, display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, justifyContent: style?.textAlign }}>
-                {value?.map(({ label, color, icon, value, description }) => {
+              <div
+                className={styles.wrapper}
+                data-tag-wrapper="true"
+                style={{
+                  ...style,
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  alignItems: 'center',
+                  boxSizing: 'border-box',
+                }}
+              >
+                {typedValue.map(({ label, color, icon, value, description }) => {
                   return (
                     <ReflistTag
                       key={value}
-                      value={value}
+                      value={value ?? undefined}
                       color={color}
                       icon={icon}
                       description={description}
@@ -127,32 +153,25 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
         );
       }
       case 'time': {
-        return <InputField style={style} value={<ValueRenderer value={value} meta={{ path: '', dataType: 'time', dataFormat: timeFormat }} />} />;
+        return <InputField className={styles.inputField} style={style} value={<ValueRenderer value={value} meta={{ path: '', dataType: 'time', dataFormat: timeFormat, isVisible: true }} />} />;
       }
       case 'datetime': {
-        return <InputField style={style} value={getMoment(value, dateFormat)?.format(dateFormat) || ''} />;
+        return <InputField className={styles.inputField} style={style} value={getMoment(value, dateFormat)?.format(dateFormat) ?? ''} />;
       }
       case 'textArea': {
-        return <div style={{ ...style, whiteSpace: 'pre-wrap', lineHeight: '1.2' }}>{value}</div>;
+        return <div style={{ ...style, whiteSpace: 'pre-wrap', lineHeight: '1.2' }}>{String(value)}</div>;
       }
 
-      default:
-        break;
+      default: {
+        return <InputField className={styles.inputField} style={style} value={Boolean(value) && typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value)} />;
+      }
     }
-    return (
-      <InputField
-        style={style}
-        value={Boolean(value) && typeof value === 'object' ? JSON.stringify(value, null, 2) : value}
-      />
-    );
   }, [value,
     type,
     dateFormat,
     timeFormat,
     dropdownDisplayMode,
     render,
-    checked,
-    defaultChecked,
     quickviewEnabled,
     quickviewFormPath,
     quickviewDisplayPropertyName,
@@ -162,10 +181,21 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = (props
     showItemName,
     solidColor,
     tagStyle,
+    style,
+    styles.wrapper,
+    styles.inputField,
   ]);
 
+  // Only apply layout-related styles to outer container, not appearance styles
+  // Appearance styles (border, background, etc.) are applied by InputField to avoid double borders
+  const containerStyle: React.CSSProperties = {
+    width: style?.width,
+    minWidth: style?.minWidth,
+    maxWidth: style?.maxWidth,
+  };
+
   return (
-    <span className={styles.readOnlyDisplayFormItem} style={style}>
+    <span className={styles.readOnlyDisplayFormItem} style={containerStyle}>
       {renderValue}
     </span>
   );

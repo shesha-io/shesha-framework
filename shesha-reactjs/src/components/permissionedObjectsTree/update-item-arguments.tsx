@@ -1,5 +1,4 @@
-import { nanoid } from '@/utils/uuid';
-import { DesignerToolbarSettings } from "@/interfaces/toolbarSettings";
+import { FormMarkupFactory } from '@/interfaces/configurableAction';
 
 export interface IUpdateItemArguments {
   object?: string;
@@ -8,27 +7,24 @@ export interface IUpdateItemArguments {
   description?: string | null | undefined;
 }
 
-export const updateItemArgumentsForm = new DesignerToolbarSettings()
-  .addTextField({
-    id: nanoid(),
+export const updateItemArgumentsForm: FormMarkupFactory = ({ fbf }) => {
+  return fbf().addTextField({
     propertyName: 'object',
     label: 'Object',
     validate: { required: true },
   })
-  .addTextField({
-    id: nanoid(),
-    propertyName: 'category',
-    label: 'Category',
-  })
-  .addTextField({
-    id: nanoid(),
-    propertyName: 'description',
-    label: 'Description',
-  })
-  .addTextField({
-    id: nanoid(),
-    propertyName: 'access',
-    label: 'Access',
-    validate: { required: true },
-  })
-  .toJson();
+    .addTextField({
+      propertyName: 'category',
+      label: 'Category',
+    })
+    .addTextField({
+      propertyName: 'description',
+      label: 'Description',
+    })
+    .addTextField({
+      propertyName: 'access',
+      label: 'Access',
+      validate: { required: true },
+    })
+    .toJson();
+};

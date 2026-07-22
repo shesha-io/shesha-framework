@@ -1,7 +1,9 @@
-﻿using Abp.Domain.Entities;
+﻿using Abp.Application.Services.Dto;
+using Abp.Domain.Entities;
 using Abp.Domain.Entities.Auditing;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Shesha.Domain.EntityPropertyConfiguration;
 using Shesha.Domain.Enums;
 using Shesha.Utilities;
 using System;
@@ -12,7 +14,7 @@ using System.Text.Json.Serialization;
 
 namespace Shesha.Metadata.Dtos
 {
-    public class PropertyMetadataDto
+    public class PropertyMetadataDto: EntityDto<string>
     {
         public string? ColumnName { get; set; }
         public bool CreatedInDb { get; set; }
@@ -114,12 +116,16 @@ namespace Shesha.Metadata.Dtos
         /// </summary>
         public PropertyMetadataDto? ItemsType { get; set; }
 
+        public bool IsItemsType { get; set; }
+
         public MetadataSourceType Source { get; set; }
 
         /// <summary>
         /// If true, indicates that the property is nullable
         /// </summary>
         public bool IsNullable { get; set; }
+
+        public EntityPropertyListConfiguration? ListConfiguration { get; set; }
 
         public static string GetPropertiesMD5(List<PropertyMetadataDto> dtos)
         {

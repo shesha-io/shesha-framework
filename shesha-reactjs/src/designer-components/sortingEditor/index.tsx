@@ -5,37 +5,39 @@ import { GroupOutlined } from '@ant-design/icons';
 import { ConfigurableFormItem } from '@/components/index';
 import settingsFormJson from './settingsForm.json';
 import { validateConfigurableComponentSettings, evaluateString } from '@/providers/form/utils';
-
 import { SortingEditor } from '@/components/dataTable/sortingConfigurator/index';
-import { MetadataProvider } from '@/providers/index';
+import { ConditionalMetadataProvider } from '@/providers/index';
 import { migrateReadOnly } from '../_common-migrations/migrateSettings';
-import ConditionalWrap from '@/components/conditionalWrapper';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { ISortingItem } from '@/providers/dataTable/interfaces';
 
 export interface ISortingEditorComponentProps extends IConfigurableFormComponent {
-  modelType: string;
+  modelType: string | IEntityTypeIdentifier;
   maxItemsCount?: number;
 }
 
 const settingsForm = settingsFormJson as FormMarkup;
 
-export const SortingEditorComponent: IToolboxComponent<ISortingEditorComponentProps> = {
+export type SortingEditorCalculatedProps = {
+  modelType: string | IEntityTypeIdentifier | undefined;
+};
+
+export const SortingEditorComponent: IToolboxComponent<ISortingEditorComponentProps, SortingEditorCalculatedProps> = {
   type: 'dataSortingEditor',
   name: 'Data Sorting Editor',
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
   icon: <GroupOutlined />,
-  calculateModel: (model, allData) => ({ modelType: model.modelType ? evaluateString(model.modelType, { data: allData.data }) : null }),
+  preserveDimensionsInDesigner: true,
+  calculateModel: (model, allData) => ({ modelType: typeof model.modelType === 'string' ? evaluateString(model.modelType, { data: allData.data }) : model.modelType }),
   Factory: ({ model, calculatedModel }) => {
     return (
-      <ConditionalWrap
-        condition={Boolean(calculatedModel.modelType)}
-        wrap={(content) => <MetadataProvider modelType={calculatedModel.modelType}>{content}</MetadataProvider>}
-      >
-        <ConfigurableFormItem model={model}>
+      <ConditionalMetadataProvider modelType={calculatedModel.modelType}>
+        <ConfigurableFormItem<ISortingItem[]> model={model}>
           {(value, onChange) => <SortingEditor value={value} onChange={onChange} readOnly={model.readOnly} maxItemsCount={model.maxItemsCount} />}
         </ConfigurableFormItem>
-      </ConditionalWrap>
+      </ConditionalMetadataProvider>
     );
   },
   settingsFormMarkup: settingsForm,

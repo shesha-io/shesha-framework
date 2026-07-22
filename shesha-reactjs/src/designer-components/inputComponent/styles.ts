@@ -17,9 +17,17 @@ export const useStyles = createStyles(({ css, cx }) => {
   const icon = cx(css`
         --icon-fill-color: #1C1B1F;
     `);
+
+  const radioBtns = cx(css`
+      .ant-radio-button-wrapper-checked {
+        z-index: 0 !important;
+      }
+      
+      `);
   return {
     inlineInputs,
     rowInputs,
     icon,
+    radioBtns,
   };
 });

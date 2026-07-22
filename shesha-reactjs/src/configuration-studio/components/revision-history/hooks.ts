@@ -9,6 +9,7 @@ export enum CreationMethod {
   Manual = 1,
   ManualImport = 2,
   MigrationImport = 3,
+  ManualRestore = 4,
 }
 
 export type ConfigurationItemRevision = {

@@ -8,7 +8,8 @@ import _ from 'lodash';
 import { useForm, useFormData } from '@/providers';
 import { Alert } from 'antd';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
-import { useConfigurableFormSections } from '@/providers/form/sections';
+import { useConfigurableFormSectionsOrUndefined } from '@/providers/form/sections';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 export type ISectionProps = IConfigurableFormComponent;
 
@@ -22,14 +23,16 @@ const SectionComponent: IToolboxComponent<ISectionProps> = {
   isOutput: true,
   Factory: ({ model }) => {
     const { formMode } = useForm();
-    const sections = useConfigurableFormSections(false) ?? {};
+    const sections = useConfigurableFormSectionsOrUndefined() ?? {};
     const { data: formData } = useFormData();
 
     if (formMode === 'designer') {
-      return <Alert message={model.propertyName} />;
+      return <Alert title={model.propertyName} />;
     }
 
-    const section = sections?.[model.propertyName];
+    const section = !isNullOrWhiteSpace(model.propertyName)
+      ? sections[model.propertyName]
+      : undefined;
 
     if (section) {
       return <Fragment>{section(formData)}</Fragment>;

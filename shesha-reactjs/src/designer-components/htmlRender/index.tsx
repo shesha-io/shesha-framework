@@ -2,15 +2,16 @@ import { IToolboxComponent } from '@/interfaces';
 import { executeScriptSync, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { HighlightOutlined } from '@ant-design/icons';
 import parse from 'html-react-parser';
+import DOMPurify from 'dompurify';
 import React from 'react';
 import { IHtmlComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
-import { ConfigurableFormItem } from '@/components';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { addContextData } from '@/index';
+import { addContextData } from '@/components/formDesigner/components/utils';
 
 interface IHtmlComponentCalulatedModel {
-  getContent: (value: any) => string;
+  getContent: (value: string | undefined) => string;
 }
 
 const HtmlComponent: IToolboxComponent<IHtmlComponentProps, IHtmlComponentCalulatedModel> = {
@@ -20,21 +21,21 @@ const HtmlComponent: IToolboxComponent<IHtmlComponentProps, IHtmlComponentCalula
   isInput: false,
   isOutput: true,
   calculateModel: (model, allData) => ({
-    getContent: (value: any) => model.renderer
+    getContent: (value: string | undefined) => model.renderer
       ? executeScriptSync(model.renderer, addContextData(allData, { value })) || '<div><div/>'
       : '<div><div/>',
   }),
   Factory: ({ model, calculatedModel }) => {
     return (
-      <div style={model.allStyles.fullStyle}>
-        <ConfigurableFormItem model={{ ...model, hideLabel: true }}>
-          {(value) => parse(calculatedModel.getContent(value))}
+      <div style={model.allStyles?.fullStyle}>
+        <ConfigurableFormItem<string> model={{ ...model, hideLabel: true }}>
+          {(value) => parse(DOMPurify.sanitize(calculatedModel.getContent(value ?? undefined), { USE_PROFILES: { html: true } }))}
         </ConfigurableFormItem>
       </div>
     );
   },
-  settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings(model), model),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
     .add<IHtmlComponentProps>(1, (prev: IHtmlComponentProps) => ({
       ...migrateFormApi.properties(prev),

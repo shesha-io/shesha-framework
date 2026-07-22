@@ -15,7 +15,7 @@ namespace Shesha.ShaRoleAppointedPersons.Dto
                     ? new EntityReferenceDto<Guid>(e.Person)
                     : null
                 ))
-                .ForMember(u => u.RoleId, options => options.MapFrom(e => e.Role != null ? e.Role.Id : (Guid?)null));
+                .ForMember(u => u.RoleId, options => options.MapFrom(e => e.Role.Id));
         }
     }
 }

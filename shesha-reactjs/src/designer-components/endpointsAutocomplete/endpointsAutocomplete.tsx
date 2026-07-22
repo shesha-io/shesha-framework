@@ -1,19 +1,17 @@
-import { IToolboxComponent } from '@/interfaces';
 import { FormMarkup } from '@/providers/form/models';
 import { ApiOutlined } from '@ant-design/icons';
-import ConfigurableFormItem from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
 import React from 'react';
-import { evaluateValueAsString, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { useFormData } from '@/providers';
-import { EndpointsAutocomplete } from '@/components/endpointsAutocomplete/endpointsAutocomplete';
-import { IEndpointsAutocompleteComponentProps } from './interfaces';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { EndpointsAutocomplete, EndpointsAutocompleteValue } from '@/components/endpointsAutocomplete/endpointsAutocomplete';
+import { EndpointsAutocompleteComponentDefinition, IEndpointsAutocompleteComponentProps } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
-const EndpointsAutocompleteComponent: IToolboxComponent<IEndpointsAutocompleteComponentProps> = {
+const EndpointsAutocompleteComponent: EndpointsAutocompleteComponentDefinition = {
   type: 'endpointsAutocomplete',
   name: 'API Endpoints Autocomplete',
   icon: <ApiOutlined />,
@@ -21,15 +19,12 @@ const EndpointsAutocompleteComponent: IToolboxComponent<IEndpointsAutocompleteCo
   isOutput: true,
   canBeJsSetting: true,
   Factory: ({ model }) => {
-    const { data: formData } = useFormData();
-    const verb = model.httpVerb ? evaluateValueAsString(model.httpVerb, { data: formData }) : model.httpVerb;
-
     return (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem<EndpointsAutocompleteValue> model={model}>
         {
           (value, onChange) => {
             return (
-              <EndpointsAutocomplete {...model} httpVerb={verb} value={value} onChange={onChange} />
+              <EndpointsAutocomplete {...model} value={value ?? undefined} onChange={onChange} />
             );
           }
         }

@@ -22,6 +22,10 @@ namespace Shesha.Migrations.ConfigurationStudio
             IfDatabase("SqlServer").Execute.Sql(@"IF (OBJECT_ID('dbo.FK_Core_DistributionListItems_ShaRoleId_Core_ShaRoles_Id', 'F') IS NOT NULL)
 	ALTER TABLE entpr_DistributionListItems DROP CONSTRAINT FK_Core_DistributionListItems_ShaRoleId_Core_ShaRoles_Id;");
 
+            this.Shesha().MoveForeignKeys("Core_ShaRoles", null, "Id", "role_revisions", "frwk", "id");
+            this.Shesha().MoveForeignKeys("Frwk_ConfigurationItems", null, "Id", "configuration_item_revisions", "frwk", "id");
+            this.Shesha().MoveForeignKeys("Frwk_Modules", null, "Id", "modules", "frwk", "id");
+
             Delete.Table("Core_ShaRoles");
             Delete.Table("Frwk_ConfigurationItems");
             Delete.Table("Frwk_Modules");
@@ -29,6 +33,7 @@ namespace Shesha.Migrations.ConfigurationStudio
             IfDatabase("SqlServer").Execute.Sql(@"IF (OBJECT_ID('dbo.FK_entpr_HomeUrlRoutes_AppId_Frwk_FrontEndApps_Id', 'F') IS NOT NULL)
 	ALTER TABLE entpr_HomeUrlRoutes DROP CONSTRAINT FK_entpr_HomeUrlRoutes_AppId_Frwk_FrontEndApps_Id;");
 
+            this.Shesha().MoveForeignKeys("Frwk_FrontEndApps", null, "Id", "front_end_apps", "frwk", "id");
             Delete.Table("Frwk_FrontEndApps");
 
             // Shesha.Domain.PermissionedObject
