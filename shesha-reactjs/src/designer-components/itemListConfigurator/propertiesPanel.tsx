@@ -4,8 +4,9 @@ import { ConfigurableFormInstance } from '@/interfaces';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { sheshaStyles } from '@/styles';
 import { Form } from 'antd';
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
+import { cloneDeep } from 'lodash';
 import { ItemSettingsMarkupFactory } from './interfaces';
 import { ConfigurableForm } from '@/components/configurableForm';
 
@@ -28,7 +29,13 @@ export const PropertiesPanel = <TItem extends ListItemWithId>(props: IProperties
     300,
   );
 
-  const markup = settingsMarkupFactory(item);
+
+  const markup = useMemo(() => {
+    const m = settingsMarkupFactory(item);
+    return Array.isArray(m)
+      ? cloneDeep(m)
+      : { ...m, components: cloneDeep(m.components) };
+  }, [item, settingsMarkupFactory]);
   return (
     <SourceFilesFolderProvider folder={`item-${item.id}`}>
       <ConfigurableForm<TItem>

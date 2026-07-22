@@ -22,6 +22,7 @@ import React, { FC, PropsWithChildren, useMemo } from "react";
 import { DataTableColumnDto, IExcelColumn, IExportExcelPayload, IGetListDataPayload, isDataColumn, ITableDataFetchColumn, ITableDataInternalResponse, ITableDataResponse } from "../interfaces";
 import { DataTableProviderWithRepository, IDataTableProviderWithRepositoryProps } from "../provider";
 import { EntityReorderItem, EntityReorderPayload, EntityReorderResponse, IRepository, RowsReorderPayload, SupportsGroupingArgs, SupportsReorderingArgs } from "./interfaces";
+import hash from 'object-hash';
 
 export interface IWithBackendRepositoryArgs {
   entityType: string | IEntityTypeIdentifier;
@@ -335,6 +336,13 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
     return args.sortMode === "standard" && Boolean(entityType);
   };
 
+  const getFetcherHash = (): string => {
+    return hash({
+      entityType,
+      getListUrl,
+    }, { algorithm: 'md5', encoding: 'hex' });
+  };
+
   const repository: IBackendRepository = {
     repositoryType: BackendRepositoryType,
     entityType: args.entityType,
@@ -347,6 +355,7 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
     performDelete,
     supportsReordering,
     supportsGrouping,
+    fetchingSettingsHash: getFetcherHash(),
   };
   return repository;
 };

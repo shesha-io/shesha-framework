@@ -33,13 +33,13 @@ export interface ICodeEditorProps extends Omit<UnwrapCodeEvaluators<IConfigurabl
 export type GetAvailableConstantsArgs = {
   data: Record<string, unknown>;
   metadataBuilder: IMetadataBuilder<IInternalObjectMetadataBuilder>;
-  form: IShaFormInstance;
+  form: IShaFormInstance | undefined;
 };
 export type GetAvailableConstantsFunc = (args: GetAvailableConstantsArgs) => Promise<IObjectMetadata>;
 export type GetResultTypeArgs = {
   data: Record<string, unknown>;
   metadataBuilder: IMetadataBuilder<IInternalObjectMetadataBuilder>;
-  form: IShaFormInstance;
+  form: IShaFormInstance | undefined;
 };
 export type GetResultTypeFunc = (args: GetResultTypeArgs) => Promise<IMetadata>;
 

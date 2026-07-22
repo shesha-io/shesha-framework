@@ -64,11 +64,26 @@ namespace Shesha.Swagger
                 }
                 uow.Complete();
             }
-            
-            var serviceNames = permissioned.Select(t => MvcHelper.GetControllerName(t)).OrderBy(s => s).ToList();
-            foreach (var serviceName in serviceNames)
+
+            var services = permissioned.Select(x => new { Key = MvcHelper.GetControllerName(x), Value = x }).ToList();
+            // found duplicates of services by name
+            var duplicates = services.GroupBy(x => x.Key).Where(g => g.Count() > 1).Select(g => g.Key).ToList();
+            var sorted = services.OrderBy(x => MvcHelper.GetControllerName(x.Value)).ToList();
+            foreach (var service in sorted)
             {
-                yield return new UrlDescriptor { Name = serviceName, Url = $"swagger/{SwaggerHelper.GetDocumentNameForService(serviceName)}/swagger.json" };
+                var postfix = string.Empty;
+                if (duplicates.Contains(service.Key))
+                {
+                    if (service.Value.ImplementsGenericInterface(typeof(IEntityAppService<,>)))
+                    {
+                        // if service has duplicate name and it is EntityAppService then
+                        var entityType = service.Value.GetGenericInterfaces(typeof(IEntityAppService<,>)).FirstOrDefault()?.GetGenericArguments()[0];
+                        // add postfix with Entity.Assembly
+                        // This is necessary to separate definitions for Entities with the same names (but different Assemblies)
+                        postfix = entityType != null ? $" ({entityType.Assembly.GetName().Name})" : string.Empty;
+                    }
+                }
+                yield return new UrlDescriptor { Name = MvcHelper.GetControllerName(service.Value) + postfix, Url = $"swagger/{SwaggerHelper.GetDocumentNameForService(service.Value)}/swagger.json" };
             }
         }
 

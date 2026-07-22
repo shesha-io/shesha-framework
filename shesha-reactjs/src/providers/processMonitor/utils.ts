@@ -77,10 +77,8 @@ export const parseLog4NetLine = (logLine: string, id: string | number): ILogEven
     const altPattern = /^(\w+)\s{1,2}(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2},\d{3})\s+(.+)$/;
     const altMatch = trimmedLine.match(altPattern);
 
-    if (!altMatch) {
-      console.warn('Line does not match expected log format:', trimmedLine);
+    if (!altMatch)
       return null;
-    }
 
     return {
       id,

@@ -2,8 +2,10 @@
 using Abp.Collections.Extensions;
 using Abp.Dependency;
 using Abp.Reflection;
+using Shesha.ConfigurationItems;
 using Shesha.Extensions;
 using Shesha.Reflection;
+using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -18,11 +20,13 @@ namespace Shesha.Settings
     {
         private readonly ITypeFinder _typeFinder;
         private readonly IIocManager _iocManager;
+        private readonly IModuleManager _moduleManager;        
 
         protected Lazy<IDictionary<SettingIdentifier, SettingDefinition>> SettingDefinitions { get; }
 
-        public SettingDefinitionManager(ITypeFinder typeFinder, IIocManager iocManager)
+        public SettingDefinitionManager(IModuleManager moduleManager, ITypeFinder typeFinder, IIocManager iocManager)
         {
+            _moduleManager = moduleManager;
             _typeFinder = typeFinder;
             _iocManager = iocManager;
 
@@ -86,6 +90,8 @@ namespace Shesha.Settings
         // Generic method to create a SettingDefinition
         public virtual SettingDefinition CreateUserSettingDefinition(string module, string name, string dataType, object? value = default)
         {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException($"Setting name can not be empty or null or whitespace.", nameof(name));
             var type = GetTypeFromName(dataType);
 
             object? convertedDefaultValue = value == null && type.IsValueType 
@@ -103,10 +109,15 @@ namespace Shesha.Settings
             SettingDefinition setting = (SettingDefinition)constructor.Invoke([name, convertedDefaultValue, name]);
 
             setting.ModuleName = module;
+            
+            var moduleInfo = _moduleManager.GetModuleInfos().FirstOrDefault(m => m.Name == module);
+            setting.ModuleAccessor = moduleInfo?.GetModuleAccessor();
+
             setting.DisplayName = name;
             setting.IsUserSpecific = true;
             setting.Accessor = name;
             setting.Category = "User Settings";
+            setting.CategoryAccessor = "";
             return setting;
         }
 

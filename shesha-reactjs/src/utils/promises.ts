@@ -263,3 +263,13 @@ export function MakePromiseWithState<T>(promise: Promise<T>): StatefulPromise<T>
 
   return result;
 }
+
+/**
+ * Type guard to check if a value is a Promise (or Thenable).
+ */
+export const isPromise = <T>(value: T | Promise<T>): value is Promise<T> => {
+  return value !== null &&
+    typeof value === 'object' &&
+    "then" in value &&
+    typeof (value.then) === 'function';
+};

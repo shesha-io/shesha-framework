@@ -30,7 +30,10 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
 
     const { override, value, color, valueSource } = model;
 
-    const getValueByExpression = (expression: string = ''): string => {
+    const getValueByExpression = (expression?: string | null): string => {
+      // Default parameters only cover `undefined`; `override`/`color` can be `null`
+      // in a component's config, so guard explicitly to avoid `null.includes(...)`.
+      if (expression == null) return '';
       return expression.includes('{{') ? evaluateString(expression, data) : expression;
     };
 

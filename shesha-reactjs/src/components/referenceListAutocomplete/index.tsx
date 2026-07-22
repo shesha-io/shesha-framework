@@ -10,7 +10,7 @@ import { buildUrl } from '@/utils';
 import { isNonEmptyArray } from '@/utils/array';
 import { makeErrorWithMessage } from '@/utils/errors';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
-import { AutoComplete, Empty, Spin, Typography } from 'antd';
+import { AutoComplete, Empty, Input, Spin, Typography } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import React, { ComponentProps, Dispatch, FC, ReactNode, SetStateAction, useMemo, useRef, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
@@ -318,6 +318,7 @@ export const ReferenceListAutocomplete: FC<IReferenceListAutocompleteRuntimeProp
       onChange={setAutocompleteText}
       title={autocompleteText}
     >
+      <Input />
     </AutoComplete>
   );
 };

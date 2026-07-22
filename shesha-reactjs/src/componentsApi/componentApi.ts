@@ -268,4 +268,8 @@ export interface InputComponentApi<T = unknown> extends CommonComponentApi {
 // Components API
 
 export type TextFieldApi = InputComponentApi<string | undefined>;
-export type NumberFieldApi = InputComponentApi<number | undefined>;
+
+export interface NumberFieldApi extends InputComponentApi<number | undefined> {
+  min?: number;
+  max?: number;
+};

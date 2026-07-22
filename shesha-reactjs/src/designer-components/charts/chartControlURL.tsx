@@ -3,16 +3,24 @@ import { Alert, Button } from 'antd';
 import React, { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import { useChartDataActionsContext, useChartDataStateContext } from '../../providers/chartData';
 import { useChartURLData } from './hooks/hooks';
-import { IChartsProps } from './model';
+import { IChartData, IChartsProps } from './model';
 import useStyles from './styles';
 import { getURLChartDataRefetchParams, renderChart } from './utils';
 import ChartLoader from './components/chartLoader';
 import { IAjaxResponse } from '@/interfaces';
 import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 import { isDefined } from '@/utils/nullables';
+import { useForm } from '@/providers';
+
+const DESIGNER_SAMPLE_DATA: IChartData = {
+  labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+  datasets: [{ label: 'Sample', data: [12, 19, 7, 15, 9, 14], backgroundColor: '#4e79a7', borderColor: '#4e79a7' }],
+};
 
 const ChartControlURL: React.FC<IChartsProps> = (props) => {
   const { url, chartType, requestTimeout = 5000 } = props;
+  const { formMode } = useForm();
+  const isDesignMode = formMode === 'designer';
   const { refetch } = useGet<IAjaxResponse<object>>({ path: '', lazy: true });
   const { setIsLoaded, setUrlTypeData } = useChartDataActionsContext();
   const state = useChartDataStateContext();
@@ -204,6 +212,17 @@ const ChartControlURL: React.FC<IChartsProps> = (props) => {
     margin: 0,
     overflow: 'hidden',
   }), []);
+
+  // In designer mode render sample data immediately — no fetch, no loaders
+  if (isDesignMode) {
+    return (
+      <div style={chartContainerStyle}>
+        <div style={chartInnerStyle}>
+          {renderChart(chartType ?? 'line', DESIGNER_SAMPLE_DATA)}
+        </div>
+      </div>
+    );
+  }
 
   // Early returns with memoized components
   if (error) {

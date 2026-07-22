@@ -2,18 +2,16 @@
 import { getFilterOptions } from "@/components/columnItemFilter";
 import { IAsyncStorage } from "@/configuration-studio/storage";
 import { IModelMetadata } from "@/interfaces";
-import { ProperyDataType } from "@/interfaces/metadata";
 import { isNonEmptyArray, undefinedIfEmptyArray } from "@/utils/array";
 import { getIdOrUndefined } from "@/utils/entity";
 import { extractErrorInfo } from "@/utils/errors";
 import { isDefined, isNullOrWhiteSpace, undefinedIfNullOrWhiteSpace } from "@/utils/nullables";
 import { jsonSafeParse } from "@/utils/object";
-import { camelcaseDotNotation, firstNonEmptyStringOrUndefined } from "@/utils/string";
 import { SubscribeFunc, SubscriptionManager } from "@/utils/subscriptions/subscriptionManager";
 import { isEqual, sortBy } from 'lodash';
 import { SortingRule } from "react-table";
-import { IConfigurableColumnsProps, isActionColumnProps, isCrudOperationsColumnProps, isDataColumnProps, isFormColumnProps, isRendererColumnProps } from "../datatableColumnsConfigurator/models";
-import { DATA_TABLE_CONTEXT_INITIAL_STATE, IDataTableUserConfig, ITableColumnUserSettings, MIN_COLUMN_WIDTH } from "./contexts";
+import { IConfigurableColumnsProps } from "../datatableColumnsConfigurator/models";
+import { DATA_TABLE_CONTEXT_INITIAL_STATE, IDataTableUserConfig, ITableColumnUserSettings } from "./contexts";
 import {
   ColumnFilter,
   DataFetchDependencies,
@@ -25,17 +23,13 @@ import {
   ISelectionProps,
   ISortingItem,
   isTableRowData,
-  IStoredFilter,
-  ITableActionColumn, ITableColumn, ITableDataColumn,
-  ITableFilter,
-  ITableFormColumn, ITableRendererColumn,
-  ITableRowData,
+  IStoredFilter, ITableColumn, ITableFilter, ITableRowData,
   JsonLogicFilter, RowSelection,
 } from "./interfaces";
 import { IDataTableStateContext } from "./interfaces.state";
 import { DatatableInitArgs, IDatasetInstance } from "./models";
 import { IRepository } from "./repository/interfaces";
-import { advancedFilter2JsonLogic, getCurrentSorting, getTableDataColumn, getTableDataColumns, getTableFormColumns, sortingItems2ColumnSorting } from "./utils";
+import { advancedFilter2JsonLogic, prepareTableColumn, getCurrentSorting, getDefaultFilterOptionForDataType, getTableDataColumn, getTableDataColumns, getTableFormColumns, sortingItems2ColumnSorting } from "./utils";
 
 export type DataTableInstanceArgs = {
   repository: IRepository;
@@ -101,6 +95,7 @@ export class DatasetInstance implements IDatasetInstance {
     this.#subscriptionManager = new SubscriptionManager<DatasetEvents, IDatasetInstance>();
     this.#storage = args.storage;
 
+
     // eslint-disable-next-line no-console
     this.log = args.logEnabled ? console.log : () => {};
   }
@@ -159,112 +154,7 @@ export class DatasetInstance implements IDatasetInstance {
   };
 
   private prepareColumn = (column: IConfigurableColumnsProps, repoColOverrides: DataTableColumnDto[], userConfig: IDataTableUserConfig | undefined): ITableColumn | undefined => {
-    const resolvedPropertyName = isDataColumnProps(column)
-      ? firstNonEmptyStringOrUndefined(column.propertyName, column.accessor, column.id)
-      : undefined;
-    const userColumnId = isDataColumnProps(column) ? resolvedPropertyName : column.id;
-    const userColumn = userConfig?.columns?.find((c) => c.id === userColumnId);
-
-    const baseProps: ITableColumn = {
-      id: column.id,
-      accessor: column.id,
-      columnId: column.id,
-      columnType: column.columnType,
-      anchored: column.anchored,
-      header: column.caption,
-      caption: column.caption,
-      minWidth: column.minWidth ?? MIN_COLUMN_WIDTH,
-      maxWidth: column.maxWidth,
-      width: userColumn?.width,
-      isVisible: column.isVisible,
-      show: column.isVisible,
-      isFilterable: false,
-      isSortable: false,
-      allowShowHide: false,
-      backgroundColor: column.backgroundColor,
-      description: column.description,
-    };
-
-    if (isDataColumnProps(column)) {
-      const colVisibility = userColumn && isDefined(userColumn.show) ? userColumn.show : column.isVisible;
-
-      const srvColumn = !isNullOrWhiteSpace(resolvedPropertyName)
-        ? repoColOverrides.find((c) => !isNullOrWhiteSpace(c.propertyName) && camelcaseDotNotation(c.propertyName) === camelcaseDotNotation(resolvedPropertyName))
-        : {};
-
-      const dataCol: ITableDataColumn = {
-        ...baseProps,
-        id: !isNullOrWhiteSpace(resolvedPropertyName) ? resolvedPropertyName : column.id,
-        accessor: !isNullOrWhiteSpace(resolvedPropertyName) ? camelcaseDotNotation(resolvedPropertyName) : column.accessor ?? "",
-        propertyName: resolvedPropertyName,
-
-        propertiesToFetch: resolvedPropertyName,
-        isEntity: srvColumn?.dataType === 'entity',
-
-        createComponent: column.createComponent,
-        editComponent: column.editComponent,
-        displayComponent: column.displayComponent,
-
-        dataType: srvColumn?.dataType as ProperyDataType,
-        dataFormat: srvColumn?.dataFormat ?? undefined,
-        isSortable: column.allowSorting && Boolean(srvColumn?.isSortable),
-        isFilterable: srvColumn?.isFilterable ?? false,
-        entityTypeName: srvColumn?.entityTypeName ?? undefined,
-        entityTypeModule: srvColumn?.entityTypeModule ?? undefined,
-        referenceListName: srvColumn?.referenceListName ?? undefined,
-        referenceListModule: srvColumn?.referenceListModule ?? undefined,
-        allowInherited: srvColumn?.allowInherited ?? false,
-        description: column.description,
-        allowShowHide: true,
-        show: colVisibility,
-        metadata: srvColumn?.metadata ?? undefined,
-      };
-      return dataCol;
-    }
-
-    if (isActionColumnProps(column)) {
-      const { icon, actionConfiguration } = column;
-
-      const actionColumn: ITableActionColumn = {
-        ...baseProps,
-        icon,
-        actionConfiguration,
-      };
-
-      return actionColumn;
-    }
-
-    if (isFormColumnProps(column)) {
-      const formColumn: ITableFormColumn = {
-        ...baseProps,
-        accessor: '',
-        propertiesToFetch: column.propertiesNames,
-        propertiesNames: column.propertiesNames,
-
-        displayFormId: column.displayFormId,
-        createFormId: column.createFormId,
-        editFormId: column.editFormId,
-
-        minHeight: column.minHeight,
-      };
-      return formColumn;
-    }
-
-    if (isRendererColumnProps(column)) {
-      const rendererColumn: ITableRendererColumn = {
-        ...baseProps,
-        renderCell: column.renderCell,
-      };
-      return rendererColumn;
-    }
-
-    if (isCrudOperationsColumnProps(column)) {
-      return {
-        ...baseProps,
-      };
-    }
-
-    return undefined;
+    return prepareTableColumn(column, repoColOverrides, userConfig);
   };
 
   /** monotonic counter used to skip outdated columns initializations (see `initColumnsAsync`) */
@@ -522,7 +412,7 @@ export class DatasetInstance implements IDatasetInstance {
           : [];
         return {
           columnId: id,
-          filterOption: filterOptions.length > 0 ? filterOptions[0] : undefined,
+          filterOption: filterOptions.length > 0 ? filterOptions[0] : getDefaultFilterOptionForDataType(column?.dataType),
           filter: undefined,
         };
       });

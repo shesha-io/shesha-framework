@@ -116,7 +116,6 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
     .add<IDataListComponentProps>(11, (prev) => ({ ...prev, showEditIcons: true })),
   settingsFormMarkup: getSettings,
   validateModel: (model, addModelError) => {
-    // Validate form configuration
     if (model.formSelectionMode === "name") {
       if (!model.formId) {
         addModelError('formId', 'This Data List has no form selected.\nSelecting a Form tells the Data List what data structure it should use when rendering items.');
@@ -134,8 +133,6 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
     if (model.formSelectionMode === "expression" && (!model.formIdExpression || model.formIdExpression.trim() === '')) {
       addModelError('formIdExpression', 'This Data List has no form identifier expression configured.\nConfiguring an expression tells the Data List how to dynamically determine which form to use.');
     }
-
-    // Note: DataContext validation is handled via useComponentValidation hook in the Factory/Control functions
   },
 };
 
