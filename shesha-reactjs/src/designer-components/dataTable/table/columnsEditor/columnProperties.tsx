@@ -10,7 +10,6 @@ import { ColumnsItemProps } from '@/providers/datatableColumnsConfigurator/model
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { useDebouncedCallback } from 'use-debounce';
 import { sheshaStyles } from '@/styles';
-import { usePrevious } from 'react-use';
 import { IMetadataContext } from '@/providers/metadata/contexts';
 import { getColumnSettings } from './columnSettings';
 import { useFormBuilderFactory } from '@/form-factory/hooks';
@@ -32,20 +31,6 @@ export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, r
   const columnType = Form.useWatch('columnType', form);
   const columnSettings = useMemo(() => getColumnSettings(fbf, { type: parentComponentType }), [fbf, parentComponentType]);
 
-  const prevColumnType = usePrevious(columnType);
-  useEffect(() => {
-    if (columnType) {
-      const fromDataToAction = !['action', 'crud-operations'].includes(prevColumnType ?? '') && ['action', 'crud-operations'].includes(columnType);
-      const fromActionToData = ['action', 'crud-operations'].includes(prevColumnType ?? '') && !['action', 'crud-operations'].includes(columnType);
-
-      if (fromDataToAction) {
-        form.setFieldsValue({ minWidth: 35, maxWidth: 35 });
-      } else if (fromActionToData) {
-        form.setFieldsValue({ minWidth: 100, maxWidth: 0 });
-      }
-    }
-  }, [columnType, form, prevColumnType]);
-
   const debouncedSave = useDebouncedCallback<OnFormValuesChangeHandler<ColumnsItemProps>>(
     (_, values) => {
       onChange?.({ ...item, ...values });
@@ -53,6 +38,22 @@ export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, r
     // delay in ms
     300,
   );
+
+  useEffect(() => {
+    if (!columnType || readOnly) return;
+
+    const { minWidth } = form.getFieldsValue();
+    // The width is considered not configured when it still holds one of the automatic
+    // defaults: 100px for data columns or 35px for action/crud-operations columns.
+    const isWidthConfigured = typeof minWidth === 'number' && minWidth !== 100 && minWidth !== 35;
+    if (isWidthConfigured) return;
+
+    const isActionColumn = ['action', 'crud-operations'].includes(columnType);
+    const widths = isActionColumn ? { minWidth: 35, maxWidth: 35 } : { minWidth: 100, maxWidth: 0 };
+    form.setFieldsValue(widths);
+    const values = form.getFieldsValue();
+    debouncedSave(values, values);
+  }, [columnType, form, readOnly, debouncedSave]);
 
   const linkToModelMetadata = (metadata: IPropertyMetadata): void => {
     if (readOnly) return;
