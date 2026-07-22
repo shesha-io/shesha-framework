@@ -46,7 +46,7 @@ export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, r
     if (!columnType || readOnly) return;
 
     const isActionColumn = ['action', 'crud-operations'].includes(columnType);
-    const currentValues = form.getFieldsValue(['minWidth', 'maxWidth']);
+    const currentValues = form.getFieldsValue(['minWidth', 'maxWidth']) as Pick<ColumnsItemProps, 'minWidth' | 'maxWidth'>;
 
     // Determine default widths based on column type
     const defaultWidths = isActionColumn
