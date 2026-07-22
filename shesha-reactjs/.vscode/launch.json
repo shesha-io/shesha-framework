@@ -40,8 +40,11 @@
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/node_modules/next/dist/bin/next",
+      "args": [
+        "--webpack"
+      ],
       "runtimeArgs": [
-        "--inspect"
+        "--inspect"        
       ],
       "skipFiles": [
         "<node_internals>/**"

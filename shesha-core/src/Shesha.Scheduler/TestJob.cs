@@ -2,6 +2,7 @@
 using Hangfire;
 using Shesha.Scheduler.Attributes;
 using Shesha.Scheduler.Domain.Enums;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,6 +29,9 @@ namespace Shesha.Scheduler
 
                 }else if (i % 5 == 0)
                 {
+                    Log.Error("Test error", new Exception(@"Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+Curabitur eget ligula commodo, maximus ex vitae, finibus libero. Mauris congue mi mauris, vitae mollis massa mollis et.
+Praesent a erat hendrerit, blandit nulla eget, ornare ante. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Sed scelerisque nulla id mattis bibendum. Vestibulum ut luctus magna. Donec elementum metus sit amet mauris mollis dapibus. Aenean ut lacus augue. Nullam posuere ultrices nisi."));
                     JobStatistics.NumErrors++;
                 } else if (i % 3 == 0)
                 {
