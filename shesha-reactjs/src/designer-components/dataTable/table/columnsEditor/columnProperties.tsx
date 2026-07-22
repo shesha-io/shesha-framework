@@ -39,16 +39,14 @@ export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, r
     300,
   );
 
+  // Track whether the column is an action column so we only reset widths when the type
+  // actually crosses the data <-> action boundary. `undefined` means "not seen yet" so the
+  // first run (loading an existing column) never overwrites the user's saved widths.
   useEffect(() => {
     if (!columnType || readOnly) return;
 
-    const { minWidth } = form.getFieldsValue();
-    // The width is considered not configured when it still holds one of the automatic
-    // defaults: 100px for data columns or 35px for action/crud-operations columns.
-    const isWidthConfigured = typeof minWidth === 'number' && minWidth !== 100 && minWidth !== 35;
-    if (isWidthConfigured) return;
-
     const isActionColumn = ['action', 'crud-operations'].includes(columnType);
+
     const widths = isActionColumn ? { minWidth: 35, maxWidth: 35 } : { minWidth: 100, maxWidth: 0 };
     form.setFieldsValue(widths);
     const values = form.getFieldsValue();

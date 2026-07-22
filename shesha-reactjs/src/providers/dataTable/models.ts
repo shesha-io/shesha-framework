@@ -38,16 +38,6 @@ export type DatatableInitArgs = {
    * Action to execute after row reorder (receives API response)
    */
   onAfterRowReorder?: IConfigurableActionConfiguration | undefined;
-
-  /*
-needToRegisterContext
-contextValidation
-
-disableRefresh
-
-actionOwnerId
-actionOwnerName
-  */
 };
 
 type MissingProperties<A, B> = Pick<A, Exclude<keyof A, keyof B>>;
