@@ -43,18 +43,6 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
     if (settingsPanelElement && settingsPanelElement.contains(target))
       return;
 
-    // Ignore events originating from portal-based overlays (modals, drawers, popovers, dropdowns),
-    // they are rendered outside of the designer DOM (e.g. the columns editor of the DataTable)
-    if (typeof target.closest === 'function' && target.closest('.ant-modal, .ant-drawer, .ant-popover, .ant-dropdown'))
-      return;
-
-    // Ignore while a modal or drawer is open: deleting the last characters of an input inside it may
-    // unmount the input and move focus to the body, the next Delete keypress must not delete the selected component
-    const hasOpenModal = Array.from(document.querySelectorAll<HTMLElement>('.ant-modal-wrap'))
-      .some((wrap) => wrap.style.display !== 'none');
-    if (hasOpenModal || document.querySelector('.ant-drawer-open'))
-      return;
-
     if (selectedComponentId) {
       event.preventDefault();
       deleteComponent({ componentId: selectedComponentId });
