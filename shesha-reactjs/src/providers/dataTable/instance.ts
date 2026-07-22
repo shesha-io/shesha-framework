@@ -631,6 +631,12 @@ export class DatasetInstance implements IDatasetInstance {
 
   unregisterDataFetchDependency = (ownerId: string): void => {
     delete this.dataFetchDependencies[ownerId];
+
+    // If a fetch was previously skipped due to dependencies and now all dependencies are ready,
+    // retry the fetch
+    if (this.isInitialized && this.fetchSkippedDueToDependencies && this.isDataDependenciesReady()) {
+      void this.fetchData();
+    }
   };
 
   getRepository = (): IRepository => {

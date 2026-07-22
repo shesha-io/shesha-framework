@@ -46,11 +46,26 @@ export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, r
     if (!columnType || readOnly) return;
 
     const isActionColumn = ['action', 'crud-operations'].includes(columnType);
+    const currentValues = form.getFieldsValue(['minWidth', 'maxWidth']);
 
-    const widths = isActionColumn ? { minWidth: 35, maxWidth: 35 } : { minWidth: 100, maxWidth: 0 };
-    form.setFieldsValue(widths);
-    const values = form.getFieldsValue();
-    debouncedSave(values, values);
+    // Determine default widths based on column type
+    const defaultWidths = isActionColumn
+      ? { minWidth: 35, maxWidth: 35 }
+      : { minWidth: 100, maxWidth: 0 };
+
+    // Check if column has custom width configuration
+    // A column is considered configured if either width differs from its default
+    const hasCustomMinWidth = currentValues.minWidth !== undefined &&
+      currentValues.minWidth !== (isActionColumn ? 35 : 100);
+    const hasCustomMaxWidth = currentValues.maxWidth !== undefined &&
+      currentValues.maxWidth !== (isActionColumn ? 35 : 0);
+
+    // Only update widths if column is not configured
+    if (!hasCustomMinWidth && !hasCustomMaxWidth) {
+      form.setFieldsValue(defaultWidths);
+      const values = form.getFieldsValue();
+      debouncedSave(values, values);
+    }
   }, [columnType, form, readOnly, debouncedSave]);
 
   const linkToModelMetadata = (metadata: IPropertyMetadata): void => {
