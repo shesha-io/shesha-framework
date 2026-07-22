@@ -4,8 +4,7 @@ export const useStyles = createStyles(({ css, cx }) => {
   const youtubeVideoComponent = cx("youtube-video-component", css`
     .youtube-video-title {
       margin-bottom: 8px;
-      font-size: 18px;
-      font-weight: 600;
+      /* font-size/weight intentionally not set: the Ant Title level (titleLevel) controls sizing */
       color: #1f1f1f;
     }
 
