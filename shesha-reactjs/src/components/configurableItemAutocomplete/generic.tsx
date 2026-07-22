@@ -99,11 +99,14 @@ interface IResponseItem {
   label?: string | undefined;
   description?: string | undefined;
   versionNo?: number | undefined;
-  module?: {
+  module?: string | {
     id: string;
     name: string;
   } | undefined;
 }
+
+const getItemModuleName = (module: IResponseItem['module']): string | undefined =>
+  typeof module === 'string' ? (module || undefined) : module?.name;
 
 interface IConfigurationItemProps {
   name: string;
@@ -136,17 +139,18 @@ const identifierToString = <TValue extends ConfigurableItemFullName = Configurab
 };
 
 const getItemValue = (item: IResponseItem): string => {
-  return item.module
-    ? `${item.module.name}:${item.name}`
+  const moduleName = getItemModuleName(item.module);
+  return moduleName
+    ? `${moduleName}:${item.name}`
     : item.name;
 };
 
 const getDisplayText = (item: IResponseItem | undefined): string | null => {
-  return item
-    ? item.module
-      ? `${item.module.name}: ${item.name}`
-      : item.name
-    : null;
+  if (!item) return null;
+  const moduleName = getItemModuleName(item.module);
+  return moduleName
+    ? `${moduleName}: ${item.name}`
+    : item.name;
 };
 
 export const GenericConfigurableItemAutocompleteInternal = <TValue extends ConfigurableItemFullName = ConfigurableItemFullName>(props: ConfigurableItemAutocompleteRuntimeProps<TValue>): React.JSX.Element => {
@@ -204,18 +208,23 @@ export const GenericConfigurableItemAutocompleteInternal = <TValue extends Confi
     if (fetchedItems) {
       const result: IOption[] = [];
       fetchedItems.forEach((item) => {
-        const moduleDto = item.module ?? { name: LEGACY_ITEMS_MODULE_NAME, id: '-' };
+        const moduleName = getItemModuleName(item.module);
+        const moduleDto = typeof item.module === 'object' && item.module
+          ? item.module
+          : moduleName
+            ? { name: moduleName, id: moduleName }
+            : { name: LEGACY_ITEMS_MODULE_NAME, id: '-' };
 
         const opt: IOption = {
           label: getItemValue(item),
           value: getItemValue(item),
           rawValue: {
             name: item.name,
-            module: item.module?.name ?? null,
+            module: moduleName ?? null,
           },
           optionData: {
             name: item.name,
-            module: item.module?.name ?? null,
+            module: moduleName ?? null,
             label: item.label,
             description: item.description,
           },

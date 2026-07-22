@@ -19,5 +19,7 @@ export const isConfigurableItemFullName = (value: unknown): value is Configurabl
 };
 
 export const configurableItemIdentifierToString = (value: ConfigurableItemIdentifier): string => {
-  return isConfigurableItemFullName(value) ? `${value.module}:${value.name}` : value;
+  return isConfigurableItemFullName(value)
+    ? (value.module === null ? value.name : `${value.module}:${value.name}`)
+    : value;
 };
