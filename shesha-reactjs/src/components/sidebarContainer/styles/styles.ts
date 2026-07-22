@@ -198,6 +198,21 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
         }
       }
 
+      /* Inline usage (e.g. the datatable advanced-filter / columns-selector panel)
+         reuses this container as a plain component rather than a full-screen editor.
+         In that case the sidebar body must size to its own content, capped at the
+         viewport, instead of forcing a fixed ~full-viewport height. The fixed
+         calc(100vh - ...) height is only correct for the full-screen editors
+         (Config Studio, model configurator); applied inline it inflates the whole
+         component to ~92vh and pushes the table below the fold. */
+      &.embedded {
+        .${sidebarContainerBody} .${sidebarContainerRight}.open .${sidebarBody},
+        .${sidebarContainerBody} .${sidebarContainerLeft}.open .${sidebarBody} {
+          height: auto;
+          max-height: calc(100vh - ${HEADER_HEIGHT} - ${TOOLBAR_HEIGHT} - ${SIDEBAR_BTN_HEIGHT});
+        }
+      }
+
       .${canvasPopupContainer} {
         position: fixed;
         top: 0;
