@@ -5,12 +5,13 @@ import { Select } from 'antd';
 import { DefaultOptionType } from 'antd/lib/select';
 import { isDefined } from '@/utils/nullables';
 import Icon from '@/components/icon/Icon';
+import { useStyles } from './dropDownStyles';
 
-const renderOptionLabel = (option: IDropdownOption): React.ReactNode => {
+const renderOptionLabel = (option: IDropdownOption, optionLabelClassName: string): React.ReactNode => {
   if (!isDefined(option.icon))
     return option.label;
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+    <span className={optionLabelClassName}>
       <Icon icon={option.icon} />
       {option.label}
     </span>
@@ -19,8 +20,9 @@ const renderOptionLabel = (option: IDropdownOption): React.ReactNode => {
 
 export const DropDownWrapper: FCUnwrapped<IDropdownSettingsInputProps> = (props) => {
   const { value, onChange, readOnly, size, width, dropdownOptions, dropdownMode, allowClear, variant, className, showSearch, placeholder } = props;
+  const { styles } = useStyles();
   const options: DefaultOptionType[] = (Array.isArray(dropdownOptions) ? dropdownOptions : [])
-    .map((option) => ({ value: option.value, label: renderOptionLabel(option) }));
+    .map((option) => ({ value: option.value, label: renderOptionLabel(option, styles.optionLabel) }));
   return (
     <Select
       value={value}
