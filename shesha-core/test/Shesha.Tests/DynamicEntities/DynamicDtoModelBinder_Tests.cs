@@ -14,7 +14,7 @@ using Shesha.DynamicEntities.Dtos;
 using Shesha.Exceptions;
 using Shesha.Reflection;
 using Shesha.Tests.DynamicEntities.Mvc;
-using Shesha.Tests.Fixtures;
+using Shesha.Testing.Fixtures;
 using Shesha.Utilities;
 using Shouldly;
 using System;

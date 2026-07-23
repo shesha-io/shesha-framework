@@ -14,12 +14,13 @@ import { IEntityMetadataFetcher } from './entities/models';
 import { MetadataDispatcherProvider, useMetadataDispatcher } from './provider';
 import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
 import { isDefined } from '@/utils/nullables';
+import { isEntityTypeIdentifier } from './entities/utils';
 
 
 const useNestedPropertyMetadatAccessor = (modelType: string | IEntityTypeIdentifier | undefined): NestedPropertyMetadatAccessor => {
   const dispatcher = useMetadataDispatcher();
 
-  const accessor: NestedPropertyMetadatAccessor = (propertyPath: string) => modelType
+  const accessor: NestedPropertyMetadatAccessor = (propertyPath: string) => isEntityTypeIdentifier(modelType)
     ? dispatcher.getPropertyMetadata({ dataType: DataTypes.entityReference, modelType, propertyPath })
     : Promise.resolve(null);
 

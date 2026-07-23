@@ -53,6 +53,19 @@ export const getListTypeAndLayout = (
   return type === 'text' || !type || isDragger ? 'text' : 'picture-card';
 };
 
+/** Default thumbnail dimension (px) used when no concrete size is configured. */
+export const DEFAULT_THUMBNAIL_SIZE = 160;
+
+/**
+ * Parses a CSS size value (e.g. "54px", "160", 54) into a positive integer pixel value for the
+ * DownloadThumbnail endpoint. The backend returns a 1x1 placeholder when width/height are missing
+ * or non-positive, so this always resolves to a usable size, falling back to DEFAULT_THUMBNAIL_SIZE.
+ */
+export const resolveThumbnailSize = (value: string | number | undefined): number => {
+  const parsed = typeof value === 'number' ? value : parseFloat(`${value ?? ''}`);
+  return Number.isFinite(parsed) && parsed > 0 ? Math.round(parsed) : DEFAULT_THUMBNAIL_SIZE;
+};
+
 
 /**
  * Result object returned by fetchStoredFile containing the object URL and cleanup function.

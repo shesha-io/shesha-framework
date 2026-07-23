@@ -7,6 +7,8 @@ import React, { FC, PropsWithChildren, useCallback, useMemo } from "react";
 import { DataTableColumnDto, IGetListDataPayload, ITableDataInternalResponse, ITableRowData } from "../interfaces";
 import { DataTableProviderWithRepository, IDataTableProviderWithRepositoryProps } from "../provider";
 import { IRepository, RowsReorderPayload, SupportsReorderingArgs } from "./interfaces";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
+import hash from 'object-hash';
 
 export interface IWithInMemoryRepositoryArgs {
   valueAccessor: () => ITableRowData[];
@@ -19,17 +21,17 @@ type FilterRowsArgs = Pick<IGetListDataPayload, 'quickSearch' | 'columns'> & {
   rows: ITableRowData[];
 };
 const filterRows = ({ rows, columns, quickSearch }: FilterRowsArgs): ITableRowData[] => {
-  if (!quickSearch)
+  if (isNullOrWhiteSpace(quickSearch))
     return rows;
   const lowerQuickSearch = quickSearch.toLowerCase();
 
   return rows.filter((row) => {
     return columns.some((col) => {
-      if (!col.propertyName)
+      if (isNullOrWhiteSpace(col.propertyName))
         return false;
 
       const value = unsafeGetValueByPropertyName(row, col.propertyName);
-      return value && typeof (value) === 'string' && value.toLowerCase().includes(lowerQuickSearch);
+      return isDefined(value) && typeof (value) === 'string' && value.toLowerCase().includes(lowerQuickSearch);
     });
   });
 };
@@ -158,6 +160,12 @@ const createRepository = (args: IWithInMemoryRepositoryArgs): IRepository => {
     return true;
   };
 
+  const getFetcherHash = (): string => {
+    return hash({
+      valueAccessor: args.valueAccessor,
+    }, { algorithm: 'md5', encoding: 'hex' });
+  };
+
   const repository: IRepository = {
     repositoryType: 'inMemory-repository',
     fetch,
@@ -168,6 +176,7 @@ const createRepository = (args: IWithInMemoryRepositoryArgs): IRepository => {
     performUpdate,
     performDelete,
     supportsReordering,
+    fetchingSettingsHash: getFetcherHash(),
   };
   return repository;
 };

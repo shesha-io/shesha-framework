@@ -31,6 +31,8 @@ export const getLayerEventItems = (
       if (!isDefined(id))
         return;
 
+      const entityTitle = typeof item['title'] === "string" ? item['title'] : "";
+
       const event: ICalendarEvent = {
         ...item,
         id: id,
@@ -39,8 +41,8 @@ export const getLayerEventItems = (
         icon,
         showIcon,
         color,
-        iconColor: iconColor || '#000000',
-        title: "",
+        iconColor: isNullOrWhiteSpace(iconColor) ? '#000000' : iconColor,
+        title: entityTitle,
         titleTemplate: title,
         onDblClick,
         onSelect,

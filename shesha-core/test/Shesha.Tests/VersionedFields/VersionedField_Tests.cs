@@ -2,7 +2,7 @@
 using Abp.Domain.Uow;
 using Shesha.Domain;
 using Shesha.Services.VersionedFields;
-using Shesha.Tests.Fixtures;
+using Shesha.Testing.Fixtures;
 using Shouldly;
 using System;
 using System.Threading.Tasks;

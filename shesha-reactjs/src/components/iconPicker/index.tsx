@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useEffect, useMemo, useState } from 'react';
+import React, { FC, ReactNode, useMemo, useState } from 'react';
 import { IconBaseProps } from '@ant-design/icons/lib/components/Icon';
 import { FilledIconTypes, FILLED_ICON_GROUPS } from './iconNamesFilled';
 import { ShaIcon } from '@/components/shaIcon';
@@ -11,6 +11,8 @@ import { TwoToneIconTypes, TWO_FACED_ICON_GROUPS } from './iconNamesTwoTone';
 import { humanizeString } from '@/utils/string';
 import classNames from 'classnames';
 import { useStyles } from './styles/styles';
+import { isNonEmptyArray } from '@/utils/array';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 export type ShaIconTypes = FilledIconTypes | OutlinedIconTypes | TwoToneIconTypes;
 type IconModes = 'outlined' | 'filled' | 'twoFaced';
@@ -66,22 +68,17 @@ const IconPicker: FC<IIconPickerProps> = ({
   value,
   onIconChange,
   readOnly = false,
-  iconSize,
+  iconSize = 24,
   twoToneColor,
   ...props
 }) => {
   const { styles } = useStyles();
-  const [localSelectedIcon, setLocalSelectedIcon] = useState<ShaIconTypes | undefined>(value as ShaIconTypes);
   const [showModal, setShowModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchOption, setSearchOption] = useState<IOption>({
     mode: 'outlined',
     group: ICON_MODE_GROUPS['outlined'],
   });
-
-  useEffect(() => {
-    setLocalSelectedIcon(value as ShaIconTypes);
-  }, [value]);
 
   const toggleModalVisibility = (): void => {
     if (!readOnly) setShowModal((visible) => !visible);
@@ -97,7 +94,6 @@ const IconPicker: FC<IIconPickerProps> = ({
 
   const handleIconSelection = (selected: ShaIconTypes): void => {
     if (readOnly) return;
-    setLocalSelectedIcon(selected);
     toggleModalVisibility();
 
     if (onIconChange) {
@@ -107,7 +103,6 @@ const IconPicker: FC<IIconPickerProps> = ({
 
   const onClear = (): void => {
     if (readOnly) return;
-    setLocalSelectedIcon(undefined);
     toggleModalVisibility();
 
     if (onIconChange) {
@@ -140,20 +135,20 @@ const IconPicker: FC<IIconPickerProps> = ({
           style={{ pointerEvents: readOnly ? 'none' : 'all' }}
           className={classNames(styles.shaIconPickerSelectedIcon, { 'sha-readonly': readOnly })}
         >
-          {localSelectedIcon ? (
+          {!isNullOrWhiteSpace(value) ? (
             <ShaIcon
               className={styles.shaIconPicker}
-              iconName={localSelectedIcon}
+              iconName={value}
               {...props}
-              style={{ fontSize: iconSize || 24, color: twoToneColor }}
-              name={localSelectedIcon}
+              style={{ fontSize: iconSize, color: twoToneColor }}
+              name={value}
             />
           ) : (
             <Button
               size={selectBtnSize}
               title="Select icon"
               disabled={readOnly}
-              icon={<SelectOutlined style={{ margin: 0 }} size={iconSize || 24} />}
+              icon={<SelectOutlined style={{ margin: 0 }} size={iconSize} />}
             >
             </Button>
           )}
@@ -191,7 +186,7 @@ const IconPicker: FC<IIconPickerProps> = ({
             const group = memoizedActiveGroup[groupKey];
             return (
               <div className={styles.shaIconPickerIconListGroup} key={groupKey}>
-                {group?.length ? (
+                {isNonEmptyArray(group) ? (
                   <div className={styles.shaIconPickerIconListGroupHeader}>
                     <SectionSeparator title={humanizeString(groupKey)} />
                   </div>

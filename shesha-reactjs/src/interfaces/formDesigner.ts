@@ -61,11 +61,16 @@ export type SettingsFormMarkupFactoryArgs = {
 };
 export type SettingsFormMarkupFactory = (args: SettingsFormMarkupFactoryArgs) => FormMarkup;
 
+export interface IApiContext<TModel> {
+  updateApiModel: (value: Partial<TModel>) => void;
+}
+
 export interface ComponentFactoryArguments<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = never> {
   model: UnwrapCodeEvaluators<TModel>;
   children?: React.JSX.Element;
   calculatedModel: TCalculatedModel;
   shaApplication?: ISheshaApplicationInstance;
+  apiContext?: IApiContext<TModel>;
 
   // for backward compatibility
   form: FormInstance;

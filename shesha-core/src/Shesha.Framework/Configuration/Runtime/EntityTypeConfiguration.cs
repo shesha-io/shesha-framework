@@ -165,7 +165,12 @@ namespace Shesha.Configuration.Runtime
         /// <summary>
         /// Type of the default application service
         /// </summary>
-        public Type? ApplicationServiceType { get; set; }
+        public Type? DefaultAppServiceType { get; set; }
+
+        /// <summary>
+        /// Type of the dynamic application service
+        /// </summary>
+        public Type? DynamicAppServiceType { get; set; }
 
         public class PropertySetChangeLoggingConfiguration
         {

@@ -97,6 +97,7 @@
     "@types/mustache": "^4.1.2",
     "@types/node": "^18.15.11",
     "@types/number-to-words": "^1.2.1",
+    "@types/object-hash": "^3.0.6",
     "@types/point-in-polygon": "^1.0.0",
     "@types/qs": "^6.9.3",
     "@types/react": "^19.2.14",
