@@ -215,6 +215,7 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
               allowClear
               {...(selectedMode ? { mode: selectedMode } : {})}
               options={options}
+              open={false}
               variant="borderless"
               suffixIcon={<span />}
               onChange={handleMultiChange}
