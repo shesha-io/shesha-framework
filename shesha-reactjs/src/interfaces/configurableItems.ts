@@ -2,7 +2,7 @@ import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 
 export interface ConfigurableItemFullName {
   readonly name: string;
-  readonly module?: string | null | undefined;
+  readonly module: string | null;
 }
 
 export type ConfigurableItemUid = string;
