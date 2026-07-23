@@ -212,7 +212,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
     const isRangeArrow = e.shiftKey && (e.key === 'ArrowDown' || e.key === 'ArrowUp');
 
     if (!isRangeArrow) {
-      if (shiftFocusKey !== null) setShiftFocusKey(null);
+      if (e.key !== 'Shift' && shiftFocusKey !== null) setShiftFocusKey(null);
       return;
     }
 
