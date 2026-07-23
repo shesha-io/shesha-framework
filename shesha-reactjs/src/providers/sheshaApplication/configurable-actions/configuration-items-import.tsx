@@ -18,11 +18,12 @@ const actionsOwner = 'Configuration Items';
 interface IConfigurationItemsImportFooterProps {
   hideModal: () => void;
   importerApi: MutableApi<IImportInterface>;
+  onImported?: () => void;
 }
 
 export const ConfigurationItemsImportFooter: FC<IConfigurationItemsImportFooterProps> = (props) => {
   const [inProgress, setInProgress] = useState(false);
-  const { hideModal, importerApi } = props;
+  const { hideModal, importerApi, onImported } = props;
   const { message, notification } = App.useApp();
 
   const onImport = (): void => {
@@ -31,7 +32,8 @@ export const ConfigurationItemsImportFooter: FC<IConfigurationItemsImportFooterP
     const importer = importerApi.getApi() ?? throwError("importerRef is not defined");
     importer.importExecuter().then(() => {
       message.info('Items imported successfully');
-      hideModal();
+      // Signal success so the caller can refresh the tree; fall back to just closing the modal.
+      (onImported ?? hideModal)();
     }).catch((error: unknown) => {
       notification.error({
         title: "Failed to import package",
@@ -89,7 +91,7 @@ export const useConfigurationItemsImportAction = (): void => {
           },
           showModalFooter: false,
           content: <ConfigurationItemsImport onImported={onImported} setImporterApi={importerApi.setApi} />,
-          footer: <ConfigurationItemsImportFooter hideModal={hideModal} importerApi={importerApi} />,
+          footer: <ConfigurationItemsImportFooter hideModal={hideModal} importerApi={importerApi} onImported={onImported} />,
         };
         createModal({ ...modalProps });
       });

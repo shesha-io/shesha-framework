@@ -123,6 +123,14 @@ namespace Shesha.ConfigurationItems.Distribution
 
             var dto = await exporter.ExportItemAsync(item);
 
+            // Folder path is package metadata, not part of the item's content/hash, so it is set here
+            // at packaging time rather than inside the shared item exporter (which also feeds
+            // SaveToRevisionAsync's ConfigHash). GetFullChain returns leaf -> root, so reverse it;
+            // an empty list means the item sits at the module root.
+            dto.FolderPath = item.Folder != null
+                ? item.Folder.GetFullChain(f => f.Parent).Select(f => f.Name).Reverse().ToList()
+                : new List<string>();
+
             var exportItem = new ConfigurationItemsExportItem
             {
                 RelativePath = GetItemRelativePath(item),
