@@ -1,33 +1,25 @@
 import { createStyles } from '@/styles';
+import { ITextFieldComponentProps } from './interfaces';
+import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
 
-type StylesArgs = {
-  fontWeight: string | undefined;
-  fontFamily: string | undefined;
-  textAlign: string | undefined;
-  color: string | undefined;
-  fontSize: number | undefined;
-};
-type StylesResponse = {
-  textField: string;
-  passwordFieldWrapper: string;
-};
+export const useStyles = createStyles(({ css, cx, token }, model: ITextFieldComponentProps) => {
+  const textField = cx('sha-textField', css`
+      ${borderStyles(model.border)}
+      ${backgroundStyles(model.background)}
+      ${shadowStyles(model.shadow)}
+      ${paddingStyles(model.stylingBoxJson)}
+      ${dimensionsStyles(model.dimensions)}
 
-export const useStyles = createStyles<StylesArgs, StylesResponse>(({ css, cx, token }, { fontWeight, fontFamily, textAlign, color, fontSize }) => {
-  const textField = cx("sha-textField", css`
-        .ant-input {
-            ${color ? `--ant-color-text: ${color} !important;` : ''};
-            ${fontSize ? `--ant-font-size: ${fontSize} !important;` : ''};
-            ${fontWeight ? `font-weight: ${fontWeight};` : ''};
-            ${fontFamily ? `font-family: ${fontFamily};` : ''};
-            ${textAlign ? `text-align: ${textAlign};` : ''};
-        }
+      .ant-input {
+        ${fontStyles(model.font)}
+      }
 
-        :hover {
-            border-color: ${token.colorPrimary} !important;
-        }
+      :hover {
+        border-color: ${token.colorPrimary} !important;
+      }
   `);
 
-  const passwordFieldWrapper = cx("sha-password-field-wrapper", css`
+  const passwordFieldWrapper = cx('sha-password-field-wrapper', css`
     .ant-form-item-explain,
     .ant-form-item-explain-connected {
       max-width: var(--sha-password-input-width, 100%);

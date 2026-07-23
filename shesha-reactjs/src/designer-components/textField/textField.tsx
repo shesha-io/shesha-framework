@@ -7,7 +7,7 @@ import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { IInputStyles, UnwrapCodeEvaluators } from '@/providers';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { ITextFieldComponentProps, TextFieldComponentDefinition } from './interfaces';
-import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly, migrateHiddenToVisible } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
@@ -15,16 +15,19 @@ import { IconType, ShaIcon } from '@/components/shaIcon';
 import { useStyles } from './styles';
 import { PasswordFieldWrapper } from './passwordFieldWrapper';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { getSettings } from './settingsForm';
 import { defaultStyles, buildPasswordValidatorString, usePasswordComplexitySettings, validatePasswordValue } from './utils';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { TextFieldApi } from '@/componentsApi/componentApi';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
+import { getComponentEvents } from '../_common/events';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 const TextFieldComponent: TextFieldComponentDefinition = {
+  allowInherit: true,
   type: 'textField',
   isInput: true,
   isOutput: true,
@@ -53,13 +56,8 @@ const TextFieldComponent: TextFieldComponentDefinition = {
     }, [componentApi, model.componentName, model.id]);
     useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
-    const { styles } = useStyles({ fontFamily: model.font?.type, fontWeight: model.font?.weight, textAlign: model.font?.align, color: model.font?.color, fontSize: model.font?.size });
+    const { styles } = useStyles(model);
     const InputComponentType = useMemo(() => model.textType === 'password' ? Input.Password : Input, [model.textType]);
-
-    const finalStyle = useMemo(() => !model.enableStyleOnReadonly && model.readOnly ? {
-      ...model.allStyles?.fontStyles,
-      ...model.allStyles?.dimensionsStyles,
-    } : model.allStyles?.fullStyle, [model.enableStyleOnReadonly, model.readOnly, model.allStyles]);
 
     const regExpObj = useMemo(() => {
       if (!model.regExp) return null;
@@ -92,8 +90,6 @@ const TextFieldComponent: TextFieldComponentDefinition = {
       };
     }, [model, isPassword, passwordValidator]);
 
-    if (model.hidden) return null;
-
     const inputProps: InputProps = {
       className: `sha-input ${styles.textField}`,
       placeholder: model.placeholder,
@@ -103,7 +99,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
       disabled: model.readOnly ?? false,
       readOnly: model.readOnly,
       spellCheck: model.spellCheck ?? false,
-      style: model.allStyles?.fullStyle,
+      ...(isDefined(model.styleJson) ? { style: model.styleJson } : {}),
     };
     if (model.border?.hideBorder)
       inputProps.variant = 'borderless';
@@ -123,11 +119,13 @@ const TextFieldComponent: TextFieldComponentDefinition = {
             })()
             : null;
 
-          const inputElement = inputProps.readOnly
+          const inputElement = model.readOnly
             ? (
               <ReadOnlyDisplayFormItem
                 value={model.textType === 'password' && !isNullOrWhiteSpace(value) ? ''.padStart(value.length, '•') : value}
-                style={finalStyle}
+                enableFullStyle={model.enableStyleOnReadonly}
+                style={model.styleJson}
+                styleValue={model}
               />
             )
             : (
@@ -152,12 +150,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
                     }
                   }
                 }}
-                onFocus={(event) => {
-                  ctx?.handleEvent(event, { value }, model.onFocusCustom);
-                }}
-                onBlur={(event) => {
-                  ctx?.handleEvent(event, { value }, model.onBlurCustom);
-                }}
+                {...getComponentEvents<string>(model, ['onFocus', 'onBlur', 'onClick', 'onMouseEnter', 'onKeyDown'], ctx, value, DataTypes.string)}
               />
             );
 
@@ -183,13 +176,16 @@ const TextFieldComponent: TextFieldComponentDefinition = {
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   initModel: (model) => ({ ...model, textType: 'text' }),
+  getDefaultStyles: () => defaultStyles(),
   migrator: (m) => m
     .add<ITextFieldComponentProps>(0, (prev) => ({ ...prev, textType: 'text' }))
     .add<ITextFieldComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<ITextFieldComponentProps>(2, (prev) => migrateVisibility(prev))
     .add<ITextFieldComponentProps>(3, (prev) => migrateReadOnly(prev, 'inherited'))
     .add<ITextFieldComponentProps>(4, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-    .add<ITextFieldComponentProps>(5, (prev) => {
+    .add<ITextFieldComponentProps>(5, (prev, context) => {
+      if (context.isNew === true) return prev;
+
       const styles: IInputStyles = {
         size: prev.size,
         width: prev.width,
@@ -205,7 +201,11 @@ const TextFieldComponent: TextFieldComponentDefinition = {
       };
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-    .add<ITextFieldComponentProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+    .add<ITextFieldComponentProps>(6, (prev, context) => context.isNew === true
+      ? prev
+      : { ...migratePrevStyles(prev, defaultStyles()) })
+    .add<ITextFieldComponentProps>(7, (prev) => migrateHiddenToVisible(prev))
+    .add<ITextFieldComponentProps>(8, (prev) => migratePermissionsToVisiblePermissions(prev)),
   linkToModelMetadata: (model, metadata): ITextFieldComponentProps => (
     { ...model, textType: metadata.dataFormat === StringFormats.password ? 'password' : 'text' }
   ),
