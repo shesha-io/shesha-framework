@@ -73,7 +73,8 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
   // The range is always recomputed as [anchor, focus] (inclusive) rather than grown
   // incrementally, so that moving the focus back toward the anchor shrinks the
   // selection instead of no-op'ing (a plain Set union can only ever add keys).
-  const shiftFocusKeyRef = useRef<React.Key | null>(null);
+  // Kept as state (not a ref) because it also drives the Tree's `activeKey` in render.
+  const [shiftFocusKey, setShiftFocusKey] = useState<React.Key | null>(null);
   const [contextNode, setContextNode] = useState<TreeNode | null>(null);
   const { styles } = useStyles();
   const [dndState, setDndState] = useState<DndState>();
@@ -106,18 +107,18 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
       if (anchorIdx >= 0 && clickedIdx >= 0) {
         const [lo, hi] = anchorIdx <= clickedIdx ? [anchorIdx, clickedIdx] : [clickedIdx, anchorIdx];
         const rangeKeys = flatVisibleNodes.slice(lo, hi + 1).map((n) => n.key.toString());
-        shiftFocusKeyRef.current = clickedKey;
+        setShiftFocusKey(clickedKey);
         void cs.setMultiSelection(rangeKeys);
       }
     } else if (isCtrl) {
       // Ctrl+click: antd already toggled the item in `keys`; persist the new set.
       void cs.setMultiSelection(keys.map((k) => k.toString()));
       lastClickedKeyRef.current = clickedKey;
-      shiftFocusKeyRef.current = null;
+      setShiftFocusKey(null);
     } else {
       // Plain click: single selection + navigation.
       lastClickedKeyRef.current = clickedKey;
-      shiftFocusKeyRef.current = null;
+      setShiftFocusKey(null);
       const selectedNode = keys.length > 0 ? info.node : undefined;
       void cs.selectTreeNode(selectedNode);
     }
@@ -234,7 +235,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
 
     // Focus moves one step per keypress from wherever it last ended up (or from
     // the anchor, on the first Shift+Arrow press).
-    const focusKey = shiftFocusKeyRef.current ?? anchorKey;
+    const focusKey = shiftFocusKey ?? anchorKey;
     const focusIdx = flatVisibleNodes.findIndex((n) => n.key === focusKey);
     if (focusIdx < 0) return;
 
@@ -243,7 +244,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
 
     const nextFocusNode = flatVisibleNodes[nextFocusIdx];
     if (!nextFocusNode) return;
-    shiftFocusKeyRef.current = nextFocusNode.key;
+    setShiftFocusKey(nextFocusNode.key);
 
     // Recompute the full [anchor, focus] range every time — moving the focus back
     // toward the anchor must shrink the selection, which a Set union can't do.
@@ -323,6 +324,10 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
                   onClick={handleClick}
                   selectedKeys={selectedKeys ?? []}
                   onExpand={onNodeExpand}
+                  // Only take over rc-tree's focus ring while our own range-selection
+                  // (shift+click/shift+arrow) is active; omitting the prop the rest of
+                  // the time hands focus tracking back to rc-tree's own uncontrolled state.
+                  {...(shiftFocusKey !== null ? { activeKey: shiftFocusKey } : {})}
                   tabIndex={0}
                 />
               </Dropdown>
