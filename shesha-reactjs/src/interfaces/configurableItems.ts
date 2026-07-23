@@ -1,4 +1,4 @@
-import { isDefined } from "@/utils/nullables";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 
 export interface ConfigurableItemFullName {
   readonly name: string;
@@ -15,11 +15,11 @@ export const isConfigurableItemRawId = (formId: ConfigurableItemIdentifier): for
 export const isConfigurableItemFullName = (value: unknown): value is ConfigurableItemFullName => {
   return isDefined(value) && typeof (value) === "object" &&
     "name" in value && typeof (value.name) === "string" &&
-    "module" in value && (typeof (value.module) === "string" || value.module === null);
+    (!("module" in value) || typeof (value.module) === "string" || value.module === null || value.module === undefined);
 };
 
 export const configurableItemIdentifierToString = (value: ConfigurableItemIdentifier): string => {
   return isConfigurableItemFullName(value)
-    ? (value.module === null ? value.name : `${value.module}:${value.name}`)
+    ? (isNullOrWhiteSpace(value.module) ? value.name : `${value.module}:${value.name}`)
     : value;
 };
