@@ -220,15 +220,17 @@ export const useUrlRepository = (args: IWithUrlRepositoryArgs): IUrlRepository =
   const apiHelper = useModelApiHelper();
   const mutator = useMutate();
 
+  // depend on the stable url, not the args object which callers pass as a fresh literal
+  const { getListUrl } = args;
   const repository = useMemo<IUrlRepository>(() => {
     return createRepository({
-      ...args,
+      getListUrl,
       httpClient,
       metadataDispatcher,
       apiHelper,
       mutator,
     });
-  }, [apiHelper, args, httpClient, metadataDispatcher, mutator]);
+  }, [apiHelper, getListUrl, httpClient, metadataDispatcher, mutator]);
 
   return repository;
 };

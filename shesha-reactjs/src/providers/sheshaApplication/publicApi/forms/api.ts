@@ -46,15 +46,23 @@ export class FormsApi implements IFormsApi {
     this._entityMetadataHelper = new FormMetadataHelper(metadataDispatcher);
   }
 
+  private buildTemplateUrl = (templateId: string): string => {
+    const trimmed = templateId.trim();
+    const isGuid = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(trimmed);
+    if (isGuid)
+      return `/api/services/Shesha/FormConfiguration/Get?${qs.stringify({ id: trimmed })}`;
+
+    const separatorIndex = trimmed.search(/[/:]/);
+    const module = separatorIndex >= 0 ? trimmed.slice(0, separatorIndex) : '';
+    const name = separatorIndex >= 0 ? trimmed.slice(separatorIndex + 1) : trimmed;
+    return `/api/services/Shesha/FormConfiguration/GetByName?${qs.stringify({ module, name })}`;
+  };
+
   prepareTemplateAsync = (templateId: string, replacements: object | undefined): Promise<string> => {
     if (!templateId)
       return Promise.resolve('');
 
-    const payload = {
-      id: templateId,
-    };
-
-    const url = `/api/dynamic/Shesha/FormConfiguration/Crud/Get?${qs.stringify(payload)}`;
+    const url = this.buildTemplateUrl(templateId);
     return this._httpClient
       .get<IAbpWrappedGetEntityResponse<FormConfigurationDto>>(url)
       .then(async (response) => {

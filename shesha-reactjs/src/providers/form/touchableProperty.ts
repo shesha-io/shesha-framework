@@ -52,8 +52,13 @@ export const CreateTouchableProperty = (data: object, parent: IPropertyTouched, 
     getOwnPropertyDescriptor(target, prop) {
       const propertyName = prop.toString();
       const data = target.accessor._data;
-      if (isDefined(data) && propertyName in data)
+      if (isDefined(data) && propertyName in data) {
+        // don't report a non-configurable own prop (e.g. array `length`) as configurable
+        const targetDesc = Reflect.getOwnPropertyDescriptor(target, propertyName);
+        if (isDefined(targetDesc) && targetDesc.configurable === false)
+          return { ...targetDesc, value: (data as IAnyObject)[propertyName] };
         return Reflect.getOwnPropertyDescriptor(data, propertyName);
+      }
       return undefined;
     },
   });

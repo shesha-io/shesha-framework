@@ -1,5 +1,5 @@
 import { FormIdFullNameDtoAjaxResponse } from "@/apis/entityConfig";
-import { ConfigurableItemFullName, ConfigurableItemIdentifier, ConfigurableItemUid, FormFullName, IFormDto, isConfigurableItemFullName, isConfigurableItemRawId, IToolboxComponents } from "@/interfaces";
+import { ConfigurableItemFullName, ConfigurableItemIdentifier, ConfigurableItemUid, FormFullName, IFormDto, isConfigurableItemFullName, isConfigurableItemRawId, IToolboxComponents, normalizeConfigurableItemIdentifier } from "@/interfaces";
 import { extractAjaxResponse, IAjaxResponse, isAjaxSuccessResponse } from "@/interfaces/ajaxResponse";
 import { HttpClientApi, HttpResponse } from "@/publicJsApis/apis/httpClient";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
@@ -313,7 +313,7 @@ export class ConfigurationLoader implements IConfigurationLoader {
       return await this.getCachedConfigAsync<TConfigDto>({ ...args, id: lookup });
     }
 
-    throw new Error('Unknown configuration item identifier');
+    throw new Error(`Unknown configuration item identifier: ${JSON.stringify(id)}`);
   };
 
   addConfigToCacheAsync = async <TConfigDto extends PartialConfigurationDto = ConfigurationDto>(type: string, id: ConfigurableItemIdentifier, configuration: TConfigDto, cacheMd5: string, topLevelModule: string | undefined): Promise<void> => {
@@ -426,16 +426,23 @@ export class ConfigurationLoader implements IConfigurationLoader {
   };
 
   getCurrentConfigAsync = <TConfigDto extends PartialConfigurationDto = ConfigurationDto>(args: GetConfigurationArgs): PromisedValue<TConfigDto> => {
-    const { id, type, topLevelModule, skipCache } = args;
+    const { type, topLevelModule, skipCache } = args;
+    const normalizedId = normalizeConfigurableItemIdentifier(args.id);
+    const id = normalizedId ?? args.id;
+    const normalizedArgs: GetConfigurationArgs = { ...args, id };
 
     if (!skipCache) {
-      const existingRequest = this.getExistingConfigRequest(args);
+      const existingRequest = this.getExistingConfigRequest(normalizedArgs);
       if (existingRequest)
         return existingRequest as PromisedValue<TConfigDto>;
     }
 
     const wrappedPromise = new StatefulPromise<TConfigDto>((resolve, reject) => {
-      this.getCachedConfigAsync<TConfigDto>(args)
+      if (!isDefined(normalizedId)) {
+        reject(new ConfigurationLoadingError(getConfigurationNotFoundMessage(type, undefined)));
+        return;
+      }
+      this.getCachedConfigAsync<TConfigDto>(normalizedArgs)
         .then((cachedConfig) => {
           this.fetchConfigFromBackendAsync({ type, id, cachedConfiguration: cachedConfig })
             .then((response) => {

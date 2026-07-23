@@ -93,9 +93,14 @@ export class ObservableProxy<T> implements IProxyWithRefresh<T> {
         return Array.from(target._propAccessors.keys());
       },
       getOwnPropertyDescriptor(target, prop) {
-        return target._propAccessors.has(prop.toString())
-          ? { enumerable: true, configurable: true, writable: false }
-          : undefined;
+        const propertyName = prop.toString();
+        if (!target._propAccessors.has(propertyName))
+          return undefined;
+        // don't report a non-configurable own prop (e.g. array `length`) as configurable
+        const targetDesc = Reflect.getOwnPropertyDescriptor(target, propertyName);
+        if (isDefined(targetDesc) && targetDesc.configurable === false)
+          return { ...targetDesc, value: target.getPropertyValue(propertyName) };
+        return { enumerable: true, configurable: true, writable: false };
       },
     });
   }
