@@ -172,7 +172,7 @@ export class ConfigurationLoader implements IConfigurationLoader {
   };
 
   getCacheKeyByFullName = (module: string | null | undefined, name: string): string => {
-    return `${module ?? null}:${name}`;
+    return `${isNullOrWhiteSpace(module) ? null : module}:${name}`;
   };
 
   getConfigLookupAsync = async (type: string, id: ConfigurableItemFullName): Promise<ConfigurationLookup | undefined> => {
@@ -388,7 +388,7 @@ export class ConfigurationLoader implements IConfigurationLoader {
 
   getExistingConfigRequestKey = (id: ConfigurableItemIdentifier, topLevelModule: string | undefined): string => {
     const idText = isConfigurableItemFullName(id)
-      ? `${id.module ?? null}/${id.name}`
+      ? `${isNullOrWhiteSpace(id.module) ? null : id.module}/${id.name}`
       : id;
 
     return topLevelModule
