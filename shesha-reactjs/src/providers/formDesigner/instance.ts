@@ -727,9 +727,10 @@ export class FormDesignerInstance implements IFormDesignerInstance {
   };
 
   private updateState = (updater: (state: FormDesignerFormState) => FormDesignerFormState, description: string): void => {
-    this.undoableState.executeChange(updater, description);
-    this.isDataModified = true;
-    this.notifySubscribers(['markup', 'selection', 'history', 'data-modified']);
+    if (this.undoableState.executeChange(updater, description)) {
+      this.isDataModified = true;
+      this.notifySubscribers(['markup', 'selection', 'history', 'data-modified']);
+    }
   };
 
   undo = (): void => {
