@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/strict-boolean-expressions: "error" */
 import ConfigurationItemsExport, { IExportInterface } from "@/components/configurationFramework/itemsExport";
 import { ConfigurationItemsImport, IImportInterface } from "@/components/configurationFramework/itemsImport";
 import { IAjaxResponse } from "@/interfaces";
@@ -91,6 +92,10 @@ const STORAGE_KEYS = {
 };
 
 interface CreateItemResponse {
+  id: string;
+};
+
+interface CreateFolderResponse {
   id: string;
 };
 
@@ -197,7 +202,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
     this.notificationApi = args.notificationApi;
     this.storage = args.storage;
     // eslint-disable-next-line no-console
-    this.log = args.logEnabled ? console.log : () => {};
+    this.log = args.logEnabled === true ? console.log : () => {};
     this.treeLoadingState = { status: 'waiting' };
     this.subscriptions = new Map<CsSubscriptionType, Set<CsSubscription>>();
     this.toolbarRef = args.toolbarRef;
@@ -808,7 +813,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
   //#region crud operations
 
   createFolderAsync = async ({ moduleId, folderId }: CreateFolderArgs): Promise<void> => {
-    await this.modalApi.showModalFormAsync({
+    const response = await this.modalApi.showModalFormAsync<CreateFolderResponse>({
       title: 'Create Folder',
       formId: FORMS.CREATE_FOLDER,
       formArguments: {
@@ -817,7 +822,19 @@ export class ConfigurationStudio implements IConfigurationStudio {
       },
     });
     await this.loadTreeAsync();
-    // TODO: select created folder
+    if (!isNullOrWhiteSpace(response?.id)) {
+      const treeNode = this._treeNodesMap.get(response.id);
+
+      if (treeNode) {
+        if (isDefined(treeNode.parentId) && !(this.isTreeNodeExpanded(treeNode.parentId))) {
+          this.expandTreeNode(treeNode.parentId);
+        }
+
+        // select new tab
+        await this.doSelectTreeNodeAsync(treeNode);
+        this.notifySubscribers(['tree']);
+      }
+    }
   };
 
   deleteFolderAsync = async (node: FolderTreeNode): Promise<void> => {
@@ -1098,7 +1115,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
   getDocIdFromRoute = (): string | undefined => {
     const { docId } = this.shaRouter.router.query;
-    return docId && typeof (docId) === 'string' && !isNullOrWhiteSpace(docId)
+    return isDefined(docId) && typeof (docId) === 'string' && !isNullOrWhiteSpace(docId)
       ? docId
       : undefined;
   };
@@ -1106,7 +1123,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
   navigateAfterInitAsync = async (): Promise<void> => {
     // get id of the document from the router and open tab
     const docId = this.getDocIdFromRoute();
-    if (docId) {
+    if (!isNullOrWhiteSpace(docId)) {
       // open document
       await this.openDocumentByIdAsync(docId);
     } else {
