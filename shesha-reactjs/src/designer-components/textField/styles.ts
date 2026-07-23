@@ -9,6 +9,7 @@ export const useStyles = createStyles(({ css, cx, token }, model: ITextFieldComp
       ${shadowStyles(model.shadow)}
       ${paddingStyles(model.stylingBoxJson)}
       ${dimensionsStyles(model.dimensions)}
+      ${fontStyles(model.font)}
 
       .ant-input {
         ${fontStyles(model.font)}
