@@ -118,12 +118,14 @@ import PieChartComponent from '@/designer-components/charts/pie';
 import PolarAreaChartComponent from '@/designer-components/charts/polarArea';
 import { ConfigurableItemAutocompleteComponent } from '@/designer-components/configurableItemAutocomplete';
 import { DividerComponent } from '@/designer-components/_legacyComponents/divider';
+import YoutubeVideoComponent from '@/designer-components/youtubeVideo';
 import EntityTypeAutocompleteComponent from '@/designer-components/configurableItemAutocomplete/entityTypeAutocomplete';
 import CalendarComponent from '@/designer-components/calendar';
 import TableContextComponentLegacy from '@/designer-components/dataTable/tableContext/tableContextComponentLegacy';
 import { isDefined } from '@/utils/nullables';
 
 type IToolboxComponentGroupRelaxed = Omit<IToolboxComponentGroup, 'components'> & { components: IToolboxComponentBase[] };
+
 
 export const getToolboxComponents = (
   devMode: boolean,
@@ -154,7 +156,7 @@ export const getToolboxComponents = (
     {
       name: 'Data display',
       visible: true,
-      components: [Alert, Link, Statistic, Text, ValidationErrors, BarChartComponent, LineChartComponent, PieChartComponent, PolarAreaChartComponent],
+      components: [Alert, Link, Statistic, Text, ValidationErrors, BarChartComponent, LineChartComponent, PieChartComponent, PolarAreaChartComponent, YoutubeVideoComponent],
     },
     {
       name: 'Advanced',
