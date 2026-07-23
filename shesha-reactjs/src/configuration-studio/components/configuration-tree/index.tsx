@@ -28,7 +28,6 @@ type AllowDrop = TreeProps<TreeNode>['allowDrop'];
 type OnDrop = TreeProps<TreeNode>['onDrop'];
 type OnRightClick = TreeProps<TreeNode>['onRightClick'];
 type MenuItems = Required<MenuProps>['items'];
-type OnTreeKeyDown = TreeProps<TreeNode>['onKeyDown'];
 type OnDragStart = TreeProps<TreeNode>['onDragStart'];
 type OnDragEnd = TreeProps<TreeNode>['onDragEnd'];
 
@@ -68,8 +67,13 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
   const { getDocumentDefinition } = useConfigurationStudioEnvironment();
   const { treeNodes, loadTreeAsync, treeLoadingState, expandedKeys, selectedKeys, selectedNodes, onNodeExpand, quickSearch, setQuickSearch, getTreeNodeById } = useCsTree();
   const { setIsDragging } = useCsTreeDnd();
-  // Anchor for shift+click range selection: the last node clicked without shift
+  // Anchor for shift+click/shift+arrow range selection: the last node clicked without shift.
   const lastClickedKeyRef = useRef<React.Key | null>(null);
+  // Current end of the shift-selection range, as moved by Shift+Arrow or Shift+Click.
+  // The range is always recomputed as [anchor, focus] (inclusive) rather than grown
+  // incrementally, so that moving the focus back toward the anchor shrinks the
+  // selection instead of no-op'ing (a plain Set union can only ever add keys).
+  const shiftFocusKeyRef = useRef<React.Key | null>(null);
   const [contextNode, setContextNode] = useState<TreeNode | null>(null);
   const { styles } = useStyles();
   const [dndState, setDndState] = useState<DndState>();
@@ -102,15 +106,18 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
       if (anchorIdx >= 0 && clickedIdx >= 0) {
         const [lo, hi] = anchorIdx <= clickedIdx ? [anchorIdx, clickedIdx] : [clickedIdx, anchorIdx];
         const rangeKeys = flatVisibleNodes.slice(lo, hi + 1).map((n) => n.key.toString());
+        shiftFocusKeyRef.current = clickedKey;
         void cs.setMultiSelection(rangeKeys);
       }
     } else if (isCtrl) {
       // Ctrl+click: antd already toggled the item in `keys`; persist the new set.
       void cs.setMultiSelection(keys.map((k) => k.toString()));
       lastClickedKeyRef.current = clickedKey;
+      shiftFocusKeyRef.current = null;
     } else {
       // Plain click: single selection + navigation.
       lastClickedKeyRef.current = clickedKey;
+      shiftFocusKeyRef.current = null;
       const selectedNode = keys.length > 0 ? info.node : undefined;
       void cs.selectTreeNode(selectedNode);
     }
@@ -203,28 +210,46 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
     setIsDragging(false);
   };
 
-  const handleKeyDown: OnTreeKeyDown = (e) => {
+  // Shift+Arrow must be intercepted in the capture phase: rc-tree runs its own
+  // roving-focus keyboard navigation (the focus outline) on every arrow keydown
+  // before antd's `onKeyDown` prop ever fires, so calling preventDefault() from
+  // that prop is too late to stop it. Stopping propagation here, before the
+  // event reaches the Tree, keeps the focus outline and the selection in sync
+  // instead of moving independently.
+  const handleTreeKeyDownCapture: React.KeyboardEventHandler<HTMLDivElement> = (e) => {
     if (!e.shiftKey || (e.key !== 'ArrowDown' && e.key !== 'ArrowUp'))
       return;
 
     e.preventDefault();
+    e.stopPropagation();
 
     const currentKeys = selectedKeys ?? [];
     if (currentKeys.length === 0) return;
 
-    // Extend selection toward the arrow direction from the last selected node.
-    const anchorKey = currentKeys[currentKeys.length - 1];
+    // Anchor stays fixed at the last plain/ctrl click; fall back to the first
+    // selected node if nothing was ever explicitly clicked (e.g. programmatic selection).
+    const anchorKey = lastClickedKeyRef.current ?? currentKeys[0];
     const anchorIdx = flatVisibleNodes.findIndex((n) => n.key === anchorKey);
     if (anchorIdx < 0) return;
 
-    const nextIdx = e.key === 'ArrowDown' ? anchorIdx + 1 : anchorIdx - 1;
-    if (nextIdx < 0 || nextIdx >= flatVisibleNodes.length) return;
+    // Focus moves one step per keypress from wherever it last ended up (or from
+    // the anchor, on the first Shift+Arrow press).
+    const focusKey = shiftFocusKeyRef.current ?? anchorKey;
+    const focusIdx = flatVisibleNodes.findIndex((n) => n.key === focusKey);
+    if (focusIdx < 0) return;
 
-    const nextNode = flatVisibleNodes[nextIdx];
-    if (!nextNode) return;
-    const nextKey = nextNode.key.toString();
-    const newKeys = [...new Set([...currentKeys.map(String), nextKey])];
-    void cs.setMultiSelection(newKeys);
+    const nextFocusIdx = e.key === 'ArrowDown' ? focusIdx + 1 : focusIdx - 1;
+    if (nextFocusIdx < 0 || nextFocusIdx >= flatVisibleNodes.length) return;
+
+    const nextFocusNode = flatVisibleNodes[nextFocusIdx];
+    if (!nextFocusNode) return;
+    shiftFocusKeyRef.current = nextFocusNode.key;
+
+    // Recompute the full [anchor, focus] range every time — moving the focus back
+    // toward the anchor must shrink the selection, which a Set union can't do.
+    const [lo, hi] = anchorIdx <= nextFocusIdx ? [anchorIdx, nextFocusIdx] : [nextFocusIdx, anchorIdx];
+    const rangeKeys = flatVisibleNodes.slice(lo, hi + 1).map((n) => n.key.toString());
+    void cs.setMultiSelection(rangeKeys);
   };
 
   const allowNodeDropWrapper: AllowDrop = ({ dragNode, dropNode, dropPosition }) => {
@@ -271,7 +296,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
             </div>
           )}
           {!collapsed && (
-            <div className={styles.csNavPanelTree}>
+            <div className={styles.csNavPanelTree} onKeyDownCapture={handleTreeKeyDownCapture}>
               <Dropdown
                 menu={{ items: nodeContextMenuItems }}
                 trigger={["contextMenu"]}
@@ -298,7 +323,6 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
                   onClick={handleClick}
                   selectedKeys={selectedKeys ?? []}
                   onExpand={onNodeExpand}
-                  onKeyDown={handleKeyDown}
                   tabIndex={0}
                 />
               </Dropdown>
