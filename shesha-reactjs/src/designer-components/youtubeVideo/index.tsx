@@ -5,7 +5,8 @@ import { IToolboxComponent } from '@/interfaces';
 import { YoutubeOutlined } from '@ant-design/icons';
 import { useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { useConfigurableActionDispatcher } from '@/providers';
-import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
+import { IConfigurableActionConfiguration, isNonEmptyActionConfiguration } from '@/interfaces/configurableAction';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { getSettings } from './settingsForm';
 import { IYoutubeVideoCalculatedValues, IYoutubeVideoComponentProps } from './interfaces';
 import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
@@ -17,13 +18,6 @@ import { loadYouTubeIframeApi, YTPlayer, YTPlayerEvent } from './youtubeApi';
 import { useStyles } from './styles';
 
 const { Title, Paragraph } = Typography;
-
-// True when a configurable action is actually wired up (has a non-empty action name).
-const hasAction = (action?: IConfigurableActionConfiguration): boolean =>
-  action?.actionName != null && action.actionName !== '';
-
-// A configured video id that is present and non-empty.
-const hasValue = (value?: string): boolean => value != null && value !== '';
 
 const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYoutubeVideoCalculatedValues> = {
   type: 'youtubeVideo',
@@ -78,7 +72,7 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
     constantsRef.current = allConstants;
 
     // The Player API is needed only when events are wired up or watch-completion gates submission.
-    const eventsConfigured = hasAction(onPlay) || hasAction(onPause) || hasAction(onEnd) || hasAction(onReady);
+    const eventsConfigured = isNonEmptyActionConfiguration(onPlay) || isNonEmptyActionConfiguration(onPause) || isNonEmptyActionConfiguration(onEnd) || isNonEmptyActionConfiguration(onReady);
     const needsJsApi = eventsConfigured || watchCompletionRequired;
 
     // titleLevel arrives from the dropdown as a string ('1'..'5'); Ant's Title needs a 1-5 number.
@@ -90,8 +84,8 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
     // Resolve thumbnail URL based on source type
     const getThumbnailUrl = (): string | null => {
       // Backward compatibility: use old customThumbnail if new properties not set
-      if (thumbnailSource == null && hasValue(customThumbnail)) {
-        return customThumbnail ?? null;
+      if (thumbnailSource == null && !isNullOrWhiteSpace(customThumbnail)) {
+        return customThumbnail;
       }
 
       switch (thumbnailSource) {
@@ -168,7 +162,7 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
 
     // Build YouTube URL with parameters
     const buildYoutubeUrl = (): string | null => {
-      if (!hasValue(videoId)) {
+      if (isNullOrWhiteSpace(videoId)) {
         // Nothing to embed (placeholder is shown in designer mode)
         return null;
       }
@@ -183,7 +177,7 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
       if (mute) params.append('mute', '1');
       if (loop) {
         params.append('loop', '1');
-        params.append('playlist', videoId ?? '');
+        params.append('playlist', videoId);
       }
       if (startTime != null) params.append('start', startTime.toString());
       if (endTime != null) params.append('end', endTime.toString());
@@ -195,7 +189,7 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
 
       // Caption parameters
       if (ccLoadPolicy) params.append('cc_load_policy', '1');
-      if (hasValue(ccLangPref)) params.append('cc_lang_pref', ccLangPref ?? '');
+      if (!isNullOrWhiteSpace(ccLangPref)) params.append('cc_lang_pref', ccLangPref);
 
       // Mobile parameters
       if (!playsinline) params.append('playsinline', '0');
@@ -274,7 +268,7 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
 
     // Track play/pause/end via the official YouTube IFrame Player API (reliable, unlike raw postMessage).
     useEffect(() => {
-      if (!needsJsApi || formMode === 'designer' || !hasValue(videoId) || !iframeShown) {
+      if (!needsJsApi || formMode === 'designer' || isNullOrWhiteSpace(videoId) || !iframeShown) {
         return undefined;
       }
 
@@ -282,9 +276,9 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
       let cancelled = false;
 
       const fire = (action?: IConfigurableActionConfiguration): void => {
-        if (!hasAction(action)) return;
+        if (!isNonEmptyActionConfiguration(action)) return;
         void handlersRef.current.executeAction({
-          actionConfiguration: action as IConfigurableActionConfiguration,
+          actionConfiguration: action,
           argumentsEvaluationContext: constantsRef.current,
         });
       };
@@ -356,7 +350,7 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
           const completed = value === true || isCompleted;
 
           // Render placeholder in designer mode
-          if (formMode === 'designer' && !hasValue(videoId)) {
+          if (formMode === 'designer' && isNullOrWhiteSpace(videoId)) {
             return (
               <div className={styles.youtubeVideoPlaceholder}>
                 <YoutubeOutlined style={{ fontSize: '48px', color: '#ff0000' }} />
@@ -370,7 +364,7 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
 
           return (
             <div className={styles.youtubeVideoComponent} style={componentStyles}>
-              {hasValue(title) && (
+              {!isNullOrWhiteSpace(title) && (
                 <Title
                   level={resolvedTitleLevel}
                   className="youtube-video-title"
@@ -378,7 +372,7 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
                   {title}
                 </Title>
               )}
-              {hasValue(description) && (
+              {!isNullOrWhiteSpace(description) && (
                 <Paragraph
                   className="youtube-video-description"
                 >
@@ -392,7 +386,7 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
                     className="youtube-custom-thumbnail"
                     role="button"
                     tabIndex={0}
-                    aria-label={hasValue(title) ? `Play video: ${title ?? ''}` : 'Play video'}
+                    aria-label={!isNullOrWhiteSpace(title) ? `Play video: ${title}` : 'Play video'}
                     onClick={() => setHasWatched(true)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') {
@@ -413,7 +407,7 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
                     style={iframeStyle}
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
-                    title={hasValue(title) ? title : 'YouTube Video'}
+                    title={!isNullOrWhiteSpace(title) ? title : 'YouTube Video'}
                   />
                 )}
               </div>
