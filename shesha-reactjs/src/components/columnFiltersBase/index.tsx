@@ -16,6 +16,7 @@ export interface IColumnFiltersBaseProps {
   changeFilter: (filterColumnId: string, filterValue: ColumnFilter) => void;
   toggleColumnFilter: (columnIds: string[]) => void;
   applyFilters: () => void;
+  removeColumnFilter?: (columnId: string) => void;
 }
 
 export const ColumnFiltersBase: FC<IColumnFiltersBaseProps> = ({
@@ -24,6 +25,7 @@ export const ColumnFiltersBase: FC<IColumnFiltersBaseProps> = ({
   changeFilter,
   toggleColumnFilter,
   applyFilters,
+  removeColumnFilter,
   currentFilter,
 }) => {
   const filterableColumns = currentFilter
@@ -81,6 +83,7 @@ export const ColumnFiltersBase: FC<IColumnFiltersBaseProps> = ({
                 filter={existingFilter?.filter}
                 filterOption={existingFilter?.filterOption}
                 applyFilters={applyFilters}
+                removeColumnFilter={removeColumnFilter}
                 referenceListName={referenceListName}
                 referenceListModule={referenceListModule}
                 entityTypeName={entityTypeName}

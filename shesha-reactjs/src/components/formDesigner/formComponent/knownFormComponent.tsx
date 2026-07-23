@@ -1,9 +1,8 @@
-import { stylingUtils } from '@/components/formDesigner/utils/stylingUtils';
 import { isSubFormComponent } from '@/designer-components/subForm';
 import { useActualContextData, useDeepCompareMemo } from '@/hooks';
 import { useActualContextExecution, useBackgroundStoredFile, useCalculatedModel, useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
-import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
+import { IApiContext, IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
 import { IStyleValue, useCanvas, useForm, useShaFormInstance, useSheshaApplication, useTheme } from '@/providers';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { formComponentActualModelPropertyFilter, isFormFullName } from '@/providers/form/utils';
@@ -16,8 +15,9 @@ import AttributeDecorator from '../../attributeDecorator';
 import ErrorIconPopover from '../../componentErrors/errorIconPopover';
 import { isValidGuid } from '../components/utils';
 import { getStyleBoxValue } from '@/designer-components/styleBox/utils';
+import { stylingUtils } from '@/components/formDesigner/utils/stylingUtils';
 import { IFormComponentProps } from './formComponent';
-import { updateApi } from './formComponentApi';
+import { updateApi, updateApiModel } from './formComponentApi';
 
 type CustomHtmlAttributes = {
   "data-sha-c-id"?: string | undefined;
@@ -109,8 +109,12 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
   const allStyles = useFormComponentStyles(unwrappedModel); // ToDo: AS - remove afte migrate all components to use IStyleValue
   const styleJson = useActualContextExecution(unwrappedModel.style, undefined, {}); // use default style if empty or error
 
-  const readOnly = useMemo(() => Boolean(unwrappedModel.readOnly) || !anyOfPermissionsGranted(unwrappedModel.editModePermissions || []), [unwrappedModel, anyOfPermissionsGranted]);
-  const disabled = useMemo(() => Boolean(unwrappedModel.disabled) || !anyOfPermissionsGranted(unwrappedModel.editModePermissions || []), [unwrappedModel, anyOfPermissionsGranted]);
+  const readOnly = useMemo(() =>
+    (toolboxComponent.allowInherit !== true && unwrappedModel.disabled === true) || // ToDo: AS - remove allowInherit after migrate all components
+    unwrappedModel.readOnly === true ||
+    !anyOfPermissionsGranted(unwrappedModel.editModePermissions || []),
+  [toolboxComponent.allowInherit, unwrappedModel.disabled, unwrappedModel.readOnly, unwrappedModel.editModePermissions, anyOfPermissionsGranted]);
+  const disabled = useMemo(() => unwrappedModel.disabled === true || !anyOfPermissionsGranted(unwrappedModel.editModePermissions || []), [unwrappedModel, anyOfPermissionsGranted]);
   const hidden = useMemo(() => shaForm.formMode !== 'designer' &&
     (
       // ToDo: AS - remove hidden from this check after migration
@@ -124,16 +128,12 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
   const propertyName = isInput || isOutput ? unwrappedModel.propertyName : undefined;
 
   const actualModel = useMemo(() => {
-    // For input components: Strip margins from fullStyle and jsStyle
-    // Margins are handled by the FormItem wrapper (via allStyles.margins), not the inner component
-    // This prevents double margins (wrapper + component) in both designer and live modes
-    const finalAllStyles = isInput
-      ? {
-        ...allStyles,
-        fullStyle: stylingUtils.stripMargins(allStyles.fullStyle),
-        jsStyle: stylingUtils.stripMargins(allStyles.jsStyle),
-      // margins are preserved for FormItem wrapper use
-      }
+    // In designer mode the outer wrapper div owns the margins (via createRootContainerStyle).
+    // Strip them from fullStyle/jsStyle here to avoid double-application inside the wrapper.
+    // In live mode there is no outer wrapper, so margins stay in fullStyle.
+    const isDesignerMode = shaForm.formMode === 'designer';
+    const finalAllStyles = isDesignerMode
+      ? { ...allStyles, fullStyle: stylingUtils.stripMargins(allStyles.fullStyle), jsStyle: stylingUtils.stripMargins(allStyles.jsStyle) }
       : allStyles;
 
     return {
@@ -145,7 +145,7 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
       propertyName,
       allStyles: finalAllStyles,
     };
-  }, [allStyles, hidden, isInput, propertyName, readOnly, disabled, styleJson, unwrappedModel]);
+  }, [allStyles, hidden, propertyName, readOnly, disabled, shaForm.formMode, styleJson, unwrappedModel]);
 
   const calculatedModel = useCalculatedModel(actualModel, toolboxComponent.useCalculateModel, toolboxComponent.calculateModel);
 
@@ -157,6 +157,8 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
   }, [componentApi, actualModel, actualApiModel, isInput, shaForm]);
   useEffectOnce(() => () => componentApi?.removeApi(actualModel.id));
 
+  const apiContext: IApiContext<IConfigurableFormComponent> = useMemo(() => ({ updateApiModel: (model) => updateApiModel(setApiModel, model) }), []);
+
   const control = useMemo(() => {
     return (
       <toolboxComponent.Factory
@@ -164,10 +166,11 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
         model={actualApiModel}
         calculatedModel={calculatedModel}
         shaApplication={shaApplication}
+        apiContext={apiContext}
         key={actualModel.id}
       />
     );
-  }, [toolboxComponent, shaForm.antdForm, actualApiModel, calculatedModel, shaApplication, actualModel.id]);
+  }, [toolboxComponent, shaForm.antdForm, actualApiModel, calculatedModel, shaApplication, actualModel.id, apiContext]);
 
   // Run validation in both designer and runtime modes
   // Collect errors from:

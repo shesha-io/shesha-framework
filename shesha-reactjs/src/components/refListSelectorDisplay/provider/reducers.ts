@@ -6,18 +6,38 @@ import { getItemPositionById } from '@/components/refListSelectorDisplay/provide
 import { createReducer } from '@reduxjs/toolkit';
 import { setItems, selectItemAction, updateItemAction, updateChildItemsAction, storeSettingsAction } from './actions';
 import { isDefined } from '@/utils/nullables';
+import { IReferenceListItem } from '@/interfaces/referenceList';
 
 export const RefListItemGroupReducer = createReducer(REF_LIST_ITEM_GROUP_CONTEXT_INITIAL_STATE, (builder) => {
   builder
     .addCase(setItems, (state, { payload }) => {
+      // Preserve any per-item configuration (Hide/Events) the user already set, matched by itemValue,
+      // so re-fetching the reference list does not wipe saved settings (the cause of #5125).
+      const priorByValue = new Map<number, RefListGroupItemProps>();
+      const indexPriorItems = (items: RefListGroupItemProps[]): void => {
+        items.forEach((prior) => {
+          const value = (prior as Partial<IReferenceListItem>).itemValue;
+          if (isDefined(value))
+            priorByValue.set(value, prior);
+          // grouped items keep their settings under childItems, so recurse to preserve nested config too
+          if (isIRefListItemGroup(prior) && isDefined(prior.childItems))
+            indexPriorItems(prior.childItems);
+        });
+      };
+      indexPriorItems(state.items);
       return {
         ...state,
-        items: payload.map<RefListGroupItemProps>((item) => ({
-          ...item,
-          item: item.item ?? undefined,
-          color: item.color ?? undefined,
-          icon: item.icon ?? undefined,
-        })),
+        items: payload.map<RefListGroupItemProps>((item) => {
+          const prior = priorByValue.get(item.itemValue);
+          return {
+            ...item,
+            item: item.item ?? undefined,
+            color: item.color ?? undefined,
+            icon: item.icon ?? undefined,
+            ...(isDefined(prior?.hidden) ? { hidden: prior.hidden } : {}),
+            ...(isDefined(prior?.actionConfiguration) ? { actionConfiguration: prior.actionConfiguration } : {}),
+          };
+        }),
       };
     })
     .addCase(storeSettingsAction, (state, { payload }) => {

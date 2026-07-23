@@ -147,7 +147,14 @@ const CrudProvider = <TData extends object = object>(props: PropsWithChildren<IC
     if (autoSave !== state.autoSave) dispatch(setAutoSaveAction(autoSave));
   }, [autoSave, state.autoSave]);
 
+  // track previous prop values so the sync effect below reacts to prop changes only,
+  // user-initiated mode switches (state.mode) must not be reverted back to the prop value
+  const prevModeProps = useRef({ mode, allowChangeMode });
   useEffect(() => {
+    if (prevModeProps.current.mode === mode && prevModeProps.current.allowChangeMode === allowChangeMode)
+      return;
+    prevModeProps.current = { mode, allowChangeMode };
+
     // to restore the edit pen when toggling between inLine edit mode(all-at-once/one-by-one)
     const modeToUse = mode === 'read' ? mode : allowChangeMode ? state.mode : mode;
 

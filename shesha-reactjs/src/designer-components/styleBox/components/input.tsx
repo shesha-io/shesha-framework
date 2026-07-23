@@ -56,6 +56,7 @@ const BoxInput: FC<IProps> = ({ direction, onChange, readOnly, type, value, prop
           propertyName={fullName}
           readOnly={readOnly}
           width="30px"
+          placeholder="0"
         />
       </div>
     </div>
