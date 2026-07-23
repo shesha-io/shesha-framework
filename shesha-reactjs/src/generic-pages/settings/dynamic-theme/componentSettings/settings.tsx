@@ -18,8 +18,8 @@ export interface IComponentDefaultsSettingsProps {
 }
 
 export const ComponentDefaultsSettings: FC<IComponentDefaultsSettingsProps> = ({ componentTitle, componentType, markup, initialModel, readonly, onChange }) => {
-  const [form] = Form.useForm();
   const { styles } = useStyles();
+  const [form] = Form.useForm();
   const defaultModel = useDefaultModelActionsOrUndefined<Record<string, unknown>>();
 
   const getMergedOrValue = (payload: ISetFormDataPayload<Record<string, unknown>>): Record<string, unknown> | undefined => {
@@ -29,6 +29,9 @@ export const ComponentDefaultsSettings: FC<IComponentDefaultsSettingsProps> = ({
       ? deepMergeValues(data, values)
       : values;
   };
+
+  // ConfigurableForm remounts on componentType changes via key={componentType} and uses mount-only initialValues,
+  // so manual form synchronization is not needed
 
   return (
     <Card

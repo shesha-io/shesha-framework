@@ -28,3 +28,31 @@ export const undefinedIfNullOrWhiteSpace = (value: string | null | undefined): s
 export const isNotNullOrWhiteSpace = (value: string | null | undefined): value is string => {
   return !isNullOrWhiteSpace(value);
 };
+
+/**
+ * Type guard for objects exposing a `toHexString()` method (e.g. antd's `AggregationColor`).
+ */
+const hasToHexString = (value: unknown): value is { toHexString: () => string } => {
+  return (
+    value !== null &&
+    typeof value === 'object' &&
+    'toHexString' in value &&
+    typeof (value as { toHexString: unknown }).toHexString === 'function'
+  );
+};
+
+/**
+ * Coerces an antd `ColorValueType` (string | AggregationColor | gradient | null) into a plain CSS
+ * color string usable in `style` props. Returns undefined for null/gradient/unsupported values.
+ * @param value - The color value to coerce.
+ * @returns A CSS color string, or undefined when there is no usable single color.
+ */
+export const coerceCssColor = (value: unknown): string | undefined => {
+  if (value === null || value === undefined) return undefined;
+  if (typeof value === 'string') return value;
+  // AggregationColor exposes toHexString(); gradients are arrays and have no single CSS color.
+  if (hasToHexString(value)) {
+    return value.toHexString();
+  }
+  return undefined;
+};

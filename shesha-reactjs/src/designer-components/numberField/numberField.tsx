@@ -42,6 +42,7 @@ export interface InputNumberRef extends HTMLInputElement {
 
 const NumberFieldComponent: NumberFieldComponentDefinition = {
   allowInherit: true,
+  themeGroup: 'input',
   type: 'numberField',
   isInput: true,
   isOutput: true,
