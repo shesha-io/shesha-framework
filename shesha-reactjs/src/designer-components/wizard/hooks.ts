@@ -129,10 +129,22 @@ export const useWizard = (model: IWizardComponentProps): IWizardComponent => {
 
   const componentsNames = useMemo(() => collectFieldNames(components), [components, collectFieldNames]);
 
-  // Field name paths across every step, used to reset step data on reset()
+  // Resolve a step's custom-footer components from the flat markup (mirrors visibleSteps)
+  const resolveFooterComponents = useCallback((step: IWizardStepProps): IConfigurableFormComponent[] => {
+    const footerId = step.stepFooter?.id ?? (step.hasCustomFooter ? `${step.id}_footer` : undefined);
+    if (!step.hasCustomFooter || !footerId) return [];
+    return (componentRelations[footerId] || [])
+      .map((id) => allComponents[id])
+      .filter(isConfigurableFormComponent);
+  }, [componentRelations, allComponents]);
+
+  // Field name paths across every step (including custom-footer fields), used to reset step data on reset()
   const allStepsFieldNames = useMemo(
-    () => tabs.flatMap((step) => collectFieldNames(step.components)),
-    [tabs, collectFieldNames],
+    () => tabs.flatMap((step) => [
+      ...collectFieldNames(step.components),
+      ...collectFieldNames(resolveFooterComponents(step)),
+    ]),
+    [tabs, collectFieldNames, resolveFooterComponents],
   );
 
   var formInstance = allData.form?.formInstance;
