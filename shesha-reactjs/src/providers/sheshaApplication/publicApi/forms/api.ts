@@ -46,8 +46,9 @@ export class FormsApi implements IFormsApi {
     this._entityMetadataHelper = new FormMetadataHelper(metadataDispatcher);
   }
 
-  private buildTemplateUrl = (templateId: string): string => {
-    const trimmed = templateId.trim();
+  // expects an already-trimmed, non-empty identifier; returns undefined when it
+  // resolves to an empty name (so an empty GetByName request is never issued)
+  private buildTemplateUrl = (trimmed: string): string | undefined => {
     const isGuid = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(trimmed);
     if (isGuid)
       return `/api/services/Shesha/FormConfiguration/Get?${qs.stringify({ id: trimmed })}`;
@@ -55,14 +56,19 @@ export class FormsApi implements IFormsApi {
     const separatorIndex = trimmed.search(/[/:]/);
     const module = separatorIndex >= 0 ? trimmed.slice(0, separatorIndex) : '';
     const name = separatorIndex >= 0 ? trimmed.slice(separatorIndex + 1) : trimmed;
+    if (!name)
+      return undefined;
     return `/api/services/Shesha/FormConfiguration/GetByName?${qs.stringify({ module, name })}`;
   };
 
   prepareTemplateAsync = (templateId: string, replacements: object | undefined): Promise<string> => {
-    if (!templateId.trim())
+    const trimmed = templateId.trim();
+    if (!trimmed)
       return Promise.resolve('');
 
-    const url = this.buildTemplateUrl(templateId);
+    const url = this.buildTemplateUrl(trimmed);
+    if (!url)
+      return Promise.resolve('');
     return this._httpClient
       .get<IAbpWrappedGetEntityResponse<FormConfigurationDto>>(url)
       .then(async (response) => {
