@@ -1,5 +1,6 @@
+/* eslint @typescript-eslint/strict-boolean-expressions: "error" */
 import React, { FC, PropsWithChildren, useCallback, useMemo, useRef, useState } from "react";
-import { Monaco, loader } from '@monaco-editor/react';
+import { Monaco } from '@monaco-editor/react';
 import { IDisposable, IPosition, IRange, Uri, UriComponents, editor, languages } from 'monaco-editor';
 import { DataTypes } from "@/interfaces";
 import { IModelMetadata, ModelTypeIdentifier, asPropertiesArray } from "@/interfaces/metadata";
@@ -21,10 +22,9 @@ import { Environment } from "@/publicJsApis/apis/metadataBuilder";
 import { useIsDevMode } from "@/hooks/useIsDevMode";
 import { useEffectOnce } from "@/hooks/useEffectOnce";
 import { isNonEmptyArray } from "@/utils/array";
-import { isDefined } from "@/utils/nullables";
-
-// you can change the source of the monaco files
-loader.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.50.0/min/vs' } });
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
+import { withMonaco } from "./loaderWrapper";
+import { firstNonEmptyString } from "@/utils/string";
 
 interface EditorFileNamesState {
   modelFilePath: string;
@@ -129,9 +129,9 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
 
   const fileUid = useRef<string>(null);
   const fileNamesState = useMemo<EditorFileNamesState>(() => {
-    const effectiveFileName = fileName || "index";
+    const effectiveFileName = firstNonEmptyString(fileName, "index");
     let effectiveFolder = path;
-    if (!effectiveFolder) {
+    if (isNullOrWhiteSpace(effectiveFolder)) {
       fileUid.current = fileUid.current ?? nanoid();
       effectiveFolder = fileUid.current;
     }
@@ -217,7 +217,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
   };
 
   const isInitialPath = (path?: string): boolean => {
-    if (!path)
+    if (isNullOrWhiteSpace(path))
       return false;
 
     const normalizedPath = _.trimStart(path, '/');
@@ -400,4 +400,4 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
     );
 };
 
-export default CodeEditorClientSide;
+export default withMonaco(CodeEditorClientSide);
