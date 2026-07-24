@@ -28,6 +28,7 @@ export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({ children
                 router={nextRouter}
                 noAuth={nextRouter.path?.includes('/no-auth')}
                 buildHttpRequestHeaders={buildHttpHeaders}
+                monaco={{ localPath: "/monaco/vs" }}
             >
                 <OrganisationsActionsProvider>
                     {children}

@@ -12,3 +12,4 @@ node_modules/asn1*
 out/
 .DS_Store
 dist/
+public/monaco
