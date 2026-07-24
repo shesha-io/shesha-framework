@@ -10,6 +10,7 @@ import { IObjectMetadata } from '@/interfaces/metadata';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { SheshaCommonContexts } from '../dataContextManager/models';
 import { ContextOnChangeData } from '../dataContextProvider/contexts';
+import { useLocalStorage } from '@/hooks';
 
 const CanvasProvider: FC<PropsWithChildren> = ({
   children,
@@ -34,9 +35,20 @@ const CanvasProvider: FC<PropsWithChildren> = ({
     dataType: DataTypes.object,
   } as IObjectMetadata), []);
 
+
+  const [storedDesignerWidth, setStoredDesignerWidth] = useLocalStorage('shesha:designerWidth', CANVAS_CONTEXT_INITIAL_STATE.designerWidth);
+  const [storedDesigneZoom, setStoredDesigneZoom] = useLocalStorage('shesha:designerZoom', CANVAS_CONTEXT_INITIAL_STATE.zoom);
+
   const [state, dispatch] = useReducer(reducer, {
     ...CANVAS_CONTEXT_INITIAL_STATE,
+    designerWidth: storedDesignerWidth,
+    zoom: storedDesigneZoom,
   });
+
+  useEffect(() => {
+    setStoredDesignerWidth(state.designerWidth);
+    setStoredDesigneZoom(state.zoom);
+  }, [setStoredDesigneZoom, setStoredDesignerWidth, state.designerWidth, state.zoom]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
