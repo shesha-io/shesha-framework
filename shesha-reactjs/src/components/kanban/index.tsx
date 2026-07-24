@@ -47,20 +47,24 @@ const KanbanReactComponent: FCUnwrapped<IKanbanProps> = (props) => {
   const stylingBoxAsCSS = pickStyleFromModel(styling);
 
   useEffect(() => {
-    if (!isInDesigner && modelType && groupingProperty) {
-      getMetadata({ modelType: modelType, dataType: DataTypes.entityReference }).then((resp) => {
-        if (isEntityMetadata(resp)) {
-          const { update, delete: deleteEndpoint, create } = resp.apiEndpoints;
-          setUrls({
-            updateUrl: update?.url ?? "",
-            deleteUrl: deleteEndpoint?.url ?? "",
-            postUrl: create?.url ?? "",
-          });
-        }
-      }).catch((error) => {
-        console.error('Failed to fetch metadata', error);
-        throw error;
-      });
+    if (modelType && groupingProperty) {
+      // Only wire up the CRUD endpoints at runtime; in the designer we render cards for preview
+      // but keep mutations disabled (urls stay empty).
+      if (!isInDesigner) {
+        getMetadata({ modelType: modelType, dataType: DataTypes.entityReference }).then((resp) => {
+          if (isEntityMetadata(resp)) {
+            const { update, delete: deleteEndpoint, create } = resp.apiEndpoints;
+            setUrls({
+              updateUrl: update?.url ?? "",
+              deleteUrl: deleteEndpoint?.url ?? "",
+              postUrl: create?.url ?? "",
+            });
+          }
+        }).catch((error) => {
+          console.error('Failed to fetch metadata', error);
+          throw error;
+        });
+      }
 
       const filteredTasks = tableData.filter((item) => item[groupingProperty]);
       setTasks(filteredTasks);
@@ -75,7 +79,7 @@ const KanbanReactComponent: FCUnwrapped<IKanbanProps> = (props) => {
     const initializeSettings = async (): Promise<void> => {
       try {
         if (!isNullOrWhiteSpace(componentName)) {
-          const resp = await fetchColumnState(componentName);
+          const resp = (await fetchColumnState(componentName)) ?? {};
           setSettings(resp);
           // Loop through and store settings asynchronously
           for (const [columnId, isCollapsed] of Object.entries(resp)) {
