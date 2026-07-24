@@ -2,7 +2,7 @@ import { HttpClientApi } from "@/publicJsApis/apis/httpClient";
 import { IEntityTypesMap, IEntityMetadataFetcher, ISyncEntitiesContext, ICacheProvider } from "./models";
 import { DataTypes, IPropertyMetadata } from "@/interfaces";
 import { IEntityMetadata, NestedProperties, isIHasEntityType, isPropertiesArray } from "@/interfaces/metadata";
-import { ENTITY_CACHE, getEntityMetadataCacheKey, syncEntities } from "./utils";
+import { ENTITY_CACHE, getEntityMetadataCacheKey, isEntityTypeIdEmpty, syncEntities } from "./utils";
 import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
 import { EntityTypesMap } from "./entityTypesMap";
 import { IConfigurationLoader } from "@/providers/configurationItemsLoader/configurationLoader";
@@ -85,6 +85,9 @@ export class EntityMetadataFetcher implements IEntityMetadataFetcher {
   };
 
   getByEntityType: EntityMetadataByEntityTypeFetcher = async (entityType: string | IEntityTypeIdentifier): Promise<IEntityMetadata | null> => {
+    if (isEntityTypeIdEmpty(entityType))
+      return null;
+
     await this.#ensureSynchronized();
     const metadata = await this.#configurationItemsLoader.getCachedConfigAsync<IEntityMetadata>({ type: 'entity', id: entityType, skipCache: false });
     return metadata

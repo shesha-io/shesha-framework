@@ -164,7 +164,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
       ) {
         try {
           const formid = await getEntityFormIdAsync(entityType, formType);
-          setFormIdentifier({ name: formid.name, module: formid.module });
+          setFormIdentifier({ name: formid.name, module: formid.module ?? null });
         } catch (error) {
           console.error('Error fetching form ID:', error);
         }

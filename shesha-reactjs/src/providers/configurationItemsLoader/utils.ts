@@ -6,7 +6,7 @@ import { FormConfigurationDto } from './models';
 export const getConfigurationNotFoundMessage = (configurationType: string, configurationId: ConfigurableItemIdentifier | undefined): string => {
   if (configurationId && isConfigurableItemRawId(configurationId)) return `${configurationType} with id='${configurationId}' not found`;
 
-  if (configurationId && isConfigurableItemFullName(configurationId)) return `${configurationType} '${getFormFullName(configurationId.module, configurationId.name)}' not found`;
+  if (configurationId && isConfigurableItemFullName(configurationId)) return `${configurationType} '${getFormFullName(configurationId.module ?? null, configurationId.name)}' not found`;
 
   return `${configurationType} not found`;
 };
@@ -17,7 +17,7 @@ export const getReferenceListNotFoundMessage = (refListId: IReferenceListIdentif
 export const getConfigurationForbiddenMessage = (configurationType: string, configurationId: ConfigurableItemIdentifier | undefined): string => {
   if (configurationId && isConfigurableItemRawId(configurationId)) return `You are not authorized to access the ${configurationType} with id='${configurationId}'`;
 
-  if (configurationId && isConfigurableItemFullName(configurationId)) return `You are not authorized to access the ${configurationType} '${getFormFullName(configurationId.module, configurationId.name)}'`;
+  if (configurationId && isConfigurableItemFullName(configurationId)) return `You are not authorized to access the ${configurationType} '${getFormFullName(configurationId.module ?? null, configurationId.name)}'`;
 
   return `${configurationType} not found`;
 };
