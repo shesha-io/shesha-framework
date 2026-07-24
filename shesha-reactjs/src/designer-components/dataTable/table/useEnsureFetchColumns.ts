@@ -57,8 +57,10 @@ export const useEnsureFetchColumns = (
 
     doneRef.current = true;
     let cancelled = false;
+    let settled = false;
     calculateDefaultColumns(metadata)
       .then((columns) => {
+        settled = true;
         if (cancelled)
           return;
 
@@ -77,12 +79,17 @@ export const useEnsureFetchColumns = (
         storeRef.current?.registerConfigurableColumns(ownerId, merged);
       })
       .catch((error) => {
+        settled = true;
         doneRef.current = false;
         console.error('Failed to register entity columns for data fetch', error);
       });
 
     return () => {
       cancelled = true;
+      // If the deps changed before the calculation settled, this run never registered its columns;
+      // reset so the replacement effect run retries instead of short-circuiting on `doneRef`.
+      if (!settled)
+        doneRef.current = false;
     };
   }, [metadata, ownerId, requiredKey]);
 };

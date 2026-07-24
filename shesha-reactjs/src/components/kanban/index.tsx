@@ -47,11 +47,16 @@ const KanbanReactComponent: FCUnwrapped<IKanbanProps> = (props) => {
   const stylingBoxAsCSS = pickStyleFromModel(styling);
 
   useEffect(() => {
+    let stale = false;
     if (modelType && groupingProperty) {
       // Only wire up the CRUD endpoints at runtime; in the designer we render cards for preview
       // but keep mutations disabled (urls stay empty).
       if (!isInDesigner) {
         getMetadata({ modelType: modelType, dataType: DataTypes.entityReference }).then((resp) => {
+          // Ignore responses that resolve after the model/grouping changed or the component
+          // switched to designer mode, so stale metadata can't re-enable mutations.
+          if (stale)
+            return;
           if (isEntityMetadata(resp)) {
             const { update, delete: deleteEndpoint, create } = resp.apiEndpoints;
             setUrls({
@@ -64,11 +69,17 @@ const KanbanReactComponent: FCUnwrapped<IKanbanProps> = (props) => {
           console.error('Failed to fetch metadata', error);
           throw error;
         });
+      } else {
+        // Designer preview must never mutate data.
+        setUrls({ updateUrl: "", deleteUrl: "", postUrl: "" });
       }
 
       const filteredTasks = tableData.filter((item) => item[groupingProperty]);
       setTasks(filteredTasks);
     }
+    return () => {
+      stale = true;
+    };
   }, [isInDesigner, modelType, groupingProperty, tableData, getMetadata]);
 
   useEffect(() => {
