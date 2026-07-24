@@ -8,6 +8,7 @@ import { useForm, useQueryBuilderOrUndefined } from '@/providers';
 export const QueryBuilderRenderer: FC<IQueryBuilderComponentPropsUnwrapped> = (props) => {
   const { formMode } = useForm();
   const { fieldsUnavailableHint } = props;
+  const showJsonTestingTools = Boolean(props.showJsonTestingTools) && formMode === 'designer';
 
   const queryBuilder = useQueryBuilderOrUndefined();
   const fieldsAvailable = Boolean(queryBuilder);
@@ -33,6 +34,7 @@ export const QueryBuilderRenderer: FC<IQueryBuilderComponentPropsUnwrapped> = (p
             value={value ?? undefined}
             onChange={onChange}
             jsonExpanded={props.jsonExpanded}
+            showJsonTestingTools={showJsonTestingTools}
             readOnly={props.readOnly}
           />
         );

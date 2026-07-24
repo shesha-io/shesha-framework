@@ -54,6 +54,53 @@ export const unproxyValue = <TValue = unknown>(value: TValue): TValue => {
   return isProxy(result) ? unproxyValue<TValue>(result as TValue) : result as TValue;
 };
 
+const jsonLogicOperators = new Set([
+  '!',
+  '!=',
+  '!==',
+  '==',
+  '===',
+  '<',
+  '<=',
+  '>',
+  '>=',
+  'and',
+  'or',
+  'if',
+  'in',
+  'var',
+  'missing',
+  'missing_some',
+  'map',
+  'filter',
+  'reduce',
+  'all',
+  'some',
+  'none',
+  'cat',
+  'substr',
+  'merge',
+  '+',
+  '-',
+  '*',
+  '/',
+  '%',
+  'min',
+  'max',
+  'evaluate',
+  'startsWith',
+  'endsWith',
+  'is_satisfied',
+]);
+
+const isJsonLogicNode = (value: unknown): value is Record<string, unknown> => {
+  if (!value || Array.isArray(value) || typeof value !== 'object')
+    return false;
+
+  const keys = Object.keys(value);
+  return keys.length > 0 && keys.every((key) => jsonLogicOperators.has(key));
+};
+
 export const deepMergeSkipUndefinedFunc = (objValue: unknown, srcValue: unknown, _key: string): unknown => srcValue === undefined ? objValue : undefined;
 
 export const deepMergeValues = <TObject extends object = object, TSource extends object = object>(
@@ -98,6 +145,10 @@ export const deepMergeValues = <TObject extends object = object, TSource extends
 
     // handle objects
     if (typeof objValue === "object" && typeof srcValue === "object" && objValue !== null) {
+      // JsonLogic objects are expression AST nodes and must be replaced as a whole.
+      if (isJsonLogicNode(objValue) || isJsonLogicNode(srcValue))
+        return srcValue;
+
       // make a copy of merged objects
       return deepMergeValues(objValue, srcValue, action);
     }

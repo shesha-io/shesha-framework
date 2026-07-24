@@ -94,6 +94,18 @@
             "settingsValidationErrors": []
           },
           {
+            "id": "6c2b1f55-2669-48cf-9c33-c04d89871379",
+            "type": "checkbox",
+            "propertyName": "showJsonTestingTools",
+            "label": "Show JSON testing tools",
+            "labelAlign": "right",
+            "parentId": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
+            "hidden": false,
+            "description": "Enables the inline JSON preview and Edit JSON tab for testing preconfigured queries in designer mode only.",
+            "validate": {},
+            "settingsValidationErrors": []
+          },
+          {
             "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",
             "type": "checkbox",
             "propertyName": "hidden",

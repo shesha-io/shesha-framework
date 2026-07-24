@@ -1,6 +1,5 @@
-import React, { ReactNode, useMemo } from "react";
+import React, { ReactNode, useEffect, useMemo } from "react";
 import { Tooltip, Select } from "antd";
-import { SELECT_WIDTH_OFFSET_RIGHT, calcTextWidth } from "../domUtils";
 const { Option, OptGroup } = Select;
 import { FactoryWithContext, FieldItem, FieldProps } from '@react-awesome-query-builder/antd';
 import { StringSubtype } from "@/interfaces/utilityTypes";
@@ -10,34 +9,50 @@ import { SizeType } from "antd/es/config-provider/SizeContext";
 const VALID_PLACEMENTS = ["bottomLeft", "bottomRight", "topLeft", "topRight"] as const;
 export type Placements = StringSubtype<typeof VALID_PLACEMENTS>;
 
-export const FuncSelect: FactoryWithContext<FieldProps> = (props) => {
+const flattenItems = (value: FieldItem[]): FieldItem[] => {
+  return value.flatMap((item) => item.items ? flattenItems(item.items) : [item]);
+};
+
+export const FuncSelect: FactoryWithContext<FieldProps> = ((props) => {
   const onChange = (key: string | undefined): void => {
     props.setField(key ?? "");
   };
 
   const {
-    config, customProps, items: allItems, placeholder,
+    config, customProps, items: allItems, placeholder, setField,
     selectedKey, selectedLabel, selectedAltLabel, selectedFullLabel, readonly = false,
   } = props;
-  const { showSearch } = customProps || {};
 
   const items = useMemo<FieldItem[]>(() => {
-    // workaround to filter out evaluation from the LHS
-    const evaluates = allItems.filter((item) => item.key && item.key.startsWith('EVALUATE_'));
+    const isTextCaseFunction = (item: FieldItem): boolean => {
+      if (!item.key && !item.label)
+        return false;
 
-    return evaluates.length > 1
-      ? allItems.filter((item) => !item.key || !item.key.startsWith('EVALUATE_'))
-      : allItems;
+      const normalizedKey = String(item.key).toUpperCase();
+      const normalizedLabel = String(item.label).toUpperCase();
+      return /(LOWER|LOWERCASE|UPPER|UPPERCASE|TOLOWER|TOUPPER)/.test(normalizedKey) ||
+        /(LOWER|LOWERCASE|UPPER|UPPERCASE|TOLOWER|TOUPPER)/.test(normalizedLabel);
+    };
+
+    return allItems
+      .filter((item) => item.key !== 'expressionFunc')
+      .filter((item) => !isTextCaseFunction(item));
   }, [allItems]);
 
-  const selectText = selectedLabel || placeholder;
-  const selectWidth = calcTextWidth(selectText ?? "");
-  const isFieldSelected = !!selectedKey;
+  const leafItems = useMemo(() => flattenItems(items).filter((item) => Boolean(item.key)), [items]);
+  const singleLeaf = leafItems.length === 1 ? leafItems[0] : null;
+  const singleLeafPath = singleLeaf ? (singleLeaf.path || singleLeaf.key) : null;
+
+  useEffect(() => {
+    if (singleLeafPath && selectedKey !== singleLeafPath) {
+      setField(singleLeafPath);
+    }
+    // depend on setField, not the whole props object (which is a new
+    // reference every render and would re-fire this effect continuously)
+  }, [singleLeafPath, selectedKey, setField]);
 
   const dropdownPlacement = getStringEnumOrDefault<Placements>(config?.settings ?? {}, "dropdownPlacement", VALID_PLACEMENTS);
   const size: SizeType | undefined = config?.settings.renderSize === 'medium' ? 'middle' : config?.settings.renderSize;
-
-  const width = isFieldSelected && !showSearch ? null : selectWidth + SELECT_WIDTH_OFFSET_RIGHT;
   let tooltipText = selectedAltLabel || selectedFullLabel;
   if (tooltipText === selectedLabel)
     tooltipText = null;
@@ -76,11 +91,15 @@ export const FuncSelect: FactoryWithContext<FieldProps> = (props) => {
 
   const fieldSelectItems = renderSelectItems(items);
 
+  if (singleLeafPath && selectedKey === singleLeafPath) {
+    return null;
+  }
+
   return (
     <Select
       {...(dropdownPlacement ? { placement: dropdownPlacement } : {})}
       popupMatchSelectWidth={false}
-      {...(width ? { style: { width } } : {})}
+      style={{ width: '100%', minWidth: 0 }}
       placeholder={placeholder}
       size={size}
       onChange={onChange}
@@ -98,4 +117,4 @@ export const FuncSelect: FactoryWithContext<FieldProps> = (props) => {
     >{fieldSelectItems}
     </Select>
   );
-};
+}) as FactoryWithContext<FieldProps>;
