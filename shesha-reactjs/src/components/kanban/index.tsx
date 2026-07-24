@@ -48,32 +48,33 @@ const KanbanReactComponent: FCUnwrapped<IKanbanProps> = (props) => {
 
   useEffect(() => {
     let stale = false;
-    if (modelType && groupingProperty) {
-      // Only wire up the CRUD endpoints at runtime; in the designer we render cards for preview
-      // but keep mutations disabled (urls stay empty).
-      if (!isInDesigner) {
-        getMetadata({ modelType: modelType, dataType: DataTypes.entityReference }).then((resp) => {
-          // Ignore responses that resolve after the model/grouping changed or the component
-          // switched to designer mode, so stale metadata can't re-enable mutations.
-          if (stale)
-            return;
-          if (isEntityMetadata(resp)) {
-            const { update, delete: deleteEndpoint, create } = resp.apiEndpoints;
-            setUrls({
-              updateUrl: update?.url ?? "",
-              deleteUrl: deleteEndpoint?.url ?? "",
-              postUrl: create?.url ?? "",
-            });
-          }
-        }).catch((error) => {
-          console.error('Failed to fetch metadata', error);
-          throw error;
-        });
-      } else {
-        // Designer preview must never mutate data.
-        setUrls({ updateUrl: "", deleteUrl: "", postUrl: "" });
-      }
+    const canMutate = !isInDesigner && !!modelType && !!groupingProperty;
+    if (canMutate) {
+      getMetadata({ modelType: modelType, dataType: DataTypes.entityReference }).then((resp) => {
+        // Ignore responses that resolve after the model/grouping changed or the component
+        // switched to designer mode, so stale metadata can't re-enable mutations.
+        if (stale)
+          return;
+        if (isEntityMetadata(resp)) {
+          const { update, delete: deleteEndpoint, create } = resp.apiEndpoints;
+          setUrls({
+            updateUrl: update?.url ?? "",
+            deleteUrl: deleteEndpoint?.url ?? "",
+            postUrl: create?.url ?? "",
+          });
+        }
+      }).catch((error) => {
+        console.error('Failed to fetch metadata', error);
+        throw error;
+      });
+    } else {
+      // Designer preview or missing model/grouping must never mutate data.
+      setUrls((prev) => (prev.updateUrl === "" && prev.deleteUrl === "" && prev.postUrl === "")
+        ? prev
+        : { updateUrl: "", deleteUrl: "", postUrl: "" });
+    }
 
+    if (modelType && groupingProperty) {
       const filteredTasks = tableData.filter((item) => item[groupingProperty]);
       setTasks(filteredTasks);
     }
