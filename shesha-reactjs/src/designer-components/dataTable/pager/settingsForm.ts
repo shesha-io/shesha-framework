@@ -28,7 +28,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       type: 'textField',
                       propertyName: 'componentName',
                       label: 'Component Name',
-                      size: 'large',
+                      size: 'small',
                       jsSetting: true,
                     },
                   ],
