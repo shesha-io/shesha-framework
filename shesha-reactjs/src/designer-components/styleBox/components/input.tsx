@@ -8,7 +8,7 @@ import { useDefaultModelPropertyUpdateSubscription, useDefaultModelActionsOrUnde
 import { useStyles } from '@/designer-components/_settings/styles/styles';
 import { getValueByPropertyName } from '@/utils/object';
 import { useFormItem } from '@/providers';
-import { isNotNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
 
 interface IProps {
   direction: keyof IInputDirection;
@@ -40,7 +40,7 @@ const BoxInput: FC<IProps> = ({ direction, onChange, readOnly, type, value, prop
   const localValue: string | undefined = rawValue == null ? undefined : String(rawValue);
 
   const internalOnChange = (val: string | undefined): void => {
-    if ((!val || val.length < 4) && onChange)
+    if ((!isDefined(val) || val.length < 4) && onChange)
       onChange({ [propertyName]: val });
   };
 

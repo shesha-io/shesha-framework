@@ -22,10 +22,10 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
   const { name, label, tooltip, required, validationDependencies, hidden, jsSetting, children, valuePropName = 'value', layout, availableConstantsExpression, permissionSettings } = props;
   const [hasCode, setHasCode] = useState(false);
 
-  useDefaultModelPropertyUpdateSubscription(name);
-
   const { namePrefix } = useFormItem();
   const defaultModelPropName = isNotNullOrWhiteSpace(namePrefix) ? namePrefix + '.' + name : name;
+
+  useDefaultModelPropertyUpdateSubscription(defaultModelPropName);
 
   const defaultModel = useDefaultModelActionsOrUndefined();
   const valueInfo = defaultModel?.getValueInfo(defaultModelPropName);
@@ -82,7 +82,7 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
       className={`sha-js-label ${className}`}
     >
       {(value, onChange) => {
-        const localValue = defaultModel?.getValueInfo(defaultModelPropName)?.state === 'usedDefault' ? defaultValue : value;
+        const localValue = valueInfo?.state === 'usedDefault' ? defaultValue : value;
         return !Boolean(jsSetting) ? (
           <PermissionsControl enabled={permissionSettings ?? false} propertyName={permissionPropertyName} readOnly={readOnly}>
             {childFunc(localValue, onChange, name)}

@@ -5,6 +5,7 @@ export interface IDefaultModelProviderProps<TData extends object = object> {
   name: string;
   defaultModel?: TData | undefined;
   model?: TData | undefined;
+  updateModelIfChanged?: boolean | undefined;
 }
 
 const DefaultModelProviderStateContext = createContext<IDefaultModelInstance<object> | undefined>(undefined);
@@ -43,8 +44,8 @@ const DefaultModelProvider = <TData extends object = object>(props: PropsWithChi
 
   // Update models if props changed
   useEffect(() => {
-    if (props.model !== undefined) instance.setModel(props.model);
-  }, [instance, props.model]);
+    if (props.model !== undefined && props.updateModelIfChanged === true) instance.setModel(props.model);
+  }, [instance, props.model, props.updateModelIfChanged]);
   useEffect(() => {
     if (props.defaultModel !== undefined) instance.setDefaultModel(props.name, props.defaultModel);
   }, [instance, props.defaultModel, props.name]);
