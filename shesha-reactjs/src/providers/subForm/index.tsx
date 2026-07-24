@@ -221,7 +221,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
               throw new Error("'formType' is required when 'formSelectionMode' = 'dynamic'");
             getEntityFormIdAsync(internalEntityType, formType)
               .then((formid) => {
-                setFormConfig({ formId: { name: formid.name, module: formid.module }, lazy: true });
+                setFormConfig({ formId: { name: formid.name, module: formid.module ?? null }, lazy: true });
                 prevRenderedEntityTypeForm.current = internalEntityType;
               })
               .catch((error) => {
