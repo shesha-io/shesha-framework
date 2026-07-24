@@ -59,7 +59,7 @@ export class FormsApi implements IFormsApi {
   };
 
   prepareTemplateAsync = (templateId: string, replacements: object | undefined): Promise<string> => {
-    if (!templateId?.trim())
+    if (!templateId.trim())
       return Promise.resolve('');
 
     const url = this.buildTemplateUrl(templateId);
