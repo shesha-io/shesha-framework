@@ -140,7 +140,7 @@ const IconPicker: FC<IIconPickerProps> = ({
               className={styles.shaIconPicker}
               iconName={value}
               {...props}
-              style={{ fontSize: iconSize, color: twoToneColor }}
+              style={{ fontSize: iconSize || 24, color: twoToneColor, ...props.style }}
               name={value}
             />
           ) : (

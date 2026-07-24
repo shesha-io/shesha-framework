@@ -446,10 +446,16 @@ export class FormDesignerInstance implements IFormDesignerInstance {
       const { formFlatMarkup } = state;
       const component = this.getComponent(payload.componentId) as TModel;
 
+      const componentJsonBefore = JSON.stringify(component);
       this.log(`FD: updateComponent ${payload.componentId} (${component.type})`, payload);
 
       const newModel = payload.updater(component);
       const newComponent = { ...component, ...newModel } as IConfigurableFormComponent;
+      const componentJsonAfter = JSON.stringify(newComponent);
+      if (componentJsonBefore === componentJsonAfter) {
+        this.log(`FD: no changes detetced in component '${payload.componentId}'`);
+        return state;
+      }
 
       const toolboxComponent = this.getToolboxComponent(component.type);
 
@@ -721,9 +727,10 @@ export class FormDesignerInstance implements IFormDesignerInstance {
   };
 
   private updateState = (updater: (state: FormDesignerFormState) => FormDesignerFormState, description: string): void => {
-    this.undoableState.executeChange(updater, description);
-    this.isDataModified = true;
-    this.notifySubscribers(['markup', 'selection', 'history', 'data-modified']);
+    if (this.undoableState.executeChange(updater, description)) {
+      this.isDataModified = true;
+      this.notifySubscribers(['markup', 'selection', 'history', 'data-modified']);
+    }
   };
 
   undo = (): void => {

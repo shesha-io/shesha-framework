@@ -43,8 +43,6 @@ export const useStyles = createStyles(({ css, cx, token }) => {
       color: ${token.colorErrorText};
       font-family: ${token.fontFamily};
       line-height: 1;
-      position: relative;
-      top: 8px;
   }
   `);
 
