@@ -1,6 +1,6 @@
 /* eslint @typescript-eslint/strict-boolean-expressions: "error" */
-import { ConditionalMonacoProvider } from '@/components/codeEditor/loaderProvider';
-import { MonacoLoaderSettings } from '@/components/codeEditor/loaderProvider/models';
+import { ConditionalMonacoProvider } from '@/providers/monacoLoader';
+import { MonacoLoaderSettings } from '@/providers/monacoLoader/models';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { ShaFormStyles } from '@/components/configurableForm/styles/styles';
 import { GlobalSheshaStyles } from '@/components/mainLayout/styles/indexStyles';

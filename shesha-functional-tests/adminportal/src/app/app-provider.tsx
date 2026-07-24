@@ -5,13 +5,16 @@ import {
     GlobalStateProvider,
     ShaApplicationProvider,
     useNextRouter,
+    MonacoLoaderSettings,
+    IHttpHeadersDictionary,
 } from '@shesha-io/reactjs';
 import { OrganisationsActionsProvider } from '@/components/dynamic-list/dynamic-actions';
-import { IHttpHeadersDictionary } from '@shesha-io/reactjs/dist/providers/sheshaApplication/contexts';
 
 export interface IAppProviderProps {
     backendUrl: string;
 }
+
+const monacoSettings: MonacoLoaderSettings = { localPath: "/monaco/vs" };
 
 export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({ children, backendUrl }) => {
     const nextRouter = useNextRouter();
@@ -28,7 +31,7 @@ export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({ children
                 router={nextRouter}
                 noAuth={nextRouter.path?.includes('/no-auth')}
                 buildHttpRequestHeaders={buildHttpHeaders}
-                monaco={{ localPath: "/monaco/vs" }}
+                monaco={monacoSettings}
             >
                 <OrganisationsActionsProvider>
                     {children}
