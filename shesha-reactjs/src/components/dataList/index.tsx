@@ -449,8 +449,10 @@ export const DataList: FC<IDataListProps> = ({
   }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, showEditIcons, canEditInline, canDeleteInline, noDataIcon, noDataSecondaryText, noDataText, style, groupStyle, orientation]);
 
   const renderSubForm = (item: ITableRowData, index: number): ReactNode => {
-    let formEntityType = null;
-    let fType = null;
+    // Note: keep these `undefined` (not `null`) so they match the values used when the entity form is
+    // registered above; the lookup below compares `x.formType === fType`, and `undefined === null` is false.
+    let formEntityType: string | IEntityTypeIdentifier | undefined = undefined;
+    let fType: string | undefined = undefined;
     if (formSelectionMode === 'name') {
       formEntityType = '$formName$';
     }

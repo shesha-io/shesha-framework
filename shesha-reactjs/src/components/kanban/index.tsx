@@ -47,8 +47,14 @@ const KanbanReactComponent: FCUnwrapped<IKanbanProps> = (props) => {
   const stylingBoxAsCSS = pickStyleFromModel(styling);
 
   useEffect(() => {
-    if (!isInDesigner && modelType && groupingProperty) {
+    let stale = false;
+    const canMutate = !isInDesigner && !!modelType && !!groupingProperty;
+    if (canMutate) {
       getMetadata({ modelType: modelType, dataType: DataTypes.entityReference }).then((resp) => {
+        // Ignore responses that resolve after the model/grouping changed or the component
+        // switched to designer mode, so stale metadata can't re-enable mutations.
+        if (stale)
+          return;
         if (isEntityMetadata(resp)) {
           const { update, delete: deleteEndpoint, create } = resp.apiEndpoints;
           setUrls({
@@ -61,10 +67,20 @@ const KanbanReactComponent: FCUnwrapped<IKanbanProps> = (props) => {
         console.error('Failed to fetch metadata', error);
         throw error;
       });
+    } else {
+      // Designer preview or missing model/grouping must never mutate data.
+      setUrls((prev) => (prev.updateUrl === "" && prev.deleteUrl === "" && prev.postUrl === "")
+        ? prev
+        : { updateUrl: "", deleteUrl: "", postUrl: "" });
+    }
 
+    if (modelType && groupingProperty) {
       const filteredTasks = tableData.filter((item) => item[groupingProperty]);
       setTasks(filteredTasks);
     }
+    return () => {
+      stale = true;
+    };
   }, [isInDesigner, modelType, groupingProperty, tableData, getMetadata]);
 
   useEffect(() => {
@@ -75,7 +91,7 @@ const KanbanReactComponent: FCUnwrapped<IKanbanProps> = (props) => {
     const initializeSettings = async (): Promise<void> => {
       try {
         if (!isNullOrWhiteSpace(componentName)) {
-          const resp = await fetchColumnState(componentName);
+          const resp = (await fetchColumnState(componentName)) ?? {};
           setSettings(resp);
           // Loop through and store settings asynchronously
           for (const [columnId, isCollapsed] of Object.entries(resp)) {

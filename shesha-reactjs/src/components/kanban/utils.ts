@@ -7,7 +7,7 @@ export type KanbanActions = {
   updateKanban: (payload: ITableRowData, url: string) => Promise<ITableRowData>;
   deleteKanban: (payload: string, url: string) => Promise<void>;
   createKanbanItem: (payload: ITableRowData, url: string) => Promise<ITableRowData>;
-  fetchColumnState: (descriminator: string) => Promise<IAnyObject>;
+  fetchColumnState: (descriminator: string) => Promise<IAnyObject | null>;
   updateUserSettings: (updatedSettings: unknown, descriminator: string) => Promise<void>;
 };
 
@@ -26,13 +26,16 @@ export const useKanbanActions = (): KanbanActions => {
     );
     extractAjaxResponse(response.data);
   };
-  const fetchColumnState = async (descriminator: string): Promise<IAnyObject> => {
-    const response = await httpClient.post<IAjaxResponse<IAnyObject>>('/api/services/app/Settings/GetUserValue', {
+  const fetchColumnState = async (descriminator: string): Promise<IAnyObject | null> => {
+    const response = await httpClient.post<IAjaxResponse<unknown>>('/api/services/app/Settings/GetUserValue', {
       name: descriminator,
       module: 'Shesha',
     });
+    // GetUserValue returns null when the user has no saved column state (e.g. a newly created Kanban)
     const responseData = extractAjaxResponse(response.data);
-    return responseData;
+    return responseData !== null && typeof responseData === 'object'
+      ? responseData as IAnyObject
+      : null;
   };
   const updateKanban = async (payload: ITableRowData, url: string): Promise<ITableRowData> => {
     const response = await httpClient.put<IAjaxResponse<ITableRowData>>(url, payload);
