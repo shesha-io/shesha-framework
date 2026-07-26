@@ -12,7 +12,7 @@ import { getGhostStyleOverrides } from '@/utils/style';
 import { DataContextTopLevels } from '@/providers/dataContextManager';
 import { isNavigationActionConfiguration, useShaRouting } from '@/providers/shaRouting';
 import { useTheme } from '@/providers/theme';
-import { isDefined } from '@/utils/nullables';
+import { coerceCssColor, isDefined } from '@/utils/nullables';
 
 export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'itemSubType'> {
   style?: CSSProperties | undefined;
@@ -100,7 +100,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
       size={props.size}
       style={{
         ...props.style,
-        ...(isSameUrl && !isGhostType && { background: theme.application?.primaryColor, color: theme.text?.default }),
+        ...(isSameUrl && !isGhostType && { background: theme.application?.primaryColor, color: coerceCssColor(theme.text?.default) }),
         ...ghostOverrides,
         ...(buttonDisabled && { pointerEvents: "none" }),
       }}

@@ -14,6 +14,7 @@ import { ISetFormDataPayload } from '@/providers/form/contexts';
 import { useDataContextManager } from '@/providers/dataContextManager/hooks';
 import { OnFormFinishFailedHandler, OnFormValuesChangeHandler } from '../configurableForm/models';
 import { IStyleValue, useThemeActions } from '@/providers';
+import { ThemeDevice } from '@/providers/theme/contexts';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { getStyleBoxValue } from '@/designer-components/styleBox/utils';
 
@@ -44,7 +45,7 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
   isInModal,
 }: IProps<TModel>): React.JSX.Element {
   const [form] = Form.useForm();
-  const { getComponentStyle } = useThemeActions();
+  const { getComponentStyle, getComponentGroupStyle } = useThemeActions();
 
   const defaultModel = useDefaultModelActionsOrUndefined<TModel>();
   const dcm = useDataContextManager();
@@ -54,21 +55,37 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
   useDeepCompareEffect(() => {
     if (Boolean(toolboxComponent.allowInherit)) {
       const defaultComponentStyle = toolboxComponent.getDefaultStyles?.() ?? {};
-      defaultModel?.setDefaultModel('Default comonent Style', { ['desktop']: defaultComponentStyle } as TModel);
-      const themeStyle = getComponentStyle(toolboxComponent.type);
-      defaultModel?.setDefaultModel('Theme component Style', { ['desktop']: themeStyle } as TModel);
+      // Use Partial<TModel> for device-keyed objects to maintain type safety
+      const desktopDefaults: Partial<TModel> = { ['desktop']: defaultComponentStyle } as Partial<TModel>;
+      defaultModel?.setDefaultModel('Default component Style', desktopDefaults as TModel);
+      // Group tier sits between the hardcoded defaults and the per-type theme overrides. Theme styles are
+      // device-scoped; the desktop tier reads the desktop base.
+      const groupStyle = getComponentGroupStyle(toolboxComponent.themeGroup, 'desktop');
+      const groupDefaults: Partial<TModel> = { ['desktop']: groupStyle } as Partial<TModel>;
+      defaultModel?.setDefaultModel('Group component Style', groupDefaults as TModel);
+      const themeStyle = getComponentStyle(toolboxComponent.type, 'desktop');
+      const themeDefaults: Partial<TModel> = { ['desktop']: themeStyle } as Partial<TModel>;
+      defaultModel?.setDefaultModel('Theme component Style', themeDefaults as TModel);
 
-      if (designerDevice !== 'desktop' && designerDevice !== currentDevice.current) {
-        // inherit mobile and tablet styles from desktop styles
-        defaultModel?.setDefaultModel('Default comonent Style', { [designerDevice]: defaultComponentStyle } as unknown as TModel);
-        defaultModel?.setDefaultModel('Theme component Style', { [designerDevice]: themeStyle } as unknown as TModel);
+      if (designerDevice !== 'desktop') {
+        // inherit mobile and tablet styles from desktop styles; overlay the active device's theme styles
+        // Always regenerate device defaults when theme changes, not just on device change
+        const deviceGroupStyle = getComponentGroupStyle(toolboxComponent.themeGroup, designerDevice as ThemeDevice);
+        const deviceThemeStyle = getComponentStyle(toolboxComponent.type, designerDevice as ThemeDevice);
+        const deviceDefaultStyle: Partial<TModel> = { [designerDevice]: defaultComponentStyle } as Partial<TModel>;
+        defaultModel?.setDefaultModel('Default component Style', deviceDefaultStyle as TModel);
+        const deviceGroupDefaults: Partial<TModel> = { [designerDevice]: deviceGroupStyle } as Partial<TModel>;
+        defaultModel?.setDefaultModel('Group component Style', deviceGroupDefaults as TModel);
+        const deviceThemeDefaults: Partial<TModel> = { [designerDevice]: deviceThemeStyle } as Partial<TModel>;
+        defaultModel?.setDefaultModel('Theme component Style', deviceThemeDefaults as TModel);
         const model = defaultModel?.getModel();
         const desktopStyles = deepCopyViaJson(unproxyValue((model as IConfigurableFormComponent).desktop ?? {})) as IStyleValue;
-        defaultModel?.setDefaultModel('Desktop component Style', { [designerDevice]: { ...desktopStyles, stylingBox: getStyleBoxValue(desktopStyles.stylingBox as string) } } as unknown as TModel);
+        const desktopStyleDefaults: Partial<TModel> = { [designerDevice]: { ...desktopStyles, stylingBox: getStyleBoxValue(desktopStyles.stylingBox as string) } } as Partial<TModel>;
+        defaultModel?.setDefaultModel('Desktop component Style', desktopStyleDefaults as TModel);
       }
     }
     currentDevice.current = designerDevice;
-  }, [toolboxComponent.allowInherit, designerDevice, defaultModel, toolboxComponent, getComponentStyle]);
+  }, [toolboxComponent.allowInherit, designerDevice, defaultModel, toolboxComponent, getComponentStyle, getComponentGroupStyle]);
 
   // Keep the Ant Design form store in sync when the component model changes externally.
   // initialValues is applied once on mount, so without this sync any field managed outside

@@ -14,12 +14,13 @@ type ColorPickerOnChange = ColorPickerProps['onChange'];
 
 export interface IColorPickerProps {
   value?: ColorValueType | undefined;
-  onChange?: ((color: ColorValueType) => void) | undefined;
+  onChange?: ((color: string | null) => void) | undefined;
   title?: string | undefined;
   presets?: Preset[] | undefined;
   showText?: boolean | undefined;
   allowClear?: boolean | undefined;
   disabledAlpha?: boolean | undefined;
+  disabled?: boolean | undefined;
   readOnly?: boolean | undefined;
   size?: SizeType | undefined;
   style?: CSSProperties | undefined;
@@ -38,6 +39,9 @@ const formatColor = (color: AggregationColor | undefined, format: ColorFormat): 
   return null;
 };
 
+const toCssColorString = (color: ColorValueType | undefined): string | undefined =>
+  typeof color === 'string' ? color : undefined;
+
 /**
  *
  * @param theme
@@ -50,8 +54,8 @@ export const readThemeColor = (theme: IConfigurableTheme): Record<string, string
   error: theme.application?.errorColor,
   info: theme.application?.infoColor,
   processing: theme.application?.processingColor,
-  primaryTextColor: theme.text?.default,
-  secondaryTextColor: theme.text?.secondary,
+  primaryTextColor: toCssColorString(theme.text?.default),
+  secondaryTextColor: toCssColorString(theme.text?.secondary),
 });
 
 export const ColorPicker: FC<IColorPickerProps> = ({
@@ -62,6 +66,7 @@ export const ColorPicker: FC<IColorPickerProps> = ({
   showText = false,
   allowClear = false,
   disabledAlpha = false,
+  disabled = false,
   readOnly = false,
   size,
   style,
@@ -148,7 +153,7 @@ export const ColorPicker: FC<IColorPickerProps> = ({
           disabledAlpha={disabledAlpha}
           showText={isDefined(value) && showText}
           allowClear={allowClear}
-          disabled={readOnly}
+          disabled={disabled || readOnly}
           onClear={handleClear}
           size={size}
           style={containerStyle}

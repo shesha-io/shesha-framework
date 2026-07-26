@@ -8,7 +8,7 @@ export const ConfigurableThemePage: FC = () => {
 
   return (
     <Page title="Customize theme">
-      <ConfigurableThemeContent value={theme} onChange={changeTheme} readOnly={false} />
+      <ConfigurableThemeContent value={theme} onChange={changeTheme} readonly={false} />
     </Page>
   );
 };

@@ -15,6 +15,7 @@ import { withAuth } from '@/hocs';
 import { useStyles } from './styles';
 import { ConfigurableForm } from '../configurableForm';
 import { ACTIVE_FOOTER, ACTIVE_HEADER } from '../mainLayout/constant';
+import { coerceCssColor } from '@/utils/nullables';
 
 const { Content, Footer } = Layout;
 
@@ -94,7 +95,7 @@ const DefaultHorizontalLayout: FC<PropsWithChildren<IHorizontalLayoutProps>> = (
           className={classNames(styles.layoutBackground, headingClass, {
             [styles.layoutBackgroundNoPadding]: noPadding,
           })}
-          style={{ ...layoutBackgroundStyle, background: themeFromStorage.layoutBackground }}
+          style={{ ...layoutBackgroundStyle, background: coerceCssColor(themeFromStorage.layoutBackground) }}
         >
           {(hasHeading || isFixedHeading) && (
             <div className={isFixedHeading ? 'fixed-heading-wrapper' : 'heading-wrapper'}>

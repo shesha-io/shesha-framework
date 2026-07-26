@@ -1,9 +1,10 @@
 import { App, ConfigProvider, ThemeConfig } from 'antd';
 import React, { FC, PropsWithChildren, useCallback, useContext, useMemo, useState } from 'react';
-import { IConfigurableTheme, IThemeActionsContext, IThemeStateContext, THEME_CONTEXT_INITIAL_STATE, UiActionsContext, UiStateContext } from './contexts';
+import { IComponentGroupsSettings, IConfigurableTheme, IThemeActionsContext, IThemeStateContext, THEME_CONTEXT_INITIAL_STATE, ThemeComponentGroup, ThemeDevice, UiActionsContext, UiStateContext } from './contexts';
 import { defaultRequiredMark } from './shaRequiredMark';
 import { useSettings, useSheshaApplication } from '..';
-import { isNotNullOrWhiteSpace } from '@/utils/nullables';
+import { coerceCssColor, isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
+import { deepMergeSkipUndefinedFunc, deepMergeValues } from '@/utils/object';
 
 export interface ThemeProviderProps {
   prefixCls?: string;
@@ -43,19 +44,42 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
     setState((prev) => ({ ...prev, theme: { ...prev.initialTheme } }));
   }, []);
 
-  const getComponentStyle = useCallback((componentName: string) => state.theme.components?.[componentName] ?? {}, [state.theme.components]);
+  // Component/group theme styles live under a device key (theme.desktop / theme.tablet / theme.mobile);
+  // desktop is the base and the requested device overlays it. Legacy themes stored these at the theme
+  // root, so fall back to the deprecated top-level fields.
+  const getComponentStyle = useCallback((componentName: string, device: ThemeDevice = 'desktop') => {
+    const base = (state.theme.desktop?.components ?? state.theme.components ?? {}) as Record<string, unknown>;
+    const overlay = device === 'desktop' ? {} : (state.theme[device]?.components ?? {}) as Record<string, unknown>;
+    return deepMergeValues(base[componentName] ?? {}, overlay[componentName] ?? {}, deepMergeSkipUndefinedFunc);
+  }, [state.theme]);
+
+  const getComponentGroupStyle = useCallback(
+    (group: ThemeComponentGroup | undefined, device: ThemeDevice = 'desktop') => {
+      if (!isDefined(group)) return {};
+      const baseGroups = (state.theme.desktop?.componentGroups ?? state.theme.componentGroups ?? {}) as IComponentGroupsSettings;
+      const overlayGroups = (device === 'desktop' ? {} : state.theme[device]?.componentGroups ?? {}) as IComponentGroupsSettings;
+      return deepMergeValues(baseGroups[group] ?? {}, overlayGroups[group] ?? {}, deepMergeSkipUndefinedFunc);
+    },
+    [state.theme],
+  );
 
   const themeConfig = useMemo<ThemeConfig>(() => {
     const appTheme = state.theme.application;
     const themeDefaults: ThemeConfig['token'] = {};
 
+    const primaryColor = coerceCssColor(appTheme?.primaryColor);
+    const infoColor = coerceCssColor(appTheme?.infoColor);
+    const successColor = coerceCssColor(appTheme?.successColor);
+    const errorColor = coerceCssColor(appTheme?.errorColor);
+    const warningColor = coerceCssColor(appTheme?.warningColor);
+
     const theme: Partial<ThemeConfig['token']> = appTheme
       ? {
-        ...(isNotNullOrWhiteSpace(appTheme.primaryColor) ? { colorPrimary: appTheme.primaryColor, colorLink: appTheme.primaryColor } : {}),
-        ...(isNotNullOrWhiteSpace(appTheme.infoColor) ? { colorInfo: appTheme.infoColor } : {}),
-        ...(isNotNullOrWhiteSpace(appTheme.successColor) ? { colorSuccess: appTheme.successColor } : {}),
-        ...(isNotNullOrWhiteSpace(appTheme.errorColor) ? { colorError: appTheme.errorColor } : {}),
-        ...(isNotNullOrWhiteSpace(appTheme.warningColor) ? { colorWarning: appTheme.warningColor } : {}),
+        ...(isNotNullOrWhiteSpace(primaryColor) ? { colorPrimary: primaryColor, colorLink: primaryColor } : {}),
+        ...(isNotNullOrWhiteSpace(infoColor) ? { colorInfo: infoColor } : {}),
+        ...(isNotNullOrWhiteSpace(successColor) ? { colorSuccess: successColor } : {}),
+        ...(isNotNullOrWhiteSpace(errorColor) ? { colorError: errorColor } : {}),
+        ...(isNotNullOrWhiteSpace(warningColor) ? { colorWarning: warningColor } : {}),
       }
       : {};
 
@@ -80,6 +104,7 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
           changeTheme,
           resetToApplicationTheme,
           getComponentStyle,
+          getComponentGroupStyle,
         }}
       >
         <ConfigProvider

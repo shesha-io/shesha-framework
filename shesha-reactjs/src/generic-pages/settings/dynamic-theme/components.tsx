@@ -7,7 +7,7 @@ import { humanizeString } from '@/utils/string';
 import { useTheme } from '@/providers';
 import Icon from '@/components/icon/Icon';
 import { PRESET_COLORS, SHESHA_COLORS } from './presetColors';
-import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { coerceCssColor, isNullOrWhiteSpace } from '@/utils/nullables';
 
 /**
  * Header component for theme sections
@@ -22,7 +22,7 @@ export const HeaderContent: FC<IHeaderProps> = ({ title, subtitle }) => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h4 style={{ margin: 0, color: '#969696' }}>{title}</h4>
-      <p style={{ margin: 0, color: theme.application?.primaryColor }}>{subtitle}</p>
+      <p style={{ margin: 0, color: coerceCssColor(theme.application?.primaryColor) }}>{subtitle}</p>
     </div>
   );
 };

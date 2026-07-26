@@ -7,6 +7,7 @@ import { BaseType } from 'antd/lib/typography/Base';
 import { useStyles } from './styles/styles';
 import { Typography } from 'antd';
 import { IConfigurableTheme, useTheme } from '@/providers';
+import { coerceCssColor } from '@/utils/nullables';
 
 const { Paragraph, Title } = Typography;
 
@@ -22,9 +23,9 @@ const getColorByContentType = (contentType: ContentType | undefined, style: CSSP
     case 'custom':
       return style?.color;
     case 'secondary':
-      return theme.text?.secondary;
+      return coerceCssColor(theme.text?.secondary);
     case '':
-      return theme.text?.default;
+      return coerceCssColor(theme.text?.default);
     default:
       return undefined;
   }

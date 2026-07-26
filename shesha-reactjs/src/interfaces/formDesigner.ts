@@ -15,6 +15,7 @@ import { IAjaxResponseBase, IApplicationContext, IDimensionsValue, IErrorInfo, I
 import { ISheshaApplicationInstance } from '@/providers/sheshaApplication/application';
 import { AxiosResponse } from 'axios';
 import { FormBuilderFactory } from '@/form-factory/interfaces';
+import { ThemeComponentGroup } from '@/providers/theme/contexts';
 
 export interface ISettingsFormInstance {
   submit: () => void;
@@ -208,6 +209,13 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
    * Returns default component styles
    */
   getDefaultStyles?: (model?: TModel) => IStyleValue;
+  /**
+   * The component-group tier this component belongs to for theming. When set, the runtime style merge
+   * layers `theme.componentGroups[themeGroup]` between the component's hardcoded `getDefaultStyles()`
+   * and its per-type `theme.components[type]` overrides, so group-level theme settings (e.g. all input
+   * components) cascade to it. Only meaningful for components with `allowInherit`.
+   */
+  themeGroup?: ThemeComponentGroup;
   /**
    * Link component to a model metadata
    */

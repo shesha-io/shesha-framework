@@ -1,6 +1,6 @@
 import { Card, Col, Menu, Row } from 'antd';
 import React, { CSSProperties, FC, useCallback, useMemo, useState } from 'react';
-import { IConfigurableTheme } from '@/providers/theme/contexts';
+import { IConfigurableTheme, ThemeDevice } from '@/providers/theme/contexts';
 import { useStyles } from '../styles/styles';
 import { findComponentNode, getMenuItems, IMenuItem } from '../toolboxComponents';
 import { getComponentDefinitions } from '@/providers/form/defaults/toolboxComponents';
@@ -18,7 +18,8 @@ import { ComponentDefaultsPreview } from './preview';
 import { ComponentDefaultsSettings } from './settings';
 import DefaultModelProvider from '@/designer-components/_settings/defaultModelProvider/defaultModelProvider';
 import { IToolboxComponent } from '../../../../interfaces/formDesigner';
-import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { deepMergeValues } from '@/utils/object';
 
 /** Markup node that wraps designer settings tabs (e.g. Appearance). */
 export interface SearchableTabsMarkup extends IConfigurableFormComponent {
@@ -54,6 +55,10 @@ const componentMenuCardStyle = { height: '600px', overflowY: 'auto' } as CSSProp
 export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value: theme, onChange, readOnly: readonly }) => {
   const { styles } = useStyles();
   const [selectedKey, setSelectedKey] = useState<string>('button');
+
+  // Theme component styles are nested under a device key. The theme page has no device switcher yet, so
+  // we read/write the desktop bucket; centralised here so wiring a switcher later is a one-line change.
+  const device: ThemeDevice = 'desktop';
 
   const selectedNode = useMemo(() => findComponentNode(selectedKey), [selectedKey]);
   const componentType = selectedNode?.type;
@@ -122,7 +127,10 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
     };
   }, [settingsFormMarkup]);
 
-  const initialModel = useMemo(() => theme?.components?.[componentType ?? ''] as object | undefined ?? {}, [componentType, theme?.components]);
+  const initialModel = useMemo(
+    () => (theme?.[device]?.components?.[componentType ?? ''] as object | undefined) ?? {},
+    [componentType, theme, device],
+  );
   const selectedKeys = useMemo(() => [selectedKey], [selectedKey]);
   const menuOnClick = useCallback((item: MenuInfo) => {
     const node = findComponentNode(item.key);
@@ -131,10 +139,32 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
     }
   }, [setSelectedKey]);
 
-  // Handle form data change — deep-merge so nested keys (e.g. application) are not replaced wholesale
-  const handleFormDataChange = (changedValues: Record<string, unknown>): void => {
-    if (!onChange) return;
-    onChange({ ...theme, components: { ...(theme?.components ?? {}), ...(isNotNullOrWhiteSpace(componentType) ? { [componentType]: { ...changedValues } } : {}) } });
+  // Persist appearance edits into theme[device].components[type], keyed by the selected component's type
+  // and nested under the device bucket. The theme panel builds the appearance markup with
+  // removeStyleRouter:true, so the form emits style props at the top level (no device layer in the form
+  // values) — exactly the shape getDefaultStyles() returns and the runtime style merge reads.
+  //
+  // ConfigurableForm's onValuesChange passes (rawFormValues, defaultModelMergedValues). We persist the
+  // raw form values so only what the user actually set lands in the theme — the runtime merge supplies
+  // defaults, group and per-component tiers. Deep-merge into the existing stored value so editing one
+  // property group doesn't wipe the others.
+  const handleFormDataChange = (formValues: Record<string, unknown>): void => {
+    if (!onChange || isNullOrWhiteSpace(componentType)) return;
+
+    const deviceStyles = theme?.[device] ?? {};
+    const existing = (deviceStyles.components?.[componentType] as Record<string, unknown> | undefined) ?? {};
+    const mergedComponent = deepMergeValues(existing, formValues);
+
+    onChange({
+      ...theme,
+      [device]: {
+        ...deviceStyles,
+        components: {
+          ...(deviceStyles.components ?? {}),
+          [componentType]: mergedComponent,
+        },
+      },
+    });
   };
 
   return (
@@ -154,7 +184,10 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
       {/* Right: Component Appearance Settings */}
       <Col xs={24} sm={24} md={18} lg={18} xl={18} xxl={18}>
         {/* Edit Card: allows editing the component's appearance/theme values */}
-        <DefaultModelProvider name="Component Default Styles" model={initialModel} defaultModel={defaultStyles}>
+        {/* key by componentType so each selected component gets a fresh DefaultModelProvider instance
+            seeded with its own theme slice — otherwise the provider persists across selections and the
+            previous component's values bleed into the next one. */}
+        <DefaultModelProvider key={componentType} name="Component Default Styles" model={initialModel} defaultModel={defaultStyles}>
           <ComponentDefaultsSettings componentTitle={componentTitle} componentType={componentType} markup={appearanceMarkup} initialModel={initialModel} readonly={readonly ?? false} onChange={handleFormDataChange} />
         </DefaultModelProvider>
         {/* Preview Card: renders the component with the current theme to show a live preview */}

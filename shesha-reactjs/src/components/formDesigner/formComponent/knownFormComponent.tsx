@@ -53,8 +53,15 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
   const effectiveStyle = useMemo((): IStyleValue => {
     // Default styles + Theme component styles
     const defStyle: IStyleValue = toolboxComponent.getDefaultStyles?.() ?? {};
-    const themeDefStyle: IStyleValue = isDefined(theme.components)
-      ? deepMergeValues(defStyle, theme.components[componentModel.type] as IStyleValue, deepMergeSkipUndefinedFunc)
+
+    // Component theme defaults are stored under the active device bucket (theme.desktop / theme.tablet /
+    // theme.mobile). Fall back to the legacy root-level theme.components for older saved themes.
+    const desktopComponents = theme.desktop?.components ?? theme.components ?? {};
+    const deviceComponents = effectiveDevice === 'desktop' ? {} : theme[effectiveDevice]?.components ?? {};
+    const themeComponents = deepMergeValues(desktopComponents, deviceComponents, deepMergeSkipUndefinedFunc);
+
+    const themeDefStyle: IStyleValue = isDefined(themeComponents)
+      ? deepMergeValues(defStyle, themeComponents[componentModel.type] as IStyleValue, deepMergeSkipUndefinedFunc)
       : defStyle;
 
     // Default styles + Theme component styles + Desktop component styles
@@ -72,7 +79,7 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
     const effectiveStylingBoxJson = effectiveModel?.stylingBoxJson;
     const effectiveDesktopStyle = deepMergeValues(desktopThemeStyle, { ...effectiveModel, stylingBoxJson: (Boolean(effectiveStylingBoxJson)) ? effectiveStylingBoxJson : effectiveStylingBox }, deepMergeSkipUndefinedFunc);
     return effectiveDesktopStyle as IStyleValue;
-  }, [componentModel, effectiveDevice, theme.components, toolboxComponent]);
+  }, [componentModel, effectiveDevice, theme, toolboxComponent]);
 
   const sfBackground = useBackgroundStoredFile(effectiveStyle.background, shaApplication);
   const sfStyle = useMemo((): IStyleValue => ({ ...effectiveStyle, background: sfBackground }), [effectiveStyle, sfBackground]);
