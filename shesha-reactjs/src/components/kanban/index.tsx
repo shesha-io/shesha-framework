@@ -49,10 +49,14 @@ const KanbanReactComponent: FCUnwrapped<IKanbanProps> = (props) => {
   useEffect(() => {
     let stale = false;
     const canMutate = !isInDesigner && !!modelType && !!groupingProperty;
+
+    // Drop the previous entity's endpoints until the new metadata resolves.
+    setUrls((prev) => (prev.updateUrl === "" && prev.deleteUrl === "" && prev.postUrl === "")
+      ? prev
+      : { updateUrl: "", deleteUrl: "", postUrl: "" });
+
     if (canMutate) {
       getMetadata({ modelType: modelType, dataType: DataTypes.entityReference }).then((resp) => {
-        // Ignore responses that resolve after the model/grouping changed or the component
-        // switched to designer mode, so stale metadata can't re-enable mutations.
         if (stale)
           return;
         if (isEntityMetadata(resp)) {
@@ -65,23 +69,19 @@ const KanbanReactComponent: FCUnwrapped<IKanbanProps> = (props) => {
         }
       }).catch((error) => {
         console.error('Failed to fetch metadata', error);
-        throw error;
       });
-    } else {
-      // Designer preview or missing model/grouping must never mutate data.
-      setUrls((prev) => (prev.updateUrl === "" && prev.deleteUrl === "" && prev.postUrl === "")
-        ? prev
-        : { updateUrl: "", deleteUrl: "", postUrl: "" });
     }
 
-    if (modelType && groupingProperty) {
-      const filteredTasks = tableData.filter((item) => item[groupingProperty]);
-      setTasks(filteredTasks);
-    }
     return () => {
       stale = true;
     };
-  }, [isInDesigner, modelType, groupingProperty, tableData, getMetadata]);
+  }, [isInDesigner, modelType, groupingProperty, getMetadata]);
+
+  useEffect(() => {
+    if (modelType && groupingProperty) {
+      setTasks(tableData.filter((item) => item[groupingProperty]));
+    }
+  }, [modelType, groupingProperty, tableData]);
 
   useEffect(() => {
     setColumns(items ?? []);
