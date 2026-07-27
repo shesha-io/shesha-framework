@@ -9,11 +9,8 @@ export const useStyles = createStyles(({ css, cx }, model: ITextAreaComponentPro
       ${shadowStyles(model.shadow)}
       ${paddingStyles(model.stylingBoxJson)}
       ${dimensionsStyles(model.dimensions)}
+      ${fontStyles(model.font)}
 
-      &.ant-input,
-      .ant-input {
-        ${fontStyles(model.font)}
-      }
   `);
 
   return {

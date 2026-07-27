@@ -82,7 +82,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
     const textAreaProps: TextAreaProps = {
       className: `sha-text-area ${styles.textArea}`,
       placeholder: model.placeholder,
-      autoSize: model.autoSize ? { minRows: 2 } : false,
+      autoSize: model.autoSize === true ? { minRows: 2 } : false,
       showCount: false, // will use a custom counter outside the textarea
       maxLength: model.validate?.maxLength,
       size: model.size,
@@ -92,9 +92,9 @@ const TextAreaComponent: TextAreaComponentDefinition = {
       },
       spellCheck: model.spellCheck ?? false,
     };
-    if (model.border?.hideBorder)
+    if (model.border?.hideBorder === true)
       textAreaProps.variant = 'borderless';
-    if (model.allowClear)
+    if (model.allowClear === true)
       textAreaProps.allowClear = model.allowClear;
 
     return (
@@ -105,7 +105,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
         {(value, onChange, _, ctx) => {
           // Character count display component
           const renderCharCounter = (): ReactNode => {
-            if (!model.showCount) return null;
+            if (model.showCount !== true) return null;
 
             const currentLength = typeof value === 'string' ? value.length : 0;
             const maxLength = model.validate?.maxLength;
@@ -114,7 +114,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
               <div style={{
                 textAlign: 'right',
                 fontSize: '14px',
-                color: maxLength && currentLength > maxLength ? '#ff4d4f' : '#8c8c8c',
+                color: isDefined(maxLength) && currentLength > maxLength ? '#ff4d4f' : '#8c8c8c',
                 marginTop: '0px',
                 marginBottom: '0px',
                 width: model.dimensions?.width,
@@ -123,7 +123,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
               }}
               >
                 {currentLength}
-                {maxLength ? `/${maxLength}` : ''}
+                {isDefined(maxLength) ? `/${maxLength}` : ''}
               </div>
             );
           };
@@ -154,6 +154,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
                     ref={inputRef}
                     rows={2}
                     {...textAreaProps}
+                    disabled={model.disabled === true}
                     value={value ?? ""}
                     onChange={(event) => {
                       ctx?.handleEvent(event, { value: event.currentTarget.value }, model.onChangeCustom);
