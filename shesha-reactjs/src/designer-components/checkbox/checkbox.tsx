@@ -101,6 +101,13 @@ const CheckboxComponent: CheckboxComponentDefinition = {
         : migratePrevStyles(prev, defaultStyles(prev)))
       .add<ICheckboxComponentProps>(6, (prev) => migrateHiddenToVisible(prev))
       .add<ICheckboxComponentProps>(7, (prev) => migratePermissionsToVisiblePermissions(prev)),
+  previewConfiguration: {
+    type: 'checkbox',
+    id: 'checkbox',
+    propertyName: `checkboxAppearance`,
+    label: `Checkbox Label`,
+    version: 'latest',
+  },
 };
 
 export default CheckboxComponent;
