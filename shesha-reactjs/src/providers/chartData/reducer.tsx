@@ -9,13 +9,14 @@ import {
 } from "./actions";
 import { INITIAL_STATE } from "./context";
 import { createReducer } from '@reduxjs/toolkit';
+import { IAnyObject } from "@/interfaces";
 
 export const chartDataReducer = createReducer(INITIAL_STATE, (builder) => {
   builder
     .addCase(SetDataAction, (state, { payload }) => {
       return {
         ...state,
-        items: payload,
+        data: payload as IAnyObject[],
       };
     })
     .addCase(SetIsLoadedAction, (state, { payload }) => {
@@ -35,7 +36,7 @@ export const chartDataReducer = createReducer(INITIAL_STATE, (builder) => {
     .addCase(CleanDataAction, (state) => {
       return {
         ...state,
-        items: [],
+        data: [],
       };
     })
     .addCase(SetAxisPropertyLabelAction, (state, { payload }) => {
