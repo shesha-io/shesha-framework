@@ -15,9 +15,11 @@ export const isConfigurableItemRawId = (formId: ConfigurableItemIdentifier): for
 export const isConfigurableItemFullName = (value: unknown): value is ConfigurableItemFullName => {
   return isDefined(value) && typeof (value) === "object" &&
     "name" in value && typeof (value.name) === "string" &&
-    "module" in value && typeof (value.module) === "string";
+    "module" in value && (typeof (value.module) === "string" || value.module === null);
 };
 
 export const configurableItemIdentifierToString = (value: ConfigurableItemIdentifier): string => {
-  return isConfigurableItemFullName(value) ? `${value.module}:${value.name}` : value;
+  return isConfigurableItemFullName(value)
+    ? (value.module === null ? value.name : `${value.module}:${value.name}`)
+    : value;
 };

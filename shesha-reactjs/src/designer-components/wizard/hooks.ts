@@ -4,7 +4,7 @@ import { IActionExecutionContext, IConfigurableActionConfiguration } from '@/int
 import { IConfigurableFormComponent, isConfigurableFormComponent, useForm, useSheshaApplication, ShaForm } from '@/providers';
 import { IWizardComponentProps, IWizardStepProps } from './models';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useDeepCompareMemo } from '@/hooks';
 import { useFormExpression } from '@/hooks';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
@@ -113,10 +113,11 @@ export const useWizard = (model: IWizardComponentProps): IWizardComponent => {
 
   const currentStep = visibleSteps[current];
   const components = currentStep?.components;
-  const componentsNames = useMemo(() => {
-    if (!components) return [];
-    const flat = componentsTreeToFlatStructure(toolbox, components);
-    const properties = [];
+
+  const collectFieldNames = useCallback((comps: IConfigurableFormComponent[] | undefined): string[][] => {
+    if (!comps) return [];
+    const flat = componentsTreeToFlatStructure(toolbox, comps);
+    const properties: string[][] = [];
     for (const comp in flat.allComponents)
       if (Object.hasOwn(flat.allComponents, comp)) {
         const component = flat.allComponents[comp];
@@ -124,7 +125,27 @@ export const useWizard = (model: IWizardComponentProps): IWizardComponent => {
           properties.push(component.propertyName.split("."));
       }
     return properties;
-  }, [components, toolbox]);
+  }, [toolbox]);
+
+  const componentsNames = useMemo(() => collectFieldNames(components), [components, collectFieldNames]);
+
+  // Resolve a step's custom-footer components from the flat markup (mirrors visibleSteps)
+  const resolveFooterComponents = useCallback((step: IWizardStepProps): IConfigurableFormComponent[] => {
+    const footerId = step.stepFooter?.id ?? (step.hasCustomFooter ? `${step.id}_footer` : undefined);
+    if (!step.hasCustomFooter || !footerId) return [];
+    return (componentRelations[footerId] || [])
+      .map((id) => allComponents[id])
+      .filter(isConfigurableFormComponent);
+  }, [componentRelations, allComponents]);
+
+  // Field name paths across every step (including custom-footer fields), used to reset step data on reset()
+  const allStepsFieldNames = useMemo(
+    () => tabs.flatMap((step) => [
+      ...collectFieldNames(step.components),
+      ...collectFieldNames(resolveFooterComponents(step)),
+    ]),
+    [tabs, collectFieldNames, resolveFooterComponents],
+  );
 
   var formInstance = allData.form?.formInstance;
   useEffect(() => {
@@ -272,6 +293,9 @@ export const useWizard = (model: IWizardComponentProps): IWizardComponent => {
   };
 
   const reset = (): void => {
+    // Clear the data entered across every step, resetting fields to their initial values
+    if (isDefined(formInstance) && isNonEmptyArray(allStepsFieldNames))
+      formInstance.resetFields(allStepsFieldNames);
     successCallback('reset');
   };
 
@@ -361,7 +385,7 @@ export const useWizard = (model: IWizardComponentProps): IWizardComponent => {
       ownerUid: actionsOwnerId,
       hasArguments: false,
       executer: () => {
-        successCallback('reset');
+        reset();
         return Promise.resolve();
       },
     },

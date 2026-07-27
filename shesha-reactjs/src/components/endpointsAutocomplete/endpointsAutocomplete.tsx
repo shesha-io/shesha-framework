@@ -9,6 +9,7 @@ import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 import { useFormData } from '@/providers';
 import { evaluateValueAsString } from '@/providers/form/utils';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { useStyles } from './styles';
 
 export interface IHttpVerb {
   id: string;
@@ -50,6 +51,7 @@ export interface VerbSelectorProps {
   size?: SizeType;
 }
 export const VerbSelector: FC<VerbSelectorProps> = ({ verbs, value, onChange, size }) => {
+  const { styles } = useStyles();
   const options: DefaultOptionType[] = useMemo(() => {
     return verbs.map<DefaultOptionType>((verb) => ({
       value: verb.value,
@@ -59,7 +61,7 @@ export const VerbSelector: FC<VerbSelectorProps> = ({ verbs, value, onChange, si
 
   return (
     <Select
-      style={{ width: '120px' }}
+      className={styles.verbSelector}
       options={options}
       value={value}
       size={size}
@@ -84,6 +86,7 @@ const getVerbFromValue = (value?: EndpointsAutocompleteValue): string | null => 
 };
 
 export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnly = false, mode = 'url', ...props }) => {
+  const { styles } = useStyles();
   const endpointsFetcher = useApiEndpoints({ lazy: true });
   const { data: formData } = useFormData();
   const verb = (props.httpVerb ? evaluateValueAsString(props.httpVerb, { data: formData }) : props.httpVerb) ?? "";
@@ -160,23 +163,17 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
       {...(props.dropdownStyle ? { styles: { popup: { root: props.dropdownStyle } } } : {})}
       popupMatchSelectWidth={false}
     >
-      {!isNullOrWhiteSpace(props.prefix) || !isNullOrWhiteSpace(props.suffix)
-        ? (
-          <Space.Compact>
-            {!isNullOrWhiteSpace(props.prefix) && <span>{props.prefix}</span>}
-            <Input size={props.size} />
-            {!isNullOrWhiteSpace(props.suffix) && <span>{props.suffix}</span>}
-          </Space.Compact>
-        )
-        : (
-          <Input size={props.size} />
-        )}
+      <Input
+        size={props.size}
+        prefix={!isNullOrWhiteSpace(props.prefix) ? <span className={styles.affix}>{props.prefix}</span> : undefined}
+        suffix={!isNullOrWhiteSpace(props.suffix) ? <span className={styles.affix}>{props.suffix}</span> : undefined}
+      />
     </AutoComplete>
   );
 
   return mode === 'endpoint'
     ? (
-      <Space.Compact style={{ width: "100%" }}>
+      <Space.Compact className={styles.compactContainer}>
         <VerbSelector
           verbs={props.availableHttpVerbs ?? []}
           onChange={onVerbChange}

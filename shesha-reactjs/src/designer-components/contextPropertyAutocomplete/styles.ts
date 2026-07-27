@@ -25,7 +25,7 @@ export const useStyles = createStyles(({ css, cx }) => {
 
     +.sha-required-mark {
         position: relative;
-        bottom: -8px;
+        bottom: 0;
     }
 `);
 

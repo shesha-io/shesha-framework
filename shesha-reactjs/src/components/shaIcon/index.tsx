@@ -2,7 +2,7 @@ import React, { CSSProperties, FC } from 'react';
 import { IconBaseProps } from '@ant-design/icons/lib/components/Icon';
 import { useThemeState } from '@/providers';
 import * as AntdIcons from '@ant-design/icons';
-import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined } from '@/utils/nullables';
 
 export type IconType = keyof typeof AntdIcons;
 
@@ -19,10 +19,10 @@ export const ShaIcon: FC<IShaIconProps> = ({ iconName = 'WarningFilled', style, 
   if (!IconComponent)
     return undefined;
 
-  const primaryColor = theme.application?.primaryColor;
-  const resolvedTwoToneColor = isDefined(twoToneColor)
-    ? twoToneColor
-    : isNullOrWhiteSpace(primaryColor) ? '#1890ff' : primaryColor;
+  // Two-tone icons need a secondary colour; honour an explicitly supplied one and fall back to the theme.
+  const resolvedTwoToneColor = twoToneColor ?? (theme.application?.primaryColor || '#1890ff');
 
-  return <IconComponent {...rest} style={style} className={className} twoToneColor={resolvedTwoToneColor} />;
+  // Must forward style (size/colour), className, twoToneColor and the remaining props to the rendered icon.
+  // These were dropped during the strict-null-checks refactor, which broke every icon's styling.
+  return <IconComponent style={style} className={className} twoToneColor={resolvedTwoToneColor} {...rest} />;
 };
