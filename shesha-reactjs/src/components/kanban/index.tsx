@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import KanbanPlaceholder from './components/kanbanPlaceholder';
 import KanbanColumn, { KanbanUrls } from './components/renderColumn';
 import { IKanbanButton, IKanbanProps } from './model';
-import { useKanbanActions } from './utils';
+import { KanbanColumnState, useKanbanActions } from './utils';
 import { addPx } from '@/utils/style';
 import { getOverflowStyle } from '@/designer-components/_settings/utils/overflow/util';
 import { getPropertyOrUndefined, jsonSafeParse } from '@/utils/object';
@@ -91,11 +91,11 @@ const KanbanReactComponent: FCUnwrapped<IKanbanProps> = (props) => {
     const initializeSettings = async (): Promise<void> => {
       try {
         if (!isNullOrWhiteSpace(componentName)) {
-          const resp = (await fetchColumnState(componentName)) ?? {};
+          const resp: KanbanColumnState = (await fetchColumnState(componentName)) ?? {};
           setSettings(resp);
           // Loop through and store settings asynchronously
           for (const [columnId, isCollapsed] of Object.entries(resp)) {
-            await storeSettings(columnId, isCollapsed as boolean); // Await inside loop
+            await storeSettings(columnId, isCollapsed);
           }
         } else
           setSettings({});
