@@ -1,10 +1,11 @@
 import { useRefListItemGroupConfigurator } from '@/components/refListSelectorDisplay/provider';
 import { App, Flex, Form, Modal } from 'antd';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import KanbanPlaceholder from './components/kanbanPlaceholder';
 import KanbanColumn, { KanbanUrls } from './components/renderColumn';
-import { IKanbanButton, IKanbanProps } from './model';
-import { useKanbanActions } from './utils';
+import { IKanbanProps, isKanbanColumn, isRefListCellValue } from './model';
+import { IDataColumnsProps, isDataColumn } from '@/providers/datatableColumnsConfigurator/models';
+import { KanbanColumnState, useKanbanActions } from './utils';
 import { addPx } from '@/utils/style';
 import { getOverflowStyle } from '@/designer-components/_settings/utils/overflow/util';
 import { getPropertyOrUndefined, jsonSafeParse } from '@/utils/object';
@@ -23,12 +24,11 @@ import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { RecursivePartial } from '@/interfaces/entity';
 
 const KanbanReactComponent: FCUnwrapped<IKanbanProps> = (props) => {
-  const { gap, groupingProperty, createFormId, items, componentName, editFormId } = props;
+  const { gap, groupingProperty, createFormId, componentName, editFormId } = props;
 
-  const { tableData, modelType } = useDataTableStore();
+  const { tableData, modelType, configurableColumns, registerConfigurableColumns } = useDataTableStore();
   const { message } = App.useApp();
   const allData = useAvailableConstantsData();
-  const [columns, setColumns] = useState<IKanbanButton[]>([]);
   const [urls, setUrls] = useState<KanbanUrls>({ updateUrl: '', deleteUrl: '', postUrl: '' });
   const [tasks, setTasks] = useState<ITableRowData[]>([]);
   const { formMode } = useFormState();
@@ -40,11 +40,51 @@ const KanbanReactComponent: FCUnwrapped<IKanbanProps> = (props) => {
   const [selectedColumn, setSelectedColumn] = useState<number | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [settings, setSettings] = useState<IAnyObject>({});
-  const { storeSettings } = useRefListItemGroupConfigurator();
+  const { storeSettings, items: refListItems } = useRefListItemGroupConfigurator();
   const { getMetadata } = useMetadataDispatcher();
+
+  // Columns come from the reference list held by the provider, not from the saved snapshot,
+  // so the designer, preview and runtime can never drift apart. Per-item configuration saved
+  // on the model is merged onto these items by the provider.
+  const columns = useMemo(() => refListItems.filter(isKanbanColumn), [refListItems]);
 
   const styling = jsonSafeParse<StyleBoxValue>(props.columnStyles?.stylingBox || '{}');
   const stylingBoxAsCSS = pickStyleFromModel(styling);
+
+  const getGroupingValue = useCallback(
+    (task: ITableRowData): number | undefined => getPropertyOrUndefined<number>(task, groupingProperty, (value) => {
+      // A reference list cell can arrive either as a raw value or as { item, itemValue }.
+      const rawValue = isRefListCellValue(value) ? value.itemValue : value;
+      const numericValue = typeof rawValue === 'number' ? rawValue : parseFloat(String(rawValue));
+      return Number.isNaN(numericValue) ? undefined : numericValue;
+    }),
+    [groupingProperty],
+  );
+
+  useEffect(() => {
+    if (isNullOrWhiteSpace(groupingProperty))
+      return;
+    // The Kanban renders no grid of its own, so nothing else asks the table to fetch the grouping
+    // property. Without it every row arrives without the value used to place cards into columns.
+    const isAlreadyFetched = configurableColumns.some((column) => isDataColumn(column) && column.propertyName === groupingProperty);
+    if (isAlreadyFetched)
+      return;
+
+    const groupingColumn: IDataColumnsProps = {
+      id: `${props.id}-${groupingProperty}`,
+      columnType: 'data',
+      propertyName: groupingProperty,
+      caption: groupingProperty,
+      sortOrder: configurableColumns.length,
+      itemType: 'item',
+      allowSorting: false,
+      isVisible: true,
+    };
+    registerConfigurableColumns(props.id, [...configurableColumns, groupingColumn]);
+    // registerConfigurableColumns is omitted from the dependencies because the actions object is
+    // recreated on every render; the effect only needs to re-run when the columns themselves change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [configurableColumns, groupingProperty, props.id]);
 
   useEffect(() => {
     if (!isInDesigner && modelType && groupingProperty) {
@@ -62,24 +102,21 @@ const KanbanReactComponent: FCUnwrapped<IKanbanProps> = (props) => {
         throw error;
       });
 
-      const filteredTasks = tableData.filter((item) => item[groupingProperty]);
+      // isDefined rather than truthiness: itemValue 0 is a valid column (e.g. "None").
+      const filteredTasks = tableData.filter((item) => isDefined(getGroupingValue(item)));
       setTasks(filteredTasks);
     }
-  }, [isInDesigner, modelType, groupingProperty, tableData, getMetadata]);
-
-  useEffect(() => {
-    setColumns(items ?? []);
-  }, [items]);
+  }, [isInDesigner, modelType, groupingProperty, tableData, getMetadata, getGroupingValue]);
 
   useEffectOnce(() => {
     const initializeSettings = async (): Promise<void> => {
       try {
         if (!isNullOrWhiteSpace(componentName)) {
-          const resp = await fetchColumnState(componentName);
+          const resp: KanbanColumnState = (await fetchColumnState(componentName)) ?? {};
           setSettings(resp);
           // Loop through and store settings asynchronously
           for (const [columnId, isCollapsed] of Object.entries(resp)) {
-            await storeSettings(columnId, isCollapsed as boolean); // Await inside loop
+            await storeSettings(columnId, isCollapsed);
           }
         } else
           setSettings({});
@@ -96,11 +133,10 @@ const KanbanReactComponent: FCUnwrapped<IKanbanProps> = (props) => {
   });
 
   useEffect(() => {
-    if (isDefined(selectedItem)) {
+    // editForm is only mounted while an item is selected; closeModal resets it while it is
+    // still connected, so there is nothing to reset here.
+    if (isDefined(selectedItem))
       editForm.setFieldsValue(selectedItem as RecursivePartial<ITableRowData>);
-    } else {
-      editForm.resetFields();
-    }
   }, [selectedItem, editForm]);
 
   const closeModal = (): void => {
@@ -170,12 +206,14 @@ const KanbanReactComponent: FCUnwrapped<IKanbanProps> = (props) => {
   const memoizedFilteredTasks = useMemo(() => {
     return columns.map((column) => ({
       column,
-      tasks: tasks.filter((task) => getPropertyOrUndefined<number>(task, groupingProperty, (value) => value ? parseFloat(String(value)) : undefined) === column.itemValue),
+      tasks: tasks.filter((task) => getGroupingValue(task) === column.itemValue),
       isCollapsed: settings[column.itemValue] || false, // Default to false if not set
     }));
-  }, [columns, tasks, groupingProperty, settings]);
+  }, [columns, tasks, settings, getGroupingValue]);
 
   const overflowStyle = getOverflowStyle(true, false);
+
+  console.log("COLUMNS::",columns)
 
   return (
     <>
