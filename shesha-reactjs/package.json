@@ -33,7 +33,8 @@
     "prepare": "husky",
     "type-check-replace": "powershell -Command \"(Get-Content typescript-errors.log) -replace 'src/', 'D:\\Boxfusion\\shesha-framework-main\\shesha-reactjs\\src/' | Set-Content typescript-errors.log\"",
     "type-check": "tsc --noEmit > typescript-errors.log",
-    "type-check-log": "npm run type-check & npm run type-check-replace"
+    "type-check-log": "npm run type-check & npm run type-check-replace",
+    "postinstall": "node bin/copy-local-monaco.js || true"
   },
   "overrides": {
     "eslint": "$eslint",
@@ -153,7 +154,8 @@
   "files": [
     "dist",
     "lib",
-    "es"
+    "es",
+    "bin"
   ],
   "dependencies": {
     "@ant-design/nextjs-registry": "^1.3.0",
@@ -217,5 +219,8 @@
     "*.{js,jsx,ts,tsx}": [
       "npm run lint -- --quiet --fix"
     ]
+  },
+  "bin": {
+    "shesha-copy-local-monaco": "./bin/copy-local-monaco.js"
   }
 }

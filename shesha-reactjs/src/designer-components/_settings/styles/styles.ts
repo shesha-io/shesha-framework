@@ -42,9 +42,9 @@ export const useStyles = createStyles(({ css, cx, responsive, token }) => {
             
             
             +.ant-form-item-tooltip {
-            align-self: end !important;
+            align-self: center !important;
             position: relative;
-            top: 4px;
+            top: 0;
             }
     `);
 

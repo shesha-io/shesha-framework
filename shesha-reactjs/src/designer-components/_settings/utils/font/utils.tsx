@@ -1,13 +1,11 @@
-import React, { FC } from 'react';
+import { CSSProperties } from 'react';
 import { IFontValue } from './interfaces';
-import { AlignCenterOutlined, AlignLeftOutlined, AlignRightOutlined } from '@ant-design/icons';
-import { SectionSeparator } from '@/components/sectionSeparator';
 import { isDefined } from '@/utils/nullables';
 
-export const getFontStyle = (input?: IFontValue): React.CSSProperties => {
+export const getFontStyle = (input?: IFontValue): CSSProperties => {
   if (!input) return {};
 
-  const style: React.CSSProperties = {};
+  const style: CSSProperties = {};
 
   if (isDefined(input.size)) {
     const size = input.size;
@@ -72,25 +70,16 @@ export const fontTypes = [
   { value: 'PT Serif', label: 'PT serif' },
 ];
 
-const FontWeightItem: FC<{ value: string; lineThickness: number }> = ({ value, lineThickness }) => {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', minHeight: '24px', paddingTop: '8px' }}>
-      <span style={{ marginTop: '-8px', marginRight: '4px' }}>{value}</span>
-      <SectionSeparator lineColor="black" lineThickness={lineThickness} />
-    </div>
-  );
-};
-
 export const fontWeightsOptions = [
-  { value: '100', label: <FontWeightItem value="100" lineThickness={1} /> },
-  { value: '400', label: <FontWeightItem value="400" lineThickness={2} /> },
-  { value: '500', label: <FontWeightItem value="500" lineThickness={3} /> },
-  { value: '700', label: <FontWeightItem value="700" lineThickness={4} /> },
-  { value: '900', label: <FontWeightItem value="900" lineThickness={5} /> },
+  { value: '100', label: 'Thin (100)' },
+  { value: '400', label: 'Normal (400)' },
+  { value: '500', label: 'Medium (500)' },
+  { value: '700', label: 'Bold (700)' },
+  { value: '900', label: 'Black (900)' },
 ];
 
 export const textAlignOptions = [
-  { value: 'left', label: <AlignLeftOutlined /> },
-  { value: 'center', label: <AlignCenterOutlined /> },
-  { value: 'right', label: <AlignRightOutlined /> },
+  { value: 'left', label: 'Left', icon: 'AlignLeftOutlined' },
+  { value: 'center', label: 'Center', icon: 'AlignCenterOutlined' },
+  { value: 'right', label: 'Right', icon: 'AlignRightOutlined' },
 ];

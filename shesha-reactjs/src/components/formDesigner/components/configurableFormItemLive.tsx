@@ -9,7 +9,7 @@ import { ConfigurableFormItemForm } from './configurableFormItemForm';
 import { designerConstants } from '../utils/designerConstants';
 import { addPx } from '@/utils/style';
 import { useStyles } from './styles';
-import { isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 
 export const ConfigurableFormItemLive = <TValue = unknown>({
   children,
@@ -59,7 +59,7 @@ export const ConfigurableFormItemLive = <TValue = unknown>({
     initialValue: initialValue,
     tooltip: isNotNullOrWhiteSpace(model.description) ? model.description : undefined,
     rules: getValidationRules(model, { getFormData }),
-    ...(model.validationDependencies?.length ? { dependencies: model.validationDependencies } : {}),
+    ...(isDefined(model.validationDependencies?.length) ? { dependencies: model.validationDependencies } : {}),
     name: isNotNullOrWhiteSpace(model.context) ? undefined : getFieldNameFromExpression(propName),
     style: {
       marginTop: addPx(marginTop, allData),

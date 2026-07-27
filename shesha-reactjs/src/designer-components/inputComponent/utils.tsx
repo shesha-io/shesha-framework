@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { Select, Row } from 'antd';
+import { Select } from 'antd';
 import { ListEditor } from '@/components/listEditor';
 import { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
 import { CodeEditorWithStandardConstants } from '../codeEditor/codeEditorWithConstants';
@@ -62,8 +62,10 @@ export const CustomLabelValueEditorInputs = (props: ILabelValueEditorProps): Rea
     >
       {({ item, itemOnChange, readOnly }) => {
         const data = item as Record<string, string | null>;
+        // nowrap keeps Label, Value, Colour and Icon on a single line as designed.
+        // The text fields flex-shrink and the colour/icon group stays compact.
         return (
-          <div className={styles.rowInputs} style={{ gap: 8 }}>
+          <div className={styles.rowInputs} style={{ gap: 8, flexWrap: 'nowrap', alignItems: 'center' }}>
             {!isNullOrWhiteSpace(labelName) && (
               <InputComponent
                 type="textField"
@@ -73,7 +75,7 @@ export const CustomLabelValueEditorInputs = (props: ILabelValueEditorProps): Rea
                 id={labelName}
                 propertyName={labelName}
                 value={data[labelName] ?? ""}
-                width={getWidth("textField", 100)}
+                width={getWidth("textField", 70)}
                 onChange={(value) => {
                   itemOnChange({ ...data, [labelName]: value } as ILabelValueItem, undefined);
                 }}
@@ -88,13 +90,13 @@ export const CustomLabelValueEditorInputs = (props: ILabelValueEditorProps): Rea
                 id={valueName}
                 propertyName={valueName}
                 value={data[valueName]}
-                width={getWidth("textField", 100)}
+                width={getWidth("textField", 70)}
                 onChange={(value) => {
                   itemOnChange({ ...data, [valueName]: value } as ILabelValueItem, undefined);
                 }}
               />
             )}
-            <Row>
+            <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
               {!isNullOrWhiteSpace(colorName) && (
                 <>
                   <InputComponent
@@ -146,7 +148,7 @@ export const CustomLabelValueEditorInputs = (props: ILabelValueEditorProps): Rea
                   }}
                 />
               )}
-            </Row>
+            </div>
           </div>
         );
       }}
