@@ -21,10 +21,9 @@ import { defaultStyles, buildPasswordValidatorString, usePasswordComplexitySetti
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { TextFieldApi } from '@/componentsApi/componentApi';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
-import { getComponentEvents } from '../_common/events';
-
 import apiCode from "../../componentsApi/componentApi.ts?raw";
-import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
+import { getComponentEvents } from '../_common/events';
 
 const TextFieldComponent: TextFieldComponentDefinition = {
   allowInherit: true,
@@ -37,7 +36,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
   preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string &&
-    (!dataFormat ||
+    (isNullOrWhiteSpace(dataFormat) ||
       dataFormat === StringFormats.singleline ||
       dataFormat === StringFormats.emailAddress ||
       dataFormat === StringFormats.phoneNumber ||
@@ -60,7 +59,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
     const InputComponentType = useMemo(() => model.textType === 'password' ? Input.Password : Input, [model.textType]);
 
     const regExpObj = useMemo(() => {
-      if (!model.regExp) return null;
+      if (isNullOrWhiteSpace(model.regExp)) return null;
       try {
         return new RegExp(model.regExp, 'g');
       } catch (error) {
@@ -73,12 +72,12 @@ const TextFieldComponent: TextFieldComponentDefinition = {
     const passwordComplexity = usePasswordComplexitySettings();
 
     const passwordValidator = useMemo(() =>
-      isPassword && model.useStandardPasswordValidation ? buildPasswordValidatorString(passwordComplexity) : null,
+      isPassword && model.useStandardPasswordValidation === true ? buildPasswordValidatorString(passwordComplexity) : null,
     [isPassword, model.useStandardPasswordValidation, passwordComplexity],
     );
 
     const modelWithValidation = useMemo<UnwrapCodeEvaluators<ITextFieldComponentProps>>(() => {
-      if (!isPassword || !passwordValidator || model.validate?.validator) return model;
+      if (!isPassword || isNullOrWhiteSpace(passwordValidator) || isNotNullOrWhiteSpace(model.validate?.validator)) return model;
       return {
         ...model,
         validate: {
@@ -96,12 +95,11 @@ const TextFieldComponent: TextFieldComponentDefinition = {
       prefix: <>{model.prefix}{model.prefixIcon && <ShaIcon iconName={model.prefixIcon} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
       suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
       size: model.size,
-      disabled: model.readOnly ?? false,
-      readOnly: model.readOnly,
+      disabled: model.disabled === true,
       spellCheck: model.spellCheck ?? false,
       ...(isDefined(model.styleJson) ? { style: model.styleJson } : {}),
     };
-    if (model.border?.hideBorder)
+    if (model.border?.hideBorder === true)
       inputProps.variant = 'borderless';
 
     const fieldContent = (
@@ -111,15 +109,15 @@ const TextFieldComponent: TextFieldComponentDefinition = {
           // the form validator (handles initial values, programmatic changes, and resets).
           // Only active when the complexity validator is actually composed into the model
           // (i.e. no custom validator has overridden it).
-          const isPasswordComplexityActive = isPassword && model.useStandardPasswordValidation && !!passwordValidator && !model.validate?.validator;
-          const passwordError = isPasswordComplexityActive && value
+          const isPasswordComplexityActive = isPassword && model.useStandardPasswordValidation === true && isNotNullOrWhiteSpace(passwordValidator) && isNullOrWhiteSpace(model.validate?.validator);
+          const passwordError = isPasswordComplexityActive && isNotNullOrWhiteSpace(value)
             ? (() => {
-              const errors = validatePasswordValue(value as string, passwordComplexity);
+              const errors = validatePasswordValue(value, passwordComplexity);
               return errors.length > 0 ? `Password must contain ${errors.join(', ')}` : null;
             })()
             : null;
 
-          const inputElement = model.readOnly
+          const inputElement = model.readOnly === true
             ? (
               <ReadOnlyDisplayFormItem
                 value={model.textType === 'password' && !isNullOrWhiteSpace(value) ? ''.padStart(value.length, '•') : value}
@@ -136,8 +134,8 @@ const TextFieldComponent: TextFieldComponentDefinition = {
                 onChange={(event) => {
                   const inputValue = event.currentTarget.value;
                   const isEmpty = isNullOrWhiteSpace(inputValue);
-                  const isRegExpMatch = regExpObj && Boolean(inputValue.match(regExpObj));
-                  if ((!isEmpty && isRegExpMatch) || !regExpObj || isEmpty) {
+                  const isRegExpMatch = isDefined(regExpObj) && inputValue.match(regExpObj) !== null;
+                  if ((!isEmpty && isRegExpMatch) || !isDefined(regExpObj) || isEmpty) {
                     const changedValue = ctx?.handleEvent(event, { value: inputValue }, model.onChangeCustom);
 
                     onChange(changedValue !== undefined ? changedValue : inputValue);
