@@ -207,6 +207,18 @@ const TextFieldComponent: TextFieldComponentDefinition = {
   linkToModelMetadata: (model, metadata): ITextFieldComponentProps => (
     { ...model, textType: metadata.dataFormat === StringFormats.password ? 'password' : 'text' }
   ),
+  previewConfiguration: {
+    type: 'textField',
+    id: 'textField',
+    propertyName: `textFieldAppearance`,
+    label: `Text Field Label`,
+    prefix: 'Prefix',
+    prefixIcon: 'DoubleRightOutlined',
+    suffixIcon: 'DoubleLeftOutlined',
+    suffix: 'Suffix',
+    version: 'latest',
+    textType: 'text',
+  },
 };
 
 export default TextFieldComponent;
