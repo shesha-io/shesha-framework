@@ -229,8 +229,6 @@ const KanbanReactComponent: FCUnwrapped<IKanbanProps> = (props) => {
 
   const overflowStyle = getOverflowStyle(true, false);
 
-  console.log("COLUMNS::",columns)
-
   return (
     <>
       {!isNonEmptyArray(columns) ? (
