@@ -220,6 +220,16 @@ const TextAreaComponent: TextAreaComponentDefinition = {
       ...model,
     };
   },
+  previewConfiguration: {
+    type: 'textArea',
+    id: 'textArea',
+    propertyName: `textAreaAppearance`,
+    label: `Text Area Label`,
+    version: 'latest',
+    autoSize: false,
+    showCount: false,
+    allowClear: false,
+  },
 };
 
 export default TextAreaComponent;
