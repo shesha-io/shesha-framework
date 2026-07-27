@@ -11,9 +11,10 @@ export const useStyles = createStyles(({ css, cx, prefixCls, iconPrefixCls, toke
     margin-bottom: ${sheshaStyles.paddingLG}px;
     background: white;
     height: 100%;
-    
+    overflow: hidden;
+
     .${prefixCls}-statistic-title {
-        padding-left: 8px;
+        padding: 8px;
         font-size: 16px;
         text-align: center;
     }

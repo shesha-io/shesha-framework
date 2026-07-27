@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/strict-boolean-expressions: "error" */
 import { Button, Dropdown, Input, MenuProps, Spin, Tooltip, Tree, TreeProps } from 'antd';
 import React, { FC, useMemo, useRef, useState } from 'react';
 import { MoveNodePayload } from '../../apis';
@@ -83,7 +84,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
     const walk = (nodes: TreeNode[]): void => {
       for (const node of nodes) {
         result.push(node);
-        if (isNodeWithChildren(node) && expandedKeys?.includes(node.key))
+        if (isNodeWithChildren(node) && isDefined(expandedKeys) && expandedKeys.includes(node.key))
           walk(node.children as TreeNode[]);
       }
     };
@@ -115,8 +116,8 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
       // Plain click: single selection + navigation.
       lastClickedKeyRef.current = clickedKey;
       setShiftFocusKey(clickedKey);
-      const selectedNode = keys.length > 0 ? info.node : undefined;
-      void cs.selectTreeNode(selectedNode);
+      if (keys.length > 0)
+        void cs.selectTreeNode(info.node);
     }
   };
 

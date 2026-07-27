@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import KanbanPlaceholder from './components/kanbanPlaceholder';
 import KanbanColumn, { KanbanUrls } from './components/renderColumn';
 import { IKanbanButton, IKanbanProps } from './model';
-import { useKanbanActions } from './utils';
+import { KanbanColumnState, useKanbanActions } from './utils';
 import { addPx } from '@/utils/style';
 import { getOverflowStyle } from '@/designer-components/_settings/utils/overflow/util';
 import { getPropertyOrUndefined, jsonSafeParse } from '@/utils/object';
@@ -47,8 +47,18 @@ const KanbanReactComponent: FCUnwrapped<IKanbanProps> = (props) => {
   const stylingBoxAsCSS = pickStyleFromModel(styling);
 
   useEffect(() => {
-    if (!isInDesigner && modelType && groupingProperty) {
+    let stale = false;
+    const canMutate = !isInDesigner && !!modelType && !!groupingProperty;
+
+    // Drop the previous entity's endpoints until the new metadata resolves.
+    setUrls((prev) => (prev.updateUrl === "" && prev.deleteUrl === "" && prev.postUrl === "")
+      ? prev
+      : { updateUrl: "", deleteUrl: "", postUrl: "" });
+
+    if (canMutate) {
       getMetadata({ modelType: modelType, dataType: DataTypes.entityReference }).then((resp) => {
+        if (stale)
+          return;
         if (isEntityMetadata(resp)) {
           const { update, delete: deleteEndpoint, create } = resp.apiEndpoints;
           setUrls({
@@ -59,13 +69,19 @@ const KanbanReactComponent: FCUnwrapped<IKanbanProps> = (props) => {
         }
       }).catch((error) => {
         console.error('Failed to fetch metadata', error);
-        throw error;
       });
-
-      const filteredTasks = tableData.filter((item) => item[groupingProperty]);
-      setTasks(filteredTasks);
     }
-  }, [isInDesigner, modelType, groupingProperty, tableData, getMetadata]);
+
+    return () => {
+      stale = true;
+    };
+  }, [isInDesigner, modelType, groupingProperty, getMetadata]);
+
+  useEffect(() => {
+    if (modelType && groupingProperty) {
+      setTasks(tableData.filter((item) => item[groupingProperty]));
+    }
+  }, [modelType, groupingProperty, tableData]);
 
   useEffect(() => {
     setColumns(items ?? []);
@@ -75,11 +91,11 @@ const KanbanReactComponent: FCUnwrapped<IKanbanProps> = (props) => {
     const initializeSettings = async (): Promise<void> => {
       try {
         if (!isNullOrWhiteSpace(componentName)) {
-          const resp = await fetchColumnState(componentName);
+          const resp: KanbanColumnState = (await fetchColumnState(componentName)) ?? {};
           setSettings(resp);
           // Loop through and store settings asynchronously
           for (const [columnId, isCollapsed] of Object.entries(resp)) {
-            await storeSettings(columnId, isCollapsed as boolean); // Await inside loop
+            await storeSettings(columnId, isCollapsed);
           }
         } else
           setSettings({});
