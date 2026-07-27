@@ -23,7 +23,9 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { style }: { styl
   };
 
   const checkbox = cx("sha-checkbox", css`
-      .${prefixCls}-checkbox-wrapper {
+      /* The emotion class is applied directly to the ant-checkbox-wrapper element,
+         so target it with &, not as a descendant (which never matched). */
+      &.${prefixCls}-checkbox-wrapper {
         height: 100%;
       }
       .${prefixCls}-checkbox {
@@ -40,6 +42,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { style }: { styl
             height: ${style.height};
             display: flex;
             justify-content: center;
+            ${(backgroundImage || backgroundColor) ? `background: ${backgroundImage || backgroundColor};` : ''}
             ${rest as CSSObject}
             :after {
                 inset-inline-start: unset;
@@ -49,7 +52,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { style }: { styl
 
       .${prefixCls}-checkbox-checked {
         .${prefixCls}-checkbox-inner {
-            background: ${backgroundImage || backgroundColor};
+            ${(backgroundImage || backgroundColor) ? `background: ${backgroundImage || backgroundColor};` : ''}
             ${rest as CSSObject}
             }
         }

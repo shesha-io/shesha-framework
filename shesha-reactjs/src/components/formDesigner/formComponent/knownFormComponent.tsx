@@ -109,8 +109,12 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
   const allStyles = useFormComponentStyles(unwrappedModel); // ToDo: AS - remove afte migrate all components to use IStyleValue
   const styleJson = useActualContextExecution(unwrappedModel.style, undefined, {}); // use default style if empty or error
 
-  const readOnly = useMemo(() => Boolean(unwrappedModel.readOnly) || !anyOfPermissionsGranted(unwrappedModel.editModePermissions || []), [unwrappedModel, anyOfPermissionsGranted]);
-  const disabled = useMemo(() => Boolean(unwrappedModel.disabled) || !anyOfPermissionsGranted(unwrappedModel.editModePermissions || []), [unwrappedModel, anyOfPermissionsGranted]);
+  const readOnly = useMemo(() =>
+    (toolboxComponent.allowInherit !== true && unwrappedModel.disabled === true) || // ToDo: AS - remove allowInherit after migrate all components
+    unwrappedModel.readOnly === true ||
+    !anyOfPermissionsGranted(unwrappedModel.editModePermissions || []),
+  [toolboxComponent.allowInherit, unwrappedModel.disabled, unwrappedModel.readOnly, unwrappedModel.editModePermissions, anyOfPermissionsGranted]);
+  const disabled = useMemo(() => unwrappedModel.disabled === true || !anyOfPermissionsGranted(unwrappedModel.editModePermissions || []), [unwrappedModel, anyOfPermissionsGranted]);
   const hidden = useMemo(() => shaForm.formMode !== 'designer' &&
     (
       // ToDo: AS - remove hidden from this check after migration

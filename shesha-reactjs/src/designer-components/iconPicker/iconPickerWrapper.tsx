@@ -1,10 +1,9 @@
-import IconPicker, { IIconPickerProps } from '@/components/iconPicker';
+import IconPicker, { IIconPickerProps, ShaIconTypes } from '@/components/iconPicker';
 import React, { CSSProperties, FC, useCallback, useMemo } from 'react';
 import { IApplicationContext } from '@/providers/form/utils';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { IDimensionsValue } from '../_settings/utils/dimensions/interfaces';
 import { Tooltip } from 'antd';
-import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 interface IconPickerWrapperProps {
   disabled?: boolean | undefined; // todo: move to the model level
@@ -22,7 +21,8 @@ interface IconPickerWrapperProps {
   borderRadius?: number | undefined;
   backgroundColor?: string | undefined;
   stylingBox?: string | undefined;
-  textAlign?: string | undefined;
+  defaultValue?: ShaIconTypes | undefined;
+  textAlign?: CSSProperties['textAlign'] | undefined;
   style?: string | undefined;
   dimensions?: IDimensionsValue | undefined;
   description?: string | undefined;
@@ -39,6 +39,7 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     fullStyles,
     iconSize,
     value,
+    defaultValue,
   } = props;
 
   const onIconChange = useCallback<Required<IIconPickerProps>["onIconChange"]>((_icon, iconName): void => {
@@ -55,9 +56,9 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
 
   return (
     <Tooltip title={props.description}>
-      <div style={!isNullOrWhiteSpace(value) ? { display: 'grid', placeItems: textAlign } : {}}>
+      <div style={(defaultValue || value) ? { textAlign: fullStyles?.textAlign ?? textAlign } : {}}>
         <IconPicker
-          value={value ?? undefined}
+          value={value ?? defaultValue ?? undefined}
           onIconChange={onIconChange}
           selectBtnSize={selectBtnSize}
           iconSize={iconSize ?? fontSize}

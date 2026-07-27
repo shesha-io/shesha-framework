@@ -272,6 +272,8 @@ export type TextFieldApi = InputComponentApi<string | undefined>;
 export type TextAreaApi = InputComponentApi<string | undefined>;
 
 export interface NumberFieldApi extends InputComponentApi<number | undefined> {
+  /** Minimum value */
   min?: number;
+  /** Maximum value */
   max?: number;
 };

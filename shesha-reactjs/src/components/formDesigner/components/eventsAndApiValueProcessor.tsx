@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useCallback, useEffect } from "react";
 import { HandleEvent, IConfigurableFormItemChildFunc } from "./model";
 import { useComponentApi } from "@/providers/componentApi/provider";
 import { InputComponentApi } from "@/componentsApi/componentApi";
@@ -7,6 +7,7 @@ import { IComponentApiInputRef } from "@/providers/componentApi/model";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { executeScriptSync, useAvailableConstantsDataNoRefresh } from "@/providers/form/utils";
 import { addContextData } from "./utils";
+import { useLiveRef } from "@/hooks/useLiveRef";
 
 interface IEventsAndApiValueProcessorProps<TValue = unknown> {
   componentId: string;
@@ -23,18 +24,13 @@ interface IEventsAndApiValueProcessorProps<TValue = unknown> {
 export const EventsAndApiValueProcessor = <TValue = unknown>({ value, onChange, children, componentId, componentName, propertyName }: IEventsAndApiValueProcessorProps<TValue>): ReactNode => {
   const allData = useAvailableConstantsDataNoRefresh();
   const componentApi = useComponentApi();
-  // set isInput once because componentName should not be changed
-  const [isInput] = useState(() => isDefined(componentApi) && componentApi.getApi(componentName)?.isInput);
 
-  const apiRef = useRef<IComponentApiInputRef<TValue>>(undefined);
-  apiRef.current = { value, onChange };
+  const apiRef = useLiveRef<IComponentApiInputRef<TValue>>({ value, onChange });
 
-  const onChangeHandler = (val: TValue | undefined | null): void => {
-    if (apiRef.current) {
-      apiRef.current.onChange(val);
-      apiRef.current.value = val;
-    }
-  };
+  const onChangeHandler = useCallback((val: TValue | undefined | null): void => {
+    apiRef.current.value = val;
+    apiRef.current.onChange(val);
+  }, [apiRef]);
 
   const handleEvent: HandleEvent<TValue> = (event, value, code, eventName) => {
     if (isNullOrWhiteSpace(code)) return;
@@ -46,17 +42,16 @@ export const EventsAndApiValueProcessor = <TValue = unknown>({ value, onChange, 
   };
 
   useEffect(() => {
-    if (isInput ?? false) {
-      componentApi?.updateApi<InputComponentApi>({
-        id: componentId,
-        componentName: componentName,
-        level: 2,
-        properties: [{ name: 'value', getter: () => apiRef.current?.value, setter: (val: unknown) => apiRef.current?.onChange(val as TValue) }],
-      });
-    }
-  }, [componentApi, componentId, componentName, isInput]);
+    componentApi?.updateApi<InputComponentApi>({
+      id: componentId,
+      componentName: componentName,
+      level: 2,
+      properties: [{ name: 'value', getter: () => apiRef.current.value, setter: (val: unknown) => onChangeHandler(val as TValue) }],
+    });
+  }, [apiRef, componentApi, componentId, componentName, onChangeHandler]);
   useEffectOnce(() => () => componentApi?.removeApi(componentId));
 
 
+  // eslint-disable-next-line react-hooks/refs
   return children(value, onChangeHandler, propertyName, { handleEvent });
 };
