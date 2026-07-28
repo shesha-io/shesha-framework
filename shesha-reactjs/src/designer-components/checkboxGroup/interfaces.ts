@@ -2,14 +2,14 @@ import { CSSProperties, EventHandler } from 'react';
 import { DataSourceType, ILabelValue } from '@/designer-components/dropdown/model';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { StringSubtype } from '@/interfaces/utilityTypes';
-import { IInputStyles } from '@/providers/form/models';
+import { IInputStyles, IStyleValue } from '@/providers/form/models';
 
 export const DIRECTION_TYPE = ['horizontal', 'vertical'] as const;
 export type DirectionType = StringSubtype<typeof DIRECTION_TYPE>;
 
 // Extends IInputStyles so the Appearance style model (font, dimensions, border,
 // background, shadow, stylingBox) is typed and available to styles.ts.
-export type CheckboxGroupCommonProps = IInputStyles & {
+export type CheckboxGroupCommonProps = IInputStyles & IStyleValue & {
   items?: ILabelValue[] | undefined;
   /**
    * @deprecated - use referenceListId instead

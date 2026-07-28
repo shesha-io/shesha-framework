@@ -1,6 +1,8 @@
 import { createStyles } from '@/styles';
 import { CheckboxGroupComponentProps } from './interfaces';
-import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
+import { backgroundStyles, borderStyles, dimensionsStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
+import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
+import { addPx } from '@/utils/style';
 
 /**
  * Applies the configured Appearance styles (Check Mark, Dimensions, Border,
@@ -10,35 +12,64 @@ import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, paddingSt
  * what makes the styling apply per checkbox rather than to the whole group.
  * Mirrors the standalone Checkbox component so both look consistent.
  */
+
+const borderWidthFromWeight = (weight: string | undefined): string => {
+  switch (weight) {
+    case '100':
+      return '1px';
+    case '400':
+      return '2px';
+    case '500':
+      return '3px';
+    case '700':
+      return '4px';
+    case '900':
+      return '5px';
+    default:
+      return '2px';
+  }
+};
+
 export const useStyles = createStyles(({ css, cx, prefixCls }, model: CheckboxGroupComponentProps) => {
+  const markSize = addPx(model.font?.size);
+  const checkColor = isDefined(model.font?.color) && model.font.color !== '' ? model.font.color : '#fff';
+  const bgColor = model.background?.type === 'color' ? model.background.color : undefined;
+
   const checkboxGroup = cx('sha-multi-checkbox', css`
+      >.${prefixCls}-checkbox-wrapper {
+        height: 100%;
+        align-items: center !important;
+      }
+
       .${prefixCls}-checkbox {
-        input {
+        ${isDefined(markSize) ? `--ant-control-interactive-size: ${markSize};` : ''}
+        --ant-line-width-bold: ${borderWidthFromWeight(model.font?.weight)} !important;
+        --ant-color-white: ${checkColor} !important;
+        ${isNotNullOrWhiteSpace(bgColor) ? `--ant-color-primary-hover: ${bgColor};` : ''}
+        ${dimensionsStyles(model.dimensions)}
+        ${borderStyles(model.border)}
+        ${shadowStyles(model.shadow)}
+        ${paddingStyles(model.stylingBoxJson)}
+
+        .${prefixCls}-checkbox-input {
           width: 100%;
           height: 100%;
         }
 
-        .${prefixCls}-checkbox-inner {
-          display: flex;
-          justify-content: center;
-          ${fontStyles(model.font)}
-          ${dimensionsStyles(model.dimensions)}
-          ${borderStyles(model.border)}
-          ${backgroundStyles(model.background)}
-          ${shadowStyles(model.shadow)}
-          ${paddingStyles(model.stylingBoxJson)}
-
-          &::after {
-            inset-inline-start: unset;
-          }
+        &:after {
+          top: 50% !important;
+          inset-inline-start: 50% !important;
+          transform: translate(-50%, -50%) rotate(45deg) scale(0) !important;
+        }
+        &.${prefixCls}-checkbox-checked:after {
+          transform: translate(-50%, -50%) rotate(45deg) scale(1) !important;
         }
       }
 
+      /* Background fills the box only when checked (checkbox convention). */
       .${prefixCls}-checkbox-checked {
-        .${prefixCls}-checkbox-inner {
-          ${backgroundStyles(model.background)}
-          ${borderStyles(model.border)}
-        }
+        ${backgroundStyles(model.background)}
+        ${borderStyles(model.border)}
       }
     `);
 
