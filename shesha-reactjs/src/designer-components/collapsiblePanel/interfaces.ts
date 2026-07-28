@@ -1,6 +1,5 @@
 import { ComponentDefinition } from '@/interfaces';
-import { headerType } from './../../components/panel/index';
-import { IConfigurableFormComponent, IStyleValue } from '@/providers/form/models';
+import { IComponentEventHandlers, IConfigurableFormComponent, IStyleValue } from '@/providers/form/models';
 import { isDefined } from '@/utils/nullables';
 import { CollapsibleType } from 'antd/lib/collapse/CollapsePanel';
 import { Collapse } from 'antd';
@@ -34,8 +33,8 @@ export interface ICollapsiblePanelComponentProps extends IConfigurableFormCompon
   noMargin?: boolean | undefined;
   hasCustomHeader?: boolean | undefined;
   customHeader?: ICollapsiblePanelContent | undefined;
-  panelHeadType?: headerType | undefined;
   headerStyles?: IStyleValue | undefined;
+  headerEvents?: IComponentEventHandlers | undefined;
 };
 
 // TODO: implement generic guard on the component level

@@ -279,3 +279,12 @@ export interface NumberFieldApi extends InputComponentApi<number | undefined> {
 };
 
 export type CheckboxFieldApi = InputComponentApi<boolean | undefined>;
+
+export interface PanelApi extends CommonComponentApi {
+  /** Whether the panel is expanded */
+  isExpanded: boolean;
+  /** Expand the panel */
+  expand(): void;
+  /** Collapse the panel */
+  collapse(): void;
+};

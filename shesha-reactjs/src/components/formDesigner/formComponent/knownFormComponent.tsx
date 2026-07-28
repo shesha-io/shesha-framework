@@ -35,9 +35,9 @@ type KnownFormComponentProps = IFormComponentProps & {
 
 const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolboxComponent }) => {
   const shaApplication = useSheshaApplication();
+  const { anyOfPermissionsGranted } = shaApplication;
   const shaForm = useShaFormInstance();
   const { isComponentFiltered, formMode } = useForm();
-  const { anyOfPermissionsGranted } = useSheshaApplication();
   const { activeDevice } = useCanvas();
   const { theme } = useTheme();
 

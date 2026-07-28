@@ -220,7 +220,7 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
     this.addSettingsInputRow({
       inputs: [
         { type: 'switch', propertyName: 'visible', label: 'Visible', jsSetting: true, layout: 'horizontal', permissionSettings: true },
-        { type: 'editModeSelector', propertyName: 'editMode', label: 'Edit Mode', size: 'small', jsSetting: true, permissionSettings: true, interactionType },
+        { type: 'editModeSelector', propertyName: 'editMode', label: 'Interaction Mode', size: 'small', jsSetting: true, permissionSettings: true, interactionType },
       ],
     });
     return this;
@@ -244,7 +244,7 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
     return this;
   };
 
-  stdCollapsiblePanel = (label: string, components: (fbf: FormBuilder) => FormBuilder, meta?: IPropertyMetadata | undefined): FormBuilder => {
+  stdCollapsiblePanel = (label: string, components: (fbf: FormBuilder) => FormBuilder, collapsedByDefault: boolean = false): FormBuilder => {
     const contentId = nanoid();
     const fbf = new FormBuilderImplementation(this.componentDefinitions, contentId) as FormBuilder;
 
@@ -253,6 +253,7 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
       labelAlign: 'right',
       ghost: true,
       collapsible: 'header',
+      collapsedByDefault,
       isDynamic: true,
       header: {
         id: nanoid(),
@@ -264,7 +265,7 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
       },
     };
 
-    return this._addProperty(fixedProps, 'collapsiblePanel', meta);
+    return this._addProperty(fixedProps, 'collapsiblePanel');
   };
 
   stdEventHandler = (
@@ -285,17 +286,17 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
     return this;
   };
 
-  stdEventHandlers = (events: StandardEventHandler[], valueType: string): FormBuilder => {
+  stdEventHandlers = (events: StandardEventHandler[], valueType?: string | undefined, prefix?: string | undefined, prefixLabel: string = ''): FormBuilder => {
     events.forEach((event) => {
       const eventConfig = getEventConfig(event, valueType);
       if (eventConfig)
-        this.stdEventHandler(eventConfig.propertyName, eventConfig.label, eventConfig.tooltip, eventConfig.availableConstantsExpression);
+        this.stdEventHandler((isDefined(prefix) ? prefix + '.' : '') + eventConfig.propertyName, prefixLabel + eventConfig.label, eventConfig.tooltip, eventConfig.availableConstantsExpression);
     });
     return this;
   };
 
-  stdFontPanel = (propertyName: string = 'font', exclude?: string[], panelTitle?: string): FormBuilder => {
-    this.stdCollapsiblePanel(panelTitle ?? 'Font', (f) => f
+  stdFontPanel = (propertyName: string = 'font', exclude?: string[], panelTitle: string = 'Font'): FormBuilder => {
+    this.stdCollapsiblePanel(panelTitle, (f) => f
       .addSettingsInputRow({
         inline: true,
         propertyName: propertyName,
@@ -310,8 +311,8 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
     return this;
   };
 
-  stdDimensionsPanel = (propertyName: string = 'dimensions', exclude?: string[], panelTitle?: string): FormBuilder => {
-    this.stdCollapsiblePanel(panelTitle ?? 'Dimensions', (f) => f
+  stdDimensionsPanel = (propertyName: string = 'dimensions', exclude?: string[], panelTitle: string = 'Dimensions'): FormBuilder => {
+    this.stdCollapsiblePanel(panelTitle, (f) => f
       .addSettingsInputRow({
         inline: true,
         inputs: excludeInputs([
@@ -331,56 +332,60 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
     return this;
   };
 
-  stdBorderPanel = (isResponsive?: boolean, panelTitle?: string): FormBuilder => {
+  stdBorderPanel = (isResponsive?: boolean, propertyName: string = 'border', exclude?: 'border' | 'radius' | undefined, panelTitle: string = 'Border'): FormBuilder => {
     const bid = nanoid();
     const cid = nanoid();
     const bfb = (): FormBuilder => new FormBuilderImplementation(this.componentDefinitions, bid);
     const cfb = (): FormBuilder => new FormBuilderImplementation(this.componentDefinitions, cid);
 
-    this.stdCollapsiblePanel(panelTitle ?? 'Border', (f) => f
-      .addContainer({ id: bid, components: getBorderInputs(bfb, undefined, isResponsive) })
-      .addContainer({ id: cid, components: getCornerInputs(cfb, undefined, isResponsive) }));
+    this.stdCollapsiblePanel(panelTitle, (f) => {
+      if (exclude !== 'border')
+        f.addContainer({ id: bid, components: getBorderInputs(bfb, propertyName, isResponsive) });
+      if (exclude !== 'radius')
+        f.addContainer({ id: cid, components: getCornerInputs(cfb, propertyName, isResponsive) });
+      return f;
+    });
 
     return this;
   };
 
-  stdBackgroundPanel = (isResponsive?: boolean, exclude?: string[], panelTitle?: string): FormBuilder => {
+  stdBackgroundPanel = (isResponsive?: boolean, propertyName: string = 'background', exclude?: string[], panelTitle: string = 'Background'): FormBuilder => {
     const dataPath = isResponsive === true ? 'data[`${page.canvasContext?.designerDevice || "desktop"}`]' : 'data';
     const keep = (propertyName: string): boolean => !isExcluded(propertyName, exclude);
-    this.stdCollapsiblePanel(panelTitle ?? 'Background', (f) => {
-      if (keep('background.type'))
-        f.addSettingsInput({ label: 'Type', jsSetting: false, propertyName: 'background.type', inputType: 'radio', tooltip: 'Select a type of background', buttonGroupOptions: backgroundTypeOptions });
-      if (keep('background.color'))
-        f.addSettingsInput({ label: 'Color', propertyName: 'background.color', hideLabel: true, jsSetting: false, inputType: 'colorPicker',
-          visibleJs: `return getSettingValue(${dataPath}?.background?.type) === "color";`, skipInheritance: true,
+    this.stdCollapsiblePanel(panelTitle, (f) => {
+      if (keep(`${propertyName}.type`))
+        f.addSettingsInput({ label: 'Type', jsSetting: false, propertyName: `${propertyName}.type`, inputType: 'radio', tooltip: 'Select a type of background', buttonGroupOptions: backgroundTypeOptions });
+      if (keep(`${propertyName}.color`))
+        f.addSettingsInput({ label: 'Color', propertyName: `${propertyName}.color`, hideLabel: true, jsSetting: false, inputType: 'colorPicker',
+          visibleJs: `return getSettingValue(${dataPath}?.${propertyName}?.type) === "color";`, skipInheritance: true,
         });
-      if (keep('background.gradient.colors'))
-        f.addSettingsInput({ label: 'Colors', inputType: 'multiColorPicker', propertyName: 'background.gradient.colors', jsSetting: false, hideLabel: true,
-          visibleJs: `return getSettingValue(${dataPath}?.background?.type) === "gradient";`, skipInheritance: true,
+      if (keep(`${propertyName}.gradient.colors`))
+        f.addSettingsInput({ label: 'Colors', inputType: 'multiColorPicker', propertyName: `${propertyName}.gradient.colors`, jsSetting: false, hideLabel: true,
+          visibleJs: `return getSettingValue(${dataPath}?.${propertyName}?.type) === "gradient";`, skipInheritance: true,
         });
-      if (keep('background.url'))
-        f.addSettingsInput({ label: 'URL', inputType: 'textField', propertyName: 'background.url', jsSetting: false,
-          visibleJs: `return getSettingValue(${dataPath}?.background?.type) === "url";`,
+      if (keep(`${propertyName}.url`))
+        f.addSettingsInput({ label: 'URL', inputType: 'textField', propertyName: `${propertyName}.url`, jsSetting: false,
+          visibleJs: `return getSettingValue(${dataPath}?.${propertyName}?.type) === "url";`,
         });
-      if (keep('background.uploadFile'))
-        f.addSettingsInput({ label: 'Image', inputType: 'imageUploader', propertyName: 'background.uploadFile', jsSetting: false,
-          visibleJs: `return getSettingValue(${dataPath}?.background?.type) === "image";`,
+      if (keep(`${propertyName}.uploadFile`))
+        f.addSettingsInput({ label: 'Image', inputType: 'imageUploader', propertyName: `${propertyName}.uploadFile`, jsSetting: false,
+          visibleJs: `return getSettingValue(${dataPath}?.${propertyName}?.type) === "image";`,
         });
-      if (keep('background.storedFile.id'))
-        f.addSettingsInput({ label: 'File ID', inputType: 'textField', jsSetting: false, propertyName: 'background.storedFile.id',
-          visibleJs: `return getSettingValue(${dataPath}?.background?.type) === "storedFile";`,
+      if (keep(`${propertyName}.storedFile.id`))
+        f.addSettingsInput({ label: 'File ID', inputType: 'textField', jsSetting: false, propertyName: `${propertyName}.storedFile.id`,
+          visibleJs: `return getSettingValue(${dataPath}?.${propertyName}?.type) === "storedFile";`,
         });
       f.addSettingsInputRow({
         inline: true,
-        visibleJs: `return !["color", "gradient"].includes(getSettingValue(${dataPath}?.background?.type));`,
+        visibleJs: `return !["color", "gradient"].includes(getSettingValue(${dataPath}?.${propertyName}?.type));`,
         inputs: excludeInputs([
-          { type: 'customDropdown', label: 'Size', hideLabel: true, propertyName: 'background.size', dropdownOptions: sizeOptions,
+          { type: 'customDropdown', label: 'Size', hideLabel: true, propertyName: `${propertyName}.size`, dropdownOptions: sizeOptions,
             customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
           },
-          { type: 'customDropdown', label: 'Position', hideLabel: true, propertyName: 'background.position', dropdownOptions: positionOptions,
+          { type: 'customDropdown', label: 'Position', hideLabel: true, propertyName: `${propertyName}.position`, dropdownOptions: positionOptions,
             customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
           },
-          { type: 'radio', label: 'Repeat', hideLabel: true, propertyName: 'background.repeat', buttonGroupOptions: repeatOptions },
+          { type: 'radio', label: 'Repeat', hideLabel: true, propertyName: `${propertyName}.repeat`, buttonGroupOptions: repeatOptions },
         ], exclude),
       });
       return f;
@@ -388,28 +393,28 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
     return this;
   };
 
-  stdShadowPanel = (exclude?: string[], panelTitle?: string): FormBuilder => {
-    this.stdCollapsiblePanel(panelTitle ?? 'Shadow', (f) => f
+  stdShadowPanel = (propertyName: string = 'shadow', exclude?: string[], panelTitle: string = 'Shadow'): FormBuilder => {
+    this.stdCollapsiblePanel(panelTitle, (f) => f
       .addSettingsInputRow({
         inline: true,
         inputs: excludeInputs([
-          { type: 'numberField', label: 'Offset X', hideLabel: true, tooltip: 'Offset X', width: 80, icon: 'offsetHorizontalIcon', propertyName: 'shadow.offsetX' },
-          { type: 'numberField', label: 'Offset Y', hideLabel: true, tooltip: 'Offset Y', width: 80, icon: 'offsetVerticalIcon', propertyName: 'shadow.offsetY' },
-          { type: 'numberField', label: 'Blur', hideLabel: true, tooltip: 'Blur Radius', width: 80, icon: 'blurIcon', propertyName: 'shadow.blurRadius' },
-          { type: 'numberField', label: 'Spread', hideLabel: true, tooltip: 'Spread Radius', width: 80, icon: 'spreadIcon', propertyName: 'shadow.spreadRadius' },
-          { type: 'colorPicker', label: 'Color', hideLabel: true, propertyName: 'shadow.color' },
+          { type: 'numberField', label: 'Offset X', hideLabel: true, tooltip: 'Offset X', width: 80, icon: 'offsetHorizontalIcon', propertyName: `${propertyName}.offsetX` },
+          { type: 'numberField', label: 'Offset Y', hideLabel: true, tooltip: 'Offset Y', width: 80, icon: 'offsetVerticalIcon', propertyName: `${propertyName}.offsetY` },
+          { type: 'numberField', label: 'Blur', hideLabel: true, tooltip: 'Blur Radius', width: 80, icon: 'blurIcon', propertyName: `${propertyName}.blurRadius` },
+          { type: 'numberField', label: 'Spread', hideLabel: true, tooltip: 'Spread Radius', width: 80, icon: 'spreadIcon', propertyName: `${propertyName}.spreadRadius` },
+          { type: 'colorPicker', label: 'Color', hideLabel: true, propertyName: `${propertyName}.color` },
         ], exclude),
       }));
     return this;
   };
 
-  stdMarginPaddingPanel = (propertyName: string = 'stylingBoxJson', panelTitle?: string): FormBuilder => {
-    this.stdCollapsiblePanel(panelTitle ?? 'Margin & Padding', (f) => f.addStyleBox({ label: 'Margin Padding', hideLabel: true, propertyName: propertyName, format: 'json' }));
+  stdMarginPaddingPanel = (propertyName: string = 'stylingBoxJson', panelTitle: string = 'Margin & Padding'): FormBuilder => {
+    this.stdCollapsiblePanel(panelTitle, (f) => f.addStyleBox({ label: 'Margin Padding', hideLabel: true, propertyName: propertyName, format: 'json' }));
     return this;
   };
 
-  stdCustomStylePanel = (propertyName: string = 'style', panelTitle?: string): FormBuilder => {
-    this.stdCollapsiblePanel(panelTitle ?? 'Custom Styles', (f) => f
+  stdCustomStylePanel = (propertyName: string = 'style', panelTitle: string = 'Custom Styles'): FormBuilder => {
+    this.stdCollapsiblePanel(panelTitle, (f) => f
       .addSettingsInput({
         inputType: 'codeEditor', propertyName: propertyName, hideLabel: false, label: 'Style',
         description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
@@ -426,25 +431,25 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
       const panelTitle: string | undefined = typeof entry === 'string' ? undefined : entry.panelTitle;
       switch (panel) {
         case 'background':
-          fbf.stdBackgroundPanel(removeStyleRouter !== true, exclude, panelTitle);
+          fbf.stdBackgroundPanel(removeStyleRouter !== true, undefined, exclude, panelTitle);
           break;
         case 'shadow':
-          fbf.stdShadowPanel(exclude, panelTitle);
+          fbf.stdShadowPanel(undefined, exclude, panelTitle);
           break;
         case 'marginPadding':
-          fbf.stdMarginPaddingPanel('stylingBoxJson', panelTitle);
+          fbf.stdMarginPaddingPanel(undefined, panelTitle);
           break;
         case 'customStyle':
-          fbf.stdCustomStylePanel('style', panelTitle);
+          fbf.stdCustomStylePanel(undefined, panelTitle);
           break;
         case 'font':
-          fbf.stdFontPanel('font', exclude, panelTitle);
+          fbf.stdFontPanel(undefined, exclude, panelTitle);
           break;
         case 'dimensions':
-          fbf.stdDimensionsPanel('dimensions', exclude, panelTitle);
+          fbf.stdDimensionsPanel(undefined, exclude, panelTitle);
           break;
         case 'border':
-          fbf.stdBorderPanel(removeStyleRouter !== true, panelTitle);
+          fbf.stdBorderPanel(removeStyleRouter !== true, undefined, undefined, panelTitle);
           break;
       }
     });
