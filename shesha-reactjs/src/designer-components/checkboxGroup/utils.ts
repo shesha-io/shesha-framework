@@ -16,8 +16,8 @@ export const defaultStyles = (prev?: IInputStyles): IStyleValue => {
       radius: { all: 4 },
     },
     dimensions: {
-      width: isNullOrWhiteSpace(`${prev?.width}`) || `${prev?.width}` === 'auto' ? '14px' : `${prev?.width}`,
-      height: isNullOrWhiteSpace(`${prev?.height}`) || `${prev?.height}` === 'auto' ? '14px' : `${prev?.height}`,
+      width: !prev?.width || isNullOrWhiteSpace(`${prev.width}`) || `${prev.width}` === 'auto' ? '14px' : `${prev.width}`,
+      height: !prev?.height || isNullOrWhiteSpace(`${prev.height}`) || `${prev.height}` === 'auto' ? '14px' : `${prev.height}`,
       minHeight: '0px',
       maxHeight: 'auto',
       minWidth: '0px',

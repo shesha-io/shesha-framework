@@ -26,7 +26,6 @@ import { migratePermissionsToVisiblePermissions } from '../_common-migrations/mi
 import { migrateHiddenToVisible } from '@/designer-components/_common-migrations/migrateSettings';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { CheckboxGroupApi } from '../../componentsApi/componentApi';
-import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { getComponentEvents } from '../_common/events';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
@@ -59,16 +58,20 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
     const focusRef = useRef<CheckboxGroupFocusHandle>(null);
 
     useEffect(() => {
+      const apiId = model.id;
       componentApi?.updateApi<CheckboxGroupApi>({
-        id: model.id,
+        id: apiId,
         componentName: model.componentName ?? "",
         level: 3,
         typeDefinition: { typeName: 'CheckboxGroupApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
         properties: [],
         api: { focus: () => focusRef.current?.focus() },
       });
+
+      return () => {
+        componentApi?.removeApi(apiId);
+      };
     }, [componentApi, model.componentName, model.id]);
-    useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
     return (
       <ConfigurableFormItem<string | string[]> model={model} autoAlignLabel={false}>
