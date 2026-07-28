@@ -7,7 +7,7 @@ import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import RefListCheckboxGroup from './refListCheckboxGroup';
-import { CHECKBOX_GROUP_MODE, CheckboxGroupComponentProps, CheckboxGroupMode, DIRECTION_TYPE, DirectionType } from './interfaces';
+import { CheckboxGroupComponentProps, DIRECTION_TYPE, DirectionType } from './interfaces';
 import {
   migratePropertyName,
   migrateCustomFunctions,
@@ -19,6 +19,9 @@ import { getSettings } from './settingsForm';
 import { isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { DATA_SOURCE_TYPES, DataSourceType } from '../dropdown/model';
 import { getStringEnumOrDefault } from '@/utils/object';
+import { IInputStyles } from '@/providers';
+import { migratePrevStyles } from '../_common-migrations';
+import { defaultStyles } from './utils';
 
 interface IEnhancedICheckboxGroupProps extends Omit<CheckboxGroupComponentProps, 'style' | 'readOnly'>, IConfigurableFormComponent {
 }
@@ -64,12 +67,12 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
   },
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+  getDefaultStyles: () => defaultStyles(),
   initModel: (model) => {
     const customProps: IEnhancedICheckboxGroupProps = {
       ...model,
       dataSourceType: 'values',
       direction: 'horizontal',
-      mode: 'single',
     };
     return customProps;
   },
@@ -79,7 +82,6 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
         ...prev,
         dataSourceType: getStringEnumOrDefault<DataSourceType>(prev, "dataSourceType", DATA_SOURCE_TYPES) ?? "values",
         direction: getStringEnumOrDefault<DirectionType>(prev, "direction", DIRECTION_TYPE) ?? "horizontal",
-        mode: getStringEnumOrDefault<CheckboxGroupMode>(prev, "direction", CHECKBOX_GROUP_MODE) ?? "single",
       }))
       .add<IEnhancedICheckboxGroupProps>(1, (prev) => {
         return {
@@ -90,7 +92,24 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
       .add<IEnhancedICheckboxGroupProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<IEnhancedICheckboxGroupProps>(3, (prev) => migrateVisibility(prev))
       .add<IEnhancedICheckboxGroupProps>(4, (prev) => migrateReadOnly(prev))
-      .add<IEnhancedICheckboxGroupProps>(5, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) })),
+      .add<IEnhancedICheckboxGroupProps>(5, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
+      // Checkbox group now only ever works in multi-select mode. Drop the legacy
+      // "mode" property so existing forms stop rendering the single (radio) variant.
+      .add<IEnhancedICheckboxGroupProps>(6, (prev) => {
+        const { mode, ...rest } = prev as IEnhancedICheckboxGroupProps & { mode?: string };
+        return rest;
+      })
+      // Seed the new per-checkbox Appearance style model (font/border/background/
+      // dimensions/shadow/padding) for existing forms only.
+      .add<IEnhancedICheckboxGroupProps>(7, (prev, context) => {
+        if (context.isNew === true) return prev;
+
+        const styles: IInputStyles = {
+          style: prev.style,
+        };
+
+        return migratePrevStyles({ ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } }, defaultStyles());
+      }),
   linkToModelMetadata: (model, metadata): IEnhancedICheckboxGroupProps => {
     const refListId: IReferenceListIdentifier | undefined = !isNullOrWhiteSpace(metadata.referenceListModule) && !isNullOrWhiteSpace(metadata.referenceListName)
       ? { module: metadata.referenceListModule, name: metadata.referenceListName }

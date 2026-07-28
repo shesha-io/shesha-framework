@@ -10,6 +10,7 @@ import { IAjaxResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxResponse'
 import { ILabelValue } from '../dropdown/model';
 import { DEFAULT_MARGINS } from '@/components/formDesigner/utils/designerConstants';
 import { isDefined } from '@/utils/nullables';
+import { useStyles } from './styles';
 
 type RawOptionsPayload = ILabelValue<unknown>[] | { items: ILabelValue<unknown>[] };
 type FetchResponse = IAjaxResponse<RawOptionsPayload> | RawOptionsPayload;
@@ -70,8 +71,11 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
     return list.map<CheckboxOptionType>((item) => (item.id ? item : { ...item, id: nanoid() }));
   }, [model.dataSourceType, items, refList?.items, reducedData]);
 
+  // Per-checkbox appearance (check mark, dimensions, border, background, etc.)
+  // is applied via the scoped emotion class; only layout stays on the group.
+  const { styles } = useStyles({ style: model.style ?? {} });
+
   const checkboxGroupStyle: CSSProperties = {
-    ...model.style,
     display: 'flex',
     flexDirection: direction === 'vertical' ? 'column' : 'row',
     flexWrap: direction === 'vertical' ? 'nowrap' : 'wrap',
@@ -86,7 +90,7 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
       style={{ margin: `${DEFAULT_MARGINS.vertical} ${DEFAULT_MARGINS.horizontal}` }}
     >
       <Checkbox.Group
-        className="sha-multi-checkbox"
+        className={styles.checkboxGroup}
         value={isDefined(value) && Array.isArray(value) ? value : []}
         {...(onChange ? { onChange } : {})}
         style={checkboxGroupStyle}

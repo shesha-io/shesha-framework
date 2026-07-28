@@ -3,15 +3,11 @@ import { DataSourceType, ILabelValue } from '@/designer-components/dropdown/mode
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { StringSubtype } from '@/interfaces/utilityTypes';
 
-export const CHECKBOX_GROUP_MODE = ['single', 'multiple'] as const;
-export type CheckboxGroupMode = StringSubtype<typeof CHECKBOX_GROUP_MODE>;
-
 export const DIRECTION_TYPE = ['horizontal', 'vertical'] as const;
 export type DirectionType = StringSubtype<typeof DIRECTION_TYPE>;
 
 export type CheckboxGroupCommonProps = {
   items?: ILabelValue[] | undefined;
-  mode?: CheckboxGroupMode | undefined;
   /**
    * @deprecated - use referenceListId instead
    */
