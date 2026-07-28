@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { ConfigurationTree } from '@/configuration-studio/components/configuration-tree';
 import { Divider, Splitter, Layout } from 'antd';
 import { WorkArea } from '@/configuration-studio/components/work-area';
@@ -17,6 +17,7 @@ import { SheshaDocumentDefinitions } from './document-definitions';
 import { useCanvas } from '@/providers';
 import { InitializationErrorsModal } from './components/initializationErrorsModal';
 import { throttle } from 'lodash';
+import { useLocalStorage } from '@/hooks';
 
 // Width of the collapsed tree panel (just enough to show the expand toggle), matches the builder's collapsed sidebar.
 const COLLAPSED_TREE_SIZE = 35;
@@ -24,7 +25,7 @@ const COLLAPSED_TREE_SIZE = 35;
 const ConfigurationStudio: FC = () => {
   const { styles } = useStyles();
   const { configTreePanelSize, setConfigTreePanelSize } = useCanvas();
-  const [treeCollapsed, setTreeCollapsed] = useState(false);
+  const [treeCollapsed, setTreeCollapsed] = useLocalStorage('shesha:cs-tree-collapsed', false);
   // Live size of the tree panel (in px) while expanded. Initialized from the canvas default so the
   // panel stays controlled throughout the component's lifetime and avoids uncontrolled/controlled switches.
   const [expandedTreeSize, setExpandedTreeSize] = useState<number>(configTreePanelSize);
@@ -50,7 +51,7 @@ const ConfigurationStudio: FC = () => {
     }
   };
 
-  const throttledTreeResize = useMemo(() => throttle(handleTreeResize, 100), []);
+  const [throttledTreeResize] = useState(() => throttle(handleTreeResize, 100));
 
   useEffect(() => {
     return () => {
@@ -59,7 +60,7 @@ const ConfigurationStudio: FC = () => {
   }, [throttledTreeResize]);
 
   const toggleTreeCollapsed = (): void => {
-    setTreeCollapsed((prev) => !prev);
+    setTreeCollapsed(!treeCollapsed);
   };
 
   return (
