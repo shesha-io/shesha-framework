@@ -1,5 +1,5 @@
 import { ProfileOutlined } from '@ant-design/icons';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { executeScriptSync, validateConfigurableComponentSettings } from '@/providers/form/utils';
@@ -7,7 +7,7 @@ import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import RefListCheckboxGroup from './refListCheckboxGroup';
-import { CheckboxGroupComponentProps, DIRECTION_TYPE, DirectionType } from './interfaces';
+import { CheckboxGroupComponentProps, CheckboxGroupFocusHandle, DIRECTION_TYPE, DirectionType } from './interfaces';
 import {
   migratePropertyName,
   migrateCustomFunctions,
@@ -23,6 +23,13 @@ import { IInputStyles } from '@/providers';
 import { migratePrevStyles } from '../_common-migrations';
 import { defaultStyles } from './utils';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
+import { migrateHiddenToVisible } from '@/designer-components/_common-migrations/migrateSettings';
+import { useComponentApi } from '@/providers/componentApi/provider';
+import { CheckboxGroupApi } from '../../componentsApi/componentApi';
+import { useEffectOnce } from '@/hooks/useEffectOnce';
+import { getComponentEvents } from '../_common/events';
+
+import apiCode from "../../componentsApi/componentApi.ts?raw";
 
 interface IEnhancedICheckboxGroupProps extends Omit<CheckboxGroupComponentProps, 'style' | 'readOnly'>, IConfigurableFormComponent {
 }
@@ -46,20 +53,37 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
     dataSourceUrl: isNotNullOrWhiteSpace(model.dataSourceUrl) ? executeScriptSync(model.dataSourceUrl, allData) : model.dataSourceUrl,
   }),
   Factory: ({ model, calculatedModel }) => {
+    const componentApi = useComponentApi();
+    // The group has no single input element, so focus goes through an imperative
+    // handle exposed by the group's wrapper div.
+    const focusRef = useRef<CheckboxGroupFocusHandle>(null);
+
+    useEffect(() => {
+      componentApi?.updateApi<CheckboxGroupApi>({
+        id: model.id,
+        componentName: model.componentName ?? "",
+        level: 3,
+        typeDefinition: { typeName: 'CheckboxGroupApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+        properties: [],
+        api: { focus: () => focusRef.current?.focus() },
+      });
+    }, [componentApi, model.componentName, model.id]);
+    useEffectOnce(() => () => componentApi?.removeApi(model.id));
+
     return (
       <ConfigurableFormItem<string | string[]> model={model} autoAlignLabel={false}>
         {(value, onChange, _, ctx) => {
           return (
             <RefListCheckboxGroup
               {...model}
+              focusRef={focusRef}
               dataSourceUrl={calculatedModel.dataSourceUrl}
               value={value ?? undefined}
               onChange={(newValue) => {
                 ctx?.handleEvent(undefined, { value: newValue }, model.onChangeCustom);
                 onChange(newValue);
               }}
-              onFocus={(event) => ctx?.handleEvent(event, { value }, model.onFocusCustom)}
-              onBlur={(event) => ctx?.handleEvent(event, { value }, model.onBlurCustom)}
+              {...getComponentEvents<string | string[]>(model, ['onFocus', 'onBlur'], ctx, value, DataTypes.array)}
             />
           );
         }}
@@ -112,8 +136,9 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
 
         return migratePrevStyles({ ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } }, defaultStyles());
       })
-      // Permissions are configured on the Visible / Interaction Mode settings now.
-      .add<IEnhancedICheckboxGroupProps>(8, (prev) => migratePermissionsToVisiblePermissions(prev)),
+      // Hidden -> Visible and permissions onto the Visible / Interaction Mode
+      // settings, applied as a single chained step.
+      .add<IEnhancedICheckboxGroupProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev))),
   linkToModelMetadata: (model, metadata): IEnhancedICheckboxGroupProps => {
     const refListId: IReferenceListIdentifier | undefined = !isNullOrWhiteSpace(metadata.referenceListModule) && !isNullOrWhiteSpace(metadata.referenceListName)
       ? { module: metadata.referenceListModule, name: metadata.referenceListName }
@@ -135,6 +160,8 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
     items: [
       { id: 'preview-1', label: 'Option 1', value: '1' },
       { id: 'preview-2', label: 'Option 2', value: '2' },
+      { id: 'preview-3', label: 'Option 3', value: '3' },
+      { id: 'preview-4', label: 'Option 4', value: '4' },
     ],
   },
 };

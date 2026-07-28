@@ -277,3 +277,6 @@ export interface NumberFieldApi extends InputComponentApi<number | undefined> {
 };
 
 export type CheckboxFieldApi = InputComponentApi<boolean | undefined>;
+
+/** Checkbox group. Multi-select only, so the value is always the list of selected item values. */
+export type CheckboxGroupApi = InputComponentApi<string[] | undefined>;

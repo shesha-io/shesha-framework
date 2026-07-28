@@ -32,7 +32,7 @@ const borderWidthFromWeight = (weight: string | undefined): string => {
 
 export const useStyles = createStyles(({ css, cx, prefixCls }, model: CheckboxGroupComponentProps) => {
   const markSize = addPx(model.font?.size);
-  const checkColor = isDefined(model.font?.color) && model.font.color !== '' ? model.font.color : '#fff';
+  const checkColor = isNotNullOrWhiteSpace(model.font?.color) ? model.font.color : '#fff';
   const bgColor = model.background?.type === 'color' ? model.background.color : undefined;
 
   const checkboxGroup = cx('sha-multi-checkbox', css`

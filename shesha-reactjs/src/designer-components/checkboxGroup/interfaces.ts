@@ -1,4 +1,4 @@
-import { CSSProperties, EventHandler } from 'react';
+import { CSSProperties, EventHandler, RefObject } from 'react';
 import { DataSourceType, ILabelValue } from '@/designer-components/dropdown/model';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { StringSubtype } from '@/interfaces/utilityTypes';
@@ -6,6 +6,11 @@ import { IInputStyles, IStyleValue } from '@/providers/form/models';
 
 export const DIRECTION_TYPE = ['horizontal', 'vertical'] as const;
 export type DirectionType = StringSubtype<typeof DIRECTION_TYPE>;
+
+/** Imperative handle exposed by the group so the component API can focus it. */
+export interface CheckboxGroupFocusHandle {
+  focus: () => void;
+}
 
 // Extends IInputStyles so the Appearance style model (font, dimensions, border,
 // background, shadow, stylingBox) is typed and available to styles.ts.
@@ -42,4 +47,6 @@ export type ICheckboxGroupProps<TValue = string> = CheckboxGroupCommonProps & {
   onChange?: ((checkedValue: TValue | Array<TValue> | undefined) => void) | undefined;
   onFocus?: EventHandler<FocusEventWithValue<TValue>> | undefined;
   onBlur?: EventHandler<FocusEventWithValue<TValue>> | undefined;
+  /** Imperative handle backing the component API's `focus()` — the group has no single input element. */
+  focusRef?: RefObject<CheckboxGroupFocusHandle | null> | undefined;
 };

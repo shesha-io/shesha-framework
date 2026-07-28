@@ -2,7 +2,7 @@ import { useGet } from '@/hooks';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
 import { nanoid } from '@/utils/uuid';
 import { Checkbox, CheckboxOptionType } from 'antd';
-import React, { CSSProperties, FC, useEffect, useMemo } from 'react';
+import React, { CSSProperties, FC, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
 import { getDataSourceList } from '../radio/utils';
 import { ICheckboxGroupProps } from './interfaces';
 import { executeScriptSync } from '@/providers/form/utils';
@@ -17,6 +17,11 @@ type FetchResponse = IAjaxResponse<RawOptionsPayload> | RawOptionsPayload;
 
 const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
   const { items = [], referenceListId, direction, value, onChange } = model;
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Expose the focus target to the component API without threading a ref
+  // through props (the group has no single focusable input element).
+  useImperativeHandle(model.focusRef, () => ({ focus: () => containerRef.current?.focus() }), []);
 
   const { data: refList } = useReferenceList(referenceListId);
   const { refetch, data } = useGet<FetchResponse>({ path: model.dataSourceUrl ?? "", lazy: true });
@@ -30,7 +35,7 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
   }, [model.dataSourceType, model.dataSourceUrl, refetch]);
 
   const fetchedData = useMemo<RawOptionsPayload | undefined>(() => {
-    if (!data) return undefined;
+    if (!isDefined(data)) return undefined;
     if (Array.isArray(data)) return data;
     if (typeof data === 'object' && 'success' in data) {
       const response = data as IAjaxResponse<RawOptionsPayload>;
@@ -51,7 +56,7 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
   }, [data]);
 
   const reducedData = useMemo<ILabelValue<unknown>[]>(() => {
-    if (!fetchedData) return [];
+    if (!isDefined(fetchedData)) return [];
 
     const list = Array.isArray(fetchedData)
       ? fetchedData
@@ -87,6 +92,7 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
 
   return (
     <div
+      ref={containerRef}
       tabIndex={0}
       onFocus={(e) => model.onFocus?.({ ...e, target: { ...e.target, value: value } })}
       onBlur={(e) => model.onBlur?.({ ...e, target: { ...e.target, value: value } })}

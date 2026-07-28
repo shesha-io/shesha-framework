@@ -24,7 +24,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
         size: 'small',
         tabs: [
           {
-            key: '1', title: 'Common', id: commonTabId,
+            key: 'common', title: 'Common', id: commonTabId,
             components: [
               ...fbf(commonTabId)
                 .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true }, jsSetting: true })
@@ -63,11 +63,11 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
             ],
           },
           {
-            key: '2', title: 'Events', id: eventsTabId,
+            key: 'events', title: 'Events', id: eventsTabId,
             components: [...fbf(eventsTabId).stdEventHandlers(['onChange', 'onFocus', 'onBlur', 'onClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave', 'onKeyDown', 'onKeyUp'], DataTypes.string).toJson()],
           },
           {
-            key: '3', title: 'Appearance', id: appearanceTabId,
+            key: 'appearance', title: 'Appearance', id: appearanceTabId,
             components: [...fbf(appearanceTabId).stdAppearancePanels(['font', 'dimensions', 'border', 'background', 'shadow', 'marginPadding', 'customStyle'], removeStyleRouter).toJson()],
           },
         ],
