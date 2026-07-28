@@ -275,3 +275,5 @@ export interface NumberFieldApi extends InputComponentApi<number | undefined> {
   /** Maximum value */
   max?: number;
 };
+
+export type CheckboxFieldApi = InputComponentApi<boolean | undefined>;

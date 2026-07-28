@@ -1,6 +1,6 @@
 import { ComponentDefinition } from '@/interfaces';
-import { IConfigurableFormComponent } from '@/providers/form/models';
+import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 
-export type ICheckboxComponentProps = IConfigurableFormComponent;
+export interface ICheckboxComponentProps extends IConfigurableFormComponent, IInputStyles {}
 
 export type CheckboxComponentDefinition = ComponentDefinition<"checkbox", ICheckboxComponentProps>;
