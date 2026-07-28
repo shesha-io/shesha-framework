@@ -266,7 +266,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   ],
                 })
                 .stdAppearancePanels(
-                  ['font', 'dimensions', 'border', 'background', 'shadow', 'marginPadding', 'customStyle'],
+                  [{ name: 'font', panelTitle: 'Check Mark', exclude: ['type', 'align'] }, 'dimensions', 'border', 'background', 'shadow', 'marginPadding', 'customStyle'],
                   removeStyleRouter,
                 )
                 .toJson(),

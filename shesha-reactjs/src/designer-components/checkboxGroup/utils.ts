@@ -1,5 +1,6 @@
 import { SpaceProps } from 'antd';
 import { IInputStyles, IStyleValue } from '@/providers/form/models';
+import { isNullOrWhiteSpace } from '@/utils';
 
 export const getSpan = (direction: SpaceProps['direction'], size: number): number =>
   direction === 'vertical' ? 24 : size < 4 ? 24 / size : 6;
@@ -15,8 +16,8 @@ export const defaultStyles = (prev?: IInputStyles): IStyleValue => {
       radius: { all: 4 },
     },
     dimensions: {
-      width: !prev?.width || prev.width === 'auto' ? '14px' : prev.width,
-      height: !prev?.height || prev.height === 'auto' ? '14px' : prev.height,
+      width: isNullOrWhiteSpace(`${prev?.width}`) || `${prev?.width}` === 'auto' ? '14px' : `${prev?.width}`,
+      height: isNullOrWhiteSpace(`${prev?.height}`) || `${prev?.height}` === 'auto' ? '14px' : `${prev?.height}`,
       minHeight: '0px',
       maxHeight: 'auto',
       minWidth: '0px',
@@ -42,6 +43,17 @@ export const defaultStyles = (prev?: IInputStyles): IStyleValue => {
       color: '#000',
       blurRadius: 0,
       spreadRadius: 0,
+    },
+    stylingBoxJson: {
+      _type: 'styleBox',
+      paddingTop: 0,
+      paddingRight: 0,
+      paddingBottom: 0,
+      paddingLeft: 0,
+      marginTop: 0,
+      marginRight: 0,
+      marginBottom: 0,
+      marginLeft: 0,
     },
   };
 };

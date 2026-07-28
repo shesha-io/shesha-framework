@@ -9,7 +9,7 @@ import { executeScriptSync } from '@/providers/form/utils';
 import { IAjaxResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 import { ILabelValue } from '../dropdown/model';
 import { DEFAULT_MARGINS } from '@/components/formDesigner/utils/designerConstants';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
 import { useStyles } from './styles';
 
 type RawOptionsPayload = ILabelValue<unknown>[] | { items: ILabelValue<unknown>[] };
@@ -22,7 +22,7 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
   const { refetch, data } = useGet<FetchResponse>({ path: model.dataSourceUrl ?? "", lazy: true });
 
   useEffect(() => {
-    if (model.dataSourceType === 'url' && model.dataSourceUrl) {
+    if (isNotNullOrWhiteSpace(model.dataSourceUrl) && model.dataSourceType === 'url') {
       refetch().catch((error) => {
         console.error('Failed to fetch options', error);
       });
@@ -59,7 +59,7 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
         ? fetchedData.items
         : [];
 
-    if (Array.isArray(list) && model.reducerFunc) {
+    if (Array.isArray(list) && isNotNullOrWhiteSpace(model.reducerFunc)) {
       return executeScriptSync(model.reducerFunc, { data: list }) ?? [];
     }
 
