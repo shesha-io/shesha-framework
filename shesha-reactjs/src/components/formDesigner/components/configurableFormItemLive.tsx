@@ -46,6 +46,15 @@ export const ConfigurableFormItemLive = <TValue = unknown>({
     marginLeft = defaultMarginLeft,
   } = (model.stylingBoxJson || {});
 
+  const marginStyle = shaForm.formMode === "designer" ? {
+    margin: 0,
+  } : {
+    marginTop: addPx(marginTop, allData),
+    marginBottom: addPx(marginBottom, allData),
+    marginRight: addPx(marginRight, allData),
+    marginLeft: addPx(marginLeft, allData),
+  };
+
   const propName = isNotNullOrWhiteSpace(namePrefix) && isNullOrWhiteSpace(model.initialContext)
     ? namePrefix + '.' + model.propertyName
     : model.propertyName;
@@ -61,12 +70,7 @@ export const ConfigurableFormItemLive = <TValue = unknown>({
     rules: getValidationRules(model, { getFormData }),
     ...(isDefined(model.validationDependencies?.length) ? { dependencies: model.validationDependencies } : {}),
     name: isNotNullOrWhiteSpace(model.context) ? undefined : getFieldNameFromExpression(propName),
-    style: {
-      marginTop: addPx(marginTop, allData),
-      marginBottom: addPx(marginBottom, allData),
-      marginRight: addPx(marginRight, allData),
-      marginLeft: addPx(marginLeft, allData),
-    },
+    style: marginStyle,
     ...(model.labelAlign ? { labelAlign: model.labelAlign } : {}),
     ...(!Boolean(hideLabel) ? { label: model.label } : {}),
     ...(layout.labelCol ? { labelCol: layout.labelCol } : {}),
