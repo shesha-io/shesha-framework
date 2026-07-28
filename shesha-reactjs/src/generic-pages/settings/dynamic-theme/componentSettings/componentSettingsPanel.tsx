@@ -154,7 +154,10 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
       {/* Right: Component Appearance Settings */}
       <Col xs={24} sm={24} md={18} lg={18} xl={18} xxl={18}>
         {/* Edit Card: allows editing the component's appearance/theme values */}
-        <DefaultModelProvider name="Component Default Styles" model={initialModel} defaultModel={defaultStyles}>
+        {/* Key by componentType so the provider (and its DefaultModelInstance) is recreated per component.
+            Without this the single shared instance retains the previously selected component's model/defaults,
+            causing settings to bleed across components (e.g. numberField <-> textField) when switching. */}
+        <DefaultModelProvider key={componentType} name="Component Default Styles" model={initialModel} defaultModel={defaultStyles}>
           <ComponentDefaultsSettings componentTitle={componentTitle} componentType={componentType} markup={appearanceMarkup} initialModel={initialModel} readonly={readonly ?? false} onChange={handleFormDataChange} />
         </DefaultModelProvider>
         {/* Preview Card: renders the component with the current theme to show a live preview */}
