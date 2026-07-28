@@ -22,8 +22,6 @@ const borderWidthFromWeight = (weight: string | undefined): string => {
 };
 
 export const useStyles = createStyles(({ css, cx, prefixCls }, model: ICheckboxComponentProps) => {
-  const width = addPx(model.dimensions?.width);
-  const height = addPx(model.dimensions?.height);
   // Font drives the check-mark: size → mark size (antd scales the `:after` off
   // `--ant-control-interactive-size`), weight → mark thickness (`--ant-line-width-bold`),
   // color → mark color (`--ant-color-white`). Dimensions size the box independently.
@@ -41,8 +39,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: ICheckboxC
         --ant-line-width-bold: ${borderWidthFromWeight(model.font?.weight)} !important;
         --ant-color-white: ${checkColor} !important;
         ${isDefined(bgColor) && bgColor !== '' ? `--ant-color-primary-hover: ${bgColor};` : ''}
-        ${isDefined(width) ? `width: ${width};` : ''}
-        ${isDefined(height) ? `height: ${height};` : ''}
         ${dimensionsStyles(model.dimensions)}
         ${borderStyles(model.border)}
         ${shadowStyles(model.shadow)}
