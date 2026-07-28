@@ -1,5 +1,5 @@
 import { Form } from 'antd';
-import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
+import React, { FC, ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { getSettings } from './refListItemsSettingsForm';
 import { useRefListItemGroupConfigurator } from '../provider';
@@ -21,14 +21,30 @@ export const RefListItemProperties: FC = () => {
 
   const formRef = useRef<ConfigurableFormInstance<RefListGroupItemProps> | undefined>(undefined);
 
-  const debouncedSave = useDebouncedCallback<OnFormValuesChangeHandler<RefListGroupItemProps>>(
-    (_, values) => {
-      if (!isNullOrWhiteSpace(selectedItemId))
-        updateItem({ id: selectedItemId, settings: values });
+  // The id is passed as an argument rather than captured: use-debounce invokes the latest
+  // callback with the queued arguments, so a pending save would otherwise land on whichever
+  // item is selected when it fires (#5125).
+  const debouncedSave = useDebouncedCallback(
+    (id: string, values: RefListGroupItemProps) => {
+      updateItem({ id: id, settings: values });
     },
     // delay in ms
     300,
   );
+
+  const handleValuesChange = useCallback<OnFormValuesChangeHandler<RefListGroupItemProps>>(
+    (_, values) => {
+      if (!isNullOrWhiteSpace(selectedItemId))
+        debouncedSave(selectedItemId, values);
+    },
+    [debouncedSave, selectedItemId],
+  );
+
+  useEffect(() => {
+    return () => {
+      debouncedSave.flush();
+    };
+  }, [debouncedSave, selectedItemId]);
 
   useEffect(() => {
     form.resetFields();
@@ -58,13 +74,13 @@ export const RefListItemProperties: FC = () => {
           markup={markup}
           form={form}
           initialValues={componentModel}
-          onValuesChange={debouncedSave}
+          onValuesChange={handleValuesChange}
         />
       );
     };
 
     setEditor(getEditor());
-  }, [debouncedSave, form, getItem, markup, readOnly, selectedItemId]);
+  }, [handleValuesChange, form, getItem, markup, readOnly, selectedItemId]);
 
   return <>{editor}</>;
 };

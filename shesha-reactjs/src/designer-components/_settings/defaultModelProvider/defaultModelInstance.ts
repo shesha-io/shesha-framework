@@ -145,25 +145,25 @@ export class DefaultModelInstance<T extends object = object> implements IDefault
   setModel = (model: T | undefined): void => {
     if (model === undefined) return;
     this.model = deepCopyViaJson(model as T);
-    this.#updateMergedModel();
     this.#needUpdateAllInfo();
+    this.#updateMergedModel();
     // Don't need to force update because this method is only store value
     // this.forceUpdate();
   };
 
   setDefaultModel = (name: string, model: T): void => {
     this.defaultModels.set(name, deepCopyViaJson(model as T));
+    this.#needUpdateAllInfo();
     this.#updateDefaultModel();
     this.#updateMergedModel();
-    this.#needUpdateAllInfo();
     this.#forceUpdate();
   };
 
   removeDefaultModel = (name: string): void => {
     this.defaultModels.delete(name);
+    this.#needUpdateAllInfo();
     this.#updateDefaultModel();
     this.#updateMergedModel();
-    this.#needUpdateAllInfo();
     this.#forceUpdate();
   };
 
@@ -210,9 +210,9 @@ export class DefaultModelInstance<T extends object = object> implements IDefault
 
   overrideValue = (propName: string): void => {
     setValueByPropertyName(this.model, propName, getValueByPropertyName(this.defaultModel as Record<string, unknown>, propName));
-    this.#updateMergedModel();
     // ToDo: AS - check if need update all info insted of one property
     this.#needUpdateAllInfo();
+    this.#updateMergedModel();
     this.#forceUpdate();
   };
 

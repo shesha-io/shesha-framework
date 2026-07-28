@@ -91,7 +91,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   inputType: 'referenceListAutocomplete',
                   propertyName: 'referenceList',
                   label: 'Reference List',
-                  tooltip: 'Make sure to reselect the reference list if any changes are made to its items',
+                  tooltip: 'The reference list whose items are rendered as steps. Changes to its items are picked up automatically',
                   filter: { and: [{ '==': [{ var: 'isLast' }, true] }] },
                 })
                 .addSettingsInput({

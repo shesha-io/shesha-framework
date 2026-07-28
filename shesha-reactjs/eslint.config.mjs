@@ -305,6 +305,7 @@ export default [
             ".next/**",
             "src/rollup-plugins/**",
             "server.js",
+            "public/**",
         ],
     },
     {
