@@ -162,8 +162,8 @@ export type StandardFormBuilderMethods<TConfig extends Record<ComponentTypes, ob
   stdCollapsiblePanel(label: string, components: (fbf: FormBuilder) => FormBuilder, meta?: IPropertyMetadata | undefined): FluentFormBuilder<TConfig>;
   stdEventHandler(propertyName: string, label: string, tooltip: string, availableConstantsExpression?: string | undefined, meta?: IPropertyMetadata | undefined): FluentFormBuilder<TConfig>;
   stdEventHandlers(events: StandardEventHandler[], valueType: string): FluentFormBuilder<TConfig>;
-  stdFontPanel(propertyName?: string, panelTitle?: string, exclude?: string[]): FluentFormBuilder<TConfig>;
-  stdDimensionsPanel(propertyName?: string, panelTitle?: string, exclude?: string[]): FluentFormBuilder<TConfig>;
+  stdFontPanel(propertyName?: string, exclude?: string[], panelTitle?: string): FluentFormBuilder<TConfig>;
+  stdDimensionsPanel(propertyName?: string, exclude?: string[], panelTitle?: string): FluentFormBuilder<TConfig>;
   stdBorderPanel(isResponsive?: boolean, panelTitle?: string): FluentFormBuilder<TConfig>;
   stdBackgroundPanel(isResponsive?: boolean, exclude?: string[], panelTitle?: string): FluentFormBuilder<TConfig>;
   stdShadowPanel(exclude?: string[], panelTitle?: string): FluentFormBuilder<TConfig>;

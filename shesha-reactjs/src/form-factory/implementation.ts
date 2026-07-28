@@ -294,7 +294,7 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
     return this;
   };
 
-  stdFontPanel = (propertyName: string = 'font', panelTitle?: string, exclude?: string[]): FormBuilder => {
+  stdFontPanel = (propertyName: string = 'font', exclude?: string[], panelTitle?: string): FormBuilder => {
     this.stdCollapsiblePanel(panelTitle ?? 'Font', (f) => f
       .addSettingsInputRow({
         inline: true,
@@ -310,7 +310,7 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
     return this;
   };
 
-  stdDimensionsPanel = (propertyName: string = 'dimensions', panelTitle?: string, exclude?: string[]): FormBuilder => {
+  stdDimensionsPanel = (propertyName: string = 'dimensions', exclude?: string[], panelTitle?: string): FormBuilder => {
     this.stdCollapsiblePanel(panelTitle ?? 'Dimensions', (f) => f
       .addSettingsInputRow({
         inline: true,
@@ -438,10 +438,10 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
           fbf.stdCustomStylePanel('style', panelTitle);
           break;
         case 'font':
-          fbf.stdFontPanel('font', panelTitle, exclude);
+          fbf.stdFontPanel('font', exclude, panelTitle);
           break;
         case 'dimensions':
-          fbf.stdDimensionsPanel('dimensions', panelTitle, exclude);
+          fbf.stdDimensionsPanel('dimensions', exclude, panelTitle);
           break;
         case 'border':
           fbf.stdBorderPanel(removeStyleRouter !== true, panelTitle);
