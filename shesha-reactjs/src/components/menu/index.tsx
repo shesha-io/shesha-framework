@@ -279,41 +279,43 @@ export const LayoutMenu: FC<IProps> = ({
           fontStyles={fontStyles}
         />
       )}
-      <div
-        className={classNames(
-          styles.menuWrapper,
-          styles.menuWrapperScroll,
-          menuId ? `horizontal-menu-${menuId}` : undefined,
+      <div className={styles.scrollRow}>
+        <div
+          className={classNames(
+            styles.menuWrapper,
+            styles.menuWrapperScroll,
+            menuId ? `horizontal-menu-${menuId}` : undefined,
+          )}
+          ref={menuWrapperRef}
+        >
+          <Menu
+            mode="horizontal"
+            className={styles.shaMenu}
+            {...(keys ? { defaultOpenKeys: keys } : {})}
+            items={menuItems}
+            onOpenChange={onOpenChange}
+            selectedKeys={getSelectedKeys(router.fullPath, items ?? [])}
+            overflowedIndicator={<OverflowedIndicator className={styles.shaHamburgerItem} />}
+            {...(menuId ? { overflowedIndicatorPopupClassName: `horizontal-menu-${menuId}-dropdown` } : {})}
+            disabledOverflow={isScrolling}
+            style={{ background: 'none' }}
+          />
+        </div>
+        {isScrolling && hasOverflow && (
+          <>
+            <ScrollButton
+              className={styles.scrollButton}
+              onClick={scrollLeft}
+              direction="left"
+            />
+            <ScrollButton
+              className={styles.scrollButton}
+              onClick={scrollRight}
+              direction="right"
+            />
+          </>
         )}
-        ref={menuWrapperRef}
-      >
-        <Menu
-          mode="horizontal"
-          className={styles.shaMenu}
-          {...(keys ? { defaultOpenKeys: keys } : {})}
-          items={menuItems}
-          onOpenChange={onOpenChange}
-          selectedKeys={getSelectedKeys(router.fullPath, items ?? [])}
-          overflowedIndicator={<OverflowedIndicator className={styles.shaHamburgerItem} />}
-          {...(menuId ? { overflowedIndicatorPopupClassName: `horizontal-menu-${menuId}-dropdown` } : {})}
-          disabledOverflow={isScrolling}
-          style={{ background: 'none' }}
-        />
       </div>
-      {isScrolling && hasOverflow && (
-        <>
-          <ScrollButton
-            className={styles.scrollButton}
-            onClick={scrollLeft}
-            direction="left"
-          />
-          <ScrollButton
-            className={styles.scrollButton}
-            onClick={scrollRight}
-            direction="right"
-          />
-        </>
-      )}
     </div>
   );
 };
