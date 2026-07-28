@@ -36,6 +36,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: CheckboxGr
   const bgColor = model.background?.type === 'color' ? model.background.color : undefined;
 
   const checkboxGroup = cx('sha-multi-checkbox', css`
+      ${dimensionsStyles(model.dimensions)}
       >.${prefixCls}-checkbox-wrapper {
         height: 100%;
         align-items: center !important;
@@ -46,7 +47,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: CheckboxGr
         --ant-line-width-bold: ${borderWidthFromWeight(model.font?.weight)} !important;
         --ant-color-white: ${checkColor} !important;
         ${isNotNullOrWhiteSpace(bgColor) ? `--ant-color-primary-hover: ${bgColor};` : ''}
-        ${dimensionsStyles(model.dimensions)}
         ${borderStyles(model.border)}
         ${shadowStyles(model.shadow)}
         ${paddingStyles(model.stylingBoxJson)}
