@@ -12,7 +12,7 @@ export type IDataSet = IAnyObject & {
   data?: unknown[] | undefined;
   pointRadius?: number;
   label?: string | undefined;
-  backgroundColor?: string | undefined;
+  backgroundColor?: string | string[] | undefined;
 };
 
 export interface IChartDataContext extends IChartsProps {
