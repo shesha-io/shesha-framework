@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 import { addPx } from '@/utils/style';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { ICheckboxComponentProps } from './interfaces';
 import { dimensionsStyles, backgroundStyles, borderStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
 
@@ -38,7 +38,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: ICheckboxC
         ${isDefined(markSize) ? `--ant-control-interactive-size: ${markSize};` : ''}
         --ant-line-width-bold: ${borderWidthFromWeight(model.font?.weight)} !important;
         --ant-color-white: ${checkColor} !important;
-        ${isDefined(bgColor) && bgColor !== '' ? `--ant-color-primary-hover: ${bgColor};` : ''}
+        ${!isNullOrWhiteSpace(bgColor) ? `--ant-color-primary-hover: ${bgColor};` : ''}
         ${dimensionsStyles(model.dimensions)}
         ${borderStyles(model.border)}
         ${shadowStyles(model.shadow)}
