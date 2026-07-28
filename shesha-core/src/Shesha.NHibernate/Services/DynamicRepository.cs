@@ -148,7 +148,9 @@ namespace Shesha.Services
         {
             var where = new Func<IQueryable<int>, Expression<Func<int, bool>>, IQueryable<int>>(Queryable.Where).Method;
             var whereForMyType = where.GetGenericMethodDefinition().MakeGenericMethod(entityType);
-            var query = CurrentSession.Query<object>(entityType.FullName).Cast(entityType.GetRequiredFullName());
+            // note: use the `Cast(Type)` overload, not `Cast(string)`. The latter resolves the type name using
+            // Dynamic LINQ's own type provider, which no longer resolves application types (System.Linq.Dynamic.Core 1.4+)
+            var query = CurrentSession.Query<object>(entityType.GetRequiredFullName()).Cast(entityType);
 
             return whereForMyType.Invoke(query, [query, lambda]).ForceCastAs<IQueryable>();
         }
