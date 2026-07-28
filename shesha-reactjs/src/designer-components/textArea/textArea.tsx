@@ -25,7 +25,6 @@ import { getOverflowStyle } from '../_settings/utils/overflow/util';
 import { getComponentEvents } from '../_common/events';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { TextAreaApi } from '@/componentsApi/componentApi';
-import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { isDefined } from '@/utils/nullables';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
@@ -67,20 +66,27 @@ const TextAreaComponent: TextAreaComponentDefinition = {
     const componentApi = useComponentApi();
     const inputRef = useRef<TextAreaRef>(null);
     useEffect(() => {
+      const apiId = model.id;
       componentApi?.updateApi<TextAreaApi>({
-        id: model.id,
+        id: apiId,
         componentName: model.componentName ?? "",
         level: 3,
         typeDefinition: { typeName: 'TextAreaApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
         api: { focus: () => inputRef.current?.focus() },
       });
+
+      return () => {
+        componentApi?.removeApi(apiId);
+      };
     }, [componentApi, model.componentName, model.id]);
-    useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
     const { styles } = useStyles(model);
 
     const textAreaProps: TextAreaProps = {
-      className: `sha-text-area ${styles.textArea}`,
+      className: 'sha-text-area',
+      classNames: {
+        textarea: `sha-text-area ${styles.textArea}`,
+      },
       placeholder: model.placeholder,
       autoSize: model.autoSize === true ? { minRows: 2 } : false,
       showCount: false, // will use a custom counter outside the textarea

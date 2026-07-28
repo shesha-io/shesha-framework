@@ -35,7 +35,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                 .addSettingsInputRow({
                   inputs: [
                     { type: 'switch', propertyName: 'allowClear', label: 'Allow Clear', jsSetting: true },
-                    { type: 'switch', propertyName: 'showCount', label: 'Show Chars Count', jsSetting: false },
+                    { type: 'switch', propertyName: 'showCount', label: 'Show Chars Count', jsSetting: true },
                   ],
                 })
                 .addSettingsInput({ inputType: 'switch', propertyName: 'spellCheck', label: 'Spell Check', jsSetting: true })
