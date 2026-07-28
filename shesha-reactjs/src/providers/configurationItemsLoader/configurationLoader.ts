@@ -171,7 +171,7 @@ export class ConfigurationLoader implements IConfigurationLoader {
     return Promise.resolve();
   };
 
-  getCacheKeyByFullName = (module: string | null | undefined, name: string): string => {
+  getCacheKeyByFullName = (module: string | null, name: string): string => {
     return `${isNullOrWhiteSpace(module) ? null : module}:${name}`;
   };
 

@@ -2,7 +2,7 @@ import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 
 export interface ConfigurableItemFullName {
   readonly name: string;
-  readonly module?: string | null;
+  readonly module: string | null;
 }
 
 export type ConfigurableItemUid = string;
@@ -15,7 +15,7 @@ export const isConfigurableItemRawId = (formId: unknown): formId is Configurable
 export const isConfigurableItemFullName = (value: unknown): value is ConfigurableItemFullName => {
   return isDefined(value) && typeof (value) === "object" &&
     "name" in value && typeof (value.name) === "string" &&
-    (!("module" in value) || typeof (value.module) === "string" || value.module === null || value.module === undefined);
+    "module" in value && (typeof (value.module) === "string" || value.module === null);
 };
 
 export const configurableItemIdentifierToString = (value: ConfigurableItemIdentifier): string => {

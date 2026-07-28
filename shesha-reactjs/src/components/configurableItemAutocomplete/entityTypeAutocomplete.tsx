@@ -7,7 +7,6 @@ import { useDebouncedCallback } from 'use-debounce';
 import HelpTextPopover from '../helpTextPopover';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
 import { getEntityTypeName, isEntityTypeIdEqual } from '@/providers/metadataDispatcher/entities/utils';
-import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { isDefined } from '@/utils/nullables';
 
 interface IConfigurationItemProps {
@@ -85,8 +84,7 @@ const isEntityByEntityId = (item: IMetadataAutocompleteDto, id: EntityIdentifier
 };
 
 const getDisplayText = (item: IMetadataAutocompleteDto): string | undefined => getEntityTypeName(item);
-const toEntityTypeId = (v: EntityIdentifier): string | IEntityTypeIdentifier => typeof v === 'string' ? v : { name: v.name, module: v.module ?? null };
-const getEntityIdentifier = (item: ConfigurableItemFullName): string | undefined => getEntityTypeName(toEntityTypeId(item));
+const getEntityIdentifier = (item: ConfigurableItemFullName): string | undefined => getEntityTypeName(item);
 
 const getListFetcherQueryParams = (
   type: EntityTypeAutocompleteType,
@@ -146,7 +144,7 @@ export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) 
   );
 
   useEffect(() => {
-    if (isDefined(value) && (!isDefined(selectedItem.value) || !isEntityTypeIdEqual(toEntityTypeId(value), toEntityTypeId(selectedItem.value)))) {
+    if (isDefined(value) && (!isDefined(selectedItem.value) || !isEntityTypeIdEqual(value, selectedItem.value))) {
       // try to find in the fetched items
       const foundItem = fetchedItems?.find((item) => isEntityByEntityId(item, value));
       if (foundItem) {
@@ -168,7 +166,7 @@ export const EntityTypeAutocomplete: FC<IEntityTypeAutocompleteProps> = (props) 
   }, [value, type, baseModel]);
 
   useEffect(() => {
-    if (isDefined(value) && (!isDefined(selectedItem.value) || !isEntityTypeIdEqual(toEntityTypeId(value), toEntityTypeId(selectedItem.value)))) {
+    if (isDefined(value) && (!isDefined(selectedItem.value) || !isEntityTypeIdEqual(value, selectedItem.value))) {
       // try to find in the fetched items
       const foundItem = fetchedItems?.find((item) => isEntityByEntityId(item, value));
       if (foundItem) {
