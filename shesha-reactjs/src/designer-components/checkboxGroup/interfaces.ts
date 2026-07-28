@@ -2,11 +2,14 @@ import { CSSProperties, EventHandler } from 'react';
 import { DataSourceType, ILabelValue } from '@/designer-components/dropdown/model';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { StringSubtype } from '@/interfaces/utilityTypes';
+import { IInputStyles } from '@/providers/form/models';
 
 export const DIRECTION_TYPE = ['horizontal', 'vertical'] as const;
 export type DirectionType = StringSubtype<typeof DIRECTION_TYPE>;
 
-export type CheckboxGroupCommonProps = {
+// Extends IInputStyles so the Appearance style model (font, dimensions, border,
+// background, shadow, stylingBox) is typed and available to styles.ts.
+export type CheckboxGroupCommonProps = IInputStyles & {
   items?: ILabelValue[] | undefined;
   /**
    * @deprecated - use referenceListId instead
@@ -20,10 +23,10 @@ export type CheckboxGroupCommonProps = {
   dataSourceType: DataSourceType;
   direction?: DirectionType | undefined;
   style?: CSSProperties | undefined;
+  styleJson?: CSSProperties | undefined;
   dataSourceUrl?: string | undefined;
   reducerFunc?: string | undefined;
   readOnly?: boolean | undefined;
-  enableStyleOnReadonly?: boolean | undefined;
 };
 
 export type CheckboxGroupComponentProps = CheckboxGroupCommonProps;

@@ -22,6 +22,7 @@ import { getStringEnumOrDefault } from '@/utils/object';
 import { IInputStyles } from '@/providers';
 import { migratePrevStyles } from '../_common-migrations';
 import { defaultStyles } from './utils';
+import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 
 interface IEnhancedICheckboxGroupProps extends Omit<CheckboxGroupComponentProps, 'style' | 'readOnly'>, IConfigurableFormComponent {
 }
@@ -31,6 +32,7 @@ interface ICheckboxGoupComopnentCalulatedValues {
 }
 
 const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, ICheckboxGoupComopnentCalulatedValues> = {
+  allowInherit: true,
   type: 'checkboxGroup',
   isInput: true,
   isOutput: true,
@@ -50,7 +52,6 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
           return (
             <RefListCheckboxGroup
               {...model}
-              style={!(model.enableStyleOnReadonly ?? false) && (model.readOnly ?? false) ? {} : model.allStyles?.fullStyle}
               dataSourceUrl={calculatedModel.dataSourceUrl}
               value={value ?? undefined}
               onChange={(newValue) => {
@@ -109,7 +110,9 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
         };
 
         return migratePrevStyles({ ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } }, defaultStyles());
-      }),
+      })
+      // Permissions are configured on the Visible / Interaction Mode settings now.
+      .add<IEnhancedICheckboxGroupProps>(8, (prev) => migratePermissionsToVisiblePermissions(prev)),
   linkToModelMetadata: (model, metadata): IEnhancedICheckboxGroupProps => {
     const refListId: IReferenceListIdentifier | undefined = !isNullOrWhiteSpace(metadata.referenceListModule) && !isNullOrWhiteSpace(metadata.referenceListName)
       ? { module: metadata.referenceListModule, name: metadata.referenceListName }
@@ -119,6 +122,19 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
       dataSourceType: metadata.dataType === DataTypes.referenceListItem ? 'referenceList' : 'values',
       referenceListId: refListId,
     };
+  },
+  previewConfiguration: {
+    type: 'checkboxGroup',
+    id: 'checkboxGroup',
+    propertyName: 'checkboxGroupAppearance',
+    label: 'Checkbox Group Label',
+    version: 'latest',
+    dataSourceType: 'values',
+    direction: 'horizontal',
+    items: [
+      { id: 'preview-1', label: 'Option 1', value: '1' },
+      { id: 'preview-2', label: 'Option 2', value: '2' },
+    ],
   },
 };
 
