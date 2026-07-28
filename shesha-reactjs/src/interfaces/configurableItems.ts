@@ -30,11 +30,13 @@ export const configurableItemIdentifierToString = (value: ConfigurableItemIdenti
  * may be stored as a reference carrying only its raw id (see issue #5162).
  * Use {@link normalizeConfigurableItemIdentifier} to convert them into a {@link ConfigurableItemIdentifier}.
  */
-export interface PersistedConfigurableItemIdentifier {
-  readonly id?: string;
-  readonly name?: string;
-  readonly module?: string | { readonly name?: string | null } | null;
-}
+export type PersistedConfigurableItemIdentifier =
+  | { readonly id: string }
+  | {
+    readonly name: string;
+    /** module name, or the module itself as returned by the configuration items API */
+    readonly module?: string | { readonly id?: string; readonly name: string } | null;
+  };
 
 const canonicalModule = (module: string | null | undefined): string | null =>
   isNotNullOrWhiteSpace(module) ? module : null;
@@ -46,14 +48,15 @@ export const normalizeConfigurableItemIdentifier = (
   if (!isDefined(value)) return undefined;
   if (isConfigurableItemFullName(value)) return { name: value.name, module: canonicalModule(value.module) };
 
-  const { id, name, module } = value;
-  if (isNotNullOrWhiteSpace(name))
+  if ("name" in value && isNotNullOrWhiteSpace(value.name)) {
+    const module = "module" in value ? value.module : null;
     return {
-      name,
+      name: value.name,
       module: isDefined(module) && typeof module === "object" ? canonicalModule(module.name) : canonicalModule(module),
     };
+  }
 
-  if (isNotNullOrWhiteSpace(id)) return id;
+  if ("id" in value && isNotNullOrWhiteSpace(value.id)) return value.id;
 
   return undefined;
 };
