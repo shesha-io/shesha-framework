@@ -98,6 +98,7 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
       onBlur={(e) => model.onBlur?.({ ...e, target: { ...e.target, value: value } })}
       onClick={model.onClick}
       onMouseEnter={model.onMouseEnter}
+      onMouseMove={model.onMouseMove}
       onMouseLeave={model.onMouseLeave}
       onKeyDown={model.onKeyDown}
       onKeyUp={model.onKeyUp}

@@ -53,6 +53,7 @@ export type ICheckboxGroupProps<TValue = string> = CheckboxGroupCommonProps & {
    */
   onClick?: MouseEventHandler<HTMLDivElement> | undefined;
   onMouseEnter?: MouseEventHandler<HTMLDivElement> | undefined;
+  onMouseMove?: MouseEventHandler<HTMLDivElement> | undefined;
   onMouseLeave?: MouseEventHandler<HTMLDivElement> | undefined;
   onKeyDown?: KeyboardEventHandler<HTMLDivElement> | undefined;
   onKeyUp?: KeyboardEventHandler<HTMLDivElement> | undefined;
