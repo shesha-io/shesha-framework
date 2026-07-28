@@ -17,6 +17,8 @@ import { DataListPlaceholder } from './dataListPlaceholder';
 import { isDefined } from '@/utils/nullables';
 import { ActionRefType } from '@/components/dataList/models';
 import { ITableRowData } from '@/providers/dataTable/interfaces';
+import { useMetadataOrUndefined } from '@/providers/metadata';
+import { useEnsureFetchColumns } from '@/designer-components/dataTable/table/useEnsureFetchColumns';
 
 const DataListControl: FCUnwrapped<IDataListWithDataSourceProps, "dataSourceInstance"> = (props) => {
   const {
@@ -61,6 +63,8 @@ const DataListControl: FCUnwrapped<IDataListWithDataSourceProps, "dataSourceInst
     clearSelectedRow,
     setMultiSelectedRow,
   } = dataSource;
+  const metadata = useMetadataOrUndefined()?.metadata;
+  useEnsureFetchColumns(props.id, dataSource, metadata);
   const { styles } = useStyles();
   const appContext = useAvailableConstantsData();
   const { formMode } = useForm();
