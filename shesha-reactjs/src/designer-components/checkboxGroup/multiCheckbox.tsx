@@ -96,6 +96,11 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
       tabIndex={0}
       onFocus={(e) => model.onFocus?.({ ...e, target: { ...e.target, value: value } })}
       onBlur={(e) => model.onBlur?.({ ...e, target: { ...e.target, value: value } })}
+      onClick={model.onClick}
+      onMouseEnter={model.onMouseEnter}
+      onMouseLeave={model.onMouseLeave}
+      onKeyDown={model.onKeyDown}
+      onKeyUp={model.onKeyUp}
       style={{ margin: `${DEFAULT_MARGINS.vertical} ${DEFAULT_MARGINS.horizontal}` }}
     >
       <Checkbox.Group

@@ -1,4 +1,4 @@
-import { CSSProperties, EventHandler, RefObject } from 'react';
+import { CSSProperties, EventHandler, KeyboardEventHandler, MouseEventHandler, RefObject } from 'react';
 import { DataSourceType, ILabelValue } from '@/designer-components/dropdown/model';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { StringSubtype } from '@/interfaces/utilityTypes';
@@ -47,6 +47,15 @@ export type ICheckboxGroupProps<TValue = string> = CheckboxGroupCommonProps & {
   onChange?: ((checkedValue: TValue | Array<TValue> | undefined) => void) | undefined;
   onFocus?: EventHandler<FocusEventWithValue<TValue>> | undefined;
   onBlur?: EventHandler<FocusEventWithValue<TValue>> | undefined;
+  /**
+   * Pointer/keyboard handlers supplied by `getComponentEvents`. The group has no
+   * single input element, so these are applied to the wrapper element.
+   */
+  onClick?: MouseEventHandler<HTMLDivElement> | undefined;
+  onMouseEnter?: MouseEventHandler<HTMLDivElement> | undefined;
+  onMouseLeave?: MouseEventHandler<HTMLDivElement> | undefined;
+  onKeyDown?: KeyboardEventHandler<HTMLDivElement> | undefined;
+  onKeyUp?: KeyboardEventHandler<HTMLDivElement> | undefined;
   /** Imperative handle backing the component API's `focus()` — the group has no single input element. */
   focusRef?: RefObject<CheckboxGroupFocusHandle | null> | undefined;
 };

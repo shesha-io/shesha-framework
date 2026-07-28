@@ -83,7 +83,7 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
                 ctx?.handleEvent(undefined, { value: newValue }, model.onChangeCustom);
                 onChange(newValue);
               }}
-              {...getComponentEvents<string | string[]>(model, ['onFocus', 'onBlur'], ctx, value, DataTypes.array)}
+              {...getComponentEvents<string | string[]>(model, ['onFocus', 'onBlur', 'onClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave', 'onKeyDown', 'onKeyUp'], ctx, value, DataTypes.array)}
             />
           );
         }}
