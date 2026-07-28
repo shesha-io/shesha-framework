@@ -156,7 +156,7 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
         weight: '400',
         color: '#000000',
       },
-      axisLabelFont: prev.axisLabelFont ?? {
+      axisLabelFont: prev.axisLabelFont ?? prev.titleFont ?? {
         family: 'Segoe UI',
         size: 16,
         weight: '400',
