@@ -166,7 +166,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
                       ctx?.handleEvent(event, { value: event.currentTarget.value }, model.onChangeCustom);
                       onChange(event.currentTarget.value);
                     }}
-                    {...getComponentEvents<TextAreaValueType>(model, ['onFocus', 'onBlur', 'onClick', 'onMouseEnter', 'onKeyDown'], ctx, value, DataTypes.string)}
+                    {...getComponentEvents<TextAreaValueType>(model, ['onFocus', 'onBlur', 'onClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave', 'onKeyDown', 'onKeyUp'], ctx, value, DataTypes.string)}
                   />
                   {renderCharCounter()}
                 </>

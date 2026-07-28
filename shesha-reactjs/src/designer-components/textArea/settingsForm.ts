@@ -26,19 +26,19 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                 .addLabelConfigurator({ propertyName: 'hideLabel', label: 'Label', hideLabel: true })
                 .stdPlaceholderDescriptionInputs()
                 .stdVisibleEditableInputs('full')
-                .addSettingsInputRow({
-                  inputs: [
-                    { type: 'switch', propertyName: 'passEmptyStringByDefault', label: 'Empty As Default', jsSetting: true },
-                    { type: 'switch', propertyName: 'autoSize', label: 'Auto Size', jsSetting: true },
-                  ],
-                })
-                .addSettingsInputRow({
-                  inputs: [
-                    { type: 'switch', propertyName: 'allowClear', label: 'Allow Clear', jsSetting: true },
-                    { type: 'switch', propertyName: 'showCount', label: 'Show Chars Count', jsSetting: true },
-                  ],
-                })
-                .addSettingsInput({ inputType: 'switch', propertyName: 'spellCheck', label: 'Spell Check', jsSetting: true })
+                .stdCollapsiblePanel('Behaviour', (fb) => fb
+                  .addSettingsInputRow({
+                    inputs: [
+                      { type: 'switch', propertyName: 'autoSize', label: 'Auto Size', jsSetting: true },
+                      { type: 'switch', propertyName: 'allowClear', label: 'Allow Clear', jsSetting: true },
+                    ],
+                  })
+                  .addSettingsInputRow({
+                    inputs: [
+                      { type: 'switch', propertyName: 'showCount', label: 'Show Chars Count', jsSetting: true },
+                      { type: 'switch', propertyName: 'spellCheck', label: 'Spell Check', jsSetting: true },
+                    ],
+                  }))
                 .stdCollapsiblePanel('Validations', (fb) => fb
                   .addSettingsInput({ inputType: 'switch', propertyName: 'validate.required', label: 'Required', size: 'small', layout: 'horizontal', jsSetting: true })
                   .addSettingsInputRow({
@@ -49,8 +49,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   })
                   .addSettingsInputRow({
                     inputs: [
-                      { type: 'textField', propertyName: 'validate.message', label: 'Message', size: 'small', jsSetting: true },
-                      { type: 'codeEditor', propertyName: 'validate.validator', label: 'Validator', labelAlign: 'right', tooltip: 'Enter custom validator logic for form.item rules. Returns a Promise' },
+                      { type: 'codeEditor', propertyName: 'validate.validator', label: 'Custom Validation', labelAlign: 'right', tooltip: 'Enter custom validator logic for form.item rules. Returns a Promise' },
                     ],
                   }))
                 .toJson(),
@@ -58,7 +57,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
           },
           {
             key: '2', title: 'Events', id: eventsTabId,
-            components: [...fbf(eventsTabId).stdEventHandlers(['onChange', 'onFocus', 'onBlur', 'onClick', 'onMouseEnter', 'onKeyDown'], DataTypes.string).toJson()],
+            components: [...fbf(eventsTabId).stdEventHandlers(['onChange', 'onFocus', 'onBlur', 'onClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave', 'onKeyDown', 'onKeyUp'], DataTypes.string).toJson()],
           },
           {
             key: '3', title: 'Appearance', id: appearanceTabId,
