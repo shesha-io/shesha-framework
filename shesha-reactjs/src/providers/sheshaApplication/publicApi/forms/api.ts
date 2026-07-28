@@ -9,6 +9,7 @@ import { GenerationLogicFactory } from "./generation-logic/factory";
 import { FormMetadataHelper } from "./generation-logic/formMetadataHelper";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
 import { FormBuilderFactory } from "@/form-factory/interfaces";
+import { isValidGuid } from "@/components/formDesigner/components/utils";
 
 export interface IFormsApi {
   /**
@@ -19,7 +20,7 @@ export interface IFormsApi {
    * or TableViewGenerationLogic) will have specialized processing for adding
    * components based on the modelType and other replacements.
    *
-   * @param templateId The ID of the form template to use
+   * @param templateId The GUID of the form template to use. Returns an empty markup if it's not a valid GUID.
    * @param replacements An object with properties to replace in the template, including modelType
    * @returns Promise resolving to the processed markup string
    */
@@ -46,27 +47,17 @@ export class FormsApi implements IFormsApi {
     this._entityMetadataHelper = new FormMetadataHelper(metadataDispatcher);
   }
 
-  // expects an already-trimmed, non-empty identifier; returns undefined when it
-  // resolves to an empty name (so an empty GetByName request is never issued)
-  private buildTemplateUrl = (trimmed: string): string | undefined => {
-    const isGuid = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(trimmed);
-    if (isGuid)
-      return `/api/services/Shesha/FormConfiguration/Get?${qs.stringify({ id: trimmed })}`;
-
-    const separatorIndex = trimmed.search(/[/:]/);
-    const module = separatorIndex >= 0 ? trimmed.slice(0, separatorIndex) : '';
-    const name = separatorIndex >= 0 ? trimmed.slice(separatorIndex + 1) : trimmed;
-    if (!name)
-      return undefined;
-    return `/api/services/Shesha/FormConfiguration/GetByName?${qs.stringify({ module, name })}`;
+  private buildTemplateUrl = (templateId: string): string | undefined => {
+    return isValidGuid(templateId)
+      ? `/api/services/Shesha/FormConfiguration/Get?${qs.stringify({ id: templateId })}`
+      : undefined;
   };
 
   prepareTemplateAsync = (templateId: string, replacements: object | undefined): Promise<string> => {
-    const trimmed = templateId.trim();
-    if (!trimmed)
+    if (!templateId)
       return Promise.resolve('');
 
-    const url = this.buildTemplateUrl(trimmed);
+    const url = this.buildTemplateUrl(templateId.trim());
     if (!url)
       return Promise.resolve('');
     return this._httpClient

@@ -1,4 +1,4 @@
-import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from "@/utils/nullables";
 
 export interface ConfigurableItemFullName {
   readonly name: string;
@@ -8,7 +8,7 @@ export interface ConfigurableItemFullName {
 export type ConfigurableItemUid = string;
 export type ConfigurableItemIdentifier = ConfigurableItemFullName | ConfigurableItemUid;
 
-export const isConfigurableItemRawId = (formId: unknown): formId is ConfigurableItemUid => {
+export const isConfigurableItemRawId = (formId: ConfigurableItemIdentifier): formId is ConfigurableItemUid => {
   return typeof formId === 'string' && !isNullOrWhiteSpace(formId);
 };
 
@@ -24,23 +24,36 @@ export const configurableItemIdentifierToString = (value: ConfigurableItemIdenti
     : value;
 };
 
-const canonicalModule = (module: unknown): string | null =>
-  typeof module === "string" && !isNullOrWhiteSpace(module) ? module : null;
+/**
+ * Identifier shapes stored in persisted form configurations. Unlike {@link ConfigurableItemIdentifier}
+ * these are not canonical: the module may be stored as a module object instead of its name, and an item
+ * may be stored as a reference carrying only its raw id (see issue #5162).
+ * Use {@link normalizeConfigurableItemIdentifier} to convert them into a {@link ConfigurableItemIdentifier}.
+ */
+export interface PersistedConfigurableItemIdentifier {
+  readonly id?: string;
+  readonly name?: string;
+  readonly module?: string | { readonly name?: string | null } | null;
+}
 
-export const normalizeConfigurableItemIdentifier = (value: unknown): ConfigurableItemIdentifier | undefined => {
-  if (isConfigurableItemRawId(value)) return value;
+const canonicalModule = (module: string | null | undefined): string | null =>
+  isNotNullOrWhiteSpace(module) ? module : null;
+
+export const normalizeConfigurableItemIdentifier = (
+  value: ConfigurableItemIdentifier | PersistedConfigurableItemIdentifier | undefined,
+): ConfigurableItemIdentifier | undefined => {
+  if (typeof value === "string") return isNullOrWhiteSpace(value) ? undefined : value;
+  if (!isDefined(value)) return undefined;
   if (isConfigurableItemFullName(value)) return { name: value.name, module: canonicalModule(value.module) };
 
-  if (isDefined(value) && typeof value === "object") {
-    if ("name" in value && typeof value.name === "string") {
-      const module = "module" in value ? value.module : null;
-      const moduleName = isDefined(module) && typeof module === "object" && "name" in module
-        ? canonicalModule(module.name)
-        : canonicalModule(module);
-      return { name: value.name, module: moduleName };
-    }
-    if ("id" in value && typeof value.id === "string") return value.id;
-  }
+  const { id, name, module } = value;
+  if (isNotNullOrWhiteSpace(name))
+    return {
+      name,
+      module: isDefined(module) && typeof module === "object" ? canonicalModule(module.name) : canonicalModule(module),
+    };
+
+  if (isNotNullOrWhiteSpace(id)) return id;
 
   return undefined;
 };
