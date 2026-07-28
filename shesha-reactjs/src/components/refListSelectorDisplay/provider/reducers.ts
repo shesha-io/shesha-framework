@@ -6,7 +6,6 @@ import { getItemPositionById } from '@/components/refListSelectorDisplay/provide
 import { createReducer } from '@reduxjs/toolkit';
 import { setItems, selectItemAction, updateItemAction, updateChildItemsAction, storeSettingsAction } from './actions';
 import { isDefined } from '@/utils/nullables';
-import { IReferenceListItem } from '@/interfaces/referenceList';
 
 export const RefListItemGroupReducer = createReducer(REF_LIST_ITEM_GROUP_CONTEXT_INITIAL_STATE, (builder) => {
   builder
@@ -16,7 +15,7 @@ export const RefListItemGroupReducer = createReducer(REF_LIST_ITEM_GROUP_CONTEXT
       const priorByValue = new Map<number, RefListGroupItemProps>();
       const indexPriorItems = (items: RefListGroupItemProps[]): void => {
         items.forEach((prior) => {
-          const value = (prior as Partial<IReferenceListItem>).itemValue;
+          const value = prior.itemValue;
           if (isDefined(value))
             priorByValue.set(value, prior);
           // grouped items keep their settings under childItems, so recurse to preserve nested config too

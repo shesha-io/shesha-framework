@@ -10,13 +10,18 @@ import { jsonSafeParse } from "@/utils/object";
 import { addPx } from '@/utils/style';
 import { Button, Form, FormInstance } from "antd";
 import classNames from "classnames";
-import { IChevronButton, IChevronControlProps } from "./models";
+import { IChevronButton, IChevronControlProps, isChevronItem } from "./models";
+import { useRefListItemGroupConfigurator } from "@/components/refListSelectorDisplay/provider";
 import { useStyles } from "./styles";
 
 
 export const ChevronControl: FC<IChevronControlProps> = (props) => {
   const fontStyles = useMemo(() => getFontStyle(props.font), [props.font]);
-  const { value, activeColor, showIcons, colorSource, items, width, height, stylingBox } = props;
+  const { value, activeColor, showIcons, colorSource, width, height, stylingBox } = props;
+  const { items: refListItems } = useRefListItemGroupConfigurator();
+  // Render from the reference list held by the provider rather than the saved snapshot,
+  // so the designer, preview and runtime cannot drift apart.
+  const items = useMemo(() => refListItems.filter(isChevronItem), [refListItems]);
   const { styles } = useStyles({ height });
   const [form] = Form.useForm();
   const { theme } = useTheme();
@@ -104,7 +109,7 @@ export const ChevronControl: FC<IChevronControlProps> = (props) => {
         </Button>
       )}
       <div ref={containerRef} className={styles.pipelineStages}>
-        {items?.map((item) => {
+        {items.map((item) => {
           return renderButton(item, item.id, form);
         })}
       </div>

@@ -1,6 +1,8 @@
 import { IFontValue } from "@/designer-components/_settings/utils/font/interfaces";
 import { IReferenceListIdentifier } from "@/interfaces";
 import { IButtonGroupItem, IButtonItem, IConfigurableFormComponent } from "@/providers";
+import { RefListGroupItemProps as ConfiguredRefListItem, isIRefListItemGroup as isConfiguredRefListGroup } from "@/components/refListSelectorDisplay/provider/models";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 
 export type RefListGroupItemProps = IRefListItemFormModel | IRefListItemGroup;
 
@@ -38,3 +40,6 @@ export interface IChevronButton extends IButtonGroupItem {
   itemValue: number;
   item: string;
 }
+
+export const isChevronItem = (item: ConfiguredRefListItem): item is ConfiguredRefListItem & IChevronButton =>
+  !isConfiguredRefListGroup(item) && isDefined(item.itemValue) && !isNullOrWhiteSpace(item.item);

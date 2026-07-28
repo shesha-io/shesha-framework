@@ -54,13 +54,13 @@ function GenericSettingsForm<TModel extends IConfigurableFormComponent>({
   useDeepCompareEffect(() => {
     if (Boolean(toolboxComponent.allowInherit)) {
       const defaultComponentStyle = toolboxComponent.getDefaultStyles?.() ?? {};
-      defaultModel?.setDefaultModel('Default comonent Style', { ['desktop']: defaultComponentStyle } as TModel);
+      defaultModel?.setDefaultModel('Default component Style', { ['desktop']: defaultComponentStyle } as TModel);
       const themeStyle = getComponentStyle(toolboxComponent.type);
       defaultModel?.setDefaultModel('Theme component Style', { ['desktop']: themeStyle } as TModel);
 
       if (designerDevice !== 'desktop' && designerDevice !== currentDevice.current) {
         // inherit mobile and tablet styles from desktop styles
-        defaultModel?.setDefaultModel('Default comonent Style', { [designerDevice]: defaultComponentStyle } as unknown as TModel);
+        defaultModel?.setDefaultModel('Default component Style', { [designerDevice]: defaultComponentStyle } as unknown as TModel);
         defaultModel?.setDefaultModel('Theme component Style', { [designerDevice]: themeStyle } as unknown as TModel);
         const model = defaultModel?.getModel();
         const desktopStyles = deepCopyViaJson(unproxyValue((model as IConfigurableFormComponent).desktop ?? {})) as IStyleValue;
