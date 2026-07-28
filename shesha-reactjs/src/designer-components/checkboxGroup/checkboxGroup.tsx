@@ -26,7 +26,7 @@ import { migratePermissionsToVisiblePermissions } from '../_common-migrations/mi
 import { migrateHiddenToVisible } from '@/designer-components/_common-migrations/migrateSettings';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { CheckboxGroupApi } from '../../componentsApi/componentApi';
-import { getComponentEvents } from '../_common/events';
+import { ALL_INPUT_EVENTS_WITHOUT_CHANGE, getComponentEvents } from '../_common/events';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
 
@@ -86,7 +86,7 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
                 ctx?.handleEvent(undefined, { value: newValue }, model.onChangeCustom);
                 onChange(newValue);
               }}
-              {...getComponentEvents<string | string[]>(model, ['onFocus', 'onBlur', 'onClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave', 'onKeyDown', 'onKeyUp'], ctx, value, DataTypes.array)}
+              {...getComponentEvents<string | string[]>(model, ALL_INPUT_EVENTS_WITHOUT_CHANGE, ctx, value, DataTypes.array)}
             />
           );
         }}
