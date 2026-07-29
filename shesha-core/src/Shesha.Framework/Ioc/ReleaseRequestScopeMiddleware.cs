@@ -33,8 +33,13 @@ namespace Shesha.Ioc
             {
                 RequestReleaseScope.Clear();
 
+                // Stop any detached/background work that inherited this bucket from enqueuing further
+                // instances into it once we start releasing (the flag lives on the shared bucket object, so it
+                // is visible across inherited ExecutionContexts — unlike the AsyncLocal reference cleared above).
+                bucket.Drained = true;
+
                 var container = _iocManager.IocContainer;
-                while (bucket.TryDequeue(out var instance))
+                while (bucket.Items.TryDequeue(out var instance))
                 {
                     // Release removes the burden from the policy dictionary and runs decommission/disposal.
                     // It is idempotent (releasing an already-released or singleton instance is a safe no-op),
