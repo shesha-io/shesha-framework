@@ -68,7 +68,32 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
             components: [
               ...fbf(appearanceTabId)
                 .addSettingsInput({ inputType: 'dropdown', propertyName: 'direction', label: 'Direction', size: 'small', jsSetting: true, dropdownOptions: directionOptions })
-                .stdAppearancePanels(['font', 'dimensions', 'border', 'background', 'shadow', 'marginPadding', 'customStyle'], removeStyleRouter)
+                // Two independent style sets: the bare-named set styles the component wrapper
+                // (the group container), the `option`-prefixed set styles each radio button.
+                .stdAppearancePanels(
+                  [
+                    { name: 'dimensions', panelTitle: 'Wrapper Dimensions' },
+                    { name: 'border', panelTitle: 'Wrapper Border' },
+                    { name: 'background', panelTitle: 'Wrapper Background' },
+                    { name: 'shadow', panelTitle: 'Wrapper Shadow' },
+                    { name: 'marginPadding', panelTitle: 'Wrapper Margin & Padding' },
+                    { name: 'customStyle', panelTitle: 'Wrapper Custom Styles' },
+                  ],
+                  removeStyleRouter,
+                )
+                .stdAppearancePanels(
+                  [
+                    { name: 'font', panelTitle: 'Radio Font' },
+                    { name: 'dimensions', panelTitle: 'Radio Dimensions' },
+                    { name: 'border', panelTitle: 'Radio Border' },
+                    { name: 'background', panelTitle: 'Radio Background' },
+                    { name: 'shadow', panelTitle: 'Radio Shadow' },
+                    { name: 'marginPadding', panelTitle: 'Radio Margin & Padding' },
+                    { name: 'customStyle', panelTitle: 'Radio Custom Styles' },
+                  ],
+                  removeStyleRouter,
+                  'option',
+                )
                 .toJson(),
             ],
           },

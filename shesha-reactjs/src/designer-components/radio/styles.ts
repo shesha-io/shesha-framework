@@ -1,45 +1,56 @@
 import { createStyles } from '@/styles';
 import { IRadioComponentProps } from './interfaces';
 import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
+import { isDefined } from '@/utils/nullables';
 
 /**
- * The appearance settings of a radio group describe a single option, not the group as a whole,
- * so every style builder is scoped to a descendant selector of the repeated option element.
- * Border/background/dimensions land on the radio indicator, font on the option label.
+ * Emits the two Appearance style sets.
+ *
+ * The bare-named model properties style the component wrapper (the group container), while the
+ * `option` set is scoped to descendant selectors so it styles every radio button: border,
+ * background, dimensions and shadow land on the radio indicator, font on the option label.
  */
 export const useStyles = createStyles(({ css, cx, prefixCls, token }, model: IRadioComponentProps) => {
+  const option = model.option;
+
   const indicatorStyles = `
-    ${borderStyles(model.border)}
-    ${backgroundStyles(model.background)}
+    ${borderStyles(option?.border)}
+    ${backgroundStyles(option?.background)}
+    ${shadowStyles(option?.shadow)}
+    ${dimensionsStyles(option?.dimensions)}
   `;
 
   const radioGroup = cx('sha-radio-group', css`
-    ${dimensionsStyles(model.dimensions)}
+      /* Wrapper set — styles the group container itself. */
+      ${borderStyles(model.border)}
+      ${backgroundStyles(model.background)}
+      ${shadowStyles(model.shadow)}
+      ${dimensionsStyles(model.dimensions)}
+      ${paddingStyles(model.stylingBoxJson)}
+
+      /* Option set — styles each radio button. */
       .${prefixCls}-radio-wrapper {
-        ${paddingStyles(model.stylingBoxJson)}
-        ${fontStyles(model.font)}
+        ${paddingStyles(option?.stylingBoxJson)}
+        ${fontStyles(option?.font)}
 
         span.${prefixCls}-radio + * {
-          ${fontStyles(model.font)}
+          ${fontStyles(option?.font)}
         }
 
-        .ant-wave-target {
-          ${borderStyles(model.border)}
-          ${shadowStyles(model.shadow)}
-          height: ${model.font?.size ?? 16}px;
-          width: ${model.font?.size ?? 16}px;
-        }
-
-        .ant-radio-input {
-          background-color: ${token.colorPrimary};
-          ${backgroundStyles(model.background)}
+        .${prefixCls}-radio-inner {
+          ${indicatorStyles}
         }
       }
 
       /* antd themes the checked state separately, so the same block is repeated
          to keep the configured border/background from being overridden. */
-      .${prefixCls}-radio-checked{
+      .${prefixCls}-radio-checked .${prefixCls}-radio-inner {
         ${indicatorStyles}
+        ${isDefined(option?.font?.color) ? `&:after { background-color: ${option.font.color}; }` : ''}
+      }
+
+      .${prefixCls}-radio-wrapper:hover .${prefixCls}-radio-inner {
+        border-color: ${token.colorPrimary};
       }
   `);
 

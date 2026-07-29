@@ -164,12 +164,17 @@ export type StandardFormBuilderMethods<TConfig extends Record<ComponentTypes, ob
   stdEventHandlers(events: readonly StandardEventHandler[], valueType: string): FluentFormBuilder<TConfig>;
   stdFontPanel(propertyName?: string, exclude?: string[], panelTitle?: string): FluentFormBuilder<TConfig>;
   stdDimensionsPanel(propertyName?: string, exclude?: string[], panelTitle?: string): FluentFormBuilder<TConfig>;
-  stdBorderPanel(isResponsive?: boolean, panelTitle?: string): FluentFormBuilder<TConfig>;
-  stdBackgroundPanel(isResponsive?: boolean, exclude?: string[], panelTitle?: string): FluentFormBuilder<TConfig>;
-  stdShadowPanel(exclude?: string[], panelTitle?: string): FluentFormBuilder<TConfig>;
+  stdBorderPanel(isResponsive?: boolean, panelTitle?: string, propertyPrefix?: string): FluentFormBuilder<TConfig>;
+  stdBackgroundPanel(isResponsive?: boolean, exclude?: string[], panelTitle?: string, propertyPrefix?: string): FluentFormBuilder<TConfig>;
+  stdShadowPanel(exclude?: string[], panelTitle?: string, propertyPrefix?: string): FluentFormBuilder<TConfig>;
   stdMarginPaddingPanel(propertyName?: string, panelTitle?: string): FluentFormBuilder<TConfig>;
   stdCustomStylePanel(propertyName?: string, panelTitle?: string): FluentFormBuilder<TConfig>;
-  stdAppearancePanels(appearancePanels: StandardAppearancePanelConfig[], removeStyleRouter?: boolean): FluentFormBuilder<TConfig>;
+  /**
+   * Renders a set of Appearance panels. `propertyPrefix` nests the whole set under one model
+   * property, so a component can expose several independent sets — e.g. the bare set styling the
+   * component wrapper and an `option`-prefixed set styling each repeated option.
+   */
+  stdAppearancePanels(appearancePanels: StandardAppearancePanelConfig[], removeStyleRouter?: boolean, propertyPrefix?: string): FluentFormBuilder<TConfig>;
 };
 
 /** Fluent form builder */

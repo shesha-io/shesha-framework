@@ -5,12 +5,12 @@ import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
 import { addPx } from '@/utils/style';
 
 /**
- * Applies the configured Appearance styles (Check Mark, Dimensions, Border,
- * Background, Shadow, Margin & Padding) to every checkbox rendered inside the
- * group. The emotion class is placed on the antd Checkbox.Group root, so the
- * style builders are scoped to each `.ant-checkbox-inner` descendant — that is
- * what makes the styling apply per checkbox rather than to the whole group.
- * Mirrors the standalone Checkbox component so both look consistent.
+ * Emits the two Appearance style sets.
+ *
+ * The bare-named model properties style the component wrapper (the group container). The `option`
+ * set is scoped to each `.ant-checkbox` descendant, which is what makes it apply per checkbox
+ * rather than to the whole group. Mirrors the standalone Checkbox component so both look
+ * consistent.
  */
 
 const borderWidthFromWeight = (weight: string | undefined): string => {
@@ -31,25 +31,34 @@ const borderWidthFromWeight = (weight: string | undefined): string => {
 };
 
 export const useStyles = createStyles(({ css, cx, prefixCls }, model: CheckboxGroupComponentProps) => {
-  const markSize = addPx(model.font?.size);
-  const checkColor = isNotNullOrWhiteSpace(model.font?.color) ? model.font.color : '#fff';
-  const bgColor = model.background?.type === 'color' ? model.background.color : undefined;
+  const option = model.option;
+  const markSize = addPx(option?.font?.size);
+  const checkColor = isNotNullOrWhiteSpace(option?.font?.color) ? option.font.color : '#fff';
+  const bgColor = option?.background?.type === 'color' ? option.background.color : undefined;
 
   const checkboxGroup = cx('sha-multi-checkbox', css`
+      /* Wrapper set — styles the group container itself. */
+      ${borderStyles(model.border)}
+      ${backgroundStyles(model.background)}
+      ${shadowStyles(model.shadow)}
       ${dimensionsStyles(model.dimensions)}
+      ${paddingStyles(model.stylingBoxJson)}
+
       >.${prefixCls}-checkbox-wrapper {
         height: 100%;
         align-items: center !important;
       }
 
+      /* Option set — styles each checkbox. */
       .${prefixCls}-checkbox {
         ${isDefined(markSize) ? `--ant-control-interactive-size: ${markSize};` : ''}
-        --ant-line-width-bold: ${borderWidthFromWeight(model.font?.weight)} !important;
+        --ant-line-width-bold: ${borderWidthFromWeight(option?.font?.weight)} !important;
         --ant-color-white: ${checkColor} !important;
         ${isNotNullOrWhiteSpace(bgColor) ? `--ant-color-primary-hover: ${bgColor};` : ''}
-        ${borderStyles(model.border)}
-        ${shadowStyles(model.shadow)}
-        ${paddingStyles(model.stylingBoxJson)}
+        ${borderStyles(option?.border)}
+        ${shadowStyles(option?.shadow)}
+        ${dimensionsStyles(option?.dimensions)}
+        ${paddingStyles(option?.stylingBoxJson)}
 
         .${prefixCls}-checkbox-input {
           width: 100%;
@@ -68,8 +77,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: CheckboxGr
 
       /* Background fills the box only when checked (checkbox convention). */
       .${prefixCls}-checkbox-checked {
-        ${backgroundStyles(model.background)}
-        ${borderStyles(model.border)}
+        ${backgroundStyles(option?.background)}
+        ${borderStyles(option?.border)}
       }
     `);
 

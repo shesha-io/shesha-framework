@@ -66,9 +66,31 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                     { label: 'Vertical', value: 'vertical' },
                   ],
                 })
+                // Two independent style sets: the bare-named set styles the component wrapper
+                // (the group container), the `option`-prefixed set styles each checkbox.
                 .stdAppearancePanels(
-                  [{ name: 'font', panelTitle: 'Check Mark', exclude: ['type', 'align'] }, 'dimensions', 'border', 'background', 'shadow', 'marginPadding', 'customStyle'],
+                  [
+                    { name: 'dimensions', panelTitle: 'Wrapper Dimensions' },
+                    { name: 'border', panelTitle: 'Wrapper Border' },
+                    { name: 'background', panelTitle: 'Wrapper Background' },
+                    { name: 'shadow', panelTitle: 'Wrapper Shadow' },
+                    { name: 'marginPadding', panelTitle: 'Wrapper Margin & Padding' },
+                    { name: 'customStyle', panelTitle: 'Wrapper Custom Styles' },
+                  ],
                   removeStyleRouter,
+                )
+                .stdAppearancePanels(
+                  [
+                    { name: 'font', panelTitle: 'Check Mark', exclude: ['type', 'align'] },
+                    { name: 'dimensions', panelTitle: 'Checkbox Dimensions' },
+                    { name: 'border', panelTitle: 'Checkbox Border' },
+                    { name: 'background', panelTitle: 'Checkbox Background' },
+                    { name: 'shadow', panelTitle: 'Checkbox Shadow' },
+                    { name: 'marginPadding', panelTitle: 'Checkbox Margin & Padding' },
+                    { name: 'customStyle', panelTitle: 'Checkbox Custom Styles' },
+                  ],
+                  removeStyleRouter,
+                  'option',
                 )
                 .toJson(),
             ],
