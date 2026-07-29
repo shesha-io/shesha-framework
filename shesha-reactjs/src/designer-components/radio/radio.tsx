@@ -91,11 +91,14 @@ const RadioComponent: RadioComponentDefinition = {
                 options={options}
                 {...(isDefined(model.styleJson) ? { style: model.styleJson } : {})}
                 onChange={(event) => {
-                  // Option values arrive as strings. Reference list items are numeric and must be
-                  // stored as numbers, but a `values` source may use non-numeric values
-                  // (e.g. "high") — those are passed through as-is rather than dropped.
+                  // antd stringifies the option value, so recover the original from the option
+                  // list rather than re-parsing: that keeps a value's configured type intact,
+                  // including numeric-looking strings such as "001" that parsing would corrupt.
                   const raw = event.target.value as string;
-                  const newValue = getNumberOrUndefined(raw) ?? raw;
+                  const selected = options.find((item) => `${item.value}` === raw)?.value;
+                  const newValue = isDefined(selected)
+                    ? selected as number | string
+                    : getNumberOrUndefined(raw) ?? raw;
                   ctx?.handleEvent(event, { value: newValue }, model.onChangeCustom);
                   onChange(newValue);
                 }}

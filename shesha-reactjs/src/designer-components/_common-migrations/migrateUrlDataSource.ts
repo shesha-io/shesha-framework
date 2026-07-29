@@ -68,8 +68,13 @@ export const getReferenceListFromUrl = (dataSourceUrl: unknown): IReferenceListI
   };
 };
 
-/** The model with the removed `url` properties stripped off. */
-type WithoutUrlSource<T> = Omit<T, 'dataSourceUrl' | 'reducerFunc'>;
+/**
+ * The model with the removed `url` properties stripped off, along with `dataSourceType` — each
+ * branch below redeclares that discriminator. Leaving it in place would intersect the branch's
+ * literal with the original one, reducing the whole type to `never` for any caller whose model
+ * narrows `dataSourceType` (e.g. to `'url'`).
+ */
+type WithoutUrlSource<T> = Omit<T, 'dataSourceUrl' | 'reducerFunc' | 'dataSourceType'>;
 
 /**
  * The result of the migration: either a reference list source carrying the list it resolved to,
