@@ -1,8 +1,17 @@
 import { createStyles } from '@/styles';
+import { CheckboxGroupComponentProps } from './interfaces';
+import { backgroundStyles, borderStyles, dimensionsStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
+import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
 import { addPx } from '@/utils/style';
-import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
-import { ICheckboxComponentProps } from './interfaces';
-import { dimensionsStyles, backgroundStyles, borderStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
+
+/**
+ * Applies the configured Appearance styles (Check Mark, Dimensions, Border,
+ * Background, Shadow, Margin & Padding) to every checkbox rendered inside the
+ * group. The emotion class is placed on the antd Checkbox.Group root, so the
+ * style builders are scoped to each `.ant-checkbox-inner` descendant — that is
+ * what makes the styling apply per checkbox rather than to the whole group.
+ * Mirrors the standalone Checkbox component so both look consistent.
+ */
 
 const borderWidthFromWeight = (weight: string | undefined): string => {
   switch (weight) {
@@ -21,25 +30,23 @@ const borderWidthFromWeight = (weight: string | undefined): string => {
   }
 };
 
-export const useStyles = createStyles(({ css, cx, prefixCls }, model: ICheckboxComponentProps) => {
-  // Font drives the check-mark: size → mark size (antd scales the `:after` off
-  // `--ant-control-interactive-size`), weight → mark thickness (`--ant-line-width-bold`),
-  // color → mark color (`--ant-color-white`). Dimensions size the box independently.
+export const useStyles = createStyles(({ css, cx, prefixCls }, model: CheckboxGroupComponentProps) => {
   const markSize = addPx(model.font?.size);
-  const checkColor = isDefined(model.font?.color) && model.font.color !== '' ? model.font.color : '#fff';
+  const checkColor = isNotNullOrWhiteSpace(model.font?.color) ? model.font.color : '#fff';
   const bgColor = model.background?.type === 'color' ? model.background.color : undefined;
 
-  const checkbox = cx("sha-checkbox", css`
-      &.${prefixCls}-checkbox-wrapper {
+  const checkboxGroup = cx('sha-multi-checkbox', css`
+      ${dimensionsStyles(model.dimensions)}
+      >.${prefixCls}-checkbox-wrapper {
         height: 100%;
+        align-items: center !important;
       }
 
       .${prefixCls}-checkbox {
         ${isDefined(markSize) ? `--ant-control-interactive-size: ${markSize};` : ''}
         --ant-line-width-bold: ${borderWidthFromWeight(model.font?.weight)} !important;
         --ant-color-white: ${checkColor} !important;
-        ${!isNullOrWhiteSpace(bgColor) ? `--ant-color-primary-hover: ${bgColor};` : ''}
-        ${dimensionsStyles(model.dimensions)}
+        ${isNotNullOrWhiteSpace(bgColor) ? `--ant-color-primary-hover: ${bgColor};` : ''}
         ${borderStyles(model.border)}
         ${shadowStyles(model.shadow)}
         ${paddingStyles(model.stylingBoxJson)}
@@ -67,6 +74,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: ICheckboxC
     `);
 
   return {
-    checkbox,
+    checkboxGroup,
   };
 });
