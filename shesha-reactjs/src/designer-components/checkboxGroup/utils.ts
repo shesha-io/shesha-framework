@@ -6,13 +6,60 @@ import { isNullOrWhiteSpace } from '@/utils';
 export const getSpan = (direction: SpaceProps['direction'], size: number): number =>
   direction === 'vertical' ? 24 : size < 4 ? 24 / size : 6;
 
-// Default Appearance styles. These describe a checkbox in the group, so they sit under the
-// `option` set; the wrapper is left unstyled so the group takes its size from its content.
-// Mirrors the standalone Checkbox component so both look consistent out of the box.
+// Default Appearance styles: the wrapper's own values, plus the nested `checkbox` set describing a
+// checkbox in the group. Mirrors the standalone Checkbox component so both look consistent out of
+// the box.
 export const defaultStyles = (prev?: IInputStyles): INestedStyleValue<'checkbox'> => {
-  return { checkbox: defaultCheckboxStyles(prev) };
+  return { ...defaultWrapperStyles(), checkbox: defaultCheckboxStyles(prev) };
 };
 
+/**
+ * The group container. It only lays the checkboxes out, so it draws nothing of its own: `border`
+ * and `background` are omitted rather than set empty, because a zero border still emits
+ * `border: 0px none` (and an empty background still emits size/repeat/position) which would
+ * override values inherited from the theme. The font lives here because it drives both the option
+ * labels and the check mark (size, weight, colour).
+ */
+const defaultWrapperStyles = (): IStyleValue => {
+  return {
+    font: {
+      color: '',
+      size: 14,
+      weight: '400',
+    },
+    dimensions: {
+      width: 'auto',
+      height: 'auto',
+      minHeight: '0px',
+      maxHeight: 'auto',
+      minWidth: '0px',
+      maxWidth: 'auto',
+    },
+    shadow: {
+      offsetX: 0,
+      offsetY: 0,
+      color: '#000',
+      blurRadius: 0,
+      spreadRadius: 0,
+    },
+    stylingBoxJson: {
+      _type: 'styleBox',
+      paddingTop: 0,
+      paddingRight: 0,
+      paddingBottom: 0,
+      paddingLeft: 0,
+      marginTop: 0,
+      marginRight: 0,
+      marginBottom: 0,
+      marginLeft: 0,
+    },
+  };
+};
+
+/**
+ * A single checkbox. No font or shadow — the nested Appearance panel exposes neither, so the
+ * label's font and the check mark come from the wrapper.
+ */
 const defaultCheckboxStyles = (prev?: IInputStyles): IStyleValue => {
   return {
     border: {
@@ -37,18 +84,6 @@ const defaultCheckboxStyles = (prev?: IInputStyles): IStyleValue => {
       position: 'center',
       gradient: { direction: 'to right', colors: {} },
       url: '',
-    },
-    font: {
-      color: '',
-      size: 14,
-      weight: '400',
-    },
-    shadow: {
-      offsetX: 0,
-      offsetY: 0,
-      color: '#000',
-      blurRadius: 0,
-      spreadRadius: 0,
     },
     stylingBoxJson: {
       _type: 'styleBox',

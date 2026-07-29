@@ -4,16 +4,21 @@ import { IStyleValue } from '@/providers/form/models';
 import { INestedStyleValue } from '../_common-migrations/migrateStylesToNestedSet';
 
 /**
- * Default Appearance styles. These describe a single radio option, so they sit under the `option`
- * set; the wrapper is left unstyled so the group takes its size from its content.
+ * Default Appearance styles: the wrapper's own values, plus the nested `radio` set describing a
+ * single radio option.
  */
 export const defaultStyles = (): INestedStyleValue<'radio'> => {
-  return { radio: defaultRadioStyles() };
+  return { ...defaultWrapperStyles(), radio: defaultRadioStyles() };
 };
 
-const defaultRadioStyles = (): IStyleValue => {
+/**
+ * The group container. It only lays the options out, so it draws nothing of its own: `border` and
+ * `background` are omitted rather than set empty, because a zero border still emits
+ * `border: 0px none` and would override a border inherited from the theme. The font lives here
+ * because it is what the option labels inherit.
+ */
+const defaultWrapperStyles = (): IStyleValue => {
   return {
-    background: { type: 'color', color: '' },
     font: {
       weight: '400',
       size: 14,
@@ -21,6 +26,42 @@ const defaultRadioStyles = (): IStyleValue => {
       type: 'Segoe UI',
       align: 'left',
     },
+    dimensions: {
+      width: 'auto',
+      height: 'auto',
+      minHeight: '0px',
+      maxHeight: 'auto',
+      minWidth: '0px',
+      maxWidth: 'auto',
+    },
+    shadow: {
+      spreadRadius: 0,
+      blurRadius: 0,
+      color: '#000',
+      offsetX: 0,
+      offsetY: 0,
+    },
+    stylingBoxJson: {
+      _type: 'styleBox',
+      marginBottom: "0",
+      marginLeft: "0",
+      marginRight: "0",
+      marginTop: "0",
+      paddingBottom: "0",
+      paddingLeft: "0",
+      paddingRight: "0",
+      paddingTop: "0",
+    },
+  };
+};
+
+/**
+ * A single radio option. No font or shadow — the nested Appearance panel exposes neither, so the
+ * label's font comes from the wrapper.
+ */
+const defaultRadioStyles = (): IStyleValue => {
+  return {
+    background: { type: 'color', color: '' },
     border: {
       border: {
         all: {
@@ -40,13 +81,6 @@ const defaultRadioStyles = (): IStyleValue => {
       maxHeight: 'auto',
       minWidth: '0px',
       maxWidth: 'auto',
-    },
-    shadow: {
-      spreadRadius: 0,
-      blurRadius: 0,
-      color: '#000',
-      offsetX: 0,
-      offsetY: 0,
     },
     stylingBoxJson: {
       _type: 'styleBox',
