@@ -172,7 +172,7 @@ export class ConfigurationLoader implements IConfigurationLoader {
   };
 
   getCacheKeyByFullName = (module: string | null, name: string): string => {
-    return `${module}:${name}`;
+    return `${isNullOrWhiteSpace(module) ? null : module}:${name}`;
   };
 
   getConfigLookupAsync = async (type: string, id: ConfigurableItemFullName): Promise<ConfigurationLookup | undefined> => {
@@ -313,7 +313,7 @@ export class ConfigurationLoader implements IConfigurationLoader {
       return await this.getCachedConfigAsync<TConfigDto>({ ...args, id: lookup });
     }
 
-    throw new Error('Unknown configuration item identifier');
+    throw new Error('Unknown configuration item identifier', { cause: id });
   };
 
   addConfigToCacheAsync = async <TConfigDto extends PartialConfigurationDto = ConfigurationDto>(type: string, id: ConfigurableItemIdentifier, configuration: TConfigDto, cacheMd5: string, topLevelModule: string | undefined): Promise<void> => {
@@ -388,7 +388,7 @@ export class ConfigurationLoader implements IConfigurationLoader {
 
   getExistingConfigRequestKey = (id: ConfigurableItemIdentifier, topLevelModule: string | undefined): string => {
     const idText = isConfigurableItemFullName(id)
-      ? `${id.module}/${id.name}`
+      ? `${isNullOrWhiteSpace(id.module) ? null : id.module}/${id.name}`
       : id;
 
     return topLevelModule
@@ -427,6 +427,10 @@ export class ConfigurationLoader implements IConfigurationLoader {
 
   getCurrentConfigAsync = <TConfigDto extends PartialConfigurationDto = ConfigurationDto>(args: GetConfigurationArgs): PromisedValue<TConfigDto> => {
     const { id, type, topLevelModule, skipCache } = args;
+    if (!isConfigurableItemRawId(id) && !isConfigurableItemFullName(id))
+      return new StatefulPromise<TConfigDto>((_resolve, reject) => {
+        reject(new ConfigurationLoadingError(getConfigurationNotFoundMessage(type, undefined)));
+      });
 
     if (!skipCache) {
       const existingRequest = this.getExistingConfigRequest(args);

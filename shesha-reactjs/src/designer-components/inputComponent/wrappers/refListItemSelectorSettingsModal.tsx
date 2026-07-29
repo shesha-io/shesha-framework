@@ -10,7 +10,7 @@ export const RefListItemSelectorSettingsModalWrapper: FCUnwrapped<IRefListItemSe
       {...props}
       value={value}
       onChange={(e) => onChange?.(e)}
-      referenceList={referenceList}
+      referenceList={referenceList ? { name: referenceList.name, module: referenceList.module ?? null } : undefined}
       readOnly={false}
     />
   );

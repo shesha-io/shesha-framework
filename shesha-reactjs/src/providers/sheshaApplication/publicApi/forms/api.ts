@@ -9,6 +9,7 @@ import { GenerationLogicFactory } from "./generation-logic/factory";
 import { FormMetadataHelper } from "./generation-logic/formMetadataHelper";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
 import { FormBuilderFactory } from "@/form-factory/interfaces";
+import { isValidGuid } from "@/components/formDesigner/components/utils";
 
 export interface IFormsApi {
   /**
@@ -19,7 +20,7 @@ export interface IFormsApi {
    * or TableViewGenerationLogic) will have specialized processing for adding
    * components based on the modelType and other replacements.
    *
-   * @param templateId The ID of the form template to use
+   * @param templateId The GUID of the form template to use. Returns an empty markup if it's not a valid GUID.
    * @param replacements An object with properties to replace in the template, including modelType
    * @returns Promise resolving to the processed markup string
    */
@@ -46,15 +47,19 @@ export class FormsApi implements IFormsApi {
     this._entityMetadataHelper = new FormMetadataHelper(metadataDispatcher);
   }
 
+  private buildTemplateUrl = (templateId: string): string | undefined => {
+    return isValidGuid(templateId)
+      ? `/api/services/Shesha/FormConfiguration/Get?${qs.stringify({ id: templateId })}`
+      : undefined;
+  };
+
   prepareTemplateAsync = (templateId: string, replacements: object | undefined): Promise<string> => {
     if (!templateId)
       return Promise.resolve('');
 
-    const payload = {
-      id: templateId,
-    };
-
-    const url = `/api/dynamic/Shesha/FormConfiguration/Crud/Get?${qs.stringify(payload)}`;
+    const url = this.buildTemplateUrl(templateId.trim());
+    if (!url)
+      return Promise.resolve('');
     return this._httpClient
       .get<IAbpWrappedGetEntityResponse<FormConfigurationDto>>(url)
       .then(async (response) => {

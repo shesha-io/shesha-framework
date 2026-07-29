@@ -197,12 +197,15 @@ export const AutocompleteWithRepository = <TValue = unknown>(props: Autocomplete
         return result;
       };
       const newSelection = getNewSelectionOrUndefined();
-      if (isDefined(newSelection))
-        setSelection(newSelection);
-      else
+      if (isDefined(newSelection)) {
+        // avoid setState when unchanged - this effect can re-run every render
+        if (!isEqual(newSelection, selectionRef.current))
+          setSelection(newSelection);
+      } else
         void fetchSelectionAsync();
     } else {
-      setSelection([]);
+      if (isNonEmptyArray(selectionRef.current))
+        setSelection([]);
       setSelectionLoadingState("waiting");
     }
   }, [dataColumns, filterKeysFunc, keyValueFunc, listRef, outcomeValueFunc, repository, selectionRef, sorting, value]);
@@ -271,7 +274,8 @@ export const AutocompleteWithRepository = <TValue = unknown>(props: Autocomplete
   };
 
   const handleSelect = (): void => {
-    if (selectRef.current)
+    // blurring after each pick in multiple mode blocks further selections
+    if (props.mode !== 'multiple' && selectRef.current)
       selectRef.current.blur();
   };
 
@@ -381,7 +385,7 @@ export const AutocompleteWithRepository = <TValue = unknown>(props: Autocomplete
       ref={selectRef}
       options={options}
       {...(style.hasOwnProperty("border") || style.hasOwnProperty("borderWidth") ? { variant: 'borderless' } : {})}
-      {...(isDefined(props.value) && props.mode === 'multiple' ? { mode: props.mode } : {})}
+      {...(props.mode === 'multiple' ? { mode: props.mode } : {})}
       popupRender={(menu) => (
         <>
           {menu}
