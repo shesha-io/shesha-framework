@@ -130,10 +130,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       label: 'Reference list',
                       value: 'referenceList',
                     },
-                    {
-                      label: 'API URL',
-                      value: 'url',
-                    },
                   ],
                 })
                 .addSettingsInputRow({
@@ -174,31 +170,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       id: nanoid(),
                       propertyName: 'referenceListId',
                       label: 'Reference List',
-                      jsSetting: true,
-                    },
-                  ],
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: dataTabId,
-                  hidden: {
-                    _code: 'return  getSettingValue(data?.dataSourceType) !== "url";',
-                    _mode: 'code',
-                    _value: false,
-                  },
-                  inputs: [
-                    {
-                      type: 'codeEditor',
-                      id: nanoid(),
-                      propertyName: 'dataSourceUrl',
-                      label: 'Data Source URL',
-                      jsSetting: true,
-                    },
-                    {
-                      type: 'codeEditor',
-                      id: nanoid(),
-                      propertyName: 'reducerFunc',
-                      label: 'Reducer Function',
                       jsSetting: true,
                     },
                   ],

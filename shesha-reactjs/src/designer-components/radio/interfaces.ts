@@ -9,9 +9,6 @@ export interface IRadioOptionsSource {
   items?: ILabelValue[] | undefined;
   referenceListId?: IReferenceListIdentifier | undefined;
   dataSourceType: DataSourceType;
-  dataSourceUrl?: string | undefined;
-  /** The function that receives data from the API and returns it in the format { value, label } */
-  reducerFunc?: string | undefined;
 }
 
 export interface IRadioProps extends Partial<IRadioOptionsSource> {
@@ -55,8 +52,4 @@ export interface IRadioComponentProps extends IRadioOptionsSource, IConfigurable
   direction?: SpaceProps['orientation'] | undefined;
 }
 
-interface IRadioComponentCalculatedValues {
-  dataSourceUrl?: string | undefined;
-}
-
-export type RadioComponentDefinition = ComponentDefinition<"radio", IRadioComponentProps, IRadioComponentCalculatedValues>;
+export type RadioComponentDefinition = ComponentDefinition<"radio", IRadioComponentProps>;

@@ -7,15 +7,14 @@ import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, paddingSt
  * so every style builder is scoped to a descendant selector of the repeated option element.
  * Border/background/dimensions land on the radio indicator, font on the option label.
  */
-export const useStyles = createStyles(({ css, cx, prefixCls }, model: IRadioComponentProps) => {
+export const useStyles = createStyles(({ css, cx, prefixCls, token }, model: IRadioComponentProps) => {
   const indicatorStyles = `
     ${borderStyles(model.border)}
     ${backgroundStyles(model.background)}
-    ${shadowStyles(model.shadow)}
-    ${dimensionsStyles(model.dimensions)}
   `;
 
   const radioGroup = cx('sha-radio-group', css`
+    ${dimensionsStyles(model.dimensions)}
       .${prefixCls}-radio-wrapper {
         ${paddingStyles(model.stylingBoxJson)}
         ${fontStyles(model.font)}
@@ -23,15 +22,23 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: IRadioComp
         span.${prefixCls}-radio + * {
           ${fontStyles(model.font)}
         }
-      }
 
-      .${prefixCls}-radio .${prefixCls}-radio-inner {
-        ${indicatorStyles}
+        .ant-wave-target {
+          ${borderStyles(model.border)}
+          ${shadowStyles(model.shadow)}
+          height: ${model.font?.size ?? 16}px;
+          width: ${model.font?.size ?? 16}px;
+        }
+
+        .ant-radio-input {
+          background-color: ${token.colorPrimary};
+          ${backgroundStyles(model.background)}
+        }
       }
 
       /* antd themes the checked state separately, so the same block is repeated
          to keep the configured border/background from being overridden. */
-      .${prefixCls}-radio-checked .${prefixCls}-radio-inner {
+      .${prefixCls}-radio-checked{
         ${indicatorStyles}
       }
   `);

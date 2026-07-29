@@ -6,7 +6,7 @@ import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers/form/models';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
-import { executeScriptSync, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import {
   migrateCustomFunctions,
   migrateHiddenToVisible,
@@ -23,6 +23,7 @@ import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
 import { DataSourceType } from '../dropdown/model';
 import { getNumberOrUndefined } from '@/utils/string';
 import { defaultStyles } from './utils';
+import { migrateUrlDataSource } from '../_common-migrations/migrateUrlDataSource';
 import { useStyles } from './styles';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { RadioApi } from '@/componentsApi/componentApi';
@@ -42,13 +43,10 @@ const RadioComponent: RadioComponentDefinition = {
   // Radio has its own intrinsic size and should not be forced to fill wrapper
   preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.referenceListItem || (dataType === DataTypes.array && dataFormat === ArrayFormats.simple),
-  calculateModel: (model, allData) => ({
-    dataSourceUrl: isNotNullOrWhiteSpace(model.dataSourceUrl) ? executeScriptSync(model.dataSourceUrl, allData) : model.dataSourceUrl,
-  }),
-  Factory: ({ model, calculatedModel }) => {
+  Factory: ({ model }) => {
     const { styles } = useStyles(model);
 
-    const options = useRadioOptions({ ...model, dataSourceUrl: calculatedModel.dataSourceUrl });
+    const options = useRadioOptions(model);
 
     const componentApi = useComponentApi();
     const groupRef = useRef<HTMLDivElement>(null);
@@ -70,7 +68,7 @@ const RadioComponent: RadioComponentDefinition = {
     useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
     return (
-      <ConfigurableFormItem<number> model={model} autoAlignLabel={false}>
+      <ConfigurableFormItem<number> model={model} autoAlignLabel={true}>
         {(value, onChange, _, ctx) => {
           const selectedLabel = options.find((item) => `${item.value}` === `${value}`)?.label;
 
@@ -107,6 +105,12 @@ const RadioComponent: RadioComponentDefinition = {
 
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+  validateModel: (model, addModelError) => {
+    if (model.dataSourceType === 'referenceList' && !isDefined(model.referenceListId))
+      addModelError('referenceListId', 'Select `Reference List` on the settings panel');
+    if (model.dataSourceType === 'values' && (model.items ?? []).length === 0)
+      addModelError('items', 'Add `Items` on the settings panel, or select a different `Data Source Type`');
+  },
   getDefaultStyles: () => defaultStyles(),
   migrator: (m) =>
     m
@@ -145,7 +149,11 @@ const RadioComponent: RadioComponentDefinition = {
           ...prev,
           desktop: { ...migrateStyles(prev, {}, 'desktop'), enableStyleOnReadonly: (prev.desktop as IInputStyles | undefined)?.enableStyleOnReadonly ?? false },
         })
-      .add<IRadioComponentProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev))),
+      .add<IRadioComponentProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev)))
+      // The `url` data source was removed. A URL that pointed at a reference list converts to
+      // the native `referenceList` source; anything else falls back to `values` and is reported
+      // by `validateModel` below.
+      .add<IRadioComponentProps>(9, (prev) => migrateUrlDataSource(prev)),
   linkToModelMetadata: (model, metadata): IRadioComponentProps => {
     const isRefList = metadata.dataType === DataTypes.referenceListItem;
 

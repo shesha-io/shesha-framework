@@ -8,6 +8,7 @@ export * from './migrateFormLifecycle';
 export * from './migrateGqlCustomEndpoint';
 export * from './migrateSettings';
 export * from './migrateStyles';
+export * from './migrateUrlDataSource';
 export * from './migrateUseExpression';
 export * from './migrateVisibility';
 export * from './models';

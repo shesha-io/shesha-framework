@@ -24,8 +24,6 @@ export type CheckboxGroupCommonProps = {
   dataSourceType: DataSourceType;
   direction?: DirectionType | undefined;
   style?: CSSProperties | undefined;
-  dataSourceUrl?: string | undefined;
-  reducerFunc?: string | undefined;
   readOnly?: boolean | undefined;
   enableStyleOnReadonly?: boolean | undefined;
 };
