@@ -57,7 +57,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: CheckboxGr
       /* Checkbox set — styles the box of each option. */
       .${prefixCls}-checkbox {
         ${isDefined(markSize) ? `--ant-control-interactive-size: ${markSize};` : ''}
-        --ant-line-width-bold: ${borderWidthFromWeight(model.font?.weight)} !important;
+        --ant-line-width-bold: ${borderWidthFromWeight(checkbox?.font?.weight)} !important;
         --ant-color-white: ${checkColor} !important;
         ${borderStyles(checkbox?.border)}
         ${shadowStyles(checkbox?.shadow)}

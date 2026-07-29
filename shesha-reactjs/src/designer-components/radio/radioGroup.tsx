@@ -1,5 +1,5 @@
 import { Radio, Space } from 'antd';
-import React, { FC, forwardRef, ReactElement, useMemo } from 'react';
+import React, { ReactElement, useMemo } from 'react';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
 import { getDataSourceList } from './utils';
 import { ILabelValue } from '../dropdown/model';
@@ -7,14 +7,21 @@ import { IRadioOptionsSource, IRadioProps } from './interfaces';
 import { DEFAULT_MARGINS } from '@/components/formDesigner/utils/designerConstants';
 import { isNotNullOrWhiteSpace } from '@/utils/nullables';
 
+const EMPTY_ITEMS: ILabelValue[] = [];
+
 /**
  * Resolves the options of a radio group from the configured data source
  * (a fixed list of values, or a reference list).
  * Extracted from the group so that the component API can expose the same list.
  */
 export const useRadioOptions = (model: Partial<IRadioOptionsSource>): ILabelValue[] => {
-  const { referenceListId, items = [] } = model;
+  const { referenceListId } = model;
   const { data: refListItems } = useReferenceList(referenceListId);
+
+  // A stable reference for the unset case: defaulting to `[]` in the destructuring would allocate
+  // a new array on every render, changing the memo's dependency and so the identity of the
+  // returned options — which would re-run the component API effect in radio.tsx each time.
+  const items = model.items ?? EMPTY_ITEMS;
 
   return useMemo(
     () => getDataSourceList(model.dataSourceType ?? 'values', items, refListItems?.items),
@@ -22,8 +29,8 @@ export const useRadioOptions = (model: Partial<IRadioOptionsSource>): ILabelValu
   );
 };
 
-const RadioGroup: FC<IRadioProps & { ref?: React.Ref<HTMLDivElement> }> = forwardRef<HTMLDivElement, IRadioProps>((model, ref) => {
-  const { value } = model;
+const RadioGroup = (model: IRadioProps & { ref?: React.Ref<HTMLDivElement> }): ReactElement => {
+  const { ref, value } = model;
   // Options resolved by the caller win; otherwise fall back to resolving them here.
   const resolvedOptions = useRadioOptions(model);
   const options = model.options ?? resolvedOptions;
@@ -57,8 +64,6 @@ const RadioGroup: FC<IRadioProps & { ref?: React.Ref<HTMLDivElement> }> = forwar
   );
 
   return renderCheckGroup();
-});
-
-RadioGroup.displayName = 'RadioGroup';
+};
 
 export default RadioGroup;

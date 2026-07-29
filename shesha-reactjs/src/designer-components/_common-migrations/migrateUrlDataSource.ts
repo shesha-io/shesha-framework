@@ -45,11 +45,39 @@ export const getReferenceListFromUrl = (dataSourceUrl: unknown): IReferenceListI
   const isDynamic = (value: string): boolean => value.includes('${') || value.includes('+');
   if (isDynamic(name) || (isDefined(module) && isDynamic(module))) return undefined;
 
+  // Persisted URLs may carry malformed percent-encoding (e.g. `name=%`), which makes
+  // decodeURIComponent throw. Treat an undecodable value as unresolvable so the
+  // migration falls back to `values` instead of crashing.
+  const safeDecode = (value: string): string | undefined => {
+    try {
+      return decodeURIComponent(value);
+    } catch {
+      return undefined;
+    }
+  };
+
+  const decodedName = safeDecode(name);
+  if (!isDefined(decodedName)) return undefined;
+
+  const decodedModule = isDefined(module) && isNotNullOrWhiteSpace(module) ? safeDecode(module) : null;
+  if (!isDefined(decodedModule)) return undefined;
+
   return {
-    name: decodeURIComponent(name),
-    module: isDefined(module) && isNotNullOrWhiteSpace(module) ? decodeURIComponent(module) : null,
+    name: decodedName,
+    module: decodedModule,
   };
 };
+
+/** The model with the removed `url` properties stripped off. */
+type WithoutUrlSource<T> = Omit<T, 'dataSourceUrl' | 'reducerFunc'>;
+
+/**
+ * The result of the migration: either a reference list source carrying the list it resolved to,
+ * or a values source. Both shapes have the `url` properties removed.
+ */
+export type MigratedUrlDataSource<T> =
+  (WithoutUrlSource<T> & { dataSourceType: 'referenceList'; referenceListId: IReferenceListIdentifier }) |
+  (WithoutUrlSource<T> & { dataSourceType: 'values' });
 
 /**
  * Migrates a component away from the removed `url` data source.
@@ -58,14 +86,16 @@ export const getReferenceListFromUrl = (dataSourceUrl: unknown): IReferenceListI
  * identically. Anything else falls back to `values`: the options cannot be recovered, but the
  * model no longer claims a source the component doesn't support, and `validateModel` then
  * surfaces a message in the designer telling the configurer what to do.
+ *
+ * A model that never used the `url` source is returned unchanged.
  */
-export const migrateUrlDataSource = <T extends ILegacyUrlDataSource>(prev: T): T => {
+export const migrateUrlDataSource = <T extends ILegacyUrlDataSource>(prev: T): T | MigratedUrlDataSource<T> => {
   if (prev.dataSourceType !== 'url') return prev;
 
   const referenceListId = prev.referenceListId ?? getReferenceListFromUrl(prev.dataSourceUrl);
   const { dataSourceUrl: _dataSourceUrl, reducerFunc: _reducerFunc, ...rest } = prev;
 
   return isDefined(referenceListId)
-    ? { ...rest, dataSourceType: 'referenceList', referenceListId } as T
-    : { ...rest, dataSourceType: 'values' } as T;
+    ? { ...rest, dataSourceType: 'referenceList', referenceListId }
+    : { ...rest, dataSourceType: 'values' };
 };

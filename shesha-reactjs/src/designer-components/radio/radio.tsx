@@ -68,7 +68,7 @@ const RadioComponent: RadioComponentDefinition = {
     useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
     return (
-      <ConfigurableFormItem<number> model={model} autoAlignLabel={false}>
+      <ConfigurableFormItem<number | string> model={model} autoAlignLabel={false}>
         {(value, onChange, _, ctx) => {
           const selectedLabel = options.find((item) => `${item.value}` === `${value}`)?.label;
 
@@ -91,11 +91,15 @@ const RadioComponent: RadioComponentDefinition = {
                 options={options}
                 {...(isDefined(model.styleJson) ? { style: model.styleJson } : {})}
                 onChange={(event) => {
-                  const newValue = getNumberOrUndefined(event.target.value);
+                  // Option values arrive as strings. Reference list items are numeric and must be
+                  // stored as numbers, but a `values` source may use non-numeric values
+                  // (e.g. "high") — those are passed through as-is rather than dropped.
+                  const raw = event.target.value as string;
+                  const newValue = getNumberOrUndefined(raw) ?? raw;
                   ctx?.handleEvent(event, { value: newValue }, model.onChangeCustom);
-                  onChange(newValue ?? null);
+                  onChange(newValue);
                 }}
-                {...getComponentEvents<number>(model, ['onFocus', 'onBlur', 'onClick', 'onMouseEnter', 'onMouseLeave'], ctx, value, DataTypes.string)}
+                {...getComponentEvents<number | string>(model, ['onFocus', 'onBlur', 'onClick', 'onMouseEnter', 'onMouseLeave'], ctx, value, DataTypes.string)}
               />
             );
         }}

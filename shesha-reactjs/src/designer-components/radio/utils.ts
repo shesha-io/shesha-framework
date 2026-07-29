@@ -11,10 +11,8 @@ export const defaultStyles = (): INestedStyleValue<'radio'> => {
 };
 
 /**
- * The group container. It only lays the options out, so it draws nothing of its own: `border` and
- * `background` are omitted rather than set empty, because a zero border still emits
- * `border: 0px none` and would override a border inherited from the theme. The font lives here
- * because it is what the option labels inherit.
+ * The group container. The font lives here because it is what the option labels inherit; the
+ * border, background and shadow give the group its own frame.
  */
 const defaultWrapperStyles = (): IStyleValue => {
   return {

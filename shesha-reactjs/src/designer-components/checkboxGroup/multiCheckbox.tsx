@@ -53,7 +53,7 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
     >
       <Checkbox.Group
         className={styles.checkboxGroup}
-        value={isDefined(value) && Array.isArray(value) ? value : []}
+        value={isDefined(value) ? (Array.isArray(value) ? value : [value]) : []}
         {...(onChange ? { onChange } : {})}
         style={checkboxGroupStyle}
         options={options}

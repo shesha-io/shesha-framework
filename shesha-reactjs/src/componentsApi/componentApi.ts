@@ -288,7 +288,7 @@ export interface RadioOption {
 
 export interface RadioApi extends InputComponentApi<number | string | undefined> {
   /** Options currently displayed by the radio group, whatever the configured data source is. Read-only. */
-  readonly options: RadioOption[];
+  readonly options: readonly RadioOption[];
 };
 
 export type CheckboxFieldApi = InputComponentApi<boolean | undefined>;
