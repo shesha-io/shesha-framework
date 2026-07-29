@@ -61,7 +61,10 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
     } = model;
 
     const { formMode } = calculatedModel;
+    // `hasWatched` tracks thumbnail dismissal (iframe visibility) only. Actual playback state is
+    // tracked separately by `hasStarted`/`isCompleted` so a thumbnail click is never mistaken for watching.
     const [hasWatched, setHasWatched] = useState(false);
+    const [hasStarted, setHasStarted] = useState(false);
     const [isCompleted, setIsCompleted] = useState(false);
     const playerRef = useRef<HTMLIFrameElement>(null);
     const onChangeRef = useRef<((value: boolean | undefined | null) => void) | null>(null);
@@ -286,7 +289,7 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
               onReady: (): void => fire(handlersRef.current.onReady),
               onStateChange: (event: YTPlayerEvent): void => {
                 if (event.data === YT.PlayerState.PLAYING) {
-                  setHasWatched(true);
+                  setHasStarted(true);
                   // "Require watching" is satisfied the moment playback starts.
                   // "Require completion" is stricter and instead waits for ENDED (below).
                   if (isRequired && !watchCompletionRequired) {
@@ -296,7 +299,7 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
                 } else if (event.data === YT.PlayerState.PAUSED) {
                   fire(handlersRef.current.onPause);
                 } else if (event.data === YT.PlayerState.ENDED) {
-                  setHasWatched(true);
+                  setHasStarted(true);
                   setIsCompleted(true);
                   onChangeRef.current?.(true);
                   fire(handlersRef.current.onEnd);
@@ -351,9 +354,10 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
           // Store onChange in ref for event handler
           onChangeRef.current = onChange;
 
-          // The gate is satisfied once the value was persisted, or the video reached the required
-          // point: started (isRequired) or finished (watchCompletionRequired, stricter).
-          const satisfied = value === true || (watchCompletionRequired ? isCompleted : hasWatched);
+          // The gate is satisfied once the value was persisted, or actual playback reached the
+          // required point: started (isRequired) or finished (watchCompletionRequired, stricter).
+          // Uses hasStarted (real PLAYING event), NOT hasWatched (thumbnail dismissal).
+          const satisfied = value === true || (watchCompletionRequired ? isCompleted : hasStarted);
 
           // Render placeholder in designer mode
           if (formMode === 'designer' && isNullOrWhiteSpace(videoId)) {
