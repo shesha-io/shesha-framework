@@ -68,7 +68,7 @@ const RadioComponent: RadioComponentDefinition = {
     useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
     return (
-      <ConfigurableFormItem<number> model={model} autoAlignLabel={true}>
+      <ConfigurableFormItem<number> model={model} autoAlignLabel={false}>
         {(value, onChange, _, ctx) => {
           const selectedLabel = options.find((item) => `${item.value}` === `${value}`)?.label;
 

@@ -27,6 +27,18 @@ const defaultWrapperStyles = (): IStyleValue => {
       minWidth: '0px',
       maxWidth: 'auto',
     },
+    border: {
+      border: {
+        all: {
+          width: 1,
+          style: 'none',
+          color: '#d9d9d9',
+        },
+      },
+      radius: { all: '50%' },
+      borderType: 'all',
+      radiusType: 'all',
+    },
     background: { type: 'color', color: '' },
     shadow: {
       offsetX: 0,
