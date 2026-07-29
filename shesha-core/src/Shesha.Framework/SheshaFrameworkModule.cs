@@ -50,6 +50,14 @@ namespace Shesha
 
         public override void PreInitialize()
         {
+            // Broad memory-leak / performance fix: replace Castle Windsor's default release policy with one
+            // that records every tracked instance in the current request's bucket (see RequestScopedReleasePolicy
+            // / RequestReleaseScope). The ReleaseRequestScopeMiddleware then releases that bucket at request end,
+            // which keeps the release policy's internal dictionary bounded instead of accumulating every
+            // root-container resolve forever. Requires UseSheshaRequestScopeRelease() in the request pipeline.
+            IocManager.IocContainer.Kernel.ReleasePolicy =
+                new Shesha.Ioc.RequestScopedReleasePolicy(IocManager.IocContainer.Kernel);
+
             IocManager.Register<IPermissionManager, IShaPermissionManager, IPermissionDefinitionContext, ShaPermissionManager>();
 
             Configuration.ReplaceService(typeof(IExceptionFilter),
