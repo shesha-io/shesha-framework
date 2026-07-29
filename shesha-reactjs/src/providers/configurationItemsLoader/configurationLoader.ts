@@ -1,5 +1,5 @@
 import { FormIdFullNameDtoAjaxResponse } from "@/apis/entityConfig";
-import { ConfigurableItemFullName, ConfigurableItemIdentifier, ConfigurableItemUid, FormFullName, IFormDto, isConfigurableItemFullName, isConfigurableItemRawId, IToolboxComponents, normalizeConfigurableItemIdentifier, PersistedConfigurableItemIdentifier } from "@/interfaces";
+import { ConfigurableItemFullName, ConfigurableItemIdentifier, ConfigurableItemUid, FormFullName, IFormDto, isConfigurableItemFullName, isConfigurableItemRawId, IToolboxComponents } from "@/interfaces";
 import { extractAjaxResponse, IAjaxResponse, isAjaxSuccessResponse } from "@/interfaces/ajaxResponse";
 import { HttpClientApi, HttpResponse } from "@/publicJsApis/apis/httpClient";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
@@ -18,15 +18,9 @@ import { convertFormConfigurationDto2FormDto, getConfigurationNotFoundMessage } 
 
 export interface GetConfigurationArgs {
   type: string;
-  /** Accepts identifiers as they are persisted in form configurations, they are normalized before use */
-  id: ConfigurableItemIdentifier | PersistedConfigurableItemIdentifier;
+  id: ConfigurableItemIdentifier;
   topLevelModule?: string;
   skipCache: boolean;
-};
-
-/** {@link GetConfigurationArgs} with an identifier already normalized by {@link normalizeConfigurableItemIdentifier} */
-type NormalizedConfigurationArgs = Omit<GetConfigurationArgs, 'id'> & {
-  id: ConfigurableItemIdentifier;
 };
 
 type FetchConfigurationArgs<TId> = {
@@ -36,7 +30,7 @@ type FetchConfigurationArgs<TId> = {
   md5: string | null;
 };
 
-type FetchConfigurationPayload<TConfigDto extends PartialConfigurationDto = ConfigurationDto> = Omit<NormalizedConfigurationArgs, 'skipCache'> & {
+type FetchConfigurationPayload<TConfigDto extends PartialConfigurationDto = ConfigurationDto> = Omit<GetConfigurationArgs, 'skipCache'> & {
   cachedConfiguration: IConfigurationItemDto<TConfigDto> | undefined;
 };
 
@@ -48,7 +42,7 @@ export type PartialConfigurationDto = Omit<ConfigurationDto, 'name' | 'descripti
 */
 
 export interface IConfigurationLoader {
-  getCachedConfigAsync<TConfigDto extends PartialConfigurationDto = ConfigurationDto>(args: NormalizedConfigurationArgs): Promise<IConfigurationItemDto<TConfigDto> | undefined>;
+  getCachedConfigAsync<TConfigDto extends PartialConfigurationDto = ConfigurationDto>(args: GetConfigurationArgs): Promise<IConfigurationItemDto<TConfigDto> | undefined>;
   getCurrentConfigAsync<TConfigDto extends PartialConfigurationDto = ConfigurationDto>(args: GetConfigurationArgs): PromisedValue<TConfigDto>;
   clearCacheAsync: (type: string, id: ConfigurableItemIdentifier) => Promise<void>;
 
@@ -298,7 +292,7 @@ export class ConfigurationLoader implements IConfigurationLoader {
     await cache.removeItem(id);
   };
 
-  getCachedConfigAsync = async <TConfigDto extends PartialConfigurationDto = ConfigurationDto>(args: NormalizedConfigurationArgs): Promise<IConfigurationItemDto<TConfigDto> | undefined> => {
+  getCachedConfigAsync = async <TConfigDto extends PartialConfigurationDto = ConfigurationDto>(args: GetConfigurationArgs): Promise<IConfigurationItemDto<TConfigDto> | undefined> => {
     const { type, id, topLevelModule } = args;
 
     const cache = this.#cacheProvider.getCache(type);
@@ -411,7 +405,7 @@ export class ConfigurationLoader implements IConfigurationLoader {
     return requests;
   };
 
-  getExistingConfigRequest = ({ type, id, topLevelModule }: NormalizedConfigurationArgs): PromisedValue<PartialConfigurationDto> | undefined => {
+  getExistingConfigRequest = ({ type, id, topLevelModule }: GetConfigurationArgs): PromisedValue<PartialConfigurationDto> | undefined => {
     const requests = this.getExistingRequests(type);
     const key = this.getExistingConfigRequestKey(id, topLevelModule);
     return requests[key];
@@ -432,23 +426,20 @@ export class ConfigurationLoader implements IConfigurationLoader {
   };
 
   getCurrentConfigAsync = <TConfigDto extends PartialConfigurationDto = ConfigurationDto>(args: GetConfigurationArgs): PromisedValue<TConfigDto> => {
-    const { type, topLevelModule, skipCache } = args;
-    const id = normalizeConfigurableItemIdentifier(args.id);
-    if (!isDefined(id))
+    const { id, type, topLevelModule, skipCache } = args;
+    if (!isConfigurableItemRawId(id) && !isConfigurableItemFullName(id))
       return new StatefulPromise<TConfigDto>((_resolve, reject) => {
         reject(new ConfigurationLoadingError(getConfigurationNotFoundMessage(type, undefined)));
       });
 
-    const normalizedArgs: NormalizedConfigurationArgs = { ...args, id };
-
     if (!skipCache) {
-      const existingRequest = this.getExistingConfigRequest(normalizedArgs);
+      const existingRequest = this.getExistingConfigRequest(args);
       if (existingRequest)
         return existingRequest as PromisedValue<TConfigDto>;
     }
 
     const wrappedPromise = new StatefulPromise<TConfigDto>((resolve, reject) => {
-      this.getCachedConfigAsync<TConfigDto>(normalizedArgs)
+      this.getCachedConfigAsync<TConfigDto>(args)
         .then((cachedConfig) => {
           this.fetchConfigFromBackendAsync({ type, id, cachedConfiguration: cachedConfig })
             .then((response) => {
