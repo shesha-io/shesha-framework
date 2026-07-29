@@ -4,7 +4,7 @@ import { CSSProperties } from 'react';
 import { DataSourceType, ILabelValue } from '@/designer-components/dropdown/model';
 import { ComponentDefinition, IConfigurableFormComponent } from '@/interfaces';
 import { IInputStyles } from '@/providers/form/models';
-import { IOptionStyleValue } from '../_common-migrations/migrateStylesToOption';
+import { INestedStyleValue } from '../_common-migrations/migrateStylesToNestedSet';
 
 /** The subset of the model that determines which options a radio group displays. */
 export interface IRadioOptionsSource {
@@ -42,9 +42,9 @@ export interface IRadioProps extends Partial<IRadioOptionsSource> {
   readOnly?: boolean | undefined;
 }
 
-// Extends IInputStyles/IOptionStyleValue so the wrapper's Appearance style model is typed here,
-// with the per-option set under `option`.
-export interface IRadioComponentProps extends IRadioOptionsSource, IConfigurableFormComponent, IInputStyles, IOptionStyleValue {
+// Extends IInputStyles/INestedStyleValue so the wrapper's Appearance style model is typed here,
+// with the per-option set under `radio`.
+export interface IRadioComponentProps extends IRadioOptionsSource, IConfigurableFormComponent, IInputStyles, INestedStyleValue<'radio'> {
   /**
    * @deprecated - use referenceListId instead
    */

@@ -3,7 +3,7 @@ import { DataSourceType, ILabelValue } from '@/designer-components/dropdown/mode
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { StringSubtype } from '@/interfaces/utilityTypes';
 import { IInputStyles } from '@/providers/form/models';
-import { IOptionStyleValue } from '../_common-migrations/migrateStylesToOption';
+import { INestedStyleValue } from '../_common-migrations/migrateStylesToNestedSet';
 
 export const DIRECTION_TYPE = ['horizontal', 'vertical'] as const;
 export type DirectionType = StringSubtype<typeof DIRECTION_TYPE>;
@@ -15,7 +15,7 @@ export interface CheckboxGroupFocusHandle {
 
 // Extends IInputStyles so the Appearance style model (font, dimensions, border,
 // background, shadow, stylingBox) is typed and available to styles.ts.
-export type CheckboxGroupCommonProps = IInputStyles & IOptionStyleValue & {
+export type CheckboxGroupCommonProps = IInputStyles & INestedStyleValue<'checkbox'> & {
   items?: ILabelValue[] | undefined;
   /**
    * @deprecated - use referenceListId instead

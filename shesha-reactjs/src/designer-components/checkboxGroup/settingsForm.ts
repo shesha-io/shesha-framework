@@ -8,6 +8,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
   const commonTabId = nanoid();
   const eventsTabId = nanoid();
   const appearanceTabId = nanoid();
+  const commonStyleRouterId = nanoid();
 
   const dataSourceTypeOptions = [
     { label: 'Values', value: 'values' },
@@ -66,32 +67,26 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                     { label: 'Vertical', value: 'vertical' },
                   ],
                 })
-                // Two independent style sets: the bare-named set styles the component wrapper
-                // (the group container), the `option`-prefixed set styles each checkbox.
-                .stdAppearancePanels(
-                  [
-                    { name: 'dimensions', panelTitle: 'Wrapper Dimensions' },
-                    { name: 'border', panelTitle: 'Wrapper Border' },
-                    { name: 'background', panelTitle: 'Wrapper Background' },
-                    { name: 'shadow', panelTitle: 'Wrapper Shadow' },
-                    { name: 'marginPadding', panelTitle: 'Wrapper Margin & Padding' },
-                    { name: 'customStyle', panelTitle: 'Wrapper Custom Styles' },
-                  ],
-                  removeStyleRouter,
-                )
-                .stdAppearancePanels(
-                  [
-                    { name: 'font', panelTitle: 'Check Mark', exclude: ['type', 'align'] },
-                    { name: 'dimensions', panelTitle: 'Checkbox Dimensions' },
-                    { name: 'border', panelTitle: 'Checkbox Border' },
-                    { name: 'background', panelTitle: 'Checkbox Background' },
-                    { name: 'shadow', panelTitle: 'Checkbox Shadow' },
-                    { name: 'marginPadding', panelTitle: 'Checkbox Margin & Padding' },
-                    { name: 'customStyle', panelTitle: 'Checkbox Custom Styles' },
-                  ],
-                  removeStyleRouter,
-                  'option',
-                )
+                .addPropertyRouter({ id: commonStyleRouterId, propertyName: 'propertyRouter1', componentName: 'propertyRouter', label: 'Property router1', labelAlign: 'right',
+                  propertyRouteName: removeStyleRouter === true ? '' : { _mode: "code", _code: "    return contexts.canvasContext?.designerDevice || 'desktop';", _value: "" },
+                  components: [
+                    ...fbf(commonStyleRouterId)
+                      .stdFontPanel('font')
+                      .stdDimensionsPanel('dimensions')
+                      .stdBorderPanel(removeStyleRouter !== true, 'border', 'radius')
+                      .stdBackgroundPanel(removeStyleRouter !== true, 'background')
+                      .stdMarginPaddingPanel('stylingBoxJson')
+                      .stdCustomStylePanel('style')
+                      .stdCollapsiblePanel('Checkbox Style', (f) => f
+                        .stdDimensionsPanel('checkbox.dimensions')
+                        .stdBorderPanel(removeStyleRouter !== true, 'checkbox.border', 'radius')
+                        .stdBackgroundPanel(removeStyleRouter !== true, 'checkbox.background')
+                        .stdMarginPaddingPanel('checkbox.stylingBoxJson')
+                        .stdCustomStylePanel('checkbox.style'),
+                      true,
+                      )
+                      .toJson()],
+                })
                 .toJson(),
             ],
           },

@@ -1,12 +1,14 @@
 import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
 import { DataTypes, SettingsFormMarkupFactory } from '@/interfaces';
+import { ALL_INPUT_EVENTS } from '../_common/events';
 
 export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const eventsTabId = nanoid();
   const appearanceTabId = nanoid();
+  const commonStyleRouterId = nanoid();
 
   const dataSourceTypeOptions = [
     { label: 'Values', value: 'values' },
@@ -34,18 +36,20 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
               ...fbf(commonTabId)
                 .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true }, jsSetting: true })
                 .addLabelConfigurator({ propertyName: 'hideLabel', label: 'Label', hideLabel: true })
-                .stdPlaceholderDescriptionInputs()
+                .addSettingsInputRow({ inputs: [{ type: 'textArea', propertyName: 'description', label: 'Tooltip', jsSetting: true }] })
                 .stdVisibleEditableInputs('full')
                 .stdCollapsiblePanel('Data', (fb) => fb
                   .addSettingsInput({ inputType: 'dropdown', propertyName: 'dataSourceType', label: 'Data Source Type', size: 'small', jsSetting: true, dropdownOptions: dataSourceTypeOptions })
-                  .addSettingsInput({
-                    inputType: 'labelValueEditor', propertyName: 'items', label: 'Items',
-                    labelTitle: 'Label', labelName: 'label', valueTitle: 'Value', valueName: 'value',
-                    jsSetting: true, mode: 'dialog',
+                  .addSettingsInputRow({
+                    inputs: [{
+                      type: 'labelValueEditor', propertyName: 'items', label: 'Items',
+                      labelTitle: 'Label', labelName: 'label', valueTitle: 'Value', valueName: 'value',
+                      mode: 'dialog', jsSetting: true,
+                    }],
                     visibleJs: 'return getSettingValue(data?.dataSourceType) === "values";',
                   })
-                  .addSettingsInput({
-                    inputType: 'referenceListAutocomplete', propertyName: 'referenceListId', label: 'Reference List', size: 'small', jsSetting: true,
+                  .addSettingsInputRow({
+                    inputs: [{ type: 'referenceListAutocomplete', propertyName: 'referenceListId', label: 'Reference List', jsSetting: true }],
                     visibleJs: 'return getSettingValue(data?.dataSourceType) === "referenceList";',
                   }))
                 .stdCollapsiblePanel('Validations', (fb) => fb
@@ -61,39 +65,33 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
           },
           {
             key: 'events', title: 'Events', id: eventsTabId,
-            components: [...fbf(eventsTabId).stdEventHandlers(['onChange', 'onFocus', 'onBlur', 'onClick', 'onMouseEnter', 'onMouseLeave'], DataTypes.string).toJson()],
+            components: [...fbf(eventsTabId).stdEventHandlers(ALL_INPUT_EVENTS, DataTypes.string).toJson()],
           },
           {
             key: 'appearance', title: 'Appearance', id: appearanceTabId,
             components: [
               ...fbf(appearanceTabId)
                 .addSettingsInput({ inputType: 'dropdown', propertyName: 'direction', label: 'Direction', size: 'small', jsSetting: true, dropdownOptions: directionOptions })
-                // Two independent style sets: the bare-named set styles the component wrapper
-                // (the group container), the `option`-prefixed set styles each radio button.
-                .stdAppearancePanels(
-                  [
-                    { name: 'dimensions', panelTitle: 'Wrapper Dimensions' },
-                    { name: 'border', panelTitle: 'Wrapper Border' },
-                    { name: 'background', panelTitle: 'Wrapper Background' },
-                    { name: 'shadow', panelTitle: 'Wrapper Shadow' },
-                    { name: 'marginPadding', panelTitle: 'Wrapper Margin & Padding' },
-                    { name: 'customStyle', panelTitle: 'Wrapper Custom Styles' },
-                  ],
-                  removeStyleRouter,
-                )
-                .stdAppearancePanels(
-                  [
-                    { name: 'font', panelTitle: 'Radio Font' },
-                    { name: 'dimensions', panelTitle: 'Radio Dimensions' },
-                    { name: 'border', panelTitle: 'Radio Border' },
-                    { name: 'background', panelTitle: 'Radio Background' },
-                    { name: 'shadow', panelTitle: 'Radio Shadow' },
-                    { name: 'marginPadding', panelTitle: 'Radio Margin & Padding' },
-                    { name: 'customStyle', panelTitle: 'Radio Custom Styles' },
-                  ],
-                  removeStyleRouter,
-                  'option',
-                )
+                .addPropertyRouter({ id: commonStyleRouterId, propertyName: 'propertyRouter1', componentName: 'propertyRouter', label: 'Property router1', labelAlign: 'right',
+                  propertyRouteName: removeStyleRouter === true ? '' : { _mode: "code", _code: "    return contexts.canvasContext?.designerDevice || 'desktop';", _value: "" },
+                  components: [
+                    ...fbf(commonStyleRouterId)
+                      .stdFontPanel('font')
+                      .stdDimensionsPanel('dimensions')
+                      .stdBorderPanel(removeStyleRouter !== true, 'border', 'radius')
+                      .stdBackgroundPanel(removeStyleRouter !== true, 'background')
+                      .stdMarginPaddingPanel('stylingBoxJson')
+                      .stdCustomStylePanel('style')
+                      .stdCollapsiblePanel('Radio Style', (f) => f
+                        .stdDimensionsPanel('radio.dimensions')
+                        .stdBorderPanel(removeStyleRouter !== true, 'radio.border', 'radius')
+                        .stdBackgroundPanel(removeStyleRouter !== true, 'radio.background')
+                        .stdMarginPaddingPanel('radio.stylingBoxJson')
+                        .stdCustomStylePanel('radio.style'),
+                      true,
+                      )
+                      .toJson()],
+                })
                 .toJson(),
             ],
           },

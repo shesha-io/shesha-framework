@@ -51,7 +51,7 @@ import { getComponentDefinitions } from "@/providers/form/defaults/toolboxCompon
 import { fontTypes, fontWeightsOptions, textAlignOptions } from "@/designer-components/_settings/utils/font/utils";
 import { getBorderInputs, getCornerInputs } from "@/designer-components/_settings/utils/border/utils";
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from "@/designer-components/_settings/utils/background/utils";
-import { isDefined, isNotNullOrWhiteSpace } from "@/utils/nullables";
+import { isDefined } from "@/utils/nullables";
 import { isPropertySettings } from "@/designer-components/_settings/utils/utils";
 import { getEventConfig, StandardEventHandler } from "@/designer-components/_common/events";
 
@@ -422,39 +422,34 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
     return this;
   };
 
-  stdAppearancePanels = (appearancePanels: StandardAppearancePanelConfig[], removeStyleRouter?: boolean, propertyPrefix?: string): FormBuilder => {
+  stdAppearancePanels = (appearancePanels: StandardAppearancePanelConfig[], removeStyleRouter?: boolean): FormBuilder => {
     const rootId = nanoid();
     const fbf = new FormBuilderImplementation(this.componentDefinitions, rootId);
-    // A prefix nests the whole set under one model property, so a component can expose more than
-    // one independent set of Appearance panels (e.g. the wrapper's and each repeated option's).
-    // Passing `undefined` keeps each panel's own default property name.
-    const prefixed = (propertyName: string): string | undefined =>
-      isNotNullOrWhiteSpace(propertyPrefix) ? `${propertyPrefix}.${propertyName}` : undefined;
     appearancePanels.forEach((entry) => {
       const panel: StandardAppearancePanel = typeof entry === 'string' ? entry : entry.name;
       const exclude: string[] | undefined = typeof entry === 'string' ? undefined : entry.exclude;
       const panelTitle: string | undefined = typeof entry === 'string' ? undefined : entry.panelTitle;
       switch (panel) {
         case 'background':
-          fbf.stdBackgroundPanel(removeStyleRouter !== true, prefixed('background'), exclude, panelTitle);
+          fbf.stdBackgroundPanel(removeStyleRouter !== true, undefined, exclude, panelTitle);
           break;
         case 'shadow':
-          fbf.stdShadowPanel(prefixed('shadow'), exclude, panelTitle);
+          fbf.stdShadowPanel(undefined, exclude, panelTitle);
           break;
         case 'marginPadding':
-          fbf.stdMarginPaddingPanel(prefixed('stylingBoxJson'), panelTitle);
+          fbf.stdMarginPaddingPanel(undefined, panelTitle);
           break;
         case 'customStyle':
-          fbf.stdCustomStylePanel(prefixed('style'), panelTitle);
+          fbf.stdCustomStylePanel(undefined, panelTitle);
           break;
         case 'font':
-          fbf.stdFontPanel(prefixed('font'), exclude, panelTitle);
+          fbf.stdFontPanel(undefined, exclude, panelTitle);
           break;
         case 'dimensions':
-          fbf.stdDimensionsPanel(prefixed('dimensions'), exclude, panelTitle);
+          fbf.stdDimensionsPanel(undefined, exclude, panelTitle);
           break;
         case 'border':
-          fbf.stdBorderPanel(removeStyleRouter !== true, prefixed('border'), undefined, panelTitle);
+          fbf.stdBorderPanel(removeStyleRouter !== true, undefined, undefined, panelTitle);
           break;
       }
     });

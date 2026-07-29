@@ -170,12 +170,7 @@ export type StandardFormBuilderMethods<TConfig extends Record<ComponentTypes, ob
   stdShadowPanel(propertyName?: string, exclude?: string[], panelTitle?: string): FluentFormBuilder<TConfig>;
   stdMarginPaddingPanel(propertyName?: string, panelTitle?: string): FluentFormBuilder<TConfig>;
   stdCustomStylePanel(propertyName?: string, panelTitle?: string): FluentFormBuilder<TConfig>;
-  /**
-   * Renders a set of Appearance panels. `propertyPrefix` nests the whole set under one model
-   * property, so a component can expose several independent sets — e.g. the bare set styling the
-   * component wrapper and an `option`-prefixed set styling each repeated option.
-   */
-  stdAppearancePanels(appearancePanels: StandardAppearancePanelConfig[], removeStyleRouter?: boolean, propertyPrefix?: string): FluentFormBuilder<TConfig>;
+  stdAppearancePanels(appearancePanels: StandardAppearancePanelConfig[], removeStyleRouter?: boolean): FluentFormBuilder<TConfig>;
 };
 
 /** Fluent form builder */

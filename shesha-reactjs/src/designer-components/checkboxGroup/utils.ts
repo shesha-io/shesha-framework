@@ -1,6 +1,6 @@
 import { SpaceProps } from 'antd';
 import { IInputStyles, IStyleValue } from '@/providers/form/models';
-import { IOptionStyleValue } from '../_common-migrations/migrateStylesToOption';
+import { INestedStyleValue } from '../_common-migrations/migrateStylesToNestedSet';
 import { isNullOrWhiteSpace } from '@/utils';
 
 export const getSpan = (direction: SpaceProps['direction'], size: number): number =>
@@ -9,11 +9,11 @@ export const getSpan = (direction: SpaceProps['direction'], size: number): numbe
 // Default Appearance styles. These describe a checkbox in the group, so they sit under the
 // `option` set; the wrapper is left unstyled so the group takes its size from its content.
 // Mirrors the standalone Checkbox component so both look consistent out of the box.
-export const defaultStyles = (prev?: IInputStyles): IOptionStyleValue => {
-  return { option: defaultOptionStyles(prev) };
+export const defaultStyles = (prev?: IInputStyles): INestedStyleValue<'checkbox'> => {
+  return { checkbox: defaultCheckboxStyles(prev) };
 };
 
-const defaultOptionStyles = (prev?: IInputStyles): IStyleValue => {
+const defaultCheckboxStyles = (prev?: IInputStyles): IStyleValue => {
   return {
     border: {
       radiusType: 'all',

@@ -1,17 +1,17 @@
 import { ReferenceListItemDto } from '@/apis/referenceList';
 import { DataSourceType, ILabelValue } from '@/designer-components/dropdown/model';
 import { IStyleValue } from '@/providers/form/models';
-import { IOptionStyleValue } from '../_common-migrations/migrateStylesToOption';
+import { INestedStyleValue } from '../_common-migrations/migrateStylesToNestedSet';
 
 /**
  * Default Appearance styles. These describe a single radio option, so they sit under the `option`
  * set; the wrapper is left unstyled so the group takes its size from its content.
  */
-export const defaultStyles = (): IOptionStyleValue => {
-  return { option: defaultOptionStyles() };
+export const defaultStyles = (): INestedStyleValue<'radio'> => {
+  return { radio: defaultRadioStyles() };
 };
 
-const defaultOptionStyles = (): IStyleValue => {
+const defaultRadioStyles = (): IStyleValue => {
   return {
     background: { type: 'color', color: '' },
     font: {

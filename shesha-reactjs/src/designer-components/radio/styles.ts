@@ -1,23 +1,22 @@
 import { createStyles } from '@/styles';
 import { IRadioComponentProps } from './interfaces';
 import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
-import { isDefined } from '@/utils/nullables';
 
 /**
  * Emits the two Appearance style sets.
  *
- * The bare-named model properties style the component wrapper (the group container), while the
- * `option` set is scoped to descendant selectors so it styles every radio button: border,
- * background, dimensions and shadow land on the radio indicator, font on the option label.
+ * The bare-named model properties style the component wrapper (the group container) — including
+ * the font, which cascades to the option labels. The `radio` set is scoped to descendant selectors
+ * so it styles the radio indicator of every option.
  */
 export const useStyles = createStyles(({ css, cx, prefixCls, token }, model: IRadioComponentProps) => {
-  const option = model.option;
+  const radio = model.radio;
 
   const indicatorStyles = `
-    ${borderStyles(option?.border)}
-    ${backgroundStyles(option?.background)}
-    ${shadowStyles(option?.shadow)}
-    ${dimensionsStyles(option?.dimensions)}
+    ${borderStyles(radio?.border)}
+    ${backgroundStyles(radio?.background)}
+    ${dimensionsStyles(radio?.dimensions)}
+    ${paddingStyles(radio?.stylingBoxJson)}
   `;
 
   const radioGroup = cx('sha-radio-group', css`
@@ -27,16 +26,17 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, model: IRa
       ${shadowStyles(model.shadow)}
       ${dimensionsStyles(model.dimensions)}
       ${paddingStyles(model.stylingBoxJson)}
+      ${fontStyles(model.font)}
 
-      /* Option set — styles each radio button. */
+      /* The label of each option inherits the wrapper's font. */
       .${prefixCls}-radio-wrapper {
-        ${paddingStyles(option?.stylingBoxJson)}
-        ${fontStyles(option?.font)}
+        ${fontStyles(model.font)}
 
         span.${prefixCls}-radio + * {
-          ${fontStyles(option?.font)}
+          ${fontStyles(model.font)}
         }
 
+        /* Radio set — styles the indicator of each option. */
         .${prefixCls}-radio-inner {
           ${indicatorStyles}
         }
@@ -46,7 +46,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, model: IRa
          to keep the configured border/background from being overridden. */
       .${prefixCls}-radio-checked .${prefixCls}-radio-inner {
         ${indicatorStyles}
-        ${isDefined(option?.font?.color) ? `&:after { background-color: ${option.font.color}; }` : ''}
       }
 
       .${prefixCls}-radio-wrapper:hover .${prefixCls}-radio-inner {
