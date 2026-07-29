@@ -287,6 +287,7 @@ const CrudProvider = <TValue extends object = object>(props: PropsWithChildren<I
       <Form<TValue>
         key={state.mode}
         component={false}
+        labelWrap
         {... (form ? { form } : {})}
         onValuesChange={onValuesChangeInternal}
         {...props.formSettings}
