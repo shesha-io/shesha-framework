@@ -18,7 +18,6 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { migrateUrlDataSource } from '../_common-migrations/migrateUrlDataSource';
-import { migrateStylesToNestedSet } from '../_common-migrations/migrateStylesToNestedSet';
 import { DATA_SOURCE_TYPES, DataSourceType } from '../dropdown/model';
 import { getStringEnumOrDefault } from '@/utils/object';
 import { IInputStyles } from '@/providers';
@@ -139,10 +138,7 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps> = 
       // The `url` data source was removed. A URL that pointed at a reference list converts to
       // the native `referenceList` source; anything else falls back to `values` and is reported
       // by `validateModel` below.
-      .add<IEnhancedICheckboxGroupProps>(9, (prev) => migrateUrlDataSource(prev))
-      // Appearance now has two style sets. The existing values styled the checkbox itself, so they
-      // move to `checkbox.*`; the bare-named properties are now the wrapper's.
-      .add<IEnhancedICheckboxGroupProps>(10, (prev, context) => context.isNew === true ? prev : migrateStylesToNestedSet(prev, 'checkbox')),
+      .add<IEnhancedICheckboxGroupProps>(9, (prev) => migrateUrlDataSource(prev)),
   linkToModelMetadata: (model, metadata): IEnhancedICheckboxGroupProps => {
     const refListId: IReferenceListIdentifier | undefined = !isNullOrWhiteSpace(metadata.referenceListModule) && !isNullOrWhiteSpace(metadata.referenceListName)
       ? { module: metadata.referenceListModule, name: metadata.referenceListName }

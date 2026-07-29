@@ -2,8 +2,7 @@ import { CSSProperties, EventHandler, KeyboardEventHandler, MouseEventHandler, R
 import { DataSourceType, ILabelValue } from '@/designer-components/dropdown/model';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { StringSubtype } from '@/interfaces/utilityTypes';
-import { IInputStyles } from '@/providers/form/models';
-import { INestedStyleValue } from '../_common-migrations/migrateStylesToNestedSet';
+import { IInputStyles, INestedStyleValue } from '@/providers/form/models';
 
 export const DIRECTION_TYPE = ['horizontal', 'vertical'] as const;
 export type DirectionType = StringSubtype<typeof DIRECTION_TYPE>;

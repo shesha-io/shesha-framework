@@ -1,7 +1,6 @@
 import { ReferenceListItemDto } from '@/apis/referenceList';
 import { DataSourceType, ILabelValue } from '@/designer-components/dropdown/model';
-import { IStyleValue } from '@/providers/form/models';
-import { INestedStyleValue } from '../_common-migrations/migrateStylesToNestedSet';
+import { INestedStyleValue, IStyleValue } from '@/providers/form/models';
 
 /**
  * Default Appearance styles: the wrapper's own values, plus the nested `radio` set describing a

@@ -1,6 +1,5 @@
 import { SpaceProps } from 'antd';
-import { IInputStyles, IStyleValue } from '@/providers/form/models';
-import { INestedStyleValue } from '../_common-migrations/migrateStylesToNestedSet';
+import { IInputStyles, INestedStyleValue, IStyleValue } from '@/providers/form/models';
 import { isNullOrWhiteSpace } from '@/utils';
 
 export const getSpan = (direction: SpaceProps['direction'], size: number): number =>
