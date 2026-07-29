@@ -51,6 +51,7 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
       thumbnailUrl,
       thumbnailBase64,
       thumbnailStoredFileId,
+      isRequired = false,
       watchCompletionRequired = false,
       onPlay,
       onPause,
@@ -71,11 +72,13 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
     const constantsRef = useRef(allConstants);
     constantsRef.current = allConstants;
 
-    // The Player API is needed only when events are wired up or watch-completion gates submission.
+    // The Player API is needed when events are wired up, or when either watch-gate is on
+    // (isRequired = must start, watchCompletionRequired = must finish) — both rely on player state.
     const eventsConfigured = isNonEmptyActionConfiguration(onPlay) || isNonEmptyActionConfiguration(onPause) || isNonEmptyActionConfiguration(onEnd) || isNonEmptyActionConfiguration(onReady);
-    const needsJsApi = eventsConfigured || watchCompletionRequired;
+    const needsJsApi = eventsConfigured || watchCompletionRequired || isRequired;
 
-    // titleLevel arrives from the dropdown as a string ('1'..'5'); Ant's Title needs a 1-5 number.
+    // titleLevel arrives from the dropdown as a number, but older configs / JS-setting bindings may
+    // deliver a string ('1'..'5'); Ant's Title needs a 1-5 number. Fall back to 3 (default).
     const parsedTitleLevel = Number(titleLevel);
     const resolvedTitleLevel = (Number.isFinite(parsedTitleLevel) && parsedTitleLevel >= 1 && parsedTitleLevel <= 5
       ? parsedTitleLevel
@@ -104,52 +107,44 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
 
     const resolvedThumbnail = getThumbnailUrl();
 
-    // Helper to convert any value to percentage
+    // Convert a width value (number, "500px", "50%", etc.) to a percentage string.
     const toPercentage = (value: string | number | undefined): string | undefined => {
       if (value === undefined) {
         return undefined;
       }
-
       const strValue = String(value).trim();
-
-      // If already a percentage, return as-is
       if (strValue.endsWith('%')) {
         return strValue;
       }
-
-      // Extract numeric part from "500px", "500", etc.
-      const numericPart = strValue.match(/^(\d+(?:\.\d+)?)/)?.[1];
+      const numericPart = /^(\d+(?:\.\d+)?)/.exec(strValue)?.[1];
       if (numericPart == null) {
         return undefined;
       }
-
-      const numeric = parseFloat(numericPart);
+      const numeric = Number.parseFloat(numericPart);
       if (!Number.isFinite(numeric) || numeric < 0) {
         return undefined;
       }
-
       return `${numeric}%`;
     };
 
-    // Intercept dimensions when responsive mode is enabled
-    let finalDimensionStyles = { ...model.allStyles?.dimensionsStyles };
-
-    if (responsive && model.dimensions != null) {
-      // Convert configured width to a percentage for the 16:9 responsive container
-      finalDimensionStyles = {
-        ...finalDimensionStyles,
-        width: toPercentage(model.dimensions.width) ?? '100%',
-        height: undefined, // Remove height for aspect ratio
+    // Resolved, device-aware dimensions come from `model.allStyles.dimensionsStyles` — NOT
+    // `model.dimensions`, which is always empty because the Appearance inputs are stored per-device
+    // (desktop/tablet/mobile). Responsive: a 16:9 container drives height, so height/min/max-height
+    // are dropped and the width becomes a percentage. Fixed: configured width/height (default 560x315).
+    const dimensionStyles = model.allStyles?.dimensionsStyles ?? {};
+    const finalDimensionStyles = responsive
+      ? {
+        ...dimensionStyles,
+        width: toPercentage(dimensionStyles.width) ?? '100%',
+        height: undefined,
+        minHeight: undefined,
+        maxHeight: undefined,
+      }
+      : {
+        ...dimensionStyles,
+        width: dimensionStyles.width ?? 560,
+        height: dimensionStyles.height ?? 315,
       };
-    } else if (!responsive) {
-      if (finalDimensionStyles.width === undefined && finalDimensionStyles.height === undefined) {
-        finalDimensionStyles = {
-          ...finalDimensionStyles,
-          width: 560,
-          height: 315,
-        };
-      };
-    }
 
     // Apply all styles to component wrapper
     const componentStyles = removeUndefinedProps({
@@ -292,6 +287,11 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
               onStateChange: (event: YTPlayerEvent): void => {
                 if (event.data === YT.PlayerState.PLAYING) {
                   setHasWatched(true);
+                  // "Require watching" is satisfied the moment playback starts.
+                  // "Require completion" is stricter and instead waits for ENDED (below).
+                  if (isRequired && !watchCompletionRequired) {
+                    onChangeRef.current?.(true);
+                  }
                   fire(handlersRef.current.onPlay);
                 } else if (event.data === YT.PlayerState.PAUSED) {
                   fire(handlersRef.current.onPause);
@@ -317,24 +317,29 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
           // player may already be gone
         }
       };
-    }, [needsJsApi, formMode, videoId, iframeShown]);
+    }, [needsJsApi, formMode, videoId, iframeShown, isRequired, watchCompletionRequired]);
 
     if (hidden) {
       return null;
     }
 
-    // Add custom validation when watch completion is required
-    const modelWithValidation = watchCompletionRequired
+    // Gate form submission when the viewer must watch the video first.
+    // isRequired => must START the video; watchCompletionRequired => must reach the END (stricter).
+    const requiresWatch = isRequired || watchCompletionRequired;
+    const watchMessage = watchCompletionRequired
+      ? 'You must watch the entire video to continue'
+      : 'You must start watching the video to continue';
+    const modelWithValidation = requiresWatch
       ? {
         ...model,
         validate: {
           ...model.validate,
           validator: `
-              // Custom validator for watch completion
+              // The bound value becomes true once the watch requirement is met (see component).
               if (value === true) {
                 return Promise.resolve();
               }
-               return Promise.reject(new Error('You must watch the entire video to continue'));
+              return Promise.reject(new Error('${watchMessage}'));
             `,
         },
       }
@@ -346,8 +351,9 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
           // Store onChange in ref for event handler
           onChangeRef.current = onChange;
 
-          // Check completion from both state and form value
-          const completed = value === true || isCompleted;
+          // The gate is satisfied once the value was persisted, or the video reached the required
+          // point: started (isRequired) or finished (watchCompletionRequired, stricter).
+          const satisfied = value === true || (watchCompletionRequired ? isCompleted : hasWatched);
 
           // Render placeholder in designer mode
           if (formMode === 'designer' && isNullOrWhiteSpace(videoId)) {
@@ -412,9 +418,9 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
                 )}
               </div>
 
-              {watchCompletionRequired && !completed && formMode !== 'designer' && (
+              {requiresWatch && !satisfied && formMode !== 'designer' && (
                 <div className="youtube-completion-warning">
-                  <span style={{ color: 'orange' }}>⚠️ You must watch the entire video to continue</span>
+                  <span style={{ color: 'orange' }}>⚠️ {watchMessage}</span>
                 </div>
               )}
             </div>

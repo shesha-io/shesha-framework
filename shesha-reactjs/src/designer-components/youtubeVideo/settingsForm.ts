@@ -114,9 +114,9 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               tooltip: 'Heading level for the title (h1-h5)',
                               dropdownOptions: [
                                 { label: '1 (Largest)', value: 1 },
-                                { label: '2', value: 2 },
+                                { label: '2 (Large)', value: 2 },
                                 { label: '3 (Default)', value: 3 },
-                                { label: '4', value: 4 },
+                                { label: '4 (Small)', value: 4 },
                                 { label: '5 (Smallest)', value: 5 },
                               ],
                             },
@@ -701,11 +701,26 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     {
                       type: 'switch',
                       id: nanoid(),
+                      propertyName: 'isRequired',
+                      label: 'Require Watching',
+                      size: 'small',
+                      jsSetting: true,
+                      tooltip: 'When enabled, the form cannot be submitted until the user STARTS the video. The watched state is stored in the form data (needs a Property Name).',
+                    },
+                  ],
+                })
+                .addSettingsInputRow({
+                  id: nanoid(),
+                  parentId: advancedTabId,
+                  inputs: [
+                    {
+                      type: 'switch',
+                      id: nanoid(),
                       propertyName: 'watchCompletionRequired',
                       label: 'Require Watch Completion',
                       size: 'small',
                       jsSetting: true,
-                      tooltip: 'When enabled, the form cannot be submitted until the user watches the entire video. The completion state is stored in the form data.',
+                      tooltip: 'Stricter than "Require Watching": the form cannot be submitted until the user watches the ENTIRE video. The completion state is stored in the form data.',
                     },
                   ],
                 })
