@@ -13,17 +13,10 @@ export const defaultStyles = (prev?: IInputStyles): INestedStyleValue<'checkbox'
   return { ...defaultWrapperStyles(), checkbox: defaultCheckboxStyles(prev) };
 };
 
-/**
- * The group container. It only lays the checkboxes out, so it draws nothing of its own: `border`
- * and `background` are omitted rather than set empty, because a zero border still emits
- * `border: 0px none` (and an empty background still emits size/repeat/position) which would
- * override values inherited from the theme. The font lives here because it drives both the option
- * labels and the check mark (size, weight, colour).
- */
 const defaultWrapperStyles = (): IStyleValue => {
   return {
     font: {
-      color: '',
+      color: '#000',
       size: 14,
       weight: '400',
     },
@@ -35,6 +28,7 @@ const defaultWrapperStyles = (): IStyleValue => {
       minWidth: '0px',
       maxWidth: 'auto',
     },
+    background: { type: 'color', color: '' },
     shadow: {
       offsetX: 0,
       offsetY: 0,

@@ -24,7 +24,6 @@ import { DataSourceType } from '../dropdown/model';
 import { getNumberOrUndefined } from '@/utils/string';
 import { defaultStyles } from './utils';
 import { migrateUrlDataSource } from '../_common-migrations/migrateUrlDataSource';
-import { migrateStylesToNestedSet } from '../_common-migrations/migrateStylesToNestedSet';
 import { useStyles } from './styles';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { RadioApi } from '@/componentsApi/componentApi';
@@ -154,10 +153,7 @@ const RadioComponent: RadioComponentDefinition = {
       // The `url` data source was removed. A URL that pointed at a reference list converts to
       // the native `referenceList` source; anything else falls back to `values` and is reported
       // by `validateModel` below.
-      .add<IRadioComponentProps>(9, (prev) => migrateUrlDataSource(prev))
-      // Appearance now has two style sets. The existing values styled the radio itself, so they
-      // move to `radio.*`; the bare-named properties are now the wrapper's.
-      .add<IRadioComponentProps>(10, (prev, context) => context.isNew === true ? prev : migrateStylesToNestedSet(prev, 'radio')),
+      .add<IRadioComponentProps>(9, (prev) => migrateUrlDataSource(prev)),
   linkToModelMetadata: (model, metadata): IRadioComponentProps => {
     const isRefList = metadata.dataType === DataTypes.referenceListItem;
 

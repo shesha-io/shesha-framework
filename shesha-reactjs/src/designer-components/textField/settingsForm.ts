@@ -65,7 +65,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
           },
           {
             key: 'events', title: 'Events', id: eventsTabId,
-            components: [...fbf(eventsTabId).stdEventHandlers(ALL_INPUT_EVENTS, DataTypes.string).toJson()],
+            components: [...fbf(eventsTabId).stdEventHandlers([...ALL_INPUT_EVENTS], DataTypes.string).toJson()],
           },
           {
             key: 'appearance', title: 'Appearance', id: appearanceTabId,

@@ -37,7 +37,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, model: IRa
         }
 
         /* Radio set — styles the indicator of each option. */
-        .${prefixCls}-radio-inner {
+        .${prefixCls}-radio-input {
           ${indicatorStyles}
         }
       }

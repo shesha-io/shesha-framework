@@ -54,7 +54,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
           },
           {
             key: 'events', title: 'Events', id: eventsTabId,
-            components: [...fbf(eventsTabId).stdEventHandlers(ALL_INPUT_EVENTS, DataTypes.array).toJson()],
+            components: [...fbf(eventsTabId).stdEventHandlers([...ALL_INPUT_EVENTS], DataTypes.array).toJson()],
           },
           {
             key: 'appearance', title: 'Appearance', id: appearanceTabId,
@@ -71,7 +71,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   propertyRouteName: removeStyleRouter === true ? '' : { _mode: "code", _code: "    return contexts.canvasContext?.designerDevice || 'desktop';", _value: "" },
                   components: [
                     ...fbf(commonStyleRouterId)
-                      .stdFontPanel('font')
+                      .stdFontPanel('font', ['align'])
                       .stdDimensionsPanel('dimensions')
                       .stdBorderPanel(removeStyleRouter !== true, 'border', 'radius')
                       .stdBackgroundPanel(removeStyleRouter !== true, 'background')
