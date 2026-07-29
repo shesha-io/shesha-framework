@@ -159,14 +159,15 @@ export type StandardFormBuilderMethods<TConfig extends Record<ComponentTypes, ob
   stdVisibleEditableInputs(interactionType: InteractionType): FluentFormBuilder<TConfig>;
   stdPropertyLabelInputs(): FluentFormBuilder<TConfig>;
   stdPlaceholderDescriptionInputs(): FluentFormBuilder<TConfig>;
-  stdCollapsiblePanel(label: string, components: (fbf: FormBuilder) => FormBuilder, meta?: IPropertyMetadata | undefined): FluentFormBuilder<TConfig>;
+  stdCollapsiblePanel(label: string, components: (fbf: FormBuilder) => FormBuilder, collapsedByDefault?: boolean | undefined): FluentFormBuilder<TConfig>;
   stdEventHandler(propertyName: string, label: string, tooltip: string, availableConstantsExpression?: string | undefined, meta?: IPropertyMetadata | undefined): FluentFormBuilder<TConfig>;
-  stdEventHandlers(events: readonly StandardEventHandler[], valueType: string): FluentFormBuilder<TConfig>;
+  /** `events` is readonly so the shared `ALL_INPUT_EVENTS` constant can be passed directly. */
+  stdEventHandlers(events: readonly StandardEventHandler[], valueType?: string | undefined, prefix?: string | undefined, prefixLabel?: string | undefined): FluentFormBuilder<TConfig>;
   stdFontPanel(propertyName?: string, exclude?: string[], panelTitle?: string): FluentFormBuilder<TConfig>;
   stdDimensionsPanel(propertyName?: string, exclude?: string[], panelTitle?: string): FluentFormBuilder<TConfig>;
-  stdBorderPanel(isResponsive?: boolean, panelTitle?: string, propertyPrefix?: string): FluentFormBuilder<TConfig>;
-  stdBackgroundPanel(isResponsive?: boolean, exclude?: string[], panelTitle?: string, propertyPrefix?: string): FluentFormBuilder<TConfig>;
-  stdShadowPanel(exclude?: string[], panelTitle?: string, propertyPrefix?: string): FluentFormBuilder<TConfig>;
+  stdBorderPanel(isResponsive?: boolean, propertyName?: string, exclude?: 'border' | 'radius' | undefined, panelTitle?: string): FluentFormBuilder<TConfig>;
+  stdBackgroundPanel(isResponsive?: boolean, propertyName?: string, exclude?: string[], panelTitle?: string): FluentFormBuilder<TConfig>;
+  stdShadowPanel(propertyName?: string, exclude?: string[], panelTitle?: string): FluentFormBuilder<TConfig>;
   stdMarginPaddingPanel(propertyName?: string, panelTitle?: string): FluentFormBuilder<TConfig>;
   stdCustomStylePanel(propertyName?: string, panelTitle?: string): FluentFormBuilder<TConfig>;
   /**

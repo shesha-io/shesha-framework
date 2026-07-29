@@ -52,8 +52,18 @@ export const CreateTouchableProperty = (data: object, parent: IPropertyTouched, 
     getOwnPropertyDescriptor(target, prop) {
       const propertyName = prop.toString();
       const data = target.accessor._data;
-      if (isDefined(data) && propertyName in data)
-        return Reflect.getOwnPropertyDescriptor(data, propertyName);
+      if (isDefined(data) && propertyName in data) {
+        // preserve the target's own non-configurable descriptor (e.g. array `length`),
+        // refreshing the value only for writable data props
+        const targetDesc = Reflect.getOwnPropertyDescriptor(target, propertyName);
+        if (isDefined(targetDesc) && targetDesc.configurable === false)
+          return 'value' in targetDesc && targetDesc.writable === true
+            ? { ...targetDesc, value: (data as IAnyObject)[propertyName] }
+            : targetDesc;
+        // virtual property: normalize so a non-configurable backing descriptor isn't leaked
+        const dataDesc = Reflect.getOwnPropertyDescriptor(data, propertyName);
+        return isDefined(dataDesc) ? { ...dataDesc, configurable: true } : undefined;
+      }
       return undefined;
     },
   });

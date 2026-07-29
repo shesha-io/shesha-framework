@@ -84,8 +84,8 @@ const PolarAreaChart = ({ data }: IPolarAreaChartProps): ReactElement => {
             if (data.labels && data.labels.length && isNonEmptyArray(data.datasets)) {
               const dataset = data.datasets[0];
               return data.labels.map<LegendItem>((label, i) => {
-                // backgroundColor can be an array or a single value
-                const bgColor = dataset.backgroundColor;
+                // backgroundColor can be an array (one per slice) or a single value
+                const bgColor = (Array.isArray(dataset.backgroundColor) ? dataset.backgroundColor[i] : dataset.backgroundColor) as Color | undefined;
                 return {
                   text: String(label), // Ensure label is a string
                   fillStyle: (bgColor || dataset.borderColor || '#000000') as Color,

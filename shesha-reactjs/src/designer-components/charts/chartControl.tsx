@@ -8,7 +8,7 @@ import { useChartDataActionsContext, useChartDataStateContext } from '../../prov
 import { useProcessedChartData } from './hooks/hooks';
 import { IChartData, IChartsProps } from './model';
 import useStyles from './styles';
-import { formatDate, getChartDataRefetchParams, getResponsiveStyle, processItems, renderChart, sortItems, validateEntityProperties } from './utils';
+import { formatDate, getChartDataRefetchParams, getPredictableColor, getPredictableColorPolarArea, getResponsiveStyle, processItems, renderChart, sortItems, validateEntityProperties } from './utils';
 import ChartLoader from './components/chartLoader';
 import { EntityData, IAbpWrappedGetEntityListResponse } from '@/interfaces/gql';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
@@ -17,10 +17,17 @@ import { DataTypes } from '@/interfaces/dataTypes';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { useForm } from '@/providers';
 
-const DESIGNER_SAMPLE_DATA: IChartData = {
-  labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-  datasets: [{ label: 'Sample', data: [12, 19, 7, 15, 9, 14], backgroundColor: '#4e79a7', borderColor: '#4e79a7' }],
-};
+const DESIGNER_SAMPLE_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+
+const getDesignerSampleData = (chartType: string | undefined): IChartData => ({
+  labels: DESIGNER_SAMPLE_LABELS,
+  datasets: [{
+    label: 'Sample',
+    data: [12, 19, 7, 15, 9, 14],
+    backgroundColor: DESIGNER_SAMPLE_LABELS.map((label) => chartType === 'polarArea' ? getPredictableColorPolarArea(label) : getPredictableColor(label)),
+    borderColor: '#4e79a7',
+  }],
+});
 
 const chartInnerStyle = {
   width: '100%',
@@ -463,7 +470,7 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
     return (
       <div style={chartContainerStyle}>
         <div style={chartInnerStyle}>
-          {renderChart(chartType ?? 'line', DESIGNER_SAMPLE_DATA)}
+          {renderChart(chartType ?? 'line', getDesignerSampleData(chartType))}
         </div>
       </div>
     );

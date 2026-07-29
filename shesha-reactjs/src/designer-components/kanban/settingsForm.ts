@@ -1032,12 +1032,12 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                       .addContainer({
                                         id: colBorderContainerId,
                                         parentId: colBorderContentId,
-                                        components: getBorderInputs(fbf, 'columnStyles', true),
+                                        components: getBorderInputs(fbf, 'columnStyles.border', true),
                                       })
                                       .addContainer({
                                         id: colBorderRadiusRowId,
                                         parentId: colBorderContentId,
-                                        components: getCornerInputs(fbf, 'columnStyles', true),
+                                        components: getCornerInputs(fbf, 'columnStyles.border', true),
                                       })
                                       .toJson(),
                                   ],

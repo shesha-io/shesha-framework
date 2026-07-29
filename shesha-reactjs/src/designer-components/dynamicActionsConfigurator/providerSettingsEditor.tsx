@@ -78,24 +78,18 @@ export const ProviderSettingsEditor = <TSettings extends object = object>({
   return (
     <CollapsiblePanel
       ghost={false}
-      headerStyle={{
-        backgroundColor: "#fff",
-        borderBottomColor: "var(--primary-color)",
-        borderBottomStyle: "solid",
-        borderBottomWidth: "2px",
-        borderTopLeftRadius: "0px",
-        borderTopRightRadius: "0px",
-        color: "darkslategray",
-        fontFamily: "Segoe UI",
-        fontSize: "14px",
-        fontWeight: "500",
+      headerStyles={{
+        background: { type: "color", color: "#fff" },
+        border: {
+          borderType: "custom",
+          border: { bottom: { color: "var(--primary-color)", width: "2px", style: "solid" } },
+          radiusType: "custom",
+          radius: { topLeft: "0px", topRight: "0px" },
+        },
+        font: { color: "darkslategray", type: "Segoe UI", size: 14, weight: "500" },
       }}
-      bodyStyle={{
-        borderStyle: "none",
-        borderWidth: "0px",
-        fontWeight: 400,
-        marginBottom: "5px",
-      }}
+      border={{ borderType: "all", border: { all: { width: "0px", style: "none" } } }}
+      stylingBoxJson={{ _type: "styleBox", marginBottom: "5px" }}
       header="Settings"
     >
       {settingsFormFactory && settingsFormFactory({

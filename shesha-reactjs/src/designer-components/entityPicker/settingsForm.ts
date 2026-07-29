@@ -599,7 +599,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           .addContainer({
                             id: nanoid(),
                             parentId: borderStylePnlId,
-                            components: getBorderInputs(fbf, '', true, true),
+                            components: getBorderInputs(fbf, undefined, true, true),
                           })
                           .addContainer({
                             id: nanoid(),

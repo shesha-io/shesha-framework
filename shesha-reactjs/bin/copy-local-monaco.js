@@ -12,88 +12,35 @@
 const fs = require('fs');
 const path = require('path');
 
-const copyFile = (src, dest) => {
-  const destDir = path.dirname(dest);
-  if (!fs.existsSync(destDir)) {
-    fs.mkdirSync(destDir, { recursive: true });
-  }
-  fs.copyFileSync(src, dest);
-};
-
-const copyDir = (src, dest) => {
-  if (!fs.existsSync(src)) {
-    return;
-  }
-
-  if (typeof fs.cpSync === 'function') {
-    fs.cpSync(src, dest, { recursive: true, force: true });
-    return;
-  }
-
-  if (!fs.existsSync(dest)) {
-    fs.mkdirSync(dest, { recursive: true });
-  }
-
-  const entries = fs.readdirSync(src, { withFileTypes: true });
-  entries.forEach((entry) => {
-    const srcPath = path.join(src, entry.name);
-    const destPath = path.join(dest, entry.name);
-    if (entry.isDirectory()) {
-      copyDir(srcPath, destPath);
-    } else if (entry.isFile()) {
-      copyFile(srcPath, destPath);
-    }
-  });
-};
-
-const setupMonaco = () => {
+async function copyMonaco() {
   try {
-    // Detect if this is running in a consuming app (not in shesha-reactjs itself)
-    const cwd = process.cwd();
-    const packageJsonPath = path.join(cwd, 'package.json');
+    console.log('📦 Setting up Monaco Editor for offline use...');
 
-    if (!fs.existsSync(packageJsonPath)) {
-      return;
-    }
+    // 1. Resolve the exact path to monaco-editor's root directory
+    //    Using 'package.json' gives us the folder root, and Node resolves symlinks automatically.
+    const packageJsonPath = require.resolve('monaco-editor/package.json');
+    const monacoSourceRoot = path.dirname(packageJsonPath);
 
-    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+    console.log(`✅ Found monaco-editor at: ${monacoSourceRoot}`);
 
-    // Skip if this is the shesha-reactjs package itself
-    // if (packageJson.name === '@shesha-io/reactjs') {
-    //   return;
-    // }
+    // 2. Define the target directory in the consuming project
+    //    process.cwd() is the directory where the user ran the script (their project root).
+    const targetDir = path.join(process.cwd(), 'public', 'monaco');
 
-    // Check if the consuming app uses @shesha-io/reactjs
-    // const dependencies = { ...packageJson.dependencies, ...packageJson.devDependencies };
-    // if (!dependencies['@shesha-io/reactjs']) {
-    //   return;
-    // }
+    // 3. Decide what to copy (usually you only need the 'min' folder)
+    const sourceFolder = path.join(monacoSourceRoot, 'esm');
 
-    console.warn('📦 Setting up Monaco Editor for offline use...');
+    // 4. Copy the folder (Node.js 16.7.0+ has built-in cp, or use fs-extra)
+    await fs.promises.rm(targetDir, { recursive: true, force: true });
+    await fs.promises.cp(sourceFolder, targetDir, { recursive: true });
 
-    // Copy workers directly from consuming app's monaco-editor package
-    // This avoids bundling 14MB with shesha-reactjs
-    const monacoPaths = [
-      path.join(cwd, 'node_modules', 'monaco-editor'),
-      path.join(cwd, 'node_modules', '@shesha-io', 'reactjs', 'node_modules', 'monaco-editor'),
-    ];
-
-    const monacoPath = monacoPaths.find((candidate) => fs.existsSync(candidate));
-    if (!monacoPath) {
-      console.warn('⚠️  Monaco Editor not found in node_modules');
-      return;
-    }
-
-    const monacoEsmPath = path.join(monacoPath, 'esm', 'vs');
-    const publicMonacoPath = path.join(cwd, 'public', 'monaco', 'vs');
-
-    // Copy the full ESM tree. Monaco's module workers import other ESM modules
-    // like vs/base/common/worker/simpleWorker.js, so the full tree must be available.
-    copyDir(monacoEsmPath, publicMonacoPath);
+    console.log(`✅ Monaco-editor successfully copied to ${targetDir}`);
   } catch (error) {
-    // Silently fail - don't break npm install
-    console.warn('⚠️  Monaco Editor setup encountered an issue:', error.message);
+    console.error('❌ Failed to copy monaco-editor:');
+    console.error(`   ${error.message}`);
+    console.error('   Make sure "monaco-editor" is installed in your project or workspace.');
+    process.exit(1);
   }
-};
+}
 
-setupMonaco();
+copyMonaco();

@@ -116,13 +116,13 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
     return await getMetadata({ dataType: DataTypes.entityReference, modelType: typeId });
   }, [getMetadata]);
 
-  const subscriptions = useRef<IDisposable[]>([]);
-  const addSubscription = (subscription: IDisposable): void => {
-    subscriptions.current.push(subscription);
+  const disposables = useRef<IDisposable[]>([]);
+  const addDisposable = (disposable: IDisposable): void => {
+    disposables.current.push(disposable);
   };
   useEffectOnce(() => {
     return () => {
-      const subsCopy = [...subscriptions.current];
+      const subsCopy = [...disposables.current];
       subsCopy.forEach((s) => s.dispose());
     };
   });
@@ -172,6 +172,7 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
     if (!model) {
       try {
         model = monaco.editor.createModel(content, "typescript", uri);
+        addDisposable(model);
       } catch (error) {
         console.error('Failed to create model', { error, uri, content });
       }
@@ -288,10 +289,10 @@ const CodeEditorClientSide: FC<ICodeEditorProps> = (props) => {
             });
           }
         });
-        addSubscription(changeModelSubscription);
+        addDisposable(changeModelSubscription);
       }
     });
-    addSubscription(createEditorSubscription);
+    addDisposable(createEditorSubscription);
 
     const { template } = codeEditorEnvironment;
     if (template && availableConstants && typeof (availableConstants) !== "function" && asPropertiesArray(availableConstants.properties, []).length > 0)

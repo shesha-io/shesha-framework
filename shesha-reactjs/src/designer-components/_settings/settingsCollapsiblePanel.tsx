@@ -28,7 +28,7 @@ const SettingsCollapsiblePanel: FC<ISettingsCollapsiblePanelProps> = (props) => 
   return (
     <SettingsCollapsiblePanelActionsContext.Provider value={settingsCollapsiblePanelActions}>
       {show
-        ? <CollapsiblePanel expandIconPosition="start" {...props} bodyStyle={{ borderRadius: '8px' }} headerStyle={{ borderRadius: '8px' }} />
+        ? <CollapsiblePanel expandIconPosition="start" {...props} border={{ radius: { all: '8px' }, radiusType: 'all' }} headerStyles={{ border: { radius: { all: '8px' }, radiusType: 'all' } }} />
         : null}
     </SettingsCollapsiblePanelActionsContext.Provider>
   );
