@@ -78,14 +78,16 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                     ...fbf(commonStyleRouterId)
                       .stdFontPanel('font', ['align'])
                       .stdDimensionsPanel('dimensions')
-                      .stdBorderPanel(removeStyleRouter !== true, 'border', 'radius')
+                      .stdBorderPanel(removeStyleRouter !== true, 'border')
                       .stdBackgroundPanel(removeStyleRouter !== true, 'background')
+                      .stdShadowPanel('shadow')
                       .stdMarginPaddingPanel('stylingBoxJson')
                       .stdCustomStylePanel('style')
                       .stdCollapsiblePanel('Radio Style', (f) => f
                         .stdDimensionsPanel('radio.dimensions')
-                        .stdBorderPanel(removeStyleRouter !== true, 'radio.border', 'radius')
+                        .stdBorderPanel(removeStyleRouter !== true, 'radio.border')
                         .stdBackgroundPanel(removeStyleRouter !== true, 'radio.background')
+                        .stdShadowPanel('radio.shadow')
                         .stdMarginPaddingPanel('radio.stylingBoxJson')
                         .stdCustomStylePanel('radio.style'),
                       true,

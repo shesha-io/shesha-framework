@@ -73,14 +73,17 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                     ...fbf(commonStyleRouterId)
                       .stdFontPanel('font', ['align'])
                       .stdDimensionsPanel('dimensions')
-                      .stdBorderPanel(removeStyleRouter !== true, 'border', 'radius')
+                      .stdBorderPanel(removeStyleRouter !== true, 'border')
                       .stdBackgroundPanel(removeStyleRouter !== true, 'background')
+                      .stdShadowPanel('shadow')
                       .stdMarginPaddingPanel('stylingBoxJson')
                       .stdCustomStylePanel('style')
                       .stdCollapsiblePanel('Checkbox Style', (f) => f
+                        .stdFontPanel('checkbox.font', ['align', 'type'], 'Check Mark')
                         .stdDimensionsPanel('checkbox.dimensions')
                         .stdBorderPanel(removeStyleRouter !== true, 'checkbox.border', 'radius')
                         .stdBackgroundPanel(removeStyleRouter !== true, 'checkbox.background')
+                        .stdShadowPanel('checkbox.shadow')
                         .stdMarginPaddingPanel('checkbox.stylingBoxJson')
                         .stdCustomStylePanel('checkbox.style'),
                       true,

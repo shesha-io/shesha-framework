@@ -15,6 +15,7 @@ export const defaultStyles = (prev?: IInputStyles): INestedStyleValue<'checkbox'
 const defaultWrapperStyles = (): IStyleValue => {
   return {
     font: {
+      type: 'Segoe UI',
       color: '#000',
       size: 14,
       weight: '400',
@@ -35,7 +36,7 @@ const defaultWrapperStyles = (): IStyleValue => {
           color: '#d9d9d9',
         },
       },
-      radius: { all: '50%' },
+      radius: { all: 0 },
       borderType: 'all',
       radiusType: 'all',
     },
@@ -67,6 +68,7 @@ const defaultWrapperStyles = (): IStyleValue => {
  */
 const defaultCheckboxStyles = (prev?: IInputStyles): IStyleValue => {
   return {
+    font: { weight: '400', color: '#fff', size: 14 },
     border: {
       radiusType: 'all',
       borderType: 'all',
@@ -74,8 +76,8 @@ const defaultCheckboxStyles = (prev?: IInputStyles): IStyleValue => {
       radius: { all: 4 },
     },
     dimensions: {
-      width: !prev?.width || isNullOrWhiteSpace(`${prev.width}`) || `${prev.width}` === 'auto' ? '14px' : `${prev.width}`,
-      height: !prev?.height || isNullOrWhiteSpace(`${prev.height}`) || `${prev.height}` === 'auto' ? '14px' : `${prev.height}`,
+      width: (prev?.width == null || isNullOrWhiteSpace(String(prev.width)) || String(prev.width) === 'auto') ? '14px' : String(prev.width),
+      height: (prev?.height == null || isNullOrWhiteSpace(String(prev.height)) || String(prev.height) === 'auto') ? '14px' : String(prev.height),
       minHeight: '0px',
       maxHeight: 'auto',
       minWidth: '0px',
@@ -89,6 +91,13 @@ const defaultCheckboxStyles = (prev?: IInputStyles): IStyleValue => {
       position: 'center',
       gradient: { direction: 'to right', colors: {} },
       url: '',
+    },
+    shadow: {
+      spreadRadius: 0,
+      blurRadius: 0,
+      color: '#000',
+      offsetX: 0,
+      offsetY: 0,
     },
     stylingBoxJson: {
       _type: 'styleBox',

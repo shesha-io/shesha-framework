@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 import { CheckboxGroupComponentProps } from './interfaces';
-import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
+import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, marginStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
 import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
 import { addPx } from '@/utils/style';
 
@@ -34,9 +34,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: CheckboxGr
   const checkbox = model.checkbox;
   // The check mark itself is drawn from the font: the nested set has no font panel, so its size,
   // weight and colour come from the wrapper's font.
-  const markSize = addPx(model.font?.size);
-  const checkColor = isNotNullOrWhiteSpace(model.font?.color) ? model.font.color : '#fff';
-  const bgColor = checkbox?.background?.type === 'color' ? checkbox.background.color : undefined;
+  const markSize = addPx(checkbox?.font?.size);
+  const checkColor = isNotNullOrWhiteSpace(checkbox?.font?.color) ? checkbox.font.color : '#fff';
 
   const checkboxGroup = cx('sha-multi-checkbox', css`
       /* Wrapper set — styles the group container itself. */
@@ -51,6 +50,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: CheckboxGr
         height: 100%;
         align-items: center !important;
         ${fontStyles(model.font)}
+        ${paddingStyles(checkbox?.stylingBoxJson)}
+        ${marginStyles(checkbox?.stylingBoxJson)}
       }
 
       /* Checkbox set — styles the box of each option. */
@@ -58,10 +59,9 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: CheckboxGr
         ${isDefined(markSize) ? `--ant-control-interactive-size: ${markSize};` : ''}
         --ant-line-width-bold: ${borderWidthFromWeight(model.font?.weight)} !important;
         --ant-color-white: ${checkColor} !important;
-        ${isNotNullOrWhiteSpace(bgColor) ? `--ant-color-primary-hover: ${bgColor};` : ''}
         ${borderStyles(checkbox?.border)}
+        ${shadowStyles(checkbox?.shadow)}
         ${dimensionsStyles(checkbox?.dimensions)}
-        ${paddingStyles(checkbox?.stylingBoxJson)}
 
         .${prefixCls}-checkbox-input {
           width: 100%;
@@ -81,7 +81,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: CheckboxGr
       /* Background fills the box only when checked (checkbox convention). */
       .${prefixCls}-checkbox-checked {
         ${backgroundStyles(checkbox?.background)}
-        ${borderStyles(checkbox?.border)}
       }
     `);
 

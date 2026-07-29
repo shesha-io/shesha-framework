@@ -93,6 +93,13 @@ const defaultRadioStyles = (): IStyleValue => {
       minWidth: '0px',
       maxWidth: 'auto',
     },
+    shadow: {
+      spreadRadius: 0,
+      blurRadius: 0,
+      color: '#000',
+      offsetX: 0,
+      offsetY: 0,
+    },
     stylingBoxJson: {
       _type: 'styleBox',
       marginBottom: "0",
