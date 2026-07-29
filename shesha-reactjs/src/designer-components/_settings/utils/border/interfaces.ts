@@ -21,7 +21,7 @@ export interface IBorderValue {
   border?: {
     [key in BorderType]?: BorderStyle | undefined;
   } | undefined;
-  radiusType?: string | undefined;
+  radiusType?: 'all' | 'custom' | undefined;
   borderType?: BorderType | 'custom' | undefined;
   hideBorder?: boolean | undefined;
 }

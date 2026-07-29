@@ -203,7 +203,11 @@ export interface IComponentLabelProps {
 export interface IComponentRuntimeProps {
   /**/
   settingsValidationErrors?: IAsyncValidationError[] | undefined;
+}
 
+export interface IComponentEventHandlers {
+  /** Custom onInput handler */
+  onInputCustom?: string | undefined;
   /** Custom onBlur handler */
   onBlurCustom?: string | undefined;
 
@@ -212,6 +216,9 @@ export interface IComponentRuntimeProps {
 
   /** Custom onClick handler */
   onClickCustom?: string | undefined;
+
+  /** Custom onDoubleClick handler */
+  onDoubleClickCustom?: string | undefined;
 
   /** Custom onFocus handler */
   onFocusCustom?: string | undefined;
@@ -296,6 +303,7 @@ export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles =
   IComponentLabelProps,
   IComponentVisibilityProps,
   IComponentRuntimeProps,
+  IComponentEventHandlers,
   IStyleValue {
   /** Type of the component */
   type: string;

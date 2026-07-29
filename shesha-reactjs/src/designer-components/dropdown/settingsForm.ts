@@ -1067,12 +1067,12 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   .addContainer({
                                     id: nanoid(),
                                     parentId: tagBorderStyleId,
-                                    components: getBorderInputs(fbf, 'tag'),
+                                    components: getBorderInputs(fbf, 'tag.border'),
                                   })
                                   .addContainer({
                                     id: nanoid(),
                                     parentId: tagBorderStyleId,
-                                    components: getCornerInputs(fbf, 'tag'),
+                                    components: getCornerInputs(fbf, 'tag.border'),
                                   })
                                   .toJson(),
                                 ],

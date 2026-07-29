@@ -573,12 +573,12 @@ export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormCompo
                     .addContainer({
                       id: nanoid(),
                       parentId: borderStylePnlId,
-                      components: getBorderInputs(fbf, "", false),
+                      components: getBorderInputs(fbf, undefined, false),
                     })
                     .addContainer({
                       id: nanoid(),
                       parentId: borderStylePnlId,
-                      components: getCornerInputs(fbf, "", false),
+                      components: getCornerInputs(fbf, undefined, false),
                     })
                     .toJson(),
                   ],
