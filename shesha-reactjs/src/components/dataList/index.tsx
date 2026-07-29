@@ -6,7 +6,7 @@ import { ValueRenderer } from '@/components/valueRenderer/index';
 import { useDeepCompareMemo } from '@/hooks';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
-import { IAnyObject, IFormSettings } from '@/interfaces';
+import { IAnyObject } from '@/interfaces';
 import { configurableItemIdentifierToString } from '@/interfaces/configurableItems';
 import { DEFAULT_FORM_SETTINGS, FormFullName, FormIdentifier, HttpClientApi, IFormDto, IPersistedFormProps, useAppConfigurator, useConfigurableActionDispatcher, useShaFormInstance } from '@/providers';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
@@ -406,34 +406,6 @@ export const DataList: FC<IDataListProps> = ({
     return false;
   };
 
-  const rawItemWidth = (style as CSSProperties | undefined)?.width ?? props.container?.dimensions?.width;
-  const isFixedWidth = (val: unknown): boolean => {
-    if (val === undefined || val === null || val === '') return false;
-    if (typeof val === 'number') return true;
-    const s = String(val).trim().toLowerCase();
-    return s !== 'auto' && s !== 'unset' && s !== 'inherit' && s !== 'initial' && s !== 'none';
-  };
-  const itemWidth = isFixedWidth(rawItemWidth)
-    ? (typeof rawItemWidth === 'number' ? `${rawItemWidth}px` : rawItemWidth)
-    : '300px';
-
-  /**
-   * `horizontal` and `wrap` orientations size every card to `itemWidth` (300px by default). A proportional
-   * `labelCol` (`{ span: 6 }` by default) then resolves to ~75px, which is not enough for a typical label:
-   * antd clips it, because `.ant-form-item-label` is `overflow: hidden`, or wraps it into an unreadable
-   * two-line stack. antd already falls back to a vertical layout below its `screenXSMax` breakpoint for
-   * exactly this reason, but it keys off the viewport — which stays wide here, since it is the card that is
-   * narrow. So apply the same fallback keyed off the card: the label gets the full card width, on one line.
-   *
-   * Only px widths are judged. A card sized in %/rem/vw has no width resolvable here, so its configured
-   * layout is left alone rather than overridden on a guess.
-   */
-  const stackCardLabels = ((): boolean => {
-    if (orientation === 'vertical') return false;
-    const px = /^(\d+(?:\.\d+)?)px$/.exec(String(itemWidth ?? '').trim());
-    return px !== null && Number(px[1]) <= theme.screenXSMax;
-  })();
-
   useDeepCompareEffect(() => {
     let isReady = true;
 
@@ -474,7 +446,7 @@ export const DataList: FC<IDataListProps> = ({
       updateRows();
       updateContent();
     }
-  }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, showEditIcons, canEditInline, canDeleteInline, noDataIcon, noDataSecondaryText, noDataText, style, groupStyle, orientation, itemWidth, stackCardLabels]);
+  }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, showEditIcons, canEditInline, canDeleteInline, noDataIcon, noDataSecondaryText, noDataText, style, groupStyle, orientation]);
 
   const renderSubForm = (item: ITableRowData, index: number): ReactNode => {
     // Note: keep these `undefined` (not `null`) so they match the values used when the entity form is
@@ -587,21 +559,13 @@ export const DataList: FC<IDataListProps> = ({
     if (isFormFullName(entityForm.formId))
       attributes['data-sha-form-name'] = `${entityForm.formId.module}/${entityForm.formId.name}`;
 
-    const baseFormSettings = entityForm.formConfiguration.settings ?? DEFAULT_FORM_SETTINGS;
-    // `labelCol`/`wrapperCol` have to be widened along with the layout: antd's `-vertical` rules do not
-    // reset the label `Col` width, and `FormItemProvider` re-injects `formSettings.labelCol` into every
-    // `Form.Item`, so leaving them at `{ span: 6 }` would keep the label boxed into 25% of the card.
-    const cardFormSettings: IFormSettings = stackCardLabels
-      ? { ...baseFormSettings, layout: 'vertical', labelCol: { span: 24 }, wrapperCol: { span: 24 } }
-      : baseFormSettings;
-
     return (
       <AttributeDecorator attributes={attributes}>
         <div onDoubleClick={dblClick} style={{ width: '100%' }}>
           <DataListItemRenderer
             isNewObject={false}
             markup={entityForm.formConfiguration.markup}
-            formSettings={cardFormSettings}
+            formSettings={entityForm.formConfiguration.settings ?? DEFAULT_FORM_SETTINGS}
             data={item}
             listId={id}
             listName="Data List"
@@ -826,6 +790,17 @@ export const DataList: FC<IDataListProps> = ({
     );
   };
 
+
+  const rawItemWidth = (style as CSSProperties | undefined)?.width ?? props.container?.dimensions?.width;
+  const isFixedWidth = (val: unknown): boolean => {
+    if (val === undefined || val === null || val === '') return false;
+    if (typeof val === 'number') return true;
+    const s = String(val).trim().toLowerCase();
+    return s !== 'auto' && s !== 'unset' && s !== 'inherit' && s !== 'initial' && s !== 'none';
+  };
+  const itemWidth = isFixedWidth(rawItemWidth)
+    ? (typeof rawItemWidth === 'number' ? `${rawItemWidth}px` : rawItemWidth)
+    : '300px';
 
   const getContainerStyles = (): CSSProperties => {
     const containerStyles: CSSProperties = {
