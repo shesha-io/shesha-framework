@@ -14,7 +14,14 @@ namespace Shesha.Extensions
         /// Releases, at the end of every request, the components that were resolved via the root container
         /// during that request (see <see cref="ReleaseRequestScopeMiddleware"/>). Keeps Castle Windsor's
         /// release-policy dictionary bounded, fixing the root-resolve memory leak and its lock-contention
-        /// slowdown. Register this as EARLY as possible in the pipeline so its cleanup wraps the whole request.
+        /// slowdown.
+        /// <para>
+        /// REQUIRED opt-in for the <c>RequestScopedReleasePolicy</c> installed by <c>SheshaFrameworkModule</c>:
+        /// call this as the FIRST middleware in the host's Configure() pipeline (before Shesha middleware,
+        /// routing, authentication and endpoints) so its cleanup wraps MVC authorization filters and ABP
+        /// interceptors. If a host omits this call the policy harmlessly degrades to Castle's default
+        /// (tracked-but-not-released) behaviour — the leak is simply not fixed, nothing breaks.
+        /// </para>
         /// </summary>
         public static IApplicationBuilder UseSheshaRequestScopeRelease(this IApplicationBuilder app)
         {

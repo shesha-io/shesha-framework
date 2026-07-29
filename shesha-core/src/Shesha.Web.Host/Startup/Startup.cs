@@ -148,6 +148,10 @@ namespace Shesha.Web.Host.Startup
 
         public void Configure(IApplicationBuilder app, IBackgroundJobClient backgroundJobs)
         {
+            // Must be first: releases per-request root-container resolutions at request end. Required to make
+            // SheshaFrameworkModule's RequestScopedReleasePolicy actually bound the release-policy dictionary.
+            app.UseSheshaRequestScopeRelease();
+
             app.UseSheshaElmah();
 
             // note: already registered in the ABP
