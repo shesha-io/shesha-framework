@@ -7,6 +7,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
   const commonTabId = nanoid();
   const eventsTabId = nanoid();
   const appearanceTabId = nanoid();
+  const styleRouterId = nanoid();
 
   const json = {
     components: fbf('root')
@@ -37,7 +38,37 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
           },
           {
             key: 'appearance', title: 'Appearance', id: appearanceTabId,
-            components: [...fbf(appearanceTabId).stdAppearancePanels([{ name: 'font', panelTitle: 'Handle', exclude: ['type', 'align'] }, 'dimensions', 'border', 'background', 'shadow', 'marginPadding', 'customStyle'], removeStyleRouter).toJson()],
+            // Two independent style sets, each in its own group: "Track Styles" binds to the root
+            // style properties, "Toggle Styles" to `handleStyles.*`. Neither has a font panel —
+            // the switch renders no text of its own. Toggle Styles has no Margin & Padding panel:
+            // the toggle is absolutely positioned inside the track rather than laid out, so a box
+            // model has nothing to act on.
+            components: [...fbf(appearanceTabId)
+              .addPropertyRouter({
+                id: styleRouterId,
+                propertyName: 'styleRouter',
+                componentName: 'styleRouter',
+                label: 'Style router',
+                labelAlign: 'right',
+                propertyRouteName: { _code: `return ${removeStyleRouter === true ? '' : 'contexts.canvasContext?.designerDevice || "desktop"'};`, _mode: 'code', _value: '' },
+                components: [
+                  ...fbf(styleRouterId)
+                    .stdDimensionsPanel()
+                    .stdBorderPanel(removeStyleRouter !== true)
+                    .stdBackgroundPanel(removeStyleRouter !== true)
+                    .stdShadowPanel()
+                    .stdMarginPaddingPanel()
+                    .stdCustomStylePanel()
+                    .stdCollapsiblePanel('Toggle Styles', (f) => f
+                      .stdDimensionsPanel('handleStyles.dimensions')
+                      .stdBorderPanel(removeStyleRouter !== true, 'handleStyles.border')
+                      .stdBackgroundPanel(removeStyleRouter !== true, 'handleStyles.background')
+                      .stdShadowPanel('handleStyles.shadow')
+                      .stdCustomStylePanel())
+                    .toJson(),
+                ],
+              })
+              .toJson()],
           },
         ],
       })

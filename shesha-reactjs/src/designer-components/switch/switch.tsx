@@ -18,7 +18,7 @@ import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { getSettings } from './settingsForm';
 import { useStyles } from './styles';
-import { defaultStyles } from './utils';
+import { defaultHandleStyles, defaultStyles } from './utils';
 import { getComponentEvents } from '../_common/events';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
@@ -86,7 +86,11 @@ const SwitchComponent: SwitchComponentDefinition = {
     );
   },
   settingsFormMarkup: getSettings,
-  getDefaultStyles: () => defaultStyles(),
+  // Two independent style sets: the root styles the track, `handleStyles` the handle.
+  getDefaultStyles: () => ({
+    ...defaultStyles(),
+    handleStyles: defaultHandleStyles(),
+  }),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) =>
     m
@@ -106,7 +110,9 @@ const SwitchComponent: SwitchComponentDefinition = {
       })
       .add<ISwitchComponentProps>(7, (prev, context) => context.isNew === true
         ? prev
-        : migratePrevStyles(prev, defaultStyles(prev)))
+        // Seed the handle style set alongside the track styles, so upgraded forms get a
+        // styled handle rather than an unstyled one.
+        : { ...migratePrevStyles(prev, defaultStyles(prev)), handleStyles: prev.handleStyles ?? defaultHandleStyles() })
       .add<ISwitchComponentProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev))),
   previewConfiguration: {
     type: 'switch',
