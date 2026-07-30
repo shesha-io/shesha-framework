@@ -96,9 +96,16 @@ const RadioComponent: RadioComponentDefinition = {
                   // including numeric-looking strings such as "001" that parsing would corrupt.
                   const raw = event.target.value as string;
                   const selected = options.find((item) => `${item.value}` === raw)?.value;
-                  const newValue = isDefined(selected)
-                    ? selected as number | string
-                    : getNumberOrUndefined(raw) ?? raw;
+
+                  // Use runtime guards to validate the selected value type
+                  let newValue: number | string;
+                  if (isDefined(selected) && (typeof selected === 'number' || typeof selected === 'string')) {
+                    newValue = selected;
+                  } else {
+                    // Fallback to parsing or using raw value
+                    newValue = getNumberOrUndefined(raw) ?? raw;
+                  }
+
                   ctx?.handleEvent(event, { value: newValue }, model.onChangeCustom);
                   onChange(newValue);
                 }}
