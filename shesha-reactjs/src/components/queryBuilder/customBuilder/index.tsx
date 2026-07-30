@@ -717,6 +717,12 @@ const FuncEditor: React.FC<{
     [candidates, funcKey],
   );
 
+  // A zero-argument function such as `NOW` omits `args` entirely, despite the type declaring it.
+  const funcArgs = funcDefinition?.args ?? {};
+  const argEntries = Object.keys(funcArgs)
+    .map((argKey) => ({ argKey, arg: funcArgs[argKey] }))
+    .filter((entry): entry is { argKey: string; arg: FuncArg } => entry.arg !== undefined);
+
   return (
     <div className="sha-query-builder-func-editor">
       {funcOptions.length > 1 && (
@@ -735,9 +741,9 @@ const FuncEditor: React.FC<{
           />
         </div>
       )}
-      {funcDefinition && (
+      {argEntries.length > 0 && (
         <div className="sha-query-builder-func-args">
-          {Object.entries(funcDefinition.args).map(([argKey, arg]) => (
+          {argEntries.map(({ argKey, arg }) => (
             <FuncArgEditor
               key={argKey}
               actions={actions}

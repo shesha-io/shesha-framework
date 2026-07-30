@@ -49,6 +49,7 @@ const createConfig = (): Config => {
     numberPrimary: { label: 'Number Primary', type: 'number' },
     numberSecondary: { label: 'Number Secondary', type: 'number' },
     textPrimary: { label: 'Text Primary', type: 'text' },
+    datePrimary: { label: 'Date Primary', type: 'datetime' },
   };
 
   return QbUtils.ConfigUtils.extendConfig({ ...queryBuilderConfig, fields } as Config);
@@ -332,5 +333,100 @@ describe('control slot contract', () => {
 
     const unhosted = controls.filter((control) => control.closest('.sha-query-builder-control-slot') === null);
     expect(unhosted.map((control) => control.className)).toEqual([]);
+  });
+});
+
+describe('multi-argument functions', () => {
+  // Ivan's example: `Relative` renders Datetime / Op / Value / Dimension. The previous build showed
+  // only the function name, which is what "arguments editor is not available" referred to.
+  const renderRelative = (): HTMLElement => {
+    const config = createConfig();
+    const jsonTree: JsonTree = {
+      id: 'group-1',
+      type: 'group',
+      children1: [
+        {
+          id: 'rule-1',
+          type: 'rule',
+          properties: {
+            field: 'datePrimary',
+            operator: 'equal',
+            value: [{
+              func: 'RELATIVE_DATETIME',
+              args: {
+                date: { value: { func: 'NOW', args: {} }, valueSrc: 'func' },
+                op: { value: 'plus', valueSrc: 'value' },
+                val: { value: 0, valueSrc: 'value' },
+                dim: { value: 'day', valueSrc: 'value' },
+              },
+            }],
+            valueSrc: ['func'],
+            valueType: ['datetime'],
+          },
+        },
+      ],
+    } as JsonTree;
+
+    const { container } = render(
+      React.createElement(CustomQueryBuilder, {
+        actions: createActions(),
+        config,
+        tree: QbUtils.loadTree(jsonTree),
+      }),
+    );
+
+    return container;
+  };
+
+  it('renders every declared argument', () => {
+    const container = renderRelative();
+
+    ['date', 'op', 'val', 'dim'].forEach((argKey) => {
+      expect(container.querySelector(`.sha-query-builder-func-arg--${argKey}`)).not.toBeNull();
+    });
+    expect(container.querySelectorAll('.sha-query-builder-func-arg')).toHaveLength(4);
+  });
+
+  it('gives only the multi-source argument its own source selector', () => {
+    const container = renderRelative();
+    const hasSelector = (argKey: string): boolean =>
+      container.querySelector(`.sha-query-builder-func-arg--${argKey} .sha-query-builder-source-trigger`) !== null;
+
+    // `date` accepts value/field/func; op, val and dim are value-only.
+    expect(hasSelector('date')).toBe(true);
+    expect([hasSelector('op'), hasSelector('val'), hasSelector('dim')]).toEqual([false, false, false]);
+  });
+
+  // `NOW` omits `args` entirely, so iterating them unguarded threw and took the builder down.
+  it('renders a zero-argument function without crashing', () => {
+    const config = createConfig();
+    const jsonTree: JsonTree = {
+      id: 'group-1',
+      type: 'group',
+      children1: [
+        {
+          id: 'rule-1',
+          type: 'rule',
+          properties: {
+            field: 'datePrimary',
+            operator: 'equal',
+            value: [{ func: 'NOW', args: {} }],
+            valueSrc: ['func'],
+            valueType: ['datetime'],
+          },
+        },
+      ],
+    } as JsonTree;
+
+    const { container } = render(
+      React.createElement(CustomQueryBuilder, {
+        actions: createActions(),
+        config,
+        tree: QbUtils.loadTree(jsonTree),
+      }),
+    );
+
+    expect(container.querySelector('.sha-query-builder-func-editor')).not.toBeNull();
+    expect(container.querySelectorAll('.sha-query-builder-func-arg')).toHaveLength(0);
   });
 });
