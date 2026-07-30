@@ -23,7 +23,7 @@ import { TextFieldApi } from '@/componentsApi/componentApi';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import apiCode from "../../componentsApi/componentApi.ts?raw";
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
-import { getComponentEvents } from '../_common/events';
+import { ALL_INPUT_EVENTS_WITHOUT_CHANGE, getComponentEvents } from '../_common/events';
 
 const TextFieldComponent: TextFieldComponentDefinition = {
   allowInherit: true,
@@ -148,7 +148,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
                     }
                   }
                 }}
-                {...getComponentEvents<string>(model, ['onFocus', 'onBlur', 'onClick', 'onMouseEnter', 'onKeyDown'], ctx, value, DataTypes.string)}
+                {...getComponentEvents<string>(model, ALL_INPUT_EVENTS_WITHOUT_CHANGE, ctx, value, DataTypes.string)}
               />
             );
 

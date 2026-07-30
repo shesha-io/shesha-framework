@@ -27,7 +27,7 @@ import { useEffectOnce } from '@/hooks/useEffectOnce';
 import apiCode from "../../componentsApi/componentApi.ts?raw";
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
-import { getComponentEvents } from '../_common/events';
+import { ALL_INPUT_EVENTS_WITHOUT_CHANGE, getComponentEvents } from '../_common/events';
 
 const suffixStyle = { color: 'rgba(0,0,0,.45)' };
 
@@ -194,7 +194,7 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
                   // force refresh because Antd InputNumber does not trigger render
                   forceRefresh({});
                 }}
-                {...getComponentEvents<number>(model, ['onFocus', 'onBlur', 'onClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave', 'onKeyDown', 'onKeyUp'], ctx, value, DataTypes.number)}
+                {...getComponentEvents<number>(model, ALL_INPUT_EVENTS_WITHOUT_CHANGE, ctx, value, DataTypes.number)}
               />
             );
         }}

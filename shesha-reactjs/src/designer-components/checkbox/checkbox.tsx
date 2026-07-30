@@ -19,7 +19,7 @@ import { migratePermissionsToVisiblePermissions } from '../_common-migrations/mi
 import { getSettings } from './settingsForm';
 import { useStyles } from './styles';
 import { defaultStyles } from './utils';
-import { getComponentEvents } from '../_common/events';
+import { ALL_INPUT_EVENTS_WITHOUT_CHANGE, getComponentEvents } from '../_common/events';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { CheckboxFieldApi } from '../../componentsApi/componentApi';
@@ -71,7 +71,7 @@ const CheckboxComponent: CheckboxComponentDefinition = {
                 ctx?.handleEvent(event, { value: event.target.checked }, model.onChangeCustom);
                 onChange(event.target.checked);
               }}
-              {...getComponentEvents<boolean>(model, ['onFocus', 'onBlur', 'onClick', 'onMouseEnter', 'onMouseLeave', 'onKeyDown', 'onKeyUp'], ctx, value, DataTypes.boolean)}
+              {...getComponentEvents<boolean>(model, ALL_INPUT_EVENTS_WITHOUT_CHANGE, ctx, value, DataTypes.boolean)}
             />
           );
         }}

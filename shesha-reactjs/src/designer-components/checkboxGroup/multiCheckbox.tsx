@@ -1,93 +1,59 @@
-import { useGet } from '@/hooks';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
 import { nanoid } from '@/utils/uuid';
 import { Checkbox, CheckboxOptionType } from 'antd';
-import React, { CSSProperties, FC, useEffect, useMemo } from 'react';
+import React, { CSSProperties, FC, useImperativeHandle, useMemo, useRef } from 'react';
 import { getDataSourceList } from '../radio/utils';
 import { ICheckboxGroupProps } from './interfaces';
-import { executeScriptSync } from '@/providers/form/utils';
-import { IAjaxResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
-import { ILabelValue } from '../dropdown/model';
 import { DEFAULT_MARGINS } from '@/components/formDesigner/utils/designerConstants';
 import { isDefined } from '@/utils/nullables';
-
-type RawOptionsPayload = ILabelValue<unknown>[] | { items: ILabelValue<unknown>[] };
-type FetchResponse = IAjaxResponse<RawOptionsPayload> | RawOptionsPayload;
+import { useStyles } from './styles';
 
 const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
   const { items = [], referenceListId, direction, value, onChange } = model;
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Expose the focus target to the component API without threading a ref
+  // through props (the group has no single focusable input element).
+  useImperativeHandle(model.focusRef, () => ({ focus: () => containerRef.current?.focus() }), []);
 
   const { data: refList } = useReferenceList(referenceListId);
-  const { refetch, data } = useGet<FetchResponse>({ path: model.dataSourceUrl ?? "", lazy: true });
-
-  useEffect(() => {
-    if (model.dataSourceType === 'url' && model.dataSourceUrl) {
-      refetch().catch((error) => {
-        console.error('Failed to fetch options', error);
-      });
-    }
-  }, [model.dataSourceType, model.dataSourceUrl, refetch]);
-
-  const fetchedData = useMemo<RawOptionsPayload | undefined>(() => {
-    if (!data) return undefined;
-    if (Array.isArray(data)) return data;
-    if (typeof data === 'object' && 'success' in data) {
-      const response = data as IAjaxResponse<RawOptionsPayload>;
-      if (isAjaxSuccessResponse(response)) {
-        const result = response.result;
-        if (isDefined(result) && !Array.isArray(result) && typeof result === 'object' && 'configuration' in result) {
-          const config = (result as { configuration?: { items?: ILabelValue<unknown>[] } }).configuration;
-          if (config?.items && Array.isArray(config.items)) return config.items;
-        }
-        return result;
-      }
-      return undefined;
-    }
-    if (typeof data === 'object' && Array.isArray((data as { items?: unknown }).items)) {
-      return data as { items: ILabelValue<unknown>[] };
-    }
-    return undefined;
-  }, [data]);
-
-  const reducedData = useMemo<ILabelValue<unknown>[]>(() => {
-    if (!fetchedData) return [];
-
-    const list = Array.isArray(fetchedData)
-      ? fetchedData
-      : (typeof fetchedData === 'object' && 'items' in fetchedData && Array.isArray(fetchedData.items))
-        ? fetchedData.items
-        : [];
-
-    if (Array.isArray(list) && model.reducerFunc) {
-      return executeScriptSync(model.reducerFunc, { data: list }) ?? [];
-    }
-
-    return list;
-  }, [fetchedData, model.reducerFunc]);
 
   const options = useMemo<CheckboxOptionType[]>(() => {
-    const list = getDataSourceList(model.dataSourceType, items, refList?.items, reducedData);
-    return list.map<CheckboxOptionType>((item) => (item.id ? item : { ...item, id: nanoid() }));
-  }, [model.dataSourceType, items, refList?.items, reducedData]);
+    const list = getDataSourceList(model.dataSourceType, items, refList?.items);
+    return list.map<CheckboxOptionType>((item) => (item.id ? item : { ...item, id: nanoid(), key: nanoid() }));
+  }, [model.dataSourceType, items, refList?.items]);
+
+  // Per-checkbox appearance (check mark, dimensions, border, background, etc.)
+  // is emitted by the scoped emotion class onto each `.ant-checkbox-inner`;
+  // only layout stays on the group container.
+  const { styles } = useStyles(model);
 
   const checkboxGroupStyle: CSSProperties = {
-    ...model.style,
     display: 'flex',
     flexDirection: direction === 'vertical' ? 'column' : 'row',
     flexWrap: direction === 'vertical' ? 'nowrap' : 'wrap',
     gap: '8px',
+    // Honour the Custom style (styleJson) at the group level.
+    ...(isDefined(model.styleJson) ? model.styleJson : {}),
   };
 
   return (
     <div
+      ref={containerRef}
       tabIndex={0}
       onFocus={(e) => model.onFocus?.({ ...e, target: { ...e.target, value: value } })}
       onBlur={(e) => model.onBlur?.({ ...e, target: { ...e.target, value: value } })}
+      onClick={model.onClick}
+      onMouseEnter={model.onMouseEnter}
+      onMouseMove={model.onMouseMove}
+      onMouseLeave={model.onMouseLeave}
+      onKeyDown={model.onKeyDown}
+      onKeyUp={model.onKeyUp}
       style={{ margin: `${DEFAULT_MARGINS.vertical} ${DEFAULT_MARGINS.horizontal}` }}
     >
       <Checkbox.Group
-        className="sha-multi-checkbox"
-        value={isDefined(value) && Array.isArray(value) ? value : []}
+        className={styles.checkboxGroup}
+        value={isDefined(value) ? (Array.isArray(value) ? value : [value]) : []}
         {...(onChange ? { onChange } : {})}
         style={checkboxGroupStyle}
         options={options}

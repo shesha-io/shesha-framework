@@ -22,6 +22,12 @@ namespace Shesha.Services.ConfigurationItems
         public IUnitOfWorkManager UnitOfWorkManager { get; set; } = default!;
         public IConfigurationFrameworkRuntime CfRuntime { get; set; }
 
+        /// <summary>
+        /// Repository of configuration item folders. Property-injected (like <see cref="UnitOfWorkManager"/>)
+        /// so that concrete importer constructors don't need to change.
+        /// </summary>
+        public IRepository<ConfigurationItemFolder, Guid> FolderRepo { get; set; } = default!;
+
         public ConfigurationItemImportBase(IRepository<Module, Guid> _moduleRepo, IRepository<FrontEndApp, Guid> _frontendAppRepo)
         {
             ModuleRepo = _moduleRepo;
@@ -86,6 +92,43 @@ namespace Shesha.Services.ConfigurationItems
         public virtual Task<List<DistributedConfigurableItemBase>> SortItemsAsync(List<DistributedConfigurableItemBase> items)
         {
             return Task.FromResult(items);
+        }
+
+        /// <summary>
+        /// Resolves the target folder for an imported item, creating any missing folders in the hierarchy.
+        /// Folders are matched by name + parent within the module (portable across environments).
+        /// </summary>
+        /// <param name="module">Module the folders belong to</param>
+        /// <param name="path">Folder path, ordered root -> leaf. null or empty => item sits at module root (returns null)</param>
+        /// <param name="context">Import context</param>
+        /// <returns>The leaf folder, or null when the item belongs at the module root</returns>
+        protected async Task<ConfigurationItemFolder?> EnsureFolderAsync(Module? module, List<string>? path, IConfigurationItemsImportContext context)
+        {
+            if (module == null || path == null || path.Count == 0)
+                return null;
+
+            ConfigurationItemFolder? parent = null;
+            foreach (var name in path)
+            {
+                var parentId = parent?.Id;
+                var moduleId = module.Id;
+                var existing = await FolderRepo.FirstOrDefaultAsync(f =>
+                    f.Module.Id == moduleId &&
+                    (parentId == null ? f.Parent == null : f.Parent != null && f.Parent.Id == parentId) &&
+                    f.Name == name);
+
+                if (existing == null)
+                {
+                    existing = new ConfigurationItemFolder { Module = module, Parent = parent, Name = name };
+                    await FolderRepo.InsertAsync(existing);
+                    // Persist so the generated Id is available for the next (child) segment.
+                    await UnitOfWorkManager.Current.SaveChangesAsync();
+                }
+
+                parent = existing;
+            }
+
+            return parent;
         }
     }
 
@@ -188,9 +231,6 @@ namespace Shesha.Services.ConfigurationItems
                 // check if form exists
                 var item = explicitItem ?? await Repository.FirstOrDefaultAsync(f => f.Name == distributedItem.Name && (f.Module == null && distributedItem.ModuleName == null || f.Module != null && f.Module.Name == distributedItem.ModuleName));
 
-                if (await SkipImportAsync(item, distributedItem))
-                    return item;
-
                 var isNew = item == null;
                 if (item == null)
                 {
@@ -198,6 +238,19 @@ namespace Shesha.Services.ConfigurationItems
                     item.Module = await GetModuleAsync(distributedItem.ModuleName, context);
                     item.Application = await GetFrontEndAppAsync(distributedItem.FrontEndApplication, context);
                     item.Name = distributedItem.Name;
+                }
+
+                // Reconcile folder from the package (source of truth). Applies to both new and existing items.
+                // null path => not specified (legacy package) => leave the existing folder untouched.
+                if (distributedItem.FolderPath != null)
+                    item.Folder = await EnsureFolderAsync(item.Module, distributedItem.FolderPath, context);
+
+                // Skip only applies to pre-existing items whose content is unchanged.
+                if (!isNew && await SkipImportAsync(item, distributedItem))
+                {
+                    // Persist any folder-only move without creating a new content revision.
+                    await Repository.UpdateAsync(item);
+                    return item;
                 }
 
                 await MapStandardPropsToItemAsync(item, distributedItem);

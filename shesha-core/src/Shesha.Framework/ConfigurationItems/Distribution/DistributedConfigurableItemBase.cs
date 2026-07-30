@@ -54,6 +54,15 @@ namespace Shesha.ConfigurationItems.Distribution
         /// </summary>
         public bool Suppress { get; set; }
 
+        /// <summary>
+        /// Folder path within the module, ordered root -> leaf (e.g. ["Entities", "Customers"]).
+        /// <para>null = not specified (legacy package, leave the existing folder untouched);</para>
+        /// <para>empty = module root (move item out of any folder);</para>
+        /// <para>non-empty = target folder hierarchy (created on import if missing).</para>
+        /// Deliberately not initialized so that a missing property deserializes to null.
+        /// </summary>
+        public List<string>? FolderPath { get; set; }
+
         #region V1 properties
 
         public DateTime? DateUpdated { get; set; }
