@@ -144,8 +144,8 @@ export interface IStyleValue {
  * The style model of a component that exposes two independent sets of Appearance panels: the
  * bare-named properties style the component's wrapper, and a nested set styles a repeated child.
  *
- * Used by the option components, where the wrapper is the group container and the nested set
- * styles each option — `INestedStyleValue<'radio'>` gives `radio.border`, `radio.background`, …
+ * Used by the inner components, where the wrapper is the group container and the nested set
+ * styles each child component — `INestedStyleValue<'radio'>` gives `radio.border`, `radio.background`, …
  * alongside the wrapper's own `border`, `background`, ….
  */
 export type INestedStyleValue<TNested extends string> = IStyleValue & { [K in TNested]?: IStyleValue | undefined };
