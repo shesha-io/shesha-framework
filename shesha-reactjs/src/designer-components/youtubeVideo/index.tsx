@@ -284,7 +284,7 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
       hasStartedRef.current = false;
       isCompletedRef.current = false;
 
-      if (formMode === 'designer' || isNullOrWhiteSpace(videoId) || !iframeShown) {
+      if (hidden || formMode === 'designer' || isNullOrWhiteSpace(videoId) || !iframeShown) {
         return undefined;
       }
 
@@ -332,7 +332,7 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
           // player may already be gone
         }
       };
-    }, [formMode, videoId, iframeShown]);
+    }, [formMode, videoId, iframeShown, hidden]);
 
     if (hidden) {
       return null;
