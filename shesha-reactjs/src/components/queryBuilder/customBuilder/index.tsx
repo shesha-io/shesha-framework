@@ -647,7 +647,7 @@ const FuncArgEditor: React.FC<{
   };
 
   return (
-    <div className={`sha-query-builder-func-arg sha-query-builder-func-arg--${argKey}`}>
+    <div className={`sha-query-builder-func-arg sha-query-builder-control-slot sha-query-builder-func-arg--${argKey}`}>
       {availableSources.length > 1 && (
         <div className="sha-query-builder-source-slot">
           <SourceSelector
@@ -720,7 +720,7 @@ const FuncEditor: React.FC<{
   return (
     <div className="sha-query-builder-func-editor">
       {funcOptions.length > 1 && (
-        <div className="sha-query-builder-func-select">
+        <div className="sha-query-builder-func-select sha-query-builder-control-slot">
           <Select
             {...(funcKey !== undefined ? { value: funcKey } : {})}
             {...(config.settings.funcPlaceholder !== undefined ? { placeholder: config.settings.funcPlaceholder } : {})}
@@ -887,7 +887,7 @@ const RuleValueEditorInner: React.FC<{
           ? renderDeltaEditor(0, deltaSource)
           : (
             <div className="sha-query-builder-value-editor">
-              <div className="sha-query-builder-value-editor-slot">{renderDeltaEditor(0, deltaSource)}</div>
+              <div className="sha-query-builder-value-editor-slot sha-query-builder-control-slot">{renderDeltaEditor(0, deltaSource)}</div>
             </div>
           )}
       </div>
@@ -904,7 +904,7 @@ const RuleValueEditorInner: React.FC<{
               {showRangeSeparator && delta > 0 && (
                 <div className="sha-query-builder-value-range-separator" aria-hidden="true">-</div>
               )}
-              <div className={classNames('sha-query-builder-value-editor-slot', deltaSource === 'func' && 'is-function')}>
+              <div className={classNames('sha-query-builder-value-editor-slot', 'sha-query-builder-control-slot', deltaSource === 'func' && 'is-function')}>
                 {renderSourceSelector(delta, deltaSource)}
                 {renderDeltaEditor(delta, deltaSource)}
               </div>
@@ -971,12 +971,10 @@ const QueryRuleRowInner: React.FC<IRuleProps> = (props) => {
     },
   };
 
-  // path.length === 2 is root-level; each nested group adds 1. Wrap layout at depth 3+.
-  const isDeepNested = path.length >= 4;
   const isUnaryOperator = getOperatorCardinality(config, selectedOperator) === 0;
 
   return (
-    <div className={classNames('sha-query-builder-rule-row', isFieldFunc && 'has-field-func', isDeepNested && 'is-deep-nested', isUnaryOperator && 'is-unary')}>
+    <div className={classNames('sha-query-builder-rule-row', isUnaryOperator && 'is-unary')}>
       <div
         className={classNames(
           isFieldFunc
@@ -1004,7 +1002,7 @@ const QueryRuleRowInner: React.FC<IRuleProps> = (props) => {
             {...(isFuncValue(selectedField) ? { value: selectedField } : {})}
           />
         ) : (
-          <div className="sha-query-builder-field-slot">
+          <div className="sha-query-builder-field-slot sha-query-builder-control-slot">
             <FieldAutocomplete {...fieldProps} />
           </div>
         )}
@@ -1012,7 +1010,7 @@ const QueryRuleRowInner: React.FC<IRuleProps> = (props) => {
 
       <div className="sha-query-builder-operator-slot" title={activeOperatorLabel}>
         <div
-          className="sha-query-builder-operator-select"
+          className="sha-query-builder-operator-select sha-query-builder-control-slot"
           onMouseDown={stopPointerPropagation}
           onPointerDown={stopPointerPropagation}
         >

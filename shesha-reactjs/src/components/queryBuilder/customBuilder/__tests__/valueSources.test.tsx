@@ -295,3 +295,42 @@ describe('field-sourced function arguments', () => {
     expect(argAutocomplete?.getAttribute('data-has-definition')).toBe('yes');
   });
 });
+
+describe('control slot contract', () => {
+  // The slot owns the border and strips the control bare. Any embedded control rendered outside a
+  // slot keeps antd's own chrome, which is how borders drifted between the value and function areas.
+  it('hosts every embedded control inside a control slot', () => {
+    const config = createConfig();
+    const jsonTree: JsonTree = {
+      id: 'group-1',
+      type: 'group',
+      children1: [
+        {
+          id: 'rule-1',
+          type: 'rule',
+          properties: {
+            field: 'textPrimary',
+            operator: 'equal',
+            value: [{ func: 'LOWER', args: { str: { value: '', valueSrc: 'value' } } }],
+            valueSrc: ['func'],
+            valueType: ['text'],
+          },
+        },
+      ],
+    } as JsonTree;
+
+    const { container } = render(
+      React.createElement(CustomQueryBuilder, {
+        actions: createActions(),
+        config,
+        tree: QbUtils.loadTree(jsonTree),
+      }),
+    );
+
+    const controls = Array.from(container.querySelectorAll('.ant-select, .ant-input, .ant-input-number, .ant-picker'));
+    expect(controls.length).toBeGreaterThan(0);
+
+    const unhosted = controls.filter((control) => control.closest('.sha-query-builder-control-slot') === null);
+    expect(unhosted.map((control) => control.className)).toEqual([]);
+  });
+});

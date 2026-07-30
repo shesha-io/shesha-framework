@@ -11,7 +11,10 @@ import { Show } from '@/components/show';
 
 const queryBuilderTabKey = 'queryBuilderTab';
 const jsonInputTabKey = 'jsonInputTab';
-const baseQueryBuilderModalWidth = 1038;
+// Viewport-relative rather than fixed: 1038px left almost no margin on a 1366px laptop while wasting
+// a third of the width on larger displays, and rule rows need every pixel they can get.
+const maxQueryBuilderModalWidth = 1240;
+const queryBuilderModalWidth = `min(${maxQueryBuilderModalWidth}px, 92vw)`;
 
 export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
   const queryBuilderDocUrl = 'https://docs.shesha.io/docs/front-end-basics/form-components/tables-lists/datatable-context';
@@ -26,10 +29,10 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
   const [activeTab, setActiveTab] = useState(queryBuilderTabKey);
   const [jsonExpanded, setJsonExpanded] = useState(props.jsonExpanded ?? false);
   const isSmall = useMedia('(max-width: 480px)');
-  const modalWidth = baseQueryBuilderModalWidth;
+  const modalWidth = isSmall ? '96vw' : queryBuilderModalWidth;
   const modalStyles = isSmall ? undefined : {
     content: {
-      height: 585,
+      height: 'min(720px, 85vh)',
       padding: 30,
       boxSizing: 'border-box' as const,
       display: 'flex',

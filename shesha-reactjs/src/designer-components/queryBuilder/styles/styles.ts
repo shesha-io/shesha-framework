@@ -795,7 +795,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             border: 1px solid #ededee;
             border-radius: ${queryBuilderSurfaceRadius};
             width: 100%;
-            max-width: 966px;
             min-width: 0;
             height: auto;
             box-sizing: border-box;

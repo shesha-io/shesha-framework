@@ -441,67 +441,43 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             overflow: visible;
         }
 
+        /* Rules wrap rather than shrink: a control that cannot keep its legible width moves to the
+           next line instead of being crushed. Horizontal room is fixed, vertical room is not. */
         .sha-query-builder-rule-row {
             width: 100%;
             min-width: 0;
             min-height: 32px;
-            display: grid;
-            grid-template-columns: minmax(0, 200px) minmax(0, 155px) minmax(0, 1fr);
+            display: flex;
+            flex-wrap: wrap;
             align-items: center;
             gap: 10px;
             padding: 13px 10px;
             box-sizing: border-box;
         }
 
+        .sha-query-builder-rule-row > .sha-query-builder-packed-control {
+            flex: 0 1 200px;
+            min-width: 180px;
+        }
 
-        .sha-query-builder-rule-row.has-field-func {
-            grid-template-columns: 1fr 155px 1fr;
+        .sha-query-builder-rule-row > .sha-query-builder-operator-slot {
+            flex: 0 1 155px;
+            min-width: 150px;
+        }
+
+        .sha-query-builder-rule-row > .sha-query-builder-value-shell {
+            flex: 1 1 260px;
+            min-width: 240px;
+        }
+
+        /* A function needs room for its own selector plus an argument editor underneath. */
+        .sha-query-builder-rule-row > .sha-query-builder-value-shell.is-function {
+            flex: 1 1 460px;
+            min-width: 440px;
         }
 
         .sha-query-builder-rule-row.is-unary {
-            grid-template-columns: max-content auto;
             justify-content: flex-start;
-        }
-
-        .sha-query-builder-rule-row.is-unary .sha-query-builder-packed-control {
-            width: 200px;
-            max-width: 200px;
-        }
-
-        .sha-query-builder-rule-row.is-unary .sha-query-builder-value-shell.is-function {
-            width: 100%;
-            max-width: 409px;
-        }
-
-        .sha-query-builder-rule-row.is-deep-nested {
-            display: grid;
-            grid-template-columns: minmax(0, 200px) minmax(0, 155px) minmax(0, 1fr);
-            align-items: center;
-            gap: 10px;
-            width: 100%;
-            min-width: 0;
-        }
-
-        .sha-query-builder-rule-row.is-deep-nested.has-field-func {
-            grid-template-columns: 1fr 155px 1fr;
-        }
-
-        .sha-query-builder-rule-row.is-deep-nested .sha-query-builder-packed-control,
-        .sha-query-builder-rule-row.is-deep-nested .sha-query-builder-value-shell.is-function {
-            width: 100%;
-            min-width: 0;
-        }
-
-        .sha-query-builder-rule-row.is-deep-nested .sha-query-builder-operator-slot {
-            width: 100%;
-            min-width: 0;
-            max-width: 155px;
-        }
-
-        .sha-query-builder-rule-row.is-deep-nested .sha-query-builder-value-shell {
-            width: 100%;
-            min-width: 0;
-            max-width: none;
         }
 
         .sha-query-builder-item-rail {
@@ -683,31 +659,22 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             display: none;
         }
 
-        .sha-query-builder-field-slot .sha-query-builder-packed-select,
-        .sha-query-builder-value-editor-slot .sha-query-builder-packed-select,
-        .sha-query-builder-field-slot .${prefixCls}-select,
-        .sha-query-builder-value-editor-slot .${prefixCls}-select,
-        .sha-query-builder-value-editor-slot .${prefixCls}-picker,
-        .sha-query-builder-value-editor-slot .${prefixCls}-input-number,
-        .sha-query-builder-value-editor-slot .${prefixCls}-segmented,
-        .sha-query-builder-func-arg .sha-expression-editor {
+        /* Every embedded control is hosted by a control slot, which owns the border. The control
+           itself is stripped bare, so field, operator, value and function arguments are
+           indistinguishable from one another. */
+        .sha-query-builder-control-slot .sha-query-builder-packed-select,
+        .sha-query-builder-control-slot .${prefixCls}-select,
+        .sha-query-builder-control-slot .${prefixCls}-picker,
+        .sha-query-builder-control-slot .${prefixCls}-input,
+        .sha-query-builder-control-slot .${prefixCls}-input-number,
+        .sha-query-builder-control-slot .${prefixCls}-segmented,
+        .sha-query-builder-control-slot .sha-expression-editor {
             width: 100% !important;
             max-width: 100%;
             min-width: 0;
         }
 
-        .sha-query-builder-field-slot .${prefixCls}-select-selector,
-        .sha-query-builder-operator-select .${prefixCls}-select-selector {
-            height: 32px !important;
-            min-height: 32px !important;
-            padding: 0 5px !important;
-            border: 0 !important;
-            border-radius: 0 !important;
-            background: transparent !important;
-            box-shadow: none !important;
-        }
-
-        .sha-query-builder-value-editor-slot .${prefixCls}-select-selector {
+        .sha-query-builder-control-slot .${prefixCls}-select-selector {
             height: 32px !important;
             min-height: 32px !important;
             padding: 0 4px !important;
@@ -717,18 +684,12 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             box-shadow: none !important;
         }
 
-        .sha-query-builder-field-slot .${prefixCls}-select-selection-wrap,
-        .sha-query-builder-value-editor-slot .${prefixCls}-select-selection-wrap,
-        .sha-query-builder-operator-select .${prefixCls}-select-selection-wrap {
+        .sha-query-builder-control-slot .${prefixCls}-select-selection-wrap {
             min-width: 0 !important;
         }
 
-        .sha-query-builder-field-slot .${prefixCls}-select-selection-item,
-        .sha-query-builder-field-slot .${prefixCls}-select-selection-placeholder,
-        .sha-query-builder-value-editor-slot .${prefixCls}-select-selection-item,
-        .sha-query-builder-value-editor-slot .${prefixCls}-select-selection-placeholder,
-        .sha-query-builder-operator-select .${prefixCls}-select-selection-item,
-        .sha-query-builder-operator-select .${prefixCls}-select-selection-placeholder {
+        .sha-query-builder-control-slot .${prefixCls}-select-selection-item,
+        .sha-query-builder-control-slot .${prefixCls}-select-selection-placeholder {
             width: 100%;
             min-width: 0;
             display: flex;
@@ -739,9 +700,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             line-height: 30px !important;
         }
 
-        .sha-query-builder-field-slot .${prefixCls}-select-selection-item > *,
-        .sha-query-builder-value-editor-slot .${prefixCls}-select-selection-item > *,
-        .sha-query-builder-operator-select .${prefixCls}-select-selection-item > * {
+        .sha-query-builder-control-slot .${prefixCls}-select-selection-item > * {
             min-width: 0;
             max-width: 100%;
         }
@@ -895,13 +854,13 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             width: 100%;
             flex: 1 1 auto;
             min-width: 0;
-            height: 32px;
+            min-height: 32px;
             display: flex;
             align-items: stretch;
             overflow: hidden;
         }
 
-        .sha-query-builder-value-editor-slot > *,
+        .sha-query-builder-control-slot > *:not(.sha-query-builder-source-slot),
         .sha-query-builder-widget-host > * {
             width: 100%;
             flex: 1 1 auto;
@@ -918,8 +877,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-func-select {
-            width: 140px;
-            min-width: 140px;
+            width: 170px;
+            min-width: 170px;
             height: 32px;
             border-right: 1px solid #d0d5dd;
             background: #f9fafb;
@@ -952,12 +911,12 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             margin-inline-start: 0;
         }
 
-        .sha-query-builder-value-editor-slot .${prefixCls}-picker,
-        .sha-query-builder-value-editor-slot .${prefixCls}-input-number,
-        .sha-query-builder-value-editor-slot .${prefixCls}-input,
-        .sha-query-builder-value-editor-slot .${prefixCls}-select,
-        .sha-query-builder-field-slot .${prefixCls}-select,
-        .sha-query-builder-func-arg .sha-expression-editor {
+
+        .sha-query-builder-control-slot .${prefixCls}-picker,
+        .sha-query-builder-control-slot .${prefixCls}-input-number,
+        .sha-query-builder-control-slot .${prefixCls}-input,
+        .sha-query-builder-control-slot .${prefixCls}-select,
+        .sha-query-builder-control-slot .sha-expression-editor {
             width: 100%;
             height: 32px;
             border: 0 !important;
@@ -966,26 +925,26 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             background: transparent !important;
         }
 
-        .sha-query-builder-value-editor-slot .${prefixCls}-picker,
-        .sha-query-builder-value-editor-slot .${prefixCls}-input-number,
-        .sha-query-builder-value-editor-slot .${prefixCls}-input {
+        .sha-query-builder-control-slot .${prefixCls}-picker,
+        .sha-query-builder-control-slot .${prefixCls}-input-number,
+        .sha-query-builder-control-slot .${prefixCls}-input {
             padding: 0 4px;
         }
 
-        .sha-query-builder-value-editor-slot .${prefixCls}-picker,
-        .sha-query-builder-value-editor-slot .${prefixCls}-input-number,
-        .sha-query-builder-value-editor-slot .${prefixCls}-picker-input,
-        .sha-query-builder-value-editor-slot .${prefixCls}-input-number-input-wrap,
-        .sha-query-builder-value-editor-slot .${prefixCls}-select-single .${prefixCls}-select-selection-search {
+        .sha-query-builder-control-slot .${prefixCls}-picker,
+        .sha-query-builder-control-slot .${prefixCls}-input-number,
+        .sha-query-builder-control-slot .${prefixCls}-picker-input,
+        .sha-query-builder-control-slot .${prefixCls}-input-number-input-wrap,
+        .sha-query-builder-control-slot .${prefixCls}-select-single .${prefixCls}-select-selection-search {
             display: flex;
             align-items: center;
             min-height: 32px;
         }
 
-        .sha-query-builder-value-editor-slot .${prefixCls}-picker-input > input,
-        .sha-query-builder-value-editor-slot .${prefixCls}-input,
-        .sha-query-builder-value-editor-slot .${prefixCls}-input-number-input,
-        .sha-query-builder-value-editor-slot .${prefixCls}-select-single .${prefixCls}-select-selection-search-input {
+        .sha-query-builder-control-slot .${prefixCls}-picker-input > input,
+        .sha-query-builder-control-slot .${prefixCls}-input,
+        .sha-query-builder-control-slot .${prefixCls}-input-number-input,
+        .sha-query-builder-control-slot .${prefixCls}-select-single .${prefixCls}-select-selection-search-input {
             width: 100%;
             height: 100% !important;
             min-height: 32px !important;
@@ -998,24 +957,24 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             white-space: nowrap;
         }
 
-        .sha-query-builder-value-editor-slot .${prefixCls}-input-number-input {
+        .sha-query-builder-control-slot .${prefixCls}-input-number-input {
             padding-inline: 0 !important;
         }
 
-        .sha-query-builder-value-editor-slot .${prefixCls}-picker-input,
-        .sha-query-builder-value-editor-slot .${prefixCls}-input-number-input-wrap {
+        .sha-query-builder-control-slot .${prefixCls}-picker-input,
+        .sha-query-builder-control-slot .${prefixCls}-input-number-input-wrap {
             height: 100%;
             min-width: 0;
         }
 
-        .sha-query-builder-value-editor-slot .${prefixCls}-picker-suffix,
-        .sha-query-builder-value-editor-slot .${prefixCls}-picker-clear,
-        .sha-query-builder-value-editor-slot .${prefixCls}-select-arrow,
-        .sha-query-builder-value-editor-slot .${prefixCls}-select-clear {
+        .sha-query-builder-control-slot .${prefixCls}-picker-suffix,
+        .sha-query-builder-control-slot .${prefixCls}-picker-clear,
+        .sha-query-builder-control-slot .${prefixCls}-select-arrow,
+        .sha-query-builder-control-slot .${prefixCls}-select-clear {
             flex-shrink: 0;
         }
 
-        .sha-query-builder-value-editor-slot .${prefixCls}-segmented {
+        .sha-query-builder-control-slot .${prefixCls}-segmented {
             padding: 2px 8px;
             box-sizing: border-box;
         }
