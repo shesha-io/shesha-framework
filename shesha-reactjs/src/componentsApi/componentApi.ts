@@ -280,6 +280,8 @@ export interface NumberFieldApi extends InputComponentApi<number | undefined> {
 
 export type CheckboxFieldApi = InputComponentApi<boolean | undefined>;
 
+export type DropdownApi = InputComponentApi<number | number[] | string | string[] | (string | number)[] | undefined>;
+
 export interface PanelApi extends CommonComponentApi {
   /** Whether the panel is expanded */
   isExpanded: boolean;

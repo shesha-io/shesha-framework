@@ -6,8 +6,9 @@ import { IInputStyles } from '@/providers/form/models';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { DataSourceType, DropdownComponentDefinition, IDropdownComponentProps } from './model';
-import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly, migrateHiddenToVisible } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { Dropdown } from '@/components/dropdown/dropdown';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
@@ -18,6 +19,7 @@ import { getBooleanPropertyOrUndefined } from '@/utils/object';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 const DropdownComponent: DropdownComponentDefinition = {
+  allowInherit: true,
   type: 'dropdown',
   isInput: true,
   isOutput: true,
@@ -65,8 +67,6 @@ const DropdownComponent: DropdownComponentDefinition = {
       </ConfigurableFormItem>
     );
   },
-  settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) => m
     .add<IDropdownComponentProps>(0, (prev) => ({
       ...prev,
@@ -144,7 +144,24 @@ const DropdownComponent: DropdownComponentDefinition = {
         result.referenceListId = { module: "Shesha", name: referenceListId.name };
       return result;
     })
-    .add<IDropdownComponentProps>(12, (prev) => ({ ...prev, mode: prev.mode ?? 'single' })),
+    .add<IDropdownComponentProps>(12, (prev) => ({ ...prev, mode: prev.mode ?? 'single' }))
+    .add<IDropdownComponentProps>(13, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev))),
+  settingsFormMarkup: getSettings,
+  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+  getDefaultStyles: () => defaultStyles(),
+  previewConfiguration: {
+    type: 'dropdown',
+    id: 'dropdown',
+    propertyName: `dropdownAppearance`,
+    label: `Dropdown Label`,
+    version: 'latest',
+    dataSourceType: 'values',
+    mode: 'single',
+    values: [
+      { id: 'preview-1', label: 'Option 1', value: '1' },
+      { id: 'preview-2', label: 'Option 2', value: '2' },
+    ],
+  },
   linkToModelMetadata: (model, metadata): IDropdownComponentProps => {
     const isSingleRefList = metadata.dataType === DataTypes.referenceListItem;
     const isMultipleRefList = metadata.dataType === DataTypes.array && metadata.dataFormat === ArrayFormats.multivalueReferenceList;
