@@ -153,6 +153,7 @@ const FIELD_SOURCE_ITEMS: Array<[string, { label: string }]> = [
   ['func', { label: 'Function' }],
 ];
 const MAX_GROUP_NESTING = 3;
+const NO_PARENT_FUNCS: Array<[string, string]> = [];
 
 
 const isGroupNode = (node?: IPlainTreeItem): boolean => node?.type === 'group';
@@ -407,42 +408,41 @@ const QueryBuilderItemAction: React.FC<{
   );
 };
 
-const RuleValueFieldEditor: React.FC<{
+/** Picks a field path. Used for a rule's right-hand side and for any function argument sourced from a field. */
+const FieldPathEditor: React.FC<{
   config: Config;
-  field: FieldValue;
+  contextField: FieldValue;
   fieldType?: string;
   operator: string;
-  path: string[];
-  actions: BuilderProps['actions'];
   readOnly: boolean;
-  value?: SafeRuleValue;
-}> = ({ actions, config, field, fieldType, operator, path, readOnly, value }) => {
+  selectedKey?: string;
+  setField: (nextField: string) => void;
+}> = ({ config, contextField, fieldType, operator, readOnly, selectedKey, setField }) => {
   const widgetProps = React.useMemo<WidgetProps>(() => ({
     placeholder: 'Select field',
     config,
-    field: toWidgetField(field),
-    fieldDefinition: toWidgetFieldDefinition(getFieldConfig(config, field)),
+    field: toWidgetField(contextField),
+    fieldDefinition: toWidgetFieldDefinition(getFieldConfig(config, contextField)),
     fieldSrc: 'field',
     ...(fieldType !== undefined ? { fieldType } : {}),
     operator,
-    value,
+    value: selectedKey,
     readonly: readOnly,
     setValue: (nextValue: RuleValue): void => {
-      actions.setValue(path, 0, nextValue, fieldType ?? 'text');
+      if (typeof nextValue === 'string')
+        setField(nextValue);
     },
-  }), [actions, config, field, fieldType, operator, path, readOnly, value]);
+  }), [config, contextField, fieldType, operator, readOnly, selectedKey, setField]);
 
   const fieldProps = React.useMemo<FieldProps>(() => ({
     items: [],
     config,
     placeholder: 'Select field',
     selectedFieldSrc: 'field',
-    selectedKey: typeof value === 'string' ? value : undefined,
+    selectedKey,
     readonly: readOnly,
-    setField: (nextField: string): void => {
-      actions.setValue(path, 0, nextField, fieldType ?? 'text');
-    },
-  }), [actions, config, fieldType, path, readOnly, value]);
+    setField,
+  }), [config, readOnly, selectedKey, setField]);
 
   return (
     <FieldWidgetProvider widgetProps={widgetProps}>
@@ -480,15 +480,16 @@ const RuleWidgetEditorInner: React.FC<{
 }) => {
   if (valueSrc === 'field') {
     return (
-      <RuleValueFieldEditor
+      <FieldPathEditor
         config={config}
-        field={field}
+        contextField={field}
         {...(fieldType !== undefined ? { fieldType } : {})}
         operator={operator}
-        path={path}
-        actions={actions}
         readOnly={readOnly}
-        value={value}
+        {...(typeof value === 'string' ? { selectedKey: value } : {})}
+        setField={(nextField: string): void => {
+          actions.setValue(path, delta, nextField, fieldType ?? 'text');
+        }}
       />
     );
   }
@@ -551,7 +552,8 @@ const areRuleWidgetPropsEqual = (
 
 const RuleWidgetEditor = React.memo(RuleWidgetEditorInner, areRuleWidgetPropsEqual);
 
-const isFuncValue = (value?: SafeRuleValue): value is FuncValue =>
+/** Takes `unknown` deliberately: `FuncValue.args` is typed through `RuleValue`, which carries `any`. */
+const isFuncValue = (value: unknown): value is FuncValue =>
   typeof value === 'object' && value !== null && !Array.isArray(value) && 'func' in value;
 
 const FuncArgEditor: React.FC<{
@@ -561,36 +563,100 @@ const FuncArgEditor: React.FC<{
   argValue?: FuncArgValue<RuleValue>;
   config: Config;
   delta: number;
+  funcKey: string;
+  parentFuncs: Array<[string, string]>;
   path: string[];
   readOnly: boolean;
-}> = ({ actions, arg, argKey, argValue, config, delta, path, readOnly }) => {
-  const widgetDefinition = getArgWidgetConfig(config, arg);
-  if (!widgetDefinition)
-    return null;
+}> = ({ actions, arg, argKey, argValue, config, delta, funcKey, parentFuncs, path, readOnly }) => {
+  // An argument declares its own sources — `LOWER(str)` accepts a field, not just a typed literal.
+  const availableSources: ValueSource[] = Array.isArray(arg.valueSources) && arg.valueSources.length > 0
+    ? arg.valueSources
+    : ['value'];
+  const rawSource = argValue?.valueSrc;
+  const argSource: ValueSource = rawSource !== undefined && availableSources.includes(rawSource)
+    ? rawSource
+    : availableSources[0] ?? 'value';
 
-  const widgetProps: WidgetProps = {
-    ...(arg.fieldSettings ?? {}),
-    placeholder: arg.label ?? argKey,
-    field: argKey,
-    fieldDefinition: toWidgetFieldDefinition(arg),
-    fieldSrc: 'field',
-    fieldType: arg.type,
-    operator: '',
-    config,
-    delta,
-    readonly: readOnly,
-    value: argValue?.value,
-    setValue: (nextValue: SafeRuleValue): void => {
-      if (isFuncValue(nextValue))
-        return;
+  const setArgSource = (nextSource: string): void => {
+    if (nextSource === argSource)
+      return;
 
-      actions.setFuncValue(path, delta, [], argKey, nextValue, arg.type);
-    },
+    actions.setFuncValue(path, delta, parentFuncs, argKey, nextSource, '!valueSrc');
+  };
+
+  const renderArgEditor = (): React.ReactNode => {
+    if (argSource === 'func') {
+      return (
+        <FuncEditor
+          actions={actions}
+          config={config}
+          delta={delta}
+          expectedType={arg.type}
+          parentFuncs={[...parentFuncs, [funcKey, argKey]]}
+          path={path}
+          readOnly={readOnly}
+          {...(isFuncValue(argValue?.value) ? { value: argValue.value } : {})}
+        />
+      );
+    }
+
+    if (argSource === 'field') {
+      return (
+        <FieldPathEditor
+          config={config}
+          contextField={argKey}
+          fieldType={arg.type}
+          operator=""
+          readOnly={readOnly}
+          {...(typeof argValue?.value === 'string' ? { selectedKey: argValue.value } : {})}
+          setField={(nextField: string): void => {
+            actions.setFuncValue(path, delta, parentFuncs, argKey, nextField, arg.type);
+          }}
+        />
+      );
+    }
+
+    const widgetDefinition = getArgWidgetConfig(config, arg);
+    if (!widgetDefinition)
+      return null;
+
+    const widgetProps: WidgetProps = {
+      ...(arg.fieldSettings ?? {}),
+      placeholder: arg.label ?? argKey,
+      field: argKey,
+      fieldDefinition: toWidgetFieldDefinition(arg),
+      fieldSrc: 'field',
+      fieldType: arg.type,
+      operator: '',
+      config,
+      delta,
+      readonly: readOnly,
+      value: argValue?.value,
+      setValue: (nextValue: SafeRuleValue): void => {
+        if (isFuncValue(nextValue))
+          return;
+
+        actions.setFuncValue(path, delta, parentFuncs, argKey, nextValue, arg.type);
+      },
+    };
+
+    return renderWidget(widgetDefinition, widgetProps, config.ctx);
   };
 
   return (
     <div className={`sha-query-builder-func-arg sha-query-builder-func-arg--${argKey}`}>
-      {renderWidget(widgetDefinition, widgetProps, config.ctx)}
+      {availableSources.length > 1 && (
+        <div className="sha-query-builder-source-slot">
+          <SourceSelector
+            variant="value"
+            valueSources={getValueSourceItems(config, availableSources)}
+            valueSrc={argSource}
+            setValueSrc={setArgSource}
+            readonly={readOnly}
+          />
+        </div>
+      )}
+      {renderArgEditor()}
     </div>
   );
 };
@@ -605,10 +671,12 @@ const FuncEditor: React.FC<{
   config: Config;
   delta: number;
   expectedType?: string;
+  /** Chain of [funcKey, argKey] pairs identifying a nested function; empty at the top level. */
+  parentFuncs?: Array<[string, string]>;
   path: string[];
   readOnly: boolean;
   value?: SafeRuleValue;
-}> = ({ actions, config, delta, expectedType, path, readOnly, value }) => {
+}> = ({ actions, config, delta, expectedType, parentFuncs = NO_PARENT_FUNCS, path, readOnly, value }) => {
   const funcValue = isFuncValue(value) ? value : null;
   const funcKey = funcValue?.func;
   const funcDefinition = getFuncConfig(config, funcKey);
@@ -618,16 +686,25 @@ const FuncEditor: React.FC<{
   );
 
   const setFunc = React.useCallback((nextFunc: string): void => {
-    actions.setFuncValue(path, delta, [], null, nextFunc, '!func');
-  }, [actions, delta, path]);
+    actions.setFuncValue(path, delta, parentFuncs, null, nextFunc, '!func');
+  }, [actions, delta, parentFuncs, path]);
 
   // Nothing picked yet: fall back to the config's hidden func for this type (the inline mustache
   // `EVALUATE_*`), else the first selectable one, so switching to the func source is never a blank row.
   const defaultFuncKey = (candidates.find((candidate) => candidate.hidden) ?? candidates[0])?.key;
+  // Applied at most once per target. Without this, a default that the store declines to persist
+  // re-triggers the effect on every render and spins the tab into an infinite dispatch loop.
+  const targetKey = `${getPathKey(path)}:${delta}:${parentFuncs.map(([f, a]) => `${f}.${a}`).join('>')}`;
+  const appliedDefaultFor = React.useRef<string | null>(null);
   React.useEffect(() => {
-    if (funcKey === undefined && defaultFuncKey !== undefined)
-      setFunc(defaultFuncKey);
-  }, [defaultFuncKey, funcKey, setFunc]);
+    if (funcKey !== undefined || defaultFuncKey === undefined)
+      return;
+    if (appliedDefaultFor.current === targetKey)
+      return;
+
+    appliedDefaultFor.current = targetKey;
+    setFunc(defaultFuncKey);
+  }, [defaultFuncKey, funcKey, setFunc, targetKey]);
 
   // A hidden func stays listed while it is the current selection, otherwise the box reads as empty.
   const funcOptions = React.useMemo(
@@ -666,6 +743,8 @@ const FuncEditor: React.FC<{
               {...(funcValue?.args[argKey] !== undefined ? { argValue: funcValue.args[argKey] } : {})}
               config={config}
               delta={delta}
+              funcKey={funcKey ?? ''}
+              parentFuncs={parentFuncs}
               path={path}
               readOnly={readOnly}
             />

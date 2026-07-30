@@ -59,6 +59,7 @@ export const getEvaluateFunc = (type: string): Func & IHasHideForSelect => {
         type: 'text',
         defaultValue: '',
         valueSources: ['value'],
+        preferWidgets: ['mustacheExpression'],
       },
       required: {
         label: 'Allow empty',

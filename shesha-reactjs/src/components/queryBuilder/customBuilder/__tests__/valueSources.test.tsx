@@ -38,6 +38,7 @@ const createConfig = (): Config => {
   const fields: Fields = {
     numberPrimary: { label: 'Number Primary', type: 'number' },
     numberSecondary: { label: 'Number Secondary', type: 'number' },
+    textPrimary: { label: 'Text Primary', type: 'text' },
   };
 
   return QbUtils.ConfigUtils.extendConfig({ ...queryBuilderConfig, fields } as Config);
@@ -149,5 +150,98 @@ describe('function editor markup', () => {
     expect(container.querySelectorAll('.sha-query-builder-func-arg')).toHaveLength(2);
     expect(container.querySelector('.sha-query-builder-func-arg--expression')).not.toBeNull();
     expect(container.querySelector('.sha-query-builder-func-arg--required')).not.toBeNull();
+  });
+});
+
+describe('function argument sources', () => {
+  // `LOWER(str)` declares valueSources ['value', 'field', 'func']; rendering only the value widget
+  // left no way to pick which field to lowercase.
+  const renderLowerRule = (): HTMLElement => {
+    const config = createConfig();
+    const jsonTree: JsonTree = {
+      id: 'group-1',
+      type: 'group',
+      children1: [
+        {
+          id: 'rule-1',
+          type: 'rule',
+          properties: {
+            field: 'textPrimary',
+            operator: 'equal',
+            value: [{ func: 'LOWER', args: { str: { value: '', valueSrc: 'value' } } }],
+            valueSrc: ['func'],
+            valueType: ['text'],
+          },
+        },
+      ],
+    } as JsonTree;
+
+    const { container } = render(
+      React.createElement(CustomQueryBuilder, {
+        actions: createActions(),
+        config,
+        tree: QbUtils.loadTree(jsonTree),
+      }),
+    );
+
+    return container;
+  };
+
+  it('gives a multi-source argument its own source selector', () => {
+    const argSlot = renderLowerRule().querySelector('.sha-query-builder-func-arg--str');
+
+    expect(argSlot).not.toBeNull();
+    expect(argSlot?.querySelector('.sha-query-builder-source-trigger')).not.toBeNull();
+  });
+
+  it('leaves a single-source argument without a selector', () => {
+    const container = renderLowerRule();
+    const argSlots = container.querySelectorAll('.sha-query-builder-func-arg');
+
+    // LOWER declares exactly one argument, so the only selector present is the one for `str`.
+    expect(argSlots).toHaveLength(1);
+  });
+});
+
+describe('default function selection', () => {
+  const createSpyActions = (): { actions: BuilderProps['actions']; setFuncValue: jest.Mock } => {
+    const setFuncValue = jest.fn();
+    const actions = new Proxy(
+      { setFuncValue },
+      { get: (target: Record<string, unknown>, prop: string) => prop in target ? target[prop] : jest.fn() },
+    ) as BuilderProps['actions'];
+
+    return { actions, setFuncValue };
+  };
+
+  const funcRuleTree = (): JsonTree => ({
+    id: 'group-1',
+    type: 'group',
+    children1: [
+      {
+        id: 'rule-1',
+        type: 'rule',
+        properties: { field: 'textPrimary', operator: 'equal', value: [], valueSrc: ['func'], valueType: ['text'] },
+      },
+    ],
+  } as JsonTree);
+
+  // A store that declines to persist the default must not re-trigger the effect: that loop crashed
+  // the tab when switching a rule's source to Function.
+  it('applies the default function once even when the value never lands', () => {
+    const config = createConfig();
+    const { actions, setFuncValue } = createSpyActions();
+    const element = React.createElement(CustomQueryBuilder, {
+      actions,
+      config,
+      tree: QbUtils.loadTree(funcRuleTree()),
+    });
+
+    const { rerender } = render(element);
+    rerender(element);
+    rerender(element);
+
+    const defaultApplications = setFuncValue.mock.calls.filter((call) => call[3] === null);
+    expect(defaultApplications).toHaveLength(1);
   });
 });

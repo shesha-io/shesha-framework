@@ -10,7 +10,11 @@ jest.mock('../../widgets/field', () => {
   return { __esModule: true, FieldWidget: { ...BasicConfig.widgets.field } };
 });
 jest.mock('../../widgets/ignoreIfUnassigned', () => ({ __esModule: true, IgnoreIfUnassignedWidget: {} }));
-jest.mock('../../widgets/mustacheExpression', () => ({ __esModule: true, MustacheExpressionWidget: {} }));
+// `config.ts` imports `ExpressionEditorWidget`; mocking only the alias leaves the widget undefined.
+jest.mock('../../widgets/mustacheExpression', () => {
+  const widget = { type: 'text', factory: () => null };
+  return { __esModule: true, ExpressionEditorWidget: widget, MustacheExpressionWidget: widget };
+});
 // Mirrors the real `getEvaluateFunc` shape; the real module reaches into providers/ and pulls in
 // `?raw` imports that jest cannot resolve.
 jest.mock('../../funcs/evaluate', () => ({
@@ -24,7 +28,12 @@ jest.mock('../../funcs/evaluate', () => ({
 }));
 
 const { config: queryBuilderConfig } = require('../../config');
-const { getFieldOperators, getFuncCandidates, getOperatorCardinality } = require('../raqbConfig');
+const {
+  getArgWidgetConfig,
+  getFieldOperators,
+  getFuncCandidates,
+  getOperatorCardinality,
+} = require('../raqbConfig');
 
 const createConfig = (): Config => {
   const fields: Fields = {
@@ -70,6 +79,26 @@ describe('raqbConfig', () => {
 
     it('reports no value for a unary operator', () => {
       expect(getOperatorCardinality(config, 'is_null', 'textPrimary')).toBe(0);
+    });
+  });
+
+  describe('getArgWidgetConfig', () => {
+    // A text argument resolves to a plain input unless the function asks for a richer editor, which
+    // is what made the mustache expression argument render as a bare textfield.
+    it('honours the widget an argument prefers', () => {
+      const widget = getArgWidgetConfig(config, {
+        type: 'text',
+        preferWidgets: ['mustacheExpression'],
+      });
+
+      expect(widget).toBe(config.widgets['mustacheExpression']);
+    });
+
+    it('falls back to the type default when no widget is preferred', () => {
+      const widget = getArgWidgetConfig(config, { type: 'text' });
+
+      expect(widget).not.toBeNull();
+      expect(widget).not.toBe(config.widgets['mustacheExpression']);
     });
   });
 
