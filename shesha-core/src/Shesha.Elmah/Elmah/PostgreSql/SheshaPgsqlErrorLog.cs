@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Shesha.Elmah.PostgreSql
 {
@@ -177,22 +178,37 @@ namespace Shesha.Elmah.PostgreSql
 
         private static class Commands
         {
-            public static void ExecuteNonQuery(NpgsqlConnection connection, string sql)
+            // Whitelist for SQL identifiers (schema/table names) that must be embedded directly into
+            // DDL statements where parameters are not allowed. Prevents SQL injection via identifiers.
+            private static readonly Regex _identifierRegex = new Regex(@"^[A-Za-z_][A-Za-z0-9_]*$", RegexOptions.Compiled);
+
+            private static string ValidateIdentifier(string identifier)
+            {
+                if (string.IsNullOrEmpty(identifier) || !_identifierRegex.IsMatch(identifier))
+                    throw new ArgumentException($"Invalid SQL identifier: '{identifier}'.", nameof(identifier));
+                return identifier;
+            }
+
+            public static void ExecuteNonQuery(NpgsqlConnection connection, string sql, params NpgsqlParameter[] parameters)
             {
                 using (var command = new NpgsqlCommand(sql))
                 {
                     command.Connection = connection;
+                    if (parameters != null && parameters.Length > 0)
+                        command.Parameters.AddRange(parameters);
                     if (connection.State == ConnectionState.Closed)
                         connection.Open();
                     command.ExecuteNonQuery();
                 }
             }
 
-            public static object ExecuteScalar(NpgsqlConnection connection, string sql)
+            public static object ExecuteScalar(NpgsqlConnection connection, string sql, params NpgsqlParameter[] parameters)
             {
                 using (var command = new NpgsqlCommand(sql))
                 {
                     command.Connection = connection;
+                    if (parameters != null && parameters.Length > 0)
+                        command.Parameters.AddRange(parameters);
                     if (connection.State == ConnectionState.Closed)
                         connection.Open();
                     return command.ExecuteScalar();
@@ -201,29 +217,33 @@ namespace Shesha.Elmah.PostgreSql
 
             public static void CreateSchemaIfMissing(NpgsqlConnection connection, string schemaName)
             {
-                ExecuteNonQuery(connection, @$"create schema if not exists ""{schemaName}""");
+                ExecuteNonQuery(connection, @$"create schema if not exists ""{ValidateIdentifier(schemaName)}""");
             }
 
             public static void CreateSchema(NpgsqlConnection connection, string schemaName)
             {
-                ExecuteNonQuery(connection, $@"create schema {schemaName}");
+                ExecuteNonQuery(connection, $@"create schema ""{ValidateIdentifier(schemaName)}""");
             }
 
             public static bool TableExists(NpgsqlConnection connection, string schemaName, string tableName)
             {
-                var result = (bool?)ExecuteScalar(connection, $@"
+                var result = (bool?)ExecuteScalar(connection, @"
 SELECT EXISTS (
    SELECT 1
-   FROM   information_schema.tables 
-   WHERE  table_schema = '{schemaName}'
-   AND    table_name = '{tableName}'
+   FROM   information_schema.tables
+   WHERE  table_schema = @schemaName
+   AND    table_name = @tableName
    )
-");
+",
+                    new NpgsqlParameter("@schemaName", schemaName),
+                    new NpgsqlParameter("@tableName", tableName));
                 return result == true;
             }
 
             public static void CreateErrorsTable(NpgsqlConnection connection, string schemaName, string tableName)
             {
+                schemaName = ValidateIdentifier(schemaName);
+                tableName = ValidateIdentifier(tableName);
                 ExecuteNonQuery(connection, $@"
 CREATE SEQUENCE {schemaName}.{tableName}_sequence;
 CREATE TABLE {schemaName}.{tableName}
@@ -254,6 +274,8 @@ CREATE INDEX ix_{tableName}_app_time_seq ON {schemaName}.{tableName} USING BTREE
 
             public static void CreateErrorRefsTable(NpgsqlConnection connection, string schemaName, string tableName)
             {
+                schemaName = ValidateIdentifier(schemaName);
+                tableName = ValidateIdentifier(tableName);
                 ExecuteNonQuery(connection, $@"
 CREATE TABLE {schemaName}.{tableName}
 (
