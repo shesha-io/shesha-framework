@@ -62,6 +62,11 @@ export class NotesEditorInstance implements INotesEditorActions, INotesEditorSta
       return;
 
     this.#notesReference = notesReference;
+    // drop the previous owner's notes and invalidate any fetch still in flight for it, otherwise
+    // they stay visible under the new owner when the new reference doesn't trigger a fetch
+    this.#fetchNotesRequestId += 1;
+    this.#notes = [];
+    this.#isFetchingNotes = false;
     this.updateCanPostNotes();
     this.notifySubscribers();
     // Skip API calls in designer/config mode to prevent errors from incomplete data
