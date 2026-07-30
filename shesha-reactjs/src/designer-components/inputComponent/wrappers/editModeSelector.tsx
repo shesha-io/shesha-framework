@@ -8,7 +8,7 @@ import { isNotNullOrWhiteSpace } from '@/utils/nullables';
 
 export const EditModeSelectorWrapper: FCUnwrapped<IEditModeSelectorSettingsInputProps> = (props) => {
   const { styles } = useStyles();
-  const { value, onChange, readOnly, size } = props;
+  const { value, onChange, readOnly, size, interactionType } = props;
   const defaultModel = useDefaultModelActionsOrUndefined();
   const onlyModel = isNotNullOrWhiteSpace(props.defaultModelPropertyName) ? defaultModel?.getValueInfo(props.defaultModelPropertyName)?.state === 'onlyModel' : true;
 
@@ -23,6 +23,7 @@ export const EditModeSelectorWrapper: FCUnwrapped<IEditModeSelectorSettingsInput
       onGetAdditionalInfo={currentValueAdditionalInfo}
       size={size}
       className={styles.radioBtns}
+      interactionType={interactionType ?? 'full'}
     />
   );
 };

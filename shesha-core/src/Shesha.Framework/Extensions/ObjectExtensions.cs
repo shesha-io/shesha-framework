@@ -69,6 +69,16 @@ namespace Shesha.Extensions
         }
 
         /// <summary>
+        /// Indicates is the specified type a type of EntityReferenceDto
+        /// </summary>
+        public static bool IsEntityReferenceDtoType(this Type type)
+        {
+            return MappingHelper.IsEntityReferenceDtoType(type);
+        }
+
+
+
+        /// <summary>
         /// Indicates is the specified type a type of Json entity
         /// </summary>
         public static bool IsJsonEntityType(this Type? type)

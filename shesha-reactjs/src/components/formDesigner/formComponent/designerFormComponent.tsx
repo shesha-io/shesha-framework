@@ -16,7 +16,7 @@ import classNames from "classnames";
 import { isNonEmptyArray } from "@/utils/array";
 import Show from "@/components/show";
 import { Tooltip } from "antd";
-import { EditOutlined, EyeInvisibleOutlined, FunctionOutlined, StopOutlined } from "@ant-design/icons";
+import { EyeInvisibleOutlined, FunctionOutlined } from "@ant-design/icons";
 import { designerConstants } from "../utils/designerConstants";
 import DragWrapper from "../configurableFormComponent/dragWrapper";
 import ValidationIcon from "../configurableFormComponent/validationIcon";
@@ -26,6 +26,7 @@ import FormComponentErrorWrapper from "./formComponentErrorWrapper";
 import { FormComponentModelPreparer } from "./formComponentModelPreparer";
 import { UnknownFormComponent } from "./unknownFormComponent";
 import { IFormComponentProps } from "./formComponent";
+import Icon from "@/components/icon/Icon";
 
 export interface IDesignerFormComponentProps {
   componentModel: IComponentModelProps;
@@ -287,14 +288,20 @@ const DesignerFormComponentInner: FC<IDesignerFormComponentProps> = ({
         </Show>
 
         <Show when={!componentEditModeFx && (componentModel.editMode === 'readOnly' || componentModel.editMode === false)}>
-          <Tooltip title="This component is always in Read only mode. It's now enabled because we're in a designer mode">
-            <StopOutlined />
+          <Tooltip title="This component is always in Read only mode">
+            <Icon icon="editLockIcon" />
+          </Tooltip>
+        </Show>
+
+        <Show when={!componentEditModeFx && componentModel.editMode === 'disabled'}>
+          <Tooltip title="This component is always disabled">
+            <Icon icon="editDisableIcon" />
           </Tooltip>
         </Show>
 
         <Show when={!componentEditModeFx && componentModel.editMode === 'editable'}>
           <Tooltip title="This component is always in Edit/Action mode">
-            <EditOutlined />
+            <Icon icon="editIcon" />
           </Tooltip>
         </Show>
       </span>

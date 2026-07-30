@@ -53,11 +53,11 @@ const RateComponent: IToolboxComponent<IRateProps> = {
                 style={{ ...model.allStyles?.fullStyle, display: 'flex', alignItems: 'center' }}
                 {...(isDefined(value) ? { value } : {})}
                 onChange={(newValue) => {
-                  ctx?.handleEvent(undefined, newValue, model.onChangeCustom);
+                  ctx?.handleEvent(undefined, { value: newValue }, model.onChangeCustom);
                   onChange(newValue);
                 }}
-                onFocus={() => ctx?.handleEvent(undefined, value, model.onFocusCustom)}
-                onBlur={() => ctx?.handleEvent(undefined, value, model.onBlurCustom)}
+                onFocus={() => ctx?.handleEvent(undefined, { value }, model.onFocusCustom)}
+                onBlur={() => ctx?.handleEvent(undefined, { value }, model.onBlurCustom)}
               />
             );
           }}

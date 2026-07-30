@@ -129,7 +129,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps): React.JSX.El
   const foundDynamicFilter = isDefined(filters) && hasDynamicFilter(filters);
 
   const hasFormData = !isEmpty(formData);
-  const hasGlobalState = !isEmpty(formData);
+  const hasGlobalState = !isEmpty(globalState);
   const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityType);
 
   const evaluateDynamicFiltersHelper = (): void => {

@@ -1,9 +1,9 @@
 import jseu from 'js-encoding-utils';
-import { getLocalizationOrDefault } from './localization';
 import { getLocalStorage } from './storage';
 import { IAccessToken } from '@/interfaces';
 import { IStoredToken } from '@/interfaces/accessToken';
 import { DEFAULT_ACCESS_TOKEN_NAME } from '@/providers/sheshaApplication/contexts';
+import { isDefined, isNullOrWhiteSpace } from './nullables';
 
 /**
  * Standard Authorization header name
@@ -67,7 +67,6 @@ export const hasTokenExpired = (date: string): boolean => {
 export const removeAccessToken = (tokenName: string): boolean => {
   try {
     getLocalStorage()?.removeItem(tokenName);
-    getLocalStorage()?.clear();
     return true;
   } catch {
     return false;
@@ -76,10 +75,10 @@ export const removeAccessToken = (tokenName: string): boolean => {
 
 export const isTokenAboutToExpire = (tokenName: string, bufferSeconds = 60): boolean => {
   const token = getLocalStorage()?.getItem(tokenName);
-  if (!token) return true;
+  if (isNullOrWhiteSpace(token)) return true;
   const deserializedToken = parseToken(token);
 
-  if (!deserializedToken?.expireOn) return true;
+  if (!isDefined(deserializedToken?.expireOn)) return true;
 
   const expiresInSeconds = Math.floor(
     (new Date(deserializedToken.expireOn).getTime() - Date.now()) / 1000,
@@ -91,10 +90,10 @@ export const isTokenAboutToExpire = (tokenName: string, bufferSeconds = 60): boo
 export const getAccessToken = (tokenName: string): IAccessToken | null => {
   const token = getLocalStorage()?.getItem(tokenName);
 
-  if (token) {
+  if (!isNullOrWhiteSpace(token)) {
     const deserializedToken = parseToken(token);
 
-    if (!deserializedToken || hasTokenExpired(deserializedToken.expireOn || '')) {
+    if (!deserializedToken || hasTokenExpired(deserializedToken.expireOn ?? '')) {
       removeAccessToken(tokenName);
 
       return null;
@@ -103,13 +102,4 @@ export const getAccessToken = (tokenName: string): IAccessToken | null => {
   }
 
   return null;
-};
-
-export const getHttpHeaders = (token: string | null): Record<string, string> => {
-  const headers: Record<string, string> = {};
-  if (token) headers[AUTHORIZATION_HEADER_NAME] = `Bearer ${token}`;
-
-  headers['.AspNetCore.Culture'] = getLocalizationOrDefault();
-
-  return headers;
 };

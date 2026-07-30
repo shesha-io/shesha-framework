@@ -7,7 +7,7 @@ import { useDefaultModelPropertyUpdateSubscription, useDefaultModelActionsOrUnde
 import { getValueByPropertyName } from '@/utils/object';
 import { useFormItem } from '@/providers';
 import { IAnyObject } from '@/interfaces';
-import { isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
 import PermissionsControl from '../permissionsControl';
 
@@ -19,13 +19,13 @@ type ChildProps = {
 
 const FormItem: FC<ISettingsFormItemProps> = (props) => {
   const { styles } = useStyles();
-  const { name, label, tooltip, required, hidden, jsSetting, children, valuePropName = 'value', layout, availableConstantsExpression, permissionSettings } = props;
+  const { name, label, tooltip, required, validationDependencies, hidden, jsSetting, children, valuePropName = 'value', layout, availableConstantsExpression, permissionSettings } = props;
   const [hasCode, setHasCode] = useState(false);
-
-  useDefaultModelPropertyUpdateSubscription(name);
 
   const { namePrefix } = useFormItem();
   const defaultModelPropName = isNotNullOrWhiteSpace(namePrefix) ? namePrefix + '.' + name : name;
+
+  useDefaultModelPropertyUpdateSubscription(defaultModelPropName);
 
   const defaultModel = useDefaultModelActionsOrUndefined();
   const valueInfo = defaultModel?.getValueInfo(defaultModelPropName);
@@ -49,9 +49,9 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
           readOnly: readOnly,
           size: 'small',
           disabled: readOnly,
-          onChange: (event: SyntheticEvent) => {
-            const { target } = event;
-            const data = !isNullOrWhiteSpace(valuePropName) && typeof target === 'object' && valuePropName in target
+          onChange: (event: SyntheticEvent | undefined) => {
+            const target = event?.target as HTMLInputElement | undefined;
+            const data = !isNullOrWhiteSpace(valuePropName) && isDefined(target) && typeof target === 'object' && valuePropName in target
               ? target[valuePropName as keyof typeof target]
               : event;
             onChange(data);
@@ -74,6 +74,7 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
         id: '',
         description: tooltip,
         validate: { required },
+        validationDependencies,
         hidden,
         layout,
         size: 'small',
@@ -81,7 +82,7 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
       className={`sha-js-label ${className}`}
     >
       {(value, onChange) => {
-        const localValue = defaultModel?.getValueInfo(defaultModelPropName)?.state === 'usedDefault' ? defaultValue : value;
+        const localValue = valueInfo?.state === 'usedDefault' ? defaultValue : value;
         return !Boolean(jsSetting) ? (
           <PermissionsControl enabled={permissionSettings ?? false} propertyName={permissionPropertyName} readOnly={readOnly}>
             {childFunc(localValue, onChange, name)}

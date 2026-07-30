@@ -1,28 +1,56 @@
-import { DatatableInitArgs, IDatasetInstance } from "./models";
-import { SortingRule } from "react-table";
-import { IConfigurableColumnsProps, isActionColumnProps, isCrudOperationsColumnProps, isDataColumnProps, isFormColumnProps, isRendererColumnProps } from "../datatableColumnsConfigurator/models";
-import { DataFetchDependencies, DatasetEvents, DataTableColumnDto, DragState, FilterExpression, IColumnWidth, IGetListDataPayload, ISelectionProps, isTableRowData, ITableActionColumn, ITableColumn, ITableDataColumn, ITableFormColumn, ITableRendererColumn, RowSelection } from "./interfaces";
-import { IndexColumnFilterOption, ColumnFilter, ITableRowData, IStoredFilter, ISortingItem, ITableFilter, DataFetchDependency } from "./interfaces";
-import { IRepository } from "./repository/interfaces";
-import { IDataTableStateContext } from "./interfaces.state";
-import { DATA_TABLE_CONTEXT_INITIAL_STATE, IDataTableUserConfig, ITableColumnUserSettings, MIN_COLUMN_WIDTH } from "./contexts";
+/* eslint @typescript-eslint/strict-boolean-expressions: "error" */
+import { getFilterOptions } from "@/components/columnItemFilter";
+import { IAsyncStorage } from "@/configuration-studio/storage";
 import { IModelMetadata } from "@/interfaces";
 import { isNonEmptyArray, undefinedIfEmptyArray } from "@/utils/array";
-import { advancedFilter2JsonLogic, getCurrentSorting, getTableDataColumn, getTableDataColumns, getTableFormColumns, sortingItems2ColumnSorting } from "./utils";
-import { extractErrorInfo } from "@/utils/errors";
-import { SubscribeFunc, SubscriptionManager } from "@/utils/subscriptions/subscriptionManager";
-import { isDefined, isNullOrWhiteSpace, undefinedIfNullOrWhiteSpace } from "@/utils/nullables";
-import { camelcaseDotNotation } from "@/utils/string";
-import { ProperyDataType } from "@/interfaces/metadata";
-import { IAsyncStorage } from "@/configuration-studio/storage";
-import { isEqual, sortBy } from 'lodash';
-import { getFilterOptions } from "@/components/columnItemFilter";
 import { getIdOrUndefined } from "@/utils/entity";
+import { extractErrorInfo } from "@/utils/errors";
+import { isDefined, isNullOrWhiteSpace, undefinedIfNullOrWhiteSpace } from "@/utils/nullables";
+import { jsonSafeParse } from "@/utils/object";
+import { SubscribeFunc, SubscriptionManager } from "@/utils/subscriptions/subscriptionManager";
+import { isEqual, sortBy } from 'lodash';
+import { SortingRule } from "react-table";
+import { IConfigurableColumnsProps } from "../datatableColumnsConfigurator/models";
+import { DATA_TABLE_CONTEXT_INITIAL_STATE, IDataTableUserConfig, ITableColumnUserSettings } from "./contexts";
+import {
+  ColumnFilter,
+  DataFetchDependencies,
+  DataFetchDependency,
+  DatasetEvents, DataTableColumnDto,
+  DragState, FilterExpression, IColumnWidth,
+  IGetListDataPayload,
+  IndexColumnFilterOption,
+  ISelectionProps,
+  ISortingItem,
+  isTableRowData,
+  IStoredFilter, ITableColumn, ITableFilter, ITableRowData,
+  JsonLogicFilter, RowSelection,
+} from "./interfaces";
+import { IDataTableStateContext } from "./interfaces.state";
+import { DatatableInitArgs, IDatasetInstance } from "./models";
+import { IRepository } from "./repository/interfaces";
+import { advancedFilter2JsonLogic, prepareTableColumn, getCurrentSorting, getDefaultFilterOptionForDataType, getTableDataColumn, getTableDataColumns, getTableFormColumns, sortingItems2ColumnSorting } from "./utils";
 
 export type DataTableInstanceArgs = {
   repository: IRepository;
   logEnabled: boolean;
   storage: IAsyncStorage;
+};
+
+const filterExpression2Object = (filter: FilterExpression | undefined): JsonLogicFilter | undefined => {
+  if (!isDefined(filter))
+    return undefined;
+
+  return typeof filter === 'string'
+    ? !isNullOrWhiteSpace(filter)
+      ? jsonSafeParse(filter)
+      : undefined
+    : filter;
+};
+const tryAddFilter = (filters: JsonLogicFilter[], filter: FilterExpression | undefined): void => {
+  const converted = filterExpression2Object(filter);
+  if (isDefined(converted))
+    filters.push(converted);
 };
 
 export class DatasetInstance implements IDatasetInstance {
@@ -35,9 +63,15 @@ export class DatasetInstance implements IDatasetInstance {
   //#region config
   private userConfigId: string | undefined;
 
+  /** last fetched user config, is used to apply user's filter selection when predefined filters arrive after initialization */
+  private userConfig: IDataTableUserConfig | undefined;
+
   private waitForColumnsBeforeFetch: boolean = false;
 
   private dataFetchDependencies: DataFetchDependencies = {};
+
+  /** true when a fetch was skipped because some data fetch dependencies were not ready (e.g. dynamic filters are not evaluated yet) */
+  private fetchSkippedDueToDependencies: boolean = false;
   //#endregion
 
   #storage: IAsyncStorage;
@@ -61,6 +95,7 @@ export class DatasetInstance implements IDatasetInstance {
     this.#subscriptionManager = new SubscriptionManager<DatasetEvents, IDatasetInstance>();
     this.#storage = args.storage;
 
+
     // eslint-disable-next-line no-console
     this.log = args.logEnabled ? console.log : () => {};
   }
@@ -83,6 +118,7 @@ export class DatasetInstance implements IDatasetInstance {
     this.log("Initializing datatable instance");
     this.#metadata = args.metadata;
     this.userConfigId = args.userConfigId;
+    this.initialPageSize = args.initialPageSize ?? DATA_TABLE_CONTEXT_INITIAL_STATE.selectedPageSize;
     this.state.sortMode = args.sortMode; // TODO: make mandetory and split models
     this.state.dataFetchingMode = args.dataFetchingMode;
     this.state.selectedPageSize = args.initialPageSize ?? DATA_TABLE_CONTEXT_INITIAL_STATE.selectedPageSize;
@@ -93,8 +129,10 @@ export class DatasetInstance implements IDatasetInstance {
     this.state.allowReordering = args.allowReordering ?? false;
     this.state.customReorderEndpoint = args.customReorderEndpoint;
     this.state.permanentFilter = args.permanentFilter;
+    this.state.onBeforeRowReorder = args.onBeforeRowReorder;
+    this.state.onAfterRowReorder = args.onAfterRowReorder;
 
-    const userConfig = this.userConfigId
+    const userConfig = !isNullOrWhiteSpace(this.userConfigId)
       ? await this.featchUserConfigAsync()
       : undefined;
 
@@ -116,157 +154,61 @@ export class DatasetInstance implements IDatasetInstance {
   };
 
   private prepareColumn = (column: IConfigurableColumnsProps, repoColOverrides: DataTableColumnDto[], userConfig: IDataTableUserConfig | undefined): ITableColumn | undefined => {
-    const resolvedPropertyName = isDataColumnProps(column)
-      ? (column.propertyName || column.accessor || column.id)
-      : undefined;
-    const userColumnId = isDataColumnProps(column) ? resolvedPropertyName : column.id;
-    const userColumn = userConfig?.columns?.find((c) => c.id === userColumnId);
-
-    const baseProps: ITableColumn = {
-      id: column.id,
-      accessor: column.id,
-      columnId: column.id,
-      columnType: column.columnType,
-      anchored: column.anchored,
-      header: column.caption,
-      caption: column.caption,
-      minWidth: column.minWidth || MIN_COLUMN_WIDTH,
-      maxWidth: column.maxWidth,
-      width: userColumn?.width,
-      isVisible: column.isVisible,
-      show: column.isVisible,
-      isFilterable: false,
-      isSortable: false,
-      allowShowHide: false,
-      backgroundColor: column.backgroundColor,
-      description: column.description,
-    };
-
-    if (isDataColumnProps(column)) {
-      const colVisibility = userColumn && isDefined(userColumn.show) ? userColumn.show : column.isVisible;
-
-      const srvColumn = resolvedPropertyName
-        ? repoColOverrides.find((c) => !isNullOrWhiteSpace(c.propertyName) && camelcaseDotNotation(c.propertyName) === camelcaseDotNotation(resolvedPropertyName))
-        : {};
-
-      const dataCol: ITableDataColumn = {
-        ...baseProps,
-        id: resolvedPropertyName || column.id,
-        accessor: resolvedPropertyName ? camelcaseDotNotation(resolvedPropertyName) : column.accessor ?? "",
-        propertyName: resolvedPropertyName,
-
-        propertiesToFetch: resolvedPropertyName,
-        isEnitty: srvColumn?.dataType === 'entity',
-
-        createComponent: column.createComponent,
-        editComponent: column.editComponent,
-        displayComponent: column.displayComponent,
-
-        dataType: srvColumn?.dataType as ProperyDataType,
-        dataFormat: srvColumn?.dataFormat ?? undefined,
-        isSortable: column.allowSorting && Boolean(srvColumn?.isSortable),
-        isFilterable: srvColumn?.isFilterable ?? false,
-        entityTypeName: srvColumn?.entityTypeName ?? undefined,
-        entityTypeModule: srvColumn?.entityTypeModule ?? undefined,
-        referenceListName: srvColumn?.referenceListName ?? undefined,
-        referenceListModule: srvColumn?.referenceListModule ?? undefined,
-        allowInherited: srvColumn?.allowInherited ?? false,
-        description: column.description,
-        allowShowHide: true,
-        show: colVisibility,
-        metadata: srvColumn?.metadata ?? undefined,
-      };
-      return dataCol;
-    }
-
-    if (isActionColumnProps(column)) {
-      const { icon, actionConfiguration } = column;
-
-      const actionColumn: ITableActionColumn = {
-        ...baseProps,
-        icon,
-        actionConfiguration,
-      };
-
-      return actionColumn;
-    }
-
-    if (isFormColumnProps(column)) {
-      const formColumn: ITableFormColumn = {
-        ...baseProps,
-        accessor: '',
-        propertiesToFetch: column.propertiesNames,
-        propertiesNames: column.propertiesNames,
-
-        displayFormId: column.displayFormId,
-        createFormId: column.createFormId,
-        editFormId: column.editFormId,
-
-        minHeight: column.minHeight,
-      };
-      return formColumn;
-    }
-
-    if (isRendererColumnProps(column)) {
-      const rendererColumn: ITableRendererColumn = {
-        ...baseProps,
-        renderCell: column.renderCell,
-      };
-      return rendererColumn;
-    }
-
-    if (isCrudOperationsColumnProps(column)) {
-      return {
-        ...baseProps,
-      };
-    }
-
-    return undefined;
+    return prepareTableColumn(column, repoColOverrides, userConfig);
   };
 
+  /** monotonic counter used to skip outdated columns initializations (see `initColumnsAsync`) */
+  #columnsInitVersion: number = 0;
+
   private initColumnsAsync = async (columns: IConfigurableColumnsProps[], userConfig: IDataTableUserConfig | undefined): Promise<void> => {
-    const { state } = this;
+    const initVersion = ++this.#columnsInitVersion;
     const repoColOverrides = await this.repository.prepareColumns(columns);
+
+    // skip outdated initialization: a newer one was started while `prepareColumns` was awaited,
+    // applying this one may bring back an outdated set of columns
+    if (initVersion !== this.#columnsInitVersion)
+      return;
 
     const cols = columns
       .map<ITableColumn | undefined>((col) => this.prepareColumn(col, repoColOverrides, userConfig))
       .filter((c): c is ITableColumn => isDefined(c));
 
-    const { predefinedFilters } = state;
+    // note: use the updater form of state to not lose changes made while `prepareColumns` was awaited (e.g. predefined filters)
+    this.updateState((state) => {
+      const { predefinedFilters } = state;
 
-    const userFilters = isDefined(userConfig) && isNonEmptyArray(userConfig.selectedFilterIds) && isNonEmptyArray(predefinedFilters)
-      ? userConfig.selectedFilterIds.filter((x) => {
-        return predefinedFilters.some((f) => {
-          return f.id === x;
-        });
-      })
-      : [];
+      const userFilters = isDefined(userConfig) && isNonEmptyArray(userConfig.selectedFilterIds) && isNonEmptyArray(predefinedFilters)
+        ? userConfig.selectedFilterIds.filter((x) => {
+          return predefinedFilters.some((f) => {
+            return f.id === x;
+          });
+        })
+        : [];
 
-    const selectedStoredFilterIds = state.selectedStoredFilterIds?.length
-      ? [...state.selectedStoredFilterIds]
-      : [...userFilters];
+      const selectedStoredFilterIds = isNonEmptyArray(state.selectedStoredFilterIds)
+        ? [...state.selectedStoredFilterIds]
+        : [...userFilters];
 
-    if (selectedStoredFilterIds.length === 0 && isNonEmptyArray(predefinedFilters))
-      selectedStoredFilterIds.push(predefinedFilters[0].id);
+      if (selectedStoredFilterIds.length === 0 && isNonEmptyArray(predefinedFilters))
+        selectedStoredFilterIds.push(predefinedFilters[0].id);
 
-    const userSorting = isDefined(userConfig) && isNonEmptyArray(userConfig.tableSorting)
-      ? userConfig.tableSorting
-      : [];
+      const userSorting = isDefined(userConfig) && isNonEmptyArray(userConfig.tableSorting)
+        ? userConfig.tableSorting
+        : [];
 
-    this.updateState(() => (
-      {
+      return {
         ...state,
         columns: cols,
         // user config
-        currentPage: userConfig?.currentPage || 1,
+        currentPage: userConfig?.currentPage ?? 1,
         selectedPageSize: userConfig?.pageSize ?? state.selectedPageSize,
         quickSearch: userConfig?.quickSearch ?? "",
         tableFilter: userConfig?.advancedFilter ?? [],
         tableFilterDirty: userConfig?.advancedFilter,
         selectedStoredFilterIds,
         userSorting: userSorting,
-      }
-    ));
+      };
+    });
   };
 
   private updateState = (updater: (state: IDataTableStateContext) => IDataTableStateContext): void => {
@@ -291,8 +233,30 @@ export class DatasetInstance implements IDatasetInstance {
 
   notifySubscribers = (types: DatasetEvents[]): void => this.#subscriptionManager.notifySubscribers(types, this);
 
+  private isDataDependenciesReady = (): boolean => {
+    return Object.values(this.dataFetchDependencies).every((dep) => dep.state === 'ready');
+  };
+
   fetchData = async (): Promise<void> => {
     this.log("fetchData");
+
+    // the host component requires columns loading (see `requireColumns`), skip fetching until the columns
+    // are registered, `registerConfigurableColumns` triggers a fetch after registration
+    if (this.waitForColumnsBeforeFetch && !this.#columnsRegistered) {
+      this.log("fetchData skipped: columns are not registered yet");
+      return;
+    }
+
+    // Components (e.g. TableViewSelector) may require preparation logic (e.g. evaluation of dynamic filters)
+    // before the data can be fetched. Skip fetching until all dependencies are ready, the fetch
+    // is re-triggered when the dependency owner pushes its data (see `setPredefinedFilters`)
+    if (!this.isDataDependenciesReady()) {
+      this.fetchSkippedDueToDependencies = true;
+      this.log("fetchData skipped: data fetch dependencies are not ready");
+      return;
+    }
+    this.fetchSkippedDueToDependencies = false;
+
     this.updateState((state) => ({ ...state, isFetchingTableData: true, fetchTableDataError: undefined }));
     try {
       await this.saveUserConfigAsync();
@@ -323,7 +287,7 @@ export class DatasetInstance implements IDatasetInstance {
   };
 
   private getRowSelection = (rows: ITableRowData[], selectedId: string | undefined): ISelectionProps | undefined => {
-    if (!selectedId || rows.length === 0)
+    if (isNullOrWhiteSpace(selectedId) || rows.length === 0)
       return undefined;
 
     const rowIndex = rows.findIndex((row) => row.id === selectedId);
@@ -354,7 +318,7 @@ export class DatasetInstance implements IDatasetInstance {
     }
     const filter = this.getFilter(state);
 
-    if (state.sortMode === 'strict' && state.strictSortBy) {
+    if (state.sortMode === 'strict' && !isNullOrWhiteSpace(state.strictSortBy)) {
       if (!dataColumns.find((column) => column.propertyName === state.strictSortBy))
         dataColumns.push({
           id: state.strictSortBy,
@@ -387,26 +351,20 @@ export class DatasetInstance implements IDatasetInstance {
   private getFilter = (state: IDataTableStateContext): string => {
     const allFilters = state.predefinedFilters ?? [];
 
-    const filters = allFilters.filter((f) => (state.selectedStoredFilterIds && state.selectedStoredFilterIds.indexOf(f.id) > -1));
+    const filters = allFilters.filter((f) => (isNonEmptyArray(state.selectedStoredFilterIds) && state.selectedStoredFilterIds.indexOf(f.id) > -1));
     const { permanentFilter } = state;
 
-    const filterExpression2Object = (filter: FilterExpression): object => {
-      return typeof filter === 'string' ? JSON.parse(filter) : filter;
-    };
-
-    let expressions = [];
+    const expressions: JsonLogicFilter[] = [];
     filters.forEach((f) => {
-      if (f.expression) {
-        expressions.push(filterExpression2Object(f.expression));
-      }
+      tryAddFilter(expressions, f.expression);
     });
     // add permanent filter if specified
-    if (permanentFilter)
-      expressions.push(filterExpression2Object(permanentFilter));
+    tryAddFilter(expressions, permanentFilter);
 
     if (isNonEmptyArray(state.tableFilter)) {
       const advancedFilter = advancedFilter2JsonLogic(state.tableFilter, state.columns);
-      if (advancedFilter && advancedFilter.length > 0) expressions = expressions.concat(advancedFilter);
+      if (isNonEmptyArray(advancedFilter))
+        expressions.push(...advancedFilter);
     }
 
     if (expressions.length === 0) return "";
@@ -454,7 +412,7 @@ export class DatasetInstance implements IDatasetInstance {
           : [];
         return {
           columnId: id,
-          filterOption: filterOptions.length > 0 ? filterOptions[0] : undefined,
+          filterOption: filterOptions.length > 0 ? filterOptions[0] : getDefaultFilterOptionForDataType(column?.dataType),
           filter: undefined,
         };
       });
@@ -523,12 +481,32 @@ export class DatasetInstance implements IDatasetInstance {
     const { state } = this;
     const filtersChanged = !isEqual(sortBy(state.predefinedFilters), sortBy(predefinedFilters));
 
-    if (filtersChanged)
-      this.updateState((state) => ({ ...state, predefinedFilters }));
+    if (filtersChanged) {
+      // filters may arrive after initialization (e.g. when dynamic filters are evaluated using async form data),
+      // in this case the default filter selection must be applied here, the same way as `initColumnsAsync` does it
+      const currentSelectedIds = state.selectedStoredFilterIds ?? [];
+      let selectedStoredFilterIds = currentSelectedIds;
+      if (currentSelectedIds.length === 0 && isNonEmptyArray(predefinedFilters)) {
+        const userFilters = this.userConfig?.selectedFilterIds?.filter((id) => predefinedFilters.some((f) => f.id === id)) ?? [];
+        selectedStoredFilterIds = userFilters.length > 0 ? [...userFilters] : [predefinedFilters[0].id];
+      }
+
+      this.updateState((state) => ({ ...state, predefinedFilters, selectedStoredFilterIds }));
+    }
+
+    // refetch when the filters were changed or a previous fetch was skipped because filters were not evaluated yet
+    if (this.isInitialized && (filtersChanged || this.fetchSkippedDueToDependencies))
+      void this.fetchData();
   };
 
   setPermanentFilter = (filter: FilterExpression | undefined): void => {
+    const filterChanged = !isEqual(this.state.permanentFilter, filter);
+    if (!filterChanged)
+      return;
+
     this.updateState((state) => ({ ...state, permanentFilter: filter }));
+    if (this.isInitialized)
+      void this.fetchData();
   };
 
   onSort = async (sorting: SortingRule<ITableRowData>[]): Promise<void> => {
@@ -578,9 +556,10 @@ export class DatasetInstance implements IDatasetInstance {
   };
 
   private featchUserConfigAsync = async (): Promise<IDataTableUserConfig | undefined> => {
-    return !isNullOrWhiteSpace(this.userConfigId)
+    this.userConfig = !isNullOrWhiteSpace(this.userConfigId)
       ? await this.#storage.getAsync<IDataTableUserConfig>(this.userConfigId)
       : undefined;
+    return this.userConfig;
   };
 
   private saveUserConfigAsync = async (updater?: (userConfig: IDataTableUserConfig) => void): Promise<void> => {
@@ -619,14 +598,18 @@ export class DatasetInstance implements IDatasetInstance {
     await this.#storage.setAsync(userConfigId, userConfig);
   };
 
+  /** true when configurable columns were registered at least once (see `requireColumns` and `fetchData`) */
+  #columnsRegistered: boolean = false;
+
   registerConfigurableColumns = async (_ownerId: string, columns: IConfigurableColumnsProps[]): Promise<void> => {
     this.log("Register columns...");
     this.columns = columns;
+    this.#columnsRegistered = true;
 
     if (!this.isInitialized)
       return;
 
-    const userConfig = this.userConfigId
+    const userConfig = !isNullOrWhiteSpace(this.userConfigId)
       ? await this.featchUserConfigAsync()
       : undefined;
 
@@ -648,6 +631,12 @@ export class DatasetInstance implements IDatasetInstance {
 
   unregisterDataFetchDependency = (ownerId: string): void => {
     delete this.dataFetchDependencies[ownerId];
+
+    // If a fetch was previously skipped due to dependencies and now all dependencies are ready,
+    // retry the fetch
+    if (this.isInitialized && this.fetchSkippedDueToDependencies && this.isDataDependenciesReady()) {
+      void this.fetchData();
+    }
   };
 
   getRepository = (): IRepository => {

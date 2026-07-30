@@ -1,5 +1,5 @@
 import IconPicker, { IIconPickerProps, ShaIconTypes } from '@/components/iconPicker';
-import React, { CSSProperties, FC, useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import React, { CSSProperties, FC, useCallback, useMemo } from 'react';
 import { IApplicationContext } from '@/providers/form/utils';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { IDimensionsValue } from '../_settings/utils/dimensions/interfaces';
@@ -22,7 +22,7 @@ interface IconPickerWrapperProps {
   backgroundColor?: string | undefined;
   stylingBox?: string | undefined;
   defaultValue?: ShaIconTypes | undefined;
-  textAlign?: string | undefined;
+  textAlign?: CSSProperties['textAlign'] | undefined;
   style?: string | undefined;
   dimensions?: IDimensionsValue | undefined;
   description?: string | undefined;
@@ -34,17 +34,13 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     color,
     readOnly,
     onChange,
-    defaultValue,
     textAlign,
     selectBtnSize,
     fullStyles,
     iconSize,
     value,
+    defaultValue,
   } = props;
-
-  const [finalValue, setFinalValue] = useState<string | null>(null);
-  const hasSaved = useRef(false);
-
 
   const onIconChange = useCallback<Required<IIconPickerProps>["onIconChange"]>((_icon, iconName): void => {
     if (onChange) onChange(iconName);
@@ -54,25 +50,15 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
 
   const style: CSSProperties = useMemo(() => ({
     ...fullStyles,
-    fontSize: fullStyles?.fontSize || 24,
+    fontSize: fullStyles?.fontSize ?? 24,
     background: 'transparent',
   }), [fullStyles]);
 
-
-  useEffect(() => {
-    if (value && !hasSaved.current) {
-      setFinalValue(value);
-      hasSaved.current = true;
-    }
-  }, [value]);
-
-  const iconValue = finalValue ?? defaultValue;
-
   return (
     <Tooltip title={props.description}>
-      <div style={(defaultValue || value) ? { display: 'grid', placeItems: textAlign } : {}}>
+      <div style={(defaultValue || value) ? { textAlign: fullStyles?.textAlign ?? textAlign } : {}}>
         <IconPicker
-          value={iconValue as ShaIconTypes}
+          value={value ?? defaultValue ?? undefined}
           onIconChange={onIconChange}
           selectBtnSize={selectBtnSize}
           iconSize={iconSize ?? fontSize}

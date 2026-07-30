@@ -27,7 +27,7 @@ export const NotesRenderer: FC<INotesRendererProps> = ({
   maxLength,
 }) => {
   const { deleteNoteAsync, createNoteAsync, updateNoteAsync } = useNotesEditorActions();
-  const { notes } = useNotesEditorState();
+  const { notes, isFetchingNotes, isPostingNotes } = useNotesEditorState();
   const { styles } = useStyles();
 
   return (
@@ -38,6 +38,8 @@ export const NotesRenderer: FC<INotesRendererProps> = ({
         deleteNoteAsync={deleteNoteAsync}
 
         notes={notes}
+        isFetchingNotes={isFetchingNotes}
+        isPostingNotes={isPostingNotes}
 
         allowCreate={allowCreate}
         allowEdit={allowUpdate}

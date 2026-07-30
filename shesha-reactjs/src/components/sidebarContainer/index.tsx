@@ -23,6 +23,10 @@ export interface ISidebarContainerProps extends PropsWithChildren {
   configTreePanelSize?: string | number | undefined;
   noPadding?: boolean | undefined;
   viewType?: IViewType | undefined;
+  /** Inline usage: size the sidebar to its content (capped at the viewport) instead
+   * of forcing a full-viewport height. Use when this container is embedded as a plain
+   * component (e.g. the datatable filter panel) rather than a full-screen editor. */
+  embedded?: boolean | undefined;
 }
 
 export const SidebarContainer: FC<ISidebarContainerProps> = ({
@@ -34,6 +38,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   noPadding,
   canZoom = false,
   viewType = 'configStudio',
+  embedded = false,
 }) => {
   const { formMode } = useShaFormInstance();
   const { styles } = useStyles();
@@ -122,7 +127,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   };
 
   return (
-    <div className={styles.sidebarContainer}>
+    <div className={classNames(styles.sidebarContainer, { embedded })}>
       {header && (
         <div className={styles.sidebarContainerHeader}>{typeof header === 'function' ? header() : header}</div>
       )}

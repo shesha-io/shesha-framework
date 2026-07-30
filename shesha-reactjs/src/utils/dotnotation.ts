@@ -64,8 +64,27 @@ export const getNestedPropertyValue = (container: unknown | undefined, propertyP
   if (!isDefined(container) || isNullOrWhiteSpace(propertyPath))
     return undefined;
   const path = propertyPath.split('.');
-  return path.reduce((prev, part) => (prev && typeof (prev) === 'object' && part in prev ? (prev as Record<string, unknown>)[part] : undefined), container as unknown);
+  return path.reduce((prev, part) => (isDefined(prev) && typeof (prev) === 'object' && part in prev ? (prev as Record<string, unknown>)[part] : undefined), container as unknown);
 };
+
+
+/**
+ * Retrieves a nested string property value from an object container using a dot notation path.
+ *
+ * @example
+ * const container = { a: { b: { c: 'value' } } };
+ * const value = getNestedStringOrUndefined(container, 'a.b.c');
+ * console.log(value); // prints 'value'
+ *
+ * @param {unknown | undefined} container - The object container to retrieve the property value from.
+ * @param {string} propertyPath - The dot notation path to the property value to retrieve.
+ * @returns {string | undefined} The retrieved property value as a string or undefined if the path does not exist, the property value is not a string, or the container is undefined.
+ */
+export const getNestedStringOrUndefined = (container: unknown | undefined, propertyPath: string): string | undefined => {
+  const value = getNestedPropertyValue(container, propertyPath);
+  return typeof value === 'string' ? value : undefined;
+};
+
 
 /**
  * Retrieves a nested property value from an object container using an array path.
@@ -82,5 +101,5 @@ export const getNestedPropertyValue = (container: unknown | undefined, propertyP
 export const getNestedPropertyValueByPath = (container: unknown | undefined, path: string[]): unknown | undefined => {
   if (!isDefined(container) || path.length === 0)
     return undefined;
-  return path.reduce((prev, part) => (prev && typeof (prev) === 'object' && part in prev ? (prev as Record<string, unknown>)[part] : undefined), container as unknown);
+  return path.reduce((prev, part) => (isDefined(prev) && typeof (prev) === 'object' && part in prev ? (prev as Record<string, unknown>)[part] : undefined), container as unknown);
 };

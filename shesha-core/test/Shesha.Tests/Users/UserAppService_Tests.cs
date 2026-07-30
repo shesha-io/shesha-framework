@@ -12,7 +12,7 @@ using Shesha.Domain.Enums;
 using Shesha.Models.TokenAuth;
 using Shesha.Otp;
 using Shesha.Otp.Dto;
-using Shesha.Tests.Fixtures;
+using Shesha.Testing.Fixtures;
 using Shesha.Users;
 using Shesha.Users.Dto;
 using Shouldly;

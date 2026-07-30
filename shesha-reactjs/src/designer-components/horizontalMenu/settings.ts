@@ -8,10 +8,7 @@ import { SettingsFormMarkupFactory } from '@/interfaces';
 export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
-  const validationTabId = nanoid();
-  const eventsTabId = nanoid();
   const appearanceTabId = nanoid();
-  const securityTabId = nanoid();
   const styleRouterId = nanoid();
   const backgroundStylePnlId = nanoid();
   const pnlMenuStylesId = nanoid();
@@ -65,22 +62,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
           },
           {
             key: '2',
-            title: 'Validation',
-            id: validationTabId,
-            components: [...fbf()
-              .toJson(),
-            ],
-          },
-          {
-            key: '3',
-            title: 'Events',
-            id: eventsTabId,
-            components: [...fbf()
-              .toJson(),
-            ],
-          },
-          {
-            key: '4',
             title: 'Appearance',
             id: appearanceTabId,
             components: [...fbf()
@@ -737,14 +718,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     .toJson(),
                 ],
               }).toJson(),
-            ],
-          },
-          {
-            key: '5',
-            title: 'Security',
-            id: securityTabId,
-            components: [...fbf()
-              .toJson(),
             ],
           },
         ],

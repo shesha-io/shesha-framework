@@ -36,7 +36,7 @@ export const migrateV9toV10 = (prev: ICollapsiblePanelComponentProps, context: S
     (c) => c.type === "container" && c.componentName === "headerLayout",
   );
 
-  if (alreadyMigrated ?? false) {
+  if (alreadyMigrated === true) {
     const headerLayout = header?.components?.find(
       (c) => c.type === "container" && c.componentName === "headerLayout",
     );

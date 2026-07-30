@@ -12,6 +12,7 @@ import { Collapse } from 'antd';
 import React, { ReactNode, useMemo } from 'react';
 import { useStyles } from '../_settings/styles/styles';
 import GenericArgumentsEditor from './genericArgumentsEditor';
+import { isDefined } from '@/utils/nullables';
 
 export interface IActionArgumentsEditorProps<TArguments extends ActionParametersDictionary = ActionParametersDictionary> {
   action: IConfigurableActionDescriptor<TArguments>;
@@ -93,9 +94,11 @@ export const ActionArgumentsEditor = <TArguments extends ActionParametersDiction
         availableConstants,
       })
       : null;
-  }, [action, availableConstants, fbf, onChange, readOnly, value]);
+  // Disable eslint verification to avoid unnecessary re-creation of the argument editor.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [action, readOnly]);
 
-  if (!argumentsEditor) return null;
+  if (!isDefined(argumentsEditor)) return null;
 
   return (
     <Collapse

@@ -1,4 +1,5 @@
-import React, { FC, PropsWithChildren, useEffect, useMemo } from "react";
+import React, { FC, PropsWithChildren, useMemo } from "react";
+import { useDeepCompareEffect } from "@/hooks/useDeepCompareEffect";
 import { useDatasetInstance, useDatasetState } from "./hooks";
 import { DataTableActionsContext, DataTableStateContext, IDataTableStateContext } from "./contexts";
 import { useConfigurableAction } from "../configurableActionsDispatcher";
@@ -147,24 +148,56 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     repository,
     userConfigId = "",
     sortMode,
+    standardSorting,
+    strictSortBy,
+    strictSortOrder,
+    allowReordering = false,
+    customReorderEndpoint,
     actionOwnerId = "",
     actionOwnerName = "",
     dataFetchingMode,
     permanentFilter,
     needToRegisterContext = true,
+    initialPageSize,
+    grouping,
+    onBeforeRowReorder,
+    onAfterRowReorder,
   } = props;
 
   const instance = useDatasetInstance(repository);
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     void instance.init({
       metadata: undefined,
       userConfigId: userConfigId,
       sortMode: sortMode ?? "standard",
-
+      standardSorting: standardSorting,
+      strictSortBy: strictSortBy,
+      strictSortOrder: strictSortOrder,
+      allowReordering: allowReordering,
+      customReorderEndpoint: customReorderEndpoint,
       dataFetchingMode: dataFetchingMode,
+      initialPageSize: initialPageSize,
       permanentFilter: permanentFilter,
+      grouping: grouping,
+      onBeforeRowReorder: onBeforeRowReorder,
+      onAfterRowReorder: onAfterRowReorder,
     });
-  }, [instance, userConfigId, sortMode, permanentFilter, dataFetchingMode]);
+  }, [
+    instance,
+    userConfigId,
+    sortMode,
+    permanentFilter,
+    dataFetchingMode,
+    initialPageSize,
+    standardSorting,
+    strictSortBy,
+    strictSortOrder,
+    grouping,
+    allowReordering,
+    customReorderEndpoint,
+    onBeforeRowReorder,
+    onAfterRowReorder,
+  ]);
 
   const content = (
     <DataTableActionsContext.Provider value={instance}>

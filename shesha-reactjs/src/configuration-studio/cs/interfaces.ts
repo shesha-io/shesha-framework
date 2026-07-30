@@ -71,6 +71,7 @@ export interface IConfigurationStudio {
   readonly treeExpandedKeys: React.Key[];
   readonly treeSelectedKeys: React.Key[];
   readonly treeSelectedNode: TreeNode | undefined;
+  readonly treeSelectedNodes: TreeNode[];
   readonly treeSelectedItemNode: ConfigItemTreeNode | undefined;
   readonly isTreeDragging: boolean;
   readonly renderedDocs: Map<string, ReactNode>;
@@ -94,6 +95,7 @@ export interface IConfigurationStudio {
 
   //#region selection and tabs
   selectTreeNode: (node?: TreeNode) => void;
+  setMultiSelection: (nodeIds: string[]) => Promise<void>;
   clickTreeNode: (node: TreeNode) => void;
 
   docs: IDocumentInstance[];

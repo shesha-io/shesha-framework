@@ -39,6 +39,7 @@ namespace Shesha.GraphQL.Provider.GraphTypes
             }
 
             targetType.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                .Where(p => !p.IsJsonIgnored())
                 .ToList()
                 .ForEach(pi =>
                 {

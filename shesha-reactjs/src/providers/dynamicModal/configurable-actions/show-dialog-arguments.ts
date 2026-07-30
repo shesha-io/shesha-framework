@@ -55,7 +55,7 @@ export const showDialogArgumentsFormFactory: SettingsFormMarkupFactory = ({ fbf 
               {
                 title: "Read only",
                 value: "readonly",
-                icon: "readonlyIcon",
+                icon: "editDisableIcon",
               },
             ],
             jsSetting: true,

@@ -59,12 +59,15 @@ export const ConfigurationItemsExport: FC<IConfigurationItemsExportProps> = (pro
             (mode === 'updated' && node.flags.isUpdated) ||
             (mode === 'updated-by-me' && node.flags.isUpdatedByMe);
           if (filterPassed) {
+            // In "updated" / "updated-by-me" mode every visible node is already flagged,
+            // so the orange dot adds no information suppress it for display only.
+            const displayNode = mode !== 'all' ? { ...node, flags: { ...node.flags, isUpdated: false } } : node;
             if (!isNullOrWhiteSpace(quickSearch)) {
-              const newTitle = getTitleWithHighlight(node, quickSearch);
+              const newTitle = getTitleWithHighlight(displayNode, quickSearch);
               if (isDefined(newTitle))
-                result.push({ ...node, title: newTitle });
+                result.push({ ...displayNode, title: newTitle });
             } else
-              result.push(node);
+              result.push(displayNode);
           }
         }
 

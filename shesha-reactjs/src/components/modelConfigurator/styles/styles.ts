@@ -17,7 +17,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { height }: { hei
       padding-left: 12px;
       padding-right: 12px;
       height: 100%;
-      overflow: hidden;
 
       .${shaModelConfiguratorForm} {
         height: calc(100vh - ${addPx(height) ?? '280px'});

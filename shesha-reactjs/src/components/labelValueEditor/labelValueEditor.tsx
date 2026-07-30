@@ -8,10 +8,8 @@ import {
   Input,
   Modal,
   Row,
-  Tabs,
 } from 'antd';
 import { BorderlessTableOutlined } from '@ant-design/icons';
-import { CodeVariablesTables, ICodeExposedVariable } from '@/components/codeVariablesTable';
 import { ILabelValueEditorPropsBase } from './interfaces';
 import { ListEditor } from '@/components/listEditor';
 import { ItemChangeDetails } from '../listEditor';
@@ -34,8 +32,6 @@ export interface ILabelValueEditorProps extends ILabelValueEditorPropsBase {
   onChange?: ((newValue: ILabelValueItem[]) => void) | undefined;
 
   mode?: 'dialog' | 'inline' | undefined;
-
-  exposedVariables?: ICodeExposedVariable[] | undefined;
 
   description?: string | undefined;
 
@@ -74,7 +70,6 @@ const LabelValueEditor: FC<ILabelValueEditorProps> = ({
   valueName = "value",
   description,
   mode = 'dialog',
-  exposedVariables,
   readOnly = false,
 }) => {
   const [showModal, setShowModal] = useState(false);
@@ -108,12 +103,7 @@ const LabelValueEditor: FC<ILabelValueEditorProps> = ({
               <Alert type="info" title={description} />
               <br />
             </Show>
-            <Tabs
-              items={[
-                { key: "keyValuePairs", label: "Key/Value pairs", children: children },
-                { key: "variable", label: "Variables", children: <CodeVariablesTables data={exposedVariables} /> },
-              ]}
-            />
+            {children}
           </Modal>
         </Fragment>
       )}

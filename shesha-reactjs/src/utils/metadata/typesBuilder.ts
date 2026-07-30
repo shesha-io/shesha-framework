@@ -452,7 +452,7 @@ export class TypesBuilder implements ITypeDefinitionBuilder {
       case DataTypes.object:
         return isPublicIMemberMetadata(property) && isDataPropertyMetadata(property) && isDefined(property.properties)
           ? await this.#getObjectType(property.path, property.properties)
-          : undefined;
+          : { typeName: 'Record<string, unknown>' };
       case DataTypes.array:
         return await this.#getArrayType(property, context);
       default:

@@ -4,23 +4,39 @@ import { setCanvasZoomAction,
   setScreenWidthAction,
   setDesignerDeviceAction,
   setCanvasAutoZoomAction,
+  setManualZoomAction,
   setConfigTreePanelSizeAction,
   setViewTypeAction } from './actions';
 import { CANVAS_CONTEXT_INITIAL_STATE } from './contexts';
-import { applyCanvasSize, getDeviceTypeByWidth, getSmallerDevice } from './utils';
+import { DEFAULT_OPTIONS, getDeviceTypeByWidth, getSmallerDevice } from './utils';
+
+const clampZoom = (zoom: number): number =>
+  Math.max(DEFAULT_OPTIONS.minZoom, Math.min(DEFAULT_OPTIONS.maxZoom, zoom));
 
 export const reducer = createReducer(CANVAS_CONTEXT_INITIAL_STATE, (builder) => {
   builder
     .addCase(setCanvasZoomAction, (state, { payload }) => {
       return {
         ...state,
-        zoom: payload,
+        zoom: clampZoom(payload),
+      };
+    })
+    .addCase(setManualZoomAction, (state, { payload }) => {
+      return {
+        ...state,
+        zoom: clampZoom(payload),
+        autoZoom: false,
       };
     })
     .addCase(setCanvasWidthAction, (state, { payload }) => {
       const { width, deviceType } = payload;
 
-      return applyCanvasSize(state, width, deviceType);
+      return {
+        ...state,
+        designerWidth: typeof width === 'string' ? width : `${width}px`,
+        designerDevice: deviceType,
+        activeDevice: getSmallerDevice(deviceType, state.physicalDevice ?? "desktop"),
+      };
     })
     .addCase(setScreenWidthAction, (state, { payload }) => {
       const device = getDeviceTypeByWidth(payload);
@@ -38,10 +54,10 @@ export const reducer = createReducer(CANVAS_CONTEXT_INITIAL_STATE, (builder) => 
         activeDevice: getSmallerDevice(payload, state.physicalDevice ?? "desktop"),
       };
     })
-    .addCase(setCanvasAutoZoomAction, (state) => {
+    .addCase(setCanvasAutoZoomAction, (state, { payload }) => {
       return {
         ...state,
-        autoZoom: !state.autoZoom,
+        autoZoom: payload !== undefined ? payload : !state.autoZoom,
       };
     })
     .addCase(setConfigTreePanelSizeAction, (state, { payload }) => {

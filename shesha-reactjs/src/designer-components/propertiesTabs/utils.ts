@@ -1,4 +1,4 @@
-import { IComponentsContainer, IConfigurableFormComponent } from "@/providers";
+import { IComponentsContainer, IConfigurableFormComponent, isComponentsContainer } from "@/providers";
 import { ICollapsiblePanelComponentProps, isCollapsiblePanel } from "../collapsiblePanel/interfaces";
 import { isSettingsInputRow } from "../settingsInputRow";
 import { isPropertyRouterComponent } from "../propertyRouter";
@@ -6,9 +6,6 @@ import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { ISettingsInputRowProps } from "../settingsInputRow/interfaces";
 import { ReactNode } from "react";
 import { reactNodeToString } from "@/utils/string";
-
-const isComponent = (component: unknown): component is IConfigurableFormComponent => isDefined(component) && "id" in component && "type" in component;
-const isComponentsContainer = (component: IConfigurableFormComponent): component is IConfigurableFormComponent & IComponentsContainer => isComponent(component) && "components" in component && Array.isArray(component.components);
 
 export const filterDynamicComponents = (components: IConfigurableFormComponent[], query: string): IConfigurableFormComponent[] => {
   if (!isDefined(components) || !Array.isArray(components))

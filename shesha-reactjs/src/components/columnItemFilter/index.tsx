@@ -330,24 +330,28 @@ export interface IColumnItemFilterProps {
   entityTypeModule?: string | undefined;
   autocompleteUrl?: string;
   dataType: ProperyDataType | undefined;
+  dataFormat?: string | undefined;
   filter?: ColumnFilter | undefined;
   filterOption: IndexColumnFilterOption | undefined;
   onRemoveFilter?: ((id: string) => void) | undefined;
   onChangeFilterOption?: ((filterId: string, filterOption: IndexColumnFilterOption) => void) | undefined;
   onChangeFilter?: ((filterId: string, filter: ColumnFilter) => void) | undefined;
   applyFilters?: (() => void) | undefined;
+  removeColumnFilter?: ((columnId: string) => void) | undefined;
 }
 
 export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
   id,
   filterName,
   dataType = 'string',
+  dataFormat,
   filterOption,
   onRemoveFilter,
   onChangeFilterOption,
   onChangeFilter,
   filter,
   applyFilters,
+  removeColumnFilter,
   referenceListName,
   referenceListModule,
   entityTypeName,
@@ -376,7 +380,7 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
     onChangeFilterOption?.(id, key as IndexColumnFilterOption);
   };
 
-  // Make sue that you initialize the `IndexColumnFilterOption` once when the component gets rendered
+  // Make sure that you initialize the `IndexColumnFilterOption` once when the component gets rendered
   useEffectOnce(() => {
     if (!filter && isNonEmptyArray(options)) {
       onChangeFilterOption?.(id, options[0]);
@@ -385,6 +389,14 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
 
   const handleStringFilter = (changeValue: ChangeEvent<HTMLInputElement>): void => {
     const value = (changeValue as ChangeEvent<HTMLInputElement>).target.value;
+    if (value === '') {
+      if (removeColumnFilter) {
+        removeColumnFilter(id);
+      } else {
+        onChangeFilter?.(id, '');
+      }
+      return;
+    }
     onChangeFilter?.(id, value);
   };
 
@@ -412,7 +424,10 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
     );
   };
 
-  const hideFilterOptions = (): boolean => ['boolean', 'reference-list-item', 'multiValueRefList', 'entity'].includes(dataType);
+  const isMultivalueRefList = dataType === 'array' && dataFormat === 'multivalue-reference-list';
+
+  const hideFilterOptions = (): boolean =>
+    ['boolean', 'reference-list-item', 'multiValueRefList', 'entity'].includes(dataType) || isMultivalueRefList;
 
   const baseProps: BaseFilterProps = {
     id,
@@ -492,7 +507,7 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
           />
         )}
 
-        {['reference-list-item', 'multiValueRefList'].includes(dataType) &&
+        {(['reference-list-item', 'multiValueRefList'].includes(dataType) || isMultivalueRefList) &&
           !isNullOrWhiteSpace(referenceListName) && !isNullOrWhiteSpace(referenceListModule) && (
           <RefListFilter
             onChange={handleRawFilter}

@@ -6,7 +6,7 @@ import { DataTypes } from '@/interfaces';
 import { FileUploadProvider, useFormData, useGlobalState } from '@/providers';
 import { useForm } from '@/providers/form';
 import {
-  evaluateValueAsString,
+  evaluateString,
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
 import {
@@ -18,6 +18,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
+import { calculateFileUploadStyles } from '@/utils/fileUploadStyles';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { FileUploadComponentDefinition, IFileUploadProps } from './interfaces';
@@ -36,20 +37,22 @@ const FileUploadComponent: FileUploadComponentDefinition = {
   preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.file,
   Factory: ({ model }) => {
-    const finalStyle = (!model.enableStyleOnReadonly && model.readOnly) ? {
-      ...model.allStyles?.fontStyles,
-      ...model.allStyles?.dimensionsStyles,
-    } : model.allStyles?.fullStyle;
+    const finalStyle = calculateFileUploadStyles({
+      enableStyleOnReadonly: model.enableStyleOnReadonly,
+      isReadOnly: model.readOnly,
+      listType: model.listType,
+      allStyles: model.allStyles,
+    });
     // TODO: refactor and implement a generic way for values evaluation
     const { formSettings, formMode } = useForm();
     const { data } = useFormData();
     const { globalState } = useGlobalState();
-    const ownerId = evaluateValueAsString(model.ownerId, { data, globalState });
+    const ownerId = evaluateString(model.ownerId, { data, globalState });
 
     const enabled = !model.readOnly;
 
     return (
-      <ConfigurableFormItem<FileUploadValue> model={model}>
+      <ConfigurableFormItem<FileUploadValue> model={model} autoAlignLabel={false}>
         {(value, onChange) => {
           return (
             <FileUploadProvider

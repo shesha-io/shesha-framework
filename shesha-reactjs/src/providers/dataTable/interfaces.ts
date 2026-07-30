@@ -77,7 +77,7 @@ export type CellStyleAccessor = CSSProperties | CellStyleFunc | undefined;
 
 export interface ITableDataFetchColumn extends ITableColumn {
   propertiesToFetch?: string | string[] | undefined;
-  isEnitty?: boolean;
+  isEntity?: boolean;
   dataType?: ProperyDataType | undefined;
   dataFormat?: string | undefined;
 }

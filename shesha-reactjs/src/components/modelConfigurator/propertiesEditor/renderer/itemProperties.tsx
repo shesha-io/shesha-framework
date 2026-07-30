@@ -18,6 +18,7 @@ import { useModelConfigurator } from '@/providers/modelConfigurator';
 import { IModelItem } from '@/interfaces/modelConfigurator';
 import { OnFormValuesChangeHandler } from '@/components/configurableForm/models';
 import { RecursivePartial } from '@/interfaces/entity';
+import { isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 
 export const ToolbarItemProperties: FC = () => {
   const { selectedItemId, getItem, updateItem } = usePropertiesEditor();
@@ -30,7 +31,7 @@ export const ToolbarItemProperties: FC = () => {
 
   const debouncedSave = useDebouncedCallback<OnFormValuesChangeHandler<IModelItem>>(
     (_, values) => {
-      if (selectedItemId)
+      if (isNotNullOrWhiteSpace(selectedItemId))
         updateItem({ id: selectedItemId, settings: values });
     },
     // delay in ms
@@ -38,16 +39,16 @@ export const ToolbarItemProperties: FC = () => {
   );
 
   // update form values since the property data can be changed in the provider
-  const currentItem: IModelItem | undefined = selectedItemId ? getItem(selectedItemId) : undefined;
+  const currentItem: IModelItem | undefined = isNotNullOrWhiteSpace(selectedItemId) ? getItem(selectedItemId) : undefined;
   useDeepCompareEffect(() => {
-    if (selectedItemId && currentItem)
+    if (currentItem)
       formRef.current?.setFieldsValue(currentItem as RecursivePartial<IModelItem>);
   }, [currentItem]);
 
   useEffect(() => {
     const getEditor = (): ReactNode => {
       const emptyEditor = null;
-      if (!selectedItemId) return emptyEditor;
+      if (isNullOrWhiteSpace(selectedItemId)) return emptyEditor;
 
       const componentModel = getItem(selectedItemId);
 
@@ -72,9 +73,11 @@ export const ToolbarItemProperties: FC = () => {
     };
 
     setEditor(getEditor());
-  }, [components, debouncedSave, fbf, formRef, getItem, modelConfigurator.modelConfiguration, selectedItemId]);
+  // to avoid unneded re-creating form (form should be created only when selectedItemId change)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [components, debouncedSave, fbf, formRef, selectedItemId]);
 
-  if (!Boolean(selectedItemId)) {
+  if (isNullOrWhiteSpace(selectedItemId)) {
     return (
       <div>
         <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Please select a component to begin editing" />

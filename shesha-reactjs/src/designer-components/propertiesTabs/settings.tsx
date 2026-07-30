@@ -16,6 +16,7 @@ import { DefaultOptionType } from 'antd/lib/select';
 import { getFirstNonEmptyStringPropertyOrUndefined } from '@/utils/object';
 
 const tabSettingsMarkup = itemSettings as FormMarkup;
+const tabSettingsMarkupFactory = (): FormMarkup => tabSettingsMarkup;
 
 const TAB_TYPES: DefaultOptionType[] = [
   { value: 'line', label: 'Line' },
@@ -85,7 +86,7 @@ const TabSettings: FC<ISettingsFormFactoryArgs<IPropertiesTabsComponentProps>> =
           <ItemListConfiguratorModal<ITabPaneProps>
             readOnly={readOnly}
             initNewItem={onAddNewItem}
-            settingsMarkupFactory={() => tabSettingsMarkup}
+            settingsMarkupFactory={tabSettingsMarkupFactory}
             itemRenderer={({ item }) => ({
               label: getFirstNonEmptyStringPropertyOrUndefined(item, ["title", "label", "name"]) ?? "",
               description: item.tooltip,

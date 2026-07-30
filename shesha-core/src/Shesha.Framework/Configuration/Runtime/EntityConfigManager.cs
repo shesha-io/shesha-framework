@@ -53,6 +53,8 @@ namespace Shesha.Configuration.Runtime
                     TypeShortAlias = x.TypeShortAlias,
 
                     Source = x.Source,
+
+                    GenerateAppService = x.GenerateAppService,
                 }).ToListAsync();
 
             return implemented ?? false

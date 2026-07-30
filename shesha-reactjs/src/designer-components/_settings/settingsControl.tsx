@@ -1,7 +1,6 @@
 import React, { ReactElement, useCallback } from 'react';
 import { getPropertySettingsFromValue } from './utils/utils';
 import { useStyles } from './styles/styles';
-import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import camelcase from 'camelcase';
 import { GetAvailableConstantsFunc, GetResultTypeFunc, ICodeEditorProps } from '../codeEditor/interfaces';
 import { CodeEditorWithStandardConstants } from '../codeEditor/codeEditorWithConstants';
@@ -33,21 +32,6 @@ export interface ISettingsControlProps<Value = unknown> {
   lazy?: boolean | undefined;
 }
 
-export const defaultExposedVariables: ICodeExposedVariable[] = [
-  { name: "data", description: "Selected form values", type: "object" },
-  { name: "pageContext", description: "Contexts data of current page", type: "object" },
-  { name: "contexts", description: "Contexts data", type: "object" },
-  { name: "globalState", description: "Global state", type: "object" },
-  { name: "setGlobalState", description: "Functiont to set globalState", type: "function" },
-  { name: "formMode", description: "Form mode", type: "'designer' | 'edit' | 'readonly'" },
-  { name: "form", description: "Form instance", type: "object" },
-  { name: "selectedRow", description: "Selected row of nearest table (null if not available)", type: "object" },
-  { name: "moment", description: "moment", type: "object" },
-  { name: "http", description: "axiosHttp", type: "object" },
-  { name: "message", description: "message framework", type: "object" },
-  { name: "modal", description: "API for displaying modal dialogs and forms", type: "object" },
-];
-
 export const SettingsControl = <Value = unknown>(props: ISettingsControlProps<Value>): ReactElement => {
   const { onChange } = props;
 
@@ -55,17 +39,16 @@ export const SettingsControl = <Value = unknown>(props: ISettingsControlProps<Va
   const resultType = useResultTypeEvaluator({ resultTypeExpression: props.resultTypeExpression });
 
   const setting = getPropertySettingsFromValue<Value>(props.value);
-  const { _mode: mode, _code: code } = setting;
 
   const { styles } = useStyles();
 
   const onInternalChange = useCallback((value: IPropertySetting<Value>, m?: PropertySettingMode | undefined): void => {
-    const newSetting: IPropertySetting<Value> = { ...value, _mode: (m ?? mode) };
+    const newSetting: IPropertySetting<Value> = { ...value, _mode: (m ?? setting._mode) };
     const newValue = isNotNullOrWhiteSpace(newSetting._code) || newSetting._mode === 'code'
       ? newSetting
-      : value._value;
+      : newSetting._value;
     onChange?.(newValue);
-  }, [mode, onChange]);
+  }, [onChange, setting._mode]);
 
   const codeOnChange = (val: string | null): void => {
     const newValue: IPropertySetting<Value> = { ...setting, _code: val, _lazy: props.lazy ?? setting._lazy } as IPropertySetting<Value>;
@@ -80,17 +63,21 @@ export const SettingsControl = <Value = unknown>(props: ISettingsControlProps<Va
   }, [setting, onInternalChange]);
 
   const onSwitchMode = (): void => {
-    const newMode = mode === 'code' ? 'value' : 'code';
+    const newMode = setting._mode === 'code' ? 'value' : 'code';
     onInternalChange(setting, newMode);
   };
 
+  // Skip setting control if disabled
+  if (props.enabled === false)
+    return <>{props.children?.(setting._value, valueOnChange, props.propertyName)}</>;
+  // --------------------------------
 
-  const propertyName = isNotNullOrWhiteSpace(code) || mode === 'code' ? `${props.propertyName}._value` : props.propertyName;
+  const propertyName = isNotNullOrWhiteSpace(setting._code) || setting._mode === 'code' ? `${props.propertyName}._value` : props.propertyName;
   const functionName = `get${camelcase(props.propertyName, { pascalCase: true })}`;
 
   const codeEditorProps: ICodeEditorProps = {
     readOnly: props.readOnly,
-    value: code,
+    value: setting._code,
     onChange: codeOnChange,
     mode: 'dialog',
     language: 'typescript',
@@ -102,7 +89,7 @@ export const SettingsControl = <Value = unknown>(props: ISettingsControlProps<Va
       useAsyncDeclaration: props.useAsyncEvaluation,
     },
     label: ' ',
-    hidden: isNullOrWhiteSpace(code) && props.readOnly,
+    hidden: isNullOrWhiteSpace(setting._code) && props.readOnly,
   };
 
   const editor = constantsEvaluator
@@ -110,18 +97,18 @@ export const SettingsControl = <Value = unknown>(props: ISettingsControlProps<Va
     : <CodeEditorWithStandardConstants {...codeEditorProps} resultType={resultType} makeComponentsNullable={true} />;
 
   return (
-    <div className={mode === 'code' ? styles.contentCode : styles.contentJs}>
+    <div className={setting._mode === 'code' ? styles.contentCode : styles.contentJs}>
       <Button
         hidden={props.readOnly}
         className={`${styles.jsSwitch} inlineJS`}
         type="text"
-        danger={mode === 'value' && isNotNullOrWhiteSpace(code)}
+        danger={setting._mode === 'value' && isNotNullOrWhiteSpace(setting._code)}
         size="small"
-        icon={mode === 'code' && isNotNullOrWhiteSpace(code) ? <CodeFilled /> : isNotNullOrWhiteSpace(code) ? <CodeFilled /> : <CodeOutlined />}
+        icon={isNotNullOrWhiteSpace(setting._code) ? <CodeFilled /> : <CodeOutlined />}
         onClick={onSwitchMode}
       />
-      {mode === 'code' && editor}
-      {mode === 'value' && (
+      {setting._mode === 'code' && editor}
+      {setting._mode === 'value' && (
         <div className={styles.jsContent} style={{ marginLeft: 0 }}>
           {props.children?.(setting._value, valueOnChange, propertyName)}
         </div>

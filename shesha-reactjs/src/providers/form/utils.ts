@@ -1,4 +1,5 @@
 import { updateJsSettingsForComponents } from '@/designer-components/_settings/utils/utils';
+import { normalizeSingleBraceAccessor } from '@/providers/form/utils/mustacheNormalization';
 import {
   IToolboxComponent,
   IToolboxComponentGroup,
@@ -8,7 +9,6 @@ import {
 } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import {
-  FormMode,
   HttpClientApi,
   IApplicationApi,
   isComponentsContainer,
@@ -129,7 +129,9 @@ export interface IApplicationContext<Value extends object = object> {
 
   /** Contexts datas */
   contexts: IDataContextsData | undefined;
-  /** Global state */
+  /** Global state
+   * @deprecated
+   */
   globalState: IAnyObject | undefined;
   /** Table selection */
   selectedRow: ISelectionProps | undefined;
@@ -147,6 +149,7 @@ export interface IApplicationContext<Value extends object = object> {
   /** Last updated date */
   lastUpdated?: Date;
 
+  /** @deprecated use page.context instead */
   pageContext?: IDataContextFull;
 
   setGlobalState: (payload: ISetStatePayload) => void;
@@ -394,13 +397,17 @@ export const isCommonContext = (name: string): boolean => {
 const extractReadOnly = (data: unknown): boolean | undefined => {
   return isDefined(data) && typeof data === 'object' && 'readOnly' in data && typeof (data.readOnly) === 'boolean' ? data.readOnly : undefined;
 };
+const extractDisabled = (data: unknown): boolean | undefined => {
+  return isDefined(data) && typeof data === 'object' && 'disabled' in data && typeof (data.disabled) === 'boolean' ? data.disabled : undefined;
+};
 
-export const getParentReadOnly = (parent: IParentProviderProps | undefined, allData: unknown): boolean => {
-  // TODO: review type of allData
-  const form = isDefined(allData) && typeof allData === 'object' && "form" in allData ? allData.form : undefined;
-  const formMode: FormMode | undefined = isDefined(form) && "formMode" in form ? form.formMode as FormMode : undefined;
-  return formMode !== 'designer' &&
-    (extractReadOnly(parent?.model) ?? (parent?.formMode === 'readonly' || formMode === 'readonly'));
+export const getParentDisabled = (parent: IParentProviderProps | undefined): boolean => {
+  return extractDisabled(parent?.model) ?? false;
+};
+
+export const getParentReadOnly = (parent: IParentProviderProps | undefined, allData: IApplicationContext): boolean => {
+  const formMode = allData.form?.formMode;
+  return extractReadOnly(parent?.model) ?? (parent?.formMode === 'readonly' || formMode === 'readonly');
 };
 
 const getContainerNames = (toolboxComponent: IToolboxComponent): string[] => {
@@ -630,11 +637,11 @@ export const componentsFlatStructureToTree = (
         container.push(component);
 
       //  process all childs if any
-      if (id in flat.componentRelations) {
+      if (id in flat.componentRelations && !staticContainerIds.includes(id)) {
         const childComponents: IConfigurableFormComponent[] = [];
         processComponent(childComponents, id);
 
-        component['components'] = childComponents;
+        (component as unknown as Record<string, unknown>)['components'] = childComponents;
       }
 
       // note: this function may be called for custom container without type
@@ -650,9 +657,9 @@ export const componentsFlatStructureToTree = (
           };
 
           const childContainers = unsafeGetValueByPropertyName(component, containerName);
-          if (childContainers) {
+          if (isDefined(childContainers)) {
             if (Array.isArray(childContainers)) {
-              component[containerName] = childContainers.map((c: unknown) => {
+              (component as unknown as Record<string, unknown>)[containerName] = childContainers.map((c: unknown) => {
                 if (!isComponentsContainer(c)) return c as IComponentsContainer;
                 const processed = processContainer(c);
                 // Handle nested containers inside array items (generic approach)
@@ -668,7 +675,7 @@ export const componentsFlatStructureToTree = (
                 return processed;
               });
             } else if (isComponentsContainer(childContainers))
-              component[containerName] = processContainer(childContainers);
+              (component as unknown as Record<string, unknown>)[containerName] = processContainer(childContainers);
             else
               throw new Error(`Unknown container type: ${typeof childContainers}`, childContainers);
           }
@@ -813,6 +820,10 @@ export const evaluateString = (template: string = '', data: object, skipUnknownT
     if (!template || typeof template !== 'string')
       return template;
 
+    // Backward compatibility: upgrade legacy single-brace accessors ({data.id}) to Mustache
+    // tags ({{data.id}}) so older form configs keep resolving after the move to Mustache.
+    const normalizedTemplate = normalizeSingleBraceAccessor(template);
+
     // The function throws an exception if the expression passed doesn't have a corresponding curly braces
     try {
       // Clone per call: caching the decorated structure is unsafe because long-lived proxies
@@ -833,7 +844,7 @@ export const evaluateString = (template: string = '', data: object, skipUnknownT
       };
 
       if (skipUnknownTags) {
-        template.match(/{{\s*[\w\.]+\s*}}/g)?.forEach((x) => {
+        normalizedTemplate.match(/{{\s*[\w\.]+\s*}}/g)?.forEach((x) => {
           const mathes = x.match(/[\w\.]+/);
           const tag = mathes && mathes.length > 0
             ? mathes[0]
@@ -862,9 +873,9 @@ export const evaluateString = (template: string = '', data: object, skipUnknownT
             : value;
         };
 
-        return Mustache.render(template, view, undefined, { escape });
+        return Mustache.render(normalizedTemplate, view, undefined, { escape });
       } else
-        return Mustache.render(template, view);
+        return Mustache.render(normalizedTemplate, view);
     } catch (error) {
       console.warn('evaluateString ', error);
       return template;

@@ -44,11 +44,11 @@ const DateField: DateFieldDefinition = {
                 onChange={(value: string | NoUndefinedRangeValueType<string> | null, _dateString: string | [string, string] | null) => {
                   // TODO: EVENTS: pass dateString to event handler
                   // addContextData(context, { dateString, value }),
-                  ctx?.handleEvent(undefined, value, model.onChangeCustom);
+                  ctx?.handleEvent(undefined, { value }, model.onChangeCustom);
                   onChange(value);
                 }}
-                onFocus={(event) => ctx?.handleEvent(event, value, model.onFocusCustom)}
-                onBlur={(event) => ctx?.handleEvent(event, value, model.onBlurCustom)}
+                onFocus={(event) => ctx?.handleEvent(event, { value }, model.onFocusCustom)}
+                onBlur={(event) => ctx?.handleEvent(event, { value }, model.onBlurCustom)}
               />
             );
           }}

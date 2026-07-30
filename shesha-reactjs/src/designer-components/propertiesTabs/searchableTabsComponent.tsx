@@ -20,6 +20,11 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
   const { tabs } = model;
   const formDesigner = useFormDesignerOrUndefined();
   const [searchQuery, setSearchQuery] = useState('');
+  // Chrome skips its load-time credential autofill for read-only fields, so keep the
+  // search box read-only until the user focuses it. This prevents the saved username
+  // (e.g. "admin") being injected, which would filter out every property and collapse
+  // the settings panel.
+  const [autofillGuard, setAutofillGuard] = useState(true);
   const [localActiveTabKey, setLocalActiveTabKey] = useState<string>(formDesigner?.activeSettingsTabKey ?? '1');
   const { styles } = useStyles();
 
@@ -48,6 +53,9 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
         placeholder="Search properties"
         value={searchQuery}
         onChange={handleSearchChange}
+        readOnly={autofillGuard}
+        onFocus={() => setAutofillGuard(false)}
+        autoComplete="new-password"
         suffix={<SearchOutlined style={{ color: 'rgba(0,0,0,.45)' }} />}
         ref={options?.ref}
         className={options?.className}

@@ -179,6 +179,38 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
           overflow: auto;
           transform-origin: top left;
         }
+
+        /* When the designer canvas is empty (no components dropped yet), the
+           zoomed canvas collapses to a short, top-aligned box, leaving the
+           empty-state hint above the vertical midpoint. Center the zoomed
+           canvas within the (non-zoomed) wrapper so the hint sits mid-screen.
+           Scoped to the designer canvas + empty state so other sidebar
+           consumers and non-empty forms keep their normal top-aligned flow. */
+        .${sidebarContainerMainArea}.${canvasWrapper}:has(.${designerCanvas}):not(:has(.sha-component)) {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+
+          .${designerCanvas} {
+            height: auto;
+          }
+        }
+      }
+
+      /* Inline usage (e.g. the datatable advanced-filter / columns-selector panel)
+         reuses this container as a plain component rather than a full-screen editor.
+         In that case the sidebar body must size to its own content, capped at the
+         viewport, instead of forcing a fixed ~full-viewport height. The fixed
+         calc(100vh - ...) height is only correct for the full-screen editors
+         (Config Studio, model configurator); applied inline it inflates the whole
+         component to ~92vh and pushes the table below the fold. */
+      &.embedded {
+        .${sidebarContainerBody} .${sidebarContainerRight}.open .${sidebarBody},
+        .${sidebarContainerBody} .${sidebarContainerLeft}.open .${sidebarBody} {
+          height: auto;
+          max-height: calc(100vh - ${HEADER_HEIGHT} - ${TOOLBAR_HEIGHT} - ${SIDEBAR_BTN_HEIGHT});
+        }
       }
 
       .${canvasPopupContainer} {

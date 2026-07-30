@@ -1,9 +1,12 @@
 import React, { FC } from 'react';
-import { ItemInterface, ReactSortable } from 'react-sortablejs';
+import { ReactSortable } from 'react-sortablejs';
 import { useStyles } from './styles/styles';
 import { RefListGroupItemProps } from '../provider/models';
 import { useRefListItemGroupConfigurator } from '../provider';
 import RefListItem from './refListItem';
+import { ISortableItem } from '@/interfaces/modelConfigurator';
+import { useDeepCompareMemo } from '@/hooks';
+import { isEqual } from 'lodash';
 
 export interface IRefListItemsContainerProps {
   index?: number[] | undefined;
@@ -17,10 +20,19 @@ export const RefListItemsContainer: FC<IRefListItemsContainerProps> = (props) =>
   const { styles } = useStyles();
   const { readOnly, updateChildItems } = useRefListItemGroupConfigurator();
 
-  const onSetList = (newState: ItemInterface[]): void => {
-    const newChilds = newState.map<RefListGroupItemProps>((item) => item as RefListGroupItemProps);
-    updateChildItems({ index: props.index ?? [], childs: newChilds });
+  const onSetList = (newState: ISortableItem<RefListGroupItemProps>[]): void => {
+    const newChilds = newState.map<RefListGroupItemProps>((item) => item.data);
+    if (!isEqual(props.items, newChilds)) {
+      updateChildItems({ index: props.index ?? [], childs: newChilds });
+    }
   };
+
+  // ReactSortable/sortablejs mutates list items (e.g. adds a `chosen` property), but the
+  // items coming from the configurator reducer are frozen by Immer. Wrap each item in a
+  // fresh, extensible sortable wrapper so sortablejs mutates the wrapper, not the frozen data.
+  const sortableItems = useDeepCompareMemo((): ISortableItem<RefListGroupItemProps>[] => {
+    return props.items.map((item) => ({ data: item, id: item.id }));
+  }, [props.items]);
 
   if (props.items.length === 0) {
     return <>No items have been configured</>;
@@ -28,9 +40,9 @@ export const RefListItemsContainer: FC<IRefListItemsContainerProps> = (props) =>
 
   return (
     <div className={styles.sidebarContainerMainArea} style={{ marginTop: '5px' }}>
-      <ReactSortable
+      <ReactSortable<ISortableItem<RefListGroupItemProps>>
         disabled={readOnly}
-        list={props.items}
+        list={sortableItems}
         setList={onSetList}
         fallbackOnBody={true}
         swapThreshold={0.5}

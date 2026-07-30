@@ -27,6 +27,7 @@ import { useEffectOnce } from '@/hooks/useEffectOnce';
 import apiCode from "../../componentsApi/componentApi.ts?raw";
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
+import { getComponentEvents } from '../_common/events';
 
 const suffixStyle = { color: 'rgba(0,0,0,.45)' };
 
@@ -54,7 +55,7 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
       executeCustomFormat: (value: unknown, code: string): string => executeScriptSync(code, addContextData(allData, { value })) ?? "",
     };
   },
-  Factory: ({ model, calculatedModel }) => {
+  Factory: ({ model, calculatedModel, apiContext }) => {
     const [, forceRefresh] = useState({});
 
     const componentApi = useComponentApi();
@@ -65,9 +66,13 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
         componentName: model.componentName ?? "",
         level: 3,
         typeDefinition: { typeName: 'NumberFieldApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+        properties: [
+          { name: 'min', getter: () => model.validate?.minValue, setter: (value) => apiContext?.updateApiModel({ validate: { minValue: value } }) },
+          { name: 'max', getter: () => model.validate?.maxValue, setter: (value) => apiContext?.updateApiModel({ validate: { maxValue: value } }) },
+        ],
         api: { focus: () => inputRef.current?.focus() },
       });
-    }, [componentApi, model.componentName, model.id]);
+    }, [apiContext, componentApi, model.componentName, model.id, model.validate?.minValue, model.validate?.maxValue]);
     useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
     const { styles } = useStyles(model);
@@ -87,7 +92,7 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
     }, [model.numberFormat, model.suffix, model.suffixIcon]);
 
     const inputProps: InputNumberProps<number> = {
-      disabled: model.readOnly === true,
+      disabled: model.disabled === true,
       ...(Boolean(model.hideBorder) ? { variant: 'borderless' } : {}),
       placeholder: model.placeholder,
       size: model.size,
@@ -96,9 +101,12 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
       suffix,
       stringMode: true,
       controls: false,
-      ...(isDefined(model.validate?.maxValue) ? { max: model.validate.maxValue } : {}),
-      ...(isDefined(model.validate?.minValue) ? { min: model.validate.minValue } : {}),
+      // ...(isDefined(model.validate?.maxValue) ? { max: model.validate.maxValue } : {}),
+      // ...(isDefined(model.validate?.minValue) ? { min: model.validate.minValue } : {}),
+
       ...(isDefined(model.styleJson) ? { style: model.styleJson } : {}),
+      className: styles.numberStyles,
+
     };
 
     // ToDo: AS - implement custom number formatting
@@ -115,7 +123,14 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
         if (!isDefined(value)) return '';
 
         const strValue = value.toString();
-        return (isDefined(model.thousandsSeparator) ? strValue.replace(/\B(?=(\d{3})+(?!\d))/g, model.thousandsSeparator) : strValue) + (model.numberFormat === 'percent' ? ' %' : '');
+        const parts = value.toString().split('.');
+
+        return (isDefined(model.thousandsSeparator)
+          ? parts.length > 1
+            ? `${parts[0]?.replace(/\B(?=(\d{3})+(?!\d))/g, model.thousandsSeparator)}.${parts[1]}`
+            : parts[0]?.replace(/\B(?=(\d{3})+(?!\d))/g, model.thousandsSeparator) ?? ''
+          : strValue) +
+          (model.numberFormat === 'percent' ? ' %' : '');
       };
       inputProps.parser = (value) => {
         if (!isDefined(value))
@@ -137,11 +152,12 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
     return (
       <ConfigurableFormItem<number> model={model}>
         {(value, onChange, _, ctx) => {
-          return model.readOnly ?? false
+          return model.readOnly === true
             ? (
               <ReadOnlyDisplayFormItem
                 type="number"
-                value={numberToFormattedString(String(value), getDataProperty(properties, model.propertyName ?? '', 'dataFormat'))}
+                // ToDo: AS - implement custom number formatting and merge with code from this component
+                value={numberToFormattedString(value?.toString(), getDataProperty(properties, model.propertyName ?? '', 'dataFormat'))}
                 enableFullStyle={model.enableStyleOnReadonly}
                 style={model.styleJson}
                 styleValue={model}
@@ -154,7 +170,6 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
                 ref={inputRef}
                 className={styles.numberStyles}
 
-                // TODO EVENTS
                 onChange={(val) => {
                   let newValue = val ?? undefined;
                   let numValue = 0;
@@ -173,14 +188,13 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
                         : numValue;
                   }
 
-                  ctx?.handleEvent(undefined, newValue, model.onChangeCustom);
+                  ctx?.handleEvent(undefined, { value: newValue }, model.onChangeCustom);
                   onChange(newValue);
 
                   // force refresh because Antd InputNumber does not trigger render
                   forceRefresh({});
                 }}
-                onFocus={(event) => ctx?.handleEvent(event, event.currentTarget.value, model.onFocusCustom)}
-                onBlur={(event) => ctx?.handleEvent(event, event.currentTarget.value, model.onBlurCustom)}
+                {...getComponentEvents<number>(model, ['onFocus', 'onBlur', 'onClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave', 'onKeyDown', 'onKeyUp'], ctx, value, DataTypes.number)}
               />
             );
         }}

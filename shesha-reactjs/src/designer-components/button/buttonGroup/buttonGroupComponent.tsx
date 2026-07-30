@@ -29,7 +29,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   preserveDimensionsInDesigner: true,
   Factory: ({ model, form }) => {
     const { styles } = useStyles();
-    return model.hidden ? null
+    return model.hidden === true ? null
       : (
         <ConfigurableFormItem model={{ ...model, hideLabel: true }} className={styles.shaHideEmpty}>
           <ButtonGroup {...model} styles={model.allStyles?.fullStyle} form={form} />
@@ -92,7 +92,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
     .add<IButtonGroupComponentProps>(10, (prev) => {
       const setDownIcon = (item: ButtonGroupItemProps): ButtonGroupItemProps => {
         if (isGroup(item)) {
-          item.downIcon = !item.downIcon ? "DownOutlined" : item.downIcon;
+          item.downIcon = !isDefined(item.downIcon) ? "DownOutlined" : item.downIcon;
           item.childItems = (item.childItems ?? []).map(setDownIcon);
         }
         return item;

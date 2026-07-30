@@ -3,10 +3,9 @@ import { IConfigurableFormItemProps } from './model';
 import { ConfigurableFormItemSetting } from './configurableFormItemSetting';
 import { ConfigurableFormItemLive } from './configurableFormItemLive';
 import { UnwrapCodeEvaluators } from '@/providers';
-import { isDefined } from '@/utils/nullables';
 
 export const ConfigurableFormItem = <TValue = unknown>(props: UnwrapCodeEvaluators<IConfigurableFormItemProps<TValue>>): ReactNode => {
-  return isDefined(props.model.jsSetting)
+  return props.model.jsSetting === true || props.model.jsSetting === 'lazy'
     ? <ConfigurableFormItemSetting<TValue> {...props} lazy={props.model.jsSetting === 'lazy'} />
     : <ConfigurableFormItemLive<TValue> {...props} />;
 };

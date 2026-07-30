@@ -2,7 +2,7 @@
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
 using Shesha.Domain;
-using Shesha.Tests.Fixtures;
+using Shesha.Testing.Fixtures;
 using System;
 using System.Linq.Expressions;
 using System.Threading.Tasks;

@@ -1,42 +1,6 @@
-import { Table, Tag } from 'antd';
-import { nanoid } from '@/utils/uuid';
-import React, { FC, useMemo } from 'react';
-import { ColumnsType } from 'antd/es/table';
-
-const columns: ColumnsType<ICodeExposedVariable> = [
-  {
-    title: 'Variable name',
-    dataIndex: 'name',
-    key: 'name',
-  },
-  {
-    title: 'Description',
-    dataIndex: 'description',
-    key: 'description',
-  },
-  {
-    title: 'Datatype',
-    key: 'type',
-    dataIndex: 'type',
-    render: (tag: string) => <Tag key={tag}>{tag}</Tag>,
-  },
-];
-
 export interface ICodeExposedVariable {
   id?: string;
   name: string;
   description: string;
   type: string;
 }
-
-export interface ICodeVariablesTableProps {
-  data?: ICodeExposedVariable[] | undefined;
-}
-
-export const CodeVariablesTables: FC<ICodeVariablesTableProps> = ({ data }) => {
-  const mappedVariables = useMemo(() => {
-    return data?.map<ICodeExposedVariable>(({ id, ...rest }) => ({ ...rest, id: id ?? nanoid() }));
-  }, [data]);
-
-  return <Table columns={columns} dataSource={mappedVariables} pagination={false} rowKey="id" />;
-};

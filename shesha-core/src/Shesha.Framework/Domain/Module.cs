@@ -15,7 +15,7 @@ namespace Shesha.Domain
     /// <summary>
     /// Module
     /// </summary>
-    [Entity(GenerateApplicationService = GenerateApplicationServiceState.AlwaysGenerateApplicationService)]
+    [Entity(GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
     [Table("modules", Schema = "frwk")]
     [SnakeCaseNaming]
     public class Module: FullAuditedEntity<Guid>

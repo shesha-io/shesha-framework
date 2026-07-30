@@ -1,12 +1,12 @@
 import { createNamedContext } from '@/utils/react';
-import { DownloadFileArgs, FileListReference, ReplaceFilePayload, StoredFileModel, UploadFileAsAttachmentArgs } from '../../utils/storedFile/models';
+import { DownloadFileArgs, FileListReference, ReplaceFilePayload, StoredFileModel } from '../../utils/storedFile/models';
 import { SubscribeFunc } from '@/utils/subscriptions/subscriptionManager';
 import { OnFileDownloaded, OnFileListChanged } from './models';
 
 export type AttachmentsEditorEvents = 'fileList';
 
 export interface IAttachmentsEditorActions {
-  uploadFile: (args: UploadFileAsAttachmentArgs) => Promise<void>;
+  uploadFile: (args: { file: File }) => Promise<void>;
   replaceFile: (args: ReplaceFilePayload) => Promise<void>;
   deleteFile: (fileId: string) => Promise<void>;
   downloadZipFile: () => Promise<void>;

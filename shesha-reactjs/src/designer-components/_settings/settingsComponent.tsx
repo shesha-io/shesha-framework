@@ -23,7 +23,7 @@ type SettingsComponentInnerProps = {
   nestedComponent: IConfigurableFormComponent;
 };
 const SettingsComponentInner = <TValue = unknown>({ model, nestedComponent }: SettingsComponentInnerProps): ReactNode => {
-  const actualSourceComponent = useActualContextData(nestedComponent, model.readOnly);
+  const actualSourceComponent = useActualContextData(nestedComponent, { readOnly: model.readOnly, disabled: model.disabled });
 
   const component: IConfigurableFormComponent = useMemo(() => {
     return {

@@ -99,7 +99,7 @@ export const ModelConfiguratorRenderer: FC = () => {
   return (
     <div className={styles.shaModelConfigurator}>
       <CustomErrorBoundary>
-        {showErrors && isNonEmptyArray(errors) && <Alert type="error" title={errorsText} showIcon />}
+        {showErrors === true && isNonEmptyArray(errors) && <Alert type="error" title={errorsText} showIcon />}
         <ConfigurableForm
           className={styles.shaModelConfiguratorForm}
           layout="horizontal"

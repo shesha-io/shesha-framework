@@ -2,7 +2,7 @@ import React, { ReactNode } from "react";
 import { Form, FormItemProps } from "antd";
 import { IConfigurableFormItemChildFunc } from "./model";
 import { DataBinder } from "@/hocs/dataBinder";
-import { ComponentApiValueProcessor } from "./componentApiValueProcessor";
+import { EventsAndApiValueProcessor } from "./eventsAndApiValueProcessor";
 
 export interface IConfigurableFormItem_FormProps<TValue = unknown> {
   formItemProps: FormItemProps;
@@ -19,9 +19,9 @@ export const ConfigurableFormItemForm = <TValue = unknown>(props: IConfigurableF
     <Form.Item {...formItemProps}>
       <DataBinder<TValue> valuePropName={valuePropName}>
         {(value, onChange, propertyName) => (
-          <ComponentApiValueProcessor value={value} onChange={onChange} componentName={componentName} propertyName={propertyName} componentId={componentId}>
+          <EventsAndApiValueProcessor value={value} onChange={onChange} componentName={componentName} propertyName={propertyName} componentId={componentId}>
             {children}
-          </ComponentApiValueProcessor>
+          </EventsAndApiValueProcessor>
         )}
       </DataBinder>
     </Form.Item>

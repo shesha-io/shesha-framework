@@ -73,16 +73,17 @@ type ComponentWrapperInnerProps = {
   columnId: string;
   propertyName: string;
   readOnly?: boolean | undefined;
+  disabled?: boolean | undefined;
   propertyMeta?: IPropertyMetadata | undefined;
   tableRow?: { [key in string]?: unknown } | undefined;
 };
 
 const ComponentWrapperInner: FC<ComponentWrapperInnerProps> = (props) => {
-  const { component, model, columnId, propertyName, readOnly, propertyMeta, tableRow } = props;
+  const { component, model, columnId, propertyName, readOnly, disabled, propertyMeta, tableRow } = props;
   const { styles, cx } = useStyles();
 
   const actualModel = useActualContextData(
-    model, readOnly ? true : undefined,
+    model, { readOnly: readOnly === true ? true : undefined, disabled: disabled === true ? true : undefined },
     {
       tableRow: tableRow,
     },

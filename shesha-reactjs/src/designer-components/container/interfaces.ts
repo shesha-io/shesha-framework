@@ -163,7 +163,6 @@ export interface ICommonContainerProps extends Omit<IInputStyles, 'style'> {
   justifySelf?: JustifySelf | undefined;
   noDefaultStyling?: boolean | undefined;
   gridColumnsCount?: number | undefined;
-  gap?: string | number | undefined;
   width?: string | number | undefined;
   minWidth?: string | number | undefined;
   maxWidth?: string | number | undefined;

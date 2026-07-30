@@ -64,7 +64,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
             <ShaStatistic
               value={(value || passedModel.value || passedModel.placeholder) ?? ""}
               {...(passedModel.precision ? { precision: passedModel.precision } : {})}
-              title={<div style={removeUndefinedProps({ ...titleFontStyles, ...titleStyles })}>{passedModel.title}</div>}
+              title={passedModel.title}
               prefix={(
                 <div>
                   {passedModel.prefixIcon && <ShaIcon iconName={prefixIcon as IconType} />}
@@ -81,6 +81,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
               )}
               style={removeUndefinedProps({ ...allStyles?.fullStyle })}
               styles={{
+                title: removeUndefinedProps({ ...titleFontStyles, ...titleStyles }),
                 content: removeUndefinedProps({
                   ...valueFontStyles,
                   ...valueStyles,
@@ -88,7 +89,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
                 }),
               }}
               onClick={(event) => {
-                ctx?.handleEvent(event, undefined, model.onClickCustom);
+                ctx?.handleEvent(event, { value }, model.onClickCustom);
               }}
             />
           );

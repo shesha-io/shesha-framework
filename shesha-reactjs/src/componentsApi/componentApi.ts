@@ -230,7 +230,7 @@ export interface IComponentStyle extends Record<string, unknown> {
   border: IBorderValue;
 }
 
-export type EditMode = 'editable' | 'readOnly' | 'inherited' | boolean;
+export type InteractionMode = 'editable' | 'readOnly' | 'disabled' | 'inherited' | boolean;
 
 export interface CommonComponentApi {
   /** Name of the component (e.g., `"textField"`, `"numberField"`). */
@@ -243,8 +243,8 @@ export interface CommonComponentApi {
   readonly style: IComponentStyle;
   /** Whether the component is visible in the UI. */
   visible: boolean;
-  /** Current edit mode of the component. */
-  editable: EditMode | undefined;
+  /** Current interaction mode of the component. */
+  interactionMode: InteractionMode | undefined;
 }
 
 export interface InputComponentApi<T = unknown> extends CommonComponentApi {
@@ -268,4 +268,23 @@ export interface InputComponentApi<T = unknown> extends CommonComponentApi {
 // Components API
 
 export type TextFieldApi = InputComponentApi<string | undefined>;
-export type NumberFieldApi = InputComponentApi<number | undefined>;
+
+export type TextAreaApi = InputComponentApi<string | undefined>;
+
+export interface NumberFieldApi extends InputComponentApi<number | undefined> {
+  /** Minimum value */
+  min?: number;
+  /** Maximum value */
+  max?: number;
+};
+
+export type CheckboxFieldApi = InputComponentApi<boolean | undefined>;
+
+export interface PanelApi extends CommonComponentApi {
+  /** Whether the panel is expanded */
+  isExpanded: boolean;
+  /** Expand the panel */
+  expand(): void;
+  /** Collapse the panel */
+  collapse(): void;
+};

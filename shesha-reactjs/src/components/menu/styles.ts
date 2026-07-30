@@ -31,6 +31,7 @@ const BLACK_CLR = "#000000e0";
 
 export type StyleResponse = {
   menuContainer: SerializedStyles;
+  scrollRow: SerializedStyles;
   menuWrapper: SerializedStyles;
   menuWrapperScroll: SerializedStyles | undefined;
   shaMenu: string;
@@ -59,12 +60,21 @@ export const useStyles = createStyles<IStyleProps, StyleResponse>(
       display: flex;
       flex-direction: row;
       white-space: nowrap;
-      align-items: ${isScrolling ? 'stretch' : 'center'};
+      align-items: center;
       height: auto;
       min-height: 100%;
       width: ${width};
       padding: ${isScrolling ? '0' : '2px 0'};
       overflow: visible !important;
+    `;
+
+    // Unlike menuContainer, has no height of its own, so stretch here sizes buttons to the menu's real height.
+    const scrollRow = css`
+      display: flex;
+      flex-direction: row;
+      flex: 1 1 auto;
+      min-width: 0;
+      align-items: stretch;
     `;
 
     const menuWrapper = css`
@@ -296,41 +306,20 @@ export const useStyles = createStyles<IStyleProps, StyleResponse>(
       }
     `;
 
-    // The scroll buttons share the row with antd's `.ant-menu-item` elements and must match
-    // their rendered height exactly, otherwise the buttons sit higher/lower than the items.
-    //
-    // Antd's horizontal menu items don't expose a usable height value at design time — the
-    // final height comes from (in order of contribution):
-    //   - 48px content box from antd's `--ant-menu-item-height` token + line-height,
-    //   - 2× vertical padding from our own `.ant-menu-item` rule above,
-    //   - a sub-pixel rounding adjustment antd applies via its internal line-height calc
-    //     (≈ -0.5px when itemStyle is set, because the base padding also gets `padding.y - 1`
-    //     instead of `padding.y` — see the menu-item rule earlier in this file).
-    //
-    // Without runtime DOM measurement (which we can't do here — styles are computed at render
-    // time before the menu mounts), the empirically-measured constant `9.5` is what lines up
-    // pixel-perfectly with menu items for the standard configuration (padding.y = 5 and
-    // itemStyle set). If a future change alters the menu-item padding rule or antd's base
-    // height, re-measure the rendered `.ant-menu-item` height in DevTools and update this
-    // constant to match.
-    const menuItemExtraHeight = 9.5;
-    const menuItemHeight = `calc(48px + ${menuItemExtraHeight}px)`;
-
     const scrollButtons = css`
       width: 80px;
       display: flex;
-      height: ${menuItemHeight};
       color: ${colors?.itemColor};
       ${colors?.itemBackground ? `background: ${colors.itemBackground};` : ''}
       flex-direction: row;
       justify-content: center;
-      align-items: center;
-      align-self: center;
+      align-items: stretch;
       margin: 0;
       padding: 0;
       gap: 0;
     `;
 
+    // Height comes from scrollRow's stretch, not set here.
     const scrollButton = css`
       cursor: pointer;
       padding: 0 5px;
@@ -338,15 +327,18 @@ export const useStyles = createStyles<IStyleProps, StyleResponse>(
       transition: background 0.3s;
       width: 40px;
       flex: 0 0 40px;
-      height: ${menuItemHeight};
-      align-self: center;
       align-items: center;
       justify-content: center;
       display: flex;
-      color: ${itemStyle ? 'inherit' : `${colors?.itemColor || BLACK_CLR}`};
       background: ${colors?.itemBackground || 'transparent'};
+      color: ${colors?.itemColor || BLACK_CLR};
       ${menuItemStyle || ''}
       ${itemStyle || ''}
+      box-sizing: border-box;
+
+      .anticon {
+        color: inherit;
+      }
 
       &:hover {
         background: ${colors?.hoverItemBackground
@@ -361,6 +353,7 @@ export const useStyles = createStyles<IStyleProps, StyleResponse>(
 
     return {
       menuContainer,
+      scrollRow,
       menuWrapper,
       menuWrapperScroll,
       shaMenu,

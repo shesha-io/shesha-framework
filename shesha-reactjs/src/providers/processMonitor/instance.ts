@@ -8,7 +8,7 @@ import { getFileNameFromResponse } from '@/utils/fetchers';
 import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 import { mergeSortedEvents, parseLog4NetLine, parseLogLevel } from './utils';
 import { buildUrl } from '@/utils/url';
-import { isNotNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 
 export type ForceRenderFunc = () => void;
 
@@ -156,14 +156,12 @@ export class ProcessMonitorInstance implements IProcessMonitor {
 
   changeProcessId = async (processId: string): Promise<void> => {
     if (this._processId === processId) return;
-    await this.stopAsync().then(async () => {
-      this._processId = processId;
-      this.clearLog();
-      this._status = 'idle';
-      this._errorMessage = undefined;
-      await this.startAsync();
-      this._forceRender();
-    });
+    await this.stopAsync();
+    this._processId = processId;
+    this.clearLog();
+    this.updateStatus('idle');
+    await this.startAsync();
+    this._forceRender();
   };
 
   startAsync = async (): Promise<void> => {
@@ -185,10 +183,30 @@ export class ProcessMonitorInstance implements IProcessMonitor {
     const result: ILogEvent[] = [];
 
     const lines = rawLogText.split('\n');
+    /*
     lines.forEach((line, idx) => {
       const event = parseLog4NetLine(line, idx);
       if (event) result.push(event);
     });
+    */
+    let i = 0;
+    let currentEvent: ILogEvent | undefined = undefined;
+    while (i < lines.length) {
+      const lineContent = lines[i];
+      if (!isNullOrWhiteSpace(lineContent)) {
+        const event = parseLog4NetLine(lineContent, result.length) ?? undefined;
+        if (isDefined(event)) {
+          result.push(event);
+          currentEvent = event;
+        } else {
+          if (currentEvent) {
+            currentEvent.message = (currentEvent.message ?? "").trimEnd() + `\n${lineContent}`;
+          }
+        }
+      }
+
+      i++;
+    }
 
     return result;
   };

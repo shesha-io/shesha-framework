@@ -98,9 +98,9 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
     : false;
 
   const valueId = useMemo(() => {
-    return Array.isArray(value)
-      ? value.map((x) => incomeValueFunc(x, {}) ?? "")
-      : incomeValueFunc(value, {}) ?? "";
+    if (Array.isArray(value)) return value.map((x) => incomeValueFunc(x, {}) ?? "");
+    const id = incomeValueFunc(value, {});
+    return id || undefined;
   }, [value, incomeValueFunc]);
 
   const selection = useEntitySelectionData({
@@ -207,7 +207,7 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
                 showPickerDialog();
               }}
               onClear={onClear}
-              value={selection.loading ? null : valueId}
+              value={selection.loading ? null : (valueId ?? null)}
               placeholder={selection.loading ? 'Loading...' : placeholder}
               notFoundContent=""
               disabled={disabled || selection.loading}
@@ -215,8 +215,9 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
               allowClear
               {...(selectedMode ? { mode: selectedMode } : {})}
               options={options}
+              open={false}
               variant="borderless"
-              suffix={null}
+              suffixIcon={<span />}
               onChange={handleMultiChange}
               className={styles.entitySelect}
               style={{

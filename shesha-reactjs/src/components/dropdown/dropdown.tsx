@@ -10,6 +10,8 @@ import ReflistTag from '../refListDropDown/reflistTag';
 import { getNumberOrUndefined } from '@/utils/string';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
+const normalizeValue = (value: number | string): number | string => getNumberOrUndefined(value) ?? value;
+
 export const Dropdown: FC<IDropdownProps> = ({
   valueFormat,
   incomeCustomJs,
@@ -18,7 +20,7 @@ export const Dropdown: FC<IDropdownProps> = ({
   dataSourceType,
   values,
   onChange,
-  value,
+  value: inputValue,
   referenceListId,
   mode,
   disableItemValue = false,
@@ -37,6 +39,12 @@ export const Dropdown: FC<IDropdownProps> = ({
   enableStyleOnReadonly,
 }) => {
   const { styles } = useStyles({ style: style ?? {} });
+
+  const value = isDefined(inputValue)
+    ? Array.isArray(inputValue)
+      ? inputValue.map(normalizeValue) as number[] | string[]
+      : normalizeValue(inputValue)
+    : undefined;
 
   const selectedMode = mode === 'multiple' || mode === 'tags' ? mode : undefined;
 
@@ -70,7 +78,7 @@ export const Dropdown: FC<IDropdownProps> = ({
   }, [valueFormat, outcomeCustomJs]);
 
   // is used for RefLists only
-  const getLabeledValue = useCallback<GetLabeledValueFunc<number>>((value, options) => {
+  const getLabeledValue = useCallback<GetLabeledValueFunc<number | string>>((value, options) => {
     if (!isDefined(value))
       return undefined;
 
@@ -86,7 +94,7 @@ export const Dropdown: FC<IDropdownProps> = ({
         // icon: item.icon,
         data: item.data,
         // description: item.description,
-      } satisfies CustomLabeledValue<number>
+      } satisfies CustomLabeledValue<number | string>
       : undefined;
   }, [incomeValueFunc]);
 
@@ -119,7 +127,7 @@ export const Dropdown: FC<IDropdownProps> = ({
   if (dataSourceType === 'referenceList') {
     return isDefined(referenceListId)
       ? (
-        <GenericRefListDropDown<number>
+        <GenericRefListDropDown<number | string>
           onChange={onChange}
           referenceListId={referenceListId}
           value={value}
@@ -146,12 +154,11 @@ export const Dropdown: FC<IDropdownProps> = ({
       : undefined;
   }
 
-  const getOptions = (): ILabelValue<number>[] => {
-    const result: ILabelValue<number>[] = [];
+  const getOptions = (): ILabelValue<number | string>[] => {
+    const result: ILabelValue<number | string>[] = [];
     (values ?? []).forEach((i) => {
-      const itemValue = getNumberOrUndefined(i.value);
-      if (itemValue)
-        result.push({ ...i, value: itemValue });
+      const itemValue = normalizeValue(i.value);
+      result.push({ ...i, value: itemValue });
     });
 
     return result;
@@ -167,7 +174,7 @@ export const Dropdown: FC<IDropdownProps> = ({
     return options.filter(({ value: currentValue }) => selectedValues.indexOf(currentValue) > -1).map(({ label }) => ({ label }));
   };
 
-  if (readOnly) {
+  if (readOnly === true) {
     const displayValue: unknown = mode === 'multiple'
       ? displayStyle === 'tags'
         ? (Array.isArray(selectedValue) ? selectedValue : []).map((x) => options.find((o) => o.value === x))

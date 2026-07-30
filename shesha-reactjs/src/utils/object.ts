@@ -108,7 +108,7 @@ export const deepMergeValues = <TObject extends object = object, TSource extends
   source: TSource | null | undefined,
   action?: (objValue: unknown, srcValue: unknown, key: string, obj: Record<string, unknown>, src: Record<string, unknown>) => unknown,
 ): TObject & TSource => {
-  if (!source) return target as TObject & TSource;
+  if (!isDefined(source)) return target as TObject & TSource;
   return mergeWith({ ...target }, source, (objValue: unknown, srcValue: unknown, key: string, obj: TObject | null) => {
     if (action) {
       const result = action(objValue, srcValue, key, obj as Record<string, unknown>, source as Record<string, unknown>);
@@ -339,3 +339,12 @@ export const getDatePropertyOrUndefined = <TContainer extends object = object>(o
  * Checks if the key is a key of the object
  */
 export const isKeyOf = <T extends object>(key: string | keyof T, obj: T): key is keyof T => key in obj;
+
+
+export const pick = <T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> => {
+  const result = {} as Pick<T, K>;
+  for (const key of keys) {
+    result[key] = obj[key];
+  }
+  return result;
+};

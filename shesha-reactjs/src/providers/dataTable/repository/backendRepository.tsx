@@ -7,7 +7,7 @@ import { HttpClientApi, IHasEntityDataSourceConfig, useHttpClient, useMetadataDi
 import { IConfigurableColumnsProps, IDataColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
 import { convertDotNotationPropertiesToGraphQL } from "@/providers/form/utils";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
-import { getEntityTypeIdentifierQueryParams } from "@/providers/metadataDispatcher/entities/utils";
+import { getEntityTypeIdentifierQueryParams, isEntityTypeId } from "@/providers/metadataDispatcher/entities/utils";
 import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
 import { GENERIC_ENTITIES_ENDPOINT } from "@/shesha-constants";
 import { buildUrl } from "@/utils";
@@ -22,6 +22,7 @@ import React, { FC, PropsWithChildren, useMemo } from "react";
 import { DataTableColumnDto, IExcelColumn, IExportExcelPayload, IGetListDataPayload, isDataColumn, ITableDataFetchColumn, ITableDataInternalResponse, ITableDataResponse } from "../interfaces";
 import { DataTableProviderWithRepository, IDataTableProviderWithRepositoryProps } from "../provider";
 import { EntityReorderItem, EntityReorderPayload, EntityReorderResponse, IRepository, RowsReorderPayload, SupportsGroupingArgs, SupportsReorderingArgs } from "./interfaces";
+import hash from 'object-hash';
 
 export interface IWithBackendRepositoryArgs {
   entityType: string | IEntityTypeIdentifier;
@@ -59,23 +60,24 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
   const getPropertyNamesForFetching = (columns: ITableDataFetchColumn[]): string[] => {
     const result: string[] = [];
     columns.forEach((column) => {
-      if (!column.propertiesToFetch)
+      if (!isDefined(column.propertiesToFetch))
         return;
       // Skip collection-of-entity columns. The backend auto-expands them to `{ id _className _displayName }`
       // and then trips ProjectionHelper.BuildNestedMemberInit looking for `Id` on `IList<T>`.
       // See https://github.com/shesha-io/shesha-framework/issues/4961.
       if (column.dataType === 'array' &&
-        (column.dataFormat === 'entity' || column.dataFormat === 'many-entity' || column.dataFormat === 'child-entity'))
+        (column.dataFormat === 'entity' || column.dataFormat === 'many-entity' || column.dataFormat === 'child-entity' ||
+          column.metadata?.itemsType?.dataType === 'entity'))
         return;
       if (Array.isArray(column.propertiesToFetch)) {
         column.propertiesToFetch.forEach((p) => {
-          if (!!p)
+          if (!isNullOrWhiteSpace(p))
             result.push(p);
         });
       } else {
         result.push(column.propertiesToFetch);
         // special handling for entity references: expand properties list to include `id` and `_displayName`
-        if (column.isEnitty) {
+        if (column.isEntity ?? false) {
           const requiredProps = [`${column.propertiesToFetch}.Id`, `${column.propertiesToFetch}._displayName`];
           requiredProps.forEach((rp) => {
             if (!result.includes(rp))
@@ -90,6 +92,10 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
   /** Convert common payload to a form that uses the back-end */
   const convertPayload = (payload: IGetListDataPayload): IGenericGetAllPayload => {
     const properties = getPropertyNamesForFetching(payload.columns);
+    // always fetch `id`, it's required for row identification (selection, crud operations etc.)
+    // and prevents an empty `properties` list when all columns are skipped (e.g. collection-of-entity columns)
+    if (!properties.includes('id') && !properties.includes('Id'))
+      properties.unshift('id');
 
     const result: IGenericGetAllPayload = {
       ...getEntityTypeIdentifierQueryParams(entityType),
@@ -100,7 +106,7 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
       sorting: isNonEmptyArray(payload.sorting)
         ? payload.sorting
           .filter((s) => Boolean(s.id))
-          .map((s) => camelcaseDotNotation(s.id) + (s.desc ? ' desc' : ''))
+          .map((s) => camelcaseDotNotation(s.id) + ((s.desc ?? false) ? ' desc' : ''))
           .join(',')
         : undefined,
       filter: payload.filter,
@@ -142,7 +148,7 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
   };
 
   const prepareColumns = (configurableColumns: IConfigurableColumnsProps[]): Promise<DataTableColumnDto[]> => {
-    if (!entityType)
+    if (!isEntityTypeId(entityType))
       return Promise.resolve([]);
 
     const dataProperties = getPropertyNames(configurableColumns);
@@ -191,7 +197,7 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
   };
 
   const performUpdate = async <TData extends object = object>(_rowIndex: number, data: TData, options?: IUpdateOptions): Promise<TData> => {
-    const endpoint: IApiEndpoint | undefined = options?.customUrl
+    const endpoint: IApiEndpoint | undefined = !isNullOrWhiteSpace(options?.customUrl)
       ? { httpVerb: 'PUT', url: options.customUrl }
       : await apiHelper.getDefaultActionUrl({ modelType: entityType, actionName: StandardEntityActions.update });
 
@@ -206,10 +212,10 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
 
   const performDelete = async <TData extends object = object>(_rowIndex: number, data: TData, options?: IDeleteOptions): Promise<TData> => {
     const id = getIdOrUndefined(data);
-    if (!id)
+    if (isNullOrWhiteSpace(id))
       return Promise.reject('Failed to determine `Id` of the object');
 
-    const endpoint: IApiEndpoint | undefined = options?.customUrl
+    const endpoint: IApiEndpoint | undefined = !isNullOrWhiteSpace(options?.customUrl)
       ? { httpVerb: 'DELETE', url: options.customUrl }
       : await apiHelper.getDefaultActionUrl({ modelType: entityType, actionName: StandardEntityActions.delete });
 
@@ -224,7 +230,7 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
   };
 
   const performCreate = async <TData extends object = object>(_rowIndex: number, data: TData, options?: ICreateOptions): Promise<TData> => {
-    const endpoint: IApiEndpoint | undefined = options?.customUrl
+    const endpoint: IApiEndpoint | undefined = !isNullOrWhiteSpace(options?.customUrl)
       ? { httpVerb: 'POST', url: options.customUrl }
       : await apiHelper.getDefaultActionUrl({ modelType: entityType, actionName: StandardEntityActions.create });
 
@@ -283,7 +289,7 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
         if (isNullOrWhiteSpace(id))
           throw new Error('Failed to determine `Id` of the object');
         const orderIndex = getNumberOrUndefined((row as Record<string, unknown>)[payload.propertyName]);
-        if (!orderIndex)
+        if (!isDefined(orderIndex))
           throw new Error('Failed to determine `orderIndex` of the object');
 
         reorderedRows.push({ id, orderIndex });
@@ -305,8 +311,8 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
         const responseItems = response.data.result.items;
         const orderedRows = newRows.map((row) => {
           const rowId = getIdOrUndefined(row);
-          const newOrder = rowId ? responseItems[rowId] : undefined;
-          return newOrder
+          const newOrder = !isNullOrWhiteSpace(rowId) ? responseItems[rowId] : undefined;
+          return isDefined(newOrder)
             ? { ...row, [payload.propertyName]: newOrder }
             : row;
         });
@@ -321,13 +327,20 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
 
 
   const supportsReordering = (args: SupportsReorderingArgs): string | true => {
-    return args.sortMode !== 'strict' || !args.strictSortBy
+    return args.sortMode !== 'strict' || isNullOrWhiteSpace(args.strictSortBy)
       ? '`sortMode` and `strictSortBy` properties are mandatory for the generic reordering functionality'
       : true;
   };
 
   const supportsGrouping = (args: SupportsGroupingArgs): boolean => {
     return args.sortMode === "standard" && Boolean(entityType);
+  };
+
+  const getFetcherHash = (): string => {
+    return hash({
+      entityType,
+      getListUrl,
+    }, { algorithm: 'md5', encoding: 'hex' });
   };
 
   const repository: IBackendRepository = {
@@ -342,6 +355,7 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
     performDelete,
     supportsReordering,
     supportsGrouping,
+    fetchingSettingsHash: getFetcherHash(),
   };
   return repository;
 };

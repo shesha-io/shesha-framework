@@ -127,6 +127,9 @@ namespace Shesha.Web.Host.Startup
                             });
                             break;
                         }
+                    case DbmsType.NotSpecified:
+                    default:
+                        throw new InvalidOperationException($"Unsupported DbmsType '{dbms}' for Hangfire storage configuration. Supported types are SQLServer and PostgreSQL.");
                 }
             });
             services.AddHangfireServer(config => {
@@ -150,6 +153,9 @@ namespace Shesha.Web.Host.Startup
 
         public void Configure(IApplicationBuilder app, IBackgroundJobClient backgroundJobs)
         {
+            // Security headers (registered first so they apply to all responses)
+            app.UseSecurityHeaders();
+
             app.UseSheshaElmah();
 
             // note: already registered in the ABP
@@ -160,11 +166,16 @@ namespace Shesha.Web.Host.Startup
             app.UseAbp(options => { options.UseAbpRequestLocalization = false; }); // Initializes ABP framework.
 
             // global cors policy
+            var corsOrigins = _appConfiguration["App:CorsOrigins"]?
+                .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                .Select(o => o.Trim().TrimEnd('/'))
+                .Where(o => !string.IsNullOrEmpty(o))
+                .ToArray() ?? Array.Empty<string>();
             app.UseCors(x => x
                 .AllowAnyMethod()
                 .AllowAnyHeader()
-                .SetIsOriginAllowed(origin => true) // allow any origin
-                .AllowCredentials()); // allow credentials
+                .WithOrigins(corsOrigins)
+                .AllowCredentials());
             app.UseStaticFiles();
             app.UseRouting();
             app.UseRateLimiter();

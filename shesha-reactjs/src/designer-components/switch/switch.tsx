@@ -33,9 +33,10 @@ const SwitchComponent: SwitchComponentDefinition = {
 
               // TODO EVENTS
               onChange={(checked, event) => {
-                ctx?.handleEvent(event, checked, model.onChangeCustom);
+                ctx?.handleEvent(event, { value: checked }, model.onChangeCustom);
                 onChange(checked);
               }}
+              onClick={(checked, event) => ctx?.handleEvent(event, { value: checked }, model.onClickCustom)}
             />
           );
         }}
