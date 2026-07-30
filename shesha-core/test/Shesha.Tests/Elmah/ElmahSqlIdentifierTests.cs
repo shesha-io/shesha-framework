@@ -34,6 +34,10 @@ namespace Shesha.Tests.Elmah
         [InlineData("has-hyphen")]
         [InlineData("has.dot")]
         [InlineData("accenté")]
+        // Newlines: .NET $ matches before a trailing \n, so these must be rejected by \A..\z
+        [InlineData("errors\n")]
+        [InlineData("errors\n; DROP TABLE x;--")]
+        [InlineData("\nerrors")]
         [InlineData("")]
         [InlineData(null)]
         public void Validate_throws_for_invalid_or_malicious_identifiers(string identifier)

@@ -12,7 +12,9 @@ namespace Shesha.Elmah
     public static class ElmahSqlIdentifier
     {
         // Only allow a leading letter/underscore followed by letters, digits or underscores.
-        private static readonly Regex _identifierRegex = new Regex(@"^[A-Za-z_][A-Za-z0-9_]*$", RegexOptions.Compiled);
+        // Uses absolute anchors (\A ... \z) rather than ^/$ because in .NET $ also matches
+        // immediately before a trailing newline, which would let "name\n" slip through.
+        private static readonly Regex _identifierRegex = new Regex(@"\A[A-Za-z_][A-Za-z0-9_]*\z", RegexOptions.Compiled);
 
         /// <summary>
         /// Returns <paramref name="identifier"/> unchanged when it is a safe SQL identifier;
