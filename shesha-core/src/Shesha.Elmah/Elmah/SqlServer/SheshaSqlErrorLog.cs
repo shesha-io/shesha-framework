@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace Shesha.Elmah.SqlServer
 {
@@ -185,17 +184,6 @@ namespace Shesha.Elmah.SqlServer
 
         private static class Commands
         {
-            // Whitelist for SQL identifiers (schema/table names) that must be embedded directly into
-            // DDL statements where parameters are not allowed. Prevents SQL injection via identifiers.
-            private static readonly Regex _identifierRegex = new Regex(@"^[A-Za-z_][A-Za-z0-9_]*$", RegexOptions.Compiled);
-
-            private static string ValidateIdentifier(string identifier)
-            {
-                if (string.IsNullOrEmpty(identifier) || !_identifierRegex.IsMatch(identifier))
-                    throw new ArgumentException($"Invalid SQL identifier: '{identifier}'.", nameof(identifier));
-                return identifier;
-            }
-
             public static void ExecuteNonQuery(SqlConnection connection, string sql, params SqlParameter[] parameters)
             {
                 using (var command = new SqlCommand(sql))
@@ -256,7 +244,7 @@ WHERE EXISTS (
 
             public static void CreateSchema(SqlConnection connection, string schemaName)
             {
-                ExecuteNonQuery(connection, $@"create schema [{ValidateIdentifier(schemaName)}]");
+                ExecuteNonQuery(connection, $@"create schema [{ElmahSqlIdentifier.Validate(schemaName)}]");
             }
 
             public static bool TableExists(SqlConnection connection, string schemaName, string tableName)
@@ -277,8 +265,8 @@ WHERE EXISTS (
 
             public static void CreateErrorsTable(SqlConnection connection)
             {
-                var schemaName = ValidateIdentifier(DBConstants.Schema);
-                var tableName = ValidateIdentifier(DBConstants.ErrorsTable);
+                var schemaName = ElmahSqlIdentifier.Validate(DBConstants.Schema);
+                var tableName = ElmahSqlIdentifier.Validate(DBConstants.ErrorsTable);
 
                 ExecuteBatchNonQuery(connection, $@"
 CREATE TABLE [{schemaName}].[{tableName}]
@@ -317,8 +305,8 @@ ON [PRIMARY]");
 
             public static void CreateErrorRefsTable(SqlConnection connection)
             {
-                var schemaName = ValidateIdentifier(DBConstants.Schema);
-                var tableName = ValidateIdentifier(DBConstants.ErrorRefsTable);
+                var schemaName = ElmahSqlIdentifier.Validate(DBConstants.Schema);
+                var tableName = ElmahSqlIdentifier.Validate(DBConstants.ErrorRefsTable);
 
                 ExecuteBatchNonQuery(connection, $@"
 CREATE TABLE [{schemaName}].[{tableName}]
