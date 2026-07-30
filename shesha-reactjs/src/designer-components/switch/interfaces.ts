@@ -1,9 +1,9 @@
 import { ComponentDefinition } from '@/interfaces';
-import { IConfigurableFormComponent, IStyleValue } from '@/providers/form/models';
+import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 
-export interface ISwitchComponentProps extends IConfigurableFormComponent, IStyleValue {
-  value?: boolean;
-  defaultChecked?: boolean;
+export interface ISwitchComponentProps extends IConfigurableFormComponent, IInputStyles {
+  value?: boolean | undefined;
+  defaultChecked?: boolean | undefined;
 }
 
 export type SwitchComponentDefinition = ComponentDefinition<"switch", ISwitchComponentProps>;
