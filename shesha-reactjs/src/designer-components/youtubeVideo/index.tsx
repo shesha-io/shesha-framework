@@ -13,7 +13,10 @@ import { migratePropertyName, migrateCustomFunctions } from '@/designer-componen
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeUndefinedProps } from '@/utils/object';
-import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
+import { useComponentApi } from '@/providers/componentApi/provider';
+import { useEffectOnce } from '@/hooks/useEffectOnce';
+import { YouTubeVideoApi } from '@/componentsApi/componentApi';
+import apiCode from '../../componentsApi/componentApi.ts?raw';
 import { loadYouTubeIframeApi, YTPlayer, YTPlayerEvent } from './youtubeApi';
 import { useStyles } from './styles';
 
@@ -21,8 +24,7 @@ const { Title, Paragraph } = Typography;
 
 const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYoutubeVideoCalculatedValues> = {
   type: 'youtubeVideo',
-  isInput: true,
-  isOutput: true,
+  isInput: false,
   name: 'YouTube Video',
   icon: <YoutubeOutlined />,
   Factory: ({ model, calculatedModel }) => {
@@ -51,8 +53,6 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
       thumbnailUrl,
       thumbnailBase64,
       thumbnailStoredFileId,
-      isRequired = false,
-      watchCompletionRequired = false,
       onPlay,
       onPause,
       onEnd,
@@ -61,13 +61,14 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
     } = model;
 
     const { formMode } = calculatedModel;
-    // `hasWatched` tracks thumbnail dismissal (iframe visibility) only. Actual playback state is
-    // tracked separately by `hasStarted`/`isCompleted` so a thumbnail click is never mistaken for watching.
+    // `hasWatched` tracks thumbnail dismissal (iframe visibility) only.
     const [hasWatched, setHasWatched] = useState(false);
-    const [hasStarted, setHasStarted] = useState(false);
-    const [isCompleted, setIsCompleted] = useState(false);
     const playerRef = useRef<HTMLIFrameElement>(null);
-    const onChangeRef = useRef<((value: boolean | undefined | null) => void) | null>(null);
+
+    // Actual playback state, kept in refs so the exposed API getters always read the latest value
+    // (the getters are called later, from the form's events/expressions).
+    const hasStartedRef = useRef(false);
+    const isCompletedRef = useRef(false);
 
     const { executeAction } = useConfigurableActionDispatcher();
     const allConstants = useAvailableConstantsData();
@@ -75,10 +76,23 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
     const constantsRef = useRef(allConstants);
     constantsRef.current = allConstants;
 
-    // The Player API is needed when events are wired up, or when either watch-gate is on
-    // (isRequired = must start, watchCompletionRequired = must finish) — both rely on player state.
-    const eventsConfigured = isNonEmptyActionConfiguration(onPlay) || isNonEmptyActionConfiguration(onPause) || isNonEmptyActionConfiguration(onEnd) || isNonEmptyActionConfiguration(onReady);
-    const needsJsApi = eventsConfigured || watchCompletionRequired || isRequired;
+    // Expose read-only watch state on the component's public API so the final form can gate
+    // submission itself (e.g. checking `isWatchedEntirely` in an OnBeforeSubmit event) instead of
+    // this component binding to a form field.
+    const componentApi = useComponentApi();
+    useEffect(() => {
+      componentApi?.updateApi<YouTubeVideoApi>({
+        id: model.id,
+        componentName: model.componentName ?? '',
+        level: 3,
+        typeDefinition: { typeName: 'YouTubeVideoApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+        properties: [
+          { name: 'isWatched', getter: () => hasStartedRef.current },
+          { name: 'isWatchedEntirely', getter: () => isCompletedRef.current },
+        ],
+      });
+    }, [componentApi, model.componentName, model.id]);
+    useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
     // titleLevel arrives from the dropdown as a number, but older configs / JS-setting bindings may
     // deliver a string ('1'..'5'); Ant's Title needs a 1-5 number. Fall back to 3 (default).
@@ -149,10 +163,10 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
         height: dimensionStyles.height ?? 315,
       };
 
-    // Apply all styles to component wrapper
+    // Apply all styles to the component wrapper
     const componentStyles = removeUndefinedProps({
       ...model.allStyles?.jsStyle,
-      ...finalDimensionStyles, // Use intercepted dimensions
+      ...finalDimensionStyles,
       ...model.allStyles?.borderStyles,
       ...model.allStyles?.shadowStyles,
       ...model.allStyles?.stylingBoxAsCSS,
@@ -192,13 +206,11 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
       // Mobile parameters
       if (!playsinline) params.append('playsinline', '0');
 
-      // JS API and security - enable when events are wired or watch completion is required
-      if (needsJsApi) {
-        params.append('enablejsapi', '1');
-        // Add origin parameter for security when using JS API
-        if (typeof window !== 'undefined') {
-          params.append('origin', window.location.origin);
-        }
+      // Always enable the JS API (with an origin for security) so play/pause/end events fire and the
+      // exposed isWatched/isWatchedEntirely state stays accurate.
+      params.append('enablejsapi', '1');
+      if (typeof window !== 'undefined') {
+        params.append('origin', window.location.origin);
       }
 
       return `${baseUrl}?${params.toString()}`;
@@ -265,8 +277,14 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
     handlersRef.current = { onPlay, onPause, onEnd, onReady, executeAction };
 
     // Track play/pause/end via the official YouTube IFrame Player API (reliable, unlike raw postMessage).
+    // Updates the watch-state refs (exposed on the API) and fires the configured events.
     useEffect(() => {
-      if (!needsJsApi || formMode === 'designer' || isNullOrWhiteSpace(videoId) || !iframeShown) {
+      // Reset watch state whenever the video (or its visibility) changes, so the exposed
+      // isWatched/isWatchedEntirely never carry over from a previously-played video.
+      hasStartedRef.current = false;
+      isCompletedRef.current = false;
+
+      if (formMode === 'designer' || isNullOrWhiteSpace(videoId) || !iframeShown) {
         return undefined;
       }
 
@@ -289,19 +307,13 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
               onReady: (): void => fire(handlersRef.current.onReady),
               onStateChange: (event: YTPlayerEvent): void => {
                 if (event.data === YT.PlayerState.PLAYING) {
-                  setHasStarted(true);
-                  // "Require watching" is satisfied the moment playback starts.
-                  // "Require completion" is stricter and instead waits for ENDED (below).
-                  if (isRequired && !watchCompletionRequired) {
-                    onChangeRef.current?.(true);
-                  }
+                  hasStartedRef.current = true;
                   fire(handlersRef.current.onPlay);
                 } else if (event.data === YT.PlayerState.PAUSED) {
                   fire(handlersRef.current.onPause);
                 } else if (event.data === YT.PlayerState.ENDED) {
-                  setHasStarted(true);
-                  setIsCompleted(true);
-                  onChangeRef.current?.(true);
+                  hasStartedRef.current = true;
+                  isCompletedRef.current = true;
                   fire(handlersRef.current.onEnd);
                 }
               },
@@ -320,117 +332,75 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
           // player may already be gone
         }
       };
-    }, [needsJsApi, formMode, videoId, iframeShown, isRequired, watchCompletionRequired]);
+    }, [formMode, videoId, iframeShown]);
 
     if (hidden) {
       return null;
     }
 
-    // Gate form submission when the viewer must watch the video first.
-    // isRequired => must START the video; watchCompletionRequired => must reach the END (stricter).
-    const requiresWatch = isRequired || watchCompletionRequired;
-    const watchMessage = watchCompletionRequired
-      ? 'You must watch the entire video to continue'
-      : 'You must start watching the video to continue';
-    const modelWithValidation = requiresWatch
-      ? {
-        ...model,
-        validate: {
-          ...model.validate,
-          validator: `
-              // The bound value becomes true once the watch requirement is met (see component).
-              if (value === true) {
-                return Promise.resolve();
-              }
-              return Promise.reject(new Error('${watchMessage}'));
-            `,
-        },
-      }
-      : model;
+    // Render placeholder in designer mode when no video is configured yet
+    if (formMode === 'designer' && isNullOrWhiteSpace(videoId)) {
+      return (
+        <div className={styles.youtubeVideoPlaceholder}>
+          <YoutubeOutlined style={{ fontSize: '48px', color: '#ff0000' }} />
+          <p>YouTube Video Component</p>
+          <p style={{ fontSize: '12px', color: '#666' }}>
+            Configure the Video ID in settings to see the video
+          </p>
+        </div>
+      );
+    }
 
     return (
-      <ConfigurableFormItem model={modelWithValidation}>
-        {(value: boolean | undefined | null, onChange: (newValue: boolean | undefined | null) => void) => {
-          // Store onChange in ref for event handler
-          onChangeRef.current = onChange;
+      <div className={styles.youtubeVideoComponent} style={componentStyles}>
+        {!isNullOrWhiteSpace(title) && (
+          <Title
+            level={resolvedTitleLevel}
+            className="youtube-video-title"
+          >
+            {title}
+          </Title>
+        )}
+        {!isNullOrWhiteSpace(description) && (
+          <Paragraph
+            className="youtube-video-description"
+          >
+            {description}
+          </Paragraph>
+        )}
 
-          // The gate is satisfied once the value was persisted, or actual playback reached the
-          // required point: started (isRequired) or finished (watchCompletionRequired, stricter).
-          // Uses hasStarted (real PLAYING event), NOT hasWatched (thumbnail dismissal).
-          const satisfied = value === true || (watchCompletionRequired ? isCompleted : hasStarted);
-
-          // Render placeholder in designer mode
-          if (formMode === 'designer' && isNullOrWhiteSpace(videoId)) {
-            return (
-              <div className={styles.youtubeVideoPlaceholder}>
-                <YoutubeOutlined style={{ fontSize: '48px', color: '#ff0000' }} />
-                <p>YouTube Video Component</p>
-                <p style={{ fontSize: '12px', color: '#666' }}>
-                  Configure the Video ID in settings to see the video
-                </p>
+        <div className="youtube-video-container" style={containerStyle}>
+          {resolvedThumbnail != null && !hasWatched ? (
+            <div
+              className="youtube-custom-thumbnail"
+              role="button"
+              tabIndex={0}
+              aria-label={!isNullOrWhiteSpace(title) ? `Play video: ${title}` : 'Play video'}
+              onClick={() => setHasWatched(true)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setHasWatched(true);
+                }
+              }}
+              style={thumbnailStyle}
+            >
+              <div className="youtube-play-button">
+                <YoutubeOutlined style={{ fontSize: '64px', color: 'white' }} />
               </div>
-            );
-          }
-
-          return (
-            <div className={styles.youtubeVideoComponent} style={componentStyles}>
-              {!isNullOrWhiteSpace(title) && (
-                <Title
-                  level={resolvedTitleLevel}
-                  className="youtube-video-title"
-                >
-                  {title}
-                </Title>
-              )}
-              {!isNullOrWhiteSpace(description) && (
-                <Paragraph
-                  className="youtube-video-description"
-                >
-                  {description}
-                </Paragraph>
-              )}
-
-              <div className="youtube-video-container" style={containerStyle}>
-                {resolvedThumbnail != null && !hasWatched ? (
-                  <div
-                    className="youtube-custom-thumbnail"
-                    role="button"
-                    tabIndex={0}
-                    aria-label={!isNullOrWhiteSpace(title) ? `Play video: ${title}` : 'Play video'}
-                    onClick={() => setHasWatched(true)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        setHasWatched(true);
-                      }
-                    }}
-                    style={thumbnailStyle}
-                  >
-                    <div className="youtube-play-button">
-                      <YoutubeOutlined style={{ fontSize: '64px', color: 'white' }} />
-                    </div>
-                  </div>
-                ) : (
-                  <iframe
-                    ref={playerRef}
-                    src={youtubeUrl ?? ''}
-                    style={iframeStyle}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    title={!isNullOrWhiteSpace(title) ? title : 'YouTube Video'}
-                  />
-                )}
-              </div>
-
-              {requiresWatch && !satisfied && formMode !== 'designer' && (
-                <div className="youtube-completion-warning">
-                  <span style={{ color: 'orange' }}>⚠️ {watchMessage}</span>
-                </div>
-              )}
             </div>
-          );
-        }}
-      </ConfigurableFormItem>
+          ) : (
+            <iframe
+              ref={playerRef}
+              src={youtubeUrl ?? ''}
+              style={iframeStyle}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              title={!isNullOrWhiteSpace(title) ? title : 'YouTube Video'}
+            />
+          )}
+        </div>
+      </div>
     );
   },
   calculateModel: (_model, allData) => ({

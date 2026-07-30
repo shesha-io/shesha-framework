@@ -694,36 +694,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     _value: false,
                   },
                 })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: advancedTabId,
-                  inputs: [
-                    {
-                      type: 'switch',
-                      id: nanoid(),
-                      propertyName: 'isRequired',
-                      label: 'Require Watching',
-                      size: 'small',
-                      jsSetting: true,
-                      tooltip: 'When enabled, the form cannot be submitted until the user STARTS the video. The watched state is stored in the form data (needs a Property Name).',
-                    },
-                  ],
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: advancedTabId,
-                  inputs: [
-                    {
-                      type: 'switch',
-                      id: nanoid(),
-                      propertyName: 'watchCompletionRequired',
-                      label: 'Require Watch Completion',
-                      size: 'small',
-                      jsSetting: true,
-                      tooltip: 'Stricter than "Require Watching": the form cannot be submitted until the user watches the ENTIRE video. The completion state is stored in the form data.',
-                    },
-                  ],
-                })
                 .toJson(),
             ],
           },

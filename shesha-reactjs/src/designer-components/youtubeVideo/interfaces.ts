@@ -38,10 +38,6 @@ export interface IYoutubeVideoComponentProps extends IConfigurableFormComponent 
   // Mobile Settings
   playsinline?: boolean;
 
-  // Form-Specific Behavior (Lower Priority)
-  isRequired?: boolean;
-  watchCompletionRequired?: boolean;
-
   // Event Handlers
   onPlay?: IConfigurableActionConfiguration;
   onPause?: IConfigurableActionConfiguration;
