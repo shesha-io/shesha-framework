@@ -35,6 +35,8 @@ export class NotesEditorInstance implements INotesEditorActions, INotesEditorSta
 
   #fetchNotesRequestId = 0;
 
+  #canPostNotes = false;
+
   constructor(args: NotesEditorInstanceArgs) {
     this.#httpClient = args.httpClient;
     this.#isDesignerMode = args.isDesignerMode ?? false;
@@ -42,9 +44,13 @@ export class NotesEditorInstance implements INotesEditorActions, INotesEditorSta
 
   setDesignerMode = (isDesignerMode: boolean): void => {
     const wasDesignerMode = this.#isDesignerMode;
-    this.#isDesignerMode = isDesignerMode;
+    if (wasDesignerMode === isDesignerMode) return;
 
-    if (wasDesignerMode && !isDesignerMode && isDefined(this.#notesReference) && isOwnerReferenceValid(this.#notesReference))
+    this.#isDesignerMode = isDesignerMode;
+    this.updateCanPostNotes();
+    this.notifySubscribers();
+
+    if (wasDesignerMode && isDefined(this.#notesReference) && isOwnerReferenceValid(this.#notesReference))
       this.fetchNotesAsync()
         .catch((error) => {
           console.error('Failed to fetch notes', error);
@@ -56,6 +62,8 @@ export class NotesEditorInstance implements INotesEditorActions, INotesEditorSta
       return;
 
     this.#notesReference = notesReference;
+    this.updateCanPostNotes();
+    this.notifySubscribers();
     // Skip API calls in designer/config mode to prevent errors from incomplete data
     if (!this.#isDesignerMode && isOwnerReferenceValid(this.#notesReference))
       this.fetchNotesAsync()
@@ -101,7 +109,13 @@ export class NotesEditorInstance implements INotesEditorActions, INotesEditorSta
     return this.#notesReference;
   }
 
+  private updateCanPostNotes = (): void => {
+    this.#canPostNotes = !this.#isDesignerMode && isDefined(this.#notesReference) && isOwnerReferenceValid(this.#notesReference);
+  };
+
   createNoteAsync = async (args: CreateNoteArgs): Promise<void> => {
+    if (!this.#canPostNotes) return;
+
     const reference = this.getValidNoteReference();
     const payload: CreateNoteDto = {
       ownerId: reference.ownerId,
@@ -126,6 +140,8 @@ export class NotesEditorInstance implements INotesEditorActions, INotesEditorSta
   };
 
   updateNoteAsync = async (args: UpdateNoteArgs): Promise<void> => {
+    if (!this.#canPostNotes) return;
+
     const note = this.#notes.find((n) => n.id === args.id);
     if (!note)
       throw new Error('Note not found.');
@@ -146,6 +162,8 @@ export class NotesEditorInstance implements INotesEditorActions, INotesEditorSta
   };
 
   deleteNoteAsync = async (args: DeleteNoteArgs): Promise<void> => {
+    if (!this.#canPostNotes) return;
+
     const deletedNote = this.#notes.find((n) => n.id === args.id);
     const url = buildUrl(NOTES_URLS.NOTE_DELETE, { id: args.id });
     await this.runPostingNotes(async () => {
@@ -221,5 +239,13 @@ export class NotesEditorInstance implements INotesEditorActions, INotesEditorSta
 
   get isPostingNotes(): boolean {
     return this.#isPostingNotes;
+  }
+
+  get canPostNotes(): boolean {
+    return this.#canPostNotes;
+  }
+
+  get isDesignerMode(): boolean {
+    return this.#isDesignerMode;
   }
 }
