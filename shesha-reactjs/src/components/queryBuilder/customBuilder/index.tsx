@@ -412,17 +412,18 @@ const QueryBuilderItemAction: React.FC<{
 const FieldPathEditor: React.FC<{
   config: Config;
   contextField: FieldValue;
+  fieldDefinition: WidgetProps['fieldDefinition'];
   fieldType?: string;
   operator: string;
   readOnly: boolean;
   selectedKey?: string;
   setField: (nextField: string) => void;
-}> = ({ config, contextField, fieldType, operator, readOnly, selectedKey, setField }) => {
+}> = ({ config, contextField, fieldDefinition, fieldType, operator, readOnly, selectedKey, setField }) => {
   const widgetProps = React.useMemo<WidgetProps>(() => ({
     placeholder: 'Select field',
     config,
     field: toWidgetField(contextField),
-    fieldDefinition: toWidgetFieldDefinition(getFieldConfig(config, contextField)),
+    fieldDefinition,
     fieldSrc: 'field',
     ...(fieldType !== undefined ? { fieldType } : {}),
     operator,
@@ -432,7 +433,7 @@ const FieldPathEditor: React.FC<{
       if (typeof nextValue === 'string')
         setField(nextValue);
     },
-  }), [config, contextField, fieldType, operator, readOnly, selectedKey, setField]);
+  }), [config, contextField, fieldDefinition, fieldType, operator, readOnly, selectedKey, setField]);
 
   const fieldProps = React.useMemo<FieldProps>(() => ({
     items: [],
@@ -483,6 +484,7 @@ const RuleWidgetEditorInner: React.FC<{
       <FieldPathEditor
         config={config}
         contextField={field}
+        fieldDefinition={toWidgetFieldDefinition(getFieldConfig(config, field))}
         {...(fieldType !== undefined ? { fieldType } : {})}
         operator={operator}
         readOnly={readOnly}
@@ -605,6 +607,7 @@ const FuncArgEditor: React.FC<{
         <FieldPathEditor
           config={config}
           contextField={argKey}
+          fieldDefinition={toWidgetFieldDefinition(arg)}
           fieldType={arg.type}
           operator=""
           readOnly={readOnly}

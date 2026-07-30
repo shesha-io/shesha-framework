@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FactoryWithContext, FieldProps } from '@react-awesome-query-builder/antd';
+import { FactoryWithContext, Field, FieldProps } from '@react-awesome-query-builder/antd';
 import { IPropertyItem, IPropertySelectProps, isPropertyMetadata, PropertySelect } from "../../propertyAutocomplete/propertySelect";
 import { isEntityReferencePropertyMetadata } from "@/interfaces/metadata";
 import { useFieldWidget } from "../widgets/field/fieldWidgetContext";
@@ -36,8 +36,12 @@ export const FieldAutocomplete: FactoryWithContext<FieldProps> = (props) => {
 
   const readOnly = isDefined(config) && config.settings.immutableFieldsMode === true;
 
+  // RAQB declares `fieldDefinition` as always present, but it is absent for a field missing from the
+  // metadata and for function arguments, which have no field path to resolve.
+  const fieldDefinition: Field | null = fieldWidget?.fieldDefinition ?? null;
+
   const isPropertyVisible = (property: IPropertyItem): boolean => {
-    const { propertyMetadata } = (fieldWidget?.fieldDefinition.fieldSettings ?? {}) as Partial<CustomFieldSettings>;
+    const { propertyMetadata } = (fieldDefinition?.fieldSettings ?? {}) as Partial<CustomFieldSettings>;
     if (!propertyMetadata)
       return true;
 
@@ -46,7 +50,7 @@ export const FieldAutocomplete: FactoryWithContext<FieldProps> = (props) => {
   };
 
   const isPropertySelectable = (property: IPropertyItem): boolean => {
-    const { propertyMetadata } = (fieldWidget?.fieldDefinition.fieldSettings ?? {}) as Partial<CustomFieldSettings>;
+    const { propertyMetadata } = (fieldDefinition?.fieldSettings ?? {}) as Partial<CustomFieldSettings>;
     if (!propertyMetadata)
       return true;
 

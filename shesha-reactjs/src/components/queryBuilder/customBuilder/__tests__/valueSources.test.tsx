@@ -25,11 +25,21 @@ jest.mock('../../funcs/evaluate', () => ({
     },
   }),
 }));
-// The left-hand autocomplete pulls in metadata providers that are irrelevant to value sources.
-jest.mock('../../fieldAutocomplete', () => ({
-  __esModule: true,
-  FieldAutocomplete: () => React.createElement('div', { 'data-testid': 'field-autocomplete' }),
-}));
+// The real autocomplete pulls in metadata providers, but it does read `fieldDefinition.fieldSettings`,
+// so the stand-in reports whether a definition was supplied.
+jest.mock('../../fieldAutocomplete', () => {
+  const { useFieldWidget } = require('../../widgets/field/fieldWidgetContext');
+  return {
+    __esModule: true,
+    FieldAutocomplete: () => {
+      const widgetProps = useFieldWidget();
+      return React.createElement('div', {
+        'data-testid': 'field-autocomplete',
+        'data-has-definition': widgetProps?.fieldDefinition ? 'yes' : 'no',
+      });
+    },
+  };
+});
 
 const { config: queryBuilderConfig } = require('../../config');
 const { CustomQueryBuilder } = require('../index');
@@ -243,5 +253,45 @@ describe('default function selection', () => {
 
     const defaultApplications = setFuncValue.mock.calls.filter((call) => call[3] === null);
     expect(defaultApplications).toHaveLength(1);
+  });
+});
+
+describe('field-sourced function arguments', () => {
+  // The autocomplete dereferences `fieldDefinition.fieldSettings`; supplying null threw a TypeError
+  // as soon as an argument's source was switched to Field.
+  it('supplies a field definition when an argument is sourced from a field', () => {
+    const config = createConfig();
+    const jsonTree: JsonTree = {
+      id: 'group-1',
+      type: 'group',
+      children1: [
+        {
+          id: 'rule-1',
+          type: 'rule',
+          properties: {
+            field: 'textPrimary',
+            operator: 'equal',
+            value: [{ func: 'LOWER', args: { str: { value: '', valueSrc: 'field' } } }],
+            valueSrc: ['func'],
+            valueType: ['text'],
+          },
+        },
+      ],
+    } as JsonTree;
+
+    const { container } = render(
+      React.createElement(CustomQueryBuilder, {
+        actions: createActions(),
+        config,
+        tree: QbUtils.loadTree(jsonTree),
+      }),
+    );
+
+    const argAutocomplete = container
+      .querySelector('.sha-query-builder-func-arg--str')
+      ?.querySelector('[data-testid="field-autocomplete"]');
+
+    expect(argAutocomplete).not.toBeNull();
+    expect(argAutocomplete?.getAttribute('data-has-definition')).toBe('yes');
   });
 });
