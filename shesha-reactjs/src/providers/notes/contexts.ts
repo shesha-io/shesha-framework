@@ -26,6 +26,11 @@ export type INotesEditorState = {
   readonly notes: NoteModel[];
   readonly isFetchingNotes: boolean;
   readonly isPostingNotes: boolean;
+  /**
+   * Indicates whether notes can be created, updated or deleted. Is false in designer mode and when the owner reference is incomplete (e.g. the owner entity is not saved yet)
+   */
+  readonly canPostNotes: boolean;
+  readonly isDesignerMode: boolean;
 };
 
 export type INotesEditorInstance = INotesEditorActions & INotesEditorState;

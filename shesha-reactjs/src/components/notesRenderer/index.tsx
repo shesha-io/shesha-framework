@@ -3,6 +3,9 @@ import { useNotesEditorActions, useNotesEditorState } from '@/providers';
 import NotesRendererBase from '@/components/notesRendererBase';
 import { useStyles } from './styles/styles';
 
+const DESIGNER_HINT = 'Notes are read-only in the form designer.';
+const UNSAVED_OWNER_HINT = 'Notes can be added only after the record has been saved.';
+
 export interface INotesRendererProps {
   allowCreate?: boolean | undefined;
   allowUpdate?: boolean | undefined;
@@ -27,7 +30,7 @@ export const NotesRenderer: FC<INotesRendererProps> = ({
   maxLength,
 }) => {
   const { deleteNoteAsync, createNoteAsync, updateNoteAsync } = useNotesEditorActions();
-  const { notes, isFetchingNotes, isPostingNotes } = useNotesEditorState();
+  const { notes, isFetchingNotes, isPostingNotes, canPostNotes, isDesignerMode } = useNotesEditorState();
   const { styles } = useStyles();
 
   return (
@@ -40,6 +43,9 @@ export const NotesRenderer: FC<INotesRendererProps> = ({
         notes={notes}
         isFetchingNotes={isFetchingNotes}
         isPostingNotes={isPostingNotes}
+
+        disabled={!canPostNotes}
+        disabledHint={isDesignerMode ? DESIGNER_HINT : UNSAVED_OWNER_HINT}
 
         allowCreate={allowCreate}
         allowEdit={allowUpdate}
