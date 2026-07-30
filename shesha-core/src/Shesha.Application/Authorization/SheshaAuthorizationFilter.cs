@@ -44,9 +44,12 @@ namespace Shesha.Authorization
             }
 
             //TODO: Avoid using try/catch, use conditional checking
+            // ResolveAll registers every resolved helper (and its whole dependency graph: UserManager,
+            // RoleManager, stores, repositories, unit-of-work managers, loggers) with Windsor's release
+            // policy. It must be paired with Release, otherwise the graph leaks on every authorized request.
+            var authorizationHelpers = _iocManager.ResolveAll<ISheshaAuthorizationHelper>();
             try
             {
-                var authorizationHelpers = _iocManager.ResolveAll<ISheshaAuthorizationHelper>();
                 foreach (var authorization in authorizationHelpers)
                 {
                     await authorization.AuthorizeAsync(
@@ -92,6 +95,14 @@ namespace Shesha.Authorization
                 {
                     //TODO: How to return Error page?
                     context.Result = new StatusCodeResult((int)System.Net.HttpStatusCode.InternalServerError);
+                }
+            }
+            finally
+            {
+                // Release the ResolveAll'd helpers and their dependency graph (fixes the per-request leak).
+                foreach (var authorization in authorizationHelpers)
+                {
+                    _iocManager.Release(authorization);
                 }
             }
         }
