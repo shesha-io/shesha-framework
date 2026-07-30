@@ -286,7 +286,7 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
     return this;
   };
 
-  stdEventHandlers = (events: StandardEventHandler[], valueType?: string | undefined, prefix?: string | undefined, prefixLabel: string = ''): FormBuilder => {
+  stdEventHandlers = (events: readonly StandardEventHandler[], valueType?: string | undefined, prefix?: string | undefined, prefixLabel: string = ''): FormBuilder => {
     events.forEach((event) => {
       const eventConfig = getEventConfig(event, valueType);
       if (eventConfig)

@@ -161,7 +161,8 @@ export type StandardFormBuilderMethods<TConfig extends Record<ComponentTypes, ob
   stdPlaceholderDescriptionInputs(): FluentFormBuilder<TConfig>;
   stdCollapsiblePanel(label: string, components: (fbf: FormBuilder) => FormBuilder, collapsedByDefault?: boolean | undefined): FluentFormBuilder<TConfig>;
   stdEventHandler(propertyName: string, label: string, tooltip: string, availableConstantsExpression?: string | undefined, meta?: IPropertyMetadata | undefined): FluentFormBuilder<TConfig>;
-  stdEventHandlers(events: StandardEventHandler[], valueType?: string | undefined, prefix?: string | undefined, prefixLabel?: string | undefined): FluentFormBuilder<TConfig>;
+  /** `events` is readonly so the shared `ALL_INPUT_EVENTS` constant can be passed directly. */
+  stdEventHandlers(events: readonly StandardEventHandler[], valueType?: string | undefined, prefix?: string | undefined, prefixLabel?: string | undefined): FluentFormBuilder<TConfig>;
   stdFontPanel(propertyName?: string, exclude?: string[], panelTitle?: string): FluentFormBuilder<TConfig>;
   stdDimensionsPanel(propertyName?: string, exclude?: string[], panelTitle?: string): FluentFormBuilder<TConfig>;
   stdBorderPanel(isResponsive?: boolean, propertyName?: string, exclude?: 'border' | 'radius' | undefined, panelTitle?: string): FluentFormBuilder<TConfig>;

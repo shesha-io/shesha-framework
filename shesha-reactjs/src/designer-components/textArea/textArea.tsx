@@ -22,7 +22,7 @@ import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
 import { useStyles } from './styles';
 import { getOverflowStyle } from '../_settings/utils/overflow/util';
-import { getComponentEvents } from '../_common/events';
+import { ALL_INPUT_EVENTS_WITHOUT_CHANGE, getComponentEvents } from '../_common/events';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { TextAreaApi } from '@/componentsApi/componentApi';
 import { isDefined } from '@/utils/nullables';
@@ -166,7 +166,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
                       ctx?.handleEvent(event, { value: event.currentTarget.value }, model.onChangeCustom);
                       onChange(event.currentTarget.value);
                     }}
-                    {...getComponentEvents<TextAreaValueType>(model, ['onFocus', 'onBlur', 'onClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave', 'onKeyDown', 'onKeyUp'], ctx, value, DataTypes.string)}
+                    {...getComponentEvents<TextAreaValueType>(model, ALL_INPUT_EVENTS_WITHOUT_CHANGE, ctx, value, DataTypes.string)}
                   />
                   {renderCharCounter()}
                 </>
