@@ -3,5 +3,10 @@
   "compilerOptions": {
     "module": "commonjs",
     "esModuleInterop": true,
+    // `module: commonjs` implies node10 resolution, where the two resolvePackageJson options
+    // inherited from tsconfig.json are invalid (TS5098) and stop every suite from compiling.
+    "moduleResolution": "node10",
+    "resolvePackageJsonExports": false,
+    "resolvePackageJsonImports": false,
   }
 }

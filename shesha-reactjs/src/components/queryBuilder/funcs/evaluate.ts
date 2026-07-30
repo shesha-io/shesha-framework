@@ -66,6 +66,7 @@ export const getEvaluateFunc = (type: string): Func & IHasHideForSelect => {
         valueSources: ['value'],
         defaultValue: false,
         fieldSettings: requiredFieldSettings,
+        preferWidgets: ['ignoreIfUnassigned'],
       },
     },
   };

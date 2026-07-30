@@ -122,6 +122,16 @@ export const normalizeTreeForJsonLogic = <T extends IPlainTreeNode>(tree?: T): T
   normalizeNodeForExport(tree) as T | undefined
 );
 
+/**
+ * `JsonTree` is an interface, so TypeScript will never accept it as satisfying `IPlainTreeNode`'s
+ * index signature — the conversion is rejected in both directions even though `getTree()` returns
+ * exactly the shape this walker expects. These two functions are the only asserted crossing between
+ * the library's tree type and the structural one used here.
+ */
+export const toPlainTreeNode = (tree: JsonTree): IPlainTreeNode => tree as unknown as IPlainTreeNode;
+
+export const toJsonTree = (node?: IPlainTreeNode): JsonTree => node as unknown as JsonTree;
+
 export const getRootLogicLabel = (tree?: IPlainTreeNode | JsonTree): string => {
   const normalizedTree = normalizeTreeForJsonLogic(tree as IPlainTreeNode);
   const conjunction = (normalizedTree?.properties as Record<string, unknown> | undefined)?.['conjunction'];

@@ -4,8 +4,7 @@ import { isEqual } from 'lodash';
 import { IQueryBuilderProps } from './interfaces';
 import { usePrevious } from 'react-use';
 import { useStyles } from './styles/styles';
-import { getRootLogicLabel, normalizeTreeForJsonLogic, IPlainTreeNode } from './treeRelations';
-import type { JsonTree } from '@react-awesome-query-builder/antd';
+import { getRootLogicLabel, normalizeTreeForJsonLogic, toJsonTree, toPlainTreeNode } from './treeRelations';
 import {
   Query,
   Utils as QbUtils,
@@ -97,7 +96,7 @@ export const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
     // hands <Query> the exact reference it already holds (no spurious onPropsChanged).
     prevTree.current = _tree;
     if (onChange) {
-      const normalizedTree = QbUtils.loadTree(normalizeTreeForJsonLogic(QbUtils.getTree(_tree) as unknown as IPlainTreeNode) as unknown as JsonTree);
+      const normalizedTree = QbUtils.loadTree(toJsonTree(normalizeTreeForJsonLogic(toPlainTreeNode(QbUtils.getTree(_tree)))));
       const jsonLogicResult = QbUtils.jsonLogicFormat(normalizedTree, _config);
 
       const previous = lastLocallyChangedValue.current;

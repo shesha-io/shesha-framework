@@ -257,7 +257,7 @@ evaluateTypes.forEach((type) => {
   evaluateFunctions[`evaluate_${type}`.toUpperCase()] = getEvaluateFunc(type);
 });
 
-const knownFuncNames = ['NOW', 'RELATIVE_DATETIME'];
+const knownFuncNames = ['NOW', 'LOWER', 'UPPER', 'RELATIVE_DATETIME'];
 const knownFuncs: Funcs = {};
 knownFuncNames.forEach((funcName) => {
   if (Object.hasOwn(BasicFuncs, funcName) && BasicFuncs[funcName])

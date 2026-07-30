@@ -3,14 +3,12 @@ import { isEqual } from 'lodash';
 import classNames from 'classnames';
 import {
   Button,
-  Checkbox,
   Dropdown,
   Select,
   Tooltip,
 } from 'antd';
 import {
   DeleteOutlined,
-  DoubleRightOutlined,
   FolderOutlined,
   HolderOutlined,
   PlusOutlined,
@@ -20,6 +18,9 @@ import {
   Config,
   FieldProps,
   FieldSource,
+  FieldValue,
+  FuncArg,
+  FuncArgValue,
   FuncValue,
   RuleValue,
   SimpleValue,
@@ -27,11 +28,25 @@ import {
   ValueSource,
   WidgetProps,
 } from '@react-awesome-query-builder/antd';
+import {
+  getArgWidgetConfig,
+  getFieldConfig,
+  getFieldOperators,
+  getFieldType,
+  getFuncCandidates,
+  getFuncConfig,
+  getOperatorCardinality,
+  getOperatorConfig,
+  getTypeOperators,
+  getWidgetConfig,
+  renderWidget,
+  toWidgetField,
+  toWidgetFieldDefinition,
+} from './raqbConfig';
 import { FieldAutocomplete } from '../fieldAutocomplete';
 import QueryRuleElement from '../groupEmptyState/queryRuleElement';
 import { SourceSelector } from '../sourceSelector';
 import { getRootLogicLabel, IPlainTreeNode } from '../treeRelations';
-import { ignoreIfUnassignedTooltip } from '../widgets/ignoreIfUnassigned/constants';
 import { FieldWidgetProvider } from '../widgets/field/fieldWidgetContext';
 
 /**
@@ -44,7 +59,8 @@ type RelationValue = 'AND' | 'OR';
 type DropPlacement = 'before' | 'after' | 'append';
 
 interface IPlainRuleProperties {
-  field?: string;
+  /** A plain field path, or a `FuncValue` when `fieldSrc` is `func`. */
+  field?: string | FuncValue;
   fieldSrc?: FieldSource;
   fieldType?: string;
   operator?: string;
@@ -259,137 +275,44 @@ const getValueSourceItems = (config: Config, sources: ValueSource[]): Array<[str
   return sources.map((source) => [source, { label: getSourceLabel(config, source) }]);
 };
 
-type IOperatorAwareFieldDefinition = {
-  type?: string;
-  returnType?: string;
-  operators?: string[];
-};
-
-const getFallbackOperatorsForType = (config: Config, typeName?: string): string[] => {
-  if (!typeName)
-    return [];
-
-  const typeDefinition = config.types[typeName] as { operators?: string[] } | undefined;
-  return Array.isArray(typeDefinition?.operators) ? typeDefinition.operators : [];
-};
-
-const getOperatorOptions = (config: Config, field?: string): Array<{ label: string; value: string }> => {
-  if (!field)
-    return [];
-
-  const fieldDefinition = QbUtils.ConfigUtils.getFieldConfig(config, field) as IOperatorAwareFieldDefinition | null | undefined;
-  const configUtils = QbUtils.ConfigUtils as unknown as {
-    getOperatorsForField?: (cfg: Config, fieldName: string) => string[] | null;
-  };
-  const operatorKeys = typeof configUtils.getOperatorsForField === 'function'
-    ? (configUtils.getOperatorsForField(config, field) ?? [])
-    : Array.isArray(fieldDefinition?.operators) && fieldDefinition.operators.length > 0
-      ? fieldDefinition.operators
-      : getFallbackOperatorsForType(config, fieldDefinition?.type ?? fieldDefinition?.returnType);
-
-  return operatorKeys.map((value) => ({
+const toOperatorOptions = (config: Config, operatorKeys: string[]): Array<{ label: string; value: string }> =>
+  operatorKeys.map((value) => ({
     value,
     label: config.operators[value]?.label ?? value,
   }));
-};
 
-const getOperatorOptionsForType = (config: Config, typeName: string): Array<{ label: string; value: string }> => {
-  const configUtils = QbUtils.ConfigUtils as unknown as {
-    getOperatorsForType?: (cfg: Config, type: string) => string[] | null;
-  };
-  const operatorKeys = typeof configUtils.getOperatorsForType === 'function'
-    ? (configUtils.getOperatorsForType(config, typeName) ?? [])
-    : getFallbackOperatorsForType(config, typeName);
+const getOperatorOptions = (config: Config, field?: string): Array<{ label: string; value: string }> =>
+  toOperatorOptions(config, getFieldOperators(config, field));
 
-  return operatorKeys.map((value) => ({
-    value,
-    label: config.operators[value]?.label ?? value,
-  }));
-};
-
-const getOperatorCardinality = (config: Config, operator?: string): number => {
-  if (!operator)
-    return 1;
-
-  const operatorDefinition = config.operators[operator] as { cardinality?: number } | undefined;
-  return typeof operatorDefinition?.cardinality === 'number' ? operatorDefinition.cardinality : 1;
-};
-
-type IValueSourceAwareFieldDefinition = {
-  type?: string;
-  returnType?: string;
-  valueSources?: ValueSource[];
-};
-
-type IValueSourceAwareOperatorDefinition = {
-  valueSources?: ValueSource[];
-};
+const getOperatorOptionsForType = (config: Config, typeName: string): Array<{ label: string; value: string }> =>
+  toOperatorOptions(config, getTypeOperators(config, typeName));
 
 const getConfigValueSources = (config: Config): ValueSource[] => {
   const valueSourceKeys = Object.keys(config.settings.valueSourcesInfo ?? {});
   return (valueSourceKeys.length > 0 ? valueSourceKeys : ['value']) as ValueSource[];
 };
 
-const getFallbackValueSources = (
-  config: Config,
-  fieldDefinition: IValueSourceAwareFieldDefinition | null | undefined,
-  operator?: string,
-): ValueSource[] => {
-  const fieldType = fieldDefinition?.type ?? fieldDefinition?.returnType;
-  const typeDefinition = fieldType ? (config.types[fieldType] as { valueSources?: ValueSource[] } | undefined) : undefined;
-  const operatorDefinition = operator ? (config.operators[operator] as IValueSourceAwareOperatorDefinition | undefined) : undefined;
+const getValueSources = (config: Config, field?: FieldValue, operator?: string): ValueSource[] => {
+  if (!field || !operator)
+    return ['value'];
 
-  const fieldValueSources = Array.isArray(fieldDefinition?.valueSources) && fieldDefinition.valueSources.length > 0
-    ? fieldDefinition.valueSources
+  const fieldConfig = getFieldConfig(config, field);
+  const fieldType = getFieldType(fieldConfig);
+  const typeDefinition = fieldType !== undefined ? config.types[fieldType] : undefined;
+  const operatorConfig = getOperatorConfig(config, operator, field);
+
+  const fieldValueSources = Array.isArray(fieldConfig?.valueSources) && fieldConfig.valueSources.length > 0
+    ? fieldConfig.valueSources
     : Array.isArray(typeDefinition?.valueSources) && typeDefinition.valueSources.length > 0
       ? typeDefinition.valueSources
       : getConfigValueSources(config);
 
-  if (!Array.isArray(operatorDefinition?.valueSources) || operatorDefinition.valueSources.length === 0)
+  const operatorValueSources = operatorConfig?.valueSources;
+  if (!Array.isArray(operatorValueSources) || operatorValueSources.length === 0)
     return fieldValueSources;
 
-  const filteredValueSources = fieldValueSources.filter((source) => (operatorDefinition.valueSources ?? []).includes(source));
+  const filteredValueSources = fieldValueSources.filter((source) => operatorValueSources.includes(source));
   return filteredValueSources.length > 0 ? filteredValueSources : ['value'];
-};
-
-const getValueSources = (config: Config, field?: string, operator?: string): ValueSource[] => {
-  if (!field || !operator)
-    return ['value'];
-
-  const fieldDefinition = QbUtils.ConfigUtils.getFieldConfig(config, field);
-  const configUtils = QbUtils.ConfigUtils as unknown as {
-    getValueSourcesForFieldOp?: (cfg: Config, fieldName: string, operatorName: string, fieldDefinition?: unknown) => ValueSource[];
-    filterValueSourcesForField?: (cfg: Config, valueSources: ValueSource[], fieldDefinition?: unknown, operatorName?: string | null) => ValueSource[];
-  };
-  const fallbackValueSources = getFallbackValueSources(
-    config,
-    fieldDefinition as IValueSourceAwareFieldDefinition | null | undefined,
-    operator,
-  );
-
-  if (typeof configUtils.getValueSourcesForFieldOp === 'function')
-    return configUtils.getValueSourcesForFieldOp(config, field, operator, fieldDefinition);
-
-  if (typeof configUtils.filterValueSourcesForField === 'function')
-    return configUtils.filterValueSourcesForField(config, fallbackValueSources, fieldDefinition, operator);
-
-  return fallbackValueSources;
-};
-
-const getWidgetKey = (config: Config, field?: string, operator?: string, valueSrc?: ValueSource): string | null => {
-  if (!field || !operator || !valueSrc)
-    return null;
-
-  const configUtils = QbUtils.ConfigUtils as unknown as {
-    getWidgetForFieldOp?: (cfg: Config, fieldName: string, operatorName: string, valueSrc?: ValueSource | null) => string | null;
-    getWidgetsForFieldOp?: (cfg: Config, fieldName: string, operatorName: string, valueSrc?: ValueSource | null) => string[] | null;
-  };
-
-  if (typeof configUtils.getWidgetForFieldOp === 'function')
-    return configUtils.getWidgetForFieldOp(config, field, operator, valueSrc);
-
-  const widgets = configUtils.getWidgetsForFieldOp?.(config, field, operator, valueSrc) ?? [];
-  return widgets[0] ?? null;
 };
 
 const getFieldSourceReadonly = (config: Config, readOnly: boolean): boolean => {
@@ -417,45 +340,8 @@ const getPrimitiveTitle = (value: RuleValue | undefined): string | undefined => 
   return undefined;
 };
 
-const getEvaluateFunctionName = (fieldType?: string): string => {
-  return `EVALUATE_${fieldType ?? 'text'}`.toUpperCase();
-};
-
 const isBooleanFieldType = (fieldType?: string): boolean => fieldType === 'boolean' || fieldType === 'strict-boolean';
 const isDateLikeFieldType = (fieldType?: string): boolean => fieldType === 'date' || fieldType === 'datetime' || fieldType === 'time';
-
-const createEvaluateFunctionValue = (fieldType: string | undefined, expression: string, ignoreIfUnassigned: boolean): unknown => {
-  return QbUtils.TreeUtils.jsToImmutable({
-    func: getEvaluateFunctionName(fieldType),
-    args: {
-      expression: {
-        value: expression,
-        valueSrc: 'value',
-      },
-      ignoreIfUnassigned: {
-        value: ignoreIfUnassigned,
-        valueSrc: 'value',
-      },
-    },
-  });
-};
-
-const parseEvaluateFunctionValue = (value: RuleValue | undefined): { expression: string; ignoreIfUnassigned: boolean } => {
-  if (!value || typeof value !== 'object' || Array.isArray(value))
-    return { expression: '', ignoreIfUnassigned: false };
-
-  const funcValue = value as {
-    args?: {
-      expression?: { value?: string };
-      ignoreIfUnassigned?: { value?: boolean };
-    };
-  };
-
-  return {
-    expression: funcValue.args?.expression?.value ?? '',
-    ignoreIfUnassigned: Boolean(funcValue.args?.ignoreIfUnassigned?.value),
-  };
-};
 
 const stopPointerPropagation = (event: React.MouseEvent | React.PointerEvent): void => {
   event.stopPropagation();
@@ -523,7 +409,7 @@ const QueryBuilderItemAction: React.FC<{
 
 const RuleValueFieldEditor: React.FC<{
   config: Config;
-  field: string;
+  field: FieldValue;
   fieldType?: string;
   operator: string;
   path: string[];
@@ -531,32 +417,36 @@ const RuleValueFieldEditor: React.FC<{
   readOnly: boolean;
   value?: SafeRuleValue;
 }> = ({ actions, config, field, fieldType, operator, path, readOnly, value }) => {
-  const widgetProps = React.useMemo(() => ({
+  const widgetProps = React.useMemo<WidgetProps>(() => ({
+    placeholder: 'Select field',
     config,
-    field,
-    fieldDefinition: QbUtils.ConfigUtils.getFieldConfig(config, field) as unknown as WidgetProps['fieldDefinition'],
-    fieldSrc: 'field' as FieldSource,
-    fieldType,
+    field: toWidgetField(field),
+    fieldDefinition: toWidgetFieldDefinition(getFieldConfig(config, field)),
+    fieldSrc: 'field',
+    ...(fieldType !== undefined ? { fieldType } : {}),
     operator,
     value,
     readonly: readOnly,
-  }), [config, field, fieldType, operator, readOnly, value]);
+    setValue: (nextValue: RuleValue): void => {
+      actions.setValue(path, 0, nextValue, fieldType ?? 'text');
+    },
+  }), [actions, config, field, fieldType, operator, path, readOnly, value]);
 
-  const fieldProps = React.useMemo(() => ({
+  const fieldProps = React.useMemo<FieldProps>(() => ({
     items: [],
     config,
     placeholder: 'Select field',
-    selectedFieldSrc: 'field' as FieldSource,
+    selectedFieldSrc: 'field',
     selectedKey: typeof value === 'string' ? value : undefined,
     readonly: readOnly,
     setField: (nextField: string): void => {
-      actions.setValue(path, 0, nextField as unknown as RuleValue, fieldType ?? 'text');
+      actions.setValue(path, 0, nextField, fieldType ?? 'text');
     },
   }), [actions, config, fieldType, path, readOnly, value]);
 
   return (
-    <FieldWidgetProvider widgetProps={widgetProps as unknown as WidgetProps}>
-      <FieldAutocomplete {...(fieldProps as unknown as FieldProps)} />
+    <FieldWidgetProvider widgetProps={widgetProps}>
+      <FieldAutocomplete {...fieldProps} />
     </FieldWidgetProvider>
   );
 };
@@ -564,7 +454,7 @@ const RuleValueFieldEditor: React.FC<{
 const RuleWidgetEditorInner: React.FC<{
   actions: BuilderProps['actions'];
   config: Config;
-  field: string;
+  field: FieldValue;
   fieldType?: string;
   operator: string;
   path: string[];
@@ -603,26 +493,24 @@ const RuleWidgetEditorInner: React.FC<{
     );
   }
 
-  const fieldDefinition = QbUtils.ConfigUtils.getFieldConfig(config, field);
-  const widgetKey = getWidgetKey(config, field, operator, valueSrc);
-  const widgetDefinition = widgetKey ? config.widgets[widgetKey] : undefined;
-  const fieldConfigType = (fieldDefinition as { type?: string } | null)?.type;
-  const fieldConfigLabel = (fieldDefinition as { label?: string } | null)?.label;
-  const fieldConfigSettings = (fieldDefinition as unknown as { fieldSettings?: Record<string, unknown> } | null)?.fieldSettings;
+  const fieldDefinition = getFieldConfig(config, field);
+  const widgetDefinition = getWidgetConfig(config, field, operator, valueSrc);
+  const fieldConfigType = getFieldType(fieldDefinition);
+  const fieldConfigLabel = fieldDefinition?.label;
+  const fieldConfigSettings = fieldDefinition?.fieldSettings;
 
-  if (!widgetDefinition || typeof widgetDefinition.factory !== 'function') {
+  if (!widgetDefinition) {
     return <div className="sha-query-builder-value-placeholder" />;
   }
 
-  const widgetFactory = widgetDefinition.factory as unknown as (props: WidgetProps, ctx?: Config['ctx']) => React.ReactNode;
-  const widgetType = (widgetDefinition as { type?: string }).type;
+  const widgetType = 'type' in widgetDefinition ? widgetDefinition.type : undefined;
   const nextValueType = valueType ?? widgetType ?? fieldType ?? fieldConfigType ?? 'text';
   const placeholder = widgetDefinition.valuePlaceholder ?? (fieldConfigLabel ? `Enter ${fieldConfigLabel}` : 'Enter value');
   const widgetProps: WidgetProps = {
     ...(fieldConfigSettings ?? {}),
     placeholder,
-    field: field as unknown as WidgetProps['field'],
-    fieldDefinition: fieldDefinition as unknown as WidgetProps['fieldDefinition'],
+    field: toWidgetField(field),
+    fieldDefinition: toWidgetFieldDefinition(fieldDefinition),
     fieldSrc: 'field',
     ...(fieldType !== undefined ? { fieldType } : {}),
     operator,
@@ -633,13 +521,13 @@ const RuleWidgetEditorInner: React.FC<{
     valueError: valueError ?? undefined,
     errorMessage: valueError ?? undefined,
     setValue: (nextValue: RuleValue): void => {
-      actions.setValue(path, delta, nextValue as unknown as RuleValue, nextValueType);
+      actions.setValue(path, delta, nextValue, nextValueType);
     },
   };
 
   return (
     <div className="sha-query-builder-widget-host" title={getPrimitiveTitle(value)}>
-      {widgetFactory(widgetProps, config.ctx)}
+      {renderWidget(widgetDefinition, widgetProps, config.ctx)}
     </div>
   );
 };
@@ -663,170 +551,128 @@ const areRuleWidgetPropsEqual = (
 
 const RuleWidgetEditor = React.memo(RuleWidgetEditorInner, areRuleWidgetPropsEqual);
 
-const FunctionValueEditor: React.FC<{
+const isFuncValue = (value?: SafeRuleValue): value is FuncValue =>
+  typeof value === 'object' && value !== null && !Array.isArray(value) && 'func' in value;
+
+const FuncArgEditor: React.FC<{
   actions: BuilderProps['actions'];
+  arg: FuncArg;
+  argKey: string;
+  argValue?: FuncArgValue<RuleValue>;
   config: Config;
-  field: string;
-  fieldType?: string;
-  operator: string;
+  delta: number;
   path: string[];
   readOnly: boolean;
-  value?: SafeRuleValue;
-}> = ({ actions, config, field, fieldType, operator, path, readOnly, value }) => {
-  const currentValue = React.useMemo(() => parseEvaluateFunctionValue(value), [value]);
-  const widgetDefinition = config.widgets['mustacheExpression'];
-  const widgetFactory = typeof widgetDefinition?.factory === 'function'
-    ? widgetDefinition.factory as unknown as (props: WidgetProps, ctx?: Config['ctx']) => React.ReactNode
-    : null;
+}> = ({ actions, arg, argKey, argValue, config, delta, path, readOnly }) => {
+  const widgetDefinition = getArgWidgetConfig(config, arg);
+  if (!widgetDefinition)
+    return null;
 
   const widgetProps: WidgetProps = {
-    placeholder: 'Expression',
-    field: field as unknown as WidgetProps['field'],
-    fieldDefinition: QbUtils.ConfigUtils.getFieldConfig(config, field) as unknown as WidgetProps['fieldDefinition'],
+    ...(arg.fieldSettings ?? {}),
+    placeholder: arg.label ?? argKey,
+    field: argKey,
+    fieldDefinition: toWidgetFieldDefinition(arg),
     fieldSrc: 'field',
-    ...(fieldType !== undefined ? { fieldType } : {}),
-    operator,
+    fieldType: arg.type,
+    operator: '',
     config,
+    delta,
     readonly: readOnly,
-    value: currentValue.expression,
-    setValue: (nextValue: RuleValue): void => {
-      actions.setValue(
-        path,
-        0,
-        createEvaluateFunctionValue(fieldType, String(nextValue ?? ''), currentValue.ignoreIfUnassigned) as unknown as RuleValue,
-        fieldType ?? 'text',
-      );
+    value: argValue?.value,
+    setValue: (nextValue: SafeRuleValue): void => {
+      if (isFuncValue(nextValue))
+        return;
+
+      actions.setFuncValue(path, delta, [], argKey, nextValue, arg.type);
     },
   };
 
   return (
-    <>
-      <div className="sha-query-builder-func-expression" title={currentValue.expression || 'Expression'}>
-        {widgetFactory ? widgetFactory(widgetProps, config.ctx) : null}
-      </div>
-      <Tooltip title={ignoreIfUnassignedTooltip} placement="top">
-        <div className="sha-query-builder-func-checkbox">
-          <span
-            className={classNames(
-              'sha-query-builder-ignore-unassigned',
-              currentValue.ignoreIfUnassigned && 'is-checked',
-            )}
-          >
-            <Checkbox
-              checked={currentValue.ignoreIfUnassigned}
-              disabled={readOnly}
-              onChange={(event) => {
-                actions.setValue(
-                  path,
-                  0,
-                  createEvaluateFunctionValue(fieldType, currentValue.expression, event.target.checked) as unknown as RuleValue,
-                  fieldType ?? 'text',
-                );
-              }}
-            />
-            <DoubleRightOutlined className="sha-query-builder-ignore-unassigned-icon" />
-          </span>
-        </div>
-      </Tooltip>
-    </>
+    <div className={`sha-query-builder-func-arg sha-query-builder-func-arg--${argKey}`}>
+      {renderWidget(widgetDefinition, widgetProps, config.ctx)}
+    </div>
   );
 };
 
-/** Parse a field-side func expression value back into { expression, ignoreIfUnassigned }. */
-const parseFieldFuncExpression = (field: unknown): { expression: string; ignoreIfUnassigned: boolean } => {
-  if (!field || typeof field !== 'object')
-    return { expression: '', ignoreIfUnassigned: false };
-
-  // Field-side func is stored as an EVALUATE_TEXT func shape: { func, args: { expression, ignoreIfUnassigned } }
-  const raw = field as unknown as {
-    args?: {
-      expression?: { value?: string };
-      ignoreIfUnassigned?: { value?: boolean };
-    };
-  };
-  return {
-    expression: raw.args?.expression?.value ?? '',
-    ignoreIfUnassigned: Boolean(raw.args?.ignoreIfUnassigned?.value),
-  };
-};
-
-/** Build the field-side func value — same EVALUATE_TEXT shape used on the value side. */
-const createFieldFuncExpression = (expression: string, ignoreIfUnassigned: boolean): unknown => {
-  return QbUtils.TreeUtils.jsToImmutable({
-    func: 'EVALUATE_TEXT',
-    args: {
-      expression: {
-        value: expression,
-        valueSrc: 'value',
-      },
-      ignoreIfUnassigned: {
-        value: ignoreIfUnassigned,
-        valueSrc: 'value',
-      },
-    },
-  });
-};
-
-const FieldFunctionEditor: React.FC<{
+/**
+ * Renders a function value the way RAQB documents it: a selector over the functions the config
+ * declares for the expected return type, then one widget per *declared* arg. Binding by declared arg
+ * name is what keeps the value round-tripping through the function's own `jsonLogic` formatter.
+ */
+const FuncEditor: React.FC<{
   actions: BuilderProps['actions'];
   config: Config;
+  delta: number;
+  expectedType?: string;
   path: string[];
-  field: unknown;
   readOnly: boolean;
-}> = ({ actions, config, field, path, readOnly }) => {
-  const { expression, ignoreIfUnassigned } = React.useMemo(() => parseFieldFuncExpression(field), [field]);
+  value?: SafeRuleValue;
+}> = ({ actions, config, delta, expectedType, path, readOnly, value }) => {
+  const funcValue = isFuncValue(value) ? value : null;
+  const funcKey = funcValue?.func;
+  const funcDefinition = getFuncConfig(config, funcKey);
+  const candidates = React.useMemo(
+    () => getFuncCandidates(config, expectedType),
+    [config, expectedType],
+  );
 
-  const widgetDefinition = config.widgets['mustacheExpression'];
-  const widgetFactory = typeof widgetDefinition?.factory === 'function'
-    ? widgetDefinition.factory as unknown as (props: WidgetProps, ctx?: Config['ctx']) => React.ReactNode
-    : null;
+  const setFunc = React.useCallback((nextFunc: string): void => {
+    actions.setFuncValue(path, delta, [], null, nextFunc, '!func');
+  }, [actions, delta, path]);
 
-  const widgetProps: WidgetProps = {
-    placeholder: 'Expression',
-    field: '' as unknown as WidgetProps['field'],
-    fieldDefinition: null as unknown as WidgetProps['fieldDefinition'],
-    fieldSrc: 'func',
-    fieldType: 'text',
-    operator: '',
-    config,
-    readonly: readOnly,
-    value: expression,
-    setValue: (nextValue: RuleValue): void => {
-      actions.setField(
-        path,
-        createFieldFuncExpression(String(nextValue ?? ''), ignoreIfUnassigned) as never,
-      );
-    },
-  };
+  // Nothing picked yet: fall back to the config's hidden func for this type (the inline mustache
+  // `EVALUATE_*`), else the first selectable one, so switching to the func source is never a blank row.
+  const defaultFuncKey = (candidates.find((candidate) => candidate.hidden) ?? candidates[0])?.key;
+  React.useEffect(() => {
+    if (funcKey === undefined && defaultFuncKey !== undefined)
+      setFunc(defaultFuncKey);
+  }, [defaultFuncKey, funcKey, setFunc]);
+
+  // A hidden func stays listed while it is the current selection, otherwise the box reads as empty.
+  const funcOptions = React.useMemo(
+    () => candidates
+      .filter((candidate) => !candidate.hidden || candidate.key === funcKey)
+      .map(({ key, label }) => ({ value: key, label })),
+    [candidates, funcKey],
+  );
 
   return (
-    <>
-      <div className="sha-query-builder-func-expression" title={expression || 'Expression'}>
-        {widgetFactory ? widgetFactory(widgetProps, config.ctx) : null}
-      </div>
-      <Tooltip title={ignoreIfUnassignedTooltip} placement="top">
-        <div className="sha-query-builder-func-checkbox">
-          <span
-            className={classNames(
-              'sha-query-builder-ignore-unassigned',
-              ignoreIfUnassigned && 'is-checked',
-            )}
-          >
-            <Checkbox
-              checked={ignoreIfUnassigned}
-              disabled={readOnly}
-              onChange={(event) => {
-                actions.setField(
-                  path,
-                  createFieldFuncExpression(expression, event.target.checked) as never,
-                );
-              }}
-            />
-            <DoubleRightOutlined className="sha-query-builder-ignore-unassigned-icon" />
-          </span>
+    <div className="sha-query-builder-func-editor">
+      {funcOptions.length > 1 && (
+        <div className="sha-query-builder-func-select">
+          <Select
+            {...(funcKey !== undefined ? { value: funcKey } : {})}
+            {...(config.settings.funcPlaceholder !== undefined ? { placeholder: config.settings.funcPlaceholder } : {})}
+            options={funcOptions}
+            onChange={setFunc}
+            disabled={readOnly}
+            showSearch={{
+              filterOption: (input, option) => String(option?.label ?? '').toLowerCase().includes(input.toLowerCase()),
+            }}
+            popupMatchSelectWidth={false}
+            style={{ width: '100%' }}
+          />
         </div>
-      </Tooltip>
-    </>
+      )}
+      {funcDefinition && (
+        <div className="sha-query-builder-func-args">
+          {Object.entries(funcDefinition.args).map(([argKey, arg]) => (
+            <FuncArgEditor
+              key={argKey}
+              actions={actions}
+              arg={arg}
+              argKey={argKey}
+              {...(funcValue?.args[argKey] !== undefined ? { argValue: funcValue.args[argKey] } : {})}
+              config={config}
+              delta={delta}
+              path={path}
+              readOnly={readOnly}
+            />
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 
@@ -844,8 +690,8 @@ const RuleValueEditorInner: React.FC<{
   const valueSrcs = Array.isArray(properties.valueSrc) ? properties.valueSrc : [];
   const valueTypes = Array.isArray(properties.valueType) ? properties.valueType : [];
   const valueErrors = Array.isArray(properties.valueError) ? properties.valueError : [];
-  const fieldDefinition = selectedField ? QbUtils.ConfigUtils.getFieldConfig(config, selectedField) : null;
-  const fieldType = properties.fieldType ?? (fieldDefinition as { type?: string } | null)?.type;
+  const fieldDefinition = getFieldConfig(config, selectedField);
+  const fieldType = properties.fieldType ?? getFieldType(fieldDefinition);
   const cardinality = getOperatorCardinality(config, selectedOperator);
 
   if (!selectedField || !selectedOperator) {
@@ -878,94 +724,112 @@ const RuleValueEditorInner: React.FC<{
   }
 
   const availableSources = getValueSources(config, selectedField, selectedOperator);
-  const firstValueSrc = valueSrcs[0];
-  const currentSource: ValueSource = firstValueSrc !== undefined && availableSources.includes(firstValueSrc)
-    ? firstValueSrc
-    : availableSources[0] ?? 'value';
-  const isFunction = currentSource === 'func' && cardinality === 1;
   const showRangeSeparator = cardinality === 2 && isDateLikeFieldType(fieldType);
   const sourceItems = getValueSourceItems(config, availableSources);
   const valueReadonly = getValueReadonly(config, readOnly);
+  // A multi-value operator (`between`) holds an independent source per side, so each side owns its
+  // own selector. Collapsing them onto `valueSrc[0]` is what hid the second one.
+  const isSingleValue = cardinality === 1;
 
-  const handleSourceChange = (nextSource: string): void => {
-    if (nextSource === currentSource)
-      return;
-
-    for (let delta = 0; delta < cardinality; delta += 1) {
-      actions.setValueSrc(path, delta, nextSource as ValueSource);
-      actions.setValue(
-        path,
-        delta,
-        undefined as unknown as RuleValue,
-        valueTypes[delta] ?? fieldType ?? 'text',
-      );
-    }
-
-    if (nextSource === 'func') {
-      actions.setValue(
-        path,
-        0,
-        createEvaluateFunctionValue(fieldType, '', false) as unknown as RuleValue,
-        fieldType ?? 'text',
-      );
-    }
+  const getDeltaSource = (delta: number): ValueSource => {
+    const rawDeltaSource = valueSrcs[delta];
+    return rawDeltaSource !== undefined && availableSources.includes(rawDeltaSource)
+      ? rawDeltaSource
+      : availableSources[0] ?? 'value';
   };
 
-  return (
-    <div className={classNames('sha-query-builder-value-shell', isFunction && 'is-function')}>
-      <div className="sha-query-builder-source-slot">
-        <SourceSelector
-          variant="value"
-          valueSources={sourceItems}
-          valueSrc={currentSource}
-          setValueSrc={handleSourceChange}
-          readonly={valueReadonly}
-        />
-      </div>
-      {isFunction ? (
-        <FunctionValueEditor
+  const handleDeltaSourceChange = (delta: number) => (nextSource: string): void => {
+    if (nextSource === getDeltaSource(delta))
+      return;
+
+    actions.setValueSrc(path, delta, nextSource as ValueSource);
+    actions.setValue(
+      path,
+      delta,
+      undefined,
+      valueTypes[delta] ?? fieldType ?? 'text',
+    );
+  };
+
+  const renderDeltaEditor = (delta: number, deltaSource: ValueSource): React.ReactNode => {
+    if (deltaSource === 'func') {
+      return (
+        <FuncEditor
           config={config}
-          field={selectedField}
-          {...(fieldType !== undefined ? { fieldType } : {})}
-          operator={selectedOperator}
+          delta={delta}
+          {...(fieldType !== undefined ? { expectedType: fieldType } : {})}
           path={path}
           actions={actions}
           readOnly={valueReadonly}
-          value={values[0]}
+          value={values[delta]}
         />
-      ) : (
-        <div className={classNames('sha-query-builder-value-editor', cardinality > 1 && 'is-range', showRangeSeparator && 'has-separator')}>
-          {Array.from({ length: cardinality }).map((_, delta) => {
-            const rawDeltaSource = valueSrcs[delta];
-            const deltaSource: ValueSource = rawDeltaSource !== undefined && availableSources.includes(rawDeltaSource)
-              ? rawDeltaSource
-              : currentSource;
-            return (
-              <React.Fragment key={`${node.id}-${delta}`}>
-                {showRangeSeparator && delta > 0 && (
-                  <div className="sha-query-builder-value-range-separator" aria-hidden="true">-</div>
-                )}
-                <div className="sha-query-builder-value-editor-slot">
-                  <RuleWidgetEditor
-                    actions={actions}
-                    config={config}
-                    delta={delta}
-                    field={selectedField}
-                    {...(fieldType !== undefined ? { fieldType } : {})}
-                    operator={selectedOperator}
-                    path={path}
-                    readOnly={valueReadonly}
-                    value={values[delta]}
-                    {...(valueErrors[delta] !== undefined ? { valueError: valueErrors[delta] } : {})}
-                    valueSrc={deltaSource}
-                    {...(valueTypes[delta] !== undefined ? { valueType: valueTypes[delta] } : {})}
-                  />
-                </div>
-              </React.Fragment>
-            );
-          })}
-        </div>
-      )}
+      );
+    }
+
+    return (
+      <RuleWidgetEditor
+        actions={actions}
+        config={config}
+        delta={delta}
+        field={selectedField}
+        {...(fieldType !== undefined ? { fieldType } : {})}
+        operator={selectedOperator}
+        path={path}
+        readOnly={valueReadonly}
+        value={values[delta]}
+        {...(valueErrors[delta] !== undefined ? { valueError: valueErrors[delta] } : {})}
+        valueSrc={deltaSource}
+        {...(valueTypes[delta] !== undefined ? { valueType: valueTypes[delta] } : {})}
+      />
+    );
+  };
+
+  const renderSourceSelector = (delta: number, deltaSource: ValueSource): React.ReactNode => (
+    <div className="sha-query-builder-source-slot">
+      <SourceSelector
+        variant="value"
+        valueSources={sourceItems}
+        valueSrc={deltaSource}
+        setValueSrc={handleDeltaSourceChange(delta)}
+        readonly={valueReadonly}
+      />
+    </div>
+  );
+
+  if (isSingleValue) {
+    const deltaSource = getDeltaSource(0);
+    return (
+      <div className={classNames('sha-query-builder-value-shell', deltaSource === 'func' && 'is-function')}>
+        {renderSourceSelector(0, deltaSource)}
+        {deltaSource === 'func'
+          ? renderDeltaEditor(0, deltaSource)
+          : (
+            <div className="sha-query-builder-value-editor">
+              <div className="sha-query-builder-value-editor-slot">{renderDeltaEditor(0, deltaSource)}</div>
+            </div>
+          )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="sha-query-builder-value-shell">
+      <div className={classNames('sha-query-builder-value-editor', 'is-range', showRangeSeparator && 'has-separator')}>
+        {Array.from({ length: cardinality }).map((_, delta) => {
+          const deltaSource = getDeltaSource(delta);
+          return (
+            <React.Fragment key={`${node.id}-${delta}`}>
+              {showRangeSeparator && delta > 0 && (
+                <div className="sha-query-builder-value-range-separator" aria-hidden="true">-</div>
+              )}
+              <div className={classNames('sha-query-builder-value-editor-slot', deltaSource === 'func' && 'is-function')}>
+                {renderSourceSelector(delta, deltaSource)}
+                {renderDeltaEditor(delta, deltaSource)}
+              </div>
+            </React.Fragment>
+          );
+        })}
+      </div>
     </div>
   );
 };
@@ -982,6 +846,7 @@ const QueryRuleRowInner: React.FC<IRuleProps> = (props) => {
   } = props;
   const properties = (node.properties ?? {}) as IPlainRuleProperties;
   const selectedField = properties.field;
+  const selectedFieldKey = typeof selectedField === 'string' ? selectedField : undefined;
   const selectedFieldSrc: FieldSource = properties.fieldSrc ?? 'field';
   const isFieldFunc = selectedFieldSrc === 'func';
   const selectedOperator = properties.operator;
@@ -991,8 +856,8 @@ const QueryRuleRowInner: React.FC<IRuleProps> = (props) => {
   const operatorOptions = React.useMemo(
     () => isFieldFunc
       ? getOperatorOptionsForType(config, 'text')
-      : getOperatorOptions(config, selectedField),
-    [config, isFieldFunc, selectedField],
+      : getOperatorOptions(config, selectedFieldKey),
+    [config, isFieldFunc, selectedFieldKey],
   );
   const fieldReadonly = getFieldSourceReadonly(config, readOnly);
   const operatorReadonly = getOperatorReadonly(config, readOnly);
@@ -1003,9 +868,7 @@ const QueryRuleRowInner: React.FC<IRuleProps> = (props) => {
       return;
 
     if (nextSrc === 'func') {
-      (actions as unknown as { setFieldSrc: (path: string[], src: FieldSource) => void })
-        .setFieldSrc(path, 'func');
-      actions.setField(path, createFieldFuncExpression('', false) as never);
+      actions.setFieldSrc(path, 'func');
     } else {
       // Switching back to plain field — remove this rule and add a fresh empty one at the parent group.
       const parentPath = path.slice(0, -1);
@@ -1019,10 +882,10 @@ const QueryRuleRowInner: React.FC<IRuleProps> = (props) => {
     config,
     ...(config.settings.fieldPlaceholder !== undefined ? { placeholder: config.settings.fieldPlaceholder } : {}),
     selectedFieldSrc: 'field',
-    selectedKey: selectedField,
+    selectedKey: selectedFieldKey,
     readonly: fieldReadonly,
     setField: (nextField: string): void => {
-      actions.setField(path, nextField as never);
+      actions.setField(path, nextField);
     },
   };
 
@@ -1049,12 +912,14 @@ const QueryRuleRowInner: React.FC<IRuleProps> = (props) => {
           />
         </div>
         {isFieldFunc ? (
-          <FieldFunctionEditor
+          <FuncEditor
             actions={actions}
             config={config}
+            delta={-1}
+            expectedType="text"
             path={path}
-            field={selectedField}
             readOnly={fieldReadonly}
+            {...(isFuncValue(selectedField) ? { value: selectedField } : {})}
           />
         ) : (
           <div className="sha-query-builder-field-slot">
@@ -1124,9 +989,7 @@ const QueryBuilderItem: React.FC<IBuilderItemProps> = ({
   const canDrag = !groupReadOnly && config.settings.canReorder !== false && (siblingCount > 1 || isNested);
 
   const handleRelationChange = (nextRelation: RelationValue): void => {
-    const nextTree = (tree as unknown as {
-      setIn: (path: Array<string | number>, value: unknown) => BuilderProps['tree'];
-    }).setIn([...getImmutablePath(path), 'properties', '__relation'], nextRelation);
+    const nextTree = tree.setIn([...getImmutablePath(path), 'properties', '__relation'], nextRelation);
 
     actions.setTree(nextTree);
   };

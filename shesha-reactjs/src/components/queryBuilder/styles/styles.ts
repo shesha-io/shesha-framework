@@ -112,8 +112,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         /* Nested group rows must not scroll on their own — they size to their
            content so the width bubbles up to the filter-body scroller. */
         .sha-query-builder-group-children {
-            width: max-content;
-            min-width: 100%;
+            width: 100%;
+            min-width: 0;
         }
 
         .sha-query-builder-filter-actions,
@@ -170,8 +170,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-group-card {
-            width: max-content;
-            min-width: 100%;
+            width: 100%;
+            min-width: 0;
             min-height: 0;
             display: flex;
             flex-direction: column;
@@ -324,8 +324,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             grid-template-columns: var(--sha-query-builder-prefix-width) minmax(0, 1fr);
             align-items: stretch;
             gap: 10px;
-            width: max-content;
-            min-width: 100%;
+            width: 100%;
+            min-width: 0;
         }
 
         .sha-query-builder-item-row:not(.is-group) .sha-query-builder-item-prefix {
@@ -418,8 +418,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-item-shell {
-            width: max-content;
-            min-width: 100%;
+            width: 100%;
+            min-width: 0;
             display: grid;
             grid-template-columns: minmax(0, 1fr) 32px 32px;
             align-items: stretch;
@@ -433,8 +433,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
 
         .sha-query-builder-rule-scroll {
             overflow: visible;
-            width: max-content;
-            min-width: 100%;
+            width: 100%;
+            min-width: 0;
         }
 
         .sha-query-builder-group-children .sha-query-builder-item-shell {
@@ -442,11 +442,11 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-rule-row {
-            width: 871px;
-            min-width: 871px;
+            width: 100%;
+            min-width: 0;
             min-height: 32px;
             display: grid;
-            grid-template-columns: 200px 155px 1fr;
+            grid-template-columns: minmax(0, 200px) minmax(0, 155px) minmax(0, 1fr);
             align-items: center;
             gap: 10px;
             padding: 13px 10px;
@@ -469,16 +469,17 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-rule-row.is-unary .sha-query-builder-value-shell.is-function {
-            width: 409px;
+            width: 100%;
+            max-width: 409px;
         }
 
         .sha-query-builder-rule-row.is-deep-nested {
             display: grid;
-            grid-template-columns: 200px 155px 1fr;
+            grid-template-columns: minmax(0, 200px) minmax(0, 155px) minmax(0, 1fr);
             align-items: center;
             gap: 10px;
-            width: 871px;
-            min-width: 871px;
+            width: 100%;
+            min-width: 0;
         }
 
         .sha-query-builder-rule-row.is-deep-nested.has-field-func {
@@ -492,8 +493,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-rule-row.is-deep-nested .sha-query-builder-operator-slot {
-            width: 155px;
-            min-width: 155px;
+            width: 100%;
+            min-width: 0;
             max-width: 155px;
         }
 
@@ -689,7 +690,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .sha-query-builder-value-editor-slot .${prefixCls}-picker,
         .sha-query-builder-value-editor-slot .${prefixCls}-input-number,
         .sha-query-builder-value-editor-slot .${prefixCls}-segmented,
-        .sha-query-builder-func-expression .sha-expression-editor {
+        .sha-query-builder-func-arg .sha-expression-editor {
             width: 100% !important;
             max-width: 100%;
             min-width: 0;
@@ -773,8 +774,9 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-operator-slot {
-            width: 155px;
-            min-width: 155px;
+            width: 100%;
+            min-width: 0;
+            max-width: 155px;
             height: 32px;
             border: 1px solid #d0d5dd;
             border-radius: 8px;
@@ -794,7 +796,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-value-shell {
-            width: 409px;
+            width: 100%;
             min-width: 0;
             max-width: none;
             min-height: 32px;
@@ -808,13 +810,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             overflow: hidden;
         }
 
-        .sha-query-builder-value-shell.is-function {
-            grid-template-columns: 60px minmax(0, 1fr) 33px;
-        }
-
-        .sha-query-builder-value-shell.is-function:has(.sha-query-builder-ignore-unassigned.is-checked) {
-            grid-template-columns: 60px minmax(0, 1fr) auto;
-        }
 
         .sha-query-builder-value-shell--empty {
             background: rgba(255, 255, 255, 0.6);
@@ -896,7 +891,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-query-builder-widget-host,
-        .sha-query-builder-func-expression {
+        .sha-query-builder-func-arg {
             width: 100%;
             flex: 1 1 auto;
             min-width: 0;
@@ -913,19 +908,47 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             min-width: 0;
         }
 
-        .sha-query-builder-func-checkbox {
-            width: 100%;
+        /* Function editor: an optional function picker followed by one slot per declared argument. */
+        .sha-query-builder-func-editor {
             min-width: 0;
             height: 100%;
-            border-left: 1px solid #d0d5dd;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #fff;
+            align-items: stretch;
             overflow: hidden;
         }
 
-        .sha-query-builder-func-checkbox .${prefixCls}-checkbox-wrapper {
+        .sha-query-builder-func-select {
+            width: 140px;
+            min-width: 140px;
+            height: 32px;
+            border-right: 1px solid #d0d5dd;
+            background: #f9fafb;
+            display: flex;
+            align-items: stretch;
+        }
+
+        .sha-query-builder-func-args {
+            flex: 1 1 auto;
+            min-width: 0;
+            height: 100%;
+            display: flex;
+            align-items: stretch;
+        }
+
+        .sha-query-builder-func-args > .sha-query-builder-func-arg + .sha-query-builder-func-arg {
+            border-left: 1px solid #d0d5dd;
+        }
+
+        /* A boolean flag argument only needs room for its control, so it opts out of the even split. */
+        .sha-query-builder-func-arg:has(.sha-query-builder-ignore-unassigned) {
+            flex: 0 0 auto;
+            width: 33px;
+            min-width: 33px;
+            justify-content: center;
+            background: #fff;
+        }
+
+        .sha-query-builder-func-arg .${prefixCls}-checkbox-wrapper {
             margin-inline-start: 0;
         }
 
@@ -934,7 +957,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .sha-query-builder-value-editor-slot .${prefixCls}-input,
         .sha-query-builder-value-editor-slot .${prefixCls}-select,
         .sha-query-builder-field-slot .${prefixCls}-select,
-        .sha-query-builder-func-expression .sha-expression-editor {
+        .sha-query-builder-func-arg .sha-expression-editor {
             width: 100%;
             height: 32px;
             border: 0 !important;
