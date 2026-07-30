@@ -29,7 +29,10 @@ export type CheckboxGroupCommonProps = IInputStyles & INestedStyleValue<'checkbo
   direction?: DirectionType | undefined;
   style?: CSSProperties | undefined;
   styleJson?: CSSProperties | undefined;
+  /** Renders the group as a read-only display of the selected labels instead of editable checkboxes. */
   readOnly?: boolean | undefined;
+  /** Keeps the checkboxes rendered but non-interactive (greyed out). */
+  disabled?: boolean | undefined;
 };
 
 export type CheckboxGroupComponentProps = CheckboxGroupCommonProps;
