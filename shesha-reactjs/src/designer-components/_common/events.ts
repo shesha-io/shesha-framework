@@ -30,6 +30,19 @@ export type StandardEventHandlerWithoutChange = Exclude<StandardEventHandler, 'o
 export const ALL_INPUT_EVENTS_WITHOUT_CHANGE: readonly StandardEventHandlerWithoutChange[] =
   ALL_INPUT_EVENTS.filter((event): event is StandardEventHandlerWithoutChange => event !== 'onChange');
 
+/**
+ * The events a component built on antd's `Select` can emit.
+ *
+ * `Select` accepts only a subset of the DOM handlers — `onDoubleClick` and `onMouseMove` are not
+ * among them, so advertising them on the Events tab would give the user handlers that never fire.
+ */
+export const SELECT_EVENTS: readonly StandardEventHandler[] =
+  ALL_INPUT_EVENTS.filter((event): event is StandardEventHandler => event !== 'onDoubleClick' && event !== 'onMouseMove');
+
+/** `SELECT_EVENTS` minus `onChange` — the set `getComponentEvents` binds for Select-based components. */
+export const SELECT_EVENTS_WITHOUT_CHANGE: readonly StandardEventHandlerWithoutChange[] =
+  SELECT_EVENTS.filter((event): event is StandardEventHandlerWithoutChange => event !== 'onChange');
+
 interface EventConfig {
   event: StandardEventHandler;
   propertyName: CustomEventHandler;

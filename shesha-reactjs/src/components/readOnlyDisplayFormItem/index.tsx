@@ -32,6 +32,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = <TValu
     showItemName,
     styleValue,
     enableFullStyle,
+    className,
   } = props;
 
   // ToDo: remove `textAlign` after migrate all components to the new styles
@@ -118,7 +119,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = <TValu
             ? <InputField className={styles.inputField} style={style} value={values.join(', ')} />
             : (
               <div
-                className={styles.wrapper}
+                className={isNullOrWhiteSpace(className) ? styles.wrapper : `${styles.wrapper} ${className}`}
                 data-tag-wrapper="true"
                 style={{
                   ...style,
@@ -168,6 +169,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = <TValu
     }
   }, [value,
     type,
+    className,
     dateFormat,
     timeFormat,
     dropdownDisplayMode,

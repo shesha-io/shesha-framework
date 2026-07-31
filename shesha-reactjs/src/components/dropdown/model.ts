@@ -1,7 +1,11 @@
 import { IStyleValue } from "@/providers/form/models";
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
+import { GetRef, Select, SelectProps } from 'antd';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
-import { CSSProperties } from 'react';
+import { CSSProperties, Ref } from 'react';
+
+/** Resolves to BaseSelectRef — the imperative handle exposing `focus()`/`blur()`. */
+export type DropdownSelectRef = GetRef<typeof Select>;
 
 export type DataSourceType = 'values' | 'referenceList' | 'url';
 
@@ -51,4 +55,22 @@ export interface IDropdownProps {
   showIcon?: boolean | undefined;
   solidColor?: boolean | undefined;
   enableStyleOnReadonly?: boolean | undefined;
+  /** Emotion class emitted from the Appearance settings. Merged with the component's own class. */
+  className?: string | undefined;
+  /** Forwarded to the underlying antd `Select` so callers can expose `focus()` on their API. */
+  selectRef?: Ref<DropdownSelectRef | null> | undefined;
+  /** Standard DOM event handlers, supplied by `getComponentEvents`. */
+  events?: SelectEventHandlers | undefined;
+  /**
+   * Appearance style model, used only by the read-only renderer. The editable control is styled by
+   * the emotion class in `className`, but `ReadOnlyDisplayFormItem` renders outside the select and
+   * has no class hook, so it still takes the style model as a value.
+   */
+  styleValue?: IStyleValue | undefined;
 }
+
+/** The subset of antd `Select` props used to relay the standard component events. */
+export type SelectEventHandlers = Pick<
+  SelectProps,
+  'onBlur' | 'onClick' | 'onFocus' | 'onKeyDown' | 'onKeyUp' | 'onMouseEnter' | 'onMouseLeave'
+>;

@@ -12,7 +12,14 @@ export interface ILabelValue<TValue = unknown> {
   value: TValue;
 }
 
-export interface IDropdownComponentProps extends Omit<IDropdownProps, "style" | "readOnly" | "value" | "onChange">, IConfigurableFormComponent, IInputStyles {
+/**
+ * Runtime plumbing supplied by the Factory rather than configured on the form: the emotion class,
+ * the ref backing the API's `focus()`, the handlers from `getComponentEvents`, and the style model
+ * handed to the read-only renderer. They are not settings, so they stay out of the component model.
+ */
+type DropdownRuntimeProps = 'className' | 'events' | 'selectRef' | 'styleValue';
+
+export interface IDropdownComponentProps extends Omit<IDropdownProps, "style" | "readOnly" | "value" | "onChange" | DropdownRuntimeProps>, IConfigurableFormComponent, IInputStyles {
 }
 
 export type DropdownComponentDefinition = ComponentDefinition<"dropdown", IDropdownComponentProps>;

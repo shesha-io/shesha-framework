@@ -1,7 +1,14 @@
-import { IStyleValue } from "@/providers/form/models";
+import { INestedStyleValue, IStyleValue } from "@/providers/form/models";
 
-export const defaultStyles = (): IStyleValue => {
+/**
+ * Appearance defaults for an unconfigured dropdown.
+ *
+ * Includes the nested `tag` set: the migration that used to seed tag styles is guarded by
+ * `isNew`, so a freshly dropped component gets its tag appearance from here instead.
+ */
+export const defaultStyles = (): INestedStyleValue<'tag'> => {
   return {
+    tag: defaultTagStyles(),
     background: { type: 'color', color: '#fff' },
     font: {
       weight: '400',

@@ -1,11 +1,12 @@
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { DownSquareOutlined } from '@ant-design/icons';
-import { IInputStyles } from '@/providers/form/models';
+import { IInputStyles, INestedStyleValue, IStyleValue } from '@/providers/form/models';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { DataSourceType, DropdownComponentDefinition, IDropdownComponentProps } from './model';
+import { DropdownSelectRef } from '@/components/dropdown/model';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly, migrateHiddenToVisible } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
@@ -14,9 +15,15 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { migratePrevStyles, migrateStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles, defaultTagStyles } from './utils';
-import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { useStyles } from './styles';
 import { getBooleanPropertyOrUndefined } from '@/utils/object';
-import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
+import { useComponentApi } from '@/providers/componentApi/provider';
+import { DropdownApi } from '../../componentsApi/componentApi';
+import { useEffectOnce } from '@/hooks/useEffectOnce';
+import { SELECT_EVENTS_WITHOUT_CHANGE, getComponentEvents } from '../_common/events';
+
+import apiCode from "../../componentsApi/componentApi.ts?raw";
 
 const DropdownComponent: DropdownComponentDefinition = {
   allowInherit: true,
@@ -30,30 +37,42 @@ const DropdownComponent: DropdownComponentDefinition = {
   preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.referenceListItem || (dataType === DataTypes.array && dataFormat === ArrayFormats.multivalueReferenceList),
   Factory: ({ model }) => {
-    const tagStyle = useFormComponentStyles({ ...model.tag }).fullStyle;
-    const {
-      readOnly = false,
-      enableStyleOnReadonly = false,
-    } = model;
+    const componentApi = useComponentApi();
+    const selectRef = useRef<DropdownSelectRef>(null);
+    useEffect(() => {
+      componentApi?.updateApi<DropdownApi>({
+        id: model.id,
+        componentName: model.componentName ?? "",
+        level: 3,
+        typeDefinition: { typeName: 'DropdownApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+        properties: [],
+        api: { focus: () => selectRef.current?.focus() },
+      });
+    }, [componentApi, model.componentName, model.id]);
+    useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
-    // When enableStyleOnReadonly is true, apply all configured styles in readonly mode
-    // When enableStyleOnReadonly is false, apply only minimal styles (font + dimensions)
-    const finalStyle = readOnly
-      ? enableStyleOnReadonly
-        ? { ...model.allStyles?.fullStyle, overflow: 'auto' }
-        : { ...model.allStyles?.fontStyles, ...model.allStyles?.dimensionsStyles }
-      : { ...model.allStyles?.fullStyle, overflow: 'auto' };
+    const { styles } = useStyles(model);
+
+    // `model.style` is the raw custom-style *expression* (a string); the select's `style` prop takes
+    // a CSSProperties object. Drop it from the spread so only the evaluated `styleJson` can land there.
+    const { style: _styleExpression, ...modelWithoutStyle } = model;
 
     return (
       <ConfigurableFormItem<number | number[] | string | string[] | (number | string)[]> model={model}>
         {(value, onChange, _, ctx) => {
           return (
             <Dropdown
-              {...model}
-              style={finalStyle}
+              {...modelWithoutStyle}
+              className={styles.dropdown}
+              // Custom style is passed through as-is; everything else is emitted as CSS by `useStyles`
+              // so unset properties keep cascading from the theme.
+              {...(isDefined(model.styleJson) ? { style: model.styleJson } : {})}
               value={value ?? undefined}
               size={model.size}
-              tagStyle={{ ...tagStyle, alignContent: 'center', justifyContent: tagStyle.textAlign }}
+              // Read-only rendering happens outside the select, where the emotion class does not
+              // reach, so the style model is handed over as a value for that path.
+              styleValue={model}
+              selectRef={selectRef}
               onChange={(newValue) => {
                 // value: CustomLabeledValue<T>, option: any
                 // TODO: EVENTS add option to context
@@ -61,6 +80,9 @@ const DropdownComponent: DropdownComponentDefinition = {
                 ctx?.handleEvent(undefined, { value: newValue }, model.onChangeCustom);
                 onChange(newValue ?? null);
               }}
+              events={getComponentEvents<number | number[] | string | string[] | (number | string)[]>(
+                model, SELECT_EVENTS_WITHOUT_CHANGE, ctx, value, DataTypes.array,
+              )}
             />
           );
         }}
@@ -93,7 +115,12 @@ const DropdownComponent: DropdownComponentDefinition = {
       editMode: prev.editMode ?? 'inherited',
     }))
     .add<IDropdownComponentProps>(6, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-    .add<IDropdownComponentProps>(7, (prev) => {
+    // Steps 7-10 back-fill styles and property defaults for forms saved before those settings
+    // existed. A newly dropped component ships empty and inherits from the entity model instead,
+    // so each of them is a no-op when `isNew`.
+    .add<IDropdownComponentProps>(7, (prev, context) => {
+      if (context.isNew === true) return prev;
+
       const styles: IInputStyles = {
         size: prev.size,
         stylingBox: prev.stylingBox,
@@ -102,7 +129,9 @@ const DropdownComponent: DropdownComponentDefinition = {
 
       return { ...prev, desktop: { ...prev.desktop, ...styles }, tablet: { ...prev.tablet, ...styles }, mobile: { ...prev.mobile, ...styles } };
     })
-    .add<IDropdownComponentProps>(8, (prev) => {
+    .add<IDropdownComponentProps>(8, (prev, context) => {
+      if (context.isNew === true) return prev;
+
       const styles: IInputStyles = {
         size: prev.size,
         width: prev.width,
@@ -118,20 +147,30 @@ const DropdownComponent: DropdownComponentDefinition = {
       };
       return { ...prev, desktop: { ...prev.desktop, ...styles }, tablet: { ...prev.tablet, ...styles }, mobile: { ...prev.mobile, ...styles } };
     })
-    .add<IDropdownComponentProps>(9, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
-    .add<IDropdownComponentProps>(10, (prev) => {
-      const initTagStyle = migrateStyles({}, defaultTagStyles());
+    .add<IDropdownComponentProps>(9, (prev, context) => context.isNew === true
+      ? prev
+      : { ...migratePrevStyles(prev, defaultStyles()) })
+    .add<IDropdownComponentProps>(10, (prev, context) => {
+      if (context.isNew === true) return prev;
 
+      const initTagStyle = migrateStyles({}, defaultTagStyles());
+      // The per-device style models are typed as the flat `IStyleValue`; the dropdown additionally
+      // nests a `tag` set under each of them.
+      const deviceTag = (device: IStyleValue | undefined): IStyleValue | undefined =>
+        (device as INestedStyleValue<'tag'> | undefined)?.tag;
+
+      // Seeded only where nothing is configured yet — a form that already styled its tags keeps
+      // those values rather than being reset to the defaults on every upgrade.
       return {
         ...prev,
-        tag: { ...initTagStyle },
+        tag: prev.tag ?? { ...initTagStyle },
         showItemName: prev.showItemName ?? true,
         showIcon: prev.showIcon ?? true,
         solidColor: prev.solidColor ?? true,
         displayStyle: prev.displayStyle ?? 'text',
-        desktop: { ...prev.desktop, tag: { ...initTagStyle } },
-        tablet: { ...prev.tablet, tag: { ...initTagStyle } },
-        mobile: { ...prev.mobile, tag: { ...initTagStyle } },
+        desktop: { ...prev.desktop, tag: deviceTag(prev.desktop) ?? { ...initTagStyle } },
+        tablet: { ...prev.tablet, tag: deviceTag(prev.tablet) ?? { ...initTagStyle } },
+        mobile: { ...prev.mobile, tag: deviceTag(prev.mobile) ?? { ...initTagStyle } },
       };
     })
     .add<IDropdownComponentProps>(11, (prev) => {
@@ -140,7 +179,10 @@ const DropdownComponent: DropdownComponentDefinition = {
       delete result['referenceListName'];
       const { referenceListId } = result;
       const knownPrefixes = ["Shesha.Framework", "Shesha.Core", "Shesha.Scheduler"];
-      if (referenceListId && referenceListId.name && !referenceListId.module && knownPrefixes.some((p) => referenceListId.name.startsWith(p)))
+      if (isDefined(referenceListId) &&
+        isNotNullOrWhiteSpace(referenceListId.name) &&
+        isNullOrWhiteSpace(referenceListId.module) &&
+        knownPrefixes.some((p) => referenceListId.name.startsWith(p)))
         result.referenceListId = { module: "Shesha", name: referenceListId.name };
       return result;
     })

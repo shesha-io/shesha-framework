@@ -37,8 +37,15 @@ export const Dropdown: FC<IDropdownProps> = ({
   displayStyle,
   tagStyle,
   enableStyleOnReadonly,
+  className,
+  selectRef,
+  events,
+  styleValue,
 }) => {
   const { styles } = useStyles({ style: style ?? {} });
+  // The caller's Appearance class is merged in rather than replacing the component's own class,
+  // so the base layout rules survive when a form supplies configured styles.
+  const selectClassName = isNullOrWhiteSpace(className) ? styles.dropdown : `${styles.dropdown} ${className}`;
 
   const value = isDefined(inputValue)
     ? Array.isArray(inputValue)
@@ -141,7 +148,7 @@ export const Dropdown: FC<IDropdownProps> = ({
           showIcon={showIcon}
           solidColor={solidColor}
           showItemName={showItemName}
-          className={styles.dropdown}
+          className={selectClassName}
           style={{ ...style }}
           tagStyle={tagStyle}
           allowClear={allowClear}
@@ -149,6 +156,9 @@ export const Dropdown: FC<IDropdownProps> = ({
           getOptionFromFetchedItem={getOptionFromFetchedItem}
           displayStyle={displayStyle}
           enableStyleOnReadonly={enableStyleOnReadonly}
+          selectRef={selectRef}
+          events={events}
+          styleValue={styleValue}
         />
       )
       : undefined;
@@ -187,6 +197,9 @@ export const Dropdown: FC<IDropdownProps> = ({
         showItemName={showItemName}
         tagStyle={tagStyle}
         style={style}
+        styleValue={styleValue}
+        enableFullStyle={enableStyleOnReadonly}
+        className={className}
         dropdownDisplayMode={displayStyle === 'tags' ? 'tags' : 'raw'}
         type={mode === 'multiple' ? 'dropdownMultiple' : 'dropdown'}
         value={displayValue}
@@ -197,7 +210,9 @@ export const Dropdown: FC<IDropdownProps> = ({
   if (mode !== 'multiple' && mode !== 'tags' && displayStyle === 'tags') {
     return (
       <Select
-        className={styles.dropdown}
+        ref={selectRef}
+        {...events}
+        className={selectClassName}
         allowClear={allowClear}
         {...(onChange ? { onChange } : {})}
         value={selectedValue ?? null}
@@ -234,7 +249,9 @@ export const Dropdown: FC<IDropdownProps> = ({
 
   return (
     <Select
-      className={styles.dropdown}
+      ref={selectRef}
+      {...events}
+      className={selectClassName}
       allowClear={allowClear}
       {...(onChange ? { onChange } : {})}
       value={selectedValue ?? null}

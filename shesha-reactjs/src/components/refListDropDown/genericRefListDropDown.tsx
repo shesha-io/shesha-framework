@@ -45,6 +45,10 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
     size,
     variant,
     className,
+    selectRef,
+    events,
+    styleValue,
+    enableStyleOnReadonly,
   } = props;
   const { data: refList, loading: refListLoading, error: refListError } = useReferenceList(referenceListId);
 
@@ -123,6 +127,9 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
         solidColor={solidColor}
         tagStyle={tagStyle}
         style={style}
+        styleValue={styleValue}
+        enableFullStyle={enableStyleOnReadonly}
+        className={className}
         dropdownDisplayMode={displayStyle === 'tags' ? 'tags' : 'raw'}
         type={mode === 'multiple' ? 'dropdownMultiple' : 'dropdown'}
       />
@@ -130,6 +137,7 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
   }
 
   const commonSelectProps: Partial<SelectProps> = {
+    ...events,
     labelInValue: true,
     defaultActiveFirstOption: false,
     notFoundContent: refListLoading ? (
@@ -154,6 +162,7 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
   if (mode !== 'multiple' && mode !== 'tags' && displayStyle === 'tags') {
     return (
       <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
+        ref={selectRef}
         {...commonSelectProps}
         popupMatchSelectWidth={false}
         style={{ width: 'max-content', height: 'max-content' }}
@@ -184,6 +193,7 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
 
   return (
     <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
+      ref={selectRef}
       {...commonSelectProps}
       style={{ ...style }}
       showSearch

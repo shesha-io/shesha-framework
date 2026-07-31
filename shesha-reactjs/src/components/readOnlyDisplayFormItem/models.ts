@@ -24,4 +24,9 @@ export interface IReadOnlyDisplayFormItemProps<TValue = unknown> {
   size?: SwitchSize | undefined;
   styleValue?: IStyleValue | undefined;
   enableFullStyle?: boolean | undefined;
+  /**
+   * Emotion class from the caller's Appearance settings, applied to the tag wrapper so read-only
+   * tags pick up the same per-tag CSS as the editable control rather than needing `tagStyle`.
+   */
+  className?: string | undefined;
 }

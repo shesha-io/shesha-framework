@@ -1,7 +1,9 @@
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { BaseOptionType, LabeledValue, SelectProps } from 'antd/lib/select';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
-import { CSSProperties, Key } from 'react';
+import { CSSProperties, Key, Ref } from 'react';
+import { DropdownSelectRef, SelectEventHandlers } from '@/components/dropdown/model';
+import { IStyleValue } from '@/providers/form/models';
 import { ReferenceListItemDto } from '@/apis/referenceList';
 import { IReadOnly } from '@/interfaces/readOnly';
 import { IAnyObject } from '@/interfaces';
@@ -44,6 +46,12 @@ export interface IRefListDropDownProps<TValue = unknown> extends LimitedSelectPr
   displayStyle?: 'tags' | 'text' | undefined;
   onChange?: ((value: TValue | TValue[] | (TValue extends unknown ? TValue | TValue[] : never) | undefined) => void) | undefined;
   enableStyleOnReadonly?: boolean | undefined;
+  /** Forwarded to the underlying antd `Select` so callers can expose `focus()` on their API. */
+  selectRef?: Ref<DropdownSelectRef | null> | undefined;
+  /** Standard DOM event handlers, supplied by `getComponentEvents`. */
+  events?: SelectEventHandlers | undefined;
+  /** Appearance style model, used only by the read-only renderer. See `IDropdownProps.styleValue`. */
+  styleValue?: IStyleValue | undefined;
 }
 
 export interface IRefListDropDownOption {

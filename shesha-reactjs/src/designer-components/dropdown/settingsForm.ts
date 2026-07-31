@@ -2,6 +2,7 @@ import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
 import { presetColors } from './utils';
 import { DataTypes, SettingsFormMarkupFactory } from '@/interfaces';
+import { SELECT_EVENTS } from '../_common/events';
 
 const refListHiddenJs = "return getSettingValue(data.dataSourceType) !== 'referenceList';";
 const valuesVisibleJs = "return getSettingValue(data.dataSourceType) === 'values';";
@@ -112,7 +113,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
           },
           {
             key: 'events', title: 'Events', id: eventsTabId,
-            components: [...fbf(eventsTabId).stdEventHandlers(['onChange'], DataTypes.array).toJson()],
+            components: [...fbf(eventsTabId).stdEventHandlers(SELECT_EVENTS, DataTypes.array).toJson()],
           },
           {
             key: 'appearance', title: 'Appearance', id: appearanceTabId,
