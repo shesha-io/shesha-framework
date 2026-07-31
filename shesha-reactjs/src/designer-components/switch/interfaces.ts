@@ -3,7 +3,6 @@ import { IConfigurableFormComponent, IInputStyles, IStyleValue } from '@/provide
 
 export interface ISwitchComponentProps extends IConfigurableFormComponent, IInputStyles {
   value?: boolean | undefined;
-  defaultChecked?: boolean | undefined;
   /**
    * Styles for the switch handle (the moving knob). The root style set styles the track,
    * so the two are configured independently.

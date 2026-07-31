@@ -13,9 +13,19 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
   const { items = [], referenceListId, direction, value, onChange } = model;
   const containerRef = useRef<HTMLDivElement>(null);
 
+  // Check if the component is disabled
+  const isDisabled = model.disabled === true;
+
   // Expose the focus target to the component API without threading a ref
   // through props (the group has no single focusable input element).
-  useImperativeHandle(model.focusRef, () => ({ focus: () => containerRef.current?.focus() }), []);
+  // When disabled, prevent focus programmatically
+  useImperativeHandle(model.focusRef, () => ({
+    focus: () => {
+      if (!isDisabled) {
+        containerRef.current?.focus();
+      }
+    },
+  }), [isDisabled]);
 
   const { data: refList } = useReferenceList(referenceListId);
 
@@ -60,20 +70,23 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
   return (
     <div
       ref={containerRef}
-      tabIndex={0}
-      onFocus={(e) => model.onFocus?.({ ...e, target: { ...e.target, value: value } })}
-      onBlur={(e) => model.onBlur?.({ ...e, target: { ...e.target, value: value } })}
-      onClick={model.onClick}
-      onMouseEnter={model.onMouseEnter}
-      onMouseMove={model.onMouseMove}
-      onMouseLeave={model.onMouseLeave}
-      onKeyDown={model.onKeyDown}
-      onKeyUp={model.onKeyUp}
-      style={{ margin: `${DEFAULT_MARGINS.vertical} ${DEFAULT_MARGINS.horizontal}` }}
+      tabIndex={isDisabled ? -1 : 0}
+      onFocus={isDisabled ? undefined : (e) => model.onFocus?.({ ...e, target: { ...e.target, value: value } })}
+      onBlur={isDisabled ? undefined : (e) => model.onBlur?.({ ...e, target: { ...e.target, value: value } })}
+      onClick={isDisabled ? undefined : model.onClick}
+      onMouseEnter={isDisabled ? undefined : model.onMouseEnter}
+      onMouseMove={isDisabled ? undefined : model.onMouseMove}
+      onMouseLeave={isDisabled ? undefined : model.onMouseLeave}
+      onKeyDown={isDisabled ? undefined : model.onKeyDown}
+      onKeyUp={isDisabled ? undefined : model.onKeyUp}
+      style={{
+        margin: `${DEFAULT_MARGINS.vertical} ${DEFAULT_MARGINS.horizontal}`,
+        ...(isDisabled ? { pointerEvents: 'none' } : {}),
+      }}
     >
       <Checkbox.Group
         className={styles.checkboxGroup}
-        disabled={model.disabled === true}
+        disabled={isDisabled}
         value={selectedValues}
         {...(onChange ? { onChange } : {})}
         style={checkboxGroupStyle}
