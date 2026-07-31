@@ -132,7 +132,7 @@ export const getComponentEvents = <TValue, TModel = IConfigurableFormComponent>(
   valueType?: string | undefined,
   prefix?: string | undefined,
 ): EventsObject => {
-  const result = {} as EventsObject;
+  const result: EventsObject = {};
   if (!isDefined(ctx) || !isDefined(events) || events.length === 0) return result;
   events.forEach((event: StandardEventHandlerWithoutChange) => {
     const config = getEventConfig(event, valueType);

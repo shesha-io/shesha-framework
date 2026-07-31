@@ -11,9 +11,6 @@ const defaultHeaderPadding: StyleBoxValue = { _type: 'styleBox', paddingBottom: 
 const defaultPadding: StyleBoxValue = { _type: 'styleBox', paddingBottom: 16, paddingTop: 16, paddingLeft: 16, paddingRight: 16 };
 const defaultMargin: StyleBoxValue = { _type: 'styleBox', marginBottom: 5 };
 
-/* export const useHeaderComponentsContainerStyles = createStyles(({ css, cx, token, prefixCls }) => {
-};*/
-
 export const shaHeaderComponentsContainer = "sha-header-components-container";
 
 export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: ICollapsiblePanelProps) => {
@@ -48,7 +45,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: ICo
       height: 100%;
     }
    
-    > .ant-collapse-item > .ant-collapse-panel {
+    > .ant-collapse-item > .ant-collapse-panel, > .ant-collapse-item > .ant-collapse-content {
       flex: 1;
       ${backgroundStyles(model.background)}
       ${padding}
@@ -81,7 +78,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: ICo
       ${headerPadding}
       ${borderLinesStyles(model.headerStyles?.border)}
       ${model.accentStyle === true ? 'border-top: 3px solid var(--primary-color);' : ''}
-      ${model.ghost === true || model.isSimpleDesign === true ? '' : borderRadiusStyles(model.border, true)}
       align-items: center !important;
 
       .ant-collapse-header-text {
@@ -151,7 +147,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: ICo
     &.${prefixCls}-collapse-ghost {
       > .ant-collapse-item > .ant-collapse-header {
         --ant-collapse-header-padding: ${isNullOrWhiteSpace(headerPaddingValue) ? '12px 16px' : headerPaddingValue} !important;
-        padding: 12px 16px !important;
+        padding: ${isNullOrWhiteSpace(headerPaddingValue) ? '12px 16px' : headerPaddingValue} !important;
         font-size: 14px;
       }
     }

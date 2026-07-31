@@ -379,6 +379,14 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     }, `Removed component ${payload.componentId}`);
   };
 
+  deleteSelectedComponent = (): boolean => {
+    if (isDefined(this.selectedComponentId)) {
+      this.deleteComponent({ componentId: this.selectedComponentId });
+      return true;
+    }
+    return false;
+  };
+
   getComponentsCount = (components: IComponentsDictionary, type: string): number => {
     let count = 0;
     for (const key in components) {

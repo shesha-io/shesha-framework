@@ -50,6 +50,7 @@ import { TextFieldComponentDefinition } from '@/designer-components/textField/in
 import { TimeFieldComponentDefinition } from '@/designer-components/timeField/models';
 import { ComponentDefinition, IConfigurableFormComponent, InteractionType, IPropertyMetadata, IPropertySetting } from '@/interfaces';
 import { StandardEventHandler } from '@/designer-components/_common/events';
+import { ContainerCheckerComponentDefinition } from '@/designer-components/containerChecker/interfaces';
 
 // Create a union of all your component definitions
 type AllComponentDefinitions =
@@ -84,6 +85,7 @@ type AllComponentDefinitions =
   NumberFieldComponentDefinition |
   PermissionAutocompleteComponentDefinition |
   PropertyAutocompleteComponentDefinition |
+  ContainerCheckerComponentDefinition |
   PropertyRouterComponentDefinition |
   QueryBuilderComponentDefinition |
   RadioComponentDefinition |
@@ -160,10 +162,13 @@ export type StandardFormBuilderMethods<TConfig extends Record<ComponentTypes, ob
   stdPropertyLabelInputs(): FluentFormBuilder<TConfig>;
   stdPlaceholderDescriptionInputs(): FluentFormBuilder<TConfig>;
   stdCollapsiblePanel(label: string, components: (fbf: FormBuilder) => FormBuilder, collapsedByDefault?: boolean | undefined): FluentFormBuilder<TConfig>;
+  stdContainer(components: (fbf: FormBuilder) => FormBuilder, hidden?: boolean | IPropertySetting<boolean> | undefined): FluentFormBuilder<TConfig>;
+  stdContainerChecker(components: (fbf: FormBuilder) => FormBuilder, hidden?: boolean | IPropertySetting<boolean> | undefined): FluentFormBuilder<TConfig>;
   stdEventHandler(propertyName: string, label: string, tooltip: string, availableConstantsExpression?: string | undefined, meta?: IPropertyMetadata | undefined): FluentFormBuilder<TConfig>;
   /** `events` is readonly so the shared `ALL_INPUT_EVENTS` constant can be passed directly. */
   stdEventHandlers(events: readonly StandardEventHandler[], valueType?: string | undefined, prefix?: string | undefined, prefixLabel?: string | undefined): FluentFormBuilder<TConfig>;
   stdFontPanel(propertyName?: string, exclude?: string[], panelTitle?: string): FluentFormBuilder<TConfig>;
+  stdLayoutPanel(isResponsive?: boolean, propertyName?: string, panelTitle?: string): FluentFormBuilder<TConfig>;
   stdDimensionsPanel(propertyName?: string, exclude?: string[], panelTitle?: string): FluentFormBuilder<TConfig>;
   stdBorderPanel(isResponsive?: boolean, propertyName?: string, exclude?: 'border' | 'radius' | undefined, panelTitle?: string): FluentFormBuilder<TConfig>;
   stdBackgroundPanel(isResponsive?: boolean, propertyName?: string, exclude?: string[], panelTitle?: string): FluentFormBuilder<TConfig>;

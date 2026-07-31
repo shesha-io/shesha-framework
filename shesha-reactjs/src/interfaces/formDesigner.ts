@@ -11,7 +11,7 @@ import {
 } from '@/providers/form/models';
 import { IHasVersion, Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 import { IModelMetadata, IPropertyMetadata } from './metadata';
-import { IAjaxResponseBase, IApplicationContext, IDimensionsValue, IErrorInfo, IObjectMetadata, IStyleValue, UnwrapCodeEvaluators } from '..';
+import { IAjaxResponseBase, IApplicationContext, IErrorInfo, IObjectMetadata, IStyleValue, UnwrapCodeEvaluators } from '..';
 import { ISheshaApplicationInstance } from '@/providers/sheshaApplication/application';
 import { AxiosResponse } from 'axios';
 import { FormBuilderFactory } from '@/form-factory/interfaces';
@@ -166,18 +166,6 @@ export type IToolboxComponentBase = {
    * ```
    */
   preserveDimensionsInDesigner?: boolean | Array<'width' | 'height' | 'minWidth' | 'maxWidth' | 'minHeight' | 'maxHeight'>;
-  /**
-   * Optional function to customize how component dimensions are calculated in designer mode.
-   * This allows components to define their own sizing behavior instead of relying on generic logic.
-   *
-   * @param originalDims - The original dimensions from the component model
-   * @param deviceDims - The default device dimensions (usually 100% width/height)
-   * @returns The calculated dimensions for designer mode, or undefined to use default behavior
-   */
-  getDesignerDimensions?: (
-    originalDims: IDimensionsValue | undefined,
-    deviceDims: IDimensionsValue | undefined,
-  ) => IDimensionsValue | undefined;
 };
 
 export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = never> = IToolboxComponentBase & {
@@ -252,6 +240,9 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
    * Configuration is used to show a preview of the component in the some places (like theme component configurator)
    */
   previewConfiguration?: TModel;
+
+  /** Drag handle dimensions */
+  getWrapperStyle?: ((componentStyle: IStyleValue | undefined) => IStyleValue | undefined) | undefined;
 } & ToolboxComponentAsTemplate;
 
 export type ComponentDefinition<TType extends string = string, TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = object> =

@@ -6,6 +6,7 @@ import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { ISettingsInputRowProps } from "../settingsInputRow/interfaces";
 import { ReactNode } from "react";
 import { reactNodeToString } from "@/utils/string";
+import { isContainerCheckerComponent } from "../containerChecker";
 
 export const filterDynamicComponents = (components: IConfigurableFormComponent[], query: string): IConfigurableFormComponent[] => {
   if (!isDefined(components) || !Array.isArray(components))
@@ -43,15 +44,10 @@ export const filterDynamicComponents = (components: IConfigurableFormComponent[]
       (!isNullOrWhiteSpace(c.propertyName) && matchesQuery(c.propertyName.split('.').join(' ')))
     );
 
-    // Handle propertyRouter
-    if (isPropertyRouterComponent(c)) {
+    // Handle propertyRouter and containerChecker
+    if (isPropertyRouterComponent(c) || isContainerCheckerComponent(c)) {
       const filteredComponents = filterDynamicComponents(c.components ?? [], query);
-
-      return {
-        ...c,
-        hidden: filteredComponents.length < 1,
-        components: filteredComponents,
-      };
+      return { ...c, hidden: filteredComponents.length < 1, components: filteredComponents };
     }
 
     // Handle collapsiblePanel
@@ -78,7 +74,7 @@ export const filterDynamicComponents = (components: IConfigurableFormComponent[]
       const filteredInputs = c.inputs?.filter((input) =>
         matchesQuery(input.label) ||
         matchesQuery(input.propertyName) ||
-        (input.propertyName && matchesQuery(input.propertyName.split('.').join(' '))),
+        (isDefined(input.propertyName) && matchesQuery(input.propertyName.split('.').join(' '))),
       ) || [];
 
       // A row is only meaningful when it has at least one matching input.
@@ -119,6 +115,6 @@ export const filterDynamicComponents = (components: IConfigurableFormComponent[]
       (isSettingsInputRow(c) && (c.inputs ?? []).length > 0)
     );
 
-    return !c.hidden || hasVisibleChildren;
+    return c.hidden !== true || hasVisibleChildren;
   });
 };

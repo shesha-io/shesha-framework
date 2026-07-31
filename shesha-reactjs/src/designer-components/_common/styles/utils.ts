@@ -109,6 +109,8 @@ export const dimensionsStyles = (model: IDimensionsValue | undefined): string =>
   if (isDefined(model.height)) sb.append(`height: ${dimensionCss(model.height)};`);
   if (isDefined(model.minHeight)) sb.append(`min-height: ${dimensionCss(model.minHeight)};`);
   if (isDefined(model.maxHeight)) sb.append(`max-height: ${dimensionCss(model.maxHeight)};`);
+  if (isDefined(model.gridRow) && model.gridRow > 0) sb.append(`grid-row: span ${model.gridRow};`);
+  if (isDefined(model.gridColumn) && model.gridColumn > 0) sb.append(`grid-column: span ${model.gridColumn};`);
   return sb.build();
 };
 

@@ -1,11 +1,12 @@
 import { createStyles } from '@/styles';
 import { INumberFieldComponentProps } from './interfaces';
-import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
+import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, marginStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
+import { isDefined, isNotNullOrWhiteSpace } from '@/utils';
 
 export const useStyles = createStyles(({ css, cx }, model: INumberFieldComponentProps) => {
-  const hasPrefix = model.prefix || model.prefixIcon;
-  const hasSuffix = model.suffix || model.suffixIcon;
-  const color = model.font?.color || '#000';
+  const hasPrefix = isNotNullOrWhiteSpace(model.prefix) || isDefined(model.prefixIcon);
+  const hasSuffix = isNotNullOrWhiteSpace(model.suffix) || isDefined(model.suffixIcon);
+  const color = isDefined(model.font?.color) ? model.font.color : '#000';
 
   const numberStyles = cx('sha-input-number-input', css`
       padding-inline-start: '0px' !important;
@@ -16,6 +17,7 @@ export const useStyles = createStyles(({ css, cx }, model: INumberFieldComponent
       ${backgroundStyles(model.background)}
       ${shadowStyles(model.shadow)}
       ${paddingStyles(model.stylingBoxJson)}
+      ${marginStyles(model.stylingBoxJson)}
       ${dimensionsStyles(model.dimensions)}
       
       //&:focus {

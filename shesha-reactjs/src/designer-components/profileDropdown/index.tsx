@@ -54,6 +54,7 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
   isInput: false,
   canBeJsSetting: false,
   icon: <UserOutlined />,
+  getWrapperStyle: (componentStyle) => ({ dimensions: { width: componentStyle?.dimensions?.width } }),
   Factory: ({ model }) => {
     const [numResolved, setNumResolved] = useState(0);
 

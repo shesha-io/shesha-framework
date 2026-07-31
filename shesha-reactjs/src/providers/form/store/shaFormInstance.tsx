@@ -46,7 +46,7 @@ import { GetShaFormDataAccessor } from "@/providers/dataContextProvider/contexts
 import { IComponentApi } from "@/providers/componentApi/model";
 import { IDataContextDescriptor, SheshaCommonContexts } from "@/providers/dataContextManager/models";
 import { useComponentApi } from "@/providers/componentApi/provider";
-import { useDataContextManager } from "@/providers/dataContextManager/hooks";
+import { useDataContextManagerActions } from "@/providers/dataContextManager/hooks";
 
 interface ShaFormInstanceArguments<Values extends object = object> {
   forceRootUpdate: ForceUpdateTrigger;
@@ -860,7 +860,7 @@ const useShaForm = <Values extends object = object>(args: UseShaFormArgs<Values>
   const fullContext = useAvailableConstantsContextsNoRefresh();
   const metadataDispatcher = useMetadataDispatcher();
   const componentApi = useComponentApi();
-  const formContext = useDataContextManager().getNearestDataContext(SheshaCommonContexts.FormContext, 'form');
+  const formContext = useDataContextManagerActions().getNearestDataContext(SheshaCommonContexts.FormContext, 'form');
 
   const [formInstance] = useState<IShaFormInstance<Values>>(() => {
     if (form) {
