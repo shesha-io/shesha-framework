@@ -7,6 +7,7 @@ import { ICheckboxGroupProps } from './interfaces';
 import { DEFAULT_MARGINS } from '@/components/formDesigner/utils/designerConstants';
 import { isDefined } from '@/utils/nullables';
 import { useStyles } from './styles';
+import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 
 const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
   const { items = [], referenceListId, direction, value, onChange } = model;
@@ -37,6 +38,25 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
     ...(isDefined(model.styleJson) ? model.styleJson : {}),
   };
 
+  const selectedValues = isDefined(value) ? (Array.isArray(value) ? value : [value]) : [];
+
+  // Read-only: like checkbox/textField/numberField, render a static display of the selected
+  // option labels instead of an editable control (this component has no read-only style toggle).
+  if (model.readOnly === true) {
+    const selectedLabels = options
+      .filter((option) => selectedValues.some((v) => `${v}` === `${option.value}`))
+      .map((option) => (typeof option.label === 'string' || typeof option.label === 'number' ? `${option.label}` : `${option.value}`))
+      .join(', ');
+
+    return (
+      <ReadOnlyDisplayFormItem
+        value={selectedLabels}
+        style={model.styleJson}
+        styleValue={model}
+      />
+    );
+  }
+
   return (
     <div
       ref={containerRef}
@@ -53,7 +73,8 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
     >
       <Checkbox.Group
         className={styles.checkboxGroup}
-        value={isDefined(value) ? (Array.isArray(value) ? value : [value]) : []}
+        disabled={model.disabled === true}
+        value={selectedValues}
         {...(onChange ? { onChange } : {})}
         style={checkboxGroupStyle}
         options={options}
