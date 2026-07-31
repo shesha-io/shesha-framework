@@ -56,7 +56,7 @@ const FormProviderWrapperInner: FC<PropsWithChildren<{ form: FormInstance }>> = 
           form={form}
           shaForm={shaForm}
         >
-          {formSettings.modelType ? (
+          {isDefined(formSettings.modelType) && formSettings.modelType !== '' ? (
             <MetadataProvider id="designer" modelType={formSettings.modelType}>
               {children}
             </MetadataProvider>

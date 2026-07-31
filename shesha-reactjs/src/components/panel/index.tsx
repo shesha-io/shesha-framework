@@ -68,8 +68,10 @@ export const CollapsiblePanel: FC<PropsWithChildren<Omit<ICollapsiblePanelProps,
   }, [onChange]);
 
   useEffect(() => {
-    if (ref)
-      ref.current = { collapsed: keys.length === 0, setCollapsed: (val: boolean) => internalOnChange(val ? [] : ['1']) };
+    if (!ref)
+      return undefined;
+    ref.current = { collapsed: keys.length === 0, setCollapsed: (val: boolean) => internalOnChange(val ? [] : ['1']) };
+    return () => ref.current = undefined;
   }, [internalOnChange, keys, ref]);
 
   const shaCollapsiblePanelStyle = isSimpleDesign === true ? styles.shaSimpleDesign : styles.shaCollapsiblePanel;

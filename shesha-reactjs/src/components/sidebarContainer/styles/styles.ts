@@ -178,6 +178,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
           height: 100%;
           overflow: auto;
           transform-origin: top left;
+          box-shadow: 1px 1px 5px 5px #00000080;
         }
 
         /* When the designer canvas is empty (no components dropped yet), the
