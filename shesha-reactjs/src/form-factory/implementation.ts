@@ -373,9 +373,24 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
             { type: 'button', label: 'Show Advanced', hideLabel: true, tooltip: 'Show advanced settings', tooltipAlt: 'Hide advanced settings', propertyName: `${propName}showAdvanced`, icon: 'tuneIcon', iconAlt: 'tuneIcon' },
           ] });
         f.addSettingsInputRow({
+          inputs: [{ type: 'textField', label: 'Gap', propertyName: `${propName}gap`, description: 'Examples of a valid gap include: `10` | `10px` | `20px 20px`' }],
+        });
+        f.addSettingsInputRow({
           inputs: [
-            { type: 'textField', label: 'Gap', propertyName: `${propName}gap`, description: 'Examples of a valid gap include: `10` | `10px` | `20px 20px`' },
             { type: 'numberField', propertyName: `${propName}gridColumnsCount`, label: 'Grid Columns Count', description: 'Number of columns each grid should have',
+              hidden: { _code: `return ${getDisplay} !== "grid" && ${getDisplay} !== "inline-grid";`, _mode: 'code', _value: false },
+            },
+            { type: 'numberField', propertyName: `${propName}gridRowsCount`, label: 'Grid Rows Count', description: 'Number of rows each grid should have',
+              hidden: { _code: `return ${getDisplay} !== "grid" && ${getDisplay} !== "inline-grid";`, _mode: 'code', _value: false },
+            },
+          ],
+        });
+        f.addSettingsInputRow({
+          inputs: [
+            { type: 'dimensionField', dimensionType: 'gridColumnWidth', propertyName: `${propName}gridColumnsWidth`, label: 'Grid Columns Width', description: 'Width of each column', icon: 'widthIcon',
+              hidden: { _code: `return ${getDisplay} !== "grid" && ${getDisplay} !== "inline-grid";`, _mode: 'code', _value: false },
+            },
+            { type: 'dimensionField', dimensionType: 'gridRowHeight', propertyName: `${propName}gridRowsHeight`, label: 'Grid Rows Height', description: 'Height of each row', icon: 'heightIcon',
               hidden: { _code: `return ${getDisplay} !== "grid" && ${getDisplay} !== "inline-grid";`, _mode: 'code', _value: false },
             },
           ],
@@ -419,17 +434,17 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
       .addSettingsInputRow({
         inline: true,
         inputs: excludeInputs([
-          { type: 'textField', label: 'Width', width: 85, propertyName: `${propertyName}.width`, icon: 'widthIcon', tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit' },
-          { type: 'textField', label: 'Min Width', width: 85, hideLabel: true, propertyName: `${propertyName}.minWidth`, icon: 'minWidthIcon' },
-          { type: 'textField', label: 'Max Width', width: 85, hideLabel: true, propertyName: `${propertyName}.maxWidth`, icon: 'maxWidthIcon' },
+          { type: 'dimensionField', dimensionType: 'width', label: 'Width', width: 85, propertyName: `${propertyName}.width`, icon: 'widthIcon', tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit' },
+          { type: 'dimensionField', dimensionType: 'minWidth', label: 'Min Width', width: 85, hideLabel: true, propertyName: `${propertyName}.minWidth`, icon: 'minWidthIcon' },
+          { type: 'dimensionField', dimensionType: 'maxWidth', label: 'Max Width', width: 85, hideLabel: true, propertyName: `${propertyName}.maxWidth`, icon: 'maxWidthIcon' },
         ], exclude),
       })
       .addSettingsInputRow({
         inline: true,
         inputs: excludeInputs([
-          { type: 'textField', label: 'Height', width: 85, propertyName: `${propertyName}.height`, icon: 'heightIcon', tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit' },
-          { type: 'textField', label: 'Min Height', width: 85, hideLabel: true, propertyName: `${propertyName}.minHeight`, icon: 'minHeightIcon' },
-          { type: 'textField', label: 'Max Height', width: 85, hideLabel: true, propertyName: `${propertyName}.maxHeight`, icon: 'maxHeightIcon' },
+          { type: 'dimensionField', dimensionType: 'height', label: 'Height', width: 85, propertyName: `${propertyName}.height`, icon: 'heightIcon', tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit' },
+          { type: 'dimensionField', dimensionType: 'minHeight', label: 'Min Height', width: 85, hideLabel: true, propertyName: `${propertyName}.minHeight`, icon: 'minHeightIcon' },
+          { type: 'dimensionField', dimensionType: 'maxHeight', label: 'Max Height', width: 85, hideLabel: true, propertyName: `${propertyName}.maxHeight`, icon: 'maxHeightIcon' },
         ], exclude),
       }));
     this.stdContainerChecker((f) => f

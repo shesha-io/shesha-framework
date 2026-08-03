@@ -192,6 +192,9 @@ export interface ICommonContainerProps extends IStyleValue {
   justifySelf?: JustifySelf | undefined;
   noDefaultStyling?: boolean | undefined;
   gridColumnsCount?: number | undefined;
+  gridRowsCount?: number | undefined;
+  gridColumnsWidth?: string | number | undefined;
+  gridRowsHeight?: string | number | undefined;
   gap?: string | number | undefined;
 }
 

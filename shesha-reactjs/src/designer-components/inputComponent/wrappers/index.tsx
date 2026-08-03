@@ -46,6 +46,7 @@ import { ThreeStateSwitchWrapper } from "./threeStateSwitch";
 import { RequestConfigButtonWrapper } from "./requestConfigButton";
 import { SectionSeparatorWrapper } from "./sectionSeparator";
 import { UnwrapCodeEvaluators } from "@/providers/form/models";
+import { DimensionFieldWrapper } from "./dimensionField";
 
 type InputType = Exclude<ISettingsInputProps['type'], undefined | "settingsInput">;
 
@@ -56,6 +57,8 @@ type EditorDictionary = {
 };
 
 export const editorRegistry: EditorDictionary = {
+  dimensionField: DimensionFieldWrapper,
+
   codeEditor: CodeEditorWrapper,
   tooltip: TooltipWrapper,
 
