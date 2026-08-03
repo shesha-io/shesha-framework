@@ -87,9 +87,17 @@ const SignalRProvider: FC<PropsWithChildren<ISignalRProvider>> = ({
 
     connection.onclose((error) => {
       console.error('SignalR connection closed', error);
-      // The connection is closed for good at this point (automatic reconnect, when enabled,
-      // has already given up), so drop it from state instead of leaving consumers holding a
-      // dead connection they might still try to invoke methods on.
+
+      // This effect instance has already been retired and its cleanup stopped this very
+      // connection, so a newer instance may already own the connection in state. Reporting a
+      // disconnect on a retired connection's behalf would clear the live connection and tell
+      // consumers they are offline when they are not.
+      if (!isActive)
+        return;
+
+      // Otherwise the connection is closed for good (automatic reconnect, when enabled, has
+      // already given up), so drop it from state instead of leaving consumers holding a dead
+      // connection they might still try to invoke methods on.
       setConnection();
       onDisconnectedRef.current?.();
     });
@@ -111,9 +119,9 @@ const SignalRProvider: FC<PropsWithChildren<ISignalRProvider>> = ({
 
     return () => {
       isActive = false;
-      // No need to call onDisconnected here — stop() triggers onclose, which already
-      // invokes onDisconnectedRef.current. If the connection never started, neither
-      // fires, mirroring the fact that onConnected was never called either.
+      // stop() triggers onclose, but the handler above deliberately ignores it now that this
+      // instance is retired, so a teardown never reports a disconnect for a connection that a
+      // newer instance may have already replaced in state.
       connection
         .stop()
         .catch((err) => console.error('SignalRProvider connection error', err));
