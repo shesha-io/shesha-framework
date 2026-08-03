@@ -3,11 +3,15 @@ import { isDefined } from "@/utils/nullables";
 import { executeScriptSync } from '@/providers/form/utils';
 import { IPropertySetting } from '..';
 
+export const DIMENSION_UNITS = ['px', '%', 'vw', 'vh', 'em', 'rem', 'auto', 'calc', 'none', 'fr', 'in', 'cm', 'mm', 'pt', 'pc'] as const;
+export type DimensionUnits = typeof DIMENSION_UNITS[number];
 export interface DimensionValue {
   value: number;
-  unit: 'px' | '%' | 'vw' | 'vh' | 'em' | 'rem' | 'auto' | 'calc' | 'none';
+  unit: DimensionUnits;
   calc?: string;
 }
+
+const isDimensionUint = (unit: string): unit is DimensionUnits => DIMENSION_UNITS.includes(unit as DimensionUnits);
 
 /**
  * Type guard to check if a value is a valid dimension input type
@@ -41,7 +45,7 @@ export const parseDimension = (value: string | number | null | undefined | IProp
   }
 
   // Handle JavaScript code execution for dynamic values
-  if (typeof value === 'object' && value._mode === 'code' && value._code) {
+  if (typeof value === 'object' && value._mode === 'code' && isDefined(value._code)) {
     try {
       const executedValue = executeScriptSync(value._code, context ?? {});
 
@@ -81,12 +85,12 @@ export const parseDimension = (value: string | number | null | undefined | IProp
   }
 
   // Match number with optional unit
-  const match = /^(-?\d+(?:\.\d+)?)(px|%|vw|vh|em|rem)?$/.exec(value.trim());
+  const match = /^(-?\d+(?:\.\d+)?)(px|%|vw|vh|em|rem|fr|in|cm|mm|pt|pc)?$/.exec(value.trim());
   if (match && match[1] !== undefined) {
-    const unit = match[2] || 'px';
+    const unit = isDefined(match[2]) ? match[2] : 'px';
 
     // Type guard: validate unit is one of the allowed values
-    if (unit === 'px' || unit === '%' || unit === 'vw' || unit === 'vh' || unit === 'em' || unit === 'rem') {
+    if (isDimensionUint(unit)) {
       return {
         value: parseFloat(match[1]),
         unit,
@@ -97,6 +101,9 @@ export const parseDimension = (value: string | number | null | undefined | IProp
   return null;
 };
 
+export const DIMENSION_VALUES = ['auto', 'none', 'min-content', 'max-content', 'fit-content', 'stretch'];
+export const GRID_DIMENSION_VALUES = ['auto', 'min-content', 'max-content'];
+
 /**
  * Add 'px' unit to bare numbers, preserve existing units
  * @param value - The value to add units to
@@ -104,6 +111,8 @@ export const parseDimension = (value: string | number | null | undefined | IProp
  * @returns String with appropriate units, or undefined
  */
 export const addPx = (value: number | string | null | undefined, context?: object): string | undefined => {
+  if (typeof value === 'string' && DIMENSION_VALUES.includes(value.trim())) return value;
+
   const parsed = parseDimension(value, context);
   if (!parsed) return undefined;
 

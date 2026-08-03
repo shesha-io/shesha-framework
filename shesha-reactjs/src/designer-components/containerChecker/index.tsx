@@ -31,7 +31,7 @@ const ContainerCheckerComponent: ContainerCheckerComponentDefinition = {
     const parentModel = container.model;
     if (!isConfigurableFormComponent(parentModel)) return null;
     if (!isContainerComponent(parentModel)) return null;
-    if (!isDefined(parentModel.gridColumnsCount) || parentModel.gridColumnsCount === 0) return null;
+    if ((parentModel.display !== 'grid' && parentModel.display !== 'inline-grid') || !isDefined(parentModel.gridColumnsCount) || parentModel.gridColumnsCount === 0) return null;
 
     const components = 'id' in parentModel && typeof parentModel.id === 'string' ? form.componentRelations[parentModel.id] ?? [] : [];
     if (components.find((x) => x === data.id) == null) return null;

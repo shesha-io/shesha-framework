@@ -29,7 +29,7 @@ const ContainerComponent: ContainerComponentDefinition = {
   icon: <GroupOutlined />,
   // Static empty array to prevent unnecessary re-renders when isDynamic is false
   emptyComponents: [],
-  getWrapperStyle: (model) => ({ dimensions: { width: model?.dimensions?.width }, stylingBoxJson: { _type: 'styleBox', paddingLeft: 2, paddingRight: 2, paddingTop: 2, paddingBottom: 2 } }),
+  getWrapperStyle: (model) => ({ dimensions: model?.dimensions, stylingBoxJson: { _type: 'styleBox', paddingLeft: 2, paddingRight: 2, paddingTop: 2, paddingBottom: 2 } }),
   Factory: ({ model }) => {
     const { styles, cx } = useStyles(model);
     const wrappedStyleJson = useActualContextExecution(model.wrapperStyle, undefined, {});

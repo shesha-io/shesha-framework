@@ -21,7 +21,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: ICo
   const hasBorder = (model.border?.borderType === 'all' && isG0(borderValue?.all?.width)) ||
     (model.border?.borderType === 'custom' && (isG0(borderValue?.top?.width) || isG0(borderValue?.right?.width) || isG0(borderValue?.bottom?.width) || isG0(borderValue?.left?.width)));
 
-  const dimensions = dimensionsStyles({ ...model.dimensions, width: '100%' });
+  const dimensions = dimensionsStyles(model.dimensions);
   const padding = paddingStyles(model.stylingBoxJson ?? defaultPadding);
 
   const headerDimensions = dimensionsStyles({ ...model.headerStyles?.dimensions, width: undefined, minWidth: undefined, maxWidth: undefined });
