@@ -95,6 +95,11 @@ export const parseDimension = (value: string | number | null | undefined | IProp
  * @returns String with appropriate units, or undefined
  */
 export const addPx = (value: number | string | null | undefined, context?: object): string | undefined => {
+  // Preserve calc() expressions and other CSS functions
+  if (typeof value === 'string' && /^(calc|min|max|clamp)\(/i.test(value.trim())) {
+    return value;
+  }
+
   const parsed = parseDimension(value, context);
   if (!parsed) return undefined;
 

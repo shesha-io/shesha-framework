@@ -10,7 +10,7 @@ import { convertValueToFriendlyString } from './utils';
 import { isNotNullOrWhiteSpace } from '@/utils';
 
 /** Stable reference so the Popover does not see a new array on every render. */
-const POPOVER_TRIGGERS: ('hover' | 'click')[] = ['hover', 'click'];
+const POPOVER_TRIGGERS: ('hover' | 'focus' | 'click')[] = ['hover', 'focus', 'click'];
 
 // make value unknown to process any type of value (InputComponent is not generic)
 export type InputComponentProps<TValue = unknown> = Omit<BaseInputProps, 'value' | 'onChange'> & {
@@ -36,19 +36,26 @@ export const InputComponent = <TValue = string>(props: InputComponentProps<TValu
     ? getValueByPropertyName(defaultModel.getDefaultModel() as Record<string, unknown>, defaultModelPropertyName) as TValue | undefined
     : undefined;
 
+  // Check if the input is in read-only state
+  const isReadOnly = props.readOnly === true || props.disabled === true;
+
   const internalOnChange = useCallback((v: TValue | undefined): void => {
     tempData.current = onChangeSetting?.(v, formData, setFormData, tempData.current);
     onChange?.(v);
   }, [onChange, onChangeSetting, formData, setFormData]);
 
   const setOverride = useCallback((): void => {
-    internalOnChange(defaultValue);
-    setPopupOpen(false);
-  }, [defaultValue, internalOnChange]);
+    if (!isReadOnly) {
+      internalOnChange(defaultValue);
+      setPopupOpen(false);
+    }
+  }, [defaultValue, internalOnChange, isReadOnly]);
   const resetToDefault = useCallback((): void => {
-    internalOnChange(undefined);
-    setPopupOpen(false);
-  }, [internalOnChange]);
+    if (!isReadOnly) {
+      internalOnChange(undefined);
+      setPopupOpen(false);
+    }
+  }, [internalOnChange, isReadOnly]);
 
   const valueInfo = defaultModel?.getValueInfo(defaultModelPropertyName);
   const isInherited = valueInfo?.state === 'usedDefault';
@@ -68,13 +75,15 @@ export const InputComponent = <TValue = string>(props: InputComponentProps<TValu
         {(Boolean(addInfo) && (Boolean(inheritanceInfo1) || Boolean(inheritanceInfo2))) && <Divider size="small" />}
         {Boolean(inheritanceInfo1) && <div>{inheritanceInfo1}</div>}
         {Boolean(inheritanceInfo2) && <div>{inheritanceInfo2}</div>}
-        <div>{isInherited
-          ? <Button type="link" onClick={() => setOverride()}><SyncOutlined /> Override inheritance</Button>
-          : isOverridden && <Button type="link" onClick={() => resetToDefault()}><RollbackOutlined /> Reset to default</Button>}
-        </div>
+        {!isReadOnly && (
+          <div>{isInherited
+            ? <Button type="link" onClick={() => setOverride()}><SyncOutlined /> Override inheritance</Button>
+            : isOverridden && <Button type="link" onClick={() => resetToDefault()}><RollbackOutlined /> Reset to default</Button>}
+          </div>
+        )}
       </div>
     ) : null;
-  }, [props.tooltip, additionalInfo, isInherited, valueInfo?.latestDefaultModelName, isOverridden, defaultValue, setOverride, resetToDefault]);
+  }, [props.tooltip, additionalInfo, isInherited, valueInfo?.latestDefaultModelName, isOverridden, defaultValue, setOverride, resetToDefault, isReadOnly]);
 
   const newProps = { ...props, defaultModelPropertyName, onChange: internalOnChange } as BaseInputProps;
 

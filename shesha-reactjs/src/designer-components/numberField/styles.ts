@@ -1,11 +1,19 @@
 import { createStyles } from '@/styles';
 import { INumberFieldComponentProps } from './interfaces';
-import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
+import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, marginStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
+import { isDefined } from '@/utils/nullables';
 
 export const useStyles = createStyles(({ css, cx }, model: INumberFieldComponentProps) => {
   const hasPrefix = model.prefix || model.prefixIcon;
   const hasSuffix = model.suffix || model.suffixIcon;
   const color = model.font?.color || '#000';
+
+  // Whether the user has configured any padding. When they have, their padding must win on the
+  // actual input element; otherwise we fall back to the prefix/suffix-aware layout defaults.
+  const sb = model.stylingBoxJson;
+  const hasUserPadding = isDefined(sb) && (
+    isDefined(sb.paddingTop) || isDefined(sb.paddingBottom) || isDefined(sb.paddingLeft) || isDefined(sb.paddingRight)
+  );
 
   const numberStyles = cx('sha-input-number-input', css`
       padding-inline-start: '0px' !important;
@@ -15,24 +23,35 @@ export const useStyles = createStyles(({ css, cx }, model: INumberFieldComponent
       ${borderStyles(model.border)}
       ${backgroundStyles(model.background)}
       ${shadowStyles(model.shadow)}
-      ${paddingStyles(model.stylingBoxJson)}
-      ${dimensionsStyles(model.dimensions)}
-      
-      //&:focus {
-      //  ${model.background && model.background.type === 'color' && `background-color: ${model.background.color};`}
-      //}
 
       &:hover {
-        // ${model.background && model.background.type === 'color' && `background-color: ${model.background.color};`}
         ${!hasSuffix && 'padding-right: 28px !important;'}
         transition: padding-right 0.2s ease;
       }
 
+      /* antd repaints the background on :hover (hoverBg), :focus/:focus-within (activeBg) and the
+         error/warning statuses. Re-assert the configured background at higher specificity so those
+         states only affect the border and never the background the user configured. */
+      &&&&:hover,
+      &&&&:focus,
+      &&&&:focus-within,
+      &&&&[class*="-status-error"],
+      &&&&[class*="-status-warning"] {
+        ${backgroundStyles(model.background)}
+      }
+
+      /* Dimensions, margin and padding apply to the actual <input> element. */
       .ant-input-number-input {
         height: 100% !important;
-        padding-left: ${hasPrefix ? '4px' : '8px'} !important;
-        padding-right: ${hasSuffix ? '4px' : '8px'} !important;
-        padding-bottom: 5px !important;
+        ${hasUserPadding
+          ? paddingStyles(model.stylingBoxJson)
+          : `
+            padding-left: ${hasPrefix ? '4px' : '8px'} !important;
+            padding-right: ${hasSuffix ? '4px' : '8px'} !important;
+            padding-bottom: 5px !important;
+          `}
+        ${dimensionsStyles(model.dimensions)}
+        ${marginStyles(model.stylingBoxJson)}
         ${fontStyles(model.font)}
       }
 

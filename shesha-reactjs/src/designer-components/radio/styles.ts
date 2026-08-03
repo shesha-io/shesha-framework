@@ -17,6 +17,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: IRadioComp
     ${dimensionsStyles(model.dimensions)}
     ${backgroundStyles(model.background)}
     ${paddingStyles(model.stylingBoxJson)}
+    ${marginStyles(model.stylingBoxJson)}
     ${shadowStyles(model.shadow)}
     .${prefixCls}-radio-wrapper {
       ${fontStyles(model.font)}

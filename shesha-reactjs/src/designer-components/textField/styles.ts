@@ -1,18 +1,33 @@
 import { createStyles } from '@/styles';
 import { ITextFieldComponentProps } from './interfaces';
-import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
+import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, marginStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
 
 export const useStyles = createStyles(({ css, cx, token }, model: ITextFieldComponentProps) => {
+  // Dimensions, margin and padding are applied to the actual <input> element (`.ant-input`) rather
+  // than the affix wrapper, so the sizing/spacing the user configures acts on the input itself.
+  // TextField always renders prefix/suffix, so antd always wraps the input in `.ant-input-affix-wrapper`
+  // and `.ant-input` is reliably present as a descendant.
+  const inputElementStyles = `
+    ${dimensionsStyles(model.dimensions)}
+    ${marginStyles(model.stylingBoxJson)}
+    ${paddingStyles(model.stylingBoxJson)}
+    ${fontStyles(model.font)}
+  `;
+
   const textField = cx('sha-textField', css`
       ${borderStyles(model.border)}
       ${backgroundStyles(model.background)}
       ${shadowStyles(model.shadow)}
-      ${paddingStyles(model.stylingBoxJson)}
-      ${dimensionsStyles(model.dimensions)}
       ${fontStyles(model.font)}
 
       .ant-input {
-        ${fontStyles(model.font)}
+        ${inputElementStyles}
+      }
+
+      /* When the field is rendered without an affix wrapper the class lands on the bare input,
+         so apply the same input-level styles to the element itself. */
+      &.ant-input {
+        ${inputElementStyles}
       }
 
       :hover {
