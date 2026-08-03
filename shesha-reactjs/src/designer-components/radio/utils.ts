@@ -84,8 +84,8 @@ const defaultRadioStyles = (): IStyleValue => {
       radiusType: 'all',
     },
     dimensions: {
-      width: 'auto',
-      height: 'auto',
+      width: '14px',
+      height: '14px',
       minHeight: '0px',
       maxHeight: 'auto',
       minWidth: '0px',
