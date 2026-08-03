@@ -18,6 +18,19 @@ export const useStyles = createStyles(({ css, cx, token }, model: ITextFieldComp
       :hover {
         border-color: ${token.colorPrimary} !important;
       }
+
+      /* antd repaints the field's background in several states: \`hoverBg\` on :hover,
+         \`activeBg\` on :focus/:focus-within, and the \`background\` shorthand on the
+         error/warning statuses (which also wipes a configured image or gradient).
+         Re-assert the configured background at higher specificity in all of them, so these
+         states only affect the border and never the background the user configured. */
+      &&&&:hover,
+      &&&&:focus,
+      &&&&:focus-within,
+      &&&&[class*="-status-error"],
+      &&&&[class*="-status-warning"] {
+        ${backgroundStyles(model.background)}
+      }
   `);
 
   const passwordFieldWrapper = cx('sha-password-field-wrapper', css`

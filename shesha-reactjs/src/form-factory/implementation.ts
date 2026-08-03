@@ -357,11 +357,11 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
         f.addSettingsInput({ label: 'Type', jsSetting: false, propertyName: `${propertyName}.type`, inputType: 'radio', tooltip: 'Select a type of background', buttonGroupOptions: backgroundTypeOptions });
       if (keep(`${propertyName}.color`))
         f.addSettingsInput({ label: 'Color', propertyName: `${propertyName}.color`, hideLabel: true, jsSetting: false, inputType: 'colorPicker',
-          visibleJs: `return getSettingValue(${dataPath}?.${propertyName}?.type) === "color";`, skipInheritance: true,
+          visibleJs: `return getSettingValue(${dataPath}?.${propertyName}?.type) === "color";`,
         });
       if (keep(`${propertyName}.gradient.colors`))
         f.addSettingsInput({ label: 'Colors', inputType: 'multiColorPicker', propertyName: `${propertyName}.gradient.colors`, jsSetting: false, hideLabel: true,
-          visibleJs: `return getSettingValue(${dataPath}?.${propertyName}?.type) === "gradient";`, skipInheritance: true,
+          visibleJs: `return getSettingValue(${dataPath}?.${propertyName}?.type) === "gradient";`,
         });
       if (keep(`${propertyName}.url`))
         f.addSettingsInput({ label: 'URL', inputType: 'textField', propertyName: `${propertyName}.url`, jsSetting: false,

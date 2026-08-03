@@ -59,8 +59,13 @@ export const getReferenceListFromUrl = (dataSourceUrl: unknown): IReferenceListI
   const decodedName = safeDecode(name);
   if (!isDefined(decodedName)) return undefined;
 
-  const decodedModule = isDefined(module) && isNotNullOrWhiteSpace(module) ? safeDecode(module) : null;
-  if (!isDefined(decodedModule)) return undefined;
+  // An absent module is the null module; only an undecodable one makes the URL unresolvable.
+  let decodedModule: string | null = null;
+  if (isDefined(module) && isNotNullOrWhiteSpace(module)) {
+    const decoded = safeDecode(module);
+    if (!isDefined(decoded)) return undefined;
+    decodedModule = decoded;
+  }
 
   return {
     name: decodedName,
@@ -69,38 +74,38 @@ export const getReferenceListFromUrl = (dataSourceUrl: unknown): IReferenceListI
 };
 
 /**
- * The model with the removed `url` properties stripped off, along with `dataSourceType` — each
- * branch below redeclares that discriminator. Leaving it in place would intersect the branch's
+ * The model with the `url` properties stripped off, along with `dataSourceType` — the branch
+ * below redeclares that discriminator. Leaving it in place would intersect the branch's
  * literal with the original one, reducing the whole type to `never` for any caller whose model
  * narrows `dataSourceType` (e.g. to `'url'`).
  */
 type WithoutUrlSource<T> = Omit<T, 'dataSourceUrl' | 'reducerFunc' | 'dataSourceType'>;
 
 /**
- * The result of the migration: either a reference list source carrying the list it resolved to,
- * or a values source. Both shapes have the `url` properties removed.
+ * The result of the migration: a reference list source carrying the list it resolved to, with
+ * the `url` properties removed.
  */
 export type MigratedUrlDataSource<T> =
-  (WithoutUrlSource<T> & { dataSourceType: 'referenceList'; referenceListId: IReferenceListIdentifier }) |
-  (WithoutUrlSource<T> & { dataSourceType: 'values' });
+  WithoutUrlSource<T> & { dataSourceType: 'referenceList'; referenceListId: IReferenceListIdentifier };
 
 /**
- * Migrates a component away from the removed `url` data source.
+ * Normalises a component's `url` data source.
  *
- * A URL pointing at a reference list becomes a native `referenceList` source, which renders
- * identically. Anything else falls back to `values`: the options cannot be recovered, but the
- * model no longer claims a source the component doesn't support, and `validateModel` then
- * surfaces a message in the designer telling the configurer what to do.
+ * A URL that statically points at a reference list becomes a native `referenceList` source,
+ * which renders identically but no longer round-trips through the API on every load.
  *
- * A model that never used the `url` source is returned unchanged.
+ * Any other URL — including dynamic ones built at runtime (e.g. the reset-password form's
+ * `GetUserPasswordResetOptions` radio) — is kept as-is: the options can only be resolved at
+ * runtime, so the `url` source must stay supported and the model is returned unchanged.
+ *
+ * A model that never used the `url` source is also returned unchanged.
  */
 export const migrateUrlDataSource = <T extends ILegacyUrlDataSource>(prev: T): T | MigratedUrlDataSource<T> => {
   if (prev.dataSourceType !== 'url') return prev;
 
   const referenceListId = prev.referenceListId ?? getReferenceListFromUrl(prev.dataSourceUrl);
-  const { dataSourceUrl: _dataSourceUrl, reducerFunc: _reducerFunc, ...rest } = prev;
+  if (!isDefined(referenceListId)) return prev;
 
-  return isDefined(referenceListId)
-    ? { ...rest, dataSourceType: 'referenceList', referenceListId }
-    : { ...rest, dataSourceType: 'values' };
+  const { dataSourceUrl: _dataSourceUrl, reducerFunc: _reducerFunc, dataSourceType: _dataSourceType, ...rest } = prev;
+  return { ...rest, dataSourceType: 'referenceList', referenceListId };
 };

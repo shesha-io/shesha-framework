@@ -6,7 +6,7 @@ import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers/form/models';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { executeScriptSync, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import {
   migrateCustomFunctions,
   migrateHiddenToVisible,
@@ -43,10 +43,13 @@ const RadioComponent: RadioComponentDefinition = {
   // Radio has its own intrinsic size and should not be forced to fill wrapper
   preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.referenceListItem || (dataType === DataTypes.array && dataFormat === ArrayFormats.simple),
-  Factory: ({ model }) => {
+  calculateModel: (model, allData) => ({
+    dataSourceUrl: isNotNullOrWhiteSpace(model.dataSourceUrl) ? executeScriptSync(model.dataSourceUrl, allData) : model.dataSourceUrl,
+  }),
+  Factory: ({ model, calculatedModel }) => {
     const { styles } = useStyles(model);
 
-    const options = useRadioOptions(model);
+    const options = useRadioOptions({ ...model, dataSourceUrl: calculatedModel.dataSourceUrl });
 
     const componentApi = useComponentApi();
     const groupRef = useRef<HTMLDivElement>(null);
@@ -164,9 +167,8 @@ const RadioComponent: RadioComponentDefinition = {
           desktop: { ...migrateStyles(prev, {}, 'desktop'), enableStyleOnReadonly: (prev.desktop as IInputStyles | undefined)?.enableStyleOnReadonly ?? false },
         })
       .add<IRadioComponentProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev)))
-      // The `url` data source was removed. A URL that pointed at a reference list converts to
-      // the native `referenceList` source; anything else falls back to `values` and is reported
-      // by `validateModel` below.
+      // A `url` source that statically points at a reference list converts to the native
+      // `referenceList` source; any other URL (e.g. a dynamic one) keeps working as `url`.
       .add<IRadioComponentProps>(9, (prev) => migrateUrlDataSource(prev)),
   linkToModelMetadata: (model, metadata): IRadioComponentProps => {
     const isRefList = metadata.dataType === DataTypes.referenceListItem;

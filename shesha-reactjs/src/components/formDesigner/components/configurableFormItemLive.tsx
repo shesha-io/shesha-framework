@@ -26,7 +26,13 @@ export const ConfigurableFormItemLive = <TValue = unknown>({
   const formItem = useFormItem();
   const { namePrefix, wrapperCol: formItemWrapperCol, labelCol: formItemlabelCol } = formItem;
   const allData = useAvailableConstantsDataNoRefresh();
-  const { styles } = useStyles({ autoAlignLabel });
+  // Pin the label to the input's configured height so a validation message cannot shift it.
+  // 'auto' carries no fixed height, so fall back to the default alignment in that case.
+  const configuredHeight = addPx(model.dimensions?.height, allData);
+  const inputHeight = isDefined(configuredHeight) && configuredHeight !== 'auto' && configuredHeight !== 'none'
+    ? configuredHeight
+    : undefined;
+  const { styles } = useStyles({ autoAlignLabel, inputHeight });
 
   const layout = useMemo(() => {
     // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form

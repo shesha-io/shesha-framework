@@ -9,11 +9,13 @@ import { getValueByPropertyName } from '@/utils/object';
 import { convertValueToFriendlyString } from './utils';
 import { isNotNullOrWhiteSpace } from '@/utils';
 
+/** Stable reference so the Popover does not see a new array on every render. */
+const POPOVER_TRIGGERS: ('hover' | 'click')[] = ['hover', 'click'];
+
 // make value unknown to process any type of value (InputComponent is not generic)
 export type InputComponentProps<TValue = unknown> = Omit<BaseInputProps, 'value' | 'onChange'> & {
   value: TValue | undefined;
   onChange?: ((value: TValue | undefined) => void) | undefined;
-  skipInheritance?: boolean;
 };
 
 export const InputComponent = <TValue = string>(props: InputComponentProps<TValue>): ReactNode => {
@@ -78,9 +80,20 @@ export const InputComponent = <TValue = string>(props: InputComponentProps<TValu
 
   if (!Editor) return null;
 
-  if (content && !Boolean(props.skipInheritance)) {
+  if (content) {
     return (
-      <Popover content={content} trigger="hover" onOpenChange={setPopupOpen} open={popupOpen} autoAdjustOverflow={true} placement="topLeft">
+      // `hover` alone made the Override / Reset buttons hard to reach: the popover closed as soon
+      // as the pointer left the input on its way to them. `click` keeps it open until dismissed,
+      // which also lets inputs with their own popup (colour pickers) be operated comfortably.
+      <Popover
+        content={content}
+        trigger={POPOVER_TRIGGERS}
+        onOpenChange={setPopupOpen}
+        open={popupOpen}
+        autoAdjustOverflow={true}
+        placement="topLeft"
+        mouseLeaveDelay={0.3}
+      >
         <div> {/* div is required to make Popover work for some input components */}
           <Editor key={newProps.id} {...newProps} />
         </div>
