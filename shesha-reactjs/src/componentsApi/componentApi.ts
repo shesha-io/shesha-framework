@@ -296,6 +296,8 @@ export type CheckboxFieldApi = InputComponentApi<boolean | undefined>;
 /** Checkbox group. Multi-select only, so the value is always the list of selected item values. */
 export type CheckboxGroupApi = InputComponentApi<string[] | undefined>;
 
+export type SwitchFieldApi = InputComponentApi<boolean | undefined>;
+
 export interface PanelApi extends CommonComponentApi {
   /** Whether the panel is expanded */
   isExpanded: boolean;
