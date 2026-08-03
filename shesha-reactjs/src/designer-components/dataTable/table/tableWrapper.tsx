@@ -471,6 +471,7 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
         content: renderSidebarContent,
       }}
       allowFullCollapse
+      embedded
     >
       <GlobalTableStyles />
       {tableFilter.length > 0 && <FilterList filters={tableFilter} rows={totalRows ?? 0} clearFilters={clearFilters} removeColumnFilter={removeColumnFilter} />}

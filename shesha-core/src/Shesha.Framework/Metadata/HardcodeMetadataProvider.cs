@@ -9,6 +9,7 @@ using Shesha.Domain;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.EntityPropertyConfiguration;
 using Shesha.DynamicEntities;
+using Shesha.EntityReferences;
 using Shesha.Extensions;
 using Shesha.Generators;
 using Shesha.Metadata.Dtos;
@@ -112,6 +113,8 @@ namespace Shesha.Metadata
                 : null;
             var epc = entityConfig?[property.Name];
 
+            var refListId = epc == null ? property.GetReferenceListIdentifierOrNull() : null;
+
             var dataType = GetDataType(property, context.MainType);
             var cascadeAttribute = property.GetAttributeOrNull<CascadeUpdateRulesAttribute>()
                 ?? property.PropertyType.GetCustomAttribute<CascadeUpdateRulesAttribute>();
@@ -143,26 +146,28 @@ namespace Shesha.Metadata
 
                 DataType = dataType.DataType,
                 DataFormat = dataType.DataFormat,
-                ReferenceListModule = epc?.ReferenceListModule,
-                ReferenceListName = epc?.ReferenceListName,
+                ReferenceListModule = epc?.ReferenceListModule ?? refListId?.Module,
+                ReferenceListName = epc?.ReferenceListName ?? refListId?.Name,
                 EnumType = epc?.EnumType,
                 OrderIndex = property.GetAttributeOrNull<DisplayAttribute>()?.GetOrder() ?? -1,
                 IsFrameworkRelated = IsFrameworkRelatedProperty(property),
                 IsNullable = property.IsNullable(),
-                //ConfigurableByUser = property.GetAttribute<BindableAttribute>()?.Bindable ?? true,
+                //ConfigurableByUser = property.GetAttributeOrNull<BindableAttribute>()?.Bindable ?? true,
                 //GroupName = ReflectionHelper.get(declaredProperty ?? property),
                 IsFilterable = epc != null && epc.IsMapped,
                 IsSortable = epc != null && epc.IsMapped,
             };
-            FillEntityRelatedProperties(result, property.PropertyType, dataType);
+
+            // use specified entity type or property type
+            FillEntityRelatedProperties(result, property.GetAttributeOrNull<EntityReferenceTypeAttribute>()?.EntityType ?? property.PropertyType, dataType);
 
             if (dataType.DataType == DataTypes.Array)
             {
                 result.ItemsType = GetItemsType(property, context);
                 if (result.ItemsType != null && result.DataFormat == ArrayFormats.MultivalueReferenceList)
                 {
-                    result.ItemsType.ReferenceListModule = epc?.ReferenceListModule;
-                    result.ItemsType.ReferenceListName = epc?.ReferenceListName;
+                    result.ItemsType.ReferenceListModule = epc?.ReferenceListModule ?? refListId?.Module;
+                    result.ItemsType.ReferenceListName = epc?.ReferenceListName ?? refListId?.Name;
                 }
 
                 var entityType = result.ItemsType?.DataType == DataTypes.EntityReference
@@ -261,7 +266,9 @@ namespace Shesha.Metadata
             var propType = ReflectionHelper.GetUnderlyingTypeIfNullable(property.PropertyType);
             if (propType.IsListType())
             {
-                var paramType = propType.GetGenericArguments()[0];
+                var paramType = property.GetAttributeOrNull<EntityReferenceTypeAttribute>()?.EntityType ?? GetListElementType(propType);
+                if (paramType == null)
+                    throw new NullReferenceException("Unable to get list element type");
                 var dataType = GetDataTypeByPropertyType(paramType, property, context.MainType);
 
                 if (dataType == null)
@@ -416,7 +423,7 @@ namespace Shesha.Metadata
             if (propType == typeof(StoredFile))
                 return new DataTypeInfo(DataTypes.File);
 
-            if (propType.IsEntityType() || propType.IsEntityReferenceType())
+            if (propType.IsEntityType() || propType.IsEntityReferenceType() || propType.IsEntityReferenceDtoType())
                 return new DataTypeInfo(DataTypes.EntityReference, propType.IsEntityReferenceType() ? EntityFormats.GenericEntity : null);
 
             // note: numeric datatypes mapping is based on the OpenApi 3

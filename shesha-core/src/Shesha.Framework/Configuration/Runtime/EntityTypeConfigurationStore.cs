@@ -178,7 +178,13 @@ namespace Shesha.Configuration.Runtime
         public void SetDefaultAppService(Type entityType, Type applicationServiceType)
         {
             var config = Get(entityType);
-            config.ApplicationServiceType = applicationServiceType;
+            config.DefaultAppServiceType = applicationServiceType;
+        }
+
+        public void SetDynamicAppService(Type entityType, Type applicationServiceType)
+        {
+            var config = Get(entityType);
+            config.DynamicAppServiceType = applicationServiceType;
         }
 
         [UnitOfWork]
@@ -193,7 +199,6 @@ namespace Shesha.Configuration.Runtime
             configs = configs.Where(x => x.Source == Domain.Enums.MetadataSourceType.UserDefined).ToList();
             await InitializeDynamicAsync(configs);
         }
-
 
         /*async Task IAsyncEventHandler<EntityChangedEventData<EntityProperty>>.HandleEventAsync(EntityChangedEventData<EntityProperty> eventData)
         {

@@ -134,7 +134,7 @@ export const modelReducer = createReducer(PROPERTIES_EDITOR_CONTEXT_INITIAL_STAT
       };
     })
     .addCase(updateItemAction, (state, { payload }) => {
-      const newItems = [...state.items];
+      const newItems = deepCopyViaJson(state.items);
 
       const position = getItemPositionById(newItems, payload.id);
       if (!position) return state;

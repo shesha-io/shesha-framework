@@ -154,7 +154,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
       {/* Right: Component Appearance Settings */}
       <Col xs={24} sm={24} md={18} lg={18} xl={18} xxl={18}>
         {/* Edit Card: allows editing the component's appearance/theme values */}
-        <DefaultModelProvider name="Component Default Styles" model={initialModel} defaultModel={defaultStyles}>
+        <DefaultModelProvider key={componentType ?? 'none'} name="Component Default Styles" model={initialModel} defaultModel={defaultStyles}>
           <ComponentDefaultsSettings componentTitle={componentTitle} componentType={componentType} markup={appearanceMarkup} initialModel={initialModel} readonly={readonly ?? false} onChange={handleFormDataChange} />
         </DefaultModelProvider>
         {/* Preview Card: renders the component with the current theme to show a live preview */}

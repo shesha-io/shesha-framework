@@ -6,7 +6,7 @@ using Shesha.Reflection;
 using Shesha.Services.Settings;
 using Shesha.Services.Settings.Cache;
 using Shesha.Settings;
-using Shesha.Tests.Fixtures;
+using Shesha.Testing.Fixtures;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;

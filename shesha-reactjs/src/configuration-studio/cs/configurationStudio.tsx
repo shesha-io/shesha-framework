@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/strict-boolean-expressions: "error" */
 import ConfigurationItemsExport, { IExportInterface } from "@/components/configurationFramework/itemsExport";
 import { ConfigurationItemsImport, IImportInterface } from "@/components/configurationFramework/itemsImport";
 import { IAjaxResponse } from "@/interfaces";
@@ -94,6 +95,10 @@ interface CreateItemResponse {
   id: string;
 };
 
+interface CreateFolderResponse {
+  id: string;
+};
+
 export type CsSubscription = (cs: IConfigurationStudio) => void;
 
 export type ForceUpdateTrigger = () => void;
@@ -148,7 +153,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
   treeLoadingState: ProcessingState;
 
-  private _selectedNodeId: string | undefined;
+  private _selectedNodeIds: string[] = [];
 
   private _isTreeDragging: boolean = false;
 
@@ -197,7 +202,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
     this.notificationApi = args.notificationApi;
     this.storage = args.storage;
     // eslint-disable-next-line no-console
-    this.log = args.logEnabled ? console.log : () => {};
+    this.log = args.logEnabled === true ? console.log : () => {};
     this.treeLoadingState = { status: 'waiting' };
     this.subscriptions = new Map<CsSubscriptionType, Set<CsSubscription>>();
     this.toolbarRef = args.toolbarRef;
@@ -269,15 +274,18 @@ export class ConfigurationStudio implements IConfigurationStudio {
   };
 
   get treeSelectedKeys(): React.Key[] {
-    return isDefined(this._selectedNodeId)
-      ? [this._selectedNodeId]
-      : [];
+    return this._selectedNodeIds;
   };
 
   get treeSelectedNode(): TreeNode | undefined {
-    return isDefined(this._selectedNodeId)
-      ? this._treeNodesMap.get(this._selectedNodeId)
-      : undefined;
+    const firstId = this._selectedNodeIds[0];
+    return firstId !== undefined ? this._treeNodesMap.get(firstId) : undefined;
+  };
+
+  get treeSelectedNodes(): TreeNode[] {
+    return this._selectedNodeIds
+      .map((id) => this._treeNodesMap.get(id))
+      .filter(isDefined);
   };
 
   get isTreeDragging(): boolean {
@@ -290,8 +298,12 @@ export class ConfigurationStudio implements IConfigurationStudio {
   };
 
   get treeSelectedItemNode(): ConfigItemTreeNode | undefined {
-    const node = this.treeSelectedNode;
-    return isConfigItemTreeNode(node) ? node : undefined;
+    // Return the first selected item that is a config item
+    for (const id of this._selectedNodeIds) {
+      const node = this._treeNodesMap.get(id);
+      if (isConfigItemTreeNode(node)) return node;
+    }
+    return undefined;
   };
 
   private saveTreeExpandedNodesAsync = async (): Promise<void> => {
@@ -307,7 +319,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
   };
 
   private loadQuickSearchAsync = async (): Promise<void> => {
-    this._quickSearch = await this.storage.getAsync<string>(STORAGE_KEYS.QUICK_SEARCH) ?? "";
+    this._quickSearch = await this.storage.getAsync<string>(STORAGE_KEYS.QUICK_SEARCH, false) ?? "";
   };
 
   private loadTreeStateAsync = async (): Promise<void> => {
@@ -323,7 +335,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
   };
 
   clearDocumentSelectionAsync = async (): Promise<void> => {
-    this._selectedNodeId = undefined;
+    this._selectedNodeIds = [];
     this.activeDocId = undefined;
 
     this.notifySubscribers(['tree', 'tabs', 'doc']);
@@ -331,7 +343,13 @@ export class ConfigurationStudio implements IConfigurationStudio {
   };
 
   doSelectTreeNodeAsync = async (node?: TreeNode): Promise<void> => {
-    this._selectedNodeId = node?.key.toString();
+    this._selectedNodeIds = node ? [node.key.toString()] : [];
+    this.notifySubscribers(['tree']);
+    await Promise.resolve();
+  };
+
+  setMultiSelection = async (nodeIds: string[]): Promise<void> => {
+    this._selectedNodeIds = nodeIds;
     this.notifySubscribers(['tree']);
     await Promise.resolve();
   };
@@ -551,7 +569,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
     doc?.toolbarForceRender?.();
 
     // sync selection with tree when CI is selected
-    if (isDefined(selectedDocId) && this._selectedNodeId !== selectedDocId) {
+    if (isDefined(selectedDocId) && !this._selectedNodeIds.includes(selectedDocId)) {
       const treeNode = this.getTreeNodeById(selectedDocId);
       if (isConfigItemTreeNode(treeNode)) {
         await this.selectTreeNode(treeNode);
@@ -795,7 +813,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
   //#region crud operations
 
   createFolderAsync = async ({ moduleId, folderId }: CreateFolderArgs): Promise<void> => {
-    await this.modalApi.showModalFormAsync({
+    const response = await this.modalApi.showModalFormAsync<CreateFolderResponse>({
       title: 'Create Folder',
       formId: FORMS.CREATE_FOLDER,
       formArguments: {
@@ -804,7 +822,19 @@ export class ConfigurationStudio implements IConfigurationStudio {
       },
     });
     await this.loadTreeAsync();
-    // TODO: select created folder
+    if (!isNullOrWhiteSpace(response?.id)) {
+      const treeNode = this._treeNodesMap.get(response.id);
+
+      if (treeNode) {
+        if (isDefined(treeNode.parentId) && !(this.isTreeNodeExpanded(treeNode.parentId))) {
+          this.expandTreeNode(treeNode.parentId);
+        }
+
+        // select new tab
+        await this.doSelectTreeNodeAsync(treeNode);
+        this.notifySubscribers(['tree']);
+      }
+    }
   };
 
   deleteFolderAsync = async (node: FolderTreeNode): Promise<void> => {
@@ -1028,7 +1058,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
       return {
         title: 'Import Configuration',
         content: <ConfigurationItemsImport onImported={onImported} setImporterApi={(api) => importerApi.setApi(api)} />,
-        footer: <ConfigurationItemsImportFooter hideModal={hideModal} importerApi={importerApi} />,
+        footer: <ConfigurationItemsImportFooter hideModal={hideModal} importerApi={importerApi} onImported={onImported} />,
       };
     });
 
@@ -1076,7 +1106,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
   };
 
   get selectedNodeId(): string | undefined {
-    return this._selectedNodeId;
+    return this._selectedNodeIds[0];
   };
 
   get treeNodes(): TreeNode[] {
@@ -1085,7 +1115,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
   getDocIdFromRoute = (): string | undefined => {
     const { docId } = this.shaRouter.router.query;
-    return docId && typeof (docId) === 'string' && !isNullOrWhiteSpace(docId)
+    return isDefined(docId) && typeof (docId) === 'string' && !isNullOrWhiteSpace(docId)
       ? docId
       : undefined;
   };
@@ -1093,7 +1123,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
   navigateAfterInitAsync = async (): Promise<void> => {
     // get id of the document from the router and open tab
     const docId = this.getDocIdFromRoute();
-    if (docId) {
+    if (!isNullOrWhiteSpace(docId)) {
       // open document
       await this.openDocumentByIdAsync(docId);
     } else {

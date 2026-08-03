@@ -14,9 +14,9 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   return (
     <FormComponentErrorWrapper componentModel={componentModel}>
       <FormComponentModelPreparer componentModel={componentModel}>
-        {(componentModelPrepared, toolboxComponent) => {
+        {(componentModelPrepared, toolboxComponent, apiContext) => {
           return isDefined(toolboxComponent)
-            ? <KnownFormComponent componentModel={componentModelPrepared} toolboxComponent={toolboxComponent} />
+            ? <KnownFormComponent componentModel={componentModelPrepared} toolboxComponent={toolboxComponent} apiContext={apiContext} />
             : <UnknownFormComponent componentModel={componentModelPrepared} />;
         }}
       </FormComponentModelPreparer>

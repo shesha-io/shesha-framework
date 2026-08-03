@@ -1,4 +1,5 @@
 import { IModelMetadata } from "@/interfaces";
+import { IConfigurableActionConfiguration } from "@/providers/configurableActionsDispatcher";
 import { IDataTableActionsContext } from "./interfaces.actions";
 import { IDataTableStateContext } from "./interfaces.state";
 import { ColumnSorting, DataFetchingMode, DatasetEvents, FilterExpression, GroupingItem, ISortingItem, SortMode } from "./interfaces";
@@ -27,6 +28,16 @@ export type DatatableInitArgs = {
   customReorderEndpoint?: string | undefined;
 
   permanentFilter?: FilterExpression | undefined;
+
+  /**
+   * Action to execute before row reorder (allows validation and cancellation)
+   */
+  onBeforeRowReorder?: IConfigurableActionConfiguration | undefined;
+
+  /**
+   * Action to execute after row reorder (receives API response)
+   */
+  onAfterRowReorder?: IConfigurableActionConfiguration | undefined;
 };
 
 type MissingProperties<A, B> = Pick<A, Exclude<keyof A, keyof B>>;

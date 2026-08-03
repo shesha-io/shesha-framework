@@ -125,7 +125,9 @@ export interface IStyleValue {
   shadow?: IShadowValue | undefined;
   dimensions?: IDimensionsValue | undefined;
   size?: SizeType | undefined;
+  /** js code of calculated style */
   style?: string | undefined;
+  /** calculated style */
   styleJson?: CSSProperties | undefined;
   /** @deprecated use stylingBoxJson insted */
   stylingBox?: string | undefined;
@@ -139,6 +141,16 @@ export interface IStyleValue {
   autoWidth?: boolean | undefined;
   autoHeight?: boolean | undefined;
 }
+
+/**
+ * The style model of a component that exposes two independent sets of Appearance panels: the
+ * bare-named properties style the component's wrapper, and a nested set styles a repeated child.
+ *
+ * Used by the inner components, where the wrapper is the group container and the nested set
+ * styles each child component — `INestedStyleValue<'radio'>` gives `radio.border`, `radio.background`, …
+ * alongside the wrapper's own `border`, `background`, ….
+ */
+export type INestedStyleValue<TNested extends string> = IStyleValue & { [K in TNested]?: IStyleValue | undefined };
 
 export interface IInputStyles extends IStyleValue {
   borderSize?: string | number | undefined;
@@ -167,8 +179,6 @@ export interface IInputStyles extends IStyleValue {
   backgroundStoredFileId?: string | undefined;
   enableStyleOnReadonly?: boolean | undefined;
   container?: IStyleValue | undefined;
-  display?: 'block' | 'flex' | 'grid' | 'inline-grid' | undefined;
-  gap?: string | number | SizeType | undefined;
 };
 
 export type ConfigurableFormComponentTypes =
@@ -203,7 +213,11 @@ export interface IComponentLabelProps {
 export interface IComponentRuntimeProps {
   /**/
   settingsValidationErrors?: IAsyncValidationError[] | undefined;
+}
 
+export interface IComponentEventHandlers {
+  /** Custom onInput handler */
+  onInputCustom?: string | undefined;
   /** Custom onBlur handler */
   onBlurCustom?: string | undefined;
 
@@ -212,6 +226,9 @@ export interface IComponentRuntimeProps {
 
   /** Custom onClick handler */
   onClickCustom?: string | undefined;
+
+  /** Custom onDoubleClick handler */
+  onDoubleClickCustom?: string | undefined;
 
   /** Custom onFocus handler */
   onFocusCustom?: string | undefined;
@@ -296,6 +313,7 @@ export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles =
   IComponentLabelProps,
   IComponentVisibilityProps,
   IComponentRuntimeProps,
+  IComponentEventHandlers,
   IStyleValue {
   /** Type of the component */
   type: string;
@@ -305,6 +323,10 @@ export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles =
 
   /** Validation rules */
   validate?: IComponentValidationRules | undefined;
+
+  /** Names of other fields whose changes should re-trigger this field's validation
+   * (maps to antd Form.Item `dependencies`). Use for cross-field conditional `required` rules. */
+  validationDependencies?: string[] | undefined;
 
   /** If true, indicates that component is read-only and can't be edited anyway */
   readOnly?: boolean | undefined;

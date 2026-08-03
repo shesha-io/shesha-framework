@@ -288,3 +288,12 @@ export const getDatePropertyOrUndefined = <TContainer extends object = object>(o
  * Checks if the key is a key of the object
  */
 export const isKeyOf = <T extends object>(key: string | keyof T, obj: T): key is keyof T => key in obj;
+
+
+export const pick = <T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> => {
+  const result = {} as Pick<T, K>;
+  for (const key of keys) {
+    result[key] = obj[key];
+  }
+  return result;
+};

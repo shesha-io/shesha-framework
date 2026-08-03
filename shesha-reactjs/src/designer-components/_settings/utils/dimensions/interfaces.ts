@@ -5,6 +5,8 @@ export interface IDimensionsValue {
   minHeight?: string | number | undefined;
   maxWidth?: string | number | undefined;
   maxHeight?: string | number | undefined;
+  gridColumn?: number | undefined;
+  gridRow?: number | undefined;
 }
 
 export interface IDimensionsType {

@@ -1,9 +1,10 @@
 import React, { FC, useCallback } from 'react';
 import { Empty } from 'antd';
 import { useFormDesigner, useFormDesignerReadOnly, useFormDesignerSelectedComponentId } from '@/providers/formDesigner';
-import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { useStyles } from './styles';
 
 const ComponentPropertiesPanelInner: FC = () => {
+  const { styles } = useStyles();
   const formDesigner = useFormDesigner();
   const readOnly = useFormDesignerReadOnly();
   const selectedComponentId = useFormDesignerSelectedComponentId();
@@ -14,11 +15,13 @@ const ComponentPropertiesPanelInner: FC = () => {
 
   return (
     <>
-      {isNullOrWhiteSpace(selectedComponentId) && (
-        <Empty
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-          description={readOnly ? 'Please select a component to view settings' : 'Please select a component to begin editing'}
-        />
+      {!selectedComponentId && (
+        <div className={styles.emptyState}>
+          <Empty
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            description={readOnly ? 'Please select a component to view settings' : 'Please select a component to begin editing'}
+          />
+        </div>
       )}
       <div ref={panelRef}></div>
     </>

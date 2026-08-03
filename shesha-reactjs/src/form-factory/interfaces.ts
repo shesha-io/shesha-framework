@@ -50,6 +50,7 @@ import { TextFieldComponentDefinition } from '@/designer-components/textField/in
 import { TimeFieldComponentDefinition } from '@/designer-components/timeField/models';
 import { ComponentDefinition, IConfigurableFormComponent, InteractionType, IPropertyMetadata, IPropertySetting } from '@/interfaces';
 import { StandardEventHandler } from '@/designer-components/_common/events';
+import { ContainerCheckerComponentDefinition } from '@/designer-components/containerChecker/interfaces';
 
 // Create a union of all your component definitions
 type AllComponentDefinitions =
@@ -84,6 +85,7 @@ type AllComponentDefinitions =
   NumberFieldComponentDefinition |
   PermissionAutocompleteComponentDefinition |
   PropertyAutocompleteComponentDefinition |
+  ContainerCheckerComponentDefinition |
   PropertyRouterComponentDefinition |
   QueryBuilderComponentDefinition |
   RadioComponentDefinition |
@@ -145,22 +147,35 @@ export type AllComponentsConfig<T extends AllComponentDefinitions = AllComponent
 
 export type StandardAppearancePanel = 'font' | 'dimensions' | 'border' | 'shadow' | 'background' | 'customStyle' | 'marginPadding';
 
+/**
+ * A single entry passed to `stdAppearancePanels`. Either a plain panel name (renders the full panel
+ * with its default title), or an object that names the panel and optionally:
+ * - `exclude`: sub-inputs to drop, matched against the trailing segment of each input's `propertyName`
+ *   (e.g. `exclude: ['align', 'type']` drops `font.align` and `font.type`).
+ * - `panelTitle`: overrides the collapsible panel's heading (e.g. `{ name: 'font', panelTitle: 'Check Mark' }`).
+ */
+export type StandardAppearancePanelConfig = StandardAppearancePanel | { name: StandardAppearancePanel; exclude?: string[]; panelTitle?: string };
+
 export type StandardFormBuilderMethods<TConfig extends Record<ComponentTypes, object> = Record<ComponentTypes, object>> = {
   stdPrefixSuffixInputs(visibleJs?: string | undefined): FluentFormBuilder<TConfig>;
   stdVisibleEditableInputs(interactionType: InteractionType): FluentFormBuilder<TConfig>;
   stdPropertyLabelInputs(): FluentFormBuilder<TConfig>;
   stdPlaceholderDescriptionInputs(): FluentFormBuilder<TConfig>;
-  stdCollapsiblePanel(label: string, components: (fbf: FormBuilder) => FormBuilder, meta?: IPropertyMetadata | undefined): FluentFormBuilder<TConfig>;
+  stdCollapsiblePanel(label: string, components: (fbf: FormBuilder) => FormBuilder, collapsedByDefault?: boolean | undefined): FluentFormBuilder<TConfig>;
+  stdContainer(components: (fbf: FormBuilder) => FormBuilder, hidden?: boolean | IPropertySetting<boolean> | undefined): FluentFormBuilder<TConfig>;
+  stdContainerChecker(components: (fbf: FormBuilder) => FormBuilder, hidden?: boolean | IPropertySetting<boolean> | undefined): FluentFormBuilder<TConfig>;
   stdEventHandler(propertyName: string, label: string, tooltip: string, availableConstantsExpression?: string | undefined, meta?: IPropertyMetadata | undefined): FluentFormBuilder<TConfig>;
-  stdEventHandlers(events: StandardEventHandler[], valueType: string): FluentFormBuilder<TConfig>;
-  stdFontPanel(propertyName?: string): FluentFormBuilder<TConfig>;
-  stdDimensionsPanel(propertyName?: string): FluentFormBuilder<TConfig>;
-  stdBorderPanel(): FluentFormBuilder<TConfig>;
-  stdBackgroundPanel(): FluentFormBuilder<TConfig>;
-  stdShadowPanel(): FluentFormBuilder<TConfig>;
-  stdMarginPaddingPanel(propertyName?: string): FluentFormBuilder<TConfig>;
-  stdCustomStylePanel(propertyName?: string): FluentFormBuilder<TConfig>;
-  stdAppearancePanels(appearancePanels: StandardAppearancePanel[], removeStyleRouter?: boolean): FluentFormBuilder<TConfig>;
+  /** `events` is readonly so the shared `ALL_INPUT_EVENTS` constant can be passed directly. */
+  stdEventHandlers(events: readonly StandardEventHandler[], valueType?: string | undefined, prefix?: string | undefined, prefixLabel?: string | undefined): FluentFormBuilder<TConfig>;
+  stdFontPanel(propertyName?: string, exclude?: string[], panelTitle?: string): FluentFormBuilder<TConfig>;
+  stdLayoutPanel(isResponsive?: boolean, propertyName?: string, panelTitle?: string): FluentFormBuilder<TConfig>;
+  stdDimensionsPanel(propertyName?: string, exclude?: string[], panelTitle?: string): FluentFormBuilder<TConfig>;
+  stdBorderPanel(isResponsive?: boolean, propertyName?: string, exclude?: 'border' | 'radius' | undefined, panelTitle?: string): FluentFormBuilder<TConfig>;
+  stdBackgroundPanel(isResponsive?: boolean, propertyName?: string, exclude?: string[], panelTitle?: string): FluentFormBuilder<TConfig>;
+  stdShadowPanel(propertyName?: string, exclude?: string[], panelTitle?: string): FluentFormBuilder<TConfig>;
+  stdMarginPaddingPanel(propertyName?: string, panelTitle?: string): FluentFormBuilder<TConfig>;
+  stdCustomStylePanel(propertyName?: string, panelTitle?: string): FluentFormBuilder<TConfig>;
+  stdAppearancePanels(appearancePanels: StandardAppearancePanelConfig[], removeStyleRouter?: boolean): FluentFormBuilder<TConfig>;
 };
 
 /** Fluent form builder */

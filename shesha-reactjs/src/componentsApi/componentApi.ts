@@ -268,4 +268,39 @@ export interface InputComponentApi<T = unknown> extends CommonComponentApi {
 // Components API
 
 export type TextFieldApi = InputComponentApi<string | undefined>;
-export type NumberFieldApi = InputComponentApi<number | undefined>;
+
+export type TextAreaApi = InputComponentApi<string | undefined>;
+
+export interface NumberFieldApi extends InputComponentApi<number | undefined> {
+  /** Minimum value */
+  min?: number;
+  /** Maximum value */
+  max?: number;
+};
+
+/** A single selectable option of a radio group. */
+export interface RadioOption {
+  /** Text displayed next to the radio button. */
+  readonly label: string;
+  /** Value assigned to the component when this option is selected. */
+  readonly value: string | number | undefined;
+}
+
+export interface RadioApi extends InputComponentApi<number | string | undefined> {
+  /** Options currently displayed by the radio group, whatever the configured data source is. Read-only. */
+  readonly options: readonly RadioOption[];
+};
+
+export type CheckboxFieldApi = InputComponentApi<boolean | undefined>;
+
+/** Checkbox group. Multi-select only, so the value is always the list of selected item values. */
+export type CheckboxGroupApi = InputComponentApi<string[] | undefined>;
+
+export interface PanelApi extends CommonComponentApi {
+  /** Whether the panel is expanded */
+  isExpanded: boolean;
+  /** Expand the panel */
+  expand(): void;
+  /** Collapse the panel */
+  collapse(): void;
+};

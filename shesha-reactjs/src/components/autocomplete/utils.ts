@@ -1,6 +1,7 @@
 import { getValueByPropertyName } from '@/utils/object';
 import { AutocompleteDataSourceType, OutcomeValueFunc } from './models';
 import { getClassNameOrUndefined, getIdOrUndefined } from '@/utils/entity';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 interface ICreateOutcomeValueFuncArgs {
   providedFunc?: OutcomeValueFunc | undefined;
@@ -26,7 +27,7 @@ export const createOutcomeValueFunc = ({
   keyPropName,
 }: ICreateOutcomeValueFuncArgs): OutcomeValueFunc => {
   const base: OutcomeValueFunc = providedFunc ??
-    (dataSourceType === 'entitiesList' && !rawKeyPropName
+    (dataSourceType === 'entitiesList' && isNullOrWhiteSpace(rawKeyPropName)
       ? (value: unknown) => {
         if (!isObjectRecord(value)) return value;
         return {
@@ -42,7 +43,9 @@ export const createOutcomeValueFunc = ({
 
   return (item: unknown) => {
     const result = base(item);
-    if (result !== undefined && result !== null) return result;
+    if (isDefined(result))
+      return result;
+
     if (isObjectRecord(item)) {
       return item['id'] ?? item['value'] ?? item;
     }

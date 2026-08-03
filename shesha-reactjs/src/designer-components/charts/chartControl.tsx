@@ -8,13 +8,26 @@ import { useChartDataActionsContext, useChartDataStateContext } from '../../prov
 import { useProcessedChartData } from './hooks/hooks';
 import { IChartData, IChartsProps } from './model';
 import useStyles from './styles';
-import { formatDate, getChartDataRefetchParams, getResponsiveStyle, processItems, renderChart, sortItems, validateEntityProperties } from './utils';
+import { formatDate, getChartDataRefetchParams, getPredictableColor, getPredictableColorPolarArea, getResponsiveStyle, processItems, renderChart, sortItems, validateEntityProperties } from './utils';
 import ChartLoader from './components/chartLoader';
 import { EntityData, IAbpWrappedGetEntityListResponse } from '@/interfaces/gql';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 import { useMetadataDispatcher } from '@/providers/metadataDispatcher/provider';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { useForm } from '@/providers';
+
+const DESIGNER_SAMPLE_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+
+const getDesignerSampleData = (chartType: string | undefined): IChartData => ({
+  labels: DESIGNER_SAMPLE_LABELS,
+  datasets: [{
+    label: 'Sample',
+    data: [12, 19, 7, 15, 9, 14],
+    backgroundColor: DESIGNER_SAMPLE_LABELS.map((label) => chartType === 'polarArea' ? getPredictableColorPolarArea(label) : getPredictableColor(label)),
+    borderColor: '#4e79a7',
+  }],
+});
 
 const chartInnerStyle = {
   width: '100%',
@@ -49,6 +62,9 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
     requestTimeout = 5000, // Default 5 seconds
     ...state
   } = useChartDataStateContext();
+
+  const { formMode } = useForm();
+  const isDesignMode = formMode === 'designer';
 
   const { refetch } = useGet<IAbpWrappedGetEntityListResponse>({ path: '', lazy: true });
   const { getMetadata } = useMetadataDispatcher();
@@ -449,6 +465,17 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
     );
   }, [chartType, cx, styles.loadingContainer, styles.loadingText, setIsLoaded, setMetadataProcessed]);
 
+  // In designer mode render sample data immediately — no fetch, no loaders
+  if (isDesignMode) {
+    return (
+      <div style={chartContainerStyle}>
+        <div style={chartInnerStyle}>
+          {renderChart(chartType ?? 'line', getDesignerSampleData(chartType))}
+        </div>
+      </div>
+    );
+  }
+
   // Early returns with memoized components
   if (error) {
     return errorAlert;
@@ -461,6 +488,17 @@ const ChartControl: React.FC<IChartsProps & { evaluatedFilters?: string }> = Rea
   // Show loader only if we don't have any data yet
   if (!state.isLoaded || !metadataProcessed) {
     return loaderComponent;
+  }
+
+  if (data.labels.length === 0) {
+    return (
+      <Alert
+        showIcon
+        title="No data"
+        description="The chart returned no results for the current configuration and filters."
+        type="info"
+      />
+    );
   }
 
   return (

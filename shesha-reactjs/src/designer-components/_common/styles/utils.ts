@@ -1,8 +1,32 @@
 import { BorderStyle, IBackgroundValue, IBorderValue, IDimensionsValue, IFontValue, IGradientValue, IShadowValue } from "@/designer-components/_settings/utils";
-import { StyleBoxValue } from "../../../providers/form/models";
+import { IConfigurableFormComponent, IStyleValue, StyleBoxValue } from "../../../providers/form/models";
 import { addPx, hasNumber } from "@/utils/style";
 import { StringBuilder } from "@/utils";
 import { isDefined } from "@/utils/nullables";
+
+export const getStyleValueFromModel = (model: IConfigurableFormComponent): IStyleValue => {
+  return {
+    border: model.border,
+    background: model.background,
+    font: model.font,
+    shadow: model.shadow,
+    dimensions: model.dimensions,
+    size: model.size,
+    style: model.style,
+    styleJson: model.styleJson,
+    /** @deprecated use stylingBoxJson insted */
+    stylingBox: model.stylingBox,
+    stylingBoxJson: model.stylingBoxJson,
+    primaryTextColor: model.primaryTextColor,
+    primaryBgColor: model.primaryBgColor,
+    secondaryBgColor: model.secondaryBgColor,
+    secondaryTextColor: model.secondaryTextColor,
+    overflow: model.overflow,
+    hideScrollBar: model.hideScrollBar,
+    autoWidth: model.autoWidth,
+    autoHeight: model.autoHeight,
+  };
+};
 
 const borderCss = (b: BorderStyle | undefined): string => `${addPx(b?.width) ?? ''} ${b?.style ?? ''} ${b?.color ?? ''}`;
 
@@ -34,7 +58,16 @@ export const shadowStyles = (model: IShadowValue | undefined): string => model
   ? `box-shadow: ${model.offsetX ?? 0}px ${model.offsetY ?? 0}px ${model.blurRadius ?? 0}px ${model.spreadRadius ?? 0}px ${Boolean(model.color) ? model.color : '#00000004'};`
   : '';
 
-export const borderStyles = (model: IBorderValue | undefined): string => {
+export const borderRadiusStyles = (model: IBorderValue | undefined, important: boolean = false): string => {
+  if (!model) return '';
+  const sb = new StringBuilder();
+  if (model.radiusType === 'all' && isDefined(model.radius?.all)) sb.append(`border-radius: ${addPx(model.radius.all)} ${important === true ? '!important;' : ';'}`);
+  if (model.radiusType !== 'all' && model.radius)
+    sb.append(`border-radius: ${addPx(model.radius.topLeft ?? 0)} ${addPx(model.radius.topRight ?? 0)} ${addPx(model.radius.bottomRight ?? 0)} ${addPx(model.radius.bottomLeft ?? 0)} ${important === true ? '!important;' : ';'};`);
+  return sb.build();
+};
+
+export const borderLinesStyles = (model: IBorderValue | undefined): string => {
   if (!model) return '';
   const sb = new StringBuilder();
   if (model.borderType === 'all' && model.border?.all) sb.append(`border: ${borderCss(model.border.all)};`);
@@ -42,9 +75,14 @@ export const borderStyles = (model: IBorderValue | undefined): string => {
   if (model.borderType !== 'all' && model.border?.right) sb.append(`border-right: ${borderCss(model.border.right)};`);
   if (model.borderType !== 'all' && model.border?.bottom) sb.append(`border-bottom: ${borderCss(model.border.bottom)};`);
   if (model.borderType !== 'all' && model.border?.left) sb.append(`border-left: ${borderCss(model.border.left)};`);
-  if (model.radiusType === 'all' && Boolean(model.radius?.all)) sb.append(`border-radius: ${addPx(model.radius?.all)};`);
-  if (model.radiusType !== 'all' && model.radius)
-    sb.append(`border-radius: ${addPx(model.radius.topLeft ?? 0)} ${addPx(model.radius.topRight ?? 0)} ${addPx(model.radius.bottomRight ?? 0)} ${addPx(model.radius.bottomLeft ?? 0)};`);
+  return sb.build();
+};
+
+export const borderStyles = (model: IBorderValue | undefined): string => {
+  if (!model) return '';
+  const sb = new StringBuilder();
+  sb.append(borderLinesStyles(model));
+  sb.append(borderRadiusStyles(model));
   return sb.build();
 };
 
@@ -71,6 +109,8 @@ export const dimensionsStyles = (model: IDimensionsValue | undefined): string =>
   if (isDefined(model.height)) sb.append(`height: ${dimensionCss(model.height)};`);
   if (isDefined(model.minHeight)) sb.append(`min-height: ${dimensionCss(model.minHeight)};`);
   if (isDefined(model.maxHeight)) sb.append(`max-height: ${dimensionCss(model.maxHeight)};`);
+  if (isDefined(model.gridRow) && model.gridRow > 0) sb.append(`grid-row: span ${model.gridRow};`);
+  if (isDefined(model.gridColumn) && model.gridColumn > 0) sb.append(`grid-column: span ${model.gridColumn};`);
   return sb.build();
 };
 
@@ -93,6 +133,17 @@ export const paddingStyles = (model: StyleBoxValue | undefined): string => {
   if (isDefined(model.paddingRight)) sb.append(`padding-right: ${addPx(model.paddingRight)};`);
   return sb.build();
 };
+
+export const paddingValue = (model: StyleBoxValue | undefined): string => {
+  if (!model) return '';
+  const sb = [];
+  sb.push(addPx(isDefined(model.paddingTop) ? model.paddingTop : 0));
+  sb.push(addPx(isDefined(model.paddingRight) ? model.paddingRight : 0));
+  sb.push(addPx(isDefined(model.paddingBottom) ? model.paddingBottom : 0));
+  sb.push(addPx(isDefined(model.paddingLeft) ? model.paddingLeft : 0));
+  return sb.join(' ');
+};
+
 
 export const fontStyles = (model: IFontValue | undefined): string => {
   if (!model) return '';

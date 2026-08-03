@@ -636,11 +636,11 @@ export const componentsFlatStructureToTree = (
         container.push(component);
 
       //  process all childs if any
-      if (id in flat.componentRelations && isComponentsContainer(component)) {
+      if (id in flat.componentRelations && !staticContainerIds.includes(id)) {
         const childComponents: IConfigurableFormComponent[] = [];
         processComponent(childComponents, id);
 
-        component['components'] = childComponents;
+        (component as unknown as Record<string, unknown>)['components'] = childComponents;
       }
 
       // note: this function may be called for custom container without type

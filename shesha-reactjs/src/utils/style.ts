@@ -5,7 +5,8 @@ import { IPropertySetting } from '..';
 
 export interface DimensionValue {
   value: number;
-  unit: 'px' | '%' | 'vw' | 'vh' | 'em' | 'rem' | 'auto' | 'none';
+  unit: 'px' | '%' | 'vw' | 'vh' | 'em' | 'rem' | 'auto' | 'calc' | 'none';
+  calc?: string;
 }
 
 /**
@@ -29,6 +30,14 @@ export const parseDimension = (value: string | number | null | undefined | IProp
 
   if (typeof value === 'number') {
     return { value, unit: 'px' };
+  }
+
+  if (typeof value === 'string') {
+    if (value.trimStart().indexOf('calc') > -1)
+      return { value: 0, unit: 'calc', calc: value };
+    if (value.trimStart().indexOf('-') > 1 || value.trimStart().indexOf('+') > 1) {
+      return { value: 0, unit: 'calc', calc: `calc(${value})` };
+    }
   }
 
   // Handle JavaScript code execution for dynamic values
@@ -100,6 +109,10 @@ export const addPx = (value: number | string | null | undefined, context?: objec
 
   if (parsed.unit === 'auto' || parsed.unit === 'none') {
     return parsed.unit;
+  }
+
+  if (parsed.unit === 'calc') {
+    return parsed.calc ?? 'auto';
   }
 
   return `${parsed.value}${parsed.unit}`;

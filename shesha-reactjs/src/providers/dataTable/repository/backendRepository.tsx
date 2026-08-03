@@ -22,6 +22,7 @@ import React, { FC, PropsWithChildren, useMemo } from "react";
 import { DataTableColumnDto, IExcelColumn, IExportExcelPayload, IGetListDataPayload, isDataColumn, ITableDataFetchColumn, ITableDataInternalResponse, ITableDataResponse } from "../interfaces";
 import { DataTableProviderWithRepository, IDataTableProviderWithRepositoryProps } from "../provider";
 import { EntityReorderItem, EntityReorderPayload, EntityReorderResponse, IRepository, RowsReorderPayload, SupportsGroupingArgs, SupportsReorderingArgs } from "./interfaces";
+import hash from 'object-hash';
 
 export interface IWithBackendRepositoryArgs {
   entityType: string | IEntityTypeIdentifier;
@@ -65,7 +66,8 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
       // and then trips ProjectionHelper.BuildNestedMemberInit looking for `Id` on `IList<T>`.
       // See https://github.com/shesha-io/shesha-framework/issues/4961.
       if (column.dataType === 'array' &&
-        (column.dataFormat === 'entity' || column.dataFormat === 'many-entity' || column.dataFormat === 'child-entity'))
+        (column.dataFormat === 'entity' || column.dataFormat === 'many-entity' || column.dataFormat === 'child-entity' ||
+          column.metadata?.itemsType?.dataType === 'entity'))
         return;
       if (Array.isArray(column.propertiesToFetch)) {
         column.propertiesToFetch.forEach((p) => {
@@ -90,6 +92,10 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
   /** Convert common payload to a form that uses the back-end */
   const convertPayload = (payload: IGetListDataPayload): IGenericGetAllPayload => {
     const properties = getPropertyNamesForFetching(payload.columns);
+    // always fetch `id`, it's required for row identification (selection, crud operations etc.)
+    // and prevents an empty `properties` list when all columns are skipped (e.g. collection-of-entity columns)
+    if (!properties.includes('id') && !properties.includes('Id'))
+      properties.unshift('id');
 
     const result: IGenericGetAllPayload = {
       ...getEntityTypeIdentifierQueryParams(entityType),
@@ -330,6 +336,13 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
     return args.sortMode === "standard" && Boolean(entityType);
   };
 
+  const getFetcherHash = (): string => {
+    return hash({
+      entityType,
+      getListUrl,
+    }, { algorithm: 'md5', encoding: 'hex' });
+  };
+
   const repository: IBackendRepository = {
     repositoryType: BackendRepositoryType,
     entityType: args.entityType,
@@ -342,6 +355,7 @@ const createRepository = (args: ICreateBackendRepositoryArgs): IBackendRepositor
     performDelete,
     supportsReordering,
     supportsGrouping,
+    fetchingSettingsHash: getFetcherHash(),
   };
   return repository;
 };

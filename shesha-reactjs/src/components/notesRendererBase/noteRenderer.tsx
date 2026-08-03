@@ -53,6 +53,7 @@ export const NoteRenderer: FC<NoteRendererProps> = ({ note, allowEdit, allowDele
 
     await updateNoteAsync({ id: note.id, noteText: editedText });
 
+    setIsEditing(false);
     setEditedText('');
     setEditCharCount(0);
     setEditValidationError('');
@@ -73,7 +74,7 @@ export const NoteRenderer: FC<NoteRendererProps> = ({ note, allowEdit, allowDele
 
   return (
     <div className={styles.commentItemBody}>
-      {allowDelete && note.author?.id === userId && (
+      {allowDelete && !isEditing && note.author?.id === userId && (
         <Popconfirm
           title="Delete Note"
           description="Are you sure you want to delete this note?"

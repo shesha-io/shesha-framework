@@ -1,7 +1,6 @@
 import { Space } from 'antd';
 import React from 'react';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import ParentProvider from '@/providers/parentProvider';
 import { SwapOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';
 import { IToolboxComponent } from '@/interfaces/formDesigner';
@@ -15,17 +14,14 @@ const HeaderAppControl: IToolboxComponent = {
   isInput: false,
   canBeJsSetting: false,
   icon: <SwapOutlined />,
+  getWrapperStyle: () => ({ dimensions: { width: 'auto' } }),
   Factory: ({ model }) => {
-    if (model.hidden) return null;
-
-    return (
-      <ParentProvider model={model} name={`headerAppControl-${model.id}`}>
-        <ProtectedContent permissionName={PERM_APP_CONFIGURATOR}>
-          <Space className="sha-header-app-control">
-            <AppEditModeToggler />
-          </Space>
-        </ProtectedContent>
-      </ParentProvider>
+    return model.hidden === true ? null : (
+      <ProtectedContent permissionName={PERM_APP_CONFIGURATOR}>
+        <Space className="sha-header-app-control">
+          <AppEditModeToggler />
+        </Space>
+      </ProtectedContent>
     );
   },
   settingsFormMarkup: getSettings,

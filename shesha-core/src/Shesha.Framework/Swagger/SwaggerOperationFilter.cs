@@ -5,8 +5,10 @@ using Abp.Dependency;
 using Abp.Web.Models;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.OpenApi.Models;
+using Shesha.Application.Services;
 using Shesha.Reflection;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
@@ -31,6 +33,16 @@ namespace Shesha.Swagger
 
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
+            if (context.ApiDescription.ActionDescriptor is ControllerActionDescriptor descriptor)
+            {
+                if (descriptor.ControllerTypeInfo.ImplementsGenericInterface(typeof(IEntityAppService<,>)))
+                {
+                    // change operationId to avoid duplicated operations for Entities with the same name but different Assemblies
+                    var entityType = descriptor.ControllerTypeInfo.GetGenericInterfaces(typeof(IEntityAppService<,>)).FirstOrDefault()?.GetGenericArguments()[0];
+                    operation.OperationId = entityType != null ? entityType.Assembly.GetName().Name + ":" + operation.OperationId : operation.OperationId;
+                }
+            }
+
             // Add "properties" parameter to CRUD Create and Update actions to support Gql requests
             // This is working only with RequestToGqlMiddleware
             AddPropertiesToCrudCreateUpdate(operation, context);

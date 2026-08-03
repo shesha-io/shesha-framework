@@ -1,7 +1,6 @@
 import React, { ReactElement, useCallback } from 'react';
 import { getPropertySettingsFromValue } from './utils/utils';
 import { useStyles } from './styles/styles';
-import { ICodeExposedVariable } from '@/components/codeVariablesTable';
 import camelcase from 'camelcase';
 import { GetAvailableConstantsFunc, GetResultTypeFunc, ICodeEditorProps } from '../codeEditor/interfaces';
 import { CodeEditorWithStandardConstants } from '../codeEditor/codeEditorWithConstants';
@@ -33,21 +32,6 @@ export interface ISettingsControlProps<Value = unknown> {
   lazy?: boolean | undefined;
 }
 
-export const defaultExposedVariables: ICodeExposedVariable[] = [
-  { name: "data", description: "Selected form values", type: "object" },
-  { name: "pageContext", description: "Contexts data of current page", type: "object" },
-  { name: "contexts", description: "Contexts data", type: "object" },
-  { name: "globalState", description: "Global state", type: "object" },
-  { name: "setGlobalState", description: "Functiont to set globalState", type: "function" },
-  { name: "formMode", description: "Form mode", type: "'designer' | 'edit' | 'readonly'" },
-  { name: "form", description: "Form instance", type: "object" },
-  { name: "selectedRow", description: "Selected row of nearest table (null if not available)", type: "object" },
-  { name: "moment", description: "moment", type: "object" },
-  { name: "http", description: "axiosHttp", type: "object" },
-  { name: "message", description: "message framework", type: "object" },
-  { name: "modal", description: "API for displaying modal dialogs and forms", type: "object" },
-];
-
 export const SettingsControl = <Value = unknown>(props: ISettingsControlProps<Value>): ReactElement => {
   const { onChange } = props;
 
@@ -55,7 +39,6 @@ export const SettingsControl = <Value = unknown>(props: ISettingsControlProps<Va
   const resultType = useResultTypeEvaluator({ resultTypeExpression: props.resultTypeExpression });
 
   const setting = getPropertySettingsFromValue<Value>(props.value);
-  // const { _mode: mode, _code: code } = setting;
 
   const { styles } = useStyles();
 

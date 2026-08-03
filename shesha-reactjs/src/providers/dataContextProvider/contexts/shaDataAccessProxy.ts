@@ -81,8 +81,16 @@ export const CreateDataAccessor = <TData extends object = object>(
     getOwnPropertyDescriptor(target, prop) {
       const propertyName = prop.toString();
       const data = target.getAccessorValue();
-      if (isDefined(data) && propertyName in data)
+      if (isDefined(data) && propertyName in data) {
+        // preserve the target's own non-configurable descriptor (e.g. array `length`);
+        // refresh the value only for writable data props, never for accessors
+        const targetDesc = Reflect.getOwnPropertyDescriptor(target, propertyName);
+        if (isDefined(targetDesc) && targetDesc.configurable === false)
+          return 'value' in targetDesc && targetDesc.writable === true
+            ? { ...targetDesc, value: (data as Record<string, unknown>)[propertyName] }
+            : targetDesc;
         return { enumerable: true, configurable: true, writable: true };
+      }
       return undefined;
     },
   });

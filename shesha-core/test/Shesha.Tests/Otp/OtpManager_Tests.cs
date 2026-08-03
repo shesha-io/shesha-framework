@@ -5,7 +5,7 @@ using Shesha.Otp;
 using Shesha.Otp.Configuration;
 using Shesha.Otp.Dto;
 using Shesha.Sms;
-using Shesha.Tests.Fixtures;
+using Shesha.Testing.Fixtures;
 using Shouldly;
 using System;
 using System.Collections.Generic;

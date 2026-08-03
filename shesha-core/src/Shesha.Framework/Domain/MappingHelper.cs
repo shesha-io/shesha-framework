@@ -2,6 +2,7 @@
 using Abp.Domain.Entities.Auditing;
 using Newtonsoft.Json.Linq;
 using PluralizeService.Core;
+using Shesha.AutoMapper.Dto;
 using Shesha.Authorization.Users;
 using Shesha.Configuration.Runtime.Exceptions;
 using Shesha.Domain.Attributes;
@@ -428,6 +429,18 @@ namespace Shesha.Domain
         public static bool IsEntityReferenceType(Type type)
         {
             return type == typeof(GenericEntityReference);
+        }
+
+        public static bool IsEntityReferenceDtoType(Type type)
+        {
+            for (var current = type; current != null; current = current.BaseType)
+            {
+                if (current.IsGenericType
+                    && current.GetGenericTypeDefinition() == typeof(EntityReferenceDto<>))
+                    return true;
+            }
+
+            return false;
         }
 
         /// <summary>

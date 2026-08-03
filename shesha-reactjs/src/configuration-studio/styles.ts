@@ -21,6 +21,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
   const csQuickInfoIcons = 'sha-cs-quick-info-icons';
   const csDocTabs = 'sha-cs-doc-tabs';
   const csDocEditor = 'sha-cs-doc-editor';
+  const csWorkAreaEmpty = 'sha-cs-work-area-empty';
 
   const headerHeight = 60;
   const tabCardHeight = 40;
@@ -176,6 +177,13 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
             overflow: auto;
             height: calc(100vh - ${headerHeight}px - ${tabCardHeight}px);
         }
+        .${csWorkAreaEmpty}{
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
   `);
 
   return {
@@ -198,5 +206,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
     csQuickInfoIcons,
     csDocTabs,
     csDocEditor,
+    csWorkAreaEmpty,
   };
 });

@@ -230,7 +230,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
             getEntityFormIdAsync(internalEntityType, formType)
               .then((formid) => {
                 setFormLoadingState({ isLoading: false, error: null });
-                setFormConfig({ formId: { name: formid.name, module: formid.module }, lazy: true });
+                setFormConfig({ formId: { name: formid.name, module: formid.module ?? null }, lazy: true });
                 prevRenderedEntityTypeForm.current = internalEntityType;
               })
               .catch((error) => {

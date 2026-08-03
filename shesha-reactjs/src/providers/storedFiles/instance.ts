@@ -13,11 +13,13 @@ import { fileListReferenceEqual, getFileExtension, storedFileDtoToModel } from "
 import { OnFileDownloaded, OnFileListChanged } from "./models";
 import { isOwnerReferenceValid } from "@/utils/entity";
 import { isFile } from "@/utils/fileValidation";
+import { RefObject } from "react";
 
 export type StoredFilesProcessorArgs = {
   httpClient: HttpClientApi;
   message: MessageInstance;
-  delayedUpdateClient: DelayedUpdateClient | undefined;
+  delayedUpdateClientRef: RefObject<DelayedUpdateClient | undefined>;
+  isDesignerMode?: boolean;
 };
 
 export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
@@ -29,7 +31,7 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
 
   #fileHelper: IStoredFileHelper;
 
-  #delayedUpdateClient: DelayedUpdateClient | undefined;
+  #delayedUpdateClientRef: RefObject<DelayedUpdateClient | undefined>;
 
   #onChange: OnFileListChanged | undefined;
 
@@ -37,11 +39,14 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
 
   #subscriptionManager: SubscriptionManager<AttachmentsEditorEvents, IAttachmentsEditorInstance>;
 
+  #isDesignerMode: boolean;
+
   constructor(args: StoredFilesProcessorArgs) {
     this.#message = args.message;
-    this.#delayedUpdateClient = args.delayedUpdateClient;
+    this.#delayedUpdateClientRef = args.delayedUpdateClientRef;
     this.#fileHelper = new StoredFileHelper(args.httpClient);
     this.#subscriptionManager = new SubscriptionManager<AttachmentsEditorEvents, IAttachmentsEditorInstance>();
+    this.#isDesignerMode = args.isDesignerMode ?? false;
   }
 
   subscribe: SubscribeFunc<AttachmentsEditorEvents, IAttachmentsEditorInstance> = (type, callback) => {
@@ -73,7 +78,8 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
       return;
 
     this.#fileListReference = fileListReference;
-    if (isOwnerReferenceValid(this.#fileListReference))
+    // Skip API calls in designer/config mode to prevent errors from incomplete data
+    if (!this.#isDesignerMode && isOwnerReferenceValid(this.#fileListReference))
       void this.fetchFilesList();
   };
 
@@ -134,7 +140,7 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
       if (!isFile(file))
         throw new Error('File is not a file');
 
-      if (isNullOrWhiteSpace(ownerId) && !this.#delayedUpdateClient)
+      if (isNullOrWhiteSpace(ownerId) && !this.#delayedUpdateClientRef.current)
         throw new Error("Delayed update client is mandatory if owner id is not defined");
 
       const newFile: StoredFileModel = {
@@ -154,8 +160,8 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
 
       this.updateFileByUid(fileUid, () => storedFileDtoToModel(responseFile));
 
-      if (responseFile.temporary && this.#delayedUpdateClient)
-        this.#delayedUpdateClient.addItem(STORED_FILES_DELAYED_UPDATE, responseFile.id, {
+      if (responseFile.temporary && this.#delayedUpdateClientRef.current)
+        this.#delayedUpdateClientRef.current.addItem(STORED_FILES_DELAYED_UPDATE, responseFile.id, {
           ownerName: uploadArgs.ownerName,
         });
 
@@ -222,8 +228,8 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
       // Remove using the original fileId to handle both id and uid lookups
       this.updateFileList((files) => files.filter((f) => f.id !== fileId && f.uid !== fileId));
 
-      if (this.#delayedUpdateClient)
-        this.#delayedUpdateClient.removeItem(STORED_FILES_DELAYED_UPDATE, persistedId);
+      if (this.#delayedUpdateClientRef.current)
+        this.#delayedUpdateClientRef.current.removeItem(STORED_FILES_DELAYED_UPDATE, persistedId);
 
       this.#onChange?.(this.#fileList, true);
     } catch (error) {

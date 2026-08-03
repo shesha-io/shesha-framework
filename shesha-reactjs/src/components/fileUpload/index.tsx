@@ -15,7 +15,7 @@ import { ListType } from '@/designer-components/attachmentsEditor/attachmentsEdi
 import { getFileIcon, isImageType } from '@/icons/fileIcons';
 import { useFileUploadState, useFileUpload, useTheme } from '@/providers';
 import { useHttpClient } from '@/providers/sheshaApplication/publicApi/http/hooks';
-import { fetchStoredFile } from '@/components/storedFilesRendererBase/utils';
+import { fetchStoredFile, resolveThumbnailSize } from '@/components/storedFilesRendererBase/utils';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
 import FileVersionsPopup from './fileVersionsPopup';
 import { DraggerStub } from './stubs';
@@ -94,15 +94,14 @@ export const FileUpload: FC<IFileUploadProps> = ({
   // of the same file reuse the already-downloaded image instead of hitting the server again.
   const previewImageCache = useRef<Map<string, string>>(new Map());
   const downloadUrl = buildUrl(fileInfo?.url ?? '');
-  const thumbnailQueryParams = {
+  // The backend returns a degenerate 1x1 thumbnail when width/height are omitted, so always send
+  // concrete dimensions derived from the configured thumbnail size (with a safe default).
+  const thumbnailUrl = buildUrl(STORED_FILE_URLS.DOWNLOAD_THUMBNAIL, {
     id: fileInfo?.id ?? '',
-    width: isDefined(thumbnailWidth) ? parseFloat(thumbnailWidth) : undefined,
-    height: isDefined(thumbnailHeight) ? parseFloat(thumbnailHeight) : undefined,
-  };
-  const thumbnailUrl = buildUrl(
-    STORED_FILE_URLS.DOWNLOAD_THUMBNAIL,
-    Object.fromEntries(Object.entries(thumbnailQueryParams).filter(([_, v]) => v !== undefined && !Number.isNaN(v))),
-  );
+    width: resolveThumbnailSize(thumbnailWidth),
+    height: resolveThumbnailSize(thumbnailHeight),
+    fitOption: 1, // 1: FitToHeight
+  });
 
   // Clean up blob URLs on unmount
   useEffect(() => {
@@ -397,33 +396,35 @@ export const FileUpload: FC<IFileUploadProps> = ({
       </div>
     );
 
-  const renderFileItem = (file: UploadFile): React.JSX.Element => {
+  const renderFileItem = (file: UploadFile & { id?: string }): React.JSX.Element => {
     const showThumbnailControls = listType === 'thumbnail';
     const showTextControls = listType === 'text';
 
     return (
       <div>
         {showThumbnailControls && styledfileControls()}
-        <span title={file.name}>
-          <Space>
-            <div className="thumbnail-item-name">
-              {(listType === 'text' || !hideFileName) && (
+        {!hideFileName && (
+          <span title={file.name}>
+            <Space>
+              <div className="thumbnail-item-name">
                 <a
                   style={{ marginRight: '5px' }}
                   onClick={isImageType(file.type ?? "")
                     ? onPreview
                     : () => {
-                      if (!isNullOrWhiteSpace(file.id))
-                        void downloadFile({ fileId: file.id, fileName: file.name });
+                      // Use file.id if available (from stored file), otherwise use uid
+                      const fileId = file.id || file.uid;
+                      if (!isNullOrWhiteSpace(fileId))
+                        void downloadFile({ fileId, fileName: file.name });
                     }}
                 >
-                  {listType !== 'thumbnail' && getFileIcon(file.type ?? "")} {`${file.name} (${filesize(isDefined(file.size) ? file.size : 0)})`}
+                  {`${file.name} (${filesize(isDefined(file.size) ? file.size : 0)})`}
                 </a>
-              )}
-              {showTextControls && fileControls(appPrimaryColor)}
-            </div>
-          </Space>
-        </span>
+                {showTextControls && fileControls(appPrimaryColor)}
+              </div>
+            </Space>
+          </span>
+        )}
       </div>
     );
   };
@@ -435,7 +436,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     multiple: false,
     fileList: isDefined(uploadFileModel) && fileInfo?.status !== 'error' ? [uploadFileModel] : [],
     maxCount: 1,
-    ...(!isDragger && listType !== 'thumbnail' && isDefined(stylesProp) ? { style: stylesProp } : {}),
+    // ...(!isDragger && listType !== 'thumbnail' && isDefined(stylesProp) ? { style: stylesProp } : {}),
     customRequest: onCustomRequest,
     beforeUpload: (file) => {
       if (!isFileTypeAllowed(file.name, allowedFileTypes)) {
@@ -509,6 +510,12 @@ export const FileUpload: FC<IFileUploadProps> = ({
       </div>
     );
   };
+
+  // When read-only with no file (and not in the designer stub), render nothing at all so the
+  // configured border/background/placeholder of an empty component isn't shown on read-only views.
+  const isEmptyReadonly = !isStub && !allowUpload && (!fileInfo || fileInfo.status === 'error');
+  if (isEmptyReadonly)
+    return null;
 
   return (
     <>

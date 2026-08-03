@@ -406,9 +406,16 @@ namespace Shesha
         {
             var sb = new StringBuilder();
             var allEntityProps = await EntityConfigCache.GetEntityPropertiesAsync(typeof(TEntity));
-            var properties = allEntityProps.NotNull().Where(x => !x.Suppress);
+            var properties = allEntityProps.NotNull()
+                .Where(x => !x.Suppress)
+                .ToList();
+            
             foreach (var property in properties)
             {
+                var isEntityList = property.DataType == DataTypes.Array && (property.DataFormat == ArrayFormats.EntityReference || property.DataFormat == ArrayFormats.ManyToManyEntities);
+                if (isEntityList)
+                    continue;
+
                 AppendProperty(sb, property, fullReference);
             }
 

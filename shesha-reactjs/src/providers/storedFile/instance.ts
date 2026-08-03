@@ -180,6 +180,8 @@ export class FileUploadInstance implements IFileUpload {
     }
 
     this.clearFileInfo();
+    // Clear the bound form value so required validation re-triggers and stale ids aren't kept.
+    this.#onChange?.(null);
   };
 
   init = (args: FileUploadInitArgs): void => {

@@ -1,8 +1,9 @@
+/* eslint @typescript-eslint/strict-boolean-expressions: "error" */
 import { Button, Dropdown, Input, MenuProps, Spin, Tooltip, Tree, TreeProps } from 'antd';
-import React, { FC, useMemo, useState } from 'react';
+import React, { FC, useMemo, useRef, useState } from 'react';
 import { MoveNodePayload } from '../../apis';
-import { isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, TreeNode } from '../../models';
-import { DownOutlined, RightOutlined } from '@ant-design/icons';
+import { isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, isNodeWithChildren, TreeNode } from '../../models';
+import { CaretDownOutlined, CaretRightOutlined, RightOutlined } from '@ant-design/icons';
 import { ValidationErrors } from '@/components/validationErrors';
 import { useCsTree, useCsTreeDnd } from '../../cs/hooks';
 import { useConfigurationStudio } from '../../cs/contexts';
@@ -28,7 +29,6 @@ type AllowDrop = TreeProps<TreeNode>['allowDrop'];
 type OnDrop = TreeProps<TreeNode>['onDrop'];
 type OnRightClick = TreeProps<TreeNode>['onRightClick'];
 type MenuItems = Required<MenuProps>['items'];
-type OnTreeKeyDown = TreeProps<TreeNode>['onKeyDown'];
 type OnDragStart = TreeProps<TreeNode>['onDragStart'];
 type OnDragEnd = TreeProps<TreeNode>['onDragEnd'];
 
@@ -66,21 +66,61 @@ type DndState = {
 export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = false, collapsed = false, onToggleCollapsed }) => {
   const cs = useConfigurationStudio();
   const { getDocumentDefinition } = useConfigurationStudioEnvironment();
-  const { treeNodes, loadTreeAsync, treeLoadingState, expandedKeys, selectedKeys, onNodeExpand, quickSearch, setQuickSearch, getTreeNodeById } = useCsTree();
+  const { treeNodes, loadTreeAsync, treeLoadingState, expandedKeys, selectedKeys, selectedNodes, onNodeExpand, quickSearch, setQuickSearch, getTreeNodeById } = useCsTree();
   const { setIsDragging } = useCsTreeDnd();
+  // Anchor for shift+click/shift+arrow range selection: the last node clicked without shift.
+  const lastClickedKeyRef = useRef<React.Key | null>(null);
+  // End of the shift-selection range; also drives Tree's controlled `activeKey` (null = uncontrolled).
+  const [shiftFocusKey, setShiftFocusKey] = useState<React.Key | null>(null);
   const [contextNode, setContextNode] = useState<TreeNode | null>(null);
   const { styles } = useStyles();
   const [dndState, setDndState] = useState<DndState>();
 
   const filteredTreeNodes = useFilteredTreeNodes(treeNodes, quickSearch);
 
-  const handleSelect: OnSelectHandler = (_keys, info) => {
-    const selectedNode = handleSelect && info.selectedNodes.length === 1
-      ? info.selectedNodes[0]
-      : undefined;
+  // Flat DFS walk of currently visible (expanded) nodes — used for shift+click range and shift+arrow.
+  const flatVisibleNodes = useMemo<TreeNode[]>(() => {
+    const result: TreeNode[] = [];
+    const walk = (nodes: TreeNode[]): void => {
+      for (const node of nodes) {
+        result.push(node);
+        if (isNodeWithChildren(node) && isDefined(expandedKeys) && expandedKeys.includes(node.key))
+          walk(node.children as TreeNode[]);
+      }
+    };
+    walk(filteredTreeNodes);
+    return result;
+  }, [filteredTreeNodes, expandedKeys]);
 
-    cs.selectTreeNode(selectedNode);
+  const handleSelect: OnSelectHandler = (keys, info) => {
+    const isCtrl = info.nativeEvent.ctrlKey || info.nativeEvent.metaKey;
+    const isShift = info.nativeEvent.shiftKey;
+    const clickedKey = info.node.key;
+
+    if (isShift && lastClickedKeyRef.current !== null) {
+      // Range selection: select all visible nodes between the anchor and the clicked node.
+      const anchorIdx = flatVisibleNodes.findIndex((n) => n.key === lastClickedKeyRef.current);
+      const clickedIdx = flatVisibleNodes.findIndex((n) => n.key === clickedKey);
+      if (anchorIdx >= 0 && clickedIdx >= 0) {
+        const [lo, hi] = anchorIdx <= clickedIdx ? [anchorIdx, clickedIdx] : [clickedIdx, anchorIdx];
+        const rangeKeys = flatVisibleNodes.slice(lo, hi + 1).map((n) => n.key.toString());
+        setShiftFocusKey(clickedKey);
+        void cs.setMultiSelection(rangeKeys);
+      }
+    } else if (isCtrl) {
+      // Ctrl+click: antd already toggled the item in `keys`; persist the new set.
+      void cs.setMultiSelection(keys.map((k) => k.toString()));
+      lastClickedKeyRef.current = clickedKey;
+      setShiftFocusKey(clickedKey);
+    } else {
+      // Plain click: single selection + navigation.
+      lastClickedKeyRef.current = clickedKey;
+      setShiftFocusKey(clickedKey);
+      if (keys.length > 0)
+        void cs.selectTreeNode(info.node);
+    }
   };
+
   const handleClick: OnClickHandler = (_, node) => {
     cs.clickTreeNode(node);
   };
@@ -117,15 +157,24 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
 
     const newFolderId = getNewFolderId(dropPosition, dropNode);
 
-    const movePayload: MoveNodePayload = {
-      nodeType: dragNode.nodeType,
-      nodeId: dragNode.id,
+    // When the dragged node is part of a multi-selection, move all selected nodes that are
+    // valid for this drop target. Otherwise fall back to moving just the dragged node.
+    const dragKeyStr = dragNode.key.toString();
+    const isMultiDrag = (selectedKeys ?? []).includes(dragKeyStr) && selectedNodes.length > 1;
+    const nodesToMove: TreeNode[] = isMultiDrag
+      ? selectedNodes.filter((n) => allowDropNode(n, dropNode, dropPosition))
+      : [dragNode];
+
+    const payloads: MoveNodePayload[] = nodesToMove.map((n) => ({
+      nodeType: n.nodeType,
+      nodeId: n.id,
       folderId: newFolderId,
-    };
-    cs.moveTreeNodeAsync(movePayload).then(() => {
+    }));
+
+    Promise.all(payloads.map((p) => cs.moveTreeNodeAsync(p))).then(() => {
       void loadTreeAsync();
     }).catch((error) => {
-      console.error('Failed to move node', error);
+      console.error('Failed to move nodes', error);
       throw error;
     });
   };
@@ -159,8 +208,39 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
     setIsDragging(false);
   };
 
-  const handleKeyDown: OnTreeKeyDown = (_e) => {
-    // nop
+  // Intercepted in the capture phase so rc-tree's own arrow-key focus handling never runs for this event.
+  const handleTreeKeyDownCapture: React.KeyboardEventHandler<HTMLDivElement> = (e) => {
+    const isRangeArrow = e.shiftKey && (e.key === 'ArrowDown' || e.key === 'ArrowUp');
+
+    if (!isRangeArrow) {
+      if (e.key !== 'Shift' && shiftFocusKey !== null) setShiftFocusKey(null);
+      return;
+    }
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    const currentKeys = selectedKeys ?? [];
+    if (currentKeys.length === 0) return;
+
+    const anchorKey = lastClickedKeyRef.current ?? currentKeys[0];
+    const anchorIdx = flatVisibleNodes.findIndex((n) => n.key === anchorKey);
+    if (anchorIdx < 0) return;
+
+    const focusKey = shiftFocusKey ?? anchorKey;
+    const focusIdx = flatVisibleNodes.findIndex((n) => n.key === focusKey);
+    if (focusIdx < 0) return;
+
+    const nextFocusIdx = e.key === 'ArrowDown' ? focusIdx + 1 : focusIdx - 1;
+    if (nextFocusIdx < 0 || nextFocusIdx >= flatVisibleNodes.length) return;
+
+    const nextFocusNode = flatVisibleNodes[nextFocusIdx];
+    if (!nextFocusNode) return;
+    setShiftFocusKey(nextFocusNode.key);
+
+    const [lo, hi] = anchorIdx <= nextFocusIdx ? [anchorIdx, nextFocusIdx] : [nextFocusIdx, anchorIdx];
+    const rangeKeys = flatVisibleNodes.slice(lo, hi + 1).map((n) => n.key.toString());
+    void cs.setMultiSelection(rangeKeys);
   };
 
   const allowNodeDropWrapper: AllowDrop = ({ dragNode, dropNode, dropPosition }) => {
@@ -207,7 +287,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
             </div>
           )}
           {!collapsed && (
-            <div className={styles.csNavPanelTree}>
+            <div className={styles.csNavPanelTree} onKeyDownCapture={handleTreeKeyDownCapture}>
               <Dropdown
                 menu={{ items: nodeContextMenuItems }}
                 trigger={["contextMenu"]}
@@ -216,7 +296,8 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
                 <Tree<TreeNode>
                   showLine
                   showIcon
-                  switcherIcon={<DownOutlined />}
+                  multiple
+                  switcherIcon={(node) => node.expanded === true ? <CaretDownOutlined /> : <CaretRightOutlined />}
 
                   treeData={filteredTreeNodes}
                   blockNode /* required for correct dragging*/
@@ -233,7 +314,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
                   onClick={handleClick}
                   selectedKeys={selectedKeys ?? []}
                   onExpand={onNodeExpand}
-                  onKeyDown={handleKeyDown}
+                  {...(shiftFocusKey !== null ? { activeKey: shiftFocusKey } : {})}
                   tabIndex={0}
                 />
               </Dropdown>

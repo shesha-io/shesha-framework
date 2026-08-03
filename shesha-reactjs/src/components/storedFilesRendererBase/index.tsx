@@ -30,11 +30,11 @@ import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models
 import { ButtonGroup } from '@/designer-components/button/buttonGroup/buttonGroup';
 import { FormIdentifier } from '@/providers/form/models';
 import { DataContextProvider } from '@/providers/dataContextProvider';
-import { FileVersionsButton, ExtraContent, PLACEHOLDER_FILE, getListTypeAndLayout, fetchStoredFile, FileNameDisplay } from './utils';
+import { FileVersionsButton, ExtraContent, PLACEHOLDER_FILE, getListTypeAndLayout, fetchStoredFile, FileNameDisplay, resolveThumbnailSize } from './utils';
 import classNames from 'classnames';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
 import { ShaIcon, IconType } from '@/components/shaIcon';
-import { defaultStyles } from '@/designer-components/attachmentsEditor/utils';
+import { calculateFileUploadStyles } from '@/utils/fileUploadStyles';
 import { getFileExtension } from '@/utils/storedFile/utils';
 import { DownloadFileArgs, ReplaceFilePayload, StoredFileModel } from '@/utils/storedFile/models';
 import { useHttpClient } from '@/providers/sheshaApplication/publicApi/http/hooks';
@@ -42,6 +42,7 @@ import { ValidationErrors } from '../validationErrors';
 import { buildUrl } from '@/utils';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { isFile } from '@/utils/fileValidation';
+import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 interface IUploaderFileTypes {
   name: string;
@@ -98,6 +99,7 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   downloadedFileStyles?: CSSProperties | undefined;
   styleDownloadedFiles?: boolean | undefined;
   downloadedIcon?: IconType | undefined;
+  gap?: string | number | SizeType | undefined;
 }
 
 const EMPTY_FILES: StoredFileModel[] = [];
@@ -161,12 +163,33 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   // of the same file reuse the already-downloaded image instead of hitting the server again.
   // Entries are revoked on unmount.
   const previewImageCache = useRef<Map<string, string>>(new Map());
+  // Content fingerprint of the thumbnail currently cached in `imageUrls` for each file uid.
+  // A file's uid/id stay the same when its content is replaced (upload new version), so keying
+  // the "reuse existing thumbnail" guard on uid alone would keep showing the stale image. Tracking
+  // a content fingerprint (size + url) lets us detect a replace and re-fetch a fresh thumbnail.
+  const thumbnailFingerprints = useRef<Map<string, string>>(new Map());
+  // Per-file-id cache-buster bumped on each replace. The thumbnail endpoint is keyed only by
+  // file id + dimensions, so its URL is byte-identical after a replace and the browser's HTTP
+  // cache would serve the stale image even on a fresh request. Appending this token to the URL
+  // makes a replaced file request a new URL (cache miss) while unchanged files stay cacheable.
+  const thumbnailCacheBusters = useRef<Map<string, number>>(new Map());
   const model = rest;
 
   // Handler for replacing a file
   const handleReplaceFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const file = e.target.files?.[0];
     if (file && fileToReplace) {
+      // A replaced file keeps the same uid/id, so any cached thumbnail/preview for it now shows the
+      // old content. Invalidate those caches up front so the new version is re-fetched fresh (the
+      // fingerprint guard below also covers this, but the backend may reuse the url for the file id).
+      thumbnailFingerprints.current.delete(fileToReplace.uid);
+      // Bump the cache-buster so the re-fetched thumbnail URL differs from the browser-cached one.
+      thumbnailCacheBusters.current.set(fileToReplace.id, (thumbnailCacheBusters.current.get(fileToReplace.id) ?? 0) + 1);
+      const cachedPreview = previewImageCache.current.get(fileToReplace.id);
+      if (isNotNullOrWhiteSpace(cachedPreview)) {
+        URL.revokeObjectURL(cachedPreview);
+        previewImageCache.current.delete(fileToReplace.id);
+      }
       try {
         // This uses the StoredFilesProvider's replaceFile action which manages state properly
         replaceFile({
@@ -199,8 +222,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const hasFiles = !!fileList.length;
 
   const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS } = useFormComponentStyles({ ...model.container });
-  const defaultBorder = defaultStyles().border?.border?.all ?? {};
-
   const { styles } = useStyles({
     downloadedFileStyles: downloadedFileStyles ?? {},
     containerStyles: {
@@ -210,9 +231,11 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       ...containerJsStyle,
       ...stylingBoxAsCSS,
     },
-    style: !enableStyleOnReadonly && disabled === true
-      ? { ...(model.allStyles?.dimensionsStyles ?? {}), ...(model.allStyles?.fontStyles ?? {}), border: `${defaultBorder.width} ${defaultBorder.style} ${defaultBorder.color}` }
-      : { ...(model.allStyles?.fullStyle ?? {}) },
+    style: calculateFileUploadStyles({
+      enableStyleOnReadonly,
+      listType,
+      allStyles: model.allStyles,
+    }),
     model: {
       gap: addPx(gap, allData) ?? '0px',
       layout: listType === 'thumbnail' && !isDragger,
@@ -279,14 +302,28 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       }
 
       const newImageUrls: { [key: string]: string } = {};
+      // Blob URLs owned by the upload cache must never be revoked here; that cache manages them.
+      const uploadedFileBlobUrlSet = new Set(uploadedFileBlobUrls.current.values());
       for (const file of fileList) {
         if (isImageType(file.type ?? "") && !isNullOrWhiteSpace(file.url)) {
-          // Preserve existing URL to avoid unnecessary re-fetches
+          // A file keeps the same uid/id when its content is replaced (upload new version), so the
+          // cached thumbnail must only be reused while the file's content is unchanged. Fingerprint
+          // the content (size + url) so a replace invalidates the stale thumbnail and re-fetches.
+          const fingerprint = `${file.size ?? ''}_${file.url}`;
+          // Preserve existing URL to avoid unnecessary re-fetches, but only when the content matches.
           const existingUrl = imageUrlsRef.current[file.uid];
-          if (isNotNullOrWhiteSpace(existingUrl)) {
+          if (isNotNullOrWhiteSpace(existingUrl) && thumbnailFingerprints.current.get(file.uid) === fingerprint) {
             newImageUrls[file.uid] = existingUrl;
             continue;
           }
+
+          // Content changed (e.g. replaced): drop the stale thumbnail so a fresh one is fetched.
+          // Only revoke blob URLs we own here; raw server URLs (initial state) and blobs owned by
+          // uploadedFileBlobUrls are left alone (the latter is managed by that cache).
+          if (isNotNullOrWhiteSpace(existingUrl) && existingUrl.startsWith('blob:') && !uploadedFileBlobUrlSet.has(existingUrl)) {
+            URL.revokeObjectURL(existingUrl);
+          }
+          thumbnailFingerprints.current.delete(file.uid);
 
           // Check for blob URL from recent upload (avoids server round-trip immediately after upload).
           // The entry is kept for the lifetime of the component (cleaned up on unmount or when the
@@ -296,6 +333,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           const blobUrl = uploadedFileBlobUrls.current.get(tempKey);
           if (isNotNullOrWhiteSpace(blobUrl)) {
             newImageUrls[file.uid] = blobUrl;
+            thumbnailFingerprints.current.set(file.uid, fingerprint);
             continue;
           }
 
@@ -303,18 +341,18 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             if (isNullOrWhiteSpace(file.id)) {
               continue;
             }
-            const queryParams = {
+            // The backend returns a degenerate 1x1 thumbnail when width/height are omitted, so always
+            // send concrete dimensions derived from the configured thumbnail size (with a safe default).
+            // `v` is a cache-buster that only changes when the file is replaced (see above), so the
+            // browser HTTP cache serves unchanged thumbnails but re-downloads a replaced one.
+            const cacheBuster = thumbnailCacheBusters.current.get(file.id);
+            const thumbnailUrl = buildUrl(STORED_FILE_URLS.DOWNLOAD_THUMBNAIL, {
               id: file.id,
-              width: isDefined(model.dimensions?.width) ? parseFloat(`${model.dimensions.width}`) : undefined,
-              height: isDefined(model.dimensions?.height) ? parseFloat(`${model.dimensions.height}`) : undefined,
-            };
-
-            // Filter out undefined/NaN values
-            const cleanedParams = Object.fromEntries(
-              Object.entries(queryParams).filter(([_, v]) => v !== undefined && !Number.isNaN(v)),
-            );
-
-            const thumbnailUrl = buildUrl(STORED_FILE_URLS.DOWNLOAD_THUMBNAIL, cleanedParams);
+              width: resolveThumbnailSize(model.thumbnailWidth ?? `${model.allStyles?.dimensionsStyles.width ?? ''}`),
+              height: resolveThumbnailSize(model.thumbnailHeight ?? `${model.allStyles?.dimensionsStyles.height ?? ''}`),
+              fitOption: 1, // 1: FitToHeight
+              ...(isDefined(cacheBuster) && cacheBuster > 0 ? { v: cacheBuster } : {}),
+            });
 
             const { url: imageUrl, revoke } = await fetchStoredFile(httpClient, thumbnailUrl);
             if (isCancelled) {
@@ -325,6 +363,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             // Track revoke callback for cleanup
             revokeCallbacks.push(revoke);
             newImageUrls[file.uid] = imageUrl;
+            thumbnailFingerprints.current.set(file.uid, fingerprint);
           } catch (error) {
             console.error(`Failed to fetch image for file ${file.name} (${file.uid}):`, error);
             // Don't add to newImageUrls or revokeCallbacks - this file will not have a thumbnail
@@ -339,6 +378,32 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           if (!liveKeys.has(key)) {
             URL.revokeObjectURL(url);
             uploadedFileBlobUrls.current.delete(key);
+          }
+        });
+
+        // Clean up thumbnail fingerprints, cache busters, and preview cache for files no longer in the list
+        const liveUids = new Set(fileList.map((f) => f.uid));
+        const liveIds = new Set(fileList.map((f) => f.id).filter((id) => isNotNullOrWhiteSpace(id)));
+
+        // Prune thumbnail fingerprints for deleted files
+        thumbnailFingerprints.current.forEach((_, uid) => {
+          if (!liveUids.has(uid)) {
+            thumbnailFingerprints.current.delete(uid);
+          }
+        });
+
+        // Prune thumbnail cache busters for deleted files
+        thumbnailCacheBusters.current.forEach((_, id) => {
+          if (!liveIds.has(id)) {
+            thumbnailCacheBusters.current.delete(id);
+          }
+        });
+
+        // Prune preview image cache for deleted files
+        previewImageCache.current.forEach((url, id) => {
+          if (!liveIds.has(id)) {
+            URL.revokeObjectURL(url);
+            previewImageCache.current.delete(id);
           }
         });
 
@@ -363,7 +428,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       // Call all revoke functions to clean up blob URLs
       revokeCallbacks.forEach((revoke) => revoke());
     };
-  }, [fileList, httpClient, model.dimensions?.width, model.dimensions?.height, listType]);
+  }, [fileList, httpClient, model.thumbnailWidth, model.thumbnailHeight, model.allStyles?.dimensionsStyles.width, model.allStyles?.dimensionsStyles.height, listType]);
 
   // Clean up uploaded blob URLs on component unmount to prevent memory leaks
   useEffect(() => {
@@ -802,10 +867,18 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                       {fileList.length === 0 ? (
                         <DraggerStub styles={styles} />
                       ) : (
-                        <div>
-                          {renderUploadContent()}
+                        <div style={{ pointerEvents: 'none' }}>
+                          <Button
+                            type="link"
+                            icon={<UploadOutlined />}
+                            disabled={disabled ?? false}
+                            className={styles.uploadButton}
+                            style={{ pointerEvents: 'auto', marginBottom: '8px' }}
+                          >
+                            (Click or drag to upload)
+                          </Button>
                           {fileList.map((file) => (
-                            <div key={file.uid}>
+                            <div key={file.uid} style={{ pointerEvents: 'auto' }}>
                               {itemRenderFunction(<></>, file as UploadFile)}
                             </div>
                           ))}

@@ -1,5 +1,4 @@
-﻿using Abp.UI;
-using Castle.Core.Logging;
+﻿using Castle.Core.Logging;
 using Shesha.Configuration;
 using Shesha.Configuration.Email;
 using Shesha.Domain;
@@ -11,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Mail;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Shesha.Notifications
@@ -141,12 +141,25 @@ namespace Shesha.Notifications
 
             if (string.IsNullOrWhiteSpace(fromAddress) || !smtpSettings.UseSmtpRelay)
             {
-                if (!StringHelper.IsValidEmail(smtpSettings.DefaultFromAddress))
+                if (StringHelper.IsValidEmail(smtpSettings.DefaultFromAddress))
                 {
-                    throw new UserFriendlyException("Default from address is not valid!");
+                    message.From = new MailAddress(
+                        smtpSettings.DefaultFromAddress,
+                        smtpSettings.DefaultFromDisplayName,
+                        Encoding.UTF8
+                    );
                 }
+                else
+                {
+                    if (!StringHelper.IsValidEmail(smtpSettings.UserName))
+                        throw new ArgumentException("Default from address is not valid email and neither is there a smtp username a valid email address");
 
-                message.From = new MailAddress(smtpSettings.DefaultFromAddress);
+                    message.From = new MailAddress(
+                        smtpSettings.UserName == null ? "" : smtpSettings.UserName,
+                        null,
+                        Encoding.UTF8
+                    );
+                }
             }
             else if (StringHelper.IsValidEmail(fromAddress))
             {

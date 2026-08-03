@@ -22,7 +22,7 @@ export type NonEmptyArray<T> = [T, ...T[]];
  * Checks if the given value is an array with at least one element.
  * @returns true if the value is an array with at least one element, false otherwise.
  */
-export const isNonEmptyArray = <T>(value: Array<T> | null | undefined): value is NonEmptyArray<T> => {
+export const isNonEmptyArray = <T>(value: Array<T> | readonly T[] | null | undefined): value is NonEmptyArray<T> => {
   return isDefined(value) && value.length > 0 && isDefined(value[0]);
 };
 

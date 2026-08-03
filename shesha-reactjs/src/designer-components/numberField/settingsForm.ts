@@ -1,6 +1,7 @@
 import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
 import { DataTypes, SettingsFormMarkupFactory } from '@/interfaces';
+import { ALL_INPUT_EVENTS } from '../_common/events';
 
 export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter }) => {
   const searchableTabsId = nanoid();
@@ -27,7 +28,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
         size: 'small',
         tabs: [
           {
-            key: '1', title: 'Common', id: commonTabId,
+            key: 'common', title: 'Common', id: commonTabId,
             components: [
               ...fbf(commonTabId)
                 .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true }, jsSetting: true })
@@ -64,11 +65,11 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
             ],
           },
           {
-            key: '2', title: 'Events', id: eventsTabId,
-            components: [...fbf(eventsTabId).stdEventHandlers(['onChange', 'onFocus', 'onBlur', 'onClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave', 'onKeyDown', 'onKeyUp'], DataTypes.number).toJson()],
+            key: 'events', title: 'Events', id: eventsTabId,
+            components: [...fbf(eventsTabId).stdEventHandlers([...ALL_INPUT_EVENTS], DataTypes.number).toJson()],
           },
           {
-            key: '3', title: 'Appearance', id: appearanceTabId,
+            key: 'appearance', title: 'Appearance', id: appearanceTabId,
             components: [...fbf(appearanceTabId).stdAppearancePanels(['font', 'dimensions', 'border', 'background', 'shadow', 'marginPadding', 'customStyle'], removeStyleRouter).toJson()],
           },
         ],

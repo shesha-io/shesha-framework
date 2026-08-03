@@ -9,7 +9,7 @@ import { ConfigurableFormItemForm } from './configurableFormItemForm';
 import { designerConstants } from '../utils/designerConstants';
 import { addPx } from '@/utils/style';
 import { useStyles } from './styles';
-import { isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 
 export const ConfigurableFormItemLive = <TValue = unknown>({
   children,
@@ -46,6 +46,15 @@ export const ConfigurableFormItemLive = <TValue = unknown>({
     marginLeft = defaultMarginLeft,
   } = (model.stylingBoxJson || {});
 
+  const marginStyle = shaForm.formMode === "designer" ? {
+    margin: 0,
+  } : {
+    marginTop: addPx(marginTop, allData),
+    marginBottom: addPx(marginBottom, allData),
+    marginRight: addPx(marginRight, allData),
+    marginLeft: addPx(marginLeft, allData),
+  };
+
   const propName = isNotNullOrWhiteSpace(namePrefix) && isNullOrWhiteSpace(model.initialContext)
     ? namePrefix + '.' + model.propertyName
     : model.propertyName;
@@ -59,13 +68,9 @@ export const ConfigurableFormItemLive = <TValue = unknown>({
     initialValue: initialValue,
     tooltip: isNotNullOrWhiteSpace(model.description) ? model.description : undefined,
     rules: getValidationRules(model, { getFormData }),
+    ...(isDefined(model.validationDependencies?.length) ? { dependencies: model.validationDependencies } : {}),
     name: isNotNullOrWhiteSpace(model.context) ? undefined : getFieldNameFromExpression(propName),
-    style: {
-      marginTop: addPx(marginTop, allData),
-      marginBottom: addPx(marginBottom, allData),
-      marginRight: addPx(marginRight, allData),
-      marginLeft: addPx(marginLeft, allData),
-    },
+    style: marginStyle,
     ...(model.labelAlign ? { labelAlign: model.labelAlign } : {}),
     ...(!Boolean(hideLabel) ? { label: model.label } : {}),
     ...(layout.labelCol ? { labelCol: layout.labelCol } : {}),

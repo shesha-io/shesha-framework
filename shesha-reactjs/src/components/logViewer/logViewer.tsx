@@ -6,7 +6,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { List, useListRef, type ListProps } from 'react-window';
+import { List, useDynamicRowHeight, useListRef, type ListProps } from 'react-window';
 import { LogLine } from './interfaces';
 import { LogRow } from './logRow';
 import { LogLevel } from '@/providers/processMonitor/interfaces';
@@ -16,7 +16,9 @@ import { cx } from 'antd-style';
 import { CopyOutlined, DownloadOutlined, DownOutlined, ExpandOutlined, LoadingOutlined, SearchOutlined, ShrinkOutlined, UpOutlined } from '@ant-design/icons';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { purple } from '@ant-design/colors';
-import { arrayHasAtLeastNDefined } from '@/utils/array';
+import { arrayHasAtLeastNDefined, isNonEmptyArray } from '@/utils/array';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { firstNonEmptyString } from '@/utils/string';
 
 type OnListScroll = NonNullable<ListProps<object, "div">["onScroll"]>;
 
@@ -86,7 +88,7 @@ const parseAzureLogLine = (line: string, index: number): LogLine => {
     const match = line.match(regex);
     if (match) {
       level = patternLevel as LogLevel;
-      message = match[1] || '';
+      message = isNonEmptyArray(match) && !isNullOrWhiteSpace(match[1]) ? match[1] : '';
 
       // Special handling for sections
       if (patternLevel === 'section' && message.includes('Starting:')) {
@@ -185,7 +187,7 @@ export const LogViewer: FC<LogViewerProps> = ({
       }));
     } else if (logs.length > 0) {
       parsedLogs = logs.map((log, index) => ({
-        ...parseAzureLogLine(log.raw || log.message || '', index),
+        ...parseAzureLogLine(firstNonEmptyString(log.raw, log.message), index),
         ...log,
         id: log.id || index,
         originalIndex: index,
@@ -212,6 +214,10 @@ export const LogViewer: FC<LogViewerProps> = ({
 
     setStatistics(stats);
   }, [logs, rawLogText, maxLogs]);
+
+  const rowHeightCache = useDynamicRowHeight({
+    defaultRowHeight: 32,
+  });
 
   // Handle search
   useEffect(() => {
@@ -252,7 +258,7 @@ export const LogViewer: FC<LogViewerProps> = ({
       if (!log) continue;
 
       if (skipDepth > 0) {
-        if (log.hasChildren) {
+        if (log.hasChildren === true) {
           skipDepth++;
         } else if (log.level === LogLevel.SECTION && (log.message ?? "").includes('Finishing:')) {
           skipDepth--;
@@ -260,7 +266,7 @@ export const LogViewer: FC<LogViewerProps> = ({
         continue;
       }
 
-      if (log.hasChildren && expandedSections.has(i)) {
+      if (log.hasChildren === true && expandedSections.has(i)) {
         skipDepth = 1;
         continue;
       }
@@ -546,18 +552,6 @@ export const LogViewer: FC<LogViewerProps> = ({
             />
             <span>Follow logs</span>
           </label>
-          {/* <label className={styles.toggleOption}>
-                        <Checkbox
-                            defaultChecked={showTimestamps}
-                        />
-                        <span>Show timestamps</span>
-                    </label>
-                    <label className={styles.toggleOption}>
-                        <Checkbox
-                            defaultChecked={showLineNumbers}
-                        />
-                        <span>Line numbers</span>
-                    </label> */}
         </div>
       </div>
 
@@ -613,7 +607,7 @@ export const LogViewer: FC<LogViewerProps> = ({
           <List
             listRef={listRef}
             rowCount={filteredLogs.length}
-            rowHeight={32}
+            rowHeight={rowHeightCache}
             overscanCount={10}
             onScroll={handleScroll}
             rowComponent={LogRow}

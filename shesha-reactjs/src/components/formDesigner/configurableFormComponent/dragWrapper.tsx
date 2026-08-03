@@ -3,16 +3,14 @@ import { ShaForm } from '@/providers/form';
 import { Tooltip } from 'antd';
 import { useFormDesigner, useFormDesignerSelectedComponentId, useFormDesignerIsDebug } from '@/providers/formDesigner';
 import { FunctionOutlined } from '@ant-design/icons';
-import { useStyles } from '../styles/styles';
 
 interface IDragWrapperProps {
   componentId: string;
   readOnly?: boolean | undefined;
+  className?: string | undefined;
 }
 
 export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => {
-  const { styles } = useStyles();
-
   const selectedComponentId = useFormDesignerSelectedComponentId();
   const isDebug = useFormDesignerIsDebug();
   const { setSelectedComponent } = useFormDesigner();
@@ -63,7 +61,7 @@ export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => 
   };
 
   return (
-    <div className={styles.componentDragHandle} onClick={onClick} onMouseOver={onMouseOver} onMouseOut={onMouseOut}>
+    <div className={props.className} onClick={onClick} onMouseOver={onMouseOver} onMouseOut={onMouseOut}>
       <Tooltip title={tooltip} placement="right" open={isOpen}>
         {props.children}
       </Tooltip>

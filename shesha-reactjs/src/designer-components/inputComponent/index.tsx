@@ -5,8 +5,9 @@ import { useFormItem, useShaFormInstance } from '@/providers';
 import { Button, Divider, Popover } from 'antd';
 import { RollbackOutlined, SyncOutlined } from '@ant-design/icons';
 import { useDefaultModelActionsOrUndefined, useDefaultModelPropertyUpdateSubscription } from '../_settings/defaultModelProvider/defaultModelProvider';
-import { getValueByPropertyName, setValueByPropertyName } from '@/utils/object';
+import { getValueByPropertyName } from '@/utils/object';
 import { convertValueToFriendlyString } from './utils';
+import { isNotNullOrWhiteSpace } from '@/utils';
 
 // make value unknown to process any type of value (InputComponent is not generic)
 export type InputComponentProps<TValue = unknown> = Omit<BaseInputProps, 'value' | 'onChange'> & {
@@ -16,7 +17,7 @@ export type InputComponentProps<TValue = unknown> = Omit<BaseInputProps, 'value'
 };
 
 export const InputComponent = <TValue = string>(props: InputComponentProps<TValue>): ReactNode => {
-  const { onChange, onChangeSetting, propertyName } = props;
+  const { onChange, onChangeSetting } = props;
   const Editor = editorRegistry[props.type] as FC<BaseInputProps> | undefined;
   const tempData = useRef<unknown>(null);
   const [popupOpen, setPopupOpen] = React.useState(false);
@@ -24,7 +25,7 @@ export const InputComponent = <TValue = string>(props: InputComponentProps<TValu
   const defaultModel = useDefaultModelActionsOrUndefined();
   const { namePrefix } = useFormItem();
 
-  const defaultModelPropertyName = Boolean(namePrefix) ? namePrefix + '.' + props.propertyName : props.propertyName;
+  const defaultModelPropertyName = isNotNullOrWhiteSpace(namePrefix) ? namePrefix + '.' + props.propertyName : props.propertyName;
 
   useDefaultModelPropertyUpdateSubscription(defaultModelPropertyName);
 
@@ -40,16 +41,12 @@ export const InputComponent = <TValue = string>(props: InputComponentProps<TValu
 
   const setOverride = useCallback((): void => {
     internalOnChange(defaultValue);
-    const values = setValueByPropertyName({}, propertyName, defaultValue);
-    setFormData({ values, mergeValues: true });
     setPopupOpen(false);
-  }, [setFormData, propertyName, defaultValue, internalOnChange]);
+  }, [defaultValue, internalOnChange]);
   const resetToDefault = useCallback((): void => {
     internalOnChange(undefined);
-    const values = setValueByPropertyName({}, propertyName, undefined);
-    setFormData({ values, mergeValues: true });
     setPopupOpen(false);
-  }, [internalOnChange, propertyName, setFormData]);
+  }, [internalOnChange]);
 
   const valueInfo = defaultModel?.getValueInfo(defaultModelPropertyName);
   const isInherited = valueInfo?.state === 'usedDefault';

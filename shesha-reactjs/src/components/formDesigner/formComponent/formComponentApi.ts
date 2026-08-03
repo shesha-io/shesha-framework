@@ -26,7 +26,7 @@ export const getDisabledAndReadOnly = (mode: Exclude<EditMode, 'inherited'>): ID
           ? { disabled: false, readOnly: true }
           : { disabled: true, readOnly: false };
 
-const updateApiModel = <T extends object>(func: (f: (prev: T) => T) => void, value: Partial<T>): void => {
+export const updateApiModel = <T extends object>(func: (f: (prev: T) => T) => void, value: Partial<T>): void => {
   func((prev) => removeUndefinedProps(deepMergeValues(prev, value)) as T);
 };
 
