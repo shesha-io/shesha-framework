@@ -8,7 +8,7 @@ import { isDefined } from '@/utils';
 import { IConfigurableFormComponent, isConfigurableFormComponent, useShaFormInstanceOrUndefined } from '@/providers';
 import { useParentOrUndefined } from '@/providers/parentProvider';
 import { isContainerComponent } from '../container/containerComponent';
-import { useFormDesignerMarkup } from '@/providers/formDesigner';
+import { useFormDesignerOrUndefined } from '@/providers/formDesigner';
 
 const ContainerCheckerComponent: ContainerCheckerComponentDefinition = {
   type: 'containerChecker',
@@ -18,9 +18,9 @@ const ContainerCheckerComponent: ContainerCheckerComponentDefinition = {
   Factory: ({ model }) => {
     const data = useShaFormInstanceOrUndefined()?.formData;
     const parent = useParentOrUndefined();
-    const form = useFormDesignerMarkup();
+    const form = useFormDesignerOrUndefined()?.state.formFlatMarkup;
 
-    if (!isDefined(data) || !('id' in data)) return null;
+    if (!isDefined(form) || !isDefined(data) || !('id' in data)) return null;
 
     let container = parent;
     while (isDefined(container) && 'formMode' in container && container.formMode !== 'designer')
