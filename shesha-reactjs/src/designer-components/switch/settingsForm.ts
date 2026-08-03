@@ -53,18 +53,18 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                 propertyRouteName: { _code: `return ${removeStyleRouter === true ? '' : 'contexts.canvasContext?.designerDevice || "desktop"'};`, _mode: 'code', _value: '' },
                 components: [
                   ...fbf(styleRouterId)
-                    .stdDimensionsPanel()
-                    .stdBorderPanel(removeStyleRouter !== true)
-                    .stdBackgroundPanel(removeStyleRouter !== true)
-                    .stdShadowPanel()
-                    .stdMarginPaddingPanel()
-                    .stdCustomStylePanel()
+                    .stdDimensionsPanel('dimensions')
+                    .stdBorderPanel(removeStyleRouter !== true, 'border')
+                    .stdBackgroundPanel(removeStyleRouter !== true, 'background')
+                    .stdShadowPanel('shadow')
+                    .stdMarginPaddingPanel('stylingBoxJson')
+                    .stdCustomStylePanel('style')
                     .stdCollapsiblePanel('Toggle Styles', (f) => f
                       .stdDimensionsPanel('handleStyles.dimensions')
                       .stdBorderPanel(removeStyleRouter !== true, 'handleStyles.border')
                       .stdBackgroundPanel(removeStyleRouter !== true, 'handleStyles.background')
                       .stdShadowPanel('handleStyles.shadow')
-                      .stdCustomStylePanel())
+                      .stdCustomStylePanel('handleStyles.style'))
                     .toJson(),
                 ],
               })
