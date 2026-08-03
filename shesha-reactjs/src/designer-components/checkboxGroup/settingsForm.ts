@@ -13,7 +13,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
   const dataSourceTypeOptions = [
     { label: 'Values', value: 'values' },
     { label: 'Reference list', value: 'referenceList' },
-    { label: 'API URL', value: 'url' },
   ];
 
   return {
@@ -47,13 +46,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   .addSettingsInputRow({
                     inputs: [{ type: 'referenceListAutocomplete', propertyName: 'referenceListId', label: 'Reference List', jsSetting: true }],
                     visibleJs: 'return getSettingValue(data?.dataSourceType) === "referenceList";',
-                  })
-                  .addSettingsInputRow({
-                    inputs: [
-                      { type: 'codeEditor', propertyName: 'dataSourceUrl', label: 'Data Source URL', jsSetting: true },
-                      { type: 'codeEditor', propertyName: 'reducerFunc', label: 'Reducer Function', jsSetting: true },
-                    ],
-                    visibleJs: 'return getSettingValue(data?.dataSourceType) === "url";',
                   }))
                 .stdCollapsiblePanel('Validations', (fb) => fb
                   .addSettingsInput({ inputType: 'switch', propertyName: 'validate.required', label: 'Required', size: 'small', layout: 'horizontal', jsSetting: true }))

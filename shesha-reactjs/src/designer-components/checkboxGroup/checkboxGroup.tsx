@@ -1,14 +1,15 @@
 import { ProfileOutlined } from '@ant-design/icons';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { executeScriptSync, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import RefListCheckboxGroup from './refListCheckboxGroup';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
-import { useCheckboxGroupOptions } from './multiCheckbox';
+import { useReferenceList } from '@/providers/referenceListDispatcher';
+import { getDataSourceList } from '../radio/utils';
 import { CheckboxGroupComponentProps, CheckboxGroupFocusHandle, DIRECTION_TYPE, DirectionType } from './interfaces';
 import {
   migratePropertyName,
@@ -18,7 +19,7 @@ import {
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
-import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { migrateUrlDataSource } from '../_common-migrations/migrateUrlDataSource';
 import { DATA_SOURCE_TYPES, DataSourceType } from '../dropdown/model';
 import { getStringEnumOrDefault } from '@/utils/object';
@@ -36,12 +37,7 @@ import apiCode from "../../componentsApi/componentApi.ts?raw";
 interface IEnhancedICheckboxGroupProps extends Omit<CheckboxGroupComponentProps, 'style' | 'readOnly'>, IConfigurableFormComponent {
 }
 
-interface ICheckboxGroupCalculatedValues {
-  /** The `dataSourceUrl` expression evaluated against the current form data. */
-  dataSourceUrl?: string | undefined;
-}
-
-const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, ICheckboxGroupCalculatedValues> = {
+const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps> = {
   allowInherit: true,
   type: 'checkboxGroup',
   isInput: true,
@@ -52,10 +48,7 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
   preserveDimensionsInDesigner: true,
   icon: <ProfileOutlined />,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.referenceListItem,
-  calculateModel: (model, allData) => ({
-    dataSourceUrl: isNotNullOrWhiteSpace(model.dataSourceUrl) ? executeScriptSync(model.dataSourceUrl, allData) : model.dataSourceUrl,
-  }),
-  Factory: ({ model, calculatedModel }) => {
+  Factory: ({ model }) => {
     const componentApi = useComponentApi();
     // The group has no single input element, so focus goes through an imperative
     // handle exposed by the group's wrapper div.
@@ -77,7 +70,13 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
       };
     }, [componentApi, model.componentName, model.id]);
 
-    const options = useCheckboxGroupOptions({ ...model, dataSourceUrl: calculatedModel.dataSourceUrl });
+    // Resolved here as well as in the group so the readOnly display can show the selected
+    // options' labels rather than their raw values.
+    const { data: refList } = useReferenceList(model.referenceListId);
+    const options = useMemo(
+      () => getDataSourceList(model.dataSourceType, model.items ?? [], refList?.items),
+      [model.dataSourceType, model.items, refList?.items],
+    );
 
     return (
       <ConfigurableFormItem<string | string[]> model={model} autoAlignLabel={false}>
@@ -101,7 +100,6 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
           return (
             <RefListCheckboxGroup
               {...model}
-              options={options}
               disabled={model.disabled === true}
               focusRef={focusRef}
               value={value ?? undefined}
@@ -165,8 +163,8 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
       // Hidden -> Visible and permissions onto the Visible / Interaction Mode
       // settings, applied as a single chained step.
       .add<IEnhancedICheckboxGroupProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev)))
-      // A `url` source that statically points at a reference list converts to the native
-      // `referenceList` source; any other URL (e.g. a dynamic one) keeps working as `url`.
+      // The `url` data source was removed. A URL that pointed at a reference list converts to
+      // the native `referenceList` source; anything else falls back to `values`.
       .add<IEnhancedICheckboxGroupProps>(9, (prev) => migrateUrlDataSource(prev)),
   linkToModelMetadata: (model, metadata): IEnhancedICheckboxGroupProps => {
     const refListId: IReferenceListIdentifier | undefined = !isNullOrWhiteSpace(metadata.referenceListModule) && !isNullOrWhiteSpace(metadata.referenceListName)

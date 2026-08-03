@@ -1,4 +1,3 @@
-import { CheckboxOptionType } from 'antd';
 import { CSSProperties, EventHandler, KeyboardEventHandler, MouseEventHandler, RefObject } from 'react';
 import { DataSourceType, ILabelValue } from '@/designer-components/dropdown/model';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
@@ -27,10 +26,6 @@ export type CheckboxGroupCommonProps = IInputStyles & INestedStyleValue<'checkbo
   referenceListName?: string | undefined;
   referenceListId?: IReferenceListIdentifier | undefined;
   dataSourceType: DataSourceType;
-  /** JS expression returning the URL to fetch options from (used when `dataSourceType` is `url`). */
-  dataSourceUrl?: string | undefined;
-  /** The function that receives data from the API and returns it in the format { value, label } */
-  reducerFunc?: string | undefined;
   direction?: DirectionType | undefined;
   style?: CSSProperties | undefined;
   styleJson?: CSSProperties | undefined;
@@ -48,11 +43,6 @@ type FocusEventWithValue<TValue = string> = React.FocusEvent<HTMLDivElement, Ele
 };
 
 export type ICheckboxGroupProps<TValue = string> = CheckboxGroupCommonProps & {
-  /**
-   * Options to render. When supplied they are used as-is; otherwise they are resolved
-   * from the data source described by the remaining properties.
-   */
-  options?: CheckboxOptionType[] | undefined;
   value?: TValue | TValue[] | undefined;
   onChange?: ((checkedValue: TValue | Array<TValue> | undefined) => void) | undefined;
   onFocus?: EventHandler<FocusEventWithValue<TValue>> | undefined;
