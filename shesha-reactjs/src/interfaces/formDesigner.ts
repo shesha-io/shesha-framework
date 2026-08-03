@@ -3,6 +3,7 @@ import { FormLayout } from 'antd/lib/form/Form';
 import { FC, RefObject, ReactNode } from 'react';
 import { ConfigurableFormInstance } from '@/providers/form/contexts';
 import {
+  FormIdentifier,
   FormMarkup,
   IConfigurableFormComponent,
   IFlatComponentsStructure,
@@ -19,6 +20,17 @@ import { FormBuilderFactory } from '@/form-factory/interfaces';
 export interface ISettingsFormInstance {
   submit: () => void;
   reset: () => void;
+}
+
+/**
+ * Context of the fields calculation, is passed to the components that render nested forms
+ */
+export interface IGetFieldsToFetchContext {
+  /**
+   * Returns the list of fields required by the specified form. Fields are relative to the root of that form,
+   * the caller is responsible for prefixing them with its own property name
+   */
+  getFormFieldsAsync: (formId: FormIdentifier) => Promise<string[]>;
 }
 
 export interface IFormLayoutSettings {
@@ -237,6 +249,12 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
    * Returns fields to fetch, used when it is necessary to get additional fields, and not just what is specified in the propertyName field
    */
   getFieldsToFetch?: ((propertyName: string, rawModel: TModel, metadata: IModelMetadata) => string[]) | undefined;
+
+  /**
+   * Asynchronous version of `getFieldsToFetch`, is used by the components that render nested forms and can't
+   * calculate the list of fields without loading those forms. Takes precedence over `getFieldsToFetch`
+   */
+  getFieldsToFetchAsync?: ((propertyName: string, rawModel: TModel, metadata: IModelMetadata, context: IGetFieldsToFetchContext) => Promise<string[]>) | undefined;
 
   /**
    * Validate model before rendering a component, used to add user-friendly messages about the need to correctly configure the component fields in the designer

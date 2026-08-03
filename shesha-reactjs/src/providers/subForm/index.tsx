@@ -46,7 +46,7 @@ import { AxiosResponse } from 'axios';
 import { configurableItemIdentifierToString } from '@/interfaces/configurableItems';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import { extractAjaxResponse, IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
-import { getEntityTypeIdentifierQueryParams, getEntityTypeName } from '../metadataDispatcher/entities/utils';
+import { getEntityTypeIdentifierQueryParams, getEntityTypeName, isEntityTypeIdEqual } from '../metadataDispatcher/entities/utils';
 import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
 import { IEntity, IGenericGetPayload } from '@/interfaces/gql';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
@@ -202,7 +202,10 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   useEffect(() => {
     if (formSelectionMode === 'dynamic') {
       if (internalEntityType) {
-        if (internalEntityType !== prevRenderedEntityTypeForm.current) {
+        const isAlreadyRendered = isDefined(prevRenderedEntityTypeForm.current) &&
+          isEntityTypeIdEqual(internalEntityType, prevRenderedEntityTypeForm.current);
+
+        if (!isAlreadyRendered) {
           const entityTypeName = getEntityTypeName(internalEntityType) ?? "";
           const cachedFormDto = entityTypeFormCache.current[entityTypeName];
           if (cachedFormDto) {
@@ -216,16 +219,23 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
               description: cachedFormDto.description ?? undefined,
             });
             prevRenderedEntityTypeForm.current = internalEntityType;
+          } else if (isNullOrWhiteSpace(formType)) {
+            // note: throwing here unmounts the whole sub-form and the user has no way to select the form type
+            setFormLoadingState({
+              isLoading: false,
+              error: new Error("'Form Type' is required when 'Form Selection Mode' = 'Dynamic'"),
+            });
           } else {
-            if (isNullOrWhiteSpace(formType))
-              throw new Error("'formType' is required when 'formSelectionMode' = 'dynamic'");
+            setFormLoadingState({ isLoading: true, error: null });
             getEntityFormIdAsync(internalEntityType, formType)
               .then((formid) => {
+                setFormLoadingState({ isLoading: false, error: null });
                 setFormConfig({ formId: { name: formid.name, module: formid.module }, lazy: true });
                 prevRenderedEntityTypeForm.current = internalEntityType;
               })
               .catch((error) => {
-                console.error('Failed to get form id', error);
+                // the sub-form stays empty if the form can't be resolved, show the reason instead of failing silently
+                setFormLoadingState({ isLoading: false, error });
               });
           }
         }
@@ -328,8 +338,10 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
           const classNameFromValue = getClassNameOrUndefined(value);
           const classNameFromResponse = getClassNameOrUndefined(dataResponse);
 
+          // note: the shorthand `{ ...dataResponse, classNameFromValue }` used to add a `classNameFromValue`
+          // property to the entity, it was submitted back to the server and rejected as an unknown property
           const newValue = classNameFromValue !== undefined && classNameFromResponse === undefined
-            ? { ...dataResponse, classNameFromValue }
+            ? { ...dataResponse, _className: classNameFromValue }
             : dataResponse;
           onChangeInternal(newValue);
           dispatch(fetchDataSuccessAction({ entityId: newValue.id }));
