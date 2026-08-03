@@ -28,6 +28,11 @@ export interface INotesRendererBaseProps {
    */
   disabled?: boolean | undefined;
   /**
+   * Makes the text area non-interactive. Defaults to `disabled`, set it to `false` to let the user type a note
+   * that can't be posted yet
+   */
+  inputDisabled?: boolean | undefined;
+  /**
    * Explanation shown to the user when the editor is disabled
    */
   disabledHint?: string | undefined;
@@ -63,6 +68,7 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
   isPostingNotes,
 
   disabled = false,
+  inputDisabled = disabled,
   disabledHint,
 
   allowCreate: showCommentBox = true,
@@ -138,7 +144,7 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
               rows={2}
               value={newComment}
               onChange={({ target: { value } }) => handleTextChange(value)}
-              disabled={disabled || (isPostingNotes ?? false)}
+              disabled={inputDisabled || (isPostingNotes ?? false)}
               onPressEnter={handleSaveNotes}
               autoSize={autoSize ? { minRows: 2 } : false}
               maxLength={maxLength}
