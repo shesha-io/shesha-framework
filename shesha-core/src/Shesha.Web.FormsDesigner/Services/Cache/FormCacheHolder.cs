@@ -28,9 +28,14 @@ namespace Shesha.Web.FormsDesigner.Services.Cache
             Cache.DefaultSlidingExpireTime = TimeSpan.FromMinutes(expirationMins);
         }
 
-        public string GetCacheKey(string module, string name, ConfigurationItemViewMode mode)
+        public string GetCacheKey(string module, string applicationKey, string name, ConfigurationItemViewMode mode)
         {
-            return $"{module}/{name}:{mode}".ToLower();
+            var key = $"{module}|{name}|{mode}";
+
+            if (!string.IsNullOrWhiteSpace(applicationKey))
+                key = applicationKey + "/" + key;
+
+            return key.ToLower();
         }
 
         public async Task HandleEventAsync(EntityChangedEventData<FormConfiguration> eventData)
@@ -42,9 +47,9 @@ namespace Shesha.Web.FormsDesigner.Services.Cache
             if (form == null)
                 return;
 
-            await Cache.RemoveAsync(GetCacheKey(form.Module?.Name, form.Name, ConfigurationItemViewMode.Live));
-            await Cache.RemoveAsync(GetCacheKey(form.Module?.Name, form.Name, ConfigurationItemViewMode.Ready));
-            await Cache.RemoveAsync(GetCacheKey(form.Module?.Name, form.Name, ConfigurationItemViewMode.Latest));
+            await Cache.RemoveAsync(GetCacheKey(form.Module?.Name, form.Application?.Name, form.Name, ConfigurationItemViewMode.Live));
+            await Cache.RemoveAsync(GetCacheKey(form.Module?.Name, form.Application?.Name, form.Name, ConfigurationItemViewMode.Ready));
+            await Cache.RemoveAsync(GetCacheKey(form.Module?.Name, form.Application?.Name, form.Name, ConfigurationItemViewMode.Latest));
         }
 
         public async Task EnableAsync()

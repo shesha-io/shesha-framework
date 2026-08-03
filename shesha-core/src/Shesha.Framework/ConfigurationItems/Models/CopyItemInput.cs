@@ -18,6 +18,11 @@ namespace Shesha.ConfigurationItems.Models
         public Guid ModuleId { get; set; }
 
         /// <summary>
+        /// Front-end application id
+        /// </summary>
+        public Guid? FrontEndAppId { get; set; }
+
+        /// <summary>
         /// Name
         /// </summary>
         public string Name { get; set; }

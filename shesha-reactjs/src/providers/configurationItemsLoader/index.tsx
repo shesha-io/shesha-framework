@@ -50,12 +50,23 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren<IConfigurationItems
   };
 
   const storages = useRef<StoragesDictionary>({});
+  const app = useSheshaApplication();
+
+  const prefixStorageName = (name: string): string => {
+    if (name === ItemTypes.Form && Boolean(app.applicationKey)){
+      return `${name}:${app.applicationKey}`;
+    } else
+      return name;
+  };
+
   const getStorage = (name: string): LocalForage => {
-    if (!storages.current[name]) {
-      storages.current[name] = localForage.createInstance({ name: name });
+    const fullName = prefixStorageName(name);
+
+    if (!storages.current[fullName]) {
+      storages.current[fullName] = localForage.createInstance({ name: fullName });
     }
 
-    return storages.current[name];
+    return storages.current[fullName];
   };
 
   const forms = useRef<IFormsDictionary>({});

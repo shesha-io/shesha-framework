@@ -87,7 +87,7 @@ namespace Shesha.Tests.ConfigurationItems
 
             var asyncExecuter = Resolve<IAsyncQueryableExecuter>();
             var uowManager = Resolve<IUnitOfWorkManager>();
-            var formManager = new FormManager(dst.FormRepo, dst.ModuleRepo, uowManager, permissionedObjectManager);
+            var formManager = new FormManager(dst.FormRepo, dst.ModuleRepo, uowManager, permissionedObjectManager, dst.FrontEndAppRepo);
             var importer = new FormConfigurationImport(dst.ModuleRepo, dst.FrontEndAppRepo, formManager, dst.FormRepo, uowManager, permissionedObjectManager);
             var importContext = new PackageImportContext()
             {
@@ -158,7 +158,7 @@ namespace Shesha.Tests.ConfigurationItems
 
             var asyncExecuter = Resolve<IAsyncQueryableExecuter>();
             var uowManager = Resolve<IUnitOfWorkManager>();
-            var formManager = new FormManager(dst.FormRepo, dst.ModuleRepo, uowManager, permissionedObjectManager);
+            var formManager = new FormManager(dst.FormRepo, dst.ModuleRepo, uowManager, permissionedObjectManager, dst.FrontEndAppRepo);
             var importer = new FormConfigurationImport(dst.ModuleRepo, dst.FrontEndAppRepo, formManager, dst.FormRepo, uowManager, permissionedObjectManager);
             var importContext = new PackageImportContext()
             {
@@ -233,7 +233,7 @@ namespace Shesha.Tests.ConfigurationItems
 
             var asyncExecuter = Resolve<IAsyncQueryableExecuter>();
             var uowManager = Resolve<IUnitOfWorkManager>();
-            var formManager = new FormManager(dst.FormRepo, dst.ModuleRepo, uowManager, permissionedObjectManager);
+            var formManager = new FormManager(dst.FormRepo, dst.ModuleRepo, uowManager, permissionedObjectManager, dst.FrontEndAppRepo);
             var importer = new FormConfigurationImport(dst.ModuleRepo, dst.FrontEndAppRepo, formManager, dst.FormRepo, uowManager, permissionedObjectManager);
             var importContext = new PackageImportContext()
             {
@@ -314,7 +314,7 @@ namespace Shesha.Tests.ConfigurationItems
 
             using (var uow = uowManager.Begin()) 
             {
-                var formManager = new FormManager(dst.FormRepo, dst.ModuleRepo, uowManager, permissionedObjectManager);
+                var formManager = new FormManager(dst.FormRepo, dst.ModuleRepo, uowManager, permissionedObjectManager, dst.FrontEndAppRepo);
                 var importer = new FormConfigurationImport(dst.ModuleRepo, dst.FrontEndAppRepo, formManager, dst.FormRepo, uowManager, permissionedObjectManager);
                 var importContext = new PackageImportContext()
                 {
@@ -447,7 +447,7 @@ namespace Shesha.Tests.ConfigurationItems
             var asyncExecuter = Resolve<IAsyncQueryableExecuter>();
             var uowManager = Resolve<IUnitOfWorkManager>();
             var permissionedObjectManager = Resolve<IPermissionedObjectManager>();
-            var formManager = new FormManager(dst.FormRepo, dst.ModuleRepo, uowManager, permissionedObjectManager);
+            var formManager = new FormManager(dst.FormRepo, dst.ModuleRepo, uowManager, permissionedObjectManager, dst.FrontEndAppRepo);
             var importer = new FormConfigurationImport(dst.ModuleRepo, dst.FrontEndAppRepo, formManager, dst.FormRepo, uowManager, permissionedObjectManager);
             
             var packageManager = Resolve<IConfigurationPackageManager>();

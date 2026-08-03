@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Shesha.ConfigurationItems
 {
@@ -65,6 +66,7 @@ namespace Shesha.ConfigurationItems
             if (status == ConfigurationItemVersionStatus.Live)
             {
                 var liveVersionsQuery = Repository.GetAll().Where(v => v.Module == item.Module &&
+                    v.Application == item.Application &&
                     v.Name == item.Name &&
                     v != item &&
                     v.VersionStatus == ConfigurationItemVersionStatus.Live);
@@ -110,10 +112,18 @@ namespace Shesha.ConfigurationItems
                 validationResults.Add(new ValidationResult("Module is mandatory", new List<string> { nameof(input.ModuleId) }));
             if (module != null && item != null)
             {
-                var alreadyExist = await Repository.GetAll().Where(f => f.Module == module && f.Name == item.Name && f != item).AnyAsync();
+                var application = item.Application;
+                var alreadyExist = await Repository.GetAll().Where(f => f.Module == module && f.Application == application && f.Name == item.Name).AnyAsync();
                 if (alreadyExist)
-                    validationResults.Add(new ValidationResult($"Item with name `{item.Name}` already exists in module `{module.Name}`")
+                {
+                    var fullName = module != null ? $"{module.Name}/{item.Name}" : item.Name;
+                    validationResults.Add(new ValidationResult(
+                        application != null
+                            ? $"Form `{fullName}` already exists in front-end application `{application.Name}`"
+                            : $"Form `{fullName}` already exists"
+                        )
                     );
+                }
             }
 
             validationResults.ThrowValidationExceptionIfAny(L);
@@ -132,7 +142,7 @@ namespace Shesha.ConfigurationItems
 
         public virtual async Task DeleteAllVersionsAsync(TItem item)
         {
-            await Repository.DeleteAsync(f => f.Name == item.Name && f.Module == item.Module && !f.IsDeleted);
+            await Repository.DeleteAsync(f => f.Name == item.Name && f.Module == item.Module && f.Application == item.Application && !f.IsDeleted);
         }
 
         public async Task UpdateStatusAsync(ConfigurationItemBase item, ConfigurationItemVersionStatus status)
