@@ -1,9 +1,11 @@
 import * as signalR from '@microsoft/signalr';
 
-import React, { PropsWithChildren, useContext, useEffect, useReducer, useRef } from 'react';
-import { getFlagSetters } from '../utils/flagsSetters';
+import React, { FC, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useReducer, useRef } from 'react';
 import {
+  ISignalRActionsContext,
   ISignalRConnection,
+  ISignalRContext,
+  ISignalRStateContext,
   SIGNAL_R_CONTEXT_INITIAL_STATE,
   SignalRActionsContext,
   SignalRStateContext,
@@ -23,7 +25,7 @@ export interface ISignalRProvider {
   reconnectIntervals?: number[]; // default: [0, 2000, 5000, 10000]
 }
 
-function SignalRProvider({
+const SignalRProvider: FC<PropsWithChildren<ISignalRProvider>> = ({
   children,
   baseUrl,
   hubUrl,
@@ -31,13 +33,15 @@ function SignalRProvider({
   onDisconnected,
   enableReconnect,
   reconnectIntervals,
-}: PropsWithChildren<ISignalRProvider>) {
+}) => {
   const [state, dispatch] = useReducer(signalRReducer, { ...SIGNAL_R_CONTEXT_INITIAL_STATE });
   const { backendUrl } = useSheshaApplication();
 
-  const setConnection = (connection?: ISignalRConnection) => {
+  // Memoized so the connection effect can list it as a dependency without tearing down and
+  // rebuilding the connection on every render.
+  const setConnection = useCallback((connection?: ISignalRConnection) => {
     dispatch(setConnectionAction(connection));
-  };
+  }, []);
 
   // Keep the latest callbacks in refs so the SignalR event handlers always invoke the
   // current callbacks without having to list them as effect deps (which would tear down
@@ -51,7 +55,8 @@ function SignalRProvider({
   });
 
   // Depend on the reconnect interval *values*, not the array's identity, so passing a new
-  // array literal with the same values doesn't needlessly recreate the connection.
+  // array literal with the same values doesn't needlessly recreate the connection. The
+  // effect reads the values back out of this key instead of closing over the array itself.
   const reconnectIntervalsKey = (reconnectIntervals ?? DEFAULT_RECONNECT_INTERVALS).join(',');
 
   useEffect(() => {
@@ -62,7 +67,10 @@ function SignalRProvider({
     let builder = new signalR.HubConnectionBuilder().withUrl(`${baseUrl ?? backendUrl}${hubUrl}`);
 
     if (enableReconnect) {
-      builder = builder.withAutomaticReconnect(reconnectIntervals ?? DEFAULT_RECONNECT_INTERVALS);
+      const intervals = reconnectIntervalsKey.length > 0
+        ? reconnectIntervalsKey.split(',').map(Number)
+        : [];
+      builder = builder.withAutomaticReconnect(intervals);
     }
 
     const connection: ISignalRConnection = builder.build();
@@ -79,17 +87,25 @@ function SignalRProvider({
 
     connection.onclose((error) => {
       console.error('SignalR connection closed', error);
+      // The connection is closed for good at this point (automatic reconnect, when enabled,
+      // has already given up), so drop it from state instead of leaving consumers holding a
+      // dead connection they might still try to invoke methods on.
+      setConnection();
       onDisconnectedRef.current?.();
     });
 
     connection
       .start()
       .then(() => {
-        // Only expose the connection once it has actually started successfully,
-        // and only if this effect instance is still active.
-        if (!isActive) return;
+        // The effect was cleaned up while start() was still in flight. Stop the connection
+        // here rather than leaving it open in the background, and keep it out of state.
+        if (!isActive)
+          return connection.stop();
+
+        // Only expose the connection once it has actually started successfully.
         setConnection(connection);
         onConnectedRef.current?.(connection);
+        return undefined;
       })
       .catch((err) => console.error('SignalR start failed:', err));
 
@@ -99,30 +115,30 @@ function SignalRProvider({
       // invokes onDisconnectedRef.current. If the connection never started, neither
       // fires, mirroring the fact that onConnected was never called either.
       connection
-        ?.stop()
-        ?.catch((err) => console.error('SignalRProvider connection error', err));
+        .stop()
+        .catch((err) => console.error('SignalRProvider connection error', err));
 
       setConnection();
     };
-  }, [baseUrl, backendUrl, hubUrl, enableReconnect, reconnectIntervalsKey]);
+  }, [baseUrl, backendUrl, hubUrl, enableReconnect, reconnectIntervalsKey, setConnection]);
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
+  const actions = useMemo<ISignalRActionsContext>(() => ({
+    setConnection,
+    /* NEW_ACTION_GOES_HERE */
+  }), [setConnection]);
+
   return (
     <SignalRStateContext.Provider value={state}>
-      <SignalRActionsContext.Provider
-        value={{
-          ...getFlagSetters(dispatch),
-          /* NEW_ACTION_GOES_HERE */
-        }}
-      >
+      <SignalRActionsContext.Provider value={actions}>
         {children}
       </SignalRActionsContext.Provider>
     </SignalRStateContext.Provider>
   );
-}
+};
 
-function useSignalRState(require: boolean) {
+function useSignalRState(require: boolean = true): ISignalRStateContext | undefined {
   const context = useContext(SignalRStateContext);
 
   if (context === undefined && require) {
@@ -132,7 +148,7 @@ function useSignalRState(require: boolean) {
   return context;
 }
 
-function useSignalRActions(require: boolean) {
+function useSignalRActions(require: boolean = true): ISignalRActionsContext | undefined {
   const context = useContext(SignalRActionsContext);
 
   if (context === undefined && require) {
@@ -142,7 +158,7 @@ function useSignalRActions(require: boolean) {
   return context;
 }
 
-function useSignalR(require: boolean = true) {
+function useSignalR(require: boolean = true): ISignalRContext | undefined {
   const actionsContext = useSignalRActions(require);
   const stateContext = useSignalRState(require);
 
@@ -157,3 +173,10 @@ function useSignalR(require: boolean = true) {
 export default SignalRProvider;
 
 export { SignalRProvider, useSignalR, useSignalRActions, useSignalRState };
+
+export type {
+  ISignalRActionsContext,
+  ISignalRConnection,
+  ISignalRContext,
+  ISignalRStateContext,
+};
