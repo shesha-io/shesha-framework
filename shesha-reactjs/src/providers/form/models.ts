@@ -125,7 +125,9 @@ export interface IStyleValue {
   shadow?: IShadowValue | undefined;
   dimensions?: IDimensionsValue | undefined;
   size?: SizeType | undefined;
+  /** js code of calculated style */
   style?: string | undefined;
+  /** calculated style */
   styleJson?: CSSProperties | undefined;
   /** @deprecated use stylingBoxJson insted */
   stylingBox?: string | undefined;
@@ -177,8 +179,6 @@ export interface IInputStyles extends IStyleValue {
   backgroundStoredFileId?: string | undefined;
   enableStyleOnReadonly?: boolean | undefined;
   container?: IStyleValue | undefined;
-  display?: 'block' | 'flex' | 'grid' | 'inline-grid' | undefined;
-  gap?: string | number | SizeType | undefined;
 };
 
 export type ConfigurableFormComponentTypes =

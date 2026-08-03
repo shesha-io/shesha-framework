@@ -123,6 +123,7 @@ import EntityTypeAutocompleteComponent from '@/designer-components/configurableI
 import CalendarComponent from '@/designer-components/calendar';
 import TableContextComponentLegacy from '@/designer-components/dataTable/tableContext/tableContextComponentLegacy';
 import { isDefined } from '@/utils/nullables';
+import ContainerCheckerComponent from '@/designer-components/containerChecker';
 
 type IToolboxComponentGroupRelaxed = Omit<IToolboxComponentGroup, 'components'> & { components: IToolboxComponentBase[] };
 
@@ -253,6 +254,7 @@ export const getToolboxComponents = (
       visible: devMode,
       name: 'Dev',
       components: [
+        ContainerCheckerComponent,
         PropertyRouterComponent,
         ThemeEditorComponent,
         MainMenuEditorComponent,

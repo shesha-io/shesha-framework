@@ -1,19 +1,12 @@
 import { createStyles } from '@/styles';
 import { INumberFieldComponentProps } from './interfaces';
 import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, marginStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace } from '@/utils';
 
 export const useStyles = createStyles(({ css, cx }, model: INumberFieldComponentProps) => {
-  const hasPrefix = model.prefix || model.prefixIcon;
-  const hasSuffix = model.suffix || model.suffixIcon;
-  const color = model.font?.color || '#000';
-
-  // Whether the user has configured any padding. When they have, their padding must win on the
-  // actual input element; otherwise we fall back to the prefix/suffix-aware layout defaults.
-  const sb = model.stylingBoxJson;
-  const hasUserPadding = isDefined(sb) && (
-    isDefined(sb.paddingTop) || isDefined(sb.paddingBottom) || isDefined(sb.paddingLeft) || isDefined(sb.paddingRight)
-  );
+  const hasPrefix = isNotNullOrWhiteSpace(model.prefix) || isDefined(model.prefixIcon);
+  const hasSuffix = isNotNullOrWhiteSpace(model.suffix) || isDefined(model.suffixIcon);
+  const color = isDefined(model.font?.color) ? model.font.color : '#000';
 
   const numberStyles = cx('sha-input-number-input', css`
       padding-inline-start: '0px' !important;
@@ -23,6 +16,13 @@ export const useStyles = createStyles(({ css, cx }, model: INumberFieldComponent
       ${borderStyles(model.border)}
       ${backgroundStyles(model.background)}
       ${shadowStyles(model.shadow)}
+      ${paddingStyles(model.stylingBoxJson)}
+      ${marginStyles(model.stylingBoxJson)}
+      ${dimensionsStyles(model.dimensions)}
+      
+      //&:focus {
+      //  ${model.background && model.background.type === 'color' && `background-color: ${model.background.color};`}
+      //}
 
       &:hover {
         ${!hasSuffix && 'padding-right: 28px !important;'}

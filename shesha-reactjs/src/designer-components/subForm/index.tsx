@@ -10,6 +10,7 @@ import {
   useForm,
   useFormItem,
   useFormData,
+  UnwrapCodeEvaluators,
 } from '@/providers';
 import { SubFormWrapper } from './subFormWrapper';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
@@ -24,7 +25,7 @@ export interface ISubFormComponentProps
   queryParams?: ISubFormProviderProps['queryParams'];
 }
 
-export const isSubFormComponent = (component: IConfigurableFormComponent): component is ISubFormComponentProps => component.type === SubFormComponent.type;
+export const isSubFormComponent = (component: IConfigurableFormComponent | UnwrapCodeEvaluators<IConfigurableFormComponent>): component is ISubFormComponentProps => component.type === SubFormComponent.type;
 
 const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
   type: 'subForm',

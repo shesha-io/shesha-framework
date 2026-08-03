@@ -24,21 +24,9 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
   type: 'button',
   isInput: false,
   name: 'Button',
-  /**
-   * Custom dimension calculation for designer mode.
-   * - Buttons with 'auto' width -> wrapper uses 'max-content' (shrinks to fit), button fills 100%
-   * - Buttons with absolute/relative width -> wrapper gets that width, button fills 100%
-   */
-  getDesignerDimensions: (originalDims, deviceDims) => {
-    const isAutoWidth = originalDims?.width === 'auto';
-    if (isAutoWidth) {
-      // WYSIWYG: Wrapper shrinks to fit content, button fills wrapper
-      return { ...deviceDims, width: 'max-content' };
-    }
-
-    // Default: fill the wrapper
-    return deviceDims;
-  },
+  getWrapperStyle: (model) => ({
+    dimensions: { height: model?.dimensions?.height, width: model?.dimensions?.width },
+    stylingBoxJson: { _type: 'styleBox', paddingLeft: 3, paddingRight: 3, paddingTop: 5, paddingBottom: 5 } }),
   icon: <BorderOutlined />,
   Factory: ({ model, form }) => {
     const shaForm = useShaFormInstance();

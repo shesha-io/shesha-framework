@@ -27,6 +27,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   icon: <GroupOutlined />,
   // Button Group preserves its original dimensions in designer mode (like image component)
   preserveDimensionsInDesigner: true,
+  getWrapperStyle: () => ({ stylingBoxJson: { _type: 'styleBox', paddingLeft: 3, paddingRight: 1, paddingTop: 5, paddingBottom: 5 } }),
   Factory: ({ model, form }) => {
     const { styles } = useStyles();
     return model.hidden === true ? null

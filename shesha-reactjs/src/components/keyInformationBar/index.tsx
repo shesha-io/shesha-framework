@@ -81,13 +81,14 @@ export const KeyInformationBar: FC<IKeyInformationBarComponentProps> = (props) =
   const computedStyle = { ...getStyle(style, data), ...pickStyleFromModel(stylingBoxJSON) };
   const barStyle = !vertical ? { justifyContent: alignItems } : { alignItems: alignItems };
 
-  const containerStyle = (item: KeyInfomationBarItemProps): CSSProperties => ({
+  const containerStyle = (item: KeyInfomationBarItemProps, gap?: number | undefined): CSSProperties => ({
     textAlign: item.textAlign,
     display: 'flex',
     flexDirection: item.flexDirection ? item.flexDirection : 'column',
     alignItems: item.textAlign,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
+    gap: addPx(gap || 0, allData),
   });
 
   const divThickness = addPx(dividerThickness || '0.62px', allData);
@@ -126,13 +127,12 @@ export const KeyInformationBar: FC<IKeyInformationBarComponentProps> = (props) =
             <div className={styles.content} style={{ justifyContent: item.textAlign }}>
               <ComponentsContainer
                 containerId={item.id}
-                gap={gap}
                 wrapperStyle={{
                   padding: addPx(item.padding || 0, allData),
                   maxWidth: vertical ? '100%' : addPx(item.width, allData),
                   boxSizing: 'border-box',
                 }}
-                style={containerStyle(item)}
+                style={containerStyle(item, gap)}
                 dynamicComponents={props.isDynamic ? item.components : []}
               />
             </div>

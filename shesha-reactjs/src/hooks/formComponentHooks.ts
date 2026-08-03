@@ -272,7 +272,7 @@ export const useBackgroundStoredFile = (model: IBackgroundValue | undefined, app
 };
 
 // ToDo: AS - remove after migration all components to the new styles
-
+/** @deprecated will be removed after migration all components to the new styles */
 export const useFormComponentStyles = <TModel extends IStyleValue & Pick<IConfigurableFormComponent, 'style' | 'wrapperStyle'>>(
   model: TModel/* & IStyleValue & Omit<IConfigurableFormComponent, 'id' | 'type'>*/,
   options?: IUseFormComponentStylesOptions,

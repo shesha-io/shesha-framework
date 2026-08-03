@@ -2,7 +2,7 @@ import { getFormDesignerBackgroundSvg } from '@/components/sidebarContainer/styl
 import { createStyles, sheshaStyles } from '@/styles';
 import { LAYOUT_CONSTANTS } from '../../../shesha-constants';
 
-const designerClassNames = {
+export const designerClassNames = {
   componentDragHandle: "sha-component-drag-handle",
   componentPropertiesActions: "component-properties-actions",
   designerWorkArea: "sha-designer-work-area",
@@ -360,7 +360,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             background-color: white;
             height: calc(100vh - ${HEADER_HEIGHT} - ${TOOLBAR_HEIGHT} - ${SIDEBAR_BTN_HEIGHT});
             .${shaComponentsContainer} {
-                border-radius: 2px;
 
                 .${shaDropHint} {
                     margin: 0;
@@ -374,7 +373,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 }
 
                 .${shaComponent} {
-                    min-height: 42px;
+                    min-height: 35px;
                 }
             }
 
@@ -420,8 +419,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             }
         }
         .${shaComponent} {
-            position: relative;
-            min-height: 50px; /* Ensure enough space for error icon */
 
             .${prefixCls}-alert.${shaDesignerWarning} {
               margin-bottom: 0;
@@ -463,41 +460,17 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               }
             }
         
-            .${componentDragHandle} {
-              visibility: visible;
-              border-radius: 2px;
-              width: 100%;
-              height: 100%;
-              position: relative;
-              cursor: grab;
-              border: 1px dashed ${token.colorPrimary};
-              box-sizing: border-box;
-              display: flex;
-              padding: 5px 3px;
-            }
-            &:not(:hover) {
-                .${componentDragHandle} {
-                    border: 1px solid white;
-                }
-            }
-        
             .${shaComponentIndicator} {
               display: inline-block;
               align-items: center;
               color: darkgray;
               left: 15px;
-              height: 100%;
+              height: auto;
               position: absolute;
               z-index: 1000;
         
               .anticon {
                 margin-right: ${sheshaStyles.paddingMD}px;
-              }
-            }
-        
-            &:not(:hover) {
-              .${componentDragHandle} {
-                background-color: transparent;
               }
             }
           }

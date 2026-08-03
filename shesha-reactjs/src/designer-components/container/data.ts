@@ -1,5 +1,5 @@
 import { nanoid } from '@/utils/uuid';
-import { ICommonContainerProps, IContainerComponentProps } from './interfaces';
+import { ICommonContainerProps, IContainerComponentPropsV0 } from './interfaces';
 import { IStyleValue } from '@/providers/form/models';
 
 export const JUSTIFY_ITEMS = [
@@ -154,7 +154,7 @@ export const ALIGN_SELF = [
 ];
 
 
-export const defaultStyles = (prev?: IContainerComponentProps): IStyleValue & ICommonContainerProps => {
+export const defaultStyles = (prev?: IContainerComponentPropsV0): IStyleValue & ICommonContainerProps => {
   const {
     width = 'auto',
     height = 'auto',
@@ -215,7 +215,7 @@ export const defaultStyles = (prev?: IContainerComponentProps): IStyleValue & IC
       offsetY: isAbove ? -2 : isBelow ? 2 : 0,
       spreadRadius: 0,
     },
-    display: className === 'sha-index-table-control' || className === 'index-table-controls-right' ? 'flex' : display ?? undefined,
+    display: className === 'sha-index-table-control' || className === 'index-table-controls-right' ? 'flex' : display ?? 'block',
     direction: direction ?? "horizontal",
     flexWrap: className === 'sha-index-table-control' || className === 'index-table-controls-right' ? 'nowrap' : flexWrap ?? 'nowrap',
     flexDirection: flexDirection ?? "row",

@@ -30,6 +30,19 @@ export type StandardEventHandlerWithoutChange = Exclude<StandardEventHandler, 'o
 export const ALL_INPUT_EVENTS_WITHOUT_CHANGE: readonly StandardEventHandlerWithoutChange[] =
   ALL_INPUT_EVENTS.filter((event): event is StandardEventHandlerWithoutChange => event !== 'onChange');
 
+/**
+ * `ALL_INPUT_EVENTS` minus `onDoubleClick` — for components that deliberately don't expose a
+ * double-click handler. Pass this to `stdEventHandlers` in the settings form and
+ * `ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK` to `getComponentEvents` at runtime so the two
+ * lists stay in step (see the note on `ALL_INPUT_EVENTS`).
+ */
+export const ALL_INPUT_EVENTS_WITHOUT_DOUBLE_CLICK: readonly StandardEventHandler[] =
+  ALL_INPUT_EVENTS.filter((event): event is StandardEventHandler => event !== 'onDoubleClick');
+
+/** `ALL_INPUT_EVENTS_WITHOUT_DOUBLE_CLICK` minus `onChange` — the runtime set for those components. */
+export const ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK: readonly StandardEventHandlerWithoutChange[] =
+  ALL_INPUT_EVENTS_WITHOUT_CHANGE.filter((event): event is StandardEventHandlerWithoutChange => event !== 'onDoubleClick');
+
 interface EventConfig {
   event: StandardEventHandler;
   propertyName: CustomEventHandler;
@@ -132,7 +145,7 @@ export const getComponentEvents = <TValue, TModel = IConfigurableFormComponent>(
   valueType?: string | undefined,
   prefix?: string | undefined,
 ): EventsObject => {
-  const result = {} as EventsObject;
+  const result: EventsObject = {};
   if (!isDefined(ctx) || !isDefined(events) || events.length === 0) return result;
   events.forEach((event: StandardEventHandlerWithoutChange) => {
     const config = getEventConfig(event, valueType);
