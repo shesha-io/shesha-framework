@@ -111,12 +111,17 @@ export const isLayerFetchable = (layer: ICalendarLayersProps): boolean =>
 // Firing the request with empty parameters (e.g. ?id=) causes a backend validation error.
 export const hasEmptyUrlParameters = (url: string): boolean => {
   if (isNullOrWhiteSpace(url)) return true;
-  if (/{{.*?}}/.test(url)) return true;
+
+  const hasUnresolvedTag = (value: string): boolean => /{{.*?}}/.test(value);
+
+  if (hasUnresolvedTag(url)) return true;
 
   try {
     const urlObj = new URL(url, 'http://placeholder');
     for (const [, value] of urlObj.searchParams.entries()) {
-      if (isNullOrWhiteSpace(value)) return true;
+      // URLSearchParams decodes percent-encoded values (e.g. %7B%7B...%7D%7D),
+      // so an unresolved tag can only surface here after decoding.
+      if (isNullOrWhiteSpace(value) || hasUnresolvedTag(value)) return true;
     }
   } catch {
     // Fallback for URLs that cannot be parsed — check for empty query values with regex
