@@ -11,7 +11,7 @@ import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/e
 import { isDefined } from '@/utils/nullables';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { View } from 'react-big-calendar';
-import { evaluateFilters, getCalendarDataUrl, getLayerEventsData, isLayerFetchable } from './utils';
+import { evaluateFilters, getCalendarDataUrl, getLayerEventsData, hasEmptyUrlParameters, isLayerFetchable } from './utils';
 import { ILayerWithMetadata } from './interfaces';
 
 interface IGetData {
@@ -83,6 +83,12 @@ export const useCalendarLayers = (layers: ICalendarLayersProps[] | undefined): I
 
           const filter = await evaluateFilters(item, formData, globalState, item.metadata);
           const evalCustomUrl = evaluateString(item.customUrl, { data: formData, globalState });
+
+          // Guard: skip the API call if the custom URL still has empty parameters.
+          // On first render formData may not be populated yet, which would produce a
+          // URL like ?id= and trigger a backend validation error.
+          if (item.dataSource === 'custom' && hasEmptyUrlParameters(evalCustomUrl))
+            return null;
 
           const url = getCalendarDataUrl({ ...item, customUrl: evalCustomUrl, overfetch: item.overfetch }, filter);
           const response = await httpClient.get<IAjaxResponse<LayerDataResponse>>(url);
