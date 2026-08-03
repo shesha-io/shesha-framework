@@ -102,6 +102,7 @@ namespace Shesha.ConfigurationItems
         public async virtual Task MoveToModuleAsync(TItem item, MoveItemToModuleInput input)
         {
             var module = await ModuleRepository.GetAsync(input.ModuleId);
+            var application = item.Application;
 
             var validationResults = new List<ValidationResult>();
 
@@ -112,15 +113,14 @@ namespace Shesha.ConfigurationItems
                 validationResults.Add(new ValidationResult("Module is mandatory", new List<string> { nameof(input.ModuleId) }));
             if (module != null && item != null)
             {
-                var application = item.Application;
-                var alreadyExist = await Repository.GetAll().Where(f => f.Module == module && f.Application == application && f.Name == item.Name).AnyAsync();
+                var alreadyExist = await Repository.GetAll().Where(f => f.Module == module && f.Application == application && f.Name == item.Name && f != item).AnyAsync();
                 if (alreadyExist)
                 {
                     var fullName = module != null ? $"{module.Name}/{item.Name}" : item.Name;
                     validationResults.Add(new ValidationResult(
                         application != null
-                            ? $"Form `{fullName}` already exists in front-end application `{application.Name}`"
-                            : $"Form `{fullName}` already exists"
+                            ? $"Item `{fullName}` already exists in front-end application `{application.Name}`"
+                            : $"Item `{fullName}` already exists"
                         )
                     );
                 }
@@ -128,7 +128,7 @@ namespace Shesha.ConfigurationItems
 
             validationResults.ThrowValidationExceptionIfAny(L);
 
-            var allVersionsQuery = Repository.GetAll().Where(v => v.Origin == item.Origin);
+            var allVersionsQuery = Repository.GetAll().Where(f => f.Module == module && f.Application == application && f.Name == item.Name);
             var allVersions = await allVersionsQuery.ToListAsync();
 
             foreach (var version in allVersions)

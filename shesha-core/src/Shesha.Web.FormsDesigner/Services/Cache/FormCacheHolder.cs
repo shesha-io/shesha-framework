@@ -8,6 +8,8 @@ using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
 using Shesha.Web.FormsDesigner.Dtos;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.Web.FormsDesigner.Services.Cache
@@ -47,9 +49,18 @@ namespace Shesha.Web.FormsDesigner.Services.Cache
             if (form == null)
                 return;
 
-            await Cache.RemoveAsync(GetCacheKey(form.Module?.Name, form.Application?.Name, form.Name, ConfigurationItemViewMode.Live));
-            await Cache.RemoveAsync(GetCacheKey(form.Module?.Name, form.Application?.Name, form.Name, ConfigurationItemViewMode.Ready));
-            await Cache.RemoveAsync(GetCacheKey(form.Module?.Name, form.Application?.Name, form.Name, ConfigurationItemViewMode.Latest));
+            var appKeys = new List<string>() { form.Application?.AppKey, null }.Distinct().ToList();
+            
+            var modes = new[] {
+                ConfigurationItemViewMode.Live,
+                ConfigurationItemViewMode.Ready,
+                ConfigurationItemViewMode.Latest
+            };
+            foreach (var mode in modes)
+            {
+                foreach (var appKey in appKeys)
+                    await Cache.RemoveAsync(GetCacheKey(form.Module?.Name, appKey, form.Name, mode));
+            }
         }
 
         public async Task EnableAsync()
