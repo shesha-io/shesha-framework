@@ -3,7 +3,7 @@ import { useNotesEditorActions, useNotesEditorState } from '@/providers';
 import NotesRendererBase from '@/components/notesRendererBase';
 import { useStyles } from './styles/styles';
 
-const DESIGNER_HINT = 'Notes are read-only in the form designer.';
+const DESIGNER_HINT = 'Notes cannot be posted from the form designer.';
 const UNSAVED_OWNER_HINT = 'Notes can be added only after the record has been saved.';
 
 export interface INotesRendererProps {
@@ -45,6 +45,8 @@ export const NotesRenderer: FC<INotesRendererProps> = ({
         isPostingNotes={isPostingNotes}
 
         disabled={!canPostNotes}
+        // the text area stays usable in the designer so the component can be laid out and tested, only posting is blocked
+        inputDisabled={!canPostNotes && !isDesignerMode}
         disabledHint={isDesignerMode ? DESIGNER_HINT : UNSAVED_OWNER_HINT}
 
         allowCreate={allowCreate}
