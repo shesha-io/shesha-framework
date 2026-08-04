@@ -3,6 +3,7 @@ using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Extensions;
 using Abp.Runtime.Validation;
+using DocumentFormat.OpenXml.Bibliography;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -558,7 +559,8 @@ namespace Shesha.Web.FormsDesigner.Services
 
             var validationResults = new List<ValidationResult>();
 
-            var alreadyExist = await Repository.GetAll().Where(f => f.Id != input.Id && f.Module.Name == input.ModelType && f.Name == input.Name).AnyAsync();
+            var entity = await GetEntityByIdAsync(input.Id);
+            var alreadyExist = await Repository.GetAll().Where(f => f.Id != input.Id && f.Module == entity.Module && f.Application == entity.Application && f.Name == input.Name).AnyAsync();
             if (alreadyExist)
                 validationResults.Add(new ValidationResult(
                     input.ModelType != null
@@ -570,13 +572,24 @@ namespace Shesha.Web.FormsDesigner.Services
             if (validationResults.Any())
                 throw new AbpValidationException("Please correct the errors and try again", validationResults);
 
-            var entity = await GetEntityByIdAsync(input.Id);
+            var oldName = entity.Name;
 
             entity.Name = input.Name;
             entity.Label = input.Label;
             entity.Description = input.Description;
             entity.Markup = input.Markup;
             entity.ModelType = input.ModelType;
+            await Repository.UpdateAsync(entity);
+
+            if (oldName != input.Name) 
+            { 
+                var versions = await Repository.GetAll().Where(f => f !=  entity && f.Module == entity.Module && f.Application == entity.Application && f.Name == oldName).ToListAsync();
+                foreach (var version in versions) 
+                {
+                    version.Name = input.Name;
+                    await Repository.UpdateAsync(version);
+                }
+            }
 
             await CurrentUnitOfWork.SaveChangesAsync();
 

@@ -13,7 +13,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Shesha.ConfigurationItems
 {
@@ -102,7 +101,7 @@ namespace Shesha.ConfigurationItems
         public async virtual Task MoveToModuleAsync(TItem item, MoveItemToModuleInput input)
         {
             var module = await ModuleRepository.GetAsync(input.ModuleId);
-            var application = item.Application;
+            var application = item?.Application;
 
             var validationResults = new List<ValidationResult>();
 

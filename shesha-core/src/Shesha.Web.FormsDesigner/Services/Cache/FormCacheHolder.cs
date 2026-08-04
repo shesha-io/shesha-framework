@@ -4,6 +4,7 @@ using Abp.Events.Bus.Handlers;
 using Abp.Runtime.Caching;
 using Microsoft.Extensions.Configuration;
 using Shesha.Cache;
+using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
 using Shesha.Web.FormsDesigner.Dtos;
@@ -16,10 +17,14 @@ namespace Shesha.Web.FormsDesigner.Services.Cache
 {
     public class FormCacheHolder : CacheHolder<string, FormConfigurationDto>, IFormCacheHolder, ISingletonDependency, IAsyncEventHandler<EntityChangedEventData<FormConfiguration>>
     {
+        private readonly IAppKeysStore _appKeyStore;
+
         public bool IsEnabled { get; set; }
 
-        public FormCacheHolder(ICacheManager cacheManager, IConfiguration configuration) : base("FormsCache", cacheManager)
+        public FormCacheHolder(ICacheManager cacheManager, IConfiguration configuration, IAppKeysStore appKeyStore) : base("FormsCache", cacheManager)
         {
+            _appKeyStore = appKeyStore;
+
             IsEnabled = !configuration.GetValue<bool>("disableFormsCache");
 
             var expiration = configuration.GetValue<int?>("FormsCacheExpiration");
@@ -49,13 +54,14 @@ namespace Shesha.Web.FormsDesigner.Services.Cache
             if (form == null)
                 return;
 
-            var appKeys = new List<string>() { form.Application?.AppKey, null }.Distinct().ToList();
+            var appKeys = _appKeyStore.AppKeys;
             
             var modes = new[] {
                 ConfigurationItemViewMode.Live,
                 ConfigurationItemViewMode.Ready,
                 ConfigurationItemViewMode.Latest
             };
+            
             foreach (var mode in modes)
             {
                 foreach (var appKey in appKeys)
