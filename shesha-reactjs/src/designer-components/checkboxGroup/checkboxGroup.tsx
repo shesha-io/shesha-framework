@@ -1,5 +1,6 @@
 import { ProfileOutlined } from '@ant-design/icons';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { CSSProperties, useEffect, useMemo, useRef } from 'react';
+import { useActualContextExecution } from '@/hooks';
 import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
@@ -54,6 +55,8 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps> = 
     // handle exposed by the group's wrapper div.
     const focusRef = useRef<CheckboxGroupFocusHandle>(null);
 
+    const checkboxStyleJson = useActualContextExecution<CSSProperties>(model.checkbox?.style, undefined, {});
+
     useEffect(() => {
       const apiId = model.id;
       componentApi?.updateApi<CheckboxGroupApi>({
@@ -100,6 +103,7 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps> = 
           return (
             <RefListCheckboxGroup
               {...model}
+              checkboxStyleJson={checkboxStyleJson}
               disabled={model.disabled === true}
               focusRef={focusRef}
               value={value ?? undefined}

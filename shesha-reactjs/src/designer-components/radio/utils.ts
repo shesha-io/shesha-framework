@@ -38,7 +38,7 @@ const defaultWrapperStyles = (): IStyleValue => {
           color: '#d9d9d9',
         },
       },
-      radius: { all: '50%' },
+      radius: { all: 0 },
       borderType: 'all',
       radiusType: 'all',
     },

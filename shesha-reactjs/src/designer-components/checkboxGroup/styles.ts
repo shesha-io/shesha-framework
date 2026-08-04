@@ -1,6 +1,7 @@
+import { CSSProperties } from 'react';
 import { createStyles } from '@/styles';
 import { CheckboxGroupComponentProps } from './interfaces';
-import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, marginStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
+import { backgroundStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, marginStyles, paddingStyles, shadowStyles, splitBackgroundProperties } from '../_common/styles/utils';
 import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
 import { addPx } from '@/utils/style';
 
@@ -30,12 +31,25 @@ const borderWidthFromWeight = (weight: string | undefined): string => {
   }
 };
 
-export const useStyles = createStyles(({ css, cx, prefixCls }, model: CheckboxGroupComponentProps) => {
+/**
+ * `checkbox.style` holds a JS expression, so the Factory evaluates it and passes the resulting
+ * CSSProperties in as `checkboxStyleJson`. The wrapper's own custom style is applied inline by
+ * the framework (as `styleJson`), but a nested set has no such route — it has to be emitted
+ * into the scoped rule here.
+ */
+type CheckboxGroupStylesArgs = CheckboxGroupComponentProps & {
+  checkboxStyleJson?: CSSProperties | undefined;
+};
+
+export const useStyles = createStyles(({ css, cx, prefixCls }, model: CheckboxGroupStylesArgs) => {
   const checkbox = model.checkbox;
+  // Background is separated so it can follow the checked-only convention below.
+  const customStyle = splitBackgroundProperties(model.checkboxStyleJson);
   // The check mark itself is drawn from the font: the nested set has no font panel, so its size,
   // weight and colour come from the wrapper's font.
-  const markSize = addPx(checkbox?.font?.size);
-  const checkColor = isNotNullOrWhiteSpace(checkbox?.font?.color) ? checkbox.font.color : '#fff';
+  const markSize = isDefined(model.checkboxStyleJson?.fontSize) ? model.checkboxStyleJson.fontSize : addPx(checkbox?.font?.size);
+  const checkColor = isDefined(model.checkboxStyleJson?.color) ? model.checkboxStyleJson.color : isNotNullOrWhiteSpace(checkbox?.font?.color) ? checkbox.font.color : '#fff';
+  const markWeight = isDefined(model.checkboxStyleJson?.fontWeight) ? model.checkboxStyleJson.fontWeight : checkbox?.font?.weight;
 
   const checkboxGroup = cx('sha-multi-checkbox', css`
       /* Wrapper set — styles the group container itself. */
@@ -56,7 +70,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: CheckboxGr
       /* Checkbox set — styles the box of each option. */
       .${prefixCls}-checkbox {
         ${isDefined(markSize) ? `--ant-control-interactive-size: ${markSize};` : ''}
-        --ant-line-width-bold: ${borderWidthFromWeight(checkbox?.font?.weight)} !important;
+        --ant-line-width-bold: ${borderWidthFromWeight(`${markWeight}`)} !important;
         --ant-color-white: ${checkColor} !important;
         ${borderStyles(checkbox?.border)}
         ${shadowStyles(checkbox?.shadow)}
@@ -77,11 +91,18 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: CheckboxGr
         &.${prefixCls}-checkbox-checked:after {
           transform: translate(-50%, -50%) rotate(45deg) scale(1) !important;
         }
+
+        /* Custom style last so it wins over the panel settings above, matching how the
+           wrapper's own custom style overrides its panels. Its background declarations are
+           held back — see the checked rule below. */
+        ${cssPropertiesToString(customStyle.rest)}
       }
 
-      /* Background fills the box only when checked (checkbox convention). */
+      /* Background fills the box only when checked (checkbox convention). The custom style's
+         background follows the same rule, so setting one there cannot paint the unchecked box. */
       .${prefixCls}-checkbox-checked {
         ${backgroundStyles(checkbox?.background)}
+        ${cssPropertiesToString(customStyle.background)}
       }
     `);
 
