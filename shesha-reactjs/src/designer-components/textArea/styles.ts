@@ -11,7 +11,6 @@ export const useStyles = createStyles(({ css, cx }, model: ITextAreaComponentPro
     ${borderStyles(model.border)}
     ${backgroundStyles(model.background)}
     ${shadowStyles(model.shadow)}
-
   `;
 
   const statefulAppearance = `
@@ -49,16 +48,24 @@ export const useStyles = createStyles(({ css, cx }, model: ITextAreaComponentPro
         ${paddingStyles(model.stylingBoxJson)}
         ${dimensionsStyles(model.dimensions)}
         ${marginStyles(model.stylingBoxJson)}
-
         ${statefulAppearance}
 
         /* The inner textarea still carries the textArea class, so its own copy of the
-           appearance is neutralised here — the wrapper owns it now. Only the font is left,
-           since that belongs on the element rendering the text. */
-        textarea.ant-input {
+           appearance is neutralised here — the wrapper owns it now. Margin and padding are
+           included: otherwise the configured spacing is applied twice, once on the wrapper
+           and again on the textarea inside it. Only the font is left, since that belongs on
+           the element rendering the text.
+
+           The repeated class matches the specificity of the textArea state rules above,
+           so those cannot re-paint a border or background on hover/focus/validation. */
+        &&&& textarea.ant-input,
+        &&&& textarea.ant-input:hover,
+        &&&& textarea.ant-input:focus,
+        &&&& textarea.ant-input:focus-within {
           background: transparent;
           border: none;
           box-shadow: none;
+          margin: 0;
           padding: 0;
           width: 100%;
           height: 100%;
