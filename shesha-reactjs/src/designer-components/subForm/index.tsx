@@ -102,8 +102,14 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
     if (!isDefined(formId) || (!isFormRawId(formId) && !isFormFullName(formId)))
       return ownFields;
 
-    const nestedFields = await context.getFormFieldsAsync(formId);
-    return [...ownFields, ...nestedFields.map((field) => `${propertyName}.${field}`)];
+    try {
+      const nestedFields = await context.getFormFieldsAsync(formId);
+      return [...ownFields, ...nestedFields.map((field) => `${propertyName}.${field}`)];
+    } catch (error) {
+      // the entity reference itself is still required even if the nested form can't be loaded
+      console.error(`Failed to get fields of the form rendered by the sub-form '${propertyName}'`, error);
+      return ownFields;
+    }
   },
 };
 
