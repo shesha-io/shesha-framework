@@ -1,5 +1,5 @@
 import React from 'react';
-import { isDefined } from "@/utils/nullables";
+import { isDefined, isNotNullOrWhiteSpace } from "@/utils/nullables";
 import { executeScriptSync } from '@/providers/form/utils';
 import { IPropertySetting } from '..';
 
@@ -112,9 +112,9 @@ export const GRID_DIMENSION_VALUES = ['auto', 'min-content', 'max-content'];
  */
 export const addPx = (value: number | string | null | undefined, context?: object): string | undefined => {
   // Preserve calc() expressions and other CSS functions
-  if (typeof value === 'string' && /^(calc|min|max|clamp)\(/i.test(value.trim())) {
-    return value;
-  }
+  const trimmedValue = typeof value === 'string' ? value.trim() : undefined;
+  if (isNotNullOrWhiteSpace(trimmedValue) && /^(calc|min|max|clamp)\([^;{}]*\)$/i.test(trimmedValue))
+    return trimmedValue;
 
   const parsed = parseDimension(value, context);
   if (!parsed) return undefined;
