@@ -27,6 +27,17 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: ICo
   const headerDimensions = dimensionsStyles({ ...model.headerStyles?.dimensions, width: undefined, minWidth: undefined, maxWidth: undefined });
   const headerPadding = paddingStyles(model.headerStyles?.stylingBoxJson ?? defaultHeaderPadding);
 
+  const collapsedBorderRadius = borderRadiusStyles({
+    ...model.border,
+    radiusType: 'custom',
+    radius: {
+      topLeft: model.border?.radius?.topLeft ?? model.border?.radius?.all,
+      topRight: model.border?.radius?.topRight ?? model.border?.radius?.all,
+      bottomRight: model.border?.radius?.topRight ?? model.border?.radius?.all,
+      bottomLeft: model.border?.radius?.topLeft ?? model.border?.radius?.all,
+    },
+  }, true);
+
   const shaCollapsiblePanel = cx("ant-collapse-component", css`
     &.${hideWhenEmpty}:not(:has(.ant-collapse-body .sha-component)):not(:has(.${prefixCls}-collapse-content-box .sha-component)):not(:has(.ant-collapse-body .ant-form-item)) {
       display: none;
@@ -41,8 +52,12 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: ICo
       display: flex;
       flex-direction: column;
       ${shadowStyles(model.shadow)}
-      ${borderRadiusStyles(model.border, true)}
       height: 100%;
+      ${collapsedBorderRadius}
+    }
+
+    > .ant-collapse-item.ant-collapse-item-active {
+      ${borderRadiusStyles(model.border, true)}
     }
    
     > .ant-collapse-item > .ant-collapse-panel, > .ant-collapse-item > .ant-collapse-content {
@@ -79,6 +94,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: ICo
       ${borderLinesStyles(model.headerStyles?.border)}
       ${model.accentStyle === true ? 'border-top: 3px solid var(--primary-color);' : ''}
       align-items: center !important;
+      ${collapsedBorderRadius} 
 
       .ant-collapse-header-text {
         ${fontStyles(model.headerStyles?.font)}
@@ -112,6 +128,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: ICo
         radius: { topLeft: model.border?.radius?.topLeft ?? model.border?.radius?.all, topRight: model.border?.radius?.topRight ?? model.border?.radius?.all, bottomRight: 0, bottomLeft: 0 },
       }, true)}
     }
+
 
     &.${prefixCls}-collapse-ghost {
       > .ant-collapse-item {
