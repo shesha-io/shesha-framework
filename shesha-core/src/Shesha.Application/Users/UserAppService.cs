@@ -651,10 +651,15 @@ namespace Shesha.Users
 
             // validate password against configured policy
             await _userManager.InitializeOptionsAsync(AbpSession.TenantId);
+            var passwordErrors = new List<IdentityError>();
             foreach (var validator in _userManager.PasswordValidators)
             {
-                CheckErrors(await validator.ValidateAsync(_userManager, user, input.NewPassword));
+                var validationResult = await validator.ValidateAsync(_userManager, user, input.NewPassword);
+                if (!validationResult.Succeeded)
+                    passwordErrors.AddRange(validationResult.Errors);
             }
+            if (passwordErrors.Any())
+                CheckErrors(IdentityResult.Failed(passwordErrors.ToArray()));
 
             user.AddHistoryEvent("Password reset", "Password reset");
             (await _personRepository.FirstOrDefaultAsync(x => x.User == user))?.AddHistoryEvent("Password reset", "Password reset");

@@ -65,19 +65,17 @@ export const Page: FC<PropsWithChildren<IPageProps>> = ({
 
   const hasAllowedPermission = anyOfPermissionsGranted(requiredPermissions);
 
-  const navigateToUrl = (url: string) => router.push(url);
-
   if (!hasAllowedPermission) {
     return (
       <Result
         status="403"
         title="403"
         subTitle="You are not authorised to access this page"
-        extra={
-          <Button onClick={() => navigateToUrl('/')} type="primary">
+        extra={(
+          <Button onClick={() => router.push('/')} type="primary">
             Back Home
           </Button>
-        }
+        )}
       />
     );
   }
