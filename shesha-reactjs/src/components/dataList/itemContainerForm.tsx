@@ -4,9 +4,10 @@ import React, { CSSProperties, FC, PropsWithChildren, ReactNode } from 'react';
 import { IComponentsContainerProps } from '../formDesigner/containers/componentsContainer';
 import classNames from 'classnames';
 import { ConfigurableFormComponent } from '../formDesigner/configurableFormComponent';
+import { ICommonContainerProps } from '@/interfaces';
 
 type AlignmentProps = Pick<
-  IComponentsContainerProps,
+  ICommonContainerProps,
   | 'direction' |
   'justifyContent' |
   'alignItems' |
@@ -83,7 +84,7 @@ export const ItemContainerForm: FC<PropsWithChildren<IComponentsContainerProps>>
 
   const style = { ...getAlignmentStyle(props), ...props.style };
 
-  return props.noDefaultStyling ? (
+  return props.noDefaultStyling === true ? (
     <div style={{ ...style, textJustify: 'auto' }}>{renderComponents()}</div>
   ) : (
     <div className={classNames(['sha-components-container', props.direction, props.className])} style={props.wrapperStyle}>

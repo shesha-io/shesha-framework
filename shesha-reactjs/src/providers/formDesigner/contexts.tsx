@@ -100,6 +100,7 @@ export type FormDesignerActions = {
   addComponent: (payload: IComponentAddPayload) => void;
   updateComponent: <TModel extends IConfigurableFormComponent = IConfigurableFormComponent>(payload: IComponentUpdatePayload<TModel>) => void;
   deleteComponent: (payload: IComponentDeletePayload) => void;
+  deleteSelectedComponent: () => boolean;
   duplicateComponent: (payload: IComponentDuplicatePayload) => void;
   updateChildComponents: (payload: IUpdateChildComponentsPayload) => void;
   addDataProperty: (payload: IAddDataPropertyPayload) => void;

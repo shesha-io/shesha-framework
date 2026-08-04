@@ -20,6 +20,7 @@ interface IEventsAndApiValueProcessorProps<TValue = unknown> {
 
 export const useEvents = <TValue = unknown>(componentName: string = 'undefined'): HandleEvent<TValue> => {
   const allData = useAvailableConstantsDataNoRefresh();
+  // allData is interactive and can be used with once initialization
   const [handleEvent] = useState((): HandleEvent<TValue> => (event, value, code, eventName) => {
     if (isNullOrWhiteSpace(code)) return;
     try {

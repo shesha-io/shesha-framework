@@ -3,7 +3,8 @@ import { addPx } from '@/utils/style';
 import { ICommonContainerProps, IConfigurableFormComponent, IInputStyles, IStyleValue } from "@/interfaces";
 import { BorderType, IBorderType } from "../_settings/utils/border/interfaces";
 import { getNumberOrUndefined } from "@/utils/string";
-import { isNullOrWhiteSpace } from "@/utils/nullables";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
+import { ICommonContainerPropsV0 } from "../container/interfaces";
 
 type ExtendedType = IInputStyles & Omit<IConfigurableFormComponent, 'type' | 'id'> & { block?: boolean | undefined; type?: string | undefined };
 
@@ -17,7 +18,7 @@ const stringOrUndefined = (value: unknown): string | undefined => typeof (value)
 
 const inputTypes = ['textField', 'numberField', 'passwordCombo', 'dropdown', 'autocomplete', 'timePicker', 'dateField', 'button', 'entityPicker'];
 const isInputField = (prev: ExtendedType): boolean => !isNullOrWhiteSpace(prev.type) && inputTypes.includes(prev.type);
-export const migrateStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<ICommonContainerProps, 'style' | 'id' | 'label'>, screen?: 'desktop' | 'tablet' | 'mobile'): IStyleValue => {
+export const migrateStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<ICommonContainerPropsV0, 'style' | 'id' | 'label'>, screen?: 'desktop' | 'tablet' | 'mobile'): IStyleValue => {
   const prevStyles: IInputStyles = screen && prev[screen] ? prev[screen] : prev;
 
   const border = (side: BorderType): BorderCssProps => ({
@@ -37,10 +38,10 @@ export const migrateStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<I
   const isStoredFile = prevStyles.backgroundDataSource === 'storedFileId' || prev.backgroundDataSource === 'storedFileId';
 
   const backgroundType = isColor ? 'color' : isBase64 ? 'image' : isUrl ? 'url' : isStoredFile ? 'storedFile' : 'color';
-  const backgroundUrl = prevStyles.backgroundUrl || prev.backgroundUrl;
-  const backgroundBase64 = prevStyles.backgroundBase64 || prev.backgroundBase64;
-  const backgroundStoredFileId = prevStyles.backgroundStoredFileId || prev.backgroundStoredFileId;
-  const backgroundColor = prevStyles.backgroundColor || prev.backgroundColor;
+  const backgroundUrl = isDefined(prevStyles.backgroundUrl) ? prevStyles.backgroundUrl : prev.backgroundUrl;
+  const backgroundBase64 = isDefined(prevStyles.backgroundBase64) ? prevStyles.backgroundBase64 : prev.backgroundBase64;
+  const backgroundStoredFileId = isDefined(prevStyles.backgroundStoredFileId) ? prevStyles.backgroundStoredFileId : prev.backgroundStoredFileId;
+  const backgroundColor = isDefined(prevStyles.backgroundColor) ? prevStyles.backgroundColor : prev.backgroundColor;
   const backgroundRepeat = prevStyles.backgroundRepeat || prev.backgroundRepeat;
   const backgroundCover = prevStyles.backgroundCover || prev.backgroundCover;
 
@@ -73,8 +74,8 @@ export const migrateStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<I
       position: prevStyles.background?.position ?? prev.background?.position ?? 'center',
       gradient: prevStyles.background?.gradient ?? prev.background?.gradient ?? { direction: 'to right', colors: {} },
       url: prevStyles.background?.url ?? prev.background?.url ?? backgroundUrl ?? defaults?.background?.url ?? '',
-      storedFile: prevStyles.background?.storedFile ?? prev.background?.storedFile ?? (backgroundStoredFileId ? { id: backgroundStoredFileId } : undefined),
-      uploadFile: prevStyles.background?.uploadFile ?? prev.background?.uploadFile ?? (backgroundBase64 ? { uid: nanoid(), name: '', url: backgroundBase64 } : undefined),
+      storedFile: prevStyles.background?.storedFile ?? prev.background?.storedFile ?? (isDefined(backgroundStoredFileId) ? { id: backgroundStoredFileId } : undefined),
+      uploadFile: prevStyles.background?.uploadFile ?? prev.background?.uploadFile ?? (isDefined(backgroundBase64) ? { uid: nanoid(), name: '', url: backgroundBase64 } : undefined),
     },
     font: {
       color: prevStyles.font?.color ?? prevStyles.fontColor ?? prevStyles.color ?? prev.font?.color ?? prev.fontColor ?? prev.color ?? defaults?.font?.color,
@@ -84,7 +85,7 @@ export const migrateStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<I
       weight: prevStyles.font?.weight ?? stringOrUndefined(prevStyles.fontWeight) ?? prev.font?.weight ?? stringOrUndefined(prev.fontWeight) ?? defaults?.font?.weight ?? '400',
     },
     dimensions: {
-      width: prevStyles.dimensions?.width ?? prev.dimensions?.width ?? (prev.block ? '100%' : (addPx(prevStyles.width) ?? addPx(prev.width) ?? defaults?.dimensions?.width)),
+      width: prevStyles.dimensions?.width ?? prev.dimensions?.width ?? (prev.block === true ? '100%' : (addPx(prevStyles.width) ?? addPx(prev.width) ?? defaults?.dimensions?.width)),
       height: prevStyles.dimensions?.height ?? prev.dimensions?.height ?? addPx(prevStyles.height) ?? addPx(prev.height) ?? heightFromSize ?? defaults?.dimensions?.height,
       minHeight: prevStyles.dimensions?.minHeight ?? prev.dimensions?.minHeight ?? defaults?.dimensions?.minHeight,
       maxHeight: prevStyles.dimensions?.maxHeight ?? prev.dimensions?.maxHeight ?? defaults?.dimensions?.maxHeight,
@@ -107,7 +108,7 @@ export const migrateStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<I
 export const migratePrevStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<ICommonContainerProps, 'style' | 'id' | 'label'>): T => {
   const result: T = {
     ...prev,
-    enableStyleOnReadonly: prev.enableStyleOnReadonly || false,
+    enableStyleOnReadonly: prev.enableStyleOnReadonly === true,
     desktop: { ...prev.desktop, ...migrateStyles(prev, defaults, 'desktop'), enableStyleOnReadonly: (prev.desktop as IInputStyles | undefined)?.enableStyleOnReadonly ?? false },
     tablet: { ...prev.tablet, ...migrateStyles(prev, defaults, 'tablet'), enableStyleOnReadonly: (prev.tablet as IInputStyles | undefined)?.enableStyleOnReadonly ?? false },
     mobile: { ...prev.mobile, ...migrateStyles(prev, defaults, 'mobile'), enableStyleOnReadonly: (prev.mobile as IInputStyles | undefined)?.enableStyleOnReadonly ?? false },

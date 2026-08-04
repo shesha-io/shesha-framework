@@ -26,6 +26,7 @@ import apiCode from "../../componentsApi/componentApi.ts?raw";
 import { useEvents } from '@/components/formDesigner/components/eventsAndApiValueProcessor';
 import { getComponentEvents } from '../_common/events';
 import { getStyleValueFromModel } from '../_common/styles/utils';
+import { IStyleValue } from '@/providers';
 
 const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
   allowInherit: true,
@@ -33,12 +34,13 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
   isInput: false,
   name: 'Panel',
   icon: <GroupOutlined />,
+  getWrapperStyle: (model) => ({ dimensions: model?.dimensions, stylingBoxJson: { _type: 'styleBox', paddingLeft: 2, paddingRight: 2, paddingTop: 2, paddingBottom: 2 } }),
   useCalculateModel(model, allData) {
     const evaluatedLabel = typeof model.label === 'string' ? evaluateString(model.label, { data: allData.data }) : model.label;
     const calcModel = useMemo(() => ({ evaluatedLabel }), [evaluatedLabel]);
     return calcModel;
   },
-  Factory: ({ model, calculatedModel }) => {
+  Factory: ({ model: sourceModel, calculatedModel }) => {
     const {
       expandIconPosition,
       collapsedByDefault,
@@ -52,7 +54,14 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
       content,
       className,
       hidden,
-    } = model;
+    } = sourceModel;
+
+    const model = useMemo(() => {
+      return {
+        ...sourceModel,
+        dimensions: { ...sourceModel.dimensions, height: '100%', width: '100%' }, // height and width will be applied to the wrapper
+      };
+    }, [sourceModel]);
 
     const collapsedRef = useRef<ICollapseRef>(undefined);
     const componentApi = useComponentApi();
@@ -77,6 +86,7 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
       <ParentProvider model={model} name={`CollapsiblePanel-${model.id}`}>
         <CollapsiblePanel
           {...getStyleValueFromModel(model)}
+          headerStyles={model.headerStyles}
           style={model.styleJson ?? {}}
           header={isDefined(model.header) && isNonEmptyArray(model.header.components) ? (
             <div {...getComponentEvents<void>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent }, undefined, undefined, 'headerEvents')}>
@@ -187,11 +197,11 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
         if (ctx.isNew === true) return prev;
 
         const newModel = migratePrevStyles(prev, getDefaultStyles(prev));
-        const defaultHeaderStyle = { ...getDefaultHeaderStyles(prev) };
+        const defaultHeaderStyle = (): IStyleValue => ({ ...getDefaultHeaderStyles(prev) });
         return {
-          ...newModel, desktop: { ...newModel.desktop, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle },
-          tablet: { ...newModel.tablet, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle },
-          mobile: { ...newModel.mobile, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle },
+          ...newModel, desktop: { ...newModel.desktop, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle() },
+          tablet: { ...newModel.tablet, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle() },
+          mobile: { ...newModel.mobile, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle() },
         };
       })
       .add<ICollapsiblePanelComponentProps>(10, migrateV9toV10)

@@ -42,6 +42,7 @@ import { ValidationErrors } from '../validationErrors';
 import { buildUrl } from '@/utils';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { isFile } from '@/utils/fileValidation';
+import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 interface IUploaderFileTypes {
   name: string;
@@ -98,6 +99,7 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   downloadedFileStyles?: CSSProperties | undefined;
   styleDownloadedFiles?: boolean | undefined;
   downloadedIcon?: IconType | undefined;
+  gap?: string | number | SizeType | undefined;
 }
 
 const EMPTY_FILES: StoredFileModel[] = [];

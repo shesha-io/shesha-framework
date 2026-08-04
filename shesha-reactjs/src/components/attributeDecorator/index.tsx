@@ -7,6 +7,8 @@ interface AttributeDecoratorProps {
   children: React.ReactElement;
 }
 
+const displayNoneStyle: React.CSSProperties = { display: 'none' };
+
 /**
  * Takes decoration attributes as props.attributes [{ key: value }, ...] and injects them as custom data attributes to the element that is being wrapped / 'decorated'.
  * The children must be a single element.
@@ -43,7 +45,7 @@ const AttributeDecorator: React.FC<AttributeDecoratorProps> = (props) => {
 
   return (
     <>
-      <div ref={divRef} style={{ display: 'none' }} />
+      <div ref={divRef} style={displayNoneStyle} />
       {props.children}
     </>
   );

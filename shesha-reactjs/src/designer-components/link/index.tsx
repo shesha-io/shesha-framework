@@ -19,6 +19,7 @@ const LinkComponent: LinkComponentDefinition = {
   name: 'link',
   preserveDimensionsInDesigner: true,
   icon: <LinkOutlined />,
+  getWrapperStyle: () => ({ dimensions: { width: 'auto' } }),
   calculateModel: (model, allData) => ({
     isDesignerMode: allData.form?.formMode === 'designer',
     href: evaluateString(model.href, allData.data ?? {}),
@@ -34,6 +35,9 @@ const LinkComponent: LinkComponentDefinition = {
       justifyItems,
       hasChildren,
     } = model;
+
+    if (model.hidden === true) return null;
+
     // Create link container style with textAlign from fontStyles
     const linkStyle: CSSProperties = {};
 
@@ -44,12 +48,12 @@ const LinkComponent: LinkComponentDefinition = {
       linkStyle['justifyItems'] = justifyItems;
     }
 
-    if (model.hidden) return null;
+    const style = { ...linkStyle, ...model.allStyles?.fullStyle };
 
     return (
       <ConfigurableFormItem model={model}>
         {() => {
-          if (!hasChildren) {
+          if (hasChildren !== true) {
             return (
               <div style={{ ...linkStyle, alignItems: 'center', display: 'flex', height: '100%' }}>
                 <a href={calculatedModel.href} target={target} className="sha-link" style={{ ...model.allStyles?.fullStyle, height: 'unset' }}>
@@ -65,19 +69,16 @@ const LinkComponent: LinkComponentDefinition = {
               model={model}
             >
               <ComponentsContainer
-                style={{ ...linkStyle, ...model.allStyles?.fullStyle }}
+                style={style}
                 containerId={id}
                 direction={direction}
-                justifyContent={model.direction === 'horizontal' ? model.justifyContent : undefined}
-                alignItems={model.direction === 'horizontal' ? model.alignItems : undefined}
-                justifyItems={model.direction === 'horizontal' ? model.justifyItems : undefined}
                 className={model.className}
                 itemsLimit={1}
-                dynamicComponents={model.isDynamic ? model.components : []}
+                dynamicComponents={model.isDynamic === true ? model.components : []}
               />
             </ParentProvider>
           );
-          if (calculatedModel.isDesignerMode) {
+          if (calculatedModel.isDesignerMode === true) {
             return containerHolder();
           }
           return (

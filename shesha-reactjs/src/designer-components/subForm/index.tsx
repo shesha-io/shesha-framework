@@ -1,7 +1,7 @@
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import React from 'react';
 import { FormOutlined } from '@ant-design/icons';
-import { getStyle } from '@/providers/form/utils';
+import { getStyle, isFormFullName, isFormRawId } from '@/providers/form/utils';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { ISubFormProviderProps, SubFormApiMode } from '@/providers/subForm/interfaces';
 import { IToolboxComponent } from '@/interfaces';
@@ -10,11 +10,13 @@ import {
   useForm,
   useFormItem,
   useFormData,
+  UnwrapCodeEvaluators,
 } from '@/providers';
 import { SubFormWrapper } from './subFormWrapper';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { getStringPropertyOrUndefined } from '@/utils/object';
+import { isDefined } from '@/utils/nullables';
 
 export interface ISubFormComponentProps
   extends Omit<ISubFormProviderProps, 'labelCol' | 'wrapperCol' | 'readOnly'>,
@@ -24,7 +26,13 @@ export interface ISubFormComponentProps
   queryParams?: ISubFormProviderProps['queryParams'];
 }
 
-export const isSubFormComponent = (component: IConfigurableFormComponent): component is ISubFormComponentProps => component.type === SubFormComponent.type;
+export const isSubFormComponent = (component: IConfigurableFormComponent | UnwrapCodeEvaluators<IConfigurableFormComponent>): component is ISubFormComponentProps => component.type === SubFormComponent.type;
+
+const getSubFormOwnFields = (propertyName: string): string[] => [
+  `${propertyName}.id`,
+  `${propertyName}._displayName`,
+  `${propertyName}._className`,
+];
 
 const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
   type: 'subForm',
@@ -79,11 +87,29 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
     return customProps;
   },
   getFieldsToFetch: (propertyName) => {
-    return [
-      propertyName + '.id',
-      propertyName + '._displayName',
-      propertyName + '._className',
-    ];
+    return getSubFormOwnFields(propertyName);
+  },
+  getFieldsToFetchAsync: async (propertyName, rawModel, _metadata, context) => {
+    const ownFields = getSubFormOwnFields(propertyName);
+
+    // the sub-form fetches its own data in the `api` mode, in the `dynamic` mode the form to render
+    // is known only at runtime. In both cases the parent form fetches the entity reference only
+    if (rawModel.dataSource !== 'form' || rawModel.formSelectionMode === 'dynamic')
+      return ownFields;
+
+    // `formId` may be a code evaluator when it's configured as a JS setting, such forms can't be resolved here
+    const formId = rawModel.formId;
+    if (!isDefined(formId) || (!isFormRawId(formId) && !isFormFullName(formId)))
+      return ownFields;
+
+    try {
+      const nestedFields = await context.getFormFieldsAsync(formId);
+      return [...ownFields, ...nestedFields.map((field) => `${propertyName}.${field}`)];
+    } catch (error) {
+      // the entity reference itself is still required even if the nested form can't be loaded
+      console.error(`Failed to get fields of the form rendered by the sub-form '${propertyName}'`, error);
+      return ownFields;
+    }
   },
 };
 
