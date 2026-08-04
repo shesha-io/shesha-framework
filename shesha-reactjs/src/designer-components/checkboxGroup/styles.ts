@@ -51,8 +51,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: CheckboxGr
         height: 100%;
         align-items: center !important;
         ${fontStyles(model.font)}
-        ${paddingStyles(checkbox?.stylingBoxJson)}
-        ${marginStyles(checkbox?.stylingBoxJson)}
       }
 
       /* Checkbox set — styles the box of each option. */
@@ -64,6 +62,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: CheckboxGr
         ${shadowStyles(checkbox?.shadow)}
         ${dimensionsStyles(checkbox?.dimensions)}
         ${marginStyles(checkbox?.stylingBoxJson)}
+        ${paddingStyles(checkbox?.stylingBoxJson)}
 
         .${prefixCls}-checkbox-input {
           width: 100%;
