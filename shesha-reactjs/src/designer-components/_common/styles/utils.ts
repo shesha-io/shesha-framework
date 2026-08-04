@@ -3,6 +3,56 @@ import { IConfigurableFormComponent, IStyleValue, StyleBoxValue } from "../../..
 import { addPx, hasNumber } from "@/utils/style";
 import { StringBuilder } from "@/utils";
 import { isDefined } from "@/utils/nullables";
+import { CSSProperties } from "react";
+
+/** Properties that are unitless in CSS, so a bare number must not gain a `px` suffix. */
+const UNITLESS_PROPERTIES = new Set([
+  'animationIterationCount', 'aspectRatio', 'borderImageOutset', 'borderImageSlice', 'borderImageWidth',
+  'boxFlex', 'boxFlexGroup', 'boxOrdinalGroup', 'columnCount', 'columns', 'flex', 'flexGrow', 'flexPositive',
+  'flexShrink', 'flexNegative', 'flexOrder', 'gridRow', 'gridColumn', 'fontWeight', 'lineClamp', 'lineHeight',
+  'opacity', 'order', 'orphans', 'tabSize', 'widows', 'zIndex', 'zoom',
+]);
+
+/**
+ * Serialises a evaluated Custom style object into CSS declarations.
+ *
+ * The framework applies a component's own custom style inline (as `styleJson`), but a nested
+ * style set has no inline element of its own — its declarations have to be emitted into a
+ * scoped rule, which needs them as text.
+ */
+export const cssPropertiesToString = (style: CSSProperties | undefined): string => {
+  if (!isDefined(style)) return '';
+  const sb = new StringBuilder();
+  Object.entries(style).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === '') return;
+    // React accepts camelCase; CSS needs kebab-case. Custom properties (--x) are passed through.
+    const property = key.startsWith('--') ? key : key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
+    const cssValue = typeof value === 'number' && !UNITLESS_PROPERTIES.has(key) ? `${value}px` : `${value}`;
+    sb.append(`${property}: ${cssValue};`);
+  });
+  return sb.build();
+};
+
+const isBackgroundProperty = (key: string): boolean => key === 'background' || key.startsWith('background');
+
+/**
+ * Splits an evaluated Custom style into its background declarations and everything else.
+ *
+ * Checkbox and radio indicators fill only when checked, so the Background panel is scoped to
+ * the checked selector. A custom style has to honour the same convention, otherwise a
+ * background set there would paint the box in its unchecked state too.
+ */
+export const splitBackgroundProperties = (style: CSSProperties | undefined): { background: CSSProperties; rest: CSSProperties } => {
+  const background: Record<string, unknown> = {};
+  const rest: Record<string, unknown> = {};
+  if (isDefined(style)) {
+    Object.entries(style).forEach(([key, value]) => {
+      if (isBackgroundProperty(key)) background[key] = value;
+      else rest[key] = value;
+    });
+  }
+  return { background: background as CSSProperties, rest: rest as CSSProperties };
+};
 
 export const getStyleValueFromModel = (model: IConfigurableFormComponent): IStyleValue => {
   return {

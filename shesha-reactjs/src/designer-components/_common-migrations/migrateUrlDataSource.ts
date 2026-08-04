@@ -59,8 +59,13 @@ export const getReferenceListFromUrl = (dataSourceUrl: unknown): IReferenceListI
   const decodedName = safeDecode(name);
   if (!isDefined(decodedName)) return undefined;
 
-  const decodedModule = isDefined(module) && isNotNullOrWhiteSpace(module) ? safeDecode(module) : null;
-  if (!isDefined(decodedModule)) return undefined;
+  // An absent module is the null module; only an undecodable one makes the URL unresolvable.
+  let decodedModule: string | null = null;
+  if (isDefined(module) && isNotNullOrWhiteSpace(module)) {
+    const decoded = safeDecode(module);
+    if (!isDefined(decoded)) return undefined;
+    decodedModule = decoded;
+  }
 
   return {
     name: decodedName,
@@ -98,7 +103,7 @@ export const migrateUrlDataSource = <T extends ILegacyUrlDataSource>(prev: T): T
   if (prev.dataSourceType !== 'url') return prev;
 
   const referenceListId = prev.referenceListId ?? getReferenceListFromUrl(prev.dataSourceUrl);
-  const { dataSourceUrl: _dataSourceUrl, reducerFunc: _reducerFunc, ...rest } = prev;
+  const { dataSourceUrl: _dataSourceUrl, reducerFunc: _reducerFunc, dataSourceType: _dataSourceType, ...rest } = prev;
 
   return isDefined(referenceListId)
     ? { ...rest, dataSourceType: 'referenceList', referenceListId }

@@ -31,7 +31,7 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
 
   const options = useMemo<CheckboxOptionType[]>(() => {
     const list = getDataSourceList(model.dataSourceType, items, refList?.items);
-    return list.map<CheckboxOptionType>((item) => (item.id ? item : { ...item, id: nanoid(), key: nanoid() }));
+    return list.map<CheckboxOptionType>((item) => (item.id ? item : { ...item, id: nanoid() }));
   }, [model.dataSourceType, items, refList?.items]);
 
   // Per-checkbox appearance (check mark, dimensions, border, background, etc.)
