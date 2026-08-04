@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useContext, useEffect, useState } from 'react';
+import React, { FC, PropsWithChildren, useCallback, useContext, useEffect, useState, useSyncExternalStore } from 'react';
 import { useFormDesignerComponentGroups } from '../form/hooks';
 import { FormMode, IConfigurableFormComponent, IFlatComponentsStructure, IFormSettings, isConfigurableFormComponent } from '../form/models';
 import {
@@ -112,6 +112,26 @@ export const useFormDesignerSubscription = (subscriptionType: FormDesignerSubscr
   return dummy;
 };
 
+const getSettingsPanelServerSnapshot = (): null => null;
+
+/**
+ * Element of the properties panel to render the settings of the selected component into.
+ * Note: the element is assigned by a ref callback during the commit phase, i.e. after the components are rendered.
+ * `useSyncExternalStore` re-reads it right after subscribing, a plain subscription would miss that assignment
+ * on mount and the components would keep rendering with the stale `null` (#4223)
+ */
+const useFormDesignerSettingsPanelElement = (): HTMLDivElement | null => {
+  const formDesigner = useFormDesigner();
+
+  const subscribe = useCallback(
+    (onStoreChange: () => void) => formDesigner.subscribe('selection', onStoreChange),
+    [formDesigner],
+  );
+  const getSnapshot = useCallback(() => formDesigner.settingsPanelElement, [formDesigner]);
+
+  return useSyncExternalStore(subscribe, getSnapshot, getSettingsPanelServerSnapshot);
+};
+
 const useFormDesignerMarkup = (): IFlatComponentsStructure => {
   useFormDesignerSubscription('markup');
   return useFormDesigner().state.formFlatMarkup;
@@ -179,6 +199,7 @@ export {
   useFormDesignerSettings,
   useFormDesignerSelectedComponentId,
   useFormDesignerSelectedComponent,
+  useFormDesignerSettingsPanelElement,
   useFormDesignerReadOnly,
   useFormDesignerIsDebug,
   useFormDesignerFormMode,
