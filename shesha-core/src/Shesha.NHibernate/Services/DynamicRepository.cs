@@ -148,7 +148,8 @@ namespace Shesha.Services
         {
             var where = new Func<IQueryable<int>, Expression<Func<int, bool>>, IQueryable<int>>(Queryable.Where).Method;
             var whereForMyType = where.GetGenericMethodDefinition().MakeGenericMethod(entityType);
-            var query = CurrentSession.Query<object>(entityType.FullName).Cast(entityType.GetRequiredFullName());
+        
+            var query = CurrentSession.Query<object>(entityType.GetRequiredFullName()).Cast(entityType);
 
             return whereForMyType.Invoke(query, [query, lambda]).ForceCastAs<IQueryable>();
         }
