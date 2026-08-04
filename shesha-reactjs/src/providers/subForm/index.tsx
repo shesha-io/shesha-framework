@@ -234,6 +234,9 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
         if (!isAlreadyRendered) {
           const requestId = ++formResolutionRequestId.current;
+          // the markup of the previously resolved form is not needed anymore, note: it's important for the cached
+          // branch below, it renders the markup directly and a pending request would overwrite it
+          markupRequestId.current++;
           const currentForm: IRenderedDynamicForm = { entityType: internalEntityType, formType };
           const cachedFormDto = entityTypeFormCache.current[getDynamicFormCacheKey(internalEntityType, formType)];
           if (cachedFormDto) {
@@ -276,6 +279,10 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
           }
         }
       } else {
+        // there is nothing to render without an entity type, a pending resolution must not bring the previous form back
+        formResolutionRequestId.current++;
+        clearResolvedForm();
+        setFormLoadingState((prev) => prev.isLoading || prev.error !== null ? { isLoading: false, error: null } : prev);
         setMarkup({
           hasFetchedConfig: false,
           id: undefined,
