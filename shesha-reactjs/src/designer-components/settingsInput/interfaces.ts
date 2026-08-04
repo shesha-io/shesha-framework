@@ -73,6 +73,16 @@ export interface ISettingsInputBase<TValue = unknown> extends IComponentLabelPro
   inline?: boolean | undefined;
 }
 
+export type DimensionTypes = 'width' | 'height' | 'minWidth' | 'minHeight' | 'maxWidth' | 'maxHeight' | 'gridRowHeight' | 'gridColumnWidth';
+// Color Picker
+export interface IDimensionFieldSettingsInputProps extends ISettingsInputBase<string> {
+  type: 'dimensionField';
+  dimensionType: DimensionTypes;
+  tooltip?: string | undefined;
+  icon?: string | React.ReactNode | undefined;
+}
+export const isDimensionFieldProps = (value: ISettingsInputBase<string>): value is IDimensionFieldSettingsInputProps => value.type === 'dimensionField';
+
 // Color Picker
 export interface IColorPickerSettingsInputProps extends ISettingsInputBase {
   type: 'colorPicker';
@@ -478,6 +488,7 @@ export interface ICommonStylingProps {
 
 // Union type of all settings input props
 export type BaseInputProps =
+  IDimensionFieldSettingsInputProps |
   IColorPickerSettingsInputProps |
   IDropdownSettingsInputProps |
   ICustomDropdownSettingsInputProps |

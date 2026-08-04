@@ -10,7 +10,7 @@ import { URLS } from ".";
 import { IComponentSettings } from "../appConfigurator/models";
 import { migrateFormSettings } from "../form/migration/formSettingsMigrations";
 import { ConfigurationType, ICacheProvider, IGetFormPayload, IGetRefListPayload } from "../metadataDispatcher/entities/models";
-import { getEntityTypeIdentifierQueryParams } from "../metadataDispatcher/entities/utils";
+import { getEntityTypeIdentifierQueryParams, getEntityTypeName } from "../metadataDispatcher/entities/utils";
 import { IEntityTypeIdentifier } from "../sheshaApplication/publicApi/entities/models";
 import { ConfigurationLoadingError } from "./errors";
 import { ConfigurationDto, FormConfigurationDto, IClearFormCachePayload, IConfigurationItemDto, IGetComponentPayload, IUpdateComponentPayload, ReferenceListDto } from "./models";
@@ -135,6 +135,11 @@ export class ConfigurationLoader implements IConfigurationLoader {
 
     const response = await this.#httpClient.get<FormIdFullNameDtoAjaxResponse>(url);
     const dto = extractAjaxResponse(response.data);
+
+    // the endpoint returns an empty result when the entity has no configuration at all
+    if (!isDefined(dto) || isNullOrWhiteSpace(dto.name))
+      throw new Error(`Form of type '${formType}' is not configured for the entity '${getEntityTypeName(entityType)}'`);
+
     return { name: dto.name, module: dto.module };
   };
 

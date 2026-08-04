@@ -11,7 +11,7 @@ const getShaComponentStyles = createStyles(({ css, cx, token }, wrapperStyle: IS
   const wrapperPadding = paddingStyles(wrapperStyle.stylingBoxJson);
 
   const shaComponent = cx(designerClassNames.shaComponent, css`
-    ${dimensionsStyles({ ...wrapperStyle.dimensions, height: "auto" })}
+    ${dimensionsStyles({ height: "auto", ...wrapperStyle.dimensions })}
     ${wrapperMargin}
   `);
 

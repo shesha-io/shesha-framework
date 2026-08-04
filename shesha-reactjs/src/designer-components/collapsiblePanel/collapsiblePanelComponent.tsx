@@ -34,13 +34,13 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
   isInput: false,
   name: 'Panel',
   icon: <GroupOutlined />,
-  getWrapperStyle: (model) => ({ dimensions: { width: model?.dimensions?.width }, stylingBoxJson: { _type: 'styleBox', paddingLeft: 2, paddingRight: 2, paddingTop: 2, paddingBottom: 2 } }),
+  getWrapperStyle: (model) => ({ dimensions: model?.dimensions, stylingBoxJson: { _type: 'styleBox', paddingLeft: 2, paddingRight: 2, paddingTop: 2, paddingBottom: 2 } }),
   useCalculateModel(model, allData) {
     const evaluatedLabel = typeof model.label === 'string' ? evaluateString(model.label, { data: allData.data }) : model.label;
     const calcModel = useMemo(() => ({ evaluatedLabel }), [evaluatedLabel]);
     return calcModel;
   },
-  Factory: ({ model, calculatedModel }) => {
+  Factory: ({ model: sourceModel, calculatedModel }) => {
     const {
       expandIconPosition,
       collapsedByDefault,
@@ -54,7 +54,14 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
       content,
       className,
       hidden,
-    } = model;
+    } = sourceModel;
+
+    const model = useMemo(() => {
+      return {
+        ...sourceModel,
+        dimensions: { ...sourceModel.dimensions, height: '100%', width: '100%' }, // height and width will be applied to the wrapper
+      };
+    }, [sourceModel]);
 
     const collapsedRef = useRef<ICollapseRef>(undefined);
     const componentApi = useComponentApi();

@@ -8,7 +8,7 @@ import { isDefined } from '@/utils';
 import { IConfigurableFormComponent, isConfigurableFormComponent, useShaFormInstanceOrUndefined } from '@/providers';
 import { useParentOrUndefined } from '@/providers/parentProvider';
 import { isContainerComponent } from '../container/containerComponent';
-import { useFormDesignerMarkup } from '@/providers/formDesigner';
+import { useFormDesignerOrUndefined } from '@/providers/formDesigner';
 
 const ContainerCheckerComponent: ContainerCheckerComponentDefinition = {
   type: 'containerChecker',
@@ -18,9 +18,9 @@ const ContainerCheckerComponent: ContainerCheckerComponentDefinition = {
   Factory: ({ model }) => {
     const data = useShaFormInstanceOrUndefined()?.formData;
     const parent = useParentOrUndefined();
-    const form = useFormDesignerMarkup();
+    const form = useFormDesignerOrUndefined()?.state.formFlatMarkup;
 
-    if (!isDefined(data) || !('id' in data)) return null;
+    if (!isDefined(form) || !isDefined(data) || !('id' in data)) return null;
 
     let container = parent;
     while (isDefined(container) && 'formMode' in container && container.formMode !== 'designer')
@@ -31,7 +31,7 @@ const ContainerCheckerComponent: ContainerCheckerComponentDefinition = {
     const parentModel = container.model;
     if (!isConfigurableFormComponent(parentModel)) return null;
     if (!isContainerComponent(parentModel)) return null;
-    if (!isDefined(parentModel.gridColumnsCount) || parentModel.gridColumnsCount === 0) return null;
+    if ((parentModel.display !== 'grid' && parentModel.display !== 'inline-grid') || !isDefined(parentModel.gridColumnsCount) || parentModel.gridColumnsCount === 0) return null;
 
     const components = 'id' in parentModel && typeof parentModel.id === 'string' ? form.componentRelations[parentModel.id] ?? [] : [];
     if (components.find((x) => x === data.id) == null) return null;
