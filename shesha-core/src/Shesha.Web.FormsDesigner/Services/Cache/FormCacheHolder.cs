@@ -4,20 +4,27 @@ using Abp.Events.Bus.Handlers;
 using Abp.Runtime.Caching;
 using Microsoft.Extensions.Configuration;
 using Shesha.Cache;
+using Shesha.ConfigurationItems;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
 using Shesha.Web.FormsDesigner.Dtos;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.Web.FormsDesigner.Services.Cache
 {
     public class FormCacheHolder : CacheHolder<string, FormConfigurationDto>, IFormCacheHolder, ISingletonDependency, IAsyncEventHandler<EntityChangedEventData<FormConfiguration>>
     {
+        private readonly IAppKeysStore _appKeyStore;
+
         public bool IsEnabled { get; set; }
 
-        public FormCacheHolder(ICacheManager cacheManager, IConfiguration configuration) : base("FormsCache", cacheManager)
+        public FormCacheHolder(ICacheManager cacheManager, IConfiguration configuration, IAppKeysStore appKeyStore) : base("FormsCache", cacheManager)
         {
+            _appKeyStore = appKeyStore;
+
             IsEnabled = !configuration.GetValue<bool>("disableFormsCache");
 
             var expiration = configuration.GetValue<int?>("FormsCacheExpiration");
@@ -28,9 +35,14 @@ namespace Shesha.Web.FormsDesigner.Services.Cache
             Cache.DefaultSlidingExpireTime = TimeSpan.FromMinutes(expirationMins);
         }
 
-        public string GetCacheKey(string module, string name, ConfigurationItemViewMode mode)
+        public string GetCacheKey(string module, string applicationKey, string name, ConfigurationItemViewMode mode)
         {
-            return $"{module}/{name}:{mode}".ToLower();
+            var key = $"{module}|{name}|{mode}";
+
+            if (!string.IsNullOrWhiteSpace(applicationKey))
+                key = applicationKey + "/" + key;
+
+            return key.ToLower();
         }
 
         public async Task HandleEventAsync(EntityChangedEventData<FormConfiguration> eventData)
@@ -42,9 +54,19 @@ namespace Shesha.Web.FormsDesigner.Services.Cache
             if (form == null)
                 return;
 
-            await Cache.RemoveAsync(GetCacheKey(form.Module?.Name, form.Name, ConfigurationItemViewMode.Live));
-            await Cache.RemoveAsync(GetCacheKey(form.Module?.Name, form.Name, ConfigurationItemViewMode.Ready));
-            await Cache.RemoveAsync(GetCacheKey(form.Module?.Name, form.Name, ConfigurationItemViewMode.Latest));
+            var appKeys = _appKeyStore.AppKeys;
+            
+            var modes = new[] {
+                ConfigurationItemViewMode.Live,
+                ConfigurationItemViewMode.Ready,
+                ConfigurationItemViewMode.Latest
+            };
+            
+            foreach (var mode in modes)
+            {
+                foreach (var appKey in appKeys)
+                    await Cache.RemoveAsync(GetCacheKey(form.Module?.Name, appKey, form.Name, mode));
+            }
         }
 
         public async Task EnableAsync()

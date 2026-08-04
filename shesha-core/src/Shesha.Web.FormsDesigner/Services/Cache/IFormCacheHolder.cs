@@ -13,6 +13,6 @@ namespace Shesha.Web.FormsDesigner.Services.Cache
 
         Task DisableAsync();
 
-        string GetCacheKey(string module, string name, ConfigurationItemViewMode mode);
+        string GetCacheKey(string module, string applicationKey, string name, ConfigurationItemViewMode mode);
     }
 }

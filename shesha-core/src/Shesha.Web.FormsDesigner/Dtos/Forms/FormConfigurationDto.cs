@@ -28,6 +28,16 @@ namespace Shesha.Web.FormsDesigner.Dtos
         public string Module { get; set; }
 
         /// <summary>
+        /// Front-end application id
+        /// </summary>
+        public Guid? ApplicationId { get; set; }
+
+        /// <summary>
+        /// Front-end application
+        /// </summary>
+        public string Application { get; set; }
+
+        /// <summary>
         /// Form name
         /// </summary>
         public string Name { get; set; }

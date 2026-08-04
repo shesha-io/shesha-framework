@@ -65,6 +65,7 @@ namespace Shesha.ConfigurationItems
             if (status == ConfigurationItemVersionStatus.Live)
             {
                 var liveVersionsQuery = Repository.GetAll().Where(v => v.Module == item.Module &&
+                    v.Application == item.Application &&
                     v.Name == item.Name &&
                     v != item &&
                     v.VersionStatus == ConfigurationItemVersionStatus.Live);
@@ -100,6 +101,7 @@ namespace Shesha.ConfigurationItems
         public async virtual Task MoveToModuleAsync(TItem item, MoveItemToModuleInput input)
         {
             var module = await ModuleRepository.GetAsync(input.ModuleId);
+            var application = item?.Application;
 
             var validationResults = new List<ValidationResult>();
 
@@ -110,15 +112,22 @@ namespace Shesha.ConfigurationItems
                 validationResults.Add(new ValidationResult("Module is mandatory", new List<string> { nameof(input.ModuleId) }));
             if (module != null && item != null)
             {
-                var alreadyExist = await Repository.GetAll().Where(f => f.Module == module && f.Name == item.Name && f != item).AnyAsync();
+                var alreadyExist = await Repository.GetAll().Where(f => f.Module == module && f.Application == application && f.Name == item.Name && f != item).AnyAsync();
                 if (alreadyExist)
-                    validationResults.Add(new ValidationResult($"Item with name `{item.Name}` already exists in module `{module.Name}`")
+                {
+                    var fullName = module != null ? $"{module.Name}/{item.Name}" : item.Name;
+                    validationResults.Add(new ValidationResult(
+                        application != null
+                            ? $"Item `{fullName}` already exists in front-end application `{application.Name}`"
+                            : $"Item `{fullName}` already exists"
+                        )
                     );
+                }
             }
 
             validationResults.ThrowValidationExceptionIfAny(L);
 
-            var allVersionsQuery = Repository.GetAll().Where(v => v.Origin == item.Origin);
+            var allVersionsQuery = Repository.GetAll().Where(f => f.Module == module && f.Application == application && f.Name == item.Name);
             var allVersions = await allVersionsQuery.ToListAsync();
 
             foreach (var version in allVersions)
@@ -132,7 +141,7 @@ namespace Shesha.ConfigurationItems
 
         public virtual async Task DeleteAllVersionsAsync(TItem item)
         {
-            await Repository.DeleteAsync(f => f.Name == item.Name && f.Module == item.Module && !f.IsDeleted);
+            await Repository.DeleteAsync(f => f.Name == item.Name && f.Module == item.Module && f.Application == item.Application && !f.IsDeleted);
         }
 
         public async Task UpdateStatusAsync(ConfigurationItemBase item, ConfigurationItemVersionStatus status)

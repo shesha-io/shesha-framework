@@ -25,14 +25,19 @@ namespace Shesha.Web.FormsDesigner.Services
     public class FormManager : ConfigurationItemManager<FormConfiguration>, IFormManager, ITransientDependency
     {
         private readonly IPermissionedObjectManager _permissionedObjectManager;
+        private readonly IRepository<FrontEndApp, Guid> _frontEndAppRepository;
+        
+
         public FormManager(
             IRepository<FormConfiguration, Guid> repository,
             IRepository<Module, Guid> moduleRepository,
             IUnitOfWorkManager unitOfWorkManager,
-            IPermissionedObjectManager permissionedObjectManager
+            IPermissionedObjectManager permissionedObjectManager,
+            IRepository<FrontEndApp, Guid> frontEndAppRepository
         ) : base(repository, moduleRepository, unitOfWorkManager)
         {
             _permissionedObjectManager = permissionedObjectManager;
+            _frontEndAppRepository = frontEndAppRepository;
         }
 
         public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;
@@ -51,6 +56,7 @@ namespace Shesha.Web.FormsDesigner.Services
             newVersion.Origin = form.Origin;
             newVersion.Name = form.Name;
             newVersion.Module = form.Module;
+            newVersion.Application = form.Application;
             newVersion.Description = form.Description;
             newVersion.Label = form.Label;
             newVersion.TenantId = form.TenantId;
@@ -89,6 +95,7 @@ namespace Shesha.Web.FormsDesigner.Services
             if (status == ConfigurationItemVersionStatus.Live)
             {
                 var liveVersionsQuery = Repository.GetAll().Where(v => v.Module == form.Module &&
+                    v.Application == form.Application &&
                     v.Name == form.Name &&
                     v != form && 
                     v.VersionStatus == ConfigurationItemVersionStatus.Live);
@@ -117,7 +124,7 @@ namespace Shesha.Web.FormsDesigner.Services
         {
             var config = await Repository.GetAsync(id);
 
-            await Repository.DeleteAsync(f => f.Origin == config.Origin && !f.IsDeleted);
+            await DeleteAllVersionsAsync(config);
         }
 
         /// inheritedDoc
@@ -135,10 +142,19 @@ namespace Shesha.Web.FormsDesigner.Services
                 validationResults.Add(new ValidationResult("Module is mandatory", new List<string> { nameof(input.ModuleId) }));
             if (module != null && form != null)
             {
-                var alreadyExist = await Repository.GetAll().Where(f => f.Module == module && f.Name == form.Name && f != form).AnyAsync();
+                var application = form.Application;
+
+                var alreadyExist = await Repository.GetAll().Where(f => f.Module == module && f.Application == application && f.Name == form.Name && f != form).AnyAsync();
                 if (alreadyExist)
-                    validationResults.Add(new ValidationResult($"Form with name `{form.Name}` already exists in module `{module.Name}`")
+                {
+                    var fullName = module != null ? $"{module.Name}/{form.Name}" : form.Name;
+                    validationResults.Add(new ValidationResult(
+                        application != null
+                            ? $"Form `{fullName}` already exists in front-end application `{application.Name}`"
+                            : $"Form `{fullName}` already exists"
+                        )
                     );
+                }
             }
 
             if (validationResults.Any())
@@ -161,16 +177,23 @@ namespace Shesha.Web.FormsDesigner.Services
                 ? await ModuleRepository.GetAsync(input.ModuleId.Value)
                 : null;
 
+            var application = input.FrontEndAppId.HasValue
+                ? await _frontEndAppRepository.GetAsync(input.FrontEndAppId.Value)
+                : null;
+
             var validationResults = new List<ValidationResult>();
 
-            var alreadyExist = await Repository.GetAll().Where(f => f.Module == module && f.Name == input.Name).AnyAsync();
-            if (alreadyExist)
+            var alreadyExist = await Repository.GetAll().Where(f => f.Module == module &&  f.Application == application && f.Name == input.Name).AnyAsync();
+            if (alreadyExist) {
+                var fullName = module != null ? $"{module.Name}/{input.Name}" : input.Name;
                 validationResults.Add(new ValidationResult(
-                    module != null
-                        ? $"Form with name `{input.Name}` already exists in module `{module.Name}`"
-                        : $"Form with name `{input.Name}` already exists"
+                    application != null
+                        ? $"Form `{fullName}` already exists in front-end application `{application.Name}`"
+                        : $"Form `{fullName}` already exists"
                     )
                 );
+            }
+                
             if (validationResults.Any())
                 throw new AbpValidationException("Please correct the errors and try again", validationResults);
 
@@ -181,6 +204,7 @@ namespace Shesha.Web.FormsDesigner.Services
             var form = new FormConfiguration();
             form.Name = input.Name;
             form.Module = module;
+            form.Application = application;
             form.Description = input.Description;
             form.Label = input.Label;
 
@@ -211,6 +235,9 @@ namespace Shesha.Web.FormsDesigner.Services
 
             // todo: validate input
             var module = await ModuleRepository.FirstOrDefaultAsync(input.ModuleId);
+            var application = input.FrontEndAppId.HasValue
+                ? await _frontEndAppRepository.GetAsync(input.FrontEndAppId.Value)
+                : null;
 
             var validationResults = new List<ValidationResult>();
 
@@ -224,14 +251,17 @@ namespace Shesha.Web.FormsDesigner.Services
 
             if (module != null && !string.IsNullOrWhiteSpace(input.Name))
             {
-                var alreadyExist = await Repository.GetAll().Where(f => f.Module == module && f.Name == input.Name).AnyAsync();
+                var alreadyExist = await Repository.GetAll().Where(f => f.Module == module && f.Application == application && f.Name == input.Name).AnyAsync();
                 if (alreadyExist)
+                {
+                    var fullName = module != null ? $"{module.Name}/{input.Name}" : input.Name;
                     validationResults.Add(new ValidationResult(
-                        module != null
-                            ? $"Form with name `{input.Name}` already exists in module `{module.Name}`"
-                            : $"Form with name `{input.Name}` already exists"
+                        application != null
+                            ? $"Form `{fullName}` already exists in front-end application `{application.Name}`"
+                            : $"Form `{fullName}` already exists"
                         )
                     );
+                }
             }
 
             if (validationResults.Any())
@@ -240,6 +270,7 @@ namespace Shesha.Web.FormsDesigner.Services
             var form = new FormConfiguration();
             form.Name = input.Name;
             form.Module = module;
+            form.Application = application;
             form.Description = input.Description;
             form.Label = input.Label;
 

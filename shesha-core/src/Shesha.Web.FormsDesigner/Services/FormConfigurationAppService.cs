@@ -3,6 +3,7 @@ using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Extensions;
 using Abp.Runtime.Validation;
+using DocumentFormat.OpenXml.Bibliography;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -176,18 +177,18 @@ namespace Shesha.Web.FormsDesigner.Services
             // check cache
             if (!string.IsNullOrWhiteSpace(input.Md5))
             {
-                var cachedMd5 = await _clientSideCache.GetCachedMd5Async(FormConfiguration.ItemTypeName, null, input.Module, input.Name, mode);
+                var cachedMd5 = await _clientSideCache.GetCachedMd5Async(FormConfiguration.ItemTypeName, _cfRuntime.FrontEndApplication, input.Module, input.Name, mode);
                 if (input.Md5 == cachedMd5)
                     throw new ContentNotModifiedException("Form not changed");
             }
 
-            var dto = await GetFormAsync(input.Module, input.Name, input.Version, mode);
+            var dto = await GetFormAsync(input.Module, _cfRuntime.FrontEndApplication, input.Name, input.Version, mode);
 
             if (dto == null)
                 throw new FormNotFoundException(input.Module, input.Name);
 
             dto.CacheMd5 = GetMd5(dto);
-            await _clientSideCache.SetCachedMd5Async(FormConfiguration.ItemTypeName, null, input.Module, input.Name, mode, dto.CacheMd5);
+            await _clientSideCache.SetCachedMd5Async(FormConfiguration.ItemTypeName, _cfRuntime.FrontEndApplication, input.Module, input.Name, mode, dto.CacheMd5);
 
             if (!await CheckFormPermissionsAsync(dto.Module, dto.Name))
             {
@@ -235,59 +236,81 @@ namespace Shesha.Web.FormsDesigner.Services
             await _cacheHolder.Cache.ClearAsync();
         }
 
-        private async Task<FormConfigurationDto> GetFormAsync(string module, string name, int? version, ConfigurationItemViewMode mode) 
+        private async Task<FormConfigurationDto> GetFormAsync(string module, string applicationKey, string name, int? version, ConfigurationItemViewMode mode) 
         {
             // Skip cache when version is specified (it shouldn't be used at all)
             if (!_cacheHolder.IsEnabled || version.HasValue)
-                return await FetchFormAsync(module, name, version, mode);
+                return await FetchFormAsync(module, applicationKey, name, version, mode);
 
-            var cacheKey = _cacheHolder.GetCacheKey(module, name, mode);
+            var cacheKey = _cacheHolder.GetCacheKey(module, applicationKey, name, mode);
 
             var result = await _cacheHolder.Cache.GetAsync(cacheKey, async (key) => {
-                var value = await FetchFormAsync(module, name, version, mode);
+                var value = await FetchFormAsync(module, applicationKey, name, version, mode);
                 return value;
             });
 
             return result;
         }
 
-        private async Task<FormConfigurationDto> FetchFormAsync(string module, string name, int? version, ConfigurationItemViewMode mode) 
+        private IQueryable<FormConfiguration> GetBaseFormQuery(string module, string applicationKey, string name) 
         {
             var query = Repository.GetAll().FilterByFullName(module, name);
+            query = string.IsNullOrWhiteSpace(applicationKey)
+                ? query.Where(f => f.Application == null)
+                : query.Where(f => f.Application != null && f.Application.AppKey == applicationKey);
+            return query;
+        }
 
-            if (version.HasValue)
-                query = query.Where(f => f.VersionNo == version.Value);
-            else
+        private IQueryable<FormConfiguration> FilterQueryByMode(IQueryable<FormConfiguration> query, ConfigurationItemViewMode mode)
+        {
+            switch (mode)
             {
-                switch (mode)
-                {
-                    case ConfigurationItemViewMode.Live:
-                        query = query.Where(f => f.VersionStatus == ConfigurationItemVersionStatus.Live);
-                        break;
-                    case ConfigurationItemViewMode.Ready:
-                        {
-                            var statuses = new ConfigurationItemVersionStatus[] {
+                case ConfigurationItemViewMode.Live:
+                    return query.Where(f => f.VersionStatus == ConfigurationItemVersionStatus.Live);
+                case ConfigurationItemViewMode.Ready:
+                    {
+                        var statuses = new ConfigurationItemVersionStatus[] {
                             ConfigurationItemVersionStatus.Live,
                             ConfigurationItemVersionStatus.Ready
                         };
 
-                            query = query.Where(f => statuses.Contains(f.VersionStatus)).OrderByDescending(f => f.VersionNo);
-                            break;
-                        }
-                    case ConfigurationItemViewMode.Latest:
-                        {
-                            var statuses = new ConfigurationItemVersionStatus[] {
+                        return query.Where(f => statuses.Contains(f.VersionStatus)).OrderByDescending(f => f.VersionNo);
+                        
+                    }
+                case ConfigurationItemViewMode.Latest:
+                    {
+                        var statuses = new ConfigurationItemVersionStatus[] {
                             ConfigurationItemVersionStatus.Live,
                             ConfigurationItemVersionStatus.Ready,
                             ConfigurationItemVersionStatus.Draft
                         };
-                            query = query.Where(f => f.IsLast && statuses.Contains(f.VersionStatus));
-                            break;
-                        }
-                }
+                        return query.Where(f => f.IsLast && statuses.Contains(f.VersionStatus));
+                    }
             }
+            return query;
+        }
+
+        private async Task<FormConfigurationDto> FetchFormAsync(string module, string applicationKey, string name, int? version, ConfigurationItemViewMode mode) 
+        {
+            var query = GetBaseFormQuery(module, applicationKey, name);
+
+            query = version.HasValue
+                ? query.Where(f => f.VersionNo == version.Value)
+                : FilterQueryByMode(query, mode);
 
             var form = await AsyncQueryableExecuter.FirstOrDefaultAsync(query);
+            if (form == null && !version.HasValue && !string.IsNullOrWhiteSpace(applicationKey)) 
+            {
+                // fallback to null application
+                var anyVersion = GetBaseFormQuery(module, applicationKey, name);
+                var formExists = await AsyncQueryableExecuter.AnyAsync(anyVersion);
+                if (!formExists)
+                {
+                    var fallbackQuery = GetBaseFormQuery(module, "", name);
+                    fallbackQuery = FilterQueryByMode(fallbackQuery, mode);
+                    form = await AsyncQueryableExecuter.FirstOrDefaultAsync(fallbackQuery);
+                }
+            }
 
             if (form == null)
                 return null;
@@ -536,7 +559,8 @@ namespace Shesha.Web.FormsDesigner.Services
 
             var validationResults = new List<ValidationResult>();
 
-            var alreadyExist = await Repository.GetAll().Where(f => f.Id != input.Id && f.Module.Name == input.ModelType && f.Name == input.Name).AnyAsync();
+            var entity = await GetEntityByIdAsync(input.Id);
+            var alreadyExist = await Repository.GetAll().Where(f => f.Id != input.Id && f.Module == entity.Module && f.Application == entity.Application && f.Name == input.Name).AnyAsync();
             if (alreadyExist)
                 validationResults.Add(new ValidationResult(
                     input.ModelType != null
@@ -548,13 +572,24 @@ namespace Shesha.Web.FormsDesigner.Services
             if (validationResults.Any())
                 throw new AbpValidationException("Please correct the errors and try again", validationResults);
 
-            var entity = await GetEntityByIdAsync(input.Id);
+            var oldName = entity.Name;
 
             entity.Name = input.Name;
             entity.Label = input.Label;
             entity.Description = input.Description;
             entity.Markup = input.Markup;
             entity.ModelType = input.ModelType;
+            await Repository.UpdateAsync(entity);
+
+            if (oldName != input.Name) 
+            { 
+                var versions = await Repository.GetAll().Where(f => f !=  entity && f.Module == entity.Module && f.Application == entity.Application && f.Name == oldName).ToListAsync();
+                foreach (var version in versions) 
+                {
+                    version.Name = input.Name;
+                    await Repository.UpdateAsync(version);
+                }
+            }
 
             await CurrentUnitOfWork.SaveChangesAsync();
 
