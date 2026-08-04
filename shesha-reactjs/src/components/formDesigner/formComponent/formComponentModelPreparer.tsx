@@ -125,8 +125,8 @@ export const FormComponentModelPreparer: FC<FormComponentPrepareModelProps> = ({
 
   useEffect(() => {
     let cancelled = false;
-    if (modelMetadata?.properties && Boolean(sourceComponentModel.propertyName)) {
-      const pName = toCamelCase(sourceComponentModel.propertyName ?? '');
+    if (modelMetadata?.properties && Boolean(actualApiModel.propertyName)) {
+      const pName = toCamelCase(actualApiModel.propertyName ?? '');
       if (Array.isArray(modelMetadata.properties)) {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setPropMetadata(modelMetadata.properties.find((p) => toCamelCase(p.path) === pName));
@@ -141,13 +141,13 @@ export const FormComponentModelPreparer: FC<FormComponentPrepareModelProps> = ({
     return () => {
       cancelled = true;
     };
-  }, [modelMetadata, sourceComponentModel.propertyName]);
+  }, [modelMetadata, actualApiModel.propertyName]);
 
   const componentModel = useDeepCompareMemo(() => {
     return toolboxComponent && propMetadata
-      ? updateComponentModelFromMetadata(toolboxComponent, sourceComponentModel, propMetadata)
-      : sourceComponentModel;
-  }, [sourceComponentModel, toolboxComponent, propMetadata]);
+      ? updateComponentModelFromMetadata(toolboxComponent, actualApiModel, propMetadata) as UnwrapCodeEvaluators<IConfigurableFormComponent>
+      : actualApiModel;
+  }, [actualApiModel, toolboxComponent, propMetadata]);
 
   // Check for validation errors (in both designer and runtime modes) when the toolbox component does not exist
   if (!toolboxComponent) {
@@ -178,9 +178,9 @@ export const FormComponentModelPreparer: FC<FormComponentPrepareModelProps> = ({
   }
 
   return toolboxComponent.allowInherit === true || formSettings?.isSettingsForm === true
-    ? children(actualApiModel, toolboxComponent, apiContext)
+    ? children(componentModel, toolboxComponent, apiContext)
     : ( // ToDo: AS - remove after migration all components to use IStyleValue
-      <FormComponentAllStylesPreparer componentModel={actualApiModel}>
+      <FormComponentAllStylesPreparer componentModel={componentModel}>
         {(styledModel) => children(styledModel, toolboxComponent, apiContext)}
       </FormComponentAllStylesPreparer>
     );
