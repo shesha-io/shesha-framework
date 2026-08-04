@@ -118,7 +118,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
 
     return {
       components: appearanceMarkupComponents,
-      formSettings: formSettings ?? DEFAULT_FORM_SETTINGS,
+      formSettings: { ...(formSettings ?? DEFAULT_FORM_SETTINGS), isSettingsForm: true },
     };
   }, [settingsFormMarkup]);
 

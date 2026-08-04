@@ -45,6 +45,10 @@ export const FormComponentModelPreparer: FC<FormComponentPrepareModelProps> = ({
   const effectiveDevice = activeDevice || 'desktop';
 
   const effectiveStyle = useMemo((): IStyleValue => {
+    // for settings form components should use their own styles
+    if (shaForm.form?.settings.isSettingsForm === true)
+      return sourceComponentModel;
+
     // Default styles + Theme component styles
     const defStyle: IStyleValue = toolboxComponent?.getDefaultStyles?.() ?? {};
     const themeDefStyle: IStyleValue = isDefined(theme.components)
@@ -66,7 +70,7 @@ export const FormComponentModelPreparer: FC<FormComponentPrepareModelProps> = ({
     const effectiveStylingBoxJson = effectiveModel?.stylingBoxJson;
     const effectiveDesktopStyle = deepMergeValues(desktopThemeStyle, { ...effectiveModel, stylingBoxJson: (Boolean(effectiveStylingBoxJson)) ? effectiveStylingBoxJson : effectiveStylingBox }, deepMergeSkipUndefinedFunc);
     return effectiveDesktopStyle as IStyleValue;
-  }, [sourceComponentModel, effectiveDevice, theme.components, toolboxComponent]);
+  }, [shaForm.form?.settings.isSettingsForm, sourceComponentModel, toolboxComponent, theme.components, effectiveDevice]);
 
   const sfBackground = useBackgroundStoredFile(effectiveStyle.background, shaApplication);
   const sfStyle = useMemo((): IStyleValue => ({ ...effectiveStyle, background: sfBackground }), [effectiveStyle, sfBackground]);
