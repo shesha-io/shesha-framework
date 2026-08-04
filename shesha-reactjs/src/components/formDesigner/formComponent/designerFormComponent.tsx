@@ -11,7 +11,7 @@ import { Tooltip } from "antd";
 import { EyeInvisibleOutlined, FunctionOutlined } from "@ant-design/icons";
 import DragWrapper from "../configurableFormComponent/dragWrapper";
 import ValidationIcon from "../configurableFormComponent/validationIcon";
-import { useFormDesigner, useFormDesignerSelectedComponentId } from "@/providers/formDesigner";
+import { useFormDesigner, useFormDesignerSelectedComponentId, useFormDesignerSettingsPanelElement } from "@/providers/formDesigner";
 import KnownFormComponent from "./knownFormComponent";
 import FormComponentErrorWrapper from "./formComponentErrorWrapper";
 import { FormComponentModelPreparer } from "./formComponentModelPreparer";
@@ -38,7 +38,8 @@ const DesignerFormComponentInner: FC<IDesignerFormComponentProps> = ({
 }) => {
   const { styles } = useStyles();
   const { styles: shaComponentStyles } = useShaComponentStyles({ componentModel, toolboxComponent });
-  const { settingsPanelElement, readOnly } = useFormDesigner();
+  const { readOnly } = useFormDesigner();
+  const settingsPanelElement = useFormDesignerSettingsPanelElement();
   const getToolboxComponent = useFormDesignerComponentGetter();
   // Memoize component lookup to prevent unnecessary re-renders
   const component = useMemo(() => getToolboxComponent(componentModel.type), [getToolboxComponent, componentModel.type]);

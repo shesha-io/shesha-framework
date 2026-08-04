@@ -1,6 +1,6 @@
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { ConditionalMetadataProvider, useShaFormInstance } from '@/providers';
-import { useFormDesigner, useFormDesignerFormMode, useFormDesignerReadOnly, useFormDesignerSettings } from '@/providers/formDesigner';
+import { useFormDesigner, useFormDesignerFormMode, useFormDesignerReadOnly, useFormDesignerSettings, useFormDesignerSettingsPanelElement } from '@/providers/formDesigner';
 import React, { FC, useMemo, useEffect, useCallback } from 'react';
 import { ComponentPropertiesPanel } from '../componentPropertiesPanel';
 import { ComponentPropertiesTitle } from '../componentPropertiesTitle';
@@ -22,7 +22,8 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
   const formMode = useFormDesignerFormMode();
   const { antdForm } = useShaFormInstance();
   const { styles } = useStyles();
-  const { deleteSelectedComponent, settingsPanelElement } = useFormDesigner();
+  const { deleteSelectedComponent } = useFormDesigner();
+  const settingsPanelElement = useFormDesignerSettingsPanelElement();
 
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
     if (readOnly || formMode !== 'designer' || event.repeat) return;
