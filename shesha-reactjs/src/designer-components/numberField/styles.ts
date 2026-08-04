@@ -39,19 +39,11 @@ export const useStyles = createStyles(({ css, cx }, model: INumberFieldComponent
       &&&&[class*="-status-warning"] {
         ${backgroundStyles(model.background)}
       }
-
-      /* Dimensions, margin and padding apply to the actual <input> element. */
-      .ant-input-number-input {
+.ant-input-number-input {
         height: 100% !important;
-        ${hasUserPadding
-          ? paddingStyles(model.stylingBoxJson)
-          : `
-            padding-left: ${hasPrefix ? '4px' : '8px'} !important;
-            padding-right: ${hasSuffix ? '4px' : '8px'} !important;
-            padding-bottom: 5px !important;
-          `}
-        ${dimensionsStyles(model.dimensions)}
-        ${marginStyles(model.stylingBoxJson)}
+        padding-left: ${hasPrefix ? '4px' : '8px'} !important;
+        padding-right: ${hasSuffix ? '4px' : '8px'} !important;
+        padding-bottom: 5px !important;
         ${fontStyles(model.font)}
       }
 

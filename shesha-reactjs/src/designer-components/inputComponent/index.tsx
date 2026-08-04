@@ -6,7 +6,7 @@ import { Button, Divider, Popover } from 'antd';
 import { RollbackOutlined, SyncOutlined } from '@ant-design/icons';
 import { useDefaultModelActionsOrUndefined, useDefaultModelPropertyUpdateSubscription } from '../_settings/defaultModelProvider/defaultModelProvider';
 import { getValueByPropertyName } from '@/utils/object';
-import { convertValueToFriendlyString } from './utils';
+import { renderValueForDisplay } from './utils';
 import { isNotNullOrWhiteSpace } from '@/utils';
 
 /** Stable reference so the Popover does not see a new array on every render. */
@@ -66,7 +66,9 @@ export const InputComponent = <TValue = string>(props: InputComponentProps<TValu
   const content = useMemo(() => {
     const addInfo = Boolean(additionalInfo) ? (<div>{additionalInfo}</div>) : null;
     const inheritanceInfo1 = isInherited ? `This value inherits from ${valueInfo.latestDefaultModelName}` : isOverridden ? `This value is overridden.` : null;
-    const inheritanceInfo2 = isOverridden ? `Inherited value: ${convertValueToFriendlyString(defaultValue)}` : null;
+    const inheritanceInfo2 = isOverridden
+      ? <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>Inherited value: {renderValueForDisplay(defaultValue)}</div>
+      : null;
     return Boolean(inheritanceInfo1) || Boolean(inheritanceInfo2) ? (
       <div style={{ width: '100%' }}>
         {Boolean(props.tooltip) && <div>{props.tooltip}</div>}
@@ -74,7 +76,7 @@ export const InputComponent = <TValue = string>(props: InputComponentProps<TValu
         {addInfo}
         {(Boolean(addInfo) && (Boolean(inheritanceInfo1) || Boolean(inheritanceInfo2))) && <Divider size="small" />}
         {Boolean(inheritanceInfo1) && <div>{inheritanceInfo1}</div>}
-        {Boolean(inheritanceInfo2) && <div>{inheritanceInfo2}</div>}
+        {inheritanceInfo2}
         {!isReadOnly && (
           <div>{isInherited
             ? <Button type="link" onClick={() => setOverride()}><SyncOutlined /> Override inheritance</Button>

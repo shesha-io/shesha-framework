@@ -85,6 +85,9 @@ const TextAreaComponent: TextAreaComponentDefinition = {
     const textAreaProps: TextAreaProps = {
       className: 'sha-text-area',
       classNames: {
+        // With allowClear (or a count) antd renders an affix wrapper and `root` lands on it;
+        // that wrapper then owns the visible border/background, so it needs the appearance too.
+        root: styles.textAreaWrapper,
         textarea: `sha-text-area ${styles.textArea}`,
       },
       placeholder: model.placeholder,
