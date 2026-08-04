@@ -1,4 +1,4 @@
-import { EditMode, IPropertySetting } from '@/providers';
+import { EditMode, IConfigurableFormComponent, IPropertySetting } from '@/providers';
 import { getPropertySettingsFromValue, isPropertySettings } from '@/designer-components/_settings/utils/utils';
 import { getStringPropertyOrUndefined } from '@/utils/object';
 import { isDefined } from '@/utils/nullables';
@@ -84,13 +84,13 @@ export const migratePropToInverseProp = <T, V>(prev: T, fromProp: keyof T, toPro
   return model;
 };
 
-export const migrateHiddenToVisible = <T>(prev: T): T => {
-  const newModel = migratePropToInverseProp(prev, 'hidden' as keyof T, 'visible' as keyof T);
+export const migrateHiddenToVisible = <T extends IConfigurableFormComponent = IConfigurableFormComponent>(prev: T): T => {
+  const newModel = !isDefined(prev.visible) ? migratePropToInverseProp(prev, 'hidden' as keyof T, 'visible' as keyof T) : prev;
   delete newModel['hidden' as keyof T];
   return newModel;
 };
 
-export const migrateReadOnly = <T>(prev: T, defaultValue?: EditMode): T => {
+export const migrateReadOnly = <T extends IConfigurableFormComponent = IConfigurableFormComponent>(prev: T, defaultValue?: EditMode): T => {
   const disabled = prev['disabled' as keyof T];
   const readOnly = prev['readOnly' as keyof T];
 
