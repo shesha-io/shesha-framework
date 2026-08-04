@@ -63,7 +63,7 @@ export const Page: FC<PropsWithChildren<IPageProps>> = ({
 
   const hasStatus = Boolean(status);
 
-  const hasAllowedPermission = anyOfPermissionsGranted(requiredPermissions);
+  const hasAllowedPermission = anyOfPermissionsGranted(requiredPermissions ?? []);
 
   if (!hasAllowedPermission) {
     return (
