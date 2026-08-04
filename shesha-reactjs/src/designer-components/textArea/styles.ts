@@ -23,14 +23,23 @@ export const useStyles = createStyles(({ css, cx }, model: ITextAreaComponentPro
     }
   `;
 
+  // antd's own rule for a bare textarea is `textarea.ant-input { height: auto; min-height: <controlHeight> }`,
+  // which outranks a single generated class. The configured dimensions are therefore repeated at a
+  // higher specificity, otherwise a height set in the designer is silently reset to `auto`.
+  const configuredDimensions = dimensionsStyles(model.dimensions);
+
   const textArea = cx('sha-text-area', css`
       ${configuredAppearance}
       ${paddingStyles(model.stylingBoxJson)}
-      ${dimensionsStyles(model.dimensions)}
+      ${configuredDimensions}
       ${fontStyles(model.font)}
       ${marginStyles(model.stylingBoxJson)}
 
       ${statefulAppearance}
+
+      &&&& {
+        ${configuredDimensions}
+      }
   `);
 
   /**

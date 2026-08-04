@@ -111,10 +111,15 @@ export const GRID_DIMENSION_VALUES = ['auto', 'min-content', 'max-content'];
  * @returns String with appropriate units, or undefined
  */
 export const addPx = (value: number | string | null | undefined, context?: object): string | undefined => {
-  // Preserve calc() expressions and other CSS functions
   const trimmedValue = typeof value === 'string' ? value.trim() : undefined;
-  if (isNotNullOrWhiteSpace(trimmedValue) && /^(calc|min|max|clamp)\([^;{}]*\)$/i.test(trimmedValue))
-    return trimmedValue;
+
+  if (isNotNullOrWhiteSpace(trimmedValue)) {
+    const isKeyword = DIMENSION_VALUES.includes(trimmedValue);
+    // `[^;{}]*` keeps the passthrough limited to a single declaration.
+    const isMathFunction = /^(calc|min|max|clamp)\([^;{}]*\)$/i.test(trimmedValue);
+
+    if (isKeyword || isMathFunction) return trimmedValue;
+  }
 
   const parsed = parseDimension(value, context);
   if (!parsed) return undefined;
