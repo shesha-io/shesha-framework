@@ -21,18 +21,28 @@ namespace Shesha.ConfigurationItems.AppKeys
     {
         private readonly IRepository<FrontEndApp, Guid> _frontEndAppRepository;
         private readonly IUnitOfWorkManager _unitOfWorkManager;
+        private readonly object _lock = new object();
         private List<string>? _appKeys = null;
 
         public List<string> AppKeys
         {
             get
             {
-                if (_appKeys == null) 
+                if (_appKeys == null)
                 {
-                    using (var uow = _unitOfWorkManager.Begin())
+                    lock (_lock)
                     {
-                        _appKeys = _frontEndAppRepository.GetAllList().Select(x => x.AppKey).ToList();
-                        uow.Complete();
+                        if (_appKeys == null)
+                        {
+                            using (var uow = _unitOfWorkManager.Begin())
+                            {
+                                var list = _frontEndAppRepository.GetAllList()
+                                                                 .Select(x => x.AppKey)
+                                                                 .ToList();
+                                uow.Complete();
+                                _appKeys = list;
+                            }
+                        }
                     }
                 }
                 return _appKeys;
@@ -45,19 +55,27 @@ namespace Shesha.ConfigurationItems.AppKeys
             _frontEndAppRepository = frontEndAppRepository;
         }
 
+        private void ClearCache() 
+        { 
+            lock (_lock) 
+            {
+                _appKeys = null;
+            }
+        }
+
         public void HandleEvent(EntityCreatedEventData<FrontEndApp> eventData)
         {
-            _appKeys = null;
+            ClearCache();
         }
 
         public void HandleEvent(EntityDeletedEventData<FrontEndApp> eventData)
         {
-            _appKeys = null;
+            ClearCache();
         }
 
         public void HandleEvent(EntityUpdatedEventData<FrontEndApp> eventData)
         {
-            _appKeys = null;
+            ClearCache();
         }
     }
 #nullable restore
