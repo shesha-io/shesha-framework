@@ -11,6 +11,6 @@ namespace Shesha.Authorization.Users
         /// <summary>
         /// Registers a new user
         /// </summary>
-        Task<User> RegisterAsync(string name, string surname, string emailAddress, string userName, string plainPassword, bool isEmailConfirmed);
+        Task<User> RegisterAsync(string name, string? surname, string emailAddress, string userName, string plainPassword, bool isEmailConfirmed);
     }
 }

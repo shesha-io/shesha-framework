@@ -336,7 +336,7 @@ namespace Shesha.Authorization
             {
                 var user = await _userRegistrationManager.RegisterAsync(
                     externalUser.Name,
-                    externalUser.Surname ?? string.Empty,
+                    externalUser.Surname,
                     externalUser.EmailAddress,
                     externalUser.EmailAddress,
                     Authorization.Users.User.CreateRandomPassword(),
