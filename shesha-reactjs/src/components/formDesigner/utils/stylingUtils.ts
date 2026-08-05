@@ -1,8 +1,21 @@
 import { CSSProperties } from 'react';
 import { DEFAULT_MARGINS } from './designerConstants';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
-import { addPx } from '@/utils/style';
+import { addPx, DIMENSION_VALUES } from '@/utils/style';
 import { getCalculatedDimension } from '@/designer-components/_settings/utils/dimensions/utils';
+import { IDimensionsValue } from '@/designer-components/_settings/utils';
+import { IStyleValue } from '@/interfaces';
+
+export const DEFAULT_DESIGNER_PADDING: IStyleValue = { stylingBoxJson: { _type: 'styleBox', paddingLeft: 5, paddingRight: 3, paddingTop: 5, paddingBottom: 3 } };
+
+export const getDesignerDimensions = (dimension: IDimensionsValue, designerStyle: IStyleValue): IDimensionsValue => ({
+  height: DIMENSION_VALUES.includes(String(dimension.height))
+    ? dimension.height
+    : `calc(${addPx(dimension.height)} + ${addPx(designerStyle.stylingBoxJson?.paddingTop ?? 0) ?? '0px'} + ${addPx(designerStyle.stylingBoxJson?.paddingBottom ?? 0) ?? '0px'})`,
+  width: DIMENSION_VALUES.includes(String(dimension.width))
+    ? dimension.width
+    : `calc(${addPx(dimension.width)} + ${addPx(designerStyle.stylingBoxJson?.paddingLeft ?? 0) ?? '0px'} + ${addPx(designerStyle.stylingBoxJson?.paddingRight ?? 0) ?? '0px'})`,
+});
 
 /** Margin values extracted from various style sources */
 export interface MarginValues {

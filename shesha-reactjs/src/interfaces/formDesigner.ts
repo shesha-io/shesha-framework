@@ -180,6 +180,11 @@ export type IToolboxComponentBase = {
   preserveDimensionsInDesigner?: boolean | Array<'width' | 'height' | 'minWidth' | 'maxWidth' | 'minHeight' | 'maxHeight'>;
 };
 
+export interface IWrapperStyle {
+  style?: IStyleValue | undefined;
+  designerStyle?: IStyleValue | undefined;
+}
+
 export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = never> = IToolboxComponentBase & {
   /**
    * Component factory. Renders the component according to the passed model (props)
@@ -260,7 +265,7 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
   previewConfiguration?: TModel;
 
   /** Drag handle dimensions */
-  getWrapperStyle?: ((componentStyle: IStyleValue | undefined) => IStyleValue | undefined) | undefined;
+  getWrapperStyle?: ((model: TModel | undefined) => IWrapperStyle | undefined) | undefined;
 } & ToolboxComponentAsTemplate;
 
 export type ComponentDefinition<TType extends string = string, TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = object> =

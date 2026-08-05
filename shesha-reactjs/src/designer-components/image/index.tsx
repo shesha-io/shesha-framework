@@ -49,7 +49,7 @@ const ImageComponent: IToolboxComponent<IImageProps, ImageComponentCalculatedMod
   isInput: true,
   isOutput: true,
   preserveDimensionsInDesigner: true,
-  getWrapperStyle: () => ({ dimensions: { width: 'auto' } }),
+  getWrapperStyle: () => ({ style: { dimensions: { width: 'auto' } } }),
   calculateModel: (model, allData) => ({
     ownerId: model.ownerId ? evaluateString(model.ownerId, allData) : undefined,
     dataId: allData.data ? (allData.data as { Id: string }).Id : undefined, // TODO: review and remove

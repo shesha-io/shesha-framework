@@ -103,7 +103,7 @@ export const InputComponent = <TValue = string>(props: InputComponentProps<TValu
         open={popupOpen}
         autoAdjustOverflow={true}
         placement="topLeft"
-        mouseLeaveDelay={0.3}
+        mouseLeaveDelay={0.5}
       >
         <div> {/* div is required to make Popover work for some input components */}
           <Editor key={newProps.id} {...newProps} />

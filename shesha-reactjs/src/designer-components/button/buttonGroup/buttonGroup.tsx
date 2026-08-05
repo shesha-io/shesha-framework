@@ -78,7 +78,7 @@ const RenderButton: FC<{ props: ButtonGroupItemProps; uuid: string; form?: FormI
       readOnly={model.readOnly}
       size={size}
       danger={props.danger}
-      style={removeNullUndefined({ ...finalStyles })}
+      styleJson={removeNullUndefined({ ...finalStyles })}
       buttonType={buttonType}
       form={form}
     />

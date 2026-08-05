@@ -14,7 +14,7 @@ const HeaderAppControl: IToolboxComponent = {
   isInput: false,
   canBeJsSetting: false,
   icon: <SwapOutlined />,
-  getWrapperStyle: () => ({ dimensions: { width: 'auto' } }),
+  getWrapperStyle: () => ({ style: { dimensions: { width: 'auto' } } }),
   Factory: ({ model }) => {
     return model.hidden === true ? null : (
       <ProtectedContent permissionName={PERM_APP_CONFIGURATOR}>

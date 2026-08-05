@@ -8,6 +8,7 @@ import { SettingsMigrationContext } from '@/interfaces';
 import { IShowModalActionArgumentsV0 } from '@/providers/dynamicModal/migrations/ver0';
 import { IHasVersion } from '@/utils/fluentMigrator/migrator';
 import { getStringPropertyOrUndefined } from '@/utils/object';
+import { isNullOrWhiteSpace } from '@/utils';
 
 const makeAction = (props: Pick<IConfigurableActionConfiguration, 'actionName' | 'actionOwner' | 'actionArguments'>): IConfigurableActionConfiguration => {
   return {
@@ -62,7 +63,7 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
       };
       actionConfig.actionArguments = modalArguments;
 
-      if (propsWithModal.onSuccessRedirectUrl) {
+      if (!isNullOrWhiteSpace(propsWithModal.onSuccessRedirectUrl)) {
         actionConfig.handleSuccess = true;
         actionConfig.onSuccess = makeAction({
           actionOwner: 'Common',
@@ -72,7 +73,7 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
           },
         });
       }
-      if (propsWithModal.refreshTableOnSuccess) {
+      if (propsWithModal.refreshTableOnSuccess === true) {
         actionConfig.handleSuccess = true;
         actionConfig.onSuccess = makeAction({ actionOwner: getClosestTableId(context) ?? "", actionName: 'Refresh table' });
       }
