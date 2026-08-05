@@ -55,14 +55,14 @@ export const DatePickerWrapper = forwardRef<HTMLDivElement, IDateFieldProps>((pr
   const showTimeConfig = useMemo(() => {
     if (!showTime) return false;
     return defaultToMidnight === true
-      ? { defaultValue: MIDNIGHT_MOMENT, ...minuteStepConfig }
+      ? { defaultOpenValue: MIDNIGHT_MOMENT, ...minuteStepConfig }
       : { ...minuteStepConfig };
   }, [showTime, defaultToMidnight, minuteStepConfig]);
 
   const rangeShowTimeConfig = useMemo(() => {
     if (!showTime) return false;
     return defaultToMidnight === true
-      ? { defaultValue: [MIDNIGHT_MOMENT, MIDNIGHT_MOMENT] as [Moment, Moment], ...minuteStepConfig }
+      ? { defaultOpenValue: [MIDNIGHT_MOMENT, MIDNIGHT_MOMENT] as [Moment, Moment], ...minuteStepConfig }
       : { ...minuteStepConfig };
   }, [showTime, defaultToMidnight, minuteStepConfig]);
 
