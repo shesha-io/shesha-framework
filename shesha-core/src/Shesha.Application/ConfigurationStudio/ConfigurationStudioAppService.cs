@@ -103,7 +103,7 @@ namespace Shesha.ConfigurationStudio
 
             var manager = CiHelper.GetManagerByDiscriminator(request.ItemType);
 
-            var item = await manager.ResolveItemAsync(request.Module, request.Name);
+            var item = await manager.ResolveItemAsync(request.Module, request.Name, CfRuntime.FrontEndApplication);
 
             if (item == null)
                 throw new EntityNotFoundException($"Requested configuration not found ({request.ItemType} - {request.Module}: {request.Name})");

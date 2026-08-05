@@ -15,6 +15,8 @@ namespace Shesha.Domain
         public virtual string ItemType { get; set; }
         public virtual Guid ModuleId { get; set; }
         public virtual string ModuleName { get; set; }
+        public virtual Guid? ApplicationId { get; set; }
+        public virtual string? AppKey { get; set; }
 
         public virtual Guid ExposedInModuleId { get; set; }
         public virtual string ExposedInModuleName { get; set; }
