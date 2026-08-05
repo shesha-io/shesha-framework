@@ -221,5 +221,16 @@ export const defaultStyles = (): IStyleValue => {
     },
     dimensions: { width: '100%', height: '32px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
     shadow: { offsetX: 0, offsetY: 0, blurRadius: 0, spreadRadius: 0, color: '#00000000' },
+    stylingBoxJson: {
+      _type: 'styleBox',
+      marginBottom: "0",
+      marginLeft: "0",
+      marginRight: "0",
+      marginTop: "0",
+      paddingBottom: "0",
+      paddingLeft: "8",
+      paddingRight: "8",
+      paddingTop: "0",
+    },
   };
 };

@@ -50,23 +50,21 @@ export const DatePickerWrapper = forwardRef<HTMLDivElement, IDateFieldProps>((pr
   const pickerFormat = getFormat(props, properties);
 
   /* The time picker only offers a minute step where minutes are actually shown. */
-  const minuteStepConfig = supportsMinuteStep(props) && isDefined(minuteStep) ? { minuteStep } : {};
+  const minuteStepConfig = useMemo(() => supportsMinuteStep(props) && isDefined(minuteStep) ? { minuteStep } : {}, [props, minuteStep]);
 
   const showTimeConfig = useMemo(() => {
     if (!showTime) return false;
     return defaultToMidnight === true
       ? { defaultValue: MIDNIGHT_MOMENT, ...minuteStepConfig }
       : { ...minuteStepConfig };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showTime, defaultToMidnight, minuteStep]);
+  }, [showTime, defaultToMidnight, minuteStepConfig]);
 
   const rangeShowTimeConfig = useMemo(() => {
     if (!showTime) return false;
     return defaultToMidnight === true
       ? { defaultValue: [MIDNIGHT_MOMENT, MIDNIGHT_MOMENT] as [Moment, Moment], ...minuteStepConfig }
       : { ...minuteStepConfig };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showTime, defaultToMidnight, minuteStep]);
+  }, [showTime, defaultToMidnight, minuteStepConfig]);
 
   const convertValue = (localValue: Moment): string => {
     const newValue = localValue;
