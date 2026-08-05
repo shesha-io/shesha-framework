@@ -72,7 +72,6 @@ export interface IDateFieldProps extends IConfigurableFormComponent, IInputStyle
   weekFormat?: string | undefined;
   range?: boolean | undefined;
   resolveToUTC?: boolean | undefined;
-  disablePastDates?: boolean | undefined;
   onChange?: TimePickerChangeEvent | RangePickerChangeEvent | undefined;
 
   /** Date restriction, promoted to the Common tab. `disabledDateMode` is its legacy predecessor. */

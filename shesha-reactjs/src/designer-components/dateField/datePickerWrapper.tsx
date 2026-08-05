@@ -248,7 +248,7 @@ export const DatePickerWrapper = forwardRef<HTMLDivElement, IDateFieldProps>((pr
         onChange={handleDatePickerChange}
         {...(hideBorder === true ? { variant: 'borderless' } : {})}
         showTime={showTimeConfig}
-        {...(showNow === true ? { showNow } : {})}
+        showNow={showNow === true}
         picker={picker}
         format={pickerFormat}
         onCalendarChange={(dates) => {

@@ -141,10 +141,15 @@ const DateField: DateFieldDefinition = {
       // resolveToUTC -> bindingFormat. The old boolean only distinguished UTC from local ISO.
       model.bindingFormat = prev.bindingFormat ?? (prev.resolveToUTC === true ? 'utc' : 'isoLocal');
 
-      // disabledDateMode/template -> dateRestriction, where the old config maps cleanly. A custom
-      // function has no dropdown equivalent, so it stays on the legacy properties and keeps working.
+      // disabledDateMode/template -> dateRestriction, where the old config maps cleanly. Only the two
+      // shipped template expressions are recognised; anything else (including a custom function) is
+      // left unset so legacyDisabledDate keeps evaluating the original expression.
       if (prev.disabledDateMode === 'functionTemplate') {
-        model.dateRestriction = prev.disabledDateTemplate?.includes('<') === true ? 'past' : 'future';
+        if (prev.disabledDateTemplate === "return current && current < moment().startOf('day');") {
+          model.dateRestriction = 'past';
+        } else if (prev.disabledDateTemplate === "return current && current > moment().endOf('day');") {
+          model.dateRestriction = 'future';
+        }
       } else if (prev.disabledDateMode === 'none' || prev.disabledDateMode === undefined) {
         model.dateRestriction = 'none';
       }
