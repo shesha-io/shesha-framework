@@ -73,14 +73,9 @@ function legacyDisabledDate(props: IDateFieldProps, current: Moment, data: objec
     return false;
 }
 
-/** The binding format in effect, falling back to the legacy `resolveToUTC` boolean for old models. */
 export const getBindingFormat = (props: IDateFieldProps): DateBindingFormat =>
   props.bindingFormat ?? (props.resolveToUTC === true ? 'utc' : 'isoLocal');
 
-/**
- * Serialise a picked moment according to the configured binding format. `ticks` uses .NET ticks
- * (100ns intervals since 0001-01-01) so the value round-trips with a .NET DateTime on the backend.
- */
 export const serializeValue = (value: Moment, props: IDateFieldProps): string => {
   switch (getBindingFormat(props)) {
     case 'utc':
@@ -182,8 +177,6 @@ export const getFormat = (props: IDateFieldProps, properties: IPropertyMetadata[
     case 'date':
       return dateFormat;
     default: {
-      // A date+time selection: append the time part at the precision the selection type implies.
-      // An explicitly configured Time Format wins over the derived one.
       const derivedTimeFormat = SELECTION_TYPE_TIME_FORMATS[selectionType];
       const timeFormat = isNotNullOrWhiteSpace(props.timeFormat)
         ? props.timeFormat
@@ -195,8 +188,6 @@ export const getFormat = (props: IDateFieldProps, properties: IPropertyMetadata[
 
 export const defaultStyles = (): IStyleValue => {
   return {
-    // The compound background slots (size/position/repeat/url/gradient) are all listed deliberately:
-    // an Appearance input whose property is absent from the defaults renders no inheritance popover.
     background: {
       type: 'color',
       color: '#fff',

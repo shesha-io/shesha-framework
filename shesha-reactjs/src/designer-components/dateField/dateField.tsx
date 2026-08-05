@@ -21,11 +21,6 @@ import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
 import { isNotNullOrWhiteSpace } from '@/utils/nullables';
 
-/**
- * Folds the legacy `picker` + `showTime` pair into a single selection type. Time precision is not
- * recoverable from the old model (it only knew "show time or not"), so a time-bearing date picker
- * lands on minutes — the default the spreadsheet specifies.
- */
 const toSelectionType = (picker: string | undefined, showTime: boolean | undefined): DateSelectionType => {
   switch (picker) {
     case 'week': return 'week';
