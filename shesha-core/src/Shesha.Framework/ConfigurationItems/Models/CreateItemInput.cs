@@ -8,6 +8,7 @@ namespace Shesha.ConfigurationItems.Models
     public class CreateItemInput
     {
         public Module Module { get; set; }
+        public FrontEndApp? Application { get; set; }
         public ConfigurationItemFolder? Folder { get; set; }
         public double? OrderIndex { get; set; }
         public string Name { get; set; }

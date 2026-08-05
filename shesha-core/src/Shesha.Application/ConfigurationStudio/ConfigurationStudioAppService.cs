@@ -37,7 +37,8 @@ namespace Shesha.ConfigurationStudio
         public IConfigurationItemHelper CiHelper { get; set; }
         public IRepository<ConfigurationItem, Guid> ItemRepo { get; set; }
         public IRepository<ConfigurationItemRevision, Guid> RevisionRepo { get; set; }
-        public IRepository<ConfigurationItemHistoryItem, Guid> HistoryRepo { get; set; }        
+        public IRepository<ConfigurationItemHistoryItem, Guid> HistoryRepo { get; set; }
+        public IRepository<FrontEndApp, Guid> ApplicationRepo;
 
         /// <summary>
         /// Expose Item
@@ -99,11 +100,9 @@ namespace Shesha.ConfigurationStudio
 
         public async Task<IConfigurationItemDto> GetItemAsync(GetItemRequest request)
         {
-            var moduleId = await ModuleManager.GetModuleIdAsync(request.Module);
-
             var manager = CiHelper.GetManagerByDiscriminator(request.ItemType);
 
-            var item = await manager.ResolveItemAsync(request.Module, request.Name);
+            var item = await manager.ResolveItemAsync(request.Module, request.Name, CfRuntime.FrontEndApplication);
 
             if (item == null)
                 throw new EntityNotFoundException($"Requested configuration not found ({request.ItemType} - {request.Module}: {request.Name})");
@@ -130,6 +129,9 @@ namespace Shesha.ConfigurationStudio
             module.EnsureEditable();
 
             var manager = CiHelper.GetManagerByDiscriminator(request.Discriminator);
+            var application = request.FrontEndAppId != null
+                ? await ApplicationRepo.GetAsync(request.FrontEndAppId.Value)
+                : null;
             var folder = request.FolderId != null
                 ? await FolderRepository.GetAsync(request.FolderId.Value)
                 : null;
@@ -137,6 +139,7 @@ namespace Shesha.ConfigurationStudio
             var item = await manager.CreateItemAsync(new ConfigurationItems.Models.CreateItemInput
             {
                 Module = module,
+                Application = application,
                 Folder = folder,
                 Name = request.Name,
                 Label = request.Label,

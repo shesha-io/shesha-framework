@@ -18,14 +18,17 @@ namespace Shesha.ConfigurationItems
     {
         private readonly IConfigurationItemClientSideCache _clientSideCache;
         private readonly IConfigurationItemHelper _ciHelper;
+        private readonly IConfigurationFrameworkRuntime _cfRuntime;
 
         public ConfigurationItemAppService(
             IConfigurationItemClientSideCache clientSideCache,
-            IConfigurationItemHelper ciHelper
+            IConfigurationItemHelper ciHelper,
+            IConfigurationFrameworkRuntime cfRuntime
         )
         {
             _clientSideCache = clientSideCache;
             _ciHelper = ciHelper;
+            _cfRuntime = cfRuntime;
         }
 
         [AbpAllowAnonymous]
@@ -41,12 +44,12 @@ namespace Shesha.ConfigurationItems
             // check cache
             if (!string.IsNullOrWhiteSpace(input.Md5))
             {
-                var cachedMd5 = await _clientSideCache.GetCachedMd5Async(input.ItemType, null, input.Module, input.Name);
+                var cachedMd5 = await _clientSideCache.GetCachedMd5Async(input.ItemType, _cfRuntime.FrontEndApplication, input.Module, input.Name);
                 if (input.Md5 == cachedMd5)
                     throw new ContentNotModifiedException("Not changed");
             }
 
-            var resolvedItem = await manager.ResolveItemAsync(input.Module, input.Name);
+            var resolvedItem = await manager.ResolveItemAsync(input.Module, input.Name, _cfRuntime.FrontEndApplication);
 
             if (resolvedItem == null)
                 throw new EntityNotFoundException($"Requested configuration not found ({input.ItemType} - {input.Module}: {input.Name})");
@@ -59,9 +62,7 @@ namespace Shesha.ConfigurationItems
 
             var cacheMd5 = await manager.GetCacheMD5Async(dto);
 
-            // TODO: handle top level module
-            // TODO: handle applicaiton key
-            await _clientSideCache.SetCachedMd5Async(input.ItemType, null, input.Module, input.Name, cacheMd5);
+            await _clientSideCache.SetCachedMd5Async(input.ItemType, _cfRuntime.FrontEndApplication, input.Module, input.Name, cacheMd5);
 
             return new GetCurrentResponse {
                 Configuration = dto,
