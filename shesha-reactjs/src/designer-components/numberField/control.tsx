@@ -2,13 +2,13 @@ import { InputNumber, InputNumberProps } from 'antd';
 import React, { FC } from 'react';
 import { customOnChangeValueEventHandler } from '@/components/formDesigner/components/utils';
 import { getStyle, useAvailableConstantsData } from '@/providers/form/utils';
-import { INumberFieldComponentProps } from './interfaces';
+import { INumberFieldComponentProps, NumberFieldValue } from './interfaces';
 
 interface IProps {
   disabled: boolean;
   model: INumberFieldComponentProps;
-  onChange?: Function;
-  value?: number;
+  onChange?: (value: NumberFieldValue) => void;
+  value?: NumberFieldValue;
 }
 
 const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value }) => {

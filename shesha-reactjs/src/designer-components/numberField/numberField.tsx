@@ -9,7 +9,7 @@ import { FormMarkup, IInputStyles } from '@/providers/form/models';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import NumberFieldControl from './control';
 import { isEmptyValue, resolveDefaultValue } from './utils';
-import { INumberFieldComponentProps } from './interfaces';
+import { INumberFieldComponentProps, NumberFieldValue } from './interfaces';
 import settingsFormJson from './settingsForm.json';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { getNumberFormat } from '@/utils/string';
@@ -22,9 +22,9 @@ const settingsForm = settingsFormJson as FormMarkup;
 
 interface INumberFieldEditorProps {
   model: INumberFieldComponentProps;
-  value: any;
-  onChange: (...args: any[]) => void;
-  defaultValue: number | string | undefined;
+  value: NumberFieldValue;
+  onChange: (value: NumberFieldValue) => void;
+  defaultValue: NumberFieldValue;
   canApplyDefaultValue: boolean;
 }
 
@@ -48,7 +48,7 @@ const NumberFieldEditor: FC<INumberFieldEditorProps> = ({ model, value, onChange
     // overwrite the default we just applied
     defaultValueApplied.current = true;
 
-    if (defaultValue !== undefined && isEmptyValue(value)) onChange(defaultValue);
+    if (!isEmptyValue(defaultValue) && isEmptyValue(value)) onChange(defaultValue);
   }, [canApplyDefaultValue, defaultValue, value, onChange]);
 
   return <NumberFieldControl disabled={model.readOnly} model={model} value={value} onChange={onChange} />;
