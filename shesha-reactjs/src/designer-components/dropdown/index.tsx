@@ -1,11 +1,14 @@
+/* The migrator reads deprecated model properties (referenceListNamespace/Name, valueFormat,
+   stylingBox) on purpose — upgrading forms saved against those shapes is what it is for. */
+/* eslint-disable @typescript-eslint/no-deprecated */
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import React, { useEffect, useRef } from 'react';
+import React, { CSSProperties, useEffect, useRef } from 'react';
 import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { DownSquareOutlined } from '@ant-design/icons';
 import { IInputStyles, INestedStyleValue, IStyleValue } from '@/providers/form/models';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { DataSourceType, DropdownComponentDefinition, IDropdownComponentProps } from './model';
+import { DataSourceType, DropdownComponentDefinition, IDropdownComponentProps, IDropdownComponentPropsV1 } from './model';
 import { DropdownSelectRef } from '@/components/dropdown/model';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly, migrateHiddenToVisible } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -21,7 +24,8 @@ import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nu
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { DropdownApi } from '../../componentsApi/componentApi';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
-import { SELECT_EVENTS_WITHOUT_CHANGE, getComponentEvents } from '../_common/events';
+import { useActualContextExecution } from '@/hooks/formComponentHooks';
+import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '../_common/events';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
 
@@ -51,7 +55,12 @@ const DropdownComponent: DropdownComponentDefinition = {
     }, [componentApi, model.componentName, model.id]);
     useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
-    const { styles } = useStyles(model);
+    // The framework only executes the root `style` expression (into `styleJson`); a nested
+    // `tag.style` script is not evaluated for us, so it would be a setting that saves but never
+    // renders. Evaluate it here and hand the result to the style builder.
+    const tagStyleJson = useActualContextExecution<CSSProperties>(model.tag?.style, undefined, {});
+
+    const { styles } = useStyles({ ...model, tagStyleJson });
 
     // `model.style` is the raw custom-style *expression* (a string); the select's `style` prop takes
     // a CSSProperties object. Drop it from the spread so only the evaluated `styleJson` can land there.
@@ -81,7 +90,7 @@ const DropdownComponent: DropdownComponentDefinition = {
                 onChange(newValue ?? null);
               }}
               events={getComponentEvents<number | number[] | string | string[] | (number | string)[]>(
-                model, SELECT_EVENTS_WITHOUT_CHANGE, ctx, value, DataTypes.array,
+                model, ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, ctx, value, DataTypes.array,
               )}
             />
           );
@@ -150,7 +159,7 @@ const DropdownComponent: DropdownComponentDefinition = {
     .add<IDropdownComponentProps>(9, (prev, context) => context.isNew === true
       ? prev
       : { ...migratePrevStyles(prev, defaultStyles()) })
-    .add<IDropdownComponentProps>(10, (prev, context) => {
+    .add<IDropdownComponentPropsV1>(10, (prev, context) => {
       if (context.isNew === true) return prev;
 
       const initTagStyle = migrateStyles({}, defaultTagStyles());
@@ -166,14 +175,16 @@ const DropdownComponent: DropdownComponentDefinition = {
         tag: prev.tag ?? { ...initTagStyle },
         showItemName: prev.showItemName ?? true,
         showIcon: prev.showIcon ?? true,
-        solidColor: prev.solidColor ?? true,
+        /* solidColor is no longer seeded here: step 14 folds it into tagVariant and treats an unset
+           value as 'solid', which is what this step used to default it to. A form that stored the
+           boolean explicitly still carries it through the spread above. */
         displayStyle: prev.displayStyle ?? 'text',
         desktop: { ...prev.desktop, tag: deviceTag(prev.desktop) ?? { ...initTagStyle } },
         tablet: { ...prev.tablet, tag: deviceTag(prev.tablet) ?? { ...initTagStyle } },
         mobile: { ...prev.mobile, tag: deviceTag(prev.mobile) ?? { ...initTagStyle } },
       };
     })
-    .add<IDropdownComponentProps>(11, (prev) => {
+    .add<IDropdownComponentPropsV1>(11, (prev) => {
       const result = { ...prev };
       delete result['referenceListNamespace'];
       delete result['referenceListName'];
@@ -186,8 +197,34 @@ const DropdownComponent: DropdownComponentDefinition = {
         result.referenceListId = { module: "Shesha", name: referenceListId.name };
       return result;
     })
-    .add<IDropdownComponentProps>(12, (prev) => ({ ...prev, mode: prev.mode ?? 'single' }))
-    .add<IDropdownComponentProps>(13, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev))),
+    .add<IDropdownComponentPropsV1>(12, (prev) => ({ ...prev, mode: prev.mode ?? 'single' }))
+    .add<IDropdownComponentPropsV1>(13, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev)))
+    .add<IDropdownComponentPropsV1>(14, (prev) => {
+      const { solidColor: _removed, ...rest } = prev;
+      const model: IDropdownComponentProps = { ...rest };
+
+      // Mode -> Enable Multi-Select. 'tags' counts as multi-select; `mode` is left in place so the
+      // runtime can still distinguish it.
+      model.enableMultiSelect = prev.enableMultiSelect ?? (prev.mode === 'multiple' || prev.mode === 'tags');
+
+      /* Value Format -> Binding Format. 'simple' and 'listItem' both resolve to the item value, so
+         they map to 'itemValue'; 'itemLabel' is new and cannot have existed before.
+
+         A saved 'custom' config is deliberately left WITHOUT a bindingFormat: Binding Format has no
+         equivalent for user JS, and the runtime checks bindingFormat before valueFormat, so setting
+         it here would silently stop incomeCustomJs/outcomeCustomJs from running. */
+      if (prev.valueFormat !== 'custom') {
+        model.bindingFormat = prev.bindingFormat ?? 'itemValue';
+      }
+
+      /* Show Solid Color -> Variant, and solidColor is dropped from the model above. The boolean only
+         distinguished solid from outlined, so those are the only two values an existing form can
+         migrate to; 'filled' is new. An unset boolean means a form that never stored the setting,
+         which takes the same 'solid' default the old code applied. */
+      model.tagVariant = prev.tagVariant ?? (prev.solidColor === false ? 'outlined' : 'solid');
+
+      return model;
+    }),
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   getDefaultStyles: () => defaultStyles(),

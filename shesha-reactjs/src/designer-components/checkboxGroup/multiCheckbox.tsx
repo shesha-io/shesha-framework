@@ -8,6 +8,7 @@ import { DEFAULT_MARGINS } from '@/components/formDesigner/utils/designerConstan
 import { isDefined } from '@/utils/nullables';
 import { useStyles } from './styles';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
+import { useUrlDataSource } from '../_common/useUrlDataSource';
 
 const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
   const { items = [], referenceListId, direction, value, onChange } = model;
@@ -28,11 +29,12 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
   }), [isDisabled]);
 
   const { data: refList } = useReferenceList(referenceListId);
+  const urlData = useUrlDataSource(model);
 
   const options = useMemo<CheckboxOptionType[]>(() => {
-    const list = getDataSourceList(model.dataSourceType, items, refList?.items);
+    const list = getDataSourceList(model.dataSourceType, items, refList?.items, urlData);
     return list.map<CheckboxOptionType>((item) => (item.id ? item : { ...item, id: nanoid(), key: nanoid() }));
-  }, [model.dataSourceType, items, refList?.items]);
+  }, [model.dataSourceType, items, refList?.items, urlData]);
 
   // Per-checkbox appearance (check mark, dimensions, border, background, etc.)
   // is emitted by the scoped emotion class onto each `.ant-checkbox-inner`;

@@ -1,4 +1,49 @@
-import { INestedStyleValue, IStyleValue } from "@/providers/form/models";
+import { IBackgroundValue, IShadowValue } from "@/designer-components/_settings/utils";
+import { INestedStyleValue, IStyleValue, StyleBoxValue } from "@/providers/form/models";
+
+/**
+ * The complete background shape, as `card` and `drawer` define it.
+ *
+ * Every slot has to be present for the Appearance tab to offer inheritance on the compound
+ * background inputs: the inheritance popover only renders for properties the default model actually
+ * contains, so a bare `{ type, color }` leaves size/position/repeat/gradient/image with nothing to
+ * inherit from and no inheritance state shown at all.
+ */
+const BACKGROUND_DEFAULTS = (color: string): IBackgroundValue => ({
+  type: 'color',
+  color,
+  repeat: 'no-repeat',
+  size: 'cover',
+  position: 'center',
+  gradient: { direction: 'to right', colors: {} },
+  url: '',
+});
+
+/**
+ * A no-op shadow. `styles.ts` reads `shadow`/`tag.shadow`, so the slot has to be present for the
+ * Shadow panel to offer inheritance — an absent slot renders nothing *and* shows no inheritance
+ * state. The zeroed values emit a shadow that is not visible, leaving appearance unchanged.
+ */
+const SHADOW_DEFAULTS = (): IShadowValue => ({
+  offsetX: 0,
+  offsetY: 0,
+  blurRadius: 0,
+  spreadRadius: 0,
+  color: '#000',
+});
+
+/** Zeroed margin/padding, present for the same inheritance reason as `SHADOW_DEFAULTS`. */
+const STYLING_BOX_DEFAULTS = (): StyleBoxValue => ({
+  _type: 'styleBox',
+  marginTop: "0",
+  marginRight: "0",
+  marginBottom: "0",
+  marginLeft: "0",
+  paddingTop: "0",
+  paddingRight: "0",
+  paddingBottom: "0",
+  paddingLeft: "0",
+});
 
 /**
  * Appearance defaults for an unconfigured dropdown.
@@ -9,7 +54,7 @@ import { INestedStyleValue, IStyleValue } from "@/providers/form/models";
 export const defaultStyles = (): INestedStyleValue<'tag'> => {
   return {
     tag: defaultTagStyles(),
-    background: { type: 'color', color: '#fff' },
+    background: BACKGROUND_DEFAULTS('#fff'),
     font: {
       weight: '400',
       size: 14,
@@ -36,12 +81,14 @@ export const defaultStyles = (): INestedStyleValue<'tag'> => {
       minWidth: '0px',
       maxWidth: 'auto',
     },
+    shadow: SHADOW_DEFAULTS(),
+    stylingBoxJson: STYLING_BOX_DEFAULTS(),
   };
 };
 
 export const defaultTagStyles = (): IStyleValue => {
   return {
-    background: { type: 'color', color: '#f0f0f0' },
+    background: BACKGROUND_DEFAULTS('#f0f0f0'),
     font: {
       weight: '400',
       size: 14,
@@ -69,7 +116,8 @@ export const defaultTagStyles = (): IStyleValue => {
       minWidth: '0px',
       maxWidth: 'auto',
     },
-
+    shadow: SHADOW_DEFAULTS(),
+    stylingBoxJson: STYLING_BOX_DEFAULTS(),
   };
 };
 

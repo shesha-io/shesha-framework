@@ -22,4 +22,13 @@ type DropdownRuntimeProps = 'className' | 'events' | 'selectRef' | 'styleValue';
 export interface IDropdownComponentProps extends Omit<IDropdownProps, "style" | "readOnly" | "value" | "onChange" | DropdownRuntimeProps>, IConfigurableFormComponent, IInputStyles {
 }
 
+/**
+ * Pre-`tagVariant` shape. `solidColor` is gone from the component model, but forms saved before the
+ * rename still carry it and migration 10 still seeds it, so the migrator steps that read or write it
+ * are typed against this instead.
+ */
+export interface IDropdownComponentPropsV1 extends IDropdownComponentProps {
+  solidColor?: boolean | undefined;
+}
+
 export type DropdownComponentDefinition = ComponentDefinition<"dropdown", IDropdownComponentProps>;

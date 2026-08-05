@@ -39,7 +39,7 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
     displayStyle,
     tagStyle,
     showIcon,
-    solidColor,
+    tagVariant = 'solid',
     showItemName,
     placeholder,
     size,
@@ -124,7 +124,7 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
         value={wrapValue(value, options)}
         showIcon={showIcon}
         showItemName={showItemName}
-        solidColor={solidColor}
+        tagVariant={tagVariant}
         tagStyle={tagStyle}
         style={style}
         styleValue={styleValue}
@@ -179,7 +179,7 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
                 icon={option.icon}
                 showIcon={showIcon}
                 tagStyle={tagStyle}
-                solidColor={solidColor}
+                variant={tagVariant}
                 showItemName={showItemName}
                 label={option.label}
               />
@@ -210,7 +210,7 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
               icon={option?.icon}
               showIcon={showIcon}
               tagStyle={tagStyle}
-              solidColor={solidColor}
+              variant={tagVariant}
               showItemName={showItemName}
               label={option?.label}
             />

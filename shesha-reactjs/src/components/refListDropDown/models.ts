@@ -2,7 +2,7 @@ import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { BaseOptionType, LabeledValue, SelectProps } from 'antd/lib/select';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { CSSProperties, Key, Ref } from 'react';
-import { DropdownSelectRef, SelectEventHandlers } from '@/components/dropdown/model';
+import { DropdownSelectRef, SelectEventHandlers, TagVariant } from '@/components/dropdown/model';
 import { IStyleValue } from '@/providers/form/models';
 import { ReferenceListItemDto } from '@/apis/referenceList';
 import { IReadOnly } from '@/interfaces/readOnly';
@@ -10,7 +10,8 @@ import { IAnyObject } from '@/interfaces';
 
 type RefListItemAndValue = Pick<ReferenceListItemDto, "item" | "itemValue">;
 export type IncomeValueFunc = (value: RefListItemAndValue, args: IAnyObject | undefined) => string | number | RefListItemAndValue | null;
-export type OutcomeValueFunc = (value: ReferenceListItemDto, args: IAnyObject | undefined) => number | RefListItemAndValue | null;
+/** `string` covers the Item Label binding format, which stores the item's display text. */
+export type OutcomeValueFunc = (value: ReferenceListItemDto, args: IAnyObject | undefined) => string | number | RefListItemAndValue | null;
 export type GetLabeledValueFunc<TValue = unknown> = (value: TValue, options: ISelectOption<TValue>[]) => CustomLabeledValue<TValue> | undefined;
 export type GetOptionFromFetchedItemFunc<TValue = unknown> = (fetchedItem: ReferenceListItemDto, args: IAnyObject | undefined) => ISelectOption<TValue>;
 
@@ -37,7 +38,8 @@ export interface IRefListDropDownProps<TValue = unknown> extends LimitedSelectPr
   style?: CSSProperties | undefined;
   tagStyle?: CSSProperties | undefined;
   showIcon?: boolean | undefined;
-  solidColor?: boolean | undefined;
+  /** How each tag is filled. */
+  tagVariant?: TagVariant;
   showItemName?: boolean | undefined;
   value?: TValue | TValue[] | (TValue extends unknown ? TValue | TValue[] : never) | undefined;
   ignoredValues?: number[] | undefined;

@@ -6,7 +6,7 @@ import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers/form/models';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { executeScriptSync, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import {
   migrateCustomFunctions,
   migrateHiddenToVisible,
@@ -19,11 +19,10 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migrateStyles } from '../_common-migrations/migrateStyles';
 import { getSettings } from './settingsForm';
 import { IRadioComponentProps, RadioComponentDefinition } from './interfaces';
-import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { DataSourceType } from '../dropdown/model';
 import { getNumberOrUndefined } from '@/utils/string';
 import { defaultStyles } from './utils';
-import { migrateUrlDataSource } from '../_common-migrations/migrateUrlDataSource';
 import { useStyles } from './styles';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { RadioApi } from '@/componentsApi/componentApi';
@@ -43,10 +42,17 @@ const RadioComponent: RadioComponentDefinition = {
   // Radio has its own intrinsic size and should not be forced to fill wrapper
   preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.referenceListItem || (dataType === DataTypes.array && dataFormat === ArrayFormats.simple),
-  Factory: ({ model }) => {
+  // `dataSourceUrl` is a script (it may read form data, localStorage, etc.), so evaluate it
+  // here and resolve the options against the endpoint it returns.
+  calculateModel: (model, allData) => ({
+    dataSourceUrl: isNotNullOrWhiteSpace(model.dataSourceUrl)
+      ? executeScriptSync<string>(model.dataSourceUrl, allData)
+      : model.dataSourceUrl,
+  }),
+  Factory: ({ model, calculatedModel }) => {
     const { styles } = useStyles(model);
 
-    const options = useRadioOptions(model);
+    const options = useRadioOptions({ ...model, dataSourceUrl: calculatedModel.dataSourceUrl });
 
     const componentApi = useComponentApi();
     const groupRef = useRef<HTMLDivElement>(null);
@@ -124,6 +130,8 @@ const RadioComponent: RadioComponentDefinition = {
       addModelError('referenceListId', 'Select `Reference List` on the settings panel');
     if (model.dataSourceType === 'values' && (model.items ?? []).length === 0)
       addModelError('items', 'Add `Items` on the settings panel, or select a different `Data Source Type`');
+    if (model.dataSourceType === 'url' && isNullOrWhiteSpace(model.dataSourceUrl))
+      addModelError('dataSourceUrl', 'Enter a `Data Source URL` on the settings panel');
   },
   getDefaultStyles: () => defaultStyles(),
   migrator: (m) =>
@@ -164,10 +172,11 @@ const RadioComponent: RadioComponentDefinition = {
           desktop: { ...migrateStyles(prev, {}, 'desktop'), enableStyleOnReadonly: (prev.desktop as IInputStyles | undefined)?.enableStyleOnReadonly ?? false },
         })
       .add<IRadioComponentProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev)))
-      // The `url` data source was removed. A URL that pointed at a reference list converts to
-      // the native `referenceList` source; anything else falls back to `values` and is reported
-      // by `validateModel` below.
-      .add<IRadioComponentProps>(9, (prev) => migrateUrlDataSource(prev)),
+      // Version 9 previously dropped the `url` data source, discarding `dataSourceUrl` and
+      // `reducerFunc`. The data source is supported again, so the step is retained as a no-op:
+      // removing it would renumber the sequence for forms that have not been migrated yet.
+      // Forms already saved at version 9 have lost those scripts and must be reconfigured.
+      .add<IRadioComponentProps>(9, (prev) => prev),
   linkToModelMetadata: (model, metadata): IRadioComponentProps => {
     const isRefList = metadata.dataType === DataTypes.referenceListItem;
 

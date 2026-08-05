@@ -8,12 +8,15 @@ import { CustomLabeledValue, GetLabeledValueFunc, GetOptionFromFetchedItemFunc, 
 import { useStyles } from './style';
 import ReflistTag from '../refListDropDown/reflistTag';
 import { getNumberOrUndefined } from '@/utils/string';
-import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 
 const normalizeValue = (value: number | string): number | string => getNumberOrUndefined(value) ?? value;
 
 export const Dropdown: FC<IDropdownProps> = ({
+  // Read deliberately: forms saved before Binding Format still resolve their values through it.
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
   valueFormat,
+  bindingFormat,
   incomeCustomJs,
   outcomeCustomJs,
   labelCustomJs,
@@ -22,17 +25,22 @@ export const Dropdown: FC<IDropdownProps> = ({
   onChange,
   value: inputValue,
   referenceListId,
-  mode,
+  mode: configuredMode,
+  enableMultiSelect,
   disableItemValue = false,
   ignoredValues = [],
   disabledValues = [],
   placeholder,
+  readOnlyPlaceholder,
   readOnly,
   style,
   size,
   showIcon,
-  solidColor,
-  showItemName,
+  tagVariant = 'solid',
+  /* Tags show their label unless explicitly turned off. A newly dropped component ships with these
+     unset (only saved forms get them back-filled by the migrator), and defaulting to false rendered
+     an empty tag body. */
+  showItemName = true,
   allowClear = true,
   displayStyle,
   tagStyle,
@@ -42,6 +50,12 @@ export const Dropdown: FC<IDropdownProps> = ({
   events,
   styleValue,
 }) => {
+  /* Enable Multi-Select supersedes `mode`; `mode` is still honoured for forms saved before the
+     rename (and for the 'tags' variant, which the boolean cannot express). */
+  const mode = isDefined(enableMultiSelect)
+    ? (enableMultiSelect ? 'multiple' : 'single')
+    : configuredMode;
+
   const { styles } = useStyles({ style: style ?? {} });
   // The caller's Appearance class is merged in rather than replacing the component's own class,
   // so the base layout rules survive when a form supplies configured styles.
@@ -57,6 +71,14 @@ export const Dropdown: FC<IDropdownProps> = ({
 
   // Extracts value from a fetched RefList item. Stored in the value poroperty of the item
   const incomeValueFunc = useCallback<IncomeValueFunc>((value, args) => {
+    // Binding Format supersedes the legacy valueFormat. `itemLabel` binds the display text, so the
+    // stored string is matched back to its item to drive the selection.
+    if (bindingFormat === 'itemLabel') {
+      return value;
+    }
+    if (bindingFormat === 'itemValue') {
+      return isDefined(value) && typeof value === 'object' ? value.itemValue : value;
+    }
     if (valueFormat === 'listItem') {
       return isDefined(value) ? value.itemValue : null; // number
     }
@@ -66,11 +88,19 @@ export const Dropdown: FC<IDropdownProps> = ({
       return executeExpression<string>(incomeCustomJs, { ...args, value }, null) ?? ""; // string
     }
     return value; // DTO
-  }, [valueFormat, incomeCustomJs]);
+  }, [bindingFormat, valueFormat, incomeCustomJs]);
 
   // Outcome function converts fetched RefList item to a value that is saved to form on selection
   // result is stored in the data property of item
   const outcomeValueFunc = useCallback<OutcomeValueFunc>((value, args) => {
+    // `itemLabel` stores the display text (e.g. to save the selected item's caption to a string
+    // property); `itemValue` stores the underlying value.
+    if (bindingFormat === 'itemLabel') {
+      return isDefined(value) ? value.item : null;
+    }
+    if (bindingFormat === 'itemValue') {
+      return isDefined(value) ? value.itemValue : null;
+    }
     if (valueFormat === 'listItem') {
       return isDefined(value)
         ? { item: value.item, itemValue: value.itemValue }
@@ -82,7 +112,7 @@ export const Dropdown: FC<IDropdownProps> = ({
       return executeExpression(outcomeCustomJs, { ...args, value }, null);
     }
     return isDefined(value) ? value.itemValue : null;
-  }, [valueFormat, outcomeCustomJs]);
+  }, [bindingFormat, valueFormat, outcomeCustomJs]);
 
   // is used for RefLists only
   const getLabeledValue = useCallback<GetLabeledValueFunc<number | string>>((value, options) => {
@@ -146,7 +176,7 @@ export const Dropdown: FC<IDropdownProps> = ({
           readOnly={readOnly}
           size={size}
           showIcon={showIcon}
-          solidColor={solidColor}
+          tagVariant={tagVariant}
           showItemName={showItemName}
           className={selectClassName}
           style={{ ...style }}
@@ -190,10 +220,25 @@ export const Dropdown: FC<IDropdownProps> = ({
         ? (Array.isArray(selectedValue) ? selectedValue : []).map((x) => options.find((o) => o.value === x))
         : getSelectValue()
       : options.find((o) => o.value === selectedValue);
+
+    // Read-only Placeholder: shown instead of an empty rendering when nothing is selected.
+    const isEmpty = Array.isArray(displayValue) ? displayValue.length === 0 : !isDefined(displayValue);
+    if (isEmpty && isNotNullOrWhiteSpace(readOnlyPlaceholder)) {
+      return (
+        <ReadOnlyDisplayFormItem
+          style={style}
+          styleValue={styleValue}
+          enableFullStyle={enableStyleOnReadonly}
+          className={className}
+          value={readOnlyPlaceholder}
+        />
+      );
+    }
+
     return (
       <ReadOnlyDisplayFormItem
         showIcon={showIcon}
-        solidColor={solidColor}
+        tagVariant={tagVariant}
         showItemName={showItemName}
         tagStyle={tagStyle}
         style={style}
@@ -235,7 +280,7 @@ export const Dropdown: FC<IDropdownProps> = ({
                 icon={option.icon}
                 showIcon={showIcon}
                 tagStyle={tagStyle}
-                solidColor={solidColor}
+                variant={tagVariant}
                 showItemName={showItemName}
                 label={option.label}
               />
@@ -262,6 +307,9 @@ export const Dropdown: FC<IDropdownProps> = ({
       size={size}
       {...(style ? { style } : {})}
       {...(displayStyle === 'tags' ? {
+        /* Single-select renders the selection through `labelRender`; multi-select renders each
+           selected item through `tagRender` instead. Supplying only `labelRender` left multi-select
+           on antd's default tag, which shows the remove icon but none of the item's label or icon. */
         labelRender: (props) => {
           const option = options.find((o) => o.value === props.value);
           return option
@@ -273,12 +321,30 @@ export const Dropdown: FC<IDropdownProps> = ({
                 icon={option.icon}
                 showIcon={showIcon}
                 tagStyle={tagStyle}
-                solidColor={solidColor}
+                variant={tagVariant}
                 showItemName={showItemName}
                 label={option.label}
               />
             )
             : undefined;
+        },
+        tagRender: (props) => {
+          const option = options.find((o) => o.value === props.value);
+          return (
+            <ReflistTag
+              value={option?.value}
+              description={option?.description}
+              color={option?.color}
+              icon={option?.icon}
+              showIcon={showIcon}
+              tagStyle={tagStyle}
+              variant={tagVariant}
+              showItemName={showItemName}
+              label={option?.label ?? props.label}
+              closable={props.closable}
+              onClose={props.onClose}
+            />
+          );
         },
       } : {})}
       options={options.map(({ value: localValue, label }) => ({ value: localValue, label }))}

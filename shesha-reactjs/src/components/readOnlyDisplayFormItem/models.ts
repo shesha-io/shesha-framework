@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { FormIdentifier, IStyleValue } from '@/providers/form/models';
 import { SwitchSize } from 'antd/es/switch';
+import { TagVariant } from '@/components/dropdown/model';
 
 export type ReadOnlyItemType = 'string' | 'number' | 'dropdown' | 'dropdownMultiple' | 'time' | 'datetime' | 'checkbox' | 'switch' | 'radiogroup' | 'textArea';
 
@@ -10,7 +11,8 @@ export interface IReadOnlyDisplayFormItemProps<TValue = unknown> {
   type?: ReadOnlyItemType | undefined;
   dropdownDisplayMode?: 'raw' | 'tags' | undefined;
   showIcon?: boolean | undefined;
-  solidColor?: boolean | undefined;
+  /** How each tag is filled. */
+  tagVariant?: TagVariant | undefined;
   showItemName?: boolean | undefined;
   dateFormat?: string | undefined;
   timeFormat?: string | undefined;

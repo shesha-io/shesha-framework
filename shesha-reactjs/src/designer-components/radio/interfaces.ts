@@ -9,6 +9,10 @@ export interface IRadioOptionsSource {
   items?: ILabelValue[] | undefined;
   referenceListId?: IReferenceListIdentifier | undefined;
   dataSourceType: DataSourceType;
+  /** Endpoint backing the `url` data source. */
+  dataSourceUrl?: string | undefined;
+  /** Script mapping the `url` response to `{ label, value }` pairs. */
+  reducerFunc?: string | undefined;
 }
 
 export interface IRadioProps extends Partial<IRadioOptionsSource> {
@@ -55,4 +59,9 @@ export interface IRadioComponentProps extends IRadioOptionsSource, IConfigurable
   radio?: IInputStyles;
 }
 
-export type RadioComponentDefinition = ComponentDefinition<"radio", IRadioComponentProps>;
+/** Values derived from the model before render — currently the evaluated `url` data source. */
+export interface IRadioCalculatedValues {
+  dataSourceUrl?: string | undefined;
+}
+
+export type RadioComponentDefinition = ComponentDefinition<"radio", IRadioComponentProps, IRadioCalculatedValues>;

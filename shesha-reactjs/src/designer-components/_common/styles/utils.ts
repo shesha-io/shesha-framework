@@ -3,6 +3,7 @@ import { IConfigurableFormComponent, IStyleValue, StyleBoxValue } from "../../..
 import { addPx, hasNumber } from "@/utils/style";
 import { StringBuilder } from "@/utils";
 import { isDefined } from "@/utils/nullables";
+import { CSSProperties } from "react";
 
 export const getStyleValueFromModel = (model: IConfigurableFormComponent): IStyleValue => {
   return {
@@ -144,6 +145,64 @@ export const paddingValue = (model: StyleBoxValue | undefined): string => {
   return sb.join(' ');
 };
 
+
+/**
+ * CSS properties that take a bare number rather than a length, so a numeric value must not have
+ * `px` appended to it.
+ */
+const UNITLESS_CSS_PROPERTIES = new Set([
+  'opacity', 'zIndex', 'lineHeight', 'fontWeight', 'flexGrow', 'flexShrink', 'order',
+  'columnCount', 'flex', 'zoom', 'tabSize', 'orphans', 'widows', 'animationIterationCount',
+]);
+
+/**
+ * Serialises a React `CSSProperties` object into a CSS declaration string suitable for
+ * interpolation into an emotion template literal.
+ *
+ * Emotion's `CSSObject` is not structurally compatible with React's `CSSProperties`, so a custom
+ * style object cannot simply be spread into a `css` block. Keys are kebab-cased, `--custom-props`
+ * are passed through untouched, and `px` is appended only to numeric values of properties that
+ * actually take a length (see `UNITLESS_CSS_PROPERTIES`).
+ */
+export const cssPropertiesToString = (style: CSSProperties | undefined): string => {
+  if (!isDefined(style)) return '';
+  const sb = new StringBuilder();
+  Object.entries(style).forEach(([key, value]) => {
+    if (!isDefined(value) || value === '') return;
+    // Custom properties are already in their final form and must keep their exact casing.
+    const name = key.startsWith('--') ? key : key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
+    const serialised = typeof value === 'number' && !UNITLESS_CSS_PROPERTIES.has(key)
+      ? `${value}px`
+      : String(value);
+    sb.append(`${name}: ${serialised};`);
+  });
+  return sb.build();
+};
+
+/**
+ * Splits a custom style object into its background-related declarations and everything else.
+ *
+ * Some components deliberately scope their Background panel to a state selector (a checkbox or
+ * radio indicator only fills when checked; a dropdown tag only takes the configured colour when
+ * the option carries none). A custom style applied to the unconditional selector would paint the
+ * element in states the panel intentionally leaves alone. Splitting lets the caller route the
+ * background half to the same selector the panel uses and the rest to the base rule.
+ *
+ * Every `background*` longhand travels with the shorthand so a single visual intent is never
+ * split across two states.
+ */
+export const splitBackgroundProperties = (style: CSSProperties | undefined): { background: CSSProperties; rest: CSSProperties } => {
+  // Built as plain records because `CSSProperties` has no string index signature; the result is
+  // narrowed back on return, where the keys are known to have come from a `CSSProperties` object.
+  const background: Record<string, unknown> = {};
+  const rest: Record<string, unknown> = {};
+  if (!isDefined(style)) return { background: {}, rest: {} };
+  Object.entries(style).forEach(([key, value]) => {
+    const target = key.startsWith('background') ? background : rest;
+    target[key] = value;
+  });
+  return { background: background as CSSProperties, rest: rest as CSSProperties };
+};
 
 export const fontStyles = (model: IFontValue | undefined): string => {
   if (!model) return '';
