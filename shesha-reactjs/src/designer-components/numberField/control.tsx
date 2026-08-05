@@ -27,7 +27,9 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value }) =>
     style: style ? getStyle(style, allData.data, allData.globalState) : { width: '100%' },
     step: model?.highPrecision ? model?.stepNumeric : model?.stepNumeric,
     ...customOnChangeValueEventHandler(model, allData, onChange),
-    defaultValue: model?.defaultValue,
+    // NOTE: antd's `defaultValue` is deliberately not passed here. It only feeds the control's own
+    // uncontrolled state, so it would render a value that is absent from the form data and therefore
+    // never submitted. The configured default is written into the form data instead (see numberField.tsx).
     changeOnWheel: false,
   };
 
