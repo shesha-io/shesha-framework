@@ -298,6 +298,15 @@ export type CheckboxGroupApi = InputComponentApi<string[] | undefined>;
 
 export type SwitchFieldApi = InputComponentApi<boolean | undefined>;
 
+/**
+ * Date field. The value is the serialised date as stored in the form data, so its shape follows the
+ * component's Binding Format; when Range is enabled it is a `[start, end]` pair instead.
+ */
+export interface DateFieldApi extends InputComponentApi<string | [string | null, string | null] | null | undefined> {
+  /** Whether the component is currently picking a range rather than a single date. Read-only. */
+  readonly isRange: boolean;
+};
+
 export interface PanelApi extends CommonComponentApi {
   /** Whether the panel is expanded */
   isExpanded: boolean;

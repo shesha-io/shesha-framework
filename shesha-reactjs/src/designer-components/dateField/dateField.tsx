@@ -1,23 +1,44 @@
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import { DATE_TIME_FORMATS } from '@/constants/formats';
-import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers/form/models';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { CalendarOutlined } from '@ant-design/icons';
-import React, { Fragment, useMemo } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { DatePickerWrapper } from './datePickerWrapper';
-import { DateFieldDefinition, DateFieldValueType, IDateFieldProps, NoUndefinedRangeValueType } from './interfaces';
+import { DateFieldDefinition, DateFieldValueType, DateSelectionType, IDateFieldProps, IDateFieldPropsV1, NoUndefinedRangeValueType } from './interfaces';
 import { getSettings } from './settingsForm';
-import {
-  defaultStyles,
-} from './utils';
+import { defaultStyles } from './utils';
+import { useComponentApi } from '@/providers/componentApi/provider';
+import { useEffectOnce } from '@/hooks/useEffectOnce';
+import { DateFieldApi } from '../../componentsApi/componentApi';
+import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '../_common/events';
 
+import apiCode from "../../componentsApi/componentApi.ts?raw";
+import { isNotNullOrWhiteSpace } from '@/utils/nullables';
+
+/**
+ * Folds the legacy `picker` + `showTime` pair into a single selection type. Time precision is not
+ * recoverable from the old model (it only knew "show time or not"), so a time-bearing date picker
+ * lands on minutes — the default the spreadsheet specifies.
+ */
+const toSelectionType = (picker: string | undefined, showTime: boolean | undefined): DateSelectionType => {
+  switch (picker) {
+    case 'week': return 'week';
+    case 'month': return 'month';
+    case 'quarter': return 'quarter';
+    case 'year': return 'year';
+    case 'time': return 'dateTimeMinutes';
+    default: return showTime === true ? 'dateTimeMinutes' : 'date';
+  }
+};
 
 const DateField: DateFieldDefinition = {
+  allowInherit: true,
   type: 'dateField',
   name: 'Date field',
   isInput: true,
@@ -26,59 +47,61 @@ const DateField: DateFieldDefinition = {
   icon: <CalendarOutlined />,
   preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.date || dataType === DataTypes.dateTime,
-  Factory: ({ model }) => {
-    const finalStyle = useMemo(() => !model.enableStyleOnReadonly && model.readOnly ? {
-      ...model.allStyles?.fontStyles,
-      ...model.allStyles?.dimensionsStyles,
-    } : model.allStyles?.fullStyle, [model.enableStyleOnReadonly, model.readOnly, model.allStyles]);
+  Factory: ({ model, apiContext }) => {
+    const componentApi = useComponentApi();
+    const inputRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+      componentApi?.updateApi<DateFieldApi>({
+        id: model.id,
+        componentName: model.componentName ?? "",
+        level: 3,
+        typeDefinition: { typeName: 'DateFieldApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+        properties: [
+          { name: 'isRange', getter: () => model.range === true, setter: (value) => apiContext?.updateApiModel({ range: value }) },
+        ],
+        api: { focus: () => inputRef.current?.querySelector('input')?.focus() },
+      });
+    }, [apiContext, componentApi, model.componentName, model.id, model.range]);
+    useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
     return (
-      <Fragment>
-        <ConfigurableFormItem<DateFieldValueType> model={model}>
-          {(value, onChange, _, ctx) => {
-            return (
-              <DatePickerWrapper
-                {...model}
-                additionalStyles={finalStyle}
-                value={value}
-                onChange={(value: string | NoUndefinedRangeValueType<string> | null, _dateString: string | [string, string] | null) => {
-                  // TODO: EVENTS: pass dateString to event handler
-                  // addContextData(context, { dateString, value }),
-                  ctx?.handleEvent(undefined, { value }, model.onChangeCustom);
-                  onChange(value);
-                }}
-                onFocus={(event) => ctx?.handleEvent(event, { value }, model.onFocusCustom)}
-                onBlur={(event) => ctx?.handleEvent(event, { value }, model.onBlurCustom)}
-              />
-            );
-          }}
-        </ConfigurableFormItem>
-      </Fragment>
+      <ConfigurableFormItem<DateFieldValueType> model={model}>
+        {(value, onChange, _, ctx) => {
+          return (
+            <DatePickerWrapper
+              {...model}
+              ref={inputRef}
+              value={value}
+              onChange={(newValue: string | NoUndefinedRangeValueType<string> | null, _dateString: string | [string, string] | null) => {
+                ctx?.handleEvent(undefined, { value: newValue }, model.onChangeCustom);
+                onChange(newValue);
+              }}
+              {...getComponentEvents<DateFieldValueType>(model, ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, ctx, value, DataTypes.dateTime)}
+            />
+          );
+        }}
+      </ConfigurableFormItem>
     );
   },
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
-  initModel: (model) => {
-    const customModel: IDateFieldProps = {
-      ...model,
-      picker: 'date',
-      showTime: false,
-      dateFormat: DATE_TIME_FORMATS.date,
-      timeFormat: DATE_TIME_FORMATS.time,
-      defaultToMidnight: true,
-    };
-    return customModel;
-  },
+  initModel: (model) => ({
+    ...model,
+  }),
+  getDefaultStyles: () => defaultStyles(),
   migrator: (m) => m
-    .add<IDateFieldProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<IDateFieldProps>(1, (prev) => migrateVisibility(prev))
-    .add<IDateFieldProps>(2, (prev) => migrateReadOnly(prev))
-    .add<IDateFieldProps>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-    .add<IDateFieldProps>(4, (prev) => ({
+    .add<IDateFieldPropsV1>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IDateFieldPropsV1>(1, (prev) => migrateVisibility(prev))
+    .add<IDateFieldPropsV1>(2, (prev) => migrateReadOnly(prev))
+    .add<IDateFieldPropsV1>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
+    .add<IDateFieldPropsV1>(4, (prev) => ({
       ...prev,
-      showNow: Boolean(prev.showNow || prev['showToday']),
+      showNow: prev.showNow === true || prev.showToday === true,
     }))
-    .add<IDateFieldProps>(5, (prev) => {
+    .add<IDateFieldPropsV1>(5, (prev, context) => {
+      if (context.isNew === true) return prev;
+
       const styles: IInputStyles = {
         size: prev.size,
         hideBorder: prev.hideBorder,
@@ -87,7 +110,9 @@ const DateField: DateFieldDefinition = {
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-    .add<IDateFieldProps>(6, (prev) => {
+    .add<IDateFieldPropsV1>(6, (prev, context) => {
+      if (context.isNew === true) return prev;
+
       const styles: IInputStyles = {
         size: prev.size,
         width: prev.width,
@@ -103,13 +128,47 @@ const DateField: DateFieldDefinition = {
       };
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-    .add<IDateFieldProps>(7, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+    .add<IDateFieldPropsV1>(7, (prev, context) => context.isNew === true
+      ? prev
+      : { ...migratePrevStyles(prev, defaultStyles()) })
+    .add<IDateFieldProps>(8, (prev) => {
+      const model = { ...migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev)) } as IDateFieldProps;
+      const legacy = prev as IDateFieldPropsV1;
+
+      // picker + showTime -> selectionType
+      model.selectionType = legacy.selectionType ?? toSelectionType(legacy.picker, legacy.showTime);
+
+      // resolveToUTC -> bindingFormat. The old boolean only distinguished UTC from local ISO.
+      model.bindingFormat = prev.bindingFormat ?? (prev.resolveToUTC === true ? 'utc' : 'isoLocal');
+
+      // disabledDateMode/template -> dateRestriction, where the old config maps cleanly. A custom
+      // function has no dropdown equivalent, so it stays on the legacy properties and keeps working.
+      if (prev.disabledDateMode === 'functionTemplate') {
+        model.dateRestriction = prev.disabledDateTemplate?.includes('<') === true ? 'past' : 'future';
+      } else if (prev.disabledDateMode === 'none' || prev.disabledDateMode === undefined) {
+        model.dateRestriction = 'none';
+      }
+
+      return model;
+    }),
   linkToModelMetadata: (model, metadata): IDateFieldProps => {
     return {
       ...model,
-      dateFormat: !!metadata.dataFormat ? metadata.dataFormat : model.dateFormat,
-      showTime: metadata.dataType === DataTypes.dateTime ? true : metadata.dataType === DataTypes.date ? false : model.showTime,
+      dateFormat: isNotNullOrWhiteSpace(metadata.dataFormat) ? metadata.dataFormat : model.dateFormat,
+      selectionType: model.selectionType ?? (metadata.dataType === DataTypes.dateTime
+        ? 'dateTimeMinutes'
+        : metadata.dataType === DataTypes.date
+          ? 'date'
+          : model.selectionType),
     };
+  },
+  previewConfiguration: {
+    type: 'dateField',
+    id: 'dateField',
+    propertyName: `dateFieldAppearance`,
+    label: `Date Field Label`,
+    version: 'latest',
+    selectionType: 'dateTimeMinutes',
   },
 };
 
