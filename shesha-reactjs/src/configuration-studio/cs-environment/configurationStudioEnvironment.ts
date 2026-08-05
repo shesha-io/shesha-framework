@@ -20,7 +20,16 @@ export class ConfigurationStudioEnvironment implements IConfigurationStudioEnvir
   private _frontEndAppsPromise: Promise<Map<string, FrontEndAppDto>> | undefined = undefined;
 
   getFrontEndAppsMapAsync = (): Promise<Map<string, FrontEndAppDto>> => {
-    return this._frontEndAppsPromise ??= fetchFrontEndAppsMapAsync(this.httpClient);
+    if (this._frontEndAppsPromise)
+      return this._frontEndAppsPromise;
+
+    const promise = fetchFrontEndAppsMapAsync(this.httpClient);
+    this._frontEndAppsPromise = promise;
+    void promise.catch(() => {
+      if (this._frontEndAppsPromise === promise)
+        this._frontEndAppsPromise = undefined;
+    });
+    return promise;
   };
 
   registerDocumentDefinition = (definition: DocumentDefinition): void => {

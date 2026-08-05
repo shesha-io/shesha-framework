@@ -60,8 +60,12 @@ export const flatNode2TreeNode = async (csEnvironment: IConfigurationStudioEnvir
 
   let applicationsMap: Promise<Map<string, FrontEndAppDto>> | undefined;
   const getApplicationNameAsync = async (applicationId: string): Promise<string> => {
-    const map = await (applicationsMap ??= csEnvironment.getFrontEndAppsMapAsync());
-    return map.get(applicationId)?.name ?? "unknown";
+    try {
+      const map = await (applicationsMap ??= csEnvironment.getFrontEndAppsMapAsync());
+      return map.get(applicationId)?.name ?? "unknown";
+    } catch {
+      return "unknown";
+    }
   };
 
   switch (node.nodeType) {

@@ -44,7 +44,7 @@ with cte as (
 		ci.is_deleted = 0
 )
 select 
-	(m.name + '/' + cte.name + ':' + cast(coalesce(rel.level, 999) as varchar)) as id,
+	(m.name + '/' + cte.name + coalesce('/' + app.app_key, '') + ':' + cast(coalesce(rel.level, 999) as varchar)) as id,
 	cte.id as item_id,
 	cte.name,
 	cte.item_type,
@@ -98,7 +98,7 @@ with recursive cte as (
 		ci.is_deleted = false
 )
 select 
-	concat(m.name, '/', cte.name, ':', coalesce(rel.level, 999)) as id,
+	concat(m.name, '/', cte.name, case when app.app_key is not null then concat('/', app.app_key) else '' end, ':', coalesce(rel.level, 999)) as id,
 	cte.id as item_id,
 	cte.name,
 	cte.item_type,
