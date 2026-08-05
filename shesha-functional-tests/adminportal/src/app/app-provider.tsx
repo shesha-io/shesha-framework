@@ -12,15 +12,17 @@ import { ProgressBar } from './progressBar';
 
 export interface IAppProviderProps {
     backendUrl: string;
+    applicationKey?: string | undefined;
 }
 
-export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({ children, backendUrl }) => {
+export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({ children, backendUrl, applicationKey: frontEndApp }) => {
     const nextRouter = useNextRouter();
 
     return (
         <GlobalStateProvider>
             <ShaApplicationProvider
                 backendUrl={backendUrl}
+                applicationKey={frontEndApp}
                 router={nextRouter}
                 noAuth={nextRouter.path?.includes('/no-auth')}
             >
