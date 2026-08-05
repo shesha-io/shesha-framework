@@ -2,7 +2,7 @@ import { BorderStyle, IBackgroundValue, IBorderValue, IDimensionsValue, IFontVal
 import { IConfigurableFormComponent, IStyleValue, StyleBoxValue } from "../../../providers/form/models";
 import { addPx, hasNumber } from "@/utils/style";
 import { StringBuilder } from "@/utils";
-import { isDefined } from "@/utils/nullables";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { CSSProperties } from "react";
 
 /** Properties that are unitless in CSS, so a bare number must not gain a `px` suffix. */
@@ -104,16 +104,16 @@ const dimensionCss = (value: string | number, _canvasValue?: string): string | n
   return !hasNumber(value) ? value : addPx(value) ?? 0;
 };
 
-export const shadowStyles = (model: IShadowValue | undefined): string => model
-  ? `box-shadow: ${model.offsetX ?? 0}px ${model.offsetY ?? 0}px ${model.blurRadius ?? 0}px ${model.spreadRadius ?? 0}px ${Boolean(model.color) ? model.color : '#00000004'};`
+export const shadowStyles = (model: IShadowValue | undefined, propertyName: string = 'box-shadow', important: boolean = false): string => model
+  ? `${propertyName}: ${model.offsetX ?? 0}px ${model.offsetY ?? 0}px ${model.blurRadius ?? 0}px ${model.spreadRadius ?? 0}px ${Boolean(model.color) ? model.color : '#00000004'}${important === true ? ' !important' : ''};`
   : '';
 
 export const borderRadiusStyles = (model: IBorderValue | undefined, important: boolean = false): string => {
   if (!model) return '';
   const sb = new StringBuilder();
-  if (model.radiusType === 'all' && isDefined(model.radius?.all)) sb.append(`border-radius: ${addPx(model.radius.all)} ${important === true ? '!important;' : ';'}`);
+  if (model.radiusType === 'all' && isDefined(model.radius?.all)) sb.append(`border-radius: ${addPx(model.radius.all)} ${important === true ? '!important' : ''};`);
   if (model.radiusType !== 'all' && model.radius)
-    sb.append(`border-radius: ${addPx(model.radius.topLeft ?? 0)} ${addPx(model.radius.topRight ?? 0)} ${addPx(model.radius.bottomRight ?? 0)} ${addPx(model.radius.bottomLeft ?? 0)} ${important === true ? '!important;' : ';'};`);
+    sb.append(`border-radius: ${addPx(model.radius.topLeft ?? 0)} ${addPx(model.radius.topRight ?? 0)} ${addPx(model.radius.bottomRight ?? 0)} ${addPx(model.radius.bottomLeft ?? 0)} ${important === true ? '!important' : ''};`);
   return sb.build();
 };
 
@@ -198,10 +198,10 @@ export const paddingValue = (model: StyleBoxValue | undefined): string => {
 export const fontStyles = (model: IFontValue | undefined): string => {
   if (!model) return '';
   const sb = new StringBuilder();
-  if (Boolean(model.color)) sb.append(`color: ${model.color};`);
+  if (!isNullOrWhiteSpace(model.color)) sb.append(`color: ${model.color};`);
   if (isDefined(model.size)) sb.append(`font-size: ${addPx(model.size)};`);
-  if (Boolean(model.weight)) sb.append(`font-weight: ${model.weight};`);
-  if (Boolean(model.type)) sb.append(`font-family: ${model.type};`);
+  if (!isNullOrWhiteSpace(model.weight)) sb.append(`font-weight: ${model.weight};`);
+  if (!isNullOrWhiteSpace(model.type)) sb.append(`font-family: ${model.type};`);
   if (isDefined(model.align)) sb.append(`text-align: ${model.align};`);
   return sb.build();
 };

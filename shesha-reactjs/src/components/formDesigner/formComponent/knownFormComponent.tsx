@@ -29,7 +29,7 @@ interface KnownFormComponentProps {
 };
 
 const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolboxComponent, apiContext }) => {
-  const { styles: shaComponentStyles } = useShaComponentStyles({ componentModel, toolboxComponent });
+  const { styles: shaComponentStyles } = useShaComponentStyles({ componentModel, toolboxComponent, isDesigner: false });
   const shaApplication = useSheshaApplication();
   const shaForm = useShaFormInstance();
   const { formMode } = useForm();

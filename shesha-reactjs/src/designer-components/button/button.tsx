@@ -1,5 +1,5 @@
 import ConfigurableButton from './configurableButton';
-import React, { useMemo } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { BorderOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
@@ -7,72 +7,63 @@ import { IButtonComponentProps } from './interfaces';
 import { IButtonGroupItemBaseV0, migrateV0toV1 } from './migrations/migrate-v1';
 import { IToolboxComponent } from '@/interfaces';
 import { makeDefaultActionConfiguration } from '@/interfaces/configurableAction';
-import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateNavigateAction } from '@/designer-components/_common-migrations/migrate-navigate-action';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './util';
-import { useShaFormInstance } from '@/providers';
-import { dimensionUtils } from '@/components/formDesigner/utils/dimensionUtils';
 import { getStringPropertyOrUndefined } from '@/utils/object';
+import { DEFAULT_DESIGNER_PADDING } from '@/components/formDesigner/utils/stylingUtils';
+import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
+import { useComponentApi } from '@/providers/componentApi/provider';
+import { useEffectOnce } from '@/hooks/useEffectOnce';
+import { useEvents } from '@/components/formDesigner/components/eventsAndApiValueProcessor';
+
+import apiCode from "../../componentsApi/componentApi.ts?raw";
+import { ButtonApi } from '@/componentsApi/componentApi';
+import { getComponentEvents } from '../_common/events';
 
 export type IActionParameters = [{ key: string; value: string }];
 
 const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
+  allowInherit: true,
   type: 'button',
   isInput: false,
   name: 'Button',
-  getWrapperStyle: (model) => ({
-    dimensions: { height: model?.dimensions?.height, width: model?.dimensions?.width },
-    stylingBoxJson: { _type: 'styleBox', paddingLeft: 3, paddingRight: 3, paddingTop: 5, paddingBottom: 5 } }),
+  getWrapperStyle: (model) => ({ style: { dimensions: model?.dimensions }, designerStyle: DEFAULT_DESIGNER_PADDING }),
   icon: <BorderOutlined />,
   Factory: ({ model, form }) => {
-    const shaForm = useShaFormInstance();
     const { style, ...restProps } = model;
 
-    const isDesignerMode = shaForm.formMode === 'designer';
+    const inputRef = useRef<HTMLAnchorElement | HTMLButtonElement>(null);
+    const componentApi = useComponentApi();
+    useEffect(() => {
+      componentApi?.updateApi<ButtonApi>({
+        id: model.id,
+        componentName: model.componentName ?? "",
+        level: 3,
+        typeDefinition: { typeName: 'ButtonApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+        api: { focus: () => inputRef.current?.focus(), click: () => inputRef.current?.click() },
+      });
+    }, [componentApi, model.componentName, model.id]);
+    useEffectOnce(() => () => componentApi?.removeApi(model.id));
+    const handleEvent = useEvents<void>(model.componentName);
 
-    // Merge base styles with designer dimensions
-    // Button preserves its original dimensions in designer mode
-    const finalStyle = useMemo(() => dimensionUtils.mergeWithDesignerDimensions(
-      {
-        ...model.allStyles?.dimensionsStyles,
-        ...(['primary', 'default'].includes(model.buttonType ?? "") && !model.readOnly && model.allStyles?.borderStyles),
-        ...model.allStyles?.fontStyles,
-        ...(['dashed', 'default'].includes(model.buttonType ?? "") && !model.readOnly && model.allStyles?.backgroundStyles),
-        ...(['primary', 'default'].includes(model.buttonType ?? "") && model.allStyles?.shadowStyles),
-        ...model.allStyles?.stylingBoxAsCSS,
-        ...model.allStyles?.jsStyle,
-        justifyContent: model.font?.align,
-      },
-      isDesignerMode,
-      true, // Preserve original dimensions in designer mode
-    ), [
-      model.allStyles?.dimensionsStyles,
-      model.allStyles?.borderStyles,
-      model.allStyles?.fontStyles,
-      model.allStyles?.backgroundStyles,
-      model.allStyles?.shadowStyles,
-      model.allStyles?.stylingBoxAsCSS,
-      model.allStyles?.jsStyle,
-      model.buttonType,
-      model.readOnly,
-      model.font?.align,
-      isDesignerMode,
-    ]);
-
-    return model.hidden ? null : (
+    return model.hidden === true ? null : (
       <ConfigurableButton
         {...restProps}
         readOnly={model.readOnly}
         block={restProps.block}
-        style={finalStyle}
+        styleJson={model.styleJson}
         form={form}
+        ref={inputRef}
+        additionalDomProperties={getComponentEvents<void, IButtonComponentProps>(model, ['onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent })}
       />
     );
   },
+  getDefaultStyles: () => defaultStyles({} as IButtonComponentProps),
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   initModel: (model) => {
@@ -105,13 +96,14 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       .add<IButtonComponentProps>(5, (prev) => ({ ...prev, actionConfiguration: migrateNavigateAction(prev.actionConfiguration) }))
       .add<IButtonComponentProps>(6, (prev) => migrateReadOnly(prev, 'editable'))
       .add<IButtonComponentProps>(7, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-      .add<IButtonComponentProps>(8, (prev) => ({
+      .add<IButtonComponentProps>(8, (prev, ctx) => ctx.isNew === true ? prev : {
         ...prev,
         desktop: { ...prev.desktop, buttonType: prev.buttonType || 'default' },
         mobile: { ...prev.mobile, buttonType: prev.buttonType || 'default' },
         tablet: { ...prev.tablet, buttonType: prev.buttonType || 'default' },
-      }))
-      .add<IButtonComponentProps>(9, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) })),
+      })
+      .add<IButtonComponentProps>(9, (prev, ctx) => ctx.isNew === true ? prev : { ...migratePrevStyles(prev, defaultStyles(prev)) })
+      .add<IButtonComponentProps>(10, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev))),
 };
 
 export default ButtonComponent;

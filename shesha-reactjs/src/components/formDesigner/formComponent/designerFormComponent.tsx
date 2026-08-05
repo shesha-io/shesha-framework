@@ -37,7 +37,7 @@ const DesignerFormComponentInner: FC<IDesignerFormComponentProps> = ({
   apiContext,
 }) => {
   const { styles } = useStyles();
-  const { styles: shaComponentStyles } = useShaComponentStyles({ componentModel, toolboxComponent });
+  const { styles: shaComponentStyles } = useShaComponentStyles({ componentModel, toolboxComponent, isDesigner: true });
   const { readOnly } = useFormDesigner();
   const settingsPanelElement = useFormDesignerSettingsPanelElement();
   const getToolboxComponent = useFormDesignerComponentGetter();
