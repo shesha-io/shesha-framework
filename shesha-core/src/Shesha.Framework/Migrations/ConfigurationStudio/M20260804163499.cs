@@ -64,7 +64,7 @@ from
 where
 	app.id is null or app.is_deleted = 0");
 
-            IfDatabase("PostgreSql").Execute.Sql(@"drop view frwk.vw_configuration_items_inheritance");
+            IfDatabase("PostgreSql").Execute.Sql(@"drop view if exists frwk.vw_configuration_items_inheritance");
             IfDatabase("PostgreSql").Execute.Sql(@"create or replace view frwk.vw_configuration_items_inheritance as
 with recursive cte as (
 	-- Anchor member: root node(s)

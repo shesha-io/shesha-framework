@@ -41,6 +41,8 @@ export type ConfigItemTreeNode = TreeNode & {
   lastModificationTime?: string | undefined;
   moduleName: string;
   baseModule?: string | undefined;
+  applicationId: string | undefined;
+  applicationName: string | undefined;
 };
 
 export type NodeWithChilds = {
@@ -57,11 +59,11 @@ export type SpecialTreeNode = TreeNode & {
   itemType: string;
 };
 
-
 export type FlatTreeNode = DocumentFlags & {
   id: string;
   parentId: string | null;
   moduleId: string;
+  applicationId: string | null;
   name: string;
   label: string;
   nodeType: number;
@@ -96,6 +98,12 @@ export const isModuleTreeNode = (node?: DataNode): node is ModuleTreeNode => {
 
 export const isNodeWithChildren = (node?: DataNode): node is ModuleTreeNode | FolderTreeNode => {
   return isModuleTreeNode(node) || isFolderTreeNode(node);
+};
+
+export type FrontEndAppDto = {
+  id: string;
+  name: string;
+  appKey: string;
 };
 
 export const TREE_NODE_TYPES = {
@@ -153,6 +161,8 @@ export type CIDocument = DocumentBase & {
   flags: DocumentFlags;
   moduleId: string;
   moduleName: string;
+  applicationId: string | undefined;
+  applicationName: string | undefined;
 };
 
 export type CustomDocument = DocumentBase & {
@@ -192,6 +202,8 @@ export type DocumentInstanceFactoryArgs = {
   label: string;
   moduleId: string;
   moduleName: string;
+  applicationId: string | undefined;
+  applicationName: string | undefined;
   flags?: DocumentFlags;
 };
 export type DocumentInstanceFactory = (args: DocumentInstanceFactoryArgs) => IDocumentInstance;

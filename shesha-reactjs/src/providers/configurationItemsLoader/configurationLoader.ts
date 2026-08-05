@@ -10,7 +10,7 @@ import axios from "axios";
 import { URLS } from ".";
 import { IComponentSettings } from "../appConfigurator/models";
 import { migrateFormSettings } from "../form/migration/formSettingsMigrations";
-import { ConfigurationType, ICacheProvider, IGetFormPayload, IGetRefListPayload } from "../metadataDispatcher/entities/models";
+import { ConfigurationType, ICache, ICacheProvider, IGetFormPayload, IGetRefListPayload } from "../metadataDispatcher/entities/models";
 import { getEntityTypeIdentifierQueryParams, getEntityTypeName } from "../metadataDispatcher/entities/utils";
 import { IEntityTypeIdentifier } from "../sheshaApplication/publicApi/entities/models";
 import { ConfigurationLoadingError } from "./errors";
@@ -181,8 +181,7 @@ export class ConfigurationLoader implements IConfigurationLoader {
   };
 
   getConfigLookupAsync = async (type: string, id: ConfigurableItemFullName): Promise<ConfigurationLookup | undefined> => {
-    const cacheName = this.prefixCacheStorageName(type, `${type}${LOOKUP_SUFFIX}`);
-    const cache = this.#cacheProvider.getCache(cacheName);
+    const cache = this.getLookupCache(type);
     if (isConfigurableItemFullName(id)) {
       const key = this.getCacheKeyByFullName(id.module, id.name);
       return await cache.getItem<ConfigurationLookup>(key) ?? undefined;
@@ -199,7 +198,7 @@ export class ConfigurationLoader implements IConfigurationLoader {
 
   getConfigRawIdLookupAsync = async (type: string, id: ConfigurableItemUid): Promise<ConfigurableItemFullName | undefined> => {
     const key = id;
-    const cache = this.#cacheProvider.getCache(`${type}${LOOKUP_SUFFIX}`);
+    const cache = this.getLookupCache(type);
     const rawIdLookup = await cache.getItem<ConfigurationRawIdLookup>(key);
     return rawIdLookup && !isNullOrWhiteSpace(rawIdLookup.module) && !isNullOrWhiteSpace(rawIdLookup.name)
       ? { name: rawIdLookup.name, module: rawIdLookup.module }
@@ -208,7 +207,7 @@ export class ConfigurationLoader implements IConfigurationLoader {
 
   setConfigRawIdLookupAsync = async (type: string, rawId: ConfigurableItemUid, fullName: ConfigurableItemFullName): Promise<void> => {
     const key = rawId;
-    const cache = this.#cacheProvider.getCache(`${type}${LOOKUP_SUFFIX}`);
+    const cache = this.getLookupCache(type);
     await cache.setItem(key, { module: fullName.module, name: fullName.name });
   };
 
@@ -237,8 +236,7 @@ export class ConfigurationLoader implements IConfigurationLoader {
   };
 
   setConfigLookupAsync = async (type: string, id: ConfigurableItemIdentifier, configuration: ConfigurationDto, topLevelModule?: string): Promise<void> => {
-    const cacheName = this.prefixCacheStorageName(type, `${type}${LOOKUP_SUFFIX}`);
-    const cache = this.#cacheProvider.getCache(cacheName);
+    const cache = this.getLookupCache(type);
     if (isConfigurableItemFullName(id)) {
       const key = this.getCacheKeyByFullName(id.module, id.name);
       const lookup = await cache.getItem<ConfigurationLookup>(key);
@@ -289,14 +287,13 @@ export class ConfigurationLoader implements IConfigurationLoader {
   };
 
   cleanConfigFullNameLookupAsync = async (type: string, id: ConfigurableItemFullName): Promise<void> => {
-    const cacheName = this.prefixCacheStorageName(type, `${type}${LOOKUP_SUFFIX}`);
-    const cache = this.#cacheProvider.getCache(cacheName);
+    const cache = this.getLookupCache(type);
     const key = this.getCacheKeyByFullName(id.module, id.name);
     await cache.removeItem(key);
   };
 
   cleanConfigRawIdLookupAsync = async (type: string, id: ConfigurableItemUid): Promise<void> => {
-    const cache = this.#cacheProvider.getCache(`${type}${LOOKUP_SUFFIX}`);
+    const cache = this.getLookupCache(type);
     await cache.removeItem(id);
   };
 
@@ -307,12 +304,20 @@ export class ConfigurationLoader implements IConfigurationLoader {
       return name;
   };
 
+  getCache = (type: string, name: string): ICache => {
+    const cacheName = this.prefixCacheStorageName(type, name);
+    return this.#cacheProvider.getCache(cacheName);
+  };
+
+  getItemsCache = (type: string): ICache => this.getCache(type, type);
+
+  getLookupCache = (type: string): ICache => this.getCache(type, `${type}${LOOKUP_SUFFIX}`);
+
   getCachedConfigAsync = async <TConfigDto extends PartialConfigurationDto = ConfigurationDto>(args: GetConfigurationArgs): Promise<IConfigurationItemDto<TConfigDto> | undefined> => {
     const { type, id, topLevelModule } = args;
 
     if (isConfigurableItemFullName(id)) {
-      const cacheName = this.prefixCacheStorageName(type, type);
-      const cache = this.#cacheProvider.getCache(cacheName);
+      const cache = this.getItemsCache(type);
 
       const { module, name } = id;
       const lookupModule = await this.getConfigLookupModuleAsync(type, id, topLevelModule);
@@ -334,8 +339,7 @@ export class ConfigurationLoader implements IConfigurationLoader {
 
   addConfigToCacheAsync = async <TConfigDto extends PartialConfigurationDto = ConfigurationDto>(type: string, id: ConfigurableItemIdentifier, configuration: TConfigDto, cacheMd5: string, topLevelModule: string | undefined): Promise<void> => {
     const { module, name } = configuration;
-    const cacheName = this.prefixCacheStorageName(type, type);
-    const cache = this.#cacheProvider.getCache(cacheName);
+    const cache = this.getItemsCache(type);
 
     const key = this.getCacheKeyByFullName(module, name);
     await cache.setItem<IConfigurationItemDto<TConfigDto>>(key, { cacheMd5, configuration });

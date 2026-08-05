@@ -29,8 +29,9 @@ namespace Shesha.ConfigurationItems
         /// </summary>
         /// <param name="name">Item name</param>
         /// <param name="module">Module</param>
+        /// <param name="application">Front-end application</param>
         /// <returns></returns>
-        Task<bool> ItemExistsAsync(string name, Module module);
+        Task<bool> ItemExistsAsync(string name, Module module, FrontEndApp? application);
     }
 
     public interface IConfigurationItemManager

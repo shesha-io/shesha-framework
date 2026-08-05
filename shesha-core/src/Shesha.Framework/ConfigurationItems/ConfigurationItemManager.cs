@@ -195,7 +195,7 @@ namespace Shesha.ConfigurationItems
 
         public async Task<ConfigurationItem> ExposeAsync(ConfigurationItem item, Module module)
         {
-            if (await ItemExistsAsync(item.Name, module))
+            if (await ItemExistsAsync(item.Name, module, item.Application))
                 throw new ArgumentException($"{item.GetFriendlyClassName()} '{item.Name}' already exists in module '{module.Name}'");
 
             return await ExposeAsync((TItem)item, module);
@@ -234,14 +234,20 @@ namespace Shesha.ConfigurationItems
 
         public virtual async Task<TItem> CreateItemAsync(CreateItemInput input, object? additionalData = null) 
         {
+            var application = IsApplicationSpecific ? input.Application : null;
+
             var validationResults = new ValidationResults();
-            var alreadyExist = await (await Repository.GetAllAsync()).Where(f => f.Module == input.Module && f.Application == input.Application && f.Name == input.Name).AnyAsync();
+
+            var itemType = typeof(TItem).GetFriendlyClassName();
+            if (!IsApplicationSpecific && input.Application != null)
+                validationResults.Add($"Application is not supported for '{itemType}' because it is not application-specific");
+
+            var alreadyExist = await (await Repository.GetAllAsync()).Where(f => f.Module == input.Module && f.Application == application && f.Name == input.Name).AnyAsync();
             if (alreadyExist) {
                 var fullName = input.Module != null ? $"{input.Module.Name}/{input.Name}" : input.Name;
-                var itemType = typeof(TItem).GetFriendlyClassName();
                 validationResults.Add(
-                    input.Application != null
-                        ? $"{itemType} `{fullName}` already exists in application `{input.Application.Name}`"
+                    application != null
+                        ? $"{itemType} `{fullName}` already exists in application `{application.Name}`"
                         : $"{itemType} `{fullName}` already exists");
             }
                 
@@ -251,7 +257,7 @@ namespace Shesha.ConfigurationItems
             {
                 Name = input.Name,
                 Module = input.Module,
-                Application = input.Application,
+                Application = application,
                 Folder = input.Folder,
             };
             item.Origin = item;
@@ -290,10 +296,11 @@ namespace Shesha.ConfigurationItems
         /// </summary>
         /// <param name="name">Item name</param>
         /// <param name="module">Module</param>
+        /// <param name="application">Front-end application</param>
         /// <returns></returns>
-        public async Task<bool> ItemExistsAsync(string name, Module module)
+        public async Task<bool> ItemExistsAsync(string name, Module module, FrontEndApp? application)
         {
-            return await (await Repository.GetAllAsync()).AnyAsync(e => e.Name == name && e.Module == module);
+            return await (await Repository.GetAllAsync()).AnyAsync(e => e.Name == name && e.Module == module && e.Application == application);
         }
 
         protected Task CopyRevisionPropertiesBaseAsync(ConfigurationItemRevision srcRevision, ConfigurationItemRevision dstRevision)

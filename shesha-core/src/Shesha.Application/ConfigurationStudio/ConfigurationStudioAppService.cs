@@ -99,8 +99,6 @@ namespace Shesha.ConfigurationStudio
 
         public async Task<IConfigurationItemDto> GetItemAsync(GetItemRequest request)
         {
-            var moduleId = await ModuleManager.GetModuleIdAsync(request.Module);
-
             var manager = CiHelper.GetManagerByDiscriminator(request.ItemType);
 
             var item = await manager.ResolveItemAsync(request.Module, request.Name, CfRuntime.FrontEndApplication);
