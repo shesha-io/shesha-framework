@@ -11,13 +11,14 @@ export default function RootLayout({
 }) {
     noStore();
     const backendUrl = process.env.BACKEND_URL ?? 'http://localhost:21021';
+    const applicationKey = process.env.APPLICATION_KEY ?? undefined;
 
     return (
         <html lang="en">
             <body>
                 <Suspense>
                     <AntdRegistry>
-                        <AppProvider backendUrl={backendUrl}>
+                        <AppProvider backendUrl={backendUrl} applicationKey={applicationKey}>
                             {children}
                         </AppProvider>
                     </AntdRegistry>
