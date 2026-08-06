@@ -12,11 +12,12 @@ import { OrganisationsActionsProvider } from '@/components/dynamic-list/dynamic-
 
 export interface IAppProviderProps {
     backendUrl: string;
+    applicationKey?: string | undefined;
 }
 
 const monacoSettings: MonacoLoaderSettings = { localPath: "/monaco/vs" };
 
-export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({ children, backendUrl }) => {
+export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({ children, backendUrl, applicationKey }) => {
     const nextRouter = useNextRouter();
     const buildHttpHeaders = (): IHttpHeadersDictionary => {
         const organisationId = 'Testing';
@@ -32,6 +33,7 @@ export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({ children
                 noAuth={nextRouter.path?.includes('/no-auth')}
                 buildHttpRequestHeaders={buildHttpHeaders}
                 monaco={monacoSettings}
+                applicationKey={applicationKey}
             >
                 <OrganisationsActionsProvider>
                     {children}
