@@ -12,6 +12,7 @@ export default function RootLayout({
 }) {
     noStore();
     const backendUrl = process.env.BACKEND_URL ?? 'http://localhost:21021';
+    const applicationKey = process.env.APPLICATION_KEY ?? 'public-portal';
 
     return (
         <html lang="en">
@@ -19,7 +20,7 @@ export default function RootLayout({
                 <AntdRegistry>
                     <NavigationGuardProvider>
                         <Suspense fallback={null}>
-                            <AppProvider backendUrl={backendUrl}>
+                            <AppProvider backendUrl={backendUrl} applicationKey={applicationKey}>
                                 {children}
                             </AppProvider>
                         </Suspense>
