@@ -54,8 +54,10 @@ namespace Shesha.Web.FormsDesigner.Services.Cache
             if (form == null)
                 return;
 
-            var appKeys = _appKeyStore.AppKeys;
-            
+            var appKeys = new List<string> { null, form.Application?.AppKey }
+                .Union(_appKeyStore.AppKeys)
+                .ToList();
+
             var modes = new[] {
                 ConfigurationItemViewMode.Live,
                 ConfigurationItemViewMode.Ready,
