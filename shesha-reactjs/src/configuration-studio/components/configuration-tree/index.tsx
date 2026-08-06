@@ -2,7 +2,7 @@
 import { Button, Dropdown, Input, MenuProps, Spin, Tooltip, Tree, TreeProps } from 'antd';
 import React, { FC, useMemo, useRef, useState } from 'react';
 import { MoveNodePayload } from '../../apis';
-import { isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, isNodeWithChildren, TreeNode } from '../../models';
+import { isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, isNodeWithChildren, TreeNode, TreeNodeType } from '../../models';
 import { CaretDownOutlined, CaretRightOutlined, RightOutlined } from '@ant-design/icons';
 import { ValidationErrors } from '@/components/validationErrors';
 import { useCsTree, useCsTreeDnd } from '../../cs/hooks';
@@ -45,6 +45,10 @@ const allowDropNode = (dragNode: TreeNode, dropNode: TreeNode, dropPosition: num
         dragNode.parentId !== dropNode.parentId;
     }
     case DropPositions.Inside: {
+      // The empty-folder placeholder (see filter.ts) stands in for its real parent folder.
+      if (dropNode.nodeType === TreeNodeType.Placeholder)
+        return dragNode.moduleId === dropNode.moduleId && dragNode.parentId !== dropNode.parentId;
+
       if (!isFolderTreeNode(dropNode) && !isModuleTreeNode(dropNode))
         return false;
       if (dragNode.moduleId !== dropNode.moduleId)
@@ -79,11 +83,13 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
   const filteredTreeNodes = useFilteredTreeNodes(treeNodes, quickSearch);
 
   // Flat DFS walk of currently visible (expanded) nodes — used for shift+click range and shift+arrow.
+  // Excludes the synthetic empty-folder placeholder (see filter.ts) so it can never end up in a selection.
   const flatVisibleNodes = useMemo<TreeNode[]>(() => {
     const result: TreeNode[] = [];
     const walk = (nodes: TreeNode[]): void => {
       for (const node of nodes) {
-        result.push(node);
+        if (node.nodeType !== TreeNodeType.Placeholder)
+          result.push(node);
         if (isNodeWithChildren(node) && isDefined(expandedKeys) && expandedKeys.includes(node.key))
           walk(node.children as TreeNode[]);
       }
@@ -136,6 +142,9 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
         return isFolderTreeNode(dropNodeParent) ? dropNodeParent.id : undefined;
       }
       default: {
+        // The placeholder's parentId is always the empty folder it belongs to (see filter.ts).
+        if (dropNode.nodeType === TreeNodeType.Placeholder)
+          return dropNode.parentId;
         return isFolderTreeNode(dropNode) ? dropNode.id : undefined;
       }
     }
@@ -297,6 +306,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
                   showLine
                   showIcon
                   multiple
+                  virtual={false}
                   switcherIcon={(node) => node.expanded === true ? <CaretDownOutlined /> : <CaretRightOutlined />}
 
                   treeData={filteredTreeNodes}

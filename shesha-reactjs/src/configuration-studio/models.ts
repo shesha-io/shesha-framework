@@ -13,6 +13,8 @@ export enum TreeNodeType {
   ConfigurationItem = 2,
   Folder = 3,
   Special = 4,
+  // Synthetic child injected into empty folders/modules for drag-and-drop hit-testing (see filter.ts).
+  Placeholder = 5,
 }
 
 export type DocumentFlags = {
