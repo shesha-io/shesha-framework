@@ -117,7 +117,17 @@ export const defaultTagStyles = (): IStyleValue => {
       maxWidth: 'auto',
     },
     shadow: SHADOW_DEFAULTS(),
-    stylingBoxJson: STYLING_BOX_DEFAULTS(),
+    stylingBoxJson: {
+      _type: 'styleBox',
+      marginTop: "0",
+      marginRight: "0",
+      marginBottom: "0",
+      marginLeft: "8",
+      paddingTop: "0",
+      paddingRight: "0",
+      paddingBottom: "0",
+      paddingLeft: "0",
+    },
   };
 };
 

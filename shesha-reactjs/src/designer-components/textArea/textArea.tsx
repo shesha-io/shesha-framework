@@ -85,6 +85,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
     const textAreaProps: TextAreaProps = {
       className: 'sha-text-area',
       classNames: {
+        root: styles.textAreaRoot,
         textarea: `sha-text-area ${styles.textArea}`,
       },
       placeholder: model.placeholder,

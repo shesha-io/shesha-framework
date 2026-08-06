@@ -488,7 +488,7 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
         });
       if (keep(`${propertyName}.gradient.colors`))
         f.addSettingsInput({ label: 'Colors', inputType: 'multiColorPicker', propertyName: `${propertyName}.gradient.colors`, jsSetting: false, hideLabel: true,
-          visibleJs: `return getSettingValue(${dataPath}?.${propertyName}?.type) === "gradient";`, skipInheritance: true,
+          visibleJs: `return getSettingValue(${dataPath}?.${propertyName}?.type) === "gradient";`,
         });
       if (keep(`${propertyName}.url`))
         f.addSettingsInput({ label: 'URL', inputType: 'textField', propertyName: `${propertyName}.url`, jsSetting: false,

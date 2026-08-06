@@ -14,7 +14,7 @@ interface IReflistTagProps {
   showIcon?: boolean | undefined;
   tagStyle?: CSSProperties | undefined;
   /** How the tag is filled. Defaults to solid. */
-  variant?: TagVariant;
+  variant?: TagVariant | undefined;
   showItemName?: boolean | undefined;
   label?: string | React.ReactNode | undefined;
   placement?: TooltipProps['placement'] | undefined;

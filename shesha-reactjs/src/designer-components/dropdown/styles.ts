@@ -114,10 +114,8 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IDr
       }
      
       .${prefixCls}-select-content {
-        ${marginStyles(tag?.stylingBoxJson)}
       }
       &&&& .${prefixCls}-tag {
-        margin: 0;
         display: inline-flex;
         align-items: center;
         overflow: hidden;
@@ -128,6 +126,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IDr
         ${dimensionsStyles(tag?.dimensions)}
         ${paddingStyles(tag?.stylingBoxJson)}
         ${fontStyles(tag?.font)}
+        ${marginStyles(tag?.stylingBoxJson)}
         ${cssPropertiesToString(tagCustomStyle.rest)}
 
         /* The label and icon inside the tag carry their own font rules, so the configured font has
