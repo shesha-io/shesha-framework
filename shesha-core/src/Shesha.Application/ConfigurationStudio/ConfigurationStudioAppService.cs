@@ -38,7 +38,7 @@ namespace Shesha.ConfigurationStudio
         public IRepository<ConfigurationItem, Guid> ItemRepo { get; set; }
         public IRepository<ConfigurationItemRevision, Guid> RevisionRepo { get; set; }
         public IRepository<ConfigurationItemHistoryItem, Guid> HistoryRepo { get; set; }
-        public IRepository<FrontEndApp, Guid> ApplicationRepo;
+        public IRepository<FrontEndApp, Guid> ApplicationRepo { get; set; }
 
         /// <summary>
         /// Expose Item
