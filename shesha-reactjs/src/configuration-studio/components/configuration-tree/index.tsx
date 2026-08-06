@@ -33,9 +33,7 @@ type OnDragStart = TreeProps<TreeNode>['onDragStart'];
 type OnDragEnd = TreeProps<TreeNode>['onDragEnd'];
 
 const isNodeDraggable: IsDraggable = (node): boolean => {
-  // This gates onDragEnter/onDragOver/onDrop too (not just drag-start), so the empty-folder
-  // placeholder (see filter.ts) must return true here to receive drops at all - its own
-  // `disabled: true` already prevents it from being draggable as a source.
+  // Also gates onDragEnter/onDragOver/onDrop, so the placeholder (filter.ts) must return true here to receive drops.
   return isConfigItemTreeNode(node) || isFolderTreeNode(node) || (isTreeNode(node) && node.nodeType === TreeNodeType.Placeholder);
 };
 
@@ -85,8 +83,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
 
   const filteredTreeNodes = useFilteredTreeNodes(treeNodes, quickSearch);
 
-  // Flat DFS walk of currently visible (expanded) nodes — used for shift+click range and shift+arrow.
-  // Excludes the synthetic empty-folder placeholder (see filter.ts) so it can never end up in a selection.
+  // Flat DFS walk of currently visible nodes (excludes the placeholder) — used for shift+click range and shift+arrow.
   const flatVisibleNodes = useMemo<TreeNode[]>(() => {
     const result: TreeNode[] = [];
     const walk = (nodes: TreeNode[]): void => {
@@ -147,8 +144,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
         return isFolderTreeNode(dropNodeParent) ? dropNodeParent.id : undefined;
       }
       default: {
-        // Placeholders (see filter.ts) exist under empty folders AND empty modules - resolve
-        // to the parent's own id only if that parent is actually a folder.
+        // Placeholders exist under empty folders and modules - only resolve to an id if the parent is a folder.
         if (dropNode.nodeType === TreeNodeType.Placeholder) {
           const parentNode = isDefined(dropNode.parentId)
             ? getTreeNodeById(dropNode.parentId)
@@ -200,8 +196,11 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
 
   const handleNodeRightClick: OnRightClick = ({ event, node }) => {
     event.preventDefault();
-    if (node.nodeType === TreeNodeType.Placeholder)
+    if (node.nodeType === TreeNodeType.Placeholder) {
+      // preventDefault() alone doesn't stop this from bubbling to the wrapping Dropdown.
+      event.stopPropagation();
       return;
+    }
     setContextNode(node);
   };
 
