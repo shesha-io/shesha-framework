@@ -35,7 +35,7 @@ export const MultiColorInput = ({ value, onChange, readOnly, propertyName }: Mul
 
   return (
     <>
-      <Row style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
+      <Row style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '8px' }}>
         {stops.map(([id, color]) => {
           return (
             <Tag
@@ -67,7 +67,6 @@ export const MultiColorInput = ({ value, onChange, readOnly, propertyName }: Mul
           onClick={() => onChange?.({ ...colors, [nanoid()]: '#000000' })}
           disabled={readOnly ?? false}
           icon={<PlusOutlined />}
-          style={{ margin: '5px 0px' }}
         >
         </Button>
       </Row>

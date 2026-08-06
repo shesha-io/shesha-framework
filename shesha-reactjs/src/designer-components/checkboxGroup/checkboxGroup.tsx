@@ -184,14 +184,7 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
 
         return migratePrevStyles({ ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } }, defaultStyles());
       })
-      // Hidden -> Visible and permissions onto the Visible / Interaction Mode
-      // settings, applied as a single chained step.
-      .add<IEnhancedICheckboxGroupProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev)))
-      // Version 9 previously dropped the `url` data source, discarding `dataSourceUrl` and
-      // `reducerFunc`. The data source is supported again, so the step is retained as a no-op:
-      // removing it would renumber the sequence for forms that have not been migrated yet.
-      // Forms already saved at version 9 have lost those scripts and must be reconfigured.
-      .add<IEnhancedICheckboxGroupProps>(9, (prev) => prev),
+      .add<IEnhancedICheckboxGroupProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev))),
   linkToModelMetadata: (model, metadata): IEnhancedICheckboxGroupProps => {
     const refListId: IReferenceListIdentifier | undefined = !isNullOrWhiteSpace(metadata.referenceListModule) && !isNullOrWhiteSpace(metadata.referenceListName)
       ? { module: metadata.referenceListModule, name: metadata.referenceListName }

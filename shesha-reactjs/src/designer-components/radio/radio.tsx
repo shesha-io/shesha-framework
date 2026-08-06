@@ -176,12 +176,7 @@ const RadioComponent: RadioComponentDefinition = {
           ...prev,
           desktop: { ...migrateStyles(prev, {}, 'desktop'), enableStyleOnReadonly: (prev.desktop as IInputStyles | undefined)?.enableStyleOnReadonly ?? false },
         })
-      .add<IRadioComponentProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev)))
-      // Version 9 previously dropped the `url` data source, discarding `dataSourceUrl` and
-      // `reducerFunc`. The data source is supported again, so the step is retained as a no-op:
-      // removing it would renumber the sequence for forms that have not been migrated yet.
-      // Forms already saved at version 9 have lost those scripts and must be reconfigured.
-      .add<IRadioComponentProps>(9, (prev) => prev),
+      .add<IRadioComponentProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev))),
   linkToModelMetadata: (model, metadata): IRadioComponentProps => {
     const isRefList = metadata.dataType === DataTypes.referenceListItem;
 
