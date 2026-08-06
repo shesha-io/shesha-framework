@@ -1,16 +1,64 @@
 import moment, { Moment } from 'moment';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { getDataProperty } from '@/utils/metadata';
-import { DisabledDateTemplate, IDateFieldProps } from './interfaces';
+import { DateBindingFormat, DateSelectionType, DisabledDateTemplate, IDateFieldProps } from './interfaces';
 import { range } from 'lodash';
 import { IStyleValue } from "@/providers/form/models";
 import { DatePicker } from '@/components/antd';
 import { DATE_TIME_FORMATS } from '@/constants/formats';
-import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
+
+/** antd picker driven by each selection type. */
+const SELECTION_TYPE_PICKERS: Record<DateSelectionType, 'date' | 'week' | 'month' | 'quarter' | 'year'> = {
+  dateTimeHours: 'date',
+  dateTimeMinutes: 'date',
+  dateTimeSeconds: 'date',
+  date: 'date',
+  week: 'week',
+  month: 'month',
+  quarter: 'quarter',
+  year: 'year',
+};
+
+/** Time-part format per selection type; `undefined` means the selection carries no time. */
+const SELECTION_TYPE_TIME_FORMATS: Partial<Record<DateSelectionType, string>> = {
+  dateTimeHours: 'HH',
+  dateTimeMinutes: 'HH:mm',
+  dateTimeSeconds: 'HH:mm:ss',
+};
+
+export const DEFAULT_SELECTION_TYPE: DateSelectionType = 'dateTimeMinutes';
+
+export const getSelectionType = (props: IDateFieldProps): DateSelectionType =>
+  props.selectionType ?? DEFAULT_SELECTION_TYPE;
+
+/** The antd `picker` prop for the configured selection type. */
+export const getPicker = (props: IDateFieldProps): 'date' | 'week' | 'month' | 'quarter' | 'year' =>
+  SELECTION_TYPE_PICKERS[getSelectionType(props)];
+
+/** Whether the configured selection type includes a time component. */
+export const hasTimePart = (props: IDateFieldProps): boolean =>
+  isDefined(SELECTION_TYPE_TIME_FORMATS[getSelectionType(props)]);
+
+/** Whether the minute step setting applies (minutes are shown but seconds granularity is separate). */
+export const supportsMinuteStep = (props: IDateFieldProps): boolean => {
+  const selectionType = getSelectionType(props);
+  return selectionType === 'dateTimeMinutes' || selectionType === 'dateTimeSeconds';
+};
 
 type DisabledDateFunc = (current: Moment, momentFunc: typeof moment, data: object | undefined, globalState: object) => boolean;
 
 export function disabledDate(props: IDateFieldProps, current: Moment, data: object | undefined, globalState: object): boolean {
+  const { dateRestriction } = props;
+
+  // Date Restriction supersedes the legacy disabledDateMode/template pair.
+  if (dateRestriction === 'past') return current.isBefore(moment().startOf('day'));
+  if (dateRestriction === 'future') return current.isAfter(moment().endOf('day'));
+
+  return legacyDisabledDate(props, current, data, globalState);
+}
+
+function legacyDisabledDate(props: IDateFieldProps, current: Moment, data: object | undefined, globalState: object): boolean {
   const { disabledDateMode, disabledDateTemplate, disabledDateFunc } = props;
 
   if (disabledDateMode === 'none') return false;
@@ -25,17 +73,29 @@ export function disabledDate(props: IDateFieldProps, current: Moment, data: obje
     return false;
 }
 
+export const getBindingFormat = (props: IDateFieldProps): DateBindingFormat =>
+  props.bindingFormat ?? (props.resolveToUTC === true ? 'utc' : 'isoLocal');
 
-export const getDefaultFormat = ({ showTime, resolveToUTC }: IDateFieldProps): string | null => {
-  if (!showTime) {
-    return 'YYYY-MM-DD';
+export const serializeValue = (value: Moment, props: IDateFieldProps): string => {
+  switch (getBindingFormat(props)) {
+    case 'utc':
+      return value.clone().utc().toISOString();
+    case 'isoLocal':
+      return value.clone().local().format('YYYY-MM-DDTHH:mm:ss.SSS');
+    case 'isoOffset':
+      return value.clone().local().format('YYYY-MM-DDTHH:mm:ss.SSSZ');
+    case 'dateOnly':
+      return value.clone().format('YYYY-MM-DD');
+    case 'ticks': {
+      const TICKS_PER_MS = 10000;
+      const MS_AT_UNIX_EPOCH = 62135596800000;
+      return String((value.clone().valueOf() + MS_AT_UNIX_EPOCH) * TICKS_PER_MS);
+    }
+    case 'unix':
+      return String(value.clone().unix());
+    default:
+      return value.clone().local().format('YYYY-MM-DDTHH:mm:ss.SSS');
   }
-
-  if (!resolveToUTC) {
-    return 'YYYY-MM-DDTHH:mm:ss';
-  }
-
-  return null;
 };
 
 export const timeObject = (): { hours: number; minutes: number; seconds: number } => {
@@ -93,37 +153,51 @@ export const disabledTime = (props: IDateFieldProps, data: object = {}, globalSt
 };
 
 export const getFormat = (props: IDateFieldProps, properties: IPropertyMetadata[]): string => {
-  const { propertyName, picker, showTime } = props;
+  const { propertyName } = props;
+  const selectionType = getSelectionType(props);
 
-  const dateFormat = props.dateFormat || (!isNullOrWhiteSpace(propertyName) ? getDataProperty(properties, propertyName, 'dataFormat') : undefined) || DATE_TIME_FORMATS.date;
-  const timeFormat = props.timeFormat || DATE_TIME_FORMATS.time;
-  const yearFormat = props.yearFormat || DATE_TIME_FORMATS.year;
-  const quarterFormat = props.quarterFormat || DATE_TIME_FORMATS.quarter;
-  const monthFormat = props.monthFormat || DATE_TIME_FORMATS.month;
-  const weekFormat = props.weekFormat || DATE_TIME_FORMATS.week;
+  const metadataFormat = !isNullOrWhiteSpace(propertyName) ? getDataProperty(properties, propertyName, 'dataFormat') : undefined;
+  const dateFormat = isNotNullOrWhiteSpace(props.dateFormat)
+    ? props.dateFormat
+    : isNotNullOrWhiteSpace(metadataFormat) ? metadataFormat : DATE_TIME_FORMATS.date;
+  const yearFormat = isNotNullOrWhiteSpace(props.yearFormat) ? props.yearFormat : DATE_TIME_FORMATS.year;
+  const quarterFormat = isNotNullOrWhiteSpace(props.quarterFormat) ? props.quarterFormat : DATE_TIME_FORMATS.quarter;
+  const monthFormat = isNotNullOrWhiteSpace(props.monthFormat) ? props.monthFormat : DATE_TIME_FORMATS.month;
+  const weekFormat = isNotNullOrWhiteSpace(props.weekFormat) ? props.weekFormat : DATE_TIME_FORMATS.week;
 
-  switch (picker) {
-    case 'date':
-      return showTime ? `${dateFormat} ${timeFormat}` : dateFormat;
+  switch (selectionType) {
     case 'year':
       return yearFormat;
     case 'month':
       return monthFormat;
     case 'quarter':
       return quarterFormat;
-    case 'time':
-      return timeFormat;
     case 'week':
       return weekFormat;
-    default:
+    case 'date':
       return dateFormat;
+    default: {
+      const derivedTimeFormat = SELECTION_TYPE_TIME_FORMATS[selectionType];
+      const timeFormat = isNotNullOrWhiteSpace(props.timeFormat)
+        ? props.timeFormat
+        : isNotNullOrWhiteSpace(derivedTimeFormat) ? derivedTimeFormat : DATE_TIME_FORMATS.time;
+      return `${dateFormat} ${timeFormat}`;
+    }
   }
 };
 
 export const defaultStyles = (): IStyleValue => {
   return {
-    background: { type: 'color', color: '#fff' },
-    font: { weight: '400', size: 14, color: '#000', type: 'Segoe UI' },
+    background: {
+      type: 'color',
+      color: '#fff',
+      repeat: 'no-repeat',
+      size: 'cover',
+      position: 'center',
+      gradient: { direction: 'to right', colors: {} },
+      url: '',
+    },
+    font: { weight: '400', size: 14, color: '#000', type: 'Segoe UI', align: 'left' },
     border: {
       border: {
         all: { width: '1px', style: 'solid', color: '#d9d9d9' },
@@ -137,5 +211,17 @@ export const defaultStyles = (): IStyleValue => {
       radiusType: 'all',
     },
     dimensions: { width: '100%', height: '32px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
+    shadow: { offsetX: 0, offsetY: 0, blurRadius: 0, spreadRadius: 0, color: '#00000000' },
+    stylingBoxJson: {
+      _type: 'styleBox',
+      marginBottom: "0",
+      marginLeft: "0",
+      marginRight: "0",
+      marginTop: "0",
+      paddingBottom: "0",
+      paddingLeft: "8",
+      paddingRight: "8",
+      paddingTop: "0",
+    },
   };
 };
