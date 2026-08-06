@@ -7,6 +7,7 @@ using Shesha.Domain;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Shesha.ConfigurationItems.Cache
@@ -18,11 +19,13 @@ namespace Shesha.ConfigurationItems.Cache
         private bool _disposed;
         private readonly ConcurrentDictionary<string, ITypedCache<string, ConfigurationItemCacheItem>> _caches;
         private string CachePrefix => $"{this.GetType().Name}:";
+        private readonly IAppKeysStore _appKeyStore;
 
-        public ConfigurationItemClientSideCache(ICacheManager cacheManager)
+        public ConfigurationItemClientSideCache(ICacheManager cacheManager, IAppKeysStore appKeyStore)
         {
             _cacheManager = cacheManager;
             _caches = new ConcurrentDictionary<string, ITypedCache<string, ConfigurationItemCacheItem>>();
+            _appKeyStore = appKeyStore;
         }
 
         public void Dispose()
@@ -124,11 +127,19 @@ namespace Shesha.ConfigurationItems.Cache
             if (configItem == null || string.IsNullOrWhiteSpace(configItem.ItemType))
                 return;
 
+            var appKeys = new List<string> { null, configItem.Application?.AppKey }
+                .Union(_appKeyStore.AppKeys)
+                .ToList();
+
             await UsingCacheAsync(configItem.ItemType, async (cache) => {
                 await cache.RemoveAsync(GetCacheKey(configItem.Id));
-                await cache.RemoveAsync(GetCacheKey(configItem.Application?.AppKey, configItem.Module?.Name, configItem.Name, ConfigurationItemViewMode.Live));
-                await cache.RemoveAsync(GetCacheKey(configItem.Application?.AppKey, configItem.Module?.Name, configItem.Name, ConfigurationItemViewMode.Ready));
-                await cache.RemoveAsync(GetCacheKey(configItem.Application?.AppKey, configItem.Module?.Name, configItem.Name, ConfigurationItemViewMode.Latest));
+
+                foreach (var appKey in appKeys) 
+                {
+                    await cache.RemoveAsync(GetCacheKey(appKey, configItem.Module?.Name, configItem.Name, ConfigurationItemViewMode.Live));
+                    await cache.RemoveAsync(GetCacheKey(appKey, configItem.Module?.Name, configItem.Name, ConfigurationItemViewMode.Ready));
+                    await cache.RemoveAsync(GetCacheKey(appKey, configItem.Module?.Name, configItem.Name, ConfigurationItemViewMode.Latest));
+                }                
             });
         }
 
