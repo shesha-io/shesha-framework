@@ -1,6 +1,7 @@
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import RadioGroup, { useRadioOptions } from './radioGroup';
-import React, { useEffect, useRef } from 'react';
+import React, { CSSProperties, useEffect, useRef } from 'react';
+import { useActualContextExecution } from '@/hooks';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers/form/models';
@@ -50,7 +51,11 @@ const RadioComponent: RadioComponentDefinition = {
       : model.dataSourceUrl,
   }),
   Factory: ({ model, calculatedModel }) => {
-    const { styles } = useStyles(model);
+    // The wrapper's own custom style is evaluated by the framework and applied inline as
+    // `styleJson`. A nested set gets no such treatment, so the per-option custom style is
+    // evaluated here and emitted into the scoped rule by useStyles.
+    const radioStyleJson = useActualContextExecution<CSSProperties>(model.radio?.style, undefined, {});
+    const { styles } = useStyles({ ...model, radioStyleJson });
 
     const options = useRadioOptions({ ...model, dataSourceUrl: calculatedModel.dataSourceUrl });
 

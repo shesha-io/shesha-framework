@@ -1,5 +1,5 @@
 import React from 'react';
-import { isDefined } from "@/utils/nullables";
+import { isDefined, isNotNullOrWhiteSpace } from "@/utils/nullables";
 import { executeScriptSync } from '@/providers/form/utils';
 import { IPropertySetting } from '..';
 
@@ -111,7 +111,15 @@ export const GRID_DIMENSION_VALUES = ['auto', 'min-content', 'max-content'];
  * @returns String with appropriate units, or undefined
  */
 export const addPx = (value: number | string | null | undefined, context?: object): string | undefined => {
-  if (typeof value === 'string' && DIMENSION_VALUES.includes(value.trim())) return value;
+  const trimmedValue = typeof value === 'string' ? value.trim() : undefined;
+
+  if (isNotNullOrWhiteSpace(trimmedValue)) {
+    const isKeyword = DIMENSION_VALUES.includes(trimmedValue);
+    // `[^;{}]*` keeps the passthrough limited to a single declaration.
+    const isMathFunction = /^(calc|min|max|clamp)\([^;{}]*\)$/i.test(trimmedValue);
+
+    if (isKeyword || isMathFunction) return trimmedValue;
+  }
 
   const parsed = parseDimension(value, context);
   if (!parsed) return undefined;

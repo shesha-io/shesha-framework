@@ -60,7 +60,7 @@ namespace Shesha.Authorization
 
             var securitySettings = await _securitySettings.SecuritySettings.GetValueOrNullAsync();
 
-            // ToDo: add RequireAll flag
+            // Note: requireAll is intentionally false — multiple permissions are OR'd (any single permission grants access)
             await _objectPermissionChecker.AuthorizeAsync(
                 false,
                 typeName,

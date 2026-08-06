@@ -474,7 +474,15 @@ namespace Shesha.Reflection
         public static string GetFriendlyClassName(this object instance) 
         { 
             // TODO: use metadata and entity attribute
-            return instance.GetType().Name.ToFriendlyName();
+            return instance.GetType().GetFriendlyClassName();
+        }
+
+        /// <summary>
+        /// Returns user-friendly name of the class
+        /// </summary>
+        public static string GetFriendlyClassName(this Type type)
+        {
+            return type.Name.ToFriendlyName();
         }
 
         /// <summary>

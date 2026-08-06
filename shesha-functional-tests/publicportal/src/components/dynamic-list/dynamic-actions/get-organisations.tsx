@@ -7,7 +7,7 @@ import {
     IButtonItem,
 } from '@shesha-io/reactjs';
 import { useOrganisationalAccounts } from '../hooks';
-import { makeActionConfig } from 'utils/configurabeleActions';
+import { makeActionConfig } from 'utils/configurableActions';
 
 export interface IOrganisationActionsProps {
 

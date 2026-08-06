@@ -3,11 +3,13 @@ import { IConfigurationStudioEnvironment } from "./interfaces";
 import { ConfigurationStudioEnvironment } from "./configurationStudioEnvironment";
 import { isDefined } from "@/utils/nullables";
 import { createNamedContext } from "@/utils/react";
+import { useHttpClient } from "@/providers";
 
 export const useConfigurationStudioEnvironmentSingletone = (): [IConfigurationStudioEnvironment] => {
+  const httpClient = useHttpClient();
   const [configurationStudioEnvironment] = React.useState<IConfigurationStudioEnvironment>(() => {
     // Create a new FormStore if not provided
-    const instance = new ConfigurationStudioEnvironment();
+    const instance = new ConfigurationStudioEnvironment({ httpClient });
 
     // instance.init();
     return instance;

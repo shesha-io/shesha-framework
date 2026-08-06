@@ -1,7 +1,7 @@
 import { HttpClientApi, useHttpClient } from "@/providers";
-import { FlatTreeNode, isConfigItemTreeNode, ItemTypeBackendDefinition, TreeNode } from "./models";
+import { FlatTreeNode, FrontEndAppDto, isConfigItemTreeNode, ItemTypeBackendDefinition, TreeNode } from "./models";
 import { IAjaxResponse } from "@/interfaces";
-import { IAbpWrappedResponse } from "@/interfaces/gql";
+import { GetAllResponse, IAbpWrappedResponse, IGetAllPayload } from "@/interfaces/gql";
 import qs from "qs";
 import { useCallback } from "react";
 import useSWR, { SWRResponse } from "swr";
@@ -12,6 +12,7 @@ import { getFileNameFromResponse } from "@/utils/fetchers";
 import FileSaver from "file-saver";
 import { IConfigurationStudioEnvironment } from "./cs-environment/interfaces";
 import { useConfigurationStudioEnvironment } from "./cs-environment/contexts";
+import { buildUrl } from "@/utils";
 
 export const CS_URLS = {
   GET_FLAT_TREE: '/api/services/app/ConfigurationStudio/GetFlatTree',
@@ -24,6 +25,7 @@ export const CS_URLS = {
   GET_ITEM_REVISION_HISTORY: '/api/services/app/ConfigurationStudio/GetItemRevisions',
   ITEM_REVISION_RESTORE: '/api/services/app/ConfigurationStudio/RestoreItemRevision',
   REVISION_GET_JSON: '/api/services/app/ConfigurationStudio/GetRevisionJson',
+  GET_FRONT_END_APPS: '/api/dynamic/Shesha/FrontEndApp/Crud/GetAll',
 };
 
 //#region Move Tree Node
@@ -58,19 +60,34 @@ export const fetchFlatTreeAsync = async (httpClient: HttpClientApi): Promise<Fla
   return extractAjaxResponse(response.data, "Failed to load tree");
 };
 
+export const fetchFrontEndAppsAsync = async (httpClient: HttpClientApi): Promise<FrontEndAppDto[]> => {
+  const url = buildUrl<IGetAllPayload>(CS_URLS.GET_FRONT_END_APPS, {
+    skipCount: 0,
+    maxResultCount: -1,
+    properties: 'id name appKey',
+  });
+  const response = await httpClient.get<IAjaxResponse<GetAllResponse<FrontEndAppDto>>>(url);
+  const responseData = extractAjaxResponse(response.data, "Failed to load front-end applications");
+  return responseData.items;
+};
+export const fetchFrontEndAppsMapAsync = async (httpClient: HttpClientApi): Promise<Map<string, FrontEndAppDto>> => {
+  const apps = await fetchFrontEndAppsAsync(httpClient);
+  return new Map<string, FrontEndAppDto>(apps.map((app) => [app.id, app]));
+};
+
 export type TreeState = {
   treeNodeMap: Map<string, TreeNode>;
   treeNodes: TreeNode[];
 };
-const convertFlatTreeToExportTree = (csEnvironment: IConfigurationStudioEnvironment, flatTreeNodes: FlatTreeNode[]): TreeState => {
+const convertFlatTreeToExportTree = async (csEnvironment: IConfigurationStudioEnvironment, flatTreeNodes: FlatTreeNode[]): Promise<TreeState> => {
   try {
     const treeNodeMap = new Map<string, TreeNode>();
     const treeNodes: TreeNode[] = [];
 
     // First pass: create map and shallow copies
-    flatTreeNodes.forEach((node) => {
-      treeNodeMap.set(node.id, flatNode2TreeNode(csEnvironment, node));
-    });
+    for await (const node of flatTreeNodes) {
+      treeNodeMap.set(node.id, await flatNode2TreeNode(csEnvironment, node));
+    }
 
     // Second pass: build hierarchy
     flatTreeNodes.forEach((node) => {
@@ -105,7 +122,7 @@ export const useTreeForExport = (): SWRResponse<TreeState, Error> => {
 
   const fetcher = useCallback(async (): Promise<TreeState> => {
     const flatTree = await fetchFlatTreeAsync(httpClient);
-    return convertFlatTreeToExportTree(csEnv, flatTree);
+    return await convertFlatTreeToExportTree(csEnv, flatTree);
   }, [httpClient, csEnv]);
 
   const url = CS_URLS.GET_FLAT_TREE;

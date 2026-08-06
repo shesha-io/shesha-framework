@@ -6,6 +6,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
   // Generate unique IDs for major components
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
+  const commonStyleRouterId = nanoid();
   const appearanceTabId = nanoid();
   const styleRouterId = nanoid();
   const eventsTabId = nanoid();
@@ -28,13 +29,22 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                 .addSettingsInput({ inputType: 'textField', propertyName: 'componentName', label: 'Component Name', validate: { required: true }, jsSetting: false })
                 .stdVisibleEditableInputs('full')
                 .addSettingsInput({ inputType: 'switch', propertyName: 'noDefaultStyling', label: 'No Default Styling', size: 'small', tooltip: 'If checked, the default styles and classes of the container will not be applied.', jsSetting: true })
+                .addPropertyRouter({ id: commonStyleRouterId, componentName: 'propertyRouter1', label: 'Property router1', labelAlign: 'right',
+                  propertyRouteName: removeStyleRouter === true ? '' : { _mode: "code", _code: "    return contexts.canvasContext?.designerDevice || 'desktop';", _value: "" },
+                  components: [
+                    ...fbf(commonStyleRouterId)
+                      .stdLayoutPanel(removeStyleRouter !== true)
+                      .stdDimensionsPanel()
+                      .stdMarginPaddingPanel()
+                      .toJson()],
+                })
                 .toJson(),
             ],
           },
           { key: 'events', title: 'Events', id: eventsTabId, components: [...fbf(eventsTabId).stdEventHandlers(['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave']).toJson()] },
           { key: 'appearance', title: 'Appearance', id: appearanceTabId,
             components: [...fbf(appearanceTabId)
-              .addPropertyRouter({ id: styleRouterId, propertyName: 'propertyRouter1', componentName: 'propertyRouter', label: 'Property router1', labelAlign: 'right',
+              .addPropertyRouter({ id: styleRouterId, componentName: 'propertyRouter2', label: 'Property router2', labelAlign: 'right',
                 propertyRouteName: removeStyleRouter === true ? '' : { _mode: "code", _code: "    return contexts.canvasContext?.designerDevice || 'desktop';", _value: "" },
                 components: [
                   ...fbf(styleRouterId)

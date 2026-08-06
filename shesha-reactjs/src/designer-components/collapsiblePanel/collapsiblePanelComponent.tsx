@@ -27,6 +27,7 @@ import { useEvents } from '@/components/formDesigner/components/eventsAndApiValu
 import { getComponentEvents } from '../_common/events';
 import { getStyleValueFromModel } from '../_common/styles/utils';
 import { IStyleValue } from '@/providers';
+import { DEFAULT_DESIGNER_PADDING } from '@/components/formDesigner/utils/stylingUtils';
 
 const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
   allowInherit: true,
@@ -34,7 +35,7 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
   isInput: false,
   name: 'Panel',
   icon: <GroupOutlined />,
-  getWrapperStyle: (model) => ({ dimensions: model?.dimensions, stylingBoxJson: { _type: 'styleBox', paddingLeft: 2, paddingRight: 2, paddingTop: 2, paddingBottom: 2 } }),
+  getWrapperStyle: (model) => ({ style: { dimensions: model?.dimensions }, designerStyle: DEFAULT_DESIGNER_PADDING }),
   useCalculateModel(model, allData) {
     const evaluatedLabel = typeof model.label === 'string' ? evaluateString(model.label, { data: allData.data }) : model.label;
     const calcModel = useMemo(() => ({ evaluatedLabel }), [evaluatedLabel]);

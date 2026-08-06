@@ -26,6 +26,35 @@ export const convertValueToFriendlyString = (value: unknown): string => {
   return String(value);
 };
 
+/** A data URI or an image URL — the image picker stores its value as base64. */
+const isImageValue = (value: unknown): value is string =>
+  typeof value === 'string' && (/^data:image\//i.test(value) || /^(https?:\/\/|\/)[^\s]+\.(png|jpe?g|gif|webp|svg)(\?[^\s]*)?$/i.test(value));
+
+/** Strings long enough to overrun the popover (e.g. a base64 payload or a long script). */
+const MAX_INLINE_VALUE_LENGTH = 80;
+
+/**
+ * Renders an inherited value for display in the inheritance popover.
+ *
+ * Most values are shown as friendly text, but an image value is shown as a thumbnail: the
+ * picker stores images as base64, and printing the raw data URI floods the popover with
+ * thousands of characters instead of telling the user what they'd inherit.
+ */
+export const renderValueForDisplay = (value: unknown): ReactElement => {
+  if (isImageValue(value)) {
+    return (
+      <img
+        src={value}
+        alt="Inherited image"
+        style={{ maxWidth: 120, maxHeight: 80, objectFit: 'contain', display: 'block' }}
+      />
+    );
+  }
+
+  const text = convertValueToFriendlyString(value);
+  return <span>{text.length > MAX_INLINE_VALUE_LENGTH ? `${text.slice(0, MAX_INLINE_VALUE_LENGTH)}…` : text}</span>;
+};
+
 export const getEditor = (
   availableConstantsExpression: string | undefined,
   codeEditorProps: ICodeEditorProps,

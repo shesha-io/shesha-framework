@@ -1,5 +1,5 @@
 import { useCacheProvider } from '@/hooks/useCache';
-import { useFormDesignerComponents, useHttpClient } from '@/providers';
+import { useFormDesignerComponents, useHttpClient, useSheshaApplication } from '@/providers';
 import React, { FC, PropsWithChildren, useContext, useState } from 'react';
 import { ConfigurationLoader, IConfigurationLoader } from './configurationLoader';
 import {
@@ -16,6 +16,8 @@ export const URLS = {
 const ConfigurationItemsLoaderProvider: FC<PropsWithChildren> = ({
   children,
 }) => {
+  const { applicationKey } = useSheshaApplication();
+
   const httpClient = useHttpClient();
 
   const designerComponents = useFormDesignerComponents();
@@ -24,6 +26,7 @@ const ConfigurationItemsLoaderProvider: FC<PropsWithChildren> = ({
 
   const [loader] = useState<IConfigurationLoader>(() =>
     new ConfigurationLoader({
+      applicationKey,
       httpClient,
       cacheProvider,
       designerComponents: designerComponents,

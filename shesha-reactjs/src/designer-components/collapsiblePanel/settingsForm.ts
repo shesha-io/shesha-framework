@@ -4,7 +4,6 @@ import { SettingsFormMarkupFactory } from '@/interfaces';
 
 export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter }) => {
   // Generate unique IDs for main sections
-  const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const commonStyleRouterId = nanoid();
   const eventsTabId = nanoid();
@@ -13,14 +12,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
 
   return {
     components: fbf()
-      .addSearchableTabs({
-        id: searchableTabsId,
-        propertyName: 'settingsTabs',
-        parentId: 'root',
-        label: 'Settings',
-        hideLabel: true,
-        labelAlign: 'right',
-        size: 'small',
+      .addSearchableTabs({ propertyName: 'settingsTabs', parentId: 'root', label: 'Settings', hideLabel: true, size: 'small',
         tabs: [
           { id: commonTabId, key: 'common', title: 'Common',
             components: [

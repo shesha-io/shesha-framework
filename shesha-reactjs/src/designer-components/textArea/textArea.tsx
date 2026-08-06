@@ -83,10 +83,12 @@ const TextAreaComponent: TextAreaComponentDefinition = {
     const { styles } = useStyles(model);
 
     const textAreaProps: TextAreaProps = {
-      className: 'sha-text-area',
       classNames: {
-        root: styles.textAreaRoot,
-        textarea: `sha-text-area ${styles.textArea}`,
+        // With allowClear/suffix antd renders an affix wrapper and `root` lands on it; that
+        // wrapper then owns the visible border/background. Both elements get the appearance
+        // class, and the stylesheet decides which one actually paints it — see styles.ts.
+        root: styles.textAreaWrapper,
+        textarea: isDefined(model.allowClear) && model.allowClear ? '' : `sha-text-area ${styles.textArea}`,
       },
       placeholder: model.placeholder,
       autoSize: model.autoSize === true ? { minRows: 2 } : false,
