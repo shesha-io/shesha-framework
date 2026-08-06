@@ -3,6 +3,17 @@ import { nanoid } from '@/utils/uuid';
 import { DataTypes, SettingsFormMarkupFactory } from '@/interfaces';
 import { ALL_INPUT_EVENTS_WITHOUT_DOUBLE_CLICK } from '../_common/events';
 
+/* On Change exposes `dateString` in addition to the standard constants: the value as displayed,
+   formatted with the configured Date/Time Format. For a range it is a [start, end] pair. */
+const onChangeConstantsExpression = [
+  'return metadataBuilder.object("constants")',
+  '.addAllStandard()',
+  '.addObject("event", "Event callback when user input", undefined)',
+  '.addString("dateString", "Selected date as displayed, formatted with the configured Date/Time Format")',
+  '.add("date-time", "value", "Component current value")',
+  '.build();',
+].join('\r\n');
+
 export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
@@ -151,7 +162,21 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
           },
           {
             key: 'events', title: 'Events', id: eventsTabId,
-            components: [...fbf(eventsTabId).stdEventHandlers([...ALL_INPUT_EVENTS_WITHOUT_DOUBLE_CLICK], DataTypes.dateTime).toJson()],
+            components: [
+              ...fbf(eventsTabId)
+                /* On Change is registered on its own so its constants can declare `dateString` — the
+                   value as displayed, which the shared event config has no way to express. The
+                   remaining events come from the shared helper unchanged. */
+                .stdEventHandler(
+                  'onChangeCustom', 'On Change', 'Enter the data change event handling code',
+                  onChangeConstantsExpression,
+                )
+                .stdEventHandlers(
+                  ALL_INPUT_EVENTS_WITHOUT_DOUBLE_CLICK.filter((event) => event !== 'onChange'),
+                  DataTypes.dateTime,
+                )
+                .toJson(),
+            ],
           },
           {
             key: 'appearance', title: 'Appearance', id: appearanceTabId,

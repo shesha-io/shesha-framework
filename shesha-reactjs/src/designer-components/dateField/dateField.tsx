@@ -42,7 +42,7 @@ const DateField: DateFieldDefinition = {
   icon: <CalendarOutlined />,
   preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.date || dataType === DataTypes.dateTime,
-  Factory: ({ model, apiContext }) => {
+  Factory: ({ model }) => {
     const componentApi = useComponentApi();
     const inputRef = useRef<HTMLDivElement>(null);
 
@@ -53,11 +53,11 @@ const DateField: DateFieldDefinition = {
         level: 3,
         typeDefinition: { typeName: 'DateFieldApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
         properties: [
-          { name: 'isRange', getter: () => model.range === true, setter: (value) => apiContext?.updateApiModel({ range: value }) },
+          { name: 'isRange', getter: () => model.range === true },
         ],
         api: { focus: () => inputRef.current?.querySelector('input')?.focus() },
       });
-    }, [apiContext, componentApi, model.componentName, model.id, model.range]);
+    }, [componentApi, model.componentName, model.id, model.range]);
     useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
     return (
@@ -68,8 +68,10 @@ const DateField: DateFieldDefinition = {
               {...model}
               ref={inputRef}
               value={value}
-              onChange={(newValue: string | NoUndefinedRangeValueType<string> | null, _dateString: string | [string, string] | null) => {
-                ctx?.handleEvent(undefined, { value: newValue }, model.onChangeCustom);
+              onChange={(newValue: string | NoUndefinedRangeValueType<string> | null, dateString: string | [string, string] | null) => {
+                // `dateString` is the value as displayed, formatted with the configured Date/Time
+                // Format. Exposed alongside `value` so an On Change script can use either.
+                ctx?.handleEvent(undefined, { value: newValue, dateString }, model.onChangeCustom);
                 onChange(newValue);
               }}
               {...getComponentEvents<DateFieldValueType>(model, ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, ctx, value, DataTypes.dateTime)}
