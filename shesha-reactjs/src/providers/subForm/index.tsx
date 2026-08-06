@@ -562,6 +562,9 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         .catch((e) => {
           if (markupRequestId.current !== requestId)
             return;
+          // the form that failed to load replaces whatever was rendered before, keeping the previous one
+          // shows a form that does not belong to the current selection
+          setMarkup({ components: [], formSettings: DEFAULT_FORM_SETTINGS, hasFetchedConfig: false });
           setFormLoadingState({ isLoading: false, error: describeDynamicFormLoadingError(e, formSelectionMode, internalEntityType, formType, formConfig.formId) });
         });
     }
