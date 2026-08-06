@@ -2,7 +2,7 @@
 import { Button, Dropdown, Input, MenuProps, Spin, Tooltip, Tree, TreeProps } from 'antd';
 import React, { FC, useMemo, useRef, useState } from 'react';
 import { MoveNodePayload } from '../../apis';
-import { isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, isNodeWithChildren, TreeNode, TreeNodeType } from '../../models';
+import { isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, isNodeWithChildren, isTreeNode, TreeNode, TreeNodeType } from '../../models';
 import { CaretDownOutlined, CaretRightOutlined, RightOutlined } from '@ant-design/icons';
 import { ValidationErrors } from '@/components/validationErrors';
 import { useCsTree, useCsTreeDnd } from '../../cs/hooks';
@@ -33,7 +33,10 @@ type OnDragStart = TreeProps<TreeNode>['onDragStart'];
 type OnDragEnd = TreeProps<TreeNode>['onDragEnd'];
 
 const isNodeDraggable: IsDraggable = (node): boolean => {
-  return isConfigItemTreeNode(node) || isFolderTreeNode(node);
+  // This gates onDragEnter/onDragOver/onDrop too (not just drag-start), so the empty-folder
+  // placeholder (see filter.ts) must return true here to receive drops at all - its own
+  // `disabled: true` already prevents it from being draggable as a source.
+  return isConfigItemTreeNode(node) || isFolderTreeNode(node) || (isTreeNode(node) && node.nodeType === TreeNodeType.Placeholder);
 };
 
 const allowDropNode = (dragNode: TreeNode, dropNode: TreeNode, dropPosition: number): boolean => {
@@ -45,7 +48,7 @@ const allowDropNode = (dragNode: TreeNode, dropNode: TreeNode, dropPosition: num
         dragNode.parentId !== dropNode.parentId;
     }
     case DropPositions.Inside: {
-      // The empty-folder placeholder (see filter.ts) stands in for its real parent folder.
+      // The empty-container placeholder (see filter.ts) stands in for its real parent folder/module.
       if (dropNode.nodeType === TreeNodeType.Placeholder)
         return dragNode.moduleId === dropNode.moduleId && dragNode.parentId !== dropNode.parentId;
 
@@ -128,6 +131,8 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
   };
 
   const handleClick: OnClickHandler = (_, node) => {
+    if (node.nodeType === TreeNodeType.Placeholder)
+      return;
     cs.clickTreeNode(node);
   };
 
@@ -142,9 +147,14 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
         return isFolderTreeNode(dropNodeParent) ? dropNodeParent.id : undefined;
       }
       default: {
-        // The placeholder's parentId is always the empty folder it belongs to (see filter.ts).
-        if (dropNode.nodeType === TreeNodeType.Placeholder)
-          return dropNode.parentId;
+        // Placeholders (see filter.ts) exist under empty folders AND empty modules - resolve
+        // to the parent's own id only if that parent is actually a folder.
+        if (dropNode.nodeType === TreeNodeType.Placeholder) {
+          const parentNode = isDefined(dropNode.parentId)
+            ? getTreeNodeById(dropNode.parentId)
+            : undefined;
+          return isFolderTreeNode(parentNode) ? parentNode.id : undefined;
+        }
         return isFolderTreeNode(dropNode) ? dropNode.id : undefined;
       }
     }
@@ -190,6 +200,8 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
 
   const handleNodeRightClick: OnRightClick = ({ event, node }) => {
     event.preventDefault();
+    if (node.nodeType === TreeNodeType.Placeholder)
+      return;
     setContextNode(node);
   };
 
