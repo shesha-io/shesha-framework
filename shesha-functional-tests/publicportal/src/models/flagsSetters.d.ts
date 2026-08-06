@@ -1,9 +1,4 @@
-export interface IFlagsSetters<
-  A extends string,
-  B extends string,
-  C extends string,
-  D extends string
-> {
+export interface IFlagsSetters<A extends string, B extends string, C extends string, D extends string> {
   setIsInProgressFlag: (key: { [key in A]?: boolean }) => void;
   setSucceededFlag: (key: { [key in B]?: boolean }) => void;
   setFailedFlag: (key: { [key in C]?: boolean }) => void;
