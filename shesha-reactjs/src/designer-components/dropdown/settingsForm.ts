@@ -6,6 +6,7 @@ import { ALL_INPUT_EVENTS_WITHOUT_DOUBLE_CLICK } from '../_common/events';
 
 const refListHiddenJs = "return getSettingValue(data.dataSourceType) !== 'referenceList';";
 const valuesVisibleJs = "return getSettingValue(data.dataSourceType) === 'values';";
+const refListVisibleJs = "return getSettingValue(data.dataSourceType) === 'referenceList';";
 const customValueHiddenJs = "return getSettingValue(data?.valueFormat) !== 'custom';";
 // Disabled values needs both a reference list and the Disable Item Value toggle.
 const disabledValuesHiddenOrNotRefListJs = "return getSettingValue(data.dataSourceType) !== 'referenceList' || !getSettingValue(data.disableItemValue);";
@@ -86,7 +87,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                     },
                   ],
                 })
-                .addSettingsInput({ inputType: 'referenceListAutocomplete', propertyName: 'referenceListId', label: 'Reference List', isDynamic: true, validate: { required: true }, visibleJs: valuesVisibleJs.replace("===", "!==") })
+                .addSettingsInput({ inputType: 'referenceListAutocomplete', propertyName: 'referenceListId', label: 'Reference List', isDynamic: true, validate: { required: true }, visibleJs: refListVisibleJs })
                 .stdCollapsiblePanel('Advanced', (fb) => fb
                   .addSettingsInput({ inputType: 'queryBuilder', propertyName: 'filter', label: 'Filter', isDynamic: true, validate: {}, modelType: 'Shesha.Framework.ReferenceListItem', hidden: { _code: refListHiddenJs, _mode: 'code', _value: false } })
                   .addSettingsInput({ inputType: 'switch', propertyName: 'disableItemValue', tooltip: 'Disable reference list from selection', label: 'Disable Item Value', jsSetting: true, layout: 'horizontal', hidden: { _code: refListHiddenJs, _mode: 'code', _value: false } })

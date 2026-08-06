@@ -51,8 +51,9 @@ export const Dropdown: FC<IDropdownProps> = ({
   styleValue,
 }) => {
   /* Enable Multi-Select supersedes `mode`; `mode` is still honoured for forms saved before the
-     rename (and for the 'tags' variant, which the boolean cannot express). */
-  const mode = isDefined(enableMultiSelect)
+     rename. 'tags' is left alone because the boolean cannot express it — overriding it would
+     silently downgrade a configured tags dropdown to plain multiple/single. */
+  const mode = isDefined(enableMultiSelect) && configuredMode !== 'tags'
     ? (enableMultiSelect ? 'multiple' : 'single')
     : configuredMode;
 

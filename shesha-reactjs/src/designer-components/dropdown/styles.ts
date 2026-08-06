@@ -3,15 +3,19 @@ import { IDropdownComponentProps } from './model';
 import { backgroundStyles, borderRadiusStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, marginStyles, paddingStyles, shadowStyles, splitBackgroundProperties } from '../_common/styles/utils';
 import { isDefined } from '@/utils/nullables';
 import { CSSProperties } from 'react';
-import { PresetColors } from 'antd/es/theme/interface';
 
 /**
- * The colour classes antd may put on a tag (`ant-tag-red`, `ant-tag-success`, …), sourced from
- * antd itself so the list cannot drift. Status colours are not in `PresetColors` but produce the
- * same kind of class, and `-inverse` variants render through the base colour class.
+ * The colour classes antd may put on a tag (`ant-tag-red`, `ant-tag-success`, …).
+ *
+ * Declared locally rather than imported from `antd/es/theme/interface`, which is an internal path
+ * with no compatibility guarantee. `@ant-design/colors` is not a substitute: its
+ * `presetPrimaryColors` omits `pink` and adds `grey`, so it does not describe the tag classes antd
+ * actually emits. Status colours are not preset colours but produce the same kind of class, and
+ * `-inverse` variants render through the base colour class.
  */
 const TAG_COLOUR_CLASSES: readonly string[] = [
-  ...PresetColors,
+  'blue', 'purple', 'cyan', 'green', 'magenta', 'pink', 'red', 'orange', 'yellow', 'volcano',
+  'geekblue', 'lime', 'gold',
   'success', 'processing', 'error', 'default', 'warning',
 ];
 

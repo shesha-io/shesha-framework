@@ -5,16 +5,18 @@ import { StringBuilder } from "@/utils";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { CSSProperties } from "react";
 
-/**
- * CSS properties that take a bare number rather than a length, so a numeric value must not have
- * `px` appended to it.
- */
-const UNITLESS_CSS_PROPERTIES = new Set([
-  'opacity', 'zIndex', 'lineHeight', 'fontWeight', 'flexGrow', 'flexShrink', 'order',
-  'columnCount', 'flex', 'zoom', 'tabSize', 'orphans', 'widows', 'animationIterationCount',
-  'aspectRatio', 'borderImageOutset', 'borderImageSlice', 'borderImageWidth', 'boxFlex',
-  'boxFlexGroup', 'boxOrdinalGroup', 'columns', 'flexPositive', 'flexNegative', 'flexOrder',
-  'gridRow', 'gridColumn', 'lineClamp',
+/** Properties that are unitless in CSS, so a bare number must not gain a `px` suffix. */
+const UNITLESS_PROPERTIES = new Set([
+  'animationIterationCount', 'aspectRatio', 'borderImageOutset', 'borderImageSlice', 'borderImageWidth',
+  'boxFlex', 'boxFlexGroup', 'boxOrdinalGroup', 'columnCount', 'columns', 'flex', 'flexGrow', 'flexPositive',
+  'flexShrink', 'flexNegative', 'flexOrder', 'gridRow', 'gridColumn', 'fontWeight', 'lineClamp', 'lineHeight',
+  'opacity', 'order', 'orphans', 'tabSize', 'widows', 'zIndex', 'zoom',
+  // SVG presentation attributes React accepts on CSSProperties.
+  'fillOpacity', 'floodOpacity', 'stopOpacity', 'strokeDasharray', 'strokeMiterlimit', 'strokeOpacity',
+  'strokeWidth',
+  // Vendor-prefixed forms of the above; React spells these with a capitalised prefix.
+  'WebkitLineClamp', 'WebkitBoxOrdinalGroup', 'WebkitFlexGrow', 'WebkitFlexShrink', 'WebkitOrder',
+  'MozBoxFlex', 'msFlex', 'msFlexPositive', 'msGridRow', 'msGridColumn',
 ]);
 
 /**
@@ -24,7 +26,7 @@ const UNITLESS_CSS_PROPERTIES = new Set([
  * Emotion's `CSSObject` is not structurally compatible with React's `CSSProperties`, so a custom
  * style object cannot simply be spread into a `css` block. Keys are kebab-cased, `--custom-props`
  * are passed through untouched, and `px` is appended only to numeric values of properties that
- * actually take a length (see `UNITLESS_CSS_PROPERTIES`).
+ * actually take a length (see `UNITLESS_PROPERTIES`).
  */
 export const cssPropertiesToString = (style: CSSProperties | undefined): string => {
   if (!isDefined(style)) return '';
@@ -32,8 +34,13 @@ export const cssPropertiesToString = (style: CSSProperties | undefined): string 
   Object.entries(style).forEach(([key, value]) => {
     if (!isDefined(value) || value === '') return;
     // Custom properties are already in their final form and must keep their exact casing.
-    const name = key.startsWith('--') ? key : key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
-    const serialised = typeof value === 'number' && !UNITLESS_CSS_PROPERTIES.has(key)
+    // React writes the Microsoft prefix lowercase (`msFlex`), which plain kebab-casing would
+    // render as `ms-flex`; the vendor declaration needs the leading dash. The other prefixes
+    // (`WebkitBoxShadow`, `MozAppearance`) capitalise, so the generic rule already emits theirs.
+    const name = key.startsWith('--')
+      ? key
+      : (/^ms[A-Z]/.test(key) ? `-${key}` : key).replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
+    const serialised = typeof value === 'number' && !UNITLESS_PROPERTIES.has(key)
       ? `${value}px`
       : String(value);
     sb.append(`${name}: ${serialised};`);
@@ -54,8 +61,10 @@ export const cssPropertiesToString = (style: CSSProperties | undefined): string 
  * split across two states.
  */
 export const splitBackgroundProperties = (style: CSSProperties | undefined): { background: CSSProperties; rest: CSSProperties } => {
-  // Built as plain records because `CSSProperties` has no string index signature; the result is
-  // narrowed back on return, where the keys are known to have come from a `CSSProperties` object.
+  // Built as plain records because `CSSProperties` has no string index signature, and its keys and
+  // values cannot be correlated when read back as a union — assigning one to the other does not
+  // typecheck. The narrowing happens on return, where the keys are known to have come from a
+  // `CSSProperties` object.
   const background: Record<string, unknown> = {};
   const rest: Record<string, unknown> = {};
   if (!isDefined(style)) return { background: {}, rest: {} };
@@ -63,7 +72,7 @@ export const splitBackgroundProperties = (style: CSSProperties | undefined): { b
     const target = key.startsWith('background') ? background : rest;
     target[key] = value;
   });
-  return { background: background, rest: rest };
+  return { background: background as CSSProperties, rest: rest as CSSProperties };
 };
 
 export const getStyleValueFromModel = (model: IConfigurableFormComponent): IStyleValue => {

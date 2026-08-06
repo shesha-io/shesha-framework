@@ -117,17 +117,9 @@ export const defaultTagStyles = (): IStyleValue => {
       maxWidth: 'auto',
     },
     shadow: SHADOW_DEFAULTS(),
-    stylingBoxJson: {
-      _type: 'styleBox',
-      marginTop: "0",
-      marginRight: "0",
-      marginBottom: "0",
-      marginLeft: "8",
-      paddingTop: "0",
-      paddingRight: "0",
-      paddingBottom: "0",
-      paddingLeft: "0",
-    },
+    // Only the left margin differs from the shared defaults: it separates a tag from the one
+    // before it. Spreading keeps the two in step as default slots are added.
+    stylingBoxJson: { ...STYLING_BOX_DEFAULTS(), marginLeft: "8" },
   };
 };
 

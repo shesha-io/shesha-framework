@@ -12,7 +12,7 @@ export const useStyles = createStyles(({ css, cx, token }, { style }: { style: C
     --ant-select-multiple-item-bg: transparent !important;
 
     .ant-select-selector {
-        ${(style.height !== 'auto' || !isDefined(style.height)) ? 'overflow-y: auto;' : ''}
+        ${style.height !== 'auto' ? 'overflow-y: auto;' : ''}
         .ant-select-selection-overflow {
             display: flex;
             flex-wrap: wrap;

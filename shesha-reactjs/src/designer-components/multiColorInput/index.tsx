@@ -41,7 +41,7 @@ export const MultiColorInput = ({ value, onChange, readOnly, propertyName }: Mul
             <Tag
               key={id}
               style={{ backgroundColor: '#fff', padding: 0, margin: 0, display: 'flex', flexDirection: 'row' }}
-              closable={id !== '1' && id !== '2'}
+              closable={readOnly !== true && id !== '1' && id !== '2'}
               onClose={() => onChange?.({ ...colors, [id]: undefined })}
             >
               {/* Deliberately NOT a form-bound SettingInput. Each swatch used to bind its own path
@@ -52,7 +52,9 @@ export const MultiColorInput = ({ value, onChange, readOnly, propertyName }: Mul
                   stop intact. It also keeps the gradient a single input for inheritance purposes. */}
               <ColorPicker
                 value={color}
-                onChange={(newColor) => onChange?.({ ...colors, [id]: typeof newColor === 'string' ? newColor : '' })}
+                // A cleared swatch stores `undefined`, not '': `stops` filters on undefined, so an
+                // empty string would survive as a stop with no colour.
+                onChange={(newColor) => onChange?.({ ...colors, [id]: typeof newColor === 'string' ? newColor : undefined })}
                 readOnly={readOnly ?? false}
                 size="small"
                 allowClear
