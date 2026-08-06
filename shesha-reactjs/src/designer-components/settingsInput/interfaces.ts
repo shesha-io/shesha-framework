@@ -548,7 +548,6 @@ export type ISettingsInputSettingsInputProps = {
 }[InputTypes];
 
 export type ISettingsInputProps = (BaseInputProps | ISettingsInputSettingsInputProps) & {
-  skipInheritance?: boolean;
   permissionSettings?: boolean;
 };
 

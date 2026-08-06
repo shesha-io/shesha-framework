@@ -23,6 +23,10 @@ export class DocumentInstance implements IDocumentInstance {
 
   moduleName: string;
 
+  applicationId: string | undefined;
+
+  applicationName: string | undefined;
+
   definition: DocumentDefinition;
 
   loadingState: LoadingStatus;
@@ -39,6 +43,8 @@ export class DocumentInstance implements IDocumentInstance {
     this.label = args.label;
     this.moduleId = args.moduleId;
     this.moduleName = args.moduleName;
+    this.applicationId = args.applicationId;
+    this.applicationName = args.applicationName;
     this.flags = args.flags ?? {
       isCodeBased: false,
       isCodegenPending: false,

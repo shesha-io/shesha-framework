@@ -7,7 +7,7 @@ import {
     IButtonItem,
 } from '@shesha-io/reactjs';
 import { useOrganisationalAccounts } from '../hooks';
-import { makeActionConfig } from 'utils/configurabeleActions';
+import { makeActionConfig } from 'utils/configurableActions';
 
 export interface IOrganisationActionsProps {
 
@@ -50,9 +50,9 @@ export const OrganisationActions: FC<PropsWithChildren<IOrganisationActionsProps
         <DynamicActionsProvider
             id='get-organisations'
             name='Get Organisations'
-            useEvaluator={ useOrganisationsActions }
+            useEvaluator={useOrganisationsActions}
         >
-        { children }
+            {children}
         </DynamicActionsProvider>
     );
 };

@@ -1,5 +1,6 @@
 import { ProfileOutlined } from '@ant-design/icons';
-import React, { useEffect, useRef } from 'react';
+import React, { CSSProperties, useEffect, useMemo, useRef } from 'react';
+import { useActualContextExecution } from '@/hooks';
 import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
@@ -7,6 +8,9 @@ import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import RefListCheckboxGroup from './refListCheckboxGroup';
+import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
+import { useReferenceList } from '@/providers/referenceListDispatcher';
+import { getDataSourceList } from '../radio/utils';
 import { CheckboxGroupComponentProps, CheckboxGroupFocusHandle, DIRECTION_TYPE, DirectionType } from './interfaces';
 import {
   migratePropertyName,
@@ -16,7 +20,7 @@ import {
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
-import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { migrateUrlDataSource } from '../_common-migrations/migrateUrlDataSource';
 import { DATA_SOURCE_TYPES, DataSourceType } from '../dropdown/model';
 import { getStringEnumOrDefault } from '@/utils/object';
@@ -51,6 +55,8 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps> = 
     // handle exposed by the group's wrapper div.
     const focusRef = useRef<CheckboxGroupFocusHandle>(null);
 
+    const checkboxStyleJson = useActualContextExecution<CSSProperties>(model.checkbox?.style, undefined, {});
+
     useEffect(() => {
       const apiId = model.id;
       componentApi?.updateApi<CheckboxGroupApi>({
@@ -67,12 +73,38 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps> = 
       };
     }, [componentApi, model.componentName, model.id]);
 
+    // Resolved here as well as in the group so the readOnly display can show the selected
+    // options' labels rather than their raw values.
+    const { data: refList } = useReferenceList(model.referenceListId);
+    const options = useMemo(
+      () => getDataSourceList(model.dataSourceType, model.items ?? [], refList?.items),
+      [model.dataSourceType, model.items, refList?.items],
+    );
+
     return (
       <ConfigurableFormItem<string | string[]> model={model} autoAlignLabel={false}>
         {(value, onChange, _, ctx) => {
+          if (model.readOnly === true) {
+            const selectedValues = isDefined(value) ? (Array.isArray(value) ? value : [value]) : [];
+            const selectedLabels = options
+              .filter((item) => selectedValues.some((v) => `${item.value}` === `${v}`))
+              .map((item) => item.label);
+
+            return (
+              <ReadOnlyDisplayFormItem
+                value={selectedLabels.join(', ')}
+                enableFullStyle={model.enableStyleOnReadonly}
+                style={model.styleJson}
+                styleValue={model}
+              />
+            );
+          }
+
           return (
             <RefListCheckboxGroup
               {...model}
+              checkboxStyleJson={checkboxStyleJson}
+              disabled={model.disabled === true}
               focusRef={focusRef}
               value={value ?? undefined}
               onChange={(newValue) => {
@@ -136,8 +168,7 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps> = 
       // settings, applied as a single chained step.
       .add<IEnhancedICheckboxGroupProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev)))
       // The `url` data source was removed. A URL that pointed at a reference list converts to
-      // the native `referenceList` source; anything else falls back to `values` and is reported
-      // by `validateModel` below.
+      // the native `referenceList` source; anything else falls back to `values`.
       .add<IEnhancedICheckboxGroupProps>(9, (prev) => migrateUrlDataSource(prev)),
   linkToModelMetadata: (model, metadata): IEnhancedICheckboxGroupProps => {
     const refListId: IReferenceListIdentifier | undefined = !isNullOrWhiteSpace(metadata.referenceListModule) && !isNullOrWhiteSpace(metadata.referenceListName)

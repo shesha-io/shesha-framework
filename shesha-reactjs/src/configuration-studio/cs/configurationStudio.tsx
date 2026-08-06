@@ -18,8 +18,7 @@ import {
   ConfigItemTreeNode,
   DocumentBase,
   FolderTreeNode,
-  ForceRenderFunc,
-  IDocumentInstance,
+  ForceRenderFunc, IDocumentInstance,
   isCIDocument,
   isConfigItemTreeNode,
   isFolderTreeNode, isModuleTreeNode, isSpecialTreeNode, ItemTypeDefinition,
@@ -457,6 +456,8 @@ export class ConfigurationStudio implements IConfigurationStudio {
           moduleId: node.moduleId,
           moduleName: node.moduleName,
           flags: node.flags,
+          applicationId: node.applicationId,
+          applicationName: node.applicationName,
         });
       }
 
@@ -471,6 +472,8 @@ export class ConfigurationStudio implements IConfigurationStudio {
           label: node.name,
           moduleId: node.moduleId,
           moduleName: "",
+          applicationId: undefined,
+          applicationName: undefined,
         });
       }
 
@@ -512,6 +515,8 @@ export class ConfigurationStudio implements IConfigurationStudio {
       moduleId: node.moduleId,
       moduleName: node.moduleName,
       flags: node.flags,
+      applicationId: node.applicationId,
+      applicationName: node.applicationName,
     });
 
     this.docs = [...this.docs, newDocument];
@@ -535,6 +540,8 @@ export class ConfigurationStudio implements IConfigurationStudio {
       label: node.name,
       moduleId: node.moduleId,
       moduleName: "",
+      applicationId: undefined,
+      applicationName: undefined,
     });
 
     this.docs = [...this.docs, newDocument];
@@ -758,9 +765,9 @@ export class ConfigurationStudio implements IConfigurationStudio {
       const treeNodes: TreeNode[] = [];
 
       // First pass: create map and shallow copies
-      flatTreeNodes.forEach((node) => {
-        treeNodeMap.set(node.id, flatNode2TreeNode(this.csEnvironment, node));
-      });
+      for await (const node of flatTreeNodes) {
+        treeNodeMap.set(node.id, await flatNode2TreeNode(this.csEnvironment, node));
+      };
 
       // Second pass: build hierarchy
       flatTreeNodes.forEach((node) => {

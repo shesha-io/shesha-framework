@@ -1,5 +1,6 @@
 import { useCache } from "@/hooks/useCache";
 import { useAuth } from "@/providers";
+import { isNonEmptyArray } from "@/utils/array";
 import useModal from "antd/lib/modal/useModal";
 import React, { FC, useEffect } from "react";
 
@@ -11,7 +12,7 @@ export const InitializationErrorsModal: FC = () => {
   useEffect(() => {
     storage.getItem('last_initialization')
       .then((lastInitialization) => {
-        if (lastInitialization !== errorsInfo?.lastInitialization && errorsInfo?.errors?.length) {
+        if (lastInitialization !== errorsInfo?.lastInitialization && isNonEmptyArray(errorsInfo?.errors)) {
           void storage.setItem('last_initialization', errorsInfo.lastInitialization);
           modal.error({
             title: 'Application initialized with critical errors: ',

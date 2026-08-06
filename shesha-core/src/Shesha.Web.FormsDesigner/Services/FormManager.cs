@@ -69,6 +69,7 @@ namespace Shesha.Web.FormsDesigner.Services
             var baseInput = new CreateItemInput
             {
                 Module = input.Module,
+                Application = input.Application,
                 Folder = input.Folder,
                 OrderIndex = input.OrderIndex,
                 Name = input.Name,
@@ -137,8 +138,10 @@ namespace Shesha.Web.FormsDesigner.Services
             var dto = new FormConfigurationDto {
                 Id = item.Id,
                 ModuleId = item.Module?.Id,
-                OriginId = item.Origin?.Id,
                 Module = item.Module?.Name,
+                OriginId = item.Origin?.Id,                
+                ApplicationId = item.Application?.Id,
+                Application = item.Application?.Name,
                 Name = item.Name,
                 Label = item.Label,
                 Description = item.Description,

@@ -2,7 +2,57 @@ import { BorderStyle, IBackgroundValue, IBorderValue, IDimensionsValue, IFontVal
 import { IConfigurableFormComponent, IStyleValue, StyleBoxValue } from "../../../providers/form/models";
 import { addPx, hasNumber } from "@/utils/style";
 import { StringBuilder } from "@/utils";
-import { isDefined } from "@/utils/nullables";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
+import { CSSProperties } from "react";
+
+/** Properties that are unitless in CSS, so a bare number must not gain a `px` suffix. */
+const UNITLESS_PROPERTIES = new Set([
+  'animationIterationCount', 'aspectRatio', 'borderImageOutset', 'borderImageSlice', 'borderImageWidth',
+  'boxFlex', 'boxFlexGroup', 'boxOrdinalGroup', 'columnCount', 'columns', 'flex', 'flexGrow', 'flexPositive',
+  'flexShrink', 'flexNegative', 'flexOrder', 'gridRow', 'gridColumn', 'fontWeight', 'lineClamp', 'lineHeight',
+  'opacity', 'order', 'orphans', 'tabSize', 'widows', 'zIndex', 'zoom',
+]);
+
+/**
+ * Serialises a evaluated Custom style object into CSS declarations.
+ *
+ * The framework applies a component's own custom style inline (as `styleJson`), but a nested
+ * style set has no inline element of its own — its declarations have to be emitted into a
+ * scoped rule, which needs them as text.
+ */
+export const cssPropertiesToString = (style: CSSProperties | undefined): string => {
+  if (!isDefined(style)) return '';
+  const sb = new StringBuilder();
+  Object.entries(style).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === '') return;
+    // React accepts camelCase; CSS needs kebab-case. Custom properties (--x) are passed through.
+    const property = key.startsWith('--') ? key : key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
+    const cssValue = typeof value === 'number' && !UNITLESS_PROPERTIES.has(key) ? `${value}px` : `${value}`;
+    sb.append(`${property}: ${cssValue};`);
+  });
+  return sb.build();
+};
+
+const isBackgroundProperty = (key: string): boolean => key === 'background' || key.startsWith('background');
+
+/**
+ * Splits an evaluated Custom style into its background declarations and everything else.
+ *
+ * Checkbox and radio indicators fill only when checked, so the Background panel is scoped to
+ * the checked selector. A custom style has to honour the same convention, otherwise a
+ * background set there would paint the box in its unchecked state too.
+ */
+export const splitBackgroundProperties = (style: CSSProperties | undefined): { background: CSSProperties; rest: CSSProperties } => {
+  const background: Record<string, unknown> = {};
+  const rest: Record<string, unknown> = {};
+  if (isDefined(style)) {
+    Object.entries(style).forEach(([key, value]) => {
+      if (isBackgroundProperty(key)) background[key] = value;
+      else rest[key] = value;
+    });
+  }
+  return { background: background as CSSProperties, rest: rest as CSSProperties };
+};
 
 export const getStyleValueFromModel = (model: IConfigurableFormComponent): IStyleValue => {
   return {
@@ -54,16 +104,16 @@ const dimensionCss = (value: string | number, _canvasValue?: string): string | n
   return !hasNumber(value) ? value : addPx(value) ?? 0;
 };
 
-export const shadowStyles = (model: IShadowValue | undefined): string => model
-  ? `box-shadow: ${model.offsetX ?? 0}px ${model.offsetY ?? 0}px ${model.blurRadius ?? 0}px ${model.spreadRadius ?? 0}px ${Boolean(model.color) ? model.color : '#00000004'};`
+export const shadowStyles = (model: IShadowValue | undefined, propertyName: string = 'box-shadow', important: boolean = false): string => model
+  ? `${propertyName}: ${model.offsetX ?? 0}px ${model.offsetY ?? 0}px ${model.blurRadius ?? 0}px ${model.spreadRadius ?? 0}px ${Boolean(model.color) ? model.color : '#00000004'}${important === true ? ' !important' : ''};`
   : '';
 
 export const borderRadiusStyles = (model: IBorderValue | undefined, important: boolean = false): string => {
   if (!model) return '';
   const sb = new StringBuilder();
-  if (model.radiusType === 'all' && isDefined(model.radius?.all)) sb.append(`border-radius: ${addPx(model.radius.all)} ${important === true ? '!important;' : ';'}`);
+  if (model.radiusType === 'all' && isDefined(model.radius?.all)) sb.append(`border-radius: ${addPx(model.radius.all)} ${important === true ? '!important' : ''};`);
   if (model.radiusType !== 'all' && model.radius)
-    sb.append(`border-radius: ${addPx(model.radius.topLeft ?? 0)} ${addPx(model.radius.topRight ?? 0)} ${addPx(model.radius.bottomRight ?? 0)} ${addPx(model.radius.bottomLeft ?? 0)} ${important === true ? '!important;' : ';'};`);
+    sb.append(`border-radius: ${addPx(model.radius.topLeft ?? 0)} ${addPx(model.radius.topRight ?? 0)} ${addPx(model.radius.bottomRight ?? 0)} ${addPx(model.radius.bottomLeft ?? 0)} ${important === true ? '!important' : ''};`);
   return sb.build();
 };
 
@@ -148,10 +198,10 @@ export const paddingValue = (model: StyleBoxValue | undefined): string => {
 export const fontStyles = (model: IFontValue | undefined): string => {
   if (!model) return '';
   const sb = new StringBuilder();
-  if (Boolean(model.color)) sb.append(`color: ${model.color};`);
+  if (!isNullOrWhiteSpace(model.color)) sb.append(`color: ${model.color};`);
   if (isDefined(model.size)) sb.append(`font-size: ${addPx(model.size)};`);
-  if (Boolean(model.weight)) sb.append(`font-weight: ${model.weight};`);
-  if (Boolean(model.type)) sb.append(`font-family: ${model.type};`);
+  if (!isNullOrWhiteSpace(model.weight)) sb.append(`font-weight: ${model.weight};`);
+  if (!isNullOrWhiteSpace(model.type)) sb.append(`font-family: ${model.type};`);
   if (isDefined(model.align)) sb.append(`text-align: ${model.align};`);
   return sb.build();
 };

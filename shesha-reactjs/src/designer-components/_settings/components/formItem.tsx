@@ -32,6 +32,15 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
   const defaultValue = getValueByPropertyName(defaultModel?.getDefaultModel() as Record<string, unknown>, defaultModelPropName);
   const className = valueInfo?.state === 'usedDefault' ? styles.inheritedValue : valueInfo?.state === 'usedModel' ? styles.overriddenValue : '';
 
+  // When the value is inherited or overridden, InputComponent renders an inheritance popover on
+  // the input that already includes this tooltip text alongside the Override / Reset actions.
+  // Drop the label's own `?` icon in that case so the same text is not shown in two popups.
+  // However, if children is a function (custom component), it likely bypasses InputComponent
+  // and won't show the inheritance popover, so we should preserve the tooltip in that case.
+  const showsInheritancePopover = valueInfo?.state === 'usedDefault' || valueInfo?.state === 'usedModel';
+  const isCustomComponent = typeof children === 'function';
+  const labelTooltip = showsInheritancePopover && !isCustomComponent ? undefined : tooltip;
+
   let childFunc: SettingsControlChildrenFunc = () => <></>;
   let readOnly = props.readOnly ?? false;
   if (typeof children === 'function') {
@@ -72,7 +81,7 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
         label: <div className={styles.label}>{label}</div>,
         type: '',
         id: '',
-        description: tooltip,
+        description: labelTooltip,
         validate: { required },
         validationDependencies,
         hidden,

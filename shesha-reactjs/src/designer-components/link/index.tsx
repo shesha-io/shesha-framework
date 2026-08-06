@@ -19,7 +19,7 @@ const LinkComponent: LinkComponentDefinition = {
   name: 'link',
   preserveDimensionsInDesigner: true,
   icon: <LinkOutlined />,
-  getWrapperStyle: () => ({ dimensions: { width: 'auto' } }),
+  getWrapperStyle: () => ({ style: { dimensions: { width: 'auto' } } }),
   calculateModel: (model, allData) => ({
     isDesignerMode: allData.form?.formMode === 'designer',
     href: evaluateString(model.href, allData.data ?? {}),

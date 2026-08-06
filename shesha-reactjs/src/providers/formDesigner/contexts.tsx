@@ -124,7 +124,8 @@ export type FormDesignerActions = {
 
   getCachedComponentEditor: <TModel extends IConfigurableFormComponent = IConfigurableFormComponent>(type: string, evaluator: () => ISettingsFormFactory<TModel> | undefined) => (IComponentSettingsFormFactory<TModel> | undefined);
 
-  subscribe: (type: FormDesignerSubscriptionType, callback: FormDesignerSubscription) => void;
+  /** Returns a function that cancels the subscription */
+  subscribe: (type: FormDesignerSubscriptionType, callback: FormDesignerSubscription) => () => void;
   loadAsync: () => Promise<void>;
   saveAsync: () => Promise<void>;
 

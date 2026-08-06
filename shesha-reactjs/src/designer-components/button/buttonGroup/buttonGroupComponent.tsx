@@ -19,6 +19,7 @@ import { nanoid } from '@/utils/uuid';
 import { migrateButtonGroupDynamicItems } from '@/designer-components/_common-migrations/migrateButtonGroupDynamicItems';
 import { isNonEmptyArray } from '@/utils/array';
 import { isDefined } from '@/utils/nullables';
+import { DEFAULT_DESIGNER_PADDING } from '@/components/formDesigner/utils/stylingUtils';
 
 const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   type: 'buttonGroup',
@@ -27,7 +28,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
   icon: <GroupOutlined />,
   // Button Group preserves its original dimensions in designer mode (like image component)
   preserveDimensionsInDesigner: true,
-  getWrapperStyle: () => ({ stylingBoxJson: { _type: 'styleBox', paddingLeft: 3, paddingRight: 1, paddingTop: 5, paddingBottom: 5 } }),
+  getWrapperStyle: () => ({ designerStyle: DEFAULT_DESIGNER_PADDING }),
   Factory: ({ model, form }) => {
     const { styles } = useStyles();
     return model.hidden === true ? null

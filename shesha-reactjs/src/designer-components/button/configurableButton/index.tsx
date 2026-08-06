@@ -8,15 +8,15 @@ import { useConfigurableActionDispatcher } from '@/providers/configurableActions
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 import { useStyles } from './style';
-import { getGhostStyleOverrides } from '@/utils/style';
 import { DataContextTopLevels } from '@/providers/dataContextManager';
 import { isNavigationActionConfiguration, useShaRouting } from '@/providers/shaRouting';
-import { useTheme } from '@/providers/theme';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
-export interface IConfigurableButtonProps extends Omit<IButtonItem, 'style' | 'itemSubType'> {
-  style?: CSSProperties | undefined;
+export interface IConfigurableButtonProps extends Omit<IButtonItem, 'itemSubType'> {
+  styleJson?: CSSProperties | undefined;
   form: FormInstance | undefined;
+  ref?: React.Ref<HTMLAnchorElement | HTMLButtonElement> | undefined;
+  additionalDomProperties?: Record<string, unknown> | undefined;
 }
 
 export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
@@ -26,14 +26,24 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
   const dynamicContext = useActionDynamicContext(actionConfiguration);
   const evaluationContext = useAvailableConstantsData({ topContextId: DataContextTopLevels.Full }, { ...dynamicContext, dynamicItem });
 
-  const { theme } = useTheme();
-  const { styles } = useStyles();
   const [loading, setLoading] = useState(false);
   const [isModal, setModal] = useState(false);
 
+  const navigationUrl = useAsyncMemo(async () => {
+    if (!isNavigationActionConfiguration(actionConfiguration) || !actionConfiguration.actionArguments)
+      return undefined;
+    const preparedArguments = await prepareArguments({ actionConfiguration, argumentsEvaluationContext: evaluationContext });
+    return getUrlFromNavigationRequest(preparedArguments);
+  }, [actionConfiguration], "");
+
+  const isSameUrl = navigationUrl === window.location.href;
+  const isGhostType = props.buttonType === 'ghost';
+
+  const { styles } = useStyles({ model: props, isSameUrl, isGhostType });
+
   const { buttonLoading, buttonDisabled } = {
     buttonLoading: loading && !isModal,
-    buttonDisabled: props.readOnly || (loading && isModal),
+    buttonDisabled: props.readOnly === true || (loading && isModal),
   };
 
   const onButtonClick = (event: React.MouseEvent<HTMLElement, MouseEvent>): void => {
@@ -64,26 +74,12 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
     }
   };
 
-
-  const navigationUrl = useAsyncMemo(async () => {
-    if (!isNavigationActionConfiguration(actionConfiguration) || !actionConfiguration.actionArguments)
-      return undefined;
-    const preparedArguments = await prepareArguments({ actionConfiguration, argumentsEvaluationContext: evaluationContext });
-    return getUrlFromNavigationRequest(preparedArguments);
-  }, [actionConfiguration], "");
-
-  const isSameUrl = navigationUrl === window.location.href;
-
-  // Handle custom 'ghost' buttonType by converting to Ant Design's ghost prop pattern
-  const isGhostType = props.buttonType === 'ghost';
   const actualButtonType = isGhostType ? 'default' : (props.buttonType as ButtonType);
-
-  // Ghost buttons: only foreground color, no background/border/shadow
-  const ghostOverrides = isGhostType ? getGhostStyleOverrides(props.style) : props.style;
 
   return (
     <Button
-      {...(navigationUrl ? { href: navigationUrl } : {})}
+      {...props.additionalDomProperties}
+      {...(isNullOrWhiteSpace(navigationUrl) ? {} : { href: navigationUrl })}
       title={props.tooltip}
       {...(isDefined(props.block) ? { block: props.block } : {})}
       disabled={buttonDisabled}
@@ -94,16 +90,12 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
       type={actualButtonType}
       ghost={isGhostType}
       danger={props.danger ?? false}
-      icon={props.icon ? <ShaIcon iconName={props.icon as IconType} /> : undefined}
+      icon={isNullOrWhiteSpace(props.icon) ? undefined : <ShaIcon iconName={props.icon as IconType} />}
       {...(props.iconPosition ? { iconPlacement: props.iconPosition } : {})}
       className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable', styles.configurableButton)}
       size={props.size}
-      style={{
-        ...props.style,
-        ...(isSameUrl && !isGhostType && { background: theme.application?.primaryColor, color: theme.text?.default }),
-        ...ghostOverrides,
-        ...(buttonDisabled && { pointerEvents: "none" }),
-      }}
+      style={{ ...props.styleJson, ...(buttonDisabled && { pointerEvents: "none" }) }}
+      ref={props.ref}
     >
       {props.label}
     </Button>

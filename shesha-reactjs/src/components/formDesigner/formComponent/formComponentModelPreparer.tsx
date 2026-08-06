@@ -45,6 +45,10 @@ export const FormComponentModelPreparer: FC<FormComponentPrepareModelProps> = ({
   const effectiveDevice = activeDevice || 'desktop';
 
   const effectiveStyle = useMemo((): IStyleValue => {
+    // for settings form components should use their own styles
+    if (shaForm.form?.settings.isSettingsForm === true)
+      return sourceComponentModel;
+
     // Default styles + Theme component styles
     const defStyle: IStyleValue = toolboxComponent?.getDefaultStyles?.() ?? {};
     const themeDefStyle: IStyleValue = isDefined(theme.components)
@@ -66,7 +70,7 @@ export const FormComponentModelPreparer: FC<FormComponentPrepareModelProps> = ({
     const effectiveStylingBoxJson = effectiveModel?.stylingBoxJson;
     const effectiveDesktopStyle = deepMergeValues(desktopThemeStyle, { ...effectiveModel, stylingBoxJson: (Boolean(effectiveStylingBoxJson)) ? effectiveStylingBoxJson : effectiveStylingBox }, deepMergeSkipUndefinedFunc);
     return effectiveDesktopStyle as IStyleValue;
-  }, [sourceComponentModel, effectiveDevice, theme.components, toolboxComponent]);
+  }, [shaForm.form?.settings.isSettingsForm, sourceComponentModel, toolboxComponent, theme.components, effectiveDevice]);
 
   const sfBackground = useBackgroundStoredFile(effectiveStyle.background, shaApplication);
   const sfStyle = useMemo((): IStyleValue => ({ ...effectiveStyle, background: sfBackground }), [effectiveStyle, sfBackground]);
@@ -121,8 +125,8 @@ export const FormComponentModelPreparer: FC<FormComponentPrepareModelProps> = ({
 
   useEffect(() => {
     let cancelled = false;
-    if (modelMetadata?.properties && Boolean(sourceComponentModel.propertyName)) {
-      const pName = toCamelCase(sourceComponentModel.propertyName ?? '');
+    if (modelMetadata?.properties && Boolean(actualApiModel.propertyName)) {
+      const pName = toCamelCase(actualApiModel.propertyName ?? '');
       if (Array.isArray(modelMetadata.properties)) {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setPropMetadata(modelMetadata.properties.find((p) => toCamelCase(p.path) === pName));
@@ -137,13 +141,13 @@ export const FormComponentModelPreparer: FC<FormComponentPrepareModelProps> = ({
     return () => {
       cancelled = true;
     };
-  }, [modelMetadata, sourceComponentModel.propertyName]);
+  }, [modelMetadata, actualApiModel.propertyName]);
 
   const componentModel = useDeepCompareMemo(() => {
     return toolboxComponent && propMetadata
-      ? updateComponentModelFromMetadata(toolboxComponent, sourceComponentModel, propMetadata)
-      : sourceComponentModel;
-  }, [sourceComponentModel, toolboxComponent, propMetadata]);
+      ? updateComponentModelFromMetadata(toolboxComponent, actualApiModel, propMetadata) as UnwrapCodeEvaluators<IConfigurableFormComponent>
+      : actualApiModel;
+  }, [actualApiModel, toolboxComponent, propMetadata]);
 
   // Check for validation errors (in both designer and runtime modes) when the toolbox component does not exist
   if (!toolboxComponent) {
@@ -174,9 +178,9 @@ export const FormComponentModelPreparer: FC<FormComponentPrepareModelProps> = ({
   }
 
   return toolboxComponent.allowInherit === true || formSettings?.isSettingsForm === true
-    ? children(actualApiModel, toolboxComponent, apiContext)
+    ? children(componentModel, toolboxComponent, apiContext)
     : ( // ToDo: AS - remove after migration all components to use IStyleValue
-      <FormComponentAllStylesPreparer componentModel={actualApiModel}>
+      <FormComponentAllStylesPreparer componentModel={componentModel}>
         {(styledModel) => children(styledModel, toolboxComponent, apiContext)}
       </FormComponentAllStylesPreparer>
     );

@@ -60,4 +60,6 @@ export type ICheckboxGroupProps<TValue = string> = CheckboxGroupCommonProps & {
   onKeyUp?: KeyboardEventHandler<HTMLDivElement> | undefined;
   /** Imperative handle backing the component API's `focus()` — the group has no single input element. */
   focusRef?: RefObject<CheckboxGroupFocusHandle | null> | undefined;
+  /** The evaluated `checkbox.style` expression, emitted onto each checkbox by useStyles. */
+  checkboxStyleJson?: CSSProperties | undefined;
 };
