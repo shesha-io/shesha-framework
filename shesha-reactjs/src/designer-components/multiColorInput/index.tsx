@@ -50,7 +50,7 @@ export const MultiColorInput = ({ value, onChange, readOnly }: MultiColorInputPr
             <Tag
               key={index}
               style={{ backgroundColor: '#fff', padding: 0, margin: 0, display: 'flex', flexDirection: 'row' }}
-              closable={canRemoveColor}
+              closable={canRemoveColor && readOnly !== true}
               onClose={() => removeColorAt(index)}
             >
               <ColorPicker
