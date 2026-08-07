@@ -58,7 +58,8 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = <TValu
             : typeof (value) === "string"
               ? value
               : undefined;
-          const className = getClassNameOrUndefined(value) ?? getClassNameOrUndefined(innerData);
+
+          const entityClassName = getClassNameOrUndefined(value) ?? getClassNameOrUndefined(innerData);
           const displayName = findMap([value, innerData], (p) => typeof (p) === "object"
             ? getFirstNonEmptyStringPropertyOrUndefined(value, ["label", "_displayName"])
             : undefined,
@@ -78,7 +79,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = <TValu
               : (
                 <GenericQuickView
                   entityId={entityId}
-                  entityType={className}
+                  entityType={entityClassName}
                   formIdentifier={quickviewFormPath}
                   displayName={displayName}
                   displayProperty={quickviewDisplayPropertyName}
