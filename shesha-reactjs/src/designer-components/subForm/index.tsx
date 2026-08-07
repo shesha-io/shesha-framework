@@ -16,7 +16,8 @@ import { SubFormWrapper } from './subFormWrapper';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { getStringPropertyOrUndefined } from '@/utils/object';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
 
 export interface ISubFormComponentProps
   extends Omit<ISubFormProviderProps, 'labelCol' | 'wrapperCol' | 'readOnly'>,
@@ -85,6 +86,16 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
       wrapperCol: 16,
     };
     return customProps;
+  },
+  linkToModelMetadata: (model, propMetadata): ISubFormComponentProps => {
+    // the `dynamic` selection mode resolves the form from the entity type, and the `Entity Type` setting is not
+    // shown while `dataSource` = `form`. Take it from the bound property so the mode has something to resolve from
+    return {
+      ...model,
+      entityType: isEntityReferencePropertyMetadata(propMetadata) && !isNullOrWhiteSpace(propMetadata.entityType)
+        ? { name: propMetadata.entityType, module: propMetadata.entityModule ?? null }
+        : undefined,
+    };
   },
   getFieldsToFetch: (propertyName) => {
     return getSubFormOwnFields(propertyName);
