@@ -8,15 +8,9 @@ using Castle.Core.Logging;
 namespace Shesha.Swagger
 {
     /// <summary>
-    /// Middleware that blocks access to Swagger when the Swagger UI setting is disabled,
-    /// returning a 403 Forbidden response.
+    /// Blocks everything under /swagger with a 403 when the Swagger UI setting is disabled,
+    /// including the generated JSON specification.
     /// </summary>
-    /// <remarks>
-    /// This covers everything under /swagger, including the generated JSON specification.
-    /// Serving the spec while the UI is disabled would still expose the full API surface,
-    /// which is what the setting exists to prevent. The spec is a build-time artefact for
-    /// client generation, so nothing consumes it at runtime.
-    /// </remarks>
     public class SwaggerUiAccessMiddleware: IMiddleware, ITransientDependency
     {
         public ILogger Logger { get; set; } = NullLogger.Instance;
