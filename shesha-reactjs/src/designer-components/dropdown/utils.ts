@@ -15,7 +15,7 @@ const BACKGROUND_DEFAULTS = (color: string): IBackgroundValue => ({
   repeat: 'no-repeat',
   size: 'cover',
   position: 'center',
-  gradient: { direction: 'to right', colors: {} },
+  gradient: { direction: 'to right', colors: [] },
   url: '',
 });
 

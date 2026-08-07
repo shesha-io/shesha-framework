@@ -1,4 +1,4 @@
-import { BorderStyle, IBackgroundValue, IBorderValue, IDimensionsValue, IFontValue, IGradientValue, IShadowValue } from "@/designer-components/_settings/utils";
+import { BorderStyle, getGradientColors, IBackgroundValue, IBorderValue, IDimensionsValue, IFontValue, IGradientValue, IShadowValue } from "@/designer-components/_settings/utils";
 import { IConfigurableFormComponent, IStyleValue, StyleBoxValue } from "../../../providers/form/models";
 import { addPx, hasNumber } from "@/utils/style";
 import { StringBuilder } from "@/utils";
@@ -105,8 +105,7 @@ const gradientCss = (g: IGradientValue): string => {
   const direction = g.direction;
   const isRadial = direction === 'radial';
   const isConic = direction === 'conic';
-  const colors = g.colors || {};
-  const colorsString = Object.values(colors).filter((color) => Boolean(color) && color.trim() !== '').join(', ');
+  const colorsString = getGradientColors(g.colors).join(', ');
   return colorsString
     ? isRadial || isConic
       ? `${direction}-gradient(${colorsString})`

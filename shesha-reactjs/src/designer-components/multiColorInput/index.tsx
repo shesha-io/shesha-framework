@@ -1,28 +1,36 @@
 import React, { useEffect, useMemo } from 'react';
 import { Button, ColorPicker, Row, Tag } from 'antd';
-import { nanoid } from '@/utils/uuid';
 import { PlusOutlined } from '@ant-design/icons';
 import { useTheme } from '@/providers';
 import { ReactElement } from 'react-markdown/lib/react-markdown';
+import { getGradientColors } from '@/designer-components/_settings/utils';
 
 type MultiColorInputProps = {
-  value: { [key: string]: string | undefined } | undefined;
-  onChange: ((newColor: { [key: string]: string | undefined }) => void) | undefined;
+  /**
+   * Colour stops in render order. Configurations saved before stops became an array hold a
+   * record keyed by generated ids; those are normalised on read and rewritten as an array by
+   * the first edit.
+   */
+  value: string[] | Record<string, string | undefined> | undefined;
+  onChange: ((newColors: string[]) => void) | undefined;
   readOnly?: boolean | undefined;
   propertyName: string;
 };
 
-export const MultiColorInput = ({ value = {}, onChange, readOnly }: MultiColorInputProps): ReactElement => {
+const MIN_STOPS = 2;
+
+export const MultiColorInput = ({ value, onChange, readOnly }: MultiColorInputProps): ReactElement => {
   const { theme } = useTheme();
 
-  const stops = useMemo(
-    () => Object.entries(value).filter((entry): entry is [string, string] => entry[1] !== undefined),
-    [value],
-  );
-  const canRemoveColor = stops.length > 2;
+  const stops = useMemo(() => getGradientColors(value), [value]);
+  const canRemoveColor = stops.length > MIN_STOPS;
 
-  const setColor = (id: string, color: string | undefined): void => {
-    onChange?.({ ...value, [id]: color });
+  const setColorAt = (index: number, color: string): void => {
+    onChange?.(stops.map((stop, i) => (i === index ? color : stop)));
+  };
+
+  const removeColorAt = (index: number): void => {
+    onChange?.(stops.filter((_, i) => i !== index));
   };
 
   const primaryColor = typeof theme.application?.primaryColor === 'string'
@@ -31,23 +39,23 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly }: MultiColorIn
 
   const isEmpty = stops.length === 0;
   useEffect(() => {
-    if (isEmpty && readOnly !== true) onChange?.({ 1: primaryColor, 2: '#fff' });
+    if (isEmpty && readOnly !== true) onChange?.([primaryColor, '#fff']);
   }, [isEmpty, onChange, primaryColor, readOnly]);
 
   return (
     <>
       <Row style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '8px' }}>
-        {stops.map(([id, color]) => {
+        {stops.map((color, index) => {
           return (
             <Tag
-              key={id}
+              key={index}
               style={{ backgroundColor: '#fff', padding: 0, margin: 0, display: 'flex', flexDirection: 'row' }}
               closable={canRemoveColor}
-              onClose={() => setColor(id, undefined)}
+              onClose={() => removeColorAt(index)}
             >
               <ColorPicker
                 value={color}
-                onChange={(newColor) => setColor(id, newColor.toHexString())}
+                onChange={(newColor) => setColorAt(index, newColor.toHexString())}
                 disabled={readOnly ?? false}
                 size="small"
               />
@@ -58,7 +66,7 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly }: MultiColorIn
           type="primary"
           ghost
           size="small"
-          onClick={() => setColor(nanoid(), '#000000')}
+          onClick={() => onChange?.([...stops, '#000000'])}
           disabled={readOnly ?? false}
           icon={<PlusOutlined />}
         >
