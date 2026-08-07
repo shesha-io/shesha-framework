@@ -130,6 +130,22 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
                       .${prefixCls}-tree-draggable-icon {
                         display: none;
                       }
+                      /* Empty-folder placeholder (filter.ts): shown as a muted hint, not hidden - display:none broke rc-virtual-list's scroll bookkeeping. */
+                      &.sha-cs-tree-empty-placeholder {
+                        cursor: default;
+                        .${prefixCls}-tree-node-content-wrapper {
+                          color: ${token.colorTextDisabled};
+                          font-style: italic;
+                          cursor: default;
+                          &:hover {
+                            background: transparent;
+                          }
+                        }
+                        .${prefixCls}-tree-switcher,
+                        .${prefixCls}-tree-iconEle {
+                          visibility: hidden;
+                        }
+                      }
                       /* Keep long labels on a single line, clipped at the panel
                          edge instead of wrapping (File Explorer behaviour).
                          The content wrapper becomes a flex row so the type icon

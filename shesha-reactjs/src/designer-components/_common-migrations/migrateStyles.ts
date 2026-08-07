@@ -2,6 +2,8 @@ import { nanoid } from "@/utils/uuid";
 import { addPx } from '@/utils/style';
 import { ICommonContainerProps, IConfigurableFormComponent, IInputStyles, IStyleValue } from "@/interfaces";
 import { BorderType, IBorderType } from "../_settings/utils/border/interfaces";
+import { IGradientValue } from "../_settings/utils/background/interfaces";
+import { getGradientColors } from "../_settings/utils/background/utils";
 import { getNumberOrUndefined } from "@/utils/string";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { ICommonContainerPropsV0 } from "../container/interfaces";
@@ -15,6 +17,17 @@ type BorderCssProps = {
 };
 
 const stringOrUndefined = (value: unknown): string | undefined => typeof (value) === 'string' ? value : undefined;
+
+/**
+ * Converts a stored gradient to the current shape, where colour stops are an ordered array.
+ *
+ * Configurations saved before that change hold `colors` as a record keyed by generated ids;
+ * `getGradientColors` reads either shape and drops blank stops.
+ */
+const migrateGradient = (gradient: IGradientValue | undefined): IGradientValue => ({
+  direction: gradient?.direction ?? 'to right',
+  colors: getGradientColors(gradient?.colors),
+});
 
 const inputTypes = ['textField', 'numberField', 'passwordCombo', 'dropdown', 'autocomplete', 'timePicker', 'dateField', 'button', 'entityPicker'];
 const isInputField = (prev: ExtendedType): boolean => !isNullOrWhiteSpace(prev.type) && inputTypes.includes(prev.type);
@@ -72,7 +85,7 @@ export const migrateStyles = <T extends ExtendedType>(prev: T, defaults?: Omit<I
       repeat: prevStyles.background?.repeat ?? prev.background?.repeat ?? backgroundRepeat ?? defaults?.background?.repeat ?? 'no-repeat',
       size: prevStyles.background?.size ?? prev.background?.size ?? backgroundCover ?? defaults?.background?.size ?? 'auto',
       position: prevStyles.background?.position ?? prev.background?.position ?? 'center',
-      gradient: prevStyles.background?.gradient ?? prev.background?.gradient ?? { direction: 'to right', colors: {} },
+      gradient: migrateGradient(prevStyles.background?.gradient ?? prev.background?.gradient),
       url: prevStyles.background?.url ?? prev.background?.url ?? backgroundUrl ?? defaults?.background?.url ?? '',
       storedFile: prevStyles.background?.storedFile ?? prev.background?.storedFile ?? (isDefined(backgroundStoredFileId) ? { id: backgroundStoredFileId } : undefined),
       uploadFile: prevStyles.background?.uploadFile ?? prev.background?.uploadFile ?? (isDefined(backgroundBase64) ? { uid: nanoid(), name: '', url: backgroundBase64 } : undefined),

@@ -7,7 +7,7 @@ export const initialValues = (): IStyleValue => {
       repeat: 'no-repeat',
       size: 'cover',
       position: 'center',
-      gradient: { direction: 'to right', colors: {} },
+      gradient: { direction: 'to right', colors: [] },
     },
     font: { weight: '400', size: 14, align: 'center', type: 'Segoe UI' },
     dimensions: { width: 'auto', height: '32px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },

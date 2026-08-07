@@ -194,7 +194,7 @@ export const defaultStyles = (): IStyleValue => {
       repeat: 'no-repeat',
       size: 'cover',
       position: 'center',
-      gradient: { direction: 'to right', colors: {} },
+      gradient: { direction: 'to right', colors: [] },
       url: '',
     },
     font: { weight: '400', size: 14, color: '#000', type: 'Segoe UI', align: 'left' },

@@ -1,54 +1,63 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Row, Tag } from 'antd';
-import { nanoid } from '@/utils/uuid';
+import React, { useEffect, useMemo } from 'react';
+import { Button, ColorPicker, Row, Tag } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useTheme } from '@/providers';
-import { removeUndefinedProps } from '@/utils/object';
-import { SettingInput } from '../settingsInput/settingsInput';
-import { gradientDirectionOptions } from '../_settings/utils/background/utils';
 import { ReactElement } from 'react-markdown/lib/react-markdown';
+import { getGradientColors } from '@/designer-components/_settings/utils';
 
 type MultiColorInputProps = {
-  value: { [key: string]: string | undefined } | undefined;
-  onChange: ((newColor: { [key: string]: string | undefined }) => void) | undefined;
+  /**
+   * Colour stops in render order. Configurations saved before stops became an array hold a
+   * record keyed by generated ids; those are normalised on read and rewritten as an array by
+   * the first edit.
+   */
+  value: string[] | Record<string, string | undefined> | undefined;
+  onChange: ((newColors: string[]) => void) | undefined;
   readOnly?: boolean | undefined;
   propertyName: string;
 };
 
-export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }: MultiColorInputProps): ReactElement => {
-  const { theme } = useTheme();
-  const [colors, setColors] = useState(value);
-  const directionInputId = React.useMemo(() => nanoid(), []);
+const MIN_STOPS = 2;
 
+export const MultiColorInput = ({ value, onChange, readOnly }: MultiColorInputProps): ReactElement => {
+  const { theme } = useTheme();
+
+  const stops = useMemo(() => getGradientColors(value), [value]);
+  const canRemoveColor = stops.length > MIN_STOPS;
+
+  const setColorAt = (index: number, color: string): void => {
+    onChange?.(stops.map((stop, i) => (i === index ? color : stop)));
+  };
+
+  const removeColorAt = (index: number): void => {
+    onChange?.(stops.filter((_, i) => i !== index));
+  };
+
+  const primaryColor = typeof theme.application?.primaryColor === 'string'
+    ? theme.application.primaryColor
+    : '#1890ff';
+
+  const isEmpty = stops.length === 0;
   useEffect(() => {
-    if (Object.entries(value).length === 0) {
-      const defaultColors = { 1: theme.application?.primaryColor, 2: '#fff' };
-      onChange?.(defaultColors);
-      setColors(defaultColors);
-    }
-  }, [value, onChange, theme.application?.primaryColor]);
+    if (isEmpty && readOnly !== true) onChange?.([primaryColor, '#fff']);
+  }, [isEmpty, onChange, primaryColor, readOnly]);
 
   return (
     <>
-      <Row style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-        {Object.entries(removeUndefinedProps(colors)).map(([id]) => {
+      <Row style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '8px' }}>
+        {stops.map((color, index) => {
           return (
             <Tag
-              key={id}
+              key={index}
               style={{ backgroundColor: '#fff', padding: 0, margin: 0, display: 'flex', flexDirection: 'row' }}
-              closable={id !== '1' && id !== '2'}
-              onClose={() => {
-                onChange?.({ ...value, [id]: undefined });
-                setColors({ ...value, [id]: undefined });
-              }}
+              closable={canRemoveColor && readOnly !== true}
+              onClose={() => removeColorAt(index)}
             >
-              <SettingInput
-                propertyName={`${propertyName}.${id}`}
-                label="color"
-                hideLabel={true}
-                readOnly={readOnly}
-                type="colorPicker"
-                id={id}
+              <ColorPicker
+                value={color}
+                onChange={(newColor) => setColorAt(index, newColor.toHexString())}
+                disabled={readOnly ?? false}
+                size="small"
               />
             </Tag>
           );
@@ -57,27 +66,12 @@ export const MultiColorInput = ({ value = {}, onChange, readOnly, propertyName }
           type="primary"
           ghost
           size="small"
-          onClick={() => {
-            const id = nanoid();
-            onChange?.({ ...value, [id]: '#000000' });
-            setColors({ ...value, [id]: '#000000' });
-          }}
+          onClick={() => onChange?.([...stops, '#000000'])}
           disabled={readOnly ?? false}
           icon={<PlusOutlined />}
-          style={{ margin: '5px 0px' }}
         >
         </Button>
       </Row>
-      <SettingInput
-        id={directionInputId}
-        propertyName={propertyName.replace('gradient.colors', 'gradient.direction')}
-        label="Direction"
-        hideLabel={true}
-        width="120px"
-        type="dropdown"
-        dropdownOptions={gradientDirectionOptions}
-      />
     </>
   );
 };
-

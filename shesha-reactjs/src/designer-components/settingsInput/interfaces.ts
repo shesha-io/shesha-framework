@@ -334,7 +334,7 @@ export interface IIconPickerSettingsInputProps extends ISettingsInputBase<string
 }
 
 // Multi Color Picker
-export interface IMultiColorPickerSettingsInputProps extends ISettingsInputBase<{ [key: string]: string | undefined }> {
+export interface IMultiColorPickerSettingsInputProps extends ISettingsInputBase<string[] | Record<string, string | undefined>> {
   type: 'multiColorPicker';
 }
 
