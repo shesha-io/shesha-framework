@@ -1,14 +1,5 @@
 export { default as BasicDisplayFormItem, type IBasicDisplayFormItemProps } from './basicDisplayFormItem';
 export {
-  ExpressionEditor,
-  buildExpressionContextFromPaths,
-  type ExpressionContext,
-  type ExpressionContextValue,
-  type ExpressionEditorProps,
-  type ExpressionFunctionDefinition,
-  type BuildExpressionContextFromPathsOptions,
-} from './expressionEditor';
-export {
   buildExpressionContextFromMetadata,
   buildExpressionContextFromProperties,
   mergeExpressionContexts,
@@ -118,3 +109,14 @@ export { ConfigurableComponentRenderer } from "./configurableComponentRenderer";
 export { PermissionAutocomplete, type IPermissionAutocompleteProps } from './permissionAutocomplete';
 export { ConfigItemAutocomplete } from './configurableItemAutocomplete';
 export { RefListSimpleDropdown as RefListDropdown } from './queryBuilder/widgets/refListDropDown/simpleDropdown';
+export {
+  ExpressionEditor,
+  buildExpressionContextFromPaths,
+  type ExpressionContext,
+  type ExpressionContextValue,
+  type ExpressionEditorProps,
+  type ExpressionFunctionArg,
+  type ExpressionFunctionCategory,
+  type ExpressionFunctionDefinition,
+  type BuildExpressionContextFromPathsOptions,
+} from './expressionEditor';

@@ -11,6 +11,15 @@ import { isNotNullOrWhiteSpace } from '@/utils/nullables';
 
 type ExpressionEditorWidgetType = TextWidget & TextFieldSettings;
 
+// Hoisted: as an inline literal this array is a new reference every render, which invalidates the
+// `useAvailableConstantsMetadata` memo, then `useAsyncMemo`'s deps, whose resolved value is also a
+// fresh object — so it sets state on every render and the editor never stops re-rendering.
+const EXPRESSION_STANDARD_CONSTANTS = [
+  SheshaConstants.globalState,
+  SheshaConstants.pageContext,
+  SheshaConstants.contexts,
+];
+
 interface ExpressionEditorWidgetControlProps {
   value?: string | undefined;
   setValue: (value: string) => void;
@@ -24,11 +33,7 @@ const ExpressionEditorWidgetControl: React.FC<ExpressionEditorWidgetControlProps
 }) => {
   const { fields } = useQueryBuilderState();
   const availableConstants = useAvailableConstantsMetadata({
-    standardConstants: [
-      SheshaConstants.globalState,
-      SheshaConstants.pageContext,
-      SheshaConstants.contexts,
-    ],
+    standardConstants: EXPRESSION_STANDARD_CONSTANTS,
   });
   const fieldPaths = React.useMemo(
     () => (fields)
