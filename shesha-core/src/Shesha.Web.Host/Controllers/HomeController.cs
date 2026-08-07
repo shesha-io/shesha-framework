@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Shesha.Web.Host.Controllers
 {
-    [AllowAnonymous]
     public class HomeController : SheshaControllerBase
     {
         private readonly INotificationPublisher _notificationPublisher;
@@ -22,6 +21,7 @@ namespace Shesha.Web.Host.Controllers
             _securitySettings = securitySettings;
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             return await RedirectToSwaggerOrDefaultAsync(_securitySettings);

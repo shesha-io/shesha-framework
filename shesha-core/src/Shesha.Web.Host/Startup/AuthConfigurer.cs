@@ -14,7 +14,12 @@ namespace Shesha.Web.Host.Startup
 {
     public static class AuthConfigurer
     {
-        private static IConfiguration _configuration;
+        /// <summary>
+        /// Set by <see cref="Configure"/> before any authentication handler is registered.
+        /// Nullable because <see cref="QueryStringTokenResolver"/> is a static callback that
+        /// cannot guarantee the field has been assigned.
+        /// </summary>
+        private static IConfiguration? _configuration;
 
         public static void Configure(IServiceCollection services, IConfiguration configuration)
         {
