@@ -1,102 +1,43 @@
 import React, { FC } from 'react';
 import { IButtonGroupItem, IDynamicItem, isDynamicItem } from '@/providers/buttonGroupConfigurator/models';
-import { Button, Flex, Tooltip, Typography } from 'antd';
+import { Flex, Tooltip, Typography } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
-import { ShaIcon, IconType } from '@/components/shaIcon';
 import { IConfigurableActionConfiguration, useDynamicActionsDispatcher } from '@/providers';
 import { useStyles } from '@/components/listEditor/styles/styles';
-import classNames from 'classnames';
-import { addPx } from '@/utils/style';
-import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
-import { initialValues } from './utils';
 import { useActualContextData } from '@/hooks';
-import { useFormComponentStyles } from '@/hooks/formComponentHooks';
-import { getGhostStyleOverrides } from '@/utils/style';
-import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
+import { isNotNullOrWhiteSpace } from '@/utils/nullables';
+import { RenderButton } from '@/designer-components/button/buttonGroup/renderButton';
+import { IToolboxComponent } from '@/interfaces';
 
 const { Text } = Typography;
 
 const DynamicGroupDetails: FC<IDynamicItem> = (props) => {
   const { getProviders } = useDynamicActionsDispatcher();
-
   const provider = isNotNullOrWhiteSpace(props.dynamicItemsConfiguration?.providerUid)
     ? getProviders()[props.dynamicItemsConfiguration.providerUid]
     : null;
 
-  return (
-    <Text type="secondary">{`Dynamic Item(s): ${provider ? provider.contextValue.name : "(not selected)"}`}</Text>
-  );
+  return <Text type="secondary">{`Dynamic Item(s): ${provider ? provider.contextValue.name : "(not selected)"}`}</Text>;
 };
 
 export interface IButtonGroupItemProps {
   item: IButtonGroupItem;
   actionConfiguration?: IConfigurableActionConfiguration;
+  buttonComponent: IToolboxComponent;
 }
 
-export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfiguration }) => {
+export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfiguration, buttonComponent }) => {
   const { styles } = useStyles();
   const actualItem = useActualContextData({ ...item, actionConfiguration });
-
-
-  const { icon, label, tooltip, iconPosition, size, buttonType, borderColor, borderRadius,
-    height, width, backgroundColor, fontSize, fontWeight, color, borderStyle, borderWidth,
-    readOnly, block, danger } = actualItem;
-
-  const model = {
-    ...actualItem,
-    type: 'button',
-    width: addPx(width),
-    height: addPx(height),
-    backgroundColor: backgroundColor,
-    fontSize: addPx(fontSize),
-    color: color,
-    fontWeight: fontWeight,
-    borderWidth: addPx(borderWidth),
-    borderColor: borderColor,
-    borderStyle: borderStyle,
-    borderRadius: addPx(borderRadius),
-  };
-
-  const prevStyles = migratePrevStyles(model, initialValues());
-
-  const buttonStyles = useFormComponentStyles(prevStyles);
-
-  const newStyles = {
-    ...buttonStyles.dimensionsStyles,
-    ...(isDefined(item.buttonType) && ['primary', 'default', 'ghost'].includes(item.buttonType) && buttonStyles.borderStyles),
-    ...buttonStyles.fontStyles,
-    ...(isDefined(item.buttonType) && ['dashed', 'default', 'ghost'].includes(item.buttonType) && buttonStyles.backgroundStyles),
-    ...(isDefined(item.buttonType) && ['primary', 'default', 'dashed', 'ghost'].includes(item.buttonType) && buttonStyles.shadowStyles),
-    ...(buttonStyles.jsStyle),
-    ...buttonStyles.stylingBoxAsCSS,
-    justifyContent: buttonStyles.fontStyles.textAlign,
-  };
-
-  // Handle custom 'ghost' buttonType by converting to Ant Design's ghost prop pattern
-  const isGhost = buttonType === 'ghost';
 
   return (
     <>
       {item.itemSubType === 'button' && (
         <Flex>
-          <Button
-            title={tooltip}
-            type={isGhost || !buttonType ? 'default' : buttonType}
-            ghost={isGhost}
-            disabled={readOnly ?? false}
-            danger={danger ?? false}
-            icon={isNotNullOrWhiteSpace(icon) ? <ShaIcon iconName={icon as IconType} /> : undefined}
-            {...(iconPosition ? { iconPlacement: iconPosition } : {})}
-            className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable')}
-            size={size}
-            block={block ?? false}
-            style={{ ...newStyles, ...(isGhost ? getGhostStyleOverrides(buttonStyles.fontStyles) : {}) }}
-          >
-            {label}
-          </Button>
-          {isNotNullOrWhiteSpace(tooltip) && (
-            <Tooltip title={tooltip}>
-              <QuestionCircleOutlined className={styles.helpIcon} style={{ marginLeft: '2px' }} />
+          <RenderButton props={actualItem} uuid={item.id} buttonComponent={buttonComponent} />
+          {isNotNullOrWhiteSpace(actualItem.tooltip) && (
+            <Tooltip title={actualItem.tooltip}>
+              <QuestionCircleOutlined className={styles.helpIcon} />
             </Tooltip>
           )}
         </Flex>

@@ -1,4 +1,5 @@
-import { IStyleValue } from "../..";
+import { nanoid } from "@/utils/uuid";
+import { ButtonGroupItemProps, IButtonGroupItem, IStyleValue } from "../..";
 
 export const initialValues = (): IStyleValue => {
   return {
@@ -20,4 +21,23 @@ export const initialValues = (): IStyleValue => {
     },
     shadow: { spreadRadius: 0, blurRadius: 0, color: '#000', offsetX: 0, offsetY: 0 },
   };
+};
+
+export const makeNewItem = (items: ButtonGroupItemProps[]): ButtonGroupItemProps => {
+  const itemsCount = items.length;
+  const itemNo = itemsCount + 1;
+
+  const newItem: IButtonGroupItem = {
+    id: nanoid(),
+    itemType: 'item',
+    sortOrder: itemsCount,
+    name: `button${itemNo}`,
+    label: `Button ${itemNo}`,
+    itemSubType: 'button',
+    buttonType: itemNo === 1 ? 'primary' : 'default',
+    editMode: 'inherited',
+    ...initialValues(),
+  };
+
+  return newItem;
 };

@@ -21,7 +21,7 @@ export const ListEditorRenderer: FC<IListEditorRendererProps> = ({
 
   return (
     <SizableColumns
-      sizes={[75, 25]}
+      sizes={[60, 40]}
       minSize={150}
       expandToMin={false}
       gutterSize={8}

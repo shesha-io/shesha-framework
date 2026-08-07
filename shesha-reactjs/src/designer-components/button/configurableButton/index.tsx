@@ -1,5 +1,5 @@
 import React, { FC, useState, CSSProperties } from 'react';
-import { Button, FormInstance } from 'antd';
+import { Button } from 'antd';
 import { ButtonType } from 'antd/es/button/buttonHelpers';
 import { ShaIcon, IconType } from '@/components/shaIcon';
 import classNames from 'classnames';
@@ -14,7 +14,6 @@ import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 export interface IConfigurableButtonProps extends Omit<IButtonItem, 'itemSubType'> {
   styleJson?: CSSProperties | undefined;
-  form: FormInstance | undefined;
   ref?: React.Ref<HTMLAnchorElement | HTMLButtonElement> | undefined;
   additionalDomProperties?: Record<string, unknown> | undefined;
 }
@@ -78,7 +77,6 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
 
   return (
     <Button
-      {...props.additionalDomProperties}
       {...(isNullOrWhiteSpace(navigationUrl) ? {} : { href: navigationUrl })}
       title={props.tooltip}
       {...(isDefined(props.block) ? { block: props.block } : {})}
@@ -96,6 +94,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
       size={props.size}
       style={{ ...props.styleJson, ...(buttonDisabled && { pointerEvents: "none" }) }}
       ref={props.ref}
+      {...props.additionalDomProperties}
     >
       {props.label}
     </Button>

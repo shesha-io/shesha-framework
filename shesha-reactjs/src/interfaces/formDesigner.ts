@@ -16,6 +16,7 @@ import { IAjaxResponseBase, IApplicationContext, IErrorInfo, IObjectMetadata, IS
 import { ISheshaApplicationInstance } from '@/providers/sheshaApplication/application';
 import { AxiosResponse } from 'axios';
 import { FormBuilderFactory } from '@/form-factory/interfaces';
+import { UnwrapFunc } from '@/providers/form/utils/js-settings';
 
 export interface ISettingsFormInstance {
   submit: () => void;
@@ -162,6 +163,8 @@ export type IToolboxComponentBase = {
   editorAdapter?: IEditorAdapter;
 
   /**
+   * @deprecated Will be removed after migrate all components to use new styles
+   *
    * Controls dimension preservation in designer mode.
    * - `true`: Preserve all original dimensions (width, height, min/max)
    * - `false` or `undefined`: Fill 100% of wrapper (default behavior)
@@ -205,6 +208,9 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
    * @returns - calculated model
    */
   calculateModel?: ((model: TModel, allData: IApplicationContext, useCalculatedModel?: TCalculatedModel) => TCalculatedModel) | undefined;
+
+  actualModelFilteredPropertyProcessor?: (model: TModel) => UnwrapFunc;
+
   /**
    * Fills the component properties with some default values. Fired when the user drops a component to the form
    */
@@ -265,7 +271,7 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
   previewConfiguration?: TModel;
 
   /** Drag handle dimensions */
-  getWrapperStyle?: ((model: TModel | undefined) => IWrapperStyle | undefined) | undefined;
+  getWrapperStyle?: ((model: TModel) => IWrapperStyle | undefined) | undefined;
 } & ToolboxComponentAsTemplate;
 
 export type ComponentDefinition<TType extends string = string, TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = object> =
