@@ -57,6 +57,8 @@ export const useStyles = createStyles(({ css, cx }, model: ITextAreaComponentPro
         ${paddingStyles(model.stylingBoxJson)}
         ${dimensionsStyles(model.dimensions)}
         ${marginStyles(model.stylingBoxJson)}
+        /* The inner textarea and the clear icon both inherit their font from here. */
+        ${fontStyles(model.font)}
         ${statefulAppearance}
 
         /* The inner textarea still carries the textArea class, so its own copy of the
@@ -80,6 +82,16 @@ export const useStyles = createStyles(({ css, cx }, model: ITextAreaComponentPro
           height: 100%;
           min-height: 0;
           max-height: none;
+          /* The font is restated because it belongs on the element rendering the text: with
+             Allow Clear the textarea no longer carries the textArea class, so this is the
+             only place the configured font reaches it. */
+          ${fontStyles(model.font)}
+        }
+
+        /* The clear icon takes its colour from the wrapper text colour by default, which the
+           configured font colour should drive. */
+        .ant-input-clear-icon {
+          color: inherit;
         }
       }
   `);

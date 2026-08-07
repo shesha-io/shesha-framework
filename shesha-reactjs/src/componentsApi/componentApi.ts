@@ -132,8 +132,8 @@ export interface IBackgroundValue {
 
   /** Gradient configuration – required when `type = "gradient"`.
    * - `direction`: gradient direction (e.g., `"to right"`, `"45deg"`)
-   * - `colors`: mapping of color stops (e.g., `{ "0%": "#fff", "100%": "#000" }`) */
-  readonly gradient?: { direction: string; colors: Record<string, string> } | undefined;
+   * - `colors`: color stops in render order (e.g., `["#fff", "#000"]`) */
+  readonly gradient?: { direction: string; colors: string[] } | undefined;
 
   /** Solid color string (CSS format) – used when `type = "color"`. */
   readonly color?: string | undefined;
@@ -339,6 +339,8 @@ export interface RadioApi extends InputComponentApi<number | string | undefined>
 };
 
 export type CheckboxFieldApi = InputComponentApi<boolean | undefined>;
+
+export type DropdownApi = InputComponentApi<number | number[] | string | string[] | (string | number)[] | undefined>;
 
 /** Checkbox group. Multi-select only, so the value is always the list of selected item values. */
 export type CheckboxGroupApi = InputComponentApi<string[] | undefined>;

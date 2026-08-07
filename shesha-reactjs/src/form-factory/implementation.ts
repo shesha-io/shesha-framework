@@ -50,7 +50,7 @@ import { linkComponentToModelMetadata, upgradeComponent } from "@/providers/form
 import { getComponentDefinitions } from "@/providers/form/defaults/toolboxComponents";
 import { fontTypes, fontWeightsOptions, textAlignOptions } from "@/designer-components/_settings/utils/font/utils";
 import { getBorderInputs, getCornerInputs } from "@/designer-components/_settings/utils/border/utils";
-import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from "@/designer-components/_settings/utils/background/utils";
+import { backgroundTypeOptions, gradientDirectionOptions, positionOptions, repeatOptions, sizeOptions } from "@/designer-components/_settings/utils/background/utils";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { isPropertySettings } from "@/designer-components/_settings/utils/utils";
 import { getEventConfig, StandardEventHandler } from "@/designer-components/_common/events";
@@ -489,7 +489,10 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
       if (keep(`${propertyName}.gradient.colors`))
         f.addSettingsInput({ label: 'Colors', inputType: 'multiColorPicker', propertyName: `${propertyName}.gradient.colors`, jsSetting: false, hideLabel: true,
           visibleJs: `return getSettingValue(${dataPath}?.${propertyName}?.type) === "gradient";`,
-        });
+        })
+          .addSettingsInput({ label: 'Direction', inputType: 'dropdown', propertyName: `${propertyName}.gradient.direction`, dropdownOptions: gradientDirectionOptions, width: 120, jsSetting: false, hideLabel: true,
+            visibleJs: `return getSettingValue(${dataPath}?.${propertyName}?.type) === "gradient";`,
+          });
       if (keep(`${propertyName}.url`))
         f.addSettingsInput({ label: 'URL', inputType: 'textField', propertyName: `${propertyName}.url`, jsSetting: false,
           visibleJs: `return getSettingValue(${dataPath}?.${propertyName}?.type) === "url";`,

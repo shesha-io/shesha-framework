@@ -161,7 +161,7 @@ export const hasNumber = (str: string | number): boolean => typeof str === 'numb
 export const getTagStyle = (style: React.CSSProperties = {}, hasColor: boolean = false): React.CSSProperties => {
   const { backgroundColor, backgroundImage, borderColor, borderTopColor,
     borderLeftColor, borderRightColor, borderBottomColor, color, ...rest } = style;
-  return hasColor ? { ...rest, margin: 0 } : style;
+  return hasColor ? { ...rest } : style;
 };
 
 /**

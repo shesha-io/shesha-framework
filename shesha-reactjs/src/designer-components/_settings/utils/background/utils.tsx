@@ -2,6 +2,18 @@ import React from "react";
 import { IBackgroundValue, IDropdownOption, IRadioOption } from "./interfaces";
 import { isDefined } from "@/utils/nullables";
 
+/**
+ * Reads gradient colour stops as an ordered array.
+ *
+ * Stops are stored as `string[]`, but configurations saved before that change hold a
+ * `Record<string, string>` keyed by generated ids. Those are read through `Object.values`, which
+ * preserves the insertion order the configurer saw in the editor. Blank stops are dropped either
+ * way, since an empty entry cannot contribute to a CSS gradient.
+ */
+export const getGradientColors = (colors: string[] | Record<string, string | undefined> | undefined): string[] =>
+  (Array.isArray(colors) ? colors : Object.values(colors ?? {}))
+    .filter((color): color is string => typeof color === 'string' && color.trim() !== '');
+
 export const getBackgroundImageUrl = async (propertyName: IBackgroundValue | undefined, backendUrl: string, httpHeaders: object): Promise<string> => {
   return (
     isDefined(propertyName) && propertyName.storedFile?.id && propertyName.type === 'storedFile'
@@ -47,8 +59,7 @@ export const getBackgroundStyle = (input: IBackgroundValue | undefined, jsStyle:
       const direction = input.gradient?.direction;
       const isRadial = direction === 'radial';
       const isConic = direction === 'conic';
-      const colors = input.gradient?.colors || [];
-      const colorsString = Object.values(colors).filter((color) => color && color.trim() !== '').join(', ');
+      const colorsString = getGradientColors(input.gradient?.colors).join(', ');
       if (colorsString) {
         style.backgroundImage = isRadial || isConic
           ? `${direction}-gradient(${colorsString})`

@@ -13,7 +13,7 @@ export const defaultStyles = (prev: IEntityPickerComponentProps): IStyleValue =>
       repeat: 'no-repeat',
       size: 'cover',
       position: 'center',
-      gradient: { direction: 'to right', colors: {} },
+      gradient: { direction: 'to right', colors: [] },
       url: '',
     },
     font: {
