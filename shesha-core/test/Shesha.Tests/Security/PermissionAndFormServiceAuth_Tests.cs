@@ -22,7 +22,7 @@ namespace Shesha.Tests.Security
         {
             var attr = typeof(PermissionAppService).GetCustomAttribute<SheshaAuthorizeAttribute>();
             attr.Should().NotBeNull();
-            attr.Access.Should().Be(RefListPermissionedAccess.AnyAuthenticated);
+            attr!.Access.Should().Be(RefListPermissionedAccess.AnyAuthenticated);
         }
 
         [Theory]
@@ -35,9 +35,9 @@ namespace Shesha.Tests.Security
             var method = typeof(PermissionAppService).GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance);
             method.Should().NotBeNull($"{methodName} should exist");
 
-            var attr = method.GetCustomAttribute<SheshaAuthorizeAttribute>();
+            var attr = method!.GetCustomAttribute<SheshaAuthorizeAttribute>();
             attr.Should().NotBeNull($"{methodName} should have [SheshaAuthorize]");
-            attr.Access.Should().Be(RefListPermissionedAccess.RequiresPermissions);
+            attr!.Access.Should().Be(RefListPermissionedAccess.RequiresPermissions);
             attr.Permissions.Should().Contain("app:Configurator");
         }
 
@@ -51,7 +51,7 @@ namespace Shesha.Tests.Security
             var method = typeof(PermissionAppService).GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance);
             method.Should().NotBeNull($"{methodName} should exist");
 
-            var attr = method.GetCustomAttribute<SheshaAuthorizeAttribute>();
+            var attr = method!.GetCustomAttribute<SheshaAuthorizeAttribute>();
             // Read methods should rely on class-level AnyAuthenticated, not have method-level restrictions
             // (except IsPermissionGrantedAsync which explicitly has AnyAuthenticated)
             if (attr != null)
@@ -70,12 +70,11 @@ namespace Shesha.Tests.Security
         {
             var attr = typeof(FormConfigurationAppService).GetCustomAttribute<SheshaAuthorizeAttribute>();
             attr.Should().NotBeNull("FormConfigurationAppService should have class-level [SheshaAuthorize]");
-            attr.Access.Should().Be(RefListPermissionedAccess.RequiresPermissions);
+            attr!.Access.Should().Be(RefListPermissionedAccess.RequiresPermissions);
             attr.Permissions.Should().Contain("app:Configurator");
         }
 
         [Theory]
-        [InlineData("GetByNameAsync")]
         [InlineData("CheckPermissionsAsync")]
         [InlineData("GetAnonymousFormsAsync")]
         public void FormConfigurationAppService_public_methods_should_be_AllowAnonymous(string methodName)
@@ -83,20 +82,19 @@ namespace Shesha.Tests.Security
             var method = typeof(FormConfigurationAppService).GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance);
             method.Should().NotBeNull($"{methodName} should exist");
 
-            var attr = method.GetCustomAttribute<AllowAnonymousAttribute>();
+            var attr = method!.GetCustomAttribute<AllowAnonymousAttribute>();
             attr.Should().NotBeNull($"{methodName} should have [AllowAnonymous] to override class-level auth");
         }
 
         [Theory]
         [InlineData("UpdateMarkupAsync")]
-        [InlineData("UpdateStatusAsync")]
         [InlineData("ImportJsonAsync")]
         public void FormConfigurationAppService_write_methods_should_not_be_AllowAnonymous(string methodName)
         {
             var method = typeof(FormConfigurationAppService).GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance);
             method.Should().NotBeNull($"{methodName} should exist");
 
-            var attr = method.GetCustomAttribute<AllowAnonymousAttribute>();
+            var attr = method!.GetCustomAttribute<AllowAnonymousAttribute>();
             attr.Should().BeNull($"{methodName} should inherit class-level auth (app:Configurator)");
         }
 

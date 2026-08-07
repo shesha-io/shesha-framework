@@ -26,7 +26,7 @@ namespace Shesha.Tests.Security
         {
             var field = typeof(TokenAuthController).GetField("_appConfiguration", BindingFlags.NonPublic | BindingFlags.Instance);
             field.Should().NotBeNull("TokenAuthController should inject IConfiguration");
-            field.FieldType.Should().Be(typeof(IConfiguration));
+            field!.FieldType.Should().Be(typeof(IConfiguration));
         }
 
         [Fact]
@@ -90,7 +90,7 @@ namespace Shesha.Tests.Security
         public void Configuration_fallback_returns_default_when_key_missing()
         {
             var config = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string>())
+                .AddInMemoryCollection(new Dictionary<string, string?>())
                 .Build();
 
             var passPhrase = config["Authentication:EncryptionPassPhrase"] ?? AppConsts.DefaultPassPhrase;
@@ -104,7 +104,7 @@ namespace Shesha.Tests.Security
         {
             var customValue = "MySecurePassPhrase";
             var config = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string>
+                .AddInMemoryCollection(new Dictionary<string, string?>
                 {
                     { "Authentication:EncryptionPassPhrase", customValue }
                 })

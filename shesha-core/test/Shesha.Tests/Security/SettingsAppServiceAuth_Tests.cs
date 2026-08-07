@@ -14,13 +14,13 @@ namespace Shesha.Tests.Security
     /// </summary>
     public class SettingsAppServiceAuth_Tests
     {
-        private static SheshaAuthorizeAttribute GetMethodSheshaAuthorize(string methodName)
+        private static SheshaAuthorizeAttribute? GetMethodSheshaAuthorize(string methodName)
         {
             var method = typeof(SettingsAppService).GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance);
             return method?.GetCustomAttribute<SheshaAuthorizeAttribute>();
         }
 
-        private static AllowAnonymousAttribute GetMethodAllowAnonymous(string methodName)
+        private static AllowAnonymousAttribute? GetMethodAllowAnonymous(string methodName)
         {
             var method = typeof(SettingsAppService).GetMethod(methodName, BindingFlags.Public | BindingFlags.Instance);
             return method?.GetCustomAttribute<AllowAnonymousAttribute>();
@@ -32,7 +32,7 @@ namespace Shesha.Tests.Security
             var attr = GetMethodSheshaAuthorize("GetConfigurationsAsync");
 
             attr.Should().NotBeNull("GetConfigurationsAsync should have [SheshaAuthorize]");
-            attr.Access.Should().Be(RefListPermissionedAccess.RequiresPermissions);
+            attr!.Access.Should().Be(RefListPermissionedAccess.RequiresPermissions);
             attr.Permissions.Should().Contain("pages:maintenance");
         }
 
@@ -49,7 +49,7 @@ namespace Shesha.Tests.Security
             var attr = GetMethodSheshaAuthorize("UpdateValueAsync");
 
             attr.Should().NotBeNull("UpdateValueAsync should have [SheshaAuthorize]");
-            attr.Access.Should().Be(RefListPermissionedAccess.RequiresPermissions);
+            attr!.Access.Should().Be(RefListPermissionedAccess.RequiresPermissions);
             attr.Permissions.Should().Contain("pages:maintenance");
         }
 
