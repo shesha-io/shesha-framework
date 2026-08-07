@@ -623,7 +623,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                   size="small"
                   readOnly={false}
                   spaceSize="small"
-                  isInline={true}
+                  buttonGroupStyle="horizontal"
                 />
               </DataContextProvider>
             </div>

@@ -99,7 +99,7 @@ export const getStyleValueFromModel = (model: IConfigurableFormComponent): IStyl
   };
 };
 
-const borderCss = (b: BorderStyle | undefined): string => `${addPx(b?.width) ?? ''} ${b?.style ?? ''} ${b?.color ?? ''}`;
+const borderCss = (b: BorderStyle | undefined): string => `${addPx(b?.width) ?? ''} ${b?.style ?? ''} ${b?.color ?? 'transparent'}`;
 
 const gradientCss = (g: IGradientValue): string => {
   const direction = g.direction;
@@ -137,22 +137,22 @@ export const borderRadiusStyles = (model: IBorderValue | undefined, important: b
   return sb.build();
 };
 
-export const borderLinesStyles = (model: IBorderValue | undefined): string => {
+export const borderLinesStyles = (model: IBorderValue | undefined, important: boolean = false): string => {
   if (!model) return '';
   const sb = new StringBuilder();
-  if (model.borderType === 'all' && model.border?.all) sb.append(`border: ${borderCss(model.border.all)};`);
-  if (model.borderType !== 'all' && model.border?.top) sb.append(`border-top: ${borderCss(model.border.top)};`);
-  if (model.borderType !== 'all' && model.border?.right) sb.append(`border-right: ${borderCss(model.border.right)};`);
-  if (model.borderType !== 'all' && model.border?.bottom) sb.append(`border-bottom: ${borderCss(model.border.bottom)};`);
-  if (model.borderType !== 'all' && model.border?.left) sb.append(`border-left: ${borderCss(model.border.left)};`);
+  if (model.borderType === 'all' && model.border?.all) sb.append(`border: ${borderCss(model.border.all)} ${important === true ? '!important' : ''};`);
+  if (model.borderType !== 'all' && model.border?.top) sb.append(`border-top: ${borderCss(model.border.top)} ${important === true ? '!important' : ''};`);
+  if (model.borderType !== 'all' && model.border?.right) sb.append(`border-right: ${borderCss(model.border.right)} ${important === true ? '!important' : ''};`);
+  if (model.borderType !== 'all' && model.border?.bottom) sb.append(`border-bottom: ${borderCss(model.border.bottom)} ${important === true ? '!important' : ''};`);
+  if (model.borderType !== 'all' && model.border?.left) sb.append(`border-left: ${borderCss(model.border.left)} ${important === true ? '!important' : ''};`);
   return sb.build();
 };
 
-export const borderStyles = (model: IBorderValue | undefined): string => {
+export const borderStyles = (model: IBorderValue | undefined, important: boolean = false): string => {
   if (!model) return '';
   const sb = new StringBuilder();
-  sb.append(borderLinesStyles(model));
-  sb.append(borderRadiusStyles(model));
+  sb.append(borderLinesStyles(model, important));
+  sb.append(borderRadiusStyles(model, important));
   return sb.build();
 };
 

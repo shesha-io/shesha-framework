@@ -1,5 +1,5 @@
 import React, { FC, ReactNode } from 'react';
-import { ButtonGroupItemProps, IButtonGroup, IButtonGroupItem } from '@/providers';
+import { ButtonGroupItemProps, IButtonGroup } from '@/providers';
 import { nanoid } from '@/utils/uuid';
 import { ButtonGroupProperties } from './properties';
 import { ButtonGroupListItem } from './buttonGroupListItem';
@@ -8,8 +8,9 @@ import { Alert, Button, Divider } from 'antd';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 import { isGroup } from '@/providers/buttonGroupConfigurator/models';
 import { ListEditorWithPropertiesPanel } from '../listEditorWithPropertiesPanel';
-import { initialValues } from './utils';
+import { makeNewItem } from './utils';
 import { isDefined } from '@/utils/nullables';
+import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 
 export interface ButtonGroupSettingsEditorProps {
   readOnly: boolean;
@@ -70,24 +71,10 @@ const ButtonGroupEditorHeader = ({ contextAccessor, level, parentItem }: ListEdi
 };
 
 export const ButtonGroupSettingsEditor: FC<ButtonGroupSettingsEditorProps> = ({ value, onChange, readOnly }) => {
-  const makeNewItem = (items: ButtonGroupItemProps[]): ButtonGroupItemProps => {
-    const itemsCount = items.length;
-    const itemNo = itemsCount + 1;
+  const componentGetter = useFormDesignerComponentGetter();
+  const buttonComponent = componentGetter('button');
 
-    const newItem: IButtonGroupItem = {
-      id: nanoid(),
-      itemType: 'item',
-      sortOrder: itemsCount,
-      name: `button${itemNo}`,
-      label: `Button ${itemNo}`,
-      itemSubType: 'button',
-      buttonType: itemNo === 1 ? 'primary' : 'default',
-      editMode: 'inherited',
-      ...initialValues(),
-    };
-
-    return newItem;
-  };
+  if (!isDefined(buttonComponent)) throw new Error("The 'button' component is not registered in the toolbox. Button group configuration is unavailable.");
 
   return (
     <ListEditorWithPropertiesPanel<ButtonGroupItemProps>
@@ -106,6 +93,7 @@ export const ButtonGroupSettingsEditor: FC<ButtonGroupSettingsEditorProps> = ({ 
           onChange={itemOnChange}
           nestedRenderer={nestedRenderer}
           initNewItem={makeNewItem}
+          buttonComponent={buttonComponent}
         />
       )}
     </ListEditorWithPropertiesPanel>

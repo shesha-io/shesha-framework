@@ -330,9 +330,9 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
   };
 
   stdLayoutPanel = (isResponsive?: boolean, propertyName: string = '', panelTitle: string = 'Layout'): FormBuilder => {
-    const getDisplay = ` getSettingValue(${isResponsive === true ? 'data[`${page.canvasContext?.designerDevice || "desktop"}`]' : 'data'}?.display)`;
-    const getFlexDirection = ` getSettingValue(${isResponsive === true ? 'data[`${page.canvasContext?.designerDevice || "desktop"}`]' : 'data'}?.flexDirection)`;
-    const getShowAdvanced = ` getSettingValue(${isResponsive === true ? 'data[`${page.canvasContext?.designerDevice || "desktop"}`]' : 'data'}?.showAdvanced)`;
+    const getDisplay = ` getSettingValue(${isResponsive === true ? 'data[`${page.canvasContext?.designerDevice || "desktop"}`]?' : 'data'}.display)`;
+    const getFlexDirection = ` getSettingValue(${isResponsive === true ? 'data[`${page.canvasContext?.designerDevice || "desktop"}`]?' : 'data'}.flexDirection)`;
+    const getShowAdvanced = ` getSettingValue(${isResponsive === true ? 'data[`${page.canvasContext?.designerDevice || "desktop"}`]?' : 'data'}.showAdvanced)`;
     const propName = isNullOrWhiteSpace(propertyName) ? '' : propertyName + '.';
     this.stdCollapsiblePanel(panelTitle, (f) => {
       f.addSettingsInput({ propertyName: `${propName}display`, label: 'Layout Type', inputType: 'radio',

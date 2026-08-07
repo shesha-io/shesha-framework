@@ -15,7 +15,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './util';
 import { getStringPropertyOrUndefined } from '@/utils/object';
-import { DEFAULT_DESIGNER_PADDING } from '@/components/formDesigner/utils/stylingUtils';
+import { getFullSizeWrapperDesignerStyle } from '@/components/formDesigner/utils/stylingUtils';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
@@ -32,9 +32,9 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
   type: 'button',
   isInput: false,
   name: 'Button',
-  getWrapperStyle: (model) => ({ style: { dimensions: model?.dimensions }, designerStyle: DEFAULT_DESIGNER_PADDING }),
+  getWrapperStyle: (model) => getFullSizeWrapperDesignerStyle(model),
   icon: <BorderOutlined />,
-  Factory: ({ model, form }) => {
+  Factory: ({ model }) => {
     const { style, ...restProps } = model;
 
     const inputRef = useRef<HTMLAnchorElement | HTMLButtonElement>(null);
@@ -57,7 +57,6 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
         readOnly={model.readOnly}
         block={restProps.block}
         styleJson={model.styleJson}
-        form={form}
         ref={inputRef}
         additionalDomProperties={getComponentEvents<void, IButtonComponentProps>(model, ['onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent })}
       />

@@ -9,7 +9,6 @@ import { ICodeEditorProps } from '../codeEditor/interfaces';
 import { IObjectMetadata } from '@/interfaces';
 import { InputComponent } from '.';
 import { getWidth } from '../settingsInput/utils';
-import { DefaultOptionType } from 'antd/lib/select';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 const stringToFriendlyMap = new Map<string, string>([['true', 'On'], ['false', 'Off'], ['editable', 'Editable'], ['readOnly', 'Read only'], ['inherited', 'Inherited']]);
@@ -156,7 +155,7 @@ export const CustomLabelValueEditorInputs = (props: ILabelValueEditorProps): Rea
                     }}
                     disabled={readOnly}
                     options={Array.isArray(dropdownOptions)
-                      ? dropdownOptions.map<DefaultOptionType>((option) => ({ label: option.label, value: option.value }))
+                      ? dropdownOptions.map((option) => ({ label: option.label, value: option.value }))
                       : []}
                   />
                 </>

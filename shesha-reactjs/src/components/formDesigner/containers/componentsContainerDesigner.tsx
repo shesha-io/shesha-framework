@@ -127,7 +127,7 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
       )}
     >
       <>
-        {childIds.length === 0 && showHintWhenEmpty && <div className={styles.shaDropHint}>Drag and Drop form component</div>}
+        {childIds.length === 0 && showHintWhenEmpty && <div className={styles.shaDropHintContainer}><div className={styles.shaDropHint}>Drag and Drop form component</div></div>}
         <ReactSortable
           disabled={readOnly}
           onStart={onDragStart}
