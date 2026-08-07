@@ -2,6 +2,7 @@ using Abp.Runtime.Security;
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Shesha.Authorization;
+using Shesha.Reflection;
 using System.Collections.Generic;
 using System.Reflection;
 using Xunit;
@@ -24,9 +25,11 @@ namespace Shesha.Tests.Security
         [Fact]
         public void TokenAuthController_should_have_IConfiguration_field()
         {
-            var field = typeof(TokenAuthController).GetField("_appConfiguration", BindingFlags.NonPublic | BindingFlags.Instance);
-            field.Should().NotBeNull("TokenAuthController should inject IConfiguration");
-            field!.FieldType.Should().Be(typeof(IConfiguration));
+            var field = typeof(TokenAuthController)
+                .GetField("_appConfiguration", BindingFlags.NonPublic | BindingFlags.Instance)
+                .NotNull("TokenAuthController should inject IConfiguration");
+
+            field.FieldType.Should().Be(typeof(IConfiguration));
         }
 
         [Fact]

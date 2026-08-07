@@ -2,6 +2,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Authorization;
 using Shesha.Authorization;
 using Shesha.Domain.Enums;
+using Shesha.Reflection;
 using Shesha.Settings;
 using System.Reflection;
 using Xunit;
@@ -29,10 +30,10 @@ namespace Shesha.Tests.Security
         [Fact]
         public void GetConfigurationsAsync_should_require_pages_maintenance()
         {
-            var attr = GetMethodSheshaAuthorize("GetConfigurationsAsync");
+            var attr = GetMethodSheshaAuthorize("GetConfigurationsAsync")
+                .NotNull("GetConfigurationsAsync should have [SheshaAuthorize]");
 
-            attr.Should().NotBeNull("GetConfigurationsAsync should have [SheshaAuthorize]");
-            attr!.Access.Should().Be(RefListPermissionedAccess.RequiresPermissions);
+            attr.Access.Should().Be(RefListPermissionedAccess.RequiresPermissions);
             attr.Permissions.Should().Contain("pages:maintenance");
         }
 
@@ -46,10 +47,10 @@ namespace Shesha.Tests.Security
         [Fact]
         public void UpdateValueAsync_should_require_pages_maintenance()
         {
-            var attr = GetMethodSheshaAuthorize("UpdateValueAsync");
+            var attr = GetMethodSheshaAuthorize("UpdateValueAsync")
+                .NotNull("UpdateValueAsync should have [SheshaAuthorize]");
 
-            attr.Should().NotBeNull("UpdateValueAsync should have [SheshaAuthorize]");
-            attr!.Access.Should().Be(RefListPermissionedAccess.RequiresPermissions);
+            attr.Access.Should().Be(RefListPermissionedAccess.RequiresPermissions);
             attr.Permissions.Should().Contain("pages:maintenance");
         }
 
