@@ -8,8 +8,10 @@ import { IOpenCageResponse } from '@/components/googlePlacesAutocomplete/models'
 import { IStyleValue } from '@/providers/form/models';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getNumericValue } from '@/utils/string';
+import { InputRef } from 'antd';
+import { InputProps } from 'antd/lib/input';
 
-interface IAutoCompletePlacesFieldProps extends IAddressCompomentBaseProps /* UnwrapCodeEvaluators<IAddressCompomentProps>*/ {
+interface IAutoCompletePlacesFieldProps extends IAddressCompomentBaseProps {
   value?: string;
   onChange?: (value: string) => void;
   font?: IStyleValue['font'];
@@ -18,10 +20,14 @@ interface IAutoCompletePlacesFieldProps extends IAddressCompomentBaseProps /* Un
   onFocus?: ((event: React.FocusEvent<HTMLInputElement, Element>) => void) | undefined;
   onSelect?: (address: IOpenCageResponse | IAddressAndCoords) => void;
   style?: CSSProperties | undefined;
+  className?: string | undefined;
+  inputRef?: React.Ref<InputRef> | undefined;
+  /** Standard event handlers bound by the component, passed straight to the antd input. */
+  inputProps?: Omit<InputProps, 'value' | 'onChange' | 'prefix' | 'disabled' | 'placeholder' | 'style' | 'size' | 'className'> | undefined;
 }
 
 const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => {
-  const { debounce, minCharactersSearch, onChange, openCageApiKey, placeholder, prefix, value, readOnly, googleMapsApiKey, onFocus, onSelect, style } = model;
+  const { debounce, minCharactersSearch, onChange, openCageApiKey, placeholder, prefix, value, readOnly, googleMapsApiKey, onFocus, onSelect, style, className, inputRef, inputProps } = model;
 
   const { loading, error, refetch } = useGet<IOpenCageResponse>({
     base: 'https://api.opencagedata.com',
@@ -56,19 +62,6 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
 
     const details = await fetchAddressDetails(event);
     onSelect(details);
-    /*
-      const expression = model.onSelectCustom;
-      if (Boolean(expression)) {
-        // Ensure lat/lng are preserved from event in case they were lost
-        const addressData = {
-          ...payload,
-          ...event,
-        };
-        return !isNullOrWhiteSpace(expression)
-          ? executeScriptSync(expression, addContextData(context, { event: addressData }))
-          : Promise.resolve();
-      }
-        */
   };
 
   return (
@@ -85,6 +78,9 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
         disableGoogleEvent={disableGoogleEvent}
         searchOptions={getSearchOptions(model)}
         style={style}
+        className={className}
+        inputRef={inputRef}
+        inputProps={inputProps}
         font={model.font}
 
         onChange={onChange}

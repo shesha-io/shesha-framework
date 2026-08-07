@@ -2,72 +2,8 @@ import { PropTypes } from 'react-places-autocomplete';
 import { IEntityReferenceDto, IStyleValue } from '@/interfaces';
 import { IAddressCompomentBaseProps } from './models';
 import { COUNTRY_CODES } from '@/shesha-constants/country-codes';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
 import { getDisplayNameOrUndefined } from '@/utils/object';
-
-export const EXPOSED_VARIABLES = [
-  {
-    id: 'd430d31c-9360-4b57-96cc-3c322de31e59',
-    name: 'data',
-    description: 'Selected form values',
-    type: 'object',
-  },
-  {
-    id: 'c96aff24-3717-49f0-836f-bd6a9f2f4944',
-    name: 'event',
-    description: 'Event callback when user input',
-    type: 'object',
-  },
-  {
-    id: '6597be4e-0364-4cd5-9dde-9338bb0cd30d',
-    name: 'form',
-    description: 'Form instance',
-    type: 'FormInstance',
-  },
-  {
-    id: 'ffc4dec1-a53c-4106-8102-1985b9a1b69b',
-    name: 'formMode',
-    description: 'The form mode',
-    type: "'readonly' | 'edit' | 'designer'",
-  },
-  {
-    id: '5a367dfe-70e4-4521-96ba-bdee1336592a',
-    name: 'globalState',
-    description: 'The global state of the application',
-    type: 'object',
-  },
-  {
-    id: '73d980c8-bec1-4c77-b44a-3b769f085fc2',
-    name: 'http',
-    description: 'axios instance used to make http requests',
-    type: 'object',
-  },
-  {
-    id: '07143298-04c3-4cbc-8c80-208a79e77c14',
-    name: 'message',
-    description:
-      'This is the Ant API for displaying toast messages. See: https://ant.design/components/message/#header',
-    type: 'object',
-  },
-  {
-    id: 'd4e035cc-e1f8-4186-95fa-a444c0f9bb29',
-    name: 'moment',
-    description: 'The moment.js object',
-    type: 'object',
-  },
-  {
-    id: 'b13ac5c2-e944-4b22-a41f-9af577df0388',
-    name: 'setFormData',
-    description: 'A function used to update the form data',
-    type: '({ values: object, mergeValues: boolean}) => void',
-  },
-  {
-    id: 'cb94503f-49d1-4f58-a24b-7ef6b5d4d4a7',
-    name: 'setGlobalState',
-    description: 'Setting the global state of the application',
-    type: '(payload: { key: string, data: any } ) => void',
-  },
-];
 
 export const getAddressValue = (value: string | IEntityReferenceDto | undefined): string => {
   if (!isDefined(value)) return '';
@@ -90,18 +26,21 @@ export const getSearchOptions = (model: IAddressCompomentBaseProps): PropTypes['
   const countries = (Array.isArray(countryRestriction)
     ? countryRestriction
     : [countryRestriction]
-  ).filter((c) => c != null && c !== '');
+  ).filter(isNotNullOrWhiteSpace);
 
-  if (countries.length) {
+  if (countries.length > 0) {
     const countryCodes = countries.map((countryLabel) => {
       const foundCountry = COUNTRY_CODES.find((item) => item.value === countryLabel);
-      return foundCountry ? foundCountry.code : countryLabel ?? "";
+      return isDefined(foundCountry) ? foundCountry.code : countryLabel;
     });
     result = { componentRestrictions: { country: countryCodes } };
   }
 
   try {
-    if (showPriorityBounds && lat && lng && radius) {
+    // Latitude and longitude are checked with `isDefined` rather than for truthiness: 0 is a
+    // valid coordinate (the equator / the prime meridian) and must not disable the bounds.
+    // A radius of 0 is meaningless, so it is required to be positive.
+    if (showPriorityBounds === true && isDefined(lat) && isDefined(lng) && isDefined(radius) && radius > 0) {
       result = { ...result, location: new google.maps.LatLng(lat, lng), radius };
     }
   } catch { /* nop */ }
@@ -128,8 +67,18 @@ export const loadGooglePlaces = (googleMapsApiKey: string, callback: ((args: boo
 
 export const defaultStyles = (): IStyleValue => {
   return {
-    background: { type: 'color', color: '#fff' },
-    font: { weight: '400', size: 14, color: '#000', type: 'Segoe UI' },
+    // The full background set (not just type/color) so every Background input has a value to
+    // inherit from — an inheritance popover only renders for properties present in the defaults.
+    background: {
+      type: 'color',
+      color: '#fff',
+      repeat: 'no-repeat',
+      size: 'cover',
+      position: 'center',
+      gradient: { direction: 'to right', colors: {} },
+      url: '',
+    },
+    font: { weight: '400', size: 14, color: '#000', type: 'Segoe UI', align: 'left' },
     border: {
       border: {
         all: { width: '1px', style: 'solid', color: '#d9d9d9' },
@@ -143,5 +92,17 @@ export const defaultStyles = (): IStyleValue => {
       radiusType: 'all',
     },
     dimensions: { width: '100%', height: '32px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
+    shadow: { spreadRadius: 0, blurRadius: 0, color: '#000', offsetX: 0, offsetY: 0 },
+    stylingBoxJson: {
+      _type: 'styleBox',
+      marginBottom: "0",
+      marginLeft: "0",
+      marginRight: "0",
+      marginTop: "0",
+      paddingBottom: "0",
+      paddingLeft: "0",
+      paddingRight: "0",
+      paddingTop: "0",
+    },
   };
 };

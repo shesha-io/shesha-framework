@@ -1,6 +1,7 @@
 import React, { FC, CSSProperties, useRef, useState } from 'react';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng, PropTypes } from 'react-places-autocomplete';
-import { Input, App } from 'antd';
+import { Input, App, InputRef } from 'antd';
+import { InputProps } from 'antd/lib/input';
 import { SearchOutlined, LoadingOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import { LatLngPolygon, PointPolygon, pointsInPolygon } from '@/utils/googleMaps';
@@ -52,6 +53,12 @@ export interface IGooglePlacesAutocompleteProps {
   font?: IStyleValue['font'] | undefined;
   searchOptions?: PropTypes['searchOptions'] | undefined;
   onFocus?: ((event: React.FocusEvent<HTMLInputElement, Element>) => void) | undefined;
+  /** Applied to the antd `Input`, so a caller can style the field itself. */
+  className?: string | undefined;
+  /** Ref to the antd `Input`, so a caller can focus the field programmatically. */
+  inputRef?: React.Ref<InputRef> | undefined;
+  /** Extra antd `Input` event handlers (mouse/click), passed through as-is. */
+  inputProps?: Omit<InputProps, 'value' | 'onChange' | 'prefix' | 'disabled' | 'placeholder' | 'style' | 'size' | 'className'> | undefined;
 }
 
 const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
@@ -73,6 +80,9 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
   size,
   searchOptions,
   onFocus,
+  className,
+  inputRef,
+  inputProps: extraInputProps,
 }) => {
   const { styles } = useStyles({ fontFamily: font?.type, fontWeight: font?.weight, textAlign: font?.align, color: font?.color, fontSize: font?.size });
   const [highlightedPlaceId, setHighlightedPlaceId] = useState('');
@@ -217,6 +227,9 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
 
             return (
               <Input
+                {...extraInputProps}
+                ref={inputRef}
+                className={className}
                 value={displayValue}
                 onChange={(e) => {
                   if (isDefined(inputProps.onChange)) {
@@ -235,8 +248,18 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
                 disabled={disabled ?? false}
                 tabIndex={tabIndex}
                 onKeyDown={onKeyDown}
-                onBlur={onBlur}
-                onFocus={onFocus}
+                // Closing the suggestions dropdown is this component's own concern, so a
+                // caller-supplied onBlur is composed with it rather than replacing it.
+                onBlur={(e) => {
+                  onBlur();
+                  extraInputProps?.onBlur?.(e);
+                }}
+                // Composed rather than assigned, so a handler supplied through `inputProps`
+                // (the standard event set) is not silently dropped by the dedicated prop.
+                onFocus={(e) => {
+                  onFocus?.(e);
+                  extraInputProps?.onFocus?.(e);
+                }}
                 style={style}
                 size={size}
               />

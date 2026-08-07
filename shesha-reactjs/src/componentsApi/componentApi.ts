@@ -356,6 +356,12 @@ export interface DateFieldApi extends InputComponentApi<string | [string | null,
   readonly isRange: boolean;
 };
 
+/**
+ * Address field. The value is the formatted address as entered or as selected from the Google
+ * Places suggestions.
+ */
+export type AddressApi = InputComponentApi<string | undefined>;
+
 export interface PanelApi extends CommonComponentApi {
   /** Whether the panel is expanded */
   isExpanded: boolean;
