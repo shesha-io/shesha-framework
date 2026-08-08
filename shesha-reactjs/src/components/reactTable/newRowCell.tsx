@@ -18,7 +18,6 @@ const cellProps: HeaderPropGetter<ITableRowData> = (props) => [
   {
     style: {
       display: 'flex',
-      height: '-webkit-fill-available !important',
     },
   },
 ];
