@@ -20,7 +20,7 @@ export const useStyles = createStyles(({ css }) => {
     width: 100%;
     height: 100%;
     margin: 0;
-    padding: 0;
+    padding: 0 11px;
     display: inline-flex;
     align-items: center;
     justify-content: flex-start;
