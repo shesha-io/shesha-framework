@@ -101,8 +101,8 @@ export const parseDimension = (value: string | number | null | undefined | IProp
   return null;
 };
 
-export const DIMENSION_VALUES = ['auto', 'none', 'min-content', 'max-content', 'fit-content', 'stretch'];
-export const GRID_DIMENSION_VALUES = ['auto', 'min-content', 'max-content'];
+export const DIMENSION_VALUES = ['auto', 'none', 'min-content', 'max-content', 'fit-content', 'stretch', '50%', '100%'];
+export const GRID_DIMENSION_VALUES = ['auto', 'min-content', 'max-content', '1fr'];
 
 /**
  * Add 'px' unit to bare numbers, preserve existing units
