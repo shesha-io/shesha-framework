@@ -48,8 +48,8 @@ namespace Shesha.Authorization
         private readonly ITokenBlacklistService _tokenBlacklistService;
         private readonly UserManager<User> _userManager;
         private readonly AbpUserClaimsPrincipalFactory<User, Role> _claimsPrincipalFactory;
-        private readonly IRepository<User, long> _userRepository;
         private readonly IConfiguration _appConfiguration;
+        private readonly IRepository<User, long> _userRepository;
 
 
         public TokenAuthController(
@@ -66,8 +66,8 @@ namespace Shesha.Authorization
             ITokenBlacklistService tokenBlacklistService,
             UserManager<User> userManager,
             AbpUserClaimsPrincipalFactory<User, Role> claimsPrincipalFactory,
-            IRepository<User, long> userRepository,
-            IConfiguration appConfiguration)
+            IConfiguration appConfiguration,
+            IRepository<User, long> userRepository)
         {
             _logInManager = logInManager;
             _tenantCache = tenantCache;
@@ -82,9 +82,8 @@ namespace Shesha.Authorization
             _tokenBlacklistService = tokenBlacklistService;
             _userManager = userManager;
             _claimsPrincipalFactory = claimsPrincipalFactory;
-            _userRepository = userRepository;
             _appConfiguration = appConfiguration;
-
+            _userRepository = userRepository;
         }
 
         [HttpPost]
