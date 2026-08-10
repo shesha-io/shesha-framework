@@ -11,7 +11,7 @@ import { ItemChangeDetails } from '@/components/listEditor';
 export interface IItemProps {
   itemProps: IModelItem;
   index: number[];
-  onChange: (newValue: IModelItem, changeDetails: ItemChangeDetails) => void;
+  onChange: (newValue: IModelItem, changeDetails?: ItemChangeDetails) => void;
   containerRendering: ContainerRenderer;
 }
 
@@ -29,7 +29,6 @@ export const Item: FC<IItemProps> = ({ itemProps, index, containerRendering, onC
   } else if (itemProps.dataType === DataTypes.object) {
     return (
       <JsonProperty
-        id={index}
         index={index}
         {...itemProps}
         key={itemProps.id}
@@ -38,7 +37,6 @@ export const Item: FC<IItemProps> = ({ itemProps, index, containerRendering, onC
   } else if (itemProps.dataType === DataTypes.entityReference && !itemProps.entityType) {
     return (
       <GenericEntityProperty
-        id={index}
         index={index}
         {...itemProps}
         key={itemProps.id}
@@ -47,7 +45,6 @@ export const Item: FC<IItemProps> = ({ itemProps, index, containerRendering, onC
   } else if (itemProps.dataType === DataTypes.entityReference && itemProps.entityType) {
     return (
       <EntityProperty
-        id={index}
         index={index}
         {...itemProps}
         key={itemProps.id}
@@ -56,7 +53,6 @@ export const Item: FC<IItemProps> = ({ itemProps, index, containerRendering, onC
   } else {
     return (
       <SimpleProperty
-        id={index}
         index={index}
         {...itemProps}
         key={itemProps.id}

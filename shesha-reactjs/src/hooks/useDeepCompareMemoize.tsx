@@ -21,7 +21,7 @@ function isEqual(x: unknown, y: unknown): boolean {
 }
 
 export function useDeepCompareMemoize<T = unknown>(value?: Readonly<T>): T {
-  const ref = useRef<T>();
+  const ref = useRef<T>(undefined);
 
   const unproxiedValue = Array.isArray(value)
     ? value.map((item) => unproxyValue(item)) as T

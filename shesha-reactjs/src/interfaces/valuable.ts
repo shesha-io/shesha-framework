@@ -1,4 +1,4 @@
 export interface IValuable<TValue = unknown> {
-  defaultValue?: TValue;
-  value?: TValue;
+  defaultValue?: TValue | undefined;
+  value?: TValue | undefined;
 }

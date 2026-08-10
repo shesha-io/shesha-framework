@@ -67,7 +67,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
       labelAlign: 'right',
       parentId: 'root',
       hidden: false,
-      customVisibility: null,
       description:
         'Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
       validate: {},
@@ -80,7 +79,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
       labelAlign: 'right',
       parentId: 'root',
       hidden: false,
-      customEnabled: null,
       description:
         'Enter custom enabled code.  You must return true to enable the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
       validate: {},

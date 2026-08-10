@@ -1,34 +1,36 @@
 import React, { PropsWithChildren, ReactElement, useContext, useState } from 'react';
-import { Form } from "antd";
-import { DEFAULT_FORM_LAYOUT_SETTINGS, IPropertyMetadata, ISettingsFormFactoryArgs } from "@/interfaces";
+import { Form, FormProps } from "antd";
+import { DEFAULT_FORM_LAYOUT_SETTINGS, IComponentSettingsFormFactoryArgs, IPropertyMetadata } from "@/interfaces";
 import { getValuesFromSettings, updateSettingsFromValues } from './utils/utils';
 import { createNamedContext } from '@/utils/react';
 import { linkComponentToModelMetadata } from '@/providers/form/utils';
 import { ConfigurableFormActionsProvider } from '@/providers/form/actions';
 import { deepMergeValues } from '@/utils/object';
-import { IConfigurableFormComponent, useShaFormInstance } from '@/providers';
+import { FormAction, IConfigurableFormComponent, useShaFormInstance } from '@/providers';
+import { RecursivePartial } from '@/interfaces/entity';
 
-interface SettingsFormState<TModel> {
-  model?: TModel;
+interface SettingsFormState<TModel extends object = object> {
+  model: TModel;
   values?: TModel;
 }
 
-interface ISettingsFormActions {
+interface ISettingsFormActions<TModel extends object = object> {
   propertyFilter: (name: string) => boolean;
-  onValuesChange?: (changedValues: any) => void;
+  onValuesChange?: ((changedValues: Partial<TModel>) => void) | undefined;
 }
 
 /** initial state */
-export const DATA_SOURCES_PROVIDER_CONTEXT_INITIAL_STATE: SettingsFormState<any> = {
+export const DATA_SOURCES_PROVIDER_CONTEXT_INITIAL_STATE: SettingsFormState<object> = {
+  model: {},
 };
 
-export const SettingsFormStateContext = createNamedContext<SettingsFormState<any>>(DATA_SOURCES_PROVIDER_CONTEXT_INITIAL_STATE, "SettingsFormStateContext");
+export const SettingsFormStateContext = createNamedContext<SettingsFormState<object> | undefined>(DATA_SOURCES_PROVIDER_CONTEXT_INITIAL_STATE, "SettingsFormStateContext");
 
-export const SettingsFormActionsContext = createNamedContext<ISettingsFormActions>(undefined, "SettingsFormActionsContext");
+export const SettingsFormActionsContext = createNamedContext<ISettingsFormActions<object> | undefined>(undefined, "SettingsFormActionsContext");
 
-export type SettingsFormProps<TModel> = ISettingsFormFactoryArgs<TModel>;
+export type SettingsFormProps<TModel extends IConfigurableFormComponent = IConfigurableFormComponent> = IComponentSettingsFormFactoryArgs<TModel>;
 
-const SettingsForm = <TModel extends object = object>(props: PropsWithChildren<SettingsFormProps<TModel>>): ReactElement => {
+const SettingsForm = <TModel extends IConfigurableFormComponent = IConfigurableFormComponent>(props: PropsWithChildren<SettingsFormProps<TModel>>): ReactElement => {
   const {
     onSave,
     model,
@@ -39,8 +41,8 @@ const SettingsForm = <TModel extends object = object>(props: PropsWithChildren<S
     toolboxComponent,
   } = props;
 
-  const [form] = Form.useForm();
-  const shaForm = useShaFormInstance();
+  const [form] = Form.useForm<TModel>();
+  const shaForm = useShaFormInstance<TModel>();
   const [state, setState] = useState<SettingsFormState<TModel>>({ model, values: getValuesFromSettings(model) });
 
   if (formRef)
@@ -49,27 +51,27 @@ const SettingsForm = <TModel extends object = object>(props: PropsWithChildren<S
       reset: () => form.resetFields(),
     };
 
-  const valuesChange = (changedValues): void => {
+  const valuesChange: ISettingsFormActions<TModel>['onValuesChange'] = (changedValues) => {
     const model = shaForm.formData as TModel;
     const incomingState = updateSettingsFromValues(model, changedValues);
     setState({ model: incomingState, values: getValuesFromSettings(incomingState) });
-    onValuesChange(changedValues, incomingState);
-    form.setFieldsValue(incomingState);
+    onValuesChange?.(changedValues, incomingState);
+    form.setFieldsValue(incomingState as RecursivePartial<TModel>);
   };
 
-  const settingsChange = (changedValues): void => {
+  const settingsChange: FormProps<TModel>["onValuesChange"] = (changedValues): void => {
     const incomingState = deepMergeValues(state.model, changedValues);
     setState({ model: incomingState, values: getValuesFromSettings(incomingState) });
-    onValuesChange(changedValues, incomingState);
-    form.setFieldsValue(incomingState);
+    onValuesChange?.(changedValues, incomingState);
+    form.setFieldsValue(incomingState as RecursivePartial<TModel>);
   };
 
   const onSaveInternal = (): void => {
     onSave(state.model);
   };
 
-  const SettingsFormActions: ISettingsFormActions = {
-    propertyFilter,
+  const SettingsFormActions: ISettingsFormActions<TModel> = {
+    propertyFilter: propertyFilter ?? (() => true),
     onValuesChange: valuesChange,
   };
 
@@ -78,12 +80,14 @@ const SettingsForm = <TModel extends object = object>(props: PropsWithChildren<S
       console.warn(`toolboxComponent is undefined, cannot link to model metadata`);
       return;
     }
-    const currentModel = shaForm.formData as IConfigurableFormComponent;
-    const newModel = linkComponentToModelMetadata(toolboxComponent, currentModel, metadata);
+    const currentModel = shaForm.formData;
+    if (!currentModel)
+      return;
+    const newModel = linkComponentToModelMetadata(toolboxComponent, currentModel, metadata) as TModel;
 
     if (toolboxComponent.initModelFromMetadata) {
       toolboxComponent.initModelFromMetadata(currentModel, newModel, metadata)
-        .then((r) => valuesChange(r))
+        .then((r) => valuesChange(r as TModel))
         .catch((error) => {
           console.error('Failed to initialize model from metadata:', error);
           valuesChange(newModel);
@@ -94,10 +98,10 @@ const SettingsForm = <TModel extends object = object>(props: PropsWithChildren<S
   };
 
   return (
-    <ConfigurableFormActionsProvider actions={{ linkToModelMetadata }}>
+    <ConfigurableFormActionsProvider actions={{ linkToModelMetadata: linkToModelMetadata as FormAction }}>
       <SettingsFormStateContext.Provider value={state}>
         <SettingsFormActionsContext.Provider value={SettingsFormActions}>
-          <Form
+          <Form<TModel>
             form={form}
             onFinish={onSaveInternal}
             {...layoutSettings}
@@ -113,9 +117,9 @@ const SettingsForm = <TModel extends object = object>(props: PropsWithChildren<S
   );
 };
 
-export function useSettingsForm<TModel>(): SettingsFormState<TModel> & ISettingsFormActions {
-  const actionsContext = useContext(SettingsFormActionsContext);
-  const stateContext = useContext<SettingsFormState<TModel>>(SettingsFormStateContext);
+export function useSettingsForm<TModel extends object = object>(): SettingsFormState<TModel> & ISettingsFormActions {
+  const actionsContext = useContext(SettingsFormActionsContext) as ISettingsFormActions<object> | undefined;
+  const stateContext = useContext(SettingsFormStateContext) as SettingsFormState<TModel> | undefined;
 
   if (actionsContext === undefined || stateContext === undefined)
     throw new Error('useSettingsForm must be used within a SettingsForm');

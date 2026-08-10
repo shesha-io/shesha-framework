@@ -1,18 +1,37 @@
 import classNames from 'classnames';
-import React, { FC } from 'react';
+import React, { FC, useLayoutEffect, useRef } from 'react';
 import BoxInput from './input';
 import { useStyles } from '../styles/styles';
+import { StyleBoxValue } from '../../../providers/form/models';
+import { getStyleBoxValue } from '../utils';
 
 interface IProps {
-  className?: string;
-  onChange?: Function;
-  readOnly?: boolean;
-  value?: string;
+  className?: string | undefined;
+  readOnly: boolean;
+  value: StyleBoxValue | undefined;
+  propertyName: string;
+  onChange?: ((newValue: StyleBoxValue | undefined) => void) | undefined;
 }
 
-const Box: FC<IProps> = ({ className, onChange, readOnly, value }) => {
-  const commonProps = { onChange, readOnly, value };
+const Box: FC<IProps> = ({ className, onChange, readOnly, value, propertyName }) => {
   const { styles } = useStyles();
+
+  // need to store the value locally because internal components may not be rendered and will use the old value
+  const localValue = useRef<StyleBoxValue | undefined>(value);
+
+  // Sync after commit only — mutating a ref during render is unsafe in concurrent mode
+  // because an interrupted render can leave the ref with an uncommitted value.
+  useLayoutEffect(() => {
+    localValue.current = value;
+  }, [value]);
+
+  const onChangeInternal = (val: Partial<StyleBoxValue>): void => {
+    const mergedValue = getStyleBoxValue({ ...localValue.current, ...val, _type: 'styleBox' });
+    localValue.current = mergedValue; // update immediately so rapid changes merge correctly
+    onChange?.(mergedValue);
+  };
+
+  const commonProps = { onChange: onChangeInternal, readOnly, value, propertyName };
 
   return (
     <div className={classNames(styles.shaStyleBox, className)}>

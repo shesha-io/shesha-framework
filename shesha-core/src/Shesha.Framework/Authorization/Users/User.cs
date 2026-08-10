@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Abp.Authorization.Users;
 using Abp.Extensions;
+using Newtonsoft.Json;
 using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using Shesha.EntityHistory;
@@ -25,6 +26,34 @@ namespace Shesha.Authorization.Users
         }
 
         public virtual DateTime? LastLoginDate { get; set; }
+
+        /// <summary>
+        /// Password hash. Marked [JsonIgnore] so it cannot be exposed via
+        /// metadata, GraphQL, or used as a sort key — see issue #4774.
+        /// </summary>
+        [JsonIgnore]
+        public override string Password { get; set; }
+
+        /// <summary>
+        /// Password reset code. Marked [JsonIgnore] so it cannot be exposed via
+        /// metadata, GraphQL, or used as a sort key — see issue #4774.
+        /// </summary>
+        [JsonIgnore]
+        public override string? PasswordResetCode { get; set; }
+
+        /// <summary>
+        /// Security stamp used for token/session invalidation. Marked [JsonIgnore]
+        /// so it cannot be exposed via metadata, GraphQL, or used as a sort key.
+        /// </summary>
+        [JsonIgnore]
+        public override string SecurityStamp { get; set; }
+
+        /// <summary>
+        /// Concurrency stamp. Marked [JsonIgnore] so it cannot be exposed via
+        /// metadata, GraphQL, or used as a sort key.
+        /// </summary>
+        [JsonIgnore]
+        public override string ConcurrencyStamp { get; set; }
 
         public static string CreateRandomPassword()
         {
@@ -70,6 +99,19 @@ namespace Shesha.Authorization.Users
         /// </summary>
         [Display(Name = "Security Question Status")]
         public virtual RefListSecurityQuestionStatus? SecurityQuestionStatus { get; set; }
+
+        /// <summary>
+        /// Number of consecutive failed security-question verification attempts.
+        /// Reset to zero on a successful verification or when a lockout window starts.
+        /// </summary>
+        [Display(Name = "Security Question Failed Attempts")]
+        public virtual int? SecurityQuestionFailedAttempts { get; set; }
+
+        /// <summary>
+        /// UTC time until which security-question verification is blocked after too many failed attempts.
+        /// </summary>
+        [Display(Name = "Security Question Lockout End")]
+        public virtual DateTime? SecurityQuestionLockoutEnd { get; set; }
 
         /// <summary>
         /// 

@@ -19,7 +19,7 @@ export interface IMenuItem {
 let cachedMenuItems: IMenuItem[] | null = null;
 
 const buildComponentItems = (): IMenuItem[] => {
-  const toolboxComponents = getToolboxComponents(false, { formId: null, formProps: null });
+  const toolboxComponents = getToolboxComponents(false, undefined);
 
   return toolboxComponents
     .filter((group) => group.visible)

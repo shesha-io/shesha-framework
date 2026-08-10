@@ -12,16 +12,22 @@ import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 import { useCanvas } from '@/providers/canvas';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { SIDEBAR_COLLAPSE } from '../mainLayout/constant';
-export interface ISidebarContainerProps extends PropsWithChildren<any> {
-  leftSidebarProps?: ISidebarProps;
-  rightSidebarProps?: ISidebarProps;
-  header?: ReactNode | (() => ReactNode);
-  sideBarWidth?: number;
-  allowFullCollapse?: boolean;
-  canZoom?: boolean;
-  configTreePanelSize?: string | number;
-  noPadding?: boolean;
-  viewType?: IViewType;
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+export interface ISidebarContainerProps extends PropsWithChildren {
+  leftSidebarProps?: ISidebarProps | undefined;
+  rightSidebarProps?: ISidebarProps | undefined;
+  header?: ReactNode | (() => ReactNode) | undefined;
+  sideBarWidth?: number | undefined;
+  allowFullCollapse?: boolean | undefined;
+  canZoom?: boolean | undefined;
+  configTreePanelSize?: string | number | undefined;
+  noPadding?: boolean | undefined;
+  viewType?: IViewType | undefined;
+  /** Inline usage: size the sidebar to its content (capped at the viewport) instead
+   * of forcing a full-viewport height. Use when this container is embedded as a plain
+   * component (e.g. the datatable filter panel) rather than a full-screen editor. */
+  embedded?: boolean | undefined;
+  storeName?: string | undefined;
 }
 
 export const SidebarContainer: FC<ISidebarContainerProps> = ({
@@ -33,15 +39,26 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   noPadding,
   canZoom = false,
   viewType = 'configStudio',
+  embedded = false,
+  storeName,
 }) => {
   const { formMode } = useShaFormInstance();
   const { styles } = useStyles();
-  const [isOpenLeft, setIsOpenLeft] = useState(false);
-  const [isOpenRight, setIsOpenRight] = useState(false);
+  const [isOpenLeftLocal, setIsOpenLeftLocal] = useState(false);
+  const [isOpenRightLocal, setIsOpenRightLocal] = useState(false);
+  const storeKey = isNullOrWhiteSpace(storeName) ? 'sidebarContainer.transient' : storeName;
+  const [isOpenLeftStore, setIsOpenLeftStore] = useLocalStorage(`${storeKey}.isOpenLeft`, false);
+  const [isOpenRightStore, setIsOpenRightStore] = useLocalStorage(`${storeKey}.isOpenRight`, false);
   const { zoom, setCanvasZoom, setViewType, designerWidth, autoZoom, configTreePanelSize } = useCanvas();
   const [isSidebarCollapsed] = useLocalStorage(SIDEBAR_COLLAPSE, false);
 
-  const [currentSizes, setCurrentSizes] = useState(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
+  const isOpenLeft = isNullOrWhiteSpace(storeName) ? isOpenLeftLocal : isOpenLeftStore;
+  const isOpenRight = isNullOrWhiteSpace(storeName) ? isOpenRightLocal : isOpenRightStore;
+
+  const setIsOpenLeft = isNullOrWhiteSpace(storeName) ? setIsOpenLeftLocal : setIsOpenLeftStore;
+  const setIsOpenRight = isNullOrWhiteSpace(storeName) ? setIsOpenRightLocal : setIsOpenRightStore;
+
+  const [currentSizes, setCurrentSizes] = useState(() => getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
   const [windowSize, setWindowSize] = useState({ width: designerWidth });
 
   const handleDragSizesChange = useCallback((sizes: number[]) => {
@@ -69,7 +86,8 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   // Track window resize
   useEffect(() => {
     const handleResize = (): void => {
-      setWindowSize({ width: (window?.innerWidth ?? parseInt(defaultDesignerWidth, 10)) + 'px' });
+      const innerWidth = isDefined(window) ? window.innerWidth : undefined;
+      setWindowSize({ width: (innerWidth ?? parseInt(defaultDesignerWidth, 10)) + 'px' });
     };
 
     window.addEventListener('resize', handleResize);
@@ -92,6 +110,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
         }
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canZoom, autoZoom, windowSize.width, designerWidth, currentSizes, configTreePanelSize, setCanvasZoom, viewType, isSidebarCollapsed]);
 
   useEffect(() => {
@@ -104,9 +123,9 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
 
   const isDesigner = formMode === 'designer';
 
-  const renderSidebar = (side: SidebarPanelPosition): React.JSX.Element => {
+  const renderSidebar = (side: SidebarPanelPosition): ReactNode => {
     const sidebarProps = side === 'left' ? leftSidebarProps : rightSidebarProps;
-    const hideFullCollapse = allowFullCollapse && !sidebarProps?.open;
+    const hideFullCollapse = allowFullCollapse && sidebarProps?.open !== true;
 
     return sidebarProps && !hideFullCollapse ? (
       <SidebarPanel
@@ -119,15 +138,15 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   };
 
   return (
-    <div className={styles.sidebarContainer}>
-      {header && (
+    <div className={classNames(styles.sidebarContainer, { embedded })}>
+      {isDefined(header) && (
         <div className={styles.sidebarContainerHeader}>{typeof header === 'function' ? header() : header}</div>
       )}
       <SizableColumns
         sizes={currentSizes}
         expandToMin={false}
-        minSize={sizes?.minSizes}
-        maxSize={sizes?.maxSizes}
+        {...(isDefined(sizes.minSizes) ? { minSize: sizes.minSizes } : {})}
+        {...(isDefined(sizes.maxSizes) ? { maxSize: sizes.maxSizes } : {})}
         onDrag={handleDragSizesChange}
         onDragEnd={handleDragSizesChange}
         gutterSize={DEFAULT_OPTIONS.gutter}
@@ -144,9 +163,9 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
           className={classNames(
             styles.sidebarContainerMainArea,
             styles.canvasWrapper,
-            { 'both-open': leftSidebarProps?.open && rightSidebarProps?.open },
-            { 'left-only-open': leftSidebarProps?.open && !rightSidebarProps?.open },
-            { 'right-only-open': rightSidebarProps?.open && !leftSidebarProps?.open },
+            { 'both-open': leftSidebarProps?.open === true && rightSidebarProps?.open === true },
+            { 'left-only-open': leftSidebarProps?.open === true && rightSidebarProps?.open !== true },
+            { 'right-only-open': rightSidebarProps?.open === true && leftSidebarProps?.open !== true },
             { 'no-left-panel': !leftSidebarProps },
             { 'no-right-panel': !rightSidebarProps },
             { 'no-padding': noPadding },

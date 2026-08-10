@@ -1,7 +1,9 @@
 ﻿using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Shesha.Authorization;
 using Shesha.Authorization.Users;
+using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Scheduler.Bootstrappers;
 using Shesha.Scheduler.Domain;
@@ -14,6 +16,7 @@ namespace Shesha.Scheduler.Services.ScheduledJobs
     /// <summary>
     /// Scheduled Job application service
     /// </summary>
+    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, "pages:maintenance")]
     public class ScheduledJobAppService : DynamicCrudAppService<ScheduledJob, DynamicDto<ScheduledJob, Guid>, Guid>, ITransientDependency
     {
         private readonly IScheduledJobManager _jobManager;

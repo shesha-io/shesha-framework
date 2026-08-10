@@ -8,6 +8,7 @@ import { sheshaStyles } from '@/styles';
 import { getGroupSettings } from './itemGroupSettings';
 import { getItemSettings } from './itemSettings';
 import { useFormBuilderFactory } from '@/form-factory/hooks';
+import { isDefined } from '@/utils/nullables';
 
 export interface IButtonGroupPropertiesProps {
   item?: ButtonGroupItemProps;
@@ -17,8 +18,10 @@ export interface IButtonGroupPropertiesProps {
 
 export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = ({ item, onChange, readOnly }) => {
   const debouncedSave = useDebouncedCallback(
-    (values) => {
-      onChange?.({ ...item, ...values });
+    (_, values: ButtonGroupItemProps) => {
+      if (isDefined(onChange)) {
+        onChange(values);
+      }
     },
     // delay in ms
     300,
@@ -38,7 +41,6 @@ export const ButtonGroupProperties: FC<IButtonGroupPropertiesProps> = ({ item, o
     return (
       <SourceFilesFolderProvider folder={`button-${item.id}`}>
         <ConfigurableForm<ButtonGroupItemProps>
-          // key={selectedItemId} // rerender for each item to initialize all controls
           labelCol={{ span: 24 }}
           wrapperCol={{ span: 24 }}
           mode={readOnly ? 'readonly' : 'edit'}

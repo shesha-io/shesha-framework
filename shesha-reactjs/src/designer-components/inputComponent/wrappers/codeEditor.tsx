@@ -1,16 +1,17 @@
 import { ICodeEditorSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import { useCallback } from 'react';
-import camelcase from 'camelcase';
+import { useCallback, useMemo } from 'react';
 import { ICodeEditorProps } from '@/designer-components/codeEditor/interfaces';
 import { IObjectMetadata } from '@/interfaces';
 import { executeScript } from '@/providers/form/utils/scripts';
 import { FCUnwrapped, useShaFormInstance } from '@/providers';
 import { useMetadataBuilderFactory } from '@/utils';
 import { getEditor } from '../utils';
+import { isObjectMetadata } from '@/interfaces/metadata';
+import { toCamelCase } from '@/utils/string';
 
 export const CodeEditorWrapper: FCUnwrapped<ICodeEditorSettingsInputProps> = (props) => {
   const { mode, language, availableConstantsExpression, resultTypeExpression, value, readOnly, description, label, propertyName, onChange, templateSettings, wrapInTemplate } = props;
-  const functionName = `get${camelcase((typeof label === 'string' ? label : undefined) || propertyName, { pascalCase: true })}`;
+  const functionName = `get${toCamelCase((typeof label === 'string' ? label : undefined) || propertyName, { pascalCase: true })}`;
 
   const codeEditorProps: ICodeEditorProps = {
     readOnly: readOnly,
@@ -36,15 +37,21 @@ export const CodeEditorWrapper: FCUnwrapped<ICodeEditorSettingsInputProps> = (pr
     return executeScript<IObjectMetadata>(availableConstantsExpression, { data: formData, metadataBuilder });
   }, [availableConstantsExpression, metadataBuilderFactory, formData]);
 
-  const resultTypeAccessor = useCallback((): Promise<IObjectMetadata> | undefined => {
+  const resultTypeAccessor = useMemo((): (() => Promise<IObjectMetadata>) | undefined => {
     if (!resultTypeExpression || (typeof resultTypeExpression === 'string' && !resultTypeExpression.trim()))
       return undefined;
 
     const metadataBuilder = metadataBuilderFactory();
     if (typeof resultTypeExpression === 'string')
-      return executeScript<IObjectMetadata>(resultTypeExpression, { data: formData, metadataBuilder });
+      return () => executeScript<IObjectMetadata>(resultTypeExpression, { data: formData, metadataBuilder });
     if (typeof resultTypeExpression === 'function')
-      return resultTypeExpression({ data: formData, metadataBuilder, form: formInstance }) as Promise<IObjectMetadata>;
+      return () => resultTypeExpression({ data: formData ? formData as Record<string, unknown> : {}, metadataBuilder, form: formInstance })
+        .then((meta) => {
+          if (!isObjectMetadata(meta))
+            throw new Error(`ResultTypeExpression must return IObjectMetadata`);
+          return meta;
+        });
+
     return undefined;
   }, [resultTypeExpression, metadataBuilderFactory, formInstance, formData]);
 

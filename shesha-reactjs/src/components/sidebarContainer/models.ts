@@ -6,40 +6,40 @@ export interface ISidebarProps {
   /**
    * Whether it's open or not
    */
-  open?: boolean;
+  open?: boolean | undefined;
   /**
    * Whether it's open or not by default. Is used for non-controlled mode
    */
-  defaultOpen?: boolean;
+  defaultOpen?: boolean | undefined;
 
-  width?: number;
+  width?: number | undefined;
 
   /**
    * The title
    */
-  title: ReactNode | (() => ReactNode);
+  title?: ReactNode | (() => ReactNode) | undefined;
 
   /**
    * The content
    */
-  content: ReactNode | (() => ReactNode);
+  content?: ReactNode | (() => ReactNode) | undefined;
 
   /**
    * What should happen when the sidebar opens
    */
-  onOpen?: () => void;
+  onOpen?: () => void | undefined;
 
   /**
    * What should happen when the sidebar closes
    */
-  onClose?: () => void;
+  onClose?: () => void | undefined;
 
-  placeholder?: string;
+  placeholder?: string | undefined;
 
-  className?: string;
+  className?: string | undefined;
 
   /**
    * Whether there should no be padding
    */
-  noPadding?: boolean;
+  noPadding?: boolean | undefined;
 }

@@ -5,9 +5,10 @@ import { ProcessMonitorInstance } from "./instance";
 import { useHttpClient } from "../sheshaApplication/publicApi";
 import { useSheshaApplication } from "../sheshaApplication";
 import { ProcessMonitorContextBinder } from "./processMonitorContextBinder";
+import { isNullOrWhiteSpace } from "@/utils/nullables";
 
 export type ProcessMonitorProviderProps = {
-  componentName?: string;
+  componentName?: string | undefined;
   processType: string;
   processId: string;
 };
@@ -33,6 +34,15 @@ export const ProcessMonitorProvider: FC<PropsWithChildren<ProcessMonitorProvider
     void instance.startAsync();
     return instance;
   });
+
+  useEffect(() => {
+    if (processMonitor.processId !== processId) {
+      processMonitor.changeProcessId(processId).catch((err) => {
+        console.error('Failed to change process ID', err);
+      });
+    }
+  }, [processMonitor, processId]);
+
   useEffect(() => {
     return () => {
       void processMonitor.stopAsync();
@@ -45,7 +55,7 @@ export const ProcessMonitorProvider: FC<PropsWithChildren<ProcessMonitorProvider
     </ProcessMonitorContext.Provider>
   );
 
-  return componentName
+  return !isNullOrWhiteSpace(componentName)
     ? (
       <ProcessMonitorContextBinder contextName={componentName} instance={processMonitor}>
         {content}

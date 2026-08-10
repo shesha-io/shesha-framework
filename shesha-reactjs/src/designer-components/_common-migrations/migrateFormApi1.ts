@@ -1,6 +1,6 @@
 import { StandardNodeTypes } from "@/interfaces/formComponent";
 import { isPropertySettings } from "../_settings/utils/utils";
-import { isNullOrWhiteSpace } from "@/utils/nullables";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { IConfigurableFormComponent } from "@/providers/form/models";
 
 const migrateExpression = (expression: string | undefined, regexp: RegExp, newValue: string): string | undefined => {
@@ -10,11 +10,11 @@ const migrateExpression = (expression: string | undefined, regexp: RegExp, newVa
 };
 
 const setFormData = (expr: string | undefined): string | undefined => migrateExpression(expr, /\b(setFormData)\b/mg, 'form.setFormData');
-const formData = (expr: string): string => migrateExpression(expr, /\b(formData)\b/mg, 'form.data');
+const formData = (expr: string | undefined): string | undefined => migrateExpression(expr, /\b(formData)\b/mg, 'form.data');
 const formMode = (expr: string | undefined): string | undefined => migrateExpression(expr, /\b(formMode)\b/mg, 'form.formMode');
 
 const withoutFormData = (expr: string | undefined): string | undefined => setFormData(formMode(expr));
-const full = (expr: string | undefined): string => setFormData(formData(formMode(expr)));
+const full = (expr: string | undefined): string | undefined => setFormData(formData(formMode(expr)));
 
 const events = <T extends IConfigurableFormComponent>(model: T): T => ({
   ...model,
@@ -23,17 +23,21 @@ const events = <T extends IConfigurableFormComponent>(model: T): T => ({
   onFocusCustom: withoutFormData(model.onFocusCustom),
 });
 
-const properties = <T>(model: T): T => {
-  const migrateProp = (prop: any): any => {
+const properties = <T extends object>(model: T): T => {
+  const migrateProp = (prop: unknown): unknown => {
     if (!prop)
       return prop;
 
     if (isPropertySettings(prop)) {
       // migrate JS settings
-      return { ...prop, _code: withoutFormData(prop?._code) };
-    } else if (prop['_type'] === StandardNodeTypes.ConfigurableActionConfig && prop['actionName'] === 'Execute Script') {
+      return { ...prop, _code: withoutFormData(prop._code) };
+    } else if (typeof (prop) === "object" && "_type" in prop && prop._type === StandardNodeTypes.ConfigurableActionConfig && "actionName" in prop && prop.actionName === 'Execute Script') {
       // migrate configurable actions
-      return { ...prop, actionArguments: { expression: withoutFormData(prop['actionArguments']?.expression) } };
+      const actionArguments = "actionArguments" in prop && typeof (prop.actionArguments) === "object" &&
+        isDefined(prop.actionArguments) && "expression" in prop.actionArguments && typeof (prop.actionArguments.expression) === "string"
+        ? prop.actionArguments.expression
+        : undefined;
+      return { ...prop, actionArguments: { expression: withoutFormData(actionArguments) } };
     } else {
       // migrate complex settings
       return properties(prop);
@@ -47,13 +51,13 @@ const properties = <T>(model: T): T => {
     }) as T;
   };
 
-  var newModel = { ...model };
+  const newModel = { ...model };
   for (const propName in newModel) {
     if (newModel.hasOwnProperty(propName)) {
       const prop = newModel[propName];
       if (prop && typeof prop === 'object') {
         // migrate properties
-        newModel[propName] = migrateProp(prop);
+        newModel[propName as keyof T] = migrateProp(prop) as T[keyof T];
       }
       // or skip migration
     }

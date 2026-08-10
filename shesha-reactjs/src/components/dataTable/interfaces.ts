@@ -8,11 +8,11 @@ import { isDefined } from '@/utils/nullables';
 export type TableSelectionMode = 'none' | 'single' | 'multiple';
 
 export type DataTableColumn<D extends object = object> = Column<D> & {
-  resizable?: boolean;
-  originalConfig?: ITableColumn;
-  metadata?: IPropertyMetadata;
-  anchored?: IAnchoredDirection;
-  cellStyleAccessor?: CellStyleFunc;
+  resizable?: boolean | undefined;
+  originalConfig?: ITableColumn | undefined;
+  metadata?: IPropertyMetadata | undefined;
+  anchored?: IAnchoredDirection | undefined;
+  cellStyleAccessor?: CellStyleFunc | undefined;
   disableSortBy?: boolean | undefined; // TODO: replace and move to a correct type
   disableResizing?: boolean | undefined; // TODO: review and merge with resizable
 };
@@ -44,7 +44,7 @@ export interface IShaDataTableInlineEditableProps {
   onNewRowInitialize?: string | undefined;
   onRowSave?: string | undefined;
   onRowSaveSuccessAction?: IConfigurableActionConfiguration | undefined;
-  onDblClick?: IConfigurableActionConfiguration | ((rowData: unknown, index?: number) => void) | undefined;
+  onDblClick?: IConfigurableActionConfiguration | ((rowData: ITableRowData, index?: number) => void) | undefined;
   onRowDeleteSuccessAction?: IConfigurableActionConfiguration | undefined;
 
   onRowClick?: IConfigurableActionConfiguration | undefined;

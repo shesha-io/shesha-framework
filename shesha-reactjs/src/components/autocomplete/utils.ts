@@ -1,10 +1,12 @@
 import { getValueByPropertyName } from '@/utils/object';
 import { AutocompleteDataSourceType, OutcomeValueFunc } from './models';
+import { getClassNameOrUndefined, getIdOrUndefined } from '@/utils/entity';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 interface ICreateOutcomeValueFuncArgs {
-  providedFunc?: OutcomeValueFunc;
-  dataSourceType?: AutocompleteDataSourceType;
-  rawKeyPropName?: string;
+  providedFunc?: OutcomeValueFunc | undefined;
+  dataSourceType?: AutocompleteDataSourceType | undefined;
+  rawKeyPropName?: string | undefined;
   displayPropName: string;
   keyPropName: string;
 }
@@ -25,13 +27,13 @@ export const createOutcomeValueFunc = ({
   keyPropName,
 }: ICreateOutcomeValueFuncArgs): OutcomeValueFunc => {
   const base: OutcomeValueFunc = providedFunc ??
-    (dataSourceType === 'entitiesList' && !rawKeyPropName
+    (dataSourceType === 'entitiesList' && isNullOrWhiteSpace(rawKeyPropName)
       ? (value: unknown) => {
         if (!isObjectRecord(value)) return value;
         return {
-          id: value.id,
+          id: getIdOrUndefined(value),
           _displayName: getValueByPropertyName(value, displayPropName),
-          _className: value._className,
+          _className: getClassNameOrUndefined(value),
         };
       }
       : (value: unknown) => {
@@ -39,11 +41,13 @@ export const createOutcomeValueFunc = ({
         return getValueByPropertyName(value, keyPropName);
       });
 
-  return (item: unknown, args: object) => {
-    const result = base(item, args);
-    if (result !== undefined && result !== null) return result;
+  return (item: unknown) => {
+    const result = base(item);
+    if (isDefined(result))
+      return result;
+
     if (isObjectRecord(item)) {
-      return item.id ?? item.value ?? item;
+      return item['id'] ?? item['value'] ?? item;
     }
     return item;
   };

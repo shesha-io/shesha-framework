@@ -1,92 +1,83 @@
-import { useMutate } from '@/hooks';
-import { IAjaxResponse } from '@/interfaces';
+import { extractAjaxResponse, IAjaxResponse } from '@/interfaces';
+import { useHttpClient } from '@/providers';
+import { ITableRowData } from '@/providers/dataTable/interfaces';
+import { buildUrl } from '@/utils';
+import { isDefined } from '@/utils/nullables';
+import { jsonSafeParse } from '@/utils/object';
+
+/** Collapsed state of every Kanban column, keyed by column item value. */
+export type KanbanColumnState = Record<string, boolean>;
+
+type GetUserSettingValueRequest = {
+  name: string;
+  module: string;
+};
+
+type UpdateUserSettingValueRequest = {
+  name: string;
+  module: string;
+  value: string;
+  datatype: string;
+};
+
+/** GetUserValue returns the value as stored - the JSON string written below - or null when nothing is saved yet. */
+type UserSettingValue = string | KanbanColumnState | null;
 
 export type KanbanActions = {
-  updateKanban: (payload: any, url: string) => Promise<any>;
-  deleteKanban: (payload: any, url: string) => Promise<any>;
-  createKanbanItem: (payload: any, url: string) => Promise<any>;
-  fetchColumnState: (descriminator: string) => Promise<any>;
-  updateUserSettings: (updatedSettings: any, descriminator: string) => Promise<any>;
+  updateKanban: (payload: ITableRowData, url: string) => Promise<ITableRowData>;
+  deleteKanban: (payload: string, url: string) => Promise<void>;
+  createKanbanItem: (payload: ITableRowData, url: string) => Promise<ITableRowData>;
+  fetchColumnState: (descriminator: string) => Promise<KanbanColumnState | null>;
+  updateUserSettings: (updatedSettings: KanbanColumnState, descriminator: string) => Promise<void>;
 };
 
 export const useKanbanActions = (): KanbanActions => {
-  const { mutate } = useMutate<any, IAjaxResponse<any>>();
+  const httpClient = useHttpClient();
 
-  const updateUserSettings = async (updatedSettings: any, descriminator: string): Promise<any> => {
-    try {
-      const response = await mutate(
-        {
-          url: '/api/services/app/Settings/UpdateUserValue',
-          httpVerb: 'POST',
-        },
-        {
-          name: descriminator,
-          module: 'Shesha',
-          value: JSON.stringify(updatedSettings),
-          datatype: 'string',
-        },
-      );
-
-      if (response?.success) {
-        return response;
-      }
-    } catch (error) {
-      console.error('Error updating user settings:', error);
-    }
-  };
-  const fetchColumnState = async (descriminator: string): Promise<any> => {
-    try {
-      const response = await mutate(
-        {
-          url: '/api/services/app/Settings/GetUserValue',
-          httpVerb: 'POST',
-        },
-        {
-          name: descriminator,
-          module: 'Shesha',
-        },
-      );
-
-      if (response?.success && response?.result !== undefined) {
-        return response;
-      }
-    } catch (error) {
-      console.error('Error fetching column state:', error);
-    }
-  };
-  const updateKanban = (payload: any, url: string): Promise<any> => {
-    return mutate(
+  const updateUserSettings = async (updatedSettings: KanbanColumnState, descriminator: string): Promise<void> => {
+    const response = await httpClient.post<IAjaxResponse<void>, UpdateUserSettingValueRequest>(
+      '/api/services/app/Settings/UpdateUserValue',
       {
-        url: url,
-        httpVerb: 'PUT',
+        name: descriminator,
+        module: 'Shesha',
+        value: JSON.stringify(updatedSettings),
+        datatype: 'string',
       },
-      payload,
     );
+    extractAjaxResponse(response.data);
   };
-
-  const createKanbanItem = (payload: any, url: string): Promise<any> => {
-    return mutate(
+  const fetchColumnState = async (descriminator: string): Promise<KanbanColumnState | null> => {
+    const response = await httpClient.post<IAjaxResponse<UserSettingValue>, GetUserSettingValueRequest>(
+      '/api/services/app/Settings/GetUserValue',
       {
-        url: url,
-        httpVerb: 'POST',
+        name: descriminator,
+        module: 'Shesha',
       },
-      payload,
     );
+    const responseData = extractAjaxResponse(response.data);
+    const columnState = typeof responseData === 'string'
+      ? jsonSafeParse<KanbanColumnState>(responseData)
+      : responseData;
+    return isDefined(columnState) && typeof columnState === 'object'
+      ? columnState
+      : null;
+  };
+  const updateKanban = async (payload: ITableRowData, url: string): Promise<ITableRowData> => {
+    const response = await httpClient.put<IAjaxResponse<ITableRowData>>(url, payload);
+    const responseData = extractAjaxResponse(response.data);
+    return responseData;
   };
 
-  const deleteKanban = (payload: any, url: string): Promise<any> => {
-    return mutate({
-      url: `${url}?id=${payload}`,
-      httpVerb: 'DELETE',
-    })
-      .then((resp: any) => {
-        if (resp.success) {
-          return resp;
-        }
-      })
-      .catch((error: any) => {
-        console.error(error);
-      });
+  const createKanbanItem = async (payload: ITableRowData, url: string): Promise<ITableRowData> => {
+    const response = await httpClient.post<IAjaxResponse<ITableRowData>>(url, payload);
+    const responseData = extractAjaxResponse(response.data);
+    return responseData;
+  };
+
+  const deleteKanban = async (payload: string, url: string): Promise<void> => {
+    const finalUrl = buildUrl(url, { id: payload });
+    const response = await httpClient.delete<IAjaxResponse<void>>(finalUrl);
+    extractAjaxResponse(response.data);
   };
   return { updateKanban, deleteKanban, createKanbanItem, fetchColumnState, updateUserSettings };
 };

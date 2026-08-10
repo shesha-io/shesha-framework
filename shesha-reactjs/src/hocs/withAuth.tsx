@@ -30,7 +30,7 @@ export const ComponentWithAuth: FC<IComponentWithAuthProps> = (props) => {
   }, [checkAuth, loginUrl, isLoggedIn]);
 
   return isLoggedIn
-    ? <Fragment>{props.children(router?.query)}</Fragment>
+    ? <Fragment>{props.children(router.query)}</Fragment>
     : <SheshaLoader message={authState.hint || "Initializing..."} />;
 };
 
@@ -40,18 +40,16 @@ export const ComponentWithAuth: FC<IComponentWithAuthProps> = (props) => {
 export const withAuth =
   <P extends object>(Component: ComponentType<P>, unauthorizedRedirectUrl = '/login', landingPage = '/'): FC<P> => {
     const WithAuth: FC<P> = (props) => {
-      const propsObj = Array.isArray(props) ? props[0] : props;
-
       return (
         <ComponentWithAuth landingPage={landingPage} unauthorizedRedirectUrl={unauthorizedRedirectUrl}>
           {(query) => (
             <IdleTimerWrapper>
-              <Component {...propsObj} id={query?.id} />
+              <Component {...props} id={query["id"]} />
             </IdleTimerWrapper>
           )}
         </ComponentWithAuth>
       );
     };
-    WithAuth.displayName = `withAuth(${Component.displayName ?? Component.name ?? 'Component'})`;
+    WithAuth.displayName = `withAuth(${Component.displayName ?? Component.name})`;
     return WithAuth;
   };

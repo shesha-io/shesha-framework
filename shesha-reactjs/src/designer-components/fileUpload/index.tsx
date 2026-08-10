@@ -6,7 +6,7 @@ import { DataTypes } from '@/interfaces';
 import { FileUploadProvider, useFormData, useGlobalState } from '@/providers';
 import { useForm } from '@/providers/form';
 import {
-  evaluateValueAsString,
+  evaluateString,
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
 import {
@@ -18,11 +18,14 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
+import { calculateFileUploadStyles } from '@/utils/fileUploadStyles';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { FileUploadComponentDefinition, IFileUploadProps } from './interfaces';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { getIdOrUndefined } from '@/utils/entity';
+import { getFirstNonEmptyStringPropertyOrUndefined, getStringPropertyOrUndefined } from '@/utils/object';
+import { FileUploadValue } from '@/providers/storedFile/models';
 
 const FileUploadComponent: FileUploadComponentDefinition = {
   type: 'fileUpload',
@@ -34,20 +37,22 @@ const FileUploadComponent: FileUploadComponentDefinition = {
   preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.file,
   Factory: ({ model }) => {
-    const finalStyle = (!model.enableStyleOnReadonly && model.readOnly) ? {
-      ...model.allStyles.fontStyles,
-      ...model.allStyles.dimensionsStyles,
-    } : model.allStyles.fullStyle;
+    const finalStyle = calculateFileUploadStyles({
+      enableStyleOnReadonly: model.enableStyleOnReadonly,
+      isReadOnly: model.readOnly,
+      listType: model.listType,
+      allStyles: model.allStyles,
+    });
     // TODO: refactor and implement a generic way for values evaluation
     const { formSettings, formMode } = useForm();
     const { data } = useFormData();
     const { globalState } = useGlobalState();
-    const ownerId = evaluateValueAsString(model.ownerId, { data, globalState });
+    const ownerId = evaluateString(model.ownerId, { data, globalState });
 
     const enabled = !model.readOnly;
 
     return (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem<FileUploadValue> model={model} autoAlignLabel={false}>
         {(value, onChange) => {
           return (
             <FileUploadProvider
@@ -57,7 +62,7 @@ const FileUploadComponent: FileUploadComponentDefinition = {
               ownerType={!isEntityTypeIdEmpty(model.ownerType)
                 ? model.ownerType
                 : !isEntityTypeIdEmpty(formSettings?.modelType)
-                  ? formSettings?.modelType
+                  ? formSettings.modelType
                   : ''}
               propertyName={model.propertyName}
               uploadMode={model.useSync ? 'sync' : 'async'}
@@ -68,8 +73,8 @@ const FileUploadComponent: FileUploadComponentDefinition = {
                 allowUpload={enabled && model.allowUpload}
                 allowDelete={enabled && model.allowDelete}
                 allowReplace={enabled && model.allowReplace}
-                allowedFileTypes={model?.allowedFileTypes}
-                isDragger={model?.isDragger}
+                allowedFileTypes={model.allowedFileTypes}
+                isDragger={model.isDragger}
                 styles={finalStyle}
               />
             </FileUploadProvider>
@@ -101,17 +106,16 @@ const FileUploadComponent: FileUploadComponentDefinition = {
           allowDelete: true,
           allowUpload: true,
           hideFileName: true,
-          ownerId: prev['ownerId'],
-          ownerType: prev['ownerType'],
-          owner: prev['owner'],
-        } as IFileUploadProps;
+          ownerId: getStringPropertyOrUndefined(prev, 'ownerId') ?? "",
+          ownerType: getStringPropertyOrUndefined(prev, 'ownerType') ?? "",
+        };
       })
       .add<IFileUploadProps>(1, (prev, context) => ({
         ...prev,
         useSync: prev.useSync === undefined ? isEntityTypeIdEmpty(context.formSettings?.modelType) : prev.useSync,
       }))
       .add<IFileUploadProps>(2, (prev) => {
-        const pn = prev['name'] ?? prev.propertyName;
+        const pn = getFirstNonEmptyStringPropertyOrUndefined(prev, ['name', 'propertyName']);
         const model = migratePropertyName(migrateCustomFunctions(prev));
         model.propertyName = pn;
         return model;

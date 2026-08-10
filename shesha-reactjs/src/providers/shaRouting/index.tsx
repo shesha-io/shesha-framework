@@ -34,9 +34,9 @@ interface IRouter {
 
 export interface INavigateActoinArguments extends IHasVersion {
   navigationType: NavigationType;
-  url?: string;
-  formId?: FormIdentifier;
-  queryParameters?: IKeyValue[];
+  url?: string | undefined;
+  formId?: FormIdentifier | undefined;
+  queryParameters?: IKeyValue[] | undefined;
 }
 
 export interface IScriptActionArguments {

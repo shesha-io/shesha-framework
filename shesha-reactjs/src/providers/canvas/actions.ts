@@ -7,6 +7,7 @@ export enum CanvasConfigActionEnums {
   SetDesignerDevice = 'SET_DESIGNER_DEVICE',
   SetScreenWidth = 'SET_SCREEN_WIDTH',
   SetCanvasAutoZoom = 'SET_AUTO_ZOOM',
+  SetManualZoom = 'SET_MANUAL_ZOOM',
   SetConfigTreePanelSize = 'SET_CONFIG_TREE_PANEL_SIZE',
   SetViewType = 'SET_VIEW_TYPE',
 }
@@ -19,7 +20,10 @@ export const setScreenWidthAction = createAction<number>(CanvasConfigActionEnums
 
 export const setDesignerDeviceAction = createAction<DeviceTypes>(CanvasConfigActionEnums.SetDesignerDevice);
 
-export const setCanvasAutoZoomAction = createAction(CanvasConfigActionEnums.SetCanvasAutoZoom);
+export const setCanvasAutoZoomAction = createAction<boolean | undefined>(CanvasConfigActionEnums.SetCanvasAutoZoom);
+
+// Sets an explicit zoom value and switches the canvas into manual mode (disables auto-zoom).
+export const setManualZoomAction = createAction<number>(CanvasConfigActionEnums.SetManualZoom);
 
 export const setConfigTreePanelSizeAction = createAction<number>(CanvasConfigActionEnums.SetConfigTreePanelSize);
 

@@ -5,18 +5,18 @@ import { jsonSafeParse } from '@/utils/object';
 export const getStyleChangeValue = (
   type: keyof IValue,
   direction: keyof IInputDirection,
-  value: string,
-  prevVal: string,
+  value: string | undefined,
+  prevVal: string | undefined,
 ): string => {
   const v = jsonSafeParse<object>(prevVal || '{}');
 
   return JSON.stringify({
     ...(v || {}),
-    [`${type}${capitalizeFirstLetter(direction)}`]: value.replace(/\b0+/g, ''),
+    [`${type}${capitalizeFirstLetter(direction)}`]: value?.replace(/\b0+/g, ''),
   });
 };
 
-export const getStyleValue = (type: keyof IValue, direction: keyof IInputDirection, value: string): string => {
+export const getStyleValue = (type: keyof IValue, direction: keyof IInputDirection, value: string | null | undefined): string => {
   const parsed = jsonSafeParse(value || '{}');
 
   // Compute the dynamic key (e.g., "paddingTop", "marginLeft")

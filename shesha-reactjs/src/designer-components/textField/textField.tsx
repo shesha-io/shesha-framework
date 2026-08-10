@@ -3,27 +3,30 @@ import { Input, InputRef, Tooltip } from 'antd';
 import { InputProps } from 'antd/lib/input';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
-import { IInputStyles } from '@/providers';
+import { IInputStyles, UnwrapCodeEvaluators } from '@/providers';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { ITextFieldComponentProps, TextFieldComponentDefinition } from './interfaces';
-import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly, migrateHiddenToVisible } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { IconType, ShaIcon } from '@/components/shaIcon';
 import { useStyles } from './styles';
+import { PasswordFieldWrapper } from './passwordFieldWrapper';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { getSettings } from './settingsForm';
 import { defaultStyles, buildPasswordValidatorString, usePasswordComplexitySettings, validatePasswordValue } from './utils';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { TextFieldApi } from '@/componentsApi/componentApi';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
-
 import apiCode from "../../componentsApi/componentApi.ts?raw";
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
+import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '../_common/events';
 
 const TextFieldComponent: TextFieldComponentDefinition = {
+  allowInherit: true,
   type: 'textField',
   isInput: true,
   isOutput: true,
@@ -33,19 +36,18 @@ const TextFieldComponent: TextFieldComponentDefinition = {
   preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string &&
-    (!dataFormat ||
+    (isNullOrWhiteSpace(dataFormat) ||
       dataFormat === StringFormats.singleline ||
       dataFormat === StringFormats.emailAddress ||
       dataFormat === StringFormats.phoneNumber ||
       dataFormat === StringFormats.password),
-  calculateModel: (model, allData) => ({ eventHandlers: getAllEventHandlers(model, allData) }),
-  Factory: ({ model, calculatedModel }) => {
+  Factory: ({ model }) => {
     const componentApi = useComponentApi();
     const inputRef = useRef<InputRef>(null);
     useEffect(() => {
       componentApi?.updateApi<TextFieldApi>({
         id: model.id,
-        componentName: model.componentName,
+        componentName: model.componentName ?? "",
         level: 3,
         typeDefinition: { typeName: 'TextFieldApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
         api: { focus: () => inputRef.current?.focus() },
@@ -53,16 +55,11 @@ const TextFieldComponent: TextFieldComponentDefinition = {
     }, [componentApi, model.componentName, model.id]);
     useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
-    const { styles } = useStyles({ fontFamily: model.font?.type, fontWeight: model.font?.weight, textAlign: model.font?.align, color: model.font?.color, fontSize: model.font?.size });
+    const { styles } = useStyles(model);
     const InputComponentType = useMemo(() => model.textType === 'password' ? Input.Password : Input, [model.textType]);
 
-    const finalStyle = useMemo(() => !model.enableStyleOnReadonly && model.readOnly ? {
-      ...model.allStyles.fontStyles,
-      ...model.allStyles.dimensionsStyles,
-    } : model.allStyles.fullStyle, [model.enableStyleOnReadonly, model.readOnly, model.allStyles]);
-
     const regExpObj = useMemo(() => {
-      if (!model.regExp) return null;
+      if (isNullOrWhiteSpace(model.regExp)) return null;
       try {
         return new RegExp(model.regExp, 'g');
       } catch (error) {
@@ -75,12 +72,12 @@ const TextFieldComponent: TextFieldComponentDefinition = {
     const passwordComplexity = usePasswordComplexitySettings();
 
     const passwordValidator = useMemo(() =>
-      isPassword ? buildPasswordValidatorString(passwordComplexity) : null,
-    [isPassword, passwordComplexity],
+      isPassword && model.useStandardPasswordValidation === true ? buildPasswordValidatorString(passwordComplexity) : null,
+    [isPassword, model.useStandardPasswordValidation, passwordComplexity],
     );
 
-    const modelWithValidation = useMemo(() => {
-      if (!isPassword || !passwordValidator || model.validate?.validator) return model;
+    const modelWithValidation = useMemo<UnwrapCodeEvaluators<ITextFieldComponentProps>>(() => {
+      if (!isPassword || isNullOrWhiteSpace(passwordValidator) || isNotNullOrWhiteSpace(model.validate?.validator)) return model;
       return {
         ...model,
         validate: {
@@ -92,72 +89,73 @@ const TextFieldComponent: TextFieldComponentDefinition = {
       };
     }, [model, isPassword, passwordValidator]);
 
-    if (model.hidden) return null;
-
     const inputProps: InputProps = {
       className: `sha-input ${styles.textField}`,
       placeholder: model.placeholder,
       prefix: <>{model.prefix}{model.prefixIcon && <ShaIcon iconName={model.prefixIcon} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
       suffix: <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon as IconType} style={{ color: 'rgba(0,0,0,.45)' }} />}</>,
-      variant: model.border?.hideBorder ? 'borderless' : undefined,
       size: model.size,
-      disabled: model.readOnly,
-      readOnly: model.readOnly,
+      disabled: model.disabled === true,
       spellCheck: model.spellCheck ?? false,
-      style: model.allStyles.fullStyle,
+      ...(isDefined(model.styleJson) ? { style: model.styleJson } : {}),
     };
+    if (model.border?.hideBorder === true)
+      inputProps.variant = 'borderless';
 
     const fieldContent = (
-      <ConfigurableFormItem model={modelWithValidation}>
-        {(value, onChange) => {
+      <ConfigurableFormItem<string> model={modelWithValidation}>
+        {(value, onChange, _, ctx) => {
           // Derive password tooltip error from committed value so it stays in sync with
           // the form validator (handles initial values, programmatic changes, and resets).
           // Only active when the complexity validator is actually composed into the model
           // (i.e. no custom validator has overridden it).
-          const isPasswordComplexityActive = isPassword && !!passwordValidator && !model.validate?.validator;
-          const passwordError = isPasswordComplexityActive && value
+          const isPasswordComplexityActive = isPassword && model.useStandardPasswordValidation === true && isNotNullOrWhiteSpace(passwordValidator) && isNullOrWhiteSpace(model.validate?.validator);
+          const passwordError = isPasswordComplexityActive && isNotNullOrWhiteSpace(value)
             ? (() => {
-              const errors = validatePasswordValue(value as string, passwordComplexity);
+              const errors = validatePasswordValue(value, passwordComplexity);
               return errors.length > 0 ? `Password must contain ${errors.join(', ')}` : null;
             })()
             : null;
 
-          const customEvents = calculatedModel.eventHandlers;
-          const onChangeInternal = (...args: unknown[]): void => {
-            const arg = args[0];
-            const inputValue: string | undefined =
-              arg !== null && typeof arg === 'object' && 'currentTarget' in arg &&
-              arg.currentTarget !== null && typeof arg.currentTarget === 'object' && 'value' in arg.currentTarget
-                ? arg.currentTarget.value?.toString()
-                : undefined;
-            const isEmpty = inputValue === undefined || inputValue === null || inputValue === '';
+          const inputElement = model.readOnly === true
+            ? (
+              <ReadOnlyDisplayFormItem
+                value={model.textType === 'password' && !isNullOrWhiteSpace(value) ? ''.padStart(value.length, '•') : value}
+                enableFullStyle={model.enableStyleOnReadonly}
+                style={model.styleJson}
+                styleValue={model}
+              />
+            )
+            : (
+              <InputComponentType
+                ref={inputRef}
+                {...inputProps}
+                value={value ?? ""}
+                onChange={(event) => {
+                  const inputValue = event.currentTarget.value;
+                  const isEmpty = isNullOrWhiteSpace(inputValue);
+                  const isRegExpMatch = isDefined(regExpObj) && inputValue.match(regExpObj) !== null;
+                  if ((!isEmpty && isRegExpMatch) || !isDefined(regExpObj) || isEmpty) {
+                    const changedValue = ctx?.handleEvent(event, { value: inputValue }, model.onChangeCustom);
 
-            const isRegExpMatch = regExpObj && Boolean(inputValue?.match(regExpObj));
-
-            let val = inputValue;
-            if ((!isEmpty && isRegExpMatch) || !regExpObj || isEmpty) {
-              const changedValue = customEvents.onChange({ value: inputValue }, args[0]) as string | undefined;
-              val = changedValue !== undefined ? changedValue : inputValue;
-            } else {
-              // Workaround because if the value is undefined, input component leave the inputed value
-              // Rendering of the component is not called
-              // And there is a discrepancy - the value is undefined, but the some text is displayed in the component
-              if (Boolean(regExpObj) && value === undefined && typeof onChange === 'function') {
-                onChange('');
-              }
-              return;
-            }
-            if (typeof onChange === 'function') onChange(val);
-          };
-
-          const inputElement = inputProps.readOnly
-            ? <ReadOnlyDisplayFormItem value={model.textType === 'password' ? ''.padStart(value?.length, '•') : value} style={finalStyle} />
-            : <InputComponentType ref={inputRef} {...inputProps} {...customEvents} disabled={model.readOnly} value={value} onChange={onChangeInternal} />;
+                    onChange(changedValue !== undefined ? changedValue : inputValue);
+                  } else {
+                    // Workaround because if the value is undefined, input component leave the inputed value
+                    // Rendering of the component is not called
+                    // And there is a discrepancy - the value is undefined, but the some text is displayed in the component
+                    if (isDefined(regExpObj) && value === undefined) {
+                      onChange('');
+                    }
+                  }
+                }}
+                {...getComponentEvents<string>(model, ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, ctx, value, DataTypes.string)}
+              />
+            );
 
           if (isPassword) {
             return (
               <Tooltip title={passwordError ?? undefined} placement="bottom">
-                <div className={styles.passwordFieldWrapper}>{inputElement}</div>
+                {inputElement}
               </Tooltip>
             );
           }
@@ -167,18 +165,25 @@ const TextFieldComponent: TextFieldComponentDefinition = {
       </ConfigurableFormItem>
     );
 
+    if (isPassword) {
+      return <PasswordFieldWrapper className={styles.passwordFieldWrapper}>{fieldContent}</PasswordFieldWrapper>;
+    }
+
     return fieldContent;
   },
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   initModel: (model) => ({ ...model, textType: 'text' }),
+  getDefaultStyles: () => defaultStyles(),
   migrator: (m) => m
     .add<ITextFieldComponentProps>(0, (prev) => ({ ...prev, textType: 'text' }))
     .add<ITextFieldComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<ITextFieldComponentProps>(2, (prev) => migrateVisibility(prev))
     .add<ITextFieldComponentProps>(3, (prev) => migrateReadOnly(prev, 'inherited'))
     .add<ITextFieldComponentProps>(4, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-    .add<ITextFieldComponentProps>(5, (prev) => {
+    .add<ITextFieldComponentProps>(5, (prev, context) => {
+      if (context.isNew === true) return prev;
+
       const styles: IInputStyles = {
         size: prev.size,
         width: prev.width,
@@ -194,10 +199,26 @@ const TextFieldComponent: TextFieldComponentDefinition = {
       };
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-    .add<ITextFieldComponentProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+    .add<ITextFieldComponentProps>(6, (prev, context) => context.isNew === true
+      ? prev
+      : { ...migratePrevStyles(prev, defaultStyles()) })
+    .add<ITextFieldComponentProps>(7, (prev) => migrateHiddenToVisible(prev))
+    .add<ITextFieldComponentProps>(8, (prev) => migratePermissionsToVisiblePermissions(prev)),
   linkToModelMetadata: (model, metadata): ITextFieldComponentProps => (
     { ...model, textType: metadata.dataFormat === StringFormats.password ? 'password' : 'text' }
   ),
+  previewConfiguration: {
+    type: 'textField',
+    id: 'textField',
+    propertyName: `textFieldAppearance`,
+    label: `Text Field Label`,
+    prefix: 'Prefix',
+    prefixIcon: 'DoubleRightOutlined',
+    suffixIcon: 'DoubleLeftOutlined',
+    suffix: 'Suffix',
+    version: 'latest',
+    textType: 'text',
+  },
 };
 
 export default TextFieldComponent;

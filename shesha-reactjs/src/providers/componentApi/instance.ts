@@ -45,9 +45,7 @@ export class ComponentApiInstance implements IComponentApi {
     const components = this.getComponents();
     components.forEach((component) => {
       if (component.api === undefined || !component.componentName) return;
-      if (this._components[component.componentName]) {
-        console.warn(`Duplicate componentName "${component.componentName}" detected. The earlier component's API will be overwritten.`);
-      }
+      // If duplicate componentName then earlier component's API will be overwritten
       this._components[component.componentName] = component.api;
     });
 
@@ -62,16 +60,14 @@ export class ComponentApiInstance implements IComponentApi {
     const localApi = (existsApi ?? { id: api.id }) as IComponentApiDescription<T>;
     if (localApi.api === undefined) localApi.api = { } as T;
     localApi.componentName = componentName;
-    if (api.typeDefinition && (localApi.typeDefinition === undefined || !api.skipUpdateTypeDefinitionIfExists))
+    if (api.typeDefinition && (localApi.typeDefinition === undefined || api.skipUpdateTypeDefinitionIfExists !== true))
       // Component APIs are always nullable because they may not have been initialized yet at some point in the lifecycle.
       localApi.typeDefinition = { ...api.typeDefinition };
     if (api.componentModel)
       localApi.componentModel = api.componentModel;
-    if (api.rawComponentModel)
-      localApi.rawComponentModel = api.rawComponentModel;
     if (api.metadata)
       localApi.metadata = api.metadata;
-    if (api.isInput)
+    if (api.isInput === true)
       localApi.isInput = api.isInput;
     if (localApi.propertiesLevel === undefined) localApi.propertiesLevel = {};
     for (const key in api.api) {
@@ -86,15 +82,16 @@ export class ComponentApiInstance implements IComponentApi {
     }
     api.properties?.forEach((property) => {
       if (localApi.propertiesLevel === undefined) localApi.propertiesLevel = {};
-      if (localApi.api && (localApi.propertiesLevel[String(property.name)] ?? 0) <= api.level && (!(property.name in localApi.api) || !property.skipIfExists)) {
+      if (localApi.api && (localApi.propertiesLevel[String(property.name)] ?? 0) <= api.level && (!(property.name in localApi.api) || property.skipIfExists !== true)) {
         this.createOrUpdateApiProperty(localApi.api as T, { name: property.name, getter: property.getter, setter: property.setter });
         localApi.propertiesLevel[String(property.name)] = api.level;
       }
     });
     this.componentApis.set(api.id, localApi as IComponentApiDescription);
 
-    if (!existsApi)
+    if (!existsApi) {
       this.refreshComponents();
+    }
   };
 
   removeApi(id: string): void {

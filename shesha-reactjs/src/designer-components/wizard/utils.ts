@@ -1,7 +1,7 @@
 import { findLastIndex } from 'lodash';
 import { nanoid } from '@/utils/uuid';
 import { IWizardSequence, IWizardStepProps } from './models';
-import { IStyleType } from "@/providers/form/models";
+import { IStyleValue } from "@/providers/form/models";
 import { CSSProperties } from 'react';
 
 export const EXPOSED_VARIABLES = [
@@ -27,7 +27,7 @@ export const EXPOSED_VARIABLES = [
 
 type StepDescriptionGetter = (description: string, index: number) => string;
 export const getStepDescritpion =
-  (show: boolean, sequence: IWizardSequence, currentIndex: number): StepDescriptionGetter => (description: string, index: number): string => {
+  (show: boolean, sequence: IWizardSequence | undefined, currentIndex: number): StepDescriptionGetter => (description: string, index: number): string => {
     if (show) {
       switch (true) {
         case index === currentIndex:
@@ -102,7 +102,7 @@ export const getWizardStep = (steps: IWizardStepProps[], current: number, type: 
 };
 
 export const onAddNewItem = (items: IWizardStepProps[]): IWizardStepProps => {
-  const count = (items ?? []).length;
+  const count = items.length;
   const id = nanoid();
   const buttonProps: IWizardStepProps = {
     id: id,
@@ -127,7 +127,7 @@ export const onAddNewItem = (items: IWizardStepProps[]): IWizardStepProps => {
 };
 
 
-export const defaultStyles = (): IStyleType => {
+export const defaultStyles = (): IStyleValue => {
   return {
     background: { type: 'color', color: '' },
     font: { weight: '400', size: 16, color: '#000', type: 'Segoe UI' },

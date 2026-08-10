@@ -1,13 +1,17 @@
-import { FieldSettings, Func, JsonLogicFormatFunc, JsonLogicImportFunc, JsonLogicTree, JsonLogicValue, RuleValue } from '@react-awesome-query-builder/antd';
+import { FieldSettings, Func, JsonLogicFormatFunc, JsonLogicImportFunc, JsonLogicTree, RuleValue } from '@react-awesome-query-builder/antd';
 import { getEvaluationNodeFromJsonLogicNode, IEvaluateJsonLogicNode } from '@/utils/jsonLogic';
 import { IHasHideForSelect } from '../interfaces';
+import { isDefined } from '@/utils/nullables';
 
-const args2JsonLogic: JsonLogicFormatFunc = (funcArgs: Record<string, JsonLogicValue>): JsonLogicTree => {
+const args2JsonLogic: JsonLogicFormatFunc = (funcArgs: Record<string, unknown>): JsonLogicTree => {
+  const expressionRaw = funcArgs['expression'];
+  const requiredRaw = funcArgs['required'];
+
   const node: IEvaluateJsonLogicNode = {
     evaluate: [
       {
-        expression: funcArgs.expression,
-        required: funcArgs.required,
+        expression: typeof (expressionRaw) === 'string' ? expressionRaw : "",
+        required: requiredRaw === true,
         type: 'mustache',
       },
     ],
@@ -16,9 +20,11 @@ const args2JsonLogic: JsonLogicFormatFunc = (funcArgs: Record<string, JsonLogicV
   return node;
 };
 
-const jsonLogic2Args: JsonLogicImportFunc = (val): RuleValue[] => {
-  const node = getEvaluationNodeFromJsonLogicNode(val);
-  if (!node || node.evaluate?.type !== 'mustache')
+const jsonLogic2Args: JsonLogicImportFunc = (val: unknown): RuleValue[] => {
+  const node = typeof (val) === "object" && isDefined(val)
+    ? getEvaluationNodeFromJsonLogicNode(val)
+    : undefined;
+  if (!node || node.evaluate.type !== 'mustache')
     throw `Can't parse 'evaluate' function`; // throw exception to skip current function and try to parse others
 
   return [node.evaluate.expression, node.evaluate.required];

@@ -5,5 +5,5 @@ import { CustomLabelValueEditorInputs } from '../utils';
 
 
 export const CustomLabelValueEditorWrapper: FCUnwrapped<ICustomLabelValueEditorSettingsInputProps> = (props) => {
-  return <CustomLabelValueEditorInputs {...props} exposedVariables={null} />;
+  return <CustomLabelValueEditorInputs {...props} />;
 };

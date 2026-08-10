@@ -7,6 +7,7 @@ import { migrateCustomFunctions, migratePropertyName } from '@/designer-componen
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { ThunderboltOutlined } from '@ant-design/icons';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 const ConfigurableActionConfiguratorComponent: ConfigurableActionConfiguratorComponentDefinition = {
   type: 'configurableActionConfigurator',
@@ -17,9 +18,13 @@ const ConfigurableActionConfiguratorComponent: ConfigurableActionConfiguratorCom
   Factory: ({ model }) => {
     if (model.hidden) return null;
 
+    if (isNullOrWhiteSpace(model.propertyName)) {
+      console.error('Property name is required for configurableActionConfigurator. Component id: ', model.id);
+      return;
+    }
     return (
       <Form.Item name={model.propertyName} labelCol={{ span: 0 }} wrapperCol={{ span: 24 }} noStyle>
-        <ConfigurableActionConfigurator allowedActions={model?.allowedActions} editorConfig={model} level={1} readOnly={model.readOnly} label={model.label as string} description={model.description} hideLabel={model.hideLabel} />
+        <ConfigurableActionConfigurator allowedActions={model.allowedActions} editorConfig={model} level={1} readOnly={model.readOnly} label={model.label as string} description={model.description} hideLabel={model.hideLabel} />
       </Form.Item>
     );
   },

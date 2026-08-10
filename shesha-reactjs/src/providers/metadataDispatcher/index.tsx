@@ -1,9 +1,11 @@
+import { useCallback } from 'react';
 import {
   NestedPropertyMetadatAccessor,
 } from './contexts';
 import {
   ModelTypeIdentifier,
   IObjectMetadata,
+  isObjectMetadata,
 } from '@/interfaces/metadata';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { MetadataFetcher } from '@/utils/metadata/metadataBuilder';
@@ -11,12 +13,14 @@ import { useEntityMetadataFetcher } from './entities/provider';
 import { IEntityMetadataFetcher } from './entities/models';
 import { MetadataDispatcherProvider, useMetadataDispatcher } from './provider';
 import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
+import { isDefined } from '@/utils/nullables';
+import { isEntityTypeIdentifier } from './entities/utils';
 
 
 const useNestedPropertyMetadatAccessor = (modelType: string | IEntityTypeIdentifier | undefined): NestedPropertyMetadatAccessor => {
   const dispatcher = useMetadataDispatcher();
 
-  const accessor: NestedPropertyMetadatAccessor = (propertyPath: string) => modelType
+  const accessor: NestedPropertyMetadatAccessor = (propertyPath: string) => isEntityTypeIdentifier(modelType)
     ? dispatcher.getPropertyMetadata({ dataType: DataTypes.entityReference, modelType, propertyPath })
     : Promise.resolve(null);
 
@@ -25,8 +29,15 @@ const useNestedPropertyMetadatAccessor = (modelType: string | IEntityTypeIdentif
 
 const useMetadataFetcher = (): MetadataFetcher => {
   const { getMetadata } = useMetadataDispatcher();
-  const metadataFetcher = (typeId: ModelTypeIdentifier): Promise<IObjectMetadata | null> => getMetadata({ dataType: DataTypes.entityReference, modelType: typeId });
-  return metadataFetcher;
+  return useCallback(
+    async (typeId: ModelTypeIdentifier): Promise<IObjectMetadata | null> => {
+      const metadata = await getMetadata({ dataType: DataTypes.entityReference, modelType: typeId });
+      return isDefined(metadata) && isObjectMetadata(metadata)
+        ? metadata
+        : null;
+    },
+    [getMetadata],
+  );
 };
 
 export {

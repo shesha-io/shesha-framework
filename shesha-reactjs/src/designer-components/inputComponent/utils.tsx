@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { Select, Row } from 'antd';
+import { Select } from 'antd';
 import { ListEditor } from '@/components/listEditor';
 import { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
 import { CodeEditorWithStandardConstants } from '../codeEditor/codeEditorWithConstants';
@@ -9,122 +9,177 @@ import { ICodeEditorProps } from '../codeEditor/interfaces';
 import { IObjectMetadata } from '@/interfaces';
 import { InputComponent } from '.';
 import { getWidth } from '../settingsInput/utils';
-import { DefaultOptionType } from 'antd/lib/select';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 const stringToFriendlyMap = new Map<string, string>([['true', 'On'], ['false', 'Off'], ['editable', 'Editable'], ['readOnly', 'Read only'], ['inherited', 'Inherited']]);
 
 export const convertValueToFriendlyString = (value: unknown): string => {
-  if (typeof value === 'string') {
-    return stringToFriendlyMap.has(value) ? stringToFriendlyMap.get(value) : value;
-  }
-
+  if (value === null)
+    return 'NULL';
+  if (value === undefined)
+    return 'Undefined';
+  if (typeof value === 'object')
+    return 'Complex value';
+  if (typeof value === 'string')
+    return stringToFriendlyMap.get(value) ?? value;
   return String(value);
 };
 
+/** A data URI or an image URL — the image picker stores its value as base64. */
+const isImageValue = (value: unknown): value is string =>
+  typeof value === 'string' && (/^data:image\//i.test(value) || /^(https?:\/\/|\/)[^\s]+\.(png|jpe?g|gif|webp|svg)(\?[^\s]*)?$/i.test(value));
+
+/** Strings long enough to overrun the popover (e.g. a base64 payload or a long script). */
+const MAX_INLINE_VALUE_LENGTH = 80;
+
+/**
+ * Renders an inherited value for display in the inheritance popover.
+ *
+ * Most values are shown as friendly text, but an image value is shown as a thumbnail: the
+ * picker stores images as base64, and printing the raw data URI floods the popover with
+ * thousands of characters instead of telling the user what they'd inherit.
+ */
+export const renderValueForDisplay = (value: unknown): ReactElement => {
+  if (isImageValue(value)) {
+    return (
+      <img
+        src={value}
+        alt="Inherited image"
+        style={{ maxWidth: 120, maxHeight: 80, objectFit: 'contain', display: 'block' }}
+      />
+    );
+  }
+
+  const text = convertValueToFriendlyString(value);
+  return <span>{text.length > MAX_INLINE_VALUE_LENGTH ? `${text.slice(0, MAX_INLINE_VALUE_LENGTH)}…` : text}</span>;
+};
+
 export const getEditor = (
-  availableConstantsExpression: string,
+  availableConstantsExpression: string | undefined,
   codeEditorProps: ICodeEditorProps,
   constantsAccessor: IObjectMetadata | (() => Promise<IObjectMetadata>),
   resultTypeAccessor: IObjectMetadata | (() => Promise<IObjectMetadata>) | undefined,
 ): ReactElement => {
-  return availableConstantsExpression?.trim()
+  return !isNullOrWhiteSpace(availableConstantsExpression)
     ? <CodeEditor {...codeEditorProps} availableConstants={constantsAccessor} resultType={resultTypeAccessor} />
     : <CodeEditorWithStandardConstants {...codeEditorProps} resultType={resultTypeAccessor} />;
 };
 
+const EMPTY_VALUE: ILabelValueItem[] = [];
+const EMPTY_ON_CHANGE = (_: ILabelValueItem[]): void => {
+  // noop
+};
+
 export const CustomLabelValueEditorInputs = (props: ILabelValueEditorProps): ReactElement => {
   const { styles } = useStyles();
-  const { value, onChange, labelName, valueName, readOnly, labelTitle, valueTitle, colorName, iconName, colorTitle, iconTitle, dropdownOptions } = props;
+  const { value = EMPTY_VALUE, onChange = EMPTY_ON_CHANGE, labelName, valueName, readOnly, labelTitle, valueTitle, colorName, iconName, colorTitle, iconTitle, dropdownOptions } = props;
 
   return (
     <ListEditor<ILabelValueItem>
       value={value}
       onChange={onChange}
-      initNewItem={(_items) => ({
-        [labelName]: '',
-        [valueName]: '',
-        [colorName]: '',
-        [iconName]: '',
-      })}
+      initNewItem={(_items) => {
+        const newItem: ILabelValueItem = {};
+        [labelName, valueName, colorName, iconName].forEach((name) => {
+          if (!isNullOrWhiteSpace(name))
+            newItem[name] = '';
+        });
+        return newItem;
+      }}
       readOnly={readOnly}
     >
-      {({ item, itemOnChange, readOnly }) => (
-        <div className={styles.rowInputs} style={{ gap: 8 }}>
-          <InputComponent
-            type="textField"
-            placeholder={labelTitle}
-            size="small"
-            label=""
-            id={labelName}
-            propertyName={labelName}
-            value={item[labelName]}
-            width={getWidth("textField", 100)}
-            onChange={(value: string) => {
-              itemOnChange({ ...item, [labelName]: value }, undefined);
-            }}
-          />
-          <InputComponent
-            type="textField"
-            placeholder={valueTitle}
-            size="small"
-            label=""
-            id={valueName}
-            propertyName={valueName}
-            value={item[valueName]}
-            width={getWidth("textField", 100)}
-            onChange={(value: string) => {
-              itemOnChange({ ...item, [valueName]: value }, undefined);
-            }}
-          />
-          <Row>
-            <InputComponent
-              type="colorPicker"
-              placeholder={colorTitle}
-              size="small"
-              label=""
-              id={colorName}
-              propertyName={colorName}
-              value={item[colorName]}
-              width={getWidth("colorPicker", 24)}
-              onChange={(value: string) => {
-                itemOnChange({ ...item, [colorName]: value }, undefined);
-              }}
-            />
-            <Select
-              size="small"
-              variant="borderless"
-              showSearch
-              value={item[colorName]}
-              onChange={(value) => {
-                itemOnChange({ ...item, [colorName]: value }, undefined);
-              }}
-              popupMatchSelectWidth={false}
-              style={{ width: 'max-content' }}
-              labelRender={() => {
-                return '';
-              }}
-              disabled={readOnly}
-              options={Array.isArray(dropdownOptions)
-                ? dropdownOptions.map<DefaultOptionType>((option) => ({ label: option.label, value: option.value }))
-                : dropdownOptions}
-            />
-            <InputComponent
-              type="iconPicker"
-              placeholder={iconTitle}
-              readOnly={readOnly}
-              size="small"
-              label=""
-              id={iconName}
-              propertyName={iconName}
-              value={item[iconName]}
-              width={getWidth("iconPicker", 24)}
-              onChange={(value: string) => {
-                itemOnChange({ ...item, [iconName]: value }, undefined);
-              }}
-            />
-          </Row>
-        </div>
-      )}
+      {({ item, itemOnChange, readOnly }) => {
+        const data = item as Record<string, string | null>;
+        // nowrap keeps Label, Value, Colour and Icon on a single line as designed.
+        // The text fields flex-shrink and the colour/icon group stays compact.
+        return (
+          <div className={styles.rowInputs} style={{ gap: 8, flexWrap: 'nowrap', alignItems: 'center' }}>
+            {!isNullOrWhiteSpace(labelName) && (
+              <InputComponent
+                type="textField"
+                placeholder={labelTitle}
+                size="small"
+                label=""
+                id={labelName}
+                propertyName={labelName}
+                value={data[labelName] ?? ""}
+                width={getWidth("textField", 70)}
+                onChange={(value) => {
+                  itemOnChange({ ...data, [labelName]: value } as ILabelValueItem, undefined);
+                }}
+              />
+            )}
+            {!isNullOrWhiteSpace(valueName) && (
+              <InputComponent
+                type="textField"
+                placeholder={valueTitle}
+                size="small"
+                label=""
+                id={valueName}
+                propertyName={valueName}
+                value={data[valueName]}
+                width={getWidth("textField", 70)}
+                onChange={(value) => {
+                  itemOnChange({ ...data, [valueName]: value } as ILabelValueItem, undefined);
+                }}
+              />
+            )}
+            <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+              {!isNullOrWhiteSpace(colorName) && (
+                <>
+                  <InputComponent
+                    type="colorPicker"
+                    placeholder={colorTitle}
+                    size="small"
+                    label=""
+                    id={colorName}
+                    propertyName={colorName}
+                    value={data[colorName]}
+                    width={getWidth("colorPicker", 24)}
+                    onChange={(value) => {
+                      itemOnChange({ ...data, [colorName]: value } as ILabelValueItem, undefined);
+                    }}
+                  />
+                  <Select
+                    size="small"
+                    variant="borderless"
+                    showSearch
+                    value={data[colorName] ?? null}
+                    onChange={(value) => {
+                      itemOnChange({ ...data, [colorName]: value } as ILabelValueItem, undefined);
+                    }}
+                    popupMatchSelectWidth={false}
+                    style={{ width: 'max-content' }}
+                    labelRender={() => {
+                      return '';
+                    }}
+                    disabled={readOnly}
+                    options={Array.isArray(dropdownOptions)
+                      ? dropdownOptions.map((option) => ({ label: option.label, value: option.value }))
+                      : []}
+                  />
+                </>
+              )}
+              {!isNullOrWhiteSpace(iconName) && (
+                <InputComponent
+                  type="iconPicker"
+                  placeholder={iconTitle}
+                  readOnly={readOnly}
+                  size="small"
+                  label=""
+                  id={iconName}
+                  propertyName={iconName}
+                  value={data[iconName]}
+                  width={getWidth("iconPicker", 24)}
+                  onChange={(value) => {
+                    itemOnChange({ ...data, [iconName]: value } as ILabelValueItem, undefined);
+                  }}
+                />
+              )}
+            </div>
+          </div>
+        );
+      }}
     </ListEditor>
   );
 };

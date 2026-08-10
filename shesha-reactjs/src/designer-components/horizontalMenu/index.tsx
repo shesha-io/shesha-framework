@@ -1,21 +1,19 @@
+import { default as ConfigurableComponentRenderer } from "@/components/configurableComponentRenderer";
 import LayoutMenu from "@/components/menu";
 import { ILayoutColor } from "@/components/menu/model";
+import { IConfigurableFormComponent, IToolboxComponent } from "@/interfaces/formDesigner";
+import { IConfigurableComponentContext } from '@/providers/configurableComponent/contexts';
+import { getStyle, validateConfigurableComponentSettings } from "@/providers/form/utils";
+import { useFormData } from "@/providers/formContext";
+import { IConfigurableMainMenu, useMainMenu } from "@/providers/mainMenu";
 import { filterObjFromKeys } from "@/utils";
 import { EditOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
-import React, { CSSProperties, useMemo } from 'react';
-import { IConfigurableComponentContext } from '@/providers/configurableComponent/contexts';
 import { ItemType } from "antd/es/menu/interface";
-
+import React, { CSSProperties, useMemo } from 'react';
+import { migratePrevStyles } from "../_common-migrations/migrateStyles";
 import Editor from "./modal";
 import { getSettings } from "./settings";
 import { defaultStyles } from "./utils";
-import { ISidebarMenuItem } from "@/interfaces/sidebar";
-import { IConfigurableFormComponent, IToolboxComponent } from "@/interfaces/formDesigner";
-import { useFormData } from "@/providers/formContext";
-import { useMainMenu } from "@/providers/mainMenu";
-import { getStyle, validateConfigurableComponentSettings } from "@/providers/form/utils";
-import ConfigurableComponentRenderer from "@/components/configurableComponentRenderer";
-import { migratePrevStyles } from "../_common-migrations/migrateStyles";
 
 interface IMenuListProps extends IConfigurableFormComponent, ILayoutColor {
   items?: ItemType[];
@@ -42,10 +40,6 @@ const resolveMenuOverflow = (
   return "dropdown";
 };
 
-interface ISideBarMenuProps {
-  items: ISidebarMenuItem[];
-}
-
 export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
   type: "menuList",
   name: "Menu List",
@@ -57,10 +51,10 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
     const { data } = useFormData();
     const { loadedMenu, changeMainMenu, saveMainMenu } = useMainMenu();
 
-    const context: IConfigurableComponentContext<ISideBarMenuProps> = {
+    const context: IConfigurableComponentContext<IConfigurableMainMenu> = {
       settings: loadedMenu,
       load: () => { /* do nothing */ },
-      save: (settings: ISideBarMenuProps) =>
+      save: (settings: IConfigurableMainMenu) =>
         saveMainMenu({ ...loadedMenu, ...settings }).then(() => {
           changeMainMenu({ ...loadedMenu, ...settings });
         }),
@@ -76,12 +70,12 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
     };
 
     const fontSize = model.font?.size || model.fontSize || "14";
-    const gap = Number(model?.gap || "12");
-    const height = Number(model?.height || "6");
+    const gap = Number(model.gap || "12");
+    const height = Number(model.height || "6");
     const dropdownPadding = `${gap}px`;
 
     // Normalize width: if no unit provided, append 'px'
-    const rawWidth = (model?.dimensions?.width || model.width || "500px").toString().trim();
+    const rawWidth = (model.dimensions?.width || model.width || "500px").toString().trim();
     const width = /^\d+(\.\d+)?$/.test(rawWidth) ? `${rawWidth}px` : rawWidth;
 
     const colors: ILayoutColor = {
@@ -165,9 +159,9 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
                   width: width,
                 } as React.CSSProperties}
                 itemStyle={finalItemStyle}
-                styleOnHover={getStyle(model?.styleOnHover, data)}
-                styleOnSelected={getStyle(model?.styleOnSelected, data)}
-                styleOnSubMenu={getStyle(model?.styleOnSubMenu, data)}
+                styleOnHover={getStyle(model.styleOnHover, data)}
+                styleOnSelected={getStyle(model.styleOnSelected, data)}
+                styleOnSubMenu={getStyle(model.styleOnSubMenu, data)}
                 overflow={resolveMenuOverflow(model.menuOverflow)}
                 width={width}
                 fontStyles={finalFontStyles as React.CSSProperties}

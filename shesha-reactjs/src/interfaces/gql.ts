@@ -49,7 +49,7 @@ export interface ErrorInfo {
   validationErrors?: ValidationErrorInfo[] | null;
 }
 
-export interface AbpWrappedResponse<TData, TError> {
+export interface AbpWrappedResponse<TData, TError = ErrorInfo> {
   targetUrl?: string | null;
   success: boolean;
   error?: TError;

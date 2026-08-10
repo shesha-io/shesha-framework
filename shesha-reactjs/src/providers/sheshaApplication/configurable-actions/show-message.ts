@@ -3,6 +3,7 @@ import { SheshaActionOwners } from "../../configurableActionsDispatcher/models";
 import { useConfigurableAction } from "@/providers/configurableActionsDispatcher";
 import { nanoid } from "@/utils/uuid";
 import { FormMarkupFactory } from "@/interfaces/configurableAction";
+import { capitalizeFirstLetter } from "@/utils/string";
 
 const messageTypes = ['info', 'success', 'error', 'warning', 'loading'] as const;
 type MessageType = typeof messageTypes[number];
@@ -28,7 +29,7 @@ const getShowMessageArgumentsForm: FormMarkupFactory = ({ fbf }) => {
       propertyName: 'type',
       label: 'Type',
       dropdownOptions: messageTypes.map((v) => ({
-        label: v[0].toUpperCase() + v.slice(1),
+        label: capitalizeFirstLetter(v),
         value: v,
         id: v,
       })),

@@ -71,12 +71,12 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     jsSetting: true,
                   },
                 ],
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
               })
               .addSettingsInputRow({
                 id: nanoid(),
                 parentId: commonTabId,
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                 inputs: [
                   {
                     id: nanoid(),
@@ -247,8 +247,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         modelType: {
                           _code: 'return getSettingValue(data?.entityType);',
                           _mode: 'code',
-                          _value: false,
-                        } as any,
+                        },
                         fieldsUnavailableHint: "Please select `Entity Type` to be able to configure this filter.",
                       },
                     ],
@@ -307,9 +306,8 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                                                 ];
                                                         }`,
                           _mode: "code",
-                          _value: false,
-                        } as any,
-                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                        },
+                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                       },
 
                     ],
@@ -331,7 +329,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         wrapInTemplate: true,
                         templateSettings: { functionName: 'outcomeValueFunc' },
                         availableConstantsExpression: 'return metadataBuilder.object("constants").addObject("item", "Item of list").build();',
-                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                       },
 
                     ],
@@ -353,7 +351,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         wrapInTemplate: true,
                         templateSettings: { functionName: 'keyValueFunc' },
                         availableConstantsExpression: 'return metadataBuilder.object("constants").addObject("value", "Value of item").build();',
-                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                       },
 
                     ],
@@ -375,7 +373,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         wrapInTemplate: true,
                         templateSettings: { functionName: 'displayValueFunc' },
                         availableConstantsExpression: 'return metadataBuilder.object("constants").addObject("item", "Item of list").build();',
-                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                       },
 
                     ],
@@ -393,7 +391,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         labelAlign: 'right',
                         jsSetting: true,
                         tooltip: 'Allow to use free text that is missing on the source',
-                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                       },
                     ],
                   })
@@ -414,7 +412,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         wrapInTemplate: true,
                         templateSettings: { functionName: 'filterSelectedFunc' },
                         availableConstantsExpression: 'return metadataBuilder.object("constants").addObject("value", "Value of autocomplete").build();',
-                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                        readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                       },
                     ],
                   })
@@ -449,8 +447,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 }
                               `,
                           _mode: 'code',
-                          _value: false,
-                        } as any,
+                        },
                         isDynamic: false,
                         autoFillProps: false,
                         settingsValidationErrors: [],
@@ -474,8 +471,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         modelType: {
                           _code: 'return getSettingValue(data?.entityType);',
                           _mode: 'code',
-                          _value: false,
-                        } as any,
+                        },
                         isDynamic: false,
                         autoFillProps: false,
                         settingsValidationErrors: [],
@@ -513,8 +509,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     modelType: {
                       _code: 'return getSettingValue(data?.entityType);',
                       _mode: 'code',
-                      _value: false,
-                    } as any,
+                    },
                   },
                 ],
               })
@@ -541,8 +536,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     modelType: {
                       _code: 'return getSettingValue(data?.entityType);',
                       _mode: 'code',
-                      _value: false,
-                    } as any,
+                    },
                   },
 
                 ],
@@ -571,8 +565,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     modelType: {
                       _code: 'return getSettingValue(data?.entityType);',
                       _mode: 'code',
-                      _value: false,
-                    } as any,
+                    },
                   },
 
                 ],
@@ -663,8 +656,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           modelType: {
                             _code: 'return getSettingValue(data?.entityType);',
                             _mode: 'code',
-                            _value: false,
-                          } as any,
+                          },
                           isDynamic: false,
                           autoFillProps: false,
                           settingsValidationErrors: [],
@@ -704,7 +696,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
             id: validationTabId,
             components: [...fbf()
               .addSettingsInput({
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                 id: nanoid(),
                 inputType: 'switch',
                 propertyName: 'validate.required',
@@ -723,7 +715,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
             id: eventsTabId,
             components: [...fbf()
               .addSettingsInput({
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                 id: nanoid(),
                 inputType: 'codeEditor',
                 propertyName: 'onChangeCustom',
@@ -753,7 +745,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   _mode: "code",
                   _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
                   _value: "",
-                } as any,
+                },
                 components: [
                   ...fbf()
                     .addSettingsInput({
@@ -1191,7 +1183,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
             id: securityTabId,
             components: [...fbf()
               .addSettingsInput({
-                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                readOnly: { _code: 'return  getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                 id: nanoid(),
                 inputType: 'permissions',
                 propertyName: 'permissions',

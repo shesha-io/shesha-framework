@@ -4,13 +4,14 @@ import { FCUnwrapped } from '@/providers/form/models';
 import { FormAutocomplete } from '@/components/configurableItemAutocomplete/formAutocomplete';
 
 export const FormAutocompleteWrapper: FCUnwrapped<IFormAutocompleteSettingsInputProps> = (props) => {
-  const { value, onChange, readOnly, size } = props;
+  const { value, onChange, readOnly = false, size } = props;
   return (
     <FormAutocomplete
       value={value}
       onChange={onChange}
       readOnly={readOnly}
       size={size ?? 'small'}
+      mode="single"
     />
   );
 };

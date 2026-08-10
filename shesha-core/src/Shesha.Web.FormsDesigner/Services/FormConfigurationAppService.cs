@@ -1,5 +1,4 @@
 ﻿using Abp.Application.Services.Dto;
-using Abp.Authorization;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Validation;
 using Abp.Threading;
@@ -7,11 +6,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
+using Shesha.Authorization;
 using Shesha.ConfigurationItems.Cache;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
-using Shesha.Exceptions;
 using Shesha.Extensions;
 using Shesha.Mvc;
 using Shesha.Permissions;
@@ -30,27 +29,28 @@ using System.Threading.Tasks;
 
 namespace Shesha.Web.FormsDesigner.Services
 {
+    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, "app:Configurator")]
     public class FormConfigurationAppService : SheshaCrudServiceBase<FormConfiguration, FormConfigurationDto, Guid, FilteredPagedAndSortedResultRequestDto, CreateFormConfigurationRequest, UpdateFormConfigurationDto, GetFormByIdInput>
     {
         private readonly IRepository<ConfigurationItemFolder, Guid> _folderRepository;
         private readonly IRepository<Module, Guid> _moduleRepository;
+        private readonly IRepository<FrontEndApp, Guid> _applicationRepository;
         private readonly IFormManager _formManager;
-        private readonly IConfigurationItemClientSideCache _clientSideCache;
         private readonly IPermissionedObjectManager _permissionedObjectManager;
 
         public FormConfigurationAppService(
             IRepository<FormConfiguration, Guid> repository,
             IRepository<Module, Guid> moduleRepository,
+            IRepository<FrontEndApp, Guid> applicationRepository,
             IRepository<ConfigurationItemFolder, Guid> folderRepository,
             IFormManager formManager,
-            IConfigurationItemClientSideCache clientSideCache,
             IPermissionedObjectManager permissionedObjectManager
         ) : base(repository)
         {
             _moduleRepository = moduleRepository;
+            _applicationRepository = applicationRepository;
             _folderRepository = folderRepository;
             _formManager = formManager;
-            _clientSideCache = clientSideCache;
             _permissionedObjectManager = permissionedObjectManager;
         }
 
@@ -69,30 +69,10 @@ namespace Shesha.Web.FormsDesigner.Services
         /// Gets all permissioned shesha forms with anonymous access
         /// </summary>
         /// <returns></returns>
+        [AllowAnonymous]
         public Task<List<PermissionedObjectDto>> GetAnonymousFormsAsync()
         {
             return _permissionedObjectManager.GetObjectsByAccessAsync(ShaPermissionedObjectsTypes.Form, RefListPermissionedAccess.AllowAnonymous);
-        }
-
-        private async Task<bool> CheckFormPermissionsAsync(string? module, string name)
-        {
-            var permission = await _permissionedObjectManager.GetOrDefaultAsync(
-                FormManager.GetFormPermissionedObjectName(module, name),
-                ShaPermissionedObjectsTypes.Form
-            );
-
-            var access = permission?.Access == null || permission.Access < RefListPermissionedAccess.AnyAuthenticated
-                ? RefListPermissionedAccess.AnyAuthenticated
-                : permission.Access;
-            if (AbpSession.UserId == null
-                && (access == RefListPermissionedAccess.AnyAuthenticated || access == RefListPermissionedAccess.RequiresPermissions))
-                throw new AbpAuthorizationException("You are not authorized for this form");
-            if (access == RefListPermissionedAccess.RequiresPermissions)
-            {
-                var permissions = permission?.Permissions?.ToArray() ?? [];
-                return await PermissionChecker.IsGrantedAsync(false, permissions);
-            }
-            return true;
         }
 
         protected override FormConfigurationDto MapToEntityDto(FormConfiguration entity)
@@ -105,6 +85,10 @@ namespace Shesha.Web.FormsDesigner.Services
             var module = await _moduleRepository.GetAsync(input.ModuleId);
             module.EnsureEditable();
 
+            var application = input.FrontEndAppId != null
+                ? await _applicationRepository.GetAsync(input.FrontEndAppId.Value)
+                : null;
+
             var folder = input.FolderId != null
                 ? await _folderRepository.GetAsync(input.FolderId.Value)
                 : null;
@@ -112,6 +96,7 @@ namespace Shesha.Web.FormsDesigner.Services
             var formInput = new CreateFormInput
             {
                 Module = module,
+                Application = application,
                 Folder = folder,
                 Name = input.Name,
                 Description = input.Description,
@@ -169,70 +154,6 @@ namespace Shesha.Web.FormsDesigner.Services
         }
 
         /// <summary>
-        /// Get current form configuration by name
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="FormNotFoundException"></exception>
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<FormConfigurationDto> GetByNameAsync(GetFormByFullNameInput input)
-        {
-            // check cache
-            if (!string.IsNullOrWhiteSpace(input.Md5))
-            {
-                var cachedMd5 = await _clientSideCache.GetCachedMd5Async(FormConfiguration.ItemTypeName, null, input.Module, input.Name);
-                if (input.Md5 == cachedMd5)
-                    throw new ContentNotModifiedException("Form not changed");
-            }
-
-            var moduleEntity = await GetModuleAsync(input.Module);
-
-            // todo: move to a generic method
-            var query = (await Repository.GetAllAsync()).Where(f => f.Module == moduleEntity && f.Name == input.Name);
-
-            var form = await AsyncQueryableExecuter.FirstOrDefaultAsync(query);
-
-            if (form == null)
-                throw new FormNotFoundException(input.Module, input.Name);
-
-            var dto = await MapToEntityDtoAsync(form);
-
-            //await _clientSideCache.SetCachedMd5Async(FormConfiguration.ItemTypeName, null, input.Module, input.Name, dto.CacheMd5);
-
-            if (!await CheckFormPermissionsAsync(form.Module?.Name, form.Name))
-            {
-                dto.Markup = null;
-            }
-
-            return dto;
-        }
-
-        public override async Task<FormConfigurationDto> GetAsync(GetFormByIdInput input)
-        {
-            // check cache
-            if (!string.IsNullOrWhiteSpace(input.Md5))
-            {
-                var cachedMd5 = await _clientSideCache.GetCachedMd5Async(FormConfiguration.ItemTypeName, input.Id);
-                if (input.Md5 == cachedMd5)
-                    throw new ContentNotModifiedException("Form not changed");
-            }
-
-            var form = await Repository.GetAsync(input.Id);
-
-            var dto = await MapToEntityDtoAsync(form);
-
-            // add MD5 to request
-            //await _clientSideCache.SetCachedMd5Async(FormConfiguration.ItemTypeName, input.Id, dto.CacheMd5);
-
-            if (!await CheckFormPermissionsAsync(form.Module?.Name, form.Name))
-            {
-                dto.Markup = null;
-            }
-
-            return dto;
-        }
-
-        /// <summary>
         /// Update form markup
         /// </summary>
         /// <param name="input"></param>
@@ -245,7 +166,7 @@ namespace Shesha.Web.FormsDesigner.Services
             form.Module?.EnsureEditable();
 
             form.Markup = input.Markup;
-            await Repository.UpdateAsync(form);
+            form.ModelType = input.ModelType;
 
             await Repository.UpdateAsync(form);
 

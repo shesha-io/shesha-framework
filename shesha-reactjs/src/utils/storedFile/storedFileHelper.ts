@@ -111,6 +111,10 @@ export class StoredFileHelper implements IStoredFileHelper {
         formData.append('ownerType.name', ownerType.name);
         formData.append('ownerType.module', ownerType.module ?? "");
       } else {
+        // A plain string is the full class name (e.g. "Shesha.Domain.Person"); send it as
+        // entityType so the server resolves the EntityConfig by full class name. Splitting it
+        // into module/name on the last dot is wrong (namespace != module) and makes the server
+        // fail to resolve the owner type, returning a 500.
         formData.append('ownerType.entityType', ownerType);
       }
     }

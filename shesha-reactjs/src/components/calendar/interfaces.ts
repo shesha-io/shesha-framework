@@ -6,5 +6,5 @@ export interface IEventComponentProps {
 }
 
 export interface ILayerWithMetadata extends ICalendarLayersProps {
-  metadata: NestedPropertyMetadatAccessor;
+  metadata: NestedPropertyMetadatAccessor | undefined;
 }

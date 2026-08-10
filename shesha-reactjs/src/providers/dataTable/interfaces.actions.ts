@@ -1,5 +1,5 @@
 
-import { Row, SortingRule } from 'react-table';
+import { SortingRule } from 'react-table';
 import { IConfigurableColumnsProps } from '../datatableColumnsConfigurator/models';
 import {
   ColumnFilter,
@@ -10,6 +10,8 @@ import {
   DataFetchDependency,
   ISortingItem,
   ITableRowData,
+  RowSelection,
+  FilterExpression,
 } from './interfaces';
 import { IRepository } from './repository/interfaces';
 import { DragState, IColumnWidth } from './interfaces';
@@ -30,7 +32,7 @@ interface _FilterActions {
   performQuickSearch: (val: string) => void;
 
   setPredefinedFilters: (filters: IStoredFilter[]) => void;
-  setPermanentFilter: (filter: IStoredFilter) => void;
+  setPermanentFilter: (filter: FilterExpression | undefined) => void;
   getCurrentFilter: () => ITableFilter[];
   toggleAdvancedFilter: (isVisible?: boolean | undefined) => void;
   toggleColumnFilter: (columnIds: string[]) => void;
@@ -57,6 +59,7 @@ interface _DataActions {
    * Get current repository of the datatable
    */
   getRepository: () => IRepository;
+  updateRepository: (repository: IRepository) => void;
   registerDataFetchDependency: (ownerId: string, dependency: DataFetchDependency) => void;
   unregisterDataFetchDependency: (ownerId: string) => void;
   /**
@@ -69,7 +72,7 @@ interface _SelectionActions {
   changeSelectedIds: (selectedIds: string[]) => void;
   setSelectedRow: (index: number, row: ITableRowData) => void;
   clearSelectedRow: () => void;
-  setMultiSelectedRow: (rows: Row<ITableRowData>[] | Row<ITableRowData>) => void;
+  setMultiSelectedRow: (rows: RowSelection<ITableRowData>[] | RowSelection<ITableRowData>) => void;
 };
 
 interface _ReorderActions {

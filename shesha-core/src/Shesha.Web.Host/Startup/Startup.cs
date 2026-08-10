@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
@@ -34,6 +35,7 @@ using Shesha.GraphQL.Swagger;
 using Shesha.Identity;
 using Shesha.Notifications;
 using Shesha.Notifications.SMS;
+using Shesha.RateLimiting;
 using Shesha.Scheduler.Extensions;
 using Shesha.Scheduler.Hangfire;
 using Shesha.Specifications;
@@ -72,6 +74,8 @@ namespace Shesha.Web.Host.Startup
             });
 
             services.AddSheshaElmah(_appConfiguration);
+
+            services.AddSheshaRateLimiting(opts => _appConfiguration.GetSection("RateLimiting").Bind(opts));
 
             services.AddMvcCore(options =>
                 {
@@ -124,6 +128,9 @@ namespace Shesha.Web.Host.Startup
                             });
                             break;
                         }
+                    case DbmsType.NotSpecified:
+                    default:
+                        throw new InvalidOperationException($"Unsupported DbmsType '{dbms}' for Hangfire storage configuration. Supported types are SQLServer and PostgreSQL.");
                 }
             });
             services.AddHangfireServer(config => {
@@ -147,6 +154,9 @@ namespace Shesha.Web.Host.Startup
 
         public void Configure(IApplicationBuilder app, IBackgroundJobClient backgroundJobs)
         {
+            // Security headers (registered first so they apply to all responses)
+            app.UseSecurityHeaders();
+
             app.UseSheshaElmah();
 
             // note: already registered in the ABP
@@ -157,15 +167,21 @@ namespace Shesha.Web.Host.Startup
             app.UseAbp(options => { options.UseAbpRequestLocalization = false; }); // Initializes ABP framework.
 
             // global cors policy
+            var corsOrigins = _appConfiguration["App:CorsOrigins"]?
+                .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                .Select(o => o.Trim().TrimEnd('/'))
+                .Where(o => !string.IsNullOrEmpty(o))
+                .ToArray() ?? Array.Empty<string>();
             app.UseCors(x => x
                 .AllowAnyMethod()
                 .AllowAnyHeader()
-                .SetIsOriginAllowed(origin => true) // allow any origin
-                .AllowCredentials()); // allow credentials
+                .WithOrigins(corsOrigins)
+                .AllowCredentials());
             app.UseStaticFiles();
+            app.UseRouting();
+            app.UseRateLimiter();
             app.UseAuthentication();
             app.UseAbpRequestLocalization();
-            app.UseRouting();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -180,6 +196,9 @@ namespace Shesha.Web.Host.Startup
                 endpoints.MapControllers();
                 endpoints.MapSignalRHubs();
             });
+
+            // Block access to Swagger UI when the setting is disabled
+            app.UseMiddleware<SwaggerUiAccessMiddleware>();
 
             // Enable middleware to serve generated Swagger as a JSON endpoint
             app.UseSwagger();
@@ -200,7 +219,10 @@ namespace Shesha.Web.Host.Startup
             });
 
             app.UseMiddleware<GraphQLMiddleware>();
-            app.UseGraphQLPlayground(); //to explorer API navigate https://*DOMAIN*/ui/playground
+            if (_hostEnvironment.IsDevelopment())
+            {
+                app.UseGraphQLPlayground(); //to explorer API navigate https://*DOMAIN*/ui/playground
+            }
         }
 
         private void AddApiVersioning(IServiceCollection services)
@@ -221,7 +243,6 @@ namespace Shesha.Web.Host.Startup
                 options.SchemaFilter<GraphQLSchemaFilter>();
                 options.SchemaFilter<DynamicDtoSchemaFilter>();
                 options.OperationFilter<SwaggerOperationFilter>();
-
                 options.CustomSchemaIds(type => SwaggerHelper.GetSchemaId(type));
 
                 options.CustomOperationIds(desc => desc.ActionDescriptor is ControllerActionDescriptor d

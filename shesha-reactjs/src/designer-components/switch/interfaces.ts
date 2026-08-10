@@ -1,14 +1,13 @@
-import { IEventHandlers } from '@/components/formDesigner/components/utils';
 import { ComponentDefinition } from '@/interfaces';
-import { IConfigurableFormComponent, IStyleType } from '@/providers/form/models';
+import { IConfigurableFormComponent, IInputStyles, IStyleValue } from '@/providers/form/models';
 
-export interface ISwitchComponentProps extends IConfigurableFormComponent, IStyleType {
-  value?: boolean;
-  defaultChecked?: boolean;
+export interface ISwitchComponentProps extends IConfigurableFormComponent, IInputStyles {
+  value?: boolean | undefined;
+  /**
+   * Styles for the switch handle (the moving knob). The root style set styles the track,
+   * so the two are configured independently.
+   */
+  handleStyles?: IStyleValue | undefined;
 }
 
-interface ISwitchComponentCalulatedValues {
-  eventHandlers: IEventHandlers;
-}
-
-export type SwitchComponentDefinition = ComponentDefinition<"switch", ISwitchComponentProps, ISwitchComponentCalulatedValues>;
+export type SwitchComponentDefinition = ComponentDefinition<"switch", ISwitchComponentProps>;

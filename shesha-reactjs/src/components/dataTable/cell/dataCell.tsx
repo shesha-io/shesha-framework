@@ -20,7 +20,7 @@ import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { updateModelExcludeFiltered } from '@/components/formComponentSelector/adapters';
 import { getEditorAdapter } from '@/components/formComponentSelector';
 import MultiEntityCell from './default/multiEntityCell';
-import FormComponentMemo from '@/components/formDesigner/formComponent';
+import FormComponentMemo from '@/components/formDesigner/formComponent/formComponent';
 import { useStyles } from '../styles/styles';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getNumberOrUndefined } from '@/utils/string';
@@ -73,16 +73,17 @@ type ComponentWrapperInnerProps = {
   columnId: string;
   propertyName: string;
   readOnly?: boolean | undefined;
+  disabled?: boolean | undefined;
   propertyMeta?: IPropertyMetadata | undefined;
   tableRow?: { [key in string]?: unknown } | undefined;
 };
 
 const ComponentWrapperInner: FC<ComponentWrapperInnerProps> = (props) => {
-  const { component, model, columnId, propertyName, readOnly, propertyMeta, tableRow } = props;
+  const { component, model, columnId, propertyName, readOnly, disabled, propertyMeta, tableRow } = props;
   const { styles, cx } = useStyles();
 
   const actualModel = useActualContextData(
-    model, readOnly ? true : undefined,
+    model, { readOnly: readOnly === true ? true : undefined, disabled: disabled === true ? true : undefined },
     {
       tableRow: tableRow,
     },

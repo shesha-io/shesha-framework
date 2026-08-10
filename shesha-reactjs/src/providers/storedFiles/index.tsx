@@ -17,11 +17,11 @@ import { StoredFileModel } from '../../utils/storedFile/models';
 import { OnFileDownloaded, OnFileListChanged } from './models';
 
 export interface IStoredFilesProviderProps {
-  name?: string;
+  name?: string | undefined;
   ownerId: string;
   ownerType: string | IEntityTypeIdentifier;
-  ownerName?: string;
-  filesCategory?: string;
+  ownerName?: string | undefined;
+  filesCategory?: string | undefined;
 
   // used for requered field validation
   value?: StoredFileModel[] | undefined;

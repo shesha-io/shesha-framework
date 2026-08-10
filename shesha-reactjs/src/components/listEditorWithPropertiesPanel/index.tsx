@@ -5,6 +5,7 @@ import { ListEditor, ListEditorChildrenFn, ListEditorSectionRenderingFn } from '
 import { Skeleton } from 'antd';
 import { DefaultGroupHeader } from './defaultGroupHeader';
 import { NoSelection } from './noSelection';
+import { isDefined } from '@/utils/nullables';
 
 export interface ItemPropertiesRendererProps<TItem extends ListItem> {
   item: TItem;
@@ -18,11 +19,12 @@ export interface IListEditorWithPropertiesPanelProps<TItem extends ListItemWithI
   onChange: (newValue: TItem[]) => void;
   header?: React.ReactNode;
   children: ListEditorChildrenFn<TItem>;
-  addItemText?: string;
-  groupHeader?: ListEditorSectionRenderingFn<TItem>;
+  addItemText?: string | undefined;
+  groupHeader?: ListEditorSectionRenderingFn<TItem> | undefined;
   initNewItem: (items: TItem[]) => TItem;
   itemProperties: (itemProps: ItemPropertiesRendererProps<TItem>) => React.ReactNode;
-  noSelectionProperties?: string | React.ReactElement;
+  noSelectionProperties?: string | React.ReactElement | undefined;
+  isGroup?: ((item: TItem) => boolean) | undefined;
 }
 
 /**
@@ -32,11 +34,14 @@ const findAndUpdateItemRecursively = <TItem extends ListItemWithId>(
   items: TItem[],
   targetId: string,
   newValues: TItem,
+  isGroup: (item: TItem) => boolean,
 ): { updated: boolean; newItems: TItem[] } => {
   const newItems = [...items];
 
   for (let i = 0; i < newItems.length; i++) {
     const item = newItems[i];
+    if (!isDefined(item))
+      continue;
 
     // Check if this is the item we're looking for
     if (item.id === targetId) {
@@ -45,8 +50,8 @@ const findAndUpdateItemRecursively = <TItem extends ListItemWithId>(
     }
 
     // If this is a group with childItems, search recursively
-    if (item.itemType === 'group' && item.childItems) {
-      const result = findAndUpdateItemRecursively(item.childItems, targetId, newValues);
+    if (isGroup(item) && item.childItems) {
+      const result = findAndUpdateItemRecursively(item.childItems as TItem[], targetId, newValues, isGroup);
       if (result.updated) {
         newItems[i] = { ...item, childItems: result.newItems };
         return { updated: true, newItems };
@@ -57,11 +62,27 @@ const findAndUpdateItemRecursively = <TItem extends ListItemWithId>(
   return { updated: false, newItems };
 };
 
-export const ListEditorWithPropertiesPanel = <TItem extends ListItemWithId>({ value, onChange, readOnly, header, groupHeader, initNewItem, children, itemProperties, noSelectionProperties, addItemText }: IListEditorWithPropertiesPanelProps<TItem>): React.JSX.Element => {
+const isGroupDefault = <TItem extends ListItemWithId>(item: TItem): boolean => {
+  return isDefined(item) && "itemType" in item && item.itemType === 'group';
+};
+
+export const ListEditorWithPropertiesPanel = <TItem extends ListItemWithId>({
+  value,
+  onChange,
+  readOnly,
+  header,
+  groupHeader,
+  initNewItem,
+  children,
+  itemProperties,
+  noSelectionProperties,
+  addItemText,
+  isGroup = isGroupDefault,
+}: IListEditorWithPropertiesPanelProps<TItem>): React.JSX.Element => {
   const [selectedItem, setSelectedItem] = useState<TItem>();
   const [isPending, startTransition] = useTransition();
 
-  const onSelectionChange = (item: TItem): void => {
+  const onSelectionChange = (item: TItem | undefined): void => {
     startTransition(() => {
       setSelectedItem(item);
     });
@@ -70,7 +91,7 @@ export const ListEditorWithPropertiesPanel = <TItem extends ListItemWithId>({ va
   const onItemUpdate = (newValues: TItem): void => {
     if (!selectedItem || selectedItem.id !== newValues.id) return;
 
-    const result = findAndUpdateItemRecursively(value, newValues.id, newValues);
+    const result = findAndUpdateItemRecursively(value, newValues.id, newValues, isGroup);
     if (result.updated) {
       onChange(result.newItems);
     } else {
@@ -99,7 +120,7 @@ export const ListEditorWithPropertiesPanel = <TItem extends ListItemWithId>({ va
         readOnly={readOnly}
         selectionType="single"
         onSelectionChange={onSelectionChange}
-        header={groupHeader ?? (groupHeader === undefined ? (headerProps) => (<DefaultGroupHeader {...headerProps} addItemText={addItemText} />) : null)}
+        header={groupHeader ?? ((headerProps) => (<DefaultGroupHeader {...headerProps} addItemText={addItemText} />))}
       >
         {children}
       </ListEditor>

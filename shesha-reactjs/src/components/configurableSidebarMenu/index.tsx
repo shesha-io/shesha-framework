@@ -19,8 +19,8 @@ const EmptySidebarProps: ISideBarMenuProps = {
 };
 
 export interface IConfigurableSidebarMenuProps {
-  theme?: MenuTheme;
-  defaultSettings?: ISideBarMenuProps;
+  theme?: MenuTheme | undefined;
+  defaultSettings?: ISideBarMenuProps | undefined;
   name: string;
   isApplicationSpecific: boolean;
 }

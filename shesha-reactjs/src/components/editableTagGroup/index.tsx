@@ -1,12 +1,12 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Input, InputProps, Tag } from 'antd';
+import { Input, InputProps, Tag, type InputRef } from 'antd';
 import React, { FC, useEffect, useState } from 'react';
 import Show from '@/components/show';
+import { isDefined } from '@/utils/nullables';
 
 export interface IEditableTagGroupProps extends Omit<InputProps, 'value' | 'onChange'> {
-  value?: string[];
-  defaultValue?: string;
-  onChange?: (values?: string[]) => void;
+  value?: string[] | undefined;
+  onChange?: ((values: string[] | null) => void) | undefined;
 }
 
 interface IEditableTagGroupState {
@@ -14,13 +14,13 @@ interface IEditableTagGroupState {
   inputValue?: string;
 }
 
-export const EditableTagGroup: FC<IEditableTagGroupProps> = ({ value = [], onChange, defaultValue, readOnly = false, ...rest }) => {
+export const EditableTagGroup: FC<IEditableTagGroupProps> = ({ value = [], onChange, readOnly = false, ...rest }) => {
   const [state, setState] = useState<IEditableTagGroupState>({ inputVisible: false, inputValue: '' });
 
-  const inputRef = React.useRef<any>(null);
+  const inputRef = React.useRef<InputRef>(null);
 
-  const handleClose = (removedTag): void => {
-    const tags = value?.filter((tag) => tag !== removedTag);
+  const handleClose = (removedTag: string): void => {
+    const tags = value.filter((tag) => tag !== removedTag);
 
     if (onChange) {
       onChange(tags);
@@ -33,7 +33,7 @@ export const EditableTagGroup: FC<IEditableTagGroupProps> = ({ value = [], onCha
 
   useEffect(() => {
     if (state.inputVisible) {
-      inputRef?.current?.focus({});
+      inputRef.current?.focus({});
     }
   }, [state.inputVisible]);
 
@@ -46,7 +46,7 @@ export const EditableTagGroup: FC<IEditableTagGroupProps> = ({ value = [], onCha
 
     let localValue = value;
 
-    if (currentValue && localValue?.indexOf(currentValue) === -1) {
+    if (currentValue && localValue.indexOf(currentValue) === -1) {
       localValue = [...localValue, currentValue];
 
       if (onChange) {
@@ -61,7 +61,7 @@ export const EditableTagGroup: FC<IEditableTagGroupProps> = ({ value = [], onCha
   };
 
   const onTagEdit = (tag: string): void => {
-    const newTags = value?.filter((v) => v !== tag);
+    const newTags = value.filter((v) => v !== tag);
     const { inputValue: currentValue } = state;
 
     setState({
@@ -69,7 +69,7 @@ export const EditableTagGroup: FC<IEditableTagGroupProps> = ({ value = [], onCha
       inputValue: tag,
     });
 
-    onChange(currentValue?.trim() ? [...newTags, currentValue] : newTags);
+    onChange?.(currentValue?.trim() ? [...newTags, currentValue] : newTags);
   };
 
   const forMap = (tag: string): React.JSX.Element => {
@@ -97,17 +97,16 @@ export const EditableTagGroup: FC<IEditableTagGroupProps> = ({ value = [], onCha
   };
 
   const { inputVisible, inputValue } = state;
-  const tagChild = (Array.isArray(value) ? value : !!value ? [value] : [])?.map(forMap);
+  const tagChild = (Array.isArray(value) ? value : isDefined(value) ? [value] : []).map(forMap);
 
   return (
     <>
-      <div style={{ marginBottom: value?.length ? 16 : 0 }}>
+      <div style={{ marginBottom: value.length ? 16 : 0 }}>
         {tagChild}
       </div>
 
-      <Show when={inputVisible}>
+      <Show when={inputVisible ?? false}>
         <Input
-          defaultValue={defaultValue}
           type="text"
           size="small"
           style={{ width: '100%' }}

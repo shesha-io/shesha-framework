@@ -1,6 +1,6 @@
-import { IStyleType } from "@/providers/form/models";
+import { IStyleValue } from "@/providers/form/models";
 
-export const initialStyles = (): IStyleType => {
+export const initialStyles = (): IStyleValue => {
   return {
     border: {
       hideBorder: false,
@@ -42,7 +42,7 @@ export const initialStyles = (): IStyleType => {
       repeat: 'no-repeat',
       size: 'cover',
       position: 'center',
-      gradient: { direction: 'to right', colors: {} },
+      gradient: { direction: 'to right', colors: [] },
     },
     font: {
       color: '#000',

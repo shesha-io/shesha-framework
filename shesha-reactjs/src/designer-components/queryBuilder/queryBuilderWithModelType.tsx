@@ -1,20 +1,16 @@
 import React, { FC, PropsWithChildren } from 'react';
-import ConditionalWrap from '@/components/conditionalWrapper';
-import { MetadataProvider } from '@/providers';
+import { ConditionalMetadataProvider } from '@/providers';
 import { QueryBuilderWrapper } from './queryBuilderWrapper';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
 export interface IQueryBuilderWithModelType {
-  modelType?: string | IEntityTypeIdentifier;
+  modelType?: string | IEntityTypeIdentifier | undefined;
 }
 
 export const QueryBuilderWithModelType: FC<PropsWithChildren<IQueryBuilderWithModelType>> = (props) => {
   return (
-    <ConditionalWrap
-      condition={Boolean(props.modelType)}
-      wrap={(content) => <MetadataProvider modelType={props.modelType}>{content}</MetadataProvider>}
-    >
+    <ConditionalMetadataProvider modelType={props.modelType}>
       <QueryBuilderWrapper>{props.children}</QueryBuilderWrapper>
-    </ConditionalWrap>
+    </ConditionalMetadataProvider>
   );
 };

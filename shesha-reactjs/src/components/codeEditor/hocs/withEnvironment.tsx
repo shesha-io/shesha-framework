@@ -8,23 +8,23 @@ import React, { ComponentType, FC } from "react";
 type ResultMetadata = IMetadata | IObjectMetadata;
 
 type WithEnvironment<T> = Omit<T, 'availableConstants' | 'resultType'> & {
-  availableConstants?: IObjectMetadata;
-  resultType?: ResultMetadata;
+  availableConstants?: IObjectMetadata | undefined;
+  resultType?: ResultMetadata | undefined;
 };
 
 type WithEnvironmentAccessors<T> = Omit<T, 'availableConstants' | 'resultType'> & {
-  availableConstants?: IObjectMetadata | (() => Promise<IObjectMetadata>);
-  resultType?: ResultMetadata | (() => Promise<ResultMetadata>);
+  availableConstants?: IObjectMetadata | (() => Promise<IObjectMetadata>) | undefined;
+  resultType?: ResultMetadata | (() => Promise<ResultMetadata>) | undefined;
 };
 
 interface EnvironmentMetadataState {
-  constants: IObjectMetadata;
-  resultType: ResultMetadata;
+  constants: IObjectMetadata | undefined;
+  resultType: ResultMetadata | undefined;
   state: 'loading' | 'ready';
 };
 
-const evaluatePromise = <TResult extends IMetadata>(value: TResult | (() => Promise<TResult>)): Promise<TResult> => {
-  const result: Promise<TResult> = value
+const evaluatePromise = <TResult extends IMetadata>(value: TResult | (() => Promise<TResult>) | undefined): Promise<TResult | undefined> => {
+  const result: Promise<TResult | undefined> = value
     ? typeof (value) === 'function'
       ? value()
       : Promise.resolve(value)
@@ -33,7 +33,7 @@ const evaluatePromise = <TResult extends IMetadata>(value: TResult | (() => Prom
 };
 
 export function withEnvironment<WrappedProps>(WrappedComponent: ComponentType<WithEnvironment<WrappedProps>>): FC<WithEnvironmentAccessors<WrappedProps>> {
-  return wrapDisplayName((props) => {
+  return wrapDisplayName<WithEnvironmentAccessors<WrappedProps>>((props) => {
     const { availableConstants, resultType } = props;
 
     const state = useAsyncMemo<EnvironmentMetadataState>(() => {
@@ -51,7 +51,7 @@ export function withEnvironment<WrappedProps>(WrappedComponent: ComponentType<Wi
       });
     }, [availableConstants], { constants: undefined, resultType: undefined, state: 'loading' });
 
-    return state.state === 'ready'
+    return state && state.state === 'ready'
       ? (
         <WrappedComponent
           {...props}

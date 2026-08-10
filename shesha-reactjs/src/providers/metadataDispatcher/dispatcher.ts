@@ -117,7 +117,10 @@ export class MetadataDispatcher implements IMetadataDispatcher {
             prefix,
             containerType: containerType ?? '',
             itemsType: itemsType ? mapProperty(itemsType) : undefined,
+            entityModule: property.entityModule ?? undefined,
             entityType: property.entityType ?? '',
+            referenceListModule: property.referenceListModule ?? undefined,
+            referenceListName: property.referenceListName ?? undefined,
             properties: properties
               ? properties.map((child) => mapProperty(child, property.path))
               : undefined,

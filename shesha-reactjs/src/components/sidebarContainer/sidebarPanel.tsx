@@ -1,14 +1,16 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useState } from 'react';
 import classNames from 'classnames';
 import { RightOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import { useStyles } from './styles/styles';
 import { ISidebarProps, SidebarPanelPosition } from './models';
+import { useEffectOnce } from '@/hooks/useEffectOnce';
+import { isDefined } from '@/utils';
 
 interface SidebarPanelProps extends ISidebarProps {
   side: SidebarPanelPosition;
   allowFullCollapse: boolean;
-  setIsOpenGlobal?: (React.Dispatch<React.SetStateAction<boolean>>) | undefined;
+  setIsOpenGlobal?: ((value: boolean) => void) | undefined;
 }
 export const SidebarPanel: FC<SidebarPanelProps> = (props) => {
   const { styles } = useStyles();
@@ -22,9 +24,9 @@ export const SidebarPanel: FC<SidebarPanelProps> = (props) => {
   const initialState = isControllable ? open : defaultOpen;
 
 
-  useEffect(() => {
+  useEffectOnce(() => {
     if (setIsOpenGlobal) setIsOpenGlobal(initialState);
-  }, []);
+  });
 
 
   const [isOpen, setIsOpen] = useState(initialState);
@@ -50,7 +52,7 @@ export const SidebarPanel: FC<SidebarPanelProps> = (props) => {
       <div className={styles.sidebarHeader}>
         <div className={`${styles.sidebarHeaderTitle} ${side}`}>{typeof title === 'function' ? title() : title}</div>
         <div className={`${styles.sidebarHeaderBtn} ${side}`} onClick={handleClick}>
-          {props.placeholder ? (
+          {isDefined(placeholder) ? (
             <Tooltip title={placeholder} placement={side === 'left' ? 'right' : 'left'}>
               <RightOutlined rotate={rotation} className="toggle-open-btn" />
             </Tooltip>

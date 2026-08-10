@@ -1,6 +1,0 @@
-{
-  "extends": "../../../tsconfig.base.json",
-  "include": [
-    "**/*"
-, "../../utils/storedFile/utils.ts", "../../utils/subscriptions/subscriptionManager.ts"  ],
-}

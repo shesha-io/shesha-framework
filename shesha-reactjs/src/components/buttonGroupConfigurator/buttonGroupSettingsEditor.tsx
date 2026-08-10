@@ -1,5 +1,5 @@
-import React, { FC } from 'react';
-import { ButtonGroupItemProps, IButtonGroup, IButtonGroupItem } from '@/providers';
+import React, { FC, ReactNode } from 'react';
+import { ButtonGroupItemProps, IButtonGroup } from '@/providers';
 import { nanoid } from '@/utils/uuid';
 import { ButtonGroupProperties } from './properties';
 import { ButtonGroupListItem } from './buttonGroupListItem';
@@ -8,7 +8,9 @@ import { Alert, Button, Divider } from 'antd';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';
 import { isGroup } from '@/providers/buttonGroupConfigurator/models';
 import { ListEditorWithPropertiesPanel } from '../listEditorWithPropertiesPanel';
-import { initialValues } from './utils';
+import { makeNewItem } from './utils';
+import { isDefined } from '@/utils/nullables';
+import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 
 export interface ButtonGroupSettingsEditorProps {
   readOnly: boolean;
@@ -16,7 +18,7 @@ export interface ButtonGroupSettingsEditorProps {
   onChange: (newValue: ButtonGroupItemProps[]) => void;
 }
 
-const ButtonGroupEditorHeader: FC<ListEditorSectionRenderingArgs<ButtonGroupItemProps>> = ({ contextAccessor, level, parentItem }) => {
+const ButtonGroupEditorHeader = ({ contextAccessor, level, parentItem }: ListEditorSectionRenderingArgs<ButtonGroupItemProps>): ReactNode => {
   const { addItem, readOnly } = contextAccessor();
   const { styles } = useStyles();
 
@@ -26,7 +28,7 @@ const ButtonGroupEditorHeader: FC<ListEditorSectionRenderingArgs<ButtonGroupItem
 
   const onAddGroupClick = (): void => {
     addItem((items) => {
-      const itemsCount = (items ?? []).length;
+      const itemsCount = items.length;
       const itemNo = itemsCount + 1;
 
       const group: IButtonGroup = {
@@ -48,7 +50,7 @@ const ButtonGroupEditorHeader: FC<ListEditorSectionRenderingArgs<ButtonGroupItem
     ? parentItem
     : undefined;
 
-  return !readOnly
+  return !Boolean(readOnly)
     ? level === 1
       ? (
         <div className={styles.customActionButtons}>
@@ -56,7 +58,7 @@ const ButtonGroupEditorHeader: FC<ListEditorSectionRenderingArgs<ButtonGroupItem
           <Button onClick={onAddItemClick} type="primary">Add New Item</Button>
         </div>
       )
-      : !(parent.childItems?.length)
+      : isDefined(parent) && !Boolean(parent.childItems?.length)
         ? (
           <Divider style={{ marginTop: 0, marginBottom: 0 }}>
             <Button shape="round" size="small" type="link" onClick={onAddItemClick}>Add item</Button>
@@ -69,24 +71,10 @@ const ButtonGroupEditorHeader: FC<ListEditorSectionRenderingArgs<ButtonGroupItem
 };
 
 export const ButtonGroupSettingsEditor: FC<ButtonGroupSettingsEditorProps> = ({ value, onChange, readOnly }) => {
-  const makeNewItem = (items: ButtonGroupItemProps[]): ButtonGroupItemProps => {
-    const itemsCount = (items ?? []).length;
-    const itemNo = itemsCount + 1;
+  const componentGetter = useFormDesignerComponentGetter();
+  const buttonComponent = componentGetter('button');
 
-    const newItem: IButtonGroupItem = {
-      id: nanoid(),
-      itemType: 'item',
-      sortOrder: itemsCount,
-      name: `button${itemNo}`,
-      label: `Button ${itemNo}`,
-      itemSubType: 'button',
-      buttonType: itemNo === 1 ? 'primary' : 'default',
-      editMode: 'inherited',
-      ...initialValues(),
-    };
-
-    return newItem;
-  };
+  if (!isDefined(buttonComponent)) throw new Error("The 'button' component is not registered in the toolbox. Button group configuration is unavailable.");
 
   return (
     <ListEditorWithPropertiesPanel<ButtonGroupItemProps>
@@ -105,6 +93,7 @@ export const ButtonGroupSettingsEditor: FC<ButtonGroupSettingsEditorProps> = ({ 
           onChange={itemOnChange}
           nestedRenderer={nestedRenderer}
           initNewItem={makeNewItem}
+          buttonComponent={buttonComponent}
         />
       )}
     </ListEditorWithPropertiesPanel>

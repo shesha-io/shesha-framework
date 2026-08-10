@@ -1,5 +1,6 @@
+/* eslint @typescript-eslint/strict-boolean-expressions: "error" */
 import { DateDisplay } from '@/components/dateDisplay';
-import { isConfigItemTreeNode, TreeNode } from '@/configuration-studio/models';
+import { isConfigItemTreeNode, ITEM_TYPES, TreeNode } from '@/configuration-studio/models';
 import { useIsDevMode } from '@/hooks/useIsDevMode';
 import { Popover, Typography } from 'antd';
 import React, { FC, PropsWithChildren, ReactNode, useMemo } from 'react';
@@ -9,6 +10,21 @@ import { useCsTreeDnd } from '@/configuration-studio/cs/hooks';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 const { Text } = Typography;
+
+const ITEM_TYPE_FRIENDLY_NAMES: Record<string, string> = {
+  [ITEM_TYPES.FORM]: 'Form',
+  [ITEM_TYPES.ROLE]: 'Role',
+  [ITEM_TYPES.ENTITY]: 'Entity',
+  [ITEM_TYPES.PERMISSION]: 'Permission',
+  [ITEM_TYPES.REFLIST]: 'Reference list',
+  [ITEM_TYPES.SETTING]: 'Setting',
+  [ITEM_TYPES.NOTIFICATION]: 'Notification',
+  [ITEM_TYPES.NOTIFICATION_CHANNEL]: 'Notification channel',
+};
+
+const getItemTypeFriendlyName = (itemType: string): string =>
+  ITEM_TYPE_FRIENDLY_NAMES[itemType] ??
+  itemType.charAt(0).toUpperCase() + itemType.slice(1).replace(/-/g, ' ');
 
 export interface ICsTreeNodeProps extends PropsWithChildren {
   node: TreeNode;
@@ -21,7 +37,8 @@ type LabelValueItem = {
 
 type LabelValueOrNode = LabelValueItem | ReactNode;
 
-const isLabelValueItem = (item: LabelValueOrNode): item is LabelValueItem => isDefined(item) && typeof (item['label']) === 'string' && item['value'];
+const isLabelValueItem = (item: LabelValueOrNode): item is LabelValueItem => isDefined(item) && typeof (item) === "object" &&
+  "label" in item && typeof (item.label) === 'string' && "value" in item && isDefined(item.value);
 
 type LabelValueProps = {
   data: LabelValueItem;
@@ -37,6 +54,12 @@ const LabelValue: FC<LabelValueProps> = ({ data }) => {
 
 const GRAY_OUT_STYLE = { color: gray.primary };
 
+const getNodeTitle = (node: TreeNode): string | undefined => {
+  return isConfigItemTreeNode(node) && !isNullOrWhiteSpace(node.applicationName)
+    ? `Application: ${node.applicationName}`
+    : undefined;
+};
+
 export const CsTreeNode: FC<ICsTreeNodeProps> = ({ node, children }) => {
   const isDevMode = useIsDevMode();
   const { isDragging } = useCsTreeDnd();
@@ -49,16 +72,52 @@ export const CsTreeNode: FC<ICsTreeNodeProps> = ({ node, children }) => {
     if (isDevMode)
       result.push({ label: 'Id', value: <Typography.Text copyable>{node.id}</Typography.Text> });
 
+    if (!isNullOrWhiteSpace(node.applicationName))
+      result.push({ label: 'Application', value: node.applicationName });
+
     if (node.flags.isExposed)
       result.push({ label: 'Exposed from', value: node.baseModule });
     if (!isNullOrWhiteSpace(node.description))
       result.push({ label: 'Description', value: node.description });
     if (node.flags.isUpdated) {
-      result.push({ label: 'Has manual changes', value: 'yes' });
+      const typeName = getItemTypeFriendlyName(node.itemType);
+      const modUser = node.lastModifierUser;
+      const modTime = node.lastModificationTime;
+      if (!isNullOrWhiteSpace(modUser) && !isNullOrWhiteSpace(modTime)) {
+        result.push(
+          <div>
+            {typeName} was last updated by {modUser} on{' '}
+            <DateDisplay format="MMMM D, YYYY">{modTime}</DateDisplay> at{' '}
+            <DateDisplay format="h:mm A">{modTime}</DateDisplay>
+          </div>,
+        );
+      } else if (!isNullOrWhiteSpace(modUser)) {
+        result.push(<div>{typeName} was last updated by {modUser}</div>);
+      } else if (!isNullOrWhiteSpace(modTime)) {
+        result.push(
+          <div>
+            {typeName} was last updated on{' '}
+            <DateDisplay format="MMMM D, YYYY">{modTime}</DateDisplay> at{' '}
+            <DateDisplay format="h:mm A">{modTime}</DateDisplay>
+          </div>,
+        );
+      } else {
+        result.push(<div>{typeName} has manual changes</div>);
+      }
+    } else {
+      const modUser = node.lastModifierUser;
+      const modTime = node.lastModificationTime;
+      if (!isNullOrWhiteSpace(modUser) && !isNullOrWhiteSpace(modTime)) {
+        const typeName = getItemTypeFriendlyName(node.itemType);
+        result.push(
+          <div>
+            {typeName} was last updated by {modUser} on{' '}
+            <DateDisplay format="MMMM D, YYYY">{modTime}</DateDisplay> at{' '}
+            <DateDisplay format="h:mm A">{modTime}</DateDisplay>
+          </div>,
+        );
+      }
     }
-
-    if (isDefined(node.lastModifierUser) && isDefined(node.lastModificationTime))
-      result.push(<div>Last updated by {node.lastModifierUser} on <DateDisplay>{node.lastModificationTime}</DateDisplay></div>);
 
     return result;
   }, [node, isDevMode]);
@@ -82,5 +141,5 @@ export const CsTreeNode: FC<ICsTreeNodeProps> = ({ node, children }) => {
         <span style={nodeStyle}>{children} <NodeIndicator node={node} /></span>
       </Popover>
     )
-    : <span style={nodeStyle}>{children} <NodeIndicator node={node} /></span>;
+    : <span style={nodeStyle} title={getNodeTitle(node)}>{children} <NodeIndicator node={node} /></span>;
 };

@@ -3,7 +3,7 @@ import { IRouter } from '../shaRouting';
 import { ThemeProviderProps } from '../theme';
 import { DEFAULT_SHESHA_ROUTES, IHttpHeadersDictionary, ISheshaRoutes } from './contexts';
 import IRequestHeaders from '@/interfaces/requestHeaders';
-import React, { MutableRefObject, useState } from 'react';
+import React, { RefObject, useState } from 'react';
 import { createNamedContext } from '@/utils/react';
 import { FRONTEND_DEFAULT_APP_KEY } from '@/components/settingsEditor/provider/models';
 import { IAuthProviderRefProps } from '../auth';
@@ -26,7 +26,7 @@ export interface IShaApplicationArgs {
   router?: IRouter;
   routes?: ISheshaRoutes;
   getFormUrlFunc?: ((formId: FormIdentifier, isLoggedIn: boolean) => string) | undefined;
-  authorizer: MutableRefObject<IAuthProviderRefProps | undefined>;
+  authorizer: RefObject<IAuthProviderRefProps | undefined>;
   buildHttpRequestHeaders?: (() => IHttpHeadersDictionary) | undefined;
 }
 
@@ -91,7 +91,7 @@ export class SheshaApplicationInstance implements ISheshaApplicationInstance {
 
   #buildHttpRequestHeaders: (() => IHttpHeadersDictionary) | undefined;
 
-  #authorizer: MutableRefObject<IAuthProviderRefProps | undefined>;
+  #authorizer: RefObject<IAuthProviderRefProps | undefined>;
 
   #formDesignerComponentRegistrations: IDictionary<IToolboxComponentGroup[]>;
 

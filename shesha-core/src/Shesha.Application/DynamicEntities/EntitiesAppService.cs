@@ -11,6 +11,7 @@ using Shesha.Application.Services.Dto;
 using Shesha.Authorization;
 using Shesha.Configuration.Runtime;
 using Shesha.Configuration.Runtime.Exceptions;
+using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Excel;
 using Shesha.Extensions;
@@ -73,14 +74,13 @@ namespace Shesha.DynamicEntities
             {
                 var entityConfig = GetConfig(entityTypeId);
                 var typeName = entityConfig.EntityType.FullName;
-                var appServiceType = entityConfig.ApplicationServiceType;
 
-                if (entityConfig.ApplicationServiceType == null)
-                    throw new NotSupportedException($"{nameof(entityConfig.ApplicationServiceType)} is not set for entity of type {typeName}");
+                if (entityConfig.DefaultAppServiceType == null)
+                    throw new NotSupportedException($"{nameof(entityConfig.DefaultAppServiceType)} is not set for entity of type {typeName}");
 
-                var appService = IocManager.Resolve(appServiceType) as IEntityAppService;
+                var appService = IocManager.Resolve(entityConfig.DefaultAppServiceType) as IEntityAppService;
                 if (appService == null)
-                    throw new NotImplementedException($"{nameof(IEntityAppService)} is not implemented by type {entityConfig.ApplicationServiceType.FullName}");
+                    throw new NotImplementedException($"{nameof(IEntityAppService)} is not implemented by type {entityConfig.DefaultAppServiceType.FullName}");
 
                 // parse id value to concrete type
                 var parsedId = Parser.ParseId(input.Id, entityConfig.EntityType);
@@ -90,7 +90,7 @@ namespace Shesha.DynamicEntities
                 if (method == null)
                     throw new NotSupportedException($"{methodName} is missing in the {typeName}");
 
-                await CheckPermissionAsync(entityConfig, methodName);
+                await CheckPermissionAsync(entityConfig, "Get");
 
                 // invoke query
                 var convertedInputType = typeof(GetDynamicEntityInput<>).MakeGenericType(entityConfig.IdType) ?? throw new Exception($"Failed to create generic type '{typeof(GetDynamicEntityInput<>).FullName}', id type: '{entityConfig.IdType.FullName}'");
@@ -123,16 +123,16 @@ namespace Shesha.DynamicEntities
             try
             {
                 var entityConfig = GetConfig(entityTypeId);
-                var appServiceType = entityConfig.ApplicationServiceType;
+                var appServiceType = entityConfig.DefaultAppServiceType;
 
-                if (entityConfig.ApplicationServiceType == null)
+                if (entityConfig.DefaultAppServiceType == null)
                     throw new NotSupportedException($"{nameof(GetAllAsync)} is not implemented for entity of type {entityConfig.EntityType.FullName}");
 
                 var appService = IocManager.Resolve(appServiceType) as IEntityAppService;
                 if (appService == null)
-                    throw new NotImplementedException($"{nameof(IEntityAppService)} is not implemented by type {entityConfig.ApplicationServiceType.FullName}");
+                    throw new NotImplementedException($"{nameof(IEntityAppService)} is not implemented by type {entityConfig.DefaultAppServiceType.FullName}");
 
-                await CheckPermissionAsync(entityConfig, nameof(IEntityAppService<Entity<Int64>, Int64>.QueryAllAsync));
+                await CheckPermissionAsync(entityConfig, "Get");
 
                 return await appService.QueryAllAsync(input);
             }
@@ -151,14 +151,14 @@ namespace Shesha.DynamicEntities
                 if (entityConfig == null)
                     throw new EntityTypeNotFoundException(entityType);
 
-                var appServiceType = entityConfig.ApplicationServiceType;
+                var appServiceType = entityConfig.DefaultAppServiceType;
 
-                if (entityConfig.ApplicationServiceType == null)
-                    throw new NotSupportedException($"{nameof(GetAllAsync)} is not implemented for entity of type {entityConfig.EntityType.FullName}");
+                if (entityConfig.DefaultAppServiceType == null)
+                    throw new NotSupportedException($"{nameof(GetTreeAsync)} is not implemented for entity of type {entityConfig.EntityType.FullName}");
 
                 var appService = IocManager.Resolve(appServiceType) as IEntityAppService;
                 if (appService == null)
-                    throw new NotImplementedException($"{nameof(IEntityAppService)} is not implemented by type {entityConfig.ApplicationServiceType.FullName}");
+                    throw new NotImplementedException($"{nameof(IEntityAppService)} is not implemented by type {entityConfig.DefaultAppServiceType.FullName}");
 
                 await CheckPermissionAsync(entityConfig, "Get");
 
@@ -176,15 +176,17 @@ namespace Shesha.DynamicEntities
             try
             {
                 var entityConfig = GetConfig(input.EntityTypeId);
-                var typeName = entityConfig.EntityType.FullName;
-                var appServiceType = entityConfig.ApplicationServiceType;
+                await CheckPermissionAsync(entityConfig, "Get");
 
-                if (entityConfig.ApplicationServiceType == null)
-                    throw new NotSupportedException($"{nameof(GetAllAsync)} is not implemented for entity of type {typeName}");
+                var typeName = entityConfig.EntityType.FullName;
+                var appServiceType = entityConfig.DefaultAppServiceType;
+
+                if (entityConfig.DefaultAppServiceType == null)
+                    throw new NotSupportedException($"{nameof(ExportToExcelAsync)} is not implemented for entity of type {typeName}");
 
                 var appService = IocManager.Resolve(appServiceType) as IEntityAppService;
                 if (appService == null)
-                    throw new NotImplementedException($"{nameof(IEntityAppService)} is not implemented by type {entityConfig.ApplicationServiceType.FullName}");
+                    throw new NotImplementedException($"{nameof(IEntityAppService)} is not implemented by type {entityConfig.DefaultAppServiceType.FullName}");
 
                 var data = await appService.QueryAllAsync(input);
 
@@ -237,6 +239,7 @@ namespace Shesha.DynamicEntities
         /// Get specifications available for the specified entityType
         /// </summary>
         /// <returns></returns>
+        [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, "app:Configurator")]
         public Task<List<SpecificationDto>> SpecificationsAsync(EntityTypeIdInput entityTypeId) 
         {
             var entityConfig = GetConfig(entityTypeId);
@@ -265,6 +268,8 @@ namespace Shesha.DynamicEntities
             var entityConfig = _entityConfigStore.Get(input.EntityType);
             if (entityConfig == null)
                 throw new EntityTypeNotFoundException(input.EntityType);
+
+            await CheckPermissionAsync(entityConfig, "Update");
 
             var property = ReflectionHelper.GetProperty(entityConfig.EntityType, input.PropertyName, true);
             if (property == null)

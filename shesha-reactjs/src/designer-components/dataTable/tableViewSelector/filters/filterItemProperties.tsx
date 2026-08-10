@@ -4,6 +4,7 @@ import { ConfigurableForm } from '@/components/configurableForm';
 import { getFiltersSettingsForm } from './filterItemSettings';
 import { useFormViaFactory } from '@/form-factory/hooks';
 import { IStoredFilter } from '@/interfaces';
+import { OnFormValuesChangeHandler } from '@/components/configurableForm/models';
 
 export type BaseFilterProperties = Omit<IStoredFilter, "expression">;
 
@@ -14,8 +15,8 @@ export interface IFilterItemPropertiesProps {
 }
 
 export const FilterItemProperties: FC<IFilterItemPropertiesProps> = ({ value, onChange, readOnly }) => {
-  const debouncedSave = useDebouncedCallback(
-    (values: BaseFilterProperties) => {
+  const debouncedSave = useDebouncedCallback<OnFormValuesChangeHandler<BaseFilterProperties>>(
+    (_, values) => {
       onChange({ ...value, ...values });
     },
     // delay in ms

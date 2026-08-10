@@ -18,7 +18,7 @@ export interface ConfigurationDto {
   description: string | null;
 };
 
-export interface IConfigurationItemDto<TConfigDto extends ConfigurationDto = ConfigurationDto> {
+export interface IConfigurationItemDto<TConfigDto = ConfigurationDto> {
   cacheMd5: string;
   configuration: TConfigDto;
 }

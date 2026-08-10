@@ -1,64 +1,65 @@
-import { Form } from 'antd';
-import React, { FC, ReactElement, ReactNode, useEffect, useRef, useState } from 'react';
+import React, { FC, ReactNode, useCallback, useEffect, useMemo } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { getSettings } from './refListItemsSettingsForm';
 import { useRefListItemGroupConfigurator } from '../provider';
-import { ConfigurableFormInstance } from '@/interfaces';
 import { getComponentModel } from '../provider/utils';
 import { ConfigurableForm } from '@/components/configurableForm';
 import { useFormViaFactory } from '@/form-factory/hooks';
+import { OnFormValuesChangeHandler } from '@/components/configurableForm/models';
+import { RefListGroupItemProps } from '../provider/models';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 export const RefListItemProperties: FC = () => {
   const { selectedItemId, getItem, updateItem, readOnly } = useRefListItemGroupConfigurator();
-  // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
-  const [editor, setEditor] = useState<ReactNode>(<></>);
-  const [form] = Form.useForm();
-
   const markup = useFormViaFactory(getSettings);
 
-  const formRef = useRef<ConfigurableFormInstance>(null);
-
+  // The id is passed as an argument rather than captured: use-debounce invokes the latest
+  // callback with the queued arguments, so a pending save would otherwise land on whichever
+  // item is selected when it fires (#5125).
   const debouncedSave = useDebouncedCallback(
-    (values) => {
-      updateItem({ id: selectedItemId, settings: values });
+    (id: string, values: RefListGroupItemProps) => {
+      updateItem({ id: id, settings: values });
     },
     // delay in ms
     300,
   );
 
+  const handleValuesChange = useCallback<OnFormValuesChangeHandler<RefListGroupItemProps>>(
+    (_, values) => {
+      if (!isNullOrWhiteSpace(selectedItemId))
+        debouncedSave(selectedItemId, values);
+    },
+    [debouncedSave, selectedItemId],
+  );
+
   useEffect(() => {
-    form.resetFields();
+    return () => {
+      debouncedSave.flush();
+    };
+  }, [debouncedSave, selectedItemId]);
 
-    if (formRef.current) {
-      const values = form.getFieldsValue();
+  // note: we have to memoize the editor to prevent unneeded re-rendering and loosing of the focus
+  const editor = useMemo<ReactNode>(() => {
+    if (isNullOrWhiteSpace(selectedItemId)) return null;
+    const item = getItem(selectedItemId);
+    if (!item) return null;
 
-      formRef.current.setFormData({ values, mergeValues: false });
-    }
-  }, [selectedItemId]);
+    const componentModel = getComponentModel(item);
 
-  const getEditor = (): ReactElement => {
-    if (!selectedItemId) return null;
-
-    const componentModel = getComponentModel(getItem(selectedItemId));
-
+    // note: no shared form instance - the keyed remount must start from an empty store, otherwise
+    // rc-field-form merges the previously selected item's values over these initialValues (#5125)
     return (
-      <ConfigurableForm
+      <ConfigurableForm<RefListGroupItemProps>
         key={selectedItemId}
-        formRef={formRef}
         labelCol={{ span: 24 }}
         wrapperCol={{ span: 24 }}
         mode={readOnly ? 'readonly' : 'edit'}
         markup={markup}
-        form={form}
         initialValues={componentModel}
-        onValuesChange={debouncedSave}
+        onValuesChange={handleValuesChange}
       />
     );
-  };
-
-  useEffect(() => {
-    setEditor(getEditor());
-  }, [selectedItemId]);
+  }, [handleValuesChange, getItem, markup, readOnly, selectedItemId]);
 
   return <>{editor}</>;
 };

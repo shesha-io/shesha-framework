@@ -1,5 +1,5 @@
-import React, { FC, useState, useEffect, CSSProperties, useRef } from 'react';
-import { Skeleton, Card, List, Empty, Input, Button } from 'antd';
+import React, { FC, useState, useEffect, CSSProperties, useRef, useMemo } from 'react';
+import { Skeleton, Card, List, Empty, Input, Button, GetRef, Tooltip } from 'antd';
 import { CheckOutlined } from '@ant-design/icons';
 import _ from 'lodash';
 import classNames from 'classnames';
@@ -11,30 +11,48 @@ import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { getNoteValidationError } from './utils';
 
 export interface INotesRendererBaseProps {
-  notes?: NoteModel[];
+  notes?: NoteModel[] | undefined;
 
-  allowEdit?: boolean;
-  allowDelete?: boolean;
+  allowEdit?: boolean | undefined;
+  allowDelete?: boolean | undefined;
 
   createNoteAsync: (args: CreateNoteArgs) => Promise<void>;
   updateNoteAsync: (args: UpdateNoteArgs) => Promise<void>;
   deleteNoteAsync: (args: DeleteNoteArgs) => Promise<void>;
 
-  isFetchingNotes?: boolean;
-  isPostingNotes?: boolean;
+  isFetchingNotes?: boolean | undefined;
+  isPostingNotes?: boolean | undefined;
 
-  showSaveBtn?: boolean;
-  allowCreate?: boolean;
-  commentListStyles?: CSSProperties;
-  className?: string;
-  commentListClassName?: string;
-  style?: CSSProperties;
-  buttonFloatRight?: boolean;
-  autoSize?: boolean;
-  showCharCount?: boolean;
-  minLength?: number;
-  maxLength?: number;
+  /**
+   * Makes the editor non-interactive. Notes are still listed, but they can't be created, edited or deleted
+   */
+  disabled?: boolean | undefined;
+  /**
+   * Makes the text area non-interactive. Defaults to `disabled`, set it to `false` to let the user type a note
+   * that can't be posted yet
+   */
+  inputDisabled?: boolean | undefined;
+  /**
+   * Explanation shown to the user when the editor is disabled
+   */
+  disabledHint?: string | undefined;
+
+  showSaveBtn?: boolean | undefined;
+  allowCreate?: boolean | undefined;
+  commentListStyles?: CSSProperties | undefined;
+  className?: string | undefined;
+  commentListClassName?: string | undefined;
+  style?: CSSProperties | undefined;
+  buttonFloatRight?: boolean | undefined;
+  autoSize?: boolean | undefined;
+  showCharCount?: boolean | undefined;
+  minLength?: number | undefined;
+  maxLength?: number | undefined;
 }
+
+type TextAreaRef = GetRef<typeof Input.TextArea>;
+
+const EMPTY_NOTES: NoteModel[] = [];
 
 export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
   notes,
@@ -49,6 +67,10 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
   isFetchingNotes,
   isPostingNotes,
 
+  disabled = false,
+  inputDisabled = disabled,
+  disabledHint,
+
   allowCreate: showCommentBox = true,
   commentListStyles,
   className,
@@ -61,10 +83,13 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
   minLength,
   maxLength,
 }) => {
+  // the backend returns notes oldest-first, and newly created ones are appended - render them newest-first
+  const orderedNotes = useMemo(() => notes ? [...notes].reverse() : EMPTY_NOTES, [notes]);
+
   const [newComment, setNewComment] = useState('');
   const [charCount, setCharCount] = useState(0);
   const [validationError, setValidationError] = useState('');
-  const textRef = useRef(null);
+  const textRef = useRef<TextAreaRef>(null);
   const { styles } = useStyles();
 
   useEffect(() => {
@@ -73,10 +98,11 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
       setCharCount(0);
       setValidationError('');
 
-      if (textRef) {
+      if (textRef.current) {
         textRef.current.focus();
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPostingNotes]);
 
   const handleTextChange = (value: string): void => {
@@ -89,6 +115,8 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
   };
 
   const handleSaveNotes = async (): Promise<void> => {
+    if (disabled) return;
+
     const error = getNoteValidationError(newComment, minLength, maxLength);
     if (!isNullOrWhiteSpace(error)) {
       setValidationError(error);
@@ -109,49 +137,51 @@ export const NotesRendererBase: FC<INotesRendererBaseProps> = ({
   return (
     <div className={classNames(styles.notes, className)} style={style}>
       {showCommentBox && (
-        <div className={styles.notesTextarea}>
-          <Input.TextArea
-            ref={textRef}
-            rows={2}
-            value={newComment}
-            onChange={({ target: { value } }) => handleTextChange(value)}
-            disabled={isPostingNotes}
-            onPressEnter={handleSaveNotes}
-            autoSize={autoSize ? { minRows: 2 } : false}
-            maxLength={maxLength}
-            showCount={false} // We'll implement our own counter
-          />
-          {showCharCount && <CharCounter count={charCount} maxLength={maxLength} error={validationError} />}
-          {showSaveBtn && (
-            <div className={classNames(styles.saveBtn, { right: buttonFloatRight })}>
-              <Button
-                size="small"
-                type="primary"
-                disabled={!newComment?.trim() || !!validationError}
-                onClick={handleSaveNotes}
-                loading={isPostingNotes}
-                icon={<CheckOutlined />}
-              >
-                Save
-              </Button>
-            </div>
-          )}
-        </div>
+        <Tooltip title={disabled ? disabledHint : undefined}>
+          <div className={styles.notesTextarea}>
+            <Input.TextArea
+              ref={textRef}
+              rows={2}
+              value={newComment}
+              onChange={({ target: { value } }) => handleTextChange(value)}
+              disabled={inputDisabled || (isPostingNotes ?? false)}
+              onPressEnter={handleSaveNotes}
+              autoSize={autoSize ? { minRows: 2 } : false}
+              maxLength={maxLength}
+              showCount={false} // We'll implement our own counter
+            />
+            {showCharCount && <CharCounter count={charCount} maxLength={maxLength} error={validationError} />}
+            {showSaveBtn && (
+              <div className={classNames(styles.saveBtn, { right: buttonFloatRight })}>
+                <Button
+                  size="small"
+                  type="primary"
+                  disabled={disabled || isNullOrWhiteSpace(newComment) || !isNullOrWhiteSpace(validationError)}
+                  onClick={handleSaveNotes}
+                  loading={isPostingNotes ?? false}
+                  icon={<CheckOutlined />}
+                >
+                  Save
+                </Button>
+              </div>
+            )}
+          </div>
+        </Tooltip>
       )}
 
-      <Skeleton loading={isFetchingNotes} active>
+      <Skeleton loading={isFetchingNotes ?? false} active>
         <Card className={classNames(styles.commentListCard, commentListClassName)} size="small">
           <List<NoteModel>
             locale={{ emptyText: <Empty description="There are no notes" /> }}
             className={`${styles.commentList} scroll scroll-y`}
             style={{ ...commentListStyles }}
             itemLayout="horizontal"
-            dataSource={notes}
+            dataSource={orderedNotes}
             renderItem={(note) => (
               <NoteRenderer
                 note={note}
-                allowEdit={allowEdit}
-                allowDelete={allowDelete}
+                allowEdit={allowEdit && !disabled}
+                allowDelete={(allowDelete ?? false) && !disabled}
                 updateNoteAsync={updateNoteAsync}
                 deleteNoteAsync={deleteNoteAsync}
                 minLength={minLength}

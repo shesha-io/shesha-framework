@@ -34,6 +34,7 @@ using Shesha.GraphQL.Swagger;
 using Shesha.Identity;
 using Shesha.Notifications;
 using Shesha.Notifications.SMS;
+using Shesha.RateLimiting;
 using Shesha.Scheduler.Extensions;
 using Shesha.Specifications;
 using Shesha.Startup;
@@ -68,6 +69,8 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 			});
             
             services.AddSheshaElmah(_appConfiguration);
+
+            services.AddSheshaRateLimiting(opts => _appConfiguration.GetSection("RateLimiting").Bind(opts));
 
             services.AddMvcCore(options =>
 			{
@@ -168,9 +171,10 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 				.SetIsOriginAllowed(origin => true) // allow any origin
 				.AllowCredentials()); // allow credentials​
 			app.UseStaticFiles();
+			app.UseRouting();
+			app.UseRateLimiter();
 			app.UseAuthentication();
 			app.UseAbpRequestLocalization();
-			app.UseRouting();
 			app.UseAuthorization();
 
 			app.UseEndpoints(endpoints =>
@@ -185,6 +189,9 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 				endpoints.MapControllers();
 				endpoints.MapSignalRHubs();
 			});
+
+			// Block access to Swagger UI when the setting is disabled
+			app.UseMiddleware<SwaggerUiAccessMiddleware>();
 
 			// Enable middleware to serve generated Swagger as a JSON endpoint
 			app.UseSwagger();

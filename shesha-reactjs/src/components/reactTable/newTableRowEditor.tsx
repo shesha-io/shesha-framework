@@ -1,24 +1,27 @@
 import { FormIdentifier, IFlatComponentsStructure } from '@/interfaces';
 import { CrudProvider } from '@/providers/crudContext';
-import React, { FC } from 'react';
-
+import React, { ReactNode } from 'react';
 import { ColumnInstance, HeaderGroup } from 'react-table';
 import { NewRowCell } from './newRowCell';
 import { ITableRowData } from '@/providers/dataTable/interfaces';
+import { RowDataInitializer } from './interfaces';
+import { isNonEmptyArray } from '@/utils/array';
 
-export interface INewRowEditorProps<D extends ITableRowData = ITableRowData> {
-  columns: ColumnInstance<D>[];
-  headerGroups: HeaderGroup<any>[];
-  creater: (data: any) => Promise<any>;
-  onInitData?: () => Promise<object>;
-  components?: IFlatComponentsStructure;
-  parentFormId?: FormIdentifier;
+export interface INewRowEditorProps<TData extends ITableRowData = ITableRowData> {
+  columns: ColumnInstance<TData>[];
+  headerGroups: HeaderGroup<TData>[];
+  creater: (data: TData) => Promise<TData>;
+  onInitData: RowDataInitializer<TData>;
+  components?: IFlatComponentsStructure | undefined;
+  parentFormId?: FormIdentifier | undefined;
 }
 
-export const NewTableRowEditor: FC<INewRowEditorProps> = (props) => {
+export const NewTableRowEditor = <TData extends ITableRowData = ITableRowData>(props: INewRowEditorProps<TData>): ReactNode => {
   const { creater, columns, headerGroups, onInitData, components, parentFormId } = props;
 
-  const { key, ...headerGroupProps } = headerGroups.length > 0 ? headerGroups[0].getHeaderGroupProps() : { key: '' };
+  const { key, ...headerGroupProps } = isNonEmptyArray(headerGroups)
+    ? headerGroups[0].getHeaderGroupProps()
+    : { key: '' };
 
   return (
     <div className="tbody" style={{ overflowX: 'unset' }}>
@@ -28,9 +31,9 @@ export const NewTableRowEditor: FC<INewRowEditorProps> = (props) => {
         data={onInitData}
         creater={creater}
         allowEdit={false}
-        updater={null}
+        updater={undefined}
         allowDelete={false}
-        deleter={null}
+        deleter={undefined}
         allowChangeMode={false}
         editorComponents={components}
       >
@@ -38,7 +41,7 @@ export const NewTableRowEditor: FC<INewRowEditorProps> = (props) => {
           {columns
             .filter((c) => c.isVisible)
             .map((column, index) => {
-              return <NewRowCell key={index} column={column} rowIndex={index} row={columns} parentFormId={parentFormId} />;
+              return <NewRowCell<TData> key={index} column={column} rowIndex={index} row={columns} parentFormId={parentFormId} />;
             })}
         </div>
       </CrudProvider>

@@ -9,13 +9,14 @@ import { JsonOutlined } from '@/icons/jsonOutlined';
 import PropertyWrapper from './propertyWrapper';
 import { ContainerRenderer } from './itemsContainer';
 import { MetadataSourceType } from '@/interfaces/metadata';
+import { isNonEmptyArray } from '@/utils/array';
 
 export interface IProps {
   index: number[];
   data: IModelItem;
-  parent?: IModelItem;
+  parent?: IModelItem | undefined;
   containerRendering: ContainerRenderer;
-  onChange?: (newValue: IModelItem, changeDetails: ItemChangeDetails) => void;
+  onChange?: ((newValue: IModelItem, changeDetails?: ItemChangeDetails) => void) | undefined;
 }
 
 export const ArrayObjectProperty: FC<IProps> = (props) => {
@@ -23,7 +24,7 @@ export const ArrayObjectProperty: FC<IProps> = (props) => {
   const { styles } = useStyles();
 
   const onAddChildClick = (): void => {
-    if (props.data.properties[0])
+    if (isNonEmptyArray(props.data.properties))
       addItem(props.data.properties[0].id).catch((error) => {
         console.error('Failed to add child', error);
         throw error;

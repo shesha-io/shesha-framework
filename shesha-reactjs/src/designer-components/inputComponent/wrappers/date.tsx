@@ -12,13 +12,12 @@ export const DateWrapper: FCUnwrapped<IDateSettingsInputProps> = (props) => {
       readOnly={readOnly}
 
       type="date"
-      id={id}
+      id={id ?? ""}
       propertyName={propertyName}
       hideBorder={false}
       range={false}
-      showTime={false}
+      selectionType="date"
       showNow={false}
-      picker="date"
       defaultToMidnight={false}
       resolveToUTC={false}
       dateFormat={undefined}

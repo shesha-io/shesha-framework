@@ -70,7 +70,7 @@ export class WebStorageProxy {
     return new Proxy(this, {
       get(target, name) {
         if (hasProperty(target, name)) {
-          const result = target[name as keyof IWebStorageProxy];
+          const result = target[name];
           return typeof result === 'function'
             ? result.bind(target)
             : result;

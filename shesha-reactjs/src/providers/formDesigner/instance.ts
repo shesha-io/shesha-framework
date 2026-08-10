@@ -379,6 +379,14 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     }, `Removed component ${payload.componentId}`);
   };
 
+  deleteSelectedComponent = (): boolean => {
+    if (isDefined(this.selectedComponentId)) {
+      this.deleteComponent({ componentId: this.selectedComponentId });
+      return true;
+    }
+    return false;
+  };
+
   getComponentsCount = (components: IComponentsDictionary, type: string): number => {
     let count = 0;
     for (const key in components) {
@@ -446,10 +454,16 @@ export class FormDesignerInstance implements IFormDesignerInstance {
       const { formFlatMarkup } = state;
       const component = this.getComponent(payload.componentId) as TModel;
 
+      const componentJsonBefore = JSON.stringify(component);
       this.log(`FD: updateComponent ${payload.componentId} (${component.type})`, payload);
 
       const newModel = payload.updater(component);
       const newComponent = { ...component, ...newModel } as IConfigurableFormComponent;
+      const componentJsonAfter = JSON.stringify(newComponent);
+      if (componentJsonBefore === componentJsonAfter) {
+        this.log(`FD: no changes detetced in component '${payload.componentId}'`);
+        return state;
+      }
 
       const toolboxComponent = this.getToolboxComponent(component.type);
 
@@ -673,7 +687,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
           }, true);
         },
       );
-      if (!Boolean(formComponent)) return state;
+      if (!isDefined(formComponent)) return state;
 
       formComponent.parentId = containerId; // set parent
       const newStructure = this.addComponentToFlatStructure(newFlatMarkup, [formComponent], containerId, index);
@@ -708,18 +722,23 @@ export class FormDesignerInstance implements IFormDesignerInstance {
 
   componentEditors: IComponentSettingsEditorsCache = {};
 
-  getCachedComponentEditor = (type: string, evaluator: () => ISettingsFormFactory): ISettingsFormFactory => {
+  getCachedComponentEditor = <TModel extends IConfigurableFormComponent = IConfigurableFormComponent>(type: string, evaluator: () => ISettingsFormFactory<TModel> | undefined): ISettingsFormFactory<TModel> | undefined => {
     const existingEditor = this.componentEditors[type];
     if (existingEditor !== undefined)
-      return existingEditor;
+      return existingEditor as unknown as ISettingsFormFactory<TModel>;
 
-    return this.componentEditors[type] = evaluator();
+    const evaluated = evaluator();
+    if (isDefined(evaluated))
+      this.componentEditors[type] = evaluated as unknown as ISettingsFormFactory;
+
+    return evaluated;
   };
 
   private updateState = (updater: (state: FormDesignerFormState) => FormDesignerFormState, description: string): void => {
-    this.undoableState.executeChange(updater, description);
-    this.isDataModified = true;
-    this.notifySubscribers(['markup', 'selection', 'history', 'data-modified']);
+    if (this.undoableState.executeChange(updater, description)) {
+      this.isDataModified = true;
+      this.notifySubscribers(['markup', 'selection', 'history', 'data-modified']);
+    }
   };
 
   undo = (): void => {

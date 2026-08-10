@@ -1,5 +1,4 @@
 import React, { FC } from 'react';
-import { getAlignmentStyle } from './util';
 import { IComponentsContainerProps } from './componentsContainer';
 import { ConfigurableFormComponent } from '../configurableFormComponent';
 import { useStyles } from '../styles/styles';
@@ -13,13 +12,14 @@ export interface IComponentsContainerDynamicProps extends Omit<IComponentsContai
 
 export const ComponentsContainerDynamic: FC<IComponentsContainerProps> = (props) => {
   const {
-    dynamicComponents,
+    dynamicComponents = [],
     direction = 'vertical',
     className,
     render,
     wrapperStyle,
-    style: incomingStyle,
+    style,
     noDefaultStyling,
+    additionalDomProperties,
   } = props;
 
   const { styles } = useStyles();
@@ -32,12 +32,10 @@ export const ComponentsContainerDynamic: FC<IComponentsContainerProps> = (props)
     return typeof render === 'function' ? render(renderedComponents) : renderedComponents;
   }, [dynamicComponents]);
 
-  const style = { ...getAlignmentStyle(props), ...incomingStyle };
-
-  return noDefaultStyling ? (
-    <div style={{ ...style, textJustify: 'auto' }}>{renderComponents}</div>
+  return noDefaultStyling === true ? (
+    <div className={styles.shaComponentsContainerInner} style={{ ...style, textJustify: 'auto' }} {...additionalDomProperties}>{renderComponents}</div>
   ) : (
-    <div className={classNames(styles.shaComponentsContainer, direction, className)} style={wrapperStyle}>
+    <div className={classNames(styles.shaComponentsContainer, direction, className)} style={wrapperStyle} {...additionalDomProperties}>
       <div className={styles.shaComponentsContainerInner} style={style}>
         {renderComponents}
       </div>

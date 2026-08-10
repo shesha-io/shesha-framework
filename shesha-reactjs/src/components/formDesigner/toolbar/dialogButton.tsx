@@ -18,7 +18,7 @@ export const DialogButton: FC<IPreviewButtonProps> = ({ refLink }) => {
     } else if (browserWidth) {
       setCurrentWidth(activeDevice === 'mobile' ? width : width);
     }
-  }, [width, browserWidth]);
+  }, [width, browserWidth, activeDevice]);
 
   const items: MenuProps['items'] = [
     {

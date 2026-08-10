@@ -49,6 +49,7 @@ const createRepository = (_args: IWithNullRepositoryArgs): IRepository => {
     performCreate,
     performUpdate,
     performDelete,
+    fetchingSettingsHash: '',
   };
   return repository;
 };

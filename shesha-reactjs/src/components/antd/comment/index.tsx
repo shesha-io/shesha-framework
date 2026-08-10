@@ -1,7 +1,6 @@
 import classNames from 'classnames';
-import * as React from 'react';
 import { ConfigProvider } from 'antd';
-// import useStyle from './style';
+import React from 'react';
 
 const { ConfigContext } = ConfigProvider;
 
@@ -37,9 +36,9 @@ const Comment: React.FC<CommentProps> = ({
   datetime,
   ...otherProps
 }) => {
-  const { getPrefixCls, direction } = React.useContext(ConfigContext) ?? {};
+  const { getPrefixCls, direction } = React.useContext(ConfigContext);
 
-  const renderNested = (prefixCls: string, nestedChildren: any): React.ReactNode => (
+  const renderNested = (prefixCls: string, nestedChildren: React.ReactNode): React.ReactNode => (
     <div className={classNames(`${prefixCls}-nested`)}>{nestedChildren}</div>
   );
 
@@ -82,20 +81,8 @@ const Comment: React.FC<CommentProps> = ({
       [`${prefixCls}-rtl`]: direction === 'rtl',
     },
     className,
-    // hashId,
   );
 
-  /*
-  return wrapSSR(
-    <div {...otherProps} className={cls}>
-      <div className={`${prefixCls}-inner`}>
-        {avatarDom}
-        {contentDom}
-      </div>
-      {children ? renderNested(prefixCls, children) : null}
-    </div>,
-  );
-  */
   return (
     <div {...otherProps} className={cls}>
       <div className={`${prefixCls}-inner`}>

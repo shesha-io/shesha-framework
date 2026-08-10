@@ -2,7 +2,7 @@ import { FormFullName, useDynamicModals } from "@/providers";
 import { IModalProps, IModalWithContentProps, ModalFooterButtons } from "@/providers/dynamicModal/models";
 import { nanoid } from "@/utils/uuid";
 import { App } from "antd";
-import { ReactNode, useRef } from "react";
+import { ReactNode, useState } from "react";
 import { HookAPI as ModalHookAPI } from 'antd/lib/modal/useModal';
 
 export interface ShowModalArgs {
@@ -146,7 +146,9 @@ export class ModalApi implements IModalApi {
         content: modalArgs.content,
         footer: modalArgs.footer,
         isVisible: true,
+
         onCancel: () => {
+          removeModal();
           reject("Cancelled");
         },
         onClose: (positive = false, result) => {
@@ -165,15 +167,10 @@ export const useModalApi = (): IModalApi => {
   const { createModal, removeModal } = useDynamicModals();
   const { modal } = App.useApp();
 
-  const apiRef = useRef<IModalApi>();
-  if (!apiRef.current) {
-    const instance = new ModalApi({
-      createModal,
-      removeModal,
-      antdApi: modal,
-    });
-    apiRef.current = instance;
-  }
-
-  return apiRef.current;
+  const [modalApi] = useState<IModalApi>(() => new ModalApi({
+    createModal,
+    removeModal,
+    antdApi: modal,
+  }));
+  return modalApi;
 };

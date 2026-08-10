@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 
 interface AttributeDecoratorProps {
   /** Object of attributes to be injected into the element */
@@ -6,6 +6,8 @@ interface AttributeDecoratorProps {
   /** The element to be decorated */
   children: React.ReactElement;
 }
+
+const displayNoneStyle: React.CSSProperties = { display: 'none' };
 
 /**
  * Takes decoration attributes as props.attributes [{ key: value }, ...] and injects them as custom data attributes to the element that is being wrapped / 'decorated'.
@@ -22,24 +24,28 @@ interface AttributeDecoratorProps {
  * @returns The decorated element with the attributes injected into it
  */
 const AttributeDecorator: React.FC<AttributeDecoratorProps> = (props) => {
-  const [Wrapper, setWrapper] = useState<any>('div');
-  const ref = useRef<HTMLDivElement>(null);
+  const divRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (ref.current?.parentElement) {
-      const targetIndex = Array.from(ref.current.parentElement.children).indexOf(ref.current) + 1;
-      if (props.attributes) {
-        Object.entries(props.attributes).forEach(([key, value]) => {
-          ref.current?.parentElement?.children[targetIndex]?.setAttribute(key, value);
-        });
-      }
-      setWrapper(React.Fragment);
+    if (!divRef.current) return;
+
+    const parent = divRef.current.parentElement;
+    if (!parent) return;
+
+    // The target sibling is the element after the hidden div
+    const targetIndex = Array.from(parent.children).indexOf(divRef.current) + 1;
+    const targetElement = parent.children[targetIndex];
+
+    if (props.attributes && targetElement) {
+      Object.entries(props.attributes).forEach(([key, value]) => {
+        targetElement.setAttribute(key, value);
+      });
     }
-  }, [ref.current, props.attributes]);
+  }, [props.attributes]);
 
   return (
     <>
-      <Wrapper ref={Wrapper !== 'div' ? undefined : ref} />
+      <div ref={divRef} style={displayNoneStyle} />
       {props.children}
     </>
   );

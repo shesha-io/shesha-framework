@@ -1,30 +1,29 @@
 import FormInfo from '../configurableForm/formInfo';
 import ParentProvider from '@/providers/parentProvider/index';
-import React, { FC, useState } from 'react';
+import React, { FC, ReactNode, useState } from 'react';
 import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
-import { DataListCrudProvider, useDataListCrud } from '@/providers/dataListCrudContext/index';
+import { DataListCrudProvider, DataProcessor, useDataListCrud } from '@/providers/dataListCrudContext/index';
 import { FormMarkupConverter } from '@/providers/formMarkupConverter/index';
 import { FormRawMarkup, IFormSettings, IPersistedFormProps } from '@/interfaces';
-import { IDataListProps, NewItemInitializer } from './models';
+import { NewItemInitializer } from './models';
 import { ItemContainerForm } from './itemContainerForm';
 import { Modal, Skeleton } from 'antd';
 import ComponentsContainer from '../formDesigner/containers/componentsContainer';
 import ValidationErrors from '../validationErrors';
+import { isDefined } from '@/utils/nullables';
 
-interface ICreateModalProps extends IDataListProps {
-  formInfo?: IPersistedFormProps;
-  readOnly?: boolean;
-  loading: boolean;
+interface ICreateModalProps {
+  formInfo?: IPersistedFormProps | undefined;
+  readOnly?: boolean | undefined;
+  loading: boolean | undefined;
   onToggle: (isOpen: boolean) => void;
-  width?: string;
+  width?: string | undefined;
 }
 
 const CreateModal: FC<ICreateModalProps> = ({
   formInfo,
   readOnly,
   loading = false,
-  // modalTitle: title,
-  // modalWidth: width = '60%',
   onToggle,
   width,
 }) => {
@@ -59,10 +58,10 @@ const CreateModal: FC<ICreateModalProps> = ({
       onOk={onOk}
       onCancel={onCancel}
       title="Add new item"
-      width={width}
+      {...(width ? { width } : {})}
       okButtonProps={{ disabled: buttonDisabled, loading: buttonLoading }}
     >
-      <FormInfo formProps={formInfo} visible={!!formInfo}>
+      <FormInfo formProps={formInfo ?? {}} visible={isDefined(formInfo)}>
         <Skeleton loading={loading}>
           <ValidationErrors error={saveError} />
           <ParentProvider model={null} formMode="edit">
@@ -76,20 +75,18 @@ const CreateModal: FC<ICreateModalProps> = ({
   );
 };
 
-export interface IDataListItemCreateModalProps {
-  id: string;
-  formInfo?: IPersistedFormProps;
-  creater?: (data: any) => Promise<any>;
-  data?: object | NewItemInitializer;
+export interface IDataListItemCreateModalProps<TValue extends object = object> {
+  formInfo?: IPersistedFormProps | undefined;
+  creater?: DataProcessor<TValue> | undefined;
+  data: TValue | NewItemInitializer<TValue> | undefined;
   markup: FormRawMarkup;
   formSettings: IFormSettings;
   onToggle: (isOpen: boolean) => void;
-  width?: string;
+  width?: string | undefined;
 }
 
-const DataListItemCreateModal: FC<IDataListItemCreateModalProps> = (props) => {
+const DataListItemCreateModal = <TValue extends object = object>(props: IDataListItemCreateModalProps<TValue>): ReactNode => {
   const {
-    id,
     formInfo,
     data,
     markup,
@@ -102,7 +99,7 @@ const DataListItemCreateModal: FC<IDataListItemCreateModalProps> = (props) => {
   return (
     <FormMarkupConverter markup={markup} formSettings={formSettings}>
       {(flatComponents) => (
-        <DataListCrudProvider
+        <DataListCrudProvider<TValue>
           isNewObject={true}
           data={data}
           allowEdit={true}
@@ -119,7 +116,6 @@ const DataListItemCreateModal: FC<IDataListItemCreateModalProps> = (props) => {
             loading={false}
             onToggle={onToggle}
             width={width}
-            id={id}
           />
         </DataListCrudProvider>
       )}

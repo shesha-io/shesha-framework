@@ -1,7 +1,7 @@
 import { IButtonComponentProps } from "@/designer-components/button/interfaces";
-import { IStyleType } from "@/providers/form/models";
+import { IStyleValue } from "@/providers/form/models";
 
-export const defaultStyles = (prev: Omit<IButtonComponentProps, 'buttonType'>): IStyleType => {
+export const defaultStyles = (prev: Omit<IButtonComponentProps, 'buttonType'>): IStyleValue => {
   return {
     background: { type: 'color' },
     font: { weight: '400', size: 14, type: 'Segoe UI', align: 'center' },

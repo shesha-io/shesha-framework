@@ -6,7 +6,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { List, useListRef, type ListProps } from 'react-window';
+import { List, useDynamicRowHeight, useListRef, type ListProps } from 'react-window';
 import { LogLine } from './interfaces';
 import { LogRow } from './logRow';
 import { LogLevel } from '@/providers/processMonitor/interfaces';
@@ -16,38 +16,41 @@ import { cx } from 'antd-style';
 import { CopyOutlined, DownloadOutlined, DownOutlined, ExpandOutlined, LoadingOutlined, SearchOutlined, ShrinkOutlined, UpOutlined } from '@ant-design/icons';
 import { CheckboxChangeEvent } from 'antd/lib/checkbox';
 import { purple } from '@ant-design/colors';
+import { arrayHasAtLeastNDefined, isNonEmptyArray } from '@/utils/array';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { firstNonEmptyString } from '@/utils/string';
 
-type OnListScroll = ListProps<object, "div">["onScroll"];
+type OnListScroll = NonNullable<ListProps<object, "div">["onScroll"]>;
 
 export interface LogViewerProps {
   /** Array of log objects */
-  logs?: LogLine[];
+  logs?: LogLine[] | undefined;
   /** Raw log text to parse (alternative to logs array) */
-  rawLogText?: string;
+  rawLogText?: string | undefined;
   /** Whether to automatically scroll to bottom */
-  autoScroll?: boolean;
+  autoScroll?: boolean | undefined;
   /** Initial search query */
-  searchQuery?: string;
+  searchQuery?: string | undefined;
   /** Callback when search changes */
-  onSearchChange?: (query: string) => void;
+  onSearchChange?: ((query: string) => void) | undefined;
   /** Whether logs are loading */
-  isLoading?: boolean;
+  isLoading?: boolean | undefined;
   /** Height of the log viewer */
-  height?: number;
+  height?: number | undefined;
   /** Whether to follow new logs (auto-scroll) */
-  follow?: boolean;
+  follow?: boolean | undefined;
   /** Callback when download button is clicked */
-  onDownload?: () => void;
+  onDownload?: (() => void) | undefined;
   /** Callback when copy button is clicked */
-  onCopy?: () => void;
+  onCopy?: (() => void) | undefined;
   /** Additional CSS class name */
-  className?: string;
+  className?: string | undefined;
   /** Callback when a log line is clicked */
-  onLineClick?: (log: LogLine, index: number) => void;
+  onLineClick?: ((log: LogLine, index: number) => void) | undefined;
   /** Maximum number of logs to keep in memory */
-  maxLogs?: number;
+  maxLogs?: number | undefined;
   /** Whether to show the header */
-  showHeader?: boolean;
+  showHeader?: boolean | undefined;
 }
 
 export interface LogStatistics {
@@ -85,7 +88,7 @@ const parseAzureLogLine = (line: string, index: number): LogLine => {
     const match = line.match(regex);
     if (match) {
       level = patternLevel as LogLevel;
-      message = match[1] || '';
+      message = isNonEmptyArray(match) && !isNullOrWhiteSpace(match[1]) ? match[1] : '';
 
       // Special handling for sections
       if (patternLevel === 'section' && message.includes('Starting:')) {
@@ -96,7 +99,8 @@ const parseAzureLogLine = (line: string, index: number): LogLine => {
         isTimeline = true;
         taskName = message.replace('Finishing:', '').trim();
         const timeMatch = line.match(/\((\d+)ms\)$/);
-        if (timeMatch) duration = parseInt(timeMatch[1], 10);
+        if (timeMatch && arrayHasAtLeastNDefined(timeMatch, 2))
+          duration = parseInt(timeMatch[1], 10);
       }
       break;
     }
@@ -145,7 +149,7 @@ export const LogViewer: FC<LogViewerProps> = ({
 }) => {
   const { message } = App.useApp();
   const { styles, theme } = useStyles();
-  const listRef = useListRef();
+  const listRef = useListRef(null);
   const listRefCurrent = listRef.current;
   const scrollToRow = listRefCurrent?.scrollToRow;
 
@@ -183,7 +187,7 @@ export const LogViewer: FC<LogViewerProps> = ({
       }));
     } else if (logs.length > 0) {
       parsedLogs = logs.map((log, index) => ({
-        ...parseAzureLogLine(log.raw || log.message || '', index),
+        ...parseAzureLogLine(firstNonEmptyString(log.raw, log.message), index),
         ...log,
         id: log.id || index,
         originalIndex: index,
@@ -211,6 +215,10 @@ export const LogViewer: FC<LogViewerProps> = ({
     setStatistics(stats);
   }, [logs, rawLogText, maxLogs]);
 
+  const rowHeightCache = useDynamicRowHeight({
+    defaultRowHeight: 32,
+  });
+
   // Handle search
   useEffect(() => {
     if (!searchTerm) {
@@ -225,7 +233,7 @@ export const LogViewer: FC<LogViewerProps> = ({
     const regex = new RegExp(searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
 
     processedLogs.forEach((log, index) => {
-      const logMatches = [...log.message.matchAll(regex)];
+      const logMatches = [...(log.message ?? "").matchAll(regex)];
       if (logMatches.length > 0) {
         matches[index] = logMatches;
         matchCount += logMatches.length;
@@ -247,17 +255,18 @@ export const LogViewer: FC<LogViewerProps> = ({
 
     for (let i = 0; i < result.length; i++) {
       const log = result[i];
+      if (!log) continue;
 
       if (skipDepth > 0) {
-        if (log.hasChildren) {
+        if (log.hasChildren === true) {
           skipDepth++;
-        } else if (log.level === LogLevel.SECTION && log.message.includes('Finishing:')) {
+        } else if (log.level === LogLevel.SECTION && (log.message ?? "").includes('Finishing:')) {
           skipDepth--;
         }
         continue;
       }
 
-      if (log.hasChildren && expandedSections.has(i)) {
+      if (log.hasChildren === true && expandedSections.has(i)) {
         skipDepth = 1;
         continue;
       }
@@ -292,14 +301,18 @@ export const LogViewer: FC<LogViewerProps> = ({
     setSearchIndex(newIndex);
 
     // Find which log contains this match
-    let cumulative = 0;
-    for (const idx of matchIndices) {
-      const matches = searchMatches[idx];
-      if (newIndex < cumulative + matches.length) {
-        scrollToRow?.({ index: idx });
-        break;
+    if (scrollToRow) {
+      let cumulative = 0;
+      for (const idx of matchIndices) {
+        const matches = searchMatches[idx];
+        if (!matches)
+          continue;
+        if (newIndex < cumulative + matches.length) {
+          scrollToRow({ index: idx });
+          break;
+        }
+        cumulative += matches.length;
       }
-      cumulative += matches.length;
     }
   }, [searchMatches, totalMatches, searchIndex, scrollToRow]);
 
@@ -396,7 +409,7 @@ export const LogViewer: FC<LogViewerProps> = ({
   // Scroll to bottom
   const scrollToBottom = useCallback(() => {
     setShouldAutoScroll(true);
-    scrollToRow({ index: filteredLogs.length - 1 });
+    scrollToRow?.({ index: filteredLogs.length - 1 });
   }, [filteredLogs.length, scrollToRow]);
 
   // Calculate which log levels are available
@@ -416,7 +429,7 @@ export const LogViewer: FC<LogViewerProps> = ({
       [LogLevel.SECTION]: theme.colorInfo,
       [LogLevel.GROUP]: theme.colorPrimary,
       [LogLevel.COMMAND]: theme.colorPrimary,
-      [LogLevel.DEBUG]: purple.primary,
+      [LogLevel.DEBUG]: purple.primary ?? "",
     };
 
     return {
@@ -539,18 +552,6 @@ export const LogViewer: FC<LogViewerProps> = ({
             />
             <span>Follow logs</span>
           </label>
-          {/* <label className={styles.toggleOption}>
-                        <Checkbox
-                            defaultChecked={showTimestamps}
-                        />
-                        <span>Show timestamps</span>
-                    </label>
-                    <label className={styles.toggleOption}>
-                        <Checkbox
-                            defaultChecked={showLineNumbers}
-                        />
-                        <span>Line numbers</span>
-                    </label> */}
         </div>
       </div>
 
@@ -606,7 +607,7 @@ export const LogViewer: FC<LogViewerProps> = ({
           <List
             listRef={listRef}
             rowCount={filteredLogs.length}
-            rowHeight={32}
+            rowHeight={rowHeightCache}
             overscanCount={10}
             onScroll={handleScroll}
             rowComponent={LogRow}

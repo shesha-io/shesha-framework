@@ -106,8 +106,8 @@ export interface IBorderValue {
       readonly style?: IBorderType;
     };
   };
-  readonly radiusType?: string;
-  readonly borderType?: string;
+  readonly radiusType?: 'all' | 'custom' | undefined;
+  readonly borderType?: 'all' | 'custom' | undefined;
   readonly hideBorder?: boolean;
 }
 
@@ -132,8 +132,8 @@ export interface IBackgroundValue {
 
   /** Gradient configuration – required when `type = "gradient"`.
    * - `direction`: gradient direction (e.g., `"to right"`, `"45deg"`)
-   * - `colors`: mapping of color stops (e.g., `{ "0%": "#fff", "100%": "#000" }`) */
-  readonly gradient?: { direction: string; colors: Record<string, string> } | undefined;
+   * - `colors`: color stops in render order (e.g., `["#fff", "#000"]`) */
+  readonly gradient?: { direction: string; colors: string[] } | undefined;
 
   /** Solid color string (CSS format) – used when `type = "color"`. */
   readonly color?: string | undefined;
@@ -186,6 +186,25 @@ export interface IFontValue {
   readonly transform?: string;
 }
 
+export interface IShadowValue {
+  readonly offsetX?: number | undefined;
+  readonly offsetY?: number | undefined;
+  readonly blurRadius?: number | undefined;
+  readonly spreadRadius?: number | undefined;
+  readonly color?: string | undefined;
+}
+
+export interface IStyleBoxValue {
+  readonly marginTop?: number | undefined;
+  readonly marginRight?: number | undefined;
+  readonly marginBottom?: number | undefined;
+  readonly marginLeft?: number | undefined;
+  readonly paddingTop?: number | undefined;
+  readonly paddingRight?: number | undefined;
+  readonly paddingBottom?: number | undefined;
+  readonly paddingLeft?: number | undefined;
+}
+
 export interface IComponentStyle extends Record<string, unknown> {
   /** **Font style**
    *
@@ -228,9 +247,37 @@ export interface IComponentStyle extends Record<string, unknown> {
    * Nested fields are read-only
    */
   border: IBorderValue;
+
+  /** **Shadow style**
+   *
+   * If you want to customize shadow styles for a component, use this property and specify values in the object's properties, for example:
+   *
+   * `components.textField.sahdow = {offsetX: 5, offsetY: 5, blurRadius: 10, spreadRadius: 3, color: 'black'};`. The specified properties will be used, the rest will not be changed.
+   *
+   * If you want to use the original values, specify `undefined` for the properties, for example:
+   *
+   * `components.textField.sahdow = {offsetX: undefined, offsetY: undefined, blurRadius: undefined, spreadRadius: undefined, color: undefined};` or `components.textField.border = undefined;`
+   *
+   * Nested fields are read-only
+   */
+  shadow: IShadowValue;
+
+  /** **Margin and padding style**
+   *
+   * If you want to customize margin and padding styles for a component, use this property and specify values in the object's properties, for example:
+   *
+   * `components.textField.styleBox = {marginLeft: 5};`. The specified properties will be used, the rest will not be changed.
+   *
+   * If you want to use the original values, specify `undefined` for the properties, for example:
+   *
+   * `components.textField.styleBox = {marginLeft: undefined};`
+   *
+   * Nested fields are read-only
+   */
+  styleBox: IStyleBoxValue;
 }
 
-export type EditMode = 'editable' | 'readOnly' | 'inherited' | boolean;
+export type InteractionMode = 'editable' | 'readOnly' | 'disabled' | 'inherited' | boolean;
 
 export interface CommonComponentApi {
   /** Name of the component (e.g., `"textField"`, `"numberField"`). */
@@ -243,8 +290,8 @@ export interface CommonComponentApi {
   readonly style: IComponentStyle;
   /** Whether the component is visible in the UI. */
   visible: boolean;
-  /** Current edit mode of the component. */
-  editable: EditMode;
+  /** Current interaction mode of the component. */
+  interactionMode: InteractionMode | undefined;
 }
 
 export interface InputComponentApi<T = unknown> extends CommonComponentApi {
@@ -268,4 +315,66 @@ export interface InputComponentApi<T = unknown> extends CommonComponentApi {
 // Components API
 
 export type TextFieldApi = InputComponentApi<string | undefined>;
-export type NumberFieldApi = InputComponentApi<number | undefined>;
+
+export type TextAreaApi = InputComponentApi<string | undefined>;
+
+export interface NumberFieldApi extends InputComponentApi<number | undefined> {
+  /** Minimum value */
+  min?: number;
+  /** Maximum value */
+  max?: number;
+};
+
+/** A single selectable option of a radio group. */
+export interface RadioOption {
+  /** Text displayed next to the radio button. */
+  readonly label: string;
+  /** Value assigned to the component when this option is selected. */
+  readonly value: string | number | undefined;
+}
+
+export interface RadioApi extends InputComponentApi<number | string | undefined> {
+  /** Options currently displayed by the radio group, whatever the configured data source is. Read-only. */
+  readonly options: readonly RadioOption[];
+};
+
+export type CheckboxFieldApi = InputComponentApi<boolean | undefined>;
+
+export type DropdownApi = InputComponentApi<number | number[] | string | string[] | (string | number)[] | undefined>;
+
+/** Checkbox group. Multi-select only, so the value is always the list of selected item values. */
+export type CheckboxGroupApi = InputComponentApi<string[] | undefined>;
+
+export type SwitchFieldApi = InputComponentApi<boolean | undefined>;
+
+/**
+ * Date field. The value is the serialised date as stored in the form data, so its shape follows the
+ * component's Binding Format; when Range is enabled it is a `[start, end]` pair instead.
+ */
+export interface DateFieldApi extends InputComponentApi<string | [string | null, string | null] | null | undefined> {
+  /** Whether the component is currently picking a range rather than a single date. Read-only. */
+  readonly isRange: boolean;
+};
+
+export interface PanelApi extends CommonComponentApi {
+  /** Whether the panel is expanded */
+  isExpanded: boolean;
+  /** Expand the panel */
+  expand(): void;
+  /** Collapse the panel */
+  collapse(): void;
+};
+
+export interface ButtonApi extends CommonComponentApi {
+  /** Focus on component */
+  focus(): void;
+  /** Click on button */
+  click(): void;
+};
+
+export interface AlertApi extends CommonComponentApi {
+  /** Text of the alert */
+  text?: string;
+  /** Description of the alert */
+  description?: string;
+};

@@ -1,6 +1,6 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { CheckSquareOutlined } from '@ant-design/icons';
-import { Checkbox, CheckboxProps } from 'antd';
+import { Checkbox, CheckboxRef } from 'antd';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { DataTypes } from '@/interfaces/dataTypes';
@@ -10,23 +10,25 @@ import {
   migratePropertyName,
   migrateCustomFunctions,
   migrateReadOnly,
+  migrateHiddenToVisible,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { getSettings } from './settingsForm';
-import { getAllEventHandlers } from '@/components/formDesigner/components/utils';
-import { CheckboxChangeEvent } from 'antd/lib/checkbox';
-import { useStyles } from './styles';
 import { migratePrevStyles } from '../_common-migrations';
+import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
+import { getSettings } from './settingsForm';
+import { useStyles } from './styles';
 import { defaultStyles } from './utils';
+import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '../_common/events';
+import { useComponentApi } from '@/providers/componentApi/provider';
+import { useEffectOnce } from '@/hooks/useEffectOnce';
+import { CheckboxFieldApi } from '../../componentsApi/componentApi';
+import { isDefined } from '@/utils/nullables';
 
-interface ExtendedCheckboxProps extends CheckboxProps {
-  onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
-  onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
-  onChange?: (e: CheckboxChangeEvent) => void;
-}
+import apiCode from "../../componentsApi/componentApi.ts?raw";
 
 const CheckboxComponent: CheckboxComponentDefinition = {
+  allowInherit: true,
   type: 'checkbox',
   isInput: true,
   isOutput: true,
@@ -39,33 +41,45 @@ const CheckboxComponent: CheckboxComponentDefinition = {
    */
   preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
-  calculateModel: (model, allData) => ({ eventHandlers: getAllEventHandlers(model, allData) }),
-  Factory: ({ model, calculatedModel }) => {
-    const finalStyle = useMemo(() => !model.enableStyleOnReadonly && model.readOnly ? {
-      ...model.allStyles.fontStyles,
-      ...model.allStyles.dimensionsStyles,
-    } : model.allStyles.fullStyle, [model.enableStyleOnReadonly, model.readOnly, model.allStyles]);
+  Factory: ({ model, apiContext }) => {
+    const componentApi = useComponentApi();
+    const inputRef = useRef<CheckboxRef>(null);
+    useEffect(() => {
+      componentApi?.updateApi<CheckboxFieldApi>({
+        id: model.id,
+        componentName: model.componentName ?? "",
+        level: 3,
+        typeDefinition: { typeName: 'CheckboxFieldApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+        api: { focus: () => inputRef.current?.focus() },
+      });
+    }, [apiContext, componentApi, model.componentName, model.id]);
+    useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
-    const { styles } = useStyles({ style: finalStyle });
+    const { styles } = useStyles(model);
 
     return (
-      <ConfigurableFormItem model={model} valuePropName="checked">
-        {(value, onChange) => {
-          const events: ExtendedCheckboxProps = {
-            onBlur: calculatedModel.eventHandlers.onBlur,
-            onFocus: calculatedModel.eventHandlers.onFocus,
-            onChange: (e: CheckboxChangeEvent) => {
-              calculatedModel.eventHandlers.onChange({ value: e.target.checked }, e);
-              if (typeof onChange === 'function') onChange(e.target.checked);
-            },
-          };
-
-          return <Checkbox className={styles.checkbox} disabled={model.readOnly} checked={value} {...events} />;
+      <ConfigurableFormItem<boolean> model={model} valuePropName="checked">
+        {(value, onChange, _, ctx) => {
+          return (
+            <Checkbox
+              ref={inputRef}
+              className={styles.checkbox}
+              disabled={model.disabled === true || model.readOnly === true}
+              checked={value ?? false}
+              {...(isDefined(model.styleJson) ? { style: model.styleJson } : {})}
+              onChange={(event) => {
+                ctx?.handleEvent(event, { value: event.target.checked }, model.onChangeCustom);
+                onChange(event.target.checked);
+              }}
+              {...getComponentEvents<boolean>(model, ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, ctx, value, DataTypes.boolean)}
+            />
+          );
         }}
       </ConfigurableFormItem>
     );
   },
   settingsFormMarkup: getSettings,
+  getDefaultStyles: () => defaultStyles(),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) =>
     m
@@ -73,14 +87,27 @@ const CheckboxComponent: CheckboxComponentDefinition = {
       .add<ICheckboxComponentProps>(1, (prev) => migrateVisibility(prev))
       .add<ICheckboxComponentProps>(2, (prev) => migrateReadOnly(prev))
       .add<ICheckboxComponentProps>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-      .add<ICheckboxComponentProps>(4, (prev) => {
+      .add<ICheckboxComponentProps>(4, (prev, context) => {
+        if (context.isNew === true) return prev;
+
         const styles: IInputStyles = {
           style: prev.style,
         };
 
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })
-      .add<ICheckboxComponentProps>(5, (prev) => (migratePrevStyles(prev, defaultStyles(prev)))),
+      .add<ICheckboxComponentProps>(5, (prev, context) => context.isNew === true
+        ? prev
+        : migratePrevStyles(prev, defaultStyles(prev)))
+      .add<ICheckboxComponentProps>(6, (prev) => migrateHiddenToVisible(prev))
+      .add<ICheckboxComponentProps>(7, (prev) => migratePermissionsToVisiblePermissions(prev)),
+  previewConfiguration: {
+    type: 'checkbox',
+    id: 'checkbox',
+    propertyName: `checkboxAppearance`,
+    label: `Checkbox Label`,
+    version: 'latest',
+  },
 };
 
 export default CheckboxComponent;

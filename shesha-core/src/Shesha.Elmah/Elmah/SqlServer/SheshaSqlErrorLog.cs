@@ -86,12 +86,15 @@ namespace Shesha.Elmah.SqlServer
                     // gather refs and log them
                     if (error.Exception != null && provider.CurrentState != null)
                     {
-                        var allRefs = provider.CurrentState.AllExceptions.Where(e => e.Exception == error.Exception).ToList();
-                        if (allRefs.Any()) 
+                        if (provider.CurrentState.AllExceptions != null)
                         {
-                            foreach (var item in allRefs)
+                            var allRefs = provider.CurrentState.AllExceptions.Where(e => e.Exception == error.Exception).ToList();
+                            if (allRefs.Any()) 
                             {
-                                ExecuteCommand(connection, () => Commands.LogErrorRef(id, item.ErrorReference.Type, item.ErrorReference.Id));
+                                foreach (var item in allRefs)
+                                {
+                                    ExecuteCommand(connection, () => Commands.LogErrorRef(id, item.ErrorReference.Type, item.ErrorReference.Id));
+                                }
                             }
                         }
                     }
@@ -181,141 +184,6 @@ namespace Shesha.Elmah.SqlServer
 
         private static class Commands
         {
-            public static void ExecuteNonQuery(SqlConnection connection, string sql)
-            {
-                using (var command = new SqlCommand(sql)) 
-                {
-                    command.Connection = connection;
-                    if (connection.State == ConnectionState.Closed)
-                        connection.Open();
-                    command.ExecuteNonQuery();
-                }                    
-            }
-
-            public static object ExecuteScalar(SqlConnection connection, string sql) 
-            {
-                using (var command = new SqlCommand(sql))
-                {
-                    command.Connection = connection;
-                    if (connection.State == ConnectionState.Closed)
-                        connection.Open();
-                    return command.ExecuteScalar();
-                }
-            }
-
-            private static void ExecuteBatchNonQuery(SqlConnection conn, string sql)
-            {
-                var sqlBatch = string.Empty;
-                using (var cmd = new SqlCommand(string.Empty, conn))
-                {
-                    sql += "\nGO"; // make sure last batch is executed.
-                    foreach (var line in sql.Split(new[] { "\n", "\r" },
-                        StringSplitOptions.RemoveEmptyEntries))
-                        if (line.ToUpperInvariant().Trim() == "GO")
-                        {
-                            cmd.CommandText = sqlBatch;
-                            cmd.ExecuteNonQuery();
-                            sqlBatch = string.Empty;
-                        }
-                        else
-                        {
-                            sqlBatch += line + "\n";
-                        }
-                }
-            }
-
-            public static bool SchemaExists(SqlConnection connection, string schemaName)
-            {
-                var result = (int?)ExecuteScalar(connection, $@"
-SELECT 1 
-WHERE EXISTS (
-   SELECT 1 FROM sys.schemas WHERE name = '{schemaName}'
-   )
-");
-                return result == 1;
-            }
-
-            public static void CreateSchema(SqlConnection connection, string schemaName)
-            {
-                ExecuteNonQuery(connection, $@"create schema {schemaName}");
-            }
-
-            public static bool TableExists(SqlConnection connection, string schemaName, string tableName)
-            {
-                var result = (int?)ExecuteScalar(connection, $@"
-SELECT 1 
-WHERE EXISTS (
-   SELECT 1
-   FROM   INFORMATION_SCHEMA.TABLES 
-   WHERE  TABLE_SCHEMA = '{schemaName}'
-   AND    TABLE_NAME = '{tableName}'
-   )
-");
-                return result == 1;
-            }
-
-            public static void CreateErrorsTable(SqlConnection connection) 
-            {
-                var schemaName = DBConstants.Schema;
-                var tableName = DBConstants.ErrorsTable;
-
-                ExecuteBatchNonQuery(connection, $@"
-CREATE TABLE [{schemaName}].[{tableName}]
-(
-    [error_id]     UNIQUEIDENTIFIER NOT NULL,
-    [application]  NVARCHAR(60)  NOT NULL,
-    [host]         NVARCHAR(50)  NOT NULL,
-    [type]         NVARCHAR(100) NOT NULL,
-    [source]       NVARCHAR(60)  NOT NULL,
-    [message]      NVARCHAR(MAX) NOT NULL,
-    [user]         NVARCHAR(50)  NOT NULL,
-    [status_code]  INT NOT NULL,
-    [time_utc]     DATETIME NOT NULL,
-    [sequence]     INT IDENTITY (1, 1) NOT NULL,
-    [all_xml]      NVARCHAR(MAX) NOT NULL 
-) 
-GO
-
-ALTER TABLE [{schemaName}].[{tableName}] WITH NOCHECK ADD 
-    CONSTRAINT [pk_{tableName}] PRIMARY KEY NONCLUSTERED ([error_id]) ON [PRIMARY] 
-GO
-
-ALTER TABLE [{schemaName}].[{tableName}] ADD 
-    CONSTRAINT [df_{tableName}_error_id] DEFAULT (NEWID()) FOR [error_id]
-GO
-
-CREATE NONCLUSTERED INDEX [ix_{tableName}_app_time_seq] ON [{schemaName}].[{tableName}] 
-(
-    [application]   ASC,
-    [time_utc]      DESC,
-    [sequence]      DESC
-) 
-ON [PRIMARY]");
-            }
-
-
-            public static void CreateErrorRefsTable(SqlConnection connection)
-            {
-                var schemaName = DBConstants.Schema;
-                var tableName = DBConstants.ErrorRefsTable;
-
-                ExecuteBatchNonQuery(connection, $@"
-CREATE TABLE [{schemaName}].[{tableName}]
-(
-    [error_id]     UNIQUEIDENTIFIER NOT NULL,
-    [ref_type]     NVARCHAR(100) NOT NULL,
-    [ref_id]       NVARCHAR(40)  NOT NULL
-) 
-GO
-
-CREATE NONCLUSTERED INDEX [ix_{tableName}_type_id] ON [{schemaName}].[{tableName}] 
-(
-    [ref_type],
-    [ref_id]
-) 
-ON [PRIMARY]");
-            }
-
             public static SqlCommand LogError(
                 Guid id,
                 string appName,

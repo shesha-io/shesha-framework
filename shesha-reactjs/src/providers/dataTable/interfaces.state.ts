@@ -100,14 +100,14 @@ interface _DataState {
   /** Data fetching mode (paging or fetch all) */
   dataFetchingMode: DataFetchingMode;
   /** Datatable data (fetched from the back-end) */
-  tableData: object[];
+  tableData: ITableRowData[];
   isFetchingTableData: boolean;
   hasFetchTableDataError: boolean;
   fetchTableDataError: unknown | undefined;
 };
 
 export interface IDataTableStateContext extends IHasModelType, _PagerState, _FiltersState, _ColumnsState, _SortingState, _SelectionState, _GroupingState, _ReorderState, _DataState {
-  actionedRow?: unknown;
+  actionedRow?: ITableRowData | undefined;
 
   /** Validation result from parent DataContext component */
   contextValidation?: IModelValidation | undefined;

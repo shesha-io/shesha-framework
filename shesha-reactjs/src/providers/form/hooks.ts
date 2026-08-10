@@ -62,7 +62,7 @@ const getDesignerUrl = (designerUrl: string, formId: FormIdentifier): string => 
 export const useFormDesignerUrl = (formId: FormIdentifier | undefined): string => {
   const app = useSheshaApplication();
   const router = useShaRouting();
-  if (!formId)
+  if (!isDefined(formId))
     return "";
   const url = getDesignerUrl(app.routes.configurationStudio, formId);
   return router.prepareUrl(url);

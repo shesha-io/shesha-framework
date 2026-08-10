@@ -62,7 +62,7 @@ export interface IFormApi<Values extends object = object> {
   setFormData: (payload: ISetFormDataPayload<Values>) => void;
 
   /** Get form data. Need for getting actual form data (using in scripts) */
-  getFormData: () => Values | undefined;
+  getFormData: (() => Values) | undefined;
 
   /** Set validation errors. Need for display validation errors in the ValidationErrors component */
   setValidationErrors: (payload: string | IErrorInfo | IAjaxResponseBase | AxiosResponse<IAjaxResponseBase> | Error) => void;

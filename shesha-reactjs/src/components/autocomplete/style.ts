@@ -3,9 +3,9 @@ import { CSSProperties } from 'react';
 
 export const useStyles = createStyles(({ css, cx, token }, { style }: { style: CSSProperties }) => {
   const autocomplete = cx("sha-autocomplete", css`
-    ${style?.color ? `--ant-color-text: ${style.color} !important;` : ''}
-    ${style?.fontSize ? `--ant-font-size: ${style.fontSize} !important;` : ''}
-    ${style?.fontWeight ? `--ant-font-weight-strong: ${style.fontWeight} !important;` : ''}
+    ${style.color ? `--ant-color-text: ${style.color} !important;` : ''}
+    ${style.fontSize ? `--ant-font-size: ${style.fontSize} !important;` : ''}
+    ${style.fontWeight ? `--ant-font-weight-strong: ${style.fontWeight} !important;` : ''}
 
     .ant-select-selection-item {
       font-weight: var(--ant-font-weight) !important;
@@ -22,9 +22,9 @@ export const useStyles = createStyles(({ css, cx, token }, { style }: { style: C
     min-height: 32px;
     border-radius: ${token.borderRadius}px;
     padding: 4px 11px;
-    font-size: ${style?.fontSize || token.fontSize};
-    font-family: ${style?.fontFamily || token.fontFamily};
-    color: ${style?.color || token.colorText};
+    font-size: ${style.fontSize || token.fontSize};
+    font-family: ${style.fontFamily || token.fontFamily};
+    color: ${style.color || token.colorText};
     
     &:hover {
       border-color: ${token.colorPrimaryHover};

@@ -1,84 +1,141 @@
 import { useRefListItemGroupConfigurator } from '@/components/refListSelectorDisplay/provider';
 import { App, Flex, Form, Modal } from 'antd';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import KanbanPlaceholder from './components/kanbanPlaceholder';
-import KanbanColumn from './components/renderColumn';
-import { IKanbanProps } from './model';
-import { useKanbanActions } from './utils';
+import KanbanColumn, { KanbanUrls } from './components/renderColumn';
+import { IKanbanProps, isKanbanColumn, isRefListCellValue } from './model';
+import { IDataColumnsProps, isDataColumn } from '@/providers/datatableColumnsConfigurator/models';
+import { KanbanColumnState, useKanbanActions } from './utils';
 import { addPx } from '@/utils/style';
 import { getOverflowStyle } from '@/designer-components/_settings/utils/overflow/util';
-import { jsonSafeParse } from '@/utils/object';
+import { getPropertyOrUndefined, jsonSafeParse } from '@/utils/object';
 import { pickStyleFromModel, useAvailableConstantsData } from '@/providers/form/utils';
 import { useDataTableStore } from '@/providers/dataTable/hooks';
 import { useFormState } from '@/providers/form';
 import { useMetadataDispatcher } from '@/providers/metadataDispatcher/provider';
-import { StyleBoxValue } from '@/providers/form/models';
+import { FCUnwrapped, StyleBoxValue } from '@/providers/form/models';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { ConfigurableForm } from '../configurableForm';
+import { IAnyObject, isEntityMetadata } from '@/interfaces';
+import { ITableRowData } from '@/providers/dataTable/interfaces';
+import { isNonEmptyArray } from '@/utils/array';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { useEffectOnce } from '@/hooks/useEffectOnce';
+import { RecursivePartial } from '@/interfaces/entity';
 
-const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
-  const { gap, groupingProperty, createFormId, items, componentName, editFormId } = props;
+const KanbanReactComponent: FCUnwrapped<IKanbanProps> = (props) => {
+  const { gap, groupingProperty, createFormId, componentName, editFormId } = props;
 
-  const { tableData, modelType } = useDataTableStore();
+  const { tableData, modelType, configurableColumns, registerConfigurableColumns } = useDataTableStore();
   const { message } = App.useApp();
   const allData = useAvailableConstantsData();
-  const [columns, setColumns] = useState([]);
-  const [urls, setUrls] = useState({ updateUrl: '', deleteUrl: '', postUrl: '' });
-  const [tasks, setTasks] = useState([]);
+  const [urls, setUrls] = useState<KanbanUrls>({ updateUrl: '', deleteUrl: '', postUrl: '' });
+  const [tasks, setTasks] = useState<ITableRowData[]>([]);
   const { formMode } = useFormState();
   const isInDesigner = formMode === 'designer';
   const { updateKanban, deleteKanban, createKanbanItem, fetchColumnState } = useKanbanActions();
-  const [form] = Form.useForm();
-  const [editForm] = Form.useForm();
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [selectedColumn, setSelectedColumn] = useState(null);
+  const [form] = Form.useForm<ITableRowData>();
+  const [editForm] = Form.useForm<ITableRowData>();
+  const [selectedItem, setSelectedItem] = useState<ITableRowData | null>(null);
+  const [selectedColumn, setSelectedColumn] = useState<number | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [settings, setSettings] = useState({});
-  const { storeSettings } = useRefListItemGroupConfigurator();
+  const [settings, setSettings] = useState<IAnyObject>({});
+  const { storeSettings, items: refListItems } = useRefListItemGroupConfigurator();
   const { getMetadata } = useMetadataDispatcher();
 
-  const styling = jsonSafeParse<StyleBoxValue>(props.columnStyles.stylingBox || '{}');
+  // Columns come from the reference list held by the provider, not from the saved snapshot,
+  // so the designer, preview and runtime can never drift apart. Per-item configuration saved
+  // on the model is merged onto these items by the provider.
+  const columns = useMemo(() => refListItems.filter(isKanbanColumn), [refListItems]);
+
+  const styling = jsonSafeParse<StyleBoxValue>(props.columnStyles?.stylingBox || '{}');
   const stylingBoxAsCSS = pickStyleFromModel(styling);
 
+  const getGroupingValue = useCallback(
+    (task: ITableRowData): number | undefined => getPropertyOrUndefined<number>(task, groupingProperty, (value) => {
+      // A reference list cell can arrive either as a raw value or as { item, itemValue }.
+      const rawValue = isRefListCellValue(value) ? value.itemValue : value;
+      const numericValue = typeof rawValue === 'number' ? rawValue : parseFloat(String(rawValue));
+      return Number.isNaN(numericValue) ? undefined : numericValue;
+    }),
+    [groupingProperty],
+  );
+
   useEffect(() => {
-    if (!isInDesigner && modelType && groupingProperty) {
-      getMetadata({ modelType: modelType, dataType: DataTypes.entityReference }).then((resp: any) => {
-        if (resp?.apiEndpoints) {
+    if (isNullOrWhiteSpace(groupingProperty))
+      return;
+    // The Kanban renders no grid of its own, so nothing else asks the table to fetch the grouping
+    // property. Without it every row arrives without the value used to place cards into columns.
+    const isAlreadyFetched = configurableColumns.some((column) => isDataColumn(column) && column.propertyName === groupingProperty);
+    if (isAlreadyFetched)
+      return;
+
+    const groupingColumn: IDataColumnsProps = {
+      id: `${props.id}-${groupingProperty}`,
+      columnType: 'data',
+      propertyName: groupingProperty,
+      caption: groupingProperty,
+      sortOrder: configurableColumns.length,
+      itemType: 'item',
+      allowSorting: false,
+      isVisible: true,
+    };
+    registerConfigurableColumns(props.id, [...configurableColumns, groupingColumn]);
+    // registerConfigurableColumns is omitted from the dependencies because the actions object is
+    // recreated on every render; the effect only needs to re-run when the columns themselves change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [configurableColumns, groupingProperty, props.id]);
+
+  useEffect(() => {
+    let stale = false;
+    const canMutate = !isInDesigner && !!modelType && !!groupingProperty;
+
+    // Drop the previous entity's endpoints until the new metadata resolves.
+    setUrls((prev) => (prev.updateUrl === "" && prev.deleteUrl === "" && prev.postUrl === "")
+      ? prev
+      : { updateUrl: "", deleteUrl: "", postUrl: "" });
+
+    if (canMutate) {
+      getMetadata({ modelType: modelType, dataType: DataTypes.entityReference }).then((resp) => {
+        if (stale)
+          return;
+        if (isEntityMetadata(resp)) {
           const { update, delete: deleteEndpoint, create } = resp.apiEndpoints;
           setUrls({
-            updateUrl: update?.url,
-            deleteUrl: deleteEndpoint?.url,
-            postUrl: create?.url,
+            updateUrl: update?.url ?? "",
+            deleteUrl: deleteEndpoint?.url ?? "",
+            postUrl: create?.url ?? "",
           });
         }
       }).catch((error) => {
         console.error('Failed to fetch metadata', error);
-        throw error;
       });
-
-      const filteredTasks = tableData.filter((item: any) => item?.[groupingProperty]);
-      setTasks(filteredTasks);
     }
-  }, [isInDesigner, modelType, groupingProperty, tableData]);
+
+    return () => {
+      stale = true;
+    };
+  }, [isInDesigner, modelType, groupingProperty, getMetadata]);
 
   useEffect(() => {
-    setColumns(items);
-  }, [items]);
+    if (modelType && groupingProperty) {
+      // isDefined rather than truthiness: itemValue 0 is a valid column (e.g. "None").
+      setTasks(tableData.filter((item) => isDefined(getGroupingValue(item))));
+    }
+  }, [modelType, groupingProperty, tableData, getGroupingValue]);
 
-  useEffect(() => {
+  useEffectOnce(() => {
     const initializeSettings = async (): Promise<void> => {
       try {
-        const resp = await fetchColumnState(componentName);
-        if (!resp?.result) return;
-
-        const parsedSettings = JSON.parse(resp.result);
-        if (parsedSettings) {
-          setSettings(parsedSettings);
+        if (!isNullOrWhiteSpace(componentName)) {
+          const resp: KanbanColumnState = (await fetchColumnState(componentName)) ?? {};
+          setSettings(resp);
           // Loop through and store settings asynchronously
-          for (const [columnId, isCollapsed] of Object.entries(parsedSettings)) {
-            await storeSettings(columnId, isCollapsed as boolean); // Await inside loop
+          for (const [columnId, isCollapsed] of Object.entries(resp)) {
+            await storeSettings(columnId, isCollapsed);
           }
-        }
+        } else
+          setSettings({});
       } catch (error) {
         console.error('Error initializing settings:', error);
         setSettings({});
@@ -89,14 +146,13 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
       console.error('Failed to initialize settings', error);
       throw error;
     });
-  }, []);
+  });
 
   useEffect(() => {
-    if (selectedItem) {
-      editForm.setFieldsValue(selectedItem);
-    } else {
-      editForm.resetFields();
-    }
+    // editForm is only mounted while an item is selected; closeModal resets it while it is
+    // still connected, so there is nothing to reset here.
+    if (isDefined(selectedItem))
+      editForm.setFieldsValue(selectedItem as RecursivePartial<ITableRowData>);
   }, [selectedItem, editForm]);
 
   const closeModal = (): void => {
@@ -107,25 +163,26 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
     setSelectedColumn(null);
   };
 
-  const handleEditClick = (item: any): void => {
+  const handleEditClick = (item: ITableRowData): void => {
     setSelectedItem(item);
     setIsModalVisible(true);
   };
 
   const handleEdit = async (): Promise<void> => {
+    if (!isDefined(selectedItem))
+      throw new Error('No item selected to update');
+
     const updatedItem = editForm.getFieldsValue();
     updatedItem.id = selectedItem.id;
 
     await updateKanban(updatedItem, urls.updateUrl)
-      .then((resp: any) => {
-        if (resp.success) {
-          const updatedTasks = tasks.map((task) => (task.id === selectedItem.id ? { ...task, ...resp.result } : task));
-          setTasks([...updatedTasks]);
-          closeModal();
-          message.success('Item updated successfully');
-        }
+      .then((resp) => {
+        const updatedTasks = tasks.map((task) => (task.id === selectedItem.id ? { ...task, ...resp } : task));
+        setTasks([...updatedTasks]);
+        closeModal();
+        message.success('Item updated successfully');
       })
-      .catch((error: any) => {
+      .catch((error) => {
         console.error(error);
       });
   };
@@ -141,23 +198,21 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
 
   const handleCreate = (): void => {
     const newValues = form.getFieldsValue();
-    newValues[groupingProperty] = selectedColumn;
+    if (!isNullOrWhiteSpace(groupingProperty))
+      newValues[groupingProperty] = selectedColumn;
     createKanbanItem(newValues, urls.postUrl)
       .then((response) => {
-        if (response?.success) {
-          setTasks([...tasks, response.result]);
-          setIsModalVisible(false);
-          setSelectedColumn(null);
-        } else {
-          message.error('Failed to create the item.');
-        }
+        setTasks([...tasks, response]);
+        setIsModalVisible(false);
+        setSelectedColumn(null);
       })
-      .catch((error: any) => {
+      .catch((error) => {
         console.error(error);
+        message.error('Failed to create the item.');
       });
   };
 
-  const handleCreateClick = (columnValue): void => {
+  const handleCreateClick = (columnValue: number): void => {
     setSelectedColumn(columnValue);
     setSelectedItem(null);
     form.resetFields();
@@ -165,29 +220,29 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
   };
 
   const memoizedFilteredTasks = useMemo(() => {
-    return columns?.map((column) => ({
+    return columns.map((column) => ({
       column,
-      tasks: tasks.filter((task) => parseFloat(task[groupingProperty]) === column.itemValue),
+      tasks: tasks.filter((task) => getGroupingValue(task) === column.itemValue),
       isCollapsed: settings[column.itemValue] || false, // Default to false if not set
     }));
-  }, [columns, tasks, groupingProperty, settings]);
+  }, [columns, tasks, settings, getGroupingValue]);
 
   const overflowStyle = getOverflowStyle(true, false);
 
   return (
     <>
-      {!columns || columns.length === 0 ? (
+      {!isNonEmptyArray(columns) ? (
         <KanbanPlaceholder />
       ) : (
         <Flex style={{ ...stylingBoxAsCSS, ...overflowStyle, overflowY: 'hidden', display: 'flex', gap: addPx(gap, allData) ?? '0px' }}>
-          {memoizedFilteredTasks?.map(({ column, tasks: columnTasks }) => (
+          {memoizedFilteredTasks.map(({ column, tasks: columnTasks }) => (
             <KanbanColumn
               props={props}
               setTasks={setTasks}
               key={column.itemValue}
               urls={urls}
               tasks={tasks}
-              collapse={settings[column.itemValue] ?? false}
+              collapse={Boolean(settings[column.itemValue])}
               column={column}
               columns={columns}
               columnTasks={columnTasks}
@@ -204,21 +259,25 @@ const KanbanReactComponent: React.FC<IKanbanProps> = (props) => {
         title={selectedItem ? 'Edit Item' : 'New Item'}
         open={isModalVisible}
         onOk={() =>
-          selectedItem ? editForm.validateFields().then(handleEdit) : form.validateFields().then(handleCreate)}
+          selectedItem
+            ? editForm.validateFields().then(handleEdit)
+            : form.validateFields().then(handleCreate)}
         onCancel={closeModal}
         width={1000}
       >
-        {selectedItem ? (
-          <ConfigurableForm
-            key={selectedItem}
-            initialValues={selectedItem || {}}
-            form={editForm}
-            formId={editFormId}
-            mode="edit"
-          />
-        ) : (
-          <ConfigurableForm key="new-item" form={form} formId={createFormId} mode="edit" />
-        )}
+        {selectedItem
+          ? editFormId && (
+            <ConfigurableForm
+              key={selectedItem.id}
+              initialValues={selectedItem}
+              form={editForm}
+              formId={editFormId}
+              mode="edit"
+            />
+          )
+          : (
+            createFormId && <ConfigurableForm key="new-item" form={form} formId={createFormId} mode="edit" />
+          )}
       </Modal>
     </>
   );

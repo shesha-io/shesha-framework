@@ -4,9 +4,9 @@ import { ConfigurableForm } from '@/components/configurableForm';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';
 
-export interface IProps<TModel = any> {
+export interface IProps<TModel extends object> {
   title?: string;
-  model: TModel;
+  model: TModel | undefined;
   markup: IConfigurableFormComponent[];
   onCancel: () => void;
   onSave: (model: TModel) => void;
@@ -17,7 +17,7 @@ export const ComponentSettingsModal = <TSettings extends object>({ title, markup
     labelCol: { span: 8 },
     wrapperCol: { span: 16 },
   };
-  const formRef = useShaFormRef();
+  const formRef = useShaFormRef<TSettings>();
 
   const onOk = (): void => {
     formRef.current?.submit();

@@ -21,6 +21,7 @@ export interface IParentProviderStateContext<Values extends object = object> {
   model: Values;
   formFlatMarkup?: IFlatComponentsStructure | undefined;
   formApi?: IFormApi<Values> | undefined;
+  parent?: IParentProviderStateContext<Values> | undefined;
   getChildComponents: (componentId: string) => IConfigurableFormComponent[];
 }
 
@@ -91,6 +92,7 @@ const ParentProvider = <TValue extends object = object>(props: PropsWithChildren
       formFlatMarkup: formFlatMarkupLocal,
       formApi: formApiLocal as IFormApi<object>,
       model: { ...parent?.model, ...model },
+      parent,
       getChildComponents: (id) => formFlatMarkupLocal ? getChildComponents(formFlatMarkupLocal, id) : [],
     };
   }, [
@@ -100,7 +102,7 @@ const ParentProvider = <TValue extends object = object>(props: PropsWithChildren
     formFlatMarkupLocal,
     formApiLocal,
     model,
-    parent?.model,
+    parent,
   ]);
 
   const contextProps: IDataContextProviderProps<object> | undefined = addContext && !props.contextProps

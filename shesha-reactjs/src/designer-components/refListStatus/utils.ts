@@ -1,4 +1,6 @@
-export const defaultStyles = (): any => {
+import { IStyleValue } from "@/interfaces";
+
+export const defaultStyles = (): IStyleValue => {
   return {
     background: { type: 'color', color: '' },
     font: {
@@ -17,8 +19,6 @@ export const defaultStyles = (): any => {
         },
       },
       radius: { all: 4 },
-      selectedBorder: 'all',
-      selectedCorner: 'all',
     },
     dimensions: {
       width: 'auto',

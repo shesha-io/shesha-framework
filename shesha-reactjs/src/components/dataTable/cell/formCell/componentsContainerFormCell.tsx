@@ -4,7 +4,7 @@ import { IComponentsContainerBaseProps } from '@/interfaces';
 import { removeUndefinedProperties } from '@/utils/array';
 import { useParent } from '@/providers/parentProvider/index';
 import { getAlignmentStyle } from '@/components/formDesigner/containers/util';
-import FormComponent from '@/components/formDesigner/formComponent';
+import FormComponent from '@/components/formDesigner/formComponent/formComponent';
 
 interface IComponentsContainerFormCellProps extends IComponentsContainerBaseProps, ICommonContainerProps { }
 

@@ -12,6 +12,7 @@ import { IMarkdownProps } from './interfaces';
 import Markdown from './markdown';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 const MarkdownComponent: IToolboxComponent<IMarkdownProps> = {
   type: 'markdown',
@@ -32,12 +33,12 @@ const MarkdownComponent: IToolboxComponent<IMarkdownProps> = {
     });
 
     return (
-      <ConfigurableFormItem model={{ ...model, label: undefined, hideLabel: true }}>
+      <ConfigurableFormItem<string> model={{ ...model, label: undefined, hideLabel: true }}>
         {(value) => {
           const content = contentProp || value;
           return (
             <div style={{ ...allStyles?.dimensionsStyles }}>
-              <Markdown {...model} content={content} style={{ ...additionalStyles }} />
+              <Markdown {...model} content={content ?? ""} style={{ ...additionalStyles }} />
             </div>
           );
         }}
@@ -48,7 +49,9 @@ const MarkdownComponent: IToolboxComponent<IMarkdownProps> = {
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   initModel: (model) => ({
     ...model,
-    content: (model.content?.trim() ? model.content : `
+    content: (!isNullOrWhiteSpace(model.content)
+      ? model.content
+      : `
 # Markdown Example
 
 ## Basic Text

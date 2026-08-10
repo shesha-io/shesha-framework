@@ -11,9 +11,9 @@ const getConfigurableActionFullName = (owner: string, name: string): string => {
 
 interface IActionSelectProps {
   actions: IConfigurableActionGroupDictionary;
-  value?: string;
-  onChange?: () => void;
-  readOnly?: boolean;
+  value?: string | undefined;
+  onChange?: ((newValue: string) => void) | undefined;
+  readOnly?: boolean | undefined;
 }
 interface IActionSelectItem {
   title: string | ReactNode;
@@ -40,6 +40,8 @@ export const ActionSelect: FC<IActionSelectProps> = ({ value, onChange, actions,
       if (!actions.hasOwnProperty(owner))
         continue;
       const ownerActions = actions[owner];
+      if (!ownerActions)
+        continue;
       const ownerNodes: IActionSelectItem[] = [];
 
       // Sort actions by sortOrder (lower numbers first), then by name if sortOrder is not specified
@@ -68,7 +70,7 @@ export const ActionSelect: FC<IActionSelectProps> = ({ value, onChange, actions,
           ),
           displayText: `${ownerActions.ownerName}: ${displayName}`,
           value: getConfigurableActionFullName(owner, action.name),
-          children: null,
+          children: [],
           selectable: true,
         });
       });
@@ -91,13 +93,12 @@ export const ActionSelect: FC<IActionSelectProps> = ({ value, onChange, actions,
       style={{
         width: '100%',
       }}
-      value={value}
+      {...(value ? { value } : {})}
       styles={treeStyles}
       size="small"
       placeholder="Please select"
       allowClear
-      // treeDefaultExpandAll
-      onChange={onChange}
+      {...(onChange ? { onChange } : {})}
       treeNodeLabelProp="displayText"
       treeData={treeData}
     >

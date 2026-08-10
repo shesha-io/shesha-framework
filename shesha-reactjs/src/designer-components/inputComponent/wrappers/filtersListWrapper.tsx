@@ -4,6 +4,6 @@ import React from 'react';
 import { FCUnwrapped } from '@/providers/form/models';
 
 export const FiltersListWrapper: FCUnwrapped<IFiltersListSettingsInputProps> = (props) => {
-  const { readOnly } = props;
-  return <FiltersList readOnly={readOnly} {...props} />;
+  const { readOnly = false } = props;
+  return <FiltersList {...props} readOnly={readOnly} />;
 };

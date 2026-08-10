@@ -34,7 +34,7 @@ export interface ISecuritySettings {
 }
 
 export interface IIdleTimerRendererProps {
-  securitySettings?: ISecuritySettings;
+  securitySettings?: ISecuritySettings | undefined;
 }
 
 interface IIdleTimerState {
@@ -73,7 +73,7 @@ const isWarningState = (value: unknown): value is IWarningState => {
     typeof value === 'object' &&
     value !== null &&
     'isVisible' in value &&
-    typeof (value as Record<string, unknown>).isVisible === 'boolean'
+    typeof value.isVisible === 'boolean'
   );
 };
 
@@ -82,7 +82,7 @@ const isTokenRefreshData = (value: unknown): value is ITokenRefreshData => {
     typeof value === 'object' &&
     value !== null &&
     'timestamp' in value &&
-    typeof (value as Record<string, unknown>).timestamp === 'number'
+    typeof value.timestamp === 'number'
   );
 };
 
@@ -140,7 +140,7 @@ class IdleHandler implements IIdleHandler {
 
     if (!active && (wasActive || this.warningVisible)) {
       this.warningVisible = false;
-      this.setStateFn?.(INIT_STATE);
+      this.setStateFn(INIT_STATE);
       try {
         getLocalStorage()?.removeItem(STORAGE_KEYS.IDLE_TIMER_WARNING_STATE);
       } catch (err) {
@@ -204,13 +204,13 @@ class IdleHandler implements IIdleHandler {
       .then(() => {
         this.warningVisible = false;
         this.logoutInProgress = false;
-        this.setStateFn?.(INIT_STATE);
+        this.setStateFn(INIT_STATE);
       })
       .catch((error) => {
         console.error('Failed to logout user:', error);
         this.warningVisible = false;
         this.logoutInProgress = false;
-        this.setStateFn?.(INIT_STATE);
+        this.setStateFn(INIT_STATE);
       });
   };
 
@@ -259,7 +259,7 @@ class IdleHandler implements IIdleHandler {
 
   handlePrompt = (): void => {
     this.warningVisible = true;
-    this.setStateFn?.({
+    this.setStateFn({
       isWarningVisible: true,
       remainingTime: WARNING_DURATION,
       isCountingDown: true,
@@ -271,7 +271,7 @@ class IdleHandler implements IIdleHandler {
   handleActive = (): void => {
     if (this.warningVisible) {
       this.warningVisible = false;
-      this.setStateFn?.(INIT_STATE);
+      this.setStateFn(INIT_STATE);
       this.broadcastWarningState(false);
     }
   };
@@ -314,7 +314,7 @@ class IdleHandler implements IIdleHandler {
         const warningState = parsed;
         if (warningState.isVisible && !this.warningVisible) {
           this.warningVisible = true;
-          this.setStateFn?.({
+          this.setStateFn({
             isWarningVisible: true,
             remainingTime: WARNING_DURATION,
             isCountingDown: true,
@@ -322,7 +322,7 @@ class IdleHandler implements IIdleHandler {
           });
         } else if (!warningState.isVisible && this.warningVisible) {
           this.warningVisible = false;
-          this.setStateFn?.(INIT_STATE);
+          this.setStateFn(INIT_STATE);
         }
       } catch (err) {
         console.error('Failed to parse warning state', err);
@@ -346,7 +346,7 @@ class IdleHandler implements IIdleHandler {
 
         if (this.warningVisible) {
           this.warningVisible = false;
-          this.setStateFn?.(INIT_STATE);
+          this.setStateFn(INIT_STATE);
         }
       } catch (err) {
         console.error('Failed to parse token refresh data', err);

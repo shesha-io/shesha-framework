@@ -1,7 +1,22 @@
 import { addPx } from '@/utils/style';
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, prefixCls }, { height }) => {
+type StylesArgs = {
+  height?: number | undefined;
+};
+type StylesResponse = {
+  chevronButton: string;
+  buttonGroup: string;
+  activeButton: string;
+  pipelineContainer: string;
+  pipelineStages: string;
+  pipelineStage: string;
+  leftArrow: string;
+  rightArrow: string;
+  arrowButton: string;
+};
+
+export const useStyles = createStyles<StylesArgs, StylesResponse>(({ css, cx, prefixCls }, { height }) => {
   const chevronButton = cx(`${prefixCls}-chevron-btn`, css`
         &:hover {
             background-color: #f0f0f0;

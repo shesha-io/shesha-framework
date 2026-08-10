@@ -22,7 +22,7 @@ import { MenuTheme } from 'antd/lib/menu/MenuContext';
 import { SIDEBAR_COLLAPSE } from './constant';
 import { SIDEBAR_MENU_NAME } from '@/shesha-constants';
 import { useLocalStorage } from '@/hooks';
-import { FormFullName, useSheshaApplication, useTheme } from '@/providers';
+import { FormFullName, useTheme } from '@/providers';
 import { withAuth } from '@/hocs';
 import { useStyles } from './styles/styles';
 import { ConfigurableForm } from '../configurableForm';
@@ -95,9 +95,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
   const { theme: themeFromStorage } = useTheme();
   const { styles } = useStyles();
 
-  const { setGlobalVariables } = useSheshaApplication();
-
-  const sideMenuTheme = themeFromStorage?.sidebar;
+  const sideMenuTheme = themeFromStorage.sidebar;
 
   const [collapsed, setCollapsed] = useLocalStorage(SIDEBAR_COLLAPSE, true);
 
@@ -164,7 +162,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
     return () => {
       clearTimeout(timeoutId);
       resizeObserver?.disconnect();
-      mutationObserver?.disconnect();
+      mutationObserver.disconnect();
     };
   }, []);
 
@@ -177,7 +175,6 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
   }, [heading, title, showHeading, fixHeading]);
 
   const onCollapse = (value: boolean): void => {
-    setGlobalVariables({ isSideBarExpanded: !value });
     setCollapsed(value);
   };
 
@@ -217,7 +214,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
         collapsed={collapsed}
         onCollapse={onCollapse}
         trigger={<MenuTrigger collapsed={collapsed} />}
-        theme={sideMenuTheme}
+        {...(sideMenuTheme ? { theme: sideMenuTheme } : {})}
       >
         <ConfigurableSidebarMenu
           theme={sideMenuTheme}
@@ -233,7 +230,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
         </Header>
         <Content className={classNames(styles.content, { collapsed })} style={contentStyle}>
           <NodeOrFuncRenderer>
-            {breadcrumb}
+            <NodeOrFuncRenderer>{breadcrumb}</NodeOrFuncRenderer>
             <div className={classNames(styles.shaLayoutHeading, headingClass)}>
               {renderPageTitle()} {renderPageControls()}
             </div>
@@ -242,7 +239,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
               className={classNames(styles.shaSiteLayoutBackground, headingClass, {
                 [styles.shaSiteLayoutBackgroundNoPadding]: noPadding,
               })}
-              style={{ ...layoutBackgroundStyle, background: themeFromStorage?.layoutBackground }}
+              style={{ ...layoutBackgroundStyle, background: themeFromStorage.layoutBackground }}
             >
               {children}
             </div>

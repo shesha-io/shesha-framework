@@ -14,9 +14,9 @@ import { ContainerRenderer } from './itemsContainer';
 export interface IProps {
   index: number[];
   data: IModelItem;
-  parent?: IModelItem;
+  parent?: IModelItem | undefined;
   containerRendering: ContainerRenderer;
-  onChange?: (newValue: IModelItem, changeDetails: ItemChangeDetails) => void;
+  onChange?: ((newValue: IModelItem, changeDetails?: ItemChangeDetails) => void) | undefined;
 }
 
 export const ComplexProperty: FC<IProps> = (props) => {

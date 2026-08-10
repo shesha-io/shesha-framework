@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useMemo } from 'react';
+import React, { FC, ReactNode, useCallback, useMemo } from 'react';
 import { BulbTwoTone, DownOutlined, QuestionCircleOutlined, LayoutOutlined } from '@ant-design/icons';
 import { Dropdown, MenuProps, Popover, Space, Tooltip, Badge } from 'antd';
 import { IStoredFilter } from '@/providers/dataTable/interfaces';
@@ -6,8 +6,10 @@ import Show from '@/components/show';
 import { nanoid } from '@/utils/uuid';
 import { useStyles } from './styles/styles';
 import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
+import { isNonEmptyArray } from '@/utils/array';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
-type MenuItem = MenuProps['items'][number];
+type MenuItem = Required<MenuProps>['items'][number];
 
 interface ITooltipIconProps {
   tooltip: string;
@@ -22,15 +24,15 @@ const TooltipIcon: FC<ITooltipIconProps> = ({ tooltip }) => {
 };
 
 export interface ITableViewSelectorRendererProps {
-  filters?: IStoredFilter[];
-  hidden?: boolean;
-  selectedFilterId?: string;
+  filters?: IStoredFilter[] | undefined;
+  hidden?: boolean | undefined;
+  selectedFilterId?: string | undefined;
   onSelectFilter: (id?: string) => void;
-  showIcon?: boolean;
+  showIcon?: boolean | undefined;
 }
 
 export const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
-  filters,
+  filters = [],
   hidden,
   selectedFilterId,
   onSelectFilter,
@@ -39,29 +41,17 @@ export const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
   const { styles } = useStyles();
   const { formMode } = useShaFormInstance();
   const getSelectedFilter = (): IStoredFilter | null => {
-    if (filters?.length === 0) {
+    if (!isNonEmptyArray(filters))
       return null;
-    }
 
-    if (selectedFilterId) {
-      const foundFilter = filters?.find(({ id }) => id === selectedFilterId);
-
-      if (foundFilter) {
-        return foundFilter;
-      }
-
-      // The selected filterId is not one of these filters
-      return filters[0];
-    }
-
-    return null;
+    return selectedFilterId ? filters.find(({ id }) => id === selectedFilterId) ?? null : filters[0];
   };
 
   const selectedFilter = getSelectedFilter();
 
   const { unevaluatedExpressions } = selectedFilter || {};
 
-  const getPopoverHintContent = (): React.JSX.Element => {
+  const getPopoverHintContent = (): ReactNode => {
     if (unevaluatedExpressions) {
       return (
         <div style={{ width: 450 }}>
@@ -71,7 +61,7 @@ export const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
           </div>
 
           <ul>
-            {unevaluatedExpressions?.map((item) => (
+            {unevaluatedExpressions.map((item) => (
               <li key={nanoid()}>{item}</li>
             ))}
           </ul>
@@ -86,21 +76,19 @@ export const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
 
   const onMenuClickMemoized = useCallback(
     (info: { key: string }) => {
-      onSelectFilter(info?.key);
+      onSelectFilter(info.key);
     },
-    [filters, onSelectFilter],
+    [onSelectFilter],
   );
 
   const menuItems = useMemo<MenuItem[]>(() => {
-    return filters?.map((filter) => {
+    return filters.map((filter) => {
       return {
-        key: filter?.id,
+        key: filter.id,
         label: (
           <Space>
-            {filter?.name}
-            <Show when={Boolean(filter?.tooltip)}>
-              <TooltipIcon tooltip={filter?.tooltip}></TooltipIcon>
-            </Show>
+            {filter.name}
+            {!isNullOrWhiteSpace(filter.tooltip) && <TooltipIcon tooltip={filter.tooltip}></TooltipIcon>}
           </Space>
         ),
       };
@@ -108,8 +96,8 @@ export const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
   }, [filters]);
 
   const renderTitle = (): React.JSX.Element => {
-    const hasFilters = (filters?.length || 0) > 1;
-    const isActiveFilter = selectedFilter?.expression !== null && selectedFilter?.expression !== undefined;
+    const hasFilters = isNonEmptyArray(filters);
+    const isActiveFilter = isDefined(selectedFilter?.expression);
 
     return (
       <div className={styles.titleContainer}>
@@ -128,7 +116,7 @@ export const TableViewSelectorRenderer: FC<ITableViewSelectorRendererProps> = ({
     );
   };
 
-  const hasMultipleFilters = (filters?.length || 0) > 1;
+  const hasMultipleFilters = filters.length > 1;
 
   return (
     <div className={styles.tableViewSelector}>

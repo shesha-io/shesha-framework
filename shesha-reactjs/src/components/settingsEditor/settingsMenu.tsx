@@ -6,13 +6,14 @@ import { useSettingsEditor } from './provider/index';
 import { IFrontEndApplication, ISettingConfiguration } from './provider/models';
 import type { MenuProps } from 'antd';
 import { useDevMode } from '@/hooks/useIsDevMode';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 const { Panel } = Collapse;
 type MenuItem = Required<MenuProps>['items'][number];
 
 interface ISettingItem {
   config: ISettingConfiguration;
-  app?: IFrontEndApplication;
+  app?: IFrontEndApplication | undefined;
 }
 
 export interface ISettingApplication {
@@ -40,7 +41,7 @@ const getSettingKey = (config: ISettingConfiguration, app?: IFrontEndApplication
 export const SettingsMenu: FC = () => {
   const [isDevmode, setDevMode] = useDevMode();
 
-  const [openedKeys, setOpenedKeys] = useLocalStorage('settings-editor.openedKeys', {});// ['']);
+  const [openedKeys, setOpenedKeys] = useLocalStorage<Record<string, string[]>>('settings-editor.openedKeys', {});
   const [searchText, setSearchText] = useLocalStorage('settings-editor.search', '');
   const [menuState, setMenuState] = useState<SettingMenuState>({ groups: [], allSettings: {} });
 
@@ -58,7 +59,7 @@ export const SettingsMenu: FC = () => {
       const groups: ISettingGroup[] = [];
       const allSettings: SettingsDictionary = {};
 
-      const addSetting = (groupName: string, config: ISettingConfiguration, app: IFrontEndApplication): void => {
+      const addSetting = (groupName: string, config: ISettingConfiguration, app: IFrontEndApplication | undefined): void => {
         let group = groups.find((g) => g.name === groupName);
         if (!group) {
           group = { name: groupName, settings: [] };
@@ -79,7 +80,7 @@ export const SettingsMenu: FC = () => {
           addSetting(category, s, selectedApplication);
         };
         if (!s.isClientSpecific && !selectedApplication) {
-          addSetting(category, s, null);
+          addSetting(category, s, undefined);
         }
       });
 
@@ -87,21 +88,21 @@ export const SettingsMenu: FC = () => {
 
       setMenuState({ groups: sortedGroups, allSettings: allSettings });
     }
-  }, [applicationsLoadingState, configsLoadingState, selectedApplication]);
+  }, [applicationsLoadingState, configsLoadingState, selectedApplication, settingConfigurations]);
 
   const onCollapseChange = (key: string | string[]): void => {
     setOpenedKeys({ ...openedKeys, [selectedApplication?.appKey ?? 'general']: Array.isArray(key) ? key : [key] });
   };
 
   const filteredGroups = useMemo<ISettingGroup[]>(() => {
-    const groups = menuState.groups ?? [];
-    if (!Boolean(searchText)) return [...groups];
+    const groups = menuState.groups;
+    if (isNullOrWhiteSpace(searchText)) return [...groups];
 
     const result: ISettingGroup[] = [];
 
     groups.forEach((setting) => {
       const filteredSettings = setting.settings.filter((c) =>
-        c.config.name?.toLowerCase().includes(searchText?.toLowerCase()),
+        c.config.name.toLowerCase().includes(searchText.toLowerCase()),
       );
       if (filteredSettings.length > 0) result.push({ ...setting, settings: filteredSettings });
     });
@@ -118,12 +119,17 @@ export const SettingsMenu: FC = () => {
       selectSetting(selectedItem.config, selectedItem.app);
   };
 
+  const activeKey = openedKeys[selectedApplication?.appKey ?? 'general'];
   return (
     <div className="sha-settings-editor-toolbox">
       <Spin spinning={configsLoadingState === 'loading'}>
         <SearchBox value={searchText} onChange={setSearchText} placeholder="Search setting" />
         {filteredGroups.length > 0 && (
-          <Collapse activeKey={openedKeys[selectedApplication?.appKey ?? 'general']} onChange={onCollapseChange} accordion>
+          <Collapse
+            {...(activeKey ? { activeKey } : {})}
+            onChange={onCollapseChange}
+            accordion
+          >
             {filteredGroups
               // .filter(({ visible }) => visible)
               .map((group, groupIndex) => {
@@ -138,7 +144,7 @@ export const SettingsMenu: FC = () => {
                   <Panel header={group.name} key={groupIndex.toString()}>
                     <Menu
                       items={menuItems}
-                      selectedKeys={settingSelection ? [getSettingKey(settingSelection.setting, settingSelection.app)] : []}
+                      selectedKeys={settingSelection && settingSelection.setting ? [getSettingKey(settingSelection.setting, settingSelection.app)] : []}
                       onSelect={onSelect}
                     />
                   </Panel>

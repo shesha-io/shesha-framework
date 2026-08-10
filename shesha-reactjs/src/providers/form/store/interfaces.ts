@@ -13,29 +13,31 @@ import { RecursivePartial } from "@/interfaces/entity";
 export type LoaderType = 'gql' | 'custom' | 'none';
 export type SubmitType = 'gql' | 'custom' | 'none';
 
-export interface InitByFormIdPayload<Values extends object = object> {
-  formId: FormIdentifier;
+export interface InitFormDataPayload<Values extends object = object> {
   formArguments?: object | undefined;
-  initialValues?: Values | undefined;
+  initialValues?: Partial<Values> | undefined;
+  lazyLoadData?: boolean | undefined;
 }
 
-export interface InitByRawMarkupPayload<Values extends object = object> {
+export interface InitByFormIdPayload<Values extends object = object> extends InitFormDataPayload<Values> {
+  formId: FormIdentifier;
+}
+
+export interface InitByRawMarkupPayload<Values extends object = object> extends InitFormDataPayload<Values> {
   rawMarkup: FormMarkup;
-  cacheKey?: string;
-  formArguments?: object;
-  initialValues: Values | undefined;
+  cacheKey?: string | undefined;
   isSettingsForm?: boolean | undefined;
 }
 
 export interface InitByMarkupPayload {
   formSettings: IFormSettings;
   formFlatMarkup: IFlatComponentsStructure;
-  formArguments?: object;
+  formArguments?: object | undefined;
 }
 
 export interface LoadFormByIdPayload<Values extends object = object> {
   skipCache?: boolean | undefined;
-  initialValues?: Values | undefined;
+  initialValues?: Partial<Values> | undefined;
 }
 
 export type LoadingStatus = 'waiting' | 'loading' | 'ready' | 'failed';
@@ -56,7 +58,7 @@ export type OnValuesChangeHandler<Values extends object = object> = (changedValu
 export type OnMarkupLoadedHandler<Values extends object = object> = (shaForm: IShaFormInstance<Values>) => Promise<void>;
 
 export interface IDataSubmitContext {
-  getDelayedUpdates: () => IDelayedUpdateGroup[];
+  getDelayedUpdates: (() => IDelayedUpdateGroup[] | undefined) | undefined;
 }
 
 export type ForceUpdateTrigger = () => void;
@@ -64,11 +66,11 @@ export type ForceUpdateTrigger = () => void;
 export interface IShaFormInstance<Values extends object = object> {
   applyMarkupAsync(args: { formFlatMarkup: IFlatComponentsStructure; formSettings: IFormSettings }): unknown;
   setDataSubmitContext: (context: IDataSubmitContext) => void;
-  setInitialValues: (values: Values) => void;
-  setSubmitHandler: (handler: SubmitHandler<Values>) => void;
-  setAfterSubmitHandler: (handler: AfterSubmitHandler<Values>) => void;
-  setOnValuesChange: (handler: OnValuesChangeHandler<Values>) => void;
-  setOnMarkupLoaded: (handler: OnMarkupLoadedHandler<Values>) => void;
+  setInitialValues: (values: Partial<Values>) => void;
+  setSubmitHandler: (handler: SubmitHandler<Values> | undefined) => void;
+  setAfterSubmitHandler: (handler: AfterSubmitHandler<Values> | undefined) => void;
+  setOnValuesChange: (handler: OnValuesChangeHandler<Values> | undefined) => void;
+  setOnMarkupLoaded: (handler: OnMarkupLoadedHandler<Values> | undefined) => void;
 
   initFormByRawMarkup: (payload: InitByRawMarkupPayload<Values>) => Promise<void>;
   initFormByMarkup: (payload: InitByMarkupPayload) => Promise<void>;
@@ -79,8 +81,10 @@ export interface IShaFormInstance<Values extends object = object> {
   initLoadData: () => Promise<void>;
   /** Initializes the form with initial data values. */
   initInitialData: () => Promise<void>;
-  /** Triggers configured form events after initialization. */
+  /** Triggers configured form Before and After dataload events */
   triggerEvents: () => Promise<void>;
+  triggerAfterDataLoad: () => Promise<void>;
+
 
   loadData: (formArguments: object) => Promise<Values>;
   submitData: (payload?: SubmitDataPayload) => Promise<Values>;
@@ -96,7 +100,7 @@ export interface IShaFormInstance<Values extends object = object> {
   readonly formId?: FormIdentifier | undefined;
   readonly settings?: IFormSettings | undefined;
   readonly flatStructure?: IFlatComponentsStructure | undefined;
-  readonly initialValues?: Values | undefined;
+  readonly initialValues?: Partial<Values> | undefined;
   readonly parentFormValues?: object | undefined;
   readonly formArguments?: object | undefined;
   readonly formData?: Values | undefined;
@@ -109,7 +113,7 @@ export interface IShaFormInstance<Values extends object = object> {
 
   setFormMode: (formMode: FormMode) => void;
   setFormData: (payload: ISetFormDataPayload<Values>) => void;
-  setParentFormValues: (values: object) => void;
+  setParentFormValues: (values: object | undefined) => void;
   setValidationErrors: (payload: IFormValidationErrors | undefined) => void;
 
   onFinish?: ((values: Values) => void) | undefined;

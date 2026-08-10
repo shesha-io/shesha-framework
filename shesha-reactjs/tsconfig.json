@@ -1,14 +1,75 @@
 {
-  "extends": "./tsconfig.base.json",
-  "references": [
-      { "path": "./src/configuration-studio" },
-      { "path": "./src/providers" },
-      { "path": "./src/interfaces" },
-      { "path": "./src/utils" },
-      { "path": "./src/hooks" },
-      { "path": "./src/designer-components/_settings/utils/background" },      
-      { "path": "./src/form-factory" },
-      { "path": "./src/publicJsApis" },      
-      { "path": "./src/components/dataTable" },
-  ]
+    "compilerOptions": {
+        "allowJs": false,
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "experimentalDecorators": true,
+        "forceConsistentCasingInFileNames": true,
+        "isolatedModules": true,
+        "jsx": "react",
+        "lib": [
+            "es6",
+            "dom",
+            "es7",
+            "es2017",
+            "esnext"
+        ],
+        "module": "esnext",
+        "moduleResolution": "Bundler",
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "outDir": "./dist",
+        "resolveJsonModule": true,
+        "skipLibCheck": true,
+        "sourceMap": true,
+        "strict": true,
+        "strictNullChecks": true,
+        "strictPropertyInitialization": true,
+        "target": "esnext",
+        "noEmitOnError": true,
+        "paths": {
+            "@/*": [
+                "./src/*"
+            ]
+        },
+        "strictFunctionTypes": true,
+        "strictBindCallApply": true,
+        "alwaysStrict": true,
+        "noUncheckedIndexedAccess": true,
+        "noImplicitOverride": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "allowUnusedLabels": false,
+        "allowUnreachableCode": false,
+        "exactOptionalPropertyTypes": true,
+        "noFallthroughCasesInSwitch": true,
+        "resolvePackageJsonExports": true,
+        "resolvePackageJsonImports": true,
+        "declaration": true,
+        "preserveConstEnums": true,
+        "incremental": true,
+        "useDefineForClassFields": true,
+        "strictBuiltinIteratorReturn": true,
+        "useUnknownInCatchVariables": true
+    },
+    "include": [
+        "src",
+        "typings",
+        "public/**/*.json"
+    ],
+    "exclude": [
+        "node_modules",
+        "build",
+        "dist",
+        "example",
+        "rollup.config.mjs",
+        "**/tests",
+        "**/*.test.js",
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/*.stories.d.ts",
+        "**/__tests__/**"
+    ]
 }

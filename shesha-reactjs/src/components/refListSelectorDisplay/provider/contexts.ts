@@ -16,9 +16,7 @@ export interface IRefListItemGroupConfiguratorStateContext {
   items: RefListGroupItemProps[];
   selectedItemId?: string;
   readOnly: boolean;
-  active?: any;
   userSettings: { [key: string]: boolean };
-
 }
 export interface ISettingsUpdatePayload {
   columnId: string;
@@ -28,7 +26,7 @@ export interface ISettingsUpdatePayload {
 export interface IRefListItemGroupConfiguratorActionsContext {
   selectItem: (uid: string) => void;
   updateItem: (payload: IUpdateItemSettingsPayload) => void;
-  getItem: (uid: string) => RefListGroupItemProps;
+  getItem: (uid: string) => RefListGroupItemProps | undefined;
   updateChildItems: (payload: IUpdateChildItemsPayload) => void;
   storeSettings: (columnId: string, isCollapsed: boolean) => Promise<void>;
 }
@@ -39,8 +37,8 @@ export const REF_LIST_ITEM_GROUP_CONTEXT_INITIAL_STATE: IRefListItemGroupConfigu
   userSettings: {},
 };
 
-export const RefListItemGroupConfiguratorStateContext = createContext<IRefListItemGroupConfiguratorStateContext>(
+export const RefListItemGroupConfiguratorStateContext = createContext<IRefListItemGroupConfiguratorStateContext | undefined>(
   REF_LIST_ITEM_GROUP_CONTEXT_INITIAL_STATE,
 );
 
-export const RefListItemGroupConfiguratorActionsContext = createContext<IRefListItemGroupConfiguratorActionsContext>(undefined);
+export const RefListItemGroupConfiguratorActionsContext = createContext<IRefListItemGroupConfiguratorActionsContext | undefined>(undefined);

@@ -1,18 +1,21 @@
-import { FormMarkup, IToolboxComponent } from '@/interfaces';
-import { EditOutlined } from '@ant-design/icons';
-import React, { useEffect, useRef } from 'react';
-import { ConfigurableThemeContent } from '@/generic-pages/settings/dynamic-theme/content';
-import settingsFormJson from './settingsForm.json';
-import { useSettingsEditor } from '@/components/settingsEditor/provider';
+import { useSettingsEditorOrUndefined } from '@/components/settingsEditor/provider';
 import { FRONTEND_DEFAULT_APP_KEY, ISettingIdentifier } from '@/components/settingsEditor/provider/models';
+import { ConfigurableThemeContent } from '@/generic-pages/settings/dynamic-theme/content';
+import { useEffectOnce } from '@/hooks/useEffectOnce';
+import { FormMarkup, IToolboxComponent } from '@/interfaces';
 import { useShaFormDataUpdate, useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { useSheshaApplication } from '@/providers/sheshaApplication';
 import { IConfigurableTheme, useTheme } from '@/providers/theme';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { EditOutlined } from '@ant-design/icons';
+import React, { useEffect, useRef } from 'react';
+import settingsFormJson from './settingsForm.json';
 
 const settingsForm = settingsFormJson as FormMarkup;
 
-const ThemeEditorComponent: IToolboxComponent<any> = {
+const EMPTY_THEME: IConfigurableTheme = {};
+
+const ThemeEditorComponent: IToolboxComponent = {
   type: 'themeEditor',
   name: 'Theme editor',
   icon: <EditOutlined />,
@@ -22,15 +25,24 @@ const ThemeEditorComponent: IToolboxComponent<any> = {
     useShaFormDataUpdate();
 
     const { applicationKey = null } = useSheshaApplication();
-    const { selectedApplication = null, settingSelection, editorMode, setEditor, saveSettingValue } = useSettingsEditor(false) ?? {};
+    const settingsEditor = useSettingsEditorOrUndefined();
     const { theme, changeTheme, resetToApplicationTheme } = useTheme();
     const form = useShaFormInstance();
-    const initialValues = useRef(theme);
-    const localTheme = useRef<IConfigurableTheme>();
+    const initialValues = useRef<IConfigurableTheme | undefined>(theme);
+    const localTheme = useRef<IConfigurableTheme | undefined>(undefined);
 
-    useEffect(() => {
+    useEffectOnce(() => {
+      if (!settingsEditor)
+        return;
+      const { selectedApplication = null, settingSelection, setEditor, saveSettingValue } = settingsEditor;
+
       setEditor({
         save: () => {
+          if (!localTheme.current)
+            throw new Error('Theme is not defined');
+          if (!settingSelection?.setting)
+            throw new Error('Setting is not defined');
+
           changeTheme(localTheme.current, applicationKey === (selectedApplication?.appKey ?? FRONTEND_DEFAULT_APP_KEY));
           const settingId: ISettingIdentifier = {
             name: settingSelection.setting.name,
@@ -47,7 +59,8 @@ const ThemeEditorComponent: IToolboxComponent<any> = {
             });
         },
         cancel() {
-          changeTheme(initialValues.current);
+          if (initialValues.current)
+            changeTheme(initialValues.current);
         },
       });
       initialValues.current = form.formData;
@@ -55,21 +68,21 @@ const ThemeEditorComponent: IToolboxComponent<any> = {
       return () => {
         resetToApplicationTheme();
       };
-    }, []);
+    });
 
     useEffect(() => {
       if (form.formData) {
         changeTheme(form.formData);
         localTheme.current = form.formData;
       }
-    }, [form.formData]);
+    }, [changeTheme, form.formData]);
 
     const onChangeInternal = (changedValue: IConfigurableTheme): void => {
       form.setFormData({ values: changedValue, mergeValues: true });
     };
 
     return (
-      <ConfigurableThemeContent value={form.formData} onChange={onChangeInternal} readonly={editorMode === 'readonly'} />
+      <ConfigurableThemeContent value={form.formData ?? EMPTY_THEME} onChange={onChangeInternal} readOnly={settingsEditor?.editorMode === 'readonly'} />
     );
   },
   settingsFormMarkup: settingsForm,

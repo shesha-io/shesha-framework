@@ -43,51 +43,38 @@ import { ITextComponentProps } from "@/designer-components/text/models";
 import { ITextAreaComponentProps } from "@/designer-components/textArea/interfaces";
 import { ITextFieldComponentProps } from "@/designer-components/textField/interfaces";
 import { ITimePickerComponentProps } from "@/designer-components/timeField/models";
-import { DEFAULT_FORM_SETTINGS, IConfigurableFormComponent, IContainerComponentProps, IPropertyMetadata, IToolboxComponent } from "@/interfaces";
-import { FluentSettings, FormBuilder, FormBuilderFactory, StandardAppearancePanel, StandardEventHandler } from "./interfaces";
+import { DEFAULT_FORM_SETTINGS, IConfigurableFormComponent, IContainerComponentProps, InteractionType, IPropertyMetadata, IToolboxComponent } from "@/interfaces";
+import { AllComponentsConfig, FluentSettings, FormBuilder, FormBuilderFactory, StandardAppearancePanel, StandardAppearancePanelConfig, StandardFormBuilderMethods } from "./interfaces";
 import { nanoid } from "@/utils/uuid";
 import { linkComponentToModelMetadata, upgradeComponent } from "@/providers/form/utils";
 import { getComponentDefinitions } from "@/providers/form/defaults/toolboxComponents";
 import { fontTypes, fontWeightsOptions, textAlignOptions } from "@/designer-components/_settings/utils/font/utils";
 import { getBorderInputs, getCornerInputs } from "@/designer-components/_settings/utils/border/utils";
-import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from "@/designer-components/_settings/utils/background/utils";
+import { backgroundTypeOptions, gradientDirectionOptions, positionOptions, repeatOptions, sizeOptions } from "@/designer-components/_settings/utils/background/utils";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
+import { isPropertySettings } from "@/designer-components/_settings/utils/utils";
+import { getEventConfig, StandardEventHandler } from "@/designer-components/_common/events";
+import { ALIGN_ITEMS, ALIGN_ITEMS_GRID, ALIGN_SELF, FLEX_DIRECTION, FLEX_WRAP, JUSTIFY_CONTENT, JUSTIFY_ITEMS, JUSTIFY_SELF } from "@/designer-components/container/data";
+import { IContainerCheckerComponentProps } from "@/designer-components/containerChecker/interfaces";
 
-interface EventConfig {
-  event: StandardEventHandler;
-  propertyName: string;
-  label: string;
-  tooltip: string;
+/**
+ * Returns `true` when `propertyName`'s trailing segment (the part after the last `.`) is listed in
+ * `exclude`. Used by the standard appearance panels so callers can drop individual sub-inputs,
+ * e.g. `exclude: ['align']` removes the input bound to `font.align`.
+ */
+const isExcluded = (propertyName: string, exclude?: string[]): boolean => {
+  if (!isDefined(exclude) || exclude.length === 0) return false;
+  const leaf = propertyName.split('.').pop() ?? propertyName;
+  return exclude.includes(leaf) || exclude.includes(propertyName);
 };
 
-const eventConfigs: EventConfig[] = [
-  {
-    event: 'onChange',
-    propertyName: 'onChangeCustom',
-    label: 'On Change',
-    tooltip: 'Enter the data change event handling code',
-  },
-  {
-    event: 'onFocus',
-    propertyName: 'onFocusCustom',
-    label: 'On Focus',
-    tooltip: 'Enter the event handling code when the component gets focus',
-  },
-  {
-    event: 'onBlur',
-    propertyName: 'onBlurCustom',
-    label: 'On Blur',
-    tooltip: 'Enter the event handling code when the component removes focus',
-  },
-  {
-    event: 'onClick',
-    propertyName: 'onClickCustom',
-    label: 'On Click',
-    tooltip: 'Enter the event handling code on click of the component',
-  },
-];
+/** Filters a panel's `inputs` array, removing any whose `propertyName` leaf is in `exclude`. */
+const excludeInputs = <TInput extends { propertyName: string }>(inputs: TInput[], exclude?: string[]): TInput[] => {
+  if (!isDefined(exclude) || exclude.length === 0) return inputs;
+  return inputs.filter((input) => !isExcluded(input.propertyName, exclude));
+};
 
-
-export class FormBuilderImplementation implements FormBuilder {
+export class FormBuilderImplementation implements FormBuilder, StandardFormBuilderMethods<AllComponentsConfig> {
   addKeyInformationBar = (props: FluentSettings<IKeyInformationBarComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'KeyInformationBar', meta);
 
   addEditModeSelector = (props: FluentSettings<IConfigurableFormComponent>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'editModeSelector', meta);
@@ -111,6 +98,8 @@ export class FormBuilderImplementation implements FormBuilder {
   addLabelValueEditor = (props: FluentSettings<ILabelValueEditorComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'labelValueEditor', meta);
 
   addNumberField = (props: FluentSettings<INumberFieldComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'numberField', meta);
+
+  addContainerChecker = (props: FluentSettings<IContainerCheckerComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'containerChecker', meta);
 
   addPermissionAutocomplete = (props: FluentSettings<IConfigurableFormComponent>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'permissionAutocomplete', meta);
 
@@ -197,13 +186,13 @@ export class FormBuilderImplementation implements FormBuilder {
     // update header id and parentId for nested components
     if (fixedProps.header && !fixedProps.header.id)
       fixedProps.header.id = nanoid();
-    if (fixedProps.header && fixedProps.header.components?.length)
+    if (fixedProps.header && isDefined(fixedProps.header.components) && fixedProps.header.components.length > 0)
       fixedProps.header.components = fixedProps.header.components.map((component) => ({ ...component, parentId: component.parentId ?? fixedProps.header?.id }));
 
     // update content id and parentId for nested components
     if (fixedProps.content && !fixedProps.content.id)
       fixedProps.content.id = nanoid();
-    if (fixedProps.content && fixedProps.content.components?.length)
+    if (fixedProps.content && isDefined(fixedProps.content.components) && fixedProps.content.components.length > 0)
       fixedProps.content.components = fixedProps.content.components.map((component) => ({ ...component, parentId: component.parentId ?? fixedProps.content?.id }));
 
     return this._addProperty(fixedProps, 'collapsiblePanel', meta);
@@ -231,11 +220,11 @@ export class FormBuilderImplementation implements FormBuilder {
     return this;
   };
 
-  stdVisibleEditableInputs = (): FormBuilder => {
+  stdVisibleEditableInputs = (interactionType: InteractionType): FormBuilder => {
     this.addSettingsInputRow({
       inputs: [
-        { type: 'switch', propertyName: 'visible', label: 'Visible', jsSetting: true, layout: 'horizontal' },
-        { type: 'editModeSelector', propertyName: 'editMode', label: 'Edit Mode', size: 'small', jsSetting: true },
+        { type: 'switch', propertyName: 'visible', label: 'Visible', jsSetting: true, layout: 'horizontal', permissionSettings: true },
+        { type: 'editModeSelector', propertyName: 'editMode', label: 'Interaction Mode', size: 'small', jsSetting: true, permissionSettings: true, interactionType },
       ],
     });
     return this;
@@ -259,155 +248,293 @@ export class FormBuilderImplementation implements FormBuilder {
     return this;
   };
 
-  stdCollapsiblePanel = (label: string, components: (fbf: FormBuilder) => FormBuilder, meta?: IPropertyMetadata | undefined): FormBuilder => {
+  stdCollapsiblePanel = (label: string, components: (fbf: FormBuilder) => FormBuilder, collapsedByDefault: boolean = false, visibleJs?: string | undefined): FormBuilder => {
     const contentId = nanoid();
     const fbf = new FormBuilderImplementation(this.componentDefinitions, contentId) as FormBuilder;
 
     const fixedProps: FluentSettings<ICollapsiblePanelComponentProps> = {
-      label: label,
-      labelAlign: 'right',
-      ghost: true,
-      collapsible: 'header',
-      isDynamic: true,
-      header: {
-        id: nanoid(),
-        components: [],
-      },
-      content: {
-        id: contentId,
-        components: components(fbf).toJson(),
-      },
+      label: label, labelAlign: 'right', ghost: true, collapsible: 'header', collapsedByDefault, isDynamic: true,
+      header: { id: nanoid(), components: [] },
+      content: { id: contentId, components: components(fbf).toJson() },
+      visibleJs,
     };
 
-    return this._addProperty(fixedProps, 'collapsiblePanel', meta);
+    return this._addProperty(fixedProps, 'collapsiblePanel');
   };
 
-  stdEventHandler = (propertyName: string, label: string, tooltip: string, meta?: IPropertyMetadata | undefined): FormBuilder => {
+  stdContainer = (components: (fbf: FormBuilder) => FormBuilder, visibleJs?: string | undefined): FormBuilder => {
+    const containerId = nanoid();
+    const fbf = new FormBuilderImplementation(this.componentDefinitions, containerId) as FormBuilder;
+    const fixedProps: FluentSettings<IContainerComponentProps> = { id: containerId, components: components(fbf).toJson(), visibleJs };
+    return this._addProperty(fixedProps, 'container');
+  };
+
+  stdContainerChecker = (components: (fbf: FormBuilder) => FormBuilder, visibleJs?: string | undefined): FormBuilder => {
+    const containerId = nanoid();
+    const fbf = new FormBuilderImplementation(this.componentDefinitions, containerId) as FormBuilder;
+    const fixedProps: FluentSettings<IContainerCheckerComponentProps> = { id: containerId, components: components(fbf).toJson(), visibleJs };
+    return this._addProperty(fixedProps, 'containerChecker');
+  };
+
+  stdEventHandler = (
+    propertyName: string,
+    label: string,
+    tooltip: string,
+    availableConstantsExpression?: string | undefined,
+    meta?: IPropertyMetadata | undefined,
+  ): FormBuilder => {
     this.addSettingsInput({
       inputType: 'codeEditor',
       propertyName: propertyName,
       label: label,
       labelAlign: 'right',
       tooltip: tooltip,
+      availableConstantsExpression,
     }, meta);
     return this;
   };
 
-  stdEventHandlers = (events: StandardEventHandler[]): FormBuilder => {
+  stdEventHandlers = (events: readonly StandardEventHandler[], valueType?: string | undefined, prefix?: string | undefined, prefixLabel: string = ''): FormBuilder => {
     events.forEach((event) => {
-      const eventConfig = eventConfigs.find((e) => e.event === event);
+      const eventConfig = getEventConfig(event, valueType);
       if (eventConfig)
-        this.stdEventHandler(eventConfig.propertyName, eventConfig.label, eventConfig.tooltip);
+        this.stdEventHandler((isDefined(prefix) ? prefix + '.' : '') + eventConfig.propertyName, prefixLabel + eventConfig.label, eventConfig.tooltip, eventConfig.availableConstantsExpression);
     });
     return this;
   };
 
-  stdFontPanel = (propertyName: string = 'font'): FormBuilder => {
-    this.stdCollapsiblePanel('Font', (f) => f
+  stdFontPanel = (propertyName: string = 'font', exclude?: string[], panelTitle: string = 'Font'): FormBuilder => {
+    this.stdCollapsiblePanel(panelTitle, (f) => f
       .addSettingsInputRow({
         inline: true,
         propertyName: propertyName,
-        inputs: [
+        inputs: excludeInputs([
           { type: 'dropdown', label: 'Family', propertyName: `${propertyName}.type`, hideLabel: true, dropdownOptions: fontTypes },
           { type: 'numberField', label: 'Size', propertyName: `${propertyName}.size`, hideLabel: true, width: 50 },
-          { type: 'dropdown', label: 'Weight', propertyName: `${propertyName}.weight`, hideLabel: true, dropdownOptions: fontWeightsOptions, width: 100, tooltip: 'Controls text thickness (light, normal, bold, etc.)' },
+          { type: 'dropdown', label: 'Weight', propertyName: `${propertyName}.weight`, hideLabel: true, dropdownOptions: fontWeightsOptions, width: 48, tooltip: 'Controls text thickness (light, normal, bold, etc.)' },
           { type: 'colorPicker', label: 'Color', hideLabel: true, propertyName: `${propertyName}.color` },
-          { type: 'dropdown', label: 'Align', propertyName: `${propertyName}.align`, hideLabel: true, width: 60, dropdownOptions: textAlignOptions },
-        ],
+          { type: 'dropdown', label: 'Align', propertyName: `${propertyName}.align`, hideLabel: true, width: 48, dropdownOptions: textAlignOptions },
+        ], exclude),
       }));
     return this;
   };
 
-  stdDimensionsPanel = (propertyName: string = 'dimensions'): FormBuilder => {
-    this.stdCollapsiblePanel('Dimensions', (f) => f
+  stdLayoutPanel = (isResponsive?: boolean, propertyName: string = '', panelTitle: string = 'Layout'): FormBuilder => {
+    const getDisplay = ` getSettingValue(${isResponsive === true ? 'data[`${page.canvasContext?.designerDevice || "desktop"}`]?' : 'data'}.display)`;
+    const getFlexDirection = ` getSettingValue(${isResponsive === true ? 'data[`${page.canvasContext?.designerDevice || "desktop"}`]?' : 'data'}.flexDirection)`;
+    const getShowAdvanced = ` getSettingValue(${isResponsive === true ? 'data[`${page.canvasContext?.designerDevice || "desktop"}`]?' : 'data'}.showAdvanced)`;
+    const propName = isNullOrWhiteSpace(propertyName) ? '' : propertyName + '.';
+    this.stdCollapsiblePanel(panelTitle, (f) => {
+      f.addSettingsInput({ propertyName: `${propName}display`, label: 'Layout Type', inputType: 'radio',
+        description: 'The display CSS property sets whether an element is treated as a block or inline element and the layout used for its children, such as flow layout, grid or flex.',
+        validate: { required: true },
+        buttonGroupOptions: [
+          { value: 'block', title: 'Block', icon: 'BorderOutlined' },
+          { value: 'grid', title: 'Grid', icon: 'AppstoreOutlined' },
+          { value: 'flex', title: 'Flex', icon: 'flex' },
+          { value: 'inline-grid', title: 'Inline grid', icon: 'TableOutlined' },
+        ],
+      });
+      f.stdContainer((f) => {
+        f.addSettingsInputRow({
+          inline: true,
+          inputs: [
+            { type: 'radio', label: 'Flex Direction', hideLabel: true, propertyName: `${propName}flexDirection`,
+              hidden: { _code: `return ${getDisplay} !== "flex";`, _mode: 'code', _value: false },
+              buttonGroupOptions: [{ title: 'Row', value: 'row', icon: 'row' }, { title: 'Column', value: 'column', icon: 'column' }],
+            },
+            { type: 'radio', label: 'Justify Content', hideLabel: true, propertyName: `${propName}justifyContent`,
+              hidden: { _code: `return (${getDisplay} === "flex" && ${getFlexDirection} === "column") || ${getDisplay} === "inline-grid"`, _mode: 'code', _value: false },
+              buttonGroupOptions: [{ title: 'Left', value: 'left', icon: 'alignHorizontalLeft' }, { title: 'Center', value: 'center', icon: 'alignHorizontalCenter' }, { title: 'Right', value: 'right', icon: 'alignHorizontalRight' }],
+            },
+            {
+              type: 'radio', label: 'Align Items', hideLabel: true, propertyName: `${propName}alignItems`,
+              hidden: { _code: `return ${getDisplay} === "flex" && ${getFlexDirection} === "column"`, _mode: 'code', _value: false },
+              buttonGroupOptions: [{ title: 'Start', value: 'start', icon: 'alignVerticalTop' }, { title: 'Center', value: 'center', icon: 'alignVerticalCenter' }, { title: 'End', value: 'end', icon: 'alignVerticalBottom' }],
+            },
+            { type: 'radio', label: 'Align Items', hideLabel: true, propertyName: `${propName}alignItems`,
+              hidden: { _code: `return ${getDisplay} !== "flex" || ${getFlexDirection} !== "column"`, _mode: 'code', _value: false },
+              buttonGroupOptions: [{ title: 'Start', value: 'start', icon: 'alignHorizontalLeft' }, { title: 'Center', value: 'center', icon: 'alignHorizontalCenter' }, { title: 'End', value: 'end', icon: 'alignHorizontalRight' }],
+            },
+            { type: 'radio', label: 'Justify Content', hideLabel: true, propertyName: `${propName}justifyContent`,
+              hidden: { _code: `return ${getDisplay} !== "flex" || ${getFlexDirection} !== "column"`, _mode: 'code', _value: false },
+              buttonGroupOptions: [{ title: 'Start', value: 'start', icon: 'alignVerticalTop' }, { title: 'Center', value: 'center', icon: 'alignVerticalCenter' }, { title: 'End', value: 'end', icon: 'alignVerticalBottom' }],
+            },
+            { type: 'button', label: 'Show Advanced', hideLabel: true, tooltip: 'Show advanced settings', tooltipAlt: 'Hide advanced settings', propertyName: `${propName}showAdvanced`, icon: 'tuneIcon', iconAlt: 'tuneIcon' },
+          ] });
+        f.addSettingsInputRow({
+          inputs: [{ type: 'textField', label: 'Gap', propertyName: `${propName}gap`, description: 'Examples of a valid gap include: `10` | `10px` | `20px 20px`' }],
+        });
+        f.addSettingsInputRow({
+          inputs: [
+            { type: 'numberField', propertyName: `${propName}gridColumnsCount`, label: 'Grid Columns Count', description: 'Number of columns each grid should have',
+              hidden: { _code: `return ${getDisplay} !== "grid" && ${getDisplay} !== "inline-grid";`, _mode: 'code', _value: false },
+            },
+            { type: 'numberField', propertyName: `${propName}gridRowsCount`, label: 'Grid Rows Count', description: 'Number of rows each grid should have',
+              hidden: { _code: `return ${getDisplay} !== "grid" && ${getDisplay} !== "inline-grid";`, _mode: 'code', _value: false },
+            },
+          ],
+        });
+        f.addSettingsInputRow({
+          inputs: [
+            { type: 'dimensionField', dimensionType: 'gridColumnWidth', propertyName: `${propName}gridColumnsWidth`, label: 'Grid Columns Width', description: 'Width of each column', icon: 'widthIcon',
+              hidden: { _code: `return ${getDisplay} !== "grid" && ${getDisplay} !== "inline-grid";`, _mode: 'code', _value: false },
+            },
+            { type: 'dimensionField', dimensionType: 'gridRowHeight', propertyName: `${propName}gridRowsHeight`, label: 'Grid Rows Height', description: 'Height of each row', icon: 'heightIcon',
+              hidden: { _code: `return ${getDisplay} !== "grid" && ${getDisplay} !== "inline-grid";`, _mode: 'code', _value: false },
+            },
+          ],
+        });
+        f.stdContainer((f) => {
+          f.addSettingsInputRow({
+            hidden: { _code: `return ${getDisplay} !== "flex";`, _mode: 'code', _value: false },
+            inputs: [
+              { type: 'dropdown', label: 'Flex Direction', propertyName: `${propName}flexDirection`, dropdownOptions: FLEX_DIRECTION, description: 'The flex-direction CSS property sets how flex items are placed in the flex container defining the main axis and the direction (normal or reversed).' },
+              { type: 'dropdown', label: 'Flex Wrap', propertyName: `${propName}flexWrap`, dropdownOptions: FLEX_WRAP, description: 'The flex-wrap CSS property sets whether flex items are forced into multiple lines and the direction of that wrapping.' },
+            ],
+          });
+          f.addSettingsInputRow({
+            inputs: [
+              { type: 'dropdown', label: 'Justify Content', propertyName: `${propName}justifyContent`, dropdownOptions: JUSTIFY_CONTENT },
+              { type: 'dropdown', label: 'Align Items', propertyName: `${propName}alignItems`, dropdownOptions: [...ALIGN_ITEMS, ...ALIGN_ITEMS_GRID] },
+            ],
+          });
+          f.addSettingsInputRow({
+            inputs: [
+              { type: 'dropdown', label: 'Align Self', propertyName: `${propName}alignSelf`, dropdownOptions: ALIGN_SELF,
+                tooltip: "The align-self CSS property overrides a grid or flex item's align-items value. In Grid, it aligns the item inside the grid area. In Flexbox, it aligns the item on the cross axis." },
+              { type: 'dropdown', label: 'Justify Items', propertyName: `${propName}justifyItems`,
+                hidden: { _code: `return ${getDisplay} === "flex";`, _mode: 'code', _value: false }, dropdownOptions: JUSTIFY_ITEMS },
+            ],
+          });
+          f.addSettingsInput({ inputType: 'dropdown', label: 'Justify Self', propertyName: `${propName}justifySelf`, dropdownOptions: JUSTIFY_SELF, tooltip: "The CSS justify-self property sets the way a box is justified inside its alignment container along the appropriate axis." });
+          return f;
+        },
+        `return ${getShowAdvanced}`);
+        return f;
+      },
+      `return ${getDisplay} !== "block";`);
+      return f;
+    });
+    return this;
+  };
+
+  stdDimensionsPanel = (propertyName: string = 'dimensions', exclude?: string[], panelTitle: string = 'Dimensions'): FormBuilder => {
+    this.stdCollapsiblePanel(panelTitle, (f) => f
       .addSettingsInputRow({
         inline: true,
-        inputs: [
-          { type: 'textField', label: 'Width', width: 85, propertyName: `${propertyName}.width`, icon: 'widthIcon', tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit' },
-          { type: 'textField', label: 'Min Width', width: 85, hideLabel: true, propertyName: `${propertyName}.minWidth`, icon: 'minWidthIcon' },
-          { type: 'textField', label: 'Max Width', width: 85, hideLabel: true, propertyName: `${propertyName}.maxWidth`, icon: 'maxWidthIcon' },
-        ],
+        inputs: excludeInputs([
+          { type: 'dimensionField', dimensionType: 'width', label: 'Width', width: 85, propertyName: `${propertyName}.width`, icon: 'widthIcon', tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit' },
+          { type: 'dimensionField', dimensionType: 'minWidth', label: 'Min Width', width: 85, hideLabel: true, propertyName: `${propertyName}.minWidth`, icon: 'minWidthIcon' },
+          { type: 'dimensionField', dimensionType: 'maxWidth', label: 'Max Width', width: 85, hideLabel: true, propertyName: `${propertyName}.maxWidth`, icon: 'maxWidthIcon' },
+        ], exclude),
       })
       .addSettingsInputRow({
         inline: true,
-        inputs: [
-          { type: 'textField', label: 'Height', width: 85, propertyName: `${propertyName}.height`, icon: 'heightIcon', tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit' },
-          { type: 'textField', label: 'Min Height', width: 85, hideLabel: true, propertyName: `${propertyName}.minHeight`, icon: 'minHeightIcon' },
-          { type: 'textField', label: 'Max Height', width: 85, hideLabel: true, propertyName: `${propertyName}.maxHeight`, icon: 'maxHeightIcon' },
-        ],
+        inputs: excludeInputs([
+          { type: 'dimensionField', dimensionType: 'height', label: 'Height', width: 85, propertyName: `${propertyName}.height`, icon: 'heightIcon', tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit' },
+          { type: 'dimensionField', dimensionType: 'minHeight', label: 'Min Height', width: 85, hideLabel: true, propertyName: `${propertyName}.minHeight`, icon: 'minHeightIcon' },
+          { type: 'dimensionField', dimensionType: 'maxHeight', label: 'Max Height', width: 85, hideLabel: true, propertyName: `${propertyName}.maxHeight`, icon: 'maxHeightIcon' },
+        ], exclude),
       }));
+    this.stdContainerChecker((f) => f
+      .stdCollapsiblePanel('Grid Size', (f) => f
+        .addSettingsInputRow({
+          inline: true,
+          inputs: excludeInputs([
+            { type: 'numberField', label: 'Width (Columns)', width: 85, propertyName: `${propertyName}.gridColumn`, icon: 'widthIcon' },
+            { type: 'numberField', label: 'Height (Rows)', width: 85, propertyName: `${propertyName}.gridRow`, icon: 'heightIcon' },
+          ], exclude),
+        })));
     return this;
   };
 
-  stdBorderPanel = (): FormBuilder => {
+  stdBorderPanel = (isResponsive?: boolean, propertyName: string = 'border', exclude?: 'border' | 'radius' | undefined, panelTitle: string = 'Border'): FormBuilder => {
     const bid = nanoid();
     const cid = nanoid();
     const bfb = (): FormBuilder => new FormBuilderImplementation(this.componentDefinitions, bid);
     const cfb = (): FormBuilder => new FormBuilderImplementation(this.componentDefinitions, cid);
 
-    this.stdCollapsiblePanel('Border', (f) => f
-      .addContainer({ id: bid, components: getBorderInputs(bfb) })
-      .addContainer({ id: cid, components: getCornerInputs(cfb) }));
+    this.stdCollapsiblePanel(panelTitle, (f) => {
+      if (exclude !== 'border')
+        f.addContainer({ id: bid, components: getBorderInputs(bfb, propertyName, isResponsive) });
+      if (exclude !== 'radius')
+        f.addContainer({ id: cid, components: getCornerInputs(cfb, propertyName, isResponsive) });
+      return f;
+    });
 
     return this;
   };
 
-  stdBackgroundPanel = (): FormBuilder => {
-    this.stdCollapsiblePanel('Background', (f) => f
-      .addSettingsInput({ label: 'Type', jsSetting: false, propertyName: 'background.type', inputType: 'radio', tooltip: 'Select a type of background', buttonGroupOptions: backgroundTypeOptions })
-      .addSettingsInput({ label: 'Color', propertyName: 'background.color', hideLabel: true, jsSetting: false, inputType: 'colorPicker',
-        visibleJs: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";',
-      })
-      .addSettingsInput({ label: 'Colors', inputType: 'multiColorPicker', propertyName: 'background.gradient.colors', jsSetting: false, hideLabel: true,
-        visibleJs: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "gradient";',
-      })
-      .addSettingsInput({ label: 'URL', inputType: 'textField', propertyName: 'background.url', jsSetting: false,
-        visibleJs: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "url";',
-      })
-      .addSettingsInput({ label: 'Image', inputType: 'imageUploader', propertyName: 'background.uploadFile', jsSetting: false,
-        visibleJs: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "image";',
-      })
-      .addSettingsInput({ label: 'File ID', inputType: 'textField', jsSetting: false, propertyName: 'background.storedFile.id',
-        visibleJs: 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "storedFile";',
-      })
-      .addSettingsInputRow({
+  stdBackgroundPanel = (isResponsive?: boolean, propertyName: string = 'background', exclude?: string[], panelTitle: string = 'Background'): FormBuilder => {
+    const dataPath = isResponsive === true ? 'data[`${page.canvasContext?.designerDevice || "desktop"}`]' : 'data';
+    const keep = (propertyName: string): boolean => !isExcluded(propertyName, exclude);
+    this.stdCollapsiblePanel(panelTitle, (f) => {
+      if (keep(`${propertyName}.type`))
+        f.addSettingsInput({ label: 'Type', jsSetting: false, propertyName: `${propertyName}.type`, inputType: 'radio', tooltip: 'Select a type of background', buttonGroupOptions: backgroundTypeOptions });
+      if (keep(`${propertyName}.color`))
+        f.addSettingsInput({ label: 'Color', propertyName: `${propertyName}.color`, hideLabel: true, jsSetting: false, inputType: 'colorPicker',
+          visibleJs: `return getSettingValue(${dataPath}?.${propertyName}?.type) === "color";`,
+        });
+      if (keep(`${propertyName}.gradient.colors`))
+        f.addSettingsInput({ label: 'Colors', inputType: 'multiColorPicker', propertyName: `${propertyName}.gradient.colors`, jsSetting: false, hideLabel: true,
+          visibleJs: `return getSettingValue(${dataPath}?.${propertyName}?.type) === "gradient";`,
+        })
+          .addSettingsInput({ label: 'Direction', inputType: 'dropdown', propertyName: `${propertyName}.gradient.direction`, dropdownOptions: gradientDirectionOptions, width: 120, jsSetting: false, hideLabel: true,
+            visibleJs: `return getSettingValue(${dataPath}?.${propertyName}?.type) === "gradient";`,
+          });
+      if (keep(`${propertyName}.url`))
+        f.addSettingsInput({ label: 'URL', inputType: 'textField', propertyName: `${propertyName}.url`, jsSetting: false,
+          visibleJs: `return getSettingValue(${dataPath}?.${propertyName}?.type) === "url";`,
+        });
+      if (keep(`${propertyName}.uploadFile`))
+        f.addSettingsInput({ label: 'Image', inputType: 'imageUploader', propertyName: `${propertyName}.uploadFile`, jsSetting: false,
+          visibleJs: `return getSettingValue(${dataPath}?.${propertyName}?.type) === "image";`,
+        });
+      if (keep(`${propertyName}.storedFile.id`))
+        f.addSettingsInput({ label: 'File ID', inputType: 'textField', jsSetting: false, propertyName: `${propertyName}.storedFile.id`,
+          visibleJs: `return getSettingValue(${dataPath}?.${propertyName}?.type) === "storedFile";`,
+        });
+      f.addSettingsInputRow({
         inline: true,
-        visibleJs: 'return !["color", "gradient"].includes(getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type));',
-        inputs: [
-          { type: 'customDropdown', label: 'Size', hideLabel: true, propertyName: 'background.size', dropdownOptions: sizeOptions,
+        visibleJs: `return !["color", "gradient"].includes(getSettingValue(${dataPath}?.${propertyName}?.type));`,
+        inputs: excludeInputs([
+          { type: 'customDropdown', label: 'Size', hideLabel: true, propertyName: `${propertyName}.size`, dropdownOptions: sizeOptions,
             customTooltip: 'Size of the background image, two space separated values with units e.g "100% 100px"',
           },
-          { type: 'customDropdown', label: 'Position', hideLabel: true, propertyName: 'background.position', dropdownOptions: positionOptions,
+          { type: 'customDropdown', label: 'Position', hideLabel: true, propertyName: `${propertyName}.position`, dropdownOptions: positionOptions,
             customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
           },
-          { type: 'radio', label: 'Repeat', hideLabel: true, propertyName: 'background.repeat', buttonGroupOptions: repeatOptions },
-        ],
-      }));
+          { type: 'radio', label: 'Repeat', hideLabel: true, propertyName: `${propertyName}.repeat`, buttonGroupOptions: repeatOptions },
+        ], exclude),
+      });
+      return f;
+    });
     return this;
   };
 
-  stdShadowPanel = (): FormBuilder => {
-    this.stdCollapsiblePanel('Shadow', (f) => f
+  stdShadowPanel = (propertyName: string = 'shadow', exclude?: string[], panelTitle: string = 'Shadow'): FormBuilder => {
+    this.stdCollapsiblePanel(panelTitle, (f) => f
       .addSettingsInputRow({
         inline: true,
-        inputs: [
-          { type: 'numberField', label: 'Offset X', hideLabel: true, tooltip: 'Offset X', width: 80, icon: 'offsetHorizontalIcon', propertyName: 'shadow.offsetX' },
-          { type: 'numberField', label: 'Offset Y', hideLabel: true, tooltip: 'Offset Y', width: 80, icon: 'offsetVerticalIcon', propertyName: 'shadow.offsetY' },
-          { type: 'numberField', label: 'Blur', hideLabel: true, tooltip: 'Blur Radius', width: 80, icon: 'blurIcon', propertyName: 'shadow.blurRadius' },
-          { type: 'numberField', label: 'Spread', hideLabel: true, tooltip: 'Spread Radius', width: 80, icon: 'spreadIcon', propertyName: 'shadow.spreadRadius' },
-          { type: 'colorPicker', label: 'Color', hideLabel: true, propertyName: 'shadow.color' },
-        ],
+        inputs: excludeInputs([
+          { type: 'numberField', label: 'Offset X', hideLabel: true, tooltip: 'Offset X', width: 80, icon: 'offsetHorizontalIcon', propertyName: `${propertyName}.offsetX` },
+          { type: 'numberField', label: 'Offset Y', hideLabel: true, tooltip: 'Offset Y', width: 80, icon: 'offsetVerticalIcon', propertyName: `${propertyName}.offsetY` },
+          { type: 'numberField', label: 'Blur', hideLabel: true, tooltip: 'Blur Radius', width: 80, icon: 'blurIcon', propertyName: `${propertyName}.blurRadius` },
+          { type: 'numberField', label: 'Spread', hideLabel: true, tooltip: 'Spread Radius', width: 80, icon: 'spreadIcon', propertyName: `${propertyName}.spreadRadius` },
+          { type: 'colorPicker', label: 'Color', hideLabel: true, propertyName: `${propertyName}.color` },
+        ], exclude),
       }));
     return this;
   };
 
-  stdMarginPaddingPanel = (propertyName: string = 'stylingBox'): FormBuilder => {
-    this.stdCollapsiblePanel('Margin & Padding', (f) => f.addStyleBox({ label: 'Margin Padding', hideLabel: true, propertyName: propertyName }));
+  stdMarginPaddingPanel = (propertyName: string = 'stylingBoxJson', panelTitle: string = 'Margin & Padding'): FormBuilder => {
+    this.stdCollapsiblePanel(panelTitle, (f) => f.addStyleBox({ label: 'Margin Padding', hideLabel: true, propertyName: propertyName, format: 'json' }));
     return this;
   };
 
-  stdCustomStylePanel = (propertyName: string = 'style'): FormBuilder => {
-    this.stdCollapsiblePanel('Custom Styles', (f) => f
+  stdCustomStylePanel = (propertyName: string = 'style', panelTitle: string = 'Custom Styles'): FormBuilder => {
+    this.stdCollapsiblePanel(panelTitle, (f) => f
       .addSettingsInput({
         inputType: 'codeEditor', propertyName: propertyName, hideLabel: false, label: 'Style',
         description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
@@ -415,51 +542,44 @@ export class FormBuilderImplementation implements FormBuilder {
     return this;
   };
 
-  stdAppearancePanels = (appearancePanels: StandardAppearancePanel[]): FormBuilder => {
+  stdAppearancePanels = (appearancePanels: StandardAppearancePanelConfig[], removeStyleRouter?: boolean): FormBuilder => {
     const rootId = nanoid();
     const fbf = new FormBuilderImplementation(this.componentDefinitions, rootId);
-    fbf.addSettingsInput({
-      propertyName: 'enableStyleOnReadonly',
-      label: 'Enable Style On Readonly',
-      tooltip: 'Removes all visual styling except typography when the component becomes read-only',
-      inputType: 'switch',
-      jsSetting: true,
-    });
-
-    appearancePanels.forEach((panel) => {
+    appearancePanels.forEach((entry) => {
+      const panel: StandardAppearancePanel = typeof entry === 'string' ? entry : entry.name;
+      const exclude: string[] | undefined = typeof entry === 'string' ? undefined : entry.exclude;
+      const panelTitle: string | undefined = typeof entry === 'string' ? undefined : entry.panelTitle;
       switch (panel) {
         case 'background':
-          fbf.stdBackgroundPanel();
+          fbf.stdBackgroundPanel(removeStyleRouter !== true, undefined, exclude, panelTitle);
           break;
         case 'shadow':
-          fbf.stdShadowPanel();
+          fbf.stdShadowPanel(undefined, exclude, panelTitle);
           break;
         case 'marginPadding':
-          fbf.stdMarginPaddingPanel();
+          fbf.stdMarginPaddingPanel(undefined, panelTitle);
           break;
         case 'customStyle':
-          fbf.stdCustomStylePanel();
+          fbf.stdCustomStylePanel(undefined, panelTitle);
           break;
         case 'font':
-          fbf.stdFontPanel();
+          fbf.stdFontPanel(undefined, exclude, panelTitle);
           break;
         case 'dimensions':
-          fbf.stdDimensionsPanel();
+          fbf.stdDimensionsPanel(undefined, exclude, panelTitle);
           break;
         case 'border':
-          fbf.stdBorderPanel();
+          fbf.stdBorderPanel(removeStyleRouter !== true, undefined, undefined, panelTitle);
           break;
       }
     });
-
     this.addPropertyRouter({
       id: rootId,
       propertyName: 'styleRouter',
       componentName: 'styleRouter',
       label: 'Style router',
       labelAlign: 'right',
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
-      propertyRouteName: { _code: "return contexts.canvasContext?.designerDevice || 'desktop';", _mode: 'code', _value: '' } as any,
+      propertyRouteName: { _code: `return ${removeStyleRouter === true ? '' : 'contexts.canvasContext?.designerDevice || "desktop"'};`, _mode: 'code', _value: '' },
       components: [...fbf.toJson()],
     });
 
@@ -483,7 +603,7 @@ export class FormBuilderImplementation implements FormBuilder {
   }
 
   private _addProperty(props: FluentSettings<IConfigurableFormComponent>, type: string, meta?: IPropertyMetadata): FormBuilder {
-    const { id, hidden, visible, visibleJs, version, parentId, ...restProps } = props;
+    const { id, hidden, visible, visibleJs, version, parentId, readOnly, editMode, ...restProps } = props;
 
     const componentDefinition = this.getComponentDefinition(type);
 
@@ -492,6 +612,11 @@ export class FormBuilderImplementation implements FormBuilder {
       id: id ?? nanoid(),
       parentId: parentId ?? this.rootId,
 
+      editMode: readOnly === true
+        ? 'readOnly'
+        : isPropertySettings(readOnly)
+          ? readOnly
+          : editMode,
       type,
       version: typeof (version) === 'number'
         ? version

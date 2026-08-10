@@ -6,7 +6,6 @@ import { Item } from '@/components/modelConfigurator/propertiesEditor/renderer-n
 import { ModelItemProperties } from '@/components/modelConfigurator/propertiesEditor/renderer-new/modelItemProperties';
 import { IMetadataEditorProps } from './interfaces';
 import { ListEditorRenderer } from '@/components/listEditorRenderer';
-import { ListItem } from '@/components/listEditor/models';
 
 type ItemType = IModelItem;
 
@@ -15,7 +14,7 @@ export type IMetadataEditorModalProps = IMetadataEditorProps;
 export const MetadataEditorModal: FC<IMetadataEditorModalProps> = ({ value, onChange, readOnly }) => {
   const [selectedItem, setSelectedItem] = useState<ItemType>();
 
-  const onSelectionChange = (item: ItemType): void => {
+  const onSelectionChange = (item: ItemType | undefined): void => {
     setSelectedItem(item);
   };
 
@@ -29,8 +28,8 @@ export const MetadataEditorModal: FC<IMetadataEditorModalProps> = ({ value, onCh
   const makeNewItem = (items: IModelItem[]): IModelItem => {
     return {
       id: nanoid(),
-      name: `NewProperty${(items ?? []).length + 1}`,
-      label: `New Property ${(items ?? []).length + 1}`,
+      name: `NewProperty${items.length + 1}`,
+      label: `New Property ${items.length + 1}`,
       dataType: '',
     };
   };
@@ -42,7 +41,7 @@ export const MetadataEditorModal: FC<IMetadataEditorModalProps> = ({ value, onCh
         content: <ModelItemProperties item={selectedItem} onChange={onItemUpdate} />,
       }}
     >
-      <ListEditor<ItemType & ListItem>
+      <ListEditor<ItemType>
         value={value}
         onChange={onChange}
         initNewItem={makeNewItem}
@@ -55,15 +54,15 @@ export const MetadataEditorModal: FC<IMetadataEditorModalProps> = ({ value, onCh
             <Item
               itemProps={item}
               index={[index]}
-              key={item?.id}
+              key={item.id}
               onChange={(newValue) => {
                 itemOnChange({ ...newValue }, undefined);
               }}
               containerRendering={(args) => {
-                return nestedRenderer({
+                return nestedRenderer?.({
                   ...args,
                   onChange: (newValue: IModelItem[], changeDetails) => {
-                    args.onChange(newValue, changeDetails);
+                    args.onChange?.(newValue, changeDetails);
                   },
                   initNewItem: makeNewItem,
                 });

@@ -29,12 +29,11 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
         margin-top: 10px;
       
         .${prefixCls}-input {
-          border: none;
-          background-color: transparent;
+          border: 1px solid #d9d9d9;
           padding: unset;
           position: absolute;
           text-align: center;
-          width: 25px;
+          width: 30px;
         }
       
         .${center} {
@@ -50,19 +49,19 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
       
         .${margTop} {
           position: absolute;
-          top: 12px;
+          top: 14px;
           left: 107px;
         }
       
         .${margLeft} {
           position: absolute;
-          left: 2px;
+          left: 4px;
           top: 79px;
         }
       
         .${margBottom} {
           position: absolute;
-          bottom: 2px;
+          bottom: 25px;
           left: 107px;
         }
       
@@ -93,13 +92,13 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
       
         .${paddBottom} {
           position: absolute;
-          bottom: 2px;
+          bottom: 27px;
           left: 70px;
         }
       
         .${paddRight} {
           position: absolute;
-          left: 130px;
+          left: 128px;
           top: 39px;
         }
       

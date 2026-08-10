@@ -1,5 +1,5 @@
 ﻿using Shesha.Metadata;
-using Shesha.Tests.Fixtures;
+using Shesha.Testing.Fixtures;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;

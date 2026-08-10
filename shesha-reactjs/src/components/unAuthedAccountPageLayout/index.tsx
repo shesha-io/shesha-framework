@@ -1,6 +1,6 @@
 import React, { FC, ReactNode } from 'react';
 import { Col, Row } from 'antd';
-import { UnAuthedLayoutContainer } from './styles';
+import { UnAuthedLayoutContainer } from './layoutContainer';
 
 const accountFormCols = {
   xs: { span: 14, offset: 5 },

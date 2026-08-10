@@ -3,21 +3,22 @@ import { Button } from 'antd';
 import { FormIdentifier } from '@/interfaces';
 import { useShaRouting } from '@/providers/shaRouting';
 import { useStyles } from './styles/styles';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { buildUrl } from '@/utils';
 
 export interface IShaLinkProps {
-  linkTo?: string;
-  icon?: ReactNode;
+  linkTo?: string | undefined;
+  icon?: ReactNode | undefined;
 
-  linkToForm?: FormIdentifier;
+  linkToForm?: FormIdentifier | undefined;
 
-  params?: any;
+  params?: object | undefined;
 
-  className?: string;
+  className?: string | undefined;
 
-  style?: CSSProperties;
+  style?: CSSProperties | undefined;
 
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 }
 
 export const ShaLink: FC<PropsWithChildren<IShaLinkProps>> = ({
@@ -28,31 +29,31 @@ export const ShaLink: FC<PropsWithChildren<IShaLinkProps>> = ({
   children,
   className,
   style,
-  disabled,
+  disabled = false,
 }) => {
   const { router, getFormUrl } = useShaRouting();
   const { styles, cx } = useStyles();
 
-  const paramsStr = useMemo(() => {
-    if (!params) return undefined;
-    const str = [];
-    for (const key of Object.keys(params)) str.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
-    return str.join('&');
-  }, [params]);
+  const formRawUrl = useMemo(() => {
+    const formUrl = linkToForm ? getFormUrl(linkToForm) : undefined;
+    return !isNullOrWhiteSpace(formUrl)
+      ? buildUrl(formUrl, params)
+      : undefined;
+  }, [linkToForm, params, getFormUrl]);
 
-  const url = (linkTo ?? getFormUrl(linkToForm)) + (paramsStr ? `?${paramsStr}` : '');
+  const url = linkTo ?? formRawUrl;
 
   const changeRoute = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>): void => {
     event.preventDefault();
 
-    if (url) router?.push(url /* .toLowerCase() - it causes problems on prod because of case sensitivity of routings!*/);
+    if (url) router.push(url);
   };
 
   return (
     <Button
       type="link"
       onClick={changeRoute}
-      href={url}
+      {...(url ? { href: url } : {})}
       className={cx(styles.innerEntityReferenceButtonBoxStyle, className)}
       style={style}
       disabled={disabled}

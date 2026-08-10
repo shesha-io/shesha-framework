@@ -5,15 +5,15 @@ export interface IHasEntityType {
 
 export interface IMetadata {
   dataType: string;
-  name?: string | undefined;
-  description?: string | undefined;
+  name?: string | null | undefined;
+  description?: string | null | undefined;
   itemsType?: Omit<IPropertyMetadata, 'path'> | undefined;
 }
 
 export interface IMemberType {
   dataType: string;
-  dataFormat?: string | null;
-  baseType?: IMemberType;
+  dataFormat?: string | null | undefined;
+  baseType?: IMemberType | undefined;
 }
 
 export interface IMemberMetadata extends IMemberType {
@@ -42,15 +42,15 @@ export interface IDecimalFormatting extends INumberFormatting {
 }
 
 export interface IPropertyMetadata extends IMemberMetadata, IHasEntityType {
-  required?: boolean;
-  readonly?: boolean;
-  minLength?: number | null;
-  maxLength?: number | null;
-  min?: number | null;
-  max?: number | null;
-  validationMessage?: string | null;
-  referenceListName?: string | undefined;
-  referenceListModule?: string | undefined;
+  required?: boolean | undefined;
+  readonly?: boolean | undefined;
+  minLength?: number | null | undefined;
+  maxLength?: number | null | undefined;
+  min?: number | null | undefined;
+  max?: number | null | undefined;
+  validationMessage?: string | null | undefined;
+  referenceListName?: string | undefined | undefined;
+  referenceListModule?: string | undefined | undefined;
   /**
    * Child properties, applicable for complex data types (e.g. object, array)
    */
@@ -59,20 +59,20 @@ export interface IPropertyMetadata extends IMemberMetadata, IHasEntityType {
   /**
    * If true, indicates that current property is a framework-related (e.g. Abp.Domain.Entities.ISoftDelete.IsDeleted, Abp.Domain.Entities.Auditing.IHasModificationTime.LastModificationTime)
    */
-  isFrameworkRelated?: boolean;
+  isFrameworkRelated?: boolean | undefined;
   /**
    * If true, indicates that current property is nullable
    */
-  isNullable?: boolean;
-  prefix?: string;
+  isNullable?: boolean | undefined;
+  prefix?: string | undefined;
   /**
    * If true, indicates that current property is visible. Treated as true by default
    */
-  isVisible?: boolean;
+  isVisible?: boolean | undefined;
 
-  columnName?: string | null;
-  createdInDb?: boolean;
-  inheritedFromId?: string | null;
+  columnName?: string | null | undefined;
+  createdInDb?: boolean | undefined;
+  inheritedFromId?: string | null | undefined;
   formatting?: IHasDefaultEditor & (IHasFilter | IDecimalFormatting) | undefined;
 }
 

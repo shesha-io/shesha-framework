@@ -1,8 +1,9 @@
 import { CSSProperties } from 'react';
-import { IComponentsContainerProps } from './componentsContainer';
+import { ICommonContainerProps } from '@/interfaces';
+import { isDefined } from '@/utils';
 
 type AlignmentProps = Pick<
-  IComponentsContainerProps,
+  ICommonContainerProps,
   | 'direction' |
   'justifyContent' |
   'alignItems' |
@@ -35,15 +36,13 @@ export const getAlignmentStyle = ({
     display,
   };
 
-  const gridTemplateColumns = Array(gridColumnsCount).fill('auto')?.join(' ');
-
   if (direction === 'horizontal' || display !== 'block') {
     style['justifyContent'] = justifyContent;
     style['alignItems'] = alignItems;
     style['justifyItems'] = justifyItems;
     // Note: justifySelf and alignSelf should be applied to the wrapper element, not the inner container
     // They are handled in the wrapperStyle in containerComponent.tsx
-    style['textJustify'] = textJustify as any;
+    style['textJustify'] = textJustify;
     style['gap'] = gap;
   }
 
@@ -58,8 +57,8 @@ export const getAlignmentStyle = ({
     style['justifyItems'] = justifyItems;
   }
 
-  if (display === 'grid' || display === 'inline-grid') {
-    style['gridTemplateColumns'] = gridTemplateColumns;
+  if ((display === 'grid' || display === 'inline-grid') && isDefined(gridColumnsCount)) {
+    style['gridTemplateColumns'] = `repeat(${gridColumnsCount}, minmax(0, 1fr))`;
   }
   return style;
 };

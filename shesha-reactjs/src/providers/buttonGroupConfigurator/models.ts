@@ -6,7 +6,7 @@ import React from 'react';
 import { IFullAuditedEntity } from '@/publicJsApis/apis/entities';
 import { ListItemWithId } from '@/components/listEditor/models';
 import { isDefined } from '@/utils/nullables';
-import { EditMode, IStyleType } from '../form/models';
+import { EditMode, IStyleValue } from '../form/models';
 
 type ButtonGroupItemType = 'item' | 'group';
 
@@ -26,7 +26,7 @@ export type ButtonActionType =
   'cancelFormEdit' |
   'dispatchAnEvent';
 
-export interface IButtonGroupItemBase extends IStyleType {
+export interface IButtonGroupItemBase extends IStyleValue {
   id: string;
   name?: string | undefined;
   block?: boolean | undefined;
@@ -34,7 +34,9 @@ export interface IButtonGroupItemBase extends IStyleType {
   tooltip?: string | undefined;
   sortOrder?: number | undefined;
   danger?: boolean | undefined;
+  /** @deprecated use visible instead. Will be removed after refactoring all components */
   hidden?: boolean | undefined;
+  visible?: boolean | undefined;
   isDynamic?: boolean | undefined;
   itemType?: ButtonGroupItemType | undefined;
   icon?: string | undefined;
@@ -46,6 +48,7 @@ export interface IButtonGroupItemBase extends IStyleType {
   size?: SizeType | undefined;
   editMode?: EditMode | undefined;
   readOnly?: boolean | undefined;
+  disabled?: boolean | undefined;
   width?: string | undefined;
   height?: string | undefined;
   backgroundColor?: string | undefined;
@@ -60,16 +63,16 @@ export interface IButtonGroupItemBase extends IStyleType {
 }
 
 export interface IButtonGroupItem extends IButtonGroupItemBase, ListItemWithId {
-  itemSubType?: ToolbarItemSubType;
-  styles?: React.CSSProperties;
-  dividerWidth?: string;
-  dividerColor?: string;
-  actionConfiguration?: IConfigurableActionConfiguration;
+  itemSubType?: ToolbarItemSubType | undefined;
+  styles?: React.CSSProperties | undefined;
+  dividerWidth?: string | undefined;
+  dividerColor?: string | undefined;
+  actionConfiguration?: IConfigurableActionConfiguration | undefined;
 }
 
 export interface IButtonItem extends Omit<IButtonGroupItem, 'type'> {
-  actionConfiguration?: IConfigurableActionConfiguration;
-  dynamicItem?: IFullAuditedEntity;
+  actionConfiguration?: IConfigurableActionConfiguration | undefined;
+  dynamicItem?: IFullAuditedEntity | undefined;
 }
 
 export const isItem = (item: IButtonGroupItemBase | undefined): item is IButtonGroupItem => {
@@ -80,7 +83,7 @@ export interface IButtonGroup extends IButtonGroupItemBase {
   /**
    * If true, indicates that the group should be hidden when it has no visible items
    */
-  hideWhenEmpty?: boolean;
+  hideWhenEmpty?: boolean | undefined;
   /**
    * Child items (buttons or nested groups)
    */

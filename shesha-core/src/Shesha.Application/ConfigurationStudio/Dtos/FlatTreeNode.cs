@@ -24,6 +24,11 @@ namespace Shesha.ConfigurationStudio.Dtos
         public Guid ModuleId { get; set; }
 
         /// <summary>
+        /// Application Id
+        /// </summary>
+        public Guid? ApplicationId { get; set; }
+
+        /// <summary>
         /// Node name
         /// </summary>
         public string Name { get; set; }

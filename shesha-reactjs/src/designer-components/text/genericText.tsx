@@ -17,14 +17,14 @@ interface IGenericTextProps
   style?: CSSProperties;
 }
 
-const getColorByContentType = (contentType: ContentType, style: CSSProperties, theme: IConfigurableTheme): string | undefined => {
+const getColorByContentType = (contentType: ContentType | undefined, style: CSSProperties | undefined, theme: IConfigurableTheme): string | undefined => {
   switch (contentType) {
     case 'custom':
       return style?.color;
     case 'secondary':
-      return theme?.text?.secondary;
+      return theme.text?.secondary;
     case '':
-      return theme?.text?.default;
+      return theme.text?.default;
     default:
       return undefined;
   }
@@ -66,15 +66,15 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
   const chosenType: BaseType | undefined = contentType === 'secondary' ? undefined : (contentType as BaseType);
 
   const baseProps: ITypographyProps = {
-    code: model.code,
-    copyable: model.copyable,
-    delete: model.delete,
-    ellipsis: model.ellipsis,
-    mark: model.mark,
-    underline: model.underline,
-    keyboard: model.keyboard,
-    italic: model.italic,
-    type: chosenType,
+    code: model.code ?? false,
+    copyable: model.copyable ?? false,
+    delete: model.delete ?? false,
+    ellipsis: model.ellipsis ?? false,
+    mark: model.mark ?? false,
+    underline: model.underline ?? false,
+    keyboard: model.keyboard ?? false,
+    italic: model.italic ?? false,
+    ...(chosenType ? { type: chosenType } : {}),
     style: {
       padding: 0,
       margin: 0,
@@ -86,16 +86,6 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
       } },
   };
 
-  const paragraphProps: ParagraphProps = {
-    ...baseProps,
-    strong: model.strong,
-  };
-
-  const titleProps: TitleProps = {
-    ...baseProps,
-    level: level ? (Number(level) as LevelType) : 1,
-  };
-
   const className = classNames(styles.typographyText, {
     [styles.primary]: contentType === 'primary',
     [styles.info]: contentType === 'info',
@@ -103,13 +93,17 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
 
   if (textType === 'span') {
     return (
-      <Paragraph key={`text-${updateKey}`} {...baseProps} className={className}>
+      <Paragraph key={`text-${updateKey}`} {...baseProps} className={className} style={{ margin: '0px' }}>
         {children}
       </Paragraph>
     );
   }
 
   if (textType === 'paragraph') {
+    const paragraphProps: Omit<ParagraphProps, "style"> = {
+      ...baseProps,
+      ...(model.strong ? { strong: model.strong } : {}),
+    };
     return (
       <Paragraph key={`paragraph-${updateKey}`} style={{ margin: '0px' }} {...paragraphProps} className={className}>
         {children}
@@ -117,8 +111,13 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
     );
   }
 
+  const titleProps: TitleProps = {
+    ...baseProps,
+    style: { ...baseProps.style, fontSize: '' },
+    level: level ? (Number(level) as LevelType) : 1,
+  };
   return (
-    <Title key={`title-${updateKey}`} {...titleProps} style={{ ...titleProps.style, fontSize: '' }} className={className}>
+    <Title key={`title-${updateKey}`} {...titleProps} className={className}>
       {children}
     </Title>
   );

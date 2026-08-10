@@ -1,9 +1,9 @@
 import { TabPaneProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { ComponentDefinition, EditMode, IConfigurableFormComponent, IInputStyles, IPropertySetting, IStyleType } from '@/interfaces';
+import { ComponentDefinition, EditMode, IConfigurableFormComponent, IInputStyles, IPropertySetting, IStyleValue } from '@/interfaces';
 
 export interface ITabPaneProps
-  extends IStyleType, Omit<TabPaneProps, 'children' | 'tab' | 'style' | 'tabKey' | 'disabled' | 'destroyInactiveTabPane'> {
+  extends IStyleValue, Omit<TabPaneProps, 'children' | 'tab' | 'style' | 'tabKey' | 'disabled' | 'destroyInactiveTabPane'> {
   id: string;
   type?: string;
   icon?: string;
@@ -30,22 +30,22 @@ export interface ITabPaneProps
 }
 
 interface ICardProps {
-  card: IInputStyles;
-}
-export interface ITabsComponentProps extends IConfigurableFormComponent, IStyleType {
-  tabs: ITabPaneProps[];
-  size?: SizeType;
-  defaultActiveKey?: string;
-  tabType?: 'line' | 'card';
-  tabLineColor?: string;
-  hidden?: boolean;
-  ghost?: boolean;
-  customVisibility?: string;
-  tabPosition?: 'left' | 'right' | 'top' | 'bottom';
   card?: IInputStyles;
-  desktop?: IInputStyles & ICardProps;
-  mobile?: IInputStyles & ICardProps;
-  tablet?: IInputStyles & ICardProps;
+}
+export interface ITabsComponentProps extends IConfigurableFormComponent, IStyleValue {
+  tabs: ITabPaneProps[];
+  size?: SizeType | undefined;
+  defaultActiveKey?: string | undefined;
+  tabType?: 'line' | 'card' | undefined;
+  tabLineColor?: string | undefined;
+  hidden?: boolean | undefined;
+  ghost?: boolean | undefined;
+  customVisibility?: string | undefined;
+  tabPosition?: 'left' | 'right' | 'top' | 'bottom' | undefined;
+  card?: IInputStyles | undefined;
+  desktop?: IInputStyles & ICardProps | undefined;
+  mobile?: IInputStyles & ICardProps | undefined;
+  tablet?: IInputStyles & ICardProps | undefined;
 }
 
 export type TabsComponentDefinition = ComponentDefinition<"tabs", ITabsComponentProps>;

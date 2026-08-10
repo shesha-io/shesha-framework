@@ -6,7 +6,7 @@ const ERROR_MSG = 'Passwords do not match';
 export const confirmPasswordValidations = (
   password: string,
   confirmPassword: string,
-  errorMessage: string = null,
+  errorMessage: string | null = null,
 ): FormItemProps => {
   const passwordsMatch = password === confirmPassword;
 
@@ -14,15 +14,18 @@ export const confirmPasswordValidations = (
 
   const hasFeedback = confirmPaswordDirty;
 
-  const validateStatus = confirmPaswordDirty ? 'success' : !confirmPassword ? undefined : 'error';
+  const validateStatus = confirmPaswordDirty ? 'success' : !confirmPassword ? "" : 'error';
 
   const help = validateStatus === 'error' ? errorMessage : null;
 
   const rules = help ? [{ required: true, validator: () => Promise.reject(errorMessage || ERROR_MSG) }] : undefined;
 
-  if (rules) return { hasFeedback, validateStatus, help, rules };
-
-  return { hasFeedback, validateStatus, help };
+  const result: FormItemProps = {
+    hasFeedback, validateStatus, help,
+  };
+  if (rules)
+    result.rules = rules;
+  return result;
 };
 
 export const getPasswordValidations = (password: string, passwordLength: number = 4): IPasswordValidation => {
@@ -55,7 +58,7 @@ export const isSamePassword = (initialPassword: string, confirmPassword: string,
 
 export const passwordValidations = (
   password: string,
-  errorMessage: string = null,
+  errorMessage: string | null = null,
   length: number = 4,
 ): FormItemProps => {
   const passwordIsBad = !isStrongPassword(password, length);

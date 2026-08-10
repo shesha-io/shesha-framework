@@ -7,30 +7,31 @@ import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { Select } from 'antd';
 import { useDataContextManager } from '@/providers/dataContextManager/hooks';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
+import { throwError } from '@/utils/errors';
 
-export interface IDataContextSelectorProps<TValue = any> {
-  readOnly?: boolean;
-  value?: TValue;
-  size?: SizeType;
-  onChange?: (value: TValue) => void;
+export interface IDataContextSelectorProps<TValue = string> {
+  readOnly?: boolean | undefined;
+  value?: TValue | null | undefined;
+  size?: SizeType | undefined;
+  onChange: (value: TValue) => void;
 }
 const DataContextSelector: FC<IDataContextSelectorProps> = (props) => {
   // Use parent DCM because this control usually used in the properties form and has own DCM
   const dcm = useDataContextManager();
-  const { getDataContexts } = dcm.getParent() ?? dcm.getRoot();
+  const { getDataContexts } = dcm.getParent() ?? dcm.getRoot() ?? throwError('DataContext not found');
 
   const dataContexts = getDataContexts('all');
 
-  const onChange = (value: any): void => {
+  const onChange = (value: string): void => {
     props.onChange(value);
   };
 
   return (
-    <Select
+    <Select<string>
       allowClear={true}
-      disabled={props.readOnly}
+      disabled={props.readOnly ?? false}
       showSearch
-      value={props.value}
+      value={props.value ?? null}
       size={props.size}
       onChange={onChange}
       options={dataContexts.map((item) => ({ value: item.id, label: item.name }))}
@@ -50,7 +51,7 @@ const DataContextSelectorComponent: IToolboxComponent<IDataContextSelectorCompon
   dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.string && dataFormat === StringFormats.singleline,
   Factory: ({ model }) => {
     return (
-      <ConfigurableFormItem model={{ ...model }}>
+      <ConfigurableFormItem<string> model={{ ...model }}>
         {(value, onChange) => {
           return <DataContextSelector {...model} value={value} onChange={onChange} />;
         }}

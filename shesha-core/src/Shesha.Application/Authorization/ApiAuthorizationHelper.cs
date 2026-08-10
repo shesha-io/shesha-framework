@@ -47,9 +47,8 @@ namespace Shesha.Authorization
                 type.HasAttribute<AbpAllowAnonymousAttribute>() || methodInfo.HasAttribute<AbpAllowAnonymousAttribute>())
                 return;
 
-            var shaServiceType = typeof(ApplicationService);
             var controllerType = typeof(ControllerBase);
-            if (!shaServiceType.IsAssignableFrom(type) && !controllerType.IsAssignableFrom(type))
+            if (type == null || !controllerType.IsAssignableFrom(type) && !type.HasInterface(typeof(IApplicationService)))
                 return;
 
             var typeName = type.GetRequiredFullName();
@@ -60,19 +59,16 @@ namespace Shesha.Authorization
                 return;
 
             var securitySettings = await _securitySettings.SecuritySettings.GetValueOrNullAsync();
-            var settings = securitySettings?.DefaultEndpointAccess;
 
-            if (settings == null)
-                throw new NullReferenceException("Cannot get DefaultEndpointAccess");
-
-            // ToDo: add RequireAll flag
+            // Note: requireAll is intentionally false — multiple permissions are OR'd (any single permission grants access)
             await _objectPermissionChecker.AuthorizeAsync(
                 false,
                 typeName,
                 methodName,
                 ShaPermissionedObjectsTypes.WebApiAction,
                 AbpSession.UserId.HasValue,
-                settings
+                securitySettings?.DefaultEndpointAccess ?? Domain.Enums.RefListPermissionedAccess.AnyAuthenticated,
+                securitySettings?.DefaultEndpointPermissions
             );
         }
     }

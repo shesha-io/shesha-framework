@@ -15,6 +15,8 @@ export interface FormUpdateMarkupInput {
   access?: number | undefined;
   /** Form permissions for Required premission mode */
   permissions?: string[] | undefined;
+  /** Form model type (if any) */
+  modelType?: string | undefined;
 }
 
 export interface FormPermissionsDto {

@@ -1,21 +1,50 @@
 import { createStyles } from '@/styles';
+import { ITextFieldComponentProps } from './interfaces';
+import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, marginStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
 
-export const useStyles = createStyles(({ css, cx, token }, { fontWeight, fontFamily, textAlign, color, fontSize }) => {
-  const textField = cx("sha-textField", css`
-        .ant-input {
-            --ant-color-text: ${color} !important;
-            --ant-font-size: ${fontSize} !important;
-            font-weight: ${fontWeight};
-            font-family: ${fontFamily};
-            text-align: ${textAlign};
-        }
+export const useStyles = createStyles(({ css, cx, token }, model: ITextFieldComponentProps) => {
+  const inputBoxStyles = `
+    ${dimensionsStyles(model.dimensions)}
+    ${marginStyles(model.stylingBoxJson)}
+    ${paddingStyles(model.stylingBoxJson)}
+  `;
 
-        :hover {
-            border-color: ${token.colorPrimary} !important;
-        }
+  const textField = cx('sha-textField', css`
+      ${borderStyles(model.border)}
+      ${backgroundStyles(model.background)}
+      ${shadowStyles(model.shadow)}
+      ${fontStyles(model.font)}
+      ${inputBoxStyles}
+
+      .ant-input {
+        ${fontStyles(model.font)}
+      }
+
+      :hover {
+        border-color: ${token.colorPrimary} !important;
+      }
+
+      /* antd repaints the field's background in several states: \`hoverBg\` on :hover,
+         \`activeBg\` on :focus/:focus-within, and the \`background\` shorthand on the
+         error/warning statuses (which also wipes a configured image or gradient).
+         Re-assert the configured background at higher specificity in all of them, so these
+         states only affect the border and never the background the user configured. */
+      &&&&:hover,
+      &&&&:focus,
+      &&&&:focus-within,
+      &&&&[class*="-status-error"],
+      &&&&[class*="-status-warning"] {
+        ${backgroundStyles(model.background)}
+      }
   `);
 
-  const passwordFieldWrapper = cx("sha-password-field-wrapper", css`
+  const passwordFieldWrapper = cx('sha-password-field-wrapper', css`
+    .ant-form-item-explain,
+    .ant-form-item-explain-connected {
+      max-width: var(--sha-password-input-width, 100%);
+      overflow: hidden;
+    }
+
     .ant-form-item-explain-error {
       white-space: nowrap;
       overflow: hidden;

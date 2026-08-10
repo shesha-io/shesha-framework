@@ -10,7 +10,7 @@ export interface ICloseModalActionArguments {
 
 export interface IShowModalActionArguments extends IHasVersion {
   modalTitle: string;
-  formId: FormIdentifier;
+  formId: FormIdentifier | undefined;
   formMode?: 'edit' | 'readonly';
   formArguments?: string | undefined;
   modalWidth?: number | string | undefined;

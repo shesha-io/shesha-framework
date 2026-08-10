@@ -26,6 +26,8 @@
     <None Remove="ConfigMigrations\package20260130_1052.shaconfig" />
     <EmbeddedResource Include="ConfigMigrations\package20260130_1052.shaconfig" />
     <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Remove="ConfigMigrations\package20260706_0834.shaconfig" />
+    <EmbeddedResource Include="ConfigMigrations\package20260706_0834.shaconfig" />
   </ItemGroup>
 
   <ItemGroup>

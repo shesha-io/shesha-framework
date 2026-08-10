@@ -14,12 +14,14 @@ import ParentProvider from '@/providers/parentProvider/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeComponents } from '../_common-migrations/removeComponents';
 import { getSettings } from './settingsForm';
-import { defaultCardStyles, defaultStyles } from './utils';
+import { defaultCardStyles, defaultStyles, tabPosition2TabPlacement } from './utils';
 import { useStyles } from './styles';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
+import { isNonEmptyArray } from '@/utils/array';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
-type TabItem = TabsProps['items'][number];
+type TabItem = Required<TabsProps>['items'][number];
 
 const TabsComponent: TabsComponentDefinition = {
   type: 'tabs',
@@ -29,11 +31,17 @@ const TabsComponent: TabsComponentDefinition = {
   Factory: ({ model }) => {
     const { anyOfPermissionsGranted } = useSheshaApplication();
     const allData = useAvailableConstantsData();
-    const [activeKey, setActiveKey] = useState<string>(model.defaultActiveKey || (model.tabs?.length && model.tabs[0]?.key));
+    const [activeKey, setActiveKey] = useState<string | undefined>(() => {
+      return !isNullOrWhiteSpace(model.defaultActiveKey)
+        ? model.defaultActiveKey
+        : isNonEmptyArray(model.tabs)
+          ? model.tabs[0].key
+          : undefined;
+    });
 
     const { tabs, defaultActiveKey, tabType = 'card', size, tabPosition = 'top', tabLineColor } = model;
 
-    const tabPlacement = tabPosition === 'left' ? 'start' : tabPosition === 'right' ? 'end' : tabPosition;
+    const tabPlacement = tabPosition2TabPlacement(tabPosition);
 
     useEffect(() => {
       if (defaultActiveKey) {
@@ -43,12 +51,18 @@ const TabsComponent: TabsComponentDefinition = {
 
     const cardStyles = useFormComponentStyles({ ...model.card });
 
-    const { styles } = useStyles({ styles: model.allStyles.fullStyle, cardStyles: tabType === 'line' ? { ...cardStyles.fontStyles, ...cardStyles.dimensionsStyles } : cardStyles.fullStyle, position: tabPosition, tabType, tabLineColor, overflow: model.allStyles.overflowStyles });
+    const { styles } = useStyles({
+      styles: model.allStyles?.fullStyle ?? {},
+      cardStyles: tabType === 'line' ? { ...cardStyles.fontStyles, ...cardStyles.dimensionsStyles } : cardStyles.fullStyle,
+      position: tabPosition,
+      tabType,
+      tabLineColor,
+    });
 
     const items = useDeepCompareMemo(() => {
       const tabItems: TabItem[] = [];
 
-      (tabs ?? [])?.forEach((item) => {
+      tabs.forEach((item) => {
         const {
           id,
           key,
@@ -62,7 +76,7 @@ const TabsComponent: TabsComponentDefinition = {
           closeIcon,
           permissions,
           hidden,
-          readOnly,
+          readOnly = false,
           selectMode,
           components,
         } = item;
@@ -74,19 +88,23 @@ const TabsComponent: TabsComponentDefinition = {
           key: key,
           label: icon ? (
             <Fragment>
-              <ShaIcon iconName={icon as any} /> {title}
+              <ShaIcon iconName={icon} /> {title}
             </Fragment>
           ) : (
             <Fragment>
               {icon} {title}
             </Fragment>
           ),
-          closable: closable,
-          className: className,
-          forceRender: forceRender,
-          animated: animated,
-          destroyOnHidden: destroyInactiveTabPane,
-          closeIcon: closeIcon ? <ShaIcon iconName={closeIcon as any} /> : null,
+          ...(closable ? { closable } : {}),
+          ...(className ? { className } : {}),
+          ...(forceRender ? { forceRender } : {}),
+          ...(animated ? { animated } : {}),
+          ...(destroyInactiveTabPane ? { destroyOnHidden: destroyInactiveTabPane } : {}),
+          closeIcon: !isDefined(closeIcon)
+            ? null
+            : typeof (closeIcon) === 'string'
+              ? <ShaIcon iconName={closeIcon} />
+              : closeIcon,
           disabled: selectMode === 'readOnly' || (selectMode === 'inherited' && readOnly),
           children: (
             <ParentProvider
@@ -95,7 +113,7 @@ const TabsComponent: TabsComponentDefinition = {
             >
               <ComponentsContainer
                 containerId={id}
-                dynamicComponents={model?.isDynamic ? components : []}
+                dynamicComponents={model.isDynamic ? components : []}
               />
             </ParentProvider>
           ),
@@ -105,18 +123,20 @@ const TabsComponent: TabsComponentDefinition = {
       return tabItems;
     }, [tabs]);
 
-    return model.hidden || !items.length ? null : (
-      <Tabs
-        animated={false}
-        activeKey={activeKey}
-        onChange={setActiveKey}
-        size={size}
-        type={tabType}
-        tabPlacement={tabPlacement}
-        items={items}
-        className={styles.content}
-      />
-    );
+    return model.hidden || !items.length
+      ? null
+      : (
+        <Tabs
+          animated={false}
+          onChange={setActiveKey}
+          size={size}
+          type={tabType}
+          {...(tabPlacement ? { tabPlacement } : {})}
+          items={items}
+          className={styles.content}
+          {...(activeKey ? { activeKey } : {})}
+        />
+      );
   },
   initModel: (model) => {
     const id = nanoid();
@@ -138,8 +158,9 @@ const TabsComponent: TabsComponentDefinition = {
   },
   migrator: (m) => m
     .add<ITabsComponentProps>(0, (prev) => {
-      const newModel = { ...prev };
-      newModel['tabs'] = prev['tabs']?.map((item) => migrateCustomFunctions(item as any));
+      const tabs: ITabsComponentProps['tabs'] = (prev as Partial<ITabsComponentProps>).tabs?.map((item) => migrateCustomFunctions(item)) ?? [];
+      const newModel: ITabsComponentProps = { ...prev, tabs };
+
       return migratePropertyName(migrateCustomFunctions(newModel)) as ITabsComponentProps;
     })
     .add<ITabsComponentProps>(1, (prev) => {

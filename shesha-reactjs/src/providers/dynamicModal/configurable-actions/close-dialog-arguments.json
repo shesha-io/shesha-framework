@@ -23,8 +23,6 @@
         }
     ],
     "formSettings": {
-        "access": null,
-        "permissions": null,
         "version": 2,
         "labelCol": {
             "span": 5
@@ -46,10 +44,6 @@
                 "endpointType": "default",
                 "dynamicEndpoint": ""
             }
-        },
-        "onAfterShow": null,
-        "onBeforeSubmit": null,
-        "onSubmitSuccess": null,
-        "onSubmitFailed": null
+        }        
     }
 }

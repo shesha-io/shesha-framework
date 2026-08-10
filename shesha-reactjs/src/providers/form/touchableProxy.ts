@@ -1,10 +1,10 @@
 import { unproxyValue } from "@/utils/object";
-import { ProxyPropertiesAccessors, ProxyWithRefresh, ValueAccessor } from "./observableProxy";
+import { ProxyPropertiesAccessors, IProxyWithRefresh, ValueAccessor } from "./observableProxy";
 import { CreateTouchableProperty, IPropertyTouched } from "./touchableProperty";
 import { isDefined } from "@/utils/nullables";
 import { IAnyObject } from "@/interfaces";
 
-export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched {
+export class TouchableProxy<T> implements IProxyWithRefresh<T>, IPropertyTouched {
   private _touchedProps: Map<string, unknown>;
 
   private _propAccessors: Map<string, ValueAccessor<unknown>>;
@@ -123,11 +123,7 @@ export class TouchableProxy<T> implements ProxyWithRefresh<T>, IPropertyTouched 
         const propertyName = name.toString();
 
         if (propertyName === 'hasOwnProperty')
-          return (prop: string | symbol) => {
-            return prop
-              ? target._propAccessors.has(prop.toString())
-              : false;
-          };
+          return (prop: string | symbol) => isDefined(prop) ? target._propAccessors.has(prop.toString()) : false;
 
         if (target._propAccessors.has(propertyName))
           return target.getPropertyValue(propertyName);

@@ -4,7 +4,7 @@ import { FCUnwrapped } from '@/providers/form/models';
 import { ButtonGroupConfigurator } from '@/components/buttonGroupConfigurator';
 
 export const ButtonGroupConfiguratorWrapper: FCUnwrapped<IButtonGroupConfiguratorSettingsInputProps> = (props) => {
-  const { value, readOnly, size, onChange, buttonText, buttonTextReadOnly, title } = props;
+  const { value, readOnly = false, size, onChange, buttonText, buttonTextReadOnly, title } = props;
   return (
     <ButtonGroupConfigurator
       value={value}

@@ -48,7 +48,7 @@ const TextComponent: TextComponentDefinition = {
           <TypographyComponent
             {...model}
             styles={additionalStyles}
-            value={model?.contentDisplay === 'name' ? value : model.content}
+            value={model.contentDisplay === 'name' ? value : model.content}
           />
         )}
       </ConfigurableFormItem>
@@ -57,6 +57,7 @@ const TextComponent: TextComponentDefinition = {
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   initModel: (model) => ({
+    ...model,
     code: false,
     copyable: false,
     delete: false,
@@ -68,7 +69,6 @@ const TextComponent: TextComponentDefinition = {
     textType: 'span',
     content: 'Your text here...',
     contentDisplay: 'content',
-    ...model,
   }),
   migrator: (m) =>
     m
@@ -87,7 +87,7 @@ const TextComponent: TextComponentDefinition = {
         const px = remToPx(rem);
         return {
           ...prev,
-          desktop: { ...prev?.desktop, font: { ...prev?.desktop?.font, size: px } },
+          desktop: { ...prev.desktop, font: { ...prev.desktop?.font, size: px } },
         };
       }),
 };

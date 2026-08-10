@@ -19,7 +19,7 @@ export const DateDisplay: FC<IDateDisplayProps> = ({
   format = 'lll',
   tooltipPlacement = 'top',
 }) => {
-  const dateString = tolocalIsoDate(children);
+  const dateString = children ? tolocalIsoDate(children) : "";
 
   const getDate = (): React.JSX.Element =>
     dateAgo ? <span>{moment(dateString).fromNow()}</span> : <span>{moment(dateString).format(format)}</span>;

@@ -1,7 +1,88 @@
 import { CSSProperties } from 'react';
-import { addPx } from '@/utils/style';
 import { DEFAULT_MARGINS } from './designerConstants';
-import { getCalculatedDimension } from '@/designer-components/_settings/utils/index';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { addPx, DIMENSION_VALUES } from '@/utils/style';
+import { getCalculatedDimension } from '@/designer-components/_settings/utils/dimensions/utils';
+import { IStyleValue, IWrapperStyle, StyleBoxValue } from '@/interfaces';
+import { IDimensionsValue } from '@/designer-components/_settings/utils';
+
+export const DEFAULT_DESIGNER_PADDING: IStyleValue = { stylingBoxJson: { _type: 'styleBox', paddingLeft: 5, paddingRight: 3, paddingTop: 5, paddingBottom: 3 } };
+
+/** Check if the value is not an exact dimension value (contains calc or % or auto/stretch/fit-content etc) */
+export const isExactDimensionValue = (value: string | number | undefined): boolean =>
+  isDefined(value) && !(typeof value === 'string' && (value.includes('calc') || value.includes('%') || DIMENSION_VALUES.includes(value)));
+
+/** Check if the value is a percentage */
+export const isPercentDimensionValue = (value: string | number | undefined): boolean =>
+  typeof value === 'string' && value.includes('%');
+
+const getFullSizeComponentDimensionsValue = (value: string | number | undefined): string | number | undefined =>
+  isPercentDimensionValue(value)
+    ? '100%'// use 100% because wrapper will use configured percentage
+    : value;
+
+/**
+ * Gets full size component dimensions
+ *
+ * Calculates three states:
+ * 1. If the dimensions are percentage, return `100%` because wrapper will use configured percentage
+ * 2. If the dimensions are exact, return them as they are
+ * 3. If the dimensions are calc, auto/stretch/fit-content etc, return them as they are
+ *
+ * @param dimensions dimensions of the component
+ * @returns dimensions of the wrapper for component
+ */
+export const getFullSizeComponentDimensions = (dimensions: IDimensionsValue | undefined): IDimensionsValue => ({
+  height: getFullSizeComponentDimensionsValue(dimensions?.height),
+  minHeight: getFullSizeComponentDimensionsValue(dimensions?.minHeight),
+  maxHeight: getFullSizeComponentDimensionsValue(dimensions?.maxHeight),
+  width: getFullSizeComponentDimensionsValue(dimensions?.width),
+  minWidth: getFullSizeComponentDimensionsValue(dimensions?.minWidth),
+  maxWidth: getFullSizeComponentDimensionsValue(dimensions?.maxWidth),
+});
+
+const getFullSizeWrapperDimensionsValue = (value: string | number | undefined): string | number | undefined =>
+  isPercentDimensionValue(value) || !isExactDimensionValue(value)
+    ? value // use dimesions for wrapper, component will use 100% or non-exact value (auto/stretch/fit-content etc)
+    : 'fit-content'; // fit to the content because the component will configured exactly
+
+/**
+ * Gets full size component wrapper dimensions
+ *
+ * Calculates three states:
+ * 1. If the dimensions are percentage, return them as they are
+ * 2. If the dimensions are exact, return `fit-content` because the component will configured exactly
+ * 3. If the dimensions are calc, auto/stretch/fit-content etc, return them as they are
+ *
+ * @param dimensions dimensions of the component
+ * @returns dimensions of the wrapper for component
+ */
+export const getFullSizeWrapperDimensions = (dimensions: IDimensionsValue | undefined): IDimensionsValue => ({
+  height: getFullSizeWrapperDimensionsValue(dimensions?.height),
+  minHeight: getFullSizeWrapperDimensionsValue(dimensions?.minHeight),
+  maxHeight: getFullSizeWrapperDimensionsValue(dimensions?.maxHeight),
+  width: getFullSizeWrapperDimensionsValue(dimensions?.width),
+  minWidth: getFullSizeWrapperDimensionsValue(dimensions?.minWidth),
+  maxWidth: getFullSizeWrapperDimensionsValue(dimensions?.maxWidth),
+});
+
+export const getFullSizeWrapperStyle = (model: IStyleValue): IStyleValue => ({
+  dimensions: getFullSizeWrapperDimensions(model.dimensions),
+  stylingBoxJson: getMarginStyle(model.stylingBoxJson),
+});
+
+export const getFullSizeWrapperDesignerStyle = (model: IStyleValue): IWrapperStyle => ({
+  style: getFullSizeWrapperStyle(model),
+  designerStyle: DEFAULT_DESIGNER_PADDING,
+});
+
+export const getMarginStyle = (model: StyleBoxValue | undefined): StyleBoxValue => ({
+  _type: 'styleBox',
+  marginBottom: model?.marginBottom ?? 0,
+  marginLeft: model?.marginLeft ?? 0,
+  marginRight: model?.marginRight ?? 0,
+  marginTop: model?.marginTop ?? 0,
+});
 
 /** Margin values extracted from various style sources */
 export interface MarginValues {
@@ -15,6 +96,13 @@ interface DefaultMargins {
   vertical: string;
   horizontal: string;
 }
+
+type PaddingValues = {
+  paddingTop?: string | number | undefined;
+  paddingBottom?: string | number | undefined;
+  paddingLeft?: string | number | undefined;
+  paddingRight?: string | number | undefined;
+};
 
 // Cached constants to avoid repeated object/string creation
 const EMPTY_STYLING_BOX = '{}';
@@ -32,15 +120,19 @@ const DEFAULT_MARGIN_VALUES = {
   right: DEFAULT_MARGINS.horizontal,
 };
 
-const getExpandedDimensions = (value: string | number, marginTop: string | number, marginBottom: string | number): string | undefined => {
-  if (value === undefined || value === null || value === '') {
+export const DEFAULT_ROOT_CONTAINER_STYLE: CSSProperties = { boxSizing: 'border-box' };
+
+// ToDo: AS - remove all unused commented code afer review and migration to the new styles
+
+/* const getExpandedDimensions = (value: string | number, marginTop: string | number, marginBottom: string | number): string | undefined => {
+  if (!isDefined(value) || value === '') {
     // When no explicit dimension is provided, don't set a CSS value at all.
     // This avoids producing invalid CSS like `calc(undefined + ...)`.
     return undefined;
   }
 
   return `calc(${addPx(value)} + (${addPx(marginTop)} + ${addPx(marginBottom)}))`;
-};
+};*/
 
 /**
  * Styling utility functions for form designer components.
@@ -84,69 +176,53 @@ export const stylingUtils = {
     dimensions: CSSProperties,
     margins: MarginValues,
   ): CSSProperties {
-    // Use margin values directly (preserves relative values like 50%)
-    const marginTop = addPx(margins?.marginTop ?? 0);
-    const marginBottom = addPx(margins?.marginBottom ?? 0);
-    const marginLeft = addPx(margins?.marginLeft ?? 0);
-    const marginRight = addPx(margins?.marginRight ?? 0);
+    const marginTop = addPx(margins.marginTop);
+    const marginBottom = addPx(margins.marginBottom);
+    const marginLeft = addPx(margins.marginLeft);
+    const marginRight = addPx(margins.marginRight);
 
-    // When width is 100% and there are margins, use getCalculatedDimension to prevent overflow
-    // Use getCalculatedDimension to properly handle converted vw/vh values that are calc() expressions
-    // Handle explicit 'auto' values in dimensions
+    // Subtract actual margins from dimensions so 100%-width containers don't overflow.
+    // getCalculatedDimension produces calc(value - left - right) for percentage/pixel values.
     const width = dimensions.width === 'auto'
       ? 'auto'
       : dimensions.width
-        ? getCalculatedDimension(dimensions.width, DEFAULT_MARGIN_VALUES.left, DEFAULT_MARGIN_VALUES.right)
-        : 'auto';
+        ? getCalculatedDimension(dimensions.width, margins.marginLeft, margins.marginRight)
+        : undefined;
 
-    // Height is expanded to include padding to allow gap for component selecting e.g in button
-    const expandedHeight = dimensions.height && dimensions.height !== 'auto'
-      ? getExpandedDimensions(dimensions.height, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom)
-      : undefined;
-    const height = dimensions.height === 'auto' ? 'auto' : expandedHeight;
+    const height = dimensions.height === 'auto'
+      ? 'auto'
+      : dimensions.height
+        ? getCalculatedDimension(dimensions.height, margins.marginTop, margins.marginBottom)
+        : undefined;
 
-    // For min/max dimensions, subtract the default wrapper margins like we do for width/height
-    // This ensures constrained dimensions account for the wrapper's default margins (5px 3px)
-    // The wrapper always has these default margins applied, so min/max must subtract them
-    const minHeight = !dimensions.minHeight
-      ? undefined
-      : dimensions.minHeight === 'auto'
-        ? 'auto'
-        : getCalculatedDimension(dimensions.minHeight, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom);
+    const minWidth = !dimensions.minWidth || dimensions.minWidth === 'auto'
+      ? dimensions.minWidth
+      : getCalculatedDimension(dimensions.minWidth, margins.marginLeft, margins.marginRight);
 
-    const maxHeight = !dimensions.maxHeight
-      ? undefined
-      : dimensions.maxHeight === 'auto'
-        ? 'auto'
-        : getCalculatedDimension(dimensions.maxHeight, DEFAULT_MARGIN_VALUES.top, DEFAULT_MARGIN_VALUES.bottom);
+    const maxWidth = !dimensions.maxWidth || dimensions.maxWidth === 'auto'
+      ? dimensions.maxWidth
+      : getCalculatedDimension(dimensions.maxWidth, margins.marginLeft, margins.marginRight);
 
-    const minWidth = !dimensions.minWidth
-      ? undefined
-      : dimensions.minWidth === 'auto'
-        ? 'auto'
-        : getCalculatedDimension(dimensions.minWidth, DEFAULT_MARGIN_VALUES.left, DEFAULT_MARGIN_VALUES.right);
+    const minHeight = !dimensions.minHeight || dimensions.minHeight === 'auto'
+      ? dimensions.minHeight
+      : getCalculatedDimension(dimensions.minHeight, margins.marginTop, margins.marginBottom);
 
-    const maxWidth = !dimensions.maxWidth
-      ? undefined
-      : dimensions.maxWidth === 'auto'
-        ? 'auto'
-        : getCalculatedDimension(dimensions.maxWidth, DEFAULT_MARGIN_VALUES.left, DEFAULT_MARGIN_VALUES.right);
+    const maxHeight = !dimensions.maxHeight || dimensions.maxHeight === 'auto'
+      ? dimensions.maxHeight
+      : getCalculatedDimension(dimensions.maxHeight, margins.marginTop, margins.marginBottom);
 
     return {
       boxSizing: 'border-box' as const,
-      // Dimensions from component configuration
+      marginTop,
+      marginBottom,
+      marginLeft,
+      marginRight,
       width,
       height,
       minWidth,
       maxWidth,
       minHeight,
       maxHeight,
-      flexBasis: dimensions.flexBasis,
-      // Apply margins directly (not as padding) to preserve relative values
-      marginTop,
-      marginBottom,
-      marginLeft,
-      marginRight,
     };
   },
 
@@ -158,10 +234,10 @@ export const stylingUtils = {
    * component should have no margins since they're applied to the wrapper.
    */
   removeMarginsFromStylingBox(stylingBox: string | undefined): string {
-    if (!stylingBox) return EMPTY_STYLING_BOX;
+    if (isNullOrWhiteSpace(stylingBox)) return EMPTY_STYLING_BOX;
 
     try {
-      const parsed = JSON.parse(stylingBox);
+      const parsed = JSON.parse(stylingBox) as CSSProperties;
       return JSON.stringify({
         ...parsed,
         marginTop: 0,
@@ -207,10 +283,10 @@ export const stylingUtils = {
    * applies padding to the component, while margins are handled by the wrapper.
    */
   createPaddingOnlyStylingBox(stylingBox: string | undefined): string {
-    if (!stylingBox) return EMPTY_STYLING_BOX;
+    if (isNullOrWhiteSpace(stylingBox)) return EMPTY_STYLING_BOX;
 
     try {
-      const parsed = JSON.parse(stylingBox);
+      const parsed = JSON.parse(stylingBox) as PaddingValues;
       return JSON.stringify({
         paddingTop: parsed.paddingTop,
         paddingRight: parsed.paddingRight,

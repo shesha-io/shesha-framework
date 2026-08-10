@@ -6,12 +6,12 @@ import { useStyles } from './styles/styles';
 import { IConfigurableTheme } from '@/providers/theme';
 
 export interface IConfigurableThemePageProps {
-  value?: IConfigurableTheme;
-  onChange?: (theme: IConfigurableTheme) => void;
-  readonly?: boolean;
+  value: IConfigurableTheme;
+  onChange: ((theme: IConfigurableTheme) => void);
+  readOnly: boolean;
 }
 
-export const ConfigurableThemeContent: FC<IConfigurableThemePageProps> = ({ value, onChange, readonly }) => {
+export const ConfigurableThemeContent: FC<IConfigurableThemePageProps> = ({ value, onChange, readOnly }) => {
   const { styles } = useStyles();
   const [themeLevel, setThemeLevel] = useState<1 | 2>(1);
 
@@ -23,7 +23,7 @@ export const ConfigurableThemeContent: FC<IConfigurableThemePageProps> = ({ valu
           <Radio.Group
             value={themeLevel}
             onChange={(e) => setThemeLevel(e.target.value as 1 | 2)}
-            disabled={readonly}
+            disabled={readOnly}
             optionType="button"
             buttonStyle="solid"
           >
@@ -33,7 +33,7 @@ export const ConfigurableThemeContent: FC<IConfigurableThemePageProps> = ({ valu
         )}
         className={styles.themeParameters}
       >
-        <ThemeParameters value={value} onChange={onChange} readonly={readonly} themeLevel={themeLevel} />
+        <ThemeParameters value={value} onChange={onChange} readOnly={readOnly} themeLevel={themeLevel} />
       </CollapsiblePanel>
     </Col>
   );

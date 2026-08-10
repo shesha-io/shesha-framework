@@ -18,7 +18,7 @@ const makeAction = (props: Pick<IConfigurableActionConfiguration, 'actionName' |
   };
 };
 
-const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: SettingsMigrationContext): IConfigurableActionConfiguration => {
+const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: SettingsMigrationContext): IConfigurableActionConfiguration | undefined => {
   switch (buttonProps.buttonAction) {
     case "cancelFormEdit": {
       return makeAction({
@@ -62,7 +62,7 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
       const propsWithModal = buttonProps as IToolbarButtonTableDialogPropsV0;
 
       const modalArguments: IShowModalActionArgumentsV0 = {
-        modalTitle: buttonProps.modalTitle,
+        modalTitle: buttonProps.modalTitle ?? "",
         formId: buttonProps.modalFormId,
 
         showModalFooter: propsWithModal.showModalFooter,
@@ -85,7 +85,7 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
       if (propsWithModal.refreshTableOnSuccess) {
         actionConfig.handleSuccess = true;
         actionConfig.onSuccess = makeAction({
-          actionOwner: getClosestTableId(context),
+          actionOwner: getClosestTableId(context) ?? "",
           actionName: 'Refresh table',
         });
       }
@@ -103,13 +103,13 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
     case "executeFormAction": {
       if (buttonProps.formAction === 'exportToExcel' || buttonProps.formAction === 'EXPORT_TO_EXCEL') {
         return makeAction({
-          actionOwner: getClosestTableId(context),
+          actionOwner: getClosestTableId(context) ?? "",
           actionName: 'Export to Excel',
         });
       }
     }
   }
-  return null;
+  return undefined;
 };
 
 //#region old types

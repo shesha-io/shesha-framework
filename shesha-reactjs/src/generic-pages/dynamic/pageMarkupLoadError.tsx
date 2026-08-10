@@ -13,7 +13,7 @@ export const PageMarkupLoadingError: FC<MarkupLoadingErrorRenderProps> = ({ form
       notification.error({
         message: 'Sorry! An error occurred.',
         icon: null,
-        description: <ValidationErrors error={markupLoadingState.error} renderMode="raw" defaultMessage={null} />,
+        description: <ValidationErrors error={markupLoadingState.error} renderMode="raw" />,
       });
     }
   }, [notification, markupLoadingState]);

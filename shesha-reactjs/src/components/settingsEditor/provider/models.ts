@@ -6,22 +6,22 @@ export const FRONTEND_DEFAULT_APP_KEY = 'default-app';
 
 export interface ISettingConfiguration {
   id: string;
-  category?: string;
+  category?: string | undefined;
   name: string;
   dataType: string;
-  editorForm?: FormFullName;
-  label?: string;
-  description?: string;
-  module?: string;
+  editorForm?: FormFullName | undefined;
+  label?: string | undefined;
+  description?: string | undefined;
+  module?: string | undefined;
   isClientSpecific: boolean;
 }
 
-export type SettingValue = any;
+export type SettingValue = unknown;
 
 export interface ISettingIdentifier {
-  module?: string;
+  module?: string | undefined;
   name: string;
-  appKey?: string;
+  appKey?: string | undefined;
 }
 
 export interface IFrontEndApplication {

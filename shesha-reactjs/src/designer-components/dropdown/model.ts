@@ -1,22 +1,34 @@
 import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 import { IDropdownProps } from '@/components/dropdown/model';
-import { CustomLabeledValue } from '@/components/refListDropDown/models';
 import { ComponentDefinition } from '@/interfaces';
+import { StringSubtype } from '@/interfaces/utilityTypes';
 
-export type DataSourceType = 'values' | 'referenceList' | 'url';
+export const DATA_SOURCE_TYPES = ['values', 'referenceList', 'url'] as const;
+export type DataSourceType = StringSubtype<typeof DATA_SOURCE_TYPES>;
 
-export interface ILabelValue<TValue = any> {
+export interface ILabelValue<TValue = unknown> {
   id: string;
   label: string;
   value: TValue;
 }
 
-export interface IDropdownComponentProps extends Omit<IDropdownProps, "style" | "readOnly">, IConfigurableFormComponent, IInputStyles {
+/**
+ * Runtime plumbing supplied by the Factory rather than configured on the form: the emotion class,
+ * the ref backing the API's `focus()`, the handlers from `getComponentEvents`, and the style model
+ * handed to the read-only renderer. They are not settings, so they stay out of the component model.
+ */
+type DropdownRuntimeProps = 'className' | 'events' | 'selectRef' | 'styleValue';
+
+export interface IDropdownComponentProps extends Omit<IDropdownProps, "style" | "readOnly" | "value" | "onChange" | DropdownRuntimeProps>, IConfigurableFormComponent, IInputStyles {
 }
 
-interface ITextFieldComponentCalulatedValues {
-  eventHandlers?: { onChange: (value: CustomLabeledValue<any>, option: any) => any };
-  defaultValue?: any;
+/**
+ * Pre-`tagVariant` shape. `solidColor` is gone from the component model, but forms saved before the
+ * rename still carry it and migration 10 still seeds it, so the migrator steps that read or write it
+ * are typed against this instead.
+ */
+export interface IDropdownComponentPropsV1 extends IDropdownComponentProps {
+  solidColor?: boolean | undefined;
 }
 
-export type DropdownComponentDefinition = ComponentDefinition<"dropdown", IDropdownComponentProps, ITextFieldComponentCalulatedValues>;
+export type DropdownComponentDefinition = ComponentDefinition<"dropdown", IDropdownComponentProps>;

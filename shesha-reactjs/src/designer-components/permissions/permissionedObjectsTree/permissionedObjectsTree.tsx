@@ -12,11 +12,6 @@ export interface IPermissionedObjectsTreeComponentProps extends IConfigurableFor
   objectsType?: string;
   height?: string;
 
-  /**
-   * A callback for when the value of this component changes
-   */
-  onChange?: any;
-
   onSelectAction?: IConfigurableActionConfiguration;
 
   defaultAccess?: number;
@@ -33,7 +28,7 @@ const PermissionedObjectsTreeComponent: IToolboxComponent<IPermissionedObjectsTr
   icon: <ApartmentOutlined />,
   Factory: ({ model }) => {
     return (
-      <PermissionedObjectsTree {...model} formComponentId={model.id} formComponentName={model.componentName} />
+      <PermissionedObjectsTree {...model} formComponentId={model.id} formComponentName={model.componentName ?? ""} />
     );
   },
   initModel: (model: IPermissionedObjectsTreeComponentProps) => {

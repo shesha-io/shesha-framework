@@ -104,7 +104,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren> = ({
     const ownerActions = actions.current[payload.ownerUid] ?? { ownerName: payload.owner, actions: [] };
 
     const newActions = ownerActions.actions.filter((action) => action.name !== payload.name);
-    newActions.push(payload);
+    newActions.push(payload as IConfigurableActionDescriptor);
 
     actions.current = {
       ...actions.current,
@@ -159,7 +159,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren> = ({
     return argumentsEvaluator({ ...actualArguments }, argumentsEvaluationContext)
       .then((preparedActionArguments) => {
         return action
-          .executer(preparedActionArguments, executionContext)
+          .executer(preparedActionArguments ?? {}, executionContext)
           .then(async (actionResponse) => {
             if (handleSuccess) {
               if (onSuccess) {

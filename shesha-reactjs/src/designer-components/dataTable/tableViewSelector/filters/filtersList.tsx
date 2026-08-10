@@ -6,8 +6,8 @@ import { ListItem } from '@/components/listEditor/models';
 import { IStoredFilter } from '@/interfaces';
 
 export interface IFiltersListProps {
-  value?: IStoredFilter[];
-  onChange?: (newValue: IStoredFilter[]) => void;
+  value?: IStoredFilter[] | undefined;
+  onChange?: ((newValue: IStoredFilter[]) => void) | undefined;
   readOnly: boolean;
 }
 

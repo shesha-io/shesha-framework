@@ -1,104 +1,85 @@
-import { FormMode } from '@/interfaces';
-import { handleActions } from 'redux-actions';
 import {
-  IEditorBridge,
-  IFetchApplicationsErrorPayload,
-  IFetchApplicationsSuccessPayload,
-  IFetchConfigurationsErrorPayload,
-  IFetchConfigurationsSuccessPayload,
-  ISettingsEditorStateContext,
-  ISettingSelection,
-  SaveStatus,
   SETTINGS_EDITOR_STATE_CONTEXT_INITIAL_STATE,
 } from './contexts';
-import { SettingsEditorActionEnums } from './actions';
+import {
+  fetchConfigurationsAction,
+  fetchConfigurationsSuccessAction,
+  fetchConfigurationsErrorAction,
+  fetchApplicationsAction,
+  fetchApplicationsSuccessAction,
+  fetchApplicationsErrorAction,
+  selectSettingAction,
+  selectApplicationAction,
+  setEditorModeAction,
+  setEditorBridgeAction,
+  setSaveStatusAction,
+} from './actions';
+import { createReducer } from '@reduxjs/toolkit';
 
-export const settingsEditorReducer = handleActions<ISettingsEditorStateContext, any>(
-  {
-    [SettingsEditorActionEnums.FetchConfigurations]: (state: ISettingsEditorStateContext) => {
-      return {
-        ...state,
-        configsLoadingState: 'loading',
-      };
-    },
-    [SettingsEditorActionEnums.FetchConfigurationsSuccess]: (state: ISettingsEditorStateContext, action: ReduxActions.Action<IFetchConfigurationsSuccessPayload>) => {
-      const { payload } = action;
+export const settingsEditorReducer = createReducer(SETTINGS_EDITOR_STATE_CONTEXT_INITIAL_STATE, (builder) => {
+  builder
+    .addCase(fetchConfigurationsAction, (state) => {
+      state.configsLoadingState = 'loading';
+    })
+    .addCase(fetchConfigurationsSuccessAction, (state, { payload }) => {
       return {
         ...state,
         configsLoadingState: 'success',
         settingConfigurations: payload.settingConfigurations,
       };
-    },
-    [SettingsEditorActionEnums.FetchConfigurationsError]: (state: ISettingsEditorStateContext, action: ReduxActions.Action<IFetchConfigurationsErrorPayload>) => {
+    })
+    .addCase(fetchConfigurationsErrorAction, (state, { payload }) => {
       return {
         ...state,
         configsLoadingState: 'failed',
-        loadingConfigsError: action.payload,
+        loadingConfigsError: payload.error,
       };
-    },
+    })
 
-    [SettingsEditorActionEnums.FetchApplications]: (state: ISettingsEditorStateContext) => {
-      return {
-        ...state,
-        applicationsLoadingState: 'loading',
-      };
-    },
-    [SettingsEditorActionEnums.FetchApplicationsSuccess]: (state: ISettingsEditorStateContext, action: ReduxActions.Action<IFetchApplicationsSuccessPayload>) => {
-      const { payload } = action;
+    .addCase(fetchApplicationsAction, (state) => {
+      state.applicationsLoadingState = 'loading';
+    })
+    .addCase(fetchApplicationsSuccessAction, (state, { payload }) => {
       return {
         ...state,
         applicationsLoadingState: 'success',
         applications: payload.applications,
       };
-    },
-    [SettingsEditorActionEnums.FetchApplicationsError]: (state: ISettingsEditorStateContext, action: ReduxActions.Action<IFetchApplicationsErrorPayload>) => {
+    })
+    .addCase(fetchApplicationsErrorAction, (state, { payload }) => {
       return {
         ...state,
         applicationsLoadingState: 'failed',
-        loadingApplicationsError: action.payload,
+        loadingApplicationsError: payload.error,
       };
-    },
-    [SettingsEditorActionEnums.SelectApplication]: (state: ISettingsEditorStateContext, action: ReduxActions.Action<ISettingSelection>) => {
-      const { payload } = action;
+    })
+
+    .addCase(selectApplicationAction, (state, { payload }) => {
       return {
         ...state,
         selectedApplication: payload.app,
-        settingSelection: null,
-        editorBridge: null,
+        settingSelection: undefined,
+        editorBridge: undefined,
         saveStatus: 'none',
       };
-    },
-    [SettingsEditorActionEnums.SelectSetting]: (state: ISettingsEditorStateContext, action: ReduxActions.Action<ISettingSelection>) => {
-      const { payload } = action;
+    })
+    .addCase(selectSettingAction, (state, { payload }) => {
       return {
         ...state,
         settingSelection: payload,
-        editorBridge: null,
+        editorBridge: undefined,
         saveStatus: 'none',
       };
-    },
-    [SettingsEditorActionEnums.SetEditorMode]: (state: ISettingsEditorStateContext, action: ReduxActions.Action<FormMode>) => {
-      const { payload } = action;
-      return {
-        ...state,
-        editorMode: payload,
-      };
-    },
-    [SettingsEditorActionEnums.SetEditorBridge]: (state: ISettingsEditorStateContext, action: ReduxActions.Action<IEditorBridge>) => {
-      const { payload } = action;
-      return {
-        ...state,
-        editorBridge: payload,
-      };
-    },
-    [SettingsEditorActionEnums.setSaveStatus]: (state: ISettingsEditorStateContext, action: ReduxActions.Action<SaveStatus>) => {
-      const { payload } = action;
-      return {
-        ...state,
-        saveStatus: payload,
-      };
-    },
-  },
+    })
+    .addCase(setEditorModeAction, (state, { payload }) => {
+      state.editorMode = payload;
+    })
+    .addCase(setEditorBridgeAction, (state, { payload }) => {
+      state.editorBridge = payload;
+    })
+    .addCase(setSaveStatusAction, (state, { payload }) => {
+      state.saveStatus = payload;
+    })
+  ;
+});
 
-  SETTINGS_EDITOR_STATE_CONTEXT_INITIAL_STATE,
-);

@@ -1,15 +1,15 @@
 import React, { FC, PropsWithChildren } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorBoundary, FallbackProps } from 'react-error-boundary';
 import CustomErrorBoundaryFallbackComponent from './fallbackComponent';
 
 export interface ICustomErrorBoundaryProps {
-  componentId?: string;
-  componentName?: string;
-  componentType?: string;
+  componentId?: string | undefined;
+  componentName?: string | undefined;
+  componentType?: string | undefined;
 }
 
 export const CustomErrorBoundary: FC<PropsWithChildren<ICustomErrorBoundaryProps>> = ({ children, componentId, componentName, componentType }) => {
-  const fallbackComponent: FC<any> = ({
+  const fallbackComponent: FC<FallbackProps> = ({
     error,
     resetErrorBoundary,
   }) => {
@@ -24,7 +24,7 @@ export const CustomErrorBoundary: FC<PropsWithChildren<ICustomErrorBoundaryProps
     );
   };
 
-  return <ErrorBoundary FallbackComponent={fallbackComponent as any}>{children}</ErrorBoundary>;
+  return <ErrorBoundary FallbackComponent={fallbackComponent}>{children}</ErrorBoundary>;
 };
 
 export default CustomErrorBoundary;

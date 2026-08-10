@@ -169,7 +169,7 @@ export const axiosHttp = (baseURL: string, tokenName?: string): AxiosInstance =>
 
 
 export interface IQueryParams {
-  [name: string]: Key;
+  [name: string]: Key | undefined;
 }
 export type FetcherOptions = {
   path: string;

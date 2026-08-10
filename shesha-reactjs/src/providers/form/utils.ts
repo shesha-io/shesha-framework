@@ -1,4 +1,5 @@
 import { updateJsSettingsForComponents } from '@/designer-components/_settings/utils/utils';
+import { normalizeSingleBraceAccessor } from '@/providers/form/utils/mustacheNormalization';
 import {
   IToolboxComponent,
   IToolboxComponentGroup,
@@ -8,7 +9,6 @@ import {
 } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import {
-  FormMode,
   HttpClientApi,
   IApplicationApi,
   isComponentsContainer,
@@ -34,7 +34,7 @@ import { Migrator } from '@/utils/fluentMigrator/migrator';
 import { ExpressionNodeValue } from '@/utils/jsonLogic';
 import { getFullPath } from '@/utils/metadata/helpers';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
-import { deepCopyViaJson, deepMergeValues, jsonSafeParse, unsafeGetValueByPropertyName } from '@/utils/object';
+import { deepCopyViaJson, deepMergeSkipUndefinedFunc, deepMergeValues, jsonSafeParse, unsafeGetValueByPropertyName } from '@/utils/object';
 import { QueryStringParams } from '@/utils/url';
 import { nanoid } from '@/utils/uuid';
 import { App } from 'antd';
@@ -65,15 +65,17 @@ import {
   IComponentsContainer,
   IConfigurableFormComponent,
   IFlatComponentsStructure,
+  IFormDto,
   IFormSettings,
   IFormValidationRulesOptions,
+  IPersistedFormProps,
   ROOT_COMPONENT_KEY,
 } from './models';
 import { isHasPropsAccessor, makeObservableProxy, ProxyPropertiesAccessors, TypedProxy } from './observableProxy';
 import { useShaFormDataUpdate, useShaFormInstanceOrUndefined } from './providers/shaFormProvider';
 import { IShaFormInstance } from './store/interfaces';
 import { isHasDataGetter } from './touchableProperty';
-import { getActualModel, getActualPropertyValue } from './utils/js-settings';
+import { getActualModel, updateActualPropertyValue } from './utils/js-settings';
 import { findToolboxComponent, getToolboxComponent } from './utils/markup';
 import {
   executeExpression,
@@ -95,7 +97,7 @@ export {
   executeScriptSync,
   // prop settings
   getActualModel,
-  getActualPropertyValue, getFunctionExecutor, type FunctionExecutor,
+  updateActualPropertyValue as getActualPropertyValue, getFunctionExecutor, type FunctionExecutor,
   type IExpressionExecuterArguments,
   type IExpressionExecuterFailedHandler,
 };
@@ -126,7 +128,9 @@ export interface IApplicationContext<Value extends object = object> {
 
   /** Contexts datas */
   contexts: IDataContextsData | undefined;
-  /** Global state */
+  /** Global state
+   * @deprecated
+   */
   globalState: IAnyObject | undefined;
   /** Table selection */
   selectedRow: ISelectionProps | undefined;
@@ -144,6 +148,7 @@ export interface IApplicationContext<Value extends object = object> {
   /** Last updated date */
   lastUpdated?: Date;
 
+  /** @deprecated use page.context instead */
   pageContext?: IDataContextFull;
 
   setGlobalState: (payload: ISetStatePayload) => void;
@@ -335,7 +340,7 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
 const useWrapAvailableConstantsData = (fullContext: AvailableConstantsContext, args: GetAvailableConstantsDataArgs = {}, additionalData?: object): IApplicationContext => {
   const accessors = wrapConstantsData({ fullContext, ...args });
 
-  const contextProxyRef = useRef<TypedProxy<IApplicationContext>>();
+  const contextProxyRef = useRef<TypedProxy<IApplicationContext>>(undefined);
   if (!contextProxyRef.current)
     contextProxyRef.current = makeObservableProxy<IApplicationContext>(accessors);
   else
@@ -391,13 +396,17 @@ export const isCommonContext = (name: string): boolean => {
 const extractReadOnly = (data: unknown): boolean | undefined => {
   return isDefined(data) && typeof data === 'object' && 'readOnly' in data && typeof (data.readOnly) === 'boolean' ? data.readOnly : undefined;
 };
+const extractDisabled = (data: unknown): boolean | undefined => {
+  return isDefined(data) && typeof data === 'object' && 'disabled' in data && typeof (data.disabled) === 'boolean' ? data.disabled : undefined;
+};
 
-export const getParentReadOnly = (parent: IParentProviderProps | undefined, allData: unknown): boolean => {
-  // TODO: review type of allData
-  const form = isDefined(allData) && typeof allData === 'object' && "form" in allData ? allData.form : undefined;
-  const formMode: FormMode | undefined = isDefined(form) && "formMode" in form ? form.formMode as FormMode : undefined;
-  return formMode !== 'designer' &&
-    (extractReadOnly(parent?.model) ?? (parent?.formMode === 'readonly' || formMode === 'readonly'));
+export const getParentDisabled = (parent: IParentProviderProps | undefined): boolean => {
+  return extractDisabled(parent?.model) ?? false;
+};
+
+export const getParentReadOnly = (parent: IParentProviderProps | undefined, allData: IApplicationContext): boolean => {
+  const formMode = allData.form?.formMode;
+  return extractReadOnly(parent?.model) ?? (parent?.formMode === 'readonly' || formMode === 'readonly');
 };
 
 const getContainerNames = (toolboxComponent: IToolboxComponent): string[] => {
@@ -501,7 +510,7 @@ export const componentsTreeToFlatStructure = (
 export const upgradeComponent = (
   componentModel: IConfigurableFormComponent,
   definition: IToolboxComponent,
-  formSettings: IFormSettings,
+  formSettings: IFormSettings | undefined,
   flatStructure: IFlatComponentsStructure,
   isNew?: boolean,
 ): IConfigurableFormComponent => {
@@ -521,7 +530,7 @@ export const upgradeComponent = (
 
 export const upgradeComponents = (
   toolboxComponents: IToolboxComponents,
-  formSettings: IFormSettings,
+  formSettings: IFormSettings | undefined,
   flatStructure: IFlatComponentsStructure,
   isNew?: boolean,
 ): void => {
@@ -627,11 +636,11 @@ export const componentsFlatStructureToTree = (
         container.push(component);
 
       //  process all childs if any
-      if (id in flat.componentRelations) {
+      if (id in flat.componentRelations && !staticContainerIds.includes(id)) {
         const childComponents: IConfigurableFormComponent[] = [];
         processComponent(childComponents, id);
 
-        component['components'] = childComponents;
+        (component as unknown as Record<string, unknown>)['components'] = childComponents;
       }
 
       // note: this function may be called for custom container without type
@@ -647,9 +656,9 @@ export const componentsFlatStructureToTree = (
           };
 
           const childContainers = unsafeGetValueByPropertyName(component, containerName);
-          if (childContainers) {
+          if (isDefined(childContainers)) {
             if (Array.isArray(childContainers)) {
-              component[containerName] = childContainers.map((c: unknown) => {
+              (component as unknown as Record<string, unknown>)[containerName] = childContainers.map((c: unknown) => {
                 if (!isComponentsContainer(c)) return c as IComponentsContainer;
                 const processed = processContainer(c);
                 // Handle nested containers inside array items (generic approach)
@@ -665,7 +674,7 @@ export const componentsFlatStructureToTree = (
                 return processed;
               });
             } else if (isComponentsContainer(childContainers))
-              component[containerName] = processContainer(childContainers);
+              (component as unknown as Record<string, unknown>)[containerName] = processContainer(childContainers);
             else
               throw new Error(`Unknown container type: ${typeof childContainers}`, childContainers);
           }
@@ -710,6 +719,78 @@ type MomentProto = {
 };
 
 /**
+ * Deep-clones data into plain objects/arrays and attaches a JSON-producing `toString` so
+ * Mustache's `{{path}}` interpolation yields JSON instead of "[object Object]" / "1,2,3".
+ *
+ * Why this is needed:
+ *  - Shesha data-access proxies (ShaArrayAccessProxy / ShaObjectAccessProxy) route every
+ *    property read through their `get` trap, including `toString`. We unwrap them via
+ *    `getAccessorValue()` to recover the underlying data.
+ *  - Plain arrays/objects produce useless default string forms when Mustache stringifies them.
+ *
+ * Exported separately so it can be unit-tested without going through the full evaluator.
+ *
+ * Note on circular references: the `seen` WeakMap preserves cycles in the cloned structure,
+ * which means the custom `toString` will catch the JSON.stringify error and return ''.
+ * That's intentional — better than throwing during template rendering.
+ */
+export const cloneAndDecorateForMustache = (input: unknown, seen: WeakMap<object, unknown> = new WeakMap()): unknown => {
+  if (input == null || typeof input !== 'object') return input;
+  if (input instanceof Date || moment.isMoment(input)) return input;
+
+  // Shesha data-access proxies are terminal: never iterate them via Object.keys (each
+  // property access re-triggers the proxy's `get` trap and may expose internal accessor
+  // properties or cause side effects). Whatever `getAccessorValue` returns is the answer.
+  const accessor = (input as { getAccessorValue?: () => unknown }).getAccessorValue;
+  if (typeof accessor === 'function') {
+    try {
+      const unwrapped = accessor.call(input);
+      return unwrapped === input ? undefined : cloneAndDecorateForMustache(unwrapped, seen);
+    } catch {
+      return undefined;
+    }
+  }
+
+  // Preserve known special types that carry internal state which would break under a generic
+  // clone (Map, Set, RegExp, Error, URL, typed arrays, etc.). We detect them via the
+  // [[Class]] tag — anything that's not `[object Object]` or `[object Array]` is returned by
+  // reference. Class instances (which have `[object Object]` tag) ARE walked so their
+  // enumerable fields are cloned and any nested Shesha proxies inside get unwrapped.
+  const tag = Object.prototype.toString.call(input);
+  if (tag !== '[object Object]' && tag !== '[object Array]') return input;
+
+  const cached = seen.get(input);
+  if (cached) return cached;
+
+  const isArray = Array.isArray(input);
+  // Preserve the prototype for class instances so prototype methods/getters remain reachable.
+  const result: Record<string, unknown> | unknown[] = isArray
+    ? []
+    : Object.create(Object.getPrototypeOf(input) as object | null) as Record<string, unknown>;
+  seen.set(input, result);
+  for (const key of Object.keys(input))
+    (result as Record<string, unknown>)[key] = cloneAndDecorateForMustache((input as Record<string, unknown>)[key], seen);
+  // Only override toString on objects — arrays must stay as real arrays so their values are
+  // submitted correctly to the API. Attaching JSON.stringify-based toString to arrays caused
+  // array fields (e.g. multi-select) to be sent as "[32,128,64]" strings instead of [32,128,64].
+  if (!isArray) {
+    Object.defineProperty(result, 'toString', {
+      value: () => {
+        try {
+          return JSON.stringify(result);
+        } catch {
+          return '';
+        }
+      },
+      configurable: true,
+      enumerable: false,
+      writable: true,
+    });
+  }
+  return result;
+};
+
+/**
  * Evaluates the string using Mustache template.
  *
  * Given a the below expression
@@ -738,10 +819,17 @@ export const evaluateString = (template: string = '', data: object, skipUnknownT
     if (!template || typeof template !== 'string')
       return template;
 
+    // Backward compatibility: upgrade legacy single-brace accessors ({data.id}) to Mustache
+    // tags ({{data.id}}) so older form configs keep resolving after the move to Mustache.
+    const normalizedTemplate = normalizeSingleBraceAccessor(template);
+
     // The function throws an exception if the expression passed doesn't have a corresponding curly braces
     try {
+      // Clone per call: caching the decorated structure is unsafe because long-lived proxies
+      // (e.g. the constants context) refresh in place, and skipUnknownTags mutates the view's
+      // nested nodes — both would leak shared state across evaluations.
       const view: IAnyObject = {
-        ...data,
+        ...(cloneAndDecorateForMustache(data) as IAnyObject),
         // adding a function to the data object that will format datetime
         dateFormat: function () {
           return function (timestamp: unknown, render: (renderArgs: unknown) => string) {
@@ -755,7 +843,7 @@ export const evaluateString = (template: string = '', data: object, skipUnknownT
       };
 
       if (skipUnknownTags) {
-        template.match(/{{\s*[\w\.]+\s*}}/g)?.forEach((x) => {
+        normalizedTemplate.match(/{{\s*[\w\.]+\s*}}/g)?.forEach((x) => {
           const mathes = x.match(/[\w\.]+/);
           const tag = mathes && mathes.length > 0
             ? mathes[0]
@@ -784,9 +872,9 @@ export const evaluateString = (template: string = '', data: object, skipUnknownT
             : value;
         };
 
-        return Mustache.render(template, view, undefined, { escape });
+        return Mustache.render(normalizedTemplate, view, undefined, { escape });
       } else
-        return Mustache.render(template, view);
+        return Mustache.render(normalizedTemplate, view);
     } catch (error) {
       console.warn('evaluateString ', error);
       return template;
@@ -961,7 +1049,7 @@ export const isComponentFiltered = (
  *
  * @param expression field name in dot notation e.g. 'supplier.name' or 'fullName'
  */
-export const getFieldNameFromExpression = (expression: string): string | string[] | undefined => {
+export const getFieldNameFromExpression = (expression: string | undefined | null): string | string[] | undefined => {
   if (!expression) return undefined;
 
   return expression.includes('.') ? expression.split('.') : expression;
@@ -1209,13 +1297,7 @@ export function updateComponentModelFromMetadata<TModel extends IConfigurableFor
   metadata: IPropertyMetadata,
 ): TModel {
   const mm = getComponentModelFromMetadata(component, model, metadata);
-  const m = deepMergeValues(deepCopyViaJson(model), mm, (t: Record<string, unknown>, s: Record<string, unknown>, key) => {
-    // skip merge
-    // metadata value is empty
-    return s[key] === undefined ||
-      // model value is a non-empty primitive (non-object values are not merged if already set)
-      (t[key] !== undefined && t[key] !== null && t[key] !== '' && typeof t[key] !== 'object');
-  });
+  const m = deepMergeValues(mm, model, deepMergeSkipUndefinedFunc);
   return m;
 };
 
@@ -1342,7 +1424,7 @@ export interface IMatchData {
   data: unknown;
 }
 
-export const pickStyleFromModel = (model: StyleBoxValue, ...args: unknown[]): CSSProperties => {
+export const pickStyleFromModel = (model: StyleBoxValue | undefined, ...args: unknown[]): CSSProperties => {
   let style = {};
 
   const propsToCopy = !args.length
@@ -1389,9 +1471,7 @@ export const getStyle = (
 };
 
 export const getLayoutStyle = (model: Pick<IConfigurableFormComponent, "style" | "stylingBox">, args: { [key: string]: unknown }): CSSProperties => {
-  const styling = !isNullOrWhiteSpace(model.stylingBox)
-    ? jsonSafeParse<StyleBoxValue>(model.stylingBox, {}) ?? {}
-    : {};
+  const styling = jsonSafeParse<StyleBoxValue>(model.stylingBox);
   const style = pickStyleFromModel(styling);
 
   try {
@@ -1551,14 +1631,14 @@ export const genericActionArgumentsEvaluator = <TArguments = ActionParametersDic
  * @param {IToolboxComponents} designerComponents - The designer components.
  * @return {IFlatComponentsStructure} The flat structure of configurable form components.
  */
-export const convertFormMarkupToFlatStructure = (markup: FormRawMarkup, formSettings: IFormSettings | null, designerComponents: IToolboxComponents): IFlatComponentsStructure => {
+export const convertFormMarkupToFlatStructure = (markup: FormRawMarkup, formSettings: IFormSettings | undefined, designerComponents: IToolboxComponents): IFlatComponentsStructure => {
   let components = getComponentsFromMarkup(markup);
   if (formSettings?.isSettingsForm)
     components = updateJsSettingsForComponents(designerComponents, components);
   const newFlatComponents = componentsTreeToFlatStructure(designerComponents, components);
 
   // migrate components to last version
-  upgradeComponents(designerComponents, formSettings, newFlatComponents);
+  upgradeComponents(designerComponents, formSettings ?? undefined, newFlatComponents);
 
   return newFlatComponents;
 };
@@ -1589,9 +1669,21 @@ export const standardActualModelPropertyFilter = (name: string): boolean => {
  * @param value - The property value
  * @returns true if the property should be included, false otherwise
  */
-export const formComponentActualModelPropertyFilter = (component: IToolboxComponent, name: string, value: unknown): boolean => {
+export const formComponentActualModelPropertyFilter = (component: IToolboxComponent | undefined, name: string, value: unknown): boolean => {
   if (isDefined(component) && component.actualModelPropertyFilter) {
     return component.actualModelPropertyFilter(name, value) && standardActualModelPropertyFilter(name);
   }
   return standardActualModelPropertyFilter(name);
+};
+
+
+export const formDtop2PersistedFormProps = (formDto: IFormDto): IPersistedFormProps => {
+  return {
+    id: formDto.id,
+    module: formDto.module,
+    name: formDto.name,
+    label: formDto.label ?? undefined,
+    description: formDto.description ?? undefined,
+    markup: formDto.markup ?? undefined,
+  };
 };

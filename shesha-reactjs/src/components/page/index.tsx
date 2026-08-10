@@ -1,12 +1,14 @@
-import { Breadcrumb, Space } from 'antd';
+import { Breadcrumb, Button, Result, Space } from 'antd';
 import classNames from 'classnames';
 import React, { FC, PropsWithChildren, useEffect } from 'react';
 import { ShaSpin } from '..';
 import Show from '@/components/show';
-import { useSheshaApplication, useTheme } from '@/providers';
+import { useShaRouting, useSheshaApplication, useTheme } from '@/providers';
 import StatusTag, { IStatusTagProps } from '@/components/statusTag';
 import { FormIdentifier } from '@/providers/form/models';
 import { ItemType } from 'antd/lib/breadcrumb/Breadcrumb';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { isNonEmptyArray } from '@/utils/array';
 
 export interface IPageHeadProps {
   readonly title?: string;
@@ -29,6 +31,7 @@ export interface IPageProps extends IPageHeadProps {
   noPadding?: boolean;
   loadingText?: string;
   status?: IStatusTagProps;
+  requiredPermissions?: string[];
 }
 
 export const Page: FC<PropsWithChildren<IPageProps>> = ({
@@ -40,14 +43,17 @@ export const Page: FC<PropsWithChildren<IPageProps>> = ({
   loadingText = 'Loading...',
   noPadding = false,
   status,
+  requiredPermissions,
 }) => {
-  const { applicationName } = useSheshaApplication();
+  const { applicationName, anyOfPermissionsGranted } = useSheshaApplication();
+  const { router } = useShaRouting();
   const { theme } = useTheme();
 
   useEffect(() => {
-    document.title = !!applicationName ? `${applicationName} | ${title}` : title;
+    const prevTitle = document.title;
+    document.title = !isNullOrWhiteSpace(applicationName) ? `${applicationName} | ${title}` : title ?? "";
     return () => {
-      document.title = '';
+      document.title = prevTitle;
     };
   }, [applicationName, title]);
 
@@ -57,8 +63,25 @@ export const Page: FC<PropsWithChildren<IPageProps>> = ({
 
   const hasStatus = Boolean(status);
 
+  const hasAllowedPermission = anyOfPermissionsGranted(requiredPermissions ?? []);
+
+  if (!hasAllowedPermission) {
+    return (
+      <Result
+        status="403"
+        title="403"
+        subTitle="You are not authorised to access this page"
+        extra={(
+          <Button onClick={() => router.push('/')} type="primary">
+            Back Home
+          </Button>
+        )}
+      />
+    );
+  }
+
   return (
-    <section className="sha-page" style={{ background: theme?.layoutBackground }}>
+    <section className="sha-page" style={{ background: theme.layoutBackground }}>
       <ShaSpin spinning={loading || false} tip={loadingText}>
         <Show when={showHeading}>
           <div className="sha-page-heading">
@@ -69,7 +92,7 @@ export const Page: FC<PropsWithChildren<IPageProps>> = ({
                     {title}
 
                     <StatusTag
-                      color={status?.color}
+                      color={status?.color ?? ""}
                       value={status?.value}
                       override={status?.override}
                       mappings={status?.mappings}
@@ -81,12 +104,12 @@ export const Page: FC<PropsWithChildren<IPageProps>> = ({
           </div>
         </Show>
 
-        <Show when={!!breadcrumbItems?.length}>
+        {isNonEmptyArray(breadcrumbItems) && (
           <Breadcrumb
             className="sha-page-breadcrumb"
-            items={breadcrumbItems?.map<ItemType>(({ text, link }) => ({ title: text, href: link }))}
+            items={breadcrumbItems.map<ItemType>(({ text, link }) => ({ title: text, href: link ?? "" }))}
           />
-        </Show>
+        )}
 
         <div
           className={classNames('sha-page-content', {

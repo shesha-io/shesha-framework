@@ -8,17 +8,18 @@ import { FormMarkup } from '@/providers/form/models';
 import { useDebouncedCallback } from 'use-debounce';
 import { IModelItem } from '@/interfaces/modelConfigurator';
 import { sheshaStyles } from '@/styles';
+import { OnFormValuesChangeHandler } from '@/components/configurableForm/models';
 
 export interface IModelItemProperties {
-  item?: IModelItem;
-  onChange?: (item: IModelItem) => void;
+  item?: IModelItem | undefined;
+  onChange?: ((item: IModelItem) => void) | undefined;
 }
 
 const formMarkup = propertySettingsJson as FormMarkup;
 
 export const ModelItemProperties: FC<IModelItemProperties> = ({ item, onChange }) => {
-  const debouncedSave = useDebouncedCallback(
-    (values) => {
+  const debouncedSave = useDebouncedCallback<OnFormValuesChangeHandler<IModelItem>>(
+    (_, values) => {
       onChange?.({ ...item, ...values });
     },
     // delay in ms
@@ -27,7 +28,7 @@ export const ModelItemProperties: FC<IModelItemProperties> = ({ item, onChange }
 
   return item
     ? (
-      <ConfigurableForm
+      <ConfigurableForm<IModelItem>
         size="small"
         layout="horizontal"
         labelCol={{ span: 24 }}

@@ -12,3 +12,7 @@ export const isFileTypeAllowed = (fileName: string, allowedFileTypes?: string[])
   const fileExt = fileName.substring(fileName.lastIndexOf('.')).toLowerCase();
   return allowedFileTypes.some((type) => fileExt === type.toLowerCase());
 };
+
+export const isFile = (value: File | Blob | string): value is File => {
+  return value instanceof File;
+};

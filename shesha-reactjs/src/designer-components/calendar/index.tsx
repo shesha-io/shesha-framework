@@ -22,8 +22,8 @@ const CalendarComponent: IToolboxComponent<ICalendarProps> = {
     if (model.hidden) return null;
 
     const additionalStyles: CSSProperties = ({
-      ...allStyles.dimensionsStyles,
-      ...allStyles.stylingBoxAsCSS,
+      ...allStyles?.dimensionsStyles,
+      ...allStyles?.stylingBoxAsCSS,
     });
 
     return (
@@ -40,7 +40,7 @@ const CalendarComponent: IToolboxComponent<ICalendarProps> = {
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   migrator: (m) =>
-    m.add<any>(0, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
+    m.add<ICalendarProps>(0, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
       .add<ICalendarProps>(1, (prev) => ({ ...prev, displayPeriod: ['month', 'week', 'work_week', 'day', 'agenda'] })),
 
 };

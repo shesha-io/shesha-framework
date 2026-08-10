@@ -4,29 +4,40 @@ import Icon from '@/components/icon/Icon';
 import { useStyles } from '../styles';
 import { Input } from 'antd';
 import { FCUnwrapped } from '@/providers/form/models';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 
 export const TextFieldWrapper: FCUnwrapped<ITextFieldSettingsInputProps> = (props) => {
-  const { value, readOnly, size, variant, placeholder, icon, textType, tooltip, label, width, onChange, regExp } = props;
+  const { className, value, readOnly, size, variant, placeholder, icon, textType, tooltip, label, width, onChange, regExp } = props;
   const { styles } = useStyles();
 
   const regExpObj = useMemo(() => {
-    if (!regExp) return null;
-    try {
-      return new RegExp(regExp, 'g');
-    } catch (error) {
-      console.warn(`Invalid regExp pattern for '${props.propertyName}':`, regExp, error);
-      return null;
+    if (isNotNullOrWhiteSpace(regExp)) {
+      try {
+        return new RegExp(regExp, 'g');
+      } catch (error) {
+        console.warn(`Invalid regExp pattern for '${props.propertyName}':`, regExp, error);
+        return null;
+      }
     }
-  }, [regExp]);
+    return null;
+  }, [props.propertyName, regExp]);
+
+  const suffix = useMemo(() => {
+    return isDefined(icon) &&
+      <Icon icon={icon} hint={isDefined(tooltip) ? tooltip : (typeof label === 'string' ? label : undefined)} className={styles.icon} />;
+  }, [icon, tooltip, label, styles.icon]);
 
   return (
     <Input
       size={size}
       onChange={(e) => {
-        const inputValue: string | undefined = e.target.value?.toString();
-        const isEmpty = inputValue === undefined || inputValue === null || inputValue === '';
-        const isRegExpMatch = regExpObj && Boolean(inputValue?.match(regExpObj));
-        if ((!isEmpty && isRegExpMatch) || !regExpObj || isEmpty) {
+        if (!isDefined(onChange))
+          return;
+
+        const inputValue: string | undefined = e.target.value;
+        const isEmpty = isNullOrWhiteSpace(inputValue);
+        const isRegExpMatch = regExpObj && Boolean(inputValue.match(regExpObj));
+        if ((!isEmpty && isRegExpMatch === true) || !regExpObj || isEmpty) {
           onChange(inputValue);
         } else {
           // Workaround because if the value is undefined, input component leave the inputed value
@@ -38,12 +49,13 @@ export const TextFieldWrapper: FCUnwrapped<ITextFieldSettingsInputProps> = (prop
         }
       }}
       readOnly={readOnly}
-      variant={variant}
+      {...(variant ? { variant } : {})}
       placeholder={placeholder}
       style={{ width: width ?? "100%" }}
-      suffix={<span style={{ height: '20px' }}><Icon icon={icon} hint={tooltip ?? (typeof label === 'string' ? label : '')} className={styles.icon} /></span>}
+      suffix={suffix}
       value={value as string}
-      type={textType}
+      {...(isNotNullOrWhiteSpace(textType) ? { type: textType } : {})}
+      className={className}
     />
   );
 };

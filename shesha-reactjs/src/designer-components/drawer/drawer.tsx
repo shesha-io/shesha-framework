@@ -5,41 +5,41 @@ import { Alert, Button, Drawer, Space } from 'antd';
 import { executeScriptSync, useAvailableConstantsData } from '@/providers/form/utils';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { useConfigurableAction, useConfigurableActionDispatcher } from '@/providers/configurableActionsDispatcher';
-import { IConfigurableFormComponent } from '@/providers';
+import { IConfigurableFormComponent, IFormComponentStyles } from '@/providers';
 import { IDimensionsValue } from '../_settings/utils/dimensions/interfaces';
 interface IShaDrawer {
-  id?: string;
-  componentName?: string;
-  showFooter?: boolean;
+  id?: string | undefined;
+  componentName?: string | undefined;
+  showFooter?: boolean | undefined;
   label?: string | ReactNode;
-  onOkAction?: IConfigurableActionConfiguration;
-  onCancelAction?: IConfigurableActionConfiguration;
-  okText?: string;
-  cancelText?: string;
-  components?: IConfigurableFormComponent[];
-  style?: CSSProperties;
-  isDynamic?: boolean;
-  okButtonCustomEnabled?: string;
-  cancelButtonCustomEnabled?: string;
-  showHeader?: boolean;
-  headerStyle?: CSSProperties;
-  footerStyle?: CSSProperties;
-  placement?: 'top' | 'right' | 'bottom' | 'left';
-  width?: string | number;
-  readOnly?: boolean;
-  backgroundStyles?: CSSProperties;
-  dimensions?: IDimensionsValue;
-  stylingBoxAsCSS?: CSSProperties;
-  allStyles?: any;
+  onOkAction?: IConfigurableActionConfiguration | undefined;
+  onCancelAction?: IConfigurableActionConfiguration | undefined;
+  okText?: string | undefined;
+  cancelText?: string | undefined;
+  components?: IConfigurableFormComponent[] | undefined;
+  style?: CSSProperties | undefined;
+  isDynamic?: boolean | undefined;
+  okButtonCustomEnabled?: string | undefined;
+  cancelButtonCustomEnabled?: string | undefined;
+  showHeader?: boolean | undefined;
+  headerStyle?: CSSProperties | undefined;
+  footerStyle?: CSSProperties | undefined;
+  placement?: 'top' | 'right' | 'bottom' | 'left' | undefined;
+  width?: string | number | undefined;
+  readOnly?: boolean | undefined;
+  backgroundStyles?: CSSProperties | undefined;
+  dimensions?: IDimensionsValue | undefined;
+  stylingBoxAsCSS?: CSSProperties | undefined;
+  allStyles?: IFormComponentStyles | undefined;
 }
 
 interface IShaDrawerState {
-  open?: boolean;
+  open: boolean;
 }
 
 const ShaDrawer: FC<IShaDrawer> = (props) => {
   const {
-    id,
+    id = "",
     placement,
     componentName: name,
     readOnly,
@@ -59,7 +59,7 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
     showFooter,
   } = props;
   const allData = useAvailableConstantsData();
-  const [state, setState] = useState<IShaDrawerState>();
+  const [state, setState] = useState<IShaDrawerState>({ open: false });
   const { executeAction } = useConfigurableActionDispatcher();
   const {
     paddingTop,
@@ -82,7 +82,7 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
     width,
     height,
     ...rest
-  } = style;
+  } = style ?? {};
 
   const openDrawer = (): void => setState((prev) => ({ ...prev, open: true }));
 
@@ -91,9 +91,9 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
   const actionOwnerName = `Drawer (${name})`;
 
   /// NAVIGATION
-  const executeActionIfConfigured = (actionConfiguration: IConfigurableActionConfiguration): void => {
+  const executeActionIfConfigured = (actionConfiguration: IConfigurableActionConfiguration | undefined): void => {
     if (!actionConfiguration) {
-      console.warn(`Action not configured '${actionConfiguration.toString()}'`);
+      console.warn(`Action not configured`);
       return;
     }
 
@@ -164,12 +164,17 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
     );
   }
 
+  const size = placement === 'top' || placement === 'bottom'
+    ? height
+    : placement === 'left' || placement === 'right'
+      ? width
+      : undefined;
+
   return (
     <Drawer
-      open={state?.open}
-      placement={placement}
-      width={width}
-      height={height}
+      open={state.open}
+      {...(placement ? { placement } : {})}
+      size={size ?? "large"}
       onClose={closeDrawer}
       styles={{
         header: { display: showHeader ? 'block' : 'none', ...headerStyle },
@@ -202,7 +207,6 @@ const ShaDrawer: FC<IShaDrawer> = (props) => {
         },
       }}
       title={label}
-      size="large"
       footer={(
         <Space>
           <Button onClick={onCancelHandler} disabled={cancelButtonDisabled}>

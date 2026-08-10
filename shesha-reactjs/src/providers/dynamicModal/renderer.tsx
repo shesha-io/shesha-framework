@@ -67,9 +67,12 @@ const DynamicModalRenderer: FC<PropsWithChildren<IDynamicModalRendererProps>> = 
 
   const context = { registerChildren, unregisterChildren };
 
+  // eslint-disable-next-line react-hooks/refs
+  const isDeepest = children.current.length === 0;
+
   return (
     <DynamicModalRendererContext.Provider value={context}>
-      {children.current.length === 0 && renderInstances()}
+      {isDeepest && renderInstances()}
       {props.children}
     </DynamicModalRendererContext.Provider>
   );

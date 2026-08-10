@@ -1,7 +1,7 @@
-import { IStyleType } from '@/providers/form/models';
+import { IStyleValue } from '@/providers/form/models';
 import { sheshaStyles } from '@/styles';
 
-export const defaultStyles = (): IStyleType => {
+export const defaultStyles = (): IStyleValue => {
   return {
     background: { type: "color", color: '' },
     font: { weight: '400', size: 14, color: '#000', type: 'Segoe UI' },

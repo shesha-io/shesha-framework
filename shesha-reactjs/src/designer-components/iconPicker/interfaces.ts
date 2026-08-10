@@ -1,19 +1,20 @@
+import { CSSProperties } from 'react';
 import { ShaIconTypes } from '@/components/iconPicker';
 import { ComponentDefinition } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 
 export interface IIconPickerComponentProps extends IConfigurableFormComponent {
-  fontSize?: number;
-  color?: string;
-  customIcon?: string;
-  customColor?: string;
-  borderWidth?: number;
-  borderColor?: string;
-  borderRadius?: number;
-  backgroundColor?: string;
-  stylingBox?: string;
-  defaultIcon?: ShaIconTypes;
-  textAlign?: string;
+  fontSize?: number | undefined;
+  color?: string | undefined;
+  customIcon?: string | undefined;
+  customColor?: string | undefined;
+  borderWidth?: number | undefined;
+  borderColor?: string | undefined;
+  borderRadius?: number | undefined;
+  backgroundColor?: string | undefined;
+  stylingBox?: string | undefined;
+  defaultIcon?: ShaIconTypes | undefined;
+  textAlign?: CSSProperties['textAlign'] | undefined;
 }
 
 export type IconPickerComponentDefinition = ComponentDefinition<"iconPicker", IIconPickerComponentProps>;

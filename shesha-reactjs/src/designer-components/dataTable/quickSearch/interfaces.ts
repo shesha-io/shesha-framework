@@ -3,8 +3,8 @@ import { ComponentDefinition } from '@/interfaces';
 import { IDimensionsValue } from '@/designer-components/_settings/utils/dimensions/interfaces';
 
 export interface IQuickSearchComponentProps extends IConfigurableFormComponent {
-  block?: boolean;
-  dimensions?: IDimensionsValue;
+  block?: boolean | undefined;
+  dimensions?: IDimensionsValue | undefined;
 }
 
 export type QuickSearchComponentDefinition = ComponentDefinition<"datatable.quickSearch", IQuickSearchComponentProps>;

@@ -1,24 +1,25 @@
-import React, { FC, PropsWithChildren } from 'react';
+import React, { FC, PropsWithChildren, ReactNode } from 'react';
 import { useAppConfigurator } from '@/providers';
 import { useStyles } from './styles/styles';
+import { isDefined } from '@/utils/nullables';
 
-export interface IComponentStateProps<TSettings = any> {
+export interface IComponentStateProps<TSettings extends object = object> {
   isSelected: boolean;
   isEditMode: boolean;
   wrapperClassName: string;
-  settings: TSettings;
+  settings: TSettings | null;
 }
 
 export interface IOverlayProps {
   children?: React.ReactElement;
 }
 
-export type ConfigurableComponentChildrenFn<TSettings = any> = (
+export type ConfigurableComponentChildrenFn<TSettings extends object = object> = (
   componentState: IComponentStateProps<TSettings>,
   BlockOverlay: (props: IOverlayProps) => React.ReactElement,
 ) => React.ReactNode | null;
 
-export interface IConfigurableComponentProps<TSettings = any> {
+export interface IConfigurableComponentProps<TSettings extends object = object> {
   canConfigure?: boolean;
   children: ConfigurableComponentChildrenFn<TSettings>;
   onStartEdit?: () => void;
@@ -40,15 +41,15 @@ const BlockOverlay: FC<PropsWithChildren<IBlockOverlayProps>> = ({ onClick, chil
   );
 };
 
-export const ConfigurableComponent = <TSettings extends any>({
+export const ConfigurableComponent = <TSettings extends object = object>({
   children,
   canConfigure = true,
   onStartEdit,
-}: IConfigurableComponentProps<TSettings>): React.JSX.Element => {
+}: IConfigurableComponentProps<TSettings>): ReactNode => {
   const { mode } = useAppConfigurator();
   const { styles } = useStyles();
 
-  if (!children) return null;
+  if (!isDefined(children)) return null;
 
   if (!canConfigure) {
     return (
@@ -60,7 +61,7 @@ export const ConfigurableComponent = <TSettings extends any>({
     );
   }
 
-  const componentState: IComponentStateProps = {
+  const componentState: IComponentStateProps<TSettings> = {
     isEditMode: mode === 'edit',
     isSelected: false,
     wrapperClassName: styles.shaConfigurableComponent,

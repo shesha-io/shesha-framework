@@ -1,18 +1,29 @@
 import { Tree } from 'antd';
 import { DataNode } from 'antd/lib/tree';
-import React, { FC, useMemo, useState, useEffect, ReactNode } from 'react';
-import { ReactSortable } from 'react-sortablejs';
+import React, { FC, useMemo, useState, useEffect, ReactNode, Key } from 'react';
+import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { IPropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { TOOLBOX_DATA_ITEM_DROPPABLE_KEY } from '@/providers/form/models';
 import { useFormDesigner } from '@/providers/formDesigner';
 import { getIconByPropertyMetadata } from '@/utils/metadata';
 import { useStyles } from '../styles/styles';
+import { isDefined } from '@/utils/nullables';
 
 export interface IProps {
   items: IPropertyMetadata[];
   defaultExpandAll: boolean;
   searchText?: string;
 }
+
+type ToolboxDroppableDataItem = ItemInterface & {
+  id: string;
+  parent_id: string | null;
+  type: string;
+  metadata: IPropertyMetadata;
+};
+export const isToolboxDroppableDataItem = (item: ItemInterface | undefined): item is ToolboxDroppableDataItem => {
+  return isDefined(item) && item['type'] === TOOLBOX_DATA_ITEM_DROPPABLE_KEY;
+};
 
 const getTreeData = (prop: IPropertyMetadata, onAddItem: (prop: IPropertyMetadata) => void): DataNodeWithMeta => {
   const node: DataNodeWithMeta = {
@@ -38,9 +49,9 @@ interface NodesWithExpanded {
   expandedKeys: string[];
 }
 
-const DataSourceTree: FC<IProps> = ({ items, defaultExpandAll, searchText }) => {
+const DataSourceTree: FC<IProps> = ({ items, defaultExpandAll, searchText = "" }) => {
   const { styles } = useStyles();
-  const [manuallyExpanded, setManuallyExpanded] = useState<string[]>(null);
+  const [manuallyExpanded, setManuallyExpanded] = useState<Key[] | null>(null);
   const { startDraggingNewItem, endDraggingNewItem } = useFormDesigner();
   const treeData = useMemo<NodesWithExpanded>(() => {
     const expanded: string[] = [];
@@ -63,12 +74,12 @@ const DataSourceTree: FC<IProps> = ({ items, defaultExpandAll, searchText }) => 
   const getTitle = (prop: IPropertyMetadata): ReactNode => {
     const { label, path } = prop;
     const displayName = label ?? path;
-    const index = displayName?.toLowerCase()?.indexOf(searchText);
+    const index = displayName.toLowerCase().indexOf(searchText);
     if (index === -1) return <span>{displayName}</span>;
 
-    const beforeStr = displayName?.substring(0, index);
-    const str = displayName?.substring(index, index + searchText.length);
-    const afterStr = displayName?.substring(index + searchText.length, displayName.length);
+    const beforeStr = displayName.substring(0, index);
+    const str = displayName.substring(index, index + searchText.length);
+    const afterStr = displayName.substring(index + searchText.length, displayName.length);
     return (
       <span>
         {beforeStr}
@@ -81,7 +92,7 @@ const DataSourceTree: FC<IProps> = ({ items, defaultExpandAll, searchText }) => 
   const renderTitle = (node: DataNodeWithMeta): React.ReactNode => {
     const icon = getIconByPropertyMetadata(node.meta);
 
-    const sortableItem = {
+    const sortableItem: ToolboxDroppableDataItem = {
       id: node.meta.path,
       parent_id: null,
       type: TOOLBOX_DATA_ITEM_DROPPABLE_KEY,
@@ -92,7 +103,7 @@ const DataSourceTree: FC<IProps> = ({ items, defaultExpandAll, searchText }) => 
       startDraggingNewItem();
     };
 
-    const onDragEnd = (_evt): void => {
+    const onDragEnd = (): void => {
       endDraggingNewItem();
     };
 
@@ -121,17 +132,15 @@ const DataSourceTree: FC<IProps> = ({ items, defaultExpandAll, searchText }) => 
     );
   };
 
-  const onExpand = (expandedKeys): void => {
-    setManuallyExpanded(expandedKeys);
-  };
-
   return (
     <Tree<DataNodeWithMeta>
       className={styles.shaDatasourceTree}
       showIcon
       treeData={treeData.nodes}
-      expandedKeys={defaultExpandAll && !Boolean(manuallyExpanded) ? treeData.expandedKeys : manuallyExpanded}
-      onExpand={onExpand}
+      expandedKeys={defaultExpandAll && !Boolean(manuallyExpanded) ? treeData.expandedKeys : manuallyExpanded ?? []}
+      onExpand={(expandedKeys) => {
+        setManuallyExpanded(expandedKeys);
+      }}
       draggable={false}
       selectable={false}
       titleRender={renderTitle}

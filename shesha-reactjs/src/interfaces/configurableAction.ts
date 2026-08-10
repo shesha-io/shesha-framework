@@ -6,7 +6,7 @@ import { ActionParametersDictionary, IApplicationApi } from '@/providers';
 import { IFormApi } from '@/providers/form/formApi';
 import { IHasVersion, Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 import { FormBuilderFactory } from '@/form-factory/interfaces';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { IArgumentsEvaluationContext } from '@/providers/configurableActionsDispatcher/contexts';
 import { ISettingsFormFactoryArgs } from '..';
 
@@ -140,12 +140,12 @@ export interface IMayHaveType {
 export interface IConfigurableActionConfiguration<TArguments extends ActionParametersDictionary = ActionParametersDictionary> extends IMayHaveType {
   actionOwner: string;
   actionName: string;
-  version?: number;
-  actionArguments?: TArguments;
+  version?: number | undefined;
+  actionArguments?: TArguments | undefined;
   handleSuccess: boolean;
-  onSuccess?: IConfigurableActionConfiguration;
+  onSuccess?: IConfigurableActionConfiguration | undefined;
   handleFail: boolean;
-  onFail?: IConfigurableActionConfiguration;
+  onFail?: IConfigurableActionConfiguration | undefined;
 }
 
 export const isConfigurableActionConfiguration = (actionConfig: unknown): actionConfig is IConfigurableActionConfiguration => {
@@ -153,6 +153,15 @@ export const isConfigurableActionConfiguration = (actionConfig: unknown): action
     'actionOwner' in actionConfig && typeof (actionConfig.actionOwner) === 'string' &&
     'actionName' in actionConfig && typeof (actionConfig.actionName) === 'string';
 };
+
+/**
+ * Returns true when the action configuration is present and actually wired up
+ * (both its owner and action name are non-empty).
+ */
+export const isNonEmptyActionConfiguration = (
+  action: IConfigurableActionConfiguration | undefined,
+): action is IConfigurableActionConfiguration =>
+  isConfigurableActionConfiguration(action) && !isNullOrWhiteSpace(action.actionName) && !isNullOrWhiteSpace(action.actionOwner);
 
 /**
  * Make default action configuration, is used for component initialization

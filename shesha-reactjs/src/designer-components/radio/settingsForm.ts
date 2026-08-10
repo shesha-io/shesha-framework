@@ -1,343 +1,106 @@
 import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
-import { SettingsFormMarkupFactory } from '@/interfaces';
+import { DataTypes, SettingsFormMarkupFactory } from '@/interfaces';
+import { ALL_INPUT_EVENTS_WITHOUT_DOUBLE_CLICK } from '../_common/events';
 
-export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
-  const dataTabId = nanoid();
-  const validationTabId = nanoid();
   const eventsTabId = nanoid();
   const appearanceTabId = nanoid();
-  const securityTabId = nanoid();
-  const styleRouterId = nanoid();
-  const customStylePanelId = nanoid();
-  const stylePanelId = nanoid();
+  const commonStyleRouterId = nanoid();
 
-  return {
-    components: fbf()
+  const dataSourceTypeOptions = [
+    { label: 'Values', value: 'values' },
+    { label: 'Reference list', value: 'referenceList' },
+    { label: 'API URL', value: 'url' },
+  ];
+
+  const directionOptions = [
+    { label: 'Horizontal', value: 'horizontal' },
+    { label: 'Vertical', value: 'vertical' },
+  ];
+
+  const json = {
+    components: fbf('root')
       .addSearchableTabs({
         id: searchableTabsId,
         propertyName: 'settingsTabs',
-        parentId: 'root',
         label: 'Settings',
         hideLabel: true,
         labelAlign: 'right',
         size: 'small',
         tabs: [
           {
-            key: '1',
-            title: 'Common',
-            id: commonTabId,
+            key: 'common', title: 'Common', id: commonTabId,
             components: [
-              ...fbf()
-                .addContextPropertyAutocomplete({
-                  id: nanoid(),
-                  propertyName: 'propertyName',
-                  label: 'Property Name',
-                  parentId: commonTabId,
-                  styledLabel: true,
-                  size: 'small',
-                  validate: {
-                    required: true,
-                  },
-                  jsSetting: true,
-                })
-                .addLabelConfigurator({
-                  id: nanoid(),
-                  propertyName: 'hideLabel',
-                  label: 'Label',
-                  parentId: commonTabId,
-                  hideLabel: true,
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  inputs: [
-                    {
-                      type: 'textArea',
-                      id: nanoid(),
-                      propertyName: 'description',
-                      label: 'Tooltip',
-                      jsSetting: true,
-                    },
-                  ],
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  inputs: [
-                    {
-                      type: 'editModeSelector',
-                      id: nanoid(),
-                      propertyName: 'editMode',
-                      label: 'Edit Mode',
-                      size: 'small',
-                      jsSetting: true,
-                    },
-                    {
-                      type: 'switch',
-                      id: nanoid(),
-                      propertyName: 'hidden',
-                      label: 'Hide',
-                      jsSetting: true,
-                      layout: 'horizontal',
-                    },
-                  ],
-                })
-
+              ...fbf(commonTabId)
+                .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true }, jsSetting: true })
+                .addLabelConfigurator({ propertyName: 'hideLabel', label: 'Label', hideLabel: true })
+                .addSettingsInputRow({ inputs: [{ type: 'textArea', propertyName: 'description', label: 'Tooltip', jsSetting: true }] })
+                .stdVisibleEditableInputs('full')
+                .stdCollapsiblePanel('Data', (fb) => fb
+                  .addSettingsInput({ inputType: 'dropdown', propertyName: 'dataSourceType', label: 'Data Source Type', size: 'small', jsSetting: true, dropdownOptions: dataSourceTypeOptions })
+                  .addSettingsInputRow({
+                    inputs: [{
+                      type: 'labelValueEditor', propertyName: 'items', label: 'Items',
+                      labelTitle: 'Label', labelName: 'label', valueTitle: 'Value', valueName: 'value',
+                      mode: 'dialog', jsSetting: true,
+                    }],
+                    visibleJs: 'return getSettingValue(data?.dataSourceType) === "values";',
+                  })
+                  .addSettingsInputRow({
+                    inputs: [{ type: 'referenceListAutocomplete', propertyName: 'referenceListId', label: 'Reference List', jsSetting: true }],
+                    visibleJs: 'return getSettingValue(data?.dataSourceType) === "referenceList";',
+                  })
+                  .addSettingsInputRow({
+                    inputs: [
+                      { type: 'codeEditor', propertyName: 'dataSourceUrl', label: 'Data Source URL', jsSetting: true },
+                      { type: 'codeEditor', propertyName: 'reducerFunc', label: 'Reducer Function', jsSetting: true },
+                    ],
+                    visibleJs: 'return getSettingValue(data?.dataSourceType) === "url";',
+                  }))
+                .stdCollapsiblePanel('Validations', (fb) => fb
+                  .addSettingsInput({ inputType: 'switch', propertyName: 'validate.required', label: 'Required', size: 'small', layout: 'horizontal', jsSetting: true })
+                  .addSettingsInputRow({
+                    inputs: [
+                      { type: 'textField', propertyName: 'validate.message', label: 'Message', size: 'small', jsSetting: true },
+                      { type: 'codeEditor', propertyName: 'validate.validator', label: 'Custom Validator', labelAlign: 'right', tooltip: 'Enter custom validator logic for form.item rules. Returns a Promise' },
+                    ],
+                  }))
                 .toJson(),
             ],
           },
           {
-            key: '2',
-            title: 'Data',
-            id: dataTabId,
-            components: [
-              ...fbf()
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'dropdown',
-                  propertyName: 'dataSourceType',
-                  label: 'Data Source Type',
-                  size: 'small',
-                  jsSetting: true,
-                  parentId: dataTabId,
-                  dropdownOptions: [
-                    {
-                      label: 'Values',
-                      value: 'values',
-                    },
-                    {
-                      label: 'Reference list',
-                      value: 'referenceList',
-                    },
-                    {
-                      label: 'API URL',
-                      value: 'url',
-                    },
-                  ],
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: dataTabId,
-                  hidden: {
-                    _code: 'return  getSettingValue(data?.dataSourceType) !== "values";',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
-                  inputs: [
-                    {
-                      id: nanoid(),
-                      type: 'labelValueEditor',
-                      propertyName: 'items',
-                      parentId: dataTabId,
-                      label: 'Items',
-                      labelTitle: 'Label',
-                      labelName: 'label',
-                      valueTitle: 'Value',
-                      valueName: 'value',
-                      jsSetting: true,
-                      mode: 'dialog',
-                    },
-                  ],
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: dataTabId,
-                  hidden: {
-                    _code: 'return  getSettingValue(data?.dataSourceType) !== "referenceList";',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
-                  inputs: [
-                    {
-                      type: 'referenceListAutocomplete',
-                      id: nanoid(),
-                      propertyName: 'referenceListId',
-                      label: 'Reference List',
-                      jsSetting: true,
-                    },
-                  ],
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: dataTabId,
-                  hidden: {
-                    _code: 'return  getSettingValue(data?.dataSourceType) !== "url";',
-                    _mode: 'code',
-                    _value: false,
-                  } as any,
-                  inputs: [
-                    {
-                      type: 'codeEditor',
-                      id: nanoid(),
-                      propertyName: 'dataSourceUrl',
-                      label: 'Data Source URL',
-                      jsSetting: true,
-                    },
-                    {
-                      type: 'codeEditor',
-                      id: nanoid(),
-                      propertyName: 'reducerFunc',
-                      label: 'Reducer Function',
-                      jsSetting: true,
-                    },
-                  ],
-                })
-                .toJson(),
-            ],
+            key: 'events', title: 'Events', id: eventsTabId,
+            components: [...fbf(eventsTabId).stdEventHandlers([...ALL_INPUT_EVENTS_WITHOUT_DOUBLE_CLICK], DataTypes.string).toJson()],
           },
           {
-            key: '3',
-            title: 'Validation',
-            id: validationTabId,
+            key: 'appearance', title: 'Appearance', id: appearanceTabId,
             components: [
-              ...fbf()
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: 'validate.required',
-                  label: 'Required',
-                  inputType: 'switch',
-                  size: 'small',
-                  layout: 'horizontal',
-                  jsSetting: true,
-                  parentId: validationTabId,
-                })
-                .toJson(),
-            ],
-          },
-          {
-            key: '4',
-            title: 'Events',
-            id: eventsTabId,
-            components: [
-              ...fbf()
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'codeEditor',
-                  propertyName: 'onChangeCustom',
-                  label: 'On Change',
-                  labelAlign: 'right',
-                  tooltip: 'Enter custom eventhandler on changing of event.',
-                  parentId: eventsTabId,
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'codeEditor',
-                  propertyName: 'onFocusCustom',
-                  label: 'On Focus',
-                  labelAlign: 'right',
-                  tooltip: 'Enter custom eventhandler on focus of event.',
-                  parentId: eventsTabId,
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'codeEditor',
-                  propertyName: 'onBlurCustom',
-                  label: 'On Blur',
-                  labelAlign: 'right',
-                  tooltip: 'Enter custom eventhandler on blur of event.',
-                  parentId: eventsTabId,
-                })
-                .toJson(),
-            ],
-          },
-          {
-            key: '5',
-            title: 'Appearance',
-            id: appearanceTabId,
-            components: [
-              ...fbf()
-                .addPropertyRouter({
-                  id: styleRouterId,
-                  propertyName: 'propertyRouter1',
-                  componentName: 'propertyRouter',
-                  label: 'Property router1',
-                  labelAlign: 'right',
-                  parentId: appearanceTabId,
-                  hidden: false,
-                  propertyRouteName: {
-                    _mode: 'code',
-                    _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
-                    _value: '',
-                  } as any,
+              ...fbf(appearanceTabId)
+                .addSettingsInput({ inputType: 'dropdown', propertyName: 'direction', label: 'Direction', size: 'small', jsSetting: true, dropdownOptions: directionOptions })
+                .addPropertyRouter({ id: commonStyleRouterId, propertyName: 'propertyRouter1', componentName: 'propertyRouter', label: 'Property router1', labelAlign: 'right',
+                  propertyRouteName: removeStyleRouter === true ? '' : { _mode: "code", _code: "    return contexts.canvasContext?.designerDevice || 'desktop';", _value: "" },
                   components: [
-                    ...fbf()
-                      .addSettingsInput({
-                        id: nanoid(),
-                        parentId: styleRouterId,
-                        propertyName: 'enableStyleOnReadonly',
-                        label: 'Enable Style On Readonly',
-                        tooltip: 'Removes all visual styling except typography when the component becomes read-only',
-                        inputType: 'switch',
-                        jsSetting: true,
-                      })
-                      .addSettingsInput({
-                        id: nanoid(),
-                        inputType: 'dropdown',
-                        propertyName: 'direction',
-                        label: 'Direction',
-                        size: 'small',
-                        jsSetting: true,
-                        parentId: styleRouterId,
-                        dropdownOptions: [
-                          {
-                            label: 'Horizontal',
-                            value: 'horizontal',
-                          },
-                          {
-                            label: 'Vertical',
-                            value: 'vertical',
-                          },
-                        ],
-                      })
-                      .addCollapsiblePanel({
-                        id: nanoid(),
-                        propertyName: 'customStyle',
-                        label: 'Custom Styles',
-                        labelAlign: 'right',
-                        ghost: true,
-                        parentId: styleRouterId,
-                        collapsible: 'header',
-                        content: {
-                          id: customStylePanelId,
-                          components: [
-                            ...fbf()
-                              .addSettingsInput({
-                                id: nanoid(),
-                                inputType: 'codeEditor',
-                                propertyName: 'style',
-                                hideLabel: false,
-                                label: 'Style',
-                                parentId: stylePanelId,
-                                description:
-                                  'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                              })
-                              .toJson(),
-                          ],
-                        },
-                      })
-                      .toJson(),
-                  ],
-                })
-                .toJson(),
-            ],
-          },
-          {
-            key: '6',
-            title: 'Security',
-            id: securityTabId,
-            components: [
-              ...fbf()
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'permissions',
-                  propertyName: 'permissions',
-                  label: 'Permissions',
-                  jsSetting: true,
-                  size: 'small',
-                  parentId: securityTabId,
+                    ...fbf(commonStyleRouterId)
+                      .stdFontPanel('font', ['align'])
+                      .stdDimensionsPanel('dimensions')
+                      .stdBorderPanel(removeStyleRouter !== true, 'border')
+                      .stdBackgroundPanel(removeStyleRouter !== true, 'background')
+                      .stdShadowPanel('shadow')
+                      .stdMarginPaddingPanel('stylingBoxJson')
+                      .stdCustomStylePanel('style')
+                      .stdCollapsiblePanel('Radio Style', (f) => f
+                        .stdDimensionsPanel('radio.dimensions')
+                        .stdBorderPanel(removeStyleRouter !== true, 'radio.border')
+                        .stdBackgroundPanel(removeStyleRouter !== true, 'radio.background')
+                        .stdShadowPanel('radio.shadow')
+                        .stdMarginPaddingPanel('radio.stylingBoxJson')
+                        .stdCustomStylePanel('radio.style'),
+                      true,
+                      )
+                      .toJson()],
                 })
                 .toJson(),
             ],
@@ -345,11 +108,8 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
         ],
       })
       .toJson(),
-    formSettings: {
-      colon: false,
-      layout: 'vertical' as FormLayout,
-      labelCol: { span: 24 },
-      wrapperCol: { span: 24 },
-    },
+    formSettings: { colon: false, layout: 'vertical' as FormLayout, labelCol: { span: 24 }, wrapperCol: { span: 24 } },
   };
+
+  return json;
 };

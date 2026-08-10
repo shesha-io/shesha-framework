@@ -19,9 +19,9 @@ const ChevronComponent: IToolboxComponent<IChevronProps> = {
   Factory: ({ model }) => {
     if (model.hidden) return null;
     return (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem<number> model={model}>
         {(value) => (
-          <RefListItemGroupConfiguratorProvider value={value} items={model.items} referenceList={model.referenceList} readOnly={model.readOnly}>
+          <RefListItemGroupConfiguratorProvider items={model.items ?? []} referenceList={model.referenceList} readOnly={model.readOnly}>
             <ChevronControl
               value={value}
               {...model}

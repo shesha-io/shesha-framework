@@ -2,6 +2,7 @@ import { IModelValidation } from "@/utils/errors";
 import { IErrorInfo, IValidationErrorInfo } from "@/interfaces/errorInfo";
 import { isAjaxErrorResponse, isAxiosResponse, IAjaxErrorResponse } from "@/interfaces/ajaxResponse";
 import axios, { AxiosError } from "axios";
+import { isNonEmptyArray } from "@/utils/array";
 
 /**
  * Type guard to check if an error is an AxiosError with response data
@@ -31,7 +32,7 @@ export const parseFetchError = (error: unknown): Array<{ propertyName: string; e
 
   // Check for AxiosError with response.data.error (ABP format)
   if (isAxiosErrorWithResponse(error)) {
-    if (isAjaxErrorResponse(error.response.data)) {
+    if (isAjaxErrorResponse(error.response?.data)) {
       errorInfo = error.response.data.error;
     }
   }
@@ -65,7 +66,7 @@ export const parseFetchError = (error: unknown): Array<{ propertyName: string; e
       let propertyName = 'Field Error';
 
       if (ve.members) {
-        if (Array.isArray(ve.members) && ve.members.length > 0) {
+        if (Array.isArray(ve.members) && isNonEmptyArray(ve.members)) {
           propertyName = ve.members[0];
         } else if (typeof ve.members === 'string') {
           propertyName = ve.members;

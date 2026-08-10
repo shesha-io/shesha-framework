@@ -1,44 +1,57 @@
 import { createStyles } from '@/styles';
-import { addPx } from '@/utils/style';
+import { INumberFieldComponentProps } from './interfaces';
+import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, marginStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
+import { isDefined, isNotNullOrWhiteSpace } from '@/utils';
 
-export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, textAlign, color, fontSize, hasSuffix, hasPrefix, padding }) => {
-  const numberField = cx(
-    'sha-input-number-input',
-    css`
-      padding-inline-start: ${padding?.paddingLeft || '0px'} !important;
+export const useStyles = createStyles(({ css, cx }, model: INumberFieldComponentProps) => {
+  const hasPrefix = isNotNullOrWhiteSpace(model.prefix) || isDefined(model.prefixIcon);
+  const hasSuffix = isNotNullOrWhiteSpace(model.suffix) || isDefined(model.suffixIcon);
+  const color = isDefined(model.font?.color) ? model.font.color : '#000';
+
+  const numberStyles = cx('sha-input-number-input', css`
+      padding-inline-start: '0px' !important;
       overflow: hidden;
+      height: 100%;
+      align-items: center;
+      ${borderStyles(model.border)}
+      ${backgroundStyles(model.background)}
+      ${shadowStyles(model.shadow)}
+      ${paddingStyles(model.stylingBoxJson)}
+      ${marginStyles(model.stylingBoxJson)}
+      ${dimensionsStyles(model.dimensions)}
+      
+      //&:focus {
+      //  ${model.background && model.background.type === 'color' && `background-color: ${model.background.color};`}
+      //}
+
+      &:hover {
+        ${!hasSuffix && 'padding-right: 28px !important;'}
+        transition: padding-right 0.2s ease;
+      }
+
+      /* antd repaints the background on :hover (hoverBg), :focus/:focus-within (activeBg) and the
+         error/warning statuses. Re-assert the configured background at higher specificity so those
+         states only affect the border and never the background the user configured. */
+      &&&&:hover,
+      &&&&:focus,
+      &&&&:focus-within,
+      &&&&[class*="-status-error"],
+      &&&&[class*="-status-warning"] {
+        ${backgroundStyles(model.background)}
+      }
+.ant-input-number-input {
+        height: 100% !important;
+        padding-left: ${hasPrefix ? '4px' : '8px'} !important;
+        padding-right: ${hasSuffix ? '4px' : '8px'} !important;
+        padding-bottom: 5px !important;
+        ${fontStyles(model.font)}
+      }
 
       .ant-input-number-input-wrap {
         height: 100% !important;
         overflow: hidden;
       }
 
-      .ant-input-number-input {
-        --ant-color-text: ${color} !important;
-        --ant-font-size: ${fontSize} !important;
-        font-size: ${addPx(fontSize) ?? 'inherit'} !important;
-        font-weight: ${fontWeight} !important;
-        font-family: ${fontFamily};
-        text-align: ${textAlign};
-        height: 100% !important;
-        padding-left: ${hasPrefix ? '4px' : '8px'} !important;
-        padding-right: ${hasSuffix ? '4px' : '8px'} !important;
-        padding-bottom: 5px !important;
-      }
-
-      
-
-      .ant-input-number {
-        height: 100%;
-        align-items: center;
-        ${hasSuffix && 'display: grid;'}
-        ${hasSuffix && 'grid-template-columns: minmax(0, 1fr) auto auto;'}
-
-        &:hover {
-          ${!hasSuffix && 'padding-right: 28px !important;'}
-          transition: padding-right 0.2s ease;
-        }
-      }
       .ant-input-number-handler-wrap {
         ${hasSuffix && 'border-inline-end: 1px solid #d9d9d9 !important;'}
         border-start-end-radius: 0px !important;
@@ -71,7 +84,7 @@ export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, te
       }
 
       .ant-input-number-prefix {
-        ${!hasPrefix && 'display: none;'}   
+        ${!hasPrefix && 'display: none;'}
         margin-inline-end: 0px !important;
         margin-left: 8px !important ;
         position: relative !important;
@@ -82,9 +95,10 @@ export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, te
           color: ${color} !important;
         }
       }
-`,
-  );
+
+    `);
+
   return {
-    numberField,
+    numberStyles,
   };
 });

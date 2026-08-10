@@ -1,13 +1,21 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx }, { fontWeight, fontFamily, textAlign, color, fontSize }) => {
+type StylesArgs = {
+  fontWeight: string | undefined;
+  fontFamily: string | undefined;
+  textAlign: string | undefined;
+};
+
+type StylesResponse = {
+  passwordCombo: string;
+};
+
+export const useStyles = createStyles<StylesArgs, StylesResponse>(({ css, cx }, { fontWeight, fontFamily, textAlign }) => {
   const passwordCombo = cx("sha-password-combo", css`
         .ant-input {
-            --ant-color-text: ${color} !important;
-            --ant-font-size: ${fontSize} !important;
-            font-weight: ${fontWeight};
-            font-family: ${fontFamily};
-            text-align: ${textAlign};
+          ${fontWeight && `font-weight: ${fontWeight};`}
+          ${fontFamily && `font-family: ${fontFamily};`}
+          ${textAlign && `text-align: ${textAlign};`}
         }
   `);
   return {

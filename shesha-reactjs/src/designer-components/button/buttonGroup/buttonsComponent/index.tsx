@@ -14,7 +14,7 @@ const ButtonsComponent: ButtonsComponentDefinition = {
   Factory: ({ model }) => {
     return (
       <ConfigurableFormItem model={model}>
-        <ButtonGroupConfigurator title="Configure Buttons" readOnly={model.readOnly} />
+        <ButtonGroupConfigurator title="Configure Buttons" readOnly={model.readOnly ?? false} />
       </ConfigurableFormItem>
     );
   },

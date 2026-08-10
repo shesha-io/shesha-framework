@@ -6,20 +6,20 @@ import { ReactNode } from 'react';
 import { IFontValue } from '../_settings/utils/font/interfaces';
 
 export interface ILinkComponentProps extends IConfigurableFormComponent {
-  href?: string;
-  content?: string;
+  href?: string | undefined;
+  content?: string | undefined;
   propertyName: string;
-  target?: string;
-  download?: string;
-  direction?: ContainerDirection;
-  hasChildren?: boolean;
-  justifyContent?: JustifyContent;
-  alignItems?: AlignItems;
-  justifyItems?: JustifyItems;
-  className?: string;
-  icon?: ReactNode;
-  font?: IFontValue;
-  components?: IConfigurableFormComponent[];
+  target?: string | undefined;
+  download?: string | undefined;
+  direction?: ContainerDirection | undefined;
+  hasChildren?: boolean | undefined;
+  justifyContent?: JustifyContent | undefined;
+  alignItems?: AlignItems | undefined;
+  justifyItems?: JustifyItems | undefined;
+  className?: string | undefined;
+  icon?: ReactNode | undefined;
+  font?: IFontValue | undefined;
+  components?: IConfigurableFormComponent[] | undefined;
 }
 
 export type LinkCalculatedModel = {

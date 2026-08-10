@@ -4,9 +4,9 @@ import GlobalTableFilterBase from '@/components/globalTableFilterBase';
 import { useDataTableStore } from '@/providers';
 
 export interface IGlobalTableFilterProps {
-  searchProps?: SearchProps;
-  block?: boolean;
-  style?: React.CSSProperties;
+  searchProps?: SearchProps | undefined;
+  block?: boolean | undefined;
+  style?: React.CSSProperties | undefined;
 }
 
 export const GlobalTableFilter: FC<IGlobalTableFilterProps> = ({ searchProps, block, style }) => {
@@ -17,7 +17,16 @@ export const GlobalTableFilter: FC<IGlobalTableFilterProps> = ({ searchProps, bl
     ...searchProps,
   };
 
-  return <GlobalTableFilterBase style={style} {...{ searchProps: srcProps, changeQuickSearch, performQuickSearch, quickSearch, block }} />;
+  return (
+    <GlobalTableFilterBase
+      style={style}
+      searchProps={srcProps}
+      changeQuickSearch={changeQuickSearch}
+      performQuickSearch={performQuickSearch}
+      quickSearch={quickSearch}
+      block={block}
+    />
+  );
 };
 
 export default GlobalTableFilter;

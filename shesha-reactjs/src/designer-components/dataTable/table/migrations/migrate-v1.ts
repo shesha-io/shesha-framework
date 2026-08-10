@@ -72,7 +72,7 @@ const getDeleteRowActionConfig = (oldColumn: IConfigurableActionColumnsPropsV0, 
       actionOwner: 'table',
       actionName: 'Delete row',
       onSuccess: makeAction({
-        actionOwner: getClosestTableId(context),
+        actionOwner: getClosestTableId(context) ?? "",
         actionName: 'Refresh table',
       }),
     }),

@@ -1,16 +1,14 @@
 import React, { ComponentType, useMemo } from 'react';
 import FormItem from "../_settings/components/formItem";
 import { BaseInputProps, hasModelType, ISettingsInputProps, isSettingsInputProps } from './interfaces';
-import ConditionalWrap from '@/components/conditionalWrapper';
-import { MetadataProvider, useSettingsComponents, FCUnwrapped, useShaFormInstance } from '@/providers';
+import { useSettingsComponents, FCUnwrapped, useShaFormInstance, ConditionalMetadataProvider, UnwrapCodeEvaluators } from '@/providers';
 import { InputComponent } from '../inputComponent';
-import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 import { evaluateString } from '@/providers/form/utils';
-import { IToolboxComponentBase } from '@/interfaces/formDesigner';
+import { IToolboxComponent } from '@/interfaces/formDesigner';
+import { isDefined } from '@/utils';
 
-export type ISettingsComponent = IToolboxComponentBase & {
-  settingsComponent?: React.FC<any>;
-  component?: ComponentType<any>;
+export type ISettingsComponent = IToolboxComponent & {
+  component?: ComponentType<UnwrapCodeEvaluators<Omit<ISettingsInputProps, 'type' | 'propertyName' | 'label' | 'value'>>>;
 };
 
 export interface ISettingsComponentGroup {
@@ -19,7 +17,7 @@ export interface ISettingsComponentGroup {
 }
 
 export const SettingInput: FCUnwrapped<ISettingsInputProps> = (props) => {
-  const { label, hideLabel, propertyName, type, readOnly, jsSetting, tooltip, hidden, visible, size, validate, inline, width, availableConstantsExpression, ...rest } = props;
+  const { label, hideLabel, propertyName, type, readOnly, jsSetting, tooltip, hidden, visible, size, validate, validationDependencies, inline, width, availableConstantsExpression, permissionSettings, ...rest } = props;
 
   const { formData } = useShaFormInstance();
   const settingsComponents = useSettingsComponents();
@@ -27,7 +25,7 @@ export const SettingInput: FCUnwrapped<ISettingsInputProps> = (props) => {
   const customComponent = settingsComponents.find((c) => c.type === type);
   const CustomComponent = customComponent?.component;
 
-  const evaluatedModelType = hasModelType(props) && props.modelType
+  const evaluatedModelType = hasModelType(props) && isDefined(props.modelType)
     ? typeof props.modelType === 'string'
       ? evaluateString(props.modelType, { data: formData })
       : props.modelType
@@ -46,27 +44,29 @@ export const SettingInput: FCUnwrapped<ISettingsInputProps> = (props) => {
   } as BaseInputProps;
 
   const style = useMemo(() => {
+    // Inline inputs with an explicit width must not flex-grow, otherwise a single
+    // width-constrained field (e.g. a radius/width box) stretches to fill the whole row.
+    const grow = inline && width != null ? 0 : 1;
     return unwrappedType === 'button' || unwrappedType === 'radio' || unwrappedType === 'iconPicker' || unwrappedType === 'colorPicker' || unwrappedType === 'multiColorPicker'
       ? { width: 'auto' }
-      : { flex: `1 1 ${inline ? (width ?? 'auto') : '120px'}`, width };
+      : { flex: `${grow} 1 ${inline === true ? (width ?? 'auto') : '120px'}`, width };
   }, [unwrappedType, inline, width]);
 
   return isHidden ? null
     : (
       <div key={propertyName} style={style}>
-        <ConditionalWrap
-          condition={!isEntityTypeIdEmpty(evaluatedModelType)}
-          wrap={(content) => <MetadataProvider modelType={evaluatedModelType}>{content}</MetadataProvider>}
-        >
+        <ConditionalMetadataProvider modelType={evaluatedModelType}>
           <FormItem
-            id={props.id ?? props.propertyName ?? props.componentName}
+            id={props.id ?? props.propertyName}
             name={propertyName}
             hideLabel={hideLabel}
             label={label}
             tooltip={tooltip}
             required={validate?.required}
+            validationDependencies={validationDependencies}
             layout="vertical"
             jsSetting={unwrappedType === 'codeEditor' ? false : jsSetting}
+            permissionSettings={unwrappedType === 'codeEditor' ? false : permissionSettings}
             readOnly={readOnly}
             availableConstantsExpression={availableConstantsExpression}
           >
@@ -74,7 +74,7 @@ export const SettingInput: FCUnwrapped<ISettingsInputProps> = (props) => {
               ? <CustomComponent {...rest} />
               : (value, onChange): React.ReactElement => <InputComponent {...nestedProps} value={value} onChange={onChange} />}
           </FormItem>
-        </ConditionalWrap>
+        </ConditionalMetadataProvider>
       </div>
     )
   ;

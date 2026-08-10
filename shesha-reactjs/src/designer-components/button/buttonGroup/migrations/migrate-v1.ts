@@ -18,9 +18,9 @@ const makeAction = (props: Pick<IConfigurableActionConfiguration, 'actionName' |
   };
 };
 
-const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: SettingsMigrationContext): IConfigurableActionConfiguration => {
-  if (buttonProps['actionConfiguration'])
-    return buttonProps['actionConfiguration'] as IConfigurableActionConfiguration;
+const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: SettingsMigrationContext): IConfigurableActionConfiguration | undefined => {
+  if ("actionConfiguration" in buttonProps && typeof buttonProps.actionConfiguration === "object")
+    return buttonProps.actionConfiguration as IConfigurableActionConfiguration;
 
   switch (buttonProps.buttonAction) {
     case "cancelFormEdit": {
@@ -50,7 +50,7 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
       const propsWithModal = buttonProps as IToolbarButtonTableDialogPropsV0;
 
       const modalArguments: IShowModalActionArgumentsV0 = {
-        modalTitle: buttonProps.modalTitle,
+        modalTitle: buttonProps.modalTitle ?? "",
         formId: buttonProps.modalFormId,
 
         showModalFooter: propsWithModal.showModalFooter,
@@ -72,7 +72,7 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
       }
       if (propsWithModal.refreshTableOnSuccess) {
         actionConfig.handleSuccess = true;
-        actionConfig.onSuccess = makeAction({ actionOwner: getClosestTableId(context), actionName: 'Refresh table' });
+        actionConfig.onSuccess = makeAction({ actionOwner: getClosestTableId(context) ?? "", actionName: 'Refresh table' });
       }
       return actionConfig;
     }
@@ -87,23 +87,24 @@ const getActionConfiguration = (buttonProps: IButtonGroupButtonV0, context: Sett
     }
     case "executeFormAction": {
       if (buttonProps.formAction === 'exportToExcel' || buttonProps.formAction === 'EXPORT_TO_EXCEL') {
-        return makeAction({ actionOwner: getClosestTableId(context), actionName: 'Export to Excel' });
+        return makeAction({ actionOwner: getClosestTableId(context) ?? "", actionName: 'Export to Excel' });
       }
       if (buttonProps.formAction === 'TOGGLE_COLUMNS_SELECTOR' || buttonProps.customAction === 'toggleColumnsSelector') {
-        return makeAction({ actionOwner: getClosestTableId(context), actionName: 'Toggle Columns Selector' });
+        return makeAction({ actionOwner: getClosestTableId(context) ?? "", actionName: 'Toggle Columns Selector' });
       }
       if (buttonProps.formAction === 'TOGGLE_ADVANCED_FILTER' || buttonProps.customAction === 'toggleAdvancedFilter') {
-        return makeAction({ actionOwner: getClosestTableId(context), actionName: 'Toggle Advanced Filter' });
+        return makeAction({ actionOwner: getClosestTableId(context) ?? "", actionName: 'Toggle Advanced Filter' });
       }
       if (buttonProps.formAction === 'REFRESH_TABLE' || buttonProps.customAction === 'refresh') {
-        return makeAction({ actionOwner: getClosestTableId(context), actionName: 'Refresh table' });
+        return makeAction({ actionOwner: getClosestTableId(context) ?? "", actionName: 'Refresh table' });
       }
+      return undefined;
     }
     case "dispatchAnEvent": {
       return getDispatchEventReplacement(buttonProps);
     }
   }
-  return null;
+  return undefined;
 };
 
 //#region old types
@@ -242,7 +243,7 @@ interface IModalPropsV0 {
   /**
    * A callback to execute when the form has been submitted
    */
-  onSubmitted?: (values?: any) => void;
+  onSubmitted?: (values?: object) => void;
 
   /**
    * If passed, the user will be redirected to this url on success

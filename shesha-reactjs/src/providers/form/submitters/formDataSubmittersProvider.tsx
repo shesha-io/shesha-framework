@@ -6,7 +6,7 @@ import { CustomSubmitter } from './customSubmitter';
 import { throwError } from '@/utils/errors';
 
 export interface IFormDataSubmittersContext {
-  getFormDataSubmitter: <Values extends object = object>(type: string) => IFormDataSubmitter<Values> | undefined;
+  getFormDataSubmitter: (type: string) => IFormDataSubmitter | undefined;
 }
 
 export const FormDataSubmittersContext = createNamedContext<IFormDataSubmittersContext | undefined>(undefined, "FormDataSubmittersContext");

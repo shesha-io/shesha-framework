@@ -15,7 +15,7 @@ export interface ILayoutProps {
 export interface IConfigurableComponentStateContext<TSettings extends object = object>
   extends IFlagsState<IFlagProgressFlags, IFlagSucceededFlags, IFlagErrorFlags, IFlagActionedFlags>,
   IConfigurableComponentProps {
-  settings: TSettings;
+  settings: TSettings | undefined;
 }
 
 export interface IComponentLoadErrorPayload {

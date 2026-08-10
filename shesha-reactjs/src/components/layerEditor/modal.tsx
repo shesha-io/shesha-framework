@@ -39,10 +39,10 @@ const LayersListInner: FC<Omit<IFiltersListProps, 'layers'>> = ({ showModal, rea
 export interface ITableViewSelectorSettingsModal {
   visible: boolean;
   hideModal: () => void;
-  value?: ILayerFormModel[];
-  onChange?: (items: ILayerFormModel[]) => void;
+  value?: ILayerFormModel[] | undefined;
+  onChange?: ((items: ILayerFormModel[]) => void) | undefined;
   readOnly: boolean;
-  settings?: FormMarkup;
+  settings: FormMarkup;
 }
 
 export const TableViewSelectorSettingsModalInner: FC<ITableViewSelectorSettingsModal> = ({
@@ -53,7 +53,7 @@ export const TableViewSelectorSettingsModalInner: FC<ITableViewSelectorSettingsM
 }) => {
   const { items, readOnly } = useLayerGroupConfigurator();
   useDeepCompareEffect(() => {
-    onChange(items);
+    onChange?.(items);
   }, [items]);
 
   const updateFilters = (): void => {

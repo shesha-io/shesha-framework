@@ -1,5 +1,15 @@
 import { createStyles } from '@/styles';
 
+/**
+ * Largest share of a card's width a label may take, so the value beside it always keeps room.
+ *
+ * A label sizes to its own text but stops here; anything longer wraps onto a second line *within* that share
+ * (the card's form sets `labelWrap`, so it wraps rather than being clipped) while its value stays to the
+ * right. At 60% a ~200px card gives the label ~115px — enough for a two-word label at the bold 14px the
+ * layout applies — and leaves ~75px for the value.
+ */
+const MAX_LABEL_SHARE = '60%';
+
 export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
   const shaDatalistComponentItemCheckbox = "sha-datalist-component-item-checkbox";
   const shaDatalistComponentDivider = "sha-datalist-component-divider";
@@ -103,6 +113,38 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
                 }
             }
 
+            /*
+             * Cards in 'wrap'/'horizontal' orientation are only as wide as the configured item width, so a
+             * proportional labelCol ({ span: 6 } by default) collapses to a fraction of the label's width and
+             * antd clips it - .ant-form-item-label is 'overflow: hidden'. Size each label to its own text
+             * instead and give the value the space to its right.
+             *
+             * 'flex-wrap: nowrap' is the important part. .ant-row is 'flex-flow: row wrap', and flex line
+             * breaking compares items' hypothetical sizes *before* shrinking, so the value drops onto its own
+             * line as soon as label + value content exceeds the card - no amount of flex-shrink prevents it.
+             * Keeping the row on one line means both shrink to fit instead, and the value stays beside its
+             * label at every card width.
+             *
+             * Scoped to '-horizontal' items so components configured for a vertical layout keep theirs.
+             */
+            &.wrap,
+            &.horizontal {
+                .${prefixCls}-form-item-horizontal > .${prefixCls}-form-item-row {
+                    flex-wrap: nowrap;
+
+                    > .${prefixCls}-form-item-label {
+                        flex: 0 1 auto;
+                        max-width: ${MAX_LABEL_SHARE};
+                    }
+
+                    > .${prefixCls}-form-item-control {
+                        flex: 1 1 auto;
+                        min-width: 0;
+                        max-width: 100%;
+                    }
+                }
+            }
+
             .${shaDatalistComponentDivider} {
                 margin: 8px 0 0 0;
             }
@@ -129,7 +171,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
         }
 
         .${shaDatalistCard} {
-            background-color: #ffffff;
             border-radius: 8px;
             position: relative;
             max-width: 100%;
@@ -144,11 +185,18 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
             }
         }
 
-        .${shaDatalistCard} > * {
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            overflow-wrap: break-word;
+        .${shaDatalistCard} > *,
+        .${shaDatalistComponentItem} > * {
+            width: 100% !important;
             max-width: 100%;
+            overflow-wrap: break-word;
+        }
+
+        .${shaDatalistCard} .sha-components-container,
+        .${shaDatalistCard} .sha-components-container-inner,
+        .${shaDatalistComponentItem} .sha-components-container,
+        .${shaDatalistComponentItem} .sha-components-container-inner {
+            width: 100% !important;
         }
 
         .${shaDatalistHorizontal} {

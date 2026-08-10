@@ -2,7 +2,7 @@ import { CheckCircleTwoTone, CloseCircleTwoTone } from '@ant-design/icons';
 import React, { FC } from 'react';
 
 interface IProps {
-  valid?: boolean;
+  valid?: boolean | undefined;
 }
 
 export const ValidationIcon: FC<IProps> = ({ valid }) =>

@@ -1,17 +1,17 @@
 import { ReactNode } from "react";
 
 export interface ISidebarProps {
-  width?: number;
+  width?: number | undefined;
 
   /**
    * The title
    */
-  title: ReactNode;
+  title?: ReactNode | undefined;
 
   /**
    * The content
    */
-  content: ReactNode | (() => ReactNode);
+  content?: ReactNode | (() => ReactNode) | undefined;
 
-  className?: string;
+  className?: string | undefined;
 }

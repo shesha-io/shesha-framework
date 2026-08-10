@@ -8,15 +8,15 @@ import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 
 export interface IShowModalActionArgumentsV0 {
   modalTitle: string;
-  formId: FormIdentifier;
-  formMode?: 'edit' | 'readonly';
-  additionalProperties?: IKeyValue[];
-  modalWidth?: number | string;
-  customWidth?: number;
-  widthUnits?: '%' | 'px';
-  buttons?: ButtonGroupItemProps[];
-  footerButtons?: ModalFooterButtons;
-  showModalFooter?: boolean;
+  formId: FormIdentifier | undefined;
+  formMode?: 'edit' | 'readonly' | undefined;
+  additionalProperties?: IKeyValue[] | undefined;
+  modalWidth?: number | string | undefined;
+  customWidth?: number | undefined;
+  widthUnits?: '%' | 'px' | undefined;
+  buttons?: ButtonGroupItemProps[] | undefined;
+  footerButtons?: ModalFooterButtons | undefined;
+  showModalFooter?: boolean | undefined;
   /**
    * What http verb to use when submitting the form. Used in conjunction with `showModalFooter`
    */

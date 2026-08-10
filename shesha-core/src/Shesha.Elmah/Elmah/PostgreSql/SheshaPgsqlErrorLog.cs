@@ -5,7 +5,6 @@ using NpgsqlTypes;
 using Shesha.Services;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 
 namespace Shesha.Elmah.PostgreSql
@@ -85,12 +84,15 @@ namespace Shesha.Elmah.PostgreSql
                 // gather refs and log them
                 if (error.Exception != null && provider.CurrentState != null)
                 {
-                    var allRefs = provider.CurrentState.AllExceptions.Where(e => e.Exception == error.Exception).ToList();
-                    if (allRefs.Any())
+                    if (provider.CurrentState.AllExceptions != null)
                     {
-                        foreach (var item in allRefs)
+                        var allRefs = provider.CurrentState.AllExceptions.Where(e => e.Exception == error.Exception).ToList();
+                        if (allRefs.Any())
                         {
-                            ExecuteCommand(connection, () => Commands.LogErrorRef(id, item.ErrorReference.Type, item.ErrorReference.Id));
+                            foreach (var item in allRefs)
+                            {
+                                ExecuteCommand(connection, () => Commands.LogErrorRef(id, item.ErrorReference.Type, item.ErrorReference.Id));
+                            }
                         }
                     }
                 }
@@ -175,98 +177,6 @@ namespace Shesha.Elmah.PostgreSql
 
         private static class Commands
         {
-            public static void ExecuteNonQuery(NpgsqlConnection connection, string sql)
-            {
-                using (var command = new NpgsqlCommand(sql))
-                {
-                    command.Connection = connection;
-                    if (connection.State == ConnectionState.Closed)
-                        connection.Open();
-                    command.ExecuteNonQuery();
-                }
-            }
-
-            public static object? ExecuteScalar(NpgsqlConnection connection, string sql)
-            {
-                using (var command = new NpgsqlCommand(sql))
-                {
-                    command.Connection = connection;
-                    if (connection.State == ConnectionState.Closed)
-                        connection.Open();
-                    return command.ExecuteScalar();
-                }
-            }
-
-            public static void CreateSchemaIfMissing(NpgsqlConnection connection, string schemaName)
-            {
-                ExecuteNonQuery(connection, @$"create schema if not exists ""{schemaName}""");
-            }
-
-            public static void CreateSchema(NpgsqlConnection connection, string schemaName)
-            {
-                ExecuteNonQuery(connection, $@"create schema {schemaName}");
-            }
-
-            public static bool TableExists(NpgsqlConnection connection, string schemaName, string tableName)
-            {
-                var result = (bool?)ExecuteScalar(connection, $@"
-SELECT EXISTS (
-   SELECT 1
-   FROM   information_schema.tables 
-   WHERE  table_schema = '{schemaName}'
-   AND    table_name = '{tableName}'
-   )
-");
-                return result == true;
-            }
-
-            public static void CreateErrorsTable(NpgsqlConnection connection, string schemaName, string tableName)
-            {
-                ExecuteNonQuery(connection, $@"
-CREATE SEQUENCE {schemaName}.{tableName}_sequence;
-CREATE TABLE {schemaName}.{tableName}
-(
-    error_id	UUID NOT NULL,
-    application	VARCHAR(60) NOT NULL,
-    host 		VARCHAR(50) NOT NULL,
-    type		VARCHAR(100) NOT NULL,
-    source		VARCHAR(60)  NOT NULL,
-    message		VARCHAR(500) NOT NULL,
-    ""user""	VARCHAR(50)  NOT NULL,
-    status_code	INT NOT NULL,
-    time_utc	TIMESTAMP NOT NULL,
-    sequence	INT NOT NULL DEFAULT NEXTVAL('{schemaName}.{tableName}_sequence'),
-    all_xml		TEXT NOT NULL
-);
-
-ALTER TABLE {schemaName}.{tableName} ADD CONSTRAINT pk_{tableName} PRIMARY KEY (error_id);
-
-CREATE INDEX ix_{tableName}_app_time_seq ON {schemaName}.{tableName} USING BTREE
-(
-    application   ASC,
-    time_utc      DESC,
-    sequence      DESC
-);
-");
-            }
-
-            public static void CreateErrorRefsTable(NpgsqlConnection connection, string schemaName, string tableName)
-            {
-                ExecuteNonQuery(connection, $@"
-CREATE TABLE {schemaName}.{tableName}
-(
-    error_id	UUID NOT NULL,
-    ref_type    VARCHAR(100) NOT NULL,
-    ref_id		VARCHAR(40) NOT NULL
-);
-
-CREATE INDEX ix_{tableName}_type_id ON {schemaName}.{tableName} USING BTREE
-(
-    ref_type,
-    ref_id
-);
-");
-            }
 
             public static NpgsqlCommand LogError(
                 Guid id,

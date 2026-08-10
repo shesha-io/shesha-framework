@@ -43,11 +43,12 @@ import { KeyInformationBarColumnsWrapper } from "./keyInformationBarColumns";
 import { SizableColumnsConfigWrapper } from "./sizableColumnsConfig";
 import { LayerSelectorSettingsModalWrapper } from "./layerSelectorSettingsModal";
 import { ThreeStateSwitchWrapper } from "./threeStateSwitch";
+import { RequestConfigButtonWrapper } from "./requestConfigButton";
 import { SectionSeparatorWrapper } from "./sectionSeparator";
 import { UnwrapCodeEvaluators } from "@/providers/form/models";
+import { DimensionFieldWrapper } from "./dimensionField";
 
-
-type InputType = ISettingsInputProps['type'];
+type InputType = Exclude<ISettingsInputProps['type'], undefined | "settingsInput">;
 
 export type EditorComponent = FC<ISettingsInputProps>;
 
@@ -56,6 +57,8 @@ type EditorDictionary = {
 };
 
 export const editorRegistry: EditorDictionary = {
+  dimensionField: DimensionFieldWrapper,
+
   codeEditor: CodeEditorWrapper,
   tooltip: TooltipWrapper,
 
@@ -93,8 +96,9 @@ export const editorRegistry: EditorDictionary = {
   Password: PasswordWrapper,
   date: DateWrapper,
   layerSelectorSettingsModal: LayerSelectorSettingsModalWrapper,
+  requestConfigButton: RequestConfigButtonWrapper,
   // TODO: check usages and remove or implement wrapper
-  settingsInput: undefined,
+  // settingsInput: undefined,
   endpointsAutocomplete: EndpointsAutocompleteWrapper,
   propertyAutocomplete: PropertyAutocompleteWrapper,
   referenceListAutocomplete: ReferenceListAutocompleteWrapper,

@@ -46,7 +46,7 @@ import { AxiosResponse } from 'axios';
 import { configurableItemIdentifierToString } from '@/interfaces/configurableItems';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import { extractAjaxResponse, IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
-import { getEntityTypeIdentifierQueryParams, getEntityTypeName } from '../metadataDispatcher/entities/utils';
+import { getEntityTypeIdentifierQueryParams, getEntityTypeName, isEntityTypeIdEqual } from '../metadataDispatcher/entities/utils';
 import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
 import { IEntity, IGenericGetPayload } from '@/interfaces/gql';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
@@ -55,11 +55,24 @@ import { getClassNameOrUndefined, getIdOrUndefined } from '@/utils/entity';
 import { IGlobalState } from '../globalState/contexts';
 import { MessageInstance } from 'antd/es/message/interface';
 import { useDataContextManagerActionsOrUndefined } from '../dataContextManager/hooks';
+import { throwError } from '@/utils/errors';
 
 interface IFormLoadingState {
   isLoading: boolean;
   error: unknown;
 }
+
+/**
+ * Identity of the form rendered in the `dynamic` selection mode. The form depends on both the entity type
+ * and the form type, a change of any of them requires the form to be resolved again
+ */
+interface IRenderedDynamicForm {
+  entityType: string | IEntityTypeIdentifier;
+  formType: string | undefined;
+}
+
+const getDynamicFormCacheKey = (entityType: string | IEntityTypeIdentifier, formType: string | undefined): string =>
+  `${getEntityTypeName(entityType) ?? ""}:${formType ?? ""}`;
 
 const EMPTY_OBJECT = {};
 
@@ -140,7 +153,12 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
   const classNameFromValue = getClassNameOrUndefined(value);
   const internalEntityType = props.apiMode === 'entityName' ? entityType : classNameFromValue;
-  const prevRenderedEntityTypeForm = useRef<string | IEntityTypeIdentifier | null>(null);
+  const prevRenderedEntityTypeForm = useRef<IRenderedDynamicForm | null>(null);
+
+  // requests of the dynamic form resolution and of the form markup are cancelled by incrementing these counters,
+  // a response of the outdated request must not overwrite the state of the actual one
+  const formResolutionRequestId = useRef(0);
+  const markupRequestId = useRef(0);
 
   const urlHelper = useModelApiHelper();
   const getReadUrl = (): Promise<string> => {
@@ -151,7 +169,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
       : internalEntityType
         ? urlHelper // if entityType is specified - get default url for the entity
           .getDefaultActionUrl({ modelType: internalEntityType, actionName: StandardEntityActions.read })
-          .then((endpoint) => endpoint.url)
+          .then((endpoint) => endpoint ? endpoint.url : "")
         : Promise.resolve(''); // return empty string
   };
 
@@ -164,9 +182,26 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   const entityTypeFormCache = useRef<Record<string, IFormDto>>({});
 
   useEffect(() => {
+    if (formSelectionMode === 'dynamic')
+      return;
     if (formConfig.formId !== formId)
       setFormConfig({ formId, lazy: true });
-  }, [formId, formConfig.formId]);
+  }, [formId, formConfig.formId, formSelectionMode]);
+
+  useEffect(() => {
+    // A selection-mode change invalidates the previously resolved form. Reset all derived state
+    // (render guard, per-entity-type cache and the resolved formConfig) so the mode-specific
+    // effects re-resolve from scratch instead of racing on values left over from the other mode.
+    // Without this the subform gets stuck on the previous form - or blanks out - after switching
+    // between 'name' and 'dynamic' (#5087).
+    prevRenderedEntityTypeForm.current = null;
+    entityTypeFormCache.current = {};
+    formResolutionRequestId.current++;
+    markupRequestId.current++;
+    setFormConfig({ formId: formSelectionMode === 'dynamic' ? undefined : formId, lazy: true });
+    // only react to mode changes here; formId changes are handled by the sync effect above
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formSelectionMode]);
 
   const setMarkup = useCallback((payload: IPersistedFormPropsWithComponents): void => {
     const flatStructure = componentsTreeToFlatStructure(designerComponents, payload.components);
@@ -182,13 +217,28 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     );
   }, [designerComponents]);
 
+  // drops the form resolved for the previous entity/form type, it must not stay rendered when the current one fails to resolve
+  const clearResolvedForm = useCallback((): void => {
+    markupRequestId.current++;
+    setFormConfig((prev) => isDefined(prev.formId) ? { formId: undefined, lazy: true } : prev);
+  }, []);
+
   // show form based on the entity type
   useEffect(() => {
     if (formSelectionMode === 'dynamic') {
       if (internalEntityType) {
-        if (internalEntityType !== prevRenderedEntityTypeForm.current) {
-          const entityTypeName = getEntityTypeName(internalEntityType) ?? "";
-          const cachedFormDto = entityTypeFormCache.current[entityTypeName];
+        const renderedForm = prevRenderedEntityTypeForm.current;
+        const isAlreadyRendered = isDefined(renderedForm) &&
+          isEntityTypeIdEqual(internalEntityType, renderedForm.entityType) &&
+          renderedForm.formType === formType;
+
+        if (!isAlreadyRendered) {
+          const requestId = ++formResolutionRequestId.current;
+          // the markup of the previously resolved form is not needed anymore, note: it's important for the cached
+          // branch below, it renders the markup directly and a pending request would overwrite it
+          markupRequestId.current++;
+          const currentForm: IRenderedDynamicForm = { entityType: internalEntityType, formType };
+          const cachedFormDto = entityTypeFormCache.current[getDynamicFormCacheKey(internalEntityType, formType)];
           if (cachedFormDto) {
             setMarkup({
               hasFetchedConfig: true,
@@ -199,21 +249,40 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
               formSettings: cachedFormDto.settings ?? DEFAULT_FORM_SETTINGS,
               description: cachedFormDto.description ?? undefined,
             });
-            prevRenderedEntityTypeForm.current = internalEntityType;
+            prevRenderedEntityTypeForm.current = currentForm;
+          } else if (isNullOrWhiteSpace(formType)) {
+            // note: throwing here unmounts the whole sub-form and the user has no way to select the form type
+            clearResolvedForm();
+            setFormLoadingState({
+              isLoading: false,
+              error: new Error("'Form Type' is required when 'Form Selection Mode' = 'Dynamic'"),
+            });
           } else {
-            if (isNullOrWhiteSpace(formType))
-              throw new Error("'formType' is required when 'formSelectionMode' = 'dynamic'");
+            setFormLoadingState({ isLoading: true, error: null });
             getEntityFormIdAsync(internalEntityType, formType)
               .then((formid) => {
-                setFormConfig({ formId: { name: formid.name, module: formid.module }, lazy: true });
-                prevRenderedEntityTypeForm.current = internalEntityType;
+                if (formResolutionRequestId.current !== requestId)
+                  return;
+                setFormLoadingState({ isLoading: false, error: null });
+                setFormConfig({ formId: { name: formid.name, module: formid.module ?? null }, lazy: true });
+                prevRenderedEntityTypeForm.current = currentForm;
               })
               .catch((error) => {
-                console.error('Failed to get form id', error);
+                if (formResolutionRequestId.current !== requestId)
+                  return;
+                // the sub-form stays empty if the form can't be resolved, show the reason instead of failing silently.
+                // the identity is stored anyway, otherwise the failed request is repeated on every re-render
+                clearResolvedForm();
+                prevRenderedEntityTypeForm.current = currentForm;
+                setFormLoadingState({ isLoading: false, error });
               });
           }
         }
       } else {
+        // there is nothing to render without an entity type, a pending resolution must not bring the previous form back
+        formResolutionRequestId.current++;
+        clearResolvedForm();
+        setFormLoadingState((prev) => prev.isLoading || prev.error !== null ? { isLoading: false, error: null } : prev);
         setMarkup({
           hasFetchedConfig: false,
           id: undefined,
@@ -226,7 +295,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         prevRenderedEntityTypeForm.current = null;
       }
     }
-  }, [formSelectionMode, formType, getEntityFormIdAsync, internalEntityType, setMarkup, value]);
+  }, [clearResolvedForm, formSelectionMode, formType, getEntityFormIdAsync, internalEntityType, setMarkup, value]);
 
   /**
    * Get final query params taking into account all settings
@@ -312,8 +381,10 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
           const classNameFromValue = getClassNameOrUndefined(value);
           const classNameFromResponse = getClassNameOrUndefined(dataResponse);
 
+          // note: the shorthand `{ ...dataResponse, classNameFromValue }` used to add a `classNameFromValue`
+          // property to the entity, it was submitted back to the server and rejected as an unknown property
           const newValue = classNameFromValue !== undefined && classNameFromResponse === undefined
-            ? { ...dataResponse, classNameFromValue }
+            ? { ...dataResponse, _className: classNameFromValue }
             : dataResponse;
           onChangeInternal(newValue);
           dispatch(fetchDataSuccessAction({ entityId: newValue.id }));
@@ -396,16 +467,19 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   //#region Fetch Form
   useDeepCompareEffect(() => {
     if (formConfig.formId && !markup) {
+      const requestId = ++markupRequestId.current;
       setFormLoadingState({ isLoading: true, error: null });
 
       getForm({ formId: formConfig.formId, skipCache: false })
         .then((response) => {
+          if (markupRequestId.current !== requestId)
+            return;
           setFormLoadingState({ isLoading: false, error: null });
 
           if (internalEntityType && formSelectionMode === 'dynamic') {
-            const entityTypeName = getEntityTypeName(internalEntityType) ?? "";
-            if (!entityTypeFormCache.current[entityTypeName])
-              entityTypeFormCache.current[entityTypeName] = response;
+            const cacheKey = getDynamicFormCacheKey(internalEntityType, formType);
+            if (!entityTypeFormCache.current[cacheKey])
+              entityTypeFormCache.current[cacheKey] = response;
           }
 
           setMarkup({
@@ -419,6 +493,8 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
           });
         })
         .catch((e) => {
+          if (markupRequestId.current !== requestId)
+            return;
           setFormLoadingState({ isLoading: false, error: e });
         });
     }
@@ -498,7 +574,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   };
 
   const getSubFormData = (): object => {
-    const data = parentFormApi.getFormData();
+    const data = parentFormApi.getFormData?.();
     return !isNullOrWhiteSpace(props.propertyName) && isDefined(data)
       ? (data as Record<string, unknown>)[props.propertyName] as object
       : data ?? {};
@@ -612,16 +688,15 @@ function useSubFormActions(require: boolean): ISubFormActionsContext | undefined
   return context;
 }
 
-function useSubForm(require: boolean = true): ISubFormStateContext & ISubFormActionsContext | undefined {
-  const actionsContext = useSubFormActions(require);
-  const stateContext = useSubFormState(require);
+const useSubFormOrUndefined = (): (ISubFormStateContext & ISubFormActionsContext) | undefined => {
+  const actionsContext = useSubFormActions(false);
+  const stateContext = useSubFormState(false);
 
-  // useContext() returns initial state when provider is missing
-  // initial context state is useless especially when require == true
-  // so we must return value only when both context are available
   return actionsContext !== undefined && stateContext !== undefined
     ? { ...actionsContext, ...stateContext }
     : undefined;
-}
+};
 
-export { SubFormProvider, useSubForm, useSubFormActions, useSubFormState };
+const useSubForm = (): ISubFormStateContext & ISubFormActionsContext => useSubFormOrUndefined() ?? throwError("useSubForm must be used within a SubFormProvider");
+
+export { SubFormProvider, useSubFormOrUndefined, useSubForm, useSubFormActions, useSubFormState };

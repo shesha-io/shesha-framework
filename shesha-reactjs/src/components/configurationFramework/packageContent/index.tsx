@@ -6,6 +6,7 @@ import GlobalTableFilter from '@/components/globalTableFilter';
 import TablePager from '@/components/tablePager';
 import { useMetadataBuilderFactory } from '@/utils/metadata';
 import { IObjectMetadata } from '@/interfaces/metadata';
+import { ITableRowData } from '@/providers/dataTable/interfaces';
 
 export interface IPackageContentProps {
   packageState: PackageAnalyzeResult;
@@ -13,8 +14,10 @@ export interface IPackageContentProps {
 }
 
 export const PackageContent: FC<IPackageContentProps> = ({ packageState, onChangeSelection }) => {
-  const getFieldValue = (propertyName: string): any => {
-    return packageState[propertyName];
+  const getFieldValue = (propertyName: string): ITableRowData[] => {
+    return propertyName === 'items'
+      ? packageState.items
+      : [];
   };
 
   const metadataBuilderFactory = useMetadataBuilderFactory();
@@ -35,7 +38,6 @@ export const PackageContent: FC<IPackageContentProps> = ({ packageState, onChang
       <DataTableProvider
         sourceType="Form"
         dataFetchingMode="paging"
-
         getFieldValue={getFieldValue}
         propertyName="items"
         metadata={metadata}

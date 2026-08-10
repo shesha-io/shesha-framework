@@ -16,7 +16,6 @@ const getIcon = (data: PackageItemDto): FC<AntdIconProps> | undefined => {
     case PackageItemStatus.Error: return ExclamationCircleOutlined;
     case PackageItemStatus.Unchanged: return MinusOutlined;
   }
-  return undefined;
 };
 
 const getStatusText = (status: PackageItemStatus): string => {
@@ -26,7 +25,6 @@ const getStatusText = (status: PackageItemStatus): string => {
     case PackageItemStatus.Error: return 'Error';
     case PackageItemStatus.Unchanged: return 'Unchanged';
   }
-  return '';
 };
 
 export const StatusCell: FC<IStatusCellProps> = ({ row }) => {

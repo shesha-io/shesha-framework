@@ -1,6 +1,21 @@
 import { createStyles } from '@/styles';
+import { CSSObject } from 'antd-style';
+import { CSSProperties } from 'react';
 
-export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles, position = 'top', tabType, tabLineColor }) => {
+type StylesArgs = {
+  styles: CSSProperties;
+  cardStyles: CSSProperties;
+  position?: string | undefined;
+  tabType?: string | undefined;
+  tabLineColor?: string | undefined;
+};
+type StylesResponse = {
+  content: string;
+};
+
+type BorderStylePrefix = 'borderTop' | 'borderBottom' | 'borderLeft' | 'borderRight';
+
+export const useStyles = createStyles<StylesArgs, StylesResponse>(({ css, cx, token }, { styles, cardStyles, position = 'top', tabType, tabLineColor }) => {
   const {
     borderWidth,
     borderStyle,
@@ -32,6 +47,7 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
     textAlign,
     color,
     fontFamily,
+    width,
     ...rest
   } = styles;
 
@@ -55,10 +71,10 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
   const isTop = position === 'top';
   const isBottom = position === 'bottom';
 
-  const getBorder = (side): string => {
-    const width = `${side}Width`;
-    const style = `${side}Style`;
-    const color = `${side}Color`;
+  const getBorder = (side: BorderStylePrefix): string => {
+    const width = `${side}Width` as keyof CSSProperties;
+    const style = `${side}Style` as keyof CSSProperties;
+    const color = `${side}Color` as keyof CSSProperties;
     return `${styles[width] ?? borderWidth} ${styles[style] ?? borderStyle} ${styles[color] ?? borderColor}`;
   };
 
@@ -85,7 +101,7 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
 
             .ant-tabs-content-holder {
                 --ant-tabs-card-bg: ${backgroundImage || backgroundColor};
-                ${rest};
+                ${rest as CSSObject};
                 width: 100%;
                 height: auto;
                 border: ${borderMap.default};
@@ -127,17 +143,19 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                 --ant-line-type:  ${isTop ? styles.borderTopStyle || borderStyle : isBottom ? styles.borderBottomStyle || borderStyle : isLeft
                   ? styles.borderLeftStyle || borderStyle : isRight ? styles.borderRightStyle || borderStyle : isBottom};
                 background: ${cardBgImage || cardBgColor} !important;
-                ${cardStyles};
+                ${cardStyles as CSSObject};
                 background-repeat: ${cardStyles.backgroundRepeat} !important;
                 background-size: ${cardStyles.backgroundSize} !important;
                 background-position: ${cardStyles.backgroundPosition} !important;
                 box-shadow: ${tabType === 'card' && boxShadow} !important;
-                ${(isLeft && 'border-right-width: 0px !important') || (isRight && 'border-left-width: 0px !important') || (isTop && 'border-bottom-width: 0px !important') || (isBottom && 'border-top-width: 0px !important')};
+                ${isLeft && 'border-right-width: 0px !important'}
+                ${isRight && 'border-left-width: 0px !important'}
+                ${isTop && 'border-bottom-width: 0px !important'}
+                ${isBottom && 'border-top-width: 0px !important'}
                  border-radius: ${isTop ? `${cardTopLeftRadius} ${cardTopRightRadius} 0px 0px`
                     : isBottom ? `0px 0px ${cardBottomLeftRadius} ${cardBottomRightRadius}`
                       : isLeft ? `${cardTopRightRadius} 0px 0px ${cardBottomRightRadius}`
                         : isRight ? `0px ${cardTopLeftRadius} ${cardBottomLeftRadius} 0px` : cardStyles.borderRadius};
-
                 .ant-tabs-tab-btn {
                     width: 100%;
                 }
@@ -154,8 +172,11 @@ export const useStyles = createStyles(({ css, cx, token }, { styles, cardStyles,
                   ? styles.borderLeftStyle || borderStyle : isRight ? styles.borderRightStyle || borderStyle : isBottom};
                 --ant-color-bg-container: ${backgroundImage || backgroundColor};
                 background: ${tabType === 'card' ? backgroundImage || backgroundColor : ''} !important;
-                ${cardStyles};
-                ${(isLeft && `border-right-width: ${styles.borderLeftWidth} !important`) || (isRight && 'border-left-width: 0px !important') || (isTop && 'border-bottom-width: 0px !important') || (isBottom && 'border-top-width: 0px !important')};
+                ${cardStyles as CSSObject};
+                ${isLeft && `border-right-width: ${styles.borderLeftWidth} !important`}
+                ${isRight && 'border-left-width: 0px !important'}
+                ${isTop && 'border-bottom-width: 0px !important'}
+                ${isBottom && 'border-top-width: 0px !important'}
                 ${isLeft ? `margin-right: calc(var(--ant-line-width) * -1) !important` : isRight ? `margin-left: calc(var(--ant-line-width) * -1) !important` : isTop ? `margin-bottom: 0` : `margin-top: 0`};
                 width: ${cardWidth};
                 height: ${cardHeight};

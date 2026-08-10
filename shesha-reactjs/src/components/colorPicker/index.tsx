@@ -6,27 +6,27 @@ import type { ColorPickerProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { IConfigurableTheme } from '@/providers/theme/contexts';
 import { useTheme } from '@/providers/theme';
+import { isDefined } from '@/utils/nullables';
 
 type Preset = Required<ColorPickerProps>['presets'][number];
 type ColorFormat = ColorPickerProps['format'];
 type ColorPickerOnChange = ColorPickerProps['onChange'];
 
 export interface IColorPickerProps {
-  value?: ColorValueType;
-  onChange?: (color: ColorValueType) => void;
-  title?: string;
-  presets?: Preset[];
-  showText?: boolean;
-  allowClear?: boolean;
-  disabledAlpha?: boolean;
-  readOnly?: boolean;
-  size?: SizeType;
-  style?: CSSProperties;
-  className?: string;
-  defaultValue?: ColorValueType;
+  value?: ColorValueType | undefined;
+  onChange?: ((color: ColorValueType) => void) | undefined;
+  title?: string | undefined;
+  presets?: Preset[] | undefined;
+  showText?: boolean | undefined;
+  allowClear?: boolean | undefined;
+  disabledAlpha?: boolean | undefined;
+  readOnly?: boolean | undefined;
+  size?: SizeType | undefined;
+  style?: CSSProperties | undefined;
+  className?: string | undefined;
 }
 
-const formatColor = (color: AggregationColor, format: ColorFormat): string | null => {
+const formatColor = (color: AggregationColor | undefined, format: ColorFormat): string | null => {
   if (!color)
     return null;
 
@@ -35,6 +35,7 @@ const formatColor = (color: AggregationColor, format: ColorFormat): string | nul
     case 'hsb': return color.toHsbString();
     case 'rgb': return color.toRgbString();
   }
+  return null;
 };
 
 /**
@@ -42,15 +43,15 @@ const formatColor = (color: AggregationColor, format: ColorFormat): string | nul
  * @param theme
  * @returns a (object) map of theme colors with keys as `primary`, `success`, `warning`, `error`, `info`, `processing`
  */
-export const readThemeColor = (theme: IConfigurableTheme): Record<string, string> => ({
+export const readThemeColor = (theme: IConfigurableTheme): Record<string, string | undefined> => ({
   primary: theme.application?.primaryColor,
   success: theme.application?.successColor,
   warning: theme.application?.warningColor,
   error: theme.application?.errorColor,
   info: theme.application?.infoColor,
   processing: theme.application?.processingColor,
-  primaryTextColor: theme?.text?.default,
-  secondaryTextColor: theme?.text?.secondary,
+  primaryTextColor: theme.text?.default,
+  secondaryTextColor: theme.text?.secondary,
 });
 
 export const ColorPicker: FC<IColorPickerProps> = ({
@@ -58,13 +59,12 @@ export const ColorPicker: FC<IColorPickerProps> = ({
   onChange,
   title,
   presets,
-  showText,
-  allowClear,
-  disabledAlpha,
-  readOnly,
+  showText = false,
+  allowClear = false,
+  disabledAlpha = false,
+  readOnly = false,
   size,
   style,
-  defaultValue,
   className,
 }) => {
   const [format, setFormat] = useState<ColorFormat>('hex');
@@ -72,11 +72,11 @@ export const ColorPicker: FC<IColorPickerProps> = ({
 
   const handleChange: ColorPickerOnChange = (value) => {
     const formattedValue = formatColor(value, format);
-    onChange(formattedValue);
+    onChange?.(formattedValue);
   };
 
   const handleClear = (): void => {
-    onChange(null);
+    onChange?.(null);
   };
 
   const onPanelClick = (event: React.MouseEvent<HTMLElement>): void => {
@@ -143,21 +143,20 @@ export const ColorPicker: FC<IColorPickerProps> = ({
       <div style={scaleContainerStyle}>
         <AntdColorPicker
           trigger="click"
-          format={format}
+          {...(format ? { format } : {})}
           onFormatChange={setFormat}
           disabledAlpha={disabledAlpha}
-          showText={value && showText}
+          showText={isDefined(value) && showText}
           allowClear={allowClear}
           disabled={readOnly}
           onClear={handleClear}
           size={size}
           style={containerStyle}
           value={(readThemeColor(theme)[value as string] ?? value) ?? ""}
-          defaultValue={readThemeColor(theme)?.[defaultValue as string] ?? defaultValue}
           onChange={handleChange}
-          presets={presets}
+          {...(presets ? { presets } : {})}
           panelRender={panelRender}
-          className={className}
+          {...(className ? { className } : {})}
         />
       </div>
     </div>

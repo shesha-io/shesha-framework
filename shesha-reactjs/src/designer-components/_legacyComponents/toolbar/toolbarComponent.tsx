@@ -22,7 +22,7 @@ const ToolbarComponent: IToolboxComponent<ToolbarButtonGroupProps> = {
   migrator: (m) =>
     m
       .add<IToolbarPropsV0>(0, (prev) => {
-        const items = prev['items'] && Array.isArray(prev['items']) ? prev['items'] : [];
+        const items = "items" in prev && prev.items && Array.isArray(prev.items) ? prev.items as IToolbarPropsV0["items"] : [];
         return { ...prev, items: items };
       })
       .add<IToolbarProps>(1, migrateV0toV1)

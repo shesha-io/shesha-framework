@@ -1,8 +1,9 @@
-import { IStyleType } from "@/providers/form/models";
+import { IStyleValue } from "@/providers/form/models";
 import { ICollapsiblePanelComponentProps } from "./interfaces";
+import { isNullOrWhiteSpace } from "@/utils";
 
-export const defaultStyles = (prev: ICollapsiblePanelComponentProps): IStyleType => {
-  const bodyColor = prev.bodyColor || '#fff';
+export const defaultStyles = (prev: ICollapsiblePanelComponentProps): IStyleValue => {
+  const bodyColor = isNullOrWhiteSpace(prev.bodyColor) ? '#fff' : prev.bodyColor;
   const { ghost, borderRadius } = prev;
 
   return {
@@ -11,7 +12,7 @@ export const defaultStyles = (prev: ICollapsiblePanelComponentProps): IStyleType
     border: {
       radiusType: 'all', borderType: 'custom',
       border: {
-        ...ghost ? { all: { width: '1px', color: '#d9d9d9', style: 'solid' } }
+        ...ghost === true ? { all: { width: '1px', color: '#d9d9d9', style: 'solid' } }
           : {
             all: { width: '1px', color: '#d9d9d9', style: 'solid' },
             top: { width: '1px', color: '#d9d9d9', style: 'none' },
@@ -20,19 +21,19 @@ export const defaultStyles = (prev: ICollapsiblePanelComponentProps): IStyleType
             right: { width: '1px', color: '#d9d9d9', style: 'solid' },
           },
       },
-      radius: { all: borderRadius || 8 },
+      radius: { all: borderRadius ?? 8 },
     },
     shadow: { blurRadius: 0, color: 'rgba(0, 0, 0, 0.15)', offsetX: 0, offsetY: 0, spreadRadius: 0 },
-    stylingBox: '{"paddingLeft":"8","paddingBottom":"8","paddingTop":"8","paddingRight":"8","marginLeft":"0","marginBottom":"5","marginTop":"0","marginRight":"0"}',
+    stylingBoxJson: { _type: 'styleBox', paddingLeft: '8', paddingBottom: '8', paddingTop: '8', paddingRight: '8', marginLeft: '0', marginBottom: '5', marginTop: '0', marginRight: '0' },
   };
 };
 
-export const defaultHeaderStyles = (prev: ICollapsiblePanelComponentProps): IStyleType => {
-  const headerBgColor = prev?.headerColor || '#fff';
+export const defaultHeaderStyles = (prev: ICollapsiblePanelComponentProps): IStyleValue => {
+  const headerBgColor = isNullOrWhiteSpace(prev.headerColor) ? '#fff' : prev.headerColor;
   const { isSimpleDesign, borderRadius } = prev;
 
   return {
-    font: { color: '#000', size: 14, weight: isSimpleDesign ? '400' : '500', align: 'left', type: 'Segoe UI' },
+    font: { color: '#000', size: 14, weight: isSimpleDesign === true ? '400' : '500', align: 'left', type: 'Segoe UI' },
     background: {
       type: 'color',
       color: headerBgColor,
@@ -47,9 +48,9 @@ export const defaultHeaderStyles = (prev: ICollapsiblePanelComponentProps): ISty
       border: {
         all: { width: '1px', color: '#d9d9d9', style: 'solid' },
       },
-      radius: { all: borderRadius || 8 },
+      radius: { all: borderRadius ?? 8 },
     },
-    stylingBox: '{"paddingLeft":"8","paddingBottom":"8","paddingTop":"8","paddingRight":"8","marginLeft":"0","marginBottom":"0","marginTop":"0","marginRight":"0"}',
+    stylingBoxJson: { _type: 'styleBox', paddingLeft: '8', paddingBottom: '8', paddingTop: '8', paddingRight: '8', marginLeft: '0', marginBottom: '0', marginTop: '0', marginRight: '0' },
   };
 };
 

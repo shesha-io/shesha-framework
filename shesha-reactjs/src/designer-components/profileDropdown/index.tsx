@@ -31,6 +31,7 @@ import { useForm } from '@/providers/form';
 import { useGlobalState } from '@/providers/globalState';
 import { useSheshaApplication } from '@/providers/sheshaApplication';
 import { ConfigurableForm } from '@/components/configurableForm';
+import { isDefined } from '@/utils/nullables';
 
 interface IProfileDropdown extends IConfigurableFormComponent {
   items?: IButtonGroupItemBase[];
@@ -53,6 +54,7 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
   isInput: false,
   canBeJsSetting: false,
   icon: <UserOutlined />,
+  getWrapperStyle: (model) => ({ style: { dimensions: { width: model.dimensions?.width } } }),
   Factory: ({ model }) => {
     const [numResolved, setNumResolved] = useState(0);
 
@@ -64,7 +66,7 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
       subTextFontFamily,
       subTextTextAlign,
       subTextStyle,
-      showUserInfo,
+      showUserInfo = false,
       popOverTitle,
       popOverFormId,
       popOverContentStyle,
@@ -138,7 +140,7 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
 
     // Custom execute function that includes dynamicItem in the context
     const executeActionWithDynamicContext = (actionConfiguration: IConfigurableActionConfiguration, dynamicItem?: IFullAuditedEntity): void => {
-      if (actionConfiguration) {
+      if (isDefined(actionConfiguration)) {
         void executeAction({
           actionConfiguration,
           argumentsEvaluationContext: { ...allData, dynamicItem },

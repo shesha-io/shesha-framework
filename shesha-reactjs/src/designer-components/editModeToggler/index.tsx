@@ -1,31 +1,27 @@
 import { Space } from 'antd';
 import React from 'react';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import ParentProvider from '@/providers/parentProvider';
 import { SwapOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';
-import { IToolboxComponentBase } from '@/interfaces/formDesigner';
+import { IToolboxComponent } from '@/interfaces/formDesigner';
 import { PERM_APP_CONFIGURATOR } from '@/shesha-constants';
 import ProtectedContent from '@/components/protectedContent';
 import AppEditModeToggler from '@/components/appConfigurator/editModeToggler';
 
-const HeaderAppControl: IToolboxComponentBase = {
+const HeaderAppControl: IToolboxComponent = {
   type: 'headerAppControl',
   name: 'Header App Control',
   isInput: false,
   canBeJsSetting: false,
   icon: <SwapOutlined />,
+  getWrapperStyle: () => ({ style: { dimensions: { width: 'auto' } } }),
   Factory: ({ model }) => {
-    if (model.hidden) return null;
-
-    return (
-      <ParentProvider model={model} name={`headerAppControl-${model.id}`}>
-        <ProtectedContent permissionName={PERM_APP_CONFIGURATOR}>
-          <Space className="sha-header-app-control">
-            <AppEditModeToggler />
-          </Space>
-        </ProtectedContent>
-      </ParentProvider>
+    return model.hidden === true ? null : (
+      <ProtectedContent permissionName={PERM_APP_CONFIGURATOR}>
+        <Space className="sha-header-app-control">
+          <AppEditModeToggler />
+        </Space>
+      </ProtectedContent>
     );
   },
   settingsFormMarkup: getSettings,

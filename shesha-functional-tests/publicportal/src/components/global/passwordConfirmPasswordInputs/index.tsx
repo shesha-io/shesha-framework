@@ -1,9 +1,9 @@
-import React, { FC } from "react";
-import { LockOutlined } from "@ant-design/icons";
-import { Popover, Input, Form } from "antd";
-import { passwordValidations, confirmPasswordValidations } from "./utils";
-import PasswordChecklist from "../passwordChecklist";
-import ConfirmPasswordChecklist from "../confirmPasswordChecklist";
+import React, { FC } from 'react';
+import { LockOutlined } from '@ant-design/icons';
+import { Popover, Input, Form } from 'antd';
+import { passwordValidations, confirmPasswordValidations } from './utils';
+import PasswordChecklist from '../passwordChecklist';
+import ConfirmPasswordChecklist from '../confirmPasswordChecklist';
 
 type ChangeEvent = React.ChangeEvent<HTMLInputElement>;
 
@@ -23,27 +23,20 @@ export interface IPasswordConfirmPasswordInputsProps {
 
 const FormItem = Form.Item;
 
-const PasswordConfirmPasswordInputs: FC<
-  IPasswordConfirmPasswordInputsProps
-> = ({
+const PasswordConfirmPasswordInputs: FC<IPasswordConfirmPasswordInputsProps> = ({
   password,
   confirmPassword,
   setPassword,
   setConfirmPassword,
-  passwordName = "password",
-  confirmPasswordName = "confirmPassword",
+  passwordName = 'password',
+  confirmPasswordName = 'confirmPassword',
 }) => {
   const handlePasswordChange = (e: ChangeEvent) => setPassword(e.target.value);
-  const handleConfirmPasswordChange = (e: ChangeEvent) =>
-    setConfirmPassword(e.target.value);
+  const handleConfirmPasswordChange = (e: ChangeEvent) => setConfirmPassword(e.target.value);
 
   return (
     <>
-      <FormItem
-        {...passwordValidations(password)}
-        name={passwordName}
-        rules={[{ required: true }]}
-      >
+      <FormItem {...passwordValidations(password)} name={passwordName} rules={[{ required: true }]}>
         <Popover
           placement="right"
           title="The password must contain the following conditions"
@@ -67,12 +60,7 @@ const PasswordConfirmPasswordInputs: FC<
       >
         <Popover
           placement="right"
-          content={
-            <ConfirmPasswordChecklist
-              password={password}
-              confirmPassword={confirmPassword}
-            />
-          }
+          content={<ConfirmPasswordChecklist password={password} confirmPassword={confirmPassword} />}
           trigger="click"
         >
           <Input

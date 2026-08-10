@@ -849,7 +849,11 @@ namespace Shesha.StoredFiles
 
             // Convert the resized image to a byte array (PNG)
             using var skImage = SKImage.FromBitmap(resizedImage);
+            if (skImage == null)
+                throw new UserFriendlyException("Failed to create image from resized bitmap.");
             using var data = skImage.Encode(SKEncodedImageFormat.Png, 100);
+            if (data == null)
+                throw new UserFriendlyException("Failed to encode thumbnail image.");
 
             // Save to result stream
 #pragma warning disable IDISP001 // Dispose created. Note: this stream will be disposed by FileStreamResult
@@ -897,12 +901,14 @@ namespace Shesha.StoredFiles
                     }
                     else
                     {
-                        newHeight = (int)(width / aspectRatio);
+                        newHeight = (int)((double)width / aspectRatio);
                     }
                     break;
             }
 
-            // Resize using SkiaSharp
+            // Resize using SkiaSharp — ensure dimensions are at least 1px
+            newWidth = Math.Max(1, newWidth);
+            newHeight = Math.Max(1, newHeight);
             var thumbnail = new SKBitmap(newWidth, newHeight);
             using var canvas = new SKCanvas(thumbnail);
             canvas.DrawBitmap(originalImage, new SKRect(0, 0, newWidth, newHeight));

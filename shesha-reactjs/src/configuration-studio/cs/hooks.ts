@@ -35,6 +35,7 @@ export type UseCsTreeResponse = {
   setQuickSearch: (value: string) => void;
   expandedKeys: ExpandedKeys;
   selectedKeys: SeletcedKeys;
+  selectedNodes: TreeNode[];
   selectedItemNode?: ConfigItemTreeNode | undefined;
   onNodeExpand: OnTreeExpand;
 };
@@ -51,6 +52,7 @@ export const useCsTree = (): UseCsTreeResponse => {
     setQuickSearch: cs.setQuickSearch,
     expandedKeys: cs.treeExpandedKeys,
     selectedKeys: cs.treeSelectedKeys,
+    selectedNodes: cs.treeSelectedNodes,
     selectedItemNode: cs.treeSelectedItemNode,
     onNodeExpand: cs.onTreeNodeExpand,
   };

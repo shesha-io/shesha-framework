@@ -1,8 +1,8 @@
 import { IconType } from '@/components/shaIcon';
 import { ComponentDefinition } from '@/interfaces';
-import { IConfigurableFormComponent, IInputStyles, IPropertySetting, IStyleType } from '@/providers/form/models';
+import { IConfigurableFormComponent, IInputStyles, IPropertySetting } from '@/providers/form/models';
 
-export interface INumberFieldComponentPropsV1 extends IConfigurableFormComponent, IInputStyles, IStyleType {
+export interface INumberFieldComponentPropsV1 extends IConfigurableFormComponent, IInputStyles {
   hideBorder?: boolean;
   min?: number;
   max?: number;
@@ -18,22 +18,20 @@ export interface INumberFieldComponentPropsV1 extends IConfigurableFormComponent
 
 export type NumberFieldFormat = 'integer' | 'decimal' | 'percent' | 'currency' | 'custom';
 
-export interface INumberFieldComponentProps extends IConfigurableFormComponent, IInputStyles, IStyleType {
-  numberFormat?: NumberFieldFormat;
-  hideBorder?: boolean;
-  highPrecision?: boolean;
-  numDecimalPlaces?: number;
-  thousandsSeparator?: string;
+export interface INumberFieldComponentProps extends IConfigurableFormComponent, IInputStyles {
+  numberFormat?: NumberFieldFormat | undefined;
+  hideBorder?: boolean | undefined;
+  highPrecision?: boolean | undefined;
+  numDecimalPlaces?: number | undefined;
+  thousandsSeparator?: string | undefined;
   customFormat?: string | IPropertySetting<string>;
-  placeholder?: string;
-  prefix?: string;
-  suffix?: string;
-  suffixIcon?: IconType;
-  prefixIcon?: IconType;
+  placeholder?: string | undefined;
+  prefix?: string | undefined;
+  suffix?: string | undefined;
+  suffixIcon?: IconType | undefined;
+  prefixIcon?: IconType | undefined;
 }
 interface INumberFieldComponentCalculatedValues {
-  defaultValue?: string;
-  eventHandlers?: any;
   executeCustomFormat?: (value: unknown, code: string) => string;
 }
 

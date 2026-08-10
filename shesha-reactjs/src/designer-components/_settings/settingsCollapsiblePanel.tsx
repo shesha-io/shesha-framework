@@ -9,11 +9,11 @@ export interface ISettingsCollapsiblePanelActionsContext {
   registerField: (name: string) => void;
 }
 
-export const SettingsCollapsiblePanelActionsContext = createNamedContext<ISettingsCollapsiblePanelActionsContext>(undefined, "SettingsCollapsiblePanelActionsContext");
+export const SettingsCollapsiblePanelActionsContext = createNamedContext<ISettingsCollapsiblePanelActionsContext | undefined>(undefined, "SettingsCollapsiblePanelActionsContext");
 
 const SettingsCollapsiblePanel: FC<ISettingsCollapsiblePanelProps> = (props) => {
-  const [fields, setFields] = useState([]);
-  const { propertyFilter } = useSettingsForm<any>();
+  const [fields, setFields] = useState<string[]>([]);
+  const { propertyFilter } = useSettingsForm();
 
   const registerField = (name: string): void => {
     if (!Boolean(fields.find((x) => (x === name))))
@@ -22,19 +22,19 @@ const SettingsCollapsiblePanel: FC<ISettingsCollapsiblePanelProps> = (props) => 
 
   const settingsCollapsiblePanelActions: ISettingsCollapsiblePanelActionsContext = { registerField };
 
-  const show = !fields || fields.length === 0 || typeof propertyFilter !== 'function' ||
+  const show = fields.length === 0 || typeof propertyFilter !== 'function' ||
     Boolean(fields.find((x) => (propertyFilter(x))));
 
   return (
     <SettingsCollapsiblePanelActionsContext.Provider value={settingsCollapsiblePanelActions}>
       {show
-        ? <CollapsiblePanel expandIconPosition="start" {...props} bodyStyle={{ borderRadius: '8px' }} headerStyle={{ borderRadius: '8px' }} />
+        ? <CollapsiblePanel expandIconPosition="start" {...props} border={{ radius: { all: '8px' }, radiusType: 'all' }} headerStyles={{ border: { radius: { all: '8px' }, radiusType: 'all' } }} />
         : null}
     </SettingsCollapsiblePanelActionsContext.Provider>
   );
 };
 
-export function useSettingsPanel(required: Boolean): ISettingsCollapsiblePanelActionsContext | undefined {
+export function useSettingsPanel(required: boolean): ISettingsCollapsiblePanelActionsContext | undefined {
   const actionsContext = useContext(SettingsCollapsiblePanelActionsContext);
   if (actionsContext === undefined && required)
     throw new Error('useSettingsPanel must be used within a SettingsCollapsiblePanel');

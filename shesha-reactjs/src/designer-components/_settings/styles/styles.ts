@@ -42,9 +42,9 @@ export const useStyles = createStyles(({ css, cx, responsive, token }) => {
             
             
             +.ant-form-item-tooltip {
-            align-self: end !important;
+            align-self: center !important;
             position: relative;
-            top: 4px;
+            top: 0;
             }
     `);
 
@@ -83,25 +83,31 @@ export const useStyles = createStyles(({ css, cx, responsive, token }) => {
 
   const valueHighlightSelectors = `
     textarea,
+    textarea:hover,
+    textarea:focus,
+    input,
+    input:hover,
+    input:focus,
     .properties-label,
     .ant-input-number,
     .ant-select,
     .ant-switch-handle:before,
     .ant-input-affix-wrapper,
-    .ant-radio-button-wrapper-checked
+    .ant-radio-button-wrapper-checked,
+    .ant-color-picker-trigger
   `;
 
   const inheritedValue = cx(css`
     ${valueHighlightSelectors} {
-      background-color: #D7E8D9 !important;
-      color: #1C1B1F !important;
+      background-color: #D7E8D9;
+      color: #1C1B1F;
     }
   `);
 
   const overriddenValue = cx(css`
     ${valueHighlightSelectors} {
-      background-color: #F4E9D6 !important;
-      color: #1C1B1F !important;
+      background-color: #F4E9D6;
+      color: #1C1B1F;
     }
   `);
 

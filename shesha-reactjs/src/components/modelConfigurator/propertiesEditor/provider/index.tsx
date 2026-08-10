@@ -1,4 +1,4 @@
-import React, { FC, useContext, PropsWithChildren, useRef } from 'react';
+import React, { FC, useContext, PropsWithChildren, useRef, useMemo, useCallback } from 'react';
 import modelReducer from './reducer';
 import useThunkReducer from '@/hooks/thunkReducer';
 import {
@@ -16,40 +16,40 @@ import {
   selectItemAction,
   updateChildItemsAction,
   updateItemAction,
-  /* NEW_ACTION_IMPORT_GOES_HERE */
 } from './actions';
 import { getItemById } from './utils';
 import { IModelItem } from '@/interfaces/modelConfigurator';
-import { Action } from 'redux-actions';
 import { nanoid } from '@/utils/uuid';
+import { throwError } from '@/utils/errors';
+import { PayloadAction } from '@reduxjs/toolkit';
+import { useDeepCompareMemo } from '@/hooks';
 
 export interface IPropertiesEditorProviderProps {
   id?: string;
   items: IModelItem[];
-  onChange?: (items: IModelItem[]) => void;
+  onChange?: ((items: IModelItem[]) => void) | undefined;
 }
 
 const PropertiesEditorProvider: FC<PropsWithChildren<IPropertiesEditorProviderProps>> = (props) => {
-  const { children } = props;
-  const selRef = useRef(null);
+  const { children, onChange } = props;
+  const selRef = useRef<HTMLDivElement>(null);
   const [state, dispatch] = useThunkReducer(modelReducer, {
     ...PROPERTIES_EDITOR_CONTEXT_INITIAL_STATE,
-    items: props.items?.filter((x) => !x.isFrameworkRelated) || [],
-    onChange: props.onChange,
-    selectedItemRef: selRef,
+    items: props.items.filter((x) => x.isFrameworkRelated !== true),
+    onChange: onChange,
   });
 
-  const dispatchAndFire = (action: Action<any>): void => {
+  const dispatchAndFire = useCallback(<P = void, T extends string = string>(action: PayloadAction<P, T>): void => {
     dispatch((dispatchThunk, getState) => {
       dispatchThunk(action);
-      if (props.onChange) {
-        const updatedItems = getState()?.items;
-        props.onChange(updatedItems);
+      if (onChange) {
+        const updatedItems = getState().items;
+        onChange(updatedItems);
       }
     });
-  };
+  }, [dispatch, onChange]);
 
-  const addItem = (parentId?: string): Promise<IModelItem> => {
+  const addItem = useCallback((parentId?: string): Promise<IModelItem> => {
     // return dispatchDeferred
     return new Promise<IModelItem>((resolve) => {
       const item: IModelItem = {
@@ -59,73 +59,54 @@ const PropertiesEditorProvider: FC<PropsWithChildren<IPropertiesEditorProviderPr
       dispatchAndFire(addItemAction({ parentId, item }));
       resolve(item);
     });
-  };
+  }, [dispatchAndFire]);
 
-  const deleteItem = (uid: string): void => {
+  const deleteItem = useCallback((uid: string): void => {
     dispatchAndFire(deleteItemAction(uid));
-  };
+  }, [dispatchAndFire]);
 
-  const selectItem = (uid: string): void => {
+  const selectItem = useCallback((uid: string): void => {
     if (state.selectedItemId !== uid) {
       dispatch(selectItemAction(uid));
     }
-  };
+  }, [state.selectedItemId, dispatch]);
 
-  const updateChildItems = (payload: IUpdateChildItemsPayload): void => {
+  const updateChildItems = useCallback((payload: IUpdateChildItemsPayload): void => {
     dispatchAndFire(updateChildItemsAction(payload));
-  };
+  }, [dispatchAndFire]);
 
-  const getItem = (uid: string): IModelItem => {
+  const getItem = useCallback((uid: string): IModelItem | undefined => {
     return getItemById(state.items, uid);
-  };
+  }, [state.items]);
 
-  const updateItem = (payload: IUpdateItemSettingsPayload): void => {
+  const updateItem = useCallback((payload: IUpdateItemSettingsPayload): void => {
     dispatchAndFire(updateItemAction(payload));
-  };
+  }, [dispatchAndFire]);
+
+  const localState = useDeepCompareMemo(() => {
+    return { ...state, selectedItemRef: selRef };
+  }, [state]);
+
+  const actions = useMemo(() => ({ addItem, deleteItem, selectItem, updateChildItems, getItem, updateItem /* NEW_ACTION_GOES_HERE */ }),
+    [addItem, deleteItem, selectItem, updateChildItems, getItem, updateItem]);
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
   return (
-    <PropertiesEditorStateContext.Provider value={{ ...state }}>
-      <PropertiesEditorActionsContext.Provider
-        value={{
-          addItem,
-          deleteItem,
-          selectItem,
-          updateChildItems,
-          getItem,
-          updateItem,
-          /* NEW_ACTION_GOES_HERE */
-        }}
-      >
+    <PropertiesEditorStateContext.Provider value={localState}>
+      <PropertiesEditorActionsContext.Provider value={actions}>
         {children}
       </PropertiesEditorActionsContext.Provider>
     </PropertiesEditorStateContext.Provider>
   );
 };
 
-function usePropertiesEditorState(): IPropertiesEditorStateContext {
-  const context = useContext(PropertiesEditorStateContext);
+const usePropertiesEditorState = (): IPropertiesEditorStateContext => useContext(PropertiesEditorStateContext) ?? throwError("usePropertiesEditorState must be used within a PropertiesEditorProvider");
 
-  if (context === undefined) {
-    throw new Error('usePropertiesEditorState must be used within a PropertiesEditorProvider');
-  }
+const usePropertiesEditorActions = (): IPropertiesEditorActionsContext => useContext(PropertiesEditorActionsContext) ?? throwError("usePropertiesEditorActions must be used within a PropertiesEditorProvider");
 
-  return context;
-}
-
-function usePropertiesEditorActions(): IPropertiesEditorActionsContext {
-  const context = useContext(PropertiesEditorActionsContext);
-
-  if (context === undefined) {
-    throw new Error('usePropertiesEditorActions must be used within a PropertiesEditorProvider');
-  }
-
-  return context;
-}
-
-function usePropertiesEditor(): IPropertiesEditorStateContext & IPropertiesEditorActionsContext {
+const usePropertiesEditor = (): IPropertiesEditorStateContext & IPropertiesEditorActionsContext => {
   return { ...usePropertiesEditorState(), ...usePropertiesEditorActions() };
-}
+};
 
 export { PropertiesEditorProvider, usePropertiesEditor };

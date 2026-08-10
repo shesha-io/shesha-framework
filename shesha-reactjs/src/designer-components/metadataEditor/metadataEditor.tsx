@@ -13,6 +13,8 @@ export const MetadataEditor: FC<IMetadataEditorProps> = (props) => {
   useEffect(() => {
     if (value !== localValue)
       setLocalValue(value);
+    // TODO sync: review dependencies
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   const hasValue = Boolean(value) && value.length > 0;
@@ -43,7 +45,7 @@ export const MetadataEditor: FC<IMetadataEditorProps> = (props) => {
             type="primary"
             size="small"
             danger
-            onClick={() => onChange?.(null)}
+            onClick={() => onChange([])}
           >
             Clear
           </Button>

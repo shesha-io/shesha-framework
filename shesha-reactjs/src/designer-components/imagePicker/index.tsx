@@ -1,7 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef } from 'react';
 import { DeleteOutlined, FileAddOutlined, SyncOutlined, UploadOutlined } from '@ant-design/icons';
 import { App, Button, Space, Upload } from 'antd';
-import type { UploadFile, UploadProps } from 'antd';
+import type { UploadProps } from 'antd';
 import { useStyles } from './style';
 import { IToolboxComponent } from '@/interfaces';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
@@ -9,16 +9,16 @@ import { toBase64, validateConfigurableComponentSettings } from '@/providers/for
 import { isFileTypeAllowed } from '@/utils/fileValidation';
 import { IFileUploadProps } from '../fileUpload/interfaces';
 import { getSettings } from './settings';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 interface IImageUploaderProps {
-  onChange: (value: any) => void;
-  value: UploadFile;
+  onChange: ((value: string | null) => void) | undefined;
+  value: string | undefined;
   readOnly: boolean;
-  allowedFileTypes?: string[];
+  allowedFileTypes?: string[] | undefined;
 }
 
-export const ImagePicker = ({ onChange, value, readOnly, allowedFileTypes }: IImageUploaderProps): React.JSX.Element => {
-  const [fileList, setFileList] = useState<UploadFile[]>(typeof value == 'string' ? value : value ? [{ ...value }] : []);
+export const ImagePicker = ({ onChange, value, readOnly, allowedFileTypes = [] }: IImageUploaderProps): React.JSX.Element => {
   const { styles } = useStyles();
   const { message } = App.useApp();
 
@@ -30,23 +30,19 @@ export const ImagePicker = ({ onChange, value, readOnly, allowedFileTypes }: IIm
 
     if (file?.originFileObj) {
       const base64Image = await toBase64(file.originFileObj as File);
-      onChange(base64Image);
-      setFileList([{ ...file, url: base64Image, name: "" }]);
+      onChange?.(base64Image);
     } else {
-      onChange({});
-      setFileList([]);
+      onChange?.(null);
     }
   };
 
   const handleRemove = (): void => {
-    setFileList([]);
-    onChange('');
+    onChange?.(null);
   };
-
 
   const uploadButton = (
     <Button size="small" ref={uploadBtnRef}>
-      {fileList.length === 0 ? <UploadOutlined title="upload" /> : <SyncOutlined title="Replace" />}
+      {isNullOrWhiteSpace(value) ? <UploadOutlined title="upload" /> : <SyncOutlined title="Replace" />}
     </Button>
   );
 
@@ -78,11 +74,11 @@ export const ImagePicker = ({ onChange, value, readOnly, allowedFileTypes }: IIm
           return false;
         }}
         disabled={readOnly}
-        accept={allowedFileTypes?.join(',')}
+        accept={allowedFileTypes.join(',')}
       >
         <Space>
           {uploadButton}
-          {fileList.length !== 0 && deleteButton}
+          {!isNullOrWhiteSpace(value) && deleteButton}
         </Space>
       </Upload>
     </div>
@@ -98,13 +94,13 @@ const ImagePickerComponent: IToolboxComponent<IFileUploadProps> = {
   preserveDimensionsInDesigner: true,
   Factory: ({ model }) => {
     return (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem<string> model={model}>
         {(value, onChange) => {
           return (
             <ImagePicker
               onChange={onChange}
-              value={value}
-              readOnly={model.readOnly}
+              value={value ?? undefined}
+              readOnly={model.readOnly ?? false}
               allowedFileTypes={model.allowedFileTypes}
             />
           );

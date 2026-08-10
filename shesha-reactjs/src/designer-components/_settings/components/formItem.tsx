@@ -1,53 +1,77 @@
-import React, { cloneElement, FC, ReactElement, useState } from 'react';
+import React, { cloneElement, FC, ReactElement, useState, isValidElement, SyntheticEvent } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import SettingsControl, { SettingsControlChildrenFunc } from '../settingsControl';
 import { ISettingsFormItemProps } from '../settingsFormItem';
 import { useStyles } from '../styles/styles';
-import { useDefaultModelPropertyUpdateSubscription, useDefaultModelProviderStateOrUndefined } from '../defaultModelProvider/defaultModelProvider';
+import { useDefaultModelPropertyUpdateSubscription, useDefaultModelActionsOrUndefined } from '../defaultModelProvider/defaultModelProvider';
 import { getValueByPropertyName } from '@/utils/object';
 import { useFormItem } from '@/providers';
+import { IAnyObject } from '@/interfaces';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
+import { SizeType } from 'antd/es/config-provider/SizeContext';
+import PermissionsControl from '../permissionsControl';
+
+type ChildProps = {
+  readOnly: boolean | undefined;
+  disabled: boolean | undefined;
+  size?: SizeType;
+};
 
 const FormItem: FC<ISettingsFormItemProps> = (props) => {
   const { styles } = useStyles();
-  const { name, label, tooltip, required, hidden, jsSetting, children, valuePropName = 'value', layout, availableConstantsExpression } = props;
+  const { name, label, tooltip, required, validationDependencies, hidden, jsSetting, children, valuePropName = 'value', layout, availableConstantsExpression, permissionSettings } = props;
   const [hasCode, setHasCode] = useState(false);
 
-  useDefaultModelPropertyUpdateSubscription(name);
-
   const { namePrefix } = useFormItem();
-  const defaultModelPropName = namePrefix ? namePrefix + '.' + name : name;
+  const defaultModelPropName = isNotNullOrWhiteSpace(namePrefix) ? namePrefix + '.' + name : name;
 
-  const defaultModel = useDefaultModelProviderStateOrUndefined();
+  useDefaultModelPropertyUpdateSubscription(defaultModelPropName);
+
+  const defaultModel = useDefaultModelActionsOrUndefined();
   const valueInfo = defaultModel?.getValueInfo(defaultModelPropName);
   const defaultValue = getValueByPropertyName(defaultModel?.getDefaultModel() as Record<string, unknown>, defaultModelPropName);
   const className = valueInfo?.state === 'usedDefault' ? styles.inheritedValue : valueInfo?.state === 'usedModel' ? styles.overriddenValue : '';
 
-  let childFunc: SettingsControlChildrenFunc | undefined = undefined;
-  let readOnly = props.readOnly;
+  // When the value is inherited or overridden, InputComponent renders an inheritance popover on
+  // the input that already includes this tooltip text alongside the Override / Reset actions.
+  // Drop the label's own `?` icon in that case so the same text is not shown in two popups.
+  // However, if children is a function (custom component), it likely bypasses InputComponent
+  // and won't show the inheritance popover, so we should preserve the tooltip in that case.
+  const showsInheritancePopover = valueInfo?.state === 'usedDefault' || valueInfo?.state === 'usedModel';
+  const isCustomComponent = typeof children === 'function';
+  const labelTooltip = showsInheritancePopover && !isCustomComponent ? undefined : tooltip;
+
+  let childFunc: SettingsControlChildrenFunc = () => <></>;
+  let readOnly = props.readOnly ?? false;
   if (typeof children === 'function') {
     childFunc = children as SettingsControlChildrenFunc;
   } else {
-    const childElement = children as ReactElement;
-    readOnly = readOnly || childElement.props.readOnly || childElement.props.disabled;
+    if (isValidElement(children)) {
+      const childrenElement = children as React.ReactElement<ChildProps & IAnyObject>;
+      const childProps = childrenElement.props;
+      readOnly = readOnly || (childProps.readOnly ?? false) || (childProps.disabled ?? false);
 
-    childFunc = (value, onChange): ReactElement => cloneElement(
-      childElement,
-      {
-        ...childElement.props,
-        readOnly: readOnly,
-        size: 'small',
-        disabled: readOnly,
-        onChange: (...args: any[]) => {
-          const event = args[0];
-          const data = event && event.target && typeof event.target === 'object' && valuePropName in event.target
-            ? (event.target as HTMLInputElement)[valuePropName]
-            : event;
-          onChange(data);
+      childFunc = (value, onChange): ReactElement => cloneElement(
+        childrenElement,
+        {
+          ...childProps,
+          readOnly: readOnly,
+          size: 'small',
+          disabled: readOnly,
+          onChange: (event: SyntheticEvent | undefined) => {
+            const target = event?.target as HTMLInputElement | undefined;
+            const data = !isNullOrWhiteSpace(valuePropName) && isDefined(target) && typeof target === 'object' && valuePropName in target
+              ? target[valuePropName as keyof typeof target]
+              : event;
+            onChange(data);
+          },
+          [valuePropName]: value,
         },
-        [valuePropName]: value,
-      },
-    );
+      );
+    }
   }
+
+  const permissionPropertyName = name + 'Permissions';
 
   return (
     <ConfigurableFormItem
@@ -57,8 +81,9 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
         label: <div className={styles.label}>{label}</div>,
         type: '',
         id: '',
-        description: tooltip,
+        description: labelTooltip,
         validate: { required },
+        validationDependencies,
         hidden,
         layout,
         size: 'small',
@@ -66,23 +91,27 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
       className={`sha-js-label ${className}`}
     >
       {(value, onChange) => {
-        const localValue = defaultModel?.getValueInfo(defaultModelPropName)?.state === 'usedDefault' ? defaultValue : value;
-        return !jsSetting ? (
-          childFunc(localValue, onChange, name)
+        const localValue = valueInfo?.state === 'usedDefault' ? defaultValue : value;
+        return !Boolean(jsSetting) ? (
+          <PermissionsControl enabled={permissionSettings ?? false} propertyName={permissionPropertyName} readOnly={readOnly}>
+            {childFunc(localValue, onChange, name)}
+          </PermissionsControl>
         ) : (
-          <SettingsControl
-            propertyName={name}
-            mode="value"
-            onChange={onChange}
-            value={localValue}
-            setHasCode={setHasCode}
-            hasCode={hasCode}
-            readOnly={readOnly}
-            lazy={jsSetting === 'lazy'}
-            availableConstantsExpression={availableConstantsExpression}
-          >
-            {(val, onChange) => childFunc(val, onChange, name)}
-          </SettingsControl>
+          <PermissionsControl enabled={permissionSettings ?? false} propertyName={permissionPropertyName} readOnly={readOnly}>
+            <SettingsControl
+              propertyName={name}
+              mode="value"
+              onChange={onChange}
+              value={localValue}
+              setHasCode={setHasCode}
+              hasCode={hasCode}
+              readOnly={readOnly}
+              lazy={jsSetting === 'lazy'}
+              availableConstantsExpression={availableConstantsExpression}
+            >
+              {(val1, onChange1) => childFunc(val1, onChange1, name)}
+            </SettingsControl>
+          </PermissionsControl>
         );
       }}
     </ConfigurableFormItem>

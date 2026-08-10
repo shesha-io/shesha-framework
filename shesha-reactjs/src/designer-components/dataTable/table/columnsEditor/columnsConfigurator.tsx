@@ -50,7 +50,15 @@ export const ColumnsConfigurator: FC<IColumnsConfiguratorProps> = ({ value, onCh
         )}
         />
       )}
-      itemProperties={(itemProps) => (<ColumnProperties item={itemProps.item} onChange={itemProps.onChange} readOnly={itemProps.readOnly} parentComponentType={parentComponentType} />)}
+      itemProperties={(itemProps) => (
+        <ColumnProperties
+          key={itemProps.item.id}
+          item={itemProps.item}
+          onChange={itemProps.onChange}
+          readOnly={itemProps.readOnly}
+          parentComponentType={parentComponentType}
+        />
+      )}
       addItemText="Add Column"
     >
       {({ item }) => (

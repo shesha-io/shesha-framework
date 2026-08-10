@@ -6,14 +6,16 @@ import { FCUnwrapped } from '@/providers/form/models';
 const { Password } = Input;
 
 export const PasswordWrapper: FCUnwrapped<IPasswordSettingsInputProps> = (props) => {
-  const { value, onChange, readOnly, size, variant } = props;
+  const { value, onChange, readOnly = false, size, variant } = props;
   return (
     <Password
-      value={value as string}
-      onChange={onChange}
+      value={value}
+      onChange={(event) => {
+        onChange?.(event.target.value);
+      }}
       readOnly={readOnly}
       size={size}
-      variant={variant}
+      {...(variant ? { variant } : {})}
     />
   );
 };

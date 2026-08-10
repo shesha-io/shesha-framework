@@ -1,6 +1,6 @@
 import React from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import EntityTypeAutocomplete from "@/components/configurableItemAutocomplete/entityTypeAutocomplete";
+import EntityTypeAutocomplete, { EntityIdentifier } from "@/components/configurableItemAutocomplete/entityTypeAutocomplete";
 import { FormMarkup } from "@/interfaces";
 import { FileSearchOutlined } from "@ant-design/icons";
 import settingsFormJson from './settingsForm.json';
@@ -18,12 +18,12 @@ const EntityTypeAutocompleteComponent: EntityTypeAutocompleteComponentDefinition
   icon: <FileSearchOutlined />,
   Factory: ({ model }) => {
     return (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem<EntityIdentifier> model={model}>
         {(value, onChange) => {
           return (
             <EntityTypeAutocomplete
               type={model.entityTypeAutocompleteType}
-              value={value}
+              value={value ?? undefined}
               onChange={onChange}
               baseModel={model.baseModel}
               readOnly={model.readOnly}

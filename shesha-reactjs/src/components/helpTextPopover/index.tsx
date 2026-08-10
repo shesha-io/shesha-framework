@@ -5,7 +5,7 @@ import React, { PropsWithChildren, FC } from 'react';
 
 
 export interface IHelpTextPopoverProps {
-  content?: string;
+  content?: string | undefined;
 }
 
 export const HelpTextPopover: FC<PropsWithChildren<IHelpTextPopoverProps>> = ({ content, children }) => {

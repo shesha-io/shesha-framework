@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/strict-boolean-expressions: "error" */
 import { FormIdFullNameDtoAjaxResponse } from "@/apis/entityConfig";
 import { ConfigurableItemFullName, ConfigurableItemIdentifier, ConfigurableItemUid, FormFullName, IFormDto, isConfigurableItemFullName, isConfigurableItemRawId, IToolboxComponents } from "@/interfaces";
 import { extractAjaxResponse, IAjaxResponse, isAjaxSuccessResponse } from "@/interfaces/ajaxResponse";
@@ -9,8 +10,8 @@ import axios from "axios";
 import { URLS } from ".";
 import { IComponentSettings } from "../appConfigurator/models";
 import { migrateFormSettings } from "../form/migration/formSettingsMigrations";
-import { ConfigurationType, ICacheProvider, IGetFormPayload, IGetRefListPayload } from "../metadataDispatcher/entities/models";
-import { getEntityTypeIdentifierQueryParams } from "../metadataDispatcher/entities/utils";
+import { ConfigurationType, ICache, ICacheProvider, IGetFormPayload, IGetRefListPayload } from "../metadataDispatcher/entities/models";
+import { getEntityTypeIdentifierQueryParams, getEntityTypeName } from "../metadataDispatcher/entities/utils";
 import { IEntityTypeIdentifier } from "../sheshaApplication/publicApi/entities/models";
 import { ConfigurationLoadingError } from "./errors";
 import { ConfigurationDto, FormConfigurationDto, IClearFormCachePayload, IConfigurationItemDto, IGetComponentPayload, IUpdateComponentPayload, ReferenceListDto } from "./models";
@@ -30,13 +31,15 @@ type FetchConfigurationArgs<TId> = {
   md5: string | null;
 };
 
-type FetchConfigurationPayload = Omit<GetConfigurationArgs, 'skipCache'> & {
-  cachedConfiguration: IConfigurationItemDto | undefined;
+type FetchConfigurationPayload<TConfigDto extends PartialConfigurationDto = ConfigurationDto> = Omit<GetConfigurationArgs, 'skipCache'> & {
+  cachedConfiguration: IConfigurationItemDto<TConfigDto> | undefined;
 };
 
+export type PartialConfigurationDto = ConfigurationDto;
+
 export interface IConfigurationLoader {
-  getCachedConfigAsync<TConfigDto extends ConfigurationDto = ConfigurationDto>(args: GetConfigurationArgs): Promise<IConfigurationItemDto<TConfigDto> | undefined>;
-  getCurrentConfigAsync<TConfigDto extends ConfigurationDto = ConfigurationDto>(args: GetConfigurationArgs): PromisedValue<TConfigDto>;
+  getCachedConfigAsync<TConfigDto extends PartialConfigurationDto = ConfigurationDto>(args: GetConfigurationArgs): Promise<IConfigurationItemDto<TConfigDto> | undefined>;
+  getCurrentConfigAsync<TConfigDto extends PartialConfigurationDto = ConfigurationDto>(args: GetConfigurationArgs): PromisedValue<TConfigDto>;
   clearCacheAsync: (type: string, id: ConfigurableItemIdentifier) => Promise<void>;
 
   getFormAsync: (payload: IGetFormPayload) => Promise<IFormDto>;
@@ -48,6 +51,7 @@ export interface IConfigurationLoader {
 };
 
 export interface ConfigurationLoaderConstructorArgs {
+  applicationKey: string | undefined;
   httpClient: HttpClientApi;
   cacheProvider: ICacheProvider;
   designerComponents: IToolboxComponents;
@@ -95,6 +99,8 @@ type GetModulesResponse = {
 const LOOKUP_SUFFIX = '_lookup';
 
 export class ConfigurationLoader implements IConfigurationLoader {
+  #applicationKey: string | undefined;
+
   #httpClient: HttpClientApi;
 
   #designerComponents: IToolboxComponents;
@@ -106,6 +112,7 @@ export class ConfigurationLoader implements IConfigurationLoader {
   #modules: Map<string, ModuleInfo> | undefined;
 
   constructor(args: ConfigurationLoaderConstructorArgs) {
+    this.#applicationKey = args.applicationKey;
     this.#httpClient = args.httpClient;
     this.#cacheProvider = args.cacheProvider;
     this.#designerComponents = args.designerComponents;
@@ -128,6 +135,11 @@ export class ConfigurationLoader implements IConfigurationLoader {
 
     const response = await this.#httpClient.get<FormIdFullNameDtoAjaxResponse>(url);
     const dto = extractAjaxResponse(response.data);
+
+    // the endpoint returns an empty result when the entity has no configuration at all
+    if (!isDefined(dto) || isNullOrWhiteSpace(dto.name))
+      throw new Error(`Form of type '${formType}' is not configured for the entity '${getEntityTypeName(entityType)}'`);
+
     return { name: dto.name, module: dto.module };
   };
 
@@ -165,11 +177,11 @@ export class ConfigurationLoader implements IConfigurationLoader {
   };
 
   getCacheKeyByFullName = (module: string | null, name: string): string => {
-    return `${module}:${name}`;
+    return `${isNullOrWhiteSpace(module) ? null : module}:${name}`;
   };
 
   getConfigLookupAsync = async (type: string, id: ConfigurableItemFullName): Promise<ConfigurationLookup | undefined> => {
-    const cache = this.#cacheProvider.getCache(`${type}${LOOKUP_SUFFIX}`);
+    const cache = this.getLookupCache(type);
     if (isConfigurableItemFullName(id)) {
       const key = this.getCacheKeyByFullName(id.module, id.name);
       return await cache.getItem<ConfigurationLookup>(key) ?? undefined;
@@ -186,7 +198,7 @@ export class ConfigurationLoader implements IConfigurationLoader {
 
   getConfigRawIdLookupAsync = async (type: string, id: ConfigurableItemUid): Promise<ConfigurableItemFullName | undefined> => {
     const key = id;
-    const cache = this.#cacheProvider.getCache(`${type}${LOOKUP_SUFFIX}`);
+    const cache = this.getLookupCache(type);
     const rawIdLookup = await cache.getItem<ConfigurationRawIdLookup>(key);
     return rawIdLookup && !isNullOrWhiteSpace(rawIdLookup.module) && !isNullOrWhiteSpace(rawIdLookup.name)
       ? { name: rawIdLookup.name, module: rawIdLookup.module }
@@ -195,7 +207,7 @@ export class ConfigurationLoader implements IConfigurationLoader {
 
   setConfigRawIdLookupAsync = async (type: string, rawId: ConfigurableItemUid, fullName: ConfigurableItemFullName): Promise<void> => {
     const key = rawId;
-    const cache = this.#cacheProvider.getCache(`${type}${LOOKUP_SUFFIX}`);
+    const cache = this.getLookupCache(type);
     await cache.setItem(key, { module: fullName.module, name: fullName.name });
   };
 
@@ -224,7 +236,7 @@ export class ConfigurationLoader implements IConfigurationLoader {
   };
 
   setConfigLookupAsync = async (type: string, id: ConfigurableItemIdentifier, configuration: ConfigurationDto, topLevelModule?: string): Promise<void> => {
-    const cache = this.#cacheProvider.getCache(`${type}${LOOKUP_SUFFIX}`);
+    const cache = this.getLookupCache(type);
     if (isConfigurableItemFullName(id)) {
       const key = this.getCacheKeyByFullName(id.module, id.name);
       const lookup = await cache.getItem<ConfigurationLookup>(key);
@@ -260,7 +272,7 @@ export class ConfigurationLoader implements IConfigurationLoader {
   getConfigLookupModuleAsync = async (type: string, id: ConfigurableItemFullName, topLevelModule?: string): Promise<string | undefined> => {
     const lookup = await this.getConfigLookupAsync(type, id);
     if (!lookup) return undefined;
-    return topLevelModule
+    return !isNullOrWhiteSpace(topLevelModule)
       ? lookup[topLevelModule]
       : lookup._default;
   };
@@ -275,22 +287,38 @@ export class ConfigurationLoader implements IConfigurationLoader {
   };
 
   cleanConfigFullNameLookupAsync = async (type: string, id: ConfigurableItemFullName): Promise<void> => {
-    const cache = this.#cacheProvider.getCache(`${type}${LOOKUP_SUFFIX}`);
+    const cache = this.getLookupCache(type);
     const key = this.getCacheKeyByFullName(id.module, id.name);
     await cache.removeItem(key);
   };
 
   cleanConfigRawIdLookupAsync = async (type: string, id: ConfigurableItemUid): Promise<void> => {
-    const cache = this.#cacheProvider.getCache(`${type}${LOOKUP_SUFFIX}`);
+    const cache = this.getLookupCache(type);
     await cache.removeItem(id);
   };
 
-  getCachedConfigAsync = async <TConfigDto extends ConfigurationDto = ConfigurationDto>(args: GetConfigurationArgs): Promise<IConfigurationItemDto<TConfigDto> | undefined> => {
+  prefixCacheStorageName = (configType: string, name: string): string => {
+    if (configType === ConfigurationType.Form && !isNullOrWhiteSpace(this.#applicationKey)) {
+      return `${name}:${this.#applicationKey}`;
+    } else
+      return name;
+  };
+
+  getCache = (type: string, name: string): ICache => {
+    const cacheName = this.prefixCacheStorageName(type, name);
+    return this.#cacheProvider.getCache(cacheName);
+  };
+
+  getItemsCache = (type: string): ICache => this.getCache(type, type);
+
+  getLookupCache = (type: string): ICache => this.getCache(type, `${type}${LOOKUP_SUFFIX}`);
+
+  getCachedConfigAsync = async <TConfigDto extends PartialConfigurationDto = ConfigurationDto>(args: GetConfigurationArgs): Promise<IConfigurationItemDto<TConfigDto> | undefined> => {
     const { type, id, topLevelModule } = args;
 
-    const cache = this.#cacheProvider.getCache(type);
-
     if (isConfigurableItemFullName(id)) {
+      const cache = this.getItemsCache(type);
+
       const { module, name } = id;
       const lookupModule = await this.getConfigLookupModuleAsync(type, id, topLevelModule);
       const resolvedModule = lookupModule ?? module;
@@ -306,30 +334,30 @@ export class ConfigurationLoader implements IConfigurationLoader {
       return await this.getCachedConfigAsync<TConfigDto>({ ...args, id: lookup });
     }
 
-    throw new Error('Unknown configuration item identifier');
+    throw new Error('Unknown configuration item identifier', { cause: id });
   };
 
-  addConfigToCacheAsync = async (type: string, id: ConfigurableItemIdentifier, configuration: ConfigurationDto, cacheMd5: string, topLevelModule: string | undefined): Promise<void> => {
+  addConfigToCacheAsync = async <TConfigDto extends PartialConfigurationDto = ConfigurationDto>(type: string, id: ConfigurableItemIdentifier, configuration: TConfigDto, cacheMd5: string, topLevelModule: string | undefined): Promise<void> => {
     const { module, name } = configuration;
-    const cache = this.#cacheProvider.getCache(type);
+    const cache = this.getItemsCache(type);
 
     const key = this.getCacheKeyByFullName(module, name);
-    await cache.setItem<IConfigurationItemDto>(key, { cacheMd5, configuration });
+    await cache.setItem<IConfigurationItemDto<TConfigDto>>(key, { cacheMd5, configuration });
 
     await this.setConfigLookupAsync(type, id, configuration, topLevelModule);
   };
 
-  fetchConfigFromBackendByRawIdAsync = ({ type, id, md5 }: FetchConfigurationArgs<ConfigurableItemUid>): Promise<HttpResponse<IAjaxResponse<IConfigurationItemDto>>> => {
+  fetchConfigFromBackendByRawIdAsync = <TConfigDto extends PartialConfigurationDto = ConfigurationDto>({ type, id, md5 }: FetchConfigurationArgs<ConfigurableItemUid>): Promise<HttpResponse<IAjaxResponse<IConfigurationItemDto<TConfigDto>>>> => {
     const payload: GetConfigPayload = {
       itemType: type,
       id: id,
       md5: md5,
     };
     const url = buildUrl(URLS.GET_CONFIG, payload);
-    return this.#httpClient.get<IAjaxResponse<IConfigurationItemDto>>(url);
+    return this.#httpClient.get<IAjaxResponse<IConfigurationItemDto<TConfigDto>>>(url);
   };
 
-  fetchConfigFromBackendByFullNameAsync = ({ type, id, md5 }: FetchConfigurationArgs<ConfigurableItemFullName>): Promise<HttpResponse<IAjaxResponse<IConfigurationItemDto>>> => {
+  fetchConfigFromBackendByFullNameAsync = <TConfigDto extends PartialConfigurationDto = ConfigurationDto>({ type, id, md5 }: FetchConfigurationArgs<ConfigurableItemFullName>): Promise<HttpResponse<IAjaxResponse<IConfigurationItemDto<TConfigDto>>>> => {
     const payload: GetCurrentConfigPayload = {
       itemType: type,
       name: id.name,
@@ -337,14 +365,14 @@ export class ConfigurationLoader implements IConfigurationLoader {
       md5: md5,
     };
     const url = buildUrl(URLS.GET_CURRENT_CONFIG, payload);
-    return this.#httpClient.get<IAjaxResponse<IConfigurationItemDto>>(url);
+    return this.#httpClient.get<IAjaxResponse<IConfigurationItemDto<TConfigDto>>>(url);
   };
 
-  fetchConfigFromBackendAsync = async ({ type, id, cachedConfiguration, topLevelModule }: FetchConfigurationPayload): Promise<IConfigurationItemDto> => {
+  fetchConfigFromBackendAsync = async <TConfigDto extends PartialConfigurationDto = ConfigurationDto>({ type, id, cachedConfiguration, topLevelModule }: FetchConfigurationPayload<TConfigDto>): Promise<IConfigurationItemDto<TConfigDto>> => {
     try {
       const httpResponse = isConfigurableItemFullName(id)
-        ? await this.fetchConfigFromBackendByFullNameAsync({ type, id, md5: cachedConfiguration?.cacheMd5 ?? null })
-        : await this.fetchConfigFromBackendByRawIdAsync({ type, id, md5: cachedConfiguration?.cacheMd5 ?? null });
+        ? await this.fetchConfigFromBackendByFullNameAsync<TConfigDto>({ type, id, md5: cachedConfiguration?.cacheMd5 ?? null })
+        : await this.fetchConfigFromBackendByRawIdAsync<TConfigDto>({ type, id, md5: cachedConfiguration?.cacheMd5 ?? null });
 
       const response = httpResponse.data;
       if (isAjaxSuccessResponse(response)) {
@@ -381,10 +409,10 @@ export class ConfigurationLoader implements IConfigurationLoader {
 
   getExistingConfigRequestKey = (id: ConfigurableItemIdentifier, topLevelModule: string | undefined): string => {
     const idText = isConfigurableItemFullName(id)
-      ? `${id.module}/${id.name}`
+      ? `${isNullOrWhiteSpace(id.module) ? null : id.module}/${id.name}`
       : id;
 
-    return topLevelModule
+    return !isNullOrWhiteSpace(topLevelModule)
       ? `${topLevelModule}:${idText}`
       : idText;
   };
@@ -398,7 +426,7 @@ export class ConfigurationLoader implements IConfigurationLoader {
     return requests;
   };
 
-  getExistingConfigRequest = ({ type, id, topLevelModule }: GetConfigurationArgs): PromisedValue<ConfigurationDto> | undefined => {
+  getExistingConfigRequest = ({ type, id, topLevelModule }: GetConfigurationArgs): PromisedValue<PartialConfigurationDto> | undefined => {
     const requests = this.getExistingRequests(type);
     const key = this.getExistingConfigRequestKey(id, topLevelModule);
     return requests[key];
@@ -418,8 +446,12 @@ export class ConfigurationLoader implements IConfigurationLoader {
     });
   };
 
-  getCurrentConfigAsync = <TConfigDto extends ConfigurationDto = ConfigurationDto>(args: GetConfigurationArgs): PromisedValue<TConfigDto> => {
+  getCurrentConfigAsync = <TConfigDto extends PartialConfigurationDto = ConfigurationDto>(args: GetConfigurationArgs): PromisedValue<TConfigDto> => {
     const { id, type, topLevelModule, skipCache } = args;
+    if (!isConfigurableItemRawId(id) && !isConfigurableItemFullName(id))
+      return new StatefulPromise<TConfigDto>((_resolve, reject) => {
+        reject(new ConfigurationLoadingError(getConfigurationNotFoundMessage(type, undefined)));
+      });
 
     if (!skipCache) {
       const existingRequest = this.getExistingConfigRequest(args);

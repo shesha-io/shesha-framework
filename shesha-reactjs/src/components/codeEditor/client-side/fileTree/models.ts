@@ -24,7 +24,8 @@ export interface Directory extends FileItemProps {
 }
 
 export type FileTreeNode = TreeDataNode & {
-  dirName?: string;
-  uri?: UriComponents;
-  parentId?: string;
+  dirName?: string | undefined;
+  uri?: UriComponents | undefined;
+  parentId?: string | undefined;
+  children?: FileTreeNode[] | undefined;
 };

@@ -6,7 +6,7 @@ import { SizableColumns } from '../sizableColumns';
 import classNames from 'classnames';
 
 
-export interface IListEditorRendererProps extends PropsWithChildren<any> {
+export interface IListEditorRendererProps extends PropsWithChildren {
   /**
    * Sidebar props
    */
@@ -21,7 +21,7 @@ export const ListEditorRenderer: FC<IListEditorRendererProps> = ({
 
   return (
     <SizableColumns
-      sizes={[75, 25]}
+      sizes={[60, 40]}
       minSize={150}
       expandToMin={false}
       gutterSize={8}

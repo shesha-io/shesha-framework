@@ -1,9 +1,13 @@
 import { IButtonGroupItemBase, isDynamicItem, isGroup } from "@/providers/buttonGroupConfigurator/models";
+import { isDefined } from "@/utils/nullables";
 import { getStringPropertyOrUndefined } from "@/utils/object";
 
 /** Migrate entityTypeShortAlias to entityType */
-export const migrateButtonGroupDynamicItems = (items: IButtonGroupItemBase[]): IButtonGroupItemBase[] => {
-  return items?.map((item) => {
+export const migrateButtonGroupDynamicItems = (items: IButtonGroupItemBase[] | undefined): IButtonGroupItemBase[] => {
+  if (!isDefined(items))
+    return [];
+
+  return items.map((item) => {
     return isGroup(item)
       ? {
         ...item,
@@ -16,8 +20,8 @@ export const migrateButtonGroupDynamicItems = (items: IButtonGroupItemBase[]): I
             ? {
               ...item.dynamicItemsConfiguration,
               settings: {
-                ...item.dynamicItemsConfiguration?.settings,
-                entityType: getStringPropertyOrUndefined(item.dynamicItemsConfiguration?.settings, "entityTypeShortAlias"),
+                ...item.dynamicItemsConfiguration.settings,
+                entityType: item.dynamicItemsConfiguration.settings ? getStringPropertyOrUndefined(item.dynamicItemsConfiguration.settings, "entityTypeShortAlias") : undefined,
                 entityTypeShortAlias: undefined,
               },
             }

@@ -26,10 +26,10 @@ const AddressInputComponent: IToolboxComponent<IAddressInputComponentProps> = {
     const finalStyle =
       !model.enableStyleOnReadonly && model.readOnly
         ? {
-          ...model.allStyles.fontStyles,
-          ...model.allStyles.dimensionsStyles,
+          ...model.allStyles?.fontStyles,
+          ...model.allStyles?.dimensionsStyles,
         }
-        : model.allStyles.fullStyle;
+        : model.allStyles?.fullStyle;
 
     if (model.hidden) return null;
 

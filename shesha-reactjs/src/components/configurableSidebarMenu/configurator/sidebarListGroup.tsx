@@ -10,12 +10,12 @@ import { useActualContextData } from '@/hooks';
 export interface IContainerRenderArgs {
   id?: string;
   items: ISidebarMenuItem[];
-  onChange: (newValue: ISidebarMenuItem[], changeDetails: ItemChangeDetails) => void;
+  onChange: (newValue: ISidebarMenuItem[], changeDetails?: ItemChangeDetails | undefined) => void;
 }
 
 export interface ISidebarMenuGroupProps {
   item: ISidebarGroup;
-  onChange: (newValue: ISidebarGroup, changeDetails: ItemChangeDetails) => void;
+  onChange: (newValue: ISidebarGroup, changeDetails?: ItemChangeDetails | undefined) => void;
   containerRendering: (args: IContainerRenderArgs) => React.ReactNode;
 }
 

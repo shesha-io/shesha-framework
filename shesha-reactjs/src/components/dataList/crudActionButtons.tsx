@@ -1,6 +1,6 @@
-import { CloseCircleOutlined, DeleteOutlined, EditOutlined, PlusCircleOutlined, SaveOutlined } from '@ant-design/icons';
-import React, { useMemo } from 'react';
 import { useDataListCrud } from '@/providers/dataListCrudContext/index';
+import { CloseCircleOutlined, DeleteOutlined, EditOutlined, PlusCircleOutlined, SaveOutlined } from '@ant-design/icons';
+import React from 'react';
 import ActionButton, { IActionButtonProps } from '../actionButton/index';
 import { useStyles } from './styles/styles';
 
@@ -17,7 +17,6 @@ export const CrudActionButtons = (): React.JSX.Element => {
     allowDelete,
     saveError,
     allowChangeMode,
-    autoSave,
     isSaving,
     isDeleting,
     deletingError,
@@ -59,72 +58,57 @@ export const CrudActionButtons = (): React.JSX.Element => {
     });
   };
 
-  const buttons = useMemo<IActionButtonProps[]>(() => {
-    const allButtons: IActionButtonProps[] = [
-      {
-        title: 'Add',
-        executer: onSaveCreateClick,
-        icon: <PlusCircleOutlined />,
-        isVisible: isNewObject,
-        loading: isSaving,
-        error: saveError,
+  const buttons: IActionButtonProps[] = [
+    {
+      title: 'Add',
+      executer: onSaveCreateClick,
+      icon: <PlusCircleOutlined />,
+      isVisible: isNewObject,
+      loading: isSaving,
+      error: saveError,
+    },
+    {
+      title: 'Edit',
+      executer: onEditClick,
+      icon: <EditOutlined />,
+      isVisible: allowEdit && mode === 'read',
+    },
+    {
+      title: 'Save',
+      executer: () => {
+        void onSaveUpdateClick();
       },
-      {
-        title: 'Edit',
-        executer: onEditClick,
-        icon: <EditOutlined />,
-        isVisible: allowEdit && mode === 'read',
+      icon: <SaveOutlined />,
+      isVisible: /* !autoSave &&*/ allowEdit && mode === 'update',
+      loading: isSaving,
+      error: saveError,
+    },
+    {
+      title: 'Cancel edit',
+      executer: () => {
+        void onCancelEditClick();
       },
-      {
-        title: 'Save',
-        executer: () => {
-          void onSaveUpdateClick();
-        },
-        icon: <SaveOutlined />,
-        isVisible: /* !autoSave &&*/ allowEdit && mode === 'update',
-        loading: isSaving,
-        error: saveError,
+      icon: <CloseCircleOutlined />,
+      isVisible: /* !autoSave &&*/ allowEdit && mode === 'update' && allowChangeMode,
+    },
+    {
+      title: 'Reset',
+      executer: () => {
+        void onCancelEditClick();
       },
-      {
-        title: 'Cancel edit',
-        executer: () => {
-          void onCancelEditClick();
-        },
-        icon: <CloseCircleOutlined />,
-        isVisible: /* !autoSave &&*/ allowEdit && mode === 'update' && allowChangeMode,
-      },
-      {
-        title: 'Reset',
-        executer: () => {
-          void onCancelEditClick();
-        },
-        icon: <CloseCircleOutlined />,
-        isVisible: /* !autoSave &&*/ isNewObject || (allowEdit && mode === 'update' && !allowChangeMode),
-      },
-      {
-        title: 'Delete',
-        confirmationText: 'Are you sure you want to delete this item?',
-        executer: onDeleteClick,
-        icon: <DeleteOutlined />,
-        isVisible: allowDelete && (mode === 'read' || (mode === 'update' && !allowChangeMode)),
-        loading: isDeleting,
-        error: deletingError,
-      },
-    ];
-    return allButtons.filter((b) => b.isVisible);
-  }, [
-    isNewObject,
-    allowDelete,
-    allowEdit,
-    mode,
-    performCreate,
-    allowChangeMode,
-    autoSave,
-    isSaving,
-    saveError,
-    isDeleting,
-    deletingError,
-  ]);
+      icon: <CloseCircleOutlined />,
+      isVisible: /* !autoSave &&*/ isNewObject || (allowEdit && mode === 'update' && !allowChangeMode),
+    },
+    {
+      title: 'Delete',
+      confirmationText: 'Are you sure you want to delete this item?',
+      executer: onDeleteClick,
+      icon: <DeleteOutlined />,
+      isVisible: allowDelete && (mode === 'read' || (mode === 'update' && !allowChangeMode)),
+      loading: isDeleting,
+      error: deletingError,
+    },
+  ].filter((b) => b.isVisible);
 
   return (
     <div className={styles.shaDatalistComponentItemCheckbox}>

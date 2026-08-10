@@ -48,7 +48,9 @@ import { TextComponentDefinition } from '@/designer-components/text/models';
 import { TextAreaComponentDefinition } from '@/designer-components/textArea/interfaces';
 import { TextFieldComponentDefinition } from '@/designer-components/textField/interfaces';
 import { TimeFieldComponentDefinition } from '@/designer-components/timeField/models';
-import { ComponentDefinition, IConfigurableFormComponent, IPropertyMetadata, IPropertySetting } from '@/interfaces';
+import { ComponentDefinition, IConfigurableFormComponent, InteractionType, IPropertyMetadata, IPropertySetting } from '@/interfaces';
+import { StandardEventHandler } from '@/designer-components/_common/events';
+import { ContainerCheckerComponentDefinition } from '@/designer-components/containerChecker/interfaces';
 
 // Create a union of all your component definitions
 type AllComponentDefinitions =
@@ -83,6 +85,7 @@ type AllComponentDefinitions =
   NumberFieldComponentDefinition |
   PermissionAutocompleteComponentDefinition |
   PropertyAutocompleteComponentDefinition |
+  ContainerCheckerComponentDefinition |
   PropertyRouterComponentDefinition |
   QueryBuilderComponentDefinition |
   RadioComponentDefinition |
@@ -126,12 +129,12 @@ type CustomOmit<T, K extends keyof T> = {
 /** Extract settings from component definition */
 export type FluentSettings<T extends IConfigurableFormComponent> = CustomOmit<T, "id" | "type" | "hidden" | "readOnly"> & {
   id?: string;
-  // ToDo: AS - remove hidden from this check
+  // ToDo: AS - remove hidden after migration all components
   /** @deprecated Use `visible` instead (inversion of `hidden`) */
   hidden?: boolean | IPropertySetting<boolean> | undefined;
-  readOnly?: boolean | IPropertySetting<boolean> | undefined;
-  visible?: boolean;
+  visible?: boolean | undefined;
   visibleJs?: string | undefined;
+  readOnly?: boolean | IPropertySetting<boolean> | undefined;
 };
 
 /** Extract settings from component definition */
@@ -139,16 +142,44 @@ export type ExtractComponentSettings<TDef extends ComponentDefinition> = TDef ex
 
 /** Extract config for all components */
 export type AllComponentsConfig<T extends AllComponentDefinitions = AllComponentDefinitions> = {
-  [K in T["type"]]: Extract<T, { type: K }> extends ComponentDefinition<infer _TType, infer TSettings> ? FluentSettings<TSettings> : never;
+  [K in T["type"]]: Extract<T, { type: K }> extends ComponentDefinition<infer _TType, infer TSettings, infer _CalcModel> ? FluentSettings<TSettings> : never;
 };
 
-export type StandardEventHandler = 'onChange' | 'onBlur' | 'onFocus' | 'onClick';
 export type StandardAppearancePanel = 'font' | 'dimensions' | 'border' | 'shadow' | 'background' | 'customStyle' | 'marginPadding';
 
+/**
+ * A single entry passed to `stdAppearancePanels`. Either a plain panel name (renders the full panel
+ * with its default title), or an object that names the panel and optionally:
+ * - `exclude`: sub-inputs to drop, matched against the trailing segment of each input's `propertyName`
+ *   (e.g. `exclude: ['align', 'type']` drops `font.align` and `font.type`).
+ * - `panelTitle`: overrides the collapsible panel's heading (e.g. `{ name: 'font', panelTitle: 'Check Mark' }`).
+ */
+export type StandardAppearancePanelConfig = StandardAppearancePanel | { name: StandardAppearancePanel; exclude?: string[]; panelTitle?: string };
+
+export type StandardFormBuilderMethods<TConfig extends Record<ComponentTypes, object> = Record<ComponentTypes, object>> = {
+  stdPrefixSuffixInputs(visibleJs?: string | undefined): FluentFormBuilder<TConfig>;
+  stdVisibleEditableInputs(interactionType: InteractionType): FluentFormBuilder<TConfig>;
+  stdPropertyLabelInputs(): FluentFormBuilder<TConfig>;
+  stdPlaceholderDescriptionInputs(): FluentFormBuilder<TConfig>;
+  stdCollapsiblePanel(label: string, components: (fbf: FormBuilder) => FormBuilder, collapsedByDefault?: boolean | undefined, visibleJs?: string | undefined): FluentFormBuilder<TConfig>;
+  stdContainer(components: (fbf: FormBuilder) => FormBuilder, visibleJs?: string | undefined): FluentFormBuilder<TConfig>;
+  stdContainerChecker(components: (fbf: FormBuilder) => FormBuilder, visibleJs?: string | undefined): FluentFormBuilder<TConfig>;
+  stdEventHandler(propertyName: string, label: string, tooltip: string, availableConstantsExpression?: string | undefined, meta?: IPropertyMetadata | undefined): FluentFormBuilder<TConfig>;
+  /** `events` is readonly so the shared `ALL_INPUT_EVENTS` constant can be passed directly. */
+  stdEventHandlers(events: readonly StandardEventHandler[], valueType?: string | undefined, prefix?: string | undefined, prefixLabel?: string | undefined): FluentFormBuilder<TConfig>;
+  stdFontPanel(propertyName?: string, exclude?: string[], panelTitle?: string): FluentFormBuilder<TConfig>;
+  stdLayoutPanel(isResponsive?: boolean, propertyName?: string, panelTitle?: string): FluentFormBuilder<TConfig>;
+  stdDimensionsPanel(propertyName?: string, exclude?: string[], panelTitle?: string): FluentFormBuilder<TConfig>;
+  stdBorderPanel(isResponsive?: boolean, propertyName?: string, exclude?: 'border' | 'radius' | undefined, panelTitle?: string): FluentFormBuilder<TConfig>;
+  stdBackgroundPanel(isResponsive?: boolean, propertyName?: string, exclude?: string[], panelTitle?: string): FluentFormBuilder<TConfig>;
+  stdShadowPanel(propertyName?: string, exclude?: string[], panelTitle?: string): FluentFormBuilder<TConfig>;
+  stdMarginPaddingPanel(propertyName?: string, panelTitle?: string): FluentFormBuilder<TConfig>;
+  stdCustomStylePanel(propertyName?: string, panelTitle?: string): FluentFormBuilder<TConfig>;
+  stdAppearancePanels(appearancePanels: StandardAppearancePanelConfig[], removeStyleRouter?: boolean): FluentFormBuilder<TConfig>;
+};
+
 /** Fluent form builder */
-export type FluentFormBuilder<
-  TConfig extends Record<ComponentTypes, object>,
-> = {
+export type FluentFormBuilder<TConfig extends Record<ComponentTypes, object>> = {
   [K in keyof TConfig as `add${ToPascalCase<K>}`]: K extends string
     ? (props: TConfig[K], metadata?: IPropertyMetadata) => FluentFormBuilder<TConfig>
     : never;
@@ -161,24 +192,9 @@ export type FluentFormBuilder<
    * Falls back gracefully when the type isn't a registered toolbox component.
    */
   addByType<TProps extends FluentSettings<IConfigurableFormComponent>>(type: string, props: TProps, metadata?: IPropertyMetadata): FluentFormBuilder<TConfig>;
-} & {
-  // standart components and component groups
-  stdPrefixSuffixInputs(visibleJs?: string | undefined): FluentFormBuilder<TConfig>;
-  stdVisibleEditableInputs(): FluentFormBuilder<TConfig>;
-  stdPropertyLabelInputs(): FluentFormBuilder<TConfig>;
-  stdPlaceholderDescriptionInputs(): FluentFormBuilder<TConfig>;
-  stdCollapsiblePanel(label: string, components: (fbf: FormBuilder) => FormBuilder, meta?: IPropertyMetadata | undefined): FluentFormBuilder<TConfig>;
-  stdEventHandler(propertyName: string, label: string, tooltip: string, meta?: IPropertyMetadata | undefined): FluentFormBuilder<TConfig>;
-  stdEventHandlers(events: StandardEventHandler[]): FluentFormBuilder<TConfig>;
-  stdFontPanel(propertyName?: string): FluentFormBuilder<TConfig>;
-  stdDimensionsPanel(propertyName?: string): FluentFormBuilder<TConfig>;
-  stdBorderPanel(): FluentFormBuilder<TConfig>;
-  stdBackgroundPanel(): FluentFormBuilder<TConfig>;
-  stdShadowPanel(): FluentFormBuilder<TConfig>;
-  stdMarginPaddingPanel(propertyName?: string): FluentFormBuilder<TConfig>;
-  stdCustomStylePanel(propertyName?: string): FluentFormBuilder<TConfig>;
-  stdAppearancePanels(appearancePanels: StandardAppearancePanel[]): FluentFormBuilder<TConfig>;
-};
+} &
+// standart components and component groups
+StandardFormBuilderMethods<TConfig>;
 
 /** Fluent form builder */
 export type FormBuilder = FluentFormBuilder<AllComponentsConfig>;

@@ -54,7 +54,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       jsSetting: true,
                     },
                   ],
-                  hidden: { _code: 'return  getSettingValue(data?.hideLabel);', _mode: 'code', _value: false } as any,
+                  hidden: { _code: 'return  getSettingValue(data?.hideLabel);', _mode: 'code', _value: false },
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -164,7 +164,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     _mode: "code",
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
                     _value: "",
-                  } as any,
+                  },
                   components: [
                     ...fbf()
                       .addCollapsiblePanel({

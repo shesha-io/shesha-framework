@@ -25,8 +25,8 @@ export interface PermissionedObjectDto {
 export type PermissionedObjectDtoListAjaxResponse = IAjaxResponse<PermissionedObjectDto[] | null>;
 
 export interface PermissionedObjectGetAllTreeQueryParams {
-  type?: string;
-  showHidden?: boolean;
+  type?: string | undefined;
+  showHidden?: boolean | undefined;
 }
 
 export type UsePermissionedObjectGetAllTreeProps = Omit<

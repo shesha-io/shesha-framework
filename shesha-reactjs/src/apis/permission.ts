@@ -2,6 +2,7 @@ import { useGet, UseGetProps } from '@/hooks/useGet';
 import { useMutateForEndpoint } from '@/hooks/useMutate';
 import { IAjaxResponse } from '@/interfaces/ajaxResponse';
 import { GuidEntityReferenceDto } from './common';
+import { buildUrl } from '@/utils';
 
 export interface PermissionDto {
   id?: string | null;
@@ -10,9 +11,9 @@ export interface PermissionDto {
   displayName?: string | null;
   description?: string | null;
   parentName?: string | null;
-  isDbPermission?: boolean;
-  parent?: PermissionDto;
-  child?: PermissionDto[] | null;
+  isDbPermission?: boolean | undefined;
+  parent?: PermissionDto | undefined;
+  child?: PermissionDto[] | undefined;
 }
 
 export interface PermissionGetAllTreeQueryParams {
@@ -36,14 +37,13 @@ export const usePermissionUpdateParent = () =>
   useMutateForEndpoint<PermissionDto>({ url: `/api/services/app/Permission/UpdateParent`, httpVerb: 'PUT' });
 
 export interface PermissionDeleteQueryParams {
-  name?: string;
+  name: string;
   'api-version'?: string;
 }
 export const usePermissionDelete = () =>
   useMutateForEndpoint<PermissionDeleteQueryParams>({
     url: (data) => {
-      const params = `name=${data.name}` + (Boolean(data['api-version']) ? `&api-version=${data['api-version']}` : '');
-      return `/api/services/app/Permission/Delete?${params}`;
+      return buildUrl("/api/services/app/Permission/Delete", data);
     },
     httpVerb: 'DELETE',
   });

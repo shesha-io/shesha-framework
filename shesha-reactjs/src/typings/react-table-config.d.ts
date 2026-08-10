@@ -65,7 +65,7 @@ declare module 'react-table' {
     // note that having Record here allows you to add anything to the options, this matches the spirit of the
     // underlying js library, but might be cleaner if it's replaced by a more specific type that matches your
     // feature set, this is a safe default.
-    Record<string, any> { }
+    Record<string, unknown> { }
 
   export interface Hooks<D extends Record<string, unknown> = Record<string, unknown>>
     extends UseExpandedHooks<D>,
@@ -124,7 +124,7 @@ declare module 'react-table' {
     UseResizeColumnsColumnProps<D>,
     UseSortByColumnProps<D> { }
 
-  export interface Cell<D extends Record<string, unknown> = Record<string, unknown>, _V = any>
+  export interface Cell<D extends Record<string, unknown> = Record<string, unknown>, _V = unknown>
     extends UseGroupByCellProps<D>,
     UseRowStateCellProps<D> { }
 
@@ -132,4 +132,15 @@ declare module 'react-table' {
     options: TableOptions<D>,
     ...plugins: Array<PluginHook<D>>
   ): TableInstance<D>;
+
+  export type IAnchoredDirection = 'left' | 'right';
+
+  export interface UseTableColumnOptions/* <D extends object>*/ {
+    // Custom column properties. To be reviewed
+    isVisible?: boolean | undefined;
+    show?: boolean | undefined;
+    anchored?: IAnchoredDirection | undefined;
+    columnType?: DatatableColumnType | undefined;
+    description?: string | undefined;
+  };
 }

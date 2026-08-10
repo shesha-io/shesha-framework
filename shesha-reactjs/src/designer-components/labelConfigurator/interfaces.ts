@@ -3,12 +3,11 @@ import { IRadioOption } from "../settingsInput/interfaces";
 import { ComponentDefinition } from "@/interfaces";
 
 export interface ILabelComponentProps extends IConfigurableFormComponent {
-  value?: boolean;
-  alignPropName?: string;
-  labelPropName?: string;
-  hideLabelPropName?: string;
-  labelAlignOptions?: IRadioOption[];
-  placeholder?: string;
+  alignPropName?: string | undefined;
+  labelPropName?: string | undefined;
+  hideLabelPropName?: string | undefined;
+  labelAlignOptions?: IRadioOption[] | undefined;
+  placeholder?: string | undefined;
 }
 
 export interface ILabelComponentCalcProps {

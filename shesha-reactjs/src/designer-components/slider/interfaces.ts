@@ -10,8 +10,8 @@ export interface ISliderComponentPropsV0 extends IConfigurableFormComponent {
 }
 
 export interface ISliderComponentProps extends IConfigurableFormComponent {
-  min?: number;
-  max?: number;
+  min?: number | undefined;
+  max?: number | undefined;
 }
 
 export type SliderComponentDefinition = ComponentDefinition<"slider", ISliderComponentProps>;

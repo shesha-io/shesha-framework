@@ -1,12 +1,17 @@
 import React from 'react';
-import { isDefined } from "@/utils/nullables";
+import { isDefined, isNotNullOrWhiteSpace } from "@/utils/nullables";
 import { executeScriptSync } from '@/providers/form/utils';
 import { IPropertySetting } from '..';
 
+export const DIMENSION_UNITS = ['px', '%', 'vw', 'vh', 'em', 'rem', 'auto', 'calc', 'none', 'fr', 'in', 'cm', 'mm', 'pt', 'pc'] as const;
+export type DimensionUnits = typeof DIMENSION_UNITS[number];
 export interface DimensionValue {
   value: number;
-  unit: 'px' | '%' | 'vw' | 'vh' | 'em' | 'rem' | 'auto' | 'none';
+  unit: DimensionUnits;
+  calc?: string;
 }
+
+const isDimensionUint = (unit: string): unit is DimensionUnits => DIMENSION_UNITS.includes(unit as DimensionUnits);
 
 /**
  * Type guard to check if a value is a valid dimension input type
@@ -31,8 +36,16 @@ export const parseDimension = (value: string | number | null | undefined | IProp
     return { value, unit: 'px' };
   }
 
+  if (typeof value === 'string') {
+    if (value.trimStart().indexOf('calc') > -1)
+      return { value: 0, unit: 'calc', calc: value };
+    if (value.trimStart().indexOf('-') > 1 || value.trimStart().indexOf('+') > 1) {
+      return { value: 0, unit: 'calc', calc: `calc(${value})` };
+    }
+  }
+
   // Handle JavaScript code execution for dynamic values
-  if (typeof value === 'object' && value._mode === 'code' && value._code) {
+  if (typeof value === 'object' && value._mode === 'code' && isDefined(value._code)) {
     try {
       const executedValue = executeScriptSync(value._code, context ?? {});
 
@@ -72,12 +85,12 @@ export const parseDimension = (value: string | number | null | undefined | IProp
   }
 
   // Match number with optional unit
-  const match = /^(-?\d+(?:\.\d+)?)(px|%|vw|vh|em|rem)?$/.exec(value.trim());
+  const match = /^(-?\d+(?:\.\d+)?)(px|%|vw|vh|em|rem|fr|in|cm|mm|pt|pc)?$/.exec(value.trim());
   if (match && match[1] !== undefined) {
-    const unit = match[2] || 'px';
+    const unit = isDefined(match[2]) ? match[2] : 'px';
 
     // Type guard: validate unit is one of the allowed values
-    if (unit === 'px' || unit === '%' || unit === 'vw' || unit === 'vh' || unit === 'em' || unit === 'rem') {
+    if (isDimensionUint(unit)) {
       return {
         value: parseFloat(match[1]),
         unit,
@@ -88,6 +101,9 @@ export const parseDimension = (value: string | number | null | undefined | IProp
   return null;
 };
 
+export const DIMENSION_VALUES = ['auto', 'none', 'min-content', 'max-content', 'fit-content', 'stretch', '50%', '100%'];
+export const GRID_DIMENSION_VALUES = ['auto', 'min-content', 'max-content', '1fr'];
+
 /**
  * Add 'px' unit to bare numbers, preserve existing units
  * @param value - The value to add units to
@@ -95,11 +111,25 @@ export const parseDimension = (value: string | number | null | undefined | IProp
  * @returns String with appropriate units, or undefined
  */
 export const addPx = (value: number | string | null | undefined, context?: object): string | undefined => {
+  const trimmedValue = typeof value === 'string' ? value.trim() : undefined;
+
+  if (isNotNullOrWhiteSpace(trimmedValue)) {
+    const isKeyword = DIMENSION_VALUES.includes(trimmedValue);
+    // `[^;{}]*` keeps the passthrough limited to a single declaration.
+    const isMathFunction = /^(calc|min|max|clamp)\([^;{}]*\)$/i.test(trimmedValue);
+
+    if (isKeyword || isMathFunction) return trimmedValue;
+  }
+
   const parsed = parseDimension(value, context);
   if (!parsed) return undefined;
 
   if (parsed.unit === 'auto' || parsed.unit === 'none') {
     return parsed.unit;
+  }
+
+  if (parsed.unit === 'calc') {
+    return parsed.calc ?? 'auto';
   }
 
   return `${parsed.value}${parsed.unit}`;
@@ -131,7 +161,7 @@ export const hasNumber = (str: string | number): boolean => typeof str === 'numb
 export const getTagStyle = (style: React.CSSProperties = {}, hasColor: boolean = false): React.CSSProperties => {
   const { backgroundColor, backgroundImage, borderColor, borderTopColor,
     borderLeftColor, borderRightColor, borderBottomColor, color, ...rest } = style;
-  return hasColor ? { ...rest, margin: 0 } : style;
+  return hasColor ? { ...rest } : style;
 };
 
 /**
@@ -140,8 +170,8 @@ export const getTagStyle = (style: React.CSSProperties = {}, hasColor: boolean =
  * @param maxPercentage - The maximum percentage value (default: 98)
  * @returns The capped value or the original value if not a percentage string
  */
-export const capPercentageWidth = (value: number | string | null | undefined, maxPercentage: number = 98): number | string | null | undefined => {
-  if (!value) return value;
+export const capPercentageWidth = (value: number | string | null | undefined, maxPercentage: number = 98): number | string | undefined => {
+  if (!isDefined(value)) return undefined;
 
   // Check if it's a percentage string (e.g., "99%", "100%")
   if (typeof value === 'string' && value.endsWith('%')) {

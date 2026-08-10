@@ -1,7 +1,7 @@
 "use client";
 
 import { Alert, Card, Col, Row } from 'antd';
-import data from 'public/meta.json';
+import data from '../../public/meta.json';
 import React, { FC } from 'react';
 import { useLayoutSelection } from '@/hooks';
 import { LAYOUT_MODE } from '@/components/mainLayout/constant';
@@ -25,7 +25,7 @@ const Home: FC = () => {
         <Alert title="This is a list of plugins the boilerplate uses" type="info" style={{ marginBottom: "15px" }} />
 
         <Row style={{ flex: 1 }}>
-          {(data?.plugins ?? []).map((plugin) => (
+          {(data.plugins).map((plugin) => (
             <Col md={6} key={plugin.name} data-testid="container">
               <Card title={plugin.name}>{plugin.description}</Card>
             </Col>

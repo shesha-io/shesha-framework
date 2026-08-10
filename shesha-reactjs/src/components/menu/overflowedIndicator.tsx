@@ -1,20 +1,20 @@
 import { ISidebarGroup, ISidebarMenuItem } from "@/interfaces/sidebar";
 import { MenuOutlined } from "@ant-design/icons";
-import React, { FC, ReactNode } from "react";
+import React, { FC } from "react";
 
 interface IProps {
   className: string;
 }
 
 interface ISidebarGroupMutate extends Omit<ISidebarGroup, "title"> {
-  title?: ReactNode | string | any;
+  title?: string | undefined;
 }
 
 export const getMutatedMenuItem = (
   item: ISidebarGroupMutate,
 ): ISidebarMenuItem => ({
   ...item,
-  title: item.title,
+  title: item.title ?? "",
 });
 
 export const OverflowedIndicator: FC<IProps> = ({ className }) => (

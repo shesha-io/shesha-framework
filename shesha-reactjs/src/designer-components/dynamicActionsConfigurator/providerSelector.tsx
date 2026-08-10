@@ -1,11 +1,12 @@
 import { TreeSelect } from 'antd';
 import { useDynamicActionsDispatcher } from '@/providers/index';
 import React, { FC, ReactNode, useMemo } from 'react';
+import { isDefined } from '@/utils/nullables';
 
 export interface IProviderSelectorProps {
   value?: string;
   onChange?: (newValue: string) => void;
-  readOnly?: boolean;
+  readOnly?: boolean | undefined;
 }
 
 interface ITreeItem {
@@ -36,27 +37,10 @@ export const ProviderSelector: FC<IProviderSelectorProps> = ({ readOnly, value, 
       if (!providers.hasOwnProperty(owner))
         continue;
       const provider = providers[owner];
+      if (!isDefined(provider))
+        continue;
       const ownerNodes: ITreeItem[] = [];
 
-      /* TODO: evaluate dynamically
-      ownerActions.actions.forEach(action => {
-        const displayName = action.label ?? action.name;
-
-        ownerNodes.push({
-          title: (
-            <div>
-              <HelpTextPopover content={action.description}>
-                {displayName}
-              </HelpTextPopover>
-            </div>
-          ),
-          displayText: `${ownerActions.ownerName}: ${displayName}`,
-          value: getConfigurableActionFullName(owner, action.name),
-          children: null,
-          selectable: true,
-        });
-      });
-    */
       result.push({
         title: provider.contextValue.name,
         value: owner,
@@ -71,16 +55,16 @@ export const ProviderSelector: FC<IProviderSelectorProps> = ({ readOnly, value, 
 
   return (
     <TreeSelect
-      disabled={readOnly}
+      disabled={readOnly ?? false}
       showSearch
       style={{
         width: '100%',
       }}
-      value={value}
+      {...(value ? { value } : {})}
       styles={treeStyles}
       placeholder="Please select"
       allowClear
-      onChange={onChange}
+      {...(onChange ? { onChange } : {})}
       treeNodeLabelProp="displayText"
       treeData={treeData}
     >

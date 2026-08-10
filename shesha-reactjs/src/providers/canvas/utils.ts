@@ -1,7 +1,7 @@
 import { deepMergeValues } from "@/utils/object";
-import { DeviceTypes, IViewType } from "./contexts";
+import { DeviceTypes, ICanvasStateContext, IViewType } from "./contexts";
 import { DesktopOutlined, MobileOutlined, TabletOutlined } from '@ant-design/icons';
-import { MutableRefObject, useCallback, useEffect, useRef } from 'react';
+import { RefObject, useCallback, useEffect, useRef } from 'react';
 
 export const getDeviceTypeByWidth = (width: number): DeviceTypes => {
   return width > 724
@@ -68,6 +68,9 @@ export const dimensionRelativeToCanvas = (
 
 export const defaultDesignerWidth = `${(typeof window !== 'undefined' ? window.screen.availWidth : 1024)}px`;
 
+/** Sentinel value for the responsive Canvas preset in the dropdown */
+export const CANVAS_PRESET_SENTINEL = '__CANVAS_RESPONSIVE__' as const;
+
 export interface IAutoZoomParams {
   currentZoom: number;
   designerWidth?: string;
@@ -77,14 +80,23 @@ export interface IAutoZoomParams {
   viewType?: IViewType;
 };
 
+/**
+ * Predefined zoom levels (percentages) that the +/- buttons step through.
+ * Direct numeric entry in the zoom input is free-form within [minZoom, maxZoom]
+ * and is not restricted to these levels.
+ */
+export const ZOOM_LEVELS = [25, 50, 75, 80, 100, 125, 150, 200] as const;
+
 export const DEFAULT_OPTIONS = {
-  minZoom: 25,
-  maxZoom: 200,
+  minZoom: 10,
+  maxZoom: 400,
+  defaultZoom: 80,
   sizes: [25, 50, 25],
   configTreePanelWidth: (val: number = 20): number => typeof window !== 'undefined' ? (val / 100) * window.innerWidth : 200,
   gutter: 4,
   designerWidth: defaultDesignerWidth,
   zoomStep: 1,
+  zoomLevels: ZOOM_LEVELS,
   modalMargins: 32,
 };
 
@@ -152,7 +164,7 @@ export const usePinchZoom = (
   minZoom: number = DEFAULT_OPTIONS.minZoom,
   maxZoom: number = DEFAULT_OPTIONS.maxZoom,
   isAutoWidth: boolean = false,
-): MutableRefObject<HTMLDivElement | null> => {
+): RefObject<HTMLDivElement | null> => {
   const elementRef = useRef<HTMLDivElement>(null);
   const lastDistance = useRef<number>(0);
   const initialZoom = useRef<number>(currentZoom);
@@ -259,10 +271,10 @@ export const screenSizeOptions = [
     label: 'Desktop 1440', value: '1440px', icon: DesktopOutlined,
   },
   {
-    label: 'Desktop 1920', value: '1920px', icon: DesktopOutlined,
+    label: 'Full HD 1920x1080', value: '1920px', icon: DesktopOutlined,
   },
   {
-    label: 'Default', value: defaultDesignerWidth, icon: DesktopOutlined,
+    label: 'Canvas', value: CANVAS_PRESET_SENTINEL, icon: DesktopOutlined,
   },
 ];
 
@@ -270,4 +282,14 @@ export const getDeviceStyle = (data: Record<string, object | undefined> | undefi
   if (!data) return {};
   if (!device) return data[defaultDevice] ?? {};
   return deepMergeValues(data[defaultDevice] ?? {}, data[device] ?? {});
+};
+
+
+export const applyCanvasSize = (state: ICanvasStateContext, width: number | string, deviceType: DeviceTypes): ICanvasStateContext => {
+  return {
+    ...state,
+    designerWidth: typeof width === 'string' ? width : `${width}px`,
+    designerDevice: deviceType,
+    activeDevice: getSmallerDevice(deviceType, state.physicalDevice ?? "desktop"),
+  };
 };

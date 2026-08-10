@@ -1,12 +1,16 @@
 import { IModelItem } from '@/interfaces/modelConfigurator';
+import { isDefined } from '@/utils/nullables';
 
 export interface IItemPosition {
   ownerArray: IModelItem[];
   index: number;
 }
-export const getItemPositionById = (items: IModelItem[], id: string): IItemPosition => {
+export const getItemPositionById = (items: IModelItem[], id: string): IItemPosition | undefined => {
   for (let index = 0; index < items.length; index++) {
     const item = items[index];
+    if (!isDefined(item))
+      continue;
+
     if (item.id === id)
       return {
         ownerArray: items,
@@ -19,10 +23,10 @@ export const getItemPositionById = (items: IModelItem[], id: string): IItemPosit
       if (itemPosition) return itemPosition;
     }
   }
-  return null;
+  return undefined;
 };
 
-export const getItemById = (items: IModelItem[], id: string): IModelItem => {
+export const getItemById = (items: IModelItem[], id: string): IModelItem | undefined => {
   const position = getItemPositionById(items, id);
-  return position ? position.ownerArray[position.index] : null;
+  return position ? position.ownerArray[position.index] : undefined;
 };

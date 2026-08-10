@@ -82,7 +82,7 @@ export const joinUrlAndPath = (baseUrl: string, path: string): string => {
 export function removeURLParameter(url: string, parameter: string): string {
   if (!url) return url;
 
-  const [baseUrl, queryString = ''] = url.split('?');
+  const [baseUrl = "", queryString = ""] = url.split("?");
   if (queryString === '') return url;
 
   const parsed = qs.parse(queryString, { allowDots: true });

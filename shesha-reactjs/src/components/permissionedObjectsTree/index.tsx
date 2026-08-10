@@ -2,60 +2,67 @@ import GrouppedObjectsTree from '@/components/grouppedObjectsTree';
 import React, { FC, useEffect, useState } from 'react';
 import { ApiOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
-import { PermissionedObjectDto, usePermissionedObjectGetAllTree } from '@/apis/permissionedObject';
-import { IConfigurableActionConfiguration, useConfigurableAction, useConfigurableActionDispatcher } from '@/providers';
+import { PermissionedObjectDto } from '@/apis/permissionedObject';
+import { IConfigurableActionConfiguration, useConfigurableAction, useConfigurableActionDispatcher, useHttpClient } from '@/providers';
 import { useLocalStorage } from '@/hooks';
 import { InterfaceOutlined } from '@/icons/interfaceOutlined';
 import { ISetGroupingArguments, getSetGroupingArgumentsForm } from './set-grouping-arguments';
 import { IUpdateItemArguments, updateItemArgumentsForm } from './update-item-arguments';
 import { ISetSearchTextArguments, setSearchTextArgumentsForm } from './set-search-text-arguments';
-import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
+import { extractAjaxResponse, IAjaxResponse } from '@/interfaces/ajaxResponse';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import ShaSpin from '../shaSpin';
+import { isDefined } from '@/utils/nullables';
+import { buildUrl } from '@/utils';
 
 export interface IPermissionedObjectsTreeProps {
-  objectsType?: string;
-  height?: string;
+  objectsType?: string | undefined;
+  height?: string | undefined;
 
-  defaultAccess?: number;
+  defaultAccess?: number | undefined;
 
   /**
    * A callback for when the value of this component changes
    */
-  onChange?: any;
+  onChange?: ((newValue: string | undefined) => void) | undefined;
 
-  formComponentName?: string;
+  formComponentName?: string | undefined;
 
-  formComponentId?: string;
+  formComponentId?: string | undefined;
 
-  onSelectAction?: IConfigurableActionConfiguration;
+  onSelectAction?: IConfigurableActionConfiguration | undefined;
 
-  searchText?: string;
+  searchText?: string | undefined;
 }
 
 export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props) => {
   const [openedKeys, setOpenedKeys] = useLocalStorage('shaPermissionedObjects.toolbox.objects.openedKeys.' + props.objectsType, ['']);
   const [searchText, setSearchText] = useLocalStorage('shaPermissionedObjects.toolbox.objects.search.' + props.objectsType, '');
   const [groupBy, setGroupBy] = useLocalStorage('shaPermissionedObjects.toolbox.objects.grouping.' + props.objectsType, '-');
-  const [allItems, setAllItems] = useState<PermissionedObjectDto[]>();
+  const [allItems, setAllItems] = useState<PermissionedObjectDto[]>([]);
 
   const { executeAction } = useConfigurableActionDispatcher();
   const allData = useAvailableConstantsData();
 
-  const fetcher = usePermissionedObjectGetAllTree({ queryParams: { type: props.objectsType }, lazy: true });
-  const { loading: isFetchingData, refetch } = fetcher;
+  const httpClient = useHttpClient();
+  const [isFetchingData, setIsFetchingData] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
 
     const loadData = async (): Promise<void> => {
       try {
-        const response = await refetch();
-        if (isMounted && isAjaxSuccessResponse(response)) {
-          setAllItems(response.result);
+        const url = buildUrl(`/api/services/app/PermissionedObject/GetAllTree`, { type: props.objectsType });
+        setIsFetchingData(true);
+        const response = await httpClient.get<IAjaxResponse<PermissionedObjectDto[] | null>>(url);
+        setIsFetchingData(false);
+        if (isMounted) {
+          const responseData = extractAjaxResponse(response.data);
+          setAllItems(responseData ?? []);
         }
       } catch (error) {
         console.error('Failed to fetch data:', error);
+        setIsFetchingData(false);
       }
     };
 
@@ -64,38 +71,42 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
     return () => {
       isMounted = false;
     };
-  }, [props.objectsType, refetch]);
+  }, [props.objectsType, httpClient]);
 
-  const [objectId, setObjectId] = useState("");
+  const [objectId, setObjectId] = useState<string>("");
 
-  const findItem = (items: PermissionedObjectDto[], key: string): PermissionedObjectDto => {
-    let res = null;
+  const findItem = (items: PermissionedObjectDto[], key: string): PermissionedObjectDto | undefined => {
+    let res = undefined;
     let i = 0;
-    while (items && !res && i < items.length) {
-      res = items[i]?.object === key ? items[i] : null;
-      if (!res) {
-        res = findItem(items[i].children, key);
+    while (!res && i < items.length) {
+      const item = items[i];
+      res = item && item.object === key
+        ? item
+        : undefined;
+      if (!res && item && item.children) {
+        res = findItem(item.children, key);
       }
       i++;
     }
     return res;
   };
 
+  const actionsOwnerUid = props.formComponentId ?? "";
+
   useConfigurableAction(
     {
       name: 'Update item',
       description: 'Update Permissioned object Tree item',
       owner: props.formComponentName || "Permissioned objects tree",
-      ownerUid: props.formComponentId,
+      ownerUid: actionsOwnerUid,
       hasArguments: true,
       argumentsFormMarkup: updateItemArgumentsForm,
       executer: (arg: IUpdateItemArguments) => {
-        const item = findItem(allItems, arg?.object);
+        const item = isDefined(arg.object) ? findItem(allItems, arg.object) : undefined;
         if (item) {
-          item.access = Number(arg?.access);
-          item.category = arg?.category;
-          item.description = arg?.description;
-          item.description = arg?.description;
+          item.access = Number(arg.access);
+          item.category = arg.category;
+          item.description = arg.description ?? null;
           setAllItems([...allItems]);
           setSearchText('');
         }
@@ -110,11 +121,11 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
       name: 'Set grouping',
       description: 'Set grouping',
       owner: props.formComponentName || "Permissioned objects tree",
-      ownerUid: props.formComponentId,
+      ownerUid: actionsOwnerUid,
       hasArguments: true,
       argumentsFormMarkup: getSetGroupingArgumentsForm,
       executer: (arg: ISetGroupingArguments) => {
-        setGroupBy(arg.group);
+        setGroupBy(arg.group ?? "");
         return Promise.resolve();
       },
     },
@@ -125,11 +136,11 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
       name: 'Set search text',
       description: 'Set grsearch textuping',
       owner: props.formComponentName || "Permissioned objects tree",
-      ownerUid: props.formComponentId,
+      ownerUid: actionsOwnerUid,
       hasArguments: true,
       argumentsFormMarkup: setSearchTextArgumentsForm,
       executer: (arg: ISetSearchTextArguments) => {
-        setSearchText(arg.searchText);
+        setSearchText(arg.searchText ?? "");
         return Promise.resolve();
       },
     },
@@ -145,9 +156,9 @@ export const PermissionedObjectsTree: FC<IPermissionedObjectsTreeProps> = (props
   };
 
   const onChangeHandler = (item: PermissionedObjectDto): void => {
-    setObjectId(item.id);
+    setObjectId(item.id ?? "");
     onChangeAction(item);
-    if (Boolean(props.onChange))
+    if (props.onChange)
       props.onChange(item.id);
   };
 

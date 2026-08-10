@@ -1,3 +1,5 @@
+import { FilterExpression } from "@/providers/dataTable/interfaces";
+
 export type IndexColumnFilterOption =
   | 'contains' |
   'startsWith' |
@@ -132,30 +134,28 @@ export interface IDataTableContexApi extends IHasModelType {
   selectedRows?: { [key in string]: string }[];
 }
 
-export type FilterExpression = string | object;
-
 export interface IStoredFilter {
   id: string;
 
   name: string;
 
-  tooltip?: string;
+  tooltip?: string | undefined;
 
-  expression?: FilterExpression;
+  expression?: FilterExpression | undefined;
 
-  selected?: boolean;
+  selected?: boolean | undefined;
 
-  defaultSelected?: boolean;
+  defaultSelected?: boolean | undefined;
 
-  sortOrder?: number;
+  sortOrder?: number | undefined;
 
   permissions?: string[] | undefined;
 
   //#region dynamic expressions
-  hasDynamicExpression?: boolean;
+  hasDynamicExpression?: boolean | undefined;
 
-  allFieldsEvaluatedSuccessfully?: boolean;
+  allFieldsEvaluatedSuccessfully?: boolean | undefined;
 
-  unevaluatedExpressions?: string[];
+  unevaluatedExpressions?: string[] | undefined;
   //#endregion
 }

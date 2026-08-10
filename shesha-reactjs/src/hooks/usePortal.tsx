@@ -1,8 +1,7 @@
 'use client';
 
-import { FC, PropsWithChildren, useEffect, useRef, useState } from 'react';
+import { FC, PropsWithChildren, ReactNode, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { ReactElement } from 'react-markdown/lib/react-markdown';
 
 /**
  * Custom hook that creates a portal component for a given container
@@ -21,7 +20,7 @@ export function usePortal(container: HTMLElement | null): FC<PropsWithChildren> 
   /**
    * Portal component that renders children into the target container
    */
-  const Portal: FC<PropsWithChildren> = ({ children }): ReactElement => {
+  const Portal: FC<PropsWithChildren> = ({ children }): ReactNode => {
     if (!portalRef.current) {
       portalRef.current = document.createElement('div');
       portalRef.current.setAttribute('data-portal', 'true');

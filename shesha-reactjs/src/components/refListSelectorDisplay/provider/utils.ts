@@ -1,3 +1,7 @@
+import { FetcherOptions } from '@/utils/fetchers';
+import { isIRefListItemGroup, RefListGroupItemProps } from './models';
+import { isDefined } from '@/utils/nullables';
+
 export const getRefListItems = (referenceList: string): FetcherOptions => {
   return {
     path: `/api/services/app/Entities/GetAll`,
@@ -10,37 +14,36 @@ export const getRefListItems = (referenceList: string): FetcherOptions => {
   };
 };
 
-import { FetcherOptions } from '@/utils/fetchers';
-import { IRefListItemGroup, RefListGroupItemProps } from './models';
-
 export interface IItemPosition {
   ownerArray: RefListGroupItemProps[];
   index: number;
 }
 
-export const getItemPositionById = (items: RefListGroupItemProps[], id: string): IItemPosition => {
+export const getItemPositionById = (items: RefListGroupItemProps[], id: string): IItemPosition | undefined => {
   for (let index = 0; index < items.length; index++) {
     const item = items[index];
+    if (!isDefined(item))
+      continue;
     if (item.id === id)
       return {
         ownerArray: items,
         index,
       };
 
-    const children = (item as IRefListItemGroup)?.childItems;
-
-    if (children) {
-      const itemPosition = getItemPositionById(children, id);
-      if (itemPosition) return itemPosition;
+    if (isIRefListItemGroup(item)) {
+      if (item.childItems) {
+        const itemPosition = getItemPositionById(item.childItems, id);
+        if (itemPosition) return itemPosition;
+      }
     }
   }
 
-  return null;
+  return undefined;
 };
 
-export const getItemById = (items: RefListGroupItemProps[], id: string): RefListGroupItemProps => {
+export const getItemById = (items: RefListGroupItemProps[], id: string): RefListGroupItemProps | undefined => {
   const position = getItemPositionById(items, id);
-  return position ? position.ownerArray[position.index] : null;
+  return position ? position.ownerArray[position.index] : undefined;
 };
 
 export const getComponentModel = (item: RefListGroupItemProps): RefListGroupItemProps & { visible: boolean; allowChangeVisibility: boolean } => ({
@@ -50,7 +53,7 @@ export const getComponentModel = (item: RefListGroupItemProps): RefListGroupItem
 });
 
 
-export function fadeColor(color: string, fadePercentage: number): string {
+export function fadeColor(color: string | undefined, fadePercentage: number): string {
   // Helper function to parse RGB values from different formats
 
   if (!color || typeof color !== 'string') {
@@ -120,7 +123,7 @@ export function fadeColor(color: string, fadePercentage: number): string {
 
     if (color.startsWith('hsl')) {
       const matches = color.match(/-?\d+(\.\d+)?/g);
-      if (!matches || matches.length < 3) {
+      if (!matches || matches.length < 3 || !matches[1] || !matches[2]) {
         return null;
       }
       const h = parseFloat(matches[0]);

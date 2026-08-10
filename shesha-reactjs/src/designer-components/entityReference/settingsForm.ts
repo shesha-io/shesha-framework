@@ -104,7 +104,14 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   labelAlign: 'right',
                   parentId: dataTabId,
                   hidden: false,
-                  validate: { required: true },
+                  validate: {
+                    required: {
+                      _code: 'return !getSettingValue(data?.getEntityUrl);',
+                      _mode: 'code',
+                      _value: true,
+                    },
+                  },
+                  validationDependencies: ['getEntityUrl'],
                   settingsValidationErrors: [],
                   jsSetting: true,
                 })
@@ -123,8 +130,9 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       _code: 'return !getSettingValue(data?.entityType);',
                       _mode: 'code',
                       _value: true,
-                    } as any,
+                    },
                   },
+                  validationDependencies: ['entityType'],
                   dataSourceUrl: '/api/services/app/Api/Endpoints',
                   settingsValidationErrors: [],
                   useRawValues: true,
@@ -150,7 +158,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         _code: 'return getSettingValue(data?.readOnly);',
                         _mode: 'code',
                         _value: false,
-                      } as any,
+                      },
                       parentId: dataTabId,
                     },
                   ],
@@ -170,12 +178,12 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         _code: 'return getSettingValue(data?.readOnly);',
                         _mode: 'code',
                         _value: false,
-                      } as any,
+                      },
                       hidden: {
                         _code: 'return getSettingValue(data?.displayType) !== "icon";',
                         _mode: 'code',
                         _value: false,
-                      } as any,
+                      },
                     },
                     {
                       id: nanoid(),
@@ -188,24 +196,24 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         _code: 'return getSettingValue(data?.readOnly);',
                         _mode: 'code',
                         _value: false,
-                      } as any,
+                      },
                       hidden: {
                         _code: 'return getSettingValue(data?.displayType) !== "textTitle";',
                         _mode: 'code',
                         _value: false,
-                      } as any,
+                      },
                     },
                   ],
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
                   parentId: dataTabId,
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                   hidden: {
                     _code: 'return getSettingValue(data?.displayType) !== "displayProperty";',
                     _mode: 'code',
                     _value: false,
-                  } as any,
+                  },
                   inputs: [
                     {
                       id: nanoid(),
@@ -218,8 +226,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       modelType: {
                         _code: 'return getSettingValue(data?.entityType);',
                         _mode: 'code',
-                        _value: false,
-                      } as any,
+                      },
                       autoFillProps: false,
                     },
                   ],
@@ -266,12 +273,12 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         _code: 'return getSettingValue(data?.readOnly);',
                         _mode: 'code',
                         _value: false,
-                      } as any,
+                      },
                       hidden: {
                         _code: 'return getSettingValue(data?.formSelectionMode) !== "dynamic";',
                         _mode: 'code',
                         _value: false,
-                      } as any,
+                      },
                     },
                     {
                       id: nanoid(),
@@ -285,12 +292,12 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                         _code: 'return getSettingValue(data?.readOnly);',
                         _mode: 'code',
                         _value: false,
-                      } as any,
+                      },
                       hidden: {
                         _code: 'return getSettingValue(data?.formSelectionMode) !== "name";',
                         _mode: 'code',
                         _value: false,
-                      } as any,
+                      },
                     },
                   ],
                 })
@@ -304,7 +311,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     _code: 'return getSettingValue(data?.entityReferenceType) !== "Dialog";',
                     _mode: 'code',
                     _value: false,
-                  } as any,
+                  },
                   content: {
                     id: nanoid(),
                     components: [
@@ -316,7 +323,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             _code: 'return getSettingValue(data?.entityReferenceType) !== "Dialog";',
                             _mode: 'code',
                             _value: false,
-                          } as any,
+                          },
                           inputs: [
                             {
                               id: nanoid(),
@@ -356,7 +363,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 _code: 'return getSettingValue(data?.footerButtons) !== "custom";',
                                 _mode: 'code',
                                 _value: false,
-                              } as any,
+                              },
                               jsSetting: true,
                             },
                             {
@@ -371,10 +378,10 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                 { value: 'PUT', label: 'PUT' },
                               ],
                               hidden: {
-                                _code: 'return getSettingValue(data?.footerButtons) === "default";',
+                                _code: 'return getSettingValue(data?.footerButtons) !== "default";',
                                 _mode: 'code',
                                 _value: false,
-                              } as any,
+                              },
                               jsSetting: true,
                             },
                           ],
@@ -386,12 +393,12 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             _code: 'return getSettingValue(data?.readOnly);',
                             _mode: 'code',
                             _value: false,
-                          } as any,
+                          },
                           hidden: {
                             _code: 'return getSettingValue(data?.entityReferenceType) !== "Dialog";',
                             _mode: 'code',
                             _value: false,
-                          } as any,
+                          },
                           inputs: [
                             {
                               id: nanoid(),
@@ -453,7 +460,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             _code: 'return getSettingValue(data?.handleSuccess) !== true;',
                             _mode: 'code',
                             _value: false,
-                          } as any,
+                          },
                           content: {
                             id: nanoid(),
                             components: [
@@ -495,7 +502,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             _code: 'return getSettingValue(data?.handleFail) !== true;',
                             _mode: 'code',
                             _value: false,
-                          } as any,
+                          },
                           content: {
                             id: nanoid(),
                             components: [
@@ -526,7 +533,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     _code: 'return getSettingValue(data?.entityReferenceType) !== "Quickview";',
                     _mode: 'code',
                     _value: false,
-                  } as any,
+                  },
                   content: {
                     id: nanoid(),
                     components: [
@@ -567,7 +574,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     _mode: 'code',
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
                     _value: '',
-                  } as any,
+                  },
                   components: [
                     ...fbf()
                       .addCollapsiblePanel({
@@ -787,7 +794,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                               })
                               .addSettingsInputRow({
                                 id: 'backgroundStyle-gradientColors',
@@ -806,7 +813,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                                 hideLabel: true,
                               })
                               .addSettingsInputRow({
@@ -826,7 +833,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                               })
                               .addSettingsInputRow({
                                 id: 'backgroundStyle-image',
@@ -845,7 +852,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                               })
                               .addSettingsInputRow({
                                 id: 'backgroundStyleRow-storedFile',
@@ -855,7 +862,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                                 inputs: [
                                   {
                                     type: 'textField',
@@ -875,7 +882,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                                 inputs: [
                                   {
                                     type: 'customDropdown',
@@ -891,7 +898,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                         'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";',
                                       _mode: 'code',
                                       _value: false,
-                                    } as any,
+                                    },
                                   },
                                   {
                                     type: 'customDropdown',
@@ -923,7 +930,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                               })
                               .toJson(),
                           ],
@@ -1080,7 +1087,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   _code: 'return  getSettingValue(data?.readOnly);',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                                 id: nanoid(),
                                 inputType: 'codeEditor',
                                 propertyName: 'style',
@@ -1106,7 +1113,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
             components: [
               ...fbf()
                 .addSettingsInput({
-                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false } as any,
+                  readOnly: { _code: 'return getSettingValue(data?.readOnly);', _mode: 'code', _value: false },
                   id: nanoid(),
                   inputType: 'permissions',
                   propertyName: 'permissions',

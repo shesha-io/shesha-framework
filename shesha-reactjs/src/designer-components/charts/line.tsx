@@ -16,6 +16,7 @@ import { useShaFormDataUpdate } from '@/providers/form/providers/shaFormProvider
 import useStyles from './styles';
 import ChartLoader from './components/chartLoader';
 import { useChartFilters } from './hooks/useChartFilters';
+import { isDefined } from '@/utils/nullables';
 
 const LineChartComponent: IToolboxComponent<IChartProps> = {
   type: 'lineChart',
@@ -36,7 +37,7 @@ const LineChartComponent: IToolboxComponent<IChartProps> = {
       shadowStyles,
       stylingBoxAsCSS,
       jsStyle,
-    } = model.allStyles;
+    } = model.allStyles ?? {};
 
     const wrapperStyles = removeUndefinedProps({
       ...dimensionsStyles,
@@ -69,7 +70,7 @@ const LineChartComponent: IToolboxComponent<IChartProps> = {
       return (
         <ConfigurableFormItem model={model} className={styles.formItem}>
           <div className={cx(styles.loadingContainer)}>
-            <ChartLoader chartType={model.chartType} />
+            {isDefined(model.chartType) && <ChartLoader chartType={model.chartType} />}
             <div className={cx(styles.loadingText)}>Fetching data...</div>
           </div>
         </ConfigurableFormItem>
@@ -154,9 +155,24 @@ const LineChartComponent: IToolboxComponent<IChartProps> = {
         weight: '400',
         color: '#000000',
       },
+      axisLabelFont: prev.axisLabelFont ?? prev.titleFont ?? {
+        family: 'Segoe UI',
+        size: 16,
+        weight: '400',
+        color: '#000000',
+      },
       legendFont: prev.legendFont ?? {
         family: 'Segoe UI',
         size: 12,
+        weight: '400',
+        color: '#000000',
+      },
+    }))
+    .add<IChartProps>(10, (prev) => ({
+      ...prev,
+      axisLabelFont: prev.axisLabelFont ?? prev.titleFont ?? {
+        family: 'Segoe UI',
+        size: 16,
         weight: '400',
         color: '#000000',
       },

@@ -75,7 +75,7 @@ namespace Shesha.Services
 
             entity.StartedOn = DateTime.Now;
             entity.Status = BootstrapperStartupStatus.Started;
-            return await _repository.InsertOrUpdateAsync(entity); ;
+            return await _repository.InsertOrUpdateAsync(entity);
         }
 
         public async Task<BootstrapperStartup> StartBootstrapperAsync(Type bootstrapper)

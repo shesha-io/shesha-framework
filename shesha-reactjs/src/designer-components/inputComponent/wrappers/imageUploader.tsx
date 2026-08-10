@@ -4,7 +4,7 @@ import { FCUnwrapped } from '@/providers/form/models';
 import { ImagePicker } from '../../imagePicker';
 
 export const ImageUploaderWrapper: FCUnwrapped<IImageUploaderSettingsInputProps> = (props) => {
-  const { value, onChange, readOnly } = props;
+  const { value, onChange, readOnly = false } = props;
   return (
     <ImagePicker
       value={value}

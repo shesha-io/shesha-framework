@@ -3,9 +3,9 @@ import React, { FC } from 'react';
 import ErrorIconPopover from './errorIconPopover';
 
 export interface IComponentErrorProps {
-  errors?: IModelValidation;
-  type?: ISheshaErrorTypes;
-  message?: string;
+  errors?: IModelValidation | undefined;
+  type?: ISheshaErrorTypes | undefined;
+  message?: string | undefined;
 }
 
 const ComponentError: FC<IComponentErrorProps> = ({

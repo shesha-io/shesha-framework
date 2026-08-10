@@ -1,5 +1,5 @@
 import { IErrorInfo } from "@/interfaces";
-import { MutableRefObject, ReactNode } from "react";
+import { RefObject, ReactNode } from "react";
 import { MoveNodePayload } from "../apis";
 import {
   CloseDocumentResponse,
@@ -71,6 +71,7 @@ export interface IConfigurationStudio {
   readonly treeExpandedKeys: React.Key[];
   readonly treeSelectedKeys: React.Key[];
   readonly treeSelectedNode: TreeNode | undefined;
+  readonly treeSelectedNodes: TreeNode[];
   readonly treeSelectedItemNode: ConfigItemTreeNode | undefined;
   readonly isTreeDragging: boolean;
   readonly renderedDocs: Map<string, ReactNode>;
@@ -81,7 +82,7 @@ export interface IConfigurationStudio {
   setIsTreeDragging: (isDragging: boolean) => void;
 
   readonly itemTypes: ItemTypeDefinition[];
-  toolbarRef: MutableRefObject<HTMLDivElement>;
+  toolbarRef: RefObject<HTMLDivElement>;
   setDocumentToolbarRerenderer: (itemId: string, forceRender: ForceRenderFunc) => void;
 
   onTreeNodeExpand: (expandedKeys: React.Key[]) => void;
@@ -94,6 +95,7 @@ export interface IConfigurationStudio {
 
   //#region selection and tabs
   selectTreeNode: (node?: TreeNode) => void;
+  setMultiSelection: (nodeIds: string[]) => Promise<void>;
   clickTreeNode: (node: TreeNode) => void;
 
   docs: IDocumentInstance[];

@@ -1,4 +1,4 @@
-import { IStyleType } from "@/providers/form/models";
+import { IStyleValue } from "@/providers/form/models";
 import { IButtonComponentProps } from "./interfaces";
 
 export const buttonTypes = [
@@ -11,10 +11,6 @@ export const buttonTypes = [
     value: 'primary',
   },
   {
-    label: 'Dashed',
-    value: 'dashed',
-  },
-  {
     label: 'Link',
     value: 'link',
   },
@@ -22,14 +18,11 @@ export const buttonTypes = [
     label: 'Text',
     value: 'text',
   },
-  {
-    label: 'Ghost',
-    value: 'ghost',
-  },
 ];
 
-export const defaultStyles = (prev: IButtonComponentProps): IStyleType => {
+export const defaultStyles = (prev: IButtonComponentProps): IStyleValue & { buttonType: IButtonComponentProps['buttonType'] } => {
   return {
+    buttonType: 'default',
     background: { type: 'color' },
     font: { weight: '400', size: 14, type: 'Segoe UI', align: 'center' },
     border: {
@@ -37,6 +30,7 @@ export const defaultStyles = (prev: IButtonComponentProps): IStyleType => {
       radius: { all: 8 },
       hideBorder: false,
       borderType: 'all',
+      radiusType: 'all',
     },
     shadow: {
       color: '#000000',
@@ -46,7 +40,7 @@ export const defaultStyles = (prev: IButtonComponentProps): IStyleType => {
       spreadRadius: 0,
     },
     dimensions: {
-      width: prev.block ? '100%' : 'auto',
+      width: prev.block === true ? '100%' : 'auto',
       height: '32px', minHeight: '0px',
       maxHeight: 'auto',
       minWidth: '0px',

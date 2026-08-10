@@ -53,7 +53,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     _code: 'return  !getSettingValue(data?.showHeader);',
                     _mode: 'code',
                     _value: false,
-                  } as any,
+                  },
                 })
                 .addCollapsiblePanel({
                   id: 'placement-panel-s4gmBg31azZC0UjZjpfTm',
@@ -97,7 +97,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                             _code: 'return  !getSettingValue(data?.showFooter);',
                             _mode: 'code',
                             _value: false,
-                          } as any,
+                          },
                           parentId: 'placement-content-s4gmBg31azZC0UjZjpfTm',
                           components: fbf()
                             .addCollapsiblePanel({
@@ -193,7 +193,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     _mode: 'code',
                     _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
                     _value: '',
-                  } as any,
+                  },
                   components: [
                     ...fbf()
                       .addSettingsInput({
@@ -334,7 +334,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                               })
                               .addSettingsInputRow({
                                 id: 'backgroundStyle-gradientColors-row-main',
@@ -353,7 +353,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                                 hideLabel: true,
                               })
                               .addSettingsInputRow({
@@ -373,7 +373,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                               })
                               .addSettingsInputRow({
                                 id: 'backgroundStyle-image-row-main',
@@ -392,7 +392,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                               })
                               .addSettingsInputRow({
                                 id: 'backgroundStyleRow-storedFile-main',
@@ -402,7 +402,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                                 inputs: [
                                   {
                                     type: 'textField',
@@ -422,7 +422,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                                 inputs: [
                                   {
                                     type: 'customDropdown',
@@ -438,7 +438,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                         'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";',
                                       _mode: 'code',
                                       _value: false,
-                                    } as any,
+                                    },
                                   },
                                   {
                                     type: 'customDropdown',
@@ -470,7 +470,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                               })
                               .toJson(),
                           ],
@@ -496,7 +496,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                     'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);',
                                   _mode: 'code',
                                   _value: false,
-                                } as any,
+                                },
                                 inputs: [
                                   {
                                     type: 'button',
@@ -649,7 +649,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           _code: 'return !getSettingValue(data?.showHeader);',
                           _mode: 'code',
                           _value: false,
-                        } as any,
+                        },
                         content: {
                           id: 'stylePnl-header-main',
                           components: [
@@ -720,7 +720,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                             'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "color";',
                                           _mode: 'code',
                                           _value: false,
-                                        } as any,
+                                        },
                                       })
                                       .addSettingsInputRow({
                                         id: 'backgroundStyle-gradientColors-header',
@@ -739,7 +739,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                             'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "gradient";',
                                           _mode: 'code',
                                           _value: false,
-                                        } as any,
+                                        },
                                         hideLabel: true,
                                       })
                                       .addSettingsInputRow({
@@ -759,7 +759,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                             'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "url";',
                                           _mode: 'code',
                                           _value: false,
-                                        } as any,
+                                        },
                                       })
                                       .addSettingsInputRow({
                                         id: 'backgroundStyle-image-header',
@@ -778,7 +778,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                             'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "image";',
                                           _mode: 'code',
                                           _value: false,
-                                        } as any,
+                                        },
                                       })
                                       .addSettingsInputRow({
                                         id: 'backgroundStyleRow-storedFile-header',
@@ -788,7 +788,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                             'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) !== "storedFile";',
                                           _mode: 'code',
                                           _value: false,
-                                        } as any,
+                                        },
                                         inputs: [
                                           {
                                             type: 'textField',
@@ -807,7 +807,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                             'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) === "color";',
                                           _mode: 'code',
                                           _value: false,
-                                        } as any,
+                                        },
                                         inline: true,
                                         inputs: [
                                           {
@@ -824,7 +824,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                                 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) === "color";',
                                               _mode: 'code',
                                               _value: false,
-                                            } as any,
+                                            },
                                           },
                                           {
                                             type: 'customDropdown',
@@ -856,7 +856,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                             'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.headerStyles?.background?.type) === "color";',
                                           _mode: 'code',
                                           _value: false,
-                                        } as any,
+                                        },
                                       })
                                       .toJson(),
                                   ],
@@ -955,7 +955,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           _code: 'return !getSettingValue(data?.showFooter);',
                           _mode: 'code',
                           _value: false,
-                        } as any,
+                        },
                         content: {
                           id: 'stylePnl-footer-main',
                           components: [
@@ -1026,7 +1026,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                             'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerStyles?.background?.type) !== "color";',
                                           _mode: 'code',
                                           _value: false,
-                                        } as any,
+                                        },
                                       })
                                       .addSettingsInputRow({
                                         id: 'backgroundStyle-gradientColors-footer',
@@ -1045,7 +1045,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                             'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerStyles?.background?.type) !== "gradient";',
                                           _mode: 'code',
                                           _value: false,
-                                        } as any,
+                                        },
                                         hideLabel: true,
                                       })
                                       .addSettingsInputRow({
@@ -1065,7 +1065,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                             'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerStyles?.background?.type) !== "url";',
                                           _mode: 'code',
                                           _value: false,
-                                        } as any,
+                                        },
                                       })
                                       .addSettingsInputRow({
                                         id: 'footerbackgroundStyle-image',
@@ -1084,7 +1084,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                             'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerStyles?.background?.type) !== "image";',
                                           _mode: 'code',
                                           _value: false,
-                                        } as any,
+                                        },
                                       })
                                       .addSettingsInputRow({
                                         id: 'footerbackgroundStyleRow-storedFile',
@@ -1094,7 +1094,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                             'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerStyles?.background?.type) !== "storedFile";',
                                           _mode: 'code',
                                           _value: false,
-                                        } as any,
+                                        },
                                         inputs: [
                                           {
                                             type: 'textField',
@@ -1114,7 +1114,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                             'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerStyles?.background?.type) === "color";',
                                           _mode: 'code',
                                           _value: false,
-                                        } as any,
+                                        },
                                         inputs: [
                                           {
                                             type: 'customDropdown',
@@ -1130,7 +1130,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                                 'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerStyles?.background?.type) === "color";',
                                               _mode: 'code',
                                               _value: false,
-                                            } as any,
+                                            },
                                           },
                                           {
                                             type: 'customDropdown',
@@ -1162,7 +1162,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                             'return getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.footerStyles?.background?.type) === "color";',
                                           _mode: 'code',
                                           _value: false,
-                                        } as any,
+                                        },
                                       })
                                       .toJson(),
                                   ],

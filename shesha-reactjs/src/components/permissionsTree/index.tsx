@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useRef, useState, FC, Key } from 'react';
+import React, { ReactNode, useEffect, useState, FC, Key } from 'react';
 import SearchBox from '../formDesigner/toolboxSearchBox';
 import { IUpdateItemArguments, updateItemArgumentsForm } from './update-item-arguments';
 import {
@@ -22,12 +22,18 @@ import { useShaFormInstanceOrUndefined } from '@/providers/form/providers/shaFor
 import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import ShaSpin from '../shaSpin';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { FirstArgument } from '@/interfaces/utilityTypes';
+import { extractErrorInfo } from '@/utils/errors';
+import { useEffectOnce } from '@/hooks/useEffectOnce';
+import { isNonEmptyArray } from '@/utils/array';
+import { BasicDataNode, DataNode } from 'antd/es/tree';
 
 interface IDataNode {
   title: React.JSX.Element;
   key: string;
   isLeaf?: boolean;
-  children?: IDataNode[];
+  children?: IDataNode[] | undefined;
   icon?: ReactNode;
   checkable?: boolean;
   selectable?: boolean;
@@ -38,50 +44,57 @@ interface IPermissionModule {
   permissions: PermissionDto[];
 }
 
+type OnDragStartHandler<TNode extends BasicDataNode = DataNode> = Required<TreeProps<TNode>>["onDragStart"];
+type OnDropHandler<TNode extends BasicDataNode = DataNode> = Required<TreeProps<TNode>>["onDrop"];
+type OnTreeCheck<TNode extends BasicDataNode = DataNode> = Required<TreeProps<TNode>>["onCheck"];
+
+type DroppedNodeInfo<TNode extends BasicDataNode = DataNode> = FirstArgument<OnDropHandler<TNode>>;
+
 export type PermissionsTreeMode = 'Edit' | 'Select' | 'View';
 
 export interface IPermissionsTreeProps {
   formComponentId: string;
   formComponentName: string;
-  value?: string[];
-  updateKey?: string;
-  onChange?: (values?: string[]) => void;
+  value?: string[] | undefined;
+  onChange?: ((values: string[] | null) => void) | undefined;
   /**
    * If true, the automplete will be in read-only mode. This is not the same sa disabled mode
    */
-  readOnly?: boolean;
-  height?: number;
+  readOnly?: boolean | undefined;
+  height?: number | undefined;
   mode: PermissionsTreeMode;
 
-  hideSearch?: boolean;
-  searchText?: string;
+  hideSearch?: boolean | undefined;
+  searchText?: string | undefined;
 
-  onSelectAction?: IConfigurableActionConfiguration;
+  onSelectAction?: IConfigurableActionConfiguration | undefined;
 }
 
 const emptyId = '_';
 const withoutModule = '[no-module]';
 
 const getErrorMessageOrDefault = (error: unknown, defaultMessage: string = "Unknown error"): string => {
-  return typeof (error) === 'object' && 'message' in error && typeof (error.message) === 'string' ? error.message : defaultMessage;
+  return extractErrorInfo(error)?.message ?? defaultMessage;
 };
+
+const EMPTY_PERMISSIONS: PermissionDto[] = [];
 
 export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, onSelectAction, ...rest }) => {
   const { message } = App.useApp();
   const [openedKeys, setOpenedKeys] = useLocalStorage('shaPermissions.toolbox.objects.openedKeys', ['']);
   const [searchText, setSearchText] = useLocalStorage('shaPermissions.toolbox.objects.search', '');
 
-  const [visibleNodes, setVisibleNodes] = useState<IDataNode[]>();
-  const [allItems, setAllItems] = useState<PermissionDto[]>(null);
-  const [allModules, setAllModules] = useState<GuidEntityReferenceDto[]>(null);
+  const [visibleNodes, setVisibleNodes] = useState<IDataNode[]>([]);
+  const [allItems, setAllItems] = useState<PermissionDto[]>(EMPTY_PERMISSIONS);
+  const [allModules, setAllModules] = useState<GuidEntityReferenceDto[]>([]);
   const [firstExpand, setFirstExpand] = useState(true);
 
   const [checked, setChecked] = useState<Key[]>([]);
   const [expanded, setExpanded] = useState<Key[]>([]);
-  const [selected, setSelected] = useState<string[]>([]);
-  const [dragInfo, setDragInfo] = useState<any>();
+  const [selected, setSelected] = useState<Key[]>([]);
+  const [dragInfo, setDragInfo] = useState<DroppedNodeInfo<IDataNode> | null>(null);
 
-  const [doSelect, setDoSelect] = useState<string>(null);
+  const [doSelect, setDoSelect] = useState<string | null>(null);
 
   const fetcher = usePermissionGetAllTree({ queryParams: {}, lazy: true });
   const { loading: isFetchingData, error: fetchingDataError, data: fetchingDataResponse } = fetcher;
@@ -94,18 +107,17 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
   const { setFormMode } = shaForm ?? {};
 
   const { executeAction } = useConfigurableActionDispatcher();
-  const allData = useRef<any>({});
-  allData.current = useAvailableConstantsData();
+  const allData = useAvailableConstantsData();
 
-  useEffect(() => {
-    if (rest.mode === 'Select' && allItems) return; // skip refetch for selectmode if fetched
+  useEffectOnce(() => {
+    if (rest.mode === 'Select' && allItems !== EMPTY_PERMISSIONS) return; // skip refetch for selectmode if fetched
 
     void fetcher.refetch();
     setSearchText('');
-  }, []);
+  });
 
   useEffect(() => {
-    setChecked(value);
+    setChecked(value ?? []);
   }, [value]);
 
   // do autoexpand only for new object
@@ -116,41 +128,41 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
         exp.push(key);
       }
     };
-    if (allItems) {
-      if (value) {
-        const f = (list: PermissionDto[]): void => {
-          list.forEach((item) => {
-            if (item.child?.length > 0 && item.child.find((c) => value.find((v) => v === c.id))) {
-              if (exp.find((e) => e === item.id))
-                expand(item.id);
-              f(item.child);
-            }
-          });
-        };
-        f(allItems);
-      }
 
-      const modules: GuidEntityReferenceDto[] = [];
-      const sorted = [...allItems].sort((a, b) => a.module?._displayName.localeCompare(b.module?._displayName));
-
-      sorted?.forEach((item) => {
-        if (!modules.find((m) => m?.id === item.module?.id))
-          modules.push(item.module);
-      });
-
-      if (firstExpand)
-        modules.forEach((m) => expand(m?._displayName ?? withoutModule));
-      setFirstExpand(false);
-
-      setAllModules(modules);
-      setExpanded(exp);
-      setOpenedKeys(exp);
+    if (value) {
+      const f = (list: PermissionDto[]): void => {
+        list.forEach((item) => {
+          if (isNonEmptyArray(item.child) && item.child.find((c) => value.find((v) => v === c.id))) {
+            if (!isNullOrWhiteSpace(item.id) && exp.find((e) => e === item.id))
+              expand(item.id);
+            f(item.child);
+          }
+        });
+      };
+      f(allItems);
     }
+
+    const modules: GuidEntityReferenceDto[] = [];
+    const sorted = [...allItems].sort((a, b) => (a.module?._displayName ?? "").localeCompare(b.module?._displayName ?? ""));
+
+    sorted.forEach((item) => {
+      if (isDefined(item.module) && !modules.find((m) => m.id === item.module?.id))
+        modules.push(item.module);
+    });
+
+    if (firstExpand)
+      modules.forEach((m) => expand(m._displayName ?? withoutModule));
+    setFirstExpand(false);
+
+    setAllModules(modules);
+    setExpanded(exp);
+    setOpenedKeys(exp);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allItems]);
 
   useEffect(() => {
     if (!isFetchingData) {
-      if (isAjaxSuccessResponse(fetchingDataResponse)) {
+      if (isDefined(fetchingDataResponse) && isAjaxSuccessResponse(fetchingDataResponse)) {
         const fetchedData = fetchingDataResponse.result;
         if (fetchedData)
           setAllItems(fetchedData);
@@ -160,14 +172,15 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
         message.error(fetchingDataError.message);
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFetchingData, fetchingDataError, fetchingDataResponse]);
 
-  const onCheck: TreeProps['onCheck'] = (keys, _info): void => {
+  const onCheck: OnTreeCheck<IDataNode> = (keys, _info) => {
     if (rest.readOnly) return;
-    if (!keys || Array.isArray(keys))
+    if (Array.isArray(keys))
       return;
     setChecked(keys.checked);
-    if (Boolean(onChange))
+    if (isDefined(onChange))
       onChange(
         keys.checked.map((item) => {
           return item.toString();
@@ -180,32 +193,37 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
     setOpenedKeys(keys.map((item) => item.toString()));
   };
 
-  const findItem = (items: PermissionDto[], key: string): PermissionDto => {
-    let res = null;
+  const findItem = (items: PermissionDto[] | undefined, key: Key | undefined): PermissionDto | undefined => {
+    if (!isDefined(key) || !isDefined(items))
+      return undefined;
+
+    let res = undefined;
     let i = 0;
-    while (items && !res && i < items.length) {
-      res = items[i]?.id === key ? items[i] : null;
-      if (!res) {
-        res = findItem(items[i].child, key);
+    while (!res && i < items.length) {
+      const item = items[i];
+      if (isDefined(item)) {
+        res = item.id === key ? item : null;
+        if (!res) {
+          res = findItem(item.child ?? undefined, key);
+        }
       }
       i++;
     }
     return res;
   };
 
-  const onChangeAction = (selectedRow: PermissionDto): void => {
+  const onChangeAction = (selectedRow: PermissionDto | null): void => {
     if (onSelectAction?.actionName) {
       void executeAction({
         actionConfiguration: onSelectAction,
-        argumentsEvaluationContext: { ...allData.current, selectedRow },
+        argumentsEvaluationContext: { ...allData, selectedRow },
       });
     }
   };
 
   const onSelect = (keys: Key[]): void => {
-    if (!keys || keys.length === 0) {
-      setSelected(null);
-
+    if (!isNonEmptyArray(keys)) {
+      setSelected([]);
       onChangeAction(null);
       return;
     }
@@ -214,6 +232,9 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
       return item.toString();
     });
     const item = findItem(allItems, ids[0]);
+    if (!item)
+      return;
+
     if (rest.mode === 'Edit') {
       if (!item.isDbPermission) {
         setFormMode?.('readonly');
@@ -232,17 +253,18 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
       }
       setDoSelect(null);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [doSelect]);
 
-  const addPermission = (parent: PermissionDto, list: PermissionDto[]): PermissionDto => {
+  const addPermission = (parent: PermissionDto | null, list: PermissionDto[]): PermissionDto => {
     const o: PermissionDto = {
       id: emptyId,
       name: 'NewPermission',
       displayName: 'New permission',
       description: '',
-      parentName: parent ? parent.name : null,
+      parentName: parent ? parent.name ?? null : null,
       isDbPermission: true,
-      parent: null,
+      parent: undefined,
       child: [],
     };
     list.push(o);
@@ -251,7 +273,10 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
 
   const deletePermission = (): void => {
     const s = findItem(allItems, selected[0]);
-    if (Boolean(s.parentName)) {
+    if (!isDefined(s))
+      return;
+
+    if (!isNullOrWhiteSpace(s.parentName)) {
       setDoSelect(s.parentName);
       const p = findItem(allItems, s.parentName);
       if (p && p.child) {
@@ -275,7 +300,8 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
   const expandParent = (items: PermissionDto[], item: PermissionDto): void => {
     const parent = item.parentName ? findItem(items, item.parentName) : null;
     const exp = parent ? parent.id : item.module?._displayName ?? withoutModule;
-    expandNode(exp);
+    if (isDefined(exp))
+      expandNode(exp);
     if (parent)
       expandParent(items, parent);
   };
@@ -288,22 +314,28 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
         deletePermission();
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDeleting, deleteDataError]);
 
   useEffect(() => {
-    if (!isParentUpdating && Boolean(dragInfo)) {
+    if (!isParentUpdating && isDefined(dragInfo)) {
       if (updateParentDataError) {
         message.error(getErrorMessageOrDefault(updateParentDataError));
       } else {
         const newItems = [...allItems];
         const dragItem = findItem(newItems, dragInfo.dragNode.key);
+        if (!isDefined(dragItem))
+          return;
 
         // remove from the old place
-        if (Boolean(dragItem.parentName)) {
+        if (!isNullOrWhiteSpace(dragItem.parentName)) {
           const parent = findItem(newItems, dragItem.parentName);
-          const index = parent.child.indexOf(dragItem);
-          if (index > -1) {
-            parent.child.splice(index, 1);
+          if (parent) {
+            parent.child = parent.child ?? [];
+            const index = parent.child.indexOf(dragItem);
+            if (index > -1) {
+              parent.child.splice(index, 1);
+            }
           }
         } else {
           const index = newItems.indexOf(dragItem);
@@ -317,33 +349,35 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
         const dropItem = findItem(newItems, dragInfo.node.key);
         // drop to Permission
         if (dropItem) {
-          if (!dropItem || dragInfo.dropToGap) {
+          if (dragInfo.dropToGap) {
             newItems.push(dragItem);
             dragItem.parentName = null;
           } else {
+            dropItem.child = dropItem.child ?? [];
             dropItem.child.push(dragItem);
-            dragItem.parentName = dropItem.name;
+            dragItem.parentName = dropItem.name ?? null;
           }
         } else {
           const dropModule = allModules.find((x) => x._displayName === dragInfo.node.key);
           newItems.push(dragItem);
           dragItem.parentName = null;
-          dragItem.module = dropModule;
+          dragItem.module = dropModule ?? null;
         }
 
         expandParent(newItems, dragItem);
         setDragInfo(null);
         setAllItems([...newItems]);
-        setDoSelect(dragItem.id);
+        setDoSelect(dragItem.id ?? null);
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isParentUpdating, updateParentDataError]);
 
-  const onDragStart = (info): void => {
+  const onDragStart: OnDragStartHandler<IDataNode> = (info) => {
     setSelected([info.node.key]);
   };
 
-  const onDrop = (info): void => {
+  const onDrop: OnDropHandler<IDataNode> = (info) => {
     const dropItem = findItem(allItems, info.node.key);
     const dragItem = findItem(allItems, info.dragNode.key);
     if (!dragItem) return;
@@ -357,7 +391,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
     if (dropItem) {
       if (dragItem.parentName === dropItem.name || (!dragItem.parentName && info.dropToGap)) return;
       setDragInfo(info);
-      updateParentRequest.mutate({ ...dragItem, parentName: info.dropToGap ? null : dropItem.name, module: { ...dropItem.module } })
+      updateParentRequest.mutate({ ...dragItem, parentName: info.dropToGap ? null : dropItem.name ?? null, module: { ...dropItem.module } })
         .catch((error) => {
           console.error('Failed to update parent', error);
           throw error;
@@ -384,14 +418,15 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
     }
   };
 
-  const getVisible = (items: PermissionDto[], searchText: string): PermissionDto[] => {
-    const result: PermissionDto[] = [];
-    if (!items) return result;
+  const getVisible = (items: PermissionDto[] | undefined, searchText: string | undefined): PermissionDto[] => {
+    if (!items) return [];
+    if (isNullOrWhiteSpace(searchText))
+      return items;
 
-    items?.forEach((item) => {
+    const result: PermissionDto[] = [];
+    items.forEach((item) => {
       const childItems = getVisible(item.child, searchText);
       const matched =
-        (searchText ?? '') === '' ||
         item.displayName?.toLowerCase().includes(searchText.toLowerCase()) ||
         item.description?.toLowerCase().includes(searchText.toLowerCase()) ||
         item.name?.toLowerCase().includes(searchText.toLowerCase());
@@ -407,11 +442,10 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
 
   const getModules = (items: PermissionDto[]): IPermissionModule[] => {
     const result: IPermissionModule[] = [];
-    if (!items) return result;
 
-    const sorted = [...items].sort((a, b) => a.module?._displayName.localeCompare(b.module?._displayName));
+    const sorted = [...items].sort((a, b) => (a.module?._displayName ?? "").localeCompare(b.module?._displayName ?? ""));
 
-    sorted?.forEach((item) => {
+    sorted.forEach((item) => {
       const moduleName = item.module?._displayName ?? withoutModule;
       let m = result.find((m) => m.moduleName === moduleName);
       if (!m) {
@@ -431,26 +465,26 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
       return {
         key: m.moduleName,
         title: <span>{m.moduleName}</span>,
-        children: m.permissions?.map(mapItem),
+        children: m.permissions.map(mapItem),
         checkable: false,
         selectable: false,
       } as IDataNode;
     }
     return {
       key: p.id,
-      title:
-        (Boolean(p.description) && (
+      title: !isNullOrWhiteSpace(p.description)
+        ? (
           <Tooltip title={p.description} mouseEnterDelay={1}>
             <span>
               {!p.isDbPermission ? <Tag>sys</Tag> : null} {p.displayName ?? p.name}
             </span>
           </Tooltip>
-        )) ||
-        (!Boolean(p.description) && (
+        )
+        : (
           <span>
             {!p.isDbPermission ? <Tag>sys</Tag> : null} {p.displayName ?? p.name}
           </span>
-        )),
+        ),
       children: p.child?.map(mapItem),
       checkable: rest.mode === 'Select',
       selectable: true,
@@ -460,11 +494,10 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
   const updateTree = (): void => {
     const visible = getVisible(allItems, rest.hideSearch ? rest.searchText : searchText);
     if (searchText || rest.searchText) {
-      const nodes = [];
+      const nodes: PermissionDto[] = [];
       const f = (item: PermissionDto): void => {
-        if (item.child.length > 0) {
+        if (isNonEmptyArray(item.child)) {
           item.child.forEach(f);
-          // nodes.push(...item.child.map(f));
         } else {
           nodes.push(item);
         }
@@ -477,6 +510,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
 
   useEffect(() => {
     updateTree();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allItems, searchText, rest.hideSearch, rest.searchText]);
 
   useConfigurableAction(
@@ -493,8 +527,8 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
           item.id = arg.name;
           item.name = arg.name;
           item.displayName = arg.displayName;
-          item.description = arg.description;
-          item.module = arg.moduleId ? { id: arg.moduleId, _displayName: arg.moduleName } : null;
+          item.description = arg.description ?? null;
+          item.module = arg.moduleId ? { id: arg.moduleId, _displayName: arg.moduleName ?? null } : null;
           setAllItems([...allItems]);
           setSelected([item.id]);
           setSearchText('');
@@ -553,7 +587,8 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
         } else {
           message.warning('A new permission is already added! Please edit it first.');
         }
-        expandParent(newItems, s);
+        if (s)
+          expandParent(newItems, s);
         setDoSelect(emptyId);
         setSearchText('');
         setFormMode?.('edit');
@@ -580,6 +615,9 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
           if (s.id === emptyId) {
             deletePermission();
           } else {
+            if (isNullOrWhiteSpace(s.name))
+              throw new Error('Permission name is required.');
+
             deleteRequest.mutate({ name: s.name }).catch((error) => {
               console.error('Failed to delete', error);
               throw error;
@@ -608,8 +646,8 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
   return (
     <Space orientation="vertical" style={{ width: '100%' }}>
       <ShaSpin spinning={isFetchingData || isDeleting || isParentUpdating} tip={getLoadingHint()}>
-        {!rest.hideSearch && <SearchBox value={searchText} onChange={setSearchText} placeholder="Search objects" />}
-        <Tree
+        {!rest.hideSearch && <SearchBox value={searchText ?? ""} onChange={setSearchText} placeholder="Search objects" />}
+        <Tree<IDataNode>
           expandedKeys={expanded}
           defaultExpandAll
           checkable={rest.mode === 'Select'}
@@ -624,7 +662,7 @@ export const PermissionsTree: FC<IPermissionsTreeProps> = ({ value, onChange, on
           treeData={visibleNodes}
           checkedKeys={checked}
           selectedKeys={selected}
-          height={rest.height}
+          {...(isDefined(rest.height) ? { height: rest.height } : {})}
         />
       </ShaSpin>
     </Space>

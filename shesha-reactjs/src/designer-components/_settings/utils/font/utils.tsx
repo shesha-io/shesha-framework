@@ -1,35 +1,36 @@
-import React from 'react';
+import { CSSProperties } from 'react';
 import { IFontValue } from './interfaces';
+import { isDefined } from '@/utils/nullables';
 
-export const getFontStyle = (input?: IFontValue): React.CSSProperties => {
+export const getFontStyle = (input?: IFontValue): CSSProperties => {
   if (!input) return {};
 
-  const style: React.CSSProperties = {};
+  const style: CSSProperties = {};
 
-  if (input.size) {
+  if (isDefined(input.size)) {
     const size = input.size;
     if (size) {
       style.fontSize = size + 'px';
     }
   }
 
-  if (input.type) {
+  if (isDefined(input.type)) {
     style.fontFamily = input.type;
   }
 
-  if (input.weight) {
-    style.fontWeight = input.weight.split(' - ')[0] || 400;
+  if (isDefined(input.weight)) {
+    style.fontWeight = (input.weight.split(' - ')[0] ?? '400') || 400;
   }
 
-  if (input.color) {
+  if (isDefined(input.color)) {
     style.color = input.color;
   }
 
-  if (input.align) {
+  if (isDefined(input.align)) {
     style.textAlign = input.align;
   }
 
-  if (input.transform) {
+  if (isDefined(input.transform)) {
     style.transform = input.transform;
   }
 
@@ -69,17 +70,16 @@ export const fontTypes = [
   { value: 'PT Serif', label: 'PT serif' },
 ];
 
-
 export const fontWeightsOptions = [
-  { value: '100', label: 'sectionSeparator' },
-  { value: '400', label: 'sectionSeparator' },
-  { value: '500', label: 'sectionSeparator' },
-  { value: '700', label: 'sectionSeparator' },
-  { value: '900', label: 'sectionSeparator' },
+  { value: '100', label: 'Thin (100)' },
+  { value: '400', label: 'Normal (400)' },
+  { value: '500', label: 'Medium (500)' },
+  { value: '700', label: 'Bold (700)' },
+  { value: '900', label: 'Black (900)' },
 ];
 
 export const textAlignOptions = [
-  { value: 'left', label: 'AlignLeftOutlined' },
-  { value: 'center', label: 'AlignCenterOutlined' },
-  { value: 'right', label: 'AlignRightOutlined' },
+  { value: 'left', label: 'Left', icon: 'AlignLeftOutlined' },
+  { value: 'center', label: 'Center', icon: 'AlignCenterOutlined' },
+  { value: 'right', label: 'Right', icon: 'AlignRightOutlined' },
 ];

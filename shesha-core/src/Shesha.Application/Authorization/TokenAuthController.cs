@@ -7,15 +7,18 @@ using Abp.UI;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Shesha.Authentication.External;
 using Shesha.Authentication.JwtBearer;
 using Shesha.Authorization.Models;
 using Shesha.Authorization.Roles;
 using Shesha.Authorization.Users;
+using Microsoft.Extensions.Configuration;
 using Shesha.Controllers;
 using Shesha.Domain;
 using Shesha.Extensions;
 using Shesha.Models.TokenAuth;
+using Shesha.RateLimiting;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -46,6 +49,7 @@ namespace Shesha.Authorization
         private readonly UserManager<User> _userManager;
         private readonly AbpUserClaimsPrincipalFactory<User, Role> _claimsPrincipalFactory;
         private readonly IRepository<User, long> _userRepository;
+        private readonly IConfiguration _appConfiguration;
 
 
         public TokenAuthController(
@@ -62,7 +66,8 @@ namespace Shesha.Authorization
             ITokenBlacklistService tokenBlacklistService,
             UserManager<User> userManager,
             AbpUserClaimsPrincipalFactory<User, Role> claimsPrincipalFactory,
-            IRepository<User, long> userRepository)
+            IRepository<User, long> userRepository,
+            IConfiguration appConfiguration)
         {
             _logInManager = logInManager;
             _tenantCache = tenantCache;
@@ -78,9 +83,12 @@ namespace Shesha.Authorization
             _userManager = userManager;
             _claimsPrincipalFactory = claimsPrincipalFactory;
             _userRepository = userRepository;
+            _appConfiguration = appConfiguration;
+
         }
 
         [HttpPost]
+        [EnableRateLimiting(SheshaRateLimitingPolicies.Auth)]
         public async Task<AuthenticateResultModel> AuthenticateAsync([FromBody] AuthenticateModel model)
         {
             // Check for user registration status
@@ -222,6 +230,7 @@ namespace Shesha.Authorization
         /// </summary>
         [AbpAllowAnonymous]
         [HttpPost]
+        [EnableRateLimiting(SheshaRateLimitingPolicies.Otp)]
         public async Task<OtpAuthenticateSendPinResponse> OtpAuthenticateSendPinAsync(string userNameOrMobileNo)
         {
             var persons = await _personRepository.GetAllListAsync(u => u.MobileNumber1 == userNameOrMobileNo || u.User != null && u.User.UserName == userNameOrMobileNo);
@@ -430,7 +439,8 @@ namespace Shesha.Authorization
 
         private string GetEncryptedAccessToken(string accessToken)
         {
-            return SimpleStringCipher.Instance.Encrypt(accessToken, AppConsts.DefaultPassPhrase);
+            var encryptionPassPhrase = _appConfiguration["Authentication:EncryptionPassPhrase"] ?? AppConsts.DefaultPassPhrase;
+            return SimpleStringCipher.Instance.Encrypt(accessToken, encryptionPassPhrase);
         }
     }
 }

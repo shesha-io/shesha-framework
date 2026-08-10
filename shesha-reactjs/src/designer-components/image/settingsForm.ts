@@ -232,7 +232,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   _mode: "code",
                   _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
                   _value: "",
-                } as any,
+                },
                 components: [
                   ...fbf()
                     .addCollapsiblePanel({
@@ -446,7 +446,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           .addSettingsInputRow({
                             id: nanoid(),
                             parentId: borderStylePnlId,
-                            hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false } as any,
+                            hidden: { _code: 'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);', _mode: 'code', _value: false },
                             inputs: [
                               {
                                 type: 'button',

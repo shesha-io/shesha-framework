@@ -1,4 +1,4 @@
-import { IApiEndpoint, IEntityMetadata } from "@/interfaces";
+import { IApiEndpoint } from "@/interfaces";
 import { EntitiesManager } from "./manager";
 import { IEntity, IEntityTypeIdentifier } from "./models";
 
@@ -26,8 +26,6 @@ export class EntityTypeAccessor<TId = string, TEntity extends IEntity<TId> = IEn
   readonly _entityTypeId: IEntityTypeIdentifier;
 
   readonly _manager: EntitiesManager;
-
-  readonly _metadata: Promise<IEntityMetadata>;
 
   constructor(manager: EntitiesManager, moduleAccessor: string, name: string) {
     this._manager = manager;

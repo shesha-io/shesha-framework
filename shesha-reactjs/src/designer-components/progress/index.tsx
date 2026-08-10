@@ -5,24 +5,24 @@ import { IConfigurableFormComponent, IFormComponentStyles, IInputStyles } from '
 import { IToolboxComponent } from '@/interfaces';
 import { LineOutlined } from '@ant-design/icons';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
-import { ProgressProps } from 'antd';
+import { Progress, ProgressProps } from 'antd';
 import { GapPlacement, GapPosition, ProgressType, SuccessProps } from 'antd/lib/progress/progress';
-import { ProgressWrapper } from './progressWrapper';
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 interface IProgressProps
   extends Omit<ProgressProps, 'style' | 'type' | 'size' | 'format' | 'success' | 'strokeColor'>,
   IConfigurableFormComponent {
-  format?: string;
-  progressType?: ProgressType;
-  success?: string;
-  strokeColor?: string;
-  lineStrokeColor?: string;
-  circleStrokeColor?: string;
-  stylingBox?: string;
-  allStyles?: IFormComponentStyles;
+  format?: string | undefined;
+  progressType?: ProgressType | undefined;
+  success?: string | undefined;
+  strokeColor?: string | undefined;
+  lineStrokeColor?: string | undefined;
+  circleStrokeColor?: string | undefined;
+  stylingBox?: string | undefined;
+  allStyles?: IFormComponentStyles | undefined;
 }
 
 const gapPositionToPlacement = (value: GapPosition | undefined): GapPlacement | undefined => {
@@ -82,56 +82,52 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
 
 
     const getEvaluatedSuccessColor = (): SuccessProps => {
-      // tslint:disable-next-line:function-constructor
-      return new Function(success)();
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      return !isNullOrWhiteSpace(success) ? new Function(success)() : {};
     };
 
-    const getEvaluatedStrokeValue = (): string => {
-      let color: string = strokeColor;
-      let isLineOrCircle = false;
-
-      if (progressType === 'line') {
-        color = lineStrokeColor?.toString() ?? strokeColor?.toString();
-        isLineOrCircle = true;
-      }
-
-      if (progressType === 'circle') {
-        color = circleStrokeColor?.toString() ?? strokeColor?.toString();
-        isLineOrCircle = true;
-      }
-
-      if (isLineOrCircle) {
-        // tslint:disable-next-line:function-constructor
-        return color;
-      } else {
-        return color;
+    const getEvaluatedStrokeValue = (): string | undefined => {
+      switch (progressType) {
+        case 'line':
+          return lineStrokeColor ?? strokeColor;
+        case 'circle':
+          return circleStrokeColor ?? strokeColor;
+        default:
+          return strokeColor;
       }
     };
 
     const getEvaluatedFormat = (incomingPercent?: number, incomingSuccessPercent?: number): React.ReactNode => {
-      // tslint:disable-next-line:function-constructor
-      return new Function('percent, successPercent', format)(incomingPercent, incomingSuccessPercent);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      return new Function('percent, successPercent', format ?? '')(incomingPercent, incomingSuccessPercent);
     };
 
+    const finalStrokeColor = getEvaluatedStrokeValue();
+    const gapPlacement = gapPositionToPlacement(gapPosition);
+
+    const isLine = progressType === 'line' || progressType === undefined;
+    const isCircular = progressType === 'circle' || progressType === 'dashboard';
+
     return (
-      <ConfigurableFormItem model={model}>
+      <ConfigurableFormItem<number> model={model}>
         {(value) => {
+          const finalPercent = percent ?? value;
           return (
-            <ProgressWrapper
-              type={progressType}
-              strokeColor={getEvaluatedStrokeValue()}
-              format={getEvaluatedFormat}
-              percent={percent || value}
-              size={width}
-              strokeWidth={strokeWidth}
-              gapPlacement={gapPositionToPlacement(gapPosition)}
-              steps={steps}
-              railColor={trailColor}
-              status={status}
-              showInfo={showInfo}
-              strokeLinecap={strokeLinecap}
+            <Progress
+              {...(progressType && { type: progressType })}
+              {...(finalStrokeColor && { strokeColor: finalStrokeColor })}
+              {...(!isNullOrWhiteSpace(format) && { format: getEvaluatedFormat })}
+              {...(finalPercent ? { percent: finalPercent } : {})}
+              {...(isCircular && { size: width })}
+              {...(strokeWidth && { strokeWidth })}
+              {...(isCircular && gapPlacement && { gapPlacement })}
+              {...(isLine && steps && { steps })}
+              {...(trailColor && { railColor: trailColor })}
+              {...(status && { status })}
+              showInfo={showInfo ?? true}
+              {...(strokeLinecap && { strokeLinecap })}
               success={getEvaluatedSuccessColor()}
-              gapDegree={gapDegree}
+              {...(isCircular && gapDegree && { gapDegree })}
               style={finalStyle}
             />
           );

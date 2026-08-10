@@ -1,109 +1,101 @@
-import React, { FC, PropsWithChildren } from 'react';
+import React, { FC, PropsWithChildren, RefObject, useCallback, useEffect } from 'react';
 import { Collapse, Skeleton } from 'antd';
 import { CollapseProps } from 'antd/lib/collapse';
 import classNames from 'classnames';
-import { IStyleType } from "@/providers/form/models";
+import { IStyleValue } from "@/providers/form/models";
 import { useStyles } from './styles/styles';
+import { isDefined } from '@/utils';
 
-export type headerType = 'parent' | 'child' | 'default';
+export interface ICollapseRef { collapsed: boolean; setCollapsed: (collapsed: boolean) => void };
 
-export interface ICollapsiblePanelProps extends CollapseProps, Omit<IStyleType, 'style'> {
-  isActive?: boolean;
-  header?: React.ReactNode;
-  className?: string;
-  extraClassName?: string;
-  showArrow?: boolean;
-  forceRender?: boolean;
-  extra?: React.ReactNode;
-  noContentPadding?: boolean;
-  loading?: boolean;
-  collapsedByDefault?: boolean;
-  headerColor?: string;
-  bodyColor?: string;
-  isSimpleDesign?: boolean;
-  hideCollapseContent?: boolean;
-  hideWhenEmpty?: boolean;
-  parentPanel?: boolean;
-  primaryColor?: string;
-  dynamicBorderRadius?: number;
-  panelHeadType?: headerType;
-  headerStyles?: IStyleType;
-  bodyStyle?: React.CSSProperties;
-  headerStyle?: React.CSSProperties;
-  accentStyle?: boolean;
-  overflowStyle?: React.CSSProperties;
+export interface ICollapsiblePanelProps extends Omit<CollapseProps, 'onChange'>, Omit<IStyleValue, 'style'> {
+  isActive?: boolean | undefined;
+  header?: React.ReactNode | undefined;
+  extraClassName?: string | undefined;
+  showArrow?: boolean | undefined;
+  forceRender?: boolean | undefined;
+  extra?: React.ReactNode | undefined;
+  loading?: boolean | undefined;
+  collapsedByDefault?: boolean | undefined;
+  headerColor?: string | undefined;
+  bodyColor?: string | undefined;
+  isSimpleDesign?: boolean | undefined;
+  hideCollapseContent?: boolean | undefined;
+  hideWhenEmpty?: boolean | undefined;
+  parentPanel?: boolean | undefined;
+  primaryColor?: string | undefined;
+  dynamicBorderRadius?: number | undefined;
+  headerStyles?: IStyleValue | undefined;
+  accentStyle?: boolean | undefined;
+  onChange?: (isExpanded: boolean) => void;
+  ref?: RefObject<ICollapseRef | undefined>;
 }
 
-const defaultHeaderStyle: React.CSSProperties = {
-  backgroundColor: 'transparent',
-  paddingLeft: '16px',
-  paddingRight: '16px',
-  paddingBottom: '8px',
-  paddingTop: '8px',
-};
-
-const defaultBodyStyle: React.CSSProperties = {
-  paddingLeft: '16px',
-  paddingBottom: '16px',
-  paddingTop: '16px',
-  paddingRight: '16px',
-  marginBottom: '5px',
-};
-/**
- * There was an error
- * TS4023: Exported variable 'xxx' has or is using name 'zzz' from external module "yyy" but cannot be named.
- *
- * found a solution
- * https://stackoverflow.com/questions/43900035/ts4023-exported-variable-x-has-or-is-using-name-y-from-external-module-but
- *
- */
-
-export const CollapsiblePanel: FC<PropsWithChildren<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'radiusRight' | 'expandIconPosition' | 'children'>>> = ({
-  expandIconPlacement = 'end',
-  onChange,
-  header,
-  extra,
-  children,
-  loading,
-  className,
-  extraClassName,
-  collapsedByDefault = false,
-  showArrow,
-  collapsible,
-  ghost,
-  bodyStyle = defaultBodyStyle,
-  headerStyle = defaultHeaderStyle,
-  isSimpleDesign,
-  hideWhenEmpty,
-  hideCollapseContent,
-  accentStyle,
-  overflowStyle,
-}) => {
+export const CollapsiblePanel: FC<PropsWithChildren<Omit<ICollapsiblePanelProps, 'radiusLeft' | 'radiusRight' | 'expandIconPosition' | 'children'>>> = (props) => {
+  const {
+    expandIconPlacement = 'end',
+    header,
+    extra,
+    children,
+    loading,
+    className,
+    extraClassName,
+    collapsedByDefault = false,
+    showArrow,
+    collapsible,
+    ghost,
+    isSimpleDesign,
+    hideWhenEmpty,
+    onChange,
+    ref,
+    style,
+  } = props;
   // Prevent the CollapsiblePanel from collapsing every time you click anywhere on the extra and header
-  const onContainerClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => event?.stopPropagation();
+  const onContainerClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>): void => event.stopPropagation();
 
-  const { styles } = useStyles({ bodyStyle, headerStyle, ghost, isSimpleDesign, hideCollapseContent, accentStyle, overflow: overflowStyle });
-  const shaCollapsiblePanelStyle = isSimpleDesign ? styles.shaSimpleDesign : styles.shaCollapsiblePanel;
+  const { styles } = useStyles(props);
+
+  const [keys, setKeys] = React.useState<string[]>(collapsedByDefault ? [] : ['1']);
+
+  const internalOnChange = useCallback((keys: string[]): void => {
+    if (isDefined(keys) && keys.length > 0) {
+      setKeys(['1']);
+      onChange?.(true);
+    } else {
+      setKeys([]);
+      onChange?.(false);
+    }
+  }, [onChange]);
+
+  useEffect(() => {
+    if (!ref)
+      return undefined;
+    ref.current = { collapsed: keys.length === 0, setCollapsed: (val: boolean) => internalOnChange(val ? [] : ['1']) };
+    return () => ref.current = undefined;
+  }, [internalOnChange, keys, ref]);
+
+  const shaCollapsiblePanelStyle = isSimpleDesign === true ? styles.shaSimpleDesign : styles.shaCollapsiblePanel;
 
   return (
     <Collapse
-      defaultActiveKey={collapsedByDefault ? [] : ['1']}
-      onChange={onChange}
+      style={style ?? {}}
+      activeKey={keys}
+      onChange={internalOnChange}
       expandIconPlacement={expandIconPlacement}
       className={classNames(shaCollapsiblePanelStyle, { [styles.hideWhenEmpty]: hideWhenEmpty }, className)}
-      ghost={ghost}
+      ghost={ghost ?? false}
       items={[
         {
           key: "1",
-          collapsible: collapsible,
-          showArrow: showArrow,
-          label: header || ' ',
+          collapsible: collapsible ?? "disabled",
+          showArrow: showArrow ?? false,
+          label: isDefined(header) ? header : ' ',
           extra: (
             <span onClick={onContainerClick} className={extraClassName}>
               {extra}
             </span>
           ),
-          children: <Skeleton loading={loading}>{children}</Skeleton>,
+          children: <Skeleton loading={loading ?? false}>{children}</Skeleton>,
         },
       ]}
     />

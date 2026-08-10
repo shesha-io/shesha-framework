@@ -6,8 +6,8 @@ import { SettingContainerDesigner } from './settingContainerDesigner';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 
 export interface ISettingContainerProps extends PropsWithChildren<IComponentsContainerProps> {
-  component: IConfigurableFormComponent | undefined;
-  propertyName?: string;
+  component: IConfigurableFormComponent;
+  propertyName?: string | undefined;
 }
 
 export const SettingComponentContainerInner: FC<ISettingContainerProps> = (props) => {

@@ -1,13 +1,14 @@
 import { Monaco } from '@monaco-editor/react';
 import { trimPrefix } from '@/utils/string';
 import { Directory, FileItemProps, FileItemType, SourceFile } from './models';
+import { isDefined } from '@/utils/nullables';
 
 export const isDirectory = (item: FileItemProps): item is Directory => {
-  return item && item.type === FileItemType.Directory;
+  return isDefined(item) && item.type === FileItemType.Directory;
 };
 
 export const isFile = (item: FileItemProps): item is SourceFile => {
-  return item && item.type === FileItemType.File;
+  return isDefined(item) && item.type === FileItemType.File;
 };
 
 type SourceTreeCache = Map<string, Directory | SourceFile>;
@@ -69,7 +70,7 @@ export const getSourcesTree = (monaco: Monaco): Directory => {
       const file: SourceFile = {
         // content: model.getValue(),
         id: fileId,
-        name: fileName,
+        name: fileName ?? "",
         uri: model.uri,
         type: FileItemType.File,
         parentId: directory.id,

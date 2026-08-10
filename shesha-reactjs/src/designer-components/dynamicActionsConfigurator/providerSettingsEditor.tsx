@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import React, { ReactNode } from 'react';
 import {
   FormMarkupFactory,
   IConfigurableActionArgumentsFormFactory,
@@ -10,22 +10,22 @@ import { IDynamicActionsContext } from '@/providers/dynamicActions/contexts';
 import { CollapsiblePanel } from '@/components/panel';
 import { FormBuilderFactory } from '@/form-factory/interfaces';
 import { useFormBuilderFactory } from '@/form-factory/hooks';
-export interface IProviderSettingsEditorProps {
-  provider: IDynamicActionsContext;
-  value?: any;
-  onChange?: (value: any) => void;
-  readOnly?: boolean;
-  // exposedVariables?: ICodeExposedVariable[];
-  availableConstants?: IObjectMetadata;
+import { isDefined } from '@/utils/nullables';
+export interface IProviderSettingsEditorProps<TSettings extends object = object> {
+  provider: IDynamicActionsContext<TSettings>;
+  value?: TSettings;
+  onChange?: (value: TSettings) => void;
+  readOnly?: boolean | undefined;
+  availableConstants?: IObjectMetadata | undefined;
 }
 
-const getDefaultFactory = (
+const getDefaultFactory = <TModel extends object = object>(
   fbf: FormBuilderFactory,
   markup: FormMarkup | FormMarkupFactory,
   readOnly: boolean,
-): IConfigurableActionArgumentsFormFactory => {
+): IConfigurableActionArgumentsFormFactory<TModel> => {
   const component: {
-    ({ model, onSave, onCancel, onValuesChange, availableConstants }: ISettingsFormFactoryArgs): React.JSX.Element;
+    ({ model, onSave, onCancel, onValuesChange, availableConstants }: ISettingsFormFactoryArgs<TModel>): ReactNode;
     displayName: string;
   } = ({ model, onSave, onCancel, onValuesChange, availableConstants }) => {
     const markupFactory = typeof markup === 'function' ? (markup as FormMarkupFactory) : () => markup as FormMarkup;
@@ -46,75 +46,60 @@ const getDefaultFactory = (
   return component;
 };
 
-export const ProviderSettingsEditor: FC<IProviderSettingsEditorProps> = ({
+export const ProviderSettingsEditor = <TSettings extends object = object>({
   provider,
   value,
   onChange,
   readOnly = false,
-  // exposedVariables,
   availableConstants,
-}) => {
+}: IProviderSettingsEditorProps<TSettings>): ReactNode => {
   const fbf = useFormBuilderFactory();
-  const settingsEditor = useMemo(() => {
-    if (provider) {
-      const settingsFormFactory = provider.settingsFormFactory
-        ? provider.settingsFormFactory
-        : provider.settingsFormMarkup
-          ? getDefaultFactory(fbf, provider.settingsFormMarkup, readOnly)
-          : null;
-
-      const onCancel = (): void => {
-        //
-      };
-
-      const onSave = (values): void => {
-        if (onChange) onChange(values);
-      };
-
-      const onValuesChange = (_changedValues, values): void => {
-        if (onChange) onChange(values);
-      };
-
-      return settingsFormFactory
-        ? settingsFormFactory({
-          model: value,
-          onSave,
-          onCancel,
-          onValuesChange,
-          readOnly,
-          availableConstants,
-        })
-        : null;
-    }
+  if (!isDefined(provider))
     return null;
-  }, [provider]);
 
-  if (!settingsEditor) return null;
+  const settingsFormFactory = provider.settingsFormFactory
+    ? provider.settingsFormFactory
+    : provider.settingsFormMarkup
+      ? getDefaultFactory<TSettings>(fbf, provider.settingsFormMarkup, readOnly)
+      : null;
+
+  const onCancel = (): void => {
+    //
+  };
+
+  const onSave = (values: TSettings): void => {
+    if (onChange) onChange(values);
+  };
+
+  const onValuesChange = (_changedValues: Partial<TSettings>, values: TSettings): void => {
+    if (onChange) onChange(values);
+  };
 
   return (
     <CollapsiblePanel
       ghost={false}
-      headerStyle={{
-        backgroundColor: "#fff",
-        borderBottomColor: "var(--primary-color)",
-        borderBottomStyle: "solid",
-        borderBottomWidth: "2px",
-        borderTopLeftRadius: "0px",
-        borderTopRightRadius: "0px",
-        color: "darkslategray",
-        fontFamily: "Segoe UI",
-        fontSize: "14px",
-        fontWeight: "500",
+      headerStyles={{
+        background: { type: "color", color: "#fff" },
+        border: {
+          borderType: "custom",
+          border: { bottom: { color: "var(--primary-color)", width: "2px", style: "solid" } },
+          radiusType: "custom",
+          radius: { topLeft: "0px", topRight: "0px" },
+        },
+        font: { color: "darkslategray", type: "Segoe UI", size: 14, weight: "500" },
       }}
-      bodyStyle={{
-        borderStyle: "none",
-        borderWidth: "0px",
-        fontWeight: 400,
-        marginBottom: "5px",
-      }}
+      border={{ borderType: "all", border: { all: { width: "0px", style: "none" } } }}
+      stylingBoxJson={{ _type: "styleBox", marginBottom: "5px" }}
       header="Settings"
     >
-      {settingsEditor}
+      {settingsFormFactory && settingsFormFactory({
+        model: value ?? {} as TSettings,
+        onSave,
+        onCancel,
+        onValuesChange,
+        readOnly,
+        availableConstants,
+      })}
     </CollapsiblePanel>
   );
 };

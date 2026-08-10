@@ -123,9 +123,10 @@ export type FormDesignerActions = {
   setReadOnly: (value: boolean) => void;
   setFormMode: (value: FormMode) => void;
 
-  getCachedComponentEditor: (type: string, evaluator: () => ISettingsFormFactory) => ISettingsFormFactory;
+  getCachedComponentEditor: (type: string, evaluator: () => ISettingsFormFactory) => ISettingsFormFactory | undefined;
 
-  subscribe: (type: FormDesignerSubscriptionType, callback: FormDesignerSubscription) => void;
+  /** Returns a function that cancels the subscription */
+  subscribe: (type: FormDesignerSubscriptionType, callback: FormDesignerSubscription) => () => void;
 
   setSettingsPanelElement: (element: HTMLDivElement | null) => void;
 };

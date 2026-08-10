@@ -3,6 +3,7 @@ import React from 'react';
 import { IToolboxComponent } from '@/interfaces/formDesigner';
 import { ITextComponentProps } from '@/designer-components/text/models';
 import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
+import { getStringPropertyOrUndefined } from '@/utils/object';
 
 const TitleComponent: IToolboxComponent<ITextComponentProps> = {
   type: 'title',
@@ -17,7 +18,7 @@ const TitleComponent: IToolboxComponent<ITextComponentProps> = {
     m.add<ITextComponentProps>(0, (prev) => {
       const props = {
         ...prev,
-        content: prev['content'] ?? '',
+        content: getStringPropertyOrUndefined(prev, 'content') ?? '',
         contentDisplay: 'content',
 
         type: 'text',

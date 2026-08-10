@@ -3,7 +3,7 @@ import { useRef, useEffect } from 'react';
 export const usePrevious = <T>(value: T): T | null => {
   // The ref object is a generic container whose current property is mutable ...
   // ... and can hold any value, similar to an instance property on a class
-  const ref = useRef(null);
+  const ref = useRef<T>(null);
 
   // Store current value in ref
   useEffect(() => {
@@ -11,5 +11,5 @@ export const usePrevious = <T>(value: T): T | null => {
   }, [value]); // Only re-run if value changes
 
   // Return previous value (happens before update in useEffect above)
-  return ref.current as T;
+  return ref.current;
 };
