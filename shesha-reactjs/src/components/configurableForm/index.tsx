@@ -14,6 +14,7 @@ import { ConfigurableFormInstance } from '@/interfaces';
 import { ShaFormProvider } from '@/providers/form/providers/shaFormProvider';
 import { IShaFormInstance } from '@/providers/form/store/interfaces';
 import { FormLoaderProvider } from '@/providers/form/formLoaderProvider';
+import { DataLoadingError } from './dataLoadingError';
 
 export type ConfigurableFormProps<Values = any> = Omit<IConfigurableFormProps<Values>, 'form' | 'formRef' | 'shaForm'> & {
   form?: FormInstance<any>;
@@ -137,20 +138,27 @@ const ConfigurableFormInternal: FC<ConfigurableFormProps> = (props) => {
             </BlockOverlay>
             <ShaFormProvider shaForm={shaForm}>
               {markupLoadingState.status === 'ready' && (
-                <FormWithFlatMarkup
-                  {...props}
-                  form={form}
-                  initialValues={shaForm.initialValues}
-                  formFlatMarkup={shaForm.flatStructure}
-                  formSettings={shaForm.settings}
-                  persistedFormProps={shaForm.form}
-                  onMarkupUpdated={() => {
-                    shaForm.reloadMarkup();
-                  }}
-                  shaForm={shaForm}
-                  actions={actions}
-                  sections={sections}
-                />
+                <>
+                {dataLoadingState.status === 'failed'
+                  ? (
+                    <DataLoadingError dataLoadingState={dataLoadingState} />
+                  )
+                  : <FormWithFlatMarkup
+                      {...props}
+                      form={form}
+                      initialValues={shaForm.initialValues}
+                      formFlatMarkup={shaForm.flatStructure}
+                      formSettings={shaForm.settings}
+                      persistedFormProps={shaForm.form}
+                      onMarkupUpdated={() => {
+                        shaForm.reloadMarkup();
+                      }}
+                      shaForm={shaForm}
+                      actions={actions}
+                      sections={sections}
+                    />
+                  }
+                </>                
               )}
               {markupLoadingState.status === 'failed' && (
                 <MarkupErrorRender formId={formId} markupLoadingState={markupLoadingState} />

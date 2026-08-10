@@ -533,7 +533,13 @@ class ShaFormInstance<Values = any> implements IShaFormInstance<Values> {
                 formFlatStructure: this.flatStructure,
                 formArguments: formArguments,
                 expressionExecuter: this.expressionExecuter,
+                loadingCallback: (loadingState) => {
+                    this.dataLoadingState = { status: loadingState.loadingState, hint: loadingState.loaderHint, error: loadingState.error };
+                    // this.forceRootUpdate();
+                },
             });
+            if (this.dataLoadingState.status === 'failed')
+                throw this.dataLoadingState.error;
 
             this.dataLoadingState = { status: 'ready' };
             this.initialValues = data;
