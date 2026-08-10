@@ -43,7 +43,7 @@ export const getItemSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 })
                 .stdVisibleEditableInputs('disabling')
                 .addConfigurableActionConfigurator({ propertyName: 'actionConfiguration', label: 'On Click' }),
-              { _code: 'return  getSettingValue(data?.itemSubType) !== "button";', _mode: 'code', _value: false },
+              'return getSettingValue(data?.itemSubType) === "button";',
               )
               .addSettingsInput({
                 visibleJs: 'return  getSettingValue(data?.itemSubType) === "dynamic";',
@@ -82,16 +82,16 @@ export const getItemSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   },
                 ],
               })
-              .stdContainer((fbf) => fbf.stdFontPanel(), { _code: `return getSettingValue(data?.itemSubType) == "separator" || ${entityOrUrl};`, _mode: 'code', _value: false })
-              .stdContainer((fbf) => fbf.stdDimensionsPanel(), { _code: `return getSettingValue(data?.itemSubType) == "separator" || ${entityOrUrl};`, _mode: 'code', _value: false })
-              .stdContainer((fbf) => fbf.stdBorderPanel(false), { _code: `return ["dashed","text", "link", "ghost"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false })
-              .stdContainer((fbf) => fbf.stdBackgroundPanel(false), { _code: `return ["text", "link", "primary", "ghost"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false })
-              .stdContainer((fbf) => fbf.stdShadowPanel(), { _code: `return ["text", "link", "ghost"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false })
-              .stdContainer((fbf) => fbf.stdMarginPaddingPanel(), { _code: `return getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false })
+              .stdContainer((fbf) => fbf.stdFontPanel(), `return !(getSettingValue(data?.itemSubType) == "separator" || ${entityOrUrl});`)
+              .stdContainer((fbf) => fbf.stdDimensionsPanel(), `return !(getSettingValue(data?.itemSubType) == "separator" || ${entityOrUrl});`)
+              .stdContainer((fbf) => fbf.stdBorderPanel(false), `return !(["dashed","text", "link", "ghost"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl});`)
+              .stdContainer((fbf) => fbf.stdBackgroundPanel(false), `return !(["text", "link", "primary", "ghost"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl});`)
+              .stdContainer((fbf) => fbf.stdShadowPanel(), `return !(["text", "link", "ghost"].includes(getSettingValue(data?.buttonType)) || getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl});`)
+              .stdContainer((fbf) => fbf.stdMarginPaddingPanel(), `return !(getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl});`)
               .stdContainer((fbf) => fbf.addSettingsInput({
                 inputType: 'codeEditor', propertyName: 'style', label: 'Custom Style',
                 description: 'A script that returns the style of the element as an object. This should conform to CSSProperties' }),
-              { _code: `return  getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl};`, _mode: 'code', _value: false })
+              `return !(getSettingValue(data?.itemSubType) === "separator" || ${entityOrUrl});`)
               .toJson()],
           },
         ],

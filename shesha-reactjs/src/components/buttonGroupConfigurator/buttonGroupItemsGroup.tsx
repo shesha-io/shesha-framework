@@ -39,7 +39,7 @@ export const ButtonGroupItemsGroup: FC<IButtonGroupItemsGroupProps> = ({ item, i
 
   return (
     <>
-      <RenderButton props={{ ...defaultStyledItem }} uuid={item.id} buttonComponent={buttonComponent} />
+      <RenderButton props={{ ...defaultStyledItem }} buttonComponent={buttonComponent} />
       {!isNullOrWhiteSpace(tooltip) && <Tooltip title={tooltip}><QuestionCircleOutlined className={styles.helpIcon} /></Tooltip>}
       {containerRendering({
         index: index,
