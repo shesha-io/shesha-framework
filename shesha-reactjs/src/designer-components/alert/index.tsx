@@ -57,7 +57,7 @@ const AlertComponent: AlertComponentDefinition = {
   getWrapperStyle: (model) => ({ style: { dimensions: model.dimensions, stylingBoxJson: getMarginStyle(model.stylingBoxJson) } }),
   calculateModel: (model, allData) => ({
     evaluatedMessage: evaluateString(model.text, allData),
-    evaluatedDescription: evaluateString(model.description, allData.data ?? {}),
+    evaluatedDescription: evaluateString(model.description, allData),
     formMode: allData.form?.formMode ?? 'readonly',
   }),
   Factory: ({ model, calculatedModel, apiContext }) => {

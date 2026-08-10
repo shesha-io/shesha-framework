@@ -14,7 +14,6 @@ import {
   getActualModel,
   getParentDisabled,
   getParentReadOnly,
-  isConfigurableFormComponent,
   pickStyleFromModel,
   useAvailableConstantsContexts,
   useAvailableConstantsContextsNoRefresh,
@@ -89,7 +88,7 @@ export const unwrapModel = <T extends object = object>(
           : parentDisabledAndReadOnly.readOnly;
         const disabledAndReadOnly =
           // Calculate disabled and readOnly, use parent values if editMode is not set or Inherited
-          isConfigurableFormComponent(newModel) && isDefined(newModel.editMode) && newModel.editMode !== 'inherited' && newModel.editMode !== true
+          isDefined(newModel.editMode) && newModel.editMode !== 'inherited' && newModel.editMode !== true
             ? getDisabledAndReadOnly(newModel.editMode)
             : { disabled: parentDisabledAndReadOnly?.disabled ?? false, readOnly: parentReadOnly };
         newModel.readOnly = disabledAndReadOnly.readOnly;

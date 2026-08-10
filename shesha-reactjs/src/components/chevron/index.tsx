@@ -57,15 +57,14 @@ export const ChevronControl: FC<IChevronControlProps> = (props) => {
 
     };
 
-    return props.hidden !== true
+    return props.visible === true
       ? (
         <div className={styles.chevronButton}>
           <ConfigurableButton
             key={uuid}
             {...props}
-            icon={showIcons ? props.icon : undefined}
+            icon={showIcons === true ? props.icon : undefined}
             styleJson={{ ...newStyles, ...stylingBoxCSS, alignContent: fontStyles.textAlign, justifyContent: fontStyles.textAlign }}
-            readOnly={props.readOnly}
             buttonType="text"
             label={props.item}
           />

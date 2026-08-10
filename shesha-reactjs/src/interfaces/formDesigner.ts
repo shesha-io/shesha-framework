@@ -209,7 +209,7 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
    */
   calculateModel?: ((model: TModel, allData: IApplicationContext, useCalculatedModel?: TCalculatedModel) => TCalculatedModel) | undefined;
 
-  actualModelFilteredPropertyProcessor?: (model: TModel) => UnwrapFunc;
+  actualModelFilteredPropertyProcessor?: UnwrapFunc;
 
   /**
    * Fills the component properties with some default values. Fired when the user drops a component to the form

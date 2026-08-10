@@ -42,7 +42,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
 
   const { buttonLoading, buttonDisabled } = {
     buttonLoading: loading && !isModal,
-    buttonDisabled: props.readOnly === true || (loading && isModal),
+    buttonDisabled: props.disabled === true || (loading && isModal),
   };
 
   const onButtonClick = (event: React.MouseEvent<HTMLElement, MouseEvent>): void => {

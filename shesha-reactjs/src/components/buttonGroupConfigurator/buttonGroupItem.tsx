@@ -34,7 +34,7 @@ export const ButtonGroupItem: FC<IButtonGroupItemProps> = ({ item, actionConfigu
     <>
       {item.itemSubType === 'button' && (
         <Flex>
-          <RenderButton props={actualItem} uuid={item.id} buttonComponent={buttonComponent} />
+          <RenderButton props={actualItem} buttonComponent={buttonComponent} />
           {isNotNullOrWhiteSpace(actualItem.tooltip) && (
             <Tooltip title={actualItem.tooltip}>
               <QuestionCircleOutlined className={styles.helpIcon} />

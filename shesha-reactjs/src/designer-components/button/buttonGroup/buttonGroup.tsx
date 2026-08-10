@@ -28,8 +28,8 @@ export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
   const isDesignMode = allData.form?.formMode === 'designer';
 
   const isVisibleBase = (item: ButtonGroupItemProps): boolean => {
-    const { permissions, hidden } = item;
-    if (hidden === true)
+    const { permissions, visible, hidden } = item;
+    if (visible === false || (visible === undefined && hidden === true))
       return false;
 
     const granted = anyOfPermissionsGranted(permissions || []);
