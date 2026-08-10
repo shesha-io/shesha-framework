@@ -28,9 +28,9 @@ export const createMenuItem = (
   return isDivider === true
     ? { key: props.id, type: 'divider', style: { height: addPx(props.dividerWidth, appContext), backgroundColor: props.dividerColor } }
     : getButtonGroupMenuItem(
-      <RenderButton props={defaultStyledItem} uuid={props.id} buttonComponent={buttonComponent} />,
+      <RenderButton props={defaultStyledItem} buttonComponent={buttonComponent} />,
       props.id,
-      props.readOnly,
+      props.disabled,
       childItems,
     );
 };
