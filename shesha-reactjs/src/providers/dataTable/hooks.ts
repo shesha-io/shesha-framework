@@ -16,7 +16,14 @@ export const useDatasetInstance = (repository: IRepository): IDatasetInstance =>
       storage: asyncStorage,
     });
   });
-  instance.updateRepository(repository);
+  // Sync the repository after commit, not during render. updateRepository can call
+  // updateState() (-> notifySubscribers -> subscriber forceUpdate); doing that during
+  // render triggers React's "Cannot update a component while rendering a different
+  // component" error and can loop/hang. The instance is constructed with the initial
+  // repository above, so the first render is already correct.
+  useEffect(() => {
+    instance.updateRepository(repository);
+  }, [instance, repository]);
 
   return instance;
 };

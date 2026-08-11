@@ -92,7 +92,9 @@ namespace Shesha.JsonLogic
             ParameterExpression param)
         {
             if (rule is JValue value)
-                return Expression.Constant(value.Value);
+                return value.Value != null
+                    ? Expression.Constant(value.Value, value.Value.GetType())
+                    : Expression.Constant(null);
 
             if (rule is JArray array) 
                 throw new NotImplementedException();
@@ -415,7 +417,18 @@ namespace Shesha.JsonLogic
                             var arg = ParseTree<T>(@operator.Arguments[0], param);
 
                             if (arg is MemberExpression memberExpr)
-                                return Expression.Equal(memberExpr, Expression.Constant(null));
+                                return memberExpr.Type == typeof(string)
+                                    ? Expression.OrElse(
+                                        Expression.Equal(memberExpr, Expression.Constant(null)),
+                                        Expression.Equal(TrimStringMember(memberExpr), Expression.Constant(string.Empty))
+                                    )
+                                    : Expression.Equal(memberExpr, Expression.Constant(null));
+
+                            if (arg.Type == typeof(string))
+                                return Expression.OrElse(
+                                    Expression.Equal(arg, Expression.Constant(null)),
+                                    Expression.Equal(Expression.Call(arg, typeof(string).GetRequiredMethod(nameof(string.Trim), [])), Expression.Constant(string.Empty))
+                                );
 
                             return Expression.Not(arg);
                         }
@@ -426,7 +439,7 @@ namespace Shesha.JsonLogic
 
                             var arg = ParseTree<T>(@operator.Arguments[0], param);
 
-                            if (arg is MemberExpression memberExpr) 
+                            if (arg is MemberExpression memberExpr)
                             {
                                 return memberExpr.Type == typeof(string)
                                     ? Expression.AndAlso(
@@ -435,6 +448,12 @@ namespace Shesha.JsonLogic
                                     )
                                     : Expression.NotEqual(memberExpr, Expression.Constant(null));
                             }
+
+                            if (arg.Type == typeof(string))
+                                return Expression.AndAlso(
+                                    Expression.NotEqual(arg, Expression.Constant(null)),
+                                    Expression.NotEqual(Expression.Call(arg, typeof(string).GetRequiredMethod(nameof(string.Trim), [])), Expression.Constant(string.Empty))
+                                );
 
                             return Expression.Not(Expression.Not(arg));
                         }
@@ -619,22 +638,26 @@ namespace Shesha.JsonLogic
                                             Expression.Constant(timeSpan)
                                         );
                                     }
-                                case "month": 
+                                case "month":
                                     {
+                                        if (number.Value < int.MinValue || number.Value > int.MaxValue)
+                                            throw new ArgumentException($"{JsOperators.DateAdd}: the `number` argument is out of range for datepart `month`");
                                         var addMonthsMethod = typeof(DateTime).GetRequiredMethod(nameof(DateTime.AddMonths), [ typeof(int) ]);
                                         return Expression.Call(
                                             date,
                                             addMonthsMethod,
-                                            Expression.Constant(number.Value)
+                                            Expression.Constant((int)number.Value)
                                         );
                                     }
                                 case "year":
                                     {
+                                        if (number.Value < int.MinValue || number.Value > int.MaxValue)
+                                            throw new ArgumentException($"{JsOperators.DateAdd}: the `number` argument is out of range for datepart `year`");
                                         var addYearsMethod = typeof(DateTime).GetRequiredMethod(nameof(DateTime.AddYears), [ typeof(int) ]);
                                         return Expression.Call(
                                             date,
                                             addYearsMethod,
-                                            Expression.Constant(number.Value)
+                                            Expression.Constant((int)number.Value)
                                         );
                                     }
                                 default:
@@ -658,6 +681,25 @@ namespace Shesha.JsonLogic
                             var arg = ParseTree<T>(@operator.Arguments[0], param);
                             var toLowerMethod = typeof(string).GetRequiredMethod(nameof(string.ToLower), []);
                             return Expression.Call(arg, toLowerMethod);
+                        }
+                    case JsOperators.Evaluate:
+                        {
+                            // evaluate nodes contain [{expression, required, type}]
+                            // The expression is either already resolved to a literal by the frontend
+                            // or is a mustache template that was not resolved. In both cases, extract
+                            // the expression string and return it as a constant.
+                            var evalArg = @operator.Arguments.FirstOrDefault();
+                            if (evalArg is JObject evalObj)
+                            {
+                                var expression = evalObj.Value<string>("expression");
+                                var required = evalObj.Value<bool?>("required") ?? true;
+
+                                if (string.IsNullOrWhiteSpace(expression) && !required)
+                                    return null;
+
+                                return Expression.Constant(expression, typeof(string));
+                            }
+                            throw new JsonLogicParsingFailedException("Invalid 'evaluate' node format", rule);
                         }
                     default:
                         throw new NotSupportedException($"Operator `{@operator.Name}` is not supported");
@@ -784,6 +826,15 @@ namespace Shesha.JsonLogic
 
                 ConvertEntityReferenceForEquality(param, pair);
 
+                // For string members compared to null, treat as "is empty": null OR whitespace-only
+                if (rightIsNullConst && pair.Left is MemberExpression stringMember && stringMember.Type == typeof(string))
+                {
+                    return Expression.OrElse(
+                        Expression.Equal(stringMember, Expression.Constant(null)),
+                        Expression.Equal(TrimStringMember(stringMember), Expression.Constant(string.Empty))
+                    );
+                }
+
                 var convertedPair = PrepareExpressionPair(pair);
                 return Expression.Equal(convertedPair.Left, convertedPair.Right);
             });
@@ -868,10 +919,10 @@ namespace Shesha.JsonLogic
                 if (constExpr.Type == typeof(Int64) && constExpr.Value != null)
                 {
                     var constValue = (Int64)constExpr.Value;
-                    if (constValue <= int.MaxValue)
+                    if (constValue >= int.MinValue && constValue <= int.MaxValue)
                         numericConstToConvert = Expression.Constant(Convert.ToInt32(constValue));
                     else
-                        throw new OverflowException($"Constant value must be not grester than {int.MaxValue} (max int size) to compare with {memberExpr.Member.Name}, currtent value is {constValue}");
+                        throw new OverflowException($"Constant value must be between {int.MinValue} and {int.MaxValue} (int size) to compare with {memberExpr.Member.Name}, current value is {constValue}");
                 }
                 else
                     if (constExpr.Type == typeof(string) && int.TryParse((string?)constExpr.Value, out var intValue)) 
@@ -1219,6 +1270,7 @@ namespace Shesha.JsonLogic
         public const string Now = "now";
         public const string Upper = "toUpperCase";
         public const string Lower = "toLowerCase";
+        public const string Evaluate = "evaluate";
     }
 
     public class ExpressionPair 
