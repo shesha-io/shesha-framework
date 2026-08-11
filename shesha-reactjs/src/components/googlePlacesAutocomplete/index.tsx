@@ -32,6 +32,9 @@ interface ISuggestion {
   description: string;
 }
 
+/** antd `Input` props a caller may pass through; props owned by the component (value, onChange, onKeyDown, tabIndex, allowClear, etc.) are omitted so they cannot conflict. */
+export type GooglePlacesAutocompleteInputProps = Omit<InputProps, 'value' | 'onChange' | 'prefix' | 'disabled' | 'placeholder' | 'style' | 'size' | 'className' | 'onKeyDown' | 'tabIndex' | 'allowClear'>;
+
 export interface IGooglePlacesAutocompleteProps {
   disableGoogleEvent?: ((value: string) => boolean) | undefined;
   debounce?: number | undefined;
@@ -60,7 +63,7 @@ export interface IGooglePlacesAutocompleteProps {
   /** Ref to the antd `Input`, so a caller can focus the field programmatically. */
   inputRef?: React.Ref<InputRef> | undefined;
   /** Extra antd `Input` event handlers (mouse/click), passed through as-is. */
-  inputProps?: Omit<InputProps, 'value' | 'onChange' | 'prefix' | 'disabled' | 'placeholder' | 'style' | 'size' | 'className'> | undefined;
+  inputProps?: GooglePlacesAutocompleteInputProps | undefined;
 }
 
 const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({

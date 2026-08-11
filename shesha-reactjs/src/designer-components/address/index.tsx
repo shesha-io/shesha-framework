@@ -1,6 +1,6 @@
 import { HomeOutlined } from '@ant-design/icons';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly, migrateHiddenToVisible } from '@/designer-components/_common-migrations/migrateSettings';
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import AutoCompletePlacesControl from './control';
 import { AddressComponentDefinition, IAddressCompomentProps } from './models';
@@ -16,10 +16,8 @@ import { isIAddressAndCoords } from '@/components/googlePlacesAutocomplete';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { useComponentApi } from '@/providers/componentApi/provider';
-import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { AddressApi } from '@/componentsApi/componentApi';
-import { getComponentEvents } from '../_common/events';
-import { ADDRESS_EVENTS_WITHOUT_CHANGE } from './events';
+import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '../_common/events';
 import { isDefined } from '@/utils/nullables';
 import { InputRef } from 'antd';
 
@@ -45,8 +43,8 @@ const AddressCompoment: AddressComponentDefinition = {
         typeDefinition: { typeName: 'AddressApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
         api: { focus: () => inputRef.current?.focus() },
       });
+      return () => componentApi?.removeApi(model.id);
     }, [componentApi, model.componentName, model.id]);
-    useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
     const { styles } = useStyles(model);
 
@@ -88,7 +86,7 @@ const AddressCompoment: AddressComponentDefinition = {
                 onSelect={(event) => ctx?.handleEvent(undefined, { value: isIAddressAndCoords(event) ? event.address : undefined, event }, model.onSelectCustom)}
                 // onFocus is part of the standard set below, so it is bound there rather than
                 // passed explicitly — wiring both would fire the handler twice.
-                inputProps={getComponentEvents<string>(model, ADDRESS_EVENTS_WITHOUT_CHANGE, ctx, value, DataTypes.string)}
+                inputProps={getComponentEvents<string>(model, ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, ctx, value, DataTypes.string)}
                 {...(isDefined(model.styleJson) ? { style: model.styleJson } : {})}
               />
             );

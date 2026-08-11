@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 import { IAddressCompomentProps } from './models';
-import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, marginStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
+import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
 
 export const useStyles = createStyles(({ css, cx, prefixCls }, model: IAddressCompomentProps) => {
   // Border, background and shadow are what antd repaints in the interactive and validation
@@ -13,7 +13,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: IAddressCo
 
   const boxStyles = `
     ${dimensionsStyles(model.dimensions)}
-    ${marginStyles(model.stylingBoxJson)}
     ${paddingStyles(model.stylingBoxJson)}
   `;
 

@@ -1,4 +1,4 @@
-import GooglePlacesAutocomplete, { IAddressAndCoords } from '@/components/googlePlacesAutocomplete';
+import GooglePlacesAutocomplete, { GooglePlacesAutocompleteInputProps, IAddressAndCoords } from '@/components/googlePlacesAutocomplete';
 import { CSSProperties, FC, Fragment, useEffect, useState } from 'react';
 import * as React from 'react';
 import ValidationErrors from '@/components/validationErrors';
@@ -10,7 +10,6 @@ import { IStyleValue } from '@/providers/form/models';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getNumericValue } from '@/utils/string';
 import { InputRef } from 'antd';
-import { InputProps } from 'antd/lib/input';
 
 interface IAutoCompletePlacesFieldProps extends IAddressCompomentBaseProps {
   value?: string;
@@ -25,7 +24,7 @@ interface IAutoCompletePlacesFieldProps extends IAddressCompomentBaseProps {
   className?: string | undefined;
   inputRef?: React.Ref<InputRef> | undefined;
   /** Standard event handlers bound by the component, passed straight to the antd input. */
-  inputProps?: Omit<InputProps, 'value' | 'onChange' | 'prefix' | 'disabled' | 'placeholder' | 'style' | 'size' | 'className'> | undefined;
+  inputProps?: GooglePlacesAutocompleteInputProps | undefined;
 }
 
 const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => {
