@@ -77,6 +77,7 @@ const AddressCompoment: AddressComponentDefinition = {
                 showPriorityBounds={model.showPriorityBounds}
                 font={model.font}
                 readOnly={model.readOnly}
+                disabled={model.disabled}
                 value={value ?? ""}
                 inputRef={inputRef}
                 className={styles.address}

@@ -75,7 +75,7 @@ export const defaultStyles = (): IStyleValue => {
       repeat: 'no-repeat',
       size: 'cover',
       position: 'center',
-      gradient: { direction: 'to right', colors: {} },
+      gradient: { direction: 'to right', colors: [] },
       url: '',
     },
     font: { weight: '400', size: 14, color: '#000', type: 'Segoe UI', align: 'left' },
@@ -99,10 +99,10 @@ export const defaultStyles = (): IStyleValue => {
       marginLeft: "0",
       marginRight: "0",
       marginTop: "0",
-      paddingBottom: "0",
-      paddingLeft: "0",
-      paddingRight: "0",
-      paddingTop: "0",
+      paddingBottom: "4",
+      paddingLeft: "11",
+      paddingRight: "11",
+      paddingTop: "4",
     },
   };
 };

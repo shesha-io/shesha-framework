@@ -45,6 +45,7 @@ export interface IGooglePlacesAutocompleteProps {
   prefix?: string | undefined;
   label?: string | undefined;
   disabled?: boolean | undefined;
+  readOnly?: boolean | undefined;
   ignoreText?: string | undefined;
   tabIndex?: number | undefined;
   biasedCoordinates?: LatLngPolygon | PointPolygon | undefined;
@@ -72,6 +73,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
   prefix,
   onGeocodeChange,
   disabled,
+  readOnly,
   ignoreText,
   tabIndex,
   biasedCoordinates,
@@ -242,12 +244,16 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
                     }
                   }
                 }}
-                allowClear
+                // Clearing is an edit, so the clear button is hidden in both non-editable states.
+                allowClear={disabled !== true && readOnly !== true}
                 placeholder={placeholder}
                 prefix={inputPrefix}
                 disabled={disabled ?? false}
+                readOnly={readOnly ?? false}
                 tabIndex={tabIndex}
-                onKeyDown={onKeyDown}
+                // Arrow-key navigation of the suggestions is pointless when nothing can be
+                // selected, so key handling is skipped entirely while read-only.
+                onKeyDown={readOnly === true ? undefined : onKeyDown}
                 // Closing the suggestions dropdown is this component's own concern, so a
                 // caller-supplied onBlur is composed with it rather than replacing it.
                 onBlur={(e) => {
@@ -265,9 +271,11 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
               />
             );
           })()}
+          {/* The dropdown stays hidden in both non-editable states — a suggestion list the user
+              cannot act on would otherwise cover the surrounding form. */}
           <div
             className={classNames(styles.dropdownContainer, {
-              hidden: !showSuggestionsDropdownContainer,
+              hidden: !showSuggestionsDropdownContainer || disabled === true || readOnly === true,
             })}
           >
             {suggestions.map((suggestion) => {

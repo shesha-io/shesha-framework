@@ -17,6 +17,7 @@ interface IAutoCompletePlacesFieldProps extends IAddressCompomentBaseProps {
   font?: IStyleValue['font'];
 
   readOnly?: boolean | undefined;
+  disabled?: boolean | undefined;
   onFocus?: ((event: React.FocusEvent<HTMLInputElement, Element>) => void) | undefined;
   onSelect?: (address: IOpenCageResponse | IAddressAndCoords) => void;
   style?: CSSProperties | undefined;
@@ -27,7 +28,7 @@ interface IAutoCompletePlacesFieldProps extends IAddressCompomentBaseProps {
 }
 
 const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => {
-  const { debounce, minCharactersSearch, onChange, openCageApiKey, placeholder, prefix, value, readOnly, googleMapsApiKey, onFocus, onSelect, style, className, inputRef, inputProps } = model;
+  const { debounce, minCharactersSearch, onChange, openCageApiKey, placeholder, prefix, value, readOnly, disabled, googleMapsApiKey, onFocus, onSelect, style, className, inputRef, inputProps } = model;
 
   const { loading, error, refetch } = useGet<IOpenCageResponse>({
     base: 'https://api.opencagedata.com',
@@ -74,7 +75,11 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
         externalLoader={loading}
         placeholder={placeholder}
         prefix={prefix}
-        disabled={readOnly}
+        // `disabled` and `readOnly` are distinct states: disabled greys the field out and takes it
+        // out of the tab order, read-only keeps it looking and reading normally but blocks editing.
+        // Read-only additionally suppresses the Places lookup, since there is nothing to select into.
+        disabled={disabled === true}
+        readOnly={readOnly === true}
         disableGoogleEvent={disableGoogleEvent}
         searchOptions={getSearchOptions(model)}
         style={style}
