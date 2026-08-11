@@ -1,11 +1,22 @@
 /**
  * Countries offered by the address component's Country Restriction setting.
  *
- * Every `code` must be an ISO 3166-1 alpha-2 code, because it is passed to Google Places as
- * `componentRestrictions.country`, which accepts nothing else — an unrecognised value makes Google
- * reject the request and return no suggestions at all. Sub-national regions therefore do not belong
- * here: Basque Country (`eus`), Catalonia (`cat`) and Galicia (`gal`) were previously listed with
- * ISO 639 language codes and have been removed; they are covered by Spain (`es`).
+ * Every `code` must be an **assigned** ISO 3166-1 alpha-2 code, because it is passed to Google
+ * Places as `componentRestrictions.country`, which accepts nothing else — an unrecognised value
+ * makes Google reject the request and return no suggestions at all.
+ *
+ * Being two letters is not sufficient: codes that are merely *reserved* (exceptionally reserved,
+ * transitionally reserved, user-assigned) are not assigned and are rejected the same way. Entries
+ * removed for this reason, and not to be re-added:
+ *
+ * - Sub-national regions listed with ISO 639 *language* codes — Basque Country (`eus`),
+ *   Catalonia (`cat`), Galicia (`gal`); all covered by Spain (`es`).
+ * - Ascension Island (`ac`) — exceptionally reserved, not assigned; covered by Saint Helena (`sh`).
+ * - North Cyprus (`ct`) — not an ISO code; the assigned entry is Cyprus (`cy`).
+ * - European Union (`eu`) — exceptionally reserved, and not a country.
+ *
+ * The United Kingdom is `gb`, its assigned code. `uk` is only exceptionally reserved and was
+ * previously used here, which silently broke the restriction for a real country.
  */
 export const COUNTRY_CODES = [
   { label: 'Afghanistan', value: 'Afghanistan', code: 'af' },
@@ -21,7 +32,6 @@ export const COUNTRY_CODES = [
   { label: 'Argentina', value: 'Argentina', code: 'ar' },
   { label: 'Armenia', value: 'Armenia', code: 'am' },
   { label: 'Aruba', value: 'Aruba', code: 'aw' },
-  { label: 'Ascension Island', value: 'Ascension Island', code: 'ac' },
   { label: 'Australia', value: 'Australia', code: 'au' },
   { label: 'Austria', value: 'Austria', code: 'at' },
   { label: 'Azerbaijan', value: 'Azerbaijan', code: 'az' },
@@ -83,7 +93,6 @@ export const COUNTRY_CODES = [
   { label: 'Eritrea', value: 'Eritrea', code: 'er' },
   { label: 'Estonia', value: 'Estonia', code: 'ee' },
   { label: 'Ethiopia', value: 'Ethiopia', code: 'et' },
-  { label: 'European Union', value: 'European Union', code: 'eu' },
   { label: 'Falkland Islands', value: 'Falkland Islands', code: 'fk' },
   { label: 'Faeroe Islands', value: 'Faeroe Islands', code: 'fo' },
   { label: 'Federated States of Micronesia', value: 'Federated States of Micronesia', code: 'fm' },
@@ -174,7 +183,6 @@ export const COUNTRY_CODES = [
   { label: 'Nigeria', value: 'Nigeria', code: 'ng' },
   { label: 'Niue', value: 'Niue', code: 'nu' },
   { label: 'Norfolk Island', value: 'Norfolk Island', code: 'nf' },
-  { label: 'North Cyprus (unrecognised, self-declared state)', value: 'North Cyprus (unrecognised, self-declared state)', code: 'ct' },
   { label: 'North Korea', value: 'North Korea', code: 'kp' },
   { label: 'Northern Mariana Islands', value: 'Northern Mariana Islands', code: 'mp' },
   { label: 'Norway', value: 'Norway', code: 'no' },
@@ -245,8 +253,9 @@ export const COUNTRY_CODES = [
   { label: 'Uganda', value: 'Uganda', code: 'ug' },
   { label: 'Ukraine', value: 'Ukraine', code: 'ua' },
   { label: 'United Arab Emirates (UAE)', value: 'United Arab Emirates (UAE)', code: 'ae' },
-  { label: 'United Kingdom (UK)', value: 'United Kingdom (UK)', code: 'uk' },
+  { label: 'United Kingdom (UK)', value: 'United Kingdom (UK)', code: 'gb' },
   { label: 'United States of America (USA)', value: 'United States of America (USA)', code: 'us' },
+  { label: 'United States Minor Outlying Islands', value: 'United States Minor Outlying Islands', code: 'um' },
   { label: 'United States Virgin Islands', value: 'United States Virgin Islands', code: 'vi' },
   { label: 'Uruguay', value: 'Uruguay', code: 'uy' },
   { label: 'Uzbekistan', value: 'Uzbekistan', code: 'uz' },
