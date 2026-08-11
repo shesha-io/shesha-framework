@@ -1,4 +1,4 @@
-import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, paddingStyles, shadowStyles } from "@/designer-components/_common/styles/utils";
+import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, marginStyles, paddingStyles, shadowStyles } from "@/designer-components/_common/styles/utils";
 import { createStyles } from "@/styles";
 import { IConfigurableButtonProps } from ".";
 import { isDefined } from "@/utils";
@@ -27,9 +27,10 @@ export const useStyles = createStyles(({ css, cx, token }, { model, isSameUrl, i
       max-width: 100%;
 
       &&&&.ant-btn {
-        ${dimensionsStyles({ ...model.dimensions, ...getFullSizeComponentDimensions(model.dimensions) })}
+        ${dimensionsStyles(getFullSizeComponentDimensions(model.dimensions))}
         ${fontStyles(font)}
         ${paddingStyles(model.stylingBoxJson)}
+        ${marginStyles(model.stylingBoxJson)}
         ${isButtonStyle && !isGhostType ? borderStyles(model.border, true) : ''}
         ${isButtonStyle ? backgroundStyles(background) : ''}
         ${isButtonStyle && !isGhostType ? shadowStyles(model.shadow) : ''}

@@ -5,7 +5,7 @@ import { BaseType, EllipsisConfig } from 'antd/lib/typography/Base';
 import { CSSProperties } from 'react';
 import { IShadowValue } from '../_settings/utils/shadow/interfaces';
 
-type LevelType = 1 | 2 | 3 | 4 | 5;
+export type LevelType = 0 | 1 | 2 | 3 | 4 | 5;
 
 export type ContentType = 'primary' | 'secondary' | 'success' | 'warning' | 'info' | 'danger' | 'custom' | '';
 export type ContentDisplay = 'content' | 'name';
@@ -66,13 +66,14 @@ export interface ITypographyProps {
 }
 
 export interface ITextComponentProps extends IConfigurableFormComponent {
-  textType: 'span' | 'paragraph' | 'title';
+  /** @deprecated will be removed */
+  textType?: 'span' | 'paragraph' | 'title' | undefined;
   content: string;
   contentType?: ContentType | undefined;
   contentDisplay: ContentDisplay | undefined;
   color?: string | undefined;
   backgroundColor?: string | undefined;
-  level?: LevelType | TypographyFontSize | undefined;
+  level?: LevelType | undefined;
   fontSize?: TypographyFontSize | string | number | undefined;
   padding?: TypographyPaddingSize | undefined;
   dataType?: string | undefined;
@@ -93,6 +94,10 @@ export interface ITextComponentProps extends IConfigurableFormComponent {
   shadow?: IShadowValue | undefined;
 }
 
-export type TextComponentDefinition = ComponentDefinition<"text", ITextComponentProps>;
+interface ITextCalculatedModel {
+  evaluateValue: (value: unknown) => string | undefined;
+}
+
+export type TextComponentDefinition = ComponentDefinition<"text", ITextComponentProps, ITextCalculatedModel>;
 
 export const isTextComponent = (component: IConfigurableFormComponent): component is ITextComponentProps => component.type === 'text';
