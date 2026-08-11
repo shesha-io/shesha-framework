@@ -103,10 +103,10 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
       >
         <FormInfo visible={false} formProps={persistedFormProps}>
           <div style={{ flex: 1 }} data-name={propertyName}>
-            {isDefined(errors) && Object.keys(errors)
-              .filter((error) => !(showFormError && error === 'getForm'))
-              .map((error, index) => (
-                <ValidationErrors key={index} error={errors[error as keyof typeof errors]} />
+            {isDefined(errors) && Object.entries(errors)
+              .filter(([name]) => !(showFormError && name === 'getForm'))
+              .map(([name, error]) => (
+                <ValidationErrors key={name} error={error} />
               ))}
             {showFormError && (
               <div className={styles.subFormError}>
