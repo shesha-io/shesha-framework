@@ -340,6 +340,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
             key: 'events',
             title: 'Events',
             id: eventsTabId,
+            hidden: { _code: 'return getSettingValue(data?.dataSource) !== "api";', _mode: 'code', _value: false },
             components: [...fbf()
               .addSettingsInput({
                 id: nanoid(),
@@ -347,13 +348,14 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 propertyName: "onCreated",
                 parentId: eventsTabId,
                 label: "On Created",
-                tooltip: "Triggered after successfully creating a new sub-form object in the back-end",
+                tooltip: "Triggered after the sub-form creates its object in the back-end, via the 'Post form data' action",
+                hidden: { _code: 'return getSettingValue(data?.dataSource) !== "api";', _mode: 'code', _value: false },
                 mode: "dialog",
-                description: "Triggered after successfully creating a new sub-form object in the back-end",
+                description: "Triggered after the sub-form creates its object in the back-end, via the 'Post form data' action",
                 exposedVariables: [
                   {
                     name: 'response',
-                    description: 'Submitted data',
+                    description: 'The entity returned by the back-end',
                     type: 'object',
                   },
                   {
@@ -372,9 +374,9 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     type: 'object',
                   },
                   {
-                    name: 'publish',
-                    description: 'Event publisher',
-                    type: 'function',
+                    name: 'application',
+                    description: 'The application context',
+                    type: 'object',
                   },
                 ],
                 wrapInTemplate: true,
@@ -388,13 +390,14 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 propertyName: "onUpdated",
                 parentId: eventsTabId,
                 label: "On Updated",
-                tooltip: "Triggered after successfully updating the sub-form object in the back-end",
+                tooltip: "Triggered after the sub-form updates its object in the back-end, via the 'Update form data' action",
+                hidden: { _code: 'return getSettingValue(data?.dataSource) !== "api";', _mode: 'code', _value: false },
                 mode: "dialog",
-                description: "Triggered after successfully updating the sub-form object in the back-end",
+                description: "Triggered after the sub-form updates its object in the back-end, via the 'Update form data' action",
                 exposedVariables: [
                   {
                     name: 'response',
-                    description: 'Submitted data',
+                    description: 'The entity returned by the back-end',
                     type: 'object',
                   },
                   {
@@ -413,9 +416,9 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     type: 'object',
                   },
                   {
-                    name: 'publish',
-                    description: 'Event publisher',
-                    type: 'function',
+                    name: 'application',
+                    description: 'The application context',
+                    type: 'object',
                   },
                 ],
                 wrapInTemplate: true,
