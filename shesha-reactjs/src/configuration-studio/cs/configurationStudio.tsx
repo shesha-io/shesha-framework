@@ -845,7 +845,9 @@ export class ConfigurationStudio implements IConfigurationStudio {
   };
 
   deleteFolderAsync = async (node: FolderTreeNode): Promise<void> => {
-    if (node.children.length > 0) {
+    // node.children may include the synthetic empty-folder placeholder (filter.ts) - exclude it.
+    const hasRealChildren = node.children.some((child: TreeNode) => child.nodeType !== TreeNodeType.Placeholder);
+    if (hasRealChildren) {
       await this.modalApi.warning({
         title: 'Delete Folder',
         content: (

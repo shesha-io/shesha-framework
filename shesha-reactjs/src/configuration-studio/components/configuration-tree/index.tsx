@@ -1,6 +1,6 @@
 /* eslint @typescript-eslint/strict-boolean-expressions: "error" */
 import { Button, Dropdown, Input, MenuProps, Spin, Tooltip, Tree, TreeProps } from 'antd';
-import React, { FC, useMemo, useRef, useState } from 'react';
+import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 import { MoveNodePayload } from '../../apis';
 import { isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, isNodeWithChildren, isTreeNode, TreeNode, TreeNodeType } from '../../models';
 import { CaretDownOutlined, CaretRightOutlined, RightOutlined } from '@ant-design/icons';
@@ -72,7 +72,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
   const cs = useConfigurationStudio();
   const { getDocumentDefinition } = useConfigurationStudioEnvironment();
   const { treeNodes, loadTreeAsync, treeLoadingState, expandedKeys, selectedKeys, selectedNodes, onNodeExpand, quickSearch, setQuickSearch, getTreeNodeById } = useCsTree();
-  const { setIsDragging } = useCsTreeDnd();
+  const { isDragging, setIsDragging } = useCsTreeDnd();
   // Anchor for shift+click/shift+arrow range selection: the last node clicked without shift.
   const lastClickedKeyRef = useRef<React.Key | null>(null);
   // End of the shift-selection range; also drives Tree's controlled `activeKey` (null = uncontrolled).
@@ -82,6 +82,53 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
   const [dndState, setDndState] = useState<DndState>();
 
   const filteredTreeNodes = useFilteredTreeNodes(treeNodes, quickSearch);
+
+  // Auto-expand a collapsed folder hovered during a drag, bypassing antd Tree's own gated drag events.
+  useEffect(() => {
+    if (!isDragging)
+      return undefined;
+
+    let hoveredNodeId: string | null = null;
+    let expandTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    const clearPending = (): void => {
+      hoveredNodeId = null;
+      if (expandTimeout !== null) {
+        clearTimeout(expandTimeout);
+        expandTimeout = null;
+      }
+    };
+
+    const handleNativeDragOver = (event: DragEvent): void => {
+      const target = event.target instanceof Element ? event.target : null;
+      const nodeId = target?.closest<HTMLElement>('[data-node-id]')?.dataset['nodeId'] ?? null;
+
+      if (nodeId === hoveredNodeId)
+        return;
+
+      clearPending();
+      if (nodeId === null)
+        return;
+
+      const node = getTreeNodeById(nodeId);
+      if (!isDefined(node) || !isNodeWithChildren(node) || (expandedKeys ?? []).includes(node.key))
+        return;
+
+      hoveredNodeId = nodeId;
+      expandTimeout = setTimeout(() => {
+        expandTimeout = null;
+        cs.onTreeNodeExpand([...(expandedKeys ?? []), node.key]);
+      }, 500);
+    };
+
+    // Capture phase: rc-tree's own per-row onDragOver calls stopPropagation(), which would
+    // otherwise stop this bubble-phase listener from ever seeing the event on draggable rows.
+    document.addEventListener('dragover', handleNativeDragOver, true);
+    return () => {
+      document.removeEventListener('dragover', handleNativeDragOver, true);
+      clearPending();
+    };
+  }, [isDragging, expandedKeys, getTreeNodeById, cs]);
 
   // Flat DFS walk of currently visible nodes (excludes the placeholder) — used for shift+click range and shift+arrow.
   const flatVisibleNodes = useMemo<TreeNode[]>(() => {

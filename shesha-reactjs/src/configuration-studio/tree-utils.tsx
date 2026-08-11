@@ -46,15 +46,16 @@ export const renderCsTreeNode = (node: TreeNode, displayText?: ReactNode): React
 
 export const flatNode2TreeNode = async (csEnvironment: IConfigurationStudioEnvironment, node: FlatTreeNode): Promise<TreeNode> => {
   const baseProps: TreeNode = {
-    id: node.id,
-    parentId: node.parentId ?? undefined,
-    key: node.id,
-    name: node.name,
-    label: node.label,
-    nodeType: node.nodeType,
-    title: (node) => isTreeNode(node) ? renderCsTreeNode(node, undefined) : undefined,
-    moduleId: node.moduleId,
-    description: node.description ?? undefined,
+    "id": node.id,
+    "parentId": node.parentId ?? undefined,
+    "key": node.id,
+    "name": node.name,
+    "label": node.label,
+    "nodeType": node.nodeType,
+    "title": (node) => isTreeNode(node) ? renderCsTreeNode(node, undefined) : undefined,
+    "moduleId": node.moduleId,
+    "description": node.description ?? undefined,
+    'data-node-id': node.id,
   };
 
 
