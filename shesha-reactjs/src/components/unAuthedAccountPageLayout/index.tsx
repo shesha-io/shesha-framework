@@ -1,4 +1,4 @@
-import React, { FC, ReactNode } from 'react';
+import { FC, ReactNode } from 'react';
 import { Col, Row } from 'antd';
 import { UnAuthedLayoutContainer } from './layoutContainer';
 

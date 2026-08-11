@@ -1,5 +1,5 @@
 import { Modal } from 'antd';
-import React, { FC, useState, useEffect } from 'react';
+import { FC, useState, useEffect } from 'react';
 import { useMedia } from 'react-use';
 import { ColumnsItemProps } from '@/providers/datatableColumnsConfigurator/models';
 import { ColumnsConfigurator } from './columnsConfigurator';

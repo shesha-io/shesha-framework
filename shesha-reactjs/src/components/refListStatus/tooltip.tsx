@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren } from 'react';
+import { FC, PropsWithChildren } from 'react';
 import { ReferenceListItemDto } from '@/apis/referenceList';
 import { Tooltip } from 'antd';
 import { isNullOrWhiteSpace } from '@/utils/nullables';

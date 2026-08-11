@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useState } from 'react';
+import { FC, useCallback, useState } from 'react';
 import { Button } from 'antd';
 import { FormSettingsEditor } from '../formSettingsEditor';
 import { SettingOutlined } from '@ant-design/icons';

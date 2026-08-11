@@ -1,7 +1,15 @@
 import { createNamedContext } from "@/utils/react";
 import { ConfigurationStudio } from "./configurationStudio";
 import { IConfigurationStudio } from "./interfaces";
-import React, { FC, PropsWithChildren, useContext, useEffect, useLayoutEffect, useRef } from "react";
+import {
+  useState,
+  FC,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+} from "react";
 import { useHttpClient, useShaRouting } from "@/providers";
 import { asyncStorage } from "../storage";
 import { useModalApi } from "./modalApi";
@@ -14,7 +22,7 @@ export const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 const useConfigurationStudioSingletone = (): [IConfigurationStudio] => {
-  const [, forceUpdate] = React.useState({});
+  const [, forceUpdate] = useState({});
   const csEnvironment = useConfigurationStudioEnvironment();
   const httpClient = useHttpClient();
   const modalApi = useModalApi();
@@ -23,7 +31,7 @@ const useConfigurationStudioSingletone = (): [IConfigurationStudio] => {
 
   const toolbarRef = useRef<HTMLDivElement>(null!);
 
-  const [configurationStudio] = React.useState<IConfigurationStudio>(() => {
+  const [configurationStudio] = useState<IConfigurationStudio>(() => {
     // Create a new FormStore if not provided
     const instance = new ConfigurationStudio({
       forceRootUpdate: () => forceUpdate({}),

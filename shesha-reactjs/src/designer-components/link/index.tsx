@@ -5,7 +5,7 @@ import { IInputStyles } from '@/providers';
 import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import ParentProvider from '@/providers/parentProvider/index';
 import { LinkOutlined } from '@ant-design/icons';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { ILinkComponentProps, LinkComponentDefinition } from './interfaces';

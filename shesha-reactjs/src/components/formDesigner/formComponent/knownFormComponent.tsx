@@ -6,7 +6,7 @@ import { isFormFullName } from '@/providers/form/utils';
 import { useValidationErrorsStateOrDefault } from '@/providers/validationErrors';
 import { IModelValidation, ISheshaErrorTypes } from '@/utils/errors';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
-import React, { FC, useMemo } from 'react';
+import { memo, FC, useMemo } from 'react';
 import AttributeDecorator from '../../attributeDecorator';
 import ErrorIconPopover from '../../componentErrors/errorIconPopover';
 import { isValidGuid } from '../components/utils';
@@ -136,5 +136,5 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
   return <AttributeDecorator attributes={attributes as Record<string, string>}>{wrappedErrorControl}</AttributeDecorator>;
 };
 
-const KnownFormComponentMemo = React.memo(KnownFormComponent);
+const KnownFormComponentMemo = memo(KnownFormComponent);
 export default KnownFormComponentMemo;

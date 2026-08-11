@@ -1,5 +1,6 @@
 import { Radio } from 'antd';
-import React, { FC } from 'react';
+import { FC } from 'react';
+import * as React from 'react';
 import Icon from '../icon/Icon';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 

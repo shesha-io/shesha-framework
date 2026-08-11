@@ -7,7 +7,7 @@ import ParentProvider from '@/providers/parentProvider/index';
 import { nanoid } from '@/utils/uuid';
 import { CodeSandboxSquareFilled } from '@ant-design/icons';
 import { Card } from 'antd';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { ICardComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';

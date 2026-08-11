@@ -1,5 +1,5 @@
 import { Typography } from "antd";
-import React, { ReactNode } from "react";
+import { Fragment, ReactNode } from "react";
 import { TreeNode } from "./models";
 import { isNullOrWhiteSpace } from "../utils/nullables";
 
@@ -48,7 +48,7 @@ export const getTitleWithHighlight = (node: TreeNode, searchString?: string): Re
   return (
     <>
       {parts.map((part, index) => (
-        <React.Fragment key={index}>{part}</React.Fragment>
+        <Fragment key={index}>{part}</Fragment>
       ))}
     </>
   );

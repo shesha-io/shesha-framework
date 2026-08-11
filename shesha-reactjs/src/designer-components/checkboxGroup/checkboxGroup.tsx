@@ -1,5 +1,5 @@
 import { ProfileOutlined } from '@ant-design/icons';
-import React, { CSSProperties, useEffect, useMemo, useRef } from 'react';
+import { CSSProperties, useEffect, useMemo, useRef } from 'react';
 import { useActualContextExecution } from '@/hooks';
 import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';

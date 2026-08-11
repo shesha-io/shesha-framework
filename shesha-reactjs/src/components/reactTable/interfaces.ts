@@ -1,7 +1,8 @@
 import { IConfigurableActionConfiguration } from '@/providers';
 import { IAnchoredDirection, ITableRowData } from '@/providers/dataTable/interfaces';
 import { IFlatComponentsStructure } from '@/providers/form/models';
-import React, { ReactNode, CSSProperties } from 'react';
+import { ReactNode, CSSProperties } from 'react';
+import * as React from 'react';
 import { Column, ColumnInstance, Row, SortingRule, TableState } from 'react-table';
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
 import { TableSelectionMode } from '../dataTable/interfaces';

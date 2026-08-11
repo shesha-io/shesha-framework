@@ -1,4 +1,5 @@
-import React, { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
+import * as React from 'react';
 import { useAppConfigurator, useAuthOrUndefined } from '@/providers';
 import { IPersistedFormProps } from '@/providers/form/models';
 import { Button } from 'antd';

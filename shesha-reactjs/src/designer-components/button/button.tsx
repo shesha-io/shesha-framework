@@ -1,5 +1,5 @@
 import ConfigurableButton from './configurableButton';
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { BorderOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';

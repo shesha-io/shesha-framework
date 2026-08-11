@@ -2,7 +2,7 @@ import { useFormPersister } from '@/providers/formPersisterProvider';
 import { getFormFullName } from '@/utils/form';
 import { CopyOutlined } from '@ant-design/icons';
 import { App } from 'antd';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { useStyles } from '../styles/styles';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 

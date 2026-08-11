@@ -1,6 +1,7 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { InputProps, Tag } from 'antd';
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
+import * as React from 'react';
 import { Autocomplete } from '@/components/autocomplete';
 import Show from '@/components/show';
 import { isDefined } from '@/utils/nullables';

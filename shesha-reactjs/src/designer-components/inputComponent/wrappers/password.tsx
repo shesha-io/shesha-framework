@@ -1,6 +1,5 @@
 import { IPasswordSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
 import { Input } from 'antd';
-import React from 'react';
 import { FCUnwrapped } from '@/providers/form/models';
 
 const { Password } = Input;

@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { IToolboxComponentBase } from '@/interfaces';
 import { Show } from '@/components/show';

@@ -1,4 +1,3 @@
-import React from 'react';
 import { ITableViewSelectorComponentProps, TableViewSelectorComponentDefinition } from './models';
 import { migrateFilterMustacheExpressions } from '@/designer-components/_common-migrations/migrateUseExpression';
 import { migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';

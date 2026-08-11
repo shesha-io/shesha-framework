@@ -1,6 +1,6 @@
 import { EditMode, InteractionType } from '@/interfaces';
 import { Radio } from 'antd';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import Icon from '../icon/Icon';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';

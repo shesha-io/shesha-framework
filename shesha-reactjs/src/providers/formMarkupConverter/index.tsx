@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useMemo } from 'react';
+import { FC, ReactNode, useMemo } from 'react';
 import { useFormDesignerComponents } from '../form/hooks';
 import { FormRawMarkup, IFlatComponentsStructure, IFormSettings } from '../form/models';
 import { convertFormMarkupToFlatStructure } from '../form/utils';

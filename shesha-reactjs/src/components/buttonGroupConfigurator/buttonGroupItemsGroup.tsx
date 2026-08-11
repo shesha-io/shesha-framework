@@ -1,4 +1,5 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
+import * as React from 'react';
 import { ButtonGroupItemProps, IButtonGroup } from '@/providers/buttonGroupConfigurator/models';
 import { Tooltip } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';

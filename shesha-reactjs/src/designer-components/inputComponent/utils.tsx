@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { Select } from 'antd';
 import { ListEditor } from '@/components/listEditor';
 import { CodeEditor } from '@/designer-components/codeEditor/codeEditor';

@@ -1,5 +1,5 @@
 import { FormAutocomplete } from '@/components/configurableItemAutocomplete/formAutocomplete';
-import React, { FC, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 import {
   Button,
   Col,

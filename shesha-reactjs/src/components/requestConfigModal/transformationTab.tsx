@@ -1,4 +1,4 @@
-import React, { FC, useCallback } from 'react';
+import { FC, useCallback } from 'react';
 import { Space, Switch, Tooltip, Typography } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { CodeEditor as BaseCodeEditor } from '@/components/codeEditor/codeEditor';

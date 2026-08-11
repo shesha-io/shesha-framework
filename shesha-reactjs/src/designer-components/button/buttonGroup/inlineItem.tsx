@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC } from 'react';
+import { CSSProperties, FC } from 'react';
 import { ButtonGroupItemProps } from '@/providers';
 import { Divider, Dropdown } from 'antd';
 import { IApplicationContext } from '@/providers/form/utils';

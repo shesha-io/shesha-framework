@@ -1,6 +1,6 @@
 import { EyeInvisibleOutlined, SettingOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import DragHandle from './dragHandle';
 import { useStyles } from './styles/styles';
 import classNames from 'classnames';

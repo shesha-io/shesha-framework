@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { isDefined, isNotNullOrWhiteSpace } from "@/utils/nullables";
 import { executeScriptSync } from '@/providers/form/utils';
 import { IPropertySetting } from '..';

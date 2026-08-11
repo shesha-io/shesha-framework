@@ -1,7 +1,5 @@
-import React, {
-  FC,
-  useState,
-} from 'react';
+import { FC, useState } from 'react';
+import * as React from 'react';
 import {
   Alert,
   App,

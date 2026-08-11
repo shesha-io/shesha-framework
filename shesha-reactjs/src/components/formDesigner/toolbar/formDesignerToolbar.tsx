@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { SaveMenu } from './saveMenu';
 import { useFormDesignerReadOnly, useFormDesignerSettings } from '@/providers/formDesigner';
 import { useSheshaApplication } from '@/providers';

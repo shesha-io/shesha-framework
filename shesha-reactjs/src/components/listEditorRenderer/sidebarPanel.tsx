@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import classNames from 'classnames';
 import { useStyles } from './styles/styles';
 import { ISidebarProps } from './models';

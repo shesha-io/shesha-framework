@@ -2,7 +2,8 @@
 import { isDefined } from '@/utils/nullables';
 import { Dropdown, Empty, Tabs, TabsProps } from 'antd';
 import { useNavigationGuard } from "next-navigation-guard";
-import React, { CSSProperties, FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { CSSProperties, FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import * as React from 'react';
 import { useCsTabs } from '../../cs/hooks';
 import { IDocumentInstance } from '../../models';
 import { useStyles } from '../../styles';

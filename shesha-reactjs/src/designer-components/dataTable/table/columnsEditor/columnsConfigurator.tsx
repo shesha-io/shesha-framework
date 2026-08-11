@@ -1,5 +1,5 @@
 import { Alert } from 'antd';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { ColumnProperties } from './columnProperties';
 import { ColumnsItemProps, IDataColumnsProps, standardCellComponentTypes } from '@/providers/datatableColumnsConfigurator/models';
 import { nanoid } from '@/utils/uuid';

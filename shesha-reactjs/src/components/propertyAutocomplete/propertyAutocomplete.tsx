@@ -1,4 +1,5 @@
-import React, { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
+import { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
+import * as React from 'react';
 import { AutoComplete, Button, Select, Space, Tag } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useEntityMetadataFetcher, useFormOrUndefined, useMetadataOrUndefined, useMetadataDispatcher } from '@/providers';

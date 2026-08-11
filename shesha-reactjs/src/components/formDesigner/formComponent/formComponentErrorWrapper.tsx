@@ -1,6 +1,6 @@
 import { IConfigurableFormComponent } from '@/interfaces';
 import { FormComponentValidationProvider } from '@/providers/validationErrors';
-import React, { FC, PropsWithChildren } from 'react';
+import { FC, PropsWithChildren } from 'react';
 import { CustomErrorBoundary } from '../..';
 
 export interface IFormComponentErrorWrapperProps {

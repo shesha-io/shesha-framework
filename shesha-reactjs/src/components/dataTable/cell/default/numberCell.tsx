@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { numberToFormattedString } from '@/utils/string';
 import { IDataCellProps } from '../interfaces';
 

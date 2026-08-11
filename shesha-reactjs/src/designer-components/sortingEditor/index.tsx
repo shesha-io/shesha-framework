@@ -1,6 +1,5 @@
 import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
 import { IToolboxComponent } from '@/interfaces';
-import React from 'react';
 import { GroupOutlined } from '@ant-design/icons';
 import { ConfigurableFormItem } from '@/components/index';
 import settingsFormJson from './settingsForm.json';

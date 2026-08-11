@@ -1,5 +1,5 @@
 import HelpTextPopover from '@/components/helpTextPopover';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { getFormFullName } from '@/utils/form';
 import { Space } from 'antd';
 import { useFormPersister } from '@/providers/formPersisterProvider';

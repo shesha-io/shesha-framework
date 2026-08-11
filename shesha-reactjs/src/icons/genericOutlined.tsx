@@ -1,5 +1,6 @@
 import Icon, { CustomIconComponentProps } from '@ant-design/icons/lib/components/Icon';
-import React, { FC } from 'react';
+import { FC } from 'react';
+import * as React from 'react';
 
 
 const GenericOutlinedSvg = (): React.JSX.Element => (

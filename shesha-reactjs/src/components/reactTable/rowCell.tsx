@@ -1,4 +1,5 @@
-import React, { ReactNode, useRef, useCallback, useEffect } from 'react';
+import { ReactNode, useRef, useCallback, useEffect } from 'react';
+import * as React from 'react';
 import { Cell } from 'react-table';
 import { useStyles } from './styles/styles';
 import { isStyledColumn } from '../dataTable/interfaces';

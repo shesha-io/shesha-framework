@@ -1,4 +1,3 @@
-import React from 'react';
 import { ButtonGroup } from './buttonGroup';
 import { ButtonGroupItemProps, isGroup, isItem } from '@/providers/buttonGroupConfigurator/models';
 import { GroupOutlined } from '@ant-design/icons';

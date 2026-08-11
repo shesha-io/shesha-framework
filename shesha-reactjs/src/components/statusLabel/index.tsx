@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { Tag } from 'antd';
 import invertColor from 'invert-color';
 import { css, cx } from 'antd-style';

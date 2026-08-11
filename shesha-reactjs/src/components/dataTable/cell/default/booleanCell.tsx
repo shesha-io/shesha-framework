@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { IDataCellProps } from '../interfaces';
 
 export type IBooleanCellCellProps<D extends object = object, V = unknown> = IDataCellProps<D, V>;

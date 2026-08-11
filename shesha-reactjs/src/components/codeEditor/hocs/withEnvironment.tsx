@@ -3,7 +3,7 @@ import { IObjectMetadata } from "@/interfaces";
 import { IMetadata } from "@/interfaces/metadata";
 import { wrapDisplayName } from "@/utils/react";
 import { Skeleton } from "antd";
-import React, { ComponentType, FC } from "react";
+import { ComponentType, FC } from "react";
 
 type ResultMetadata = IMetadata | IObjectMetadata;
 

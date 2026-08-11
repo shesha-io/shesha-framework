@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { IDataCellProps } from '../interfaces';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { useStyles } from '../../styles/styles';

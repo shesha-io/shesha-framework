@@ -8,7 +8,7 @@ import { GENERIC_ENTITIES_ENDPOINT } from '@/shesha-constants';
 import { buildUrl } from '@/utils';
 import { makeErrorWithMessage, throwError } from '@/utils/errors';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
-import React, { FC, PropsWithChildren, useCallback, useContext, useEffect } from 'react';
+import { FC, PropsWithChildren, useCallback, useContext, useEffect } from 'react';
 import {
   fetchApplicationsErrorAction,
   fetchApplicationsSuccessAction,

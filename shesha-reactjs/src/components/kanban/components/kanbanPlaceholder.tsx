@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import { Card, Col, Row } from "antd";
 
 export const KanbanPlaceholder = (): React.JSX.Element => {

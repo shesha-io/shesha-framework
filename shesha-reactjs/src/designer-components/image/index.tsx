@@ -4,7 +4,7 @@ import { FileImageOutlined } from '@ant-design/icons';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
 import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import React, { ReactElement, ReactNode } from 'react';
+import { ReactElement, ReactNode } from 'react';
 import {
   migrateCustomFunctions,
   migratePropertyName,

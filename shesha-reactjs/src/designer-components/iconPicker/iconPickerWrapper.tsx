@@ -1,5 +1,5 @@
 import IconPicker, { IIconPickerProps, ShaIconTypes } from '@/components/iconPicker';
-import React, { CSSProperties, FC, useCallback, useMemo } from 'react';
+import { CSSProperties, FC, useCallback, useMemo } from 'react';
 import { IApplicationContext } from '@/providers/form/utils';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { IDimensionsValue } from '../_settings/utils/dimensions/interfaces';

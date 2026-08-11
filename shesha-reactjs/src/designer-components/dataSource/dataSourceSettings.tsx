@@ -1,5 +1,5 @@
 import { EndpointsAutocomplete } from '@/components/endpointsAutocomplete/endpointsAutocomplete';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 import {

@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { CloseOutlined } from '@ant-design/icons';
 import { createStyles } from '@/styles';
 import { CircleFilled } from './circle-icon';

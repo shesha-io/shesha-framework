@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, ReactNode, useEffect, useRef, useState } from 'react';
+import { CSSProperties, FC, ReactNode, useEffect, useRef, useState } from 'react';
 import { useStyles } from './styles/styles';
 import Show from '../show';
 import { Tooltip } from 'antd';

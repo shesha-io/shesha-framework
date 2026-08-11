@@ -1,4 +1,4 @@
-import React, { FC, useCallback } from 'react';
+import { FC, useCallback } from 'react';
 import { useFormDesigner } from '@/providers/formDesigner';
 import { ComponentPropertiesEditor } from './componentPropertiesEditor';
 import ParentProvider from '@/providers/parentProvider/index';

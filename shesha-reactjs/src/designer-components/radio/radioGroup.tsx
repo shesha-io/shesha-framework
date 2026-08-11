@@ -1,5 +1,6 @@
 import { Radio, Space } from 'antd';
-import React, { ReactElement, useMemo } from 'react';
+import { ReactElement, useMemo } from 'react';
+import * as React from 'react';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
 import { getDataSourceList } from './utils';
 import { ILabelValue } from '../dropdown/model';

@@ -1,4 +1,5 @@
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
+import * as React from 'react';
 import { PlusOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Button, Divider, Input, Select, SelectProps, Space, Tooltip } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';

@@ -1,5 +1,4 @@
 import { GroupOutlined } from '@ant-design/icons';
-import React from 'react';
 import { IContainerComponentProps } from '@/interfaces';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { getSettings } from './settingsForm';

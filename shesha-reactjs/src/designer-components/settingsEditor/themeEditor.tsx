@@ -8,7 +8,7 @@ import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { useSheshaApplication } from '@/providers/sheshaApplication';
 import { IConfigurableTheme, useTheme } from '@/providers/theme';
 import { EditOutlined } from '@ant-design/icons';
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import settingsFormJson from './settingsForm.json';
 
 const settingsForm = settingsFormJson as FormMarkup;

@@ -1,7 +1,6 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { GroupOutlined } from '@ant-design/icons';
-import React from 'react';
 import { IContainerCheckerComponentProps, ContainerCheckerComponentDefinition } from './interfaces';
 import { getSettings } from './settingsForm';
 import { isDefined } from '@/utils';

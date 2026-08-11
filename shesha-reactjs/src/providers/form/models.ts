@@ -1,7 +1,8 @@
 import { ColProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { FormLayout } from 'antd/lib/form/Form';
-import React, { CSSProperties, ReactNode } from 'react';
+import { CSSProperties, ReactNode } from 'react';
+import * as React from 'react';
 import { IAsyncValidationError, IDictionary } from '@/interfaces';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { IHasVersion } from '@/utils/fluentMigrator/migrator';
@@ -179,7 +180,7 @@ export interface IInputStyles extends IStyleValue {
   backgroundStoredFileId?: string | undefined;
   enableStyleOnReadonly?: boolean | undefined;
   container?: IStyleValue | undefined;
-};
+}
 
 export type ConfigurableFormComponentTypes =
   | 'alert' |

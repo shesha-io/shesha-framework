@@ -1,5 +1,5 @@
 import { ButtonGroupItemProps } from '@/providers';
-import React, { FC, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 import ConfigurableButton from '../configurableButton';
 import { useShaComponentStyles } from '@/components/formDesigner/styles/shaComponentStyles';
 import { IToolboxComponent } from '@/interfaces';

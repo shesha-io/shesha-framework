@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
+import * as React from 'react';
 
 interface AttributeDecoratorProps {
   /** Object of attributes to be injected into the element */

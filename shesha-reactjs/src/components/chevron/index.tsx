@@ -1,4 +1,5 @@
-import React, { CSSProperties, FC, ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { CSSProperties, FC, ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import * as React from "react";
 import { fadeColor } from "@/components/refListSelectorDisplay/provider/utils";
 import { getFontStyle } from "@/designer-components/_settings/utils/font/utils";
 import ConfigurableButton from "@/designer-components/button/configurableButton";
