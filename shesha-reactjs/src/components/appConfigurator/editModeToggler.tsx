@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { useAppConfigurator } from '@/providers';
 import { Space, Switch, App, SwitchProps } from 'antd';
 import { CheckCircleOutlined, EditOutlined } from '@ant-design/icons';

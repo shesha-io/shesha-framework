@@ -1,5 +1,5 @@
 import { MetadataProvider } from "@/providers";
-import React from "react";
+import * as React from "react";
 
 export interface WithMetadataProps {
   modelType?: string;

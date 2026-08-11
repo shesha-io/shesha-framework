@@ -1,5 +1,4 @@
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import React from 'react';
 import settingsFormJson from './settingsForm.json';
 import { evaluateString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { FileSearchOutlined } from '@ant-design/icons';

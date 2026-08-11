@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { FallbackProps } from 'react-error-boundary';
 import { FrownTwoTone } from '@ant-design/icons';
 import { Button, Space } from 'antd';
@@ -59,7 +59,7 @@ const CustomErrorBoundaryFallbackComponent: FC<ICustomErrorBoundaryFallbackProps
   }
 
   if (SheshaError.isSheshaError(error)) {
-    const shaErrors = { ...error.cause?.errors ?? {} } as IModelValidation;
+    const shaErrors = { ...(error.cause?.errors ?? {}) } as IModelValidation;
     if (isDefined(shaErrors)) {
       if (isNullOrWhiteSpace(shaErrors.componentId)) shaErrors.componentId = componentId;
       if (isNullOrWhiteSpace(shaErrors.componentName)) shaErrors.componentName = componentName;

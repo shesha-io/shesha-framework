@@ -1,4 +1,4 @@
-import React, {
+import {
   FC,
   PropsWithChildren,
   useCallback,
@@ -706,7 +706,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         },
         components: state.components,
         formSettings: {
-          ...state.formSettings ?? DEFAULT_FORM_SETTINGS,
+          ...(state.formSettings ?? DEFAULT_FORM_SETTINGS),
           labelCol: getColSpan(labelCol) ?? getColSpan(state.formSettings?.labelCol) ?? DEFAULT_FORM_SETTINGS.labelCol,
           wrapperCol: getColSpan(wrapperCol) ?? getColSpan(state.formSettings?.wrapperCol) ?? DEFAULT_FORM_SETTINGS.wrapperCol, // Override with the incoming one
         },

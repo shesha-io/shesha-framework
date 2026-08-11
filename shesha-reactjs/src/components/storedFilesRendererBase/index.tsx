@@ -23,7 +23,8 @@ import {
 } from 'antd';
 import Dragger, { DraggerProps } from 'antd/lib/upload/Dragger';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
-import React, { CSSProperties, FC, useCallback, useEffect, useRef, useState } from 'react';
+import { CSSProperties, FC, useCallback, useEffect, useRef, useState } from 'react';
+import * as React from 'react';
 import { isValidGuid } from '../formDesigner/components/utils';
 import { useStyles } from './styles/styles';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
@@ -623,7 +624,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                   size="small"
                   readOnly={false}
                   spaceSize="small"
-                  isInline={true}
+                  buttonGroupStyle="horizontal"
                 />
               </DataContextProvider>
             </div>

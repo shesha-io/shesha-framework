@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { CustomErrorBoundary } from '@/components/customErrorBoundary';
 import { IDocumentInstance, isCIDocument, isCustomDocument } from '../../models';
 import { useStyles } from '../../styles';

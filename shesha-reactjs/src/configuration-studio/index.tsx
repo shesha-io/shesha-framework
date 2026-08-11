@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { ConfigurationTree } from '@/configuration-studio/components/configuration-tree';
 import { Divider, Splitter, Layout } from 'antd';
 import { WorkArea } from '@/configuration-studio/components/work-area';

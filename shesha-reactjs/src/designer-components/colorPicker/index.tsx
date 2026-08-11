@@ -1,5 +1,4 @@
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import React from 'react';
 import { FormatPainterOutlined } from '@ant-design/icons';
 import { ColorPickerComponentDefinition, IColorPickerComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';

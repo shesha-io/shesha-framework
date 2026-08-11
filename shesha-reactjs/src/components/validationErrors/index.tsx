@@ -1,4 +1,5 @@
-import React, { FC, Fragment } from 'react';
+import { FC, Fragment } from 'react';
+import * as React from 'react';
 import { Alert, AlertProps } from 'antd';
 import classNames from 'classnames';
 import { IErrorInfo } from '@/interfaces/errorInfo';

@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 import ToolboxComponent from './toolboxComponent';
 import { Collapse, CollapseProps, Empty } from 'antd';
 import { useLocalStorage } from '@/hooks';

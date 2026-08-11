@@ -1,5 +1,5 @@
 
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { useActualContextExecution } from '@/hooks';
 import { ShaIcon } from '../shaIcon';
 import { IEventComponentProps } from './interfaces';

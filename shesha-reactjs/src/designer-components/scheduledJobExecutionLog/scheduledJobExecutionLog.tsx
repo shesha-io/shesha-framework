@@ -1,5 +1,4 @@
 import { SmallDashOutlined } from '@ant-design/icons';
-import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';

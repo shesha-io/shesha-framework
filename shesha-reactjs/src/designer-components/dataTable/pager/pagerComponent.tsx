@@ -6,7 +6,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { ControlOutlined } from '@ant-design/icons';
-import React, { CSSProperties } from 'react';
+import { CSSProperties } from 'react';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { IPagerComponentProps, PagerComponentDefinition } from './interfaces';
@@ -42,7 +42,7 @@ const PagerComponent: PagerComponentDefinition = {
   },
   migrator: (m) =>
     m
-      .add<IPagerComponentProps>(0, (prev) => ({ ...prev }) as IPagerComponentProps)
+      .add<IPagerComponentProps>(0, (prev) => ({ ...prev } as IPagerComponentProps))
       .add<IPagerComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<IPagerComponentProps>(2, (prev) => migrateVisibility(prev))
       .add<IPagerComponentProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) }))

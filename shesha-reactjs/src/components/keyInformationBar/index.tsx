@@ -1,7 +1,7 @@
 import { IKeyInformationBarComponentProps, KeyInfomationBarItemProps } from '@/designer-components/keyInformationBar/interfaces';
 import { getStyle, pickStyleFromModel, useAvailableConstantsData } from '@/providers/form/utils';
 import { Flex } from 'antd';
-import React, { CSSProperties, FC, useMemo } from 'react';
+import { CSSProperties, FC, useMemo } from 'react';
 import { useStyles } from './style';
 import { jsonSafeParse, removeUndefinedProps } from '@/utils/object';
 import { getFontStyle } from '@/designer-components/_settings/utils/font/utils';

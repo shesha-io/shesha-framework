@@ -4,7 +4,7 @@ import { migrateCustomFunctions, migratePropertyName } from '@/designer-componen
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { removeUndefinedProps } from '@/utils/object';
 import { LineHeightOutlined } from '@ant-design/icons';
-import React, { CSSProperties } from 'react';
+import { CSSProperties } from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { FONT_SIZES, ITextComponentProps, TextComponentDefinition } from './models';

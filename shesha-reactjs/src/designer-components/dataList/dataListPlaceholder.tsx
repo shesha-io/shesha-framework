@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { useStyles } from '@/components/dataList/styles/styles';
 
 // Static placeholder shown when DataList has configuration errors

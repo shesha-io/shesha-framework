@@ -1,4 +1,5 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
+import * as React from 'react';
 import { Button, Popover, Skeleton, Typography } from 'antd';
 import { HistoryOutlined } from '@ant-design/icons';
 import filesize from 'filesize';

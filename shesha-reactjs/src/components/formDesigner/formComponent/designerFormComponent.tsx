@@ -1,6 +1,6 @@
 import { IApiContext, IToolboxComponent } from "@/interfaces";
 import { IComponentModelProps, IConfigurableFormComponent, UnwrapCodeEvaluators } from "@/providers";
-import React, { FC, useMemo } from "react";
+import { memo, FC, useMemo } from "react";
 import { useStyles } from "../styles/styles";
 import { isDefined } from "@/utils/nullables";
 import { isPropertySettings } from "@/designer-components/_settings/utils/utils";
@@ -109,7 +109,7 @@ const DesignerFormComponentInner: FC<IDesignerFormComponentProps> = ({
   );
 };
 
-const DesignerFormComponentInnerMemo = React.memo(DesignerFormComponentInner);
+const DesignerFormComponentInnerMemo = memo(DesignerFormComponentInner);
 
 const DesignerFormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   return (
@@ -125,6 +125,6 @@ const DesignerFormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   );
 };
 
-const DesignerFormComponentMemo = React.memo(DesignerFormComponent);
+const DesignerFormComponentMemo = memo(DesignerFormComponent);
 
 export default DesignerFormComponentMemo;

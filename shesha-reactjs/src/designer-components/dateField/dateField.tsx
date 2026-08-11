@@ -5,7 +5,7 @@ import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers/form/models';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { CalendarOutlined } from '@ant-design/icons';
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';

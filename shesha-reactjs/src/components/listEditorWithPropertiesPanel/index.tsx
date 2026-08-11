@@ -1,4 +1,5 @@
-import React, { useState, useTransition } from 'react';
+import { useState, useTransition } from 'react';
+import * as React from 'react';
 import { ListItem, ListItemWithId } from '../listEditor/models';
 import { ListEditorRenderer } from '../listEditorRenderer';
 import { ListEditor, ListEditorChildrenFn, ListEditorSectionRenderingFn } from '../listEditor';

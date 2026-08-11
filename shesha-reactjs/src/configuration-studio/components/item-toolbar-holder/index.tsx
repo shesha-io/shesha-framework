@@ -1,6 +1,6 @@
 import { useConfigurationStudio } from '@/configuration-studio/cs/contexts';
 import { useActiveDoc } from '@/configuration-studio/cs/hooks';
-import React, { FC } from 'react';
+import { FC } from 'react';
 
 export const ItemToolbarHolder: FC = () => {
   const cs = useConfigurationStudio();

@@ -1,6 +1,7 @@
 import { IModelMetadata } from "@/interfaces/metadata";
 import { IConfigurableActionConfiguration, useConfigurableActionDispatcher } from "@/providers";
-import React, { PropsWithChildren, useRef } from "react";
+import { PropsWithChildren, useRef } from "react";
+import * as React from "react";
 import { DataContextType, ContextOnChangeData, ContextSetFieldValue, RefreshContext } from "./contexts";
 import DataContextBinder from "./dataContextBinder";
 import { setValueByPropertyName } from "@/utils/object";

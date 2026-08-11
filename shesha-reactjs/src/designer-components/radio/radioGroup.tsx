@@ -1,22 +1,28 @@
 import { Radio, Space } from 'antd';
-import React, { ReactElement, useMemo } from 'react';
+import { ReactElement, useMemo } from 'react';
+import * as React from 'react';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
 import { getDataSourceList } from './utils';
 import { ILabelValue } from '../dropdown/model';
 import { IRadioOptionsSource, IRadioProps } from './interfaces';
 import { DEFAULT_MARGINS } from '@/components/formDesigner/utils/designerConstants';
-import { isNotNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
+import { useUrlDataSource } from '../_common/useUrlDataSource';
 
 const EMPTY_ITEMS: ILabelValue[] = [];
 
 /**
  * Resolves the options of a radio group from the configured data source
- * (a fixed list of values, or a reference list).
+ * (a fixed list of values, a reference list, or an API URL).
  * Extracted from the group so that the component API can expose the same list.
+ *
+ * `enabled` lets a caller that already holds resolved options keep the hook inert
+ * instead of fetching the same URL data source a second time.
  */
-export const useRadioOptions = (model: Partial<IRadioOptionsSource>): ILabelValue[] => {
+export const useRadioOptions = (model: Partial<IRadioOptionsSource>, enabled: boolean = true): ILabelValue[] => {
   const { referenceListId } = model;
-  const { data: refListItems } = useReferenceList(referenceListId);
+  const { data: refListItems } = useReferenceList(enabled ? referenceListId : undefined);
+  const urlData = useUrlDataSource(model, enabled);
 
   // A stable reference for the unset case: defaulting to `[]` in the destructuring would allocate
   // a new array on every render, changing the memo's dependency and so the identity of the
@@ -24,15 +30,16 @@ export const useRadioOptions = (model: Partial<IRadioOptionsSource>): ILabelValu
   const items = model.items ?? EMPTY_ITEMS;
 
   return useMemo(
-    () => getDataSourceList(model.dataSourceType ?? 'values', items, refListItems?.items),
-    [model.dataSourceType, items, refListItems?.items],
+    () => getDataSourceList(model.dataSourceType ?? 'values', items, refListItems?.items, urlData),
+    [model.dataSourceType, items, refListItems?.items, urlData],
   );
 };
 
 const RadioGroup = (model: IRadioProps & { ref?: React.Ref<HTMLDivElement> }): ReactElement => {
   const { ref, value } = model;
   // Options resolved by the caller win; otherwise fall back to resolving them here.
-  const resolvedOptions = useRadioOptions(model);
+  const hasSuppliedOptions = isDefined(model.options);
+  const resolvedOptions = useRadioOptions(model, !hasSuppliedOptions);
   const options = model.options ?? resolvedOptions;
   const isDisabled = model.disabled === true || model.readOnly === true;
 

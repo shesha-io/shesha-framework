@@ -1,6 +1,6 @@
 'use client';
 
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { ACTIVE_LOGIN } from '@/components/mainLayout/constant';
 import { ConfigurableForm } from '@/components/configurableForm';
 

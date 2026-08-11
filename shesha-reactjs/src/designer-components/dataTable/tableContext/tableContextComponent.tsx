@@ -1,4 +1,3 @@
-import React from 'react';
 import { DatabaseOutlined } from '@ant-design/icons';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { TableContext } from './tableContext';

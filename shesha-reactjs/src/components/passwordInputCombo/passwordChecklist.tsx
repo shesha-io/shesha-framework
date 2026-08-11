@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { getPasswordValidations } from './utils';
 import { ValidationIcon } from './validationIcon';
 import { toWords } from 'number-to-words';

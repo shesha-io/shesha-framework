@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import TableViewSelectorRenderer from '@/components/tableViewSelectorRenderer';
 import { evaluateDynamicFilters } from '@/utils/datatable';
 import { ITableViewSelectorComponentProps } from './models';

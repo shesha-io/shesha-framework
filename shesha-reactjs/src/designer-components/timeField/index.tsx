@@ -1,4 +1,3 @@
-import React from 'react';
 import { ClockCircleOutlined } from '@ant-design/icons';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { DataTypes } from '@/interfaces/dataTypes';

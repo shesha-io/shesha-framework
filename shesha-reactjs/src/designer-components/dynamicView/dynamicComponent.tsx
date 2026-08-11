@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 import { CustomErrorBoundary } from '@/components/customErrorBoundary';
 import { IConfigurableFormComponent, UnwrapCodeEvaluators } from '@/interfaces';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';

@@ -1,4 +1,4 @@
-import React, { ReactNode, useMemo } from "react";
+import { ReactNode, useMemo } from "react";
 import { Tooltip, Select } from "antd";
 import { SELECT_WIDTH_OFFSET_RIGHT, calcTextWidth } from "../domUtils";
 const { Option, OptGroup } = Select;

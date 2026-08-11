@@ -1,4 +1,5 @@
-import React, { CSSProperties, FC, ReactNode } from 'react';
+import { CSSProperties, FC, ReactNode } from 'react';
+import * as React from 'react';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { IComponentsContainerBaseProps } from '@/interfaces';
 import { useComponentContainer } from '@/providers/form/nesting/containerContext';

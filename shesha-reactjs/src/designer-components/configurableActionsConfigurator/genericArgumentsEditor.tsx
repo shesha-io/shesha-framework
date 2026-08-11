@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { ConfigurableForm } from '@/components/configurableForm';
 import { FormMarkup } from '@/providers/form/models';
 import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';

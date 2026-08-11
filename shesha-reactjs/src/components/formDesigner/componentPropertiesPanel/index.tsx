@@ -1,4 +1,4 @@
-import React, { FC, useCallback } from 'react';
+import { memo, FC, useCallback } from 'react';
 import { Empty } from 'antd';
 import { useFormDesigner, useFormDesignerReadOnly, useFormDesignerSelectedComponentId } from '@/providers/formDesigner';
 import { useStyles } from './styles';
@@ -28,5 +28,5 @@ const ComponentPropertiesPanelInner: FC = () => {
   );
 };
 
-export const ComponentPropertiesPanel = React.memo(ComponentPropertiesPanelInner);
+export const ComponentPropertiesPanel = memo(ComponentPropertiesPanelInner);
 

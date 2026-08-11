@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren } from 'react';
+import { FC, PropsWithChildren } from 'react';
 import { ConfigurableFormComponent } from '../configurableFormComponent';
 import { ShaForm } from '@/providers/form';
 import { IComponentsContainerProps } from './componentsContainer';

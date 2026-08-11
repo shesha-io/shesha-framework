@@ -1,5 +1,4 @@
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import React from 'react';
 import { FormOutlined } from '@ant-design/icons';
 import { getStyle, isFormFullName, isFormRawId } from '@/providers/form/utils';
 import { IConfigurableFormComponent } from '@/providers/form/models';

@@ -1,4 +1,4 @@
-import React, { FC, ReactNode } from 'react';
+import { Fragment, FC, ReactNode } from 'react';
 import { useSheshaApplication } from '@/providers';
 
 export interface IProtectedContentProps {
@@ -11,7 +11,7 @@ export const ProtectedContent: FC<IProtectedContentProps> = ({ permissionName, c
 
   const hasRights = !permissionName || anyOfPermissionsGranted([permissionName]);
 
-  return hasRights ? <React.Fragment>{children}</React.Fragment> : null;
+  return hasRights ? <Fragment>{children}</Fragment> : null;
 };
 
 export default ProtectedContent;

@@ -1,4 +1,5 @@
-import React, { FC, ReactNode, useCallback, useMemo } from 'react';
+import { FC, ReactNode, useCallback, useMemo } from 'react';
+import * as React from 'react';
 import { BulbTwoTone, DownOutlined, QuestionCircleOutlined, LayoutOutlined } from '@ant-design/icons';
 import { Dropdown, MenuProps, Popover, Space, Tooltip, Badge } from 'antd';
 import { IStoredFilter } from '@/providers/dataTable/interfaces';

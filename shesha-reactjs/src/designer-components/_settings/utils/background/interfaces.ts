@@ -6,9 +6,17 @@ type BackgroundImageFile = {
   url: string;
 };
 
+/**
+ * A gradient's colour stops, in render order.
+ *
+ * This is an array rather than a keyed object so that overriding an inherited gradient (theme,
+ * parent component, or a less specific device breakpoint) replaces the stops outright instead of
+ * merging them together — `deepMergeValues` assigns arrays as-is. It also makes stop order explicit
+ * rather than dependent on object key ordering.
+ */
 export interface IGradientValue {
   direction: string;
-  colors?: Record<string, string> | undefined;
+  colors?: string[] | undefined;
 }
 
 export interface IBackgroundValue {

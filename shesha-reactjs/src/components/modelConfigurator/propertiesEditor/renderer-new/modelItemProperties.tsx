@@ -1,7 +1,5 @@
 import propertySettingsJson from './propertySettings.json';
-import React, {
-  FC,
-} from 'react';
+import { FC } from 'react';
 import { ConfigurableForm } from '../../..';
 import { Empty } from 'antd';
 import { FormMarkup } from '@/providers/form/models';

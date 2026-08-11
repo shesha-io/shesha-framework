@@ -1,5 +1,7 @@
 /* eslint @typescript-eslint/strict-boolean-expressions: "error" */
-import React, { useEffect, useState, ComponentType } from 'react';
+import { useEffect, useState, ComponentType } from 'react';
+
+import * as React from 'react';
 import { ICodeEditorProps } from '../models';
 import { firstNonEmptyString } from '@/utils/string';
 import { Monaco, loader } from '@monaco-editor/react';

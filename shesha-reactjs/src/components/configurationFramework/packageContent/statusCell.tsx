@@ -1,5 +1,5 @@
 import { ExclamationCircleOutlined, FileAddOutlined, FormOutlined, MinusOutlined } from '@ant-design/icons';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { PackageItemDto, PackageItemStatus } from '../itemsImport/models';
 import { AntdIconProps } from '@ant-design/icons/lib/components/AntdIcon';
 import { Popover } from 'antd';

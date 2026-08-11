@@ -36,7 +36,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                 },
               ] })
               .addSettingsInput({ propertyName: 'tooltip', label: 'Tooltip', inputType: 'textArea', jsSetting: true })
-              .stdVisibleEditableInputs('full')
+              .stdVisibleEditableInputs('disabling')
               .addConfigurableActionConfigurator({ propertyName: 'actionConfiguration', label: 'On Click' })
               .addPropertyRouter({ id: styleRouter2Id, componentName: 'propertyRouter2', label: 'Property router2', labelAlign: 'right',
                 propertyRouteName: removeStyleRouter === true ? '' : { _mode: "code", _code: "    return contexts.canvasContext?.designerDevice || 'desktop';", _value: "" },

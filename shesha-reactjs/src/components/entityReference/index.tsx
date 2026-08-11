@@ -16,7 +16,8 @@ import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { ModalFooterButtons } from '@/providers/dynamicModal/models';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { App, Button, Spin } from 'antd';
-import React, { CSSProperties, FC, useCallback, useEffect, useMemo, useState } from 'react';
+import { CSSProperties, FC, useCallback, useEffect, useMemo, useState } from 'react';
+import * as React from 'react';
 import { ShaIconTypes } from '../iconPicker';
 import { addPx, capPercentageWidth } from '@/utils/style';
 import { useStyles } from './styles/styles';
@@ -275,8 +276,10 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
         buttons: props.buttons,
         footerButtons: props.footerButtons,
         additionalProperties:
-          isNonEmptyArray(props.additionalProperties) && props.additionalProperties.some((p) => p.key === 'id')
-            ? props.additionalProperties
+          isNonEmptyArray(props.additionalProperties)
+            ? props.additionalProperties.some((p) => p.key === 'id')
+              ? props.additionalProperties
+              : [{ key: 'id', value: '{{entityReference.id}}' }, ...props.additionalProperties]
             : [{ key: 'id', value: '{{entityReference.id}}' }],
         modalWidth: addPx(props.modalWidth, executionContext),
         skipFetchData: props.skipFetchData ?? false,

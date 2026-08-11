@@ -1,5 +1,5 @@
 import { Alert, Space } from 'antd';
-import React, { FC } from 'react';
+import { FC } from 'react';
 
 const AlertsExample: FC = () => (
   <Space orientation="vertical" size="middle" style={{ width: '100%' }}>

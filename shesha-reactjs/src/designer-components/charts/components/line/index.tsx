@@ -12,7 +12,8 @@ import {
   Title,
   Tooltip,
 } from 'chart.js';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
+import * as React from 'react';
 import { Line } from 'react-chartjs-2';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 import { IChartData, IChartDataProps } from '../../model';
