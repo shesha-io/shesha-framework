@@ -22,7 +22,7 @@ export const ConfigurableFormItemSetting = <TValue = unknown>({
   availableConstantsExpression,
 }: UnwrapCodeEvaluators<IConfigurableFormItemProps<TValue>>): ReactNode => {
   const { formData } = useShaFormInstance();
-  const { styles } = useStyles({ autoAlignLabel });
+  const { styles } = useStyles({ ...model, autoAlignLabel });
   if (model.hidden === true) return null;
 
   const { _mode: mode = "value" } = getPropertySettingsFromData(formData, model.propertyName ?? "");

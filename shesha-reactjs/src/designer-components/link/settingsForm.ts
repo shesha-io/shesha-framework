@@ -2,6 +2,29 @@ import { FormLayout } from 'antd/es/form/Form';
 import { nanoid } from '@/utils/uuid';
 import { SettingsFormMarkupFactory } from '@/interfaces';
 
+const justifyContentOptions = [
+  { label: 'Center', value: 'center' }, { label: 'Flex Start', value: 'flex-start' }, { label: 'Flex End', value: 'flex-end' },
+  { label: 'Left', value: 'left' }, { label: 'Right', value: 'right' }, { label: 'Space Between', value: 'space-between' },
+  { label: 'Space Around', value: 'space-around' }, { label: 'Space Evenly', value: 'space-evenly' }, { label: 'Stretch', value: 'stretch' },
+];
+
+const alignItemsOptions = [
+  { label: 'Baseline', value: 'baseline' }, { label: 'Center', value: 'center' }, { label: 'End', value: 'end' },
+  { label: 'Flex End', value: 'flex-end' }, { label: 'Flex Start', value: 'flex-start' }, { label: 'Inherit', value: 'inherit' },
+  { label: 'Initial', value: 'initial' }, { label: 'Normal', value: 'normal' }, { label: 'Revert', value: 'revert' },
+  { label: 'Self End', value: 'self-end' }, { label: 'Self Start', value: 'self-start' }, { label: 'Start', value: 'start' },
+  { label: 'Stretch', value: 'stretch' }, { label: 'Unset', value: 'unset' },
+];
+
+const justifyItemsOptions = [
+  { label: 'Baseline', value: 'baseline' }, { label: 'Center', value: 'center' }, { label: 'End', value: 'end' },
+  { label: 'Flex End', value: 'flex-end' }, { label: 'Flex Start', value: 'flex-start' }, { label: 'inherit', value: 'inherit' },
+  { label: 'Initial', value: 'initial' }, { label: 'Left', value: 'left' }, { label: 'Legacy', value: 'legacy' },
+  { label: 'Normal', value: 'normal' }, { label: 'Revert', value: 'revert' }, { label: 'Right', value: 'right' },
+  { label: 'Self End', value: 'self-end' }, { label: 'Self Start', value: 'self-start' }, { label: 'Start', value: 'start' },
+  { label: 'Stretch', value: 'stretch' }, { label: 'Unset', value: 'unset' },
+];
+
 export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter }) => {
   const commonTabId = nanoid();
   const appearanceTabId = nanoid();
@@ -34,26 +57,9 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                 components: fbf(styleRouter1Id)
                   .stdCollapsiblePanel('Layout', (fbf) => fbf
                     .addSettingsInputRow({ inputs: [
-                      { type: 'dropdown', propertyName: 'justifyContent', label: 'Justify Content', jsSetting: true, layout: 'horizontal', dropdownOptions: [
-                        { label: 'Center', value: 'center' }, { label: 'Flex Start', value: 'flex-start' }, { label: 'Flex End', value: 'flex-end' },
-                        { label: 'Left', value: 'left' }, { label: 'Right', value: 'right' }, { label: 'Space Between', value: 'space-between' },
-                        { label: 'Space Around', value: 'space-around' }, { label: 'Space Evenly', value: 'space-evenly' }, { label: 'Stretch', value: 'stretch' },
-                      ] },
-                      { type: 'dropdown', propertyName: 'alignItems', label: 'Align Items', jsSetting: true, layout: 'horizontal', dropdownOptions: [
-                        { label: 'Baseline', value: 'baseline' }, { label: 'Center', value: 'center' }, { label: 'End', value: 'end' },
-                        { label: 'Flex End', value: 'flex-end' }, { label: 'Flex Start', value: 'flex-start' }, { label: 'Inherit', value: 'inherit' },
-                        { label: 'Initial', value: 'initial' }, { label: 'Normal', value: 'normal' }, { label: 'Revert', value: 'revert' },
-                        { label: 'Self End', value: 'self-end' }, { label: 'Self Start', value: 'self-start' }, { label: 'Start', value: 'start' },
-                        { label: 'Stretch', value: 'stretch' }, { label: 'Unset', value: 'unset' },
-                      ] },
-                      { type: 'dropdown', propertyName: 'justifyItems', label: 'Justify Items', jsSetting: true, layout: 'horizontal', dropdownOptions: [
-                        { label: 'Baseline', value: 'baseline' }, { label: 'Center', value: 'center' }, { label: 'End', value: 'end' },
-                        { label: 'Flex End', value: 'flex-end' }, { label: 'Flex Start', value: 'flex-start' }, { label: 'inherit', value: 'inherit' },
-                        { label: 'Initial', value: 'initial' }, { label: 'Left', value: 'left' }, { label: 'Legacy', value: 'legacy' },
-                        { label: 'Normal', value: 'normal' }, { label: 'Revert', value: 'revert' }, { label: 'Right', value: 'right' },
-                        { label: 'Self End', value: 'self-end' }, { label: 'Self Start', value: 'self-start' }, { label: 'Start', value: 'start' },
-                        { label: 'Stretch', value: 'stretch' }, { label: 'Unset', value: 'unset' },
-                      ] },
+                      { type: 'dropdown', propertyName: 'justifyContent', label: 'Justify Content', jsSetting: true, layout: 'horizontal', dropdownOptions: justifyContentOptions },
+                      { type: 'dropdown', propertyName: 'alignItems', label: 'Align Items', jsSetting: true, layout: 'horizontal', dropdownOptions: alignItemsOptions },
+                      { type: 'dropdown', propertyName: 'justifyItems', label: 'Justify Items', jsSetting: true, layout: 'horizontal', dropdownOptions: justifyItemsOptions },
                     ] }),
                   false,
                   'return getSettingValue(data?.hasChildren) === true && getSettingValue(data?.direction) === "horizontal"',
@@ -79,26 +85,9 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                 components: fbf(styleRouter2Id)
                   .stdCollapsiblePanel('Layout', (fbf) => fbf
                     .addSettingsInputRow({ inputs: [
-                      { type: 'dropdown', propertyName: 'justifyContent', label: 'Justify Content', jsSetting: true, layout: 'horizontal', dropdownOptions: [
-                        { label: 'Center', value: 'center' }, { label: 'Flex Start', value: 'flex-start' }, { label: 'Flex End', value: 'flex-end' },
-                        { label: 'Left', value: 'left' }, { label: 'Right', value: 'right' }, { label: 'Space Between', value: 'space-between' },
-                        { label: 'Space Around', value: 'space-around' }, { label: 'Space Evenly', value: 'space-evenly' }, { label: 'Stretch', value: 'stretch' },
-                      ] },
-                      { type: 'dropdown', propertyName: 'alignItems', label: 'Align Items', jsSetting: true, layout: 'horizontal', dropdownOptions: [
-                        { label: 'Baseline', value: 'baseline' }, { label: 'Center', value: 'center' }, { label: 'End', value: 'end' },
-                        { label: 'Flex End', value: 'flex-end' }, { label: 'Flex Start', value: 'flex-start' }, { label: 'Inherit', value: 'inherit' },
-                        { label: 'Initial', value: 'initial' }, { label: 'Normal', value: 'normal' }, { label: 'Revert', value: 'revert' },
-                        { label: 'Self End', value: 'self-end' }, { label: 'Self Start', value: 'self-start' }, { label: 'Start', value: 'start' },
-                        { label: 'Stretch', value: 'stretch' }, { label: 'Unset', value: 'unset' },
-                      ] },
-                      { type: 'dropdown', propertyName: 'justifyItems', label: 'Justify Items', jsSetting: true, layout: 'horizontal', dropdownOptions: [
-                        { label: 'Baseline', value: 'baseline' }, { label: 'Center', value: 'center' }, { label: 'End', value: 'end' },
-                        { label: 'Flex End', value: 'flex-end' }, { label: 'Flex Start', value: 'flex-start' }, { label: 'inherit', value: 'inherit' },
-                        { label: 'Initial', value: 'initial' }, { label: 'Left', value: 'left' }, { label: 'Legacy', value: 'legacy' },
-                        { label: 'Normal', value: 'normal' }, { label: 'Revert', value: 'revert' }, { label: 'Right', value: 'right' },
-                        { label: 'Self End', value: 'self-end' }, { label: 'Self Start', value: 'self-start' }, { label: 'Start', value: 'start' },
-                        { label: 'Stretch', value: 'stretch' }, { label: 'Unset', value: 'unset' },
-                      ] },
+                      { type: 'dropdown', propertyName: 'justifyContent', label: 'Justify Content', jsSetting: true, layout: 'horizontal', dropdownOptions: justifyContentOptions },
+                      { type: 'dropdown', propertyName: 'alignItems', label: 'Align Items', jsSetting: true, layout: 'horizontal', dropdownOptions: alignItemsOptions },
+                      { type: 'dropdown', propertyName: 'justifyItems', label: 'Justify Items', jsSetting: true, layout: 'horizontal', dropdownOptions: justifyItemsOptions },
                       { type: 'textField', propertyName: 'className', label: 'Custom CSS Class', jsSetting: true },
                     ] }),
                   false,
