@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 import { INumberFieldComponentProps } from './interfaces';
-import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, marginStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
+import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
 import { isDefined, isNotNullOrWhiteSpace } from '@/utils';
 
 export const useStyles = createStyles(({ css, cx }, model: INumberFieldComponentProps) => {
@@ -17,7 +17,6 @@ export const useStyles = createStyles(({ css, cx }, model: INumberFieldComponent
       ${backgroundStyles(model.background)}
       ${shadowStyles(model.shadow)}
       ${paddingStyles(model.stylingBoxJson)}
-      ${marginStyles(model.stylingBoxJson)}
       ${dimensionsStyles(model.dimensions)}
       
       //&:focus {

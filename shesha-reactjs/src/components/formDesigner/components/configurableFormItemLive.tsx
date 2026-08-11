@@ -6,10 +6,11 @@ import { UnwrapCodeEvaluators, useFormItem, useShaFormInstance } from '@/provide
 import { IConfigurableFormItemProps } from './model';
 import { ConfigurableFormItemCtx } from './configurableFormItemContext';
 import { ConfigurableFormItemForm } from './configurableFormItemForm';
-import { designerConstants } from '../utils/designerConstants';
 import { addPx } from '@/utils/style';
 import { useStyles } from './styles';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
+import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
+import { designerConstants } from '../utils/designerConstants';
 
 export const ConfigurableFormItemLive = <TValue = unknown>({
   children,
@@ -21,6 +22,8 @@ export const ConfigurableFormItemLive = <TValue = unknown>({
   wrapperCol,
   autoAlignLabel = true,
 }: UnwrapCodeEvaluators<IConfigurableFormItemProps<TValue>>): ReactNode => {
+  const toolboxComponent = useFormDesignerComponentGetter()(model.type);
+
   const shaForm = useShaFormInstance();
   const getFormData = shaForm.getPublicFormApi().getFormData;
   const formItem = useFormItem();
@@ -28,11 +31,7 @@ export const ConfigurableFormItemLive = <TValue = unknown>({
   const allData = useAvailableConstantsDataNoRefresh();
   // Pin the label to the input's configured height so a validation message cannot shift it.
   // 'auto' carries no fixed height, so fall back to the default alignment in that case.
-  const configuredHeight = addPx(model.dimensions?.height, allData);
-  const inputHeight = isDefined(configuredHeight) && configuredHeight !== 'auto' && configuredHeight !== 'none'
-    ? configuredHeight
-    : undefined;
-  const { styles } = useStyles({ autoAlignLabel, inputHeight });
+  const { styles } = useStyles({ ...model, autoAlignLabel });
 
   const layout = useMemo(() => {
     // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form
@@ -52,14 +51,15 @@ export const ConfigurableFormItemLive = <TValue = unknown>({
     marginLeft = defaultMarginLeft,
   } = (model.stylingBoxJson || {});
 
-  const marginStyle = shaForm.formMode === "designer" ? {
-    margin: 0,
-  } : {
-    marginTop: addPx(marginTop, allData),
-    marginBottom: addPx(marginBottom, allData),
-    marginRight: addPx(marginRight, allData),
-    marginLeft: addPx(marginLeft, allData),
-  };
+  // ToDo: AS - remove after migration all components to the new styles
+  const marginStyle = toolboxComponent?.allowInherit === true
+    ? {}
+    : {
+      marginTop: addPx(marginTop, allData),
+      marginBottom: addPx(marginBottom, allData),
+      marginRight: addPx(marginRight, allData),
+      marginLeft: addPx(marginLeft, allData),
+    };
 
   const propName = isNotNullOrWhiteSpace(namePrefix) && isNullOrWhiteSpace(model.initialContext)
     ? namePrefix + '.' + model.propertyName
