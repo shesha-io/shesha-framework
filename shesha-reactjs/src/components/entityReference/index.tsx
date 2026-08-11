@@ -275,8 +275,10 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
         buttons: props.buttons,
         footerButtons: props.footerButtons,
         additionalProperties:
-          isNonEmptyArray(props.additionalProperties) && props.additionalProperties.some((p) => p.key === 'id')
-            ? props.additionalProperties
+          isNonEmptyArray(props.additionalProperties)
+            ? props.additionalProperties.some((p) => p.key === 'id')
+              ? props.additionalProperties
+              : [{ key: 'id', value: '{{entityReference.id}}' }, ...props.additionalProperties]
             : [{ key: 'id', value: '{{entityReference.id}}' }],
         modalWidth: addPx(props.modalWidth, executionContext),
         skipFetchData: props.skipFetchData ?? false,
