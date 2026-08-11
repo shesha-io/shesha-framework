@@ -18,7 +18,7 @@ export const isPercentDimensionValue = (value: string | number | undefined): boo
 
 const getFullSizeComponentDimensionsValue = (value: string | number | undefined): string | number | undefined =>
   isPercentDimensionValue(value)
-    ? '100%'// use 100% because wrapper will use configured percentage
+    ? 'stretch'// use `stretch` because wrapper will use configured percentage
     : value;
 
 /**
@@ -68,7 +68,7 @@ export const getFullSizeWrapperDimensions = (dimensions: IDimensionsValue | unde
 
 export const getFullSizeWrapperStyle = (model: IStyleValue): IStyleValue => ({
   dimensions: getFullSizeWrapperDimensions(model.dimensions),
-  stylingBoxJson: getMarginStyle(model.stylingBoxJson),
+  // stylingBoxJson: getMarginStyle(model.stylingBoxJson),
 });
 
 export const getFullSizeWrapperDesignerStyle = (model: IStyleValue): IWrapperStyle => ({

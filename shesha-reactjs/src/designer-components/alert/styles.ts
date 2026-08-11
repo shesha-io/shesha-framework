@@ -1,5 +1,5 @@
 import { createStyles } from '@/styles';
-import { paddingStyles, shadowStyles } from '../_common/styles/utils';
+import { marginStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
 import { IAlertComponentProps } from './interfaces';
 
 export const useStyles = createStyles(({ css, cx }, model: IAlertComponentProps) => {
@@ -8,9 +8,11 @@ export const useStyles = createStyles(({ css, cx }, model: IAlertComponentProps)
 
         ${shadowStyles(model.shadow)}
         ${paddingStyles(model.stylingBoxJson)}
+        ${marginStyles(model.stylingBoxJson)}
+
         /* dimensions will by applied to the wrapper div */
-        height: 100%;
-        width: 100%;
+        height: stretch;
+        width: stretch;
     `);
 
   return {

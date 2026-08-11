@@ -1,7 +1,6 @@
 import classNames from 'classnames';
-import { CSSProperties, FC, PropsWithChildren, useEffect, useState } from 'react';
+import { FC, PropsWithChildren, useMemo } from 'react';
 import { ContentType, ITextComponentProps, ITypographyProps } from './models';
-import { ParagraphProps } from 'antd/lib/typography/Paragraph';
 import { TitleProps } from 'antd/lib/typography/Title';
 import { BaseType } from 'antd/lib/typography/Base';
 import { useStyles } from './styles/styles';
@@ -10,62 +9,33 @@ import { IConfigurableTheme, useTheme } from '@/providers';
 
 const { Paragraph, Title } = Typography;
 
-type LevelType = 1 | 2 | 3 | 4 | 5;
+type StrongLevelType = 1 | 2 | 3 | 4 | 5;
 
-interface IGenericTextProps
-  extends Omit<ITextComponentProps, 'style' | 'contentDisplay' | 'name' | 'id' | 'type' | 'content' | 'value'> {
-  style?: CSSProperties;
-}
-
-const getColorByContentType = (contentType: ContentType | undefined, style: CSSProperties | undefined, theme: IConfigurableTheme): string | undefined => {
+const getColorByContentType = (contentType: ContentType | undefined, color: string | undefined, theme: IConfigurableTheme | undefined): string | undefined => {
   switch (contentType) {
     case 'custom':
-      return style?.color;
+      return color;
     case 'secondary':
-      return theme.text?.secondary;
+      return theme?.text?.secondary;
     case '':
-      return theme.text?.default;
+      return theme?.text?.default;
     default:
       return undefined;
   }
 };
 
-export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
-  children,
-  backgroundColor,
-  color,
-  contentType,
-  dataType,
-  dateFormat,
-  level,
-  size,
-  numberFormat,
-  textType,
-  style,
-  ...model
-}) => {
-  const { styles } = useStyles();
-  const [updateKey, setUpdateKey] = useState(0);
-  // NOTE: to be replaced with a generic context implementation
+const isBaseType = (value: unknown): value is BaseType =>
+  typeof value === 'string' && ['secondary', 'success', 'warning', 'danger'].includes(value);
+
+export const GenericText: FC<PropsWithChildren<ITextComponentProps>> = (model) => {
+  const { children, contentType, level = 0 } = model;
+
   const { theme } = useTheme();
+  const { styles } = useStyles({ ...model, font: { ...model.font, color: getColorByContentType(contentType, model.font?.color, theme) } });
 
-  useEffect(() => {
-    setUpdateKey((prev) => prev + 1);
-  }, [
-    model.italic,
-    model.code,
-    model.copyable,
-    model.delete,
-    model.ellipsis,
-    model.mark,
-    model.underline,
-    model.keyboard,
-    model.strong,
-  ]);
+  const chosenType: BaseType | undefined = isBaseType(contentType) ? contentType : undefined;
 
-  const chosenType: BaseType | undefined = contentType === 'secondary' ? undefined : (contentType as BaseType);
-
-  const baseProps: ITypographyProps = {
+  const baseProps: ITypographyProps = useMemo(() => ({
     code: model.code ?? false,
     copyable: model.copyable ?? false,
     delete: model.delete ?? false,
@@ -75,50 +45,17 @@ export const GenericText: FC<PropsWithChildren<IGenericTextProps>> = ({
     keyboard: model.keyboard ?? false,
     italic: model.italic ?? false,
     ...(chosenType ? { type: chosenType } : {}),
-    style: {
-      padding: 0,
-      margin: 0,
-      ...{
-        ...style,
-        color: getColorByContentType(contentType, style, theme),
-        fontSize: textType === 'title' ? undefined : style?.fontSize,
-        justifyContent: style?.textAlign,
-      } },
-  };
+    style: model.styleJson ?? {},
+  }), [model.code, model.copyable, model.delete, model.ellipsis, model.mark, model.underline, model.keyboard, model.italic, model.styleJson, chosenType]);
+
+  const titleProps: TitleProps = useMemo(() => ({ ...baseProps, style: baseProps.style ?? {}, level: level > 0 ? level as StrongLevelType : 5 }), [baseProps, level]);
 
   const className = classNames(styles.typographyText, {
     [styles.primary]: contentType === 'primary',
     [styles.info]: contentType === 'info',
   });
 
-  if (textType === 'span') {
-    return (
-      <Paragraph key={`text-${updateKey}`} {...baseProps} className={className} style={{ margin: '0px' }}>
-        {children}
-      </Paragraph>
-    );
-  }
-
-  if (textType === 'paragraph') {
-    const paragraphProps: Omit<ParagraphProps, "style"> = {
-      ...baseProps,
-      ...(model.strong ? { strong: model.strong } : {}),
-    };
-    return (
-      <Paragraph key={`paragraph-${updateKey}`} style={{ margin: '0px' }} {...paragraphProps} className={className}>
-        {children}
-      </Paragraph>
-    );
-  }
-
-  const titleProps: TitleProps = {
-    ...baseProps,
-    style: { ...baseProps.style, fontSize: '' },
-    level: level ? (Number(level) as LevelType) : 1,
-  };
-  return (
-    <Title key={`title-${updateKey}`} {...titleProps} className={className}>
-      {children}
-    </Title>
-  );
+  return level > 0
+    ? <Title {...titleProps} className={className}>{children}</Title>
+    : <Paragraph {...baseProps} className={className} style={model.styleJson ?? {}}>{children}</Paragraph>;
 };

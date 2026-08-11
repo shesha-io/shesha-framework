@@ -14,7 +14,6 @@ import parse from 'html-react-parser';
 import DOMPurify from 'dompurify';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getStringPropertyOrUndefined } from '@/utils/object';
-import { getMarginStyle } from '@/components/formDesigner/utils/stylingUtils';
 import { useStyles } from './styles';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { useComponentApi } from '@/providers/componentApi/provider';
@@ -55,7 +54,7 @@ const AlertComponent: AlertComponentDefinition = {
   isInput: false,
   name: 'Alert',
   icon: <ExclamationCircleOutlined />,
-  getWrapperStyle: (model) => ({ style: { dimensions: model.dimensions, stylingBoxJson: getMarginStyle(model.stylingBoxJson) } }),
+  getWrapperStyle: (model) => ({ style: { dimensions: model.dimensions } }),
   calculateModel: (model, allData) => ({
     evaluatedMessage: evaluateString(model.text, allData),
     evaluatedDescription: evaluateString(model.description, allData),

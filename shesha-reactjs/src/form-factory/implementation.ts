@@ -424,7 +424,8 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
       .addSettingsInputRow({
         inline: true,
         inputs: excludeInputs([
-          { type: 'dimensionField', dimensionType: 'width', label: 'Width', width: 85, propertyName: `${propertyName}.width`, icon: 'widthIcon', tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit' },
+          { type: 'dimensionField', dimensionType: 'width', label: 'Width', width: 85, propertyName: `${propertyName}.width`, icon: 'widthIcon',
+            tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit. \nAlso you can use calc value, for example `calc(50% - 10px)` or `50% - 10px`' },
           { type: 'dimensionField', dimensionType: 'minWidth', label: 'Min Width', width: 85, hideLabel: true, propertyName: `${propertyName}.minWidth`, icon: 'minWidthIcon' },
           { type: 'dimensionField', dimensionType: 'maxWidth', label: 'Max Width', width: 85, hideLabel: true, propertyName: `${propertyName}.maxWidth`, icon: 'maxWidthIcon' },
         ], exclude),
@@ -432,7 +433,8 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
       .addSettingsInputRow({
         inline: true,
         inputs: excludeInputs([
-          { type: 'dimensionField', dimensionType: 'height', label: 'Height', width: 85, propertyName: `${propertyName}.height`, icon: 'heightIcon', tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit' },
+          { type: 'dimensionField', dimensionType: 'height', label: 'Height', width: 85, propertyName: `${propertyName}.height`, icon: 'heightIcon',
+            tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit. \nAlso you can use calc value, for example `calc(50% - 10px)` or `50% - 10px`' },
           { type: 'dimensionField', dimensionType: 'minHeight', label: 'Min Height', width: 85, hideLabel: true, propertyName: `${propertyName}.minHeight`, icon: 'minHeightIcon' },
           { type: 'dimensionField', dimensionType: 'maxHeight', label: 'Max Height', width: 85, hideLabel: true, propertyName: `${propertyName}.maxHeight`, icon: 'maxHeightIcon' },
         ], exclude),
