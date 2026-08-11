@@ -115,7 +115,6 @@ const EMPTY_OBJECT = {};
 type OnCreatedFunction = (
   value: ISubFormProviderProps['value'],
   globalState: IGlobalState['globalState'],
-  submittedValue: IEntity,
   responseData: IEntity,
   message: MessageInstance,
   application: ReturnType<typeof useApplicationContextData>) => void;
@@ -124,7 +123,7 @@ type OnUpdated = (
   globalState: IGlobalState['globalState'],
   responseData: IEntity,
   message: MessageInstance,
-  application: ReturnType<typeof useApplicationContextData>) => void;
+) => void;
 
 const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) => {
   const {
@@ -490,13 +489,12 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
           const result = extractAjaxResponse(response.data);
           onChangeInternal(result);
           if (!isNullOrWhiteSpace(onCreated)) {
-            // `response` is the documented name, `submittedValue` is kept for handlers written against the old one
-            try {
-              const func = new Function('data, globalState, submittedValue, response, message, application', onCreated) as OnCreatedFunction;
-              func(value, globalState, result, result, message, appContextData);
-            } catch (error) {
-              console.error("Sub-form 'On Created' handler failed", error);
-            }
+            const evaluateOnCreated = (): void => {
+              const func = new Function('data, globalState, submittedValue, message, application', onCreated) as OnCreatedFunction;
+              func(value, globalState, result, message, appContextData);
+            };
+
+            evaluateOnCreated();
           }
         })
         .catch((error) => {
@@ -517,13 +515,13 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         .then((response) => {
           const result = extractAjaxResponse(response.data);
           onChangeInternal(result);
-          if (!isNullOrWhiteSpace(onUpdated)) {
-            try {
-              const func = new Function('data, globalState, response, message, application', onUpdated) as OnUpdated;
-              func(value, globalState, result, message, appContextData);
-            } catch (error) {
-              console.error("Sub-form 'On Updated' handler failed", error);
-            }
+          if (onUpdated) {
+            const evaluateOnUpdated = (): void => {
+              const func = new Function('data, globalState, response, message', onUpdated) as OnUpdated;
+              func(value, globalState, result, message);
+            };
+
+            evaluateOnUpdated();
           }
         })
         .catch((error) => {
