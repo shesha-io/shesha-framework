@@ -5,6 +5,9 @@ import { COUNTRY_CODES } from '@/shesha-constants/country-codes';
 import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
 import { getDisplayNameOrUndefined } from '@/utils/object';
 
+/** Google's Places API accepts at most 5 entries in `componentRestrictions.country`. */
+const MAX_COUNTRY_RESTRICTIONS = 5;
+
 export const getAddressValue = (value: string | IEntityReferenceDto | undefined): string => {
   if (!isDefined(value)) return '';
 
@@ -29,11 +32,20 @@ export const getSearchOptions = (model: IAddressCompomentBaseProps): PropTypes['
   ).filter(isNotNullOrWhiteSpace);
 
   if (countries.length > 0) {
-    const countryCodes = countries.map((countryLabel) => {
-      const foundCountry = COUNTRY_CODES.find((item) => item.value === countryLabel);
-      return isDefined(foundCountry) ? foundCountry.code : countryLabel;
-    });
-    result = { componentRestrictions: { country: countryCodes } };
+    const countryCodes = countries
+      .map((country) => {
+        const byLabel = COUNTRY_CODES.find((item) => item.value === country);
+        if (isDefined(byLabel)) return byLabel.code;
+        const code = country.trim().toLowerCase();
+        return COUNTRY_CODES.some((item) => item.code === code) ? code : undefined;
+      })
+      .filter(isDefined)
+      // Google allows at most 5 countries in componentRestrictions and rejects the request
+      // outright past that limit, so the list is capped rather than sent in full.
+      .slice(0, MAX_COUNTRY_RESTRICTIONS);
+
+    if (countryCodes.length > 0)
+      result = { componentRestrictions: { country: countryCodes } };
   }
 
   try {
