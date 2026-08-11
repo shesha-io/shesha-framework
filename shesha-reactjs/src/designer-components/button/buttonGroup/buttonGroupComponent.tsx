@@ -1,7 +1,7 @@
 import { ButtonGroup } from './buttonGroup';
 import { ButtonGroupItemProps, isGroup, isItem } from '@/providers/buttonGroupConfigurator/models';
 import { GroupOutlined } from '@ant-design/icons';
-import { IButtonGroupComponentProps } from './models';
+import { IButtonGroupComponentProps, isButtonGroupComponent } from './models';
 import { IToolboxComponent } from '@/interfaces';
 import { migrateButtonsNavigateAction } from './migrations/migrateButtonsNavigateAction';
 import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
@@ -37,16 +37,19 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
       </DynamicActionsEvaluator>
     );
   },
-  actualModelPropertyFilter: (name) => name !== 'items', // handle items later to use buttonGroup's readOnly setting
-  actualModelFilteredPropertyProcessor: (model) => {
-    return (propertyName, value, allData) => {
-      if (propertyName === 'items') {
+  // handle items later to use buttonGroup's readOnly setting
+  actualModelPropertyFilter: (name) => name !== 'items',
+  // handle items to use buttonGroup's readOnly setting
+  actualModelFilteredPropertyProcessor: (model, propertyName, value, allData) => {
+    if (propertyName === 'items') {
+      if (isButtonGroupComponent(model)) {
         const items: ButtonGroupItemProps[] = Array.isArray(value) ? value as ButtonGroupItemProps[] : [];
         const preparedItems = items.map((item) => ({ ...item, size: item.size ?? model.size ?? 'middle' }));
-        return unwrapModel(preparedItems, allData as TypedProxy<IApplicationContext<object>>, standardActualModelPropertyFilter, undefined, { readOnly: model.readOnly, disabled: false });
+        return unwrapModel(preparedItems, allData as TypedProxy<IApplicationContext<object>>, standardActualModelPropertyFilter, undefined, { readOnly: model.readOnly, disabled: model.disabled });
       }
       return value;
-    };
+    }
+    return value;
   },
   getDefaultStyles: defaultContainerStyles,
   migrator: (m) => m
@@ -83,7 +86,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
     .add<IButtonGroupComponentProps>(6, (prev) => migrateVisibility(prev))
     .add<IButtonGroupComponentProps>(7, (prev) => migrateButtonsNavigateAction(prev))
     .add<IButtonGroupComponentProps>(8, (prev) => {
-      const newModel = { ...prev, editMode: 'editable' } as IButtonGroupComponentProps;
+      const newModel = { ...prev, editMode: 'inherited' } as IButtonGroupComponentProps;
       const updateItems = (item: ButtonGroupItemProps): ButtonGroupItemProps => {
         const newItem = migrateReadOnly(item, 'inherited');
         if (Array.isArray(newItem['childItems']))

@@ -84,7 +84,7 @@ export const FormComponentModelPreparer: FC<FormComponentPrepareModelProps> = ({
     undefined,
     (name, value) => formComponentActualModelPropertyFilter(toolboxComponent, name, value),
     undefined,
-    toolboxComponent?.actualModelFilteredPropertyProcessor?.(deviceModel),
+    toolboxComponent?.actualModelFilteredPropertyProcessor,
   );
 
   const { isInput = false, isOutput = false } = toolboxComponent ?? {};

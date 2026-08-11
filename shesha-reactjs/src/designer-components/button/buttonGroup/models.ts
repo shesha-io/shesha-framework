@@ -1,11 +1,13 @@
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { IConfigurableFormComponent, IStyleValue } from '@/providers/form/models';
+import { IConfigurableFormComponent, isConfigurableFormComponent, IStyleValue } from '@/providers/form/models';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
 import { MenuProps } from 'antd';
 import { CSSProperties } from 'react';
 
 export interface IButtonGroupComponentProps extends IConfigurableFormComponent, IBaseButtonGroupProps {
 }
+
+export const isButtonGroupComponent = (component: unknown): component is IButtonGroupComponentProps => isConfigurableFormComponent(component) && component.type === 'buttonGroup';
 
 export interface IButtonGroupProps extends IBaseButtonGroupProps, IStyleValue {
   id: string;

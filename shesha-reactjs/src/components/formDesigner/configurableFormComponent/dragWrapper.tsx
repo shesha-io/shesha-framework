@@ -62,11 +62,11 @@ export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => 
   };
 
   return (
-    <div className={props.className} onClick={onClick} onMouseOver={onMouseOver} onMouseOut={onMouseOut}>
-      <Tooltip title={tooltip} placement="right" open={isOpen}>
+    <Tooltip title={tooltip} placement="right" open={isOpen}>
+      <div className={props.className} onClick={onClick} onMouseOver={onMouseOver} onMouseOut={onMouseOut}>
         {props.children}
-      </Tooltip>
-    </div>
+      </div>
+    </Tooltip>
   );
 };
 

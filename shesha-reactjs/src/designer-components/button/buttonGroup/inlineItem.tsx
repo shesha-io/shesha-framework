@@ -35,9 +35,9 @@ export const InlineItem: FC<InlineItemProps> = (props) => {
     const defaultStyledItem = deepMergeValues(defaultGroupStyles(), item);
 
     return (
-      <Dropdown key={uuid} menu={{ items: menuItems }} disabled={item.readOnly === true}>
+      <Dropdown key={uuid} menu={{ items: menuItems }} disabled={item.disabled === true}>
         <div> {/* this need to force button style */}
-          <RenderButton props={{ ...defaultStyledItem, size }} uuid={item.id} buttonComponent={props.buttonComponent} />
+          <RenderButton props={{ ...defaultStyledItem, size }} buttonComponent={props.buttonComponent} />
         </div>
       </Dropdown>
     );
@@ -46,7 +46,7 @@ export const InlineItem: FC<InlineItemProps> = (props) => {
   if (isItem(item)) {
     switch (item.itemSubType) {
       case 'button':
-        return <RenderButton props={{ ...item, size }} uuid={item.id} buttonComponent={props.buttonComponent} />;
+        return <RenderButton props={{ ...item, size }} buttonComponent={props.buttonComponent} />;
       case 'separator':
       case 'line':
         return <Divider orientation="vertical" key={uuid} style={{ width: addPx(item.dividerWidth, appContext), backgroundColor: item.dividerColor }} />;

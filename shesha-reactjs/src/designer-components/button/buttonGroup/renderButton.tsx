@@ -8,11 +8,10 @@ import { ShaIcon } from '@/components/shaIcon';
 
 interface IRenderButtonProps {
   props: ButtonGroupItemProps;
-  uuid: string;
   buttonComponent: IToolboxComponent;
 }
 
-export const RenderButton: FC<IRenderButtonProps> = ({ props, uuid, buttonComponent: toolboxComponent }) => {
+export const RenderButton: FC<IRenderButtonProps> = ({ props, buttonComponent: toolboxComponent }) => {
   const componentModel = useMemo(() => ({ ...props, type: 'button' }), [props]);
   const { styles: shaComponentStyles } = useShaComponentStyles({ componentModel, toolboxComponent, isDesigner: false });
 
@@ -25,7 +24,7 @@ export const RenderButton: FC<IRenderButtonProps> = ({ props, uuid, buttonCompon
 
   return (
     <div className={shaComponentStyles.shaComponent}>
-      <ConfigurableButton key={uuid} {...props} label={label} />
+      <ConfigurableButton key={props.id} {...props} label={label} />
     </div>
   );
 };

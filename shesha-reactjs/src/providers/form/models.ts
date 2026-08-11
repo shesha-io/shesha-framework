@@ -268,12 +268,13 @@ export interface IComponentBindingProps {
 }
 
 export interface IComponentVisibilityProps {
-  /** Hidden field is still a part of the form but not visible on it */
+  /** Hidden field is still a part of the form but not visible on it
+   * It may also depend on the permissions and/or state of the parent container/form
+   */
   hidden?: boolean | undefined;
 
   /** Visible field contains only the value from the component settings (set explicitly or calculated),
-   * but does not reflect the actual visibility of the component.
-   * It may also depend on the permissions and/or state of the parent container/form
+   * but does not reflect the actual visibility of the component (It may also depend on the permissions and/or state of the parent container/form)
    * Use `hidden` to get actual visible/hidden state of the component */
   visible?: boolean | undefined;
   visiblePermissions?: string[] | undefined;

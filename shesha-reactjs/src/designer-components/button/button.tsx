@@ -54,9 +54,6 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
     return model.hidden === true ? null : (
       <ConfigurableButton
         {...restProps}
-        readOnly={model.readOnly}
-        block={restProps.block}
-        styleJson={model.styleJson}
         ref={inputRef}
         additionalDomProperties={getComponentEvents<void, IButtonComponentProps>(model, ['onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent })}
       />
@@ -93,7 +90,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
       .add<IButtonComponentProps>(3, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
       .add<IButtonComponentProps>(4, (prev) => migrateVisibility(prev))
       .add<IButtonComponentProps>(5, (prev) => ({ ...prev, actionConfiguration: migrateNavigateAction(prev.actionConfiguration) }))
-      .add<IButtonComponentProps>(6, (prev) => migrateReadOnly(prev, 'editable'))
+      .add<IButtonComponentProps>(6, (prev) => migrateReadOnly(prev, 'inherited'))
       .add<IButtonComponentProps>(7, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
       .add<IButtonComponentProps>(8, (prev, ctx) => ctx.isNew === true ? prev : {
         ...prev,
