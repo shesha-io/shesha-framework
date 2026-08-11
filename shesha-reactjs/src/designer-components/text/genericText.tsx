@@ -27,7 +27,7 @@ const getColorByContentType = (contentType: ContentType | undefined, color: stri
 const isBaseType = (value: unknown): value is BaseType =>
   typeof value === 'string' && ['secondary', 'success', 'warning', 'danger'].includes(value);
 
-export const GenericText: FC<PropsWithChildren<ITextComponentProps>> = (model) => {
+export const GenericText: FC<PropsWithChildren<ITextComponentProps & { additionalDomProperties: Record<string, unknown> }>> = (model) => {
   const { children, contentType, level = 0 } = model;
 
   const { theme } = useTheme();
@@ -56,6 +56,6 @@ export const GenericText: FC<PropsWithChildren<ITextComponentProps>> = (model) =
   });
 
   return level > 0
-    ? <Title {...titleProps} className={className}>{children}</Title>
-    : <Paragraph {...baseProps} className={className} style={model.styleJson ?? {}}>{children}</Paragraph>;
+    ? <Title {...titleProps} className={className} {...model.additionalDomProperties}>{children}</Title>
+    : <Paragraph {...baseProps} className={className} style={model.styleJson ?? {}} {...model.additionalDomProperties}>{children}</Paragraph>;
 };
