@@ -1,6 +1,6 @@
 import { useRefListItemGroupConfigurator } from '@/components/refListSelectorDisplay/provider';
 import { App, Flex, Form, Modal } from 'antd';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import KanbanPlaceholder from './components/kanbanPlaceholder';
 import KanbanColumn, { KanbanUrls } from './components/renderColumn';
 import { IKanbanProps, isKanbanColumn, isRefListCellValue } from './model';

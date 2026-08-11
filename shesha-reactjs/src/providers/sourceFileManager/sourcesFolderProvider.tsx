@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useContext, useMemo } from 'react';
+import { FC, PropsWithChildren, useContext, useMemo } from 'react';
 import { ISourcesFolderContext, SourcesFolderContext } from './contexts';
 
 export interface ISourceFilesFolderProviderProps {

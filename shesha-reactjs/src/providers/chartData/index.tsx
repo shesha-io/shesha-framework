@@ -1,5 +1,13 @@
 import { IChartsProps, IChartProps } from "@/designer-components/charts/model";
-import React, { FC, PropsWithChildren, useCallback, useContext, useEffect, useReducer } from "react";
+import {
+  memo,
+  FC,
+  PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useReducer,
+} from "react";
 import { CleanDataAction, SetAxisPropertyLabelAction, SetControlPropsAction, SetDataAction, SetIsLoadedAction, SetUrlTypeDataAction, SetValuePropertyLabelAction } from "./actions";
 import { ChartDataActionsContext, ChartDataStateContext, IChartDataAtionsContext, IChartDataContext, INITIAL_STATE } from "./context";
 import { chartDataReducer } from "./reducer";
@@ -68,4 +76,4 @@ export const useChartDataStateContext = (): IChartDataContext => useContext(Char
 
 export const useChartDataActionsContext = (): IChartDataAtionsContext => useContext(ChartDataActionsContext) ?? throwError("useChartDataActionsContext must be used within a ChartDataProvider");
 
-export default React.memo(ChartDataProvider);
+export default memo(ChartDataProvider);

@@ -1,5 +1,6 @@
 import { Form, FormItemProps, FormProps, Input, InputProps, Popover } from 'antd';
-import React, { FC, useEffect } from 'react';
+import { FC, useEffect } from 'react';
+import * as React from 'react';
 import { ConfimPasswordChecklist } from './confimPasswordChecklist';
 import { PasswordChecklist } from './passwordChecklist';
 import { PasswordComboWrapper } from './passwordComboWrapper';

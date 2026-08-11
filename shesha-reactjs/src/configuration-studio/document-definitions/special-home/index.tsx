@@ -1,5 +1,4 @@
 import { DocumentDefinition, DocumentInstanceFactoryArgs, IDocumentInstance } from "@/configuration-studio/models";
-import React from "react";
 import { HomePageDocument } from "./editor";
 import { DocumentInstance } from "@/configuration-studio/cs/documentInstance";
 import { HomeOutlined } from "@ant-design/icons";

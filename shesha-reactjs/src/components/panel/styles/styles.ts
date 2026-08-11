@@ -45,18 +45,22 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: ICo
     --primary-color: ${token.colorPrimary};
     --ant-line-width: ${hasBorder ? '0px' : '1px'} !important;
     --ant-collapse-header-bg: transparent !important;
-    ${dimensions}
-    ${marginStyles(model.stylingBoxJson ?? defaultMargin)}
+
+    /* dimensions will by applied to the wrapper div */
+    height: 100%;
+    width: 100%;
+    /* ${dimensions}
+    ${marginStyles(model.stylingBoxJson ?? defaultMargin)} */
 
     > .ant-collapse-item {
       display: flex;
       flex-direction: column;
-      ${shadowStyles(model.shadow)}
       height: 100%;
       ${collapsedBorderRadius}
     }
 
     > .ant-collapse-item.ant-collapse-item-active {
+      ${shadowStyles(model.shadow)}
       ${borderRadiusStyles(model.border, true)}
     }
    

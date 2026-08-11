@@ -1,11 +1,10 @@
 import { createStyles } from '@/styles';
 import { ITextFieldComponentProps } from './interfaces';
-import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, marginStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
+import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
 
 export const useStyles = createStyles(({ css, cx, token }, model: ITextFieldComponentProps) => {
   const inputBoxStyles = `
     ${dimensionsStyles(model.dimensions)}
-    ${marginStyles(model.stylingBoxJson)}
     ${paddingStyles(model.stylingBoxJson)}
   `;
 

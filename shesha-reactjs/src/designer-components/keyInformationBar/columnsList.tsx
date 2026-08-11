@@ -1,4 +1,4 @@
-import React, { FC, Fragment, ReactElement, useState } from 'react';
+import { FC, Fragment, ReactElement, useState } from 'react';
 import { Button, Modal, Space, Tooltip } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { KeyInfomationBarItemProps } from './interfaces';

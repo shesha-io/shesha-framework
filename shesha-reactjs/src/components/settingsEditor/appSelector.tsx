@@ -1,6 +1,6 @@
 import { Select } from 'antd';
 import FormItem from 'antd/es/form/FormItem';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { useSettingsEditor } from './provider';
 import { DefaultOptionType } from 'antd/es/select';
 

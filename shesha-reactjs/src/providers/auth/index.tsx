@@ -1,4 +1,11 @@
-import React, { FC, RefObject, PropsWithChildren, useContext, useLayoutEffect } from 'react';
+import {
+  createContext,
+  FC,
+  RefObject,
+  PropsWithChildren,
+  useContext,
+  useLayoutEffect,
+} from 'react';
 import { URL_HOME_PAGE, URL_LOGIN_PAGE } from '@/shesha-constants';
 import { useShaRouting } from '@/providers/shaRouting';
 import { useAuthenticatorInstance } from './authenticator';
@@ -34,7 +41,7 @@ interface IAuthProviderProps {
   authRef?: RefObject<IAuthProviderRefProps | undefined> | undefined;
 }
 
-const AuthenticatorContext = React.createContext<IAuthenticator | undefined>(undefined);
+const AuthenticatorContext = createContext<IAuthenticator | undefined>(undefined);
 
 const AuthProvider: FC<PropsWithChildren<IAuthProviderProps>> = ({
   children,

@@ -1,5 +1,6 @@
 import { isDefined } from '@/utils/nullables';
-import React, { FC, useEffect } from 'react';
+import { FC, useEffect } from 'react';
+import * as React from 'react';
 import { TableToggleRowsSelectedProps } from 'react-table';
 
 type CheckBoxProps = Partial<TableToggleRowsSelectedProps> & { ref?: React.RefObject<HTMLInputElement | null> };

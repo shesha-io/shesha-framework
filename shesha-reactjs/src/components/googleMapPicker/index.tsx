@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { App, AutoComplete, Button, Modal, Space, Tooltip } from 'antd';
 import { AimOutlined } from '@ant-design/icons';
 

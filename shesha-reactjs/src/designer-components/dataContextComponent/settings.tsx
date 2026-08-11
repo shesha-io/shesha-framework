@@ -1,5 +1,5 @@
 import { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
 import SettingsCollapsiblePanel from '@/designer-components/_settings/settingsCollapsiblePanel';
 import SettingsForm, { useSettingsForm } from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';

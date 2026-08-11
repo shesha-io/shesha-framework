@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { Button } from 'antd';
 import { RebaseEditOutlined } from '@/icons/rebaseEditOutlined';
 import { IPersistedFormProps } from '@/providers/form/models';

@@ -1,4 +1,5 @@
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
+import * as React from "react";
 
 type ErrorHandler = (error: Error, info: React.ErrorInfo) => void;
 type ErrorHandlingComponent<Props> = (props: Props, error?: Error) => React.ReactNode;

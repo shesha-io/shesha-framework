@@ -1,4 +1,3 @@
-import React from 'react';
 import settingsFormJson from './settingsForm.json';
 import { FilterOutlined } from '@ant-design/icons';
 import { FormMarkup } from '@/providers/form/models';

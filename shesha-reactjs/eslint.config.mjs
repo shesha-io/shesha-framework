@@ -198,6 +198,7 @@ const baseTsConfig = {
         "memory-monitor/track-memory": "off",
         ...hooksPluginRules,
         ...reactPlugin.configs.recommended.rules,
+        ...reactPlugin.configs["jsx-runtime"].rules,
 
         "react/prop-types": ["off"],
         "require-await": "error",

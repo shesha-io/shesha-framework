@@ -1,6 +1,6 @@
 import { FormProviderWrapper } from "./formDesignerWrapper";
 import { FormDesignerRenderer } from "./formDesignerRenderer";
-import React, { FC } from "react";
+import { FC } from "react";
 import { FormIdentifier } from "@/interfaces";
 
 interface IFormDesignerProps {

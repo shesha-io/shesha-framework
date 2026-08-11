@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useCallback, useMemo, useRef, useState } from 'react';
+import { FC, ReactNode, useCallback, useMemo, useRef, useState } from 'react';
 import settingsFormJson from './settingsForm.json';
 import { Button, Input } from 'antd';
 import { DataContextSelector } from '@/designer-components/dataContextSelector';

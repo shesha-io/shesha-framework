@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { IConfigurableFormItemProps } from './model';
 import { ConfigurableFormItemSetting } from './configurableFormItemSetting';
 import { ConfigurableFormItemLive } from './configurableFormItemLive';

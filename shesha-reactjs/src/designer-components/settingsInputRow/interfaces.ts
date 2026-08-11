@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 
 import { ComponentDefinition, IConfigurableFormComponent } from "@/interfaces";
 import { ISettingsInputProps } from '../settingsInput/interfaces';

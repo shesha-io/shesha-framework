@@ -1,6 +1,6 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import DataTableProvider, { IHasFormDataSourceConfig } from '@/providers/dataTable';
-import React, { ReactElement, useMemo } from 'react';
+import { ReactElement, useMemo } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { evaluateString } from '@/providers/form/utils';
 import { evaluateYesNo } from '@/utils/form';

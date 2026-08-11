@@ -8,7 +8,8 @@ import { ConfigurationItemsExportFooter } from "@/providers/sheshaApplication/co
 import { ConfigurationItemsImportFooter } from "@/providers/sheshaApplication/configurable-actions/configuration-items-import";
 import { buildUrl } from "@/utils/url";
 import { HomeOutlined, SettingOutlined } from "@ant-design/icons";
-import React, { RefObject, ReactNode } from "react";
+import { RefObject, ReactNode } from "react";
+import * as React from "react";
 import { isDefined, isNullOrWhiteSpace } from "../../utils/nullables";
 import { deleteConfigurationItemAsync, deleteFolderAsync, duplicateItemAsync, fetchFlatTreeAsync, fetchItemTypesAsync, getRevisionJsonAsync, MoveNodePayload, moveTreeNodeAsync, restoreItemRevisionAsync } from "../apis";
 import { confirmSaveDocumentAsync } from "../components/save-confirmation";
@@ -92,11 +93,11 @@ const STORAGE_KEYS = {
 
 interface CreateItemResponse {
   id: string;
-};
+}
 
 interface CreateFolderResponse {
   id: string;
-};
+}
 
 export type CsSubscription = (cs: IConfigurationStudio) => void;
 
@@ -248,7 +249,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
   };
 
   restoreRevisionAsync = async (args: RestoreRevisionArgs): Promise<boolean> => {
-    if (!await this.modalApi.confirmYesNoAsync({ title: 'Confirm Revision Restore', content: `Are you sure you want to restore revision '${args.revisionFriendlyName}'?` }))
+    if (!(await this.modalApi.confirmYesNoAsync({ title: 'Confirm Revision Restore', content: `Are you sure you want to restore revision '${args.revisionFriendlyName}'?` })))
       return false;
     await restoreItemRevisionAsync(this.httpClient, { itemId: args.itemId, revisionId: args.revisionId });
     return true;
@@ -314,11 +315,11 @@ export class ConfigurationStudio implements IConfigurationStudio {
   };
 
   private loadTreeExpandedNodesAsync = async (): Promise<void> => {
-    this._treeExpandedKeys = await this.storage.getAsync(STORAGE_KEYS.TREE_EXPANDED_KEYS) ?? [];
+    this._treeExpandedKeys = (await this.storage.getAsync(STORAGE_KEYS.TREE_EXPANDED_KEYS)) ?? [];
   };
 
   private loadQuickSearchAsync = async (): Promise<void> => {
-    this._quickSearch = await this.storage.getAsync<string>(STORAGE_KEYS.QUICK_SEARCH, false) ?? "";
+    this._quickSearch = (await this.storage.getAsync<string>(STORAGE_KEYS.QUICK_SEARCH, false)) ?? "";
   };
 
   private loadTreeStateAsync = async (): Promise<void> => {
@@ -438,7 +439,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
   private loadOpenedDocsAsync = async (): Promise<void> => {
     // TODO: check type of stored value, filter/proceess documents taking into account loaded tree nodes
-    const docs = await this.storage.getAsync<StoredDocumentInfo[]>(STORAGE_KEYS.OPENED_DOCS) ?? [];
+    const docs = (await this.storage.getAsync<StoredDocumentInfo[]>(STORAGE_KEYS.OPENED_DOCS)) ?? [];
 
     this.log('Convert restored docs');
     const mappedDocs = docs.map<IDocumentInstance | undefined>((d) => {
@@ -858,7 +859,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
       });
       return;
     }
-    if (!await this.modalApi.confirmYesNoAsync({ title: 'Confirm Deletion', content: `Are you sure you want to delete '${node.name}'?` }))
+    if (!(await this.modalApi.confirmYesNoAsync({ title: 'Confirm Deletion', content: `Are you sure you want to delete '${node.name}'?` })))
       return;
 
     try {
@@ -939,7 +940,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
   deleteItemAsync = async (node: ConfigItemTreeNode): Promise<void> => {
     const definition = this.getItemTypeDefinition(node.discriminator);
-    if (!await this.modalApi.confirmYesNoAsync({ title: 'Confirm Deletion', content: `Are you sure you want to delete ${definition.friendlyName} '${node.name}'?` }))
+    if (!(await this.modalApi.confirmYesNoAsync({ title: 'Confirm Deletion', content: `Are you sure you want to delete ${definition.friendlyName} '${node.name}'?` })))
       return;
 
     const docId = node.id;

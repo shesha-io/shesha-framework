@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { BasicConfig } from '@react-awesome-query-builder/antd';
 import type { TextWidget, TextFieldSettings } from '@react-awesome-query-builder/antd';
 import { ExpressionEditor, buildExpressionContextFromPaths } from '@/components/expressionEditor';

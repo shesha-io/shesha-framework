@@ -1,5 +1,5 @@
 import { Button, Modal } from 'antd';
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
 import { useDeepCompareEffect } from 'react-use';
 import { LayerGroupConfiguratorProvider, useLayerGroupConfigurator } from '@/providers/layersProvider';
 import { ILayerFormModel } from '@/providers/layersProvider/models';

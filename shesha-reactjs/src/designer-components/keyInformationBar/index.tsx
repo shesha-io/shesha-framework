@@ -5,7 +5,6 @@ import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import ParentProvider from '@/providers/parentProvider/index';
 import { nanoid } from '@/utils/uuid';
 import { BorderLeftOutlined } from '@ant-design/icons';
-import React from 'react';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { removeComponents } from '../_common-migrations/removeComponents';
 import { KeyInformationBarComponentDefinition, IKeyInformationBarComponentProps } from './interfaces';

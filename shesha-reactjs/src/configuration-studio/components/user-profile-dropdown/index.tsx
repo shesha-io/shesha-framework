@@ -1,4 +1,5 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
+import * as React from 'react';
 import { Avatar, Divider, Dropdown, MenuProps, Space, theme } from 'antd';
 import { LoginOutlined, UserOutlined } from '@ant-design/icons';
 import { useAuth } from '@/providers';

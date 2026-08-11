@@ -1,6 +1,8 @@
-import React, { FC, CSSProperties, useRef, useState } from 'react';
+import { FC, CSSProperties, useRef, useState } from 'react';
+import * as React from 'react';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng, PropTypes } from 'react-places-autocomplete';
-import { Input, App } from 'antd';
+import { Input, App, InputRef } from 'antd';
+import { InputProps } from 'antd/lib/input';
 import { SearchOutlined, LoadingOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
 import { LatLngPolygon, PointPolygon, pointsInPolygon } from '@/utils/googleMaps';
@@ -30,6 +32,9 @@ interface ISuggestion {
   description: string;
 }
 
+/** antd `Input` props a caller may pass through; props owned by the component (value, onChange, onKeyDown, tabIndex, allowClear, etc.) are omitted so they cannot conflict. */
+export type GooglePlacesAutocompleteInputProps = Omit<InputProps, 'value' | 'onChange' | 'prefix' | 'disabled' | 'placeholder' | 'style' | 'size' | 'className' | 'onKeyDown' | 'tabIndex' | 'allowClear'>;
+
 export interface IGooglePlacesAutocompleteProps {
   disableGoogleEvent?: ((value: string) => boolean) | undefined;
   debounce?: number | undefined;
@@ -44,6 +49,7 @@ export interface IGooglePlacesAutocompleteProps {
   prefix?: string | undefined;
   label?: string | undefined;
   disabled?: boolean | undefined;
+  readOnly?: boolean | undefined;
   ignoreText?: string | undefined;
   tabIndex?: number | undefined;
   biasedCoordinates?: LatLngPolygon | PointPolygon | undefined;
@@ -52,6 +58,12 @@ export interface IGooglePlacesAutocompleteProps {
   font?: IStyleValue['font'] | undefined;
   searchOptions?: PropTypes['searchOptions'] | undefined;
   onFocus?: ((event: React.FocusEvent<HTMLInputElement, Element>) => void) | undefined;
+  /** Applied to the antd `Input`, so a caller can style the field itself. */
+  className?: string | undefined;
+  /** Ref to the antd `Input`, so a caller can focus the field programmatically. */
+  inputRef?: React.Ref<InputRef> | undefined;
+  /** Extra antd `Input` event handlers (mouse/click), passed through as-is. */
+  inputProps?: GooglePlacesAutocompleteInputProps | undefined;
 }
 
 const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
@@ -65,6 +77,7 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
   prefix,
   onGeocodeChange,
   disabled,
+  readOnly,
   ignoreText,
   tabIndex,
   biasedCoordinates,
@@ -73,6 +86,9 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
   size,
   searchOptions,
   onFocus,
+  className,
+  inputRef,
+  inputProps: extraInputProps,
 }) => {
   const { styles } = useStyles({ fontFamily: font?.type, fontWeight: font?.weight, textAlign: font?.align, color: font?.color, fontSize: font?.size });
   const [highlightedPlaceId, setHighlightedPlaceId] = useState('');
@@ -217,6 +233,9 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
 
             return (
               <Input
+                {...extraInputProps}
+                ref={inputRef}
+                className={className}
                 value={displayValue}
                 onChange={(e) => {
                   if (isDefined(inputProps.onChange)) {
@@ -229,22 +248,38 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
                     }
                   }
                 }}
-                allowClear
+                // Clearing is an edit, so the clear button is hidden in both non-editable states.
+                allowClear={disabled !== true && readOnly !== true}
                 placeholder={placeholder}
                 prefix={inputPrefix}
                 disabled={disabled ?? false}
+                readOnly={readOnly ?? false}
                 tabIndex={tabIndex}
-                onKeyDown={onKeyDown}
-                onBlur={onBlur}
-                onFocus={onFocus}
+                // Arrow-key navigation of the suggestions is pointless when nothing can be
+                // selected, so key handling is skipped entirely while read-only.
+                onKeyDown={readOnly === true ? undefined : onKeyDown}
+                // Closing the suggestions dropdown is this component's own concern, so a
+                // caller-supplied onBlur is composed with it rather than replacing it.
+                onBlur={(e) => {
+                  onBlur();
+                  extraInputProps?.onBlur?.(e);
+                }}
+                // Composed rather than assigned, so a handler supplied through `inputProps`
+                // (the standard event set) is not silently dropped by the dedicated prop.
+                onFocus={(e) => {
+                  onFocus?.(e);
+                  extraInputProps?.onFocus?.(e);
+                }}
                 style={style}
                 size={size}
               />
             );
           })()}
+          {/* The dropdown stays hidden in both non-editable states — a suggestion list the user
+              cannot act on would otherwise cover the surrounding form. */}
           <div
             className={classNames(styles.dropdownContainer, {
-              hidden: !showSuggestionsDropdownContainer,
+              hidden: !showSuggestionsDropdownContainer || disabled === true || readOnly === true,
             })}
           >
             {suggestions.map((suggestion) => {

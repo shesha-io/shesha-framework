@@ -1,5 +1,4 @@
 import { Space } from 'antd';
-import React from 'react';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { SwapOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';

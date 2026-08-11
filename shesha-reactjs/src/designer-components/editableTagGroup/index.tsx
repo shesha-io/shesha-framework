@@ -1,4 +1,3 @@
-import React from 'react';
 import { FormMarkup } from '@/providers/form/models';
 import { HomeOutlined } from '@ant-design/icons';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';

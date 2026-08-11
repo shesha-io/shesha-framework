@@ -1,5 +1,5 @@
 import { NumberOutlined } from '@ant-design/icons';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { DataTypes, NumberFormats } from '@/interfaces/dataTypes';

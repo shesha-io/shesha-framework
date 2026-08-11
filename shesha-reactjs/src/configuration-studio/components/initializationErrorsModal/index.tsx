@@ -2,7 +2,7 @@ import { useCache } from "@/hooks/useCache";
 import { useAuth } from "@/providers";
 import { isNonEmptyArray } from "@/utils/array";
 import useModal from "antd/lib/modal/useModal";
-import React, { FC, useEffect } from "react";
+import { FC, useEffect } from "react";
 
 export const InitializationErrorsModal: FC = () => {
   const { errorsInfo } = useAuth();

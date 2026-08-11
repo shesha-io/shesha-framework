@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Permissions
 {
-    [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.AnyAuthenticated)]
+    [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.RequiresPermissions, "pages:maintenance")]
     public class PermissionedObjectAppService : SheshaCrudServiceBase<PermissionedObject, PermissionedObjectDto, Guid>, IPermissionedObjectAppService
     {
         private readonly IPermissionedObjectManager _permissionedObjectManager;

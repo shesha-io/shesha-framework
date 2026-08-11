@@ -1,5 +1,4 @@
 import { GroupOutlined } from '@ant-design/icons';
-import React from 'react';
 import { IContainerComponentProps } from '@/interfaces';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { getSettings } from './settingsForm';
@@ -20,7 +19,7 @@ import { useActualContextExecution } from '@/hooks';
 import { getComponentEvents } from '../_common/events';
 import { useEvents } from '@/components/formDesigner/components/eventsAndApiValueProcessor';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
-import { DEFAULT_DESIGNER_PADDING } from '@/components/formDesigner/utils/stylingUtils';
+import { DEFAULT_DESIGNER_PADDING, getMarginStyle } from '@/components/formDesigner/utils/stylingUtils';
 
 const ContainerComponent: ContainerComponentDefinition = {
   allowInherit: true,
@@ -30,7 +29,10 @@ const ContainerComponent: ContainerComponentDefinition = {
   icon: <GroupOutlined />,
   // Static empty array to prevent unnecessary re-renders when isDynamic is false
   emptyComponents: [],
-  getWrapperStyle: (model) => ({ style: { dimensions: model?.dimensions }, designerStyle: DEFAULT_DESIGNER_PADDING }),
+  getWrapperStyle: (model) => ({
+    style: { dimensions: model.dimensions, stylingBoxJson: getMarginStyle(model.stylingBoxJson) },
+    designerStyle: DEFAULT_DESIGNER_PADDING,
+  }),
   Factory: ({ model }) => {
     const { styles, cx } = useStyles(model);
     const wrappedStyleJson = useActualContextExecution(model.wrapperStyle, undefined, {});

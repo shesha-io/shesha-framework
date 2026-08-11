@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { DatabaseOutlined } from '@ant-design/icons';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { useFormDesignerSelectedComponentId } from '@/providers/formDesigner';

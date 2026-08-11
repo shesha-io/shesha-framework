@@ -3,7 +3,6 @@ import { migratePrevStyles } from '@/designer-components/_common-migrations/migr
 import { IToolboxComponent } from '@/interfaces';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { FilterOutlined } from '@ant-design/icons';
-import React from 'react';
 import { AdvancedFilterButton } from './advancedFilterButton';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';

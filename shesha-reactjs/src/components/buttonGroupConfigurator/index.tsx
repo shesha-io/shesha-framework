@@ -1,4 +1,4 @@
-import React, { FC, Fragment, ReactNode, useState } from 'react';
+import { FC, Fragment, ReactNode, useState } from 'react';
 import { Button, Modal } from 'antd';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
 import { useMedia } from 'react-use';

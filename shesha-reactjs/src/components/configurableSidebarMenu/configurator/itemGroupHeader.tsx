@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 import { ListEditorSectionRenderingArgs } from "@/components/listEditor";
 import { ISidebarGroup, ISidebarMenuItem, isSidebarGroup } from "@/interfaces/sidebar";
 import { nanoid } from "@/utils/uuid";

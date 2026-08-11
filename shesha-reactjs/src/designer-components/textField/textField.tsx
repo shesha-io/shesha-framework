@@ -1,7 +1,7 @@
 import { CodeOutlined } from '@ant-design/icons';
 import { Input, InputRef, Tooltip } from 'antd';
 import { InputProps } from 'antd/lib/input';
-import React, { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { IInputStyles, UnwrapCodeEvaluators } from '@/providers';

@@ -1,4 +1,5 @@
-import React, { RefObject, useEffect, useRef } from 'react';
+import { RefObject, useEffect, useRef } from 'react';
+import * as React from 'react';
 import { Form } from 'antd';
 import { IConfigurableFormComponent, FormMarkup, FormAction } from '@/providers/form/models';
 import { ConfigurableFormInstance, DEFAULT_FORM_LAYOUT_SETTINGS, IFormLayoutSettings, ISettingsFormInstance, IShaFormInstance, IToolboxComponent } from '@/interfaces';

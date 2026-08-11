@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { DataList } from '@/components/dataList';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import classNames from 'classnames';
@@ -74,7 +74,7 @@ const DataListControl: FCUnwrapped<IDataListWithDataSourceProps, "dataSourceInst
   const repository = getRepository();
 
   // Check if form configuration is invalid (for placeholder display in designer mode)
-  const hasInvalidFormConfig = React.useMemo(() => {
+  const hasInvalidFormConfig = useMemo(() => {
     if (!isDesignMode) return false;
 
     if (props.formSelectionMode === "name") {

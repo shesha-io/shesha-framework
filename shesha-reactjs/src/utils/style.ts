@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { isDefined, isNotNullOrWhiteSpace } from "@/utils/nullables";
 import { executeScriptSync } from '@/providers/form/utils';
 import { IPropertySetting } from '..';
@@ -101,8 +101,8 @@ export const parseDimension = (value: string | number | null | undefined | IProp
   return null;
 };
 
-export const DIMENSION_VALUES = ['auto', 'none', 'min-content', 'max-content', 'fit-content', 'stretch'];
-export const GRID_DIMENSION_VALUES = ['auto', 'min-content', 'max-content'];
+export const DIMENSION_VALUES = ['auto', 'none', 'min-content', 'max-content', 'fit-content', 'stretch', '50%', '100%'];
+export const GRID_DIMENSION_VALUES = ['auto', 'min-content', 'max-content', '1fr'];
 
 /**
  * Add 'px' unit to bare numbers, preserve existing units
@@ -161,7 +161,7 @@ export const hasNumber = (str: string | number): boolean => typeof str === 'numb
 export const getTagStyle = (style: React.CSSProperties = {}, hasColor: boolean = false): React.CSSProperties => {
   const { backgroundColor, backgroundImage, borderColor, borderTopColor,
     borderLeftColor, borderRightColor, borderBottomColor, color, ...rest } = style;
-  return hasColor ? { ...rest, margin: 0 } : style;
+  return hasColor ? { ...rest } : style;
 };
 
 /**

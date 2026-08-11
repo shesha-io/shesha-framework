@@ -142,7 +142,8 @@ namespace Shesha
                     OtpCooldownSeconds = 60,
                     UseResetPasswordViaSecurityQuestions = true,
                     ResetPasswordViaSecurityQuestionsNumQuestionsAllowed = 3,
-                    DefaultEndpointAccess = Domain.Enums.RefListPermissionedAccess.AllowAnonymous
+                    SwaggerUiEnabled = true,
+                    DefaultEndpointAccess = Domain.Enums.RefListPermissionedAccess.AnyAuthenticated
                 });
             });
 

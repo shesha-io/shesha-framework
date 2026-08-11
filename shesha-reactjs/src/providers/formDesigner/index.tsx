@@ -1,4 +1,12 @@
-import React, { FC, PropsWithChildren, useCallback, useContext, useEffect, useState, useSyncExternalStore } from 'react';
+import {
+  FC,
+  PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+  useSyncExternalStore,
+} from 'react';
 import { useFormDesignerComponentGroups } from '../form/hooks';
 import { FormMode, IConfigurableFormComponent, IFlatComponentsStructure, IFormSettings, isConfigurableFormComponent } from '../form/models';
 import {

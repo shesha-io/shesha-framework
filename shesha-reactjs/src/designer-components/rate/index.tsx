@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import classNames from 'classnames';
-import React from 'react';
 import { getSettings } from './settingsForm';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { IconType } from '@/components/shaIcon';

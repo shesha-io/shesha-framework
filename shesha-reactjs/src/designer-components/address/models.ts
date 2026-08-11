@@ -1,4 +1,5 @@
-import { IConfigurableFormComponent } from '@/providers/form/models';
+import { ComponentDefinition } from '@/interfaces';
+import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
 
 export interface IAddressCompomentBaseProps {
   countryRestriction?: string[] | undefined;
@@ -14,8 +15,13 @@ export interface IAddressCompomentBaseProps {
   showPriorityBounds?: boolean | undefined;
 };
 
-export interface IAddressCompomentProps extends IConfigurableFormComponent, IAddressCompomentBaseProps {
+export interface IAddressCompomentProps extends IConfigurableFormComponent, IInputStyles, IAddressCompomentBaseProps {
   onSelectCustom?: string | undefined;
   onFocusCustom?: string | undefined;
   onBlurCustom?: string | undefined;
+  desktop?: IInputStyles | undefined;
+  tablet?: IInputStyles | undefined;
+  mobile?: IInputStyles | undefined;
 }
+
+export type AddressComponentDefinition = ComponentDefinition<"address", IAddressCompomentProps>;

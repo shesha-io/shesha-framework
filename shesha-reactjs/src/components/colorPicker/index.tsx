@@ -1,4 +1,5 @@
-import React, { CSSProperties, FC, ReactNode, useState } from 'react';
+import { CSSProperties, FC, ReactNode, useState } from 'react';
+import * as React from 'react';
 import { ColorPicker as AntdColorPicker } from 'antd';
 import { ColorValueType } from 'antd/es/color-picker/interface';
 import { AggregationColor } from 'antd/es/color-picker/color';

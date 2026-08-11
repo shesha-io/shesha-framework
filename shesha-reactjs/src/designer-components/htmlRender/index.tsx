@@ -3,7 +3,6 @@ import { executeScriptSync, validateConfigurableComponentSettings } from '@/prov
 import { HighlightOutlined } from '@ant-design/icons';
 import parse from 'html-react-parser';
 import DOMPurify from 'dompurify';
-import React from 'react';
 import { IHtmlComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';

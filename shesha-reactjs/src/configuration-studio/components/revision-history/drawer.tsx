@@ -1,5 +1,5 @@
 import { Drawer, List, Typography } from 'antd';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { useActiveDoc } from '../../cs/hooks';
 import { useConfigurationStudio } from '../../cs/contexts';
 import { useItemRevisionHistory } from './hooks';

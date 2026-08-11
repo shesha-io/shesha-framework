@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import SubForm from './subForm';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { IStylable } from '@/interfaces';

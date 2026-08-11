@@ -1,7 +1,7 @@
 import { IToolboxComponent } from '@/interfaces';
 import { ISizableColumnComponentProps } from './interfaces';
 import { BorderHorizontalOutlined } from '@ant-design/icons';
-import React, { CSSProperties, Fragment, useMemo } from 'react';
+import { CSSProperties, Fragment, useMemo } from 'react';
 import { IInputStyles, StyleBoxValue, useFormData, useGlobalState } from '@/providers';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { getLayoutStyle, getStyle, pickStyleFromModel } from '@/providers/form/utils';

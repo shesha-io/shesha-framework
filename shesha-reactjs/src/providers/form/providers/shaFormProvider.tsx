@@ -1,4 +1,14 @@
-import React, { RefObject, PropsWithChildren, ReactNode, useContext, useEffect, useRef, useState } from "react";
+import {
+  RefObject,
+  PropsWithChildren,
+  ReactNode,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+
+import * as React from "react";
 import { IShaFormInstance } from '../store/interfaces';
 import { DelayedUpdateProvider } from "../../delayedUpdateProvider";
 import { ShaFormDataUpdateContext, ShaFormInstanceContext } from "../providers/contexts";

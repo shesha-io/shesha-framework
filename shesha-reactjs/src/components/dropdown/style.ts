@@ -1,20 +1,24 @@
 import { createStyles } from '@/styles';
+import { isDefined } from '@/utils/nullables';
 import { CSSProperties } from 'react';
 
 export const useStyles = createStyles(({ css, cx, token }, { style }: { style: CSSProperties }) => {
+  // Only emit the theme overrides the caller actually supplied. The designer component now styles
+  // the control through its own Appearance class and passes no computed `style`, so emitting these
+  // unconditionally would produce `undefined` declarations that shadow that class.
   const dropdown = cx("sha-dropdown", css`
-    --ant-color-text: ${style.color} !important;
-    --ant-font-weight-strong: ${style.fontWeight} !important;
+    ${isDefined(style.color) ? `--ant-color-text: ${style.color} !important;` : ''}
+    ${isDefined(style.fontWeight) ? `--ant-font-weight-strong: ${style.fontWeight} !important;` : ''}
     --ant-select-multiple-item-bg: transparent !important;
 
     .ant-select-selector {
-        ${(style.height !== 'auto' || !style.height) && 'overflow-y: auto;'}
+        ${style.height !== 'auto' ? 'overflow-y: auto;' : ''}
         .ant-select-selection-overflow {
             display: flex;
             flex-wrap: wrap;
             width: 100%;
             height: 100%;
-            justify-content: ${style.textAlign};
+            ${isDefined(style.textAlign) ? `justify-content: ${style.textAlign};` : ''}
         }
 
         scrollbar-width: thin;
@@ -25,7 +29,7 @@ export const useStyles = createStyles(({ css, cx, token }, { style }: { style: C
     }
 
     input {
-      font-size: ${style.fontSize} !important;
+      ${isDefined(style.fontSize) ? `font-size: ${style.fontSize} !important;` : ''}
     }
 
     .ant-tag {
@@ -34,11 +38,11 @@ export const useStyles = createStyles(({ css, cx, token }, { style }: { style: C
       display: inline-flex;
       align-items: center;
       overflow: hidden;
-      justify-content: ${style.textAlign};
+      ${isDefined(style.textAlign) ? `justify-content: ${style.textAlign};` : ''}
     }
   
     .ant-select-selection-item {
-      font-size: ${style.fontSize} !important;
+      ${isDefined(style.fontSize) ? `font-size: ${style.fontSize} !important;` : ''}
       font-weight: var(--ant-font-weight) !important;
       --ant-line-width: 0px !important;
       line-height: unset !important;
@@ -46,7 +50,7 @@ export const useStyles = createStyles(({ css, cx, token }, { style }: { style: C
       height: 100%;
       display: flex;
       align-items: center;
-      justify-content: ${style.textAlign};
+      ${isDefined(style.textAlign) ? `justify-content: ${style.textAlign};` : ''}
 
       .ant-select-selection-item-content {
         display: flex;
