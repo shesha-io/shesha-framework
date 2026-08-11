@@ -67,7 +67,7 @@ implements IMigrationRegistrationsOwner<TDst, TContext> {
     this.migrations.push(registration as unknown as MigrationRegistration);
   };
 
-  add = <TNext extends IHasVersion = IHasVersion>(version: number, migration: Migration<TSrc, TNext>): MigratorFluent<TNext, TDst, TContext> => {
+  add = <TNext extends IHasVersion = IHasVersion>(version: number, migration: Migration<TSrc, TNext, TContext>): MigratorFluent<TNext, TDst, TContext> => {
     this.addMigration<TSrc, TNext>({ version, migration });
 
     return new MigratorFluent<TNext, TDst, TContext>(this);

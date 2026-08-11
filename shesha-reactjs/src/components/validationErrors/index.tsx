@@ -16,6 +16,7 @@ export interface IValidationErrorsProps extends AlertProps {
   defaultMessage?: string | undefined;
   position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
   children?: React.ReactNode;
+  additionalDomProperties?: Record<string, unknown> | undefined;
 }
 
 /**
@@ -28,14 +29,15 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({
   className,
   position = 'top-right',
   children,
+  additionalDomProperties,
   ...rest
 }) => {
   const { styles } = useStyles();
   const parsedError = extractErrorInfo(error);
   if (!parsedError) return null;
 
-  const renderValidationErrors = (props: AlertProps): React.JSX.Element => {
-    const widthStyle = isDefined(props.style) && props.style.width && props.style.marginLeft && props.style.marginRight
+  const renderValidationErrors = (props: AlertProps, additionalDomProperties?: Record<string, unknown> | undefined): React.JSX.Element => {
+    const widthStyle = isDefined(props.style) && isDefined(props.style.width) && isDefined(props.style.marginLeft) && isDefined(props.style.marginRight)
       ? {
         width: `calc(${props.style.width} - (${props.style.marginLeft} + ${props.style.marginRight}))`,
         maxWidth: `calc(${props.style.width} - (${props.style.marginLeft} + ${props.style.marginRight}))`,
@@ -52,6 +54,7 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({
           closable
           {...props}
           style={{ ...props.style, ...widthStyle }}
+          {...additionalDomProperties}
         />
       );
     }
@@ -59,7 +62,7 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({
     return (
       <Fragment>
         {props.title}
-        {props.description && (
+        {isDefined(props.description) && (
           <>
             <br />
             {props.description}
@@ -73,17 +76,17 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({
   if (renderMode === 'popover') {
     const errors: Array<{ propertyName?: string; error: string }> = [];
 
-    if (parsedError.validationErrors?.length) {
-      parsedError.validationErrors.forEach((ve) => {
+    if ((parsedError.validationErrors?.length ?? 0) > 0) {
+      parsedError.validationErrors?.forEach((ve) => {
         const memberName = Array.isArray(ve.members)
           ? ve.members.join(', ')
-          : ve.members || 'Validation Error';
+          : ve.members ?? 'Validation Error';
         errors.push({
           propertyName: memberName,
-          error: ve.message || 'Validation error occurred',
+          error: ve.message ?? 'Validation error occurred',
         });
       });
-    } else if (parsedError.details) {
+    } else if (!isNullOrWhiteSpace(parsedError.details)) {
       errors.push({
         propertyName: parsedError.message ?? defaultMessage,
         error: typeof parsedError.details === 'string' ? parsedError.details : 'See details',
@@ -109,22 +112,22 @@ export const ValidationErrors: FC<IValidationErrorsProps> = ({
         position={position}
         title="Error"
       >
-        {children || <div style={{ display: 'inline-block' }} />}
+        {isDefined(children) ? children : <div style={{ display: 'inline-block' }} />}
       </ErrorIconPopover>
     );
   }
 
   // Legacy alert/raw modes
-  if (parsedError.validationErrors?.length) {
-    const violations = <ul>{parsedError.validationErrors.map((e, i) => <li key={i}>{e.message || 'Validation error'}</li>)}</ul>;
-    return renderValidationErrors({ title: parsedError.message ?? defaultMessage, description: violations, ...rest });
+  if ((parsedError.validationErrors?.length ?? 0) > 0) {
+    const violations = <ul>{parsedError.validationErrors?.map((e, i) => <li key={i}>{e.message ?? 'Validation error'}</li>)}</ul>;
+    return renderValidationErrors({ title: parsedError.message ?? defaultMessage, description: violations, ...rest }, additionalDomProperties);
   }
 
   if (!isNullOrWhiteSpace(parsedError.details) && parsedError.details !== parsedError.message) {
-    return renderValidationErrors({ title: parsedError.message ?? defaultMessage, description: parsedError.details, ...rest });
+    return renderValidationErrors({ title: parsedError.message ?? defaultMessage, description: parsedError.details, ...rest }, additionalDomProperties);
   }
 
-  return renderValidationErrors({ title: parsedError.message ?? defaultMessage, ...rest });
+  return renderValidationErrors({ title: parsedError.message ?? defaultMessage, ...rest }, additionalDomProperties);
 };
 
 export default ValidationErrors;

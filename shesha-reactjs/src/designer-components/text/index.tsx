@@ -13,6 +13,8 @@ import { isMoment } from 'moment';
 import { GenericText } from './genericText';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { isDefined } from '@/utils';
+import { getComponentEvents } from '../_common/events';
+import { useEvents } from '@/components/formDesigner/components/eventsAndApiValueProcessor';
 
 const TextComponent: TextComponentDefinition = {
   allowInherit: true,
@@ -43,11 +45,19 @@ const TextComponent: TextComponentDefinition = {
     return { evaluateValue };
   },
   Factory: ({ model, calculatedModel }) => {
+    const handleEvent = useEvents<void>(model.componentName);
     return (
       <ConfigurableFormItem model={{ ...model, hideLabel: true }}>
         {(value) => {
           const val = calculatedModel.evaluateValue(model.contentDisplay === 'name' ? value : model.content);
-          return <GenericText {...model}>{val}</GenericText>;
+          return (
+            <GenericText
+              {...model}
+              additionalDomProperties={getComponentEvents<void, ITextComponentProps>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent })}
+            >
+              {val}
+            </GenericText>
+          );
         }}
       </ConfigurableFormItem>
     );

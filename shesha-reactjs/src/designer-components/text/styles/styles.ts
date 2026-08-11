@@ -12,6 +12,9 @@ export const useStyles = createStyles(({ css, cx, token }, model: ITextComponent
       ${backgroundStyles(model.background)}
       ${paddingStyles(model.stylingBoxJson)}
       ${fontStyles(model.font)}
+      &&&& {
+        margin: 0px;
+      }
     
       &.ant-form-item-control-input {
         margin: 0px;

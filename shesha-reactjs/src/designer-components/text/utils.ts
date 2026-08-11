@@ -60,6 +60,7 @@ export const defaultStyles = (model: ITextComponentProps | undefined): IStyleVal
       minWidth: '0px',
       maxWidth: 'auto',
     },
+    stylingBoxJson: { _type: 'styleBox', paddingLeft: '0', paddingBottom: '0', paddingTop: '0', paddingRight: '0', marginLeft: '0', marginBottom: '0', marginTop: '0', marginRight: '0' },
   };
 };
 
