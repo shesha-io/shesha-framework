@@ -122,16 +122,26 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
       }, 500);
     };
 
-    // Capture phase: rc-tree's own per-row onDragOver calls stopPropagation(), which would
-    // otherwise stop this bubble-phase listener from ever seeing the event on draggable rows.
+    // A null relatedTarget means the cursor left the whole page, not just moved between rows.
+    const handleDocumentDragLeave = (event: DragEvent): void => {
+      if (!(event.relatedTarget instanceof Element))
+        clearPending();
+    };
+    const handleWindowBlur = (): void => {
+      clearPending();
+    };
+
     document.addEventListener('dragover', handleNativeDragOver, true);
+    document.addEventListener('dragleave', handleDocumentDragLeave, true);
+    window.addEventListener('blur', handleWindowBlur);
     return () => {
       document.removeEventListener('dragover', handleNativeDragOver, true);
+      document.removeEventListener('dragleave', handleDocumentDragLeave, true);
+      window.removeEventListener('blur', handleWindowBlur);
       clearPending();
     };
   }, [isDragging, expandedKeys, getTreeNodeById, cs]);
 
-  // Flat DFS walk of currently visible nodes (excludes the placeholder) — used for shift+click range and shift+arrow.
   const flatVisibleNodes = useMemo<TreeNode[]>(() => {
     const result: TreeNode[] = [];
     const walk = (nodes: TreeNode[]): void => {
