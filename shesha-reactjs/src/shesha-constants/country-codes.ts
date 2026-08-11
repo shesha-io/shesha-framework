@@ -1,3 +1,12 @@
+/**
+ * Countries offered by the address component's Country Restriction setting.
+ *
+ * Every `code` must be an ISO 3166-1 alpha-2 code, because it is passed to Google Places as
+ * `componentRestrictions.country`, which accepts nothing else — an unrecognised value makes Google
+ * reject the request and return no suggestions at all. Sub-national regions therefore do not belong
+ * here: Basque Country (`eus`), Catalonia (`cat`) and Galicia (`gal`) were previously listed with
+ * ISO 639 language codes and have been removed; they are covered by Spain (`es`).
+ */
 export const COUNTRY_CODES = [
   { label: 'Afghanistan', value: 'Afghanistan', code: 'af' },
   { label: 'Åland', value: 'Åland', code: 'ax' },
@@ -20,7 +29,6 @@ export const COUNTRY_CODES = [
   { label: 'Bahrain', value: 'Bahrain', code: 'bh' },
   { label: 'Bangladesh', value: 'Bangladesh', code: 'bd' },
   { label: 'Barbados', value: 'Barbados', code: 'bb' },
-  { label: 'Basque Country', value: 'Basque Country', code: 'eus' },
   { label: 'Belarus', value: 'Belarus', code: 'by' },
   { label: 'Belgium', value: 'Belgium', code: 'be' },
   { label: 'Belize', value: 'Belize', code: 'bz' },
@@ -44,7 +52,6 @@ export const COUNTRY_CODES = [
   { label: 'Cameroon', value: 'Cameroon', code: 'cm' },
   { label: 'Canada', value: 'Canada', code: 'ca' },
   { label: 'Cape Verde (in Portuguese: Cabo Verde)', value: 'Cape Verde (in Portuguese: Cabo Verde)', code: 'cv' },
-  { label: 'Catalonia', value: 'Catalonia', code: 'cat' },
   { label: 'Cayman Islands', value: 'Cayman Islands', code: 'ky' },
   { label: 'Central African Republic', value: 'Central African Republic', code: 'cf' },
   { label: 'Chad', value: 'Chad', code: 'td' },
@@ -87,7 +94,6 @@ export const COUNTRY_CODES = [
   { label: 'French Polynesia', value: 'French Polynesia', code: 'pf' },
   { label: 'French Southern and Antarctic Lands', value: 'French Southern and Antarctic Lands', code: 'tf' },
   { label: 'Gabon (officially: Gabonese Republic)', value: 'Gabon (officially: Gabonese Republic)', code: 'ga' },
-  { label: 'Galicia', value: 'Galicia', code: 'gal' },
   { label: 'Gambia', value: 'Gambia', code: 'gm' },
   { label: 'Gaza Strip (Gaza, Palestine)', value: 'Gaza Strip (Gaza, Palestine)', code: 'ps' },
   { label: 'Georgia', value: 'Georgia', code: 'ge' },
