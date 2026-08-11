@@ -73,6 +73,7 @@ export interface IDropdownProps {
   style?: React.CSSProperties | undefined;
   tagStyle?: CSSProperties | undefined;
   readOnly?: boolean | undefined;
+  disabled?: boolean | undefined;
   displayStyle?: 'text' | 'tags' | undefined;
   showItemName?: boolean | undefined;
   showIcon?: boolean | undefined;

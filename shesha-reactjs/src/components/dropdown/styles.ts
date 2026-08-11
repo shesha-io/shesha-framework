@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
-import { IDropdownComponentProps } from './model';
-import { backgroundStyles, borderRadiusStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, marginStyles, paddingStyles, shadowStyles, splitBackgroundProperties } from '../_common/styles/utils';
+import { IDropdownComponentProps } from '@/designer-components/dropdown/model';
+import { backgroundStyles, borderRadiusStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, marginStyles, paddingStyles, shadowStyles, splitBackgroundProperties } from '@/designer-components/_common/styles/utils';
 import { isDefined } from '@/utils/nullables';
 import { CSSProperties } from 'react';
 
@@ -20,7 +20,13 @@ const TAG_COLOUR_CLASSES: readonly string[] = [
 ];
 
 /**
- * Emits the two Appearance style sets.
+ * Emits the two Appearance style sets for the dropdown.
+ *
+ * Lives next to `dropdown.tsx` because it targets that component's DOM: the selectors below encode
+ * the antd structure this component renders, so the two have to change together. The designer
+ * component consumes it — it evaluates the nested `tag.style` script, calls this hook with the full
+ * component model, and hands the resulting class down as `className`. There is deliberately only one
+ * such class: building a second one here would carry equal specificity and the two would fight.
  *
  * The bare-named model properties style the select control itself (antd renders the visible box as
  * `.ant-select-selector`, not the root element, so border/background/dimensions have to land there
@@ -63,11 +69,14 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IDr
   const configuredTagBorder = hidesBorder ? '' : borderStyles(tag?.border);
 
   const dropdown = cx('sha-dropdown', css`
-      ${dimensionsStyles(model.dimensions)}
       ${marginStyles(model.stylingBoxJson)}
-      height: 100%;
       ${isDefined(model.dimensions?.height) && model.dimensions.height !== 'auto' ? 'overflow-y: auto;' : ''}
       ${configuredAppearance}
+      
+      &&& {
+        ${dimensionsStyles(model.dimensions)}
+        ${isDefined(model.dimensions?.height) ? '' : 'height: 100%;'}
+      }
 
       /* The visible box is the selector element, not the root. A rule scoped to select-content
          matches nothing: that is a semantic classNames slot, emitted only when a caller passes
