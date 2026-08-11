@@ -1,5 +1,4 @@
 import { LineHeightOutlined } from '@ant-design/icons';
-import React from 'react';
 import { IToolboxComponent } from '@/interfaces/formDesigner';
 import { ITextComponentProps } from '@/designer-components/text/models';
 import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';

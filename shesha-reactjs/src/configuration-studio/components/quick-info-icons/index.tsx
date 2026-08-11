@@ -2,7 +2,7 @@ import { useActiveDoc } from '@/configuration-studio/cs/hooks';
 import { useStyles } from '@/configuration-studio/styles';
 import { BranchesOutlined, CodeOutlined, EditOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
-import React, { FC } from 'react';
+import { FC } from 'react';
 
 export const QuickInfoIcons: FC = () => {
   const { styles, theme } = useStyles();

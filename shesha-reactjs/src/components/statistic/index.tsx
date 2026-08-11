@@ -1,4 +1,5 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
+import * as React from 'react';
 import { Statistic, StatisticProps } from 'antd';
 import { useStyles } from './styles/styles';
 import classNames from 'classnames';

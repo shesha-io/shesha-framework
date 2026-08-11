@@ -1,7 +1,7 @@
 import { useReferenceList } from '@/providers/referenceListDispatcher';
 import { nanoid } from '@/utils/uuid';
 import { Checkbox, CheckboxOptionType } from 'antd';
-import React, { CSSProperties, FC, useImperativeHandle, useMemo, useRef } from 'react';
+import { CSSProperties, FC, useImperativeHandle, useMemo, useRef } from 'react';
 import { getDataSourceList } from '../radio/utils';
 import { ICheckboxGroupProps } from './interfaces';
 import { DEFAULT_MARGINS } from '@/components/formDesigner/utils/designerConstants';

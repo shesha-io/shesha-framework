@@ -161,9 +161,9 @@ export type StandardFormBuilderMethods<TConfig extends Record<ComponentTypes, ob
   stdVisibleEditableInputs(interactionType: InteractionType): FluentFormBuilder<TConfig>;
   stdPropertyLabelInputs(): FluentFormBuilder<TConfig>;
   stdPlaceholderDescriptionInputs(): FluentFormBuilder<TConfig>;
-  stdCollapsiblePanel(label: string, components: (fbf: FormBuilder) => FormBuilder, collapsedByDefault?: boolean | undefined): FluentFormBuilder<TConfig>;
-  stdContainer(components: (fbf: FormBuilder) => FormBuilder, hidden?: boolean | IPropertySetting<boolean> | undefined): FluentFormBuilder<TConfig>;
-  stdContainerChecker(components: (fbf: FormBuilder) => FormBuilder, hidden?: boolean | IPropertySetting<boolean> | undefined): FluentFormBuilder<TConfig>;
+  stdCollapsiblePanel(label: string, components: (fbf: FormBuilder) => FormBuilder, collapsedByDefault?: boolean | undefined, visibleJs?: string | undefined): FluentFormBuilder<TConfig>;
+  stdContainer(components: (fbf: FormBuilder) => FormBuilder, visibleJs?: string | undefined): FluentFormBuilder<TConfig>;
+  stdContainerChecker(components: (fbf: FormBuilder) => FormBuilder, visibleJs?: string | undefined): FluentFormBuilder<TConfig>;
   stdEventHandler(propertyName: string, label: string, tooltip: string, availableConstantsExpression?: string | undefined, meta?: IPropertyMetadata | undefined): FluentFormBuilder<TConfig>;
   /** `events` is readonly so the shared `ALL_INPUT_EVENTS` constant can be passed directly. */
   stdEventHandlers(events: readonly StandardEventHandler[], valueType?: string | undefined, prefix?: string | undefined, prefixLabel?: string | undefined): FluentFormBuilder<TConfig>;

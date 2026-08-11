@@ -1,4 +1,3 @@
-import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { AppstoreOutlined } from '@ant-design/icons';

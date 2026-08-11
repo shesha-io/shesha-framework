@@ -1,6 +1,6 @@
 import { FormIdentifier, IFlatComponentsStructure } from '@/interfaces';
 import { CrudProvider } from '@/providers/crudContext';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { ColumnInstance, HeaderGroup } from 'react-table';
 import { NewRowCell } from './newRowCell';
 import { ITableRowData } from '@/providers/dataTable/interfaces';

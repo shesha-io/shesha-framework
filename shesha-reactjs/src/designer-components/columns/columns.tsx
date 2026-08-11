@@ -9,7 +9,7 @@ import ParentProvider from '@/providers/parentProvider/index';
 import { jsonSafeParse, removeUndefinedProps } from '@/utils/object';
 import { SplitCellsOutlined } from '@ant-design/icons';
 import { Col, Row } from 'antd';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { removeComponents } from '../_common-migrations/removeComponents';
 import { getBorderStyle } from '../_settings/utils/border/utils';

@@ -7,7 +7,7 @@ import { TreeNodeType } from '@/configuration-studio/models';
 import { getIcon } from '@/configuration-studio/tree-utils';
 import { DownOutlined } from '@ant-design/icons';
 import { Button, Dropdown, MenuProps, Space } from 'antd';
-import React, { FC, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 
 type MenuItems = Required<MenuProps>["items"];
 

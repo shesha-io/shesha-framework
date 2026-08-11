@@ -377,3 +377,10 @@ export interface ButtonApi extends CommonComponentApi {
   /** Click on button */
   click(): void;
 };
+
+export interface AlertApi extends CommonComponentApi {
+  /** Text of the alert */
+  text?: string;
+  /** Description of the alert */
+  description?: string;
+};

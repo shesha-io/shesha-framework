@@ -1,5 +1,5 @@
 import { Alert } from 'antd';
-import React, { FC, ReactNode } from 'react';
+import { FC, ReactNode } from 'react';
 import LayerProperties from './properties';
 import { useStyles } from './styles/styles';
 import { useLayerGroupConfigurator } from '@/providers/layersProvider';

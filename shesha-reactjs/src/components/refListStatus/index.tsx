@@ -3,7 +3,7 @@ import { useReferenceListItem } from '@/providers/referenceListDispatcher';
 import { extractErrorMessage } from '@/providers/referenceListDispatcher/models';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { Alert, Skeleton } from 'antd';
-import React, { CSSProperties, FC } from 'react';
+import { CSSProperties, FC } from 'react';
 import { ShaIcon } from '../shaIcon';
 import { useStyles } from './styles/styles';
 import RefTag from './tag';

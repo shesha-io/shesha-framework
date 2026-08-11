@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { FC, PropsWithChildren, useState } from 'react';
+import { FC, PropsWithChildren, useState } from 'react';
 import { Button } from 'antd';
 import { DeleteFilled, MenuOutlined } from '@ant-design/icons';
 import { InsertItemMarker } from './insertItemMarker';

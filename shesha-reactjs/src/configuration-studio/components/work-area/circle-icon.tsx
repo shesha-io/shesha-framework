@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import Icon, { CustomIconComponentProps } from '@ant-design/icons/lib/components/Icon';
 
 const CircleFilledSvg = (): React.JSX.Element => (

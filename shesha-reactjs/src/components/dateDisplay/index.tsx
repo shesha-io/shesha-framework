@@ -1,4 +1,5 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
+import * as React from 'react';
 import { Tooltip } from 'antd';
 import moment from 'moment';
 import { tolocalIsoDate } from '@/utils/date';

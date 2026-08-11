@@ -3,7 +3,6 @@ import { IToolboxComponent } from '@/interfaces';
 import { FormMarkup } from '@/providers/form/models';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { SmallDashOutlined } from '@ant-design/icons';
-import React from 'react';
 import { ILogViewerProps } from './interfaces';
 import { LogViewerRenderer } from './logViewerRenderer';
 import settingsFormJson from './settingsForm.json';

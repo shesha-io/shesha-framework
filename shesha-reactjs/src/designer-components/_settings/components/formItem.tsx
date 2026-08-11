@@ -1,4 +1,5 @@
-import React, { cloneElement, FC, ReactElement, useState, isValidElement, SyntheticEvent } from 'react';
+import { cloneElement, FC, ReactElement, useState, isValidElement, SyntheticEvent } from 'react';
+import * as React from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import SettingsControl, { SettingsControlChildrenFunc } from '../settingsControl';
 import { ISettingsFormItemProps } from '../settingsFormItem';

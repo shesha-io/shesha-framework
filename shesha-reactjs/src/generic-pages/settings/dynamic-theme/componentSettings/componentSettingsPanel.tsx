@@ -1,5 +1,6 @@
 import { Card, Col, Menu, Row } from 'antd';
-import React, { CSSProperties, FC, useCallback, useMemo, useState } from 'react';
+import { CSSProperties, FC, useCallback, useMemo, useState } from 'react';
+import * as React from 'react';
 import { IConfigurableTheme } from '@/providers/theme/contexts';
 import { useStyles } from '../styles/styles';
 import { findComponentNode, getMenuItems, IMenuItem } from '../toolboxComponents';

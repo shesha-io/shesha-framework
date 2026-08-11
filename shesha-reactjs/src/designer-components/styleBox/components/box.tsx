@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { FC, useLayoutEffect, useRef } from 'react';
+import { FC, useLayoutEffect, useRef } from 'react';
 import BoxInput from './input';
 import { useStyles } from '../styles/styles';
 import { StyleBoxValue } from '../../../providers/form/models';

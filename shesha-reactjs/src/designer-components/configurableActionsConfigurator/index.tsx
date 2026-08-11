@@ -1,4 +1,3 @@
-import React from 'react';
 import { ConfigurableActionConfigurator } from './configurator';
 import { getSettings } from './settings';
 import { Form } from 'antd';

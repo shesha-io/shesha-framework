@@ -1,4 +1,3 @@
-import React from 'react';
 import { SecurityScanOutlined } from '@ant-design/icons';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { PermissionAutocomplete } from '@/components/permissionAutocomplete';

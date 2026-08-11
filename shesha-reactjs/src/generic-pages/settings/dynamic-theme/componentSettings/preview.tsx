@@ -1,6 +1,6 @@
 import { ConfigurableForm } from "../../../../components/configurableForm";
 import { FormMarkup, IConfigurableFormComponent, IConfigurableTheme } from "@/providers";
-import React, { FC, useMemo } from "react";
+import { FC, useMemo } from "react";
 import { useStyles } from "../styles/styles";
 import { Card } from "antd";
 import { IToolboxComponent } from "../../../../interfaces/formDesigner";

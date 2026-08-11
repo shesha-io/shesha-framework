@@ -1,4 +1,5 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
+import * as React from 'react';
 import { Button } from 'antd';
 import { ListItem, SortableItem, ListItemFactory, ListEditorSectionRenderingFn, IListEditorContext, ListEditorChildrenFn, IListEditor, ItemChangeDetails } from './models';
 import { PlusCircleOutlined } from '@ant-design/icons';

@@ -12,7 +12,7 @@ import { LinkExternalOutlined } from '@/icons/linkExternalOutlined';
 import { IToolboxComponent } from '@/interfaces';
 import { isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
 import { IConfigurableFormComponent } from '@/providers/form/models';
-import React from 'react';
+import * as React from 'react';
 import { migrateNavigateAction } from '../_common-migrations/migrate-navigate-action';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';

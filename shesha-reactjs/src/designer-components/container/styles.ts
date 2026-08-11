@@ -2,7 +2,7 @@ import { createStyles } from '@/styles';
 import { getOverflowStyle } from '../_settings/utils/overflow/util';
 import { CSSObject } from 'antd-style';
 import { IContainerComponentProps } from './interfaces';
-import { backgroundStyles, borderStyles, marginStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
+import { backgroundStyles, borderStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
 import { isDefined } from '@/utils';
 import { addPx } from '@/utils/style';
 
@@ -18,11 +18,12 @@ export const useStyles = createStyles(({ css, cx }, model: IContainerComponentPr
   const gridRowHeight = addPx(model.gridRowsHeight) ?? 'auto';
 
   const container = cx("sha-container-component", css`
+        transition: all 0.2s ease;
+
         overflow: hidden;
         ${borderStyles(model.border)}
         ${backgroundStyles(model.background)}
         ${shadowStyles(model.shadow)}
-        ${marginStyles(model.stylingBoxJson)}
         ${paddingStyles(model.stylingBoxJson)}
         /* dimensions will by applied to the wrapper div */
         height: 100%;

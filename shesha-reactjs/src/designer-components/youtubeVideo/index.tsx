@@ -1,5 +1,7 @@
 /* eslint @typescript-eslint/strict-boolean-expressions: "error" */
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
+
+import * as React from 'react';
 import { Typography } from 'antd';
 import { IToolboxComponent } from '@/interfaces';
 import { YoutubeOutlined } from '@ant-design/icons';

@@ -1,5 +1,6 @@
 import { IConfigurableFormComponent, IStyleValue, UnwrapCodeEvaluators, useCanvas, useForm, useShaFormInstance, useSheshaApplication, useTheme } from "@/providers";
-import React, { FC, useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
+import * as React from "react";
 import { useStyles } from "../styles/styles";
 import { useFormDesignerComponentGetter } from "@/providers/form/hooks";
 import { toCamelCase } from "@/utils/string";
@@ -83,6 +84,7 @@ export const FormComponentModelPreparer: FC<FormComponentPrepareModelProps> = ({
     undefined,
     (name, value) => formComponentActualModelPropertyFilter(toolboxComponent, name, value),
     undefined,
+    toolboxComponent?.actualModelFilteredPropertyProcessor,
   );
 
   const { isInput = false, isOutput = false } = toolboxComponent ?? {};

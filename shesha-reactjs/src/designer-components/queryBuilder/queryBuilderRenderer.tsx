@@ -1,6 +1,6 @@
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import QueryBuilderField from './queryBuilderField';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { Alert, Typography } from 'antd';
 import { IQueryBuilderComponentPropsUnwrapped } from './interfaces';
 import { useForm, useQueryBuilderOrUndefined } from '@/providers';

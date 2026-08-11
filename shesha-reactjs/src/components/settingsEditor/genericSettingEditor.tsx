@@ -1,5 +1,5 @@
 import { ConfigurableForm } from '@/components/configurableForm';
-import React, { useEffect, useMemo, FC } from 'react';
+import { useEffect, useMemo, FC } from 'react';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { FormMarkup } from '@/interfaces';
 import { ISettingIdentifier, SettingValue } from './provider/models';

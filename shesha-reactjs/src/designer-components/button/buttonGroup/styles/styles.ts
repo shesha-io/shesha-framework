@@ -1,9 +1,21 @@
 import { createStyles } from '@/styles';
+import { IButtonGroupProps } from '../models';
+import { backgroundStyles, borderStyles, dimensionsStyles, marginStyles, paddingStyles, shadowStyles } from '@/designer-components/_common/styles/utils';
 
-export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
+export const useStyles = createStyles(({ css, cx, prefixCls, token }, model: IButtonGroupProps) => {
   const shaResponsiveButtonGroup = "sha-responsive-button-group";
   const shaResponsiveButtonGroupInlineContainer = "sha-responsive-button-group-inline-container";
   const shaButtonMenu = "sha-button-menu";
+
+  const shaButtonGroupContainer = cx("sha-button-group-container", css`
+    ${dimensionsStyles({ height: 30, width: 30, ...model.dimensions })}
+    ${borderStyles(model.border)}
+    ${backgroundStyles(model.background)}
+    ${shadowStyles(model.shadow)}
+    ${marginStyles(model.stylingBoxJson)}
+    ${paddingStyles(model.stylingBoxJson)}
+  `);
+
   const a = css`
 
         .${shaButtonMenu} {
@@ -116,6 +128,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
   `);
 
   return {
+    shaButtonGroupContainer,
     shaResponsiveButtonGroupContainer,
     shaResponsiveButtonGroup,
     shaResponsiveButtonGroupInlineContainer,

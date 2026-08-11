@@ -1,6 +1,6 @@
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import RadioGroup, { useRadioOptions } from './radioGroup';
-import React, { CSSProperties, useEffect, useRef } from 'react';
+import { CSSProperties, useEffect, useRef } from 'react';
 import { useActualContextExecution } from '@/hooks';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';

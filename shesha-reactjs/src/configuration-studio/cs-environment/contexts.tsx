@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useContext } from "react";
+import { useState, FC, PropsWithChildren, useContext } from "react";
 import { IConfigurationStudioEnvironment } from "./interfaces";
 import { ConfigurationStudioEnvironment } from "./configurationStudioEnvironment";
 import { isDefined } from "@/utils/nullables";
@@ -7,7 +7,7 @@ import { useHttpClient } from "@/providers";
 
 export const useConfigurationStudioEnvironmentSingletone = (): [IConfigurationStudioEnvironment] => {
   const httpClient = useHttpClient();
-  const [configurationStudioEnvironment] = React.useState<IConfigurationStudioEnvironment>(() => {
+  const [configurationStudioEnvironment] = useState<IConfigurationStudioEnvironment>(() => {
     // Create a new FormStore if not provided
     const instance = new ConfigurationStudioEnvironment({ httpClient });
 

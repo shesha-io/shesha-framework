@@ -20,7 +20,7 @@ import { isEntityReferenceId } from '@/utils/entity';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getBooleanPropertyOrUndefined, getStringEnumOrDefault, getStringPropertyOrUndefined, getValueByPropertyName, pick } from '@/utils/object';
 import { FileSearchOutlined } from '@ant-design/icons';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { AutocompleteComponentDefinition, IAutocompleteComponentProps } from './interfaces';

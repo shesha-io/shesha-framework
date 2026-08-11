@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect, useRef, useMemo } from 'react';
+import { FC, useState, useEffect, useRef, useMemo } from 'react';
 import { Modal, Tabs } from 'antd';
 import { ParamsTab } from './paramsTab';
 import { HeadersTab } from './headersTab';

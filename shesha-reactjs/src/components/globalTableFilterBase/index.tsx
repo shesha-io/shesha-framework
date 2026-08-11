@@ -1,4 +1,5 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
+import * as React from 'react';
 import Search from 'antd/lib/input/Search';
 import { SearchProps } from 'antd/lib/input';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';

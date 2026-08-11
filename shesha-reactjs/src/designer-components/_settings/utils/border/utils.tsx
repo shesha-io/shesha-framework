@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 
 import { BorderStyle, IBorderValue } from "./interfaces";
 import {
@@ -139,7 +139,7 @@ export const borderCorners = [
 ];
 
 const generateCode = (type: string, isCustom: boolean, isResponsive: boolean, propertyName: string): string => {
-  const devicePath = isResponsive ? 'data[`${contexts.canvasContext?.designerDevice || "desktop"}`]' : 'data';
+  const devicePath = isResponsive ? 'data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?' : 'data';
   return `return getSettingValue(${devicePath}.${propertyName.replace('.', '?.')}?.${type}) !== "${isCustom ? "custom" : "all"}";`;
 };
 

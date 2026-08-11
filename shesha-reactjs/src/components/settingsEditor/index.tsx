@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 
 import SettingsMenu from './settingsMenu';
 import { SettingsEditorProvider } from './provider';

@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { type RowComponentProps } from "react-window";
 import { LogLineComponent } from './logLine';
 import { LogLine } from './interfaces';

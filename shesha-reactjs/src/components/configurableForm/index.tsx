@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import ConfigurableComponent from '../appConfigurator/configurableComponent';
 import EditViewMsg from '../appConfigurator/editViewMsg';
-import React, { RefObject, ReactElement, useEffect, useLayoutEffect, useState } from 'react';
+import { RefObject, ReactElement, useEffect, useLayoutEffect, useState } from 'react';
 import { IConfigurableFormProps, SheshaFormProps } from './models';
 import { Form, FormInstance } from 'antd';
 import { useAppConfigurator, useShaRoutingOrUndefined, useSheshaApplication } from '@/providers';

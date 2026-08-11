@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import { FC, JSX, useState } from 'react';
 import { AutoComplete, Button, Checkbox, Radio, Select, Space, Table, Tooltip, Typography } from 'antd';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { BodyType, IFormDataField, IRequestBody, RawBodySubType } from './models';

@@ -1,6 +1,5 @@
 import { OrderedListOutlined } from '@ant-design/icons';
 import { nanoid } from '@/utils/uuid';
-import React from 'react';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
 import { IToolboxComponent } from '@/interfaces';
 import { migrateV0toV1 } from './migrations/migrate-v1';

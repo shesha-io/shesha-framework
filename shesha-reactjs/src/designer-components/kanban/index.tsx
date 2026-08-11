@@ -5,7 +5,7 @@ import { RefListItemGroupConfiguratorProvider } from '@/components/refListSelect
 import { removeUndefinedProps } from '@/utils/object';
 import { FormOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
-import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
+import { CSSProperties, useEffect, useMemo, useState } from 'react';
 import { getBackgroundImageUrl, getBackgroundStyle } from '../_settings/utils/background/utils';
 import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';

@@ -1,4 +1,5 @@
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
+import * as React from 'react';
 import { useStyles } from './styles';
 import { labelAlignOptions } from './utils';
 import { SettingInput } from '../settingsInput/settingsInput';

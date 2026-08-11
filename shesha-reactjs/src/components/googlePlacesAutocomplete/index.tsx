@@ -1,4 +1,5 @@
-import React, { FC, CSSProperties, useRef, useState } from 'react';
+import { FC, CSSProperties, useRef, useState } from 'react';
+import * as React from 'react';
 import PlacesAutocomplete, { geocodeByAddress, getLatLng, PropTypes } from 'react-places-autocomplete';
 import { Input, App, InputRef } from 'antd';
 import { InputProps } from 'antd/lib/input';

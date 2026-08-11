@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { Spin } from 'antd';
 import { getDataProperty } from '@/utils/metadata';
 import { IPropertyMetadata } from '@/interfaces/metadata';

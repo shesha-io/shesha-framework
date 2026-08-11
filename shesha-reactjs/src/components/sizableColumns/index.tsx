@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import Split, { SplitProps } from 'react-split';
 import { useStyles } from './styles';
 import classNames from 'classnames';

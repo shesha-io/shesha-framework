@@ -1,4 +1,5 @@
-import React, { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import * as React from 'react';
 import { App, Button, Image, Tooltip, Upload, UploadProps } from 'antd';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
 import { DeleteOutlined, UploadOutlined } from '@ant-design/icons';

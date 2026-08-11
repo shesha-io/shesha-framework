@@ -1,7 +1,8 @@
 import { getTagStyle } from '@/utils/style';
 import convert from 'color-convert';
 import { Tag, Tooltip, TooltipProps } from 'antd';
-import React, { CSSProperties } from 'react';
+import { CSSProperties } from 'react';
+import * as React from 'react';
 import { ShaIcon, IconType } from '../shaIcon';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { TagVariant } from '../dropdown/model';
@@ -67,6 +68,6 @@ function ReflistTag({ value, description, color = "", icon, showIcon = false, ta
       </Tag>
     </Tooltip>
   );
-};
+}
 
 export default ReflistTag;

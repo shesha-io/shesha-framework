@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { FormIdentifier } from '@/interfaces';
 import { DynamicPage } from '@/generic-pages/dynamic';
 import { notFound } from 'next/navigation';

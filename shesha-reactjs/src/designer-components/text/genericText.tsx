@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { CSSProperties, FC, PropsWithChildren, useEffect, useState } from 'react';
+import { CSSProperties, FC, PropsWithChildren, useEffect, useState } from 'react';
 import { ContentType, ITextComponentProps, ITypographyProps } from './models';
 import { ParagraphProps } from 'antd/lib/typography/Paragraph';
 import { TitleProps } from 'antd/lib/typography/Title';

@@ -8,7 +8,7 @@ import { useAvailableStandardConstantsMetadata } from '@/utils/metadata/hooks';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { nanoid } from '@/utils/uuid';
 import { Collapse, Form } from 'antd';
-import React, { FC, ReactNode, useMemo } from 'react';
+import { FC, ReactNode, useMemo } from 'react';
 import FormItem from '../_settings/components/formItem';
 import { StyledLabel } from '../_settings/utils/utils';
 import { SettingInput } from '../settingsInput/settingsInput';

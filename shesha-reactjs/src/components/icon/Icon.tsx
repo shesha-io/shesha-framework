@@ -1,5 +1,6 @@
 import { Tooltip } from 'antd';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
+import * as React from 'react';
 import { ShaIcon } from '../shaIcon';
 import { customIcons } from './icons';
 import * as antdIcons from '@ant-design/icons';

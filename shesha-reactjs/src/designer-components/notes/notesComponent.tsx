@@ -5,7 +5,6 @@ import { getSettings } from './settingsForm';
 import { NotesRenderer } from '@/components/notesRenderer';
 import { useFormData, useGlobalState } from '@/providers';
 import { evaluateString, executeScript, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import React from 'react';
 import { NotesEditorProvider, OnNoteCreatedFunc, OnNoteDeletedFunc, OnNoteUpdatedFunc } from '@/providers/notes';
 import {
   migrateCustomFunctions,

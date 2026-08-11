@@ -1,6 +1,6 @@
 import { ListItemWithId } from '@/components/listEditor/models';
 import { ListEditorWithPropertiesPanel } from '@/components/listEditorWithPropertiesPanel';
-import React from 'react';
+import * as React from 'react';
 import { PropertiesPanel } from './propertiesPanel';
 import { DefaultListItem } from './defaultListItem';
 import { DefaultItemRenderer, ItemSettingsMarkupFactory, isDefaultItemRenderingProps } from './interfaces';

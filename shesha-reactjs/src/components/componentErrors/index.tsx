@@ -1,5 +1,5 @@
 import { IModelValidation, ISheshaErrorTypes } from '@/utils/errors';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import ErrorIconPopover from './errorIconPopover';
 
 export interface IComponentErrorProps {

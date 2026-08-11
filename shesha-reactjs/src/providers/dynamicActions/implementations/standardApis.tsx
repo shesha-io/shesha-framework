@@ -1,6 +1,6 @@
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
 import { DynamicItemsEvaluationHook } from '@/providers/dynamicActionsDispatcher/models';
-import React, { PropsWithChildren, FC, ComponentType } from 'react';
+import { PropsWithChildren, FC, ComponentType } from 'react';
 
 import { DynamicActionsProvider, IHasActions } from '../index';
 import { wrapDisplayName } from '@/utils/react';

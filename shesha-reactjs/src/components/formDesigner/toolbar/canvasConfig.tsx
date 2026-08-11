@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import { FC, useState } from "react";
 import { useStyles } from "../styles/styles";
 import { Button, InputNumber, Space, Tooltip } from "antd";
 import { ExpandOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";

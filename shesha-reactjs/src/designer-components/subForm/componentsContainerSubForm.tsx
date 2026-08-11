@@ -1,4 +1,4 @@
-import React, { FC, useCallback } from 'react';
+import { FC, useCallback } from 'react';
 import { executeScriptSync } from '@/providers/form/utils';
 import { getAlignmentStyle } from '@/components/formDesigner/containers/util';
 import { ICommonContainerProps } from '@/designer-components/container/interfaces';

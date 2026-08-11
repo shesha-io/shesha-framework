@@ -116,6 +116,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
                         cursor: help;
                         font-size: 14px;
                         color: #aaa;
+                        margin-left: 2px;
                     }
                 }
 
