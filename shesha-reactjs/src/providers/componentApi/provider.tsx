@@ -1,10 +1,10 @@
-import React, { FC, PropsWithChildren, useId, useState } from "react";
+import { createContext, useContext, FC, PropsWithChildren, useId, useState } from "react";
 import { ComponentApiInstance } from "./instance";
 import { IComponentApi, useComponentApiFunc } from "./model";
 
-export const ComponentApiContext = React.createContext<IComponentApi | undefined>(undefined);
+export const ComponentApiContext = createContext<IComponentApi | undefined>(undefined);
 
-export const useComponentApi: useComponentApiFunc = () => React.useContext(ComponentApiContext);
+export const useComponentApi: useComponentApiFunc = () => useContext(ComponentApiContext);
 
 export interface IComponentApiProviderProps {
   id?: string;

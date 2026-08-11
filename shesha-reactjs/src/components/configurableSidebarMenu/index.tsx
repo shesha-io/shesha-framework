@@ -1,4 +1,5 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
+import * as React from 'react';
 import { ISettingsEditorProps } from '@/components/configurableComponent';
 import { SidebarMenu } from '@/components/sidebarMenu';
 import { ComponentSettingsModal } from './settingsModal';

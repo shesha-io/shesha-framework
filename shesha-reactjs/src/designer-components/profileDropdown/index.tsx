@@ -11,7 +11,7 @@ import {
 import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { DownOutlined, LoginOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Dropdown, Popover } from 'antd';
-import React, { CSSProperties, useMemo, useState } from 'react';
+import { CSSProperties, useMemo, useState } from 'react';
 import { getSettings } from './settingsForm';
 import { useStyles } from './styles';
 import { getMenuItem } from './utils';

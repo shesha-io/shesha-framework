@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { Alert, Menu, Space } from 'antd';
 import { ButtonGroupItemProps, IButtonGroup, isGroup, isItem } from '@/providers/buttonGroupConfigurator/models';
 import { useAvailableConstantsData } from '@/providers/form/utils';

@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, useMemo } from 'react';
+import { CSSProperties, FC, useMemo } from 'react';
 import { Tag } from 'antd';
 import { isNumeric } from '@/utils/string';
 import { useStyles } from './styles/styles';

@@ -1,7 +1,7 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import { css, cx } from 'antd-style';
-import React, { PropsWithChildren, FC } from 'react';
+import { PropsWithChildren, FC } from 'react';
 
 
 export interface IHelpTextPopoverProps {

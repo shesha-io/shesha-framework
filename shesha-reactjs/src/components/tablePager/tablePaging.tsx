@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC } from 'react';
+import { CSSProperties, FC } from 'react';
 import { Pagination, Select } from 'antd';
 import { useMedia } from 'react-use';
 import { useStyles } from './style';

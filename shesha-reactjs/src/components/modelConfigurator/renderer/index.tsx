@@ -1,6 +1,7 @@
 import { ConfigurableForm } from '@/components/configurableForm';
 import modelSettingsMarkup from '../modelSettings.json';
-import React, { FC, useMemo, useRef } from 'react';
+import { FC, useMemo, useRef } from 'react';
+import * as React from 'react';
 import { CustomErrorBoundary } from '@/components/customErrorBoundary';
 import { FormMarkup } from '@/providers/form/models';
 import { Alert, App, Skeleton } from 'antd';

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { CheckSquareOutlined } from '@ant-design/icons';
 import { Checkbox, CheckboxRef } from 'antd';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';

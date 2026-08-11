@@ -1,6 +1,7 @@
 import { ButtonGroupItemProps } from '@/providers';
 import { isGroup, isItem } from '@/providers/buttonGroupConfigurator/models';
-import React, { FC } from 'react';
+import { FC } from 'react';
+import * as React from 'react';
 import { ButtonGroupItem } from './buttonGroupItem';
 import { ButtonGroupItemsGroup } from './buttonGroupItemsGroup';
 import { ItemChangeDetails, NestedItemsRenderingArgs } from '@/components/listEditor';

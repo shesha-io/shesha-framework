@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { BasicConfig } from '@react-awesome-query-builder/antd';
 import type { FieldWidget as BaseFieldWidget } from '@react-awesome-query-builder/antd';
 import { FieldWidgetProvider } from './fieldWidgetContext';

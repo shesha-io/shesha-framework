@@ -4,7 +4,7 @@ import { StyleBoxValue, useFormData } from '@/providers';
 import { getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { getBooleanPropertyOrUndefined, jsonSafeParse } from '@/utils/object';
 import { LineOutlined } from '@ant-design/icons';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';

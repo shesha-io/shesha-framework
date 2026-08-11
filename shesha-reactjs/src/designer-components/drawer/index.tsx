@@ -6,7 +6,7 @@ import { IInputStyles } from '@/providers';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { SwapOutlined } from '@ant-design/icons';
-import React, { CSSProperties } from 'react';
+import { CSSProperties } from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import ShaDrawer from './drawer';

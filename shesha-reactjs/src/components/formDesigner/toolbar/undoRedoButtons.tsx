@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { Button, ButtonProps, Space } from 'antd';
 import { RedoOutlined, UndoOutlined } from '@ant-design/icons';
 import { useFormDesignerUndoRedo } from '@/providers/formDesigner';

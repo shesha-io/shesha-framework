@@ -1,11 +1,11 @@
 "use client";
-
 import classNames from 'classnames';
 import ConfigurableSidebarMenu from '@/components/configurableSidebarMenu';
 import LayoutHeader from './header';
 import LayoutHeading from '@/components/layoutHeading';
 import NodeOrFuncRenderer, { ReactNodeOrFunc } from '@/components/nodeOrFuncRenderer';
-import React, {
+
+import {
   CSSProperties,
   FC,
   Fragment,
@@ -15,6 +15,8 @@ import React, {
   useEffect,
   useMemo,
 } from 'react';
+
+import * as React from 'react';
 import { IHtmlHeadProps } from '@/components/htmlHead';
 import { Layout } from 'antd';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';

@@ -1,4 +1,5 @@
-import React, { FC, useState, CSSProperties } from 'react';
+import { FC, useState, CSSProperties } from 'react';
+import * as React from 'react';
 import { Button } from 'antd';
 import { ButtonType } from 'antd/es/button/buttonHelpers';
 import { ShaIcon, IconType } from '@/components/shaIcon';

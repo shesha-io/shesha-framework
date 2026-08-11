@@ -1,4 +1,5 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
+import * as React from 'react';
 import { DeleteOutlined, FileAddOutlined, SyncOutlined, UploadOutlined } from '@ant-design/icons';
 import { App, Button, Space, Upload } from 'antd';
 import type { UploadProps } from 'antd';

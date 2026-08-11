@@ -5,7 +5,7 @@ import { IInputStyles } from '@/providers';
 import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import ParentProvider from '@/providers/parentProvider/index';
 import { LinkOutlined } from '@ant-design/icons';
-import React, { CSSProperties, ReactNode } from 'react';
+import { CSSProperties, ReactNode } from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { ILinkComponentProps, LinkComponentDefinition } from './interfaces';
@@ -105,7 +105,7 @@ const LinkComponent: LinkComponentDefinition = {
   },
   migrator: (m) =>
     m
-      .add<ILinkComponentProps>(0, (prev) => ({ ...prev }) as ILinkComponentProps)
+      .add<ILinkComponentProps>(0, (prev) => ({ ...prev } as ILinkComponentProps))
       .add<ILinkComponentProps>(1, (prev) => {
         return {
           ...prev,

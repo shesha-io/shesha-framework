@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, Key } from 'react';
+import { CSSProperties, FC, Key } from 'react';
 import { Radio, RadioChangeEvent, RadioGroupProps } from 'antd';
 import { nanoid } from '@/utils/uuid';
 import { ReferenceListItemDto } from '@/apis/referenceList';

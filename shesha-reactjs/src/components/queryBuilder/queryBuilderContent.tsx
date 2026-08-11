@@ -1,5 +1,6 @@
 import classNames from 'classnames';
-import React, { FC, useMemo, useRef } from 'react';
+import { FC, useMemo, useRef } from 'react';
+import * as React from 'react';
 import { IQueryBuilderProps } from './interfaces';
 import { usePrevious } from 'react-use';
 import { useStyles } from './styles/styles';

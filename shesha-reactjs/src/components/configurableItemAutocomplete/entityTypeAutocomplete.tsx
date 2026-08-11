@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useEffect, useMemo, useState } from 'react';
+import { FC, ReactNode, useEffect, useMemo, useState } from 'react';
 import { ConfigurableItemFullName } from '@/interfaces';
 import { Empty, Select, SelectProps, Spin, Typography } from 'antd';
 import { useGet } from '@/hooks';

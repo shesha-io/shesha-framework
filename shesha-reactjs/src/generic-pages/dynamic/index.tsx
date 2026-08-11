@@ -1,6 +1,6 @@
 import { App } from 'antd';
 import classNames from 'classnames';
-import React, { FC, Fragment, useCallback, useMemo } from 'react';
+import { FC, Fragment, useCallback, useMemo } from 'react';
 import { ConfigurableForm } from '@/components/configurableForm';
 import { IDynamicPageProps } from './interfaces';
 import { DataContextProvider } from '@/providers/dataContextProvider';

@@ -1,7 +1,7 @@
 import { ButtonGroupItemProps, IButtonGroupItem, isGroup, isItem } from '@/providers/buttonGroupConfigurator/models';
 import { IStyleValue } from '@/providers/form/models';
 import { deepMergeValues, getStringPropertyOrUndefined } from '@/utils/object';
-import React from 'react';
+import * as React from 'react';
 import { MenuButton, MenuItem, VisibilityEvaluator } from './models';
 import { IApplicationContext } from '@/providers/form/utils';
 import { addPx } from '@/utils/style';

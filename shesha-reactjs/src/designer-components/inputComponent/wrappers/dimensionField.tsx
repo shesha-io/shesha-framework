@@ -1,5 +1,5 @@
 import { IDimensionFieldSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { FCUnwrapped } from '@/providers/form/models';
 import { AutoComplete } from 'antd';
 import Icon from '@/components/icon/Icon';

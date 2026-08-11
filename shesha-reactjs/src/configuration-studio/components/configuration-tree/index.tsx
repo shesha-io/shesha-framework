@@ -1,6 +1,7 @@
 /* eslint @typescript-eslint/strict-boolean-expressions: "error" */
 import { Button, Dropdown, Input, MenuProps, Spin, Tooltip, Tree, TreeProps } from 'antd';
-import React, { FC, useMemo, useRef, useState } from 'react';
+import { FC, useMemo, useRef, useState } from 'react';
+import * as React from 'react';
 import { MoveNodePayload } from '../../apis';
 import { isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, isNodeWithChildren, isTreeNode, TreeNode, TreeNodeType } from '../../models';
 import { CaretDownOutlined, CaretRightOutlined, RightOutlined } from '@ant-design/icons';

@@ -2,7 +2,7 @@ import { ButtonType } from 'antd/es/button/buttonHelpers';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IDynamicActionsConfiguration } from '@/designer-components/dynamicActionsConfigurator/models';
-import React from 'react';
+import * as React from 'react';
 import { IFullAuditedEntity } from '@/publicJsApis/apis/entities';
 import { ListItemWithId } from '@/components/listEditor/models';
 import { isDefined } from '@/utils/nullables';

@@ -1,5 +1,4 @@
 import { FC, memo } from "react";
-import React from "react";
 import { LogLevel } from "@/providers/processMonitor/interfaces";
 import { useStyles } from "./styles";
 

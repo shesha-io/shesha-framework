@@ -1,4 +1,3 @@
-import React from 'react';
 import { SettingOutlined } from "@ant-design/icons";
 import { SettingInput } from './settingsInput';
 import { SettingsInputDefinition } from './interfaces';

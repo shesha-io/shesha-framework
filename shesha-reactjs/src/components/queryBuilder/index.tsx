@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useMemo } from 'react';
+import { FC, useEffect, useMemo } from 'react';
 import { config as InitialConfig } from './config';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { extractVars } from '@/utils/jsonLogic';

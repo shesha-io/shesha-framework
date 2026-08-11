@@ -1,5 +1,5 @@
 import ComplexProperty from './complexProperty';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { ArrayFormats, DataTypes, ObjectFormats } from '@/interfaces/dataTypes';
 import { IModelItem } from '@/interfaces/modelConfigurator';
 import { SimpleProperty } from './simpleProperty';

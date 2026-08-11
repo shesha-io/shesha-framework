@@ -1,11 +1,5 @@
-import React, {
-  CSSProperties,
-  FC,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { CSSProperties, FC, useCallback, useEffect, useMemo, useState } from 'react';
+import * as React from 'react';
 import { List, useDynamicRowHeight, useListRef, type ListProps } from 'react-window';
 import { LogLine } from './interfaces';
 import { LogRow } from './logRow';

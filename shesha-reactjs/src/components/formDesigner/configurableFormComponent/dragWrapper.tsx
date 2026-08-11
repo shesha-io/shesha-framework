@@ -1,4 +1,5 @@
-import React, { FC, PropsWithChildren, useMemo, useState } from 'react';
+import { FC, PropsWithChildren, useMemo, useState } from 'react';
+import * as React from 'react';
 import { ShaForm } from '@/providers/form';
 import { Tooltip } from 'antd';
 import { useFormDesigner, useFormDesignerSelectedComponentId, useFormDesignerIsDebug } from '@/providers/formDesigner';

@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect, CSSProperties, useRef, useMemo } from 'react';
+import { FC, useState, useEffect, CSSProperties, useRef, useMemo } from 'react';
 import { Skeleton, Card, List, Empty, Input, Button, GetRef, Tooltip } from 'antd';
 import { CheckOutlined } from '@ant-design/icons';
 import _ from 'lodash';

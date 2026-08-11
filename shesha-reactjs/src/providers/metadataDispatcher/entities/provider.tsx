@@ -1,6 +1,6 @@
 import { useCacheProvider } from '@/hooks/useCache';
 import { useHttpClient } from '@/providers/sheshaApplication/publicApi';
-import React, { FC, PropsWithChildren, useContext, useState } from 'react';
+import { FC, PropsWithChildren, useContext, useState } from 'react';
 import { EntityMetadataFetcher } from './entityMetadataFetcher';
 import { IEntityMetadataFetcher } from './models';
 import { createNamedContext } from '@/utils/react';

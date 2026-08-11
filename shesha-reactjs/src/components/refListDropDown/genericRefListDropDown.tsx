@@ -1,7 +1,8 @@
 import { Empty, Select, SelectProps, Spin } from 'antd';
 import { ValidationErrors } from '@/components/validationErrors';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
-import React, { useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
+import * as React from 'react';
 import { ReferenceListItemDto } from '@/apis/referenceList';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { CustomLabeledValue, IGenericRefListDropDownProps, ISelectOption } from './models';

@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { Alert } from 'antd';
 import { evaluateString } from '@/providers/form/utils';
 import { GenericText } from './genericText';

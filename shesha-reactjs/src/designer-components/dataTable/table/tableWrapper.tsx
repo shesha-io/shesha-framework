@@ -1,11 +1,5 @@
-import React, {
-  FC,
-  Fragment,
-  useMemo,
-  useRef,
-  useEffect,
-  useState,
-} from 'react';
+import { FC, Fragment, useMemo, useRef, useEffect, useState } from 'react';
+import * as React from 'react';
 import { collectMetadataPropertyPaths, filterVisibility, calculateDefaultColumns, convertRowDimensionsToHeight, convertRowBorderStyleToBorder, convertRowStylingBoxToPadding, convertRowPaddingFieldsToPadding, flattenConfiguredColumns, getDataColumnAccessor } from './utils';
 import { getStyle } from '@/providers/form/utils';
 import { ITableComponentProps } from './models';

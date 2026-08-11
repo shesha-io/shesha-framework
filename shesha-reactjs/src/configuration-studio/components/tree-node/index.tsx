@@ -3,7 +3,7 @@ import { DateDisplay } from '@/components/dateDisplay';
 import { isConfigItemTreeNode, ITEM_TYPES, TreeNode } from '@/configuration-studio/models';
 import { useIsDevMode } from '@/hooks/useIsDevMode';
 import { Popover, Typography } from 'antd';
-import React, { FC, PropsWithChildren, ReactNode, useMemo } from 'react';
+import { Fragment, FC, PropsWithChildren, ReactNode, useMemo } from 'react';
 import { NodeIndicator } from './nodeIndicators';
 import { gray } from '@ant-design/colors';
 import { useCsTreeDnd } from '@/configuration-studio/cs/hooks';
@@ -131,7 +131,7 @@ export const CsTreeNode: FC<ICsTreeNodeProps> = ({ node, children }) => {
       <Popover
         content={(
           <div>
-            {items.map((item, index) => (isLabelValueItem(item) ? <LabelValue key={index} data={item} /> : <React.Fragment key={index}>{item}</React.Fragment>))}
+            {items.map((item, index) => (isLabelValueItem(item) ? <LabelValue key={index} data={item} /> : <Fragment key={index}>{item}</Fragment>))}
           </div>
         )}
         trigger="hover"

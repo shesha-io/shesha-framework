@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
 import { IModelItem } from '@/interfaces/modelConfigurator';
 import { ListEditor } from '@/components/listEditor';
 import { nanoid } from '@/utils/uuid';

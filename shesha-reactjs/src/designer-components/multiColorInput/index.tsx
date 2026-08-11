@@ -1,8 +1,7 @@
-import React, { useEffect, useMemo } from 'react';
+import { ReactElement, useEffect, useMemo } from 'react';
 import { Button, ColorPicker, Row, Tag } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useTheme } from '@/providers';
-import { ReactElement } from 'react-markdown/lib/react-markdown';
 import { getGradientColors } from '@/designer-components/_settings/utils';
 
 type MultiColorInputProps = {

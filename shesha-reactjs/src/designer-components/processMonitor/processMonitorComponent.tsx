@@ -1,5 +1,4 @@
 import { MonitorOutlined } from '@ant-design/icons';
-import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { FormMarkup } from '@/providers/form/models';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';

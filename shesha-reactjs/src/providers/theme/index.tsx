@@ -1,5 +1,5 @@
 import { App, ConfigProvider, ThemeConfig } from 'antd';
-import React, { FC, PropsWithChildren, useCallback, useContext, useMemo, useState } from 'react';
+import { FC, PropsWithChildren, useCallback, useContext, useMemo, useState } from 'react';
 import { IConfigurableTheme, IThemeActionsContext, IThemeStateContext, THEME_CONTEXT_INITIAL_STATE, UiActionsContext, UiStateContext } from './contexts';
 import { defaultRequiredMark } from './shaRequiredMark';
 import { useSettings, useSheshaApplication } from '..';

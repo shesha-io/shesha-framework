@@ -1,4 +1,4 @@
-import React, { DependencyList, FC, PropsWithChildren, useContext, useEffect, useRef } from 'react';
+import { DependencyList, FC, PropsWithChildren, useContext, useEffect, useRef } from 'react';
 import {
   ConfigurableActionDispatcherActionsContext,
   IConfigurableActionDispatcherActionsContext,

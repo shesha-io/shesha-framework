@@ -1,5 +1,6 @@
 import { Alert, Skeleton } from 'antd';
-import React, { FC, lazy, use } from 'react';
+import { FC, lazy, use } from 'react';
+import React from 'react';
 import { useFormData, useGlobalState, useSubFormOrUndefined } from '@/providers';
 import { useForm } from '@/providers/form';
 import { evaluateString } from '@/providers/form/utils';
@@ -24,18 +25,17 @@ const MarkdownWithGfm: FC<MarkdownWithGfmProps> = ({ content/* , style*/ }) => {
     <ReactMarkdown
       remarkPlugins={[gfm]}
       components={{
-        // style: style,
-        code(/* { node, inline, className, children, ...props }*/props) {
-          const { inline, className, children } = props;
-          const match = /language-(\w+)/.exec(className || '');
-          return !inline && match ? (
+        code(props) {
+          const { className, children, ...rest } = props;
+          const match = /language-(\w+)/.exec(className ?? '');
+          return match ? (
             <SyntaxHighlighter
+              {...rest}
               style={dark}
               language={match[1]}
               PreTag="div"
-              {...props}
+              ref={null}
             >
-              {/* {String(children).replace(/\n$/, '')} */}
             </SyntaxHighlighter>
           ) : (
             <code className={className} {...props}>

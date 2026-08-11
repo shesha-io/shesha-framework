@@ -1,5 +1,4 @@
 import { FolderAddOutlined } from '@ant-design/icons';
-import React from 'react';
 import { IconType } from '@/components/shaIcon';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { DataTypes, IToolboxComponent } from '@/interfaces';

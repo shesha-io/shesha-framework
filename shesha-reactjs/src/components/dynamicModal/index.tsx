@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useState } from 'react';
+import { FC, ReactNode, useState } from 'react';
 import { ButtonGroup } from '@/designer-components/button/buttonGroup/buttonGroup';
 import { ConfigurableForm, IConfigurableFormProps, Show } from '@/components/';
 import { Form, Modal } from 'antd';

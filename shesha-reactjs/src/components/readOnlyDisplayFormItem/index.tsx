@@ -1,5 +1,6 @@
 import { ValueRenderer } from '@/components/valueRenderer/index';
-import React, { FC, useMemo } from 'react';
+import { FC, useMemo } from 'react';
+import * as React from 'react';
 import { getMoment } from '@/utils/date';
 import { ISelectOption } from '@/components/autocomplete';
 import QuickView, { GenericQuickView } from '@/components/quickView';

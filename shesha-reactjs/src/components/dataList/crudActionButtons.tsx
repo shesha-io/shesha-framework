@@ -1,6 +1,6 @@
 import { useDataListCrud } from '@/providers/dataListCrudContext/index';
 import { CloseCircleOutlined, DeleteOutlined, EditOutlined, PlusCircleOutlined, SaveOutlined } from '@ant-design/icons';
-import React from 'react';
+import * as React from 'react';
 import ActionButton, { IActionButtonProps } from '../actionButton/index';
 import { useStyles } from './styles/styles';
 

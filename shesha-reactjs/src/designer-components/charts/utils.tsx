@@ -1,4 +1,5 @@
-import React, { CSSProperties } from "react";
+import { CSSProperties } from "react";
+import * as React from "react";
 import { IChartData, IChartsProps, TAggregationMethod, TDataMode, TOrderDirection, TTimeSeriesFormat } from "./model";
 import LineChart from "./components/line";
 import BarChart from "./components/bar";

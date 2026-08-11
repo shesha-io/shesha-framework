@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { DataLoadingErrorRenderProps } from './models';
 import { Result } from 'antd';
 import ValidationErrors from '../validationErrors';

@@ -1,4 +1,5 @@
-import React, { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import * as React from 'react';
 import { createPortal } from 'react-dom';
 import { FullscreenOutlined, FunctionOutlined } from '@ant-design/icons';
 import { Modal } from 'antd';

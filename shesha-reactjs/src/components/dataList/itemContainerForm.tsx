@@ -1,6 +1,6 @@
 import { ShaForm } from '@/providers';
 import { useParent } from '@/providers/parentProvider/index';
-import React, { CSSProperties, FC, PropsWithChildren, ReactNode } from 'react';
+import { CSSProperties, FC, PropsWithChildren, ReactNode } from 'react';
 import { IComponentsContainerProps } from '../formDesigner/containers/componentsContainer';
 import classNames from 'classnames';
 import { ConfigurableFormComponent } from '../formDesigner/configurableFormComponent';

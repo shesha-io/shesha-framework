@@ -1,4 +1,5 @@
-import React, { CSSProperties, ReactNode, useEffect, useRef } from 'react';
+import { CSSProperties, ReactNode, useEffect, useRef } from 'react';
+import * as React from 'react';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
 import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';

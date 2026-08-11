@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { ConfigurableFormComponent } from '../configurableFormComponent';
-import React, { FC, PropsWithChildren, ReactNode, useMemo } from 'react';
+import { FC, PropsWithChildren, ReactNode, useMemo } from 'react';
 import { IComponentsContainerProps } from './componentsContainer';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { TOOLBOX_COMPONENT_DROPPABLE_KEY, TOOLBOX_DATA_ITEM_DROPPABLE_KEY } from '@/providers/form/models';

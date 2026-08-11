@@ -1,7 +1,7 @@
 import { ItemEditorProps } from '@/configuration-studio/models';
 import { SaveOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { useShaFormDataModified, useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 
 export type IGenericToolbarProps = ItemEditorProps;

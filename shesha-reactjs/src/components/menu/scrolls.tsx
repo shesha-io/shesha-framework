@@ -1,5 +1,5 @@
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
-import React, { FC } from "react";
+import { FC } from "react";
 
 interface IScrollButtonProps {
   className?: string | undefined;

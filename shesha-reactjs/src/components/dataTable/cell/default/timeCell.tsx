@@ -1,5 +1,5 @@
 import moment from 'moment';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { IDataCellProps } from '../interfaces';
 import { asNumber } from '../utils';
 

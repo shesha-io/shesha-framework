@@ -1,4 +1,3 @@
-import React from 'react';
 import { Badge, Button, Tooltip } from 'antd';
 import { FilterFilled, FilterOutlined } from '@ant-design/icons';
 import { FCUnwrapped, useDataTableStore } from '@/providers';

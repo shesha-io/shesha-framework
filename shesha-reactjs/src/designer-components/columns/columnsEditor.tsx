@@ -2,7 +2,7 @@ import { ListEditor } from '@/components/listEditor';
 import { ListItem } from '@/components/listEditor/models';
 import { nanoid } from '@/utils/uuid';
 import { Col, InputNumber, Row } from 'antd';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { IColumnProps } from './interfaces';
 
 export interface IColumnsEditorProps {

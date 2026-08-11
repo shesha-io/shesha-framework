@@ -1,4 +1,3 @@
-import React from 'react';
 import { getSettings } from './settings';
 import { DynamicActionsConfigurator } from './configurator';
 import { IDynamicActionsConfiguratorComponentProps } from './interfaces';

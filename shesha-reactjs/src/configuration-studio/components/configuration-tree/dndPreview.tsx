@@ -1,5 +1,5 @@
 import { TreeNode } from "@/configuration-studio/models";
-import React from "react";
+import * as React from "react";
 import { getDropPositionText } from "./models";
 
 export interface DndPreviewProps {

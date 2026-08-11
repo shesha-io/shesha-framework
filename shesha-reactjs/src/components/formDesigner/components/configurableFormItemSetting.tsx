@@ -1,4 +1,5 @@
-import React, { cloneElement, ReactNode, SyntheticEvent } from 'react';
+import { cloneElement, ReactNode, SyntheticEvent } from 'react';
+import * as React from 'react';
 import { Form, FormItemProps } from 'antd';
 import { getFieldNameFromExpression } from '@/providers/form/utils';
 import { getPropertySettingsFromData } from '@/designer-components/_settings/utils/utils';

@@ -1,6 +1,5 @@
 import { FC, PropsWithChildren } from "react";
 import { useStyles } from "./styles";
-import React from "react";
 import classNames from "classnames";
 
 export type UnAuthedLayoutContainerProps = {

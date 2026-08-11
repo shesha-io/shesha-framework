@@ -1,6 +1,6 @@
 import { QuestionCircleOutlined, SettingOutlined } from '@ant-design/icons';
 import { Button, Space, Tooltip } from 'antd';
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
 import { FilterItemSettingsModal } from './filterItemSettingsModal';
 import { useStyles } from '@/components/listEditor/styles/styles';
 import { useStyles as useItemStyles } from './styles';

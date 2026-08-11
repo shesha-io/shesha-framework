@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { BugOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import { useFormDesigner, useFormDesignerIsDebug } from '@/providers/formDesigner';

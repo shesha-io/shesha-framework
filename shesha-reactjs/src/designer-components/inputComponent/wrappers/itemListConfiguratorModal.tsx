@@ -1,5 +1,5 @@
 import { IItemListConfiguratorModalSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { FCUnwrapped, FormMarkup } from '@/providers/form/models';
 import { ItemListConfiguratorModal } from '@/designer-components/itemListConfigurator/itemListConfiguratorModal';
 import { Alert } from 'antd';

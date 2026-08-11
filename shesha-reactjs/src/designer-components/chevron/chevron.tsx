@@ -1,6 +1,5 @@
 
 import { FolderOpenOutlined } from '@ant-design/icons';
-import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { ChevronControl } from '@/components/chevron';
 import { RefListItemGroupConfiguratorProvider } from '@/components/refListSelectorDisplay/provider';
