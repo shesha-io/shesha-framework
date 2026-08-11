@@ -15,6 +15,7 @@ import AttributeDecorator from '@/components/attributeDecorator';
 import { isDefined } from '@/utils/nullables';
 import { ValidateErrorEntity } from '@/interfaces';
 import { isNonEmptyArray } from '@/utils/array';
+import { useStyles } from './styles';
 
 interface ISubFormProps {
   style?: CSSProperties | undefined;
@@ -23,6 +24,7 @@ interface ISubFormProps {
 
 const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
   const { anyOfPermissionsGranted } = useSheshaApplication();
+  const { styles } = useStyles();
   const {
     id,
     module,
@@ -34,6 +36,7 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
     context,
     description,
     allComponents,
+    components,
   } = useSubForm();
 
   const form = useForm();
@@ -68,6 +71,11 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
     return isDefined(loading) && Object.values(loading).find((l) => Boolean(l)) !== undefined;
   }, [loading]);
 
+  // with no form to render the component collapses to nothing, leaving the failure to a validation
+  // icon in the designer chrome. Show it where the form would have been instead
+  const formError = errors?.getForm;
+  const showFormError = !isLoading && isDefined(formError) && !isNonEmptyArray(components);
+
   const persistedFormProps: IPersistedFormProps = { id, module, description, name };
 
   if (isDefined(formSettings) && formSettings.access === 4 && !anyOfPermissionsGranted(formSettings.permissions || [])) {
@@ -95,9 +103,16 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
       >
         <FormInfo visible={false} formProps={persistedFormProps}>
           <div style={{ flex: 1 }} data-name={propertyName}>
-            {isDefined(errors) && Object.keys(errors).map((error, index) => (
-              <ValidationErrors key={index} error={errors[error as keyof typeof errors]} />
-            ))}
+            {isDefined(errors) && Object.entries(errors)
+              .filter(([name]) => !(showFormError && name === 'getForm'))
+              .map(([name, error]) => (
+                <ValidationErrors key={name} error={error} />
+              ))}
+            {showFormError && (
+              <div className={styles.subFormError}>
+                <ValidationErrors error={formError} />
+              </div>
+            )}
             <div>
               <ComponentsContainerProvider ContainerComponent={ComponentsContainerSubForm}>
                 <FormItemProvider
