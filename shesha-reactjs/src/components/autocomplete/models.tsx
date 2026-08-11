@@ -1,9 +1,11 @@
 import { FormIdentifier, IEntityReferenceDto } from "@/interfaces";
 import { IDataColumnsProps } from "@/providers/datatableColumnsConfigurator/models";
-import { Key, ReactNode } from "react";
+import { Key, ReactNode, Ref } from "react";
+import type { GetRef, Select, SelectProps } from "antd";
 import { GroupingItem, ISortingItem, ITableRowData, JsonLogicFilter } from "@/providers/dataTable/interfaces";
 import { SizeType } from "antd/lib/config-provider/SizeContext";
 import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
+import { IStyleValue } from "@/providers/form/models";
 import { StringSubtype } from "@/interfaces/utilityTypes";
 import { BaseOptionType } from "antd/lib/select";
 
@@ -29,6 +31,9 @@ export function getColumns(fields: string[] | undefined): IDataColumnsProps[] {
 
 export const AUTOCOMPLETE_DATA_SOURCE_TYPE = ["entitiesList", "url"] as const;
 export type AutocompleteDataSourceType = StringSubtype<typeof AUTOCOMPLETE_DATA_SOURCE_TYPE>;
+
+/** Ref of the antd `Select` the autocomplete renders. */
+export type AutocompleteSelectRef = GetRef<typeof Select>;
 
 export type QueryParamFunc = (searchText: string, selected: unknown[]) => object;
 export type FilterSelectedFunc = (value: unknown | unknown[] | undefined) => JsonLogicFilter | undefined;
@@ -97,11 +102,36 @@ type AutocompleteDisplayProps = {
   readOnly?: boolean | undefined;
   /** Not found content */
   notFoundContent?: ReactNode;
+  /** Prevent the user from typing to filter the list, turning the control into a plain picker */
+  disableSearch?: boolean | undefined;
   /** Style */
   style?: React.CSSProperties | undefined;
+  /** Class name applied to the underlying select */
+  className?: string | undefined;
   /** Size */
   size?: SizeType | undefined;
+  /** Ref to the underlying select, used by the component API to focus the component */
+  selectRef?: Ref<AutocompleteSelectRef> | undefined;
+  /**
+   * Appearance style model, used only by the read-only renderer. The editable control is styled by
+   * the emotion class in `className`, but `ReadOnlyDisplayFormItem` renders outside the select and
+   * has no class hook, so it still takes the style model as a value.
+   */
+  styleValue?: IStyleValue | undefined;
+  /** Whether the full appearance is kept when the component is read-only. */
+  enableStyleOnReadonly?: boolean | undefined;
+  /**
+   * Standard DOM event handlers, supplied by `getComponentEvents`. `onChange` is not part of the
+   * set — the form component wires that inline because it also updates the form value.
+   */
+  events?: SelectEventHandlers | undefined;
 };
+
+/** The subset of antd `Select` props used to relay the standard component events. */
+export type SelectEventHandlers = Pick<
+  SelectProps,
+  'onBlur' | 'onClick' | 'onFocus' | 'onKeyDown' | 'onKeyUp' | 'onMouseEnter' | 'onMouseLeave'
+>;
 
 type AutocompleteDataProps = {
   /** A property used as label */

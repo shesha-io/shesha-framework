@@ -92,6 +92,12 @@ export const EntityAutocomplete = <TValue = unknown>(props: EntityAutocompletePr
 
       placeholder={props.placeholder}
       size={props.size}
+      className={props.className}
+      selectRef={props.selectRef}
+      events={props.events}
+      styleValue={props.styleValue}
+      enableStyleOnReadonly={props.enableStyleOnReadonly}
+      disableSearch={props.disableSearch}
     />
   );
 };

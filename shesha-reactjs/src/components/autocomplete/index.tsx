@@ -42,8 +42,26 @@ const Autocomplete = <TValue = unknown>(props: IAutocompleteProps<TValue>): Reac
         mode={props.mode}
         readOnly={props.readOnly}
         outcomeValueFunc={props.outcomeValueFunc}
+        keyValueFunc={props.keyValueFunc}
+        displayValueFunc={props.displayValueFunc}
         allowClear={props.allowClear}
         allowFreeText={props.allowFreeText}
+
+        quickviewEnabled={props.quickviewEnabled}
+        quickviewFormPath={props.quickviewFormPath}
+        quickviewDisplayPropertyName={props.quickviewDisplayPropertyName}
+        quickviewGetEntityUrl={props.quickviewGetEntityUrl}
+        quickviewWidth={props.quickviewWidth}
+
+        placeholder={props.placeholder}
+        size={props.size}
+        style={props.style}
+        className={props.className}
+        selectRef={props.selectRef}
+        events={props.events}
+        styleValue={props.styleValue}
+        enableStyleOnReadonly={props.enableStyleOnReadonly}
+        disableSearch={props.disableSearch}
       />
     )
     : (
@@ -61,8 +79,20 @@ const Autocomplete = <TValue = unknown>(props: IAutocompleteProps<TValue>): Reac
         mode={props.mode}
         readOnly={props.readOnly}
         outcomeValueFunc={props.outcomeValueFunc}
+        keyValueFunc={props.keyValueFunc}
+        displayValueFunc={props.displayValueFunc}
         allowClear={props.allowClear}
         allowFreeText={props.allowFreeText}
+
+        placeholder={props.placeholder}
+        size={props.size}
+        style={props.style}
+        className={props.className}
+        selectRef={props.selectRef}
+        events={props.events}
+        styleValue={props.styleValue}
+        enableStyleOnReadonly={props.enableStyleOnReadonly}
+        disableSearch={props.disableSearch}
       />
     );
 };
