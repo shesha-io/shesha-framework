@@ -279,19 +279,22 @@ export interface IComponentStyle extends Record<string, unknown> {
 
 export type InteractionMode = 'editable' | 'readOnly' | 'disabled' | 'inherited' | boolean;
 
-export interface CommonComponentApi {
+export interface BaseComponentApi {
   /** Name of the component (e.g., `"textField"`, `"numberField"`). */
   readonly componentName: string;
   /** Context to which the component is bound (e.g., formContext, pageContext, undefined for form data). */
   readonly context?: string | undefined;
   /** Name of the property this component is bound to. */
   readonly propertyName: string;
-  /** Current style overrides applied to the component. */
-  readonly style: IComponentStyle;
   /** Whether the component is visible in the UI. */
   visible: boolean;
   /** Current interaction mode of the component. */
   interactionMode: InteractionMode | undefined;
+}
+
+export interface CommonComponentApi extends BaseComponentApi {
+  /** Current style overrides applied to the component. */
+  readonly style: IComponentStyle;
 }
 
 export interface InputComponentApi<T = unknown> extends CommonComponentApi {
@@ -383,4 +386,13 @@ export interface AlertApi extends CommonComponentApi {
   text?: string;
   /** Description of the alert */
   description?: string;
+};
+
+export interface SubFormApi extends BaseComponentApi {
+  /** Get sub form data from the backend */
+  getSubFormData(): void;
+  /** Post sub form data to the backend */
+  postSubFormData(): void;
+  /** Put sub form data to the backend */
+  putSubFormData(): void;
 };

@@ -109,7 +109,7 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
                 <ValidationErrors key={name} error={error} />
               ))}
             {showFormError && (
-              <div className={styles.subFormError}>
+              <div className={styles.shaSubFormError}>
                 <ValidationErrors error={formError} />
               </div>
             )}

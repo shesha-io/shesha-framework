@@ -21,9 +21,10 @@ import { defaultStyles, buildPasswordValidatorString, usePasswordComplexitySetti
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { TextFieldApi } from '@/componentsApi/componentApi';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
-import apiCode from "../../componentsApi/componentApi.ts?raw";
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '../_common/events';
+
+import apiCode from "../../componentsApi/componentApi.ts?raw";
 
 const TextFieldComponent: TextFieldComponentDefinition = {
   allowInherit: true,

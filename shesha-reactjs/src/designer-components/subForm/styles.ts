@@ -1,7 +1,11 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, token }) => {
-  const subFormError = css`
+export const useStyles = createStyles(({ cx, css, token }) => {
+  const shaSubFormContainer = cx("sub-form-container", css`
+    margin: 0px;
+  `);
+
+  const shaSubFormError = cx("sha-sub-form-error", css`
     display: flex;
     align-items: center;
     min-height: 60px;
@@ -12,7 +16,7 @@ export const useStyles = createStyles(({ css, token }) => {
     .ant-alert {
       width: 100%;
     }
-  `;
+  `);
 
-  return { subFormError };
+  return { shaSubFormError, shaSubFormContainer };
 });
