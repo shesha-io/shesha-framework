@@ -12,6 +12,7 @@ import {
   Config,
   BuilderProps,
   Utils,
+  JsonLogicTree,
 } from '@react-awesome-query-builder/antd';
 
 interface IQueryBuilderContentProps extends IQueryBuilderProps {
@@ -34,7 +35,9 @@ export const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
   qbConfig,
 }) => {
   const { styles } = useStyles();
-  const lastLocallyChangedValue = useRef(value);
+  // `value` is the JsonLogic tree, while `onChange` emits a full JsonLogicResult.
+  // Track the tree (not the result) so a locally-originated change isn't mistaken for an external one.
+  const lastLocallyChangedValue = useRef<JsonLogicTree | object | undefined>(value);
   const changedOutside = value !== lastLocallyChangedValue.current;
   const prevValue = usePrevious(value);
   const prevTree = useRef<ImmutableTree | undefined>(undefined);
@@ -72,7 +75,7 @@ export const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
     if (onChange) {
       const jsonLogicResult = QbUtils.jsonLogicFormat(_tree, _config);
 
-      lastLocallyChangedValue.current = jsonLogicResult;
+      lastLocallyChangedValue.current = jsonLogicResult.logic;
       onChange(jsonLogicResult);
     }
   };
