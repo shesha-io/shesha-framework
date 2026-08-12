@@ -28,6 +28,7 @@ import { getComponentEvents } from '../_common/events';
 import { getStyleValueFromModel } from '../_common/styles/utils';
 import { IStyleValue } from '@/providers';
 import { getFullSizeWrapperDesignerStyle } from '@/components/formDesigner/utils/stylingUtils';
+import { EMPTY_STYLE } from '@/styles/variables';
 
 const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
   allowInherit: true,
@@ -88,7 +89,7 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
         <CollapsiblePanel
           {...getStyleValueFromModel(model)}
           headerStyles={model.headerStyles}
-          style={model.styleJson ?? {}}
+          style={model.styleJson ?? EMPTY_STYLE}
           header={isDefined(model.header) && isNonEmptyArray(model.header.components) ? (
             <div {...getComponentEvents<void>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent }, undefined, undefined, 'headerEvents')}>
               <ComponentsContainer
@@ -189,9 +190,9 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
 
         const accentStyle = prev.overflow === undefined;
         return {
-          ...prev, accentStyle, desktop: { ...prev.desktop, accentStyle },
-          tablet: { ...prev.tablet, accentStyle },
-          mobile: { ...prev.mobile, accentStyle },
+          ...prev, accentStyle, desktop: { styleJson: {}, ...prev.desktop, accentStyle },
+          tablet: { styleJson: {}, ...prev.tablet, accentStyle },
+          mobile: { styleJson: {}, ...prev.mobile, accentStyle },
         };
       })
       .add<ICollapsiblePanelComponentProps>(9, (prev, ctx) => {
@@ -200,9 +201,9 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
         const newModel = migratePrevStyles(prev, getDefaultStyles(prev));
         const defaultHeaderStyle = (): IStyleValue => ({ ...getDefaultHeaderStyles(prev) });
         return {
-          ...newModel, desktop: { ...newModel.desktop, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle() },
-          tablet: { ...newModel.tablet, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle() },
-          mobile: { ...newModel.mobile, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle() },
+          ...newModel, desktop: { styleJson: {}, ...newModel.desktop, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle() },
+          tablet: { styleJson: {}, ...newModel.tablet, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle() },
+          mobile: { styleJson: {}, ...newModel.mobile, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle() },
         };
       })
       .add<ICollapsiblePanelComponentProps>(10, migrateV9toV10)

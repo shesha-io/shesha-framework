@@ -12,6 +12,7 @@ import classNames from 'classnames';
 import { useStyles } from './styles';
 import { useEvents } from '@/components/formDesigner/components/eventsAndApiValueProcessor';
 import { getComponentEvents } from '../_common/events';
+import { EMPTY_STYLE } from '@/styles/variables';
 
 export interface IValidationErrorsComponentProps extends IConfigurableFormComponent, IStyleValue {
   className?: string | undefined;
@@ -35,22 +36,20 @@ export interface IValidationErrorsComponentProps extends IConfigurableFormCompon
   hideBorder?: boolean | undefined;
 }
 
-const emptyStyle = {};
-
 const ValidationErrorsComponent: IToolboxComponent<IValidationErrorsComponentProps> = {
   allowInherit: true,
   type: 'validationErrors',
   isInput: false,
   name: 'Validation Errors',
   icon: <WarningOutlined />,
-  getWrapperStyle: (model) => ({ style: { dimensions: model.dimensions } }),
+  getWrapperStyle: (model) => ({ style: { styleJson: {}, dimensions: model.dimensions } }),
   Factory: ({ model }) => {
     const handleEvent = useEvents<void>(model.componentName);
     const { styles } = useStyles(model);
     const { validationErrors, formMode } = useShaFormInstance();
     return (
       <ValidationErrors
-        style={model.styleJson ?? emptyStyle}
+        style={model.styleJson ?? EMPTY_STYLE}
         error={formMode === 'designer' ? 'Validation Errors (visible in the designer only)' : validationErrors}
         renderMode="alert"
         className={classNames(styles.shaValidationErrors, model.className)}
