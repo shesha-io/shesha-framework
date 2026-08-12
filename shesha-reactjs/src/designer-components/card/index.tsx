@@ -21,6 +21,7 @@ import { migratePermissionsToVisiblePermissions } from '../_common-migrations/mi
 import { migrateHiddenToVisible } from '../_common-migrations';
 import { useEvents } from '@/components/formDesigner/components/eventsAndApiValueProcessor';
 import { getComponentEvents } from '../_common/events';
+import { useMemo } from 'react';
 
 const CardComponent: IToolboxComponent<ICardComponentProps> = {
   allowInherit: true,
@@ -34,7 +35,7 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
     const { formMode } = useForm();
     const { styles } = useStyles(model);
     const handleEvent = useEvents<void>(model.componentName);
-
+    const events = useMemo(() => getComponentEvents<void>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent }), [handleEvent, model]);
     if (model.hidden === true) return null;
 
     const title = model.hideHeading === true ? null : model.label;
@@ -57,7 +58,7 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
           title={title}
           extra={extra}
           style={model.styleJson ?? EMPTY_STYLE}
-          {...getComponentEvents<void>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent }, undefined, undefined, 'headerEvents')}
+          {...events}
         >
           {model.content && (
             <ComponentsContainer

@@ -33,7 +33,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
               })
               .toJson(),
           },
-          { key: 'events', title: 'Events', id: eventsTabId, components: [...fbf(eventsTabId).stdEventHandlers(['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave']).toJson()] },
+          { key: 'events', title: 'Events', id: eventsTabId, components: fbf(eventsTabId).stdEventHandlers(['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave']).toJson() },
           { key: 'appearance', title: 'Appearance', id: appearanceTabId,
             components: fbf(appearanceTabId)
               .addPropertyRouter({ id: styleRouterId, componentName: 'propertyRouter2', label: 'Property router2', labelAlign: 'right',

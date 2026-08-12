@@ -91,13 +91,12 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
           headerStyles={model.headerStyles}
           style={model.styleJson ?? EMPTY_STYLE}
           header={isDefined(model.header) && isNonEmptyArray(model.header.components) ? (
-            <div {...getComponentEvents<void>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent }, undefined, undefined, 'headerEvents')}>
-              <ComponentsContainer
-                containerId={model.header.id}
-                dynamicComponents={isDynamic === true ? model.header.components : []}
-                className={shaHeaderComponentsContainer}
-              />
-            </div>
+            <ComponentsContainer
+              containerId={model.header.id}
+              dynamicComponents={isDynamic === true ? model.header.components : []}
+              className={shaHeaderComponentsContainer}
+              additionalDomProperties={getComponentEvents<void>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent }, undefined, undefined, 'headerEvents')}
+            />
           ) : calculatedModel.evaluatedLabel}
           {...(!isIconHidden && expandIconPosition ? { expandIconPlacement: expandIconPosition } : {})}
           showArrow={collapsible !== 'disabled' && !isIconHidden}
@@ -114,12 +113,11 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
           onChange={onChange}
         >
           {isDefined(content) && (
-            <div {...getComponentEvents<void, ICollapsiblePanelComponentProps>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent })}>
-              <ComponentsContainer
-                containerId={content.id}
-                dynamicComponents={isDynamic === true ? content.components : []}
-              />
-            </div>
+            <ComponentsContainer
+              containerId={content.id}
+              dynamicComponents={isDynamic === true ? content.components : []}
+              additionalDomProperties={getComponentEvents<void, ICollapsiblePanelComponentProps>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent })}
+            />
           )}
         </CollapsiblePanel>
       </ParentProvider>
