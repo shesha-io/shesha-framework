@@ -100,6 +100,7 @@ type AutocompleteDisplayProps = {
   hideBorder?: boolean | undefined;
   /** Read only */
   readOnly?: boolean | undefined;
+  disabled?: boolean | undefined;
   /** Not found content */
   notFoundContent?: ReactNode;
   /** Prevent the user from typing to filter the list, turning the control into a plain picker */

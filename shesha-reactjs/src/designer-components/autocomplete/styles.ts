@@ -3,17 +3,7 @@ import { IAutocompleteComponentProps } from './interfaces';
 import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, marginStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
 import { isDefined } from '@/utils/nullables';
 
-/**
- * Emits the Appearance styles for the autocomplete.
- *
- * antd renders a select's visible box as `.ant-select-selector`, not the root element, so
- * border/background/padding have to land there to be seen — the same "wrapper owns the appearance"
- * situation the affix wrapper creates for plain inputs. Dimensions and margin stay on the root,
- * which is the element that occupies space in the form layout.
- *
- * Only properties actually present in the model emit CSS, so anything left unconfigured keeps
- * cascading from the theme.
- */
+
 export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IAutocompleteComponentProps) => {
   const textAlign = model.font?.align;
 
@@ -24,39 +14,54 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IAu
   `;
 
   const autocomplete = cx('sha-autocomplete-field', css`
-      ${dimensionsStyles(model.dimensions)}
       ${marginStyles(model.stylingBoxJson)}
 
-      &.${prefixCls}-select .${prefixCls}-select-selector {
-        height: 100%;
+      /* The root is the visible box: dimensions, border, background, shadow, padding and font all
+         land here (see the note above). 0-3-0 so it beats both antd's box rule (0-1-0) and its
+         \`in-form-item\` width rule (0-2-0). */
+      &&& {
+        ${dimensionsStyles(model.dimensions)}
         ${configuredAppearance}
-        ${paddingStyles(model.stylingBoxJson)}
         ${fontStyles(model.font)}
-      }
-
-      /* The search input, the rendered selection and the placeholder each carry their own font
-         rules, so the configured font has to be restated on all three or the box resizes without
-         its text following. */
-      .${prefixCls}-select-selection-search-input,
-      .${prefixCls}-select-selection-item,
-      .${prefixCls}-select-selection-placeholder {
-        ${fontStyles(model.font)}
-      }
-
-      .${prefixCls}-select-selection-item {
         display: flex;
         align-items: center;
-        ${isDefined(textAlign) ? `justify-content: ${textAlign};` : ''}
       }
 
-      /* antd repaints the selector background and border on hover, focus, while the dropdown is
-         open and on the validation statuses. Re-assert the configured appearance at higher
-         specificity so those states only change what the user did not configure. */
-      &&&&.${prefixCls}-select:hover .${prefixCls}-select-selector,
-      &&&&.${prefixCls}-select-focused .${prefixCls}-select-selector,
-      &&&&.${prefixCls}-select-open .${prefixCls}-select-selector,
-      &&&&[class*='-status-error'] .${prefixCls}-select-selector,
-      &&&&[class*='-status-warning'] .${prefixCls}-select-selector {
+      &&& .${prefixCls}-select-input {
+        ${paddingStyles(model.stylingBoxJson)}
+      }
+
+      /* The inner elements carry their own font rules, so the configured font has to be restated or
+         the box resizes without its text following. They must stay transparent: the root already
+         paints, and a second background here would cover it.
+
+         These are this antd version's real class names — the typed input is \`.ant-select-input\`
+         (not \`input.ant-input\`) and the placeholder is \`.ant-select-placeholder\` (not
+         \`.ant-select-selection-placeholder\`). \`.ant-select-selection-item\` is the tag rendered in
+         multiple mode only. */
+      &&& .${prefixCls}-select-content,
+      &&& .${prefixCls}-select-input,
+      &&& .${prefixCls}-select-placeholder,
+      &&& .${prefixCls}-select-selection-item {
+        ${fontStyles(model.font)}
+        background: transparent;
+        border: none;
+      }
+
+      &&& .${prefixCls}-select-content {
+        ${isDefined(textAlign) ? `justify-content: ${textAlign};` : ''}
+        align-items: center;
+        height: 100%;
+      }
+
+      /* antd repaints the box on hover, focus, while the dropdown is open and on the validation
+         statuses — it swaps the CSS variables the root rule reads. Re-assert the configured
+         appearance in those states so they only change what the user did not configure. */
+      &&&&:hover,
+      &&&&.${prefixCls}-select-focused,
+      &&&&.${prefixCls}-select-open,
+      &&&&[class*='-status-error'],
+      &&&&[class*='-status-warning'] {
         ${configuredAppearance}
       }
 

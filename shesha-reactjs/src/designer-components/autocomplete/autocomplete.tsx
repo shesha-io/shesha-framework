@@ -158,6 +158,7 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
             "fields",
             "sorting",
             "readOnly",
+            "disabled",
             "placeholder",
             "disableSearch",
             "keyPropName",

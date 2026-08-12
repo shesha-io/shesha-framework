@@ -397,7 +397,7 @@ export const AutocompleteWithRepository = <TValue = unknown>(props: Autocomplete
       allowClear={allowClear}
       loading={listLoadingState === "loading"}
       placeholder={props.placeholder}
-      disabled={props.readOnly ?? false}
+      disabled={props.disabled === true}
       style={style}
       size={props.size}
       ref={(instance) => {
