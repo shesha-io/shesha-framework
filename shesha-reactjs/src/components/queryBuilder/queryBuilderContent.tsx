@@ -19,7 +19,7 @@ interface IQueryBuilderContentProps extends IQueryBuilderProps {
   qbConfig: Config;
 }
 
-const loadJsonLogic = (jlValue: object, config: Config): ImmutableTree | undefined => {
+const loadJsonLogic = (jlValue: JsonLogicTree, config: Config): ImmutableTree | undefined => {
   try {
     return QbUtils.loadFromJsonLogic(jlValue, config);
   } catch (error) {
@@ -37,7 +37,7 @@ export const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
   const { styles } = useStyles();
   // `value` is the JsonLogic tree, while `onChange` emits a full JsonLogicResult.
   // Track the tree (not the result) so a locally-originated change isn't mistaken for an external one.
-  const lastLocallyChangedValue = useRef<JsonLogicTree | object | undefined>(value);
+  const lastLocallyChangedValue = useRef(value);
   const changedOutside = value !== lastLocallyChangedValue.current;
   const prevValue = usePrevious(value);
   const prevTree = useRef<ImmutableTree | undefined>(undefined);
