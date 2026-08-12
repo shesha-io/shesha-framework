@@ -13,7 +13,7 @@ import { useHttpClient } from "@/providers";
 import { buildUrl } from "./url";
 
 export const isEntityReferenceId = (data: unknown): data is IEntityReferenceDto => {
-  if (data === null || typeof data !== "object" || Array.isArray(data))
+  if (!isDefined(data) || typeof data !== "object" || Array.isArray(data))
     return false;
 
   const candidate = data as { id?: unknown; _className?: unknown };
@@ -153,7 +153,15 @@ export const useEntityDisplayText = (props: IUseEntityDisplayTextProps): string 
  * @returns The value of the 'id' property if it exists, otherwise undefined.
  */
 export const getIdOrUndefined = (val: unknown): string | undefined => {
-  return isDefined(val) && typeof (val) === 'object' && "id" in val && typeof (val.id) === 'string' ? val.id : undefined;
+  return isDefined(val)
+    ? typeof val === 'string'
+      ? !isNullOrWhiteSpace(val)
+        ? val
+        : undefined
+      : isEntityReferenceId(val)
+        ? val.id
+        : undefined
+    : undefined;
 };
 
 /**
