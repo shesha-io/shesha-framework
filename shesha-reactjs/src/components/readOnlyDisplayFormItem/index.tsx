@@ -37,7 +37,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = <TValu
   } = props;
 
   // ToDo: remove `textAlign` after migrate all components to the new styles
-  const { styles } = useStyles({ styleValue, enableFullStyle, textAlign: styleValue?.font?.align || style?.textAlign || 'left' });
+  const { styles } = useStyles({ styleValue, enableFullStyle });
 
   const renderValue = useMemo(() => {
     if (isDefined(render)) {

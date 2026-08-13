@@ -98,7 +98,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
       size: model.size,
       style: {
         ...getOverflowStyle(true, false),
-        ...(isDefined(model.styleJson) ? model.styleJson : {}),
+        ...(isDefined(model.styleCss) ? model.styleCss : {}),
       },
       spellCheck: model.spellCheck ?? false,
     };
@@ -155,7 +155,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
                   value={value}
                   type="textArea"
                   enableFullStyle={model.enableStyleOnReadonly}
-                  style={{ padding: 8, ...getOverflowStyle(true, false), ...model.styleJson }}
+                  style={{ padding: 8, ...getOverflowStyle(true, false), ...model.styleCss }}
                   styleValue={model}
                 />
               ) : (

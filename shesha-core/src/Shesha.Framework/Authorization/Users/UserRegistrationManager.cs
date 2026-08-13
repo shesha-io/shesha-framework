@@ -14,25 +14,22 @@ using Shesha.MultiTenancy;
 
 namespace Shesha.Authorization.Users
 {
-    public class UserRegistrationManager : DomainService
+    public class UserRegistrationManager : DomainService, IUserRegistrationManager
     {
         public IAbpSession AbpSession { get; set; } = NullAbpSession.Instance;
 
         private readonly TenantManager _tenantManager;
         private readonly UserManager _userManager;
         private readonly RoleManager _roleManager;
-        private readonly IPasswordHasher<User> _passwordHasher;
 
         public UserRegistrationManager(
             TenantManager tenantManager,
             UserManager userManager,
-            RoleManager roleManager,
-            IPasswordHasher<User> passwordHasher)
+            RoleManager roleManager)
         {
             _tenantManager = tenantManager;
             _userManager = userManager;
             _roleManager = roleManager;
-            _passwordHasher = passwordHasher;
 
             AbpSession = NullAbpSession.Instance;
         }
@@ -56,7 +53,7 @@ namespace Shesha.Authorization.Users
             };
 
             user.SetNormalizedNames();
-           
+
             foreach (var defaultRole in await _roleManager.Roles.Where(r => r.IsDefault).ToListAsync())
             {
                 user.Roles.Add(new UserRole(tenant.Id, user.Id, defaultRole.Id));

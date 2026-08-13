@@ -14,7 +14,7 @@ import { isNavigationActionConfiguration, useShaRouting } from '@/providers/shaR
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 export interface IConfigurableButtonProps extends Omit<IButtonItem, 'itemSubType'> {
-  styleJson?: CSSProperties | undefined;
+  styleCss?: CSSProperties | undefined;
   ref?: React.Ref<HTMLAnchorElement | HTMLButtonElement> | undefined;
   additionalDomProperties?: Record<string, unknown> | undefined;
 }
@@ -93,7 +93,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
       {...(props.iconPosition ? { iconPlacement: props.iconPosition } : {})}
       className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable', styles.configurableButton)}
       size={props.size}
-      style={{ ...props.styleJson, ...(buttonDisabled && { pointerEvents: "none" }) }}
+      style={{ ...props.styleCss, ...(buttonDisabled && { pointerEvents: "none" }) }}
       ref={props.ref}
       {...props.additionalDomProperties}
     >

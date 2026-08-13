@@ -57,7 +57,7 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
           className={classNames(model.className, styles.shaCardComponent, { [styles.hideWhenEmpty]: model.hideWhenEmpty })}
           title={title}
           extra={extra}
-          style={model.styleJson ?? EMPTY_STYLE}
+          style={model.styleCss ?? EMPTY_STYLE}
           {...events}
         >
           {model.content && (

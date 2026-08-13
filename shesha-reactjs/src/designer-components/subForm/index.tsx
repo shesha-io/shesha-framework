@@ -53,7 +53,7 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
         {(value, onChange) => {
           return (
             <SubFormProvider {...model} key={`subform-${model.id}`} value={value ?? undefined} propertyName={propertyName} onChange={onChange}>
-              <SubForm style={model.styleJson} readOnly={model.readOnly} />
+              <SubForm style={model.styleCss} readOnly={model.readOnly} />
             </SubFormProvider>
           );
         }}

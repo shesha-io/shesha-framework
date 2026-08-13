@@ -76,7 +76,7 @@ const DropdownComponent: DropdownComponentDefinition = {
               popupClassName={styles.popup}
               // Custom style is passed through as-is; everything else is emitted as CSS by `useStyles`
               // so unset properties keep cascading from the theme.
-              {...(isDefined(model.styleJson) ? { style: model.styleJson } : {})}
+              {...(isDefined(model.styleCss) ? { style: model.styleCss } : {})}
               value={value ?? undefined}
               size={model.size}
               // Read-only rendering happens outside the select, where the emotion class does not

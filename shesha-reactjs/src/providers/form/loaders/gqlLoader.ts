@@ -81,13 +81,25 @@ export class GqlLoader<Values extends object = object> implements IFormDataLoade
     }
   };
 
+  #missingDataIdError = (payload: FormDataLoadingPayload, endpointUrl: string): Error => {
+    const { formSettings, formArguments } = payload;
+    const { modelType } = formSettings;
+    const modelTypeName = typeof modelType === 'string' ? modelType : modelType?.name;
+
+    const argumentNames = isDefined(formArguments) ? Object.keys(formArguments) : [];
+    const receivedArguments = argumentNames.length > 0
+      ? `received form arguments: ${argumentNames.join(', ')}`
+      : 'no form arguments were passed';
+
+    return new Error(
+      `Data id is missing: the form loads data by id${isNullOrWhiteSpace(modelTypeName) ? '' : ` from '${modelTypeName}'`} using '${endpointUrl}', but no 'id' was found in the form arguments (${receivedArguments}).`,
+    );
+  };
+
   loadAsync = async (payload: FormDataLoadingPayload): Promise<Values | undefined> => {
     const { loadingCallback, formSettings, formArguments, formFlatStructure } = payload;
+    const dataId = getIdOrUndefined(formArguments);
     try {
-      const dataId = getIdOrUndefined(formArguments);
-      if (!dataId)
-        throw new Error('Data id is missing');
-
       const endpoint = await this.getEndpointAsync(payload);
 
       // TODO: implement data loading using different http verbs
@@ -113,6 +125,10 @@ export class GqlLoader<Values extends object = object> implements IFormDataLoade
       const response = await this.#httpClient.get<IAjaxResponse<Values>>(finalUrl);
 
       const responseData = extractAjaxResponse(response.data, 'Failed to load data');
+
+      // note: checked after the request so that more specific failures (endpoint, server, permissions) surface first
+      if (!dataId)
+        throw this.#missingDataIdError(payload, getDataUrl);
 
       loadingCallback?.({ loadingState: 'ready', loaderHint: undefined });
 

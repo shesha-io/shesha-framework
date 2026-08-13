@@ -1,16 +1,14 @@
 import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, paddingStyles, shadowStyles } from '@/designer-components/_common/styles/utils';
-import { IStyleValue } from '../../../providers/form/models';
+import { IStyleValue } from '@/providers';
 import { createStyles, sheshaStyles, getTextHoverEffects } from '@/styles';
-import { CSSProperties } from 'react';
 
 interface UseStylesParams {
-  textAlign: CSSProperties['textAlign'] | undefined;
   styleValue: IStyleValue | undefined;
   enableFullStyle: boolean | undefined;
 }
 
-export const useStyles = createStyles(({ css, cx, prefixCls, token }, params: UseStylesParams) => {
-  const { textAlign, styleValue, enableFullStyle } = params;
+export const useStyles = createStyles(({ css, cx, prefixCls, token }, { styleValue, enableFullStyle }: UseStylesParams) => {
+  const textAlign = fontStyles(styleValue?.font);
 
   const readOnlyModeToggler = "read-only-mode-toggler";
   const readOnlyDisplayFormItem = cx("read-only-display-form-item", css`
