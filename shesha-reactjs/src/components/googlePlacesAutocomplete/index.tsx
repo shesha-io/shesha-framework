@@ -55,7 +55,16 @@ export interface IGooglePlacesAutocompleteProps {
   biasedCoordinates?: LatLngPolygon | PointPolygon | undefined;
   style?: CSSProperties | undefined;
   size?: SizeType | undefined;
-  font?: IStyleValue['font'] | undefined;
+  /**
+   * The component's Appearance model, handed over whole.
+   *
+   * This control renders its own suggestion list rather than an antd popup, so there is no popup to
+   * hand an emotion class to — the list is styled from these values instead. Passing the model as a
+   * single object rather than a property per style keeps the caller from silently dropping one: a
+   * forgotten `background=` prop is invisible to the type-checker when every property is optional,
+   * which is exactly how the list went unstyled once already.
+   */
+  styleModel?: IStyleValue | undefined;
   searchOptions?: PropTypes['searchOptions'] | undefined;
   onFocus?: ((event: React.FocusEvent<HTMLInputElement, Element>) => void) | undefined;
   /** Applied to the antd `Input`, so a caller can style the field itself. */
@@ -82,15 +91,15 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
   tabIndex,
   biasedCoordinates,
   style,
-  font,
   size,
+  styleModel,
   searchOptions,
   onFocus,
   className,
   inputRef,
   inputProps: extraInputProps,
 }) => {
-  const { styles } = useStyles({ fontFamily: font?.type, fontWeight: font?.weight, textAlign: font?.align, color: font?.color, fontSize: font?.size });
+  const { styles } = useStyles(styleModel ?? {});
   const [highlightedPlaceId, setHighlightedPlaceId] = useState('');
   const [showSuggestionsDropdownContainer, setShowSuggestionsDropdownContainer] = useState(true);
   const suggestionRef = useRef<ISuggestion[]>([]);

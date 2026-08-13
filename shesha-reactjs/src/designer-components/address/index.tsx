@@ -73,7 +73,9 @@ const AddressCompoment: AddressComponentDefinition = {
                 prefix={model.prefix}
                 radiusPriority={model.radiusPriority}
                 showPriorityBounds={model.showPriorityBounds}
-                font={model.font}
+                // The component model carries the Appearance properties directly, so it doubles as
+                // the style model for the suggestion list.
+                styleModel={model}
                 readOnly={model.readOnly}
                 disabled={model.disabled}
                 value={value ?? ""}

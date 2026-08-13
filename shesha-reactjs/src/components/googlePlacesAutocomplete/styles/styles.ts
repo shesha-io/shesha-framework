@@ -1,14 +1,18 @@
 import { createStyles } from '@/styles';
+import { fontStyles, paddingStyles, popupAppearanceStyles } from '@/designer-components/_common/styles/utils';
+import { IStyleValue } from '@/interfaces';
 
-type StylesArgs = {
-  fontFamily?: string | undefined;
-  fontWeight?: string | undefined;
-  textAlign?: string | undefined;
-  color?: string | undefined;
-  fontSize?: number | undefined;
-};
+/* The whole Appearance model, not a property per style: this control renders its own suggestion
+   list rather than an antd popup, so there is no popup to hand a class to and the list is styled
+   from these values. Taking the model as one object means a caller cannot silently omit one of
+   them — see the note on `styleModel` in the component. */
+export const useStyles = createStyles(({ css, cx, token }, { font, background, border, stylingBoxJson }: IStyleValue) => {
+  const fontFamily = font?.type;
+  const fontWeight = font?.weight;
+  const textAlign = font?.align;
+  const color = font?.color;
+  const fontSize = font?.size;
 
-export const useStyles = createStyles(({ css, cx, token }, { fontFamily, fontWeight, textAlign, color, fontSize }: StylesArgs) => {
   const dropdownContainer = "dropdown-container";
   const suggestionContainer = "suggestion-container";
   const suggestion = "suggestion";
@@ -27,21 +31,27 @@ export const useStyles = createStyles(({ css, cx, token }, { fontFamily, fontWei
             position: absolute;
             z-index: 1000;
             width: 100%;
-            background: white;
-    
+            /* Falls back to the themed surface rather than a hardcoded white, so the list is legible
+               on a dark theme even when no background is configured. Any configured appearance is
+               emitted after and wins. */
+            background: ${token.colorBgElevated};
+            ${popupAppearanceStyles({ background, border })}
+            ${paddingStyles(stylingBoxJson)}
+
             &.hidden {
                 display: none;
             }
-    
+
             .${suggestionContainer} {
                 padding: 2.5px 5px;
                 transition: all 0.2s ease-in;
                 border-bottom: 1px solid #e8e8e8;
-        
+                ${fontStyles(font)}
+
                 &:hover {
                     ${highlightedSuggestion}
                 }
-        
+
                 &.highlighted {
                    ${highlightedSuggestion}
                 }
