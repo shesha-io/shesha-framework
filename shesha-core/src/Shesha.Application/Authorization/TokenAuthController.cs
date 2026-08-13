@@ -351,6 +351,9 @@ namespace Shesha.Authorization
                     true
                 );
 
+                if (user.Logins == null)
+                    user.Logins = new List<UserLogin>();
+
                 user.Logins.Add(new UserLogin
                 {
                     LoginProvider = externalUser.Provider,
