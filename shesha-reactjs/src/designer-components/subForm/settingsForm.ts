@@ -4,6 +4,7 @@ import { FormLayout } from 'antd/lib/form/Form';
 
 export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const commonTabId = nanoid();
+  const eventsTabId = nanoid();
   const appearanceTabId = nanoid();
   const styleRouterId = nanoid();
 
@@ -64,6 +65,18 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   wrapInTemplate: true, templateSettings: { functionName: 'getPutUrl' },
                 },
               ] })
+              .toJson(),
+          },
+          { key: 'events', title: 'Events', id: eventsTabId,
+            components: fbf(eventsTabId)
+              .addSettingsInput({ inputType: "codeEditor", propertyName: "onCreated", label: "On Post Data", tooltip: "Triggered after successfully creating a new sub-form object in the back-end",
+                mode: "dialog", description: "Triggered after successfully creating a new sub-form object in the back-end",
+                wrapInTemplate: true, templateSettings: { functionName: 'onCreated' },
+              })
+              .addSettingsInput({ inputType: "codeEditor", propertyName: "onUpdated", label: "On Put Data", tooltip: "Triggered after successfully updating the sub-form object in the back-end",
+                mode: "dialog", description: "Triggered after successfully updating the sub-form object in the back-end",
+                wrapInTemplate: true, templateSettings: { functionName: 'onUpdated' },
+              })
               .toJson(),
           },
           { key: 'appearance', title: 'Appearance', id: appearanceTabId,
