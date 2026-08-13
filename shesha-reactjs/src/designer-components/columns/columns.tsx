@@ -51,7 +51,7 @@ const ColumnsComponent: ColumnsComponentDefinition = {
     const validatedColumns = validateColumns(columns);
 
     return (
-      <div className={styles.shaColumnComponent} style={model.styleJson} {...events}>
+      <div className={styles.shaColumnComponent} style={model.styleCss} {...events}>
         <Row gutter={[gutterX || 0, gutterY || 0]} style={{ marginLeft: 0, marginRight: 0 }}>
           <ParentProvider model={model} name={`Columns-${model.id}`}>
             {validatedColumns.map((col, index) => (

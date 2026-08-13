@@ -24,6 +24,7 @@ export const useStyles = createStyles(({ css, cx, token }, model: IConfigurableF
             > .ant-form-item-label {
                 ${paddingStyles({ ...model.stylingBoxJson, paddingLeft: 0, paddingRight: 0, _type: 'styleBox' })}
                 align-content: center;
+                min-height: fit-content;
                 ${model.autoAlignLabel !== false
                   ? `
                   /* A validation message grows the control column. With height: 100% the label

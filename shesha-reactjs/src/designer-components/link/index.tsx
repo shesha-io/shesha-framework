@@ -39,7 +39,7 @@ const LinkComponent: LinkComponentDefinition = {
         {() => {
           if (hasChildren !== true) {
             return (
-              <div className={styles.shaLinkWrapper} style={model.styleJson}>
+              <div className={styles.shaLinkWrapper} style={model.styleCss}>
                 <a href={calculatedModel.href} target={target} className={styles.shaLink}>
                   {content}
                 </a>
@@ -53,7 +53,7 @@ const LinkComponent: LinkComponentDefinition = {
               model={model}
             >
               <ComponentsContainer
-                style={model.styleJson}
+                style={model.styleCss}
                 containerId={id}
                 direction={direction}
                 className={classNames(styles.shaLinkContainer, model.className)}
