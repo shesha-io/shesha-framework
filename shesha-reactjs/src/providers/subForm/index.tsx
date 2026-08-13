@@ -261,6 +261,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     entityTypeFormCache.current = {};
     clearedForMissingEntityType.current = false;
     formResolutionRequestId.current++;
+    resolutionInFlightKey.current = null;
     markupRequestId.current++;
     setFormConfig({ formId: formSelectionMode === 'dynamic' ? undefined : formId, lazy: true });
     // only react to mode changes here; formId changes are handled by the sync effect above
@@ -334,7 +335,8 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
             setFormLoadingState({ isLoading: true, error: null });
             getEntityFormIdAsync(internalEntityType, formType)
               .finally(() => {
-                if (resolutionInFlightKey.current === inFlightKey)
+                // an invalidated request no longer owns the key, the replacement request that took it must keep it
+                if (formResolutionRequestId.current === requestId && resolutionInFlightKey.current === inFlightKey)
                   resolutionInFlightKey.current = null;
               })
               .then((formid) => {
@@ -362,6 +364,8 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         clearedForMissingEntityType.current = true;
         clearedForApiMode.current = props.apiMode;
         formResolutionRequestId.current++;
+        // the discarded request keeps the key otherwise, and the same entity type coming back resolves nothing
+        resolutionInFlightKey.current = null;
         clearResolvedForm();
         // note : in the `entityName` mode the entity type is part of the configuration, so its absence is the reason
         // nothing renders and must be stated. In the other modes it comes from the value and isn't known yet
