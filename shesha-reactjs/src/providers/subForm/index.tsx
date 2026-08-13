@@ -56,6 +56,11 @@ import { IGlobalState } from '../globalState/contexts';
 import { MessageInstance } from 'antd/es/message/interface';
 import { useDataContextManagerActionsOrUndefined } from '../dataContextManager/hooks';
 import { throwError } from '@/utils/errors';
+import { useComponentApi } from '../componentApi/provider';
+import { SubFormApi } from '@/componentsApi/componentApi';
+import { useEffectOnce } from 'react-use';
+
+import apiCode from "../../componentsApi/componentApi.ts?raw";
 
 interface IFormLoadingState {
   isLoading: boolean;
@@ -149,6 +154,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     context,
   } = props;
 
+  const componentApi = useComponentApi();
   const parent = useParentOrUndefined();
   const httpClient = useHttpClient();
 
@@ -392,7 +398,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   const finalQueryParams = useDeepCompareMemo(() => {
     const result = getFinalQueryParams();
     return result;
-  }, [actualQueryParams, properties, internalEntityType]);
+  }, [actualQueryParams, properties, internalEntityType, getIdOrUndefined(value)]); // refetch data if papameters or id changed
 
   // abort controller, is used to cancel out of date data requests
   const dataRequestAbortController = useRef<AbortController | null>(null);
@@ -637,10 +643,23 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     actionDependencies,
   );
 
+  // register subform api
+
+  useEffect(() => {
+    componentApi?.updateApi<SubFormApi>({
+      id: props.id,
+      componentName: props.componentName ?? "",
+      level: 3,
+      typeDefinition: { typeName: 'SubFormApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+      api: { getSubFormData: () => debouncedFetchData(true), postSubFormData: () => postData(), putSubFormData: () => putData() }, // TODO: return real promise
+    });
+  }, [componentApi, debouncedFetchData, postData, props.componentName, props.id, putData]);
+  useEffectOnce(() => () => componentApi?.removeApi(props.id));
+
   //#endregion
 
   const getColSpan = (span: number | ColProps | undefined): ColProps | undefined => {
-    if (!span) return undefined;
+    if (!isDefined(span)) return undefined;
 
     return typeof span === 'number' ? { span } : span;
   };

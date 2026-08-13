@@ -2,60 +2,67 @@ import { IToolboxComponent } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { WarningOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';
-import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { IStyleValue, useFormData } from '@/providers';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { IStyleValue } from '@/providers';
 import ValidationErrors from '@/components/validationErrors';
 import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 import { defaultStyles } from './utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import classNames from 'classnames';
+import { useStyles } from './styles';
+import { useEvents } from '@/components/formDesigner/components/eventsAndApiValueProcessor';
+import { getComponentEvents } from '../_common/events';
+import { EMPTY_STYLE } from '@/styles/variables';
 
 export interface IValidationErrorsComponentProps extends IConfigurableFormComponent, IStyleValue {
   className?: string | undefined;
+  /** @deprecated */
   borderSize?: string | number | undefined;
+  /** @deprecated */
   borderRadius?: number | undefined;
+  /** @deprecated */
   borderType?: string | undefined;
+  /** @deprecated */
   borderColor?: string | undefined;
+  /** @deprecated */
   stylingBox?: string | undefined;
+  /** @deprecated */
   height?: string | number | undefined;
+  /** @deprecated */
   width?: string | number | undefined;
+  /** @deprecated */
   backgroundColor?: string | undefined;
+  /** @deprecated */
   hideBorder?: boolean | undefined;
 }
 
 const ValidationErrorsComponent: IToolboxComponent<IValidationErrorsComponentProps> = {
+  allowInherit: true,
   type: 'validationErrors',
   isInput: false,
   name: 'Validation Errors',
   icon: <WarningOutlined />,
+  getWrapperStyle: (model) => ({ style: { styleJson: {}, dimensions: model.dimensions } }),
   Factory: ({ model }) => {
-    const { allStyles } = model;
+    const handleEvent = useEvents<void>(model.componentName);
+    const { styles } = useStyles(model);
     const { validationErrors, formMode } = useShaFormInstance();
-    const { data: formData } = useFormData();
-
-    if (formMode === 'designer')
-      return (
-        <ValidationErrors
-          style={{ ...getStyle(model.style, formData), ...allStyles?.fullStyle }}
-          error="Validation Errors (visible in the runtime only)"
-          renderMode="alert"
-          {...(model.className ? { className: model.className } : {})}
-        />
-      );
-
     return (
       <ValidationErrors
-        style={{ ...getStyle(model.style, formData), ...allStyles?.fullStyle }}
-        error={validationErrors}
+        style={model.styleJson ?? EMPTY_STYLE}
+        error={formMode === 'designer' ? 'Validation Errors (visible in the designer only)' : validationErrors}
         renderMode="alert"
-        {...(model.className ? { className: model.className } : {})}
+        className={classNames(styles.shaValidationErrors, model.className)}
+        additionalDomProperties={getComponentEvents<void, IValidationErrorsComponentProps>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent })}
       />
     );
   },
-  /** validationErrors should not have any settings and should be never in hidden mode and depends on permission */
+  /** validationErrors is never hidden and depends on permission */
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+  getDefaultStyles: defaultStyles,
   settingsFormMarkup: getSettings,
   migrator: (m) =>
-    m.add<IValidationErrorsComponentProps>(0, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+    m.add<IValidationErrorsComponentProps>(0, (prev, ctx) => ctx.isNew === true ? prev : { ...migratePrevStyles(prev, defaultStyles()) }),
 };
 
 export default ValidationErrorsComponent;

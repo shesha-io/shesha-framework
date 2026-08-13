@@ -22,12 +22,11 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
               .addSettingsInput({ inputType: 'switch', propertyName: 'noDefaultStyling', label: 'No Default Styling', size: 'small', tooltip: 'If checked, the default styles and classes of the container will not be applied.', jsSetting: true })
               .addPropertyRouter({ id: commonStyleRouterId, componentName: 'propertyRouter1', label: 'Property router1', labelAlign: 'right',
                 propertyRouteName: removeStyleRouter === true ? '' : { _mode: "code", _code: "    return contexts.canvasContext?.designerDevice || 'desktop';", _value: "" },
-                components: [
-                  ...fbf(commonStyleRouterId)
-                    .stdLayoutPanel(removeStyleRouter !== true)
-                    .stdDimensionsPanel()
-                    .stdMarginPaddingPanel()
-                    .toJson()],
+                components: fbf(commonStyleRouterId)
+                  .stdLayoutPanel(removeStyleRouter !== true)
+                  .stdDimensionsPanel()
+                  .stdMarginPaddingPanel()
+                  .toJson(),
               })
               .toJson(),
           },
@@ -59,6 +58,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
         ],
       }).toJson(),
     formSettings: {
+      isSettingsForm: true,
       colon: false,
       layout: 'vertical' as FormLayout,
       labelCol: { span: 24 },

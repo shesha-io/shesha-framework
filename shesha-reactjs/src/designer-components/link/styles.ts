@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 import { ILinkComponentProps } from './interfaces';
-import { dimensionsStyles, fontStyles, marginStyles, paddingStyles } from '../_common/styles/utils';
+import { dimensionsStyles, fontStyles, paddingStyles } from '../_common/styles/utils';
 import { isDefined } from '@/utils';
 
 const shaLink = 'sha-link';
@@ -17,7 +17,6 @@ export const useStyles = createStyles(({ css, cx }, model: ILinkComponentProps) 
           : ''
       }
       ${paddingStyles(model.stylingBoxJson)}
-      ${marginStyles(model.stylingBoxJson)}
       ${dimensionsStyles(model.dimensions)}
   `);
 
@@ -27,7 +26,6 @@ export const useStyles = createStyles(({ css, cx }, model: ILinkComponentProps) 
       align-items: center;
 
       ${paddingStyles(model.stylingBoxJson)}
-      ${marginStyles(model.stylingBoxJson)}
       ${dimensionsStyles(model.dimensions)}
 
       .${shaLink} {

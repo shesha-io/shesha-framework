@@ -51,7 +51,7 @@ export const FormComponentModelPreparer: FC<FormComponentPrepareModelProps> = ({
       return sourceComponentModel;
 
     // Default styles + Theme component styles
-    const defStyle: IStyleValue = toolboxComponent?.getDefaultStyles?.() ?? {};
+    const defStyle: IStyleValue = toolboxComponent?.getDefaultStyles?.() ?? { styleJson: {} };
     const themeDefStyle: IStyleValue = isDefined(theme.components)
       ? deepMergeValues(defStyle, theme.components[sourceComponentModel.type] as IStyleValue, deepMergeSkipUndefinedFunc)
       : defStyle;

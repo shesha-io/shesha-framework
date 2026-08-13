@@ -188,6 +188,7 @@ export interface ICodeEditorSettingsInputProps extends ISettingsInputBase<string
   resultTypeExpression?: string | GetResultTypeFunc | undefined;
   availableConstantsExpression?: string | undefined;
   availableConstants?: IObjectMetadata | undefined;
+  /** @deprecated use availableConstantsExpression or availableConstants */
   exposedVariables?: string[] | ICodeExposedVariable[] | undefined;
 }
 

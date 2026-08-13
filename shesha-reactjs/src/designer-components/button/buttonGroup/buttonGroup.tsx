@@ -72,7 +72,7 @@ export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
       <Space.Compact size={size} style={{ ...props.styleJson, ...getOverflowStyle(true, false) }} className={classNames(styles.shaHideEmpty, styles.shaButtonGroupContainer)}>
         <Space size={gap}>
           {filteredItems.map((item) =>
-            (<InlineItem styles={item.styles} item={item} uuid={item.id} size={item.size ?? size} getIsVisible={getIsVisible} appContext={allData} key={item.id} buttonComponent={buttonComponent} />),
+            (<InlineItem styles={item.styleJson} item={item} uuid={item.id} size={item.size ?? size} getIsVisible={getIsVisible} appContext={allData} key={item.id} buttonComponent={buttonComponent} />),
           )}
         </Space>
       </Space.Compact>
