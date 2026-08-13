@@ -6,7 +6,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const dataTabId = nanoid();
-  const eventsTabId = nanoid();
   const appearanceTabId = nanoid();
   const securityTabId = nanoid();
   const styleRouterId = nanoid();
@@ -332,96 +331,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 label: "Unique State ID",
                 tooltip: "A unique identifier used to maintain component state across sessions. Enable this if you need to preserve the component's state when the page reloads.",
                 jsSetting: true,
-              })
-              .toJson(),
-            ],
-          },
-          {
-            key: 'events',
-            title: 'Events',
-            id: eventsTabId,
-            components: [...fbf()
-              .addSettingsInput({
-                id: nanoid(),
-                inputType: "codeEditor",
-                propertyName: "onCreated",
-                parentId: eventsTabId,
-                label: "On Created",
-                tooltip: "Triggered after successfully creating a new sub-form object in the back-end",
-                mode: "dialog",
-                description: "Triggered after successfully creating a new sub-form object in the back-end",
-                exposedVariables: [
-                  {
-                    name: 'response',
-                    description: 'Submitted data',
-                    type: 'object',
-                  },
-                  {
-                    name: 'data',
-                    description: 'Form data',
-                    type: 'object',
-                  },
-                  {
-                    name: 'globalState',
-                    description: 'The global state',
-                    type: 'object',
-                  },
-                  {
-                    name: 'message',
-                    description: 'Toast message',
-                    type: 'object',
-                  },
-                  {
-                    name: 'publish',
-                    description: 'Event publisher',
-                    type: 'function',
-                  },
-                ],
-                wrapInTemplate: true,
-                templateSettings: {
-                  functionName: 'onCreated',
-                },
-              })
-              .addSettingsInput({
-                id: nanoid(),
-                inputType: "codeEditor",
-                propertyName: "onUpdated",
-                parentId: eventsTabId,
-                label: "On Updated",
-                tooltip: "Triggered after successfully updating the sub-form object in the back-end",
-                mode: "dialog",
-                description: "Triggered after successfully updating the sub-form object in the back-end",
-                exposedVariables: [
-                  {
-                    name: 'response',
-                    description: 'Submitted data',
-                    type: 'object',
-                  },
-                  {
-                    name: 'data',
-                    description: 'Form data',
-                    type: 'object',
-                  },
-                  {
-                    name: 'globalState',
-                    description: 'The global state',
-                    type: 'object',
-                  },
-                  {
-                    name: 'message',
-                    description: 'Toast message',
-                    type: 'object',
-                  },
-                  {
-                    name: 'publish',
-                    description: 'Event publisher',
-                    type: 'function',
-                  },
-                ],
-                wrapInTemplate: true,
-                templateSettings: {
-                  functionName: 'onUpdated',
-                },
               })
               .toJson(),
             ],
