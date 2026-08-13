@@ -33,7 +33,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 visibleJs: 'return getSettingValue(data?.dataSource) !== "form";',
               })
               .addSettingsInput({ inputType: "entityTypeAutocomplete", propertyName: "entityType", label: "Entity Type", jsSetting: true,
-                visibleJs: 'return !(getSettingValue(data?.dataSource) === "form" || getSettingValue(data?.apiMode) !== "entityName");',
+                visibleJs: 'return getSettingValue(data?.formSelectionMode) === "dynamic" || !(getSettingValue(data?.dataSource) === "form" || getSettingValue(data?.apiMode) !== "entityName");',
               })
               .addSettingsInput({ inputType: "codeEditor", propertyName: "properties", label: "Properties", language: "graphql", description: "Properties in GraphQL-like syntax",
                 jsSetting: true, mode: "inline", wrapInTemplate: false, visibleJs: 'return getSettingValue(data?.entityType);',

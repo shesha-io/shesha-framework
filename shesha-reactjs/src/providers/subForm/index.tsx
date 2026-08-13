@@ -355,7 +355,14 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         clearedForMissingEntityType.current = true;
         formResolutionRequestId.current++;
         clearResolvedForm();
-        setFormLoadingState((prev) => prev.isLoading || prev.error !== null ? { isLoading: false, error: null } : prev);
+        // note : in the `entityName` mode the entity type is part of the configuration, so its absence is the reason
+        // nothing renders and must be stated. In the other modes it comes from the value and isn't known yet
+        setFormLoadingState({
+          isLoading: false,
+          error: props.apiMode === 'entityName'
+            ? new Error("'Entity Type' is required when 'Form Selection Mode' = 'Dynamic'. Bind the sub form to an entity reference property, or set the entity type explicitly.")
+            : null,
+        });
         setMarkup({
           hasFetchedConfig: false,
           id: undefined,
@@ -368,7 +375,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         prevRenderedEntityTypeForm.current = null;
       }
     }
-  }, [clearResolvedForm, formSelectionMode, formType, getEntityFormIdAsync, internalEntityType, setMarkup, value]);
+  }, [clearResolvedForm, formSelectionMode, formType, getEntityFormIdAsync, internalEntityType, props.apiMode, setMarkup, value]);
 
   /**
    * Get final query params taking into account all settings
