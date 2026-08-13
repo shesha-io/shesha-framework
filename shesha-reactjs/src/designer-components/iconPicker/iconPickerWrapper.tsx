@@ -1,73 +1,69 @@
 import IconPicker, { IIconPickerProps, ShaIconTypes } from '@/components/iconPicker';
-import { CSSProperties, FC, useCallback, useMemo } from 'react';
-import { IApplicationContext } from '@/providers/form/utils';
+import { CSSProperties, FC, useCallback } from 'react';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { IDimensionsValue } from '../_settings/utils/dimensions/interfaces';
 import { Tooltip } from 'antd';
+import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
 
 interface IconPickerWrapperProps {
-  disabled?: boolean | undefined; // todo: move to the model level
-  applicationContext: IApplicationContext;
+  /** Greys the picker out and takes it out of the tab order. Independent of `readOnly`. */
+  disabled?: boolean | undefined;
+  /** Renders the icon but blocks selection. Independent of `disabled`. */
+  readOnly?: boolean | undefined;
   value: string | null | undefined;
   onChange: ((newValue: string | null) => void) | undefined;
-  readOnly?: boolean | undefined;
-  fontSize?: number | undefined;
-  iconSize?: number | undefined;
   selectBtnSize?: SizeType | undefined;
-  color?: string | undefined;
-  customColor?: string | undefined;
-  borderWidth?: number | undefined;
-  borderColor?: string | undefined;
-  borderRadius?: number | undefined;
-  backgroundColor?: string | undefined;
-  stylingBox?: string | undefined;
   defaultValue?: ShaIconTypes | undefined;
-  textAlign?: CSSProperties['textAlign'] | undefined;
-  style?: string | undefined;
-  dimensions?: IDimensionsValue | undefined;
   description?: string | undefined;
-  fullStyles?: CSSProperties | undefined;
+  /**
+   * Explicit glyph size in px. Used by the settings-form `iconPicker` input, which sizes the glyph
+   * directly rather than through a style model. The form component leaves this unset and sizes the
+   * glyph from the Font panel via `className` instead.
+   */
+  iconSize?: number | undefined;
+  /** Emotion class carrying the configured appearance. */
+  className?: string | undefined;
+  /** Evaluated Custom style script. */
+  style?: CSSProperties | undefined;
 }
 
 export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
   const {
-    color,
+    disabled,
     readOnly,
     onChange,
-    textAlign,
     selectBtnSize,
-    fullStyles,
-    iconSize,
     value,
     defaultValue,
+    description,
+    iconSize,
+    className,
+    style,
   } = props;
 
   const onIconChange = useCallback<Required<IIconPickerProps>["onIconChange"]>((_icon, iconName): void => {
     if (onChange) onChange(iconName);
   }, [onChange]);
 
-  const fontSize = parseFloat(String(fullStyles?.fontSize).replace('px', ''));
+  // Both non-editable modes must block selection. `IconPicker` gates the modal on `readOnly`
+  // alone, so Disabled has to be folded in here or a disabled picker would still open its modal.
+  const selectionBlocked = readOnly === true || disabled === true;
 
-  const style: CSSProperties = useMemo(() => ({
-    ...fullStyles,
-    fontSize: fullStyles?.fontSize ?? 24,
-    background: 'transparent',
-  }), [fullStyles]);
-
-  return (
-    <Tooltip title={props.description}>
-      <div style={(defaultValue || value) ? { textAlign: fullStyles?.textAlign ?? textAlign } : {}}>
-        <IconPicker
-          value={value ?? defaultValue ?? undefined}
-          onIconChange={onIconChange}
-          selectBtnSize={selectBtnSize}
-          iconSize={iconSize ?? fontSize}
-          readOnly={readOnly}
-          style={style}
-          color={color}
-          twoToneColor={color}
-        />
-      </div>
-    </Tooltip>
+  const picker = (
+    <div className={className} style={style}>
+      <IconPicker
+        value={value ?? defaultValue ?? undefined}
+        onIconChange={onIconChange}
+        selectBtnSize={selectBtnSize}
+        readOnly={selectionBlocked}
+        {...(isDefined(iconSize) ? { iconSize } : {})}
+        // Colour and size otherwise come from the emotion class on the container, so no inline
+        // style is passed down — that keeps the cascade open for form- and theme-level overrides.
+        style={{ background: 'transparent' }}
+      />
+    </div>
   );
+
+  return isNotNullOrWhiteSpace(description)
+    ? <Tooltip title={description}>{picker}</Tooltip>
+    : picker;
 };

@@ -365,6 +365,12 @@ export interface DateFieldApi extends InputComponentApi<string | [string | null,
  */
 export type AddressApi = InputComponentApi<string | undefined>;
 
+/**
+ * Icon picker. The value is the name of the selected Ant Design icon (for example
+ * `"HeartOutlined"`), or `undefined` when no icon is selected.
+ */
+export type IconPickerApi = InputComponentApi<string | undefined>;
+
 export interface PanelApi extends CommonComponentApi {
   /** Whether the panel is expanded */
   isExpanded: boolean;
