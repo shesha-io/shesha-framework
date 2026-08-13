@@ -78,6 +78,22 @@ const KeyInformationBarComponent: KeyInformationBarComponentDefinition = {
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   customContainerNames: ['columns'],
+  previewConfiguration: {
+    version: 'latest',
+    type: 'KeyInformationBar',
+    id: 'KeyInformationBar',
+    propertyName: 'column 1',
+    columns: [
+      { id: nanoid(), width: 200, textAlign: 'center', flexDirection: 'column', padding: '0px', components: [
+        { type: 'textField', id: 'textField', label: 'Text Field' },
+      ],
+      },
+      { id: nanoid(), width: 200, textAlign: 'center', flexDirection: 'column', padding: '0px', components: [
+        { type: 'textField', id: 'textField1', label: 'Text Field1' },
+      ],
+      },
+    ],
+  },
 };
 
 export default KeyInformationBarComponent;
