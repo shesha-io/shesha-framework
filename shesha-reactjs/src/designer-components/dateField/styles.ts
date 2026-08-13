@@ -105,8 +105,21 @@ export const useStyles = createStyles(({ css, cx }, model: IDateFieldProps) => {
     &&& .ant-picker-header,
     &&& .ant-picker-header button,
     &&& .ant-picker-content th,
-    &&& .ant-picker-cell-in-view .ant-picker-cell-inner {
+    &&& .ant-picker-cell-in-view:not(.ant-picker-cell-disabled) .ant-picker-cell-inner {
       ${fontStyles({ ...model.font, align: undefined })}
+    }
+
+    /* A disabled date takes the configured size only. Without it the cell keeps antd's default size
+       while the rest of the grid follows the configured one, so the row sits visibly out of line.
+       Colour, weight and family are deliberately not applied: the greyed-out text is what marks the
+       date unselectable, and a configured colour would paint it as if it were available.
+
+       The same applies to the leading and trailing days of the adjacent months, which antd greys out
+       the same way (they are not in-view, so the rule above skips them). Both are matched here so
+       every cell in the grid shares one size. */
+    &&& .ant-picker-cell-disabled .ant-picker-cell-inner,
+    &&& .ant-picker-cell:not(.ant-picker-cell-in-view) .ant-picker-cell-inner {
+      ${fontStyles({ ...model.font, color: undefined })}
     }
   `);
 

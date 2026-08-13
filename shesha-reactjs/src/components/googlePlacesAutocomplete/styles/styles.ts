@@ -25,7 +25,9 @@ export const useStyles = createStyles(({ css, cx, token }, { font, background, b
   const locationSearchInputWrapper = cx("location-search-input-wrapper", css`
         width: 100%;
         position: relative;
-    
+
+        /* The list renders in place rather than in a portal, so it is positioned against this
+           wrapper and styled as its descendant. */
         .${dropdownContainer} {
             font-size: 12.5px;
             position: absolute;
