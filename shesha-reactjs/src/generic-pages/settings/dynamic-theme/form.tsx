@@ -1,6 +1,6 @@
 import { SmileOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Space } from 'antd';
-import React, { FC } from 'react';
+import { FC } from 'react';
 
 export const formItemLayout = {
   labelCol: {

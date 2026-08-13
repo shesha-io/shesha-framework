@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { DesignerMainArea } from './designerMainArea/index';
 import { FormDesignerToolbar } from './toolbar/formDesignerToolbar';
 import { useMainStyles } from './styles/styles';

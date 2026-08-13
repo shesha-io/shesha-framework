@@ -1,4 +1,3 @@
-import React from 'react';
 import { UnorderedListOutlined } from "@ant-design/icons";
 import { IToolboxComponent } from "@/interfaces";
 import { useDataSources } from '@/providers/dataSourcesProvider';

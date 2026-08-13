@@ -1,6 +1,6 @@
 import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
 import { EditOutlined } from '@ant-design/icons';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { IHasVersion, Migrator } from '@/utils/fluentMigrator/migrator';
 import { mainMenuMigration } from '@/providers/mainMenu/migrations/migration';
 import { useSettingsEditorOrUndefined } from '@/components/settingsEditor/provider';

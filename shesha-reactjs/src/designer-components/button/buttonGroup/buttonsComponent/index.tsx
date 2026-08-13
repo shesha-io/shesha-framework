@@ -1,6 +1,5 @@
 import { ButtonGroupConfigurator } from '../../../../components/buttonGroupConfigurator';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import React from 'react';
 import { getSettings } from './settings';
 import { GroupOutlined } from '@ant-design/icons';
 import { ButtonsComponentDefinition } from './interfaces';

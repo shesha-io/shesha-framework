@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { ComponentDefinition } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers';
 import { PickerFocusEventHandler } from '@rc-component/picker/interface';

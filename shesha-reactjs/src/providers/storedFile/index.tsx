@@ -1,10 +1,4 @@
-import React, {
-  FC,
-  PropsWithChildren,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import { FC, PropsWithChildren, useContext, useEffect, useState } from 'react';
 import {
   IFileUpload,
   FileUploadContext,

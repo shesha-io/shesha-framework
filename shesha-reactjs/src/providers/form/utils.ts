@@ -75,7 +75,7 @@ import { isHasPropsAccessor, makeObservableProxy, ProxyPropertiesAccessors, Type
 import { useShaFormDataUpdate, useShaFormInstanceOrUndefined } from './providers/shaFormProvider';
 import { IShaFormInstance } from './store/interfaces';
 import { isHasDataGetter } from './touchableProperty';
-import { getActualModel, getActualPropertyValue } from './utils/js-settings';
+import { getActualModel, updateActualPropertyValue } from './utils/js-settings';
 import { findToolboxComponent, getToolboxComponent } from './utils/markup';
 import {
   executeExpression,
@@ -97,7 +97,7 @@ export {
   executeScriptSync,
   // prop settings
   getActualModel,
-  getActualPropertyValue, getFunctionExecutor, type FunctionExecutor,
+  updateActualPropertyValue as getActualPropertyValue, getFunctionExecutor, type FunctionExecutor,
   type IExpressionExecuterArguments,
   type IExpressionExecuterFailedHandler,
 };

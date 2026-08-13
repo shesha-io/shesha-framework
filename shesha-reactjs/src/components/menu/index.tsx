@@ -3,13 +3,8 @@ import { convertJsonToCss, convertJsonToCssWithImportant, getSelectedKeys, norma
 import { MenuOutlined } from "@ant-design/icons";
 import { Button, Menu, MenuProps } from "antd";
 import classNames from "classnames";
-import React, {
-  FC,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { FC, useCallback, useEffect, useRef, useState } from "react";
+import * as React from "react";
 import ShaMenuDrawer from "../menuDrawer";
 import { ILayoutColor } from "./model";
 import OverflowedIndicator, { getMutatedMenuItem } from "./overflowedIndicator";

@@ -1,5 +1,6 @@
 import classNames from 'classnames';
-import React, { FC, useMemo, useRef } from 'react';
+import { FC, useMemo, useRef } from 'react';
+import * as React from 'react';
 import { IQueryBuilderProps } from './interfaces';
 import { usePrevious } from 'react-use';
 import { useStyles } from './styles/styles';
@@ -11,13 +12,14 @@ import {
   Config,
   BuilderProps,
   Utils,
+  JsonLogicTree,
 } from '@react-awesome-query-builder/antd';
 
 interface IQueryBuilderContentProps extends IQueryBuilderProps {
   qbConfig: Config;
 }
 
-const loadJsonLogic = (jlValue: object, config: Config): ImmutableTree | undefined => {
+const loadJsonLogic = (jlValue: JsonLogicTree, config: Config): ImmutableTree | undefined => {
   try {
     return QbUtils.loadFromJsonLogic(jlValue, config);
   } catch (error) {
@@ -33,6 +35,8 @@ export const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
   qbConfig,
 }) => {
   const { styles } = useStyles();
+  // `value` is the JsonLogic tree, while `onChange` emits a full JsonLogicResult.
+  // Track the tree (not the result) so a locally-originated change isn't mistaken for an external one.
   const lastLocallyChangedValue = useRef(value);
   const changedOutside = value !== lastLocallyChangedValue.current;
   const prevValue = usePrevious(value);
@@ -71,7 +75,7 @@ export const QueryBuilderContent: FC<IQueryBuilderContentProps> = ({
     if (onChange) {
       const jsonLogicResult = QbUtils.jsonLogicFormat(_tree, _config);
 
-      lastLocallyChangedValue.current = jsonLogicResult;
+      lastLocallyChangedValue.current = jsonLogicResult.logic;
       onChange(jsonLogicResult);
     }
   };

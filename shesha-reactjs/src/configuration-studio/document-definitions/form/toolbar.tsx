@@ -3,7 +3,7 @@ import { PreviewButton } from '@/components/formDesigner/toolbar/previewButton';
 import { SaveButton } from '@/components/formDesigner/toolbar/saveButton';
 import { UndoRedoButtons } from '@/components/formDesigner/toolbar/undoRedoButtons';
 import { Space } from 'antd';
-import React, { FC } from 'react';
+import { FC } from 'react';
 
 export interface IFormToolbarProps {
   readOnly?: boolean;

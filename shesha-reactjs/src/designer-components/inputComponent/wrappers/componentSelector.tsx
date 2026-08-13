@@ -1,5 +1,4 @@
 import { IComponentSelectorSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React from 'react';
 import { FCUnwrapped } from '@/providers/form/models';
 import { useMetadataOrUndefined, useShaFormInstance } from '@/providers';
 import { FormComponentSelector } from '@/components/formComponentSelector';

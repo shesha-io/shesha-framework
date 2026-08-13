@@ -1,8 +1,4 @@
-import React, {
-  FC,
-  useEffect,
-  useMemo,
-} from 'react';
+import { FC, useEffect, useMemo } from 'react';
 import { ConfigurableForm } from '@/components/configurableForm';
 import { Form } from 'antd';
 import { FormAction, FormMarkup } from '@/providers/form/models';

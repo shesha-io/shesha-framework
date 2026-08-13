@@ -2,7 +2,7 @@
    stylingBox) on purpose — upgrading forms saved against those shapes is what it is for. */
 /* eslint-disable @typescript-eslint/no-deprecated */
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import React, { CSSProperties, useEffect, useRef } from 'react';
+import { CSSProperties, useEffect, useRef } from 'react';
 import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { DownSquareOutlined } from '@ant-design/icons';
 import { IInputStyles, INestedStyleValue, IStyleValue } from '@/providers/form/models';

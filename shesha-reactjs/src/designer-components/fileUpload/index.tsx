@@ -1,5 +1,4 @@
 import { FileAddOutlined } from '@ant-design/icons';
-import React from 'react';
 import { FileUpload } from '@/components/fileUpload';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { DataTypes } from '@/interfaces';

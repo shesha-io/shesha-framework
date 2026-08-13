@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { Typography } from 'antd';
 import { useStyles } from './styles/styles';
 import { ShaIcon, IconType } from '../shaIcon';

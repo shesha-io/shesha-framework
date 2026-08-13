@@ -1,6 +1,6 @@
 import { useCacheProvider } from '@/hooks/useCache';
 import { useFormDesignerComponents, useHttpClient, useSheshaApplication } from '@/providers';
-import React, { FC, PropsWithChildren, useContext, useState } from 'react';
+import { FC, PropsWithChildren, useContext, useState } from 'react';
 import { ConfigurationLoader, IConfigurationLoader } from './configurationLoader';
 import {
   ConfigurationItemsLoaderActionsContext,

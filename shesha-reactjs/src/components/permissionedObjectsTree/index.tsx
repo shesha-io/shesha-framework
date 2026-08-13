@@ -1,5 +1,6 @@
 import GrouppedObjectsTree from '@/components/grouppedObjectsTree';
-import React, { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
+import * as React from 'react';
 import { ApiOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import { PermissionedObjectDto } from '@/apis/permissionedObject';

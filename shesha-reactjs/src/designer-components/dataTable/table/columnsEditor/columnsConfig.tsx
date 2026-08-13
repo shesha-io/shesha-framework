@@ -1,5 +1,5 @@
 import { Button } from 'antd';
-import React, { FC, Fragment, useState } from 'react';
+import { FC, Fragment, useState } from 'react';
 import { ColumnsItemProps } from '@/providers/datatableColumnsConfigurator/models';
 import { ColumnsEditorModal } from './columnsEditorModal';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';

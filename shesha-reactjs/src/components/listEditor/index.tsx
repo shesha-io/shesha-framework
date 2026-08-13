@@ -1,4 +1,5 @@
-import React, { PropsWithChildren, useContext, useMemo, useState } from 'react';
+import { PropsWithChildren, useContext, useMemo, useState } from 'react';
+import * as React from 'react';
 import { GenericListEditorProvider } from './provider';
 import {
   getListEditorActionsContext,

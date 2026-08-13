@@ -8,7 +8,6 @@ import { buildUrl } from '@/utils';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { useShaFormInstanceOrUndefined } from '@/providers';
 import { AutocompleteWithRepository } from './autocompleteWithRepository';
-import React from 'react';
 import { useUrlRepository } from '@/providers/dataTable/repository/urlRepository';
 
 export type UrlAutocompleteProps<TValue = unknown> = Omit<IAutocompleteProps<TValue>, 'dataSourceType'>;

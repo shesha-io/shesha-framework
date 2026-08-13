@@ -2,7 +2,7 @@
 
 import { Alert, Card, Col, Row } from 'antd';
 import data from '../../public/meta.json';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { useLayoutSelection } from '@/hooks';
 import { LAYOUT_MODE } from '@/components/mainLayout/constant';
 import CollapsiblePanel from '@/components/panel';

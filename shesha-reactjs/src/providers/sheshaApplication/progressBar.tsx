@@ -1,6 +1,6 @@
 import { useTheme } from 'antd-style';
 import { AppProgressProvider } from '@bprogress/next';
-import React, { FC, PropsWithChildren } from 'react';
+import { FC, PropsWithChildren } from 'react';
 
 export const ProgressBar: FC<PropsWithChildren> = ({ children }) => {
   const theme = useTheme();

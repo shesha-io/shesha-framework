@@ -1,6 +1,6 @@
 import { Breadcrumb, Button, Result, Space } from 'antd';
 import classNames from 'classnames';
-import React, { FC, PropsWithChildren, useEffect } from 'react';
+import { FC, PropsWithChildren, useEffect } from 'react';
 import { ShaSpin } from '..';
 import Show from '@/components/show';
 import { useShaRouting, useSheshaApplication, useTheme } from '@/providers';

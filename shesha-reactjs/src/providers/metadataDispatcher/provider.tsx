@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useContext, useState } from 'react';
+import { FC, PropsWithChildren, useContext, useState } from 'react';
 import { IMetadataDispatcher } from './contexts';
 import { MetadataDispatcher } from './dispatcher';
 import { useHttpClient } from '../sheshaApplication/publicApi';

@@ -1,5 +1,6 @@
 import { Tooltip } from 'antd';
-import React, { MouseEventHandler } from 'react';
+import { MouseEventHandler } from 'react';
+import * as React from 'react';
 import {
   isNavigationActionConfiguration,
   useConfigurableActionDispatcher,

@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { useNotesEditorActions, useNotesEditorState } from '@/providers';
 import NotesRendererBase from '@/components/notesRendererBase';
 import { useStyles } from './styles/styles';

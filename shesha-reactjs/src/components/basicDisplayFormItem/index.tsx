@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import FormItem, { FormItemProps } from 'antd/lib/form/FormItem';
 
 export interface IBasicDisplayFormItemProps extends FormItemProps {

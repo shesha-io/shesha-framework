@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { useDataTableStore } from '@/providers';
 import ColumnsFilterSelectBase from '@/components/columnsFilterSelectBase';
 

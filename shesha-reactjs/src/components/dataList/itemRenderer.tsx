@@ -5,7 +5,7 @@ import { DataListCrudProvider, DataProcessor } from "@/providers/dataListCrudCon
 import { CrudMode } from "@/providers/crudContext/models";
 import { ComponentsContainerProvider } from "@/providers/form/nesting/containerContext";
 import { FormMarkupConverter } from "@/providers/formMarkupConverter/index";
-import React, { Component, ErrorInfo, ReactNode } from "react";
+import { Component, ErrorInfo, ReactNode } from "react";
 import CrudActionButtons from "./crudActionButtons";
 import { ItemContainerForm } from "./itemContainerForm";
 import { useStyles } from './styles/styles';

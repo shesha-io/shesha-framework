@@ -1,6 +1,6 @@
 "use client";
 
-import React, { FC, PropsWithChildren, useContext, useEffect, useState } from 'react';
+import { FC, PropsWithChildren, useContext, useEffect, useState } from 'react';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import { ISettingsClientContext, SettingsClientContext } from './contexts';
 import { ISettingIdentifier, ISettingsDictionary } from './models';

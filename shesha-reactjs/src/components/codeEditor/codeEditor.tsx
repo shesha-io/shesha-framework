@@ -1,4 +1,4 @@
-import React, { FC, lazy } from 'react';
+import { Suspense, FC, lazy } from 'react';
 import { ICodeEditorProps } from './models';
 import { withEnvironment } from './hocs/withEnvironment';
 import { CodeEditorLoadingProgressor } from './loadingProgressor';
@@ -10,9 +10,9 @@ const CodeEditorInternal: FC<ICodeEditorProps> = (props) => {
   return isSSR ? (
     <CodeEditorLoadingProgressor />
   ) : (
-    <React.Suspense fallback={<CodeEditorLoadingProgressor />}>
+    <Suspense fallback={<CodeEditorLoadingProgressor />}>
       <CodeEditorNoSsr {...props} />
-    </React.Suspense>
+    </Suspense>
   );
 };
 

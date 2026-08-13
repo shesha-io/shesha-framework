@@ -1,5 +1,5 @@
 import { Editor, Monaco } from '@monaco-editor/react';
-import React, { FC, useCallback, useEffect, useRef } from 'react';
+import { FC, useCallback, useEffect, useRef } from 'react';
 import { editor } from 'monaco-editor';
 import { TextRange } from './utils';
 import { ValueInEditableRanges, constrainedMonaco, isConstrainedTextModel } from './constrainedWrapper';

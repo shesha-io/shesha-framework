@@ -1,4 +1,4 @@
-import React, { FC, useReducer, useContext, PropsWithChildren } from 'react';
+import { FC, useReducer, useContext, PropsWithChildren } from 'react';
 import { reducer } from './reducers';
 import {
   IUpdateItemSettingsPayload,

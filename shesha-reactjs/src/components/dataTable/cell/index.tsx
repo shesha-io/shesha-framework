@@ -1,4 +1,3 @@
-import React from 'react';
 import { CellProps, Renderer } from 'react-table';
 import { IShaFormInstance, ITableColumn } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';

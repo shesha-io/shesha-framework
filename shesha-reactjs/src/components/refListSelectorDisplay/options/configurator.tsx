@@ -1,5 +1,5 @@
 import { Alert } from 'antd';
-import React, { FC, ReactNode } from 'react';
+import { FC, ReactNode } from 'react';
 import { useStyles } from '@/components/refListSelectorDisplay/options/styles/styles';
 import { useRefListItemGroupConfigurator } from '@/components/refListSelectorDisplay/provider';
 import RefListItemProperties from '@/components/refListSelectorDisplay/options/properties';

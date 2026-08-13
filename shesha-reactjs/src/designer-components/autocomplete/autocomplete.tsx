@@ -25,7 +25,7 @@ import { isEntityReferenceId } from '@/utils/entity';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getBooleanPropertyOrUndefined, getStringEnumOrDefault, getStringPropertyOrUndefined, getValueByPropertyName, pick } from '@/utils/object';
 import { FileSearchOutlined } from '@ant-design/icons';
-import React, { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { AutocompleteApi } from '../../componentsApi/componentApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';

@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { HistoryOutlined } from '@ant-design/icons';
 import { Popover, Skeleton, Button } from 'antd';
 import { DateDisplay } from '@/components/';

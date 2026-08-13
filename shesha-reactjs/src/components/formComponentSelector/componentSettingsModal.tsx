@@ -1,6 +1,6 @@
 import { Modal, Spin } from 'antd';
 import { ISettingsFormInstance, IToolboxComponent, IToolboxComponentBase } from '@/interfaces';
-import React, { ReactNode, useRef } from 'react';
+import { ReactNode, useRef } from 'react';
 import { useMedia } from 'react-use';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { ComponentPropertiesEditor } from '@/components/formDesigner/componentPropertiesPanel/componentPropertiesEditor';

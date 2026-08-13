@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import { FC, useEffect } from 'react';
 import { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
 import { isDefined } from '@/utils/nullables';
 

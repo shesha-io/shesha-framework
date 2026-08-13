@@ -1,8 +1,6 @@
 import { ConfigurableForm } from '@/components/configurableForm';
 import { DataTypes } from '@/interfaces/dataTypes';
-import React, { FC, useState,
-  useEffect,
-  useMemo } from 'react';
+import { FC, useState, useEffect, useMemo } from 'react';
 import { ISettingEditorWithValueProps } from './models';
 import { ISettingIdentifier } from './provider/models';
 import { useSettingsEditor } from './provider';

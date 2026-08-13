@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useCallback } from 'react';
+import { FC, ReactNode, useCallback } from 'react';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { executeExpression } from '@/providers/form/utils';
 import { IDropdownProps, ILabelValue } from './model';

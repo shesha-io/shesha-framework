@@ -1,7 +1,8 @@
 import { IConfigurableFormComponent, UnwrapCodeEvaluators } from "@/interfaces";
 import { isDefined } from '@/utils/nullables';
 import { SettingOutlined } from "@ant-design/icons";
-import React, { FC, useRef } from 'react';
+import { FC, useRef } from 'react';
+import * as React from 'react';
 import { useStyles } from '../inputComponent/styles';
 import { SettingInput } from '../settingsInput/settingsInput';
 import { getWidth } from '../settingsInput/utils';

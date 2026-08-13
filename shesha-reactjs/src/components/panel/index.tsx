@@ -1,4 +1,5 @@
-import React, { FC, PropsWithChildren, RefObject, useCallback, useEffect } from 'react';
+import { FC, PropsWithChildren, RefObject, useCallback, useEffect } from 'react';
+import * as React from 'react';
 import { Collapse, Skeleton } from 'antd';
 import { CollapseProps } from 'antd/lib/collapse';
 import classNames from 'classnames';
@@ -6,7 +7,7 @@ import { IStyleValue } from "@/providers/form/models";
 import { useStyles } from './styles/styles';
 import { isDefined } from '@/utils';
 
-export interface ICollapseRef { collapsed: boolean; setCollapsed: (collapsed: boolean) => void };
+export interface ICollapseRef { collapsed: boolean; setCollapsed: (collapsed: boolean) => void }
 
 export interface ICollapsiblePanelProps extends Omit<CollapseProps, 'onChange'>, Omit<IStyleValue, 'style'> {
   isActive?: boolean | undefined;

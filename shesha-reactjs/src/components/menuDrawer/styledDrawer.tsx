@@ -1,7 +1,7 @@
 import { smSpace } from "@/styles/variables";
 import { Drawer, DrawerProps } from "antd";
 import { createStyles } from "antd-style";
-import React, { FC } from "react";
+import { FC } from "react";
 
 const useStyles = createStyles(({ css }) => ({
   drawerBody: css`

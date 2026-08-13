@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { IDataCellProps } from '../interfaces';
 import NodeOrFuncRenderer from '@/components/nodeOrFuncRenderer';
 

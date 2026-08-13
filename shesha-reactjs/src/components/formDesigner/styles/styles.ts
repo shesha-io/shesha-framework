@@ -29,6 +29,7 @@ export const designerClassNames = {
   shaDesignerToolbox: "sha-designer-toolbox",
   shaDesignerWarning: "sha-designer-warning",
   shaDragging: "sha-dragging",
+  shaDropHintContainer: "sha-drop-hint-container",
   shaDropHint: "sha-drop-hint",
   shaForm: "sha-form",
   shaHelpIcon: "sha-help-icon",
@@ -81,6 +82,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     shaDatasourceTree,
     shaComponentIndicator,
     shaComponentsContainer,
+    shaDropHintContainer,
     shaDropHint,
     designerWorkArea,
     componentPropertiesActions,
@@ -361,25 +363,29 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             height: calc(100vh - ${HEADER_HEIGHT} - ${TOOLBAR_HEIGHT} - ${SIDEBAR_BTN_HEIGHT});
             .${shaComponentsContainer} {
 
+                .${shaDropHintContainer} {
+                    height: 100%;
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
                 .${shaDropHint} {
                     margin: 0;
                     text-align: center;
                     color: darkgray;
                     padding: 10px;
+                    max-width: 130px;
                     height: 55px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                 }
-
-                .${shaComponent} {
-                    min-height: 35px;
-                }
             }
 
             > div {
              height: 100%;
-                > div:not(.sha-drop-hint) {
+                > div:not(.sha-drop-hint):not(.sha-drop-hint-container) {
                     min-height: 100vh;
                     height: 100%;
                 }
@@ -393,7 +399,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             }
 
             /* Hide drop hint in main canvas when background SVG is showing */
-            > .${shaComponentsContainer} > .${shaDropHint} {
+            > .${shaComponentsContainer} > .${shaDropHintContainer} {
                 display: none;
             }
         }

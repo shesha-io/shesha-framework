@@ -1,4 +1,5 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
+import { FC, useCallback, useEffect, useRef, useState } from 'react';
+import * as React from 'react';
 import { App, AutoComplete, Button, Input, Modal, Space, Tooltip } from 'antd';
 import { AimOutlined, CloseCircleOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import { useFormActions } from '@/providers/form';

@@ -1,7 +1,8 @@
 import { IErrorInfo } from '@/interfaces';
 import { isDefined } from '@/utils/nullables';
 import { Empty } from 'antd';
-import React, { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
+import * as React from 'react';
 import { CustomFormSettingEditor } from './customFormSettingEditor';
 import { GenericSettingEditor } from './genericSettingEditor';
 import { isSelectionWithSetting } from './models';

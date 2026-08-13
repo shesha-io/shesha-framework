@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { SwitcherOutlined } from '@ant-design/icons';
 import { Switch } from 'antd';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';

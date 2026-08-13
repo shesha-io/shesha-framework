@@ -1,6 +1,6 @@
 import { DatePicker } from '@/components/antd';
 import moment, { Moment } from 'moment';
-import React, { forwardRef, useMemo, useRef } from 'react';
+import { forwardRef, useMemo, useRef } from 'react';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { useForm, useGlobalState, useMetadataOrUndefined } from '@/providers';
 import { getMoment, getRangeMoment } from '@/utils/date';

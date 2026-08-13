@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect } from "react";
 import { DocumentDefinition, ItemEditorProps, ProviderRendererProps, ITEM_TYPES } from "@/configuration-studio/models";
 
 import { DocumentInstance } from "@/configuration-studio/cs/documentInstance";
