@@ -740,8 +740,11 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
           // this.forceRootUpdate();
         },
       });
-      if (this.dataLoadingState.status === 'failed')
+      if (this.dataLoadingState.status === 'failed') {
+        // note : the loading callback doesn't re-render, the failed state must be rendered before the error is rethrown
+        this.forceRootUpdate();
         throw this.dataLoadingState.error;
+      }
 
       this.initialValues = data;
       this.formData = data;
