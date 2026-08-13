@@ -378,12 +378,8 @@ export const AutocompleteWithRepository = <TValue = unknown>(props: Autocomplete
     <Select<string[], ISelectOption>
       value={keys}
       className={cx(styles.autocomplete, props.className)}
-      // The configured appearance reaches the portalled popup as a class; `styles.popup` stays for
-      // the custom style JSON, which is inline and so still wins over it.
-      {...(isDefined(props.popupClassName) ? { popupClassName: props.popupClassName } : {})}
+      {...(isDefined(props.popupClassName) ? { classNames: { popup: { root: props.popupClassName } } } : {})}
       styles={{ popup: { root: restOfDropdownStyles } }}
-      // Disable Search turns the autocomplete into a plain picker: the list still loads (via
-      // `onOpenChange` below), but the user cannot type to filter it.
       showSearch={props.disableSearch === true
         ? false
         : {

@@ -213,7 +213,7 @@ export const DatePickerWrapper = forwardRef<HTMLDivElement, IDateFieldProps>((pr
           value={rangeMomentValue}
           picker={picker}
           showTime={rangeShowTimeConfig}
-          disabled={disabled === true}
+          disabled={disabled === true || readOnly === true}
           allowClear
           {...(isDefined(props.styleJson) ? { style: props.styleJson } : {})}
           {...(hideBorder === true ? { variant: 'borderless' } : {})}

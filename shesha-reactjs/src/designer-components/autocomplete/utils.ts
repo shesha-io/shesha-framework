@@ -28,8 +28,10 @@ export const defaultStyles = (): IStyleValue => {
     },
     dimensions: {
       width: '100%',
-      height: '32px',
-      minHeight: '0px',
+      /* A minimum rather than a fixed height: `dimensionsStyles` emits `height` on the root box, so
+         a fixed 32px clips the wrapped rows of tags a multiple-selection autocomplete grows. The
+         minimum keeps the empty control the same size it was. */
+      minHeight: '32px',
       maxHeight: 'auto',
       minWidth: '0px',
       maxWidth: 'auto',

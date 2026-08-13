@@ -25,6 +25,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IAu
         ${fontStyles(model.font)}
         display: flex;
         align-items: center;
+        overflow: auto;
       }
 
       &&& .${prefixCls}-select-input {

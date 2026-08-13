@@ -46,6 +46,7 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
     size,
     variant,
     className,
+    popupClassName,
     selectRef,
     events,
     styleValue,
@@ -156,6 +157,7 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
     size: size,
     ...(variant ? { variant } : {}),
     ...(!isNullOrWhiteSpace(className) ? { className } : {}),
+    ...(!isNullOrWhiteSpace(popupClassName) ? { classNames: { popup: { root: popupClassName } } } : {}),
     onChange: handleChange,
     value: wrapValue(value, options),
   };

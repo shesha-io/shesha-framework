@@ -185,6 +185,7 @@ export const Dropdown: FC<IDropdownProps> = ({
           tagVariant={tagVariant}
           showItemName={showItemName}
           className={selectClassName}
+          {...(isDefined(popupClassName) ? { popupClassName } : {})}
           style={{ ...style }}
           tagStyle={tagStyle}
           allowClear={allowClear}
@@ -264,7 +265,7 @@ export const Dropdown: FC<IDropdownProps> = ({
         ref={selectRef}
         {...events}
         className={selectClassName}
-        {...(isDefined(popupClassName) ? { popupClassName } : {})}
+        {...(isDefined(popupClassName) ? { classNames: { popup: { root: popupClassName } } } : {})}
         allowClear={allowClear}
         {...(onChange ? { onChange } : {})}
         value={selectedValue ?? null}
@@ -304,7 +305,7 @@ export const Dropdown: FC<IDropdownProps> = ({
       ref={selectRef}
       {...events}
       className={selectClassName}
-      {...(isDefined(popupClassName) ? { popupClassName } : {})}
+      {...(isDefined(popupClassName) ? { classNames: { popup: { root: popupClassName } } } : {})}
       allowClear={allowClear}
       {...(onChange ? { onChange } : {})}
       value={selectedValue ?? null}
