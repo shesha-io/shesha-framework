@@ -47,7 +47,7 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
     flexWrap: direction === 'vertical' ? 'nowrap' : 'wrap',
     gap: '8px',
     // Honour the Custom style (styleJson) at the group level.
-    ...(isDefined(model.styleJson) ? model.styleJson : {}),
+    ...(isDefined(model.styleCss) ? model.styleCss : {}),
   };
 
   const selectedValues = isDefined(value) ? (Array.isArray(value) ? value : [value]) : [];
@@ -63,7 +63,7 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
     return (
       <ReadOnlyDisplayFormItem
         value={selectedLabels}
-        style={model.styleJson}
+        style={model.styleCss}
         styleValue={model}
       />
     );

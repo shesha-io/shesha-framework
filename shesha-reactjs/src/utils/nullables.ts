@@ -4,7 +4,11 @@ export const isDefined = <T>(value: T | null | undefined): value is NonNullable<
 };
 
 export const getDefault = <T>(value: T | null | undefined, defaultValue: T): T => {
-  return isDefined(value) ? value : defaultValue;
+  return isDefined(value)
+    ? typeof value === 'string'
+      ? value.trim() !== '' ? value : defaultValue
+      : value
+    : defaultValue;
 };
 
 /**

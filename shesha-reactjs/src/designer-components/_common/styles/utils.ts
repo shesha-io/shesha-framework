@@ -84,7 +84,7 @@ export const getStyleValueFromModel = (model: IConfigurableFormComponent): IStyl
     dimensions: model.dimensions,
     size: model.size,
     style: model.style,
-    styleJson: model.styleJson,
+    styleCss: model.styleCss,
     /** @deprecated use stylingBoxJson insted */
     stylingBox: model.stylingBox,
     stylingBoxJson: model.stylingBoxJson,

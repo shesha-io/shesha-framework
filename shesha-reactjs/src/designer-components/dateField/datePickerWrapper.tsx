@@ -212,7 +212,7 @@ export const DatePickerWrapper = forwardRef<HTMLDivElement, IDateFieldProps>((pr
           showTime={rangeShowTimeConfig}
           disabled={readOnly === true}
           allowClear
-          {...(isDefined(props.styleJson) ? { style: props.styleJson } : {})}
+          {...(isDefined(props.styleCss) ? { style: props.styleCss } : {})}
           {...(hideBorder === true ? { variant: 'borderless' } : {})}
           {...(isDefined(props.onFocus) ? { onFocus: props.onFocus } : {})}
           {...(isDefined(props.onBlur) ? { onBlur: props.onBlur } : {})}
@@ -231,7 +231,7 @@ export const DatePickerWrapper = forwardRef<HTMLDivElement, IDateFieldProps>((pr
         dateFormat={format}
         timeFormat={timeFormat}
         enableFullStyle={props.enableStyleOnReadonly}
-        style={props.styleJson}
+        style={props.styleCss}
         styleValue={props}
       />
     );
@@ -255,7 +255,7 @@ export const DatePickerWrapper = forwardRef<HTMLDivElement, IDateFieldProps>((pr
         value={momentValue}
         {...(isNotNullOrWhiteSpace(placeholder) ? { placeholder } : {})}
         allowClear
-        {...(isDefined(props.styleJson) ? { style: props.styleJson } : {})}
+        {...(isDefined(props.styleCss) ? { style: props.styleCss } : {})}
         {...(isDefined(props.onFocus) ? { onFocus: props.onFocus } : {})}
         {...(isDefined(props.onBlur) ? { onBlur: props.onBlur } : {})}
       />
