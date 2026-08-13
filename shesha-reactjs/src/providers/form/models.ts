@@ -144,6 +144,39 @@ export interface IStyleValue {
 }
 
 /**
+ * Every property of `IStyleValue`, as a runtime list.
+ *
+ * Declared `satisfies` the key union so the compiler flags it when a property is added to
+ * `IStyleValue` but not here — otherwise `extractStyleValue` would silently stop forwarding it.
+ */
+const STYLE_VALUE_KEYS = [
+  'border', 'background', 'font', 'shadow', 'dimensions', 'size', 'style', 'styleJson',
+  'stylingBox', 'stylingBoxJson', 'primaryTextColor', 'primaryBgColor', 'secondaryBgColor',
+  'secondaryTextColor', 'overflow', 'hideScrollBar', 'autoWidth', 'autoHeight',
+] as const satisfies readonly (keyof IStyleValue)[];
+
+/**
+ * Extracts just the Appearance properties from a component model.
+ *
+ * A component model carries far more than styling — data source settings, event handlers, the
+ * component id. Handing the whole model to a presentational component passes all of that as well,
+ * which widens its contract to the entire model and makes it unclear what it actually reads.
+ * This narrows it to the style properties alone.
+ *
+ * Only keys actually present on the model are copied, so an unset property stays absent rather
+ * than becoming an explicit `undefined` — style builders test for presence to decide whether to
+ * emit a rule, and an own property set to `undefined` is still "present" to a spread.
+ */
+export const extractStyleValue = (model: IStyleValue | undefined): IStyleValue => {
+  if (model === undefined) return {};
+  const result: Record<string, unknown> = {};
+  STYLE_VALUE_KEYS.forEach((key) => {
+    if (key in model && model[key] !== undefined) result[key] = model[key];
+  });
+  return result as IStyleValue;
+};
+
+/**
  * The style model of a component that exposes two independent sets of Appearance panels: the
  * bare-named properties style the component's wrapper, and a nested set styles a repeated child.
  *

@@ -38,10 +38,12 @@ const Autocomplete = <TValue = unknown>(props: IAutocompleteProps<TValue>): Reac
         filterKeysFunc={props.filterKeysFunc}
 
         displayPropName={props.displayPropName}
+        keyPropName={props.keyPropName}
         onChange={props.onChange}
         value={props.value}
         mode={props.mode}
         readOnly={props.readOnly}
+        disabled={props.disabled}
         outcomeValueFunc={props.outcomeValueFunc}
         keyValueFunc={props.keyValueFunc}
         displayValueFunc={props.displayValueFunc}
@@ -80,6 +82,7 @@ const Autocomplete = <TValue = unknown>(props: IAutocompleteProps<TValue>): Reac
         value={props.value}
         mode={props.mode}
         readOnly={props.readOnly}
+        disabled={props.disabled}
         outcomeValueFunc={props.outcomeValueFunc}
         keyValueFunc={props.keyValueFunc}
         displayValueFunc={props.displayValueFunc}

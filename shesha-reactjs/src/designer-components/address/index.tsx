@@ -1,6 +1,7 @@
 import { HomeOutlined } from '@ant-design/icons';
+import { extractStyleValue } from '@/providers/form/models';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly, migrateHiddenToVisible } from '@/designer-components/_common-migrations/migrateSettings';
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import AutoCompletePlacesControl from './control';
 import { AddressComponentDefinition, IAddressCompomentProps } from './models';
@@ -48,6 +49,12 @@ const AddressCompoment: AddressComponentDefinition = {
 
     const { styles } = useStyles(model);
 
+    /* Only the Appearance properties, not the whole model: the suggestion list and the read-only
+       renderer style themselves from these, and handing them the full model would widen their
+       contract to every data-source and event setting on it. Memoised so the object identity is
+       stable across renders. */
+    const styleValue = useMemo(() => extractStyleValue(model), [model]);
+
     return (
       <ConfigurableFormItem<string> model={model}>
         {(value, onChange, _, ctx) => {
@@ -57,7 +64,7 @@ const AddressCompoment: AddressComponentDefinition = {
                 value={value}
                 enableFullStyle={model.enableStyleOnReadonly}
                 style={model.styleJson}
-                styleValue={model}
+                styleValue={styleValue}
               />
             )
             : (
@@ -73,9 +80,7 @@ const AddressCompoment: AddressComponentDefinition = {
                 prefix={model.prefix}
                 radiusPriority={model.radiusPriority}
                 showPriorityBounds={model.showPriorityBounds}
-                // The component model carries the Appearance properties directly, so it doubles as
-                // the style model for the suggestion list.
-                styleModel={model}
+                styleValue={styleValue}
                 readOnly={model.readOnly}
                 disabled={model.disabled}
                 value={value ?? ""}

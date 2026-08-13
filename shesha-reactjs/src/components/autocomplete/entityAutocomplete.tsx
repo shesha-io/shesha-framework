@@ -71,6 +71,7 @@ export const EntityAutocomplete = <TValue = unknown>(props: EntityAutocompletePr
       onChange={props.onChange}
       mode={props.mode}
       readOnly={props.readOnly}
+      disabled={props.disabled}
 
       permanentFilter={permanentFilter}
       grouping={props.grouping}

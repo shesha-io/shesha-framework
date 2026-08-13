@@ -5,7 +5,7 @@ import { IStyleValue } from '@/interfaces';
 /* The whole Appearance model, not a property per style: this control renders its own suggestion
    list rather than an antd popup, so there is no popup to hand a class to and the list is styled
    from these values. Taking the model as one object means a caller cannot silently omit one of
-   them — see the note on `styleModel` in the component. */
+   them — see the note on `styleValue` in the component. */
 export const useStyles = createStyles(({ css, cx, token }, { font, background, border, stylingBoxJson }: IStyleValue) => {
   const fontFamily = font?.type;
   const fontWeight = font?.weight;
