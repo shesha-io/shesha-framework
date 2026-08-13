@@ -203,6 +203,8 @@ export const DatePickerWrapper = forwardRef<HTMLDivElement, IDateFieldProps>((pr
             if (showTime && defaultToMidnight !== true) handleCalendarRangeChange(dates);
           }}
           className={styles.rangePicker}
+          // The calendar panel is portalled outside the picker, so it takes its own class.
+          classNames={{ popup: { root: styles.popup } }}
           disabledDate={(e) => disabledDate(props, e, formData, globalState)}
           disabledTime={disabledTime(props, formData, globalState)}
           onChange={(dates, datesString) => handleRangePicker(dates, datesString)}
@@ -241,6 +243,8 @@ export const DatePickerWrapper = forwardRef<HTMLDivElement, IDateFieldProps>((pr
     <div ref={ref} style={{ marginRight: 1 }}>
       <DatePicker
         className={styles.dateField}
+        // The calendar panel is portalled outside the picker, so it takes its own class.
+        classNames={{ popup: { root: styles.popup } }}
         disabledDate={(e) => disabledDate(props, e, formData, globalState)}
         disabledTime={disabledTime(props, formData, globalState)}
         onChange={handleDatePickerChange}

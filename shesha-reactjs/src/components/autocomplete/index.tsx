@@ -57,6 +57,7 @@ const Autocomplete = <TValue = unknown>(props: IAutocompleteProps<TValue>): Reac
         size={props.size}
         style={props.style}
         className={props.className}
+        popupClassName={props.popupClassName}
         selectRef={props.selectRef}
         events={props.events}
         styleValue={props.styleValue}
@@ -88,6 +89,7 @@ const Autocomplete = <TValue = unknown>(props: IAutocompleteProps<TValue>): Reac
         size={props.size}
         style={props.style}
         className={props.className}
+        popupClassName={props.popupClassName}
         selectRef={props.selectRef}
         events={props.events}
         styleValue={props.styleValue}

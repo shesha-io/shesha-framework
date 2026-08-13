@@ -82,6 +82,11 @@ export interface IDropdownProps {
   enableStyleOnReadonly?: boolean | undefined;
   /** Emotion class emitted from the Appearance settings. Merged with the component's own class. */
   className?: string | undefined;
+  /**
+   * Emotion class for the option list, which antd portals outside the select and so cannot be
+   * reached from `className`. Built by the caller for the same reason (see `className`).
+   */
+  popupClassName?: string | undefined;
   /** Forwarded to the underlying antd `Select` so callers can expose `focus()` on their API. */
   selectRef?: Ref<DropdownSelectRef | null> | undefined;
   /** Standard DOM event handlers, supplied by `getComponentEvents`. */

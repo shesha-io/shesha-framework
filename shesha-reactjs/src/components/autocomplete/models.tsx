@@ -109,6 +109,8 @@ type AutocompleteDisplayProps = {
   style?: React.CSSProperties | undefined;
   /** Class name applied to the underlying select */
   className?: string | undefined;
+  /** Class name applied to the dropdown popup, which is portalled outside the select */
+  popupClassName?: string | undefined;
   /** Size */
   size?: SizeType | undefined;
   /** Ref to the underlying select, used by the component API to focus the component */

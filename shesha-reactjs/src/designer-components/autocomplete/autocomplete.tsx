@@ -181,6 +181,7 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
               displayValueFunc={displayValueFunc}
               filterKeysFunc={isNotNullOrWhiteSpace(filterKeysFuncExpression) ? filterKeysFunc : undefined}
               className={styles.autocomplete}
+              popupClassName={styles.popup}
               // Custom style is passed through as-is; everything else is emitted as CSS by
               // `useStyles` so unset properties keep cascading from the theme.
               {...(isDefined(model.styleJson) ? { style: model.styleJson } : {})}

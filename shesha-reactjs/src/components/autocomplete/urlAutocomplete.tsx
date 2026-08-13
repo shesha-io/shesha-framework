@@ -101,6 +101,7 @@ export const UrlAutocomplete = <TValue = unknown>(props: UrlAutocompleteProps<TV
       placeholder={props.placeholder}
       size={props.size}
       className={props.className}
+      popupClassName={props.popupClassName}
       selectRef={props.selectRef}
       events={props.events}
       styleValue={props.styleValue}

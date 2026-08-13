@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 import { IDateFieldProps } from './interfaces';
-import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, marginStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
+import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, marginStyles, paddingStyles, popupAppearanceStyles, shadowStyles } from '../_common/styles/utils';
 
 export const useStyles = createStyles(({ css, cx }, model: IDateFieldProps) => {
   /* The appearance the user configured. Emitted in the base state and re-asserted in every state
@@ -74,8 +74,45 @@ export const useStyles = createStyles(({ css, cx }, model: IDateFieldProps) => {
     }
   `);
 
+  /* The calendar panel is portalled to the body, out of reach of the classes above, so it needs its
+     own. Unlike a select popup this is a grid rather than a list: padding insets the whole panel and
+     the font applies to the date cells, which antd styles individually.
+
+     Dimensions are deliberately not applied — the panel is sized by the calendar it contains, and
+     forcing the input's width or height onto it clips the grid. */
+  const popup = cx('sha-date-field-popup', css`
+    &&& .ant-picker-panel-container {
+      ${popupAppearanceStyles(model)}
+      ${paddingStyles(model.stylingBoxJson)}
+    }
+
+    /* The panel and its header/body paint their own surface, which would cover the configured
+       background on the container above. */
+    &&& .ant-picker-panel,
+    &&& .ant-picker-header,
+    &&& .ant-picker-content th,
+    &&& .ant-picker-footer {
+      background: transparent;
+    }
+
+    /* The header controls and the date cells carry their own colour rules, so the configured font
+       has to be restated or only part of the panel follows it. The selected and today cells keep
+       their themed highlight — only the text is restated.
+
+       Alignment is dropped: antd centres every cell in the grid, and the input's alignment (right,
+       say) would push each date off-centre in its box. Align describes where the text sits in the
+       input, which has no meaning for a calendar cell. */
+    &&& .ant-picker-header,
+    &&& .ant-picker-header button,
+    &&& .ant-picker-content th,
+    &&& .ant-picker-cell-in-view .ant-picker-cell-inner {
+      ${fontStyles({ ...model.font, align: undefined })}
+    }
+  `);
+
   return {
     dateField,
     rangePicker,
+    popup,
   };
 });

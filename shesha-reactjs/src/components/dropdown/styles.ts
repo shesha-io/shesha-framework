@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 import { IDropdownComponentProps } from '@/designer-components/dropdown/model';
-import { backgroundStyles, borderRadiusStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, marginStyles, paddingStyles, shadowStyles, splitBackgroundProperties } from '@/designer-components/_common/styles/utils';
+import { backgroundStyles, borderRadiusStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, marginStyles, paddingStyles, popupAppearanceStyles, shadowStyles, splitBackgroundProperties } from '@/designer-components/_common/styles/utils';
 import { isDefined } from '@/utils/nullables';
 import { CSSProperties } from 'react';
 
@@ -184,7 +184,39 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IDr
       }
     `);
 
+  /* The option list is portalled to the body, out of reach of the class above, so it needs its own.
+     Padding insets the list inside the panel, so it belongs on the root — applied to each option
+     instead it multiplies across every row and inflates the whole popup. Font is restated on the
+     options because antd sets it on `.ant-select-item` itself, where a rule on the root would be
+     overridden rather than inherited.
+
+     The `tag` set is deliberately not applied here: it styles the selected items rendered inside
+     the control, and the popup lists plain options rather than tags. */
+  const popup = cx('sha-dropdown-popup', css`
+      &&& {
+        ${popupAppearanceStyles(model)}
+        ${paddingStyles(model.stylingBoxJson)}
+      }
+
+      /* antd paints the option list on an inner wrapper, which would cover the configured
+         background of the popup root. */
+      &&& .${prefixCls}-select-dropdown,
+      &&& .rc-virtual-list-holder,
+      &&& .${prefixCls}-select-item-empty {
+        background: transparent;
+      }
+
+      /* Restated on the active and selected rows too: those keep their themed highlight, but
+         without this the text reverts while a row is hovered or picked. */
+      &&& .${prefixCls}-select-item,
+      &&& .${prefixCls}-select-item-option-active,
+      &&& .${prefixCls}-select-item-option-selected {
+        ${fontStyles(model.font)}
+      }
+    `);
+
   return {
     dropdown,
+    popup,
   };
 });
