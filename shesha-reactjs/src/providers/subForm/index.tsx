@@ -208,8 +208,10 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   );
   const prevRenderedEntityTypeForm = useRef<IRenderedDynamicForm | null>(null);
 
-  // the "no entity type" branch below dispatches new state on every call, without this guard it loops
+  // the "no entity type" branch below dispatches new state on every call, without this guard it loops.
+  // the api mode decides what that branch reports, so a change of it must let the branch run again
   const clearedForMissingEntityType = useRef(false);
+  const clearedForApiMode = useRef<ISubFormProviderProps['apiMode']>(undefined);
 
   // requests of the dynamic form resolution and of the form markup are cancelled by incrementing these counters,
   // a response of the outdated request must not overwrite the state of the actual one
@@ -355,9 +357,10 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
               });
           }
         }
-      } else if (!clearedForMissingEntityType.current) {
+      } else if (!clearedForMissingEntityType.current || clearedForApiMode.current !== props.apiMode) {
         // there is nothing to render without an entity type, a pending resolution must not bring the previous form back
         clearedForMissingEntityType.current = true;
+        clearedForApiMode.current = props.apiMode;
         formResolutionRequestId.current++;
         clearResolvedForm();
         // note : in the `entityName` mode the entity type is part of the configuration, so its absence is the reason
