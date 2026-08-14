@@ -1,8 +1,14 @@
 import { createStyles } from '@/styles';
 import { IDateFieldProps } from './interfaces';
-import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, marginStyles, paddingStyles, popupAppearanceStyles, shadowStyles } from '../_common/styles/utils';
+import { backgroundStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, marginStyles, paddingStyles, popupAppearanceStyles, shadowStyles, splitTextProperties } from '../_common/styles/utils';
 
 export const useStyles = createStyles(({ css, cx }, model: IDateFieldProps) => {
+  /* The Custom style, minus the dimensions (see the popup rule below), split so each half lands
+     where it takes effect: the box half on the panel container, the text half merged into the font
+     of the header and date cells, which carry their own colour rules. */
+  const { width: _w, height: _h, ...popupCustomStyle } = model.styleCss ?? {};
+  const { text: customTextStyle, box: customBoxStyle } = splitTextProperties(popupCustomStyle);
+
   /* The appearance the user configured. Emitted in the base state and re-asserted in every state
      where antd would otherwise repaint it. */
   const configuredAppearance = `
@@ -33,7 +39,9 @@ export const useStyles = createStyles(({ css, cx }, model: IDateFieldProps) => {
     ${statefulAppearance}
 
     .ant-picker-input > input {
-      ${fontStyles(model.font)}
+      /* The Custom style is merged in: it is applied inline on the picker root, but this rule would
+         otherwise re-assert the Font over it on the element that actually renders the text. */
+      ${fontStyles(model.font, customTextStyle)}
       background: transparent;
     }
 
@@ -60,7 +68,9 @@ export const useStyles = createStyles(({ css, cx }, model: IDateFieldProps) => {
     ${statefulAppearance}
 
     .ant-picker-input > input {
-      ${fontStyles(model.font)}
+      /* The Custom style is merged in: it is applied inline on the picker root, but this rule would
+         otherwise re-assert the Font over it on the element that actually renders the text. */
+      ${fontStyles(model.font, customTextStyle)}
       background: transparent;
     }
 
@@ -81,9 +91,18 @@ export const useStyles = createStyles(({ css, cx }, model: IDateFieldProps) => {
      Dimensions are deliberately not applied — the panel is sized by the calendar it contains, and
      forcing the input's width or height onto it clips the grid. */
   const popup = cx('sha-date-field-popup', css`
+    /* Everything lands on the panel container, not the popup root. The root is a positioning
+       wrapper that antd sizes to the whole overlay, so a background on it paints a block well past
+       the calendar — the container is the visible panel.
+
+       The Custom style is emitted here too, last, so it still overrides the panel inputs. It cannot
+       be passed inline via \`styles.popup.root\` for the same reason: that targets the root. Width
+       and height are dropped — the panel is sized by its calendar and constraining it clips the
+       grid. */
     &&& .ant-picker-panel-container {
       ${popupAppearanceStyles(model)}
       ${paddingStyles(model.stylingBoxJson)}
+      ${cssPropertiesToString(customBoxStyle)}
     }
 
     /* The panel and its header/body paint their own surface, which would cover the configured
@@ -106,7 +125,7 @@ export const useStyles = createStyles(({ css, cx }, model: IDateFieldProps) => {
     &&& .ant-picker-header button,
     &&& .ant-picker-content th,
     &&& .ant-picker-cell-in-view:not(.ant-picker-cell-disabled) .ant-picker-cell-inner {
-      ${fontStyles({ ...model.font, align: undefined })}
+      ${fontStyles({ ...model.font, align: undefined }, { ...customTextStyle, textAlign: undefined })}
     }
 
     /* A disabled date takes the configured size only. Without it the cell keeps antd's default size
@@ -119,7 +138,10 @@ export const useStyles = createStyles(({ css, cx }, model: IDateFieldProps) => {
        every cell in the grid shares one size. */
     &&& .ant-picker-cell-disabled .ant-picker-cell-inner,
     &&& .ant-picker-cell:not(.ant-picker-cell-in-view) .ant-picker-cell-inner {
-      ${fontStyles({ ...model.font, color: undefined })}
+      ${fontStyles(
+        { ...model.font, color: undefined, align: undefined },
+        { ...customTextStyle, color: undefined, textAlign: undefined },
+      )}
     }
   `);
 

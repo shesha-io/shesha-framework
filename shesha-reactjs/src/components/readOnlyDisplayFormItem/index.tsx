@@ -1,5 +1,6 @@
 import { ValueRenderer } from '@/components/valueRenderer/index';
-import { FC, useMemo } from 'react';
+import { CSSProperties, FC, useMemo } from 'react';
+import { splitTextProperties } from '@/designer-components/_common/styles/utils';
 import * as React from 'react';
 import { getMoment } from '@/utils/date';
 import { ISelectOption } from '@/components/autocomplete';
@@ -26,7 +27,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = <TValu
     quickviewDisplayPropertyName = "",
     quickviewGetEntityUrl,
     quickviewWidth,
-    style,
+    style: rawStyle,
     tagStyle,
     showIcon,
     tagVariant,
@@ -36,8 +37,25 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = <TValu
     className,
   } = props;
 
+  /* Read-only shows a value, not an editable control, so only the text half of the Custom style
+     applies — a background, border or shadow would draw a box around something the user cannot
+     interact with. The box half is already gated behind `enableFullStyle` in the class; the inline
+     style has to be filtered the same way or it reinstates what that gate excludes, since inline
+     beats the class on this element.
+
+     Dimensions are kept: `readOnlyDisplayFormItem` reads width/minWidth/maxWidth off this object for
+     its container, and dropping them would collapse the field's configured size. */
+  const style = useMemo<CSSProperties | undefined>(() => {
+    if (!isDefined(rawStyle)) return undefined;
+    const { text } = splitTextProperties(rawStyle);
+    const { width, minWidth, maxWidth, height, minHeight, maxHeight } = rawStyle;
+    return Boolean(enableFullStyle)
+      ? rawStyle
+      : { ...text, width, minWidth, maxWidth, height, minHeight, maxHeight };
+  }, [rawStyle, enableFullStyle]);
+
   // ToDo: remove `textAlign` after migrate all components to the new styles
-  const { styles } = useStyles({ styleValue, enableFullStyle });
+  const { styles } = useStyles(styleValue);
 
   const renderValue = useMemo(() => {
     if (isDefined(render)) {

@@ -1,5 +1,5 @@
 import { createStyles } from '@/styles';
-import { fontStyles } from '@/designer-components/_common/styles/utils';
+import { fontStyles, splitTextProperties } from '@/designer-components/_common/styles/utils';
 import { IStyleValue } from '@/providers/form/models';
 
 /**
@@ -13,14 +13,11 @@ import { IStyleValue } from '@/providers/form/models';
  * component's own `styles.ts` and arrives as `className`, so it is deliberately not repeated here;
  * this hook only covers what the control needs on top of that.
  */
-export const useStyles = createStyles(({ css, cx, token }, styleValue: IStyleValue | undefined) => {
-  const font = styleValue?.font;
+export const useStyles = createStyles(({ css, cx, token }, model: IStyleValue | undefined) => {
+  const { width: _w, height: _h, ...popupCustomStyle } = model?.styleCss ?? {};
+  const { text: customTextStyle } = splitTextProperties(popupCustomStyle);
 
-  const autocomplete = cx("sha-autocomplete", css`
-    &.ant-select-open, &:hover {
-      border-color: ${token.colorPrimary} !important;
-    }
-  `);
+  const autocomplete = cx("sha-autocomplete", css``);
 
   /* Shown in place of the control while the list loads, so it restates the configured font to keep
      the same text metrics and avoid a visible jump when the real control replaces it. */
@@ -33,7 +30,7 @@ export const useStyles = createStyles(({ css, cx, token }, styleValue: IStyleVal
     font-size: ${token.fontSize}px;
     font-family: ${token.fontFamily};
     color: ${token.colorText};
-    ${fontStyles(font)}
+    ${fontStyles(model?.font, customTextStyle)}
 
     &:hover {
       border-color: ${token.colorPrimaryHover};

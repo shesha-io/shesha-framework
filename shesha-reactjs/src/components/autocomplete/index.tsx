@@ -63,6 +63,7 @@ const Autocomplete = <TValue = unknown>(props: IAutocompleteProps<TValue>): Reac
         selectRef={props.selectRef}
         events={props.events}
         styleValue={props.styleValue}
+        enableStyleOnReadonly={props.enableStyleOnReadonly}
         disableSearch={props.disableSearch}
       />
     )

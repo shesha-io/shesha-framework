@@ -361,7 +361,6 @@ export const AutocompleteWithRepository = <TValue = unknown>(props: Autocomplete
       <ReadOnlyDisplayFormItem
         value={readonlyValue}
         type={props.mode === 'multiple' ? 'dropdownMultiple' : 'dropdown'}
-        style={style}
         styleValue={props.styleValue}
         enableFullStyle={props.enableStyleOnReadonly}
         quickviewEnabled={props.quickviewEnabled}
@@ -373,14 +372,13 @@ export const AutocompleteWithRepository = <TValue = unknown>(props: Autocomplete
     );
   }
 
-  const { width, ...restOfDropdownStyles } = style;
-
   return (
     <Select<string[], ISelectOption>
       value={keys}
       className={cx(styles.autocomplete, props.className)}
+      // The Custom style reaches the popup through this class, not an inline `styles.popup.root`:
+      // its text half has to land on each option, which an inline style on the root cannot do.
       {...(isDefined(props.popupClassName) ? { classNames: { popup: { root: props.popupClassName } } } : {})}
-      styles={{ popup: { root: restOfDropdownStyles } }}
       showSearch={props.disableSearch === true
         ? false
         : {

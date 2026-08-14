@@ -1,14 +1,12 @@
-import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, paddingStyles, shadowStyles } from '@/designer-components/_common/styles/utils';
+import { dimensionsStyles, fontStyles, splitTextProperties } from '@/designer-components/_common/styles/utils';
 import { IStyleValue } from '@/providers';
 import { createStyles, sheshaStyles, getTextHoverEffects } from '@/styles';
 
-interface UseStylesParams {
-  styleValue: IStyleValue | undefined;
-  enableFullStyle: boolean | undefined;
-}
 
-export const useStyles = createStyles(({ css, cx, prefixCls, token }, { styleValue, enableFullStyle }: UseStylesParams) => {
-  const textAlign = styleValue?.font?.align;
+export const useStyles = createStyles(({ css, cx, prefixCls, token }, styleValue: IStyleValue) => {
+  const { width: _popupWidth, ...popupCustomStyle } = styleValue.styleCss ?? {};
+  const { text: customTextStyle } = splitTextProperties(popupCustomStyle);
+  const textAlign = customTextStyle.textAlign ?? styleValue.font?.align;
 
   const readOnlyModeToggler = "read-only-mode-toggler";
   const readOnlyDisplayFormItem = cx("read-only-display-form-item", css`
@@ -75,15 +73,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, { styleVal
     margin: 0;
     overflow: hidden;
     text-overflow: ellipsis;
-    ${dimensionsStyles(styleValue?.dimensions)}
-    ${fontStyles(styleValue?.font)}
-
-    ${Boolean(enableFullStyle)
-        ? borderStyles(styleValue?.border) +
-        backgroundStyles(styleValue?.background) +
-        shadowStyles(styleValue?.shadow) +
-        paddingStyles(styleValue?.stylingBoxJson)
-        : ''
+    ${dimensionsStyles(styleValue.dimensions)}
+    ${fontStyles(styleValue.font, customTextStyle)}
     }
 
   `;

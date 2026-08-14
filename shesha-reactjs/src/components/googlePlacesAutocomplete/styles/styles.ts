@@ -1,13 +1,14 @@
 import { createStyles } from '@/styles';
-import { fontStyles, paddingStyles, popupAppearanceStyles } from '@/designer-components/_common/styles/utils';
+import { cssPropertiesToString, fontStyles, paddingStyles, popupAppearanceStyles, splitTextProperties } from '@/designer-components/_common/styles/utils';
 import { IStyleValue } from '@/interfaces';
 
-export const useStyles = createStyles(({ css, cx, token }, { font, background, border, stylingBoxJson }: IStyleValue) => {
-  const fontFamily = font?.type;
-  const fontWeight = font?.weight;
-  const textAlign = font?.align;
-  const color = font?.color;
-  const fontSize = font?.size;
+export const useStyles = createStyles(({ css, cx, token }, { font, background, border, stylingBoxJson, styleCss }: IStyleValue) => {
+  /* The Custom style, split so each half lands where it takes effect: the box half on the list, the
+     text half on each row. Dimensions are dropped — the list is sized to the wrapper and grows with
+     its suggestions. */
+  const { width: _w, height: _h, ...popupCustomStyle } = styleCss ?? {};
+  const { text: customTextStyle, box: customBoxStyle } = splitTextProperties(popupCustomStyle);
+
 
   const dropdownContainer = "dropdown-container";
   const suggestionContainer = "suggestion-container";
@@ -35,6 +36,7 @@ export const useStyles = createStyles(({ css, cx, token }, { font, background, b
             background: ${token.colorBgElevated};
             ${popupAppearanceStyles({ background, border })}
             ${paddingStyles(stylingBoxJson)}
+            ${cssPropertiesToString(customBoxStyle)}
 
             &.hidden {
                 display: none;
@@ -44,7 +46,10 @@ export const useStyles = createStyles(({ css, cx, token }, { font, background, b
                 padding: 2.5px 5px;
                 transition: all 0.2s ease-in;
                 border-bottom: 1px solid #e8e8e8;
-                ${fontStyles(font)}
+                /* The Custom style is merged in rather than emitted separately: the list sets its
+                   own colour and font size, so a rule on the container alone does not reach the
+                   text. */
+                ${fontStyles(font, customTextStyle)}
 
                 &:hover {
                     ${highlightedSuggestion}
@@ -56,14 +61,10 @@ export const useStyles = createStyles(({ css, cx, token }, { font, background, b
             }
         }
 
-         > .ant-input-affix-wrapper {
-          .ant-input {
-            --ant-color-text: ${color} !important;
-            --ant-font-size: ${fontSize} !important;
-            font-weight: ${fontWeight};
-            font-family: ${fontFamily};
-            text-align: ${textAlign};
-            }
+        &&& .ant-input-affix-wrapper,
+        &&& input.ant-input,
+        &&& input {
+            ${fontStyles(font, customTextStyle)}
         }
 `);
 

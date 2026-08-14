@@ -64,6 +64,9 @@ const AddressCompoment: AddressComponentDefinition = {
                 value={value}
                 enableFullStyle={model.enableStyleOnReadonly}
                 styleValue={styleValue}
+                // The Custom style, so read-only matches the editable control. It lands inline on
+                // the same element as the class, where it beats the configured Font.
+                {...(isDefined(model.styleCss) ? { style: model.styleCss } : {})}
               />
             )
             : (

@@ -183,7 +183,6 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
               className={styles.autocomplete}
               popupClassName={styles.popup}
               styleValue={model}
-              enableStyleOnReadonly={model.enableStyleOnReadonly}
               size={model.size ?? 'middle'}
               value={value}
               selectRef={selectRef}

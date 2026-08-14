@@ -93,12 +93,12 @@ export const EntityAutocomplete = <TValue = unknown>(props: EntityAutocompletePr
 
       placeholder={props.placeholder}
       size={props.size}
+      style={props.style}
       className={props.className}
       popupClassName={props.popupClassName}
       selectRef={props.selectRef}
       events={props.events}
       styleValue={props.styleValue}
-      enableStyleOnReadonly={props.enableStyleOnReadonly}
       disableSearch={props.disableSearch}
     />
   );

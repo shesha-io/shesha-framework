@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 import { IDropdownComponentProps } from '@/designer-components/dropdown/model';
-import { backgroundStyles, borderRadiusStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, marginStyles, paddingStyles, popupAppearanceStyles, shadowStyles, splitBackgroundProperties } from '@/designer-components/_common/styles/utils';
+import { backgroundStyles, borderRadiusStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, marginStyles, paddingStyles, popupAppearanceStyles, shadowStyles, splitBackgroundProperties, splitTextProperties } from '@/designer-components/_common/styles/utils';
 import { isDefined } from '@/utils/nullables';
 import { CSSProperties } from 'react';
 
@@ -46,6 +46,9 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IDr
   // so it respects the same per-option-colour exclusion the Background panel does.
   const tagCustomStyle = splitBackgroundProperties(model.tagStyleJson);
 
+  const { width: _popupWidth, ...popupCustomStyle } = model.styleCss ?? {};
+  const { text: customTextStyle, box: customBoxStyle } = splitTextProperties(popupCustomStyle);
+
   const configuredAppearance = `
     ${borderStyles(model.border)}
     ${backgroundStyles(model.background)}
@@ -83,7 +86,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IDr
          classNames.content, which this component never does. */
       &.${prefixCls}-select .${prefixCls}-select-selector {
         ${paddingStyles(model.stylingBoxJson)}
-        ${fontStyles(model.font)}
+        ${fontStyles(model.font, customTextStyle)}
 
         .${prefixCls}-select-selection-overflow {
           display: flex;
@@ -104,7 +107,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IDr
       .${prefixCls}-select-selection-search-input,
       .${prefixCls}-select-selection-item,
       .${prefixCls}-select-selection-placeholder {
-        ${fontStyles(model.font)}
+        ${fontStyles(model.font, customTextStyle)}
       }
 
       .${prefixCls}-select-selection-item {
@@ -125,9 +128,11 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IDr
           border: none !important;
         }
       }
-     
-      .${prefixCls}-select-content {
+
+      &&&& input {
+        ${fontStyles(model.font, customTextStyle)}
       }
+
       &&&& .${prefixCls}-tag {
         display: inline-flex;
         align-items: center;
@@ -196,6 +201,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IDr
       &&& {
         ${popupAppearanceStyles(model)}
         ${paddingStyles(model.stylingBoxJson)}
+        ${cssPropertiesToString(customBoxStyle)}
       }
 
       /* antd paints the option list on an inner wrapper, which would cover the configured
@@ -206,12 +212,25 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IDr
         background: transparent;
       }
 
-      /* Restated on the active and selected rows too: those keep their themed highlight, but
-         without this the text reverts while a row is hovered or picked. */
+      /* The configured Font, at the same specificity the control uses for its own text (a single
+         class). Emitting it at &&& instead made the popup win arguments the input loses: the Font
+         defaults are non-empty, so every option took them while the input still showed antd's, and
+         the two looked like different components. */
+      .${prefixCls}-select-item,
+      .${prefixCls}-select-item-option-active,
+      .${prefixCls}-select-item-option-selected {
+        ${fontStyles(model.font, customTextStyle)}
+      }
+
+      /* The Custom style, at &&& because it must beat antd where the Font above deliberately does
+         not. It cannot ride on an inline style on the popup root: antd sets colour and font on the
+         option itself, so the row overrides anything inherited from an ancestor.
+         This emits nothing when no Custom style is set, leaving the rule above to win or lose
+         against antd on its own. */
       &&& .${prefixCls}-select-item,
       &&& .${prefixCls}-select-item-option-active,
       &&& .${prefixCls}-select-item-option-selected {
-        ${fontStyles(model.font)}
+        ${fontStyles(model.font, customTextStyle)}
       }
     `);
 
