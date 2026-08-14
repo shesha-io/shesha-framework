@@ -62,6 +62,7 @@ export const AutocompleteWithRepository = <TValue = unknown>(props: Autocomplete
   const {
     allowClear = true,
     style = {},
+    styleValue,
     allowFreeText = false,
     readOnly = false,
     keyPropName = "", // required, change type
@@ -74,7 +75,7 @@ export const AutocompleteWithRepository = <TValue = unknown>(props: Autocomplete
     sorting,
   } = props;
 
-  const { styles, cx } = useStyles({ style });
+  const { styles, cx } = useStyles(styleValue);
 
   const selectRef = useRef<SelectRef>(null);
 

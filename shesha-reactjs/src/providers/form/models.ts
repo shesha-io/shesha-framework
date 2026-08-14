@@ -154,7 +154,8 @@ export interface IStyleValue {
  * `IStyleValue` but not here — otherwise `extractStyleValue` would silently stop forwarding it.
  */
 const STYLE_VALUE_KEYS = [
-  'border', 'background', 'font', 'shadow', 'dimensions', 'size', 'style', 'styleJson',
+  'border', 'background', 'font', 'shadow', 'dimensions', 'size',
+  'style', 'styleCss', 'wrapperStyle', 'wrapperStyleCss',
   'stylingBox', 'stylingBoxJson', 'primaryTextColor', 'primaryBgColor', 'secondaryBgColor',
   'secondaryTextColor', 'overflow', 'hideScrollBar', 'autoWidth', 'autoHeight',
 ] as const satisfies readonly (keyof IStyleValue)[];
@@ -173,11 +174,18 @@ const STYLE_VALUE_KEYS = [
  */
 export const extractStyleValue = (model: IStyleValue | undefined): IStyleValue => {
   if (model === undefined) return {};
-  const result: Record<string, unknown> = {};
+  const result: IStyleValue = {};
+  /* Generic in the key so `target[key]` and `source[key]` resolve to the same property type: a copy
+     between mismatched properties is a compile error rather than something an `unknown` bag and a
+     cast would let through. */
+  const copyKey = <K extends keyof IStyleValue>(target: IStyleValue, source: IStyleValue, key: K): void => {
+    const value = source[key];
+    if (value !== undefined) target[key] = value;
+  };
   STYLE_VALUE_KEYS.forEach((key) => {
-    if (key in model && model[key] !== undefined) result[key] = model[key];
+    if (key in model) copyKey(result, model, key);
   });
-  return result as IStyleValue;
+  return result;
 };
 
 /**

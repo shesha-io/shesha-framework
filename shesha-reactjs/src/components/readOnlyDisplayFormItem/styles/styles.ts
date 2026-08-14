@@ -8,7 +8,7 @@ interface UseStylesParams {
 }
 
 export const useStyles = createStyles(({ css, cx, prefixCls, token }, { styleValue, enableFullStyle }: UseStylesParams) => {
-  const textAlign = fontStyles(styleValue?.font);
+  const textAlign = styleValue?.font?.align;
 
   const readOnlyModeToggler = "read-only-mode-toggler";
   const readOnlyDisplayFormItem = cx("read-only-display-form-item", css`

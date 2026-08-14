@@ -182,11 +182,6 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
               filterKeysFunc={isNotNullOrWhiteSpace(filterKeysFuncExpression) ? filterKeysFunc : undefined}
               className={styles.autocomplete}
               popupClassName={styles.popup}
-              // Custom style is passed through as-is; everything else is emitted as CSS by
-              // `useStyles` so unset properties keep cascading from the theme.
-              {...(isDefined(model.styleJson) ? { style: model.styleJson } : {})}
-              // Read-only rendering happens outside the select, where the emotion class does not
-              // reach, so the style model is handed over as a value for that path.
               styleValue={model}
               enableStyleOnReadonly={model.enableStyleOnReadonly}
               size={model.size ?? 'middle'}

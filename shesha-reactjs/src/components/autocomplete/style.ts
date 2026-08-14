@@ -1,31 +1,40 @@
 import { createStyles } from '@/styles';
-import { CSSProperties } from 'react';
+import { fontStyles } from '@/designer-components/_common/styles/utils';
+import { IStyleValue } from '@/providers/form/models';
 
-export const useStyles = createStyles(({ css, cx, token }, { style }: { style: CSSProperties }) => {
+/**
+ * Styles for the autocomplete control itself.
+ *
+ * Takes the Appearance model rather than a flat `CSSProperties`: the caller passes `styleValue`, so
+ * the font settings live under `font.*` (`font.color`, `font.size`, …) and are emitted through the
+ * shared builders. Reading them as flat CSS keys — the previous shape — silently matched nothing.
+ *
+ * The Appearance box (border, background, shadow, dimensions, padding) is emitted by the designer
+ * component's own `styles.ts` and arrives as `className`, so it is deliberately not repeated here;
+ * this hook only covers what the control needs on top of that.
+ */
+export const useStyles = createStyles(({ css, cx, token }, styleValue: IStyleValue | undefined) => {
+  const font = styleValue?.font;
+
   const autocomplete = cx("sha-autocomplete", css`
-    ${style.color ? `--ant-color-text: ${style.color} !important;` : ''}
-    ${style.fontSize ? `--ant-font-size: ${style.fontSize} !important;` : ''}
-    ${style.fontWeight ? `--ant-font-weight-strong: ${style.fontWeight} !important;` : ''}
-
-    .ant-select-selection-item {
-      font-weight: var(--ant-font-weight) !important;
-    }
-
     &.ant-select-open, &:hover {
       border-color: ${token.colorPrimary} !important;
     }
   `);
 
+  /* Shown in place of the control while the list loads, so it restates the configured font to keep
+     the same text metrics and avoid a visible jump when the real control replaces it. */
   const loadingSpinner = cx("sha-autocomplete-loading", css`
     display: flex;
     align-items: center;
     min-height: 32px;
     border-radius: ${token.borderRadius}px;
     padding: 4px 11px;
-    font-size: ${style.fontSize || token.fontSize};
-    font-family: ${style.fontFamily || token.fontFamily};
-    color: ${style.color || token.colorText};
-    
+    font-size: ${token.fontSize}px;
+    font-family: ${token.fontFamily};
+    color: ${token.colorText};
+    ${fontStyles(font)}
+
     &:hover {
       border-color: ${token.colorPrimaryHover};
     }
