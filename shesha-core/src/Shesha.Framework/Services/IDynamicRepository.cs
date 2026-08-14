@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -67,5 +68,13 @@ namespace Shesha.Services
         /// <param name="lambda"></param>
         /// <returns></returns>
         IQueryable Where(Type entityType, LambdaExpression lambda);
+
+        /// <summary>
+        /// Validates entity Id
+        /// </summary>
+        /// <param name="entityTypeShortAlias">Entity type</param>
+        /// <param name="id">Entity id</param>
+        /// <returns></returns>
+        List<ValidationResult> ValidateEntityId(string entityTypeShortAlias, string id);
     }
 }

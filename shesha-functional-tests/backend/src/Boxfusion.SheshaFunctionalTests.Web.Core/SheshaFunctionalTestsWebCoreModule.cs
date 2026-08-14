@@ -6,6 +6,8 @@ using Castle.MicroKernel.Registration;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using NHibernate.Dialect;
+using NHibernate.Driver;
 using Shesha;
 using Shesha.Authentication.JwtBearer;
 using Shesha.Authorization;
@@ -57,9 +59,19 @@ namespace Boxfusion.SheshaFunctionalTests
             Configuration.Caching.UseSheshaRedisIfConfigured();
 
             var hnConfig = Configuration.Modules.ShaNHibernate();
-            
-            hnConfig.UseDbms(c => c.GetDbmsType(), c => c.GetDefaultConnectionString());
 
+            var dbmsType = _appConfiguration.GetDbmsType();
+            hnConfig.UseDbms(c => dbmsType, c => c.GetDefaultConnectionString());
+            if (dbmsType == DbmsType.SQLServer) 
+            {
+                var useMicrosoftSqlClient = _appConfiguration.GetValue("UseMicrosoftSqlClient", true);
+                if (useMicrosoftSqlClient) 
+                {
+                    hnConfig.UseDialect<MsSql2012Dialect>();
+                    hnConfig.UseDriver<MicrosoftDataSqlClientDriver>();
+                }
+            }
+            
             ConfigureTokenAuth();
         }
 
