@@ -18,6 +18,9 @@ export interface ITextFieldComponentProps extends IConfigurableFormComponent, II
   spellCheck?: boolean | undefined;
   regExp?: string | undefined;
   useStandardPasswordValidation?: boolean | undefined;
+  enableFormatting?: boolean | undefined;
+  formatGroups?: string | undefined;
+  formatSeparator?: string | undefined;
 }
 
 export type TextFieldComponentDefinition = ComponentDefinition<"textField", ITextFieldComponentProps>;

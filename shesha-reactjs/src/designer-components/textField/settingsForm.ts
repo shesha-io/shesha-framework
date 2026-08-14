@@ -38,6 +38,19 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   inputType: 'switch', propertyName: 'spellCheck', label: 'Spell Check', jsSetting: true,
                   hidden: { _code: 'return getSettingValue(data?.textType) === "password";', _mode: 'code', _value: false },
                 })
+                .stdCollapsiblePanel('Auto-format', (fb) => fb
+                  .addSettingsInput({
+                    inputType: 'switch', propertyName: 'enableFormatting', label: 'Enable auto-format', size: 'small', layout: 'horizontal', jsSetting: true,
+                    tooltip: 'Displays a separator between groups of characters as the user types, e.g. groups "3,4" with separator "-" displays 1234567 as 123-4567. Display only — the stored value and payload never include the separator. Works on a normal text input (no per-character boxes).',
+                  })
+                  .addSettingsInputRow({
+                    inputs: [
+                      { type: 'textField', propertyName: 'formatGroups', label: 'Group lengths', size: 'small', jsSetting: true, tooltip: 'Comma-separated lengths of each group, e.g. 3,4' },
+                      { type: 'textField', propertyName: 'formatSeparator', label: 'Separator', size: 'small', jsSetting: true, tooltip: 'Character(s) displayed between groups, e.g. -. Visual only, not included in the stored value.' },
+                    ],
+                    visibleJs: 'return data?.enableFormatting === true;',
+                  }),
+                undefined, 'return getSettingValue(data?.textType) === "text";')
                 .stdCollapsiblePanel('Validations', (fb) => fb
                   .addSettingsInput({ inputType: 'switch', propertyName: 'validate.required', label: 'Required', size: 'small', layout: 'horizontal', jsSetting: true })
                   .addSettingsInput({

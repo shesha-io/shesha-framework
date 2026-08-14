@@ -1,7 +1,47 @@
 import { IStyleValue } from "@/providers/form/models";
 import { useSettingValue } from '@/providers/settings';
 import { ISettingIdentifier } from '@/providers/settings/models';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { useMemo } from 'react';
+
+export const parseGroupLengths = (groups: string | undefined): number[] => {
+  if (isNullOrWhiteSpace(groups)) return [];
+  return groups
+    .split(',')
+    .map((part) => parseInt(part.trim(), 10))
+    .filter((length) => Number.isFinite(length) && length > 0);
+};
+
+/** Removes every occurrence of `separator` from `value`, leaving only the raw characters. */
+export const stripSeparator = (value: string, separator: string): string => {
+  if (isNullOrWhiteSpace(value) || isNullOrWhiteSpace(separator)) return value;
+  const escapedSeparator = separator.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return value.split(new RegExp(escapedSeparator, 'g')).join('');
+};
+
+export const totalGroupLength = (groupLengths: number[]): number => groupLengths.reduce((sum, length) => sum + length, 0);
+
+/**
+ * Re-groups raw characters with a separator, e.g. groupLengths [3, 4] and separator '-'
+ * turns "1234567" into "123-4567". Strips any separator characters already present first,
+ * so it can be applied both to raw stored values and to the input's current (already-formatted) value.
+ */
+export const applyGroupFormatting = (rawValue: string, groupLengths: number[], separator: string): string => {
+  if (groupLengths.length === 0 || isNullOrWhiteSpace(rawValue)) return rawValue;
+
+  const stripped = stripSeparator(rawValue, separator);
+  const capped = stripped.slice(0, totalGroupLength(groupLengths));
+
+  const groupedParts: string[] = [];
+  let position = 0;
+  for (const length of groupLengths) {
+    if (position >= capped.length) break;
+    groupedParts.push(capped.slice(position, position + length));
+    position += length;
+  }
+
+  return groupedParts.join(separator);
+};
 
 export const defaultStyles = (): IStyleValue => {
   return {

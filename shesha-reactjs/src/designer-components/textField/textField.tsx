@@ -17,7 +17,7 @@ import { PasswordFieldWrapper } from './passwordFieldWrapper';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { getSettings } from './settingsForm';
-import { defaultStyles, buildPasswordValidatorString, usePasswordComplexitySettings, validatePasswordValue } from './utils';
+import { applyGroupFormatting, defaultStyles, buildPasswordValidatorString, parseGroupLengths, stripSeparator, totalGroupLength, usePasswordComplexitySettings, validatePasswordValue } from './utils';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { TextFieldApi } from '@/componentsApi/componentApi';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
@@ -72,6 +72,12 @@ const TextFieldComponent: TextFieldComponentDefinition = {
     const isPassword = model.textType === 'password';
     const passwordComplexity = usePasswordComplexitySettings();
 
+    const formatGroupLengths = useMemo(
+      () => model.enableFormatting === true ? parseGroupLengths(model.formatGroups) : [],
+      [model.enableFormatting, model.formatGroups],
+    );
+    const formatSeparator = model.formatSeparator ?? '-';
+
     const passwordValidator = useMemo(() =>
       isPassword && model.useStandardPasswordValidation === true ? buildPasswordValidatorString(passwordComplexity) : null,
     [isPassword, model.useStandardPasswordValidation, passwordComplexity],
@@ -118,10 +124,14 @@ const TextFieldComponent: TextFieldComponentDefinition = {
             })()
             : null;
 
+          const displayValue = formatGroupLengths.length > 0
+            ? applyGroupFormatting(value ?? "", formatGroupLengths, formatSeparator)
+            : (value ?? "");
+
           const inputElement = model.readOnly === true
             ? (
               <ReadOnlyDisplayFormItem
-                value={model.textType === 'password' && !isNullOrWhiteSpace(value) ? ''.padStart(value.length, '•') : value}
+                value={model.textType === 'password' && !isNullOrWhiteSpace(value) ? ''.padStart(value.length, '•') : displayValue}
                 enableFullStyle={model.enableStyleOnReadonly}
                 style={model.styleJson}
                 styleValue={model}
@@ -131,9 +141,11 @@ const TextFieldComponent: TextFieldComponentDefinition = {
               <InputComponentType
                 ref={inputRef}
                 {...inputProps}
-                value={value ?? ""}
+                value={displayValue}
                 onChange={(event) => {
-                  const inputValue = event.currentTarget.value;
+                  const inputValue = formatGroupLengths.length > 0
+                    ? stripSeparator(event.currentTarget.value, formatSeparator).slice(0, totalGroupLength(formatGroupLengths))
+                    : event.currentTarget.value;
                   const isEmpty = isNullOrWhiteSpace(inputValue);
                   const isRegExpMatch = isDefined(regExpObj) && inputValue.match(regExpObj) !== null;
                   if ((!isEmpty && isRegExpMatch) || !isDefined(regExpObj) || isEmpty) {
