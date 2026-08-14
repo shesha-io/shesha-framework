@@ -7,10 +7,10 @@ using Abp.Reflection;
 using Abp.Runtime.Session;
 using Abp.Runtime.Validation;
 using Abp.UI;
-using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Shesha.Authorization;
+using Shesha.Configuration.Runtime;
 using Shesha.Domain;
 using Shesha.EntityReferences;
 using Shesha.Extensions;
@@ -19,6 +19,7 @@ using Shesha.Services;
 using Shesha.StoredFiles.Dto;
 using Shesha.StoredFiles.Enums;
 using Shesha.Utilities;
+using Shesha.Validations;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
@@ -44,6 +45,7 @@ namespace Shesha.StoredFiles
         private readonly IRepository<Person, Guid> _personRepository;
         private readonly TypeFinder _typeFinder;
         private readonly IAbpSession _abpSession;
+        private readonly IEntityConfigurationStore _entityConfigurationStore;
 
         /// <summary>
         /// Reference to the object to object mapper.
@@ -55,8 +57,10 @@ namespace Shesha.StoredFiles
             IDynamicRepository dynamicRepository,
             IUnitOfWorkManager unitOfWorkManager,
             IRepository<Person, Guid> personRepository,
-            TypeFinder typeFinder
-, IAbpSession abpSession, IRepository<StoredFileVersionDownload, Guid> fileVersionDownloadRepository)
+            TypeFinder typeFinder, 
+            IAbpSession abpSession, 
+            IRepository<StoredFileVersionDownload, Guid> fileVersionDownloadRepository,
+            IEntityConfigurationStore entityConfigurationStore)
         {
             _fileService = fileService;
             _fileRepository = fileRepository;
@@ -67,6 +71,7 @@ namespace Shesha.StoredFiles
             _typeFinder = typeFinder;
             _abpSession = abpSession;
             _fileVersionDownloadRepository = fileVersionDownloadRepository;
+            _entityConfigurationStore = entityConfigurationStore;
         }
 
         [HttpGet, Route("Download")]
@@ -759,13 +764,15 @@ namespace Shesha.StoredFiles
 
             if (hasOwner)
             {
+                _dynamicRepository.ValidateEntityId(input.OwnerType, input.OwnerId).ThrowValidationExceptionIfAny("Entity Id validation failed");
+
                 var entity = await _dynamicRepository.GetAsync(input.OwnerType, input.OwnerId);
                 if (entity == null)
                     return null;
 
                 var property = ReflectionHelper.GetProperty(entity, input.PropertyName, out var owner);
                 if (property == null)
-                    throw new Exception($"Property '{input.PropertyName}' not found in the class {owner.GetType().Name}");
+                    throw new AbpValidationException("Validation failed", new List<ValidationResult> { new ValidationResult($"Property '{input.PropertyName}' not found in the class '{entity.GetType().Name}'") });
 
                 if (!(property.GetValue(owner) is StoredFile storedFile && !storedFile.IsDeleted))
                     return null;

@@ -2,7 +2,6 @@
 using Abp.Domain.Entities;
 using Abp.Domain.Uow;
 using NHibernate;
-using NHibernate.Context;
 using Shesha.Configuration.Runtime;
 using Shesha.Domain.Attributes;
 using Shesha.NHibernate.Repositories;
@@ -10,6 +9,7 @@ using Shesha.NHibernate.Session;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
@@ -147,6 +147,28 @@ namespace Shesha.Services
             var whereForMyType = where.GetGenericMethodDefinition().MakeGenericMethod(entityType);
             var query = CurrentSession.Query<object>(entityType.FullName).Cast(entityType.FullName);
             return (IQueryable)whereForMyType.Invoke(query, new object[] { query, lambda });
+        }
+
+        public List<ValidationResult> ValidateEntityId(string entityTypeShortAlias, string id) 
+        {
+            var validationResults = new List<ValidationResult>();
+            if (string.IsNullOrWhiteSpace(entityTypeShortAlias))
+                validationResults.Add(new ValidationResult($"Entity type is required"));
+            else {
+                var entityConfiguration = _entityConfigurationStore.Get(entityTypeShortAlias);
+                if (entityConfiguration == null)
+                    validationResults.Add(new ValidationResult($"Entity type '{entityTypeShortAlias}' not found"));
+                else
+                {
+                    if (!string.IsNullOrWhiteSpace(id) && !Parser.CanParseId(id, entityConfiguration.EntityType))
+                        validationResults.Add(new ValidationResult($"Entity id '{id}' is not valid"));
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(id))
+                validationResults.Add(new ValidationResult($"Entity id is required"));
+            
+            return validationResults;
         }
     }
 }
