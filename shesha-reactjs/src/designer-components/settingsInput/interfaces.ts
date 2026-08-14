@@ -73,6 +73,16 @@ export interface ISettingsInputBase<TValue = unknown> extends IComponentLabelPro
   inline?: boolean | undefined;
 }
 
+export type DimensionTypes = 'width' | 'height' | 'minWidth' | 'minHeight' | 'maxWidth' | 'maxHeight' | 'gridRowHeight' | 'gridColumnWidth';
+// Color Picker
+export interface IDimensionFieldSettingsInputProps extends ISettingsInputBase<string> {
+  type: 'dimensionField';
+  dimensionType: DimensionTypes;
+  tooltip?: string | undefined;
+  icon?: string | React.ReactNode | undefined;
+}
+export const isDimensionFieldProps = (value: ISettingsInputBase<string>): value is IDimensionFieldSettingsInputProps => value.type === 'dimensionField';
+
 // Color Picker
 export interface IColorPickerSettingsInputProps extends ISettingsInputBase {
   type: 'colorPicker';
@@ -178,6 +188,7 @@ export interface ICodeEditorSettingsInputProps extends ISettingsInputBase<string
   resultTypeExpression?: string | GetResultTypeFunc | undefined;
   availableConstantsExpression?: string | undefined;
   availableConstants?: IObjectMetadata | undefined;
+  /** @deprecated use availableConstantsExpression or availableConstants */
   exposedVariables?: string[] | ICodeExposedVariable[] | undefined;
 }
 
@@ -324,7 +335,7 @@ export interface IIconPickerSettingsInputProps extends ISettingsInputBase<string
 }
 
 // Multi Color Picker
-export interface IMultiColorPickerSettingsInputProps extends ISettingsInputBase<{ [key: string]: string | undefined }> {
+export interface IMultiColorPickerSettingsInputProps extends ISettingsInputBase<string[] | Record<string, string | undefined>> {
   type: 'multiColorPicker';
 }
 
@@ -478,6 +489,7 @@ export interface ICommonStylingProps {
 
 // Union type of all settings input props
 export type BaseInputProps =
+  IDimensionFieldSettingsInputProps |
   IColorPickerSettingsInputProps |
   IDropdownSettingsInputProps |
   ICustomDropdownSettingsInputProps |
@@ -537,7 +549,6 @@ export type ISettingsInputSettingsInputProps = {
 }[InputTypes];
 
 export type ISettingsInputProps = (BaseInputProps | ISettingsInputSettingsInputProps) & {
-  skipInheritance?: boolean;
   permissionSettings?: boolean;
 };
 

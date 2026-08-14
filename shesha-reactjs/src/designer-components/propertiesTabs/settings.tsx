@@ -1,5 +1,5 @@
 import itemSettings from './itemSettings.json';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import SettingsForm from '@/designer-components/_settings/settingsForm';
 import SettingsFormItem from '@/designer-components/_settings/settingsFormItem';
 import { Alert, Checkbox, Input, Select } from 'antd';

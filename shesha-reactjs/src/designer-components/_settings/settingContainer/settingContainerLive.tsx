@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren } from 'react';
+import { FC, PropsWithChildren } from 'react';
 import FormComponentMemo from '@/components/formDesigner/formComponent/formComponent';
 import { ISettingContainerProps } from './settingComponentContainer';
 

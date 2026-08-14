@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC } from 'react';
+import { CSSProperties, FC } from 'react';
 import { IconBaseProps } from '@ant-design/icons/lib/components/Icon';
 import { useThemeState } from '@/providers';
 import * as AntdIcons from '@ant-design/icons';

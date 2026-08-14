@@ -1,5 +1,5 @@
 import { NumberOutlined } from '@ant-design/icons';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { DataTypes, NumberFormats } from '@/interfaces/dataTypes';
@@ -27,7 +27,7 @@ import { useEffectOnce } from '@/hooks/useEffectOnce';
 import apiCode from "../../componentsApi/componentApi.ts?raw";
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
-import { getComponentEvents } from '../_common/events';
+import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '../_common/events';
 
 const suffixStyle = { color: 'rgba(0,0,0,.45)' };
 
@@ -104,7 +104,7 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
       // ...(isDefined(model.validate?.maxValue) ? { max: model.validate.maxValue } : {}),
       // ...(isDefined(model.validate?.minValue) ? { min: model.validate.minValue } : {}),
 
-      ...(isDefined(model.styleJson) ? { style: model.styleJson } : {}),
+      ...(isDefined(model.styleCss) ? { style: model.styleCss } : {}),
       className: styles.numberStyles,
 
     };
@@ -159,7 +159,7 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
                 // ToDo: AS - implement custom number formatting and merge with code from this component
                 value={numberToFormattedString(value?.toString(), getDataProperty(properties, model.propertyName ?? '', 'dataFormat'))}
                 enableFullStyle={model.enableStyleOnReadonly}
-                style={model.styleJson}
+                style={model.styleCss}
                 styleValue={model}
               />
             )
@@ -194,7 +194,7 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
                   // force refresh because Antd InputNumber does not trigger render
                   forceRefresh({});
                 }}
-                {...getComponentEvents<number>(model, ['onFocus', 'onBlur', 'onClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave', 'onKeyDown', 'onKeyUp'], ctx, value, DataTypes.number)}
+                {...getComponentEvents<number>(model, ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, ctx, value, DataTypes.number)}
               />
             );
         }}

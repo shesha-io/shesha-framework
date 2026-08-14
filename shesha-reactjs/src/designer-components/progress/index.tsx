@@ -1,5 +1,5 @@
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import React from 'react';
+import * as React from 'react';
 import { getSettings } from './settings';
 import { IConfigurableFormComponent, IFormComponentStyles, IInputStyles } from '@/providers/form/models';
 import { IToolboxComponent } from '@/interfaces';

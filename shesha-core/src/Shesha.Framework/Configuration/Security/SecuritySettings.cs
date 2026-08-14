@@ -69,6 +69,11 @@ namespace Shesha.Configuration.Security
         /// </summary>
         [Display(Name = "Default endpoint access", Description = "Used for 'Inherited' endpoint access")]
         public RefListPermissionedAccess DefaultEndpointAccess { get; set; }
+        
+        /// <summary>
+        /// Enable Swagger UI
+        /// </summary>
+        public bool SwaggerUiEnabled { get; set; }
 
         /// <summary>
         /// Default endpoint permissons

@@ -6,8 +6,42 @@ import { getValueByPropertyName } from "@/utils/object";
 import { RadioChangeEvent } from "antd";
 import { SyntheticEvent } from "react";
 
-export type StandardEventHandler = 'onChange' | 'onBlur' | 'onFocus' | 'onClick' | 'onDoubleClick' | 'onMouseEnter' | 'onMouseLeave' | 'onMouseMove' | 'onKeyDown' | 'onKeyUp';
+/**
+ * The complete standard event set, in the order it should appear on the Events tab.
+ *
+ * Input components should expose *all* of these rather than an ad-hoc subset — pass
+ * `ALL_INPUT_EVENTS` to `stdEventHandlers` in the settings form and
+ * `ALL_INPUT_EVENTS_WITHOUT_CHANGE` to `getComponentEvents` at runtime. Using the shared
+ * constants at both call sites keeps the two lists in step: a settings form that advertises
+ * an event the runtime never binds produces a handler the user can configure but which
+ * silently never fires.
+ *
+ * `onChange` is absent from the runtime list because each component wires it inline
+ * (it also updates the component's value, which `getComponentEvents` does not do).
+ */
+export const ALL_INPUT_EVENTS = ['onChange', 'onFocus', 'onBlur', 'onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave', 'onKeyDown', 'onKeyUp'] as const;
+
+export type StandardEventHandler = typeof ALL_INPUT_EVENTS[number];
 export type CustomEventHandler = `${StandardEventHandler}Custom`;
+
+export type StandardEventHandlerWithoutChange = Exclude<StandardEventHandler, 'onChange'>;
+
+/** `ALL_INPUT_EVENTS` minus `onChange` — the set `getComponentEvents` binds. */
+export const ALL_INPUT_EVENTS_WITHOUT_CHANGE: readonly StandardEventHandlerWithoutChange[] =
+  ALL_INPUT_EVENTS.filter((event): event is StandardEventHandlerWithoutChange => event !== 'onChange');
+
+/**
+ * `ALL_INPUT_EVENTS` minus `onDoubleClick` — for components that deliberately don't expose a
+ * double-click handler. Pass this to `stdEventHandlers` in the settings form and
+ * `ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK` to `getComponentEvents` at runtime so the two
+ * lists stay in step (see the note on `ALL_INPUT_EVENTS`).
+ */
+export const ALL_INPUT_EVENTS_WITHOUT_DOUBLE_CLICK: readonly StandardEventHandler[] =
+  ALL_INPUT_EVENTS.filter((event): event is StandardEventHandler => event !== 'onDoubleClick');
+
+/** `ALL_INPUT_EVENTS_WITHOUT_DOUBLE_CLICK` minus `onChange` — the runtime set for those components. */
+export const ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK: readonly StandardEventHandlerWithoutChange[] =
+  ALL_INPUT_EVENTS_WITHOUT_CHANGE.filter((event): event is StandardEventHandlerWithoutChange => event !== 'onDoubleClick');
 
 interface EventConfig {
   event: StandardEventHandler;
@@ -100,18 +134,18 @@ export const getEventConfig = (event: StandardEventHandler, valueType?: string |
   return eventConfig;
 };
 
-type StandardEventHandlerWithoutChange = Exclude<StandardEventHandler, 'onChange'>;
 type EventsObject = { [k in StandardEventHandlerWithoutChange]?: (event: SyntheticEvent<Element, Event> | RadioChangeEvent | undefined) => void };
 
 export const getComponentEvents = <TValue, TModel = IConfigurableFormComponent>(
   model: TModel,
-  events: StandardEventHandlerWithoutChange[],
+  // `readonly` so the shared `ALL_INPUT_EVENTS_WITHOUT_CHANGE` constant can be passed directly.
+  events: readonly StandardEventHandlerWithoutChange[],
   ctx: ConfigurableFormItemContext<TValue> | undefined,
   value?: TValue | null | undefined,
   valueType?: string | undefined,
   prefix?: string | undefined,
 ): EventsObject => {
-  const result = {} as EventsObject;
+  const result: EventsObject = {};
   if (!isDefined(ctx) || !isDefined(events) || events.length === 0) return result;
   events.forEach((event: StandardEventHandlerWithoutChange) => {
     const config = getEventConfig(event, valueType);

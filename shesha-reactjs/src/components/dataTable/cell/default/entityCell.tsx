@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { IDataCellProps } from '../interfaces';
 import { getFirstNonEmptyStringPropertyOrUndefined } from '@/utils/object';
 import { isDefined } from '@/utils/nullables';

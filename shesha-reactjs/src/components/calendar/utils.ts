@@ -104,6 +104,32 @@ export const isLayerFetchable = (layer: ICalendarLayersProps): boolean =>
     ? !isNullOrWhiteSpace(layer.customUrl)
     : !isEntityTypeIdEmpty(layer.entityType);
 
+// Checks whether an evaluated custom URL still contains unresolved or empty parameters.
+// This happens on calendar initialisation when form data is not yet available,
+// causing mustache templates like {{data.taskId}} to evaluate to an empty/whitespace
+// string, or, when a tag can't be resolved at all, to survive as literal {{...}} text.
+// Firing the request with empty parameters (e.g. ?id=) causes a backend validation error.
+export const hasEmptyUrlParameters = (url: string): boolean => {
+  if (isNullOrWhiteSpace(url)) return true;
+
+  const hasUnresolvedTag = (value: string): boolean => /{{.*?}}/.test(value);
+
+  if (hasUnresolvedTag(url)) return true;
+
+  try {
+    const urlObj = new URL(url, 'http://placeholder');
+    for (const [, value] of urlObj.searchParams.entries()) {
+      // URLSearchParams decodes percent-encoded values (e.g. %7B%7B...%7D%7D),
+      // so an unresolved tag can only surface here after decoding.
+      if (isNullOrWhiteSpace(value) || hasUnresolvedTag(value)) return true;
+    }
+  } catch {
+    // Fallback for URLs that cannot be parsed — check for empty query values with regex
+    if (/[?&][^=]+=(?:&|$)/.test(url)) return true;
+  }
+  return false;
+};
+
 export const getCalendarDataUrl = (param: ICalendarLayersProps, filter: string): string => {
   const { customUrl, dataSource, entityType, overfetch } = param;
 

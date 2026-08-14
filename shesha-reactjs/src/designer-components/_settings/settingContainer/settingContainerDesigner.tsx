@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import ConditionalWrap from '@/components/conditionalWrapper';
-import React, { FC, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { TOOLBOX_COMPONENT_DROPPABLE_KEY } from '@/providers/form/models';
 import { ShaForm } from '@/providers/form';

@@ -3,7 +3,7 @@ import { IHasFormDataSourceConfig, useMetadataDispatcher } from "@/providers";
 import { IConfigurableColumnsProps, isDataColumn } from "@/providers/datatableColumnsConfigurator/models";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
 import { unsafeGetValueByPropertyName } from "@/utils/object";
-import React, { FC, PropsWithChildren, useCallback, useMemo } from "react";
+import { FC, PropsWithChildren, useCallback, useMemo } from "react";
 import { DataTableColumnDto, IGetListDataPayload, ITableDataInternalResponse, ITableRowData } from "../interfaces";
 import { DataTableProviderWithRepository, IDataTableProviderWithRepositoryProps } from "../provider";
 import { IRepository, RowsReorderPayload, SupportsReorderingArgs } from "./interfaces";

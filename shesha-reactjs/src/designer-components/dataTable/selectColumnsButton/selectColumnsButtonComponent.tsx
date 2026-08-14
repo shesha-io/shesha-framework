@@ -1,4 +1,3 @@
-import React from 'react';
 import settingsFormJson from './settingsForm.json';
 import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
 import { IToolboxComponent } from '@/interfaces';

@@ -2,7 +2,8 @@ import { IInputStyles } from '@/providers/form/models';
 import { FontColorsOutlined } from '@ant-design/icons';
 import { Input } from 'antd';
 import { TextAreaProps, TextAreaRef } from 'antd/lib/input/TextArea';
-import React, { FocusEventHandler, ReactNode, useEffect, useRef } from 'react';
+import { FocusEventHandler, ReactNode, useEffect, useRef } from 'react';
+import * as React from 'react';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { ITextAreaComponentProps, TextAreaComponentDefinition } from './interfaces';
@@ -22,7 +23,7 @@ import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
 import { useStyles } from './styles';
 import { getOverflowStyle } from '../_settings/utils/overflow/util';
-import { getComponentEvents } from '../_common/events';
+import { ALL_INPUT_EVENTS_WITHOUT_CHANGE, getComponentEvents } from '../_common/events';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { TextAreaApi } from '@/componentsApi/componentApi';
 import { isDefined } from '@/utils/nullables';
@@ -83,9 +84,12 @@ const TextAreaComponent: TextAreaComponentDefinition = {
     const { styles } = useStyles(model);
 
     const textAreaProps: TextAreaProps = {
-      className: 'sha-text-area',
       classNames: {
-        textarea: `sha-text-area ${styles.textArea}`,
+        // With allowClear/suffix antd renders an affix wrapper and `root` lands on it; that
+        // wrapper then owns the visible border/background. Both elements get the appearance
+        // class, and the stylesheet decides which one actually paints it — see styles.ts.
+        root: styles.textAreaWrapper,
+        textarea: isDefined(model.allowClear) && model.allowClear ? '' : `sha-text-area ${styles.textArea}`,
       },
       placeholder: model.placeholder,
       autoSize: model.autoSize === true ? { minRows: 2 } : false,
@@ -94,7 +98,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
       size: model.size,
       style: {
         ...getOverflowStyle(true, false),
-        ...(isDefined(model.styleJson) ? model.styleJson : {}),
+        ...(isDefined(model.styleCss) ? model.styleCss : {}),
       },
       spellCheck: model.spellCheck ?? false,
     };
@@ -151,7 +155,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
                   value={value}
                   type="textArea"
                   enableFullStyle={model.enableStyleOnReadonly}
-                  style={{ padding: 8, ...getOverflowStyle(true, false), ...model.styleJson }}
+                  style={{ padding: 8, ...getOverflowStyle(true, false), ...model.styleCss }}
                   styleValue={model}
                 />
               ) : (
@@ -166,7 +170,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
                       ctx?.handleEvent(event, { value: event.currentTarget.value }, model.onChangeCustom);
                       onChange(event.currentTarget.value);
                     }}
-                    {...getComponentEvents<TextAreaValueType>(model, ['onFocus', 'onBlur', 'onClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave', 'onKeyDown', 'onKeyUp'], ctx, value, DataTypes.string)}
+                    {...getComponentEvents<TextAreaValueType>(model, ALL_INPUT_EVENTS_WITHOUT_CHANGE, ctx, value, DataTypes.string)}
                   />
                   {renderCharCounter()}
                 </>

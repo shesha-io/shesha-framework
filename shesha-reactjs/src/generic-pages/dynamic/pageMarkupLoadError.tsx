@@ -3,7 +3,7 @@ import { MarkupLoadingErrorRenderProps } from '@/components/configurableForm/mod
 import { getFormForbiddenMessage } from '@/providers/configurationItemsLoader/utils';
 import { App, Button, Result } from 'antd';
 import Link from 'next/link';
-import React, { FC, useEffect } from 'react';
+import { FC, useEffect } from 'react';
 
 export const PageMarkupLoadingError: FC<MarkupLoadingErrorRenderProps> = ({ formId, markupLoadingState }) => {
   const { notification } = App.useApp();

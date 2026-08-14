@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { IConfigurableFormComponent, IPropertySetting, IToolboxComponents } from '@/interfaces';
 import { useStyles } from '../styles/styles';
 import { getNestedPropertyValue } from '@/utils/dotnotation';

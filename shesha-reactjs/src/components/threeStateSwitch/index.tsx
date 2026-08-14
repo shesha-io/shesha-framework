@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { CheckOutlined, CloseOutlined, SettingOutlined } from '@ant-design/icons';
 import { useDeepCompareMemo } from '@/hooks';
 import IconRadioGroup, { IIconRadioGroupValueDefinition } from '../iconRadioGroup';

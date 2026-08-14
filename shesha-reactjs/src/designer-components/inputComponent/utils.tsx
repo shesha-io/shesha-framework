@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { Select } from 'antd';
 import { ListEditor } from '@/components/listEditor';
 import { CodeEditor } from '@/designer-components/codeEditor/codeEditor';
@@ -9,7 +9,6 @@ import { ICodeEditorProps } from '../codeEditor/interfaces';
 import { IObjectMetadata } from '@/interfaces';
 import { InputComponent } from '.';
 import { getWidth } from '../settingsInput/utils';
-import { DefaultOptionType } from 'antd/lib/select';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 const stringToFriendlyMap = new Map<string, string>([['true', 'On'], ['false', 'Off'], ['editable', 'Editable'], ['readOnly', 'Read only'], ['inherited', 'Inherited']]);
@@ -24,6 +23,35 @@ export const convertValueToFriendlyString = (value: unknown): string => {
   if (typeof value === 'string')
     return stringToFriendlyMap.get(value) ?? value;
   return String(value);
+};
+
+/** A data URI or an image URL — the image picker stores its value as base64. */
+const isImageValue = (value: unknown): value is string =>
+  typeof value === 'string' && (/^data:image\//i.test(value) || /^(https?:\/\/|\/)[^\s]+\.(png|jpe?g|gif|webp|svg)(\?[^\s]*)?$/i.test(value));
+
+/** Strings long enough to overrun the popover (e.g. a base64 payload or a long script). */
+const MAX_INLINE_VALUE_LENGTH = 80;
+
+/**
+ * Renders an inherited value for display in the inheritance popover.
+ *
+ * Most values are shown as friendly text, but an image value is shown as a thumbnail: the
+ * picker stores images as base64, and printing the raw data URI floods the popover with
+ * thousands of characters instead of telling the user what they'd inherit.
+ */
+export const renderValueForDisplay = (value: unknown): ReactElement => {
+  if (isImageValue(value)) {
+    return (
+      <img
+        src={value}
+        alt="Inherited image"
+        style={{ maxWidth: 120, maxHeight: 80, objectFit: 'contain', display: 'block' }}
+      />
+    );
+  }
+
+  const text = convertValueToFriendlyString(value);
+  return <span>{text.length > MAX_INLINE_VALUE_LENGTH ? `${text.slice(0, MAX_INLINE_VALUE_LENGTH)}…` : text}</span>;
 };
 
 export const getEditor = (
@@ -127,7 +155,7 @@ export const CustomLabelValueEditorInputs = (props: ILabelValueEditorProps): Rea
                     }}
                     disabled={readOnly}
                     options={Array.isArray(dropdownOptions)
-                      ? dropdownOptions.map<DefaultOptionType>((option) => ({ label: option.label, value: option.value }))
+                      ? dropdownOptions.map((option) => ({ label: option.label, value: option.value }))
                       : []}
                   />
                 </>

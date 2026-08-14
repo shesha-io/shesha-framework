@@ -50,10 +50,12 @@ import { linkComponentToModelMetadata, upgradeComponent } from "@/providers/form
 import { getComponentDefinitions } from "@/providers/form/defaults/toolboxComponents";
 import { fontTypes, fontWeightsOptions, textAlignOptions } from "@/designer-components/_settings/utils/font/utils";
 import { getBorderInputs, getCornerInputs } from "@/designer-components/_settings/utils/border/utils";
-import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from "@/designer-components/_settings/utils/background/utils";
-import { isDefined } from "@/utils/nullables";
+import { backgroundTypeOptions, gradientDirectionOptions, positionOptions, repeatOptions, sizeOptions } from "@/designer-components/_settings/utils/background/utils";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { isPropertySettings } from "@/designer-components/_settings/utils/utils";
 import { getEventConfig, StandardEventHandler } from "@/designer-components/_common/events";
+import { ALIGN_ITEMS, ALIGN_ITEMS_GRID, ALIGN_SELF, FLEX_DIRECTION, FLEX_WRAP, JUSTIFY_CONTENT, JUSTIFY_ITEMS, JUSTIFY_SELF } from "@/designer-components/container/data";
+import { IContainerCheckerComponentProps } from "@/designer-components/containerChecker/interfaces";
 
 /**
  * Returns `true` when `propertyName`'s trailing segment (the part after the last `.`) is listed in
@@ -96,6 +98,8 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
   addLabelValueEditor = (props: FluentSettings<ILabelValueEditorComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'labelValueEditor', meta);
 
   addNumberField = (props: FluentSettings<INumberFieldComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'numberField', meta);
+
+  addContainerChecker = (props: FluentSettings<IContainerCheckerComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'containerChecker', meta);
 
   addPermissionAutocomplete = (props: FluentSettings<IConfigurableFormComponent>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'permissionAutocomplete', meta);
 
@@ -244,28 +248,32 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
     return this;
   };
 
-  stdCollapsiblePanel = (label: string, components: (fbf: FormBuilder) => FormBuilder, collapsedByDefault: boolean = false): FormBuilder => {
+  stdCollapsiblePanel = (label: string, components: (fbf: FormBuilder) => FormBuilder, collapsedByDefault: boolean = false, visibleJs?: string | undefined): FormBuilder => {
     const contentId = nanoid();
     const fbf = new FormBuilderImplementation(this.componentDefinitions, contentId) as FormBuilder;
 
     const fixedProps: FluentSettings<ICollapsiblePanelComponentProps> = {
-      label: label,
-      labelAlign: 'right',
-      ghost: true,
-      collapsible: 'header',
-      collapsedByDefault,
-      isDynamic: true,
-      header: {
-        id: nanoid(),
-        components: [],
-      },
-      content: {
-        id: contentId,
-        components: components(fbf).toJson(),
-      },
+      label: label, labelAlign: 'right', ghost: true, collapsible: 'header', collapsedByDefault, isDynamic: true,
+      header: { id: nanoid(), components: [] },
+      content: { id: contentId, components: components(fbf).toJson() },
+      visibleJs,
     };
 
     return this._addProperty(fixedProps, 'collapsiblePanel');
+  };
+
+  stdContainer = (components: (fbf: FormBuilder) => FormBuilder, visibleJs?: string | undefined): FormBuilder => {
+    const containerId = nanoid();
+    const fbf = new FormBuilderImplementation(this.componentDefinitions, containerId) as FormBuilder;
+    const fixedProps: FluentSettings<IContainerComponentProps> = { id: containerId, components: components(fbf).toJson(), visibleJs };
+    return this._addProperty(fixedProps, 'container');
+  };
+
+  stdContainerChecker = (components: (fbf: FormBuilder) => FormBuilder, visibleJs?: string | undefined): FormBuilder => {
+    const containerId = nanoid();
+    const fbf = new FormBuilderImplementation(this.componentDefinitions, containerId) as FormBuilder;
+    const fixedProps: FluentSettings<IContainerCheckerComponentProps> = { id: containerId, components: components(fbf).toJson(), visibleJs };
+    return this._addProperty(fixedProps, 'containerChecker');
   };
 
   stdEventHandler = (
@@ -286,7 +294,7 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
     return this;
   };
 
-  stdEventHandlers = (events: StandardEventHandler[], valueType?: string | undefined, prefix?: string | undefined, prefixLabel: string = ''): FormBuilder => {
+  stdEventHandlers = (events: readonly StandardEventHandler[], valueType?: string | undefined, prefix?: string | undefined, prefixLabel: string = ''): FormBuilder => {
     events.forEach((event) => {
       const eventConfig = getEventConfig(event, valueType);
       if (eventConfig)
@@ -295,19 +303,124 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
     return this;
   };
 
+  stdFontControls = (propertyName: string = 'font', exclude?: string[], panelTitle: string = 'Font', showSeparator: boolean = true): FormBuilder => {
+    if (showSeparator)
+      this.addSectionSeparator({ label: panelTitle, containerStylingBoxJson: { _type: 'styleBox', marginBottom: 8 } });
+    this.addSettingsInputRow({
+      inline: true,
+      propertyName: propertyName,
+      inputs: excludeInputs([
+        { type: 'dropdown', label: 'Family', propertyName: `${propertyName}.type`, hideLabel: true, dropdownOptions: fontTypes },
+        { type: 'numberField', label: 'Size', propertyName: `${propertyName}.size`, hideLabel: true, width: 50 },
+        { type: 'dropdown', label: 'Weight', propertyName: `${propertyName}.weight`, hideLabel: true, dropdownOptions: fontWeightsOptions, width: 48, tooltip: 'Controls text thickness (light, normal, bold, etc.)' },
+        { type: 'colorPicker', label: 'Color', hideLabel: true, propertyName: `${propertyName}.color` },
+        { type: 'dropdown', label: 'Align', propertyName: `${propertyName}.align`, hideLabel: true, width: 48, dropdownOptions: textAlignOptions },
+      ], exclude) });
+    return this;
+  };
+
   stdFontPanel = (propertyName: string = 'font', exclude?: string[], panelTitle: string = 'Font'): FormBuilder => {
-    this.stdCollapsiblePanel(panelTitle, (f) => f
-      .addSettingsInputRow({
-        inline: true,
-        propertyName: propertyName,
-        inputs: excludeInputs([
-          { type: 'dropdown', label: 'Family', propertyName: `${propertyName}.type`, hideLabel: true, dropdownOptions: fontTypes },
-          { type: 'numberField', label: 'Size', propertyName: `${propertyName}.size`, hideLabel: true, width: 50 },
-          { type: 'dropdown', label: 'Weight', propertyName: `${propertyName}.weight`, hideLabel: true, dropdownOptions: fontWeightsOptions, width: 48, tooltip: 'Controls text thickness (light, normal, bold, etc.)' },
-          { type: 'colorPicker', label: 'Color', hideLabel: true, propertyName: `${propertyName}.color` },
-          { type: 'dropdown', label: 'Align', propertyName: `${propertyName}.align`, hideLabel: true, width: 48, dropdownOptions: textAlignOptions },
-        ], exclude),
-      }));
+    this.stdCollapsiblePanel(panelTitle, (f) => f.stdFontControls(propertyName, exclude, panelTitle, false));
+    return this;
+  };
+
+  stdLayoutPanel = (isResponsive?: boolean, propertyName: string = '', panelTitle: string = 'Layout'): FormBuilder => {
+    const getDisplay = ` getSettingValue(${isResponsive === true ? 'data[`${page.canvasContext?.designerDevice || "desktop"}`]?' : 'data'}.display)`;
+    const getFlexDirection = ` getSettingValue(${isResponsive === true ? 'data[`${page.canvasContext?.designerDevice || "desktop"}`]?' : 'data'}.flexDirection)`;
+    const getShowAdvanced = ` getSettingValue(${isResponsive === true ? 'data[`${page.canvasContext?.designerDevice || "desktop"}`]?' : 'data'}.showAdvanced)`;
+    const propName = isNullOrWhiteSpace(propertyName) ? '' : propertyName + '.';
+    this.stdCollapsiblePanel(panelTitle, (f) => {
+      f.addSettingsInput({ propertyName: `${propName}display`, label: 'Layout Type', inputType: 'radio',
+        description: 'The display CSS property sets whether an element is treated as a block or inline element and the layout used for its children, such as flow layout, grid or flex.',
+        validate: { required: true },
+        buttonGroupOptions: [
+          { value: 'block', title: 'Block', icon: 'BorderOutlined' },
+          { value: 'grid', title: 'Grid', icon: 'AppstoreOutlined' },
+          { value: 'flex', title: 'Flex', icon: 'flex' },
+          { value: 'inline-grid', title: 'Inline grid', icon: 'TableOutlined' },
+        ],
+      });
+      f.stdContainer((f) => {
+        f.addSettingsInputRow({
+          inline: true,
+          inputs: [
+            { type: 'radio', label: 'Flex Direction', hideLabel: true, propertyName: `${propName}flexDirection`,
+              hidden: { _code: `return ${getDisplay} !== "flex";`, _mode: 'code', _value: false },
+              buttonGroupOptions: [{ title: 'Row', value: 'row', icon: 'row' }, { title: 'Column', value: 'column', icon: 'column' }],
+            },
+            { type: 'radio', label: 'Justify Content', hideLabel: true, propertyName: `${propName}justifyContent`,
+              hidden: { _code: `return (${getDisplay} === "flex" && ${getFlexDirection} === "column") || ${getDisplay} === "inline-grid"`, _mode: 'code', _value: false },
+              buttonGroupOptions: [{ title: 'Left', value: 'left', icon: 'alignHorizontalLeft' }, { title: 'Center', value: 'center', icon: 'alignHorizontalCenter' }, { title: 'Right', value: 'right', icon: 'alignHorizontalRight' }],
+            },
+            {
+              type: 'radio', label: 'Align Items', hideLabel: true, propertyName: `${propName}alignItems`,
+              hidden: { _code: `return ${getDisplay} === "flex" && ${getFlexDirection} === "column"`, _mode: 'code', _value: false },
+              buttonGroupOptions: [{ title: 'Start', value: 'start', icon: 'alignVerticalTop' }, { title: 'Center', value: 'center', icon: 'alignVerticalCenter' }, { title: 'End', value: 'end', icon: 'alignVerticalBottom' }],
+            },
+            { type: 'radio', label: 'Align Items', hideLabel: true, propertyName: `${propName}alignItems`,
+              hidden: { _code: `return ${getDisplay} !== "flex" || ${getFlexDirection} !== "column"`, _mode: 'code', _value: false },
+              buttonGroupOptions: [{ title: 'Start', value: 'start', icon: 'alignHorizontalLeft' }, { title: 'Center', value: 'center', icon: 'alignHorizontalCenter' }, { title: 'End', value: 'end', icon: 'alignHorizontalRight' }],
+            },
+            { type: 'radio', label: 'Justify Content', hideLabel: true, propertyName: `${propName}justifyContent`,
+              hidden: { _code: `return ${getDisplay} !== "flex" || ${getFlexDirection} !== "column"`, _mode: 'code', _value: false },
+              buttonGroupOptions: [{ title: 'Start', value: 'start', icon: 'alignVerticalTop' }, { title: 'Center', value: 'center', icon: 'alignVerticalCenter' }, { title: 'End', value: 'end', icon: 'alignVerticalBottom' }],
+            },
+            { type: 'button', label: 'Show Advanced', hideLabel: true, tooltip: 'Show advanced settings', tooltipAlt: 'Hide advanced settings', propertyName: `${propName}showAdvanced`, icon: 'tuneIcon', iconAlt: 'tuneIcon' },
+          ] });
+        f.addSettingsInputRow({
+          inputs: [{ type: 'textField', label: 'Gap', propertyName: `${propName}gap`, description: 'Examples of a valid gap include: `10` | `10px` | `20px 20px`' }],
+        });
+        f.addSettingsInputRow({
+          inputs: [
+            { type: 'numberField', propertyName: `${propName}gridColumnsCount`, label: 'Grid Columns Count', description: 'Number of columns each grid should have',
+              hidden: { _code: `return ${getDisplay} !== "grid" && ${getDisplay} !== "inline-grid";`, _mode: 'code', _value: false },
+            },
+            { type: 'numberField', propertyName: `${propName}gridRowsCount`, label: 'Grid Rows Count', description: 'Number of rows each grid should have',
+              hidden: { _code: `return ${getDisplay} !== "grid" && ${getDisplay} !== "inline-grid";`, _mode: 'code', _value: false },
+            },
+          ],
+        });
+        f.addSettingsInputRow({
+          inputs: [
+            { type: 'dimensionField', dimensionType: 'gridColumnWidth', propertyName: `${propName}gridColumnsWidth`, label: 'Grid Columns Width', description: 'Width of each column', icon: 'widthIcon',
+              hidden: { _code: `return ${getDisplay} !== "grid" && ${getDisplay} !== "inline-grid";`, _mode: 'code', _value: false },
+            },
+            { type: 'dimensionField', dimensionType: 'gridRowHeight', propertyName: `${propName}gridRowsHeight`, label: 'Grid Rows Height', description: 'Height of each row', icon: 'heightIcon',
+              hidden: { _code: `return ${getDisplay} !== "grid" && ${getDisplay} !== "inline-grid";`, _mode: 'code', _value: false },
+            },
+          ],
+        });
+        f.stdContainer((f) => {
+          f.addSettingsInputRow({
+            hidden: { _code: `return ${getDisplay} !== "flex";`, _mode: 'code', _value: false },
+            inputs: [
+              { type: 'dropdown', label: 'Flex Direction', propertyName: `${propName}flexDirection`, dropdownOptions: FLEX_DIRECTION, description: 'The flex-direction CSS property sets how flex items are placed in the flex container defining the main axis and the direction (normal or reversed).' },
+              { type: 'dropdown', label: 'Flex Wrap', propertyName: `${propName}flexWrap`, dropdownOptions: FLEX_WRAP, description: 'The flex-wrap CSS property sets whether flex items are forced into multiple lines and the direction of that wrapping.' },
+            ],
+          });
+          f.addSettingsInputRow({
+            inputs: [
+              { type: 'dropdown', label: 'Justify Content', propertyName: `${propName}justifyContent`, dropdownOptions: JUSTIFY_CONTENT },
+              { type: 'dropdown', label: 'Align Items', propertyName: `${propName}alignItems`, dropdownOptions: [...ALIGN_ITEMS, ...ALIGN_ITEMS_GRID] },
+            ],
+          });
+          f.addSettingsInputRow({
+            inputs: [
+              { type: 'dropdown', label: 'Align Self', propertyName: `${propName}alignSelf`, dropdownOptions: ALIGN_SELF,
+                tooltip: "The align-self CSS property overrides a grid or flex item's align-items value. In Grid, it aligns the item inside the grid area. In Flexbox, it aligns the item on the cross axis." },
+              { type: 'dropdown', label: 'Justify Items', propertyName: `${propName}justifyItems`,
+                hidden: { _code: `return ${getDisplay} === "flex";`, _mode: 'code', _value: false }, dropdownOptions: JUSTIFY_ITEMS },
+            ],
+          });
+          f.addSettingsInput({ inputType: 'dropdown', label: 'Justify Self', propertyName: `${propName}justifySelf`, dropdownOptions: JUSTIFY_SELF, tooltip: "The CSS justify-self property sets the way a box is justified inside its alignment container along the appropriate axis." });
+          return f;
+        },
+        `return ${getShowAdvanced}`);
+        return f;
+      },
+      `return ${getDisplay} !== "block";`);
+      return f;
+    });
     return this;
   };
 
@@ -316,19 +429,30 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
       .addSettingsInputRow({
         inline: true,
         inputs: excludeInputs([
-          { type: 'textField', label: 'Width', width: 85, propertyName: `${propertyName}.width`, icon: 'widthIcon', tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit' },
-          { type: 'textField', label: 'Min Width', width: 85, hideLabel: true, propertyName: `${propertyName}.minWidth`, icon: 'minWidthIcon' },
-          { type: 'textField', label: 'Max Width', width: 85, hideLabel: true, propertyName: `${propertyName}.maxWidth`, icon: 'maxWidthIcon' },
+          { type: 'dimensionField', dimensionType: 'width', label: 'Width', width: 85, propertyName: `${propertyName}.width`, icon: 'widthIcon',
+            tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit. \nAlso you can use calc value, for example `calc(50% - 10px)` or `50% - 10px`' },
+          { type: 'dimensionField', dimensionType: 'minWidth', label: 'Min Width', width: 85, hideLabel: true, propertyName: `${propertyName}.minWidth`, icon: 'minWidthIcon' },
+          { type: 'dimensionField', dimensionType: 'maxWidth', label: 'Max Width', width: 85, hideLabel: true, propertyName: `${propertyName}.maxWidth`, icon: 'maxWidthIcon' },
         ], exclude),
       })
       .addSettingsInputRow({
         inline: true,
         inputs: excludeInputs([
-          { type: 'textField', label: 'Height', width: 85, propertyName: `${propertyName}.height`, icon: 'heightIcon', tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit' },
-          { type: 'textField', label: 'Min Height', width: 85, hideLabel: true, propertyName: `${propertyName}.minHeight`, icon: 'minHeightIcon' },
-          { type: 'textField', label: 'Max Height', width: 85, hideLabel: true, propertyName: `${propertyName}.maxHeight`, icon: 'maxHeightIcon' },
+          { type: 'dimensionField', dimensionType: 'height', label: 'Height', width: 85, propertyName: `${propertyName}.height`, icon: 'heightIcon',
+            tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit. \nAlso you can use calc value, for example `calc(50% - 10px)` or `50% - 10px`' },
+          { type: 'dimensionField', dimensionType: 'minHeight', label: 'Min Height', width: 85, hideLabel: true, propertyName: `${propertyName}.minHeight`, icon: 'minHeightIcon' },
+          { type: 'dimensionField', dimensionType: 'maxHeight', label: 'Max Height', width: 85, hideLabel: true, propertyName: `${propertyName}.maxHeight`, icon: 'maxHeightIcon' },
         ], exclude),
       }));
+    this.stdContainerChecker((f) => f
+      .stdCollapsiblePanel('Grid Size', (f) => f
+        .addSettingsInputRow({
+          inline: true,
+          inputs: excludeInputs([
+            { type: 'numberField', label: 'Width (Columns)', width: 85, propertyName: `${propertyName}.gridColumn`, icon: 'widthIcon' },
+            { type: 'numberField', label: 'Height (Rows)', width: 85, propertyName: `${propertyName}.gridRow`, icon: 'heightIcon' },
+          ], exclude),
+        })));
     return this;
   };
 
@@ -357,12 +481,15 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
         f.addSettingsInput({ label: 'Type', jsSetting: false, propertyName: `${propertyName}.type`, inputType: 'radio', tooltip: 'Select a type of background', buttonGroupOptions: backgroundTypeOptions });
       if (keep(`${propertyName}.color`))
         f.addSettingsInput({ label: 'Color', propertyName: `${propertyName}.color`, hideLabel: true, jsSetting: false, inputType: 'colorPicker',
-          visibleJs: `return getSettingValue(${dataPath}?.${propertyName}?.type) === "color";`, skipInheritance: true,
+          visibleJs: `return getSettingValue(${dataPath}?.${propertyName}?.type) === "color";`,
         });
       if (keep(`${propertyName}.gradient.colors`))
         f.addSettingsInput({ label: 'Colors', inputType: 'multiColorPicker', propertyName: `${propertyName}.gradient.colors`, jsSetting: false, hideLabel: true,
-          visibleJs: `return getSettingValue(${dataPath}?.${propertyName}?.type) === "gradient";`, skipInheritance: true,
-        });
+          visibleJs: `return getSettingValue(${dataPath}?.${propertyName}?.type) === "gradient";`,
+        })
+          .addSettingsInput({ label: 'Direction', inputType: 'dropdown', propertyName: `${propertyName}.gradient.direction`, dropdownOptions: gradientDirectionOptions, width: 120, jsSetting: false, hideLabel: true,
+            visibleJs: `return getSettingValue(${dataPath}?.${propertyName}?.type) === "gradient";`,
+          });
       if (keep(`${propertyName}.url`))
         f.addSettingsInput({ label: 'URL', inputType: 'textField', propertyName: `${propertyName}.url`, jsSetting: false,
           visibleJs: `return getSettingValue(${dataPath}?.${propertyName}?.type) === "url";`,

@@ -29,8 +29,9 @@ namespace Shesha.ConfigurationItems
         /// </summary>
         /// <param name="name">Item name</param>
         /// <param name="module">Module</param>
+        /// <param name="application">Front-end application</param>
         /// <returns></returns>
-        Task<bool> ItemExistsAsync(string name, Module module);
+        Task<bool> ItemExistsAsync(string name, Module module, FrontEndApp? application);
     }
 
     public interface IConfigurationItemManager
@@ -64,16 +65,18 @@ namespace Shesha.ConfigurationItems
         /// </summary>
         /// <param name="module">Module name</param>
         /// <param name="name">Item name</param>
+        /// <param name="appKey">Application key, is used for application specific items only (e.g. forms)</param>
         /// <returns></returns>
-        Task<ConfigurationItemInheritance> GetActualInheritanceOrNullAsync(string module, string name);
+        Task<ConfigurationItemInheritance?> GetActualInheritanceOrNullAsync(string module, string name, string? appKey);
 
         /// <summary>
         /// Resolved configuration item by pair: module and name. Note that
         /// </summary>
         /// <param name="module">Module name</param>
         /// <param name="name">Item name</param>
+        /// <param name="appKey">Application key, is used for application specific items only (e.g. forms)</param>
         /// <returns></returns>
-        Task<ConfigurationItem> ResolveItemAsync(string module, string name);
+        Task<ConfigurationItem> ResolveItemAsync(string module, string name, string? appKey);
 
         /// <summary>
         /// Get configuration item by id

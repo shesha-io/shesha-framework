@@ -1,5 +1,5 @@
 import { FolderOpenOutlined } from '@ant-design/icons';
-import React, { CSSProperties } from 'react';
+import { CSSProperties } from 'react';
 import CalendarControl from '../../components/calendar';
 import { CalendarActionsAccessor } from '../../components/calendar/configurable-actions/calendar-actions-processor';
 import { getSettings } from './settingsForm';

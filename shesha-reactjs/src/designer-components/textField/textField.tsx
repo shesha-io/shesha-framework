@@ -1,7 +1,7 @@
 import { CodeOutlined } from '@ant-design/icons';
 import { Input, InputRef, Tooltip } from 'antd';
 import { InputProps } from 'antd/lib/input';
-import React, { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { IInputStyles, UnwrapCodeEvaluators } from '@/providers';
@@ -21,9 +21,10 @@ import { defaultStyles, buildPasswordValidatorString, usePasswordComplexitySetti
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { TextFieldApi } from '@/componentsApi/componentApi';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
-import apiCode from "../../componentsApi/componentApi.ts?raw";
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
-import { getComponentEvents } from '../_common/events';
+import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '../_common/events';
+
+import apiCode from "../../componentsApi/componentApi.ts?raw";
 
 const TextFieldComponent: TextFieldComponentDefinition = {
   allowInherit: true,
@@ -97,7 +98,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
       size: model.size,
       disabled: model.disabled === true,
       spellCheck: model.spellCheck ?? false,
-      ...(isDefined(model.styleJson) ? { style: model.styleJson } : {}),
+      ...(isDefined(model.styleCss) ? { style: model.styleCss } : {}),
     };
     if (model.border?.hideBorder === true)
       inputProps.variant = 'borderless';
@@ -122,7 +123,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
               <ReadOnlyDisplayFormItem
                 value={model.textType === 'password' && !isNullOrWhiteSpace(value) ? ''.padStart(value.length, '•') : value}
                 enableFullStyle={model.enableStyleOnReadonly}
-                style={model.styleJson}
+                style={model.styleCss}
                 styleValue={model}
               />
             )
@@ -148,7 +149,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
                     }
                   }
                 }}
-                {...getComponentEvents<string>(model, ['onFocus', 'onBlur', 'onClick', 'onMouseEnter', 'onKeyDown'], ctx, value, DataTypes.string)}
+                {...getComponentEvents<string>(model, ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, ctx, value, DataTypes.string)}
               />
             );
 

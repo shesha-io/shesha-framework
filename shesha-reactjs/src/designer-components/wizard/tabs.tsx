@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import ParentProvider from '@/providers/parentProvider/index';
-import React, { FC, useEffect, useMemo } from 'react';
+import { FC, useEffect, useMemo } from 'react';
 import { ShaIcon } from '@/components/shaIcon';
 import { Button, Space, Steps } from 'antd';
 import { isValidGuid } from '@/components/formDesigner/components/utils';

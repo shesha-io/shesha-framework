@@ -1,7 +1,7 @@
 import { ReferenceListItemDto } from '@/apis/referenceList';
 import GenericRefListDropDown from '@/components/refListDropDown/genericRefListDropDown';
 import { GetLabeledValueFunc, IGenericRefListDropDownProps, ISelectOption } from '@/components/refListDropDown/models';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 export type IRefListSimpleDropdownProps<TValue = unknown> = Pick<IGenericRefListDropDownProps<TValue>, 'onChange' | 'referenceListId' | 'style' | 'size' | 'value' | 'readOnly'>;
 

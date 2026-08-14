@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { IConfigurableFormComponent } from '@/providers';
 import { ShaForm, useIsDrawingForm } from '@/providers/form';
 import { isDefined } from '@/utils/nullables';

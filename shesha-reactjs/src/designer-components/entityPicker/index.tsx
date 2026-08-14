@@ -1,5 +1,5 @@
 import { EllipsisOutlined } from '@ant-design/icons';
-import React, { CSSProperties, useCallback, useMemo } from 'react';
+import { CSSProperties, useCallback, useMemo } from 'react';
 import { EntityPicker } from '@/components/entityPicker';
 import { ValidationErrors } from '@/components/validationErrors';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';

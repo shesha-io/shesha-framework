@@ -543,6 +543,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
       })
       .toJson(),
     formSettings: {
+      isSettingsForm: true,
       colon: false,
       layout: 'vertical' as FormLayout,
       labelCol: { span: 24 },

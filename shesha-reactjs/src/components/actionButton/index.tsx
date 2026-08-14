@@ -1,5 +1,6 @@
 import { Button, Popconfirm, Popover } from 'antd';
-import React, { FC } from 'react';
+import { FC } from 'react';
+import * as React from 'react';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import { ButtonShape, ButtonType } from 'antd/es/button/buttonHelpers';
 

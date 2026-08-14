@@ -6,7 +6,15 @@ import { FormIdentifier } from '@/providers/form/models';
 import ParentProvider from '@/providers/parentProvider';
 import { capPercentageWidth } from '@/utils/style';
 import { App, Button, Popover, PopoverProps } from 'antd';
-import React, { CSSProperties, FC, PropsWithChildren, ReactNode, useEffect, useMemo, useState } from 'react';
+import {
+  CSSProperties,
+  FC,
+  PropsWithChildren,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { ShaIconTypes } from '../iconPicker';
 import { formItemLayout, getQuickViewInitialValues, loadingBox } from './utils';
 import { useStyles } from './styles/styles';

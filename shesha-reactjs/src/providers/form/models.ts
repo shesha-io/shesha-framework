@@ -1,7 +1,8 @@
 import { ColProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { FormLayout } from 'antd/lib/form/Form';
-import React, { CSSProperties, ReactNode } from 'react';
+import { CSSProperties, ReactNode } from 'react';
+import * as React from 'react';
 import { IAsyncValidationError, IDictionary } from '@/interfaces';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { IHasVersion } from '@/utils/fluentMigrator/migrator';
@@ -125,8 +126,14 @@ export interface IStyleValue {
   shadow?: IShadowValue | undefined;
   dimensions?: IDimensionsValue | undefined;
   size?: SizeType | undefined;
+  /** js code of calculated style */
   style?: string | undefined;
-  styleJson?: CSSProperties | undefined;
+  /** calculated style */
+  styleCss?: CSSProperties | undefined;
+  /** js code of calculated wrapper style */
+  wrapperStyle?: string | undefined;
+  /** calculated wrapper style */
+  wrapperStyleCss?: CSSProperties | undefined;
   /** @deprecated use stylingBoxJson insted */
   stylingBox?: string | undefined;
   stylingBoxJson?: StyleBoxValue | undefined;
@@ -139,6 +146,16 @@ export interface IStyleValue {
   autoWidth?: boolean | undefined;
   autoHeight?: boolean | undefined;
 }
+
+/**
+ * The style model of a component that exposes two independent sets of Appearance panels: the
+ * bare-named properties style the component's wrapper, and a nested set styles a repeated child.
+ *
+ * Used by the inner components, where the wrapper is the group container and the nested set
+ * styles each child component — `INestedStyleValue<'radio'>` gives `radio.border`, `radio.background`, …
+ * alongside the wrapper's own `border`, `background`, ….
+ */
+export type INestedStyleValue<TNested extends string> = IStyleValue & { [K in TNested]?: IStyleValue | undefined };
 
 export interface IInputStyles extends IStyleValue {
   borderSize?: string | number | undefined;
@@ -167,9 +184,7 @@ export interface IInputStyles extends IStyleValue {
   backgroundStoredFileId?: string | undefined;
   enableStyleOnReadonly?: boolean | undefined;
   container?: IStyleValue | undefined;
-  display?: 'block' | 'flex' | 'grid' | 'inline-grid' | undefined;
-  gap?: string | number | SizeType | undefined;
-};
+}
 
 export type ConfigurableFormComponentTypes =
   | 'alert' |
@@ -257,12 +272,13 @@ export interface IComponentBindingProps {
 }
 
 export interface IComponentVisibilityProps {
-  /** Hidden field is still a part of the form but not visible on it */
+  /** Hidden field is still a part of the form but not visible on it
+   * It may also depend on the permissions and/or state of the parent container/form
+   */
   hidden?: boolean | undefined;
 
   /** Visible field contains only the value from the component settings (set explicitly or calculated),
-   * but does not reflect the actual visibility of the component.
-   * It may also depend on the permissions and/or state of the parent container/form
+   * but does not reflect the actual visibility of the component (It may also depend on the permissions and/or state of the parent container/form)
    * Use `hidden` to get actual visible/hidden state of the component */
   visible?: boolean | undefined;
   visiblePermissions?: string[] | undefined;
@@ -348,8 +364,6 @@ export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles =
   availableConstantsExpression?: string | GetAvailableConstantsFunc | undefined;
 
   subscribedEventNames?: string[] | undefined;
-
-  wrapperStyle?: string | undefined;
 
   noDataText?: string | undefined;
 

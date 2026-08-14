@@ -1,21 +1,15 @@
 import { IDictionary } from '@/interfaces';
 import { ICache, ICacheProvider } from '@/providers/metadataDispatcher/entities/models';
 import localForage from 'localforage';
-import { useEffect, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 
 type LocalForage = ReturnType<typeof localForage.createInstance>;
 type StoragesDictionary = IDictionary<LocalForage>;
 
 export const useCache = (name: string): ICache => {
-  const [storage, setStorage] = useState(() => {
-    return localForage.createInstance({ name: name });
-  });
-  useEffect(() => {
-    if (storage.INDEXEDDB !== name) {
-      const newStorage = localForage.createInstance({ name: name });
-      setStorage(newStorage);
-    }
-  }, [name, storage.INDEXEDDB]);
+  const storage = useMemo(() => {
+    return localForage.createInstance({ name });
+  }, [name]);
 
   return storage;
 };

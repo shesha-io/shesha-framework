@@ -1,5 +1,5 @@
 import FileSaver from 'file-saver';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { getFileNameFromResponse } from '@/utils/fetchers';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import { HttpClientApi } from '@/providers';

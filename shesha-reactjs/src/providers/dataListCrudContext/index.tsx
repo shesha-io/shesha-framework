@@ -1,5 +1,13 @@
 import { Form } from 'antd';
-import React, { PropsWithChildren, ReactNode, useCallback, useContext, useEffect, useReducer, useRef } from 'react';
+import {
+  PropsWithChildren,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useReducer,
+  useRef,
+} from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { RowDataInitializer } from '@/components/reactTable/interfaces';
 import { FormProvider, ShaForm, useForm } from '@/providers/index';
@@ -284,12 +292,17 @@ const CrudProvider = <TValue extends object = object>(props: PropsWithChildren<I
 
   return (
     <CrudContext.Provider value={contextValue}>
+      {/* `labelWrap` stops antd clipping labels: without it `.ant-form-item-label` keeps `overflow: hidden`,
+          so a label too long for its card is hidden rather than wrapped. Kept *after* the `formSettings`
+          spread deliberately — those settings are form configuration deserialized from the database, so a
+          stored blob carrying a `labelWrap` key would otherwise switch clipping back on. */}
       <Form<TValue>
         key={state.mode}
         component={false}
         {... (form ? { form } : {})}
         onValuesChange={onValuesChangeInternal}
         {...props.formSettings}
+        labelWrap
         initialValues={state.initialValues ? state.initialValues as Record<string, unknown> : {}}
       >
         <ParentProvider

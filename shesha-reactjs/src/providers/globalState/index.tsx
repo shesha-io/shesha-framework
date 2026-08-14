@@ -1,4 +1,5 @@
-import React, { FC, PropsWithChildren, useContext, useState } from 'react';
+import { FC, PropsWithChildren, useContext, useState } from 'react';
+import * as React from 'react';
 import {
   GlobalStateContext,
   IGlobalState,

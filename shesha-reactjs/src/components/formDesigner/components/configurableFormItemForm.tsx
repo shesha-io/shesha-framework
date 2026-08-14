@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 import { Form, FormItemProps } from "antd";
 import { IConfigurableFormItemChildFunc } from "./model";
 import { DataBinder } from "@/hocs/dataBinder";

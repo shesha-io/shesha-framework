@@ -1,5 +1,5 @@
 /* eslint @typescript-eslint/strict-boolean-expressions: "error" */
-import React, { createContext, FC, PropsWithChildren } from 'react';
+import { useContext, createContext, FC, PropsWithChildren } from 'react';
 import { DEFAULT_MONACO_LOADER_SETTINGS, MonacoLoaderSettings } from './models';
 
 export type MonacoLoaderProviderProps = MonacoLoaderSettings;
@@ -18,4 +18,4 @@ export const ConditionalMonacoProvider: FC<PropsWithChildren<{ monaco: MonacoLoa
   return monaco ? <MonacoLoaderProvider {...monaco}>{children}</MonacoLoaderProvider> : <>{children}</>;
 };
 
-export const useMonacoLoaderSettings = (): MonacoLoaderSettings => React.useContext(MonacoLoaderSettingsContext) ?? DEFAULT_MONACO_LOADER_SETTINGS;
+export const useMonacoLoaderSettings = (): MonacoLoaderSettings => useContext(MonacoLoaderSettingsContext) ?? DEFAULT_MONACO_LOADER_SETTINGS;

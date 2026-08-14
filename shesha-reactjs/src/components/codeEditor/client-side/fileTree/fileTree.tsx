@@ -1,4 +1,5 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
+import * as React from 'react';
 import { Tree } from 'antd';
 import type { GetProps } from 'antd';
 import { Monaco } from '@monaco-editor/react';

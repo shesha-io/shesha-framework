@@ -100,6 +100,7 @@ export type FormDesignerActions = {
   addComponent: (payload: IComponentAddPayload) => void;
   updateComponent: <TModel extends IConfigurableFormComponent = IConfigurableFormComponent>(payload: IComponentUpdatePayload<TModel>) => void;
   deleteComponent: (payload: IComponentDeletePayload) => void;
+  deleteSelectedComponent: () => boolean;
   duplicateComponent: (payload: IComponentDuplicatePayload) => void;
   updateChildComponents: (payload: IUpdateChildComponentsPayload) => void;
   addDataProperty: (payload: IAddDataPropertyPayload) => void;
@@ -123,7 +124,8 @@ export type FormDesignerActions = {
 
   getCachedComponentEditor: <TModel extends IConfigurableFormComponent = IConfigurableFormComponent>(type: string, evaluator: () => ISettingsFormFactory<TModel> | undefined) => (IComponentSettingsFormFactory<TModel> | undefined);
 
-  subscribe: (type: FormDesignerSubscriptionType, callback: FormDesignerSubscription) => void;
+  /** Returns a function that cancels the subscription */
+  subscribe: (type: FormDesignerSubscriptionType, callback: FormDesignerSubscription) => () => void;
   loadAsync: () => Promise<void>;
   saveAsync: () => Promise<void>;
 

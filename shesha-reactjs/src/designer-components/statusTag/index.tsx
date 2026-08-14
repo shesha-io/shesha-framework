@@ -1,5 +1,4 @@
 import { ArrowsAltOutlined } from '@ant-design/icons';
-import React from 'react';
 import { useGlobalState, useFormData, useForm } from '@/providers';
 import { evaluateString, validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces/formDesigner';

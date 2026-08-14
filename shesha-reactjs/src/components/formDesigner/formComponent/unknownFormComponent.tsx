@@ -2,7 +2,6 @@ import { FC } from "react";
 import ErrorIconPopover from "../../componentErrors/errorIconPopover";
 import { useStyles } from '../styles/styles';
 import { IModelValidation } from "@/utils/errors";
-import React from "react";
 import { IConfigurableFormComponent, useShaFormInstance } from "@/providers";
 
 export interface UnknownFormComponentProps {

@@ -1,5 +1,5 @@
 import { RequiredMark } from "antd/lib/form/Form";
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 
 /**
  * Default Shesha Required Mark

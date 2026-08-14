@@ -1,11 +1,11 @@
 "use client";
-
 import classNames from 'classnames';
 import ConfigurableSidebarMenu from '@/components/configurableSidebarMenu';
 import LayoutHeader from './header';
 import LayoutHeading from '@/components/layoutHeading';
 import NodeOrFuncRenderer, { ReactNodeOrFunc } from '@/components/nodeOrFuncRenderer';
-import React, {
+
+import {
   CSSProperties,
   FC,
   Fragment,
@@ -15,6 +15,8 @@ import React, {
   useEffect,
   useMemo,
 } from 'react';
+
+import * as React from 'react';
 import { IHtmlHeadProps } from '@/components/htmlHead';
 import { Layout } from 'antd';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
@@ -22,7 +24,7 @@ import { MenuTheme } from 'antd/lib/menu/MenuContext';
 import { SIDEBAR_COLLAPSE } from './constant';
 import { SIDEBAR_MENU_NAME } from '@/shesha-constants';
 import { useLocalStorage } from '@/hooks';
-import { FormFullName, useSheshaApplication, useTheme } from '@/providers';
+import { FormFullName, useTheme } from '@/providers';
 import { withAuth } from '@/hocs';
 import { useStyles } from './styles/styles';
 import { ConfigurableForm } from '../configurableForm';
@@ -94,8 +96,6 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
   } = props;
   const { theme: themeFromStorage } = useTheme();
   const { styles } = useStyles();
-
-  const { setGlobalVariables } = useSheshaApplication();
 
   const sideMenuTheme = themeFromStorage.sidebar;
 
@@ -177,7 +177,6 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
   }, [heading, title, showHeading, fixHeading]);
 
   const onCollapse = (value: boolean): void => {
-    setGlobalVariables({ isSideBarExpanded: !value });
     setCollapsed(value);
   };
 

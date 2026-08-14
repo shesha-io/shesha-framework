@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { Divider } from 'antd';
 import ColumnFilters from '@/components/columnFilters';
 import ColumnsFilterSelect from '@/components/columnsFilterSelect';

@@ -1,5 +1,5 @@
 import FileSaver from 'file-saver';
-import React, { useMemo, useState, FC, Key } from 'react';
+import { useMemo, useState, FC, Key } from 'react';
 import {
   App,
   Button,

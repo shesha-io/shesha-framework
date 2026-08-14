@@ -20,8 +20,8 @@ export interface ISubFormProviderProps<TValue extends object = object> extends I
 
   formId?: FormIdentifier | undefined | undefined;
 
-  labelCol?: ColProps | undefined;
-  wrapperCol?: ColProps | undefined;
+  labelCol?: number | ColProps | undefined;
+  wrapperCol?: number | ColProps | undefined;
   dataSource?: 'form' | 'api' | undefined;
   apiMode?: SubFormApiMode | undefined;
   entityType?: string | IEntityTypeIdentifier | undefined;

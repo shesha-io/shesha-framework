@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
@@ -196,6 +197,9 @@ namespace Shesha.Web.Host.Startup
                 endpoints.MapSignalRHubs();
             });
 
+            // Block access to Swagger UI when the setting is disabled
+            app.UseMiddleware<SwaggerUiAccessMiddleware>();
+
             // Enable middleware to serve generated Swagger as a JSON endpoint
             app.UseSwagger();
 
@@ -215,7 +219,10 @@ namespace Shesha.Web.Host.Startup
             });
 
             app.UseMiddleware<GraphQLMiddleware>();
-            app.UseGraphQLPlayground(); //to explorer API navigate https://*DOMAIN*/ui/playground
+            if (_hostEnvironment.IsDevelopment())
+            {
+                app.UseGraphQLPlayground(); //to explorer API navigate https://*DOMAIN*/ui/playground
+            }
         }
 
         private void AddApiVersioning(IServiceCollection services)
@@ -236,7 +243,6 @@ namespace Shesha.Web.Host.Startup
                 options.SchemaFilter<GraphQLSchemaFilter>();
                 options.SchemaFilter<DynamicDtoSchemaFilter>();
                 options.OperationFilter<SwaggerOperationFilter>();
-
                 options.CustomSchemaIds(type => SwaggerHelper.GetSchemaId(type));
 
                 options.CustomOperationIds(desc => desc.ActionDescriptor is ControllerActionDescriptor d

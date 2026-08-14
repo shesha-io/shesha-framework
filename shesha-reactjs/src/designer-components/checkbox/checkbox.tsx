@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { CheckSquareOutlined } from '@ant-design/icons';
 import { Checkbox, CheckboxRef } from 'antd';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
@@ -19,7 +19,7 @@ import { migratePermissionsToVisiblePermissions } from '../_common-migrations/mi
 import { getSettings } from './settingsForm';
 import { useStyles } from './styles';
 import { defaultStyles } from './utils';
-import { getComponentEvents } from '../_common/events';
+import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '../_common/events';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { CheckboxFieldApi } from '../../componentsApi/componentApi';
@@ -66,12 +66,12 @@ const CheckboxComponent: CheckboxComponentDefinition = {
               className={styles.checkbox}
               disabled={model.disabled === true || model.readOnly === true}
               checked={value ?? false}
-              {...(isDefined(model.styleJson) ? { style: model.styleJson } : {})}
+              {...(isDefined(model.styleCss) ? { style: model.styleCss } : {})}
               onChange={(event) => {
                 ctx?.handleEvent(event, { value: event.target.checked }, model.onChangeCustom);
                 onChange(event.target.checked);
               }}
-              {...getComponentEvents<boolean>(model, ['onFocus', 'onBlur', 'onClick', 'onMouseEnter', 'onMouseLeave', 'onKeyDown', 'onKeyUp'], ctx, value, DataTypes.boolean)}
+              {...getComponentEvents<boolean>(model, ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, ctx, value, DataTypes.boolean)}
             />
           );
         }}

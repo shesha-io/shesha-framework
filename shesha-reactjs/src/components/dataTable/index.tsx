@@ -1,6 +1,7 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { ModalProps } from 'antd/lib/modal';
-import React, { CSSProperties, FC, ReactElement, useCallback, useEffect, useMemo } from 'react';
+import { CSSProperties, FC, ReactElement, useCallback, useEffect, useMemo } from 'react';
+import * as React from 'react';
 import { Column, ColumnInstance, Row, SortingRule, TableProps } from 'react-table';
 import { usePrevious } from 'react-use';
 import {

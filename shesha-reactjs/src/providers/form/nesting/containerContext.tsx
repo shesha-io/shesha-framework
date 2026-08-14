@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useContext } from 'react';
+import { FC, PropsWithChildren, useContext } from 'react';
 import { IComponentsContainerBaseProps } from '@/interfaces';
 import { createNamedContext } from '@/utils/react';
 import { throwError } from '@/utils/errors';

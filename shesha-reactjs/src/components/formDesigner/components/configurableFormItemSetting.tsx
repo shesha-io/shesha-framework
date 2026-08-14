@@ -1,4 +1,5 @@
-import React, { cloneElement, ReactNode, SyntheticEvent } from 'react';
+import { cloneElement, ReactNode, SyntheticEvent } from 'react';
+import * as React from 'react';
 import { Form, FormItemProps } from 'antd';
 import { getFieldNameFromExpression } from '@/providers/form/utils';
 import { getPropertySettingsFromData } from '@/designer-components/_settings/utils/utils';
@@ -21,7 +22,7 @@ export const ConfigurableFormItemSetting = <TValue = unknown>({
   availableConstantsExpression,
 }: UnwrapCodeEvaluators<IConfigurableFormItemProps<TValue>>): ReactNode => {
   const { formData } = useShaFormInstance();
-  const { styles } = useStyles({ autoAlignLabel });
+  const { styles } = useStyles({ ...model, autoAlignLabel });
   if (model.hidden === true) return null;
 
   const { _mode: mode = "value" } = getPropertySettingsFromData(formData, model.propertyName ?? "");

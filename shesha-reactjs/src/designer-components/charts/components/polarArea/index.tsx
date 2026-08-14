@@ -1,5 +1,5 @@
 import { ArcElement, Chart, ChartData, Chart as ChartJS, ChartOptions, Color, Legend, LegendItem, RadialLinearScale, Title, Tooltip } from 'chart.js';
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { PolarArea } from 'react-chartjs-2';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 import { IChartData, IChartDataProps } from '../../model';

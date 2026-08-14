@@ -39,21 +39,14 @@ export const getContent = (content: string, { dataType = 'string', dateFormat, n
   }
 };
 
-export const defaultStyles = (textType: string): IStyleValue => {
+export const defaultStyles = (model: ITextComponentProps | undefined): IStyleValue & { level: number } => {
   return {
-    font: {
-      color: '#000',
-      type: 'Segoe UI',
-      size: textType === 'title' ? undefined : 14,
-    },
+    level: 0,
+    font: { color: '#000', type: 'Segoe UI', align: 'left', weight: '400', size: model?.textType === 'title' ? undefined : 14 },
     background: { type: 'color', color: '' },
     border: {
       border: {
-        all: {
-          width: 1,
-          style: 'none',
-          color: '#d9d9d9',
-        },
+        all: { width: 1, style: 'none', color: '#d9d9d9' },
       },
       radius: { all: 8 },
       borderType: 'all',
@@ -67,6 +60,7 @@ export const defaultStyles = (textType: string): IStyleValue => {
       minWidth: '0px',
       maxWidth: 'auto',
     },
+    stylingBoxJson: { _type: 'styleBox', paddingLeft: '0', paddingBottom: '0', paddingTop: '0', paddingRight: '0', marginLeft: '0', marginBottom: '0', marginTop: '0', marginRight: '0' },
   };
 };
 

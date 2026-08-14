@@ -3,6 +3,7 @@ import { FormLayout } from 'antd/lib/form/Form';
 import { FC, RefObject, ReactNode } from 'react';
 import { ConfigurableFormInstance } from '@/providers/form/contexts';
 import {
+  FormIdentifier,
   FormMarkup,
   IConfigurableFormComponent,
   IFlatComponentsStructure,
@@ -11,14 +12,26 @@ import {
 } from '@/providers/form/models';
 import { IHasVersion, Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 import { IModelMetadata, IPropertyMetadata } from './metadata';
-import { IAjaxResponseBase, IApplicationContext, IDimensionsValue, IErrorInfo, IObjectMetadata, IStyleValue, UnwrapCodeEvaluators } from '..';
+import { IAjaxResponseBase, IApplicationContext, IErrorInfo, IObjectMetadata, IStyleValue, UnwrapCodeEvaluators } from '..';
 import { ISheshaApplicationInstance } from '@/providers/sheshaApplication/application';
 import { AxiosResponse } from 'axios';
 import { FormBuilderFactory } from '@/form-factory/interfaces';
+import { UnwrapFunc } from '@/providers/form/utils/js-settings';
 
 export interface ISettingsFormInstance {
   submit: () => void;
   reset: () => void;
+}
+
+/**
+ * Context of the fields calculation, is passed to the components that render nested forms
+ */
+export interface IGetFieldsToFetchContext {
+  /**
+   * Returns the list of fields required by the specified form. Fields are relative to the root of that form,
+   * the caller is responsible for prefixing them with its own property name
+   */
+  getFormFieldsAsync: (formId: FormIdentifier) => Promise<string[]>;
 }
 
 export interface IFormLayoutSettings {
@@ -150,6 +163,8 @@ export type IToolboxComponentBase = {
   editorAdapter?: IEditorAdapter;
 
   /**
+   * @deprecated Will be removed after migrate all components to use new styles
+   *
    * Controls dimension preservation in designer mode.
    * - `true`: Preserve all original dimensions (width, height, min/max)
    * - `false` or `undefined`: Fill 100% of wrapper (default behavior)
@@ -166,19 +181,12 @@ export type IToolboxComponentBase = {
    * ```
    */
   preserveDimensionsInDesigner?: boolean | Array<'width' | 'height' | 'minWidth' | 'maxWidth' | 'minHeight' | 'maxHeight'>;
-  /**
-   * Optional function to customize how component dimensions are calculated in designer mode.
-   * This allows components to define their own sizing behavior instead of relying on generic logic.
-   *
-   * @param originalDims - The original dimensions from the component model
-   * @param deviceDims - The default device dimensions (usually 100% width/height)
-   * @returns The calculated dimensions for designer mode, or undefined to use default behavior
-   */
-  getDesignerDimensions?: (
-    originalDims: IDimensionsValue | undefined,
-    deviceDims: IDimensionsValue | undefined,
-  ) => IDimensionsValue | undefined;
 };
+
+export interface IWrapperStyle {
+  style?: IStyleValue | undefined;
+  designerStyle?: IStyleValue | undefined;
+}
 
 export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = never> = IToolboxComponentBase & {
   /**
@@ -200,6 +208,9 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
    * @returns - calculated model
    */
   calculateModel?: ((model: TModel, allData: IApplicationContext, useCalculatedModel?: TCalculatedModel) => TCalculatedModel) | undefined;
+
+  actualModelFilteredPropertyProcessor?: UnwrapFunc;
+
   /**
    * Fills the component properties with some default values. Fired when the user drops a component to the form
    */
@@ -244,6 +255,12 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
   getFieldsToFetch?: ((propertyName: string, rawModel: TModel, metadata: IModelMetadata) => string[]) | undefined;
 
   /**
+   * Asynchronous version of `getFieldsToFetch`, is used by the components that render nested forms and can't
+   * calculate the list of fields without loading those forms. Takes precedence over `getFieldsToFetch`
+   */
+  getFieldsToFetchAsync?: ((propertyName: string, rawModel: TModel, metadata: IModelMetadata, context: IGetFieldsToFetchContext) => Promise<string[]>) | undefined;
+
+  /**
    * Validate model before rendering a component, used to add user-friendly messages about the need to correctly configure the component fields in the designer
    */
   validateModel?: (model: TModel, addModelError: (propertyName: string, error: string) => void) => void;
@@ -252,6 +269,9 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
    * Configuration is used to show a preview of the component in the some places (like theme component configurator)
    */
   previewConfiguration?: TModel;
+
+  /** Drag handle dimensions */
+  getWrapperStyle?: ((model: TModel) => IWrapperStyle | undefined) | undefined;
 } & ToolboxComponentAsTemplate;
 
 export type ComponentDefinition<TType extends string = string, TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = object> =

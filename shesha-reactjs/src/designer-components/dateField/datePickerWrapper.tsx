@@ -1,22 +1,22 @@
 import { DatePicker } from '@/components/antd';
 import moment, { Moment } from 'moment';
-import React, { CSSProperties, useMemo, useRef } from 'react';
+import { forwardRef, useMemo, useRef } from 'react';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
-import { FCUnwrapped, useForm, useGlobalState, useMetadataOrUndefined } from '@/providers';
+import { useForm, useGlobalState, useMetadataOrUndefined } from '@/providers';
 import { getMoment, getRangeMoment } from '@/utils/date';
 import { getDataProperty } from '@/utils/metadata';
 import { IDateFieldProps, NoUndefinedRangeValueType, RangePickerChangeEvent, TimePickerChangeEvent } from './interfaces';
-import { disabledDate, disabledTime, getFormat } from './utils';
+import { disabledDate, disabledTime, getFormat, getPicker, hasTimePart, serializeValue, supportsMinuteStep } from './utils';
 import { asPropertiesArray } from '@/interfaces/metadata';
-import { useStyles } from './style';
+import { useStyles } from './styles';
 import { DATE_TIME_FORMATS } from '@/constants/formats';
-import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 
 const MIDNIGHT_MOMENT = moment('00:00:00', 'HH:mm:ss');
 
 const { RangePicker } = DatePicker;
 
-export const DatePickerWrapper: FCUnwrapped<IDateFieldProps> = (props) => {
+export const DatePickerWrapper = forwardRef<HTMLDivElement, IDateFieldProps>((props, ref) => {
   const { properties: metaProperties } = useMetadataOrUndefined()?.metadata ?? {};
   const properties = asPropertiesArray(metaProperties, []);
 
@@ -28,25 +28,43 @@ export const DatePickerWrapper: FCUnwrapped<IDateFieldProps> = (props) => {
     hideBorder,
     range,
     value,
-    showTime,
     showNow,
     onChange,
-    picker = 'date',
     readOnly,
-    additionalStyles = {},
     defaultToMidnight,
-    resolveToUTC,
+    minuteStep,
   } = props;
 
+  const picker = getPicker(props);
+  const showTime = hasTimePart(props);
 
-  const dateFormat = props.dateFormat || (!isNullOrWhiteSpace(name) ? getDataProperty(properties, name, 'dataFormat') : undefined) || DATE_TIME_FORMATS.date;
-  const timeFormat = props.timeFormat || DATE_TIME_FORMATS.time;
-  const { styles } = useStyles({ fullStyles: additionalStyles });
-  const finalStyles: CSSProperties = { ...additionalStyles };
+  const metadataFormat = !isNullOrWhiteSpace(name) ? getDataProperty(properties, name, 'dataFormat') : undefined;
+  const dateFormat = isNotNullOrWhiteSpace(props.dateFormat)
+    ? props.dateFormat
+    : isNotNullOrWhiteSpace(metadataFormat) ? metadataFormat : DATE_TIME_FORMATS.date;
+  const timeFormat = isNotNullOrWhiteSpace(props.timeFormat) ? props.timeFormat : DATE_TIME_FORMATS.time;
+  const { styles } = useStyles(props);
 
   const { formData } = useForm();
 
   const pickerFormat = getFormat(props, properties);
+
+  /* The time picker only offers a minute step where minutes are actually shown. */
+  const minuteStepConfig = useMemo(() => supportsMinuteStep(props) && isDefined(minuteStep) ? { minuteStep } : {}, [props, minuteStep]);
+
+  const showTimeConfig = useMemo(() => {
+    if (!showTime) return false;
+    return defaultToMidnight === true
+      ? { defaultOpenValue: MIDNIGHT_MOMENT, ...minuteStepConfig }
+      : { ...minuteStepConfig };
+  }, [showTime, defaultToMidnight, minuteStepConfig]);
+
+  const rangeShowTimeConfig = useMemo(() => {
+    if (!showTime) return false;
+    return defaultToMidnight === true
+      ? { defaultOpenValue: [MIDNIGHT_MOMENT, MIDNIGHT_MOMENT] as [Moment, Moment], ...minuteStepConfig }
+      : { ...minuteStepConfig };
+  }, [showTime, defaultToMidnight, minuteStepConfig]);
 
   const convertValue = (localValue: Moment): string => {
     const newValue = localValue;
@@ -63,8 +81,7 @@ export const DatePickerWrapper: FCUnwrapped<IDateFieldProps> = (props) => {
                 ? newValue.startOf('day')
                 : newValue;
 
-    const finalMoment = resolveToUTC ? val.clone().utc() : val.clone().local();
-    return resolveToUTC ? finalMoment.toISOString() : finalMoment.format('YYYY-MM-DDTHH:mm:ss.SSS');
+    return serializeValue(val, props);
   };
   const convertValueOrNull = (localValue: Moment | null): string | null => localValue ? convertValue(localValue) : null;
 
@@ -178,60 +195,72 @@ export const DatePickerWrapper: FCUnwrapped<IDateFieldProps> = (props) => {
     );
   };
 
-  if (range) {
+  if (range === true) {
     return (
-      <div style={{ marginRight: 1 }}>
+      <div ref={ref} style={{ marginRight: 1 }}>
         <RangePicker
           onCalendarChange={(dates) => {
-            if (showTime && !defaultToMidnight) handleCalendarRangeChange(dates);
+            if (showTime && defaultToMidnight !== true) handleCalendarRangeChange(dates);
           }}
-          className="sha-range-picker"
+          className={styles.rangePicker}
           disabledDate={(e) => disabledDate(props, e, formData, globalState)}
           disabledTime={disabledTime(props, formData, globalState)}
           onChange={(dates, datesString) => handleRangePicker(dates, datesString)}
           format={pickerFormat}
           value={rangeMomentValue}
           picker={picker}
-          showTime={showTime ? (defaultToMidnight ? { defaultValue: [MIDNIGHT_MOMENT, MIDNIGHT_MOMENT] } : true) : false}
+          showTime={rangeShowTimeConfig}
           disabled={readOnly === true}
-          style={finalStyles}
           allowClear
-          {...(hideBorder ? { variant: 'borderless' } : {})}
-          {...(props.onFocus ? { onFocus: props.onFocus } : {})}
-          {...(props.onBlur ? { onBlur: props.onBlur } : {})}
-          {...(!isNullOrWhiteSpace(placeholder) ? { placeholder: [placeholder, placeholder] } : {})}
+          {...(isDefined(props.styleCss) ? { style: props.styleCss } : {})}
+          {...(hideBorder === true ? { variant: 'borderless' } : {})}
+          {...(isDefined(props.onFocus) ? { onFocus: props.onFocus } : {})}
+          {...(isDefined(props.onBlur) ? { onBlur: props.onBlur } : {})}
+          {...(isNotNullOrWhiteSpace(placeholder) ? { placeholder: [placeholder, placeholder] } : {})}
         />
       </div>
     );
   }
 
-  if (readOnly) {
+  if (readOnly === true) {
     const format = showTime ? `${dateFormat} ${timeFormat}` : dateFormat;
-    return <ReadOnlyDisplayFormItem value={momentValue} type="datetime" dateFormat={format} timeFormat={timeFormat} style={finalStyles} />;
+    return (
+      <ReadOnlyDisplayFormItem
+        value={momentValue}
+        type="datetime"
+        dateFormat={format}
+        timeFormat={timeFormat}
+        enableFullStyle={props.enableStyleOnReadonly}
+        style={props.styleCss}
+        styleValue={props}
+      />
+    );
   }
 
   return (
-    <div style={{ marginRight: 1 }}>
+    <div ref={ref} style={{ marginRight: 1 }}>
       <DatePicker
         className={styles.dateField}
         disabledDate={(e) => disabledDate(props, e, formData, globalState)}
         disabledTime={disabledTime(props, formData, globalState)}
         onChange={handleDatePickerChange}
-        {...(hideBorder ? { variant: 'borderless' } : {})}
-        showTime={showTime ? (defaultToMidnight ? { defaultValue: MIDNIGHT_MOMENT } : true) : false}
-        {...(showNow ? { showNow } : {})}
+        {...(hideBorder === true ? { variant: 'borderless' } : {})}
+        showTime={showTimeConfig}
+        showNow={showNow === true}
         picker={picker}
         format={pickerFormat}
-        style={{ ...finalStyles }}
         onCalendarChange={(dates) => {
-          if (showTime && !defaultToMidnight) handleCalendarDatePickerChange(dates);
+          if (showTime && defaultToMidnight !== true) handleCalendarDatePickerChange(dates);
         }}
         value={momentValue}
-        {...(!isNullOrWhiteSpace(placeholder) ? { placeholder } : {})}
+        {...(isNotNullOrWhiteSpace(placeholder) ? { placeholder } : {})}
         allowClear
-        {...(props.onFocus ? { onFocus: props.onFocus } : {})}
-        {...(props.onBlur ? { onBlur: props.onBlur } : {})}
+        {...(isDefined(props.styleCss) ? { style: props.styleCss } : {})}
+        {...(isDefined(props.onFocus) ? { onFocus: props.onFocus } : {})}
+        {...(isDefined(props.onBlur) ? { onBlur: props.onBlur } : {})}
       />
     </div>
   );
-};
+});
+
+DatePickerWrapper.displayName = 'DatePickerWrapper';

@@ -3,12 +3,14 @@ using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Runtime.Session;
 using Abp.Timing;
+using FluentMigrator.Infrastructure.Extensions;
 using Newtonsoft.Json;
 using Shesha.ConfigurationItems.Distribution;
 using Shesha.ConfigurationItems.Distribution.Exceptions;
 using Shesha.ConfigurationItems.Exceptions;
 using Shesha.ConfigurationItems.Models;
 using Shesha.Domain;
+using Shesha.Domain.Attributes;
 using Shesha.Domain.Enums;
 using Shesha.Dto;
 using Shesha.Dto.Interfaces;
@@ -17,6 +19,7 @@ using Shesha.Reflection;
 using Shesha.Utilities;
 using Shesha.Validations;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -49,6 +52,8 @@ namespace Shesha.ConfigurationItems
         {
             LocalizationSourceName = SheshaConsts.LocalizationSourceName;
         }
+
+        protected bool IsApplicationSpecific => typeof(TItem).HasAttribute<ApplicationSpecificAttribute>();
 
         private async Task<string> GenerateItemDuplicateNameAsync(TItem item)
         {
@@ -130,7 +135,7 @@ namespace Shesha.ConfigurationItems
         }
 
         /// inheritedDoc
-        public virtual Task<IConfigurationItemDto> MapToDtoAsync(TItem item) 
+        public virtual Task<IConfigurationItemDto>MapToDtoAsync(TItem item) 
         {
             var dto = new ConfigurationItemDto
             {
@@ -156,6 +161,7 @@ namespace Shesha.ConfigurationItems
                 {
                     Name = item.Name,
                     Module = module,
+                    Application = item.Application,
                 	Label = item.Label,
                 	Description = item.Description,
                     ExposedFrom = item,
@@ -189,41 +195,69 @@ namespace Shesha.ConfigurationItems
 
         public async Task<ConfigurationItem> ExposeAsync(ConfigurationItem item, Module module)
         {
-            if (await ItemExistsAsync(item.Name, module))
+            if (await ItemExistsAsync(item.Name, module, item.Application))
                 throw new ArgumentException($"{item.GetFriendlyClassName()} '{item.Name}' already exists in module '{module.Name}'");
 
             return await ExposeAsync((TItem)item, module);
         }
 
-        public async Task<ConfigurationItemInheritance> GetActualInheritanceOrNullAsync(string module, string name)
+        public async Task<ConfigurationItemInheritance?> GetActualInheritanceOrNullAsync(string module, string name, string? appKey)
         {
-            return await (await InheritanceRepository.GetAllAsync()).Where(e => e.ItemType == Discriminator && e.ModuleName == module && e.Name == name)
-                .OrderBy(e => e.ModuleLevel)
-                .FirstOrDefaultAsync();
+            var appKeys = new List<string?>();
+            if (IsApplicationSpecific && !string.IsNullOrWhiteSpace(appKey))
+                appKeys.Add(appKey);
+
+            // default for non-application-specific and fallback for application-specific
+            appKeys.Add(null);
+
+            var baseQuery = (await InheritanceRepository.GetAllAsync()).Where(e => e.ItemType == Discriminator && e.ModuleName == module && e.Name == name);
+            foreach (var currentAppKey in appKeys) 
+            {
+                var result = await baseQuery.Where(e => e.AppKey == currentAppKey)
+                    .OrderBy(e => e.ModuleLevel)
+                    .FirstOrDefaultAsync();
+                if (result != null)
+                    return result;
+            }
+            return null;
         }
 
-        public async Task<ConfigurationItem> ResolveItemAsync(string module, string name)
+        public async Task<ConfigurationItem> ResolveItemAsync(string module, string name, string? appKey)
         {
-            var actualItem = await GetActualInheritanceOrNullAsync(module, name);
+            var actualItem = await GetActualInheritanceOrNullAsync(module, name, appKey);
 
             if (actualItem == null)
-                throw new ConfigurationItemNotFoundException(Discriminator, module, name, null);
+                throw new ConfigurationItemNotFoundException(Discriminator, module, name, appKey);
 
             return await GetAsync(actualItem.ItemId);
         }
 
         public virtual async Task<TItem> CreateItemAsync(CreateItemInput input, object? additionalData = null) 
         {
+            var application = IsApplicationSpecific ? input.Application : null;
+
             var validationResults = new ValidationResults();
-            var alreadyExist = await (await Repository.GetAllAsync()).Where(f => f.Module == input.Module && f.Name == input.Name).AnyAsync();
-            if (alreadyExist)
-                validationResults.Add($"Form with name `{input.Name}` already exists in module `{input.Module.Name}`");
+
+            var itemType = typeof(TItem).GetFriendlyClassName();
+            if (!IsApplicationSpecific && input.Application != null)
+                validationResults.Add($"Application is not supported for '{itemType}' because it is not application-specific");
+
+            var alreadyExist = await (await Repository.GetAllAsync()).Where(f => f.Module == input.Module && f.Application == application && f.Name == input.Name).AnyAsync();
+            if (alreadyExist) {
+                var fullName = input.Module != null ? $"{input.Module.Name}/{input.Name}" : input.Name;
+                validationResults.Add(
+                    application != null
+                        ? $"{itemType} `{fullName}` already exists in application `{application.Name}`"
+                        : $"{itemType} `{fullName}` already exists");
+            }
+                
             validationResults.ThrowValidationExceptionIfAny(L);
 
             var item = new TItem
             {
                 Name = input.Name,
                 Module = input.Module,
+                Application = application,
                 Folder = input.Folder,
             };
             item.Origin = item;
@@ -262,10 +296,11 @@ namespace Shesha.ConfigurationItems
         /// </summary>
         /// <param name="name">Item name</param>
         /// <param name="module">Module</param>
+        /// <param name="application">Front-end application</param>
         /// <returns></returns>
-        public async Task<bool> ItemExistsAsync(string name, Module module)
+        public async Task<bool> ItemExistsAsync(string name, Module module, FrontEndApp? application)
         {
-            return await (await Repository.GetAllAsync()).AnyAsync(e => e.Name == name && e.Module == module);
+            return await (await Repository.GetAllAsync()).AnyAsync(e => e.Name == name && e.Module == module && e.Application == application);
         }
 
         protected Task CopyRevisionPropertiesBaseAsync(ConfigurationItemRevision srcRevision, ConfigurationItemRevision dstRevision)

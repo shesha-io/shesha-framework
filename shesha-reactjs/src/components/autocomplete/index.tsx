@@ -1,5 +1,6 @@
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
+import * as React from 'react';
 import { AutocompleteDataSourceType, IAutocompleteProps, ISelectOption } from './models';
 import { EntityAutocomplete } from './entityAutocomplete';
 import { UrlAutocomplete } from './urlAutocomplete';

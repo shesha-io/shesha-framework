@@ -1,5 +1,4 @@
 import { EnvironmentOutlined } from '@ant-design/icons';
-import React from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { IToolboxComponent } from '@/interfaces';
 import {

@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
+import * as React from 'react';
 
 interface AttributeDecoratorProps {
   /** Object of attributes to be injected into the element */
@@ -6,6 +7,8 @@ interface AttributeDecoratorProps {
   /** The element to be decorated */
   children: React.ReactElement;
 }
+
+const displayNoneStyle: React.CSSProperties = { display: 'none' };
 
 /**
  * Takes decoration attributes as props.attributes [{ key: value }, ...] and injects them as custom data attributes to the element that is being wrapped / 'decorated'.
@@ -43,7 +46,7 @@ const AttributeDecorator: React.FC<AttributeDecoratorProps> = (props) => {
 
   return (
     <>
-      <div ref={divRef} style={{ display: 'none' }} />
+      <div ref={divRef} style={displayNoneStyle} />
       {props.children}
     </>
   );

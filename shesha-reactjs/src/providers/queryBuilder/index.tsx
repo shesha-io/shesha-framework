@@ -1,4 +1,4 @@
-import React, { FC, useContext, PropsWithChildren, useState } from 'react';
+import { FC, useContext, PropsWithChildren, useState } from 'react';
 import { QueryBuilderActionsContext, QueryBuilderStateContext, IQueryBuilderStateContext, IQueryBuilderActionsContext } from './contexts';
 import { IHasQueryBuilderConfig, IProperty, IPropertyMetadataWithQBSettings, propertyHasQBConfig } from './models';
 import { getPropertyFullPath, propertyMetadata2QbProperty } from './utils';

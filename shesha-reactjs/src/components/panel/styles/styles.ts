@@ -3,6 +3,7 @@ import { ICollapsiblePanelProps } from '..';
 import { isDefined, isNullOrWhiteSpace } from '@/utils';
 import { backgroundStyles, borderLinesStyles, borderRadiusStyles, dimensionsStyles, fontStyles, marginStyles, paddingStyles, paddingValue, shadowStyles } from '@/designer-components/_common/styles/utils';
 import { StyleBoxValue } from '@/providers';
+import { getFullSizeComponentDimensions } from '@/components/formDesigner/utils/stylingUtils';
 
 /** Is value defined and greater than 0 */
 const isG0 = (value: string | number | undefined): boolean => isDefined(value) && parseFloat(String(value)) > 0;
@@ -10,9 +11,6 @@ const isG0 = (value: string | number | undefined): boolean => isDefined(value) &
 const defaultHeaderPadding: StyleBoxValue = { _type: 'styleBox', paddingBottom: 8, paddingTop: 8, paddingLeft: 16, paddingRight: 16 };
 const defaultPadding: StyleBoxValue = { _type: 'styleBox', paddingBottom: 16, paddingTop: 16, paddingLeft: 16, paddingRight: 16 };
 const defaultMargin: StyleBoxValue = { _type: 'styleBox', marginBottom: 5 };
-
-/* export const useHeaderComponentsContainerStyles = createStyles(({ css, cx, token, prefixCls }) => {
-};*/
 
 export const shaHeaderComponentsContainer = "sha-header-components-container";
 
@@ -24,11 +22,22 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: ICo
   const hasBorder = (model.border?.borderType === 'all' && isG0(borderValue?.all?.width)) ||
     (model.border?.borderType === 'custom' && (isG0(borderValue?.top?.width) || isG0(borderValue?.right?.width) || isG0(borderValue?.bottom?.width) || isG0(borderValue?.left?.width)));
 
-  const dimensions = dimensionsStyles({ ...model.dimensions, width: '100%' });
+  const dimensions = dimensionsStyles(getFullSizeComponentDimensions(model.dimensions));
   const padding = paddingStyles(model.stylingBoxJson ?? defaultPadding);
 
   const headerDimensions = dimensionsStyles({ ...model.headerStyles?.dimensions, width: undefined, minWidth: undefined, maxWidth: undefined });
   const headerPadding = paddingStyles(model.headerStyles?.stylingBoxJson ?? defaultHeaderPadding);
+
+  const collapsedBorderRadius = borderRadiusStyles({
+    ...model.border,
+    radiusType: 'custom',
+    radius: {
+      topLeft: model.border?.radius?.topLeft ?? model.border?.radius?.all,
+      topRight: model.border?.radius?.topRight ?? model.border?.radius?.all,
+      bottomRight: model.border?.radius?.topRight ?? model.border?.radius?.all,
+      bottomLeft: model.border?.radius?.topLeft ?? model.border?.radius?.all,
+    },
+  }, true);
 
   const shaCollapsiblePanel = cx("ant-collapse-component", css`
     &.${hideWhenEmpty}:not(:has(.ant-collapse-body .sha-component)):not(:has(.${prefixCls}-collapse-content-box .sha-component)):not(:has(.ant-collapse-body .ant-form-item)) {
@@ -37,18 +46,23 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: ICo
     --primary-color: ${token.colorPrimary};
     --ant-line-width: ${hasBorder ? '0px' : '1px'} !important;
     --ant-collapse-header-bg: transparent !important;
+
     ${dimensions}
     ${marginStyles(model.stylingBoxJson ?? defaultMargin)}
 
     > .ant-collapse-item {
       display: flex;
       flex-direction: column;
+      height: 100%;
+      ${collapsedBorderRadius}
+    }
+
+    > .ant-collapse-item.ant-collapse-item-active {
       ${shadowStyles(model.shadow)}
       ${borderRadiusStyles(model.border, true)}
-      height: 100%;
     }
    
-    > .ant-collapse-item > .ant-collapse-panel {
+    > .ant-collapse-item > .ant-collapse-panel, > .ant-collapse-item > .ant-collapse-content {
       flex: 1;
       ${backgroundStyles(model.background)}
       ${padding}
@@ -81,8 +95,8 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: ICo
       ${headerPadding}
       ${borderLinesStyles(model.headerStyles?.border)}
       ${model.accentStyle === true ? 'border-top: 3px solid var(--primary-color);' : ''}
-      ${model.ghost === true || model.isSimpleDesign === true ? '' : borderRadiusStyles(model.border, true)}
       align-items: center !important;
+      ${collapsedBorderRadius} 
 
       .ant-collapse-header-text {
         ${fontStyles(model.headerStyles?.font)}
@@ -117,6 +131,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: ICo
       }, true)}
     }
 
+
     &.${prefixCls}-collapse-ghost {
       > .ant-collapse-item {
         > .ant-collapse-header {
@@ -143,6 +158,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: ICo
 
   const shaSimpleDesign = cx(css`
     --primary-color: ${token.colorPrimary};
+    ${marginStyles(model.stylingBoxJson ?? defaultMargin)}
 
     > .ant-collapse-item > .ant-collapse-header-text {
       ${fontStyles(model.headerStyles?.font)}
@@ -151,7 +167,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: ICo
     &.${prefixCls}-collapse-ghost {
       > .ant-collapse-item > .ant-collapse-header {
         --ant-collapse-header-padding: ${isNullOrWhiteSpace(headerPaddingValue) ? '12px 16px' : headerPaddingValue} !important;
-        padding: 12px 16px !important;
+        padding: ${isNullOrWhiteSpace(headerPaddingValue) ? '12px 16px' : headerPaddingValue} !important;
         font-size: 14px;
       }
     }

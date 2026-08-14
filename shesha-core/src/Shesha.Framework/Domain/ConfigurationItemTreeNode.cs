@@ -20,6 +20,10 @@ namespace Shesha.Domain
         /// </summary>
         public virtual Guid ModuleId { get; set; }
         /// <summary>
+        /// Application Id
+        /// </summary>
+        public Guid? ApplicationId { get; set; }
+        /// <summary>
         /// Item name
         /// </summary>
         public virtual string Name { get; set; }

@@ -2,7 +2,7 @@ import { createStyles } from '@/styles';
 import { addPx } from '@/utils/style';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { ICheckboxComponentProps } from './interfaces';
-import { dimensionsStyles, backgroundStyles, borderStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
+import { dimensionsStyles, backgroundStyles, borderStyles, marginStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
 
 const borderWidthFromWeight = (weight: string | undefined): string => {
   switch (weight) {
@@ -43,6 +43,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: ICheckboxC
         ${borderStyles(model.border)}
         ${shadowStyles(model.shadow)}
         ${paddingStyles(model.stylingBoxJson)}
+        ${marginStyles(model.stylingBoxJson)}
 
         .${prefixCls}-checkbox-input {
           width: 100%;

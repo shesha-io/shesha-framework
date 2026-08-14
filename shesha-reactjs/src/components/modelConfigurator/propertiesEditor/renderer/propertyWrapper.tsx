@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren } from 'react';
+import { FC, PropsWithChildren } from 'react';
 import { Button, Tag, Tooltip } from 'antd';
 import { DeleteFilled, EyeInvisibleOutlined, InfoCircleOutlined, WarningFilled } from '@ant-design/icons';
 import { usePropertiesEditor } from '../provider';

@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { IConfigurableFormItemChildFunc } from '@/components/formDesigner/components/model';
 import { isNotNullOrWhiteSpace } from '@/utils/nullables';
 

@@ -1,6 +1,6 @@
 import { ISidebarGroup, ISidebarMenuItem } from "@/interfaces/sidebar";
 import { MenuOutlined } from "@ant-design/icons";
-import React, { FC } from "react";
+import { FC } from "react";
 
 interface IProps {
   className: string;

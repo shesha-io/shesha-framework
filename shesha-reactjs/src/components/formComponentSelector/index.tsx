@@ -5,7 +5,7 @@ import { IPropertyMetadata } from '@/interfaces/metadata';
 import { nanoid } from '@/utils/uuid';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
 import { upgradeComponent } from '@/providers/form/utils';
-import React, { FC, useMemo, useState } from 'react';
+import { FC, useMemo, useState } from 'react';
 import { editorAdapters } from './adapters';
 import ComponentSettingsModal from './componentSettingsModal';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';

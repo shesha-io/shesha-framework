@@ -4,7 +4,6 @@ import { SettingsFormMarkupFactory } from '@/interfaces';
 
 export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter }) => {
   // Generate unique IDs for main sections
-  const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const commonStyleRouterId = nanoid();
   const eventsTabId = nanoid();
@@ -13,14 +12,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
 
   return {
     components: fbf()
-      .addSearchableTabs({
-        id: searchableTabsId,
-        propertyName: 'settingsTabs',
-        parentId: 'root',
-        label: 'Settings',
-        hideLabel: true,
-        labelAlign: 'right',
-        size: 'small',
+      .addSearchableTabs({ propertyName: 'settingsTabs', parentId: 'root', label: 'Settings', hideLabel: true, size: 'small',
         tabs: [
           { id: commonTabId, key: 'common', title: 'Common',
             components: [
@@ -39,7 +31,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   { propertyName: 'collapsedByDefault', label: 'Collapsed By Default', labelAlign: 'right', type: 'switch', jsSetting: true },
                   { propertyName: 'hideWhenEmpty', label: 'Hide When Empty', labelAlign: 'right', type: 'switch', jsSetting: true, description: 'Allows to hide the panel when all components are hidden due to some conditions' },
                 ] })
-                .addPropertyRouter({ id: commonStyleRouterId, propertyName: 'propertyRouter1', componentName: 'propertyRouter', label: 'Property router1', labelAlign: 'right',
+                .addPropertyRouter({ id: commonStyleRouterId, componentName: 'propertyRouter1', label: 'Property router1', labelAlign: 'right',
                   propertyRouteName: removeStyleRouter === true ? '' : { _mode: "code", _code: "    return contexts.canvasContext?.designerDevice || 'desktop';", _value: "" },
                   components: [
                     ...fbf(commonStyleRouterId)
@@ -70,7 +62,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
           },
           { key: 'appearance', title: 'Appearance', id: appearanceTabId,
             components: [...fbf(appearanceTabId)
-              .addPropertyRouter({ id: styleRouterId, propertyName: 'propertyRouter2', componentName: 'propertyRouter', label: 'Property router1', labelAlign: 'right',
+              .addPropertyRouter({ id: styleRouterId, componentName: 'propertyRouter2', label: 'Property router2', labelAlign: 'right',
                 propertyRouteName: removeStyleRouter === true ? '' : { _mode: "code", _code: "    return contexts.canvasContext?.designerDevice || 'desktop';", _value: "" },
                 components: [
                   ...fbf(styleRouterId)

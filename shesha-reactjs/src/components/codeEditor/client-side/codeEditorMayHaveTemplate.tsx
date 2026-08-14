@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { IMonacoEditorProps, IHasCodeTemplate } from '../models';
 import { ConstrainedCodeEditor } from './constrainedCodeEditor';
 import { Editor } from '@monaco-editor/react';

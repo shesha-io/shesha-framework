@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
+import { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
 import { IPropertyMetadata, asPropertiesArray } from '@/interfaces/metadata';
 import { useMetadataDispatcher } from '@/providers';
 import { setMetadataAction } from './actions';

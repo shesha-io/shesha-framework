@@ -1,4 +1,5 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
+import * as React from 'react';
 import { SearchProps } from 'antd/lib/input';
 import GlobalTableFilterBase from '@/components/globalTableFilterBase';
 import { useDataTableStore } from '@/providers';
