@@ -17,6 +17,9 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
     { label: 'Phone Number', value: 'phone' },
   ];
 
+  const isTextJs = 'return getSettingValue(data?.textType) === "text";';
+  const isPasswordJs = 'return getSettingValue(data?.textType) === "password";';
+
   const json = {
     components: fbf('root')
       .addSearchableTabs({
@@ -39,7 +42,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                 .stdPrefixSuffixInputs()
                 .addSettingsInput({
                   inputType: 'switch', propertyName: 'spellCheck', label: 'Spell Check', jsSetting: true,
-                  hidden: { _code: 'return getSettingValue(data?.textType) !== "text";', _mode: 'code', _value: false },
+                  visibleJs: isTextJs,
                 })
                 .stdCollapsiblePanel('Auto-format', (fb) => fb
                   .addSettingsInput({
@@ -53,25 +56,25 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                     ],
                     visibleJs: 'return getSettingValue(data?.enableFormatting) === true;',
                   }),
-                undefined, 'return getSettingValue(data?.textType) === "text";')
+                undefined, isTextJs)
                 .stdCollapsiblePanel('Validations', (fb) => fb
                   .addSettingsInput({ inputType: 'switch', propertyName: 'validate.required', label: 'Required', size: 'small', layout: 'horizontal', jsSetting: true })
                   .addSettingsInput({
                     inputType: 'switch', propertyName: 'useStandardPasswordValidation', label: 'Use standard password validation',
                     tooltip: 'When enabled, the password validation follows the rules defined in the corresponding authentication configuration. When disabled, no global complexity validation is applied.',
                     size: 'small', layout: 'horizontal', jsSetting: true,
-                    hidden: { _code: 'return getSettingValue(data?.textType) !== "password";', _mode: 'code', _value: false },
+                    visibleJs: isPasswordJs,
                   })
                   .addSettingsInputRow({
                     inputs: [
                       { type: 'numberField', propertyName: 'validate.minLength', label: 'Min Length', size: 'small', jsSetting: true },
                       { type: 'numberField', propertyName: 'validate.maxLength', label: 'Max Length', size: 'small', jsSetting: true },
                     ],
-                    visibleJs: 'return getSettingValue(data?.textType) === "text";',
+                    visibleJs: isTextJs,
                   })
                   .addSettingsInput({
                     inputType: 'textField', propertyName: 'regExp', label: 'Regular expression', size: 'small', jsSetting: true,
-                    hidden: { _code: 'return getSettingValue(data?.textType) !== "text";', _mode: 'code', _value: false },
+                    visibleJs: isTextJs,
                   })
                   .addSettingsInputRow({
                     inputs: [
