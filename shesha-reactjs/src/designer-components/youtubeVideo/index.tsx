@@ -278,14 +278,17 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
     const handlersRef = useRef({ onPlay, onPause, onEnd, onReady, executeAction });
     handlersRef.current = { onPlay, onPause, onEnd, onReady, executeAction };
 
+    // Reset watch state only when the watched video identity changes, so the exposed
+    // isWatched/isWatchedEntirely never carry over from a previously-played video — and are NOT
+    // discarded when the component is merely hidden/shown (e.g. a wizard step or tab switch).
+    useEffect(() => {
+      hasStartedRef.current = false;
+      isCompletedRef.current = false;
+    }, [videoId]);
+
     // Track play/pause/end via the official YouTube IFrame Player API (reliable, unlike raw postMessage).
     // Updates the watch-state refs (exposed on the API) and fires the configured events.
     useEffect(() => {
-      // Reset watch state whenever the video (or its visibility) changes, so the exposed
-      // isWatched/isWatchedEntirely never carry over from a previously-played video.
-      hasStartedRef.current = false;
-      isCompletedRef.current = false;
-
       if (hidden || formMode === 'designer' || isNullOrWhiteSpace(videoId) || !iframeShown) {
         return undefined;
       }
@@ -340,8 +343,12 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
       return null;
     }
 
-    // Render placeholder in designer mode when no video is configured yet
-    if (formMode === 'designer' && isNullOrWhiteSpace(videoId)) {
+    // No video configured (or invalid): show the placeholder in designer mode, render nothing at
+    // runtime. Guards against rendering <iframe src=""> which browsers resolve to the host page.
+    if (youtubeUrl == null) {
+      if (formMode !== 'designer') {
+        return null;
+      }
       return (
         <div className={styles.youtubeVideoPlaceholder}>
           <YoutubeOutlined style={{ fontSize: '48px', color: '#ff0000' }} />
@@ -394,7 +401,7 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
           ) : (
             <iframe
               ref={playerRef}
-              src={youtubeUrl ?? ''}
+              src={youtubeUrl}
               style={iframeStyle}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
