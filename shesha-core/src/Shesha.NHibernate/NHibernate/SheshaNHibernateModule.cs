@@ -276,6 +276,7 @@ namespace Shesha.NHibernate
                     ))
                 {
                     Logger.Warn("Database initialized by another application instance");
+                    await CheckDbHealthAsync();
                     return;
                 }
 

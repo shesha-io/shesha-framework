@@ -32,9 +32,7 @@ namespace Shesha.NHibernate.DbHealth
         public override string ToString()
         {
             var text = new StringBuilder();
-            text.Append(base.ToString());
-
-            text.AppendLine();
+            
             AppendDetails(text);
 
             return text.ToString();
