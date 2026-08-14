@@ -88,7 +88,7 @@ const RadioComponent: RadioComponentDefinition = {
               <ReadOnlyDisplayFormItem
                 value={selectedLabel}
                 enableFullStyle={model.enableStyleOnReadonly}
-                style={model.styleJson}
+                style={model.styleCss}
                 styleValue={model}
               />
             )
@@ -100,7 +100,7 @@ const RadioComponent: RadioComponentDefinition = {
                 direction={model.direction}
                 value={value ?? undefined}
                 options={options}
-                {...(isDefined(model.styleJson) ? { style: model.styleJson } : {})}
+                {...(isDefined(model.styleCss) ? { style: model.styleCss } : {})}
                 onChange={(event) => {
                   // antd stringifies the option value, so recover the original from the option
                   // list rather than re-parsing: that keeps a value's configured type intact,

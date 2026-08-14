@@ -129,7 +129,11 @@ export interface IStyleValue {
   /** js code of calculated style */
   style?: string | undefined;
   /** calculated style */
-  styleJson?: CSSProperties | undefined;
+  styleCss?: CSSProperties | undefined;
+  /** js code of calculated wrapper style */
+  wrapperStyle?: string | undefined;
+  /** calculated wrapper style */
+  wrapperStyleCss?: CSSProperties | undefined;
   /** @deprecated use stylingBoxJson insted */
   stylingBox?: string | undefined;
   stylingBoxJson?: StyleBoxValue | undefined;
@@ -360,8 +364,6 @@ export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles =
   availableConstantsExpression?: string | GetAvailableConstantsFunc | undefined;
 
   subscribedEventNames?: string[] | undefined;
-
-  wrapperStyle?: string | undefined;
 
   noDataText?: string | undefined;
 

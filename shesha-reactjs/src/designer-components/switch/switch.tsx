@@ -69,7 +69,7 @@ const SwitchComponent: SwitchComponentDefinition = {
               className={styles.switchStyles}
               disabled={model.disabled === true || model.readOnly === true}
               checked={value ?? false}
-              {...(isDefined(model.styleJson) ? { style: model.styleJson } : {})}
+              {...(isDefined(model.styleCss) ? { style: model.styleCss } : {})}
               onChange={(checked, event) => {
                 ctx?.handleEvent(event, { value: checked }, model.onChangeCustom);
                 onChange(checked);

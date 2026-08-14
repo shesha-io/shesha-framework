@@ -69,10 +69,10 @@ export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
 
   if (buttonGroupStyle === 'horizontal') {
     return (
-      <Space.Compact size={size} style={{ ...props.styleJson, ...getOverflowStyle(true, false) }} className={classNames(styles.shaHideEmpty, styles.shaButtonGroupContainer)}>
+      <Space.Compact size={size} style={{ ...props.styleCss, ...getOverflowStyle(true, false) }} className={classNames(styles.shaHideEmpty, styles.shaButtonGroupContainer)}>
         <Space size={gap}>
           {filteredItems.map((item) =>
-            (<InlineItem styles={item.styleJson} item={item} uuid={item.id} size={item.size ?? size} getIsVisible={getIsVisible} appContext={allData} key={item.id} buttonComponent={buttonComponent} />),
+            (<InlineItem styles={item.styleCss} item={item} uuid={item.id} size={item.size ?? size} getIsVisible={getIsVisible} appContext={allData} key={item.id} buttonComponent={buttonComponent} />),
           )}
         </Space>
       </Space.Compact>
@@ -86,7 +86,7 @@ export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
           mode="horizontal"
           items={menuItems}
           className={classNames(styles.shaResponsiveButtonGroup, styles.shaButtonGroupContainer, styles.a, `space-${gap}`)}
-          style={{ width: '30px', height: '30px', ...props.styleJson }}
+          style={{ width: '30px', height: '30px', ...props.styleCss }}
         />
       </div>
     );

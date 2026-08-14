@@ -138,7 +138,7 @@ const AlertComponent: AlertComponentDefinition = {
         {...(isDefined(closable) ? { closable } : {})}
         showIcon={showIcon ?? false}
         icon={!isNullOrWhiteSpace(icon) ? <ShaIcon iconName={icon} /> : null}
-        {...(isDefined(model.styleJson) ? { style: model.styleJson } : {})}
+        {...(isDefined(model.styleCss) ? { style: model.styleCss } : {})}
         ref={inputRef}
         {...getComponentEvents<void, IAlertComponentProps>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent })}
       />

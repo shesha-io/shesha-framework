@@ -56,7 +56,7 @@ const AddressCompoment: AddressComponentDefinition = {
               <ReadOnlyDisplayFormItem
                 value={value}
                 enableFullStyle={model.enableStyleOnReadonly}
-                style={model.styleJson}
+                style={model.styleCss}
                 styleValue={model}
               />
             )
@@ -87,7 +87,7 @@ const AddressCompoment: AddressComponentDefinition = {
                 // onFocus is part of the standard set below, so it is bound there rather than
                 // passed explicitly — wiring both would fire the handler twice.
                 inputProps={getComponentEvents<string>(model, ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, ctx, value, DataTypes.string)}
-                {...(isDefined(model.styleJson) ? { style: model.styleJson } : {})}
+                {...(isDefined(model.styleCss) ? { style: model.styleCss } : {})}
               />
             );
         }}

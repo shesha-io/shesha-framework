@@ -42,14 +42,14 @@ const ValidationErrorsComponent: IToolboxComponent<IValidationErrorsComponentPro
   isInput: false,
   name: 'Validation Errors',
   icon: <WarningOutlined />,
-  getWrapperStyle: (model) => ({ style: { styleJson: {}, dimensions: model.dimensions } }),
+  getWrapperStyle: (model) => ({ style: { styleCss: {}, dimensions: model.dimensions } }),
   Factory: ({ model }) => {
     const handleEvent = useEvents<void>(model.componentName);
     const { styles } = useStyles(model);
     const { validationErrors, formMode } = useShaFormInstance();
     return (
       <ValidationErrors
-        style={model.styleJson ?? EMPTY_STYLE}
+        style={model.styleCss ?? EMPTY_STYLE}
         error={formMode === 'designer' ? 'Validation Errors (visible in the designer only)' : validationErrors}
         renderMode="alert"
         className={classNames(styles.shaValidationErrors, model.className)}
