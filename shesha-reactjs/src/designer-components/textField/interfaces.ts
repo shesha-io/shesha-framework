@@ -2,7 +2,7 @@ import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/model
 import { IconType } from '@/components/shaIcon';
 import { ComponentDefinition } from '@/interfaces';
 
-export type TextType = 'text' | 'password';
+export type TextType = 'text' | 'password' | 'email' | 'url' | 'phone';
 
 export interface ITextFieldComponentProps extends IConfigurableFormComponent, IInputStyles {
   placeholder?: string | undefined;

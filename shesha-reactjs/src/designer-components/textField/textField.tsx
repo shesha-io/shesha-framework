@@ -6,7 +6,7 @@ import { ConfigurableFormItem } from '@/components/formDesigner/components/formI
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { IInputStyles, UnwrapCodeEvaluators } from '@/providers';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { ITextFieldComponentProps, TextFieldComponentDefinition } from './interfaces';
+import { ITextFieldComponentProps, TextFieldComponentDefinition, TextType } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly, migrateHiddenToVisible } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index';
@@ -17,7 +17,7 @@ import { PasswordFieldWrapper } from './passwordFieldWrapper';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { getSettings } from './settingsForm';
-import { applyGroupFormatting, defaultStyles, buildPasswordValidatorString, parseGroupLengths, stripSeparator, totalGroupLength, usePasswordComplexitySettings, validatePasswordValue } from './utils';
+import { applyGroupFormatting, buildFormatValidatorString, defaultStyles, buildPasswordValidatorString, parseGroupLengths, stripSeparator, TEXT_TYPE_FORMATS, totalGroupLength, usePasswordComplexitySettings, validatePasswordValue } from './utils';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { TextFieldApi } from '@/componentsApi/componentApi';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
@@ -25,6 +25,13 @@ import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nu
 import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '../_common/events';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
+
+const DATA_FORMAT_TO_TEXT_TYPE: Partial<Record<string, TextType>> = {
+  [StringFormats.password]: 'password',
+  [StringFormats.emailAddress]: 'email',
+  [StringFormats.phoneNumber]: 'phone',
+  [StringFormats.url]: 'url',
+};
 
 const TextFieldComponent: TextFieldComponentDefinition = {
   allowInherit: true,
@@ -41,6 +48,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
       dataFormat === StringFormats.singleline ||
       dataFormat === StringFormats.emailAddress ||
       dataFormat === StringFormats.phoneNumber ||
+      dataFormat === StringFormats.url ||
       dataFormat === StringFormats.password),
   Factory: ({ model }) => {
     const componentApi = useComponentApi();
@@ -60,7 +68,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
     const InputComponentType = useMemo(() => model.textType === 'password' ? Input.Password : Input, [model.textType]);
 
     const regExpObj = useMemo(() => {
-      if (isNullOrWhiteSpace(model.regExp)) return null;
+      if (model.textType !== 'text' || isNullOrWhiteSpace(model.regExp)) return null;
       try {
         return new RegExp(model.regExp, 'g');
       } catch (error) {
@@ -71,6 +79,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
 
     const isPassword = model.textType === 'password';
     const passwordComplexity = usePasswordComplexitySettings();
+    const formatConfig = isDefined(model.textType) ? TEXT_TYPE_FORMATS[model.textType] : undefined;
 
     const formatGroupLengths = useMemo(
       () => model.enableFormatting === true ? parseGroupLengths(model.formatGroups) : [],
@@ -83,18 +92,22 @@ const TextFieldComponent: TextFieldComponentDefinition = {
     [isPassword, model.useStandardPasswordValidation, passwordComplexity],
     );
 
+    const builtInValidator = isDefined(formatConfig)
+      ? buildFormatValidatorString(formatConfig.pattern, formatConfig.message)
+      : passwordValidator;
+
     const modelWithValidation = useMemo<UnwrapCodeEvaluators<ITextFieldComponentProps>>(() => {
-      if (!isPassword || isNullOrWhiteSpace(passwordValidator) || isNotNullOrWhiteSpace(model.validate?.validator)) return model;
+      if (isNullOrWhiteSpace(builtInValidator) || isNotNullOrWhiteSpace(model.validate?.validator)) return model;
       return {
         ...model,
         validate: {
           ...(model.validate || {}),
           minLength: undefined,
           maxLength: undefined,
-          validator: passwordValidator,
+          validator: builtInValidator,
         },
       };
-    }, [model, isPassword, passwordValidator]);
+    }, [model, builtInValidator]);
 
     const inputProps: InputProps = {
       className: `sha-input ${styles.textField}`,
@@ -105,6 +118,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
       disabled: model.disabled === true,
       spellCheck: model.spellCheck ?? false,
       ...(isDefined(model.styleJson) ? { style: model.styleJson } : {}),
+      ...(isDefined(formatConfig) ? { type: formatConfig.inputType, autoComplete: formatConfig.autoComplete } : {}),
     };
     if (model.border?.hideBorder === true)
       inputProps.variant = 'borderless';
@@ -218,7 +232,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
     .add<ITextFieldComponentProps>(7, (prev) => migrateHiddenToVisible(prev))
     .add<ITextFieldComponentProps>(8, (prev) => migratePermissionsToVisiblePermissions(prev)),
   linkToModelMetadata: (model, metadata): ITextFieldComponentProps => (
-    { ...model, textType: metadata.dataFormat === StringFormats.password ? 'password' : 'text' }
+    { ...model, textType: DATA_FORMAT_TO_TEXT_TYPE[metadata.dataFormat ?? ''] ?? 'text' }
   ),
   previewConfiguration: {
     type: 'textField',

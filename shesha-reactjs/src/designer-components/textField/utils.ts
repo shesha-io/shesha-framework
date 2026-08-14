@@ -3,6 +3,48 @@ import { useSettingValue } from '@/providers/settings';
 import { ISettingIdentifier } from '@/providers/settings/models';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { useMemo } from 'react';
+import { TextType } from './interfaces';
+
+export interface ITextTypeFormatConfig {
+  pattern: RegExp;
+  message: string;
+  inputType: string;
+  autoComplete: string;
+}
+
+/** Built-in format presets for the non-password "typed" TextField variants. */
+export const TEXT_TYPE_FORMATS: Partial<Record<TextType, ITextTypeFormatConfig>> = {
+  email: {
+    pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+    message: 'Please enter a valid email address',
+    inputType: 'email',
+    autoComplete: 'email',
+  },
+  url: {
+    pattern: /^https?:\/\/[^\s$.?#].[^\s]*$/,
+    message: 'Please enter a valid URL, e.g. https://example.com',
+    inputType: 'url',
+    autoComplete: 'url',
+  },
+  phone: {
+    // Lenient: leading "+", digits, spaces, dashes, dots and parentheses, 7-20 chars.
+    pattern: /^\+?[0-9\s\-().]{7,20}$/,
+    message: 'Please enter a valid phone number',
+    inputType: 'tel',
+    autoComplete: 'tel',
+  },
+};
+
+export const buildFormatValidatorString = (pattern: RegExp, message: string): string => `
+    try {
+      if (typeof value !== 'string' || value.length === 0) return Promise.resolve();
+      return ${pattern.toString()}.test(value) ? Promise.resolve() : Promise.reject(${JSON.stringify(message)});
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      console.error('[TextField] Format validator error:', msg);
+      return Promise.reject('Validation failed: ' + msg);
+    }
+  `;
 
 export const parseGroupLengths = (groups: string | undefined): number[] => {
   if (isNullOrWhiteSpace(groups)) return [];

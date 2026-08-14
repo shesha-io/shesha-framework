@@ -12,6 +12,9 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
   const textTypeOptions = [
     { label: 'Text', value: 'text' },
     { label: 'Password', value: 'password' },
+    { label: 'Email', value: 'email' },
+    { label: 'URL', value: 'url' },
+    { label: 'Phone Number', value: 'phone' },
   ];
 
   const json = {
@@ -36,7 +39,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                 .stdPrefixSuffixInputs()
                 .addSettingsInput({
                   inputType: 'switch', propertyName: 'spellCheck', label: 'Spell Check', jsSetting: true,
-                  hidden: { _code: 'return getSettingValue(data?.textType) === "password";', _mode: 'code', _value: false },
+                  hidden: { _code: 'return getSettingValue(data?.textType) !== "text";', _mode: 'code', _value: false },
                 })
                 .stdCollapsiblePanel('Auto-format', (fb) => fb
                   .addSettingsInput({
@@ -64,9 +67,12 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                       { type: 'numberField', propertyName: 'validate.minLength', label: 'Min Length', size: 'small', jsSetting: true },
                       { type: 'numberField', propertyName: 'validate.maxLength', label: 'Max Length', size: 'small', jsSetting: true },
                     ],
-                    visibleJs: 'return getSettingValue(data?.textType) !== "password";',
+                    visibleJs: 'return getSettingValue(data?.textType) === "text";',
                   })
-                  .addSettingsInput({ inputType: 'textField', propertyName: 'regExp', label: 'Regular expression', size: 'small', jsSetting: true })
+                  .addSettingsInput({
+                    inputType: 'textField', propertyName: 'regExp', label: 'Regular expression', size: 'small', jsSetting: true,
+                    hidden: { _code: 'return getSettingValue(data?.textType) !== "text";', _mode: 'code', _value: false },
+                  })
                   .addSettingsInputRow({
                     inputs: [
                       { type: 'textField', propertyName: 'validate.message', label: 'Message', size: 'small', jsSetting: true },
