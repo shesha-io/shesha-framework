@@ -7,7 +7,7 @@ export const useStyles = createStyles(({ css, cx, token }, { font, background, b
      text half on each row. Dimensions are dropped — the list is sized to the wrapper and grows with
      its suggestions. */
   const { width: _w, height: _h, ...popupCustomStyle } = styleCss ?? {};
-  const { text: customTextStyle, box: customBoxStyle } = splitTextProperties(popupCustomStyle);
+  const { box: customBoxStyle } = splitTextProperties(popupCustomStyle);
 
 
   const dropdownContainer = "dropdown-container";
@@ -49,7 +49,7 @@ export const useStyles = createStyles(({ css, cx, token }, { font, background, b
                 /* The Custom style is merged in rather than emitted separately: the list sets its
                    own colour and font size, so a rule on the container alone does not reach the
                    text. */
-                ${fontStyles(font, customTextStyle)}
+                ${fontStyles(font, styleCss)}
 
                 &:hover {
                     ${highlightedSuggestion}
@@ -64,7 +64,7 @@ export const useStyles = createStyles(({ css, cx, token }, { font, background, b
         &&& .ant-input-affix-wrapper,
         &&& input.ant-input,
         &&& input {
-            ${fontStyles(font, customTextStyle)}
+            ${fontStyles(font, styleCss)}
         }
 `);
 

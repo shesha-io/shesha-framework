@@ -246,33 +246,21 @@ export const paddingValue = (model: StyleBoxValue | undefined): string => {
   return sb.join(' ');
 };
 
-/**
- * Emits the text rules for a Font model, optionally overridden by a Custom style.
- *
- * `custom` wins property by property, not wholesale: a Custom style that sets only `color` overrides
- * the Font's colour and leaves its size, weight, family and alignment in place. That is what makes
- * the two settings compose rather than one replacing the other.
- *
- * Passing the Custom style here rather than emitting it as a second declaration after this one is
- * what keeps the precedence correct wherever the result lands. Two separate declarations only
- * resolve by document order, so the same pair of settings could render differently depending on
- * which rule a component happened to write first — and a value the user cleared from the Custom
- * style would leave the Font's value un-emitted rather than restored.
- *
- * Only the text properties of `custom` are read; the rest of a Custom style describes the box and is
- * applied by the caller (see `splitTextProperties`).
- */
-export const fontStyles = (model: IFontValue | undefined, custom?: CSSProperties | undefined): string => {
+export const fontStyles = (model: IFontValue | undefined, customStyle?: CSSProperties | undefined): string => {
+  /* An explicit Custom style wins over the model's own `styleCss`, so a caller that has already
+     narrowed it — stripping `textAlign` for a calendar cell, say — keeps that narrowing. Either way
+     only the text properties are used, so a full Custom style can be handed over as-is. */
+  const custom = splitTextProperties(customStyle).text;
   const sb = new StringBuilder();
 
   /* Read from the Custom style first, falling back to the Font model. `fontSize` is passed through
      `addPx` on the model side only: a Custom style is authored as CSS, where a bare number is either
      already a string with units or a unitless number React itself serialises with `px`. */
-  const color = !isNullOrWhiteSpace(custom?.color) ? custom.color : model?.color;
-  const size = isDefined(custom?.fontSize) ? custom.fontSize : (isDefined(model?.size) ? model.size : undefined);
-  const weight = isDefined(custom?.fontWeight) ? custom.fontWeight : model?.weight;
-  const family = !isNullOrWhiteSpace(custom?.fontFamily) ? custom.fontFamily : model?.type;
-  const align = isDefined(custom?.textAlign) ? custom.textAlign : model?.align;
+  const color = !isNullOrWhiteSpace(custom.color) ? custom.color : model?.color;
+  const size = isDefined(custom.fontSize) ? custom.fontSize : (isDefined(model?.size) ? model.size : undefined);
+  const weight = isDefined(custom.fontWeight) ? custom.fontWeight : model?.weight;
+  const family = !isNullOrWhiteSpace(custom.fontFamily) ? custom.fontFamily : model?.type;
+  const align = isDefined(custom.textAlign) ? custom.textAlign : model?.align;
 
   if (!isNullOrWhiteSpace(color)) sb.append(`color: ${color};`);
   if (isDefined(size)) sb.append(`font-size: ${addPx(size)};`);

@@ -1,24 +1,17 @@
 import { createStyles } from '@/styles';
 import { IAutocompleteComponentProps } from './interfaces';
-import { backgroundStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, marginStyles, paddingStyles, popupAppearanceStyles, shadowStyles, splitTextProperties } from '../_common/styles/utils';
+import { backgroundStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, marginStyles, paddingStyles, popupAppearanceStyles, shadowStyles } from '../_common/styles/utils';
 import { isDefined } from '@/utils/nullables';
 
 
 export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IAutocompleteComponentProps) => {
   const textAlign = model.font?.align;
 
-  /* The Custom style, split so each half lands where it takes effect: the box half on the popup
-     panel, the text half on every element that renders text — the control's inner elements and the
-     popup's options alike, since each carries its own font rule that would otherwise win. Width is
-     dropped: the popup is sized to the trigger. */
-  const { width: _popupWidth, ...popupCustomStyle } = model.styleCss ?? {};
-  const { text: customTextStyle, box: customBoxStyle } = splitTextProperties(popupCustomStyle);
-
   const configuredAppearance = `
     ${borderStyles(model.border)}
     ${backgroundStyles(model.background)}
     ${shadowStyles(model.shadow)}
-    ${cssPropertiesToString(customBoxStyle)}
+    ${cssPropertiesToString(model.styleCss)}
   `;
 
   const autocomplete = cx('sha-autocomplete-field', css`
@@ -30,7 +23,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IAu
       &&& {
         ${dimensionsStyles(model.dimensions)}
         ${configuredAppearance}
-        ${fontStyles(model.font, customTextStyle)}
+        ${fontStyles(model.font, model.styleCss)}
         display: flex;
         align-items: center;
         overflow: auto;
@@ -55,7 +48,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IAu
         /* The Custom style is merged in here rather than inherited from the root: it is applied
            inline on the root, but these inner elements carry their own font rule at &&&, and a class
            rule on the child beats an inline style inherited from the parent. */
-        ${fontStyles(model.font, customTextStyle)}
+        ${fontStyles(model.font, model.styleCss)}
         background: transparent;
         border: none;
       }
@@ -94,7 +87,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IAu
       &&& {
         ${popupAppearanceStyles(model)}
         ${paddingStyles(model.stylingBoxJson)}
-        ${cssPropertiesToString(customBoxStyle)}
+        ${cssPropertiesToString(model.styleCss)}
       }
 
       /* antd paints the option list on an inner wrapper, which would cover the configured
@@ -116,7 +109,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IAu
       &&& .${prefixCls}-select-item,
       &&& .${prefixCls}-select-item-option-active,
       &&& .${prefixCls}-select-item-option-selected {
-        ${fontStyles(model.font, customTextStyle)}
+        ${fontStyles(model.font, model.styleCss)}
       }
     `);
 

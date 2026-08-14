@@ -1,13 +1,10 @@
-import { dimensionsStyles, fontStyles, splitTextProperties } from '@/designer-components/_common/styles/utils';
+import { dimensionsStyles, fontStyles } from '@/designer-components/_common/styles/utils';
 import { IStyleValue } from '@/providers';
 import { createStyles, sheshaStyles, getTextHoverEffects } from '@/styles';
 
 
 export const useStyles = createStyles(({ css, cx, prefixCls, token }, styleValue: IStyleValue) => {
-  const { width: _popupWidth, ...popupCustomStyle } = styleValue.styleCss ?? {};
-  const { text: customTextStyle } = splitTextProperties(popupCustomStyle);
-  const textAlign = customTextStyle.textAlign ?? styleValue.font?.align;
-
+  const textAlign = styleValue.styleCss?.textAlign ?? styleValue.font?.align;
   const readOnlyModeToggler = "read-only-mode-toggler";
   const readOnlyDisplayFormItem = cx("read-only-display-form-item", css`
         width: 100%;
@@ -74,7 +71,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, styleValue
     overflow: hidden;
     text-overflow: ellipsis;
     ${dimensionsStyles(styleValue.dimensions)}
-    ${fontStyles(styleValue.font, customTextStyle)}
+    ${fontStyles(styleValue.font, styleValue.styleCss)}
     }
 
   `;

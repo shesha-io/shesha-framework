@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 import { IDropdownComponentProps } from '@/designer-components/dropdown/model';
-import { backgroundStyles, borderRadiusStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, marginStyles, paddingStyles, popupAppearanceStyles, shadowStyles, splitBackgroundProperties, splitTextProperties } from '@/designer-components/_common/styles/utils';
+import { backgroundStyles, borderRadiusStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, marginStyles, paddingStyles, popupAppearanceStyles, shadowStyles, splitBackgroundProperties } from '@/designer-components/_common/styles/utils';
 import { isDefined } from '@/utils/nullables';
 import { CSSProperties } from 'react';
 
@@ -46,9 +46,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IDr
   // so it respects the same per-option-colour exclusion the Background panel does.
   const tagCustomStyle = splitBackgroundProperties(model.tagStyleJson);
 
-  const { width: _popupWidth, ...popupCustomStyle } = model.styleCss ?? {};
-  const { text: customTextStyle, box: customBoxStyle } = splitTextProperties(popupCustomStyle);
-
   const configuredAppearance = `
     ${borderStyles(model.border)}
     ${backgroundStyles(model.background)}
@@ -86,7 +83,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IDr
          classNames.content, which this component never does. */
       &.${prefixCls}-select .${prefixCls}-select-selector {
         ${paddingStyles(model.stylingBoxJson)}
-        ${fontStyles(model.font, customTextStyle)}
+        ${fontStyles(model.font, model.styleCss)}
 
         .${prefixCls}-select-selection-overflow {
           display: flex;
@@ -107,7 +104,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IDr
       .${prefixCls}-select-selection-search-input,
       .${prefixCls}-select-selection-item,
       .${prefixCls}-select-selection-placeholder {
-        ${fontStyles(model.font, customTextStyle)}
+        ${fontStyles(model.font, model.styleCss)}
       }
 
       .${prefixCls}-select-selection-item {
@@ -130,7 +127,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IDr
       }
 
       &&&& input {
-        ${fontStyles(model.font, customTextStyle)}
+        ${fontStyles(model.font, model.styleCss)}
       }
 
       &&&& .${prefixCls}-tag {
@@ -201,7 +198,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IDr
       &&& {
         ${popupAppearanceStyles(model)}
         ${paddingStyles(model.stylingBoxJson)}
-        ${cssPropertiesToString(customBoxStyle)}
+        ${cssPropertiesToString(model.styleCss)}
       }
 
       /* antd paints the option list on an inner wrapper, which would cover the configured
@@ -219,7 +216,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IDr
       .${prefixCls}-select-item,
       .${prefixCls}-select-item-option-active,
       .${prefixCls}-select-item-option-selected {
-        ${fontStyles(model.font, customTextStyle)}
+        ${fontStyles(model.font, model.styleCss)}
       }
 
       /* The Custom style, at &&& because it must beat antd where the Font above deliberately does
@@ -230,7 +227,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IDr
       &&& .${prefixCls}-select-item,
       &&& .${prefixCls}-select-item-option-active,
       &&& .${prefixCls}-select-item-option-selected {
-        ${fontStyles(model.font, customTextStyle)}
+        ${fontStyles(model.font, model.styleCss)}
       }
     `);
 
