@@ -21,6 +21,7 @@ using Shesha.FluentMigrator;
 using Shesha.Generators;
 using Shesha.Locks;
 using Shesha.NHibernate.Configuration;
+using Shesha.NHibernate.DbHealth;
 using Shesha.NHibernate.Filters;
 using Shesha.NHibernate.Interceptors;
 using Shesha.NHibernate.Linq;
@@ -37,6 +38,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using NhEnvironment = global::NHibernate.Cfg.Environment;
 
@@ -51,6 +53,8 @@ namespace Shesha.NHibernate
     {
         public const string SkipMigrationsSetting = "skipMigrations";
         public const string SkipBootstrappersSetting = "skipBootstrappers";
+        public const string SkipDbHealthChecksSetting = "skipDbHealthChecks";
+
         private bool _disposed;
 
 
@@ -236,6 +240,8 @@ namespace Shesha.NHibernate
             if (skipMigration && skipBootstrappers) 
             {
                 Logger.Warn($"Database initialization skipped due to configuration (`{SkipMigrationsSetting}` is {skipMigration}, `{SkipBootstrappersSetting}` is {skipBootstrappers})");
+                await CheckDbHealthAsync();
+
                 return;
             }
 
@@ -270,6 +276,7 @@ namespace Shesha.NHibernate
                     ))
                 {
                     Logger.Warn("Database initialized by another application instance");
+                    await CheckDbHealthAsync();
                     return;
                 }
 
@@ -310,9 +317,11 @@ namespace Shesha.NHibernate
                     if (!dbIsReadyForLogging)
                         startupDto = await appStartup.LogApplicationStartAsync(appStartLogArgs);
 
-                    if (!skipBootstrappers) 
+                    await CheckDbHealthAsync();
+
+                    if (!skipBootstrappers)
                     {
-                        if (!appStartup.AllAssembliesStayUnchanged) 
+                        if (!appStartup.AllAssembliesStayUnchanged)
                         {
                             // find all seeders/bootstrappers and run them
                             var bootstrapperTypes = _typeFinder.Find(t => typeof(IBootstrapper).IsAssignableFrom(t) && t.IsClass).ToList();
@@ -343,7 +352,8 @@ namespace Shesha.NHibernate
                                     Logger.Warn($"Run bootstrapper: {bootstrapperType.Name} - finished");
                                 }
                             }
-                        } else
+                        }
+                        else
                             Logger.Warn($"Bootstrappers skipped. Previous startup was full, successful and all assemblies stay unchanged");
                     }
                     else
@@ -366,6 +376,28 @@ namespace Shesha.NHibernate
             Logger.Warn(initializedByCurrentInstance 
                 ? "Database initialization finished" : 
                 "Database initialization skipped (locked by another instance)");
+        }
+
+        private async Task CheckDbHealthAsync() 
+        {
+            var config = Configuration.Modules.ShaNHibernate();
+            var ioc = StaticContext.IocManager;
+            var configuration = ioc.Resolve<IConfiguration>();
+            var skipDbHealthChecks = configuration.GetValue<bool>(SkipDbHealthChecksSetting);
+
+            // Check DB health
+            if (!skipDbHealthChecks)
+            {
+                Logger.Warn("Check DB health...");
+
+                var dbHealthCheckers = ioc.ResolveAll<IDbHealthChecker>();
+                foreach (var dbHealthChecker in dbHealthCheckers)
+                    await dbHealthChecker.CheckHealthAsync(new CheckHealthArguments { DatabaseType = config.DatabaseType });
+
+                Logger.Warn("Check DB health - finished");
+            }
+            else
+                Logger.Warn($"DB health checks skipped due to configuration (`{SkipDbHealthChecksSetting}` is {skipDbHealthChecks})");
         }
 
         private List<Type> SortByDependencies(List<Type> types)
