@@ -504,12 +504,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             display: flex;
             justify-content: center;
             align-items: center;
-            height: -webkit-fill-available !important;
+            ${rowHeight ? `height: ${rowHeight};` : 'height: auto;'}
             border-top: 0.5px solid rgb(220, 220, 220) !important;
             border-bottom: 0.5px solid rgb(218, 218, 218) !important;
-            
+
             .${shaCrudCell} {
-              height: -webkit-fill-available !important;
+              height: auto;
 
               .sha-link {
                 .${iconPrefixCls} {
