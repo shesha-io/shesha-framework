@@ -1,7 +1,7 @@
 import { IStyleValue } from "@/providers/form/models";
 import { useSettingValue } from '@/providers/settings';
 import { ISettingIdentifier } from '@/providers/settings/models';
-import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { useMemo } from 'react';
 import { TextType } from './interfaces';
 
@@ -28,7 +28,8 @@ export const TEXT_TYPE_FORMATS: Partial<Record<TextType, ITextTypeFormatConfig>>
   },
   phone: {
     // Lenient: leading "+", digits, spaces, dashes, dots and parentheses, 7-20 chars.
-    pattern: /^\+?[0-9\s\-().]{7,20}$/,
+    // The lookahead requires at least one digit, so separators alone (e.g. "-------") are rejected.
+    pattern: /^\+?(?=.*[0-9])[0-9\s\-().]{7,20}$/,
     message: 'Please enter a valid phone number',
     inputType: 'tel',
     autoComplete: 'tel',
@@ -50,13 +51,15 @@ export const parseGroupLengths = (groups: string | undefined): number[] => {
   if (isNullOrWhiteSpace(groups)) return [];
   return groups
     .split(',')
-    .map((part) => parseInt(part.trim(), 10))
+    .map((part) => part.trim())
+    .filter((part) => /^\d+$/.test(part))
+    .map((part) => parseInt(part, 10))
     .filter((length) => Number.isFinite(length) && length > 0);
 };
 
 /** Removes every occurrence of `separator` from `value`, leaving only the raw characters. */
 export const stripSeparator = (value: string, separator: string): string => {
-  if (isNullOrWhiteSpace(value) || isNullOrWhiteSpace(separator)) return value;
+  if (isNullOrWhiteSpace(value) || !isDefined(separator) || separator === '') return value;
   const escapedSeparator = separator.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   return value.split(new RegExp(escapedSeparator, 'g')).join('');
 };

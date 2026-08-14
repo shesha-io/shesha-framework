@@ -51,7 +51,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                       { type: 'textField', propertyName: 'formatGroups', label: 'Group lengths', size: 'small', jsSetting: true, tooltip: 'Comma-separated lengths of each group, e.g. 3,4' },
                       { type: 'textField', propertyName: 'formatSeparator', label: 'Separator', size: 'small', jsSetting: true, tooltip: 'Character(s) displayed between groups, e.g. -. Visual only, not included in the stored value.' },
                     ],
-                    visibleJs: 'return data?.enableFormatting === true;',
+                    visibleJs: 'return getSettingValue(data?.enableFormatting) === true;',
                   }),
                 undefined, 'return getSettingValue(data?.textType) === "text";')
                 .stdCollapsiblePanel('Validations', (fb) => fb
