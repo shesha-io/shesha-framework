@@ -303,19 +303,24 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
     return this;
   };
 
+  stdFontControls = (propertyName: string = 'font', exclude?: string[], panelTitle: string = 'Font', showSeparator: boolean = true): FormBuilder => {
+    if (showSeparator)
+      this.addSectionSeparator({ label: panelTitle, containerStylingBoxJson: { _type: 'styleBox', marginBottom: 8 } });
+    this.addSettingsInputRow({
+      inline: true,
+      propertyName: propertyName,
+      inputs: excludeInputs([
+        { type: 'dropdown', label: 'Family', propertyName: `${propertyName}.type`, hideLabel: true, dropdownOptions: fontTypes },
+        { type: 'numberField', label: 'Size', propertyName: `${propertyName}.size`, hideLabel: true, width: 50 },
+        { type: 'dropdown', label: 'Weight', propertyName: `${propertyName}.weight`, hideLabel: true, dropdownOptions: fontWeightsOptions, width: 48, tooltip: 'Controls text thickness (light, normal, bold, etc.)' },
+        { type: 'colorPicker', label: 'Color', hideLabel: true, propertyName: `${propertyName}.color` },
+        { type: 'dropdown', label: 'Align', propertyName: `${propertyName}.align`, hideLabel: true, width: 48, dropdownOptions: textAlignOptions },
+      ], exclude) });
+    return this;
+  };
+
   stdFontPanel = (propertyName: string = 'font', exclude?: string[], panelTitle: string = 'Font'): FormBuilder => {
-    this.stdCollapsiblePanel(panelTitle, (f) => f
-      .addSettingsInputRow({
-        inline: true,
-        propertyName: propertyName,
-        inputs: excludeInputs([
-          { type: 'dropdown', label: 'Family', propertyName: `${propertyName}.type`, hideLabel: true, dropdownOptions: fontTypes },
-          { type: 'numberField', label: 'Size', propertyName: `${propertyName}.size`, hideLabel: true, width: 50 },
-          { type: 'dropdown', label: 'Weight', propertyName: `${propertyName}.weight`, hideLabel: true, dropdownOptions: fontWeightsOptions, width: 48, tooltip: 'Controls text thickness (light, normal, bold, etc.)' },
-          { type: 'colorPicker', label: 'Color', hideLabel: true, propertyName: `${propertyName}.color` },
-          { type: 'dropdown', label: 'Align', propertyName: `${propertyName}.align`, hideLabel: true, width: 48, dropdownOptions: textAlignOptions },
-        ], exclude),
-      }));
+    this.stdCollapsiblePanel(panelTitle, (f) => f.stdFontControls(propertyName, exclude, panelTitle, false));
     return this;
   };
 

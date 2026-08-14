@@ -117,7 +117,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
       size: model.size,
       disabled: model.disabled === true,
       spellCheck: model.spellCheck ?? false,
-      ...(isDefined(model.styleJson) ? { style: model.styleJson } : {}),
+      ...(isDefined(model.styleCss) ? { style: model.styleCss } : {}),
       ...(isDefined(formatConfig) ? { type: formatConfig.inputType, autoComplete: formatConfig.autoComplete } : {}),
     };
     if (model.border?.hideBorder === true)
@@ -147,7 +147,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
               <ReadOnlyDisplayFormItem
                 value={model.textType === 'password' && !isNullOrWhiteSpace(value) ? ''.padStart(value.length, '•') : displayValue}
                 enableFullStyle={model.enableStyleOnReadonly}
-                style={model.styleJson}
+                style={model.styleCss}
                 styleValue={model}
               />
             )

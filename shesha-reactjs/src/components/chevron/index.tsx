@@ -65,7 +65,7 @@ export const ChevronControl: FC<IChevronControlProps> = (props) => {
             key={uuid}
             {...props}
             icon={showIcons === true ? props.icon : undefined}
-            styleJson={{ ...newStyles, ...stylingBoxCSS, alignContent: fontStyles.textAlign, justifyContent: fontStyles.textAlign }}
+            styleCss={{ ...newStyles, ...stylingBoxCSS, alignContent: fontStyles.textAlign, justifyContent: fontStyles.textAlign }}
             buttonType="text"
             label={props.item}
           />

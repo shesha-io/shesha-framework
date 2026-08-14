@@ -25,6 +25,7 @@ export interface IKeyInformationBarComponentProps extends IConfigurableFormCompo
   columns?: KeyInfomationBarItemProps[] | undefined;
   readOnly?: boolean | undefined;
   style?: string | undefined;
+  itemsStyle?: string | undefined;
   stylingBox?: string | undefined;
   backgroundColor?: string | undefined;
 }

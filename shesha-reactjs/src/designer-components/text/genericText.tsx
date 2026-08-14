@@ -46,8 +46,8 @@ export const GenericText: FC<PropsWithChildren<ITextComponentProps & { additiona
     keyboard: model.keyboard ?? false,
     italic: model.italic ?? false,
     ...(chosenType ? { type: chosenType } : {}),
-    style: model.styleJson,
-  }), [model.code, model.copyable, model.delete, model.ellipsis, model.mark, model.underline, model.keyboard, model.italic, model.styleJson, chosenType]);
+    style: model.styleCss,
+  }), [model.code, model.copyable, model.delete, model.ellipsis, model.mark, model.underline, model.keyboard, model.italic, model.styleCss, chosenType]);
 
   const titleProps: TitleProps = useMemo(() => ({ ...baseProps, style: baseProps.style ?? {}, level: level > 0 ? level as StrongLevelType : 5 }), [baseProps, level]);
 
@@ -58,5 +58,5 @@ export const GenericText: FC<PropsWithChildren<ITextComponentProps & { additiona
 
   return level > 0
     ? <Title {...titleProps} className={className} {...model.additionalDomProperties}>{children}</Title>
-    : <Paragraph {...baseProps} className={className} style={model.styleJson ?? EMPTY_STYLE} {...model.additionalDomProperties}>{children}</Paragraph>;
+    : <Paragraph {...baseProps} className={className} style={model.styleCss ?? EMPTY_STYLE} {...model.additionalDomProperties}>{children}</Paragraph>;
 };

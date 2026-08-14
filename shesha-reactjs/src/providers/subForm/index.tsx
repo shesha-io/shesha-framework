@@ -115,6 +115,9 @@ const describeDynamicFormLoadingError = (
     : new Error(`The '${formTypeName}' view of '${entityTypeName}' points to '${resolvedName}', which could not be loaded.`);
 };
 
+const isSameLoadingError = (current: IFormLoadingState['error'], next: Error | null): boolean =>
+  current instanceof Error && next instanceof Error ? current.message === next.message : current === next;
+
 const EMPTY_OBJECT = {};
 
 type OnCreatedFunction = (
@@ -205,8 +208,10 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   );
   const prevRenderedEntityTypeForm = useRef<IRenderedDynamicForm | null>(null);
 
-  // the "no entity type" branch below dispatches new state on every call, without this guard it loops
+  // the "no entity type" branch below dispatches new state on every call, without this guard it loops.
+  // the api mode decides what that branch reports, so a change of it must let the branch run again
   const clearedForMissingEntityType = useRef(false);
+  const clearedForApiMode = useRef<ISubFormProviderProps['apiMode']>(undefined);
 
   // requests of the dynamic form resolution and of the form markup are cancelled by incrementing these counters,
   // a response of the outdated request must not overwrite the state of the actual one
@@ -256,6 +261,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     entityTypeFormCache.current = {};
     clearedForMissingEntityType.current = false;
     formResolutionRequestId.current++;
+    resolutionInFlightKey.current = null;
     markupRequestId.current++;
     setFormConfig({ formId: formSelectionMode === 'dynamic' ? undefined : formId, lazy: true });
     // only react to mode changes here; formId changes are handled by the sync effect above
@@ -275,6 +281,10 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
       }),
     );
   }, [designerComponents]);
+
+  const setLoadingError = useCallback((error: Error | null): void => {
+    setFormLoadingState((prev) => !prev.isLoading && isSameLoadingError(prev.error, error) ? prev : { isLoading: false, error });
+  }, []);
 
   // drops the form resolved for the previous entity/form type, it must not stay rendered when the current one fails to resolve
   const clearResolvedForm = useCallback((): void => {
@@ -311,12 +321,10 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
             setFormLoadingState({ isLoading: false, error: null });
             prevRenderedEntityTypeForm.current = currentForm;
           } else if (isNullOrWhiteSpace(formType)) {
-            // note: throwing here unmounts the whole sub-form and the user has no way to select the form type
+            // note: throwing here unmounts the whole sub-form and the user has no way to select the form type.
+            // this branch keeps no rendered identity, so it re-runs until the form type is set and must stay idempotent
             clearResolvedForm();
-            setFormLoadingState({
-              isLoading: false,
-              error: new Error("'Form Type' is required when 'Form Selection Mode' = 'Dynamic'"),
-            });
+            setLoadingError(new Error("'Form Type' is required when 'Form Selection Mode' = 'Dynamic'"));
           } else if (resolutionInFlightKey.current !== getDynamicFormCacheKey(internalEntityType, formType)) {
             // the counters must only advance when a request actually starts - bumping them on a pass that
             // resolves nothing discards the response already in flight, and nothing replaces it
@@ -327,7 +335,8 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
             setFormLoadingState({ isLoading: true, error: null });
             getEntityFormIdAsync(internalEntityType, formType)
               .finally(() => {
-                if (resolutionInFlightKey.current === inFlightKey)
+                // an invalidated request no longer owns the key, the replacement request that took it must keep it
+                if (formResolutionRequestId.current === requestId && resolutionInFlightKey.current === inFlightKey)
                   resolutionInFlightKey.current = null;
               })
               .then((formid) => {
@@ -350,12 +359,19 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
               });
           }
         }
-      } else if (!clearedForMissingEntityType.current) {
+      } else if (!clearedForMissingEntityType.current || clearedForApiMode.current !== props.apiMode) {
         // there is nothing to render without an entity type, a pending resolution must not bring the previous form back
         clearedForMissingEntityType.current = true;
+        clearedForApiMode.current = props.apiMode;
         formResolutionRequestId.current++;
+        // the discarded request keeps the key otherwise, and the same entity type coming back resolves nothing
+        resolutionInFlightKey.current = null;
         clearResolvedForm();
-        setFormLoadingState((prev) => prev.isLoading || prev.error !== null ? { isLoading: false, error: null } : prev);
+        // note : in the `entityName` mode the entity type is part of the configuration, so its absence is the reason
+        // nothing renders and must be stated. In the other modes it comes from the value and isn't known yet
+        setLoadingError(props.apiMode === 'entityName'
+          ? new Error("'Entity Type' is required when 'Form Selection Mode' = 'Dynamic'. Bind the sub form to an entity reference property, or set the entity type explicitly.")
+          : null);
         setMarkup({
           hasFetchedConfig: false,
           id: undefined,
@@ -368,7 +384,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         prevRenderedEntityTypeForm.current = null;
       }
     }
-  }, [clearResolvedForm, formSelectionMode, formType, getEntityFormIdAsync, internalEntityType, setMarkup, value]);
+  }, [clearResolvedForm, formSelectionMode, formType, getEntityFormIdAsync, internalEntityType, props.apiMode, setLoadingError, setMarkup, value]);
 
   /**
    * Get final query params taking into account all settings

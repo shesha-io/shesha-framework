@@ -51,7 +51,7 @@ export const FormComponentModelPreparer: FC<FormComponentPrepareModelProps> = ({
       return sourceComponentModel;
 
     // Default styles + Theme component styles
-    const defStyle: IStyleValue = toolboxComponent?.getDefaultStyles?.() ?? { styleJson: {} };
+    const defStyle: IStyleValue = toolboxComponent?.getDefaultStyles?.() ?? { styleCss: {} };
     const themeDefStyle: IStyleValue = isDefined(theme.components)
       ? deepMergeValues(defStyle, theme.components[sourceComponentModel.type] as IStyleValue, deepMergeSkipUndefinedFunc)
       : defStyle;
@@ -89,7 +89,8 @@ export const FormComponentModelPreparer: FC<FormComponentPrepareModelProps> = ({
 
   const { isInput = false, isOutput = false } = toolboxComponent ?? {};
 
-  const styleJson = useActualContextExecution(unwrappedModel.style, undefined, {}); // use default style if empty or error
+  const styleCss = useActualContextExecution(unwrappedModel.style, undefined, unwrappedModel.styleCss ?? {}); // use default style if empty or error
+  const wrapperStyleCss = useActualContextExecution(unwrappedModel.wrapperStyle, undefined, unwrappedModel.wrapperStyleCss ?? {}); // use default style if empty or error
 
   const allowInherit = toolboxComponent?.allowInherit === true;
   const readOnly = useMemo(() =>
@@ -111,9 +112,9 @@ export const FormComponentModelPreparer: FC<FormComponentPrepareModelProps> = ({
 
   const propertyName = isInput || isOutput ? unwrappedModel.propertyName : undefined;
 
-  const actualModel = useMemo(() => {
-    return { ...unwrappedModel, styleJson, readOnly, disabled, hidden, propertyName };
-  }, [hidden, propertyName, readOnly, disabled, styleJson, unwrappedModel]);
+  const actualModel = useMemo((): UnwrapCodeEvaluators<IConfigurableFormComponent> => {
+    return { ...unwrappedModel, styleCss, wrapperStyleCss, readOnly, disabled, hidden, propertyName };
+  }, [hidden, propertyName, readOnly, disabled, styleCss, wrapperStyleCss, unwrappedModel]);
 
   const actualApiModel = useDeepCompareMemo(() => deepMergeValues(actualModel, apiModel), [actualModel, apiModel]);
 
@@ -145,7 +146,7 @@ export const FormComponentModelPreparer: FC<FormComponentPrepareModelProps> = ({
     };
   }, [modelMetadata, actualApiModel.propertyName]);
 
-  const componentModel = useDeepCompareMemo(() => {
+  const componentModel = useDeepCompareMemo((): UnwrapCodeEvaluators<IConfigurableFormComponent> => {
     return toolboxComponent && propMetadata
       ? updateComponentModelFromMetadata(toolboxComponent, actualApiModel, propMetadata) as UnwrapCodeEvaluators<IConfigurableFormComponent>
       : actualApiModel;

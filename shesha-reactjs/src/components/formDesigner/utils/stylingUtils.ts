@@ -76,7 +76,7 @@ export const getFullSizeWrapperStyle = (model: IStyleValue): IStyleValue => ({
  * This allows to keep the margins the same as in the "live" forms.
  * If the component's margin is less than the designer's padding,
  * then the padding - margin difference is applied so that the component always has a minimum padding in designer mode. */
-const getDesignerPadding = (value: string | number | undefined, designerValue: string | number | undefined): string | number | undefined => {
+export const getDesignerPadding = (value: string | number | undefined, designerValue: string | number | undefined): string | number | undefined => {
   const stringValue = isDefined(value) ? String(value) : undefined;
   const designerStringValue = isDefined(designerValue) ? String(designerValue) : undefined;
   if (isNullOrWhiteSpace(stringValue) || isNullOrWhiteSpace(designerStringValue)) return designerValue;
