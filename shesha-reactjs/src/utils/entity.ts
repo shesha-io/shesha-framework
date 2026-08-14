@@ -153,15 +153,17 @@ export const useEntityDisplayText = (props: IUseEntityDisplayTextProps): string 
  * @returns The value of the 'id' property if it exists, otherwise undefined.
  */
 export const getIdOrUndefined = (val: unknown): string | undefined => {
-  return isDefined(val)
-    ? typeof val === 'string'
-      ? !isNullOrWhiteSpace(val)
-        ? val
-        : undefined
-      : isEntityReferenceId(val)
-        ? val.id
-        : undefined
-    : undefined;
+  if (!isDefined(val))
+    return undefined;
+  if (typeof val === 'string')
+    return !isNullOrWhiteSpace(val) ? val : undefined;
+  // note: any object with a string id qualifies, `_className` must not be required here (see isEntityReferenceId),
+  // sources like form arguments and query params carry a plain { id } only
+  if (typeof val !== 'object' || Array.isArray(val) || !('id' in val))
+    return undefined;
+
+  const id = val.id;
+  return typeof id === 'string' && !isNullOrWhiteSpace(id) ? id : undefined;
 };
 
 /**
