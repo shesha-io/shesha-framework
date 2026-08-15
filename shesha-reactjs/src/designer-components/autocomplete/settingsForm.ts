@@ -187,6 +187,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     labelTitle: 'Param',
                     valueName: 'value',
                     valueTitle: 'Value',
+                    valueEditor: 'expression',
                     mode: 'dialog',
                     jsSetting: true,
                     version: 2,
