@@ -193,6 +193,7 @@ export type ConfigurableFormComponentTypes =
   'dropdown' |
   'textField' |
   'textField' |
+  'phoneNumber' |
   'textArea' |
   'iconPicker' |
   'colorPicker' |
