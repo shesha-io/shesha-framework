@@ -1,5 +1,5 @@
 import SectionSeparator from '@/components/sectionSeparator';
-import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { getBooleanPropertyOrUndefined } from '@/utils/object';
 import { LineOutlined } from '@ant-design/icons';
@@ -108,7 +108,7 @@ const SectionSeparatorComponent: SectionSeparatorComponentDefinition = {
           mobile: { ...prev.mobile, ...getNewStyles(prev.mobile) },
         };
       })
-      .add<ISectionSeparatorComponentProps>(7, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev))),
+      .add<ISectionSeparatorComponentProps>(7, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
 };
 
 export default SectionSeparatorComponent;

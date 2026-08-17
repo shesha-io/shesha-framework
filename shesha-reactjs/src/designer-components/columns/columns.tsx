@@ -1,5 +1,5 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
-import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IFormComponentContainer } from '@/providers';
 import ParentProvider from '@/providers/parentProvider/index';
@@ -107,7 +107,7 @@ const ColumnsComponent: ColumnsComponentDefinition = {
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
     .add<IColumnsComponentProps>(5, (prev, ctx) => ctx.isNew === true ? prev : { ...migratePrevStyles(prev, defaultStyles()) })
-    .add<IColumnsComponentProps>(6, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev))),
+    .add<IColumnsComponentProps>(6, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
   settingsFormMarkup: getSettings,
   customContainerNames: ['columns'],
   getContainers: (model) => {

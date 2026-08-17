@@ -1,6 +1,6 @@
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { IInputStyles } from '@/providers';
 import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import ParentProvider from '@/providers/parentProvider/index';
@@ -14,6 +14,7 @@ import { defaultStyles } from './utils';
 import { getFirstNonEmptyStringPropertyOrUndefined, getStringPropertyOrUndefined } from '@/utils/object';
 import { useStyles } from './styles';
 import classNames from 'classnames';
+import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 
 const LinkComponent: LinkComponentDefinition = {
   allowInherit: true,
@@ -105,7 +106,8 @@ const LinkComponent: LinkComponentDefinition = {
       const styles: IInputStyles = { style: prev.style };
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-    .add<ILinkComponentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+    .add<ILinkComponentProps>(5, (prev, ctx) => ctx.isNew === true ? prev : { ...migratePrevStyles(prev, defaultStyles()) })
+    .add<ILinkComponentProps>(6, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
 };
 
 export default LinkComponent;

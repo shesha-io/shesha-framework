@@ -7,7 +7,7 @@ import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { IInputStyles, UnwrapCodeEvaluators } from '@/providers';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { ITextFieldComponentProps, TextFieldComponentDefinition, TextType } from './interfaces';
-import { migrateCustomFunctions, migratePropertyName, migrateReadOnly, migrateHiddenToVisible } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly, migrateHiddenToVisible, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
@@ -229,7 +229,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
     .add<ITextFieldComponentProps>(6, (prev, context) => context.isNew === true
       ? prev
       : { ...migratePrevStyles(prev, defaultStyles()) })
-    .add<ITextFieldComponentProps>(7, (prev) => migrateHiddenToVisible(prev))
+    .add<ITextFieldComponentProps>(7, (prev) => migrateHiddenToVisible(migrateStylingBoxToJson(prev)))
     .add<ITextFieldComponentProps>(8, (prev) => migratePermissionsToVisiblePermissions(prev)),
   linkToModelMetadata: (model, metadata): ITextFieldComponentProps => (
     { ...model, textType: DATA_FORMAT_TO_TEXT_TYPE[metadata.dataFormat ?? ''] ?? 'text' }
