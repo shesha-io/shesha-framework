@@ -32,7 +32,7 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
   const urlData = useUrlDataSource(model);
 
   const options = useMemo<CheckboxOptionType[]>(() => {
-    const list = getDataSourceList(model.dataSourceType, items, refList?.items, urlData);
+    const list = getDataSourceList(model.dataSourceType ?? 'values', items, refList?.items, urlData);
     return list.map<CheckboxOptionType>((item) => (item.id ? item : { ...item, id: nanoid(), key: nanoid() }));
   }, [model.dataSourceType, items, refList?.items, urlData]);
 

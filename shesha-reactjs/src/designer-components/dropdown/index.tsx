@@ -18,7 +18,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { migratePrevStyles, migrateStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles, defaultTagStyles } from './utils';
-import { useStyles } from './styles';
+import { useStyles } from '@/components/dropdown/styles';
 import { getBooleanPropertyOrUndefined } from '@/utils/object';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { useComponentApi } from '@/providers/componentApi/provider';
@@ -73,6 +73,7 @@ const DropdownComponent: DropdownComponentDefinition = {
             <Dropdown
               {...modelWithoutStyle}
               className={styles.dropdown}
+              popupClassName={styles.popup}
               // Custom style is passed through as-is; everything else is emitted as CSS by `useStyles`
               // so unset properties keep cascading from the theme.
               {...(isDefined(model.styleCss) ? { style: model.styleCss } : {})}

@@ -75,6 +75,38 @@ export const splitBackgroundProperties = (style: CSSProperties | undefined): { b
   return { background: background as CSSProperties, rest: rest as CSSProperties };
 };
 
+/** Custom-style properties that describe text rather than the box that contains it. */
+const TEXT_STYLE_PROPERTIES = new Set([
+  'color', 'font', 'fontFamily', 'fontSize', 'fontWeight', 'fontStyle', 'fontVariant', 'fontStretch',
+  'lineHeight', 'letterSpacing', 'wordSpacing', 'textAlign', 'textDecoration', 'textTransform',
+  'textShadow', 'textIndent', 'whiteSpace', 'wordBreak', 'textOverflow', 'direction',
+]);
+
+/**
+ * Splits a custom style into the properties that style text and everything else.
+ *
+ * A dropdown popup needs the two halves on different elements. The box half (background, border,
+ * padding, shadow) belongs on the panel, but the text half has to be restated on each option: antd
+ * sets colour and font on the option element itself, so a rule on an ancestor — or an inline style
+ * on the popup root — is overridden rather than inherited, and the user's colour and font size
+ * silently do nothing.
+ *
+ * Dimensions are deliberately in neither half: callers drop them before splitting, since a popup is
+ * sized to its trigger or its content.
+ */
+export const splitTextProperties = (style: CSSProperties | undefined): { text: CSSProperties; box: CSSProperties } => {
+  // Plain records for the same reason as `splitBackgroundProperties` above: `CSSProperties` has no
+  // index signature and its key/value union cannot be correlated when read back.
+  const text: Record<string, unknown> = {};
+  const box: Record<string, unknown> = {};
+  if (!isDefined(style)) return { text: {}, box: {} };
+  Object.entries(style).forEach(([key, value]) => {
+    const target = TEXT_STYLE_PROPERTIES.has(key) ? text : box;
+    target[key] = value;
+  });
+  return { text: text as CSSProperties, box: box as CSSProperties };
+};
+
 export const getStyleValueFromModel = (model: IConfigurableFormComponent): IStyleValue => {
   return {
     border: model.border,
@@ -214,13 +246,50 @@ export const paddingValue = (model: StyleBoxValue | undefined): string => {
   return sb.join(' ');
 };
 
-export const fontStyles = (model: IFontValue | undefined): string => {
-  if (!model) return '';
+export const fontStyles = (model: IFontValue | undefined, customStyle?: CSSProperties | undefined): string => {
+  /* An explicit Custom style wins over the model's own `styleCss`, so a caller that has already
+     narrowed it — stripping `textAlign` for a calendar cell, say — keeps that narrowing. Either way
+     only the text properties are used, so a full Custom style can be handed over as-is. */
+  const custom = splitTextProperties(customStyle).text;
   const sb = new StringBuilder();
-  if (!isNullOrWhiteSpace(model.color)) sb.append(`color: ${model.color};`);
-  if (isDefined(model.size)) sb.append(`font-size: ${addPx(model.size)};`);
-  if (!isNullOrWhiteSpace(model.weight)) sb.append(`font-weight: ${model.weight};`);
-  if (!isNullOrWhiteSpace(model.type)) sb.append(`font-family: ${model.type};`);
-  if (isDefined(model.align)) sb.append(`text-align: ${model.align};`);
+
+  /* Read from the Custom style first, falling back to the Font model. `fontSize` is passed through
+     `addPx` on the model side only: a Custom style is authored as CSS, where a bare number is either
+     already a string with units or a unitless number React itself serialises with `px`. */
+  const color = !isNullOrWhiteSpace(custom.color) ? custom.color : model?.color;
+  const size = isDefined(custom.fontSize) ? custom.fontSize : (isDefined(model?.size) ? model.size : undefined);
+  const weight = isDefined(custom.fontWeight) ? custom.fontWeight : model?.weight;
+  const family = !isNullOrWhiteSpace(custom.fontFamily) ? custom.fontFamily : model?.type;
+  const align = isDefined(custom.textAlign) ? custom.textAlign : model?.align;
+
+  if (!isNullOrWhiteSpace(color)) sb.append(`color: ${color};`);
+  if (isDefined(size)) sb.append(`font-size: ${addPx(size)};`);
+  if (isDefined(weight) && `${weight}` !== '') sb.append(`font-weight: ${weight};`);
+  if (!isNullOrWhiteSpace(family)) sb.append(`font-family: ${family};`);
+  if (isDefined(align)) sb.append(`text-align: ${align};`);
   return sb.build();
 };
+
+/**
+ * Emits the appearance a dropdown popup shares with the input that opens it: background and border.
+ *
+ * Shared by every component that opens a floating list (a select popup, a picker panel, a suggestion
+ * list) so they stay consistent rather than each re-deriving the set.
+ *
+ * The configured **shadow is deliberately excluded** — popups keep antd's own elevation. On the input
+ * a shadow is decorative, but on a panel that overlays the page it is structural, and a configured
+ * offset reaches outside the popup's own footprint: `offsetY: -22` paints a band 22px up over the
+ * field above it. Elevation is also the one part of a popup users expect to look native, so it is
+ * left to the theme. `shadow` is absent from the parameter type on purpose, so a caller cannot pass
+ * one and quietly get nothing.
+ *
+ * Padding is likewise not included: it belongs on the popup root for a list (insetting the whole
+ * panel) but on the item for a grid-like panel, so each caller applies it where it fits.
+ */
+export const popupAppearanceStyles = (model: {
+  background?: IBackgroundValue | undefined;
+  border?: IBorderValue | undefined;
+}): string => `
+  ${borderStyles(model.border)}
+  ${backgroundStyles(model.background)}
+`;

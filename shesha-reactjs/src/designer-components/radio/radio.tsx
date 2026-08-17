@@ -19,9 +19,10 @@ import { migratePermissionsToVisiblePermissions } from '../_common-migrations/mi
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migrateStyles } from '../_common-migrations/migrateStyles';
 import { getSettings } from './settingsForm';
-import { IRadioComponentProps, RadioComponentDefinition } from './interfaces';
+import { DIRECTION_TYPE, DirectionType, IRadioComponentProps, RadioComponentDefinition } from './interfaces';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
-import { DataSourceType } from '../dropdown/model';
+import { DATA_SOURCE_TYPES, DataSourceType } from '../dropdown/model';
+import { getStringEnumOrDefault } from '@/utils/object';
 import { getNumberOrUndefined } from '@/utils/string';
 import { defaultStyles } from './utils';
 import { useStyles } from './styles';
@@ -131,25 +132,26 @@ const RadioComponent: RadioComponentDefinition = {
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   validateModel: (model, addModelError) => {
-    if (model.dataSourceType === 'referenceList' && !isDefined(model.referenceListId))
+    const dataSourceType = model.dataSourceType ?? 'values';
+    if (dataSourceType === 'referenceList' && !isDefined(model.referenceListId))
       addModelError('referenceListId', 'Select `Reference List` on the settings panel');
-    if (model.dataSourceType === 'values' && (model.items ?? []).length === 0)
+    if (dataSourceType === 'values' && (model.items ?? []).length === 0)
       addModelError('items', 'Add `Items` on the settings panel, or select a different `Data Source Type`');
-    if (model.dataSourceType === 'url' && isNullOrWhiteSpace(model.dataSourceUrl))
+    if (dataSourceType === 'url' && isNullOrWhiteSpace(model.dataSourceUrl))
       addModelError('dataSourceUrl', 'Enter a `Data Source URL` on the settings panel');
   },
   getDefaultStyles: () => defaultStyles(),
   migrator: (m) =>
     m
-      .add<IRadioComponentProps>(0, (prev) => ({
-        ...prev,
-        dataSourceType: "dataSourceType" in prev && typeof (prev.dataSourceType) === 'string'
-          ? (prev.dataSourceType as DataSourceType)
-          : 'values',
-        direction: "direction" in prev && typeof (prev.direction) === 'string'
-          ? prev.direction as "horizontal" | "vertical"
-          : 'horizontal',
-      }))
+      .add<IRadioComponentProps>(0, (prev, context) => {
+        const configured = getStringEnumOrDefault<DataSourceType>(prev, "dataSourceType", DATA_SOURCE_TYPES);
+
+        return {
+          ...prev,
+          dataSourceType: configured ?? (context.isNew === true ? undefined : 'values'),
+          direction: getStringEnumOrDefault<DirectionType>(prev, "direction", DIRECTION_TYPE) ?? 'horizontal',
+        };
+      })
       .add<IRadioComponentProps>(1, (prev) => {
         return {
           ...prev,

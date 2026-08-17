@@ -7,7 +7,7 @@ import { Select, Spin, type GetRef, SelectProps } from 'antd';
 import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import ReadOnlyDisplayFormItem from '../readOnlyDisplayFormItem';
-import { DisplayValueFunc, FilterSelectedFunc, getColumns, IAutocompleteBaseProps, ISelectOption, KayValueFunc, OutcomeValueFunc } from './models';
+import { AutocompleteSelectRef, DisplayValueFunc, FilterSelectedFunc, getColumns, IAutocompleteBaseProps, ISelectOption, KayValueFunc, OutcomeValueFunc } from './models';
 import { useStyles } from './style';
 import { createOutcomeValueFunc } from './utils';
 import { IRepository } from '@/providers/dataTable/repository/interfaces';
@@ -20,6 +20,18 @@ import { combineExpressionsWithAnd } from '@/utils/jsonLogic';
 import { rowToOption } from './renderUtils';
 
 type SelectRef = GetRef<typeof Select>; // Resolves to BaseSelectRef
+
+/**
+ * The component keeps its own ref (to blur the select after a pick) while the caller may pass one of
+ * its own (the form component uses it to implement the API `focus()` method), so both have to be
+ * populated from the single `ref` antd accepts.
+ */
+const assignRef = (ref: React.Ref<AutocompleteSelectRef> | undefined, instance: SelectRef | null): void => {
+  if (typeof ref === 'function')
+    ref(instance);
+  else if (isDefined(ref))
+    (ref as React.RefObject<SelectRef | null>).current = instance;
+};
 
 export type AutocompleteWithRepositoryProps<TValue = unknown> = IAutocompleteBaseProps<TValue> & {
   repository: IRepository;
@@ -50,6 +62,7 @@ export const AutocompleteWithRepository = <TValue = unknown>(props: Autocomplete
   const {
     allowClear = true,
     style = {},
+    styleValue,
     allowFreeText = false,
     readOnly = false,
     keyPropName = "", // required, change type
@@ -62,7 +75,7 @@ export const AutocompleteWithRepository = <TValue = unknown>(props: Autocomplete
     sorting,
   } = props;
 
-  const { styles } = useStyles({ style });
+  const { styles, cx } = useStyles(styleValue);
 
   const selectRef = useRef<SelectRef>(null);
 
@@ -348,7 +361,8 @@ export const AutocompleteWithRepository = <TValue = unknown>(props: Autocomplete
       <ReadOnlyDisplayFormItem
         value={readonlyValue}
         type={props.mode === 'multiple' ? 'dropdownMultiple' : 'dropdown'}
-        style={style}
+        styleValue={props.styleValue}
+        enableFullStyle={props.enableStyleOnReadonly}
         quickviewEnabled={props.quickviewEnabled}
         quickviewFormPath={props.quickviewFormPath}
         quickviewDisplayPropertyName={!isNullOrWhiteSpace(props.quickviewDisplayPropertyName) ? props.quickviewDisplayPropertyName : props.displayPropName}
@@ -358,17 +372,19 @@ export const AutocompleteWithRepository = <TValue = unknown>(props: Autocomplete
     );
   }
 
-  const { width, ...restOfDropdownStyles } = style;
-
   return (
     <Select<string[], ISelectOption>
       value={keys}
-      className={styles.autocomplete}
-      styles={{ popup: { root: restOfDropdownStyles } }}
-      showSearch={{
-        filterOption: false,
-        onSearch: handleSearch,
-      }}
+      className={cx(styles.autocomplete, props.className)}
+      // The Custom style reaches the popup through this class, not an inline `styles.popup.root`:
+      // its text half has to land on each option, which an inline style on the root cannot do.
+      {...(isDefined(props.popupClassName) ? { classNames: { popup: { root: props.popupClassName } } } : {})}
+      showSearch={props.disableSearch === true
+        ? false
+        : {
+          filterOption: false,
+          onSearch: handleSearch,
+        }}
       notFoundContent={props.notFoundContent}
       defaultActiveFirstOption={false}
 
@@ -379,11 +395,15 @@ export const AutocompleteWithRepository = <TValue = unknown>(props: Autocomplete
       allowClear={allowClear}
       loading={listLoadingState === "loading"}
       placeholder={props.placeholder}
-      disabled={props.readOnly ?? false}
+      disabled={props.disabled === true}
       style={style}
       size={props.size}
-      ref={selectRef}
+      ref={(instance) => {
+        selectRef.current = instance;
+        assignRef(props.selectRef, instance);
+      }}
       options={options}
+      {...(props.events ?? {})}
       {...(style.hasOwnProperty("border") || style.hasOwnProperty("borderWidth") ? { variant: 'borderless' } : {})}
       {...(props.mode === 'multiple' ? { mode: props.mode } : {})}
       popupRender={(menu) => (

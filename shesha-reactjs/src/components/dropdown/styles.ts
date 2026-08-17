@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
-import { IDropdownComponentProps } from './model';
-import { backgroundStyles, borderRadiusStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, marginStyles, paddingStyles, shadowStyles, splitBackgroundProperties } from '../_common/styles/utils';
+import { IDropdownComponentProps } from '@/designer-components/dropdown/model';
+import { backgroundStyles, borderRadiusStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, marginStyles, paddingStyles, popupAppearanceStyles, shadowStyles, splitBackgroundProperties } from '@/designer-components/_common/styles/utils';
 import { isDefined } from '@/utils/nullables';
 import { CSSProperties } from 'react';
 
@@ -20,7 +20,13 @@ const TAG_COLOUR_CLASSES: readonly string[] = [
 ];
 
 /**
- * Emits the two Appearance style sets.
+ * Emits the two Appearance style sets for the dropdown.
+ *
+ * Lives next to `dropdown.tsx` because it targets that component's DOM: the selectors below encode
+ * the antd structure this component renders, so the two have to change together. The designer
+ * component consumes it — it evaluates the nested `tag.style` script, calls this hook with the full
+ * component model, and hands the resulting class down as `className`. There is deliberately only one
+ * such class: building a second one here would carry equal specificity and the two would fight.
  *
  * The bare-named model properties style the select control itself (antd renders the visible box as
  * `.ant-select-selector`, not the root element, so border/background/dimensions have to land there
@@ -63,18 +69,21 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IDr
   const configuredTagBorder = hidesBorder ? '' : borderStyles(tag?.border);
 
   const dropdown = cx('sha-dropdown', css`
-      ${dimensionsStyles(model.dimensions)}
       ${marginStyles(model.stylingBoxJson)}
-      height: 100%;
       ${isDefined(model.dimensions?.height) && model.dimensions.height !== 'auto' ? 'overflow-y: auto;' : ''}
       ${configuredAppearance}
+      
+      &&& {
+        ${dimensionsStyles(model.dimensions)}
+        ${isDefined(model.dimensions?.height) ? '' : 'height: 100%;'}
+      }
 
       /* The visible box is the selector element, not the root. A rule scoped to select-content
          matches nothing: that is a semantic classNames slot, emitted only when a caller passes
          classNames.content, which this component never does. */
       &.${prefixCls}-select .${prefixCls}-select-selector {
         ${paddingStyles(model.stylingBoxJson)}
-        ${fontStyles(model.font)}
+        ${fontStyles(model.font, model.styleCss)}
 
         .${prefixCls}-select-selection-overflow {
           display: flex;
@@ -95,7 +104,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IDr
       .${prefixCls}-select-selection-search-input,
       .${prefixCls}-select-selection-item,
       .${prefixCls}-select-selection-placeholder {
-        ${fontStyles(model.font)}
+        ${fontStyles(model.font, model.styleCss)}
       }
 
       .${prefixCls}-select-selection-item {
@@ -116,9 +125,11 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IDr
           border: none !important;
         }
       }
-     
-      .${prefixCls}-select-content {
+
+      &&&& input {
+        ${fontStyles(model.font, model.styleCss)}
       }
+
       &&&& .${prefixCls}-tag {
         display: inline-flex;
         align-items: center;
@@ -175,7 +186,53 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IDr
       }
     `);
 
+  /* The option list is portalled to the body, out of reach of the class above, so it needs its own.
+     Padding insets the list inside the panel, so it belongs on the root — applied to each option
+     instead it multiplies across every row and inflates the whole popup. Font is restated on the
+     options because antd sets it on `.ant-select-item` itself, where a rule on the root would be
+     overridden rather than inherited.
+
+     The `tag` set is deliberately not applied here: it styles the selected items rendered inside
+     the control, and the popup lists plain options rather than tags. */
+  const popup = cx('sha-dropdown-popup', css`
+      &&& {
+        ${popupAppearanceStyles(model)}
+        ${paddingStyles(model.stylingBoxJson)}
+        ${cssPropertiesToString(model.styleCss)}
+      }
+
+      /* antd paints the option list on an inner wrapper, which would cover the configured
+         background of the popup root. */
+      &&& .${prefixCls}-select-dropdown,
+      &&& .rc-virtual-list-holder,
+      &&& .${prefixCls}-select-item-empty {
+        background: transparent;
+      }
+
+      /* The configured Font, at the same specificity the control uses for its own text (a single
+         class). Emitting it at &&& instead made the popup win arguments the input loses: the Font
+         defaults are non-empty, so every option took them while the input still showed antd's, and
+         the two looked like different components. */
+      .${prefixCls}-select-item,
+      .${prefixCls}-select-item-option-active,
+      .${prefixCls}-select-item-option-selected {
+        ${fontStyles(model.font, model.styleCss)}
+      }
+
+      /* The Custom style, at &&& because it must beat antd where the Font above deliberately does
+         not. It cannot ride on an inline style on the popup root: antd sets colour and font on the
+         option itself, so the row overrides anything inherited from an ancestor.
+         This emits nothing when no Custom style is set, leaving the rule above to win or lose
+         against antd on its own. */
+      &&& .${prefixCls}-select-item,
+      &&& .${prefixCls}-select-item-option-active,
+      &&& .${prefixCls}-select-item-option-selected {
+        ${fontStyles(model.font, model.styleCss)}
+      }
+    `);
+
   return {
     dropdown,
+    popup,
   };
 });
