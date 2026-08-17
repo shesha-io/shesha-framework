@@ -65,7 +65,7 @@ const IconPickerComponent: IconPickerComponentDefinition = {
           >
             <IconPickerWrapper
               className={cx(styles.iconPickerStyles, { [styles.disabled]: model.disabled === true })}
-              {...(isDefined(model.styleJson) ? { style: model.styleJson } : {})}
+              {...(isDefined(model.styleCss) ? { style: model.styleCss } : {})}
               value={value}
               defaultValue={model.defaultIcon}
               description={model.description}

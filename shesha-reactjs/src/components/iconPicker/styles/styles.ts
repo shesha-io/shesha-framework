@@ -1,6 +1,8 @@
 import { createStyles, sheshaStyles } from '@/styles';
 
 
+// No model parameter: callers style this component by passing a `className`, which is composed
+// onto the picker root, rather than by threading a style model through here.
 export const useStyles = createStyles(({ css, cx, token, iconPrefixCls }) => {
   const shaIconPickerSelectedIcon = "sha-icon-picker-selected-icon";
   const shaIconPickerParent = "sha-icon-pciker-parent";

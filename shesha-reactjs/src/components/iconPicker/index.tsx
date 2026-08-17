@@ -1,4 +1,4 @@
-import { FC, ReactNode, useMemo, useState } from 'react';
+import { CSSProperties, FC, ReactNode, useMemo, useState } from 'react';
 import * as React from 'react';
 import { IconBaseProps } from '@ant-design/icons/lib/components/Icon';
 import { FilledIconTypes, FILLED_ICON_GROUPS } from './iconNamesFilled';
@@ -13,7 +13,7 @@ import { humanizeString } from '@/utils/string';
 import classNames from 'classnames';
 import { useStyles } from './styles/styles';
 import { isNonEmptyArray } from '@/utils/array';
-import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 
 export type ShaIconTypes = FilledIconTypes | OutlinedIconTypes | TwoToneIconTypes;
 type IconModes = 'outlined' | 'filled' | 'twoFaced';
@@ -52,6 +52,12 @@ export interface IIconPickerProps extends IconBaseProps {
   twoToneColor?: string | undefined;
 
   iconSize?: number | undefined;
+
+  /**
+   * Inline style for the picker root. `style` (from `IconBaseProps`) targets the glyph itself, so
+   * a caller styling the picker as a box needs this instead.
+   */
+  rootStyle?: CSSProperties | undefined;
 }
 
 interface IOption {
@@ -69,11 +75,13 @@ const IconPicker: FC<IIconPickerProps> = ({
   value,
   onIconChange,
   readOnly = false,
-  iconSize = 24,
+  iconSize,
   twoToneColor,
+  className,
+  rootStyle,
   ...props
 }) => {
-  const { styles } = useStyles();
+  const { styles, cx } = useStyles();
   const [showModal, setShowModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchOption, setSearchOption] = useState<IOption>({
@@ -129,7 +137,9 @@ const IconPicker: FC<IIconPickerProps> = ({
   }, [searchQuery, searchOption.group]);
 
   return (
-    <div className={styles.shaIconPicker}>
+    // The caller's className goes on the root so a configured appearance (border, background,
+    // padding) applies to the picker as a whole, and its descendant rules can reach the glyph.
+    <div className={cx(styles.shaIconPicker, className)} style={rootStyle}>
       <div>
         <div
           onClick={toggleModalVisibility}
@@ -138,10 +148,16 @@ const IconPicker: FC<IIconPickerProps> = ({
         >
           {!isNullOrWhiteSpace(value) ? (
             <ShaIcon
-              className={styles.shaIconPicker}
               iconName={value}
               {...props}
-              style={{ fontSize: iconSize || 24, color: twoToneColor, ...props.style }}
+              // `iconSize`/`twoToneColor` are only applied when explicitly given, so a caller
+              // styling the glyph through CSS (font-size/color on the root class) is not
+              // overridden by an inline default that would always win.
+              style={{
+                ...(isDefined(iconSize) ? { fontSize: iconSize } : {}),
+                ...(isNotNullOrWhiteSpace(twoToneColor) ? { color: twoToneColor } : {}),
+                ...props.style,
+              }}
               name={value}
             />
           ) : (

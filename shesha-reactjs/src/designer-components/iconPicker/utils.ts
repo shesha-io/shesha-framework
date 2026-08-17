@@ -34,16 +34,8 @@ export const defaultStyles = (): IStyleValue => {
       borderType: 'all',
       radiusType: 'all',
     },
-    // Sized by the glyph itself: 'auto' keeps the box tight around whatever font size is configured
-    // rather than stretching to the form column.
-    dimensions: {
-      width: 'auto',
-      height: 'auto',
-      minHeight: '0px',
-      maxHeight: 'auto',
-      minWidth: '0px',
-      maxWidth: 'auto',
-    },
+    // No `dimensions`: the Appearance tab exposes no Dimensions panel, since the icon is sized by
+    // its font size rather than by width/height.
     shadow: {
       spreadRadius: 0,
       blurRadius: 0,

@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 import { IIconPickerComponentProps } from './interfaces';
-import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, marginStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
+import { backgroundStyles, borderStyles, fontStyles, marginStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
 
 /**
  * The container is a flex box (so a configured height can centre the icon vertically), which makes
@@ -20,52 +20,103 @@ const justifyContentFor = (align: AlignSetting | undefined): string => {
 };
 
 export const useStyles = createStyles(({ css, cx, iconPrefixCls }, model: IIconPickerComponentProps) => {
-  // The box model (border, background, dimensions, shadow, spacing) belongs to the container the
-  // icon sits in; Font drives the glyph itself.
+  /*
+   * The configured box (border, background, shadow, padding) sits on the glyph rather than on the
+   * picker root. The root is a block-level flex container that spans the form column, so a border
+   * or background there would draw a full-width box around a small icon. On the glyph it hugs the
+   * icon, which is what "style the icon" means for a glyph-only component.
+   */
   const configuredAppearance = `
     ${borderStyles(model.border)}
     ${backgroundStyles(model.background)}
     ${shadowStyles(model.shadow)}
+    ${paddingStyles(model.stylingBoxJson)}
   `;
 
   const iconPickerStyles = cx('sha-icon-picker-container', css`
-      ${configuredAppearance}
-      ${dimensionsStyles(model.dimensions)}
-      ${paddingStyles(model.stylingBoxJson)}
       ${marginStyles(model.stylingBoxJson)}
 
       box-sizing: border-box;
 
       /* The picker renders either the chosen glyph or a "select icon" button. Centre whichever it
-         is on the cross axis so a configured height does not leave it pinned to the top, and use
-         justify-content for the Font panel horizontal alignment (see justifyContentFor). */
+         is on the cross axis, and use justify-content for the Font panel horizontal alignment,
+         since a flex container makes text-align inert (see justifyContentFor). */
       display: flex;
       align-items: center;
       justify-content: ${justifyContentFor(model.font?.align)};
 
-      /* Honour the configured appearance while the user hovers or focuses the trigger, so the
-         box does not flash back to the antd defaults mid-interaction. */
-      &&&&:hover,
-      &&&&:focus,
-      &&&&:focus-within {
+      /* IconPicker nests the glyph two unstyled divs deep. Those are block-level and so span the
+         full width, which would swallow the alignment above — make them pass the flex through so
+         the alignment actually reaches the icon. */
+      > div,
+      > div > .sha-icon-picker-selected-icon {
+        display: flex;
+        align-items: center;
+        justify-content: inherit;
+        flex: 1;
+      }
+
+      /*
+       * The two states render different elements: with a value it is a bare .anticon glyph, with
+       * none it is an antd Button wrapping its own .anticon. The configured box must land on
+       * exactly one element per state, so it targets the glyph only when that glyph is NOT inside
+       * a button, and the button itself otherwise. Applying it to .anticon unconditionally paints
+       * the box on the inner glyph *and* leaves the button drawing its own frame around it, which
+       * is the nested double-box in the empty state.
+       */
+      /* &&&& out-specifies the base stylesheet, which styles .sha-icon-picker-selected-icon
+         .ant-btn two classes deep and would otherwise reset the configured background. */
+      &&&& .${iconPrefixCls}:not(.ant-btn .${iconPrefixCls}),
+      &&&& .ant-btn {
         ${configuredAppearance}
-      }
-
-      /* The glyph inherits colour and size from the container font styles. The antd icon sets its
-         own font-size, so it has to be restated here rather than left to inherit. */
-      .${iconPrefixCls} {
         ${fontStyles(model.font)}
+        box-sizing: border-box;
+        /* The base stylesheet adds a right margin to every .anticon in the picker, which offsets
+           the icon inside its box. The box is the alignment reference here, so drop it. */
+        margin-right: 0;
+        /* The button sizes itself from the antd control height; let both states be sized by the
+           configured font and padding so they look identical. */
+        height: auto;
+        width: auto;
+        min-width: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
       }
 
-      /* The placeholder button is chrome, not content: keep it transparent so the configured
-         container background is what shows through, in every antd button state. */
-      .ant-btn,
-      .ant-btn:hover,
-      .ant-btn:focus {
-        background: transparent;
-        border-color: transparent;
-        box-shadow: none;
+      /*
+       * Neutralise the chrome antd puts on the button per state. This deliberately does NOT reset
+       * box-shadow: it shares the specificity of the rule above and comes later, so resetting the
+       * shadow here would override a configured one in the empty state. The configured appearance
+       * already sets background, border and shadow, so only colour needs pinning.
+       */
+      &&&& .ant-btn,
+      &&&& .ant-btn:hover,
+      &&&& .ant-btn:focus,
+      &&&& .ant-btn:active {
         color: inherit;
+      }
+
+      /* The glyph inside the placeholder button is content, not a box: it inherits the font but
+         must not repeat the border/background that the button now carries. */
+      &&&& .ant-btn .${iconPrefixCls} {
+        font-size: inherit;
+        color: inherit;
+        border: none;
+        background: none;
+        box-shadow: none;
+        padding: 0;
+        margin-right: 0;
+      }
+
+      /* Keep the configured box through hover/focus so it does not flash back to antd defaults. */
+      &&&&:hover .${iconPrefixCls}:not(.ant-btn .${iconPrefixCls}),
+      &&&&:focus .${iconPrefixCls}:not(.ant-btn .${iconPrefixCls}),
+      &&&&:focus-within .${iconPrefixCls}:not(.ant-btn .${iconPrefixCls}),
+      &&&&:hover .ant-btn,
+      &&&&:focus .ant-btn,
+      &&&&:focus-within .ant-btn {
+        ${configuredAppearance}
       }
     `);
 

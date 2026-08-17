@@ -47,7 +47,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
               .stdAppearancePanels(
                 [
                   { name: 'font', exclude: ['weight', 'type'], panelTitle: 'Icon Style' },
-                  'dimensions',
                   'border',
                   'background',
                   'shadow',

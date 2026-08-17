@@ -49,18 +49,21 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
   const selectionBlocked = readOnly === true || disabled === true;
 
   const picker = (
-    <div className={className} style={style}>
-      <IconPicker
-        value={value ?? defaultValue ?? undefined}
-        onIconChange={onIconChange}
-        selectBtnSize={selectBtnSize}
-        readOnly={selectionBlocked}
-        {...(isDefined(iconSize) ? { iconSize } : {})}
-        // Colour and size otherwise come from the emotion class on the container, so no inline
-        // style is passed down — that keeps the cascade open for form- and theme-level overrides.
-        style={{ background: 'transparent' }}
-      />
-    </div>
+    <IconPicker
+      value={value ?? defaultValue ?? undefined}
+      onIconChange={onIconChange}
+      selectBtnSize={selectBtnSize}
+      readOnly={selectionBlocked}
+      {...(isDefined(iconSize) ? { iconSize } : {})}
+      // The class goes to IconPicker itself rather than to a wrapping div: it lands on the
+      // picker root, so the configured box applies to the picker and the class's descendant
+      // rules can reach the glyph. No inline style beyond the evaluated Custom style, which
+      // keeps the cascade open for form- and theme-level overrides.
+      className={className}
+      // `rootStyle`, not `style`: the latter targets the glyph, while the Custom style script is
+      // meant to style the component as a whole.
+      {...(isDefined(style) ? { rootStyle: style } : {})}
+    />
   );
 
   return isNotNullOrWhiteSpace(description)
