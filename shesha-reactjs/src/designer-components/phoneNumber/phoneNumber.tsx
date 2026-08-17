@@ -235,7 +235,7 @@ const PhoneNumberControl: FC<IPhoneNumberComponentProps & { value?: PhoneNumberV
 
 const PhoneNumberComponent: PhoneNumberComponentDefinition = {
   allowInherit: true,
-  type: 'phoneNumber',
+  type: 'phoneNumberInput',
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
@@ -268,18 +268,11 @@ const PhoneNumberComponent: PhoneNumberComponentDefinition = {
   }),
   getDefaultStyles: () => defaultStyles(),
   migrator: (m) => m
-    .add<IPhoneNumberComponentProps>(0, (prev) => ({
-      ...prev,
-      valueFormat: 'string',
-      stripCountryCode: false,
-      defaultCountry: 'za',
-      enableArrow: true,
-    }))
-    .add<IPhoneNumberComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<IPhoneNumberComponentProps>(2, (prev) => migrateVisibility(prev))
-    .add<IPhoneNumberComponentProps>(3, (prev) => migrateReadOnly(prev, 'inherited'))
-    .add<IPhoneNumberComponentProps>(4, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-    .add<IPhoneNumberComponentProps>(5, (prev, context) => {
+    .add<IPhoneNumberComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IPhoneNumberComponentProps>(1, (prev) => migrateVisibility(prev))
+    .add<IPhoneNumberComponentProps>(2, (prev) => migrateReadOnly(prev, 'inherited'))
+    .add<IPhoneNumberComponentProps>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
+    .add<IPhoneNumberComponentProps>(4, (prev, context) => {
       if (context.isNew === true) return prev;
 
       const styles: IInputStyles = {
@@ -297,12 +290,12 @@ const PhoneNumberComponent: PhoneNumberComponentDefinition = {
       };
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-    .add<IPhoneNumberComponentProps>(6, (prev, context) => (context.isNew === true ? prev : { ...migratePrevStyles(prev, defaultStyles()) }))
-    .add<IPhoneNumberComponentProps>(7, (prev) => migrateHiddenToVisible(prev))
-    .add<IPhoneNumberComponentProps>(8, (prev) => migratePermissionsToVisiblePermissions(prev)),
+    .add<IPhoneNumberComponentProps>(5, (prev, context) => (context.isNew === true ? prev : { ...migratePrevStyles(prev, defaultStyles()) }))
+    .add<IPhoneNumberComponentProps>(6, (prev) => migrateHiddenToVisible(prev))
+    .add<IPhoneNumberComponentProps>(7, (prev) => migratePermissionsToVisiblePermissions(prev)),
   previewConfiguration: {
-    type: 'phoneNumber',
-    id: 'phoneNumber',
+    type: 'phoneNumberInput',
+    id: 'phoneNumberInput',
     propertyName: 'phoneNumberAppearance',
     label: 'Phone Number Label',
     version: 'latest',

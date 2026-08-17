@@ -32,4 +32,4 @@ export interface IPhoneNumberComponentProps extends IConfigurableFormComponent, 
   onFocusCustom?: string | undefined;
 }
 
-export type PhoneNumberComponentDefinition = ComponentDefinition<"phoneNumber", IPhoneNumberComponentProps>;
+export type PhoneNumberComponentDefinition = ComponentDefinition<"phoneNumberInput", IPhoneNumberComponentProps>;

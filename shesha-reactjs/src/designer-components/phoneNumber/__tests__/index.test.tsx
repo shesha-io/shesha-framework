@@ -5,7 +5,7 @@ import { isValidPhoneValue, normalizeCountryCode } from '../utils';
 
 const buildModel = (overrides: Partial<IPhoneNumberComponentProps> = {}): IPhoneNumberComponentProps => ({
   id: '1',
-  type: 'phoneNumber',
+  type: 'phoneNumberInput',
   propertyName: 'phone',
   ...overrides,
 } as IPhoneNumberComponentProps);
@@ -21,7 +21,7 @@ const getValidator = (model: IPhoneNumberComponentProps): ((rule: RuleObject, va
 
 describe('PhoneNumberComponent', () => {
   test('is registered with the expected type and capabilities', () => {
-    expect(PhoneNumberComponent.type).toBe('phoneNumber');
+    expect(PhoneNumberComponent.type).toBe('phoneNumberInput');
     expect(PhoneNumberComponent.isInput).toBe(true);
     expect(PhoneNumberComponent.isOutput).toBe(true);
   });
