@@ -117,14 +117,17 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 })
                 .addSettingsInput({
                   id: nanoid(),
-                  inputType: 'autocomplete',
+                  inputType: 'endpointsAutocomplete',
                   allowClear: true,
                   propertyName: 'getEntityUrl',
                   label: 'Get Entity URL',
                   labelAlign: 'right',
                   parentId: dataTabId,
                   hidden: false,
-                  dataSourceType: 'url',
+                  size: 'small',
+                  mode: 'url',
+                  httpVerb: 'get',
+                  jsSetting: true,
                   validate: {
                     required: {
                       _code: 'return !getSettingValue(data?.entityType);',
@@ -133,9 +136,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     },
                   },
                   validationDependencies: ['entityType'],
-                  dataSourceUrl: '/api/services/app/Api/Endpoints',
                   settingsValidationErrors: [],
-                  useRawValues: true,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
