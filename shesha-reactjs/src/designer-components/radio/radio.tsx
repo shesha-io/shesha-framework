@@ -19,9 +19,10 @@ import { migratePermissionsToVisiblePermissions } from '../_common-migrations/mi
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migrateStyles } from '../_common-migrations/migrateStyles';
 import { getSettings } from './settingsForm';
-import { IRadioComponentProps, RadioComponentDefinition } from './interfaces';
+import { DIRECTION_TYPE, DirectionType, IRadioComponentProps, RadioComponentDefinition } from './interfaces';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
-import { DataSourceType } from '../dropdown/model';
+import { DATA_SOURCE_TYPES, DataSourceType } from '../dropdown/model';
+import { getStringEnumOrDefault } from '@/utils/object';
 import { getNumberOrUndefined } from '@/utils/string';
 import { defaultStyles } from './utils';
 import { useStyles } from './styles';
@@ -143,16 +144,12 @@ const RadioComponent: RadioComponentDefinition = {
   migrator: (m) =>
     m
       .add<IRadioComponentProps>(0, (prev, context) => {
-        const configured = "dataSourceType" in prev && typeof (prev.dataSourceType) === 'string'
-          ? (prev.dataSourceType as DataSourceType)
-          : undefined;
+        const configured = getStringEnumOrDefault<DataSourceType>(prev, "dataSourceType", DATA_SOURCE_TYPES);
 
         return {
           ...prev,
           dataSourceType: configured ?? (context.isNew === true ? undefined : 'values'),
-          direction: "direction" in prev && typeof (prev.direction) === 'string'
-            ? prev.direction as "horizontal" | "vertical"
-            : 'horizontal',
+          direction: getStringEnumOrDefault<DirectionType>(prev, "direction", DIRECTION_TYPE) ?? 'horizontal',
         };
       })
       .add<IRadioComponentProps>(1, (prev) => {
