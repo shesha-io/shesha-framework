@@ -88,7 +88,7 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
     // options' labels rather than their raw values.
     const { data: refList } = useReferenceList(model.referenceListId);
     const options = useMemo(
-      () => getDataSourceList(model.dataSourceType, model.items ?? [], refList?.items),
+      () => getDataSourceList(model.dataSourceType ?? 'values', model.items ?? [], refList?.items),
       [model.dataSourceType, model.items, refList?.items],
     );
 
@@ -133,29 +133,33 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   validateModel: (model, addModelError) => {
-    if (model.dataSourceType === 'referenceList' && !isDefined(model.referenceListId))
+    const dataSourceType = model.dataSourceType ?? 'values';
+    if (dataSourceType === 'referenceList' && !isDefined(model.referenceListId))
       addModelError('referenceListId', 'Select `Reference List` on the settings panel');
-    if (model.dataSourceType === 'values' && (model.items ?? []).length === 0)
+    if (dataSourceType === 'values' && (model.items ?? []).length === 0)
       addModelError('items', 'Add `Items` on the settings panel, or select a different `Data Source Type`');
-    if (model.dataSourceType === 'url' && isNullOrWhiteSpace(model.dataSourceUrl))
+    if (dataSourceType === 'url' && isNullOrWhiteSpace(model.dataSourceUrl))
       addModelError('dataSourceUrl', 'Enter a `Data Source URL` on the settings panel');
   },
   getDefaultStyles: () => defaultStyles(),
   initModel: (model) => {
     const customProps: IEnhancedICheckboxGroupProps = {
       ...model,
-      dataSourceType: 'values',
       direction: 'horizontal',
     };
     return customProps;
   },
   migrator: (m) =>
     m
-      .add<IEnhancedICheckboxGroupProps>(0, (prev) => ({
-        ...prev,
-        dataSourceType: getStringEnumOrDefault<DataSourceType>(prev, "dataSourceType", DATA_SOURCE_TYPES) ?? "values",
-        direction: getStringEnumOrDefault<DirectionType>(prev, "direction", DIRECTION_TYPE) ?? "horizontal",
-      }))
+      .add<IEnhancedICheckboxGroupProps>(0, (prev, context) => {
+        const configured = getStringEnumOrDefault<DataSourceType>(prev, "dataSourceType", DATA_SOURCE_TYPES);
+
+        return {
+          ...prev,
+          dataSourceType: configured ?? (context.isNew === true ? undefined : "values"),
+          direction: getStringEnumOrDefault<DirectionType>(prev, "direction", DIRECTION_TYPE) ?? "horizontal",
+        };
+      })
       .add<IEnhancedICheckboxGroupProps>(1, (prev) => {
         return {
           ...prev,

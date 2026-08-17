@@ -4,11 +4,15 @@ import { CSSProperties } from 'react';
 import { DataSourceType, ILabelValue } from '@/designer-components/dropdown/model';
 import { ComponentDefinition, IConfigurableFormComponent } from '@/interfaces';
 import { IInputStyles, INestedStyleValue } from '@/providers/form/models';
+
+export type DirectionType = 'horizontal' | 'vertical';
+export const DIRECTION_TYPE: readonly DirectionType[] = ['horizontal', 'vertical'];
+
 /** The subset of the model that determines which options a radio group displays. */
 export interface IRadioOptionsSource {
   items?: ILabelValue[] | undefined;
   referenceListId?: IReferenceListIdentifier | undefined;
-  dataSourceType: DataSourceType;
+  dataSourceType?: DataSourceType | undefined;
   /** Endpoint backing the `url` data source. */
   dataSourceUrl?: string | undefined;
   /** Script mapping the `url` response to `{ label, value }` pairs. */
