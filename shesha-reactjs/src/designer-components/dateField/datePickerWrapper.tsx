@@ -32,19 +32,16 @@ export const DatePickerWrapper = forwardRef<HTMLDivElement, IDateFieldProps>((pr
     readOnly,
     defaultToMidnight,
     minuteStep,
+    /* antd's picker accepts only onFocus/onBlur, so the remaining handlers from `getComponentEvents`
+       are bound to the wrapper element. Click, mouse-move and both key events bubble up from the
+       inner input; enter/leave fire on the wrapper itself. */
+    onClick,
+    onMouseEnter,
+    onMouseMove,
+    onMouseLeave,
+    onKeyDown,
+    onKeyUp,
   } = props;
-
-  /* antd's picker accepts only onFocus/onBlur, so the remaining handlers from `getComponentEvents`
-     are bound to the wrapper element. Click, mouse-move and both key events bubble up from the
-     inner input; enter/leave fire on the wrapper itself. */
-  const wrapperEvents = {
-    onClick: props.onClick,
-    onMouseEnter: props.onMouseEnter,
-    onMouseMove: props.onMouseMove,
-    onMouseLeave: props.onMouseLeave,
-    onKeyDown: props.onKeyDown,
-    onKeyUp: props.onKeyUp,
-  };
 
   const picker = getPicker(props);
   const showTime = hasTimePart(props);
@@ -208,7 +205,16 @@ export const DatePickerWrapper = forwardRef<HTMLDivElement, IDateFieldProps>((pr
 
   if (range === true) {
     return (
-      <div ref={ref} style={{ marginRight: 1 }} {...wrapperEvents}>
+      <div
+        ref={ref}
+        style={{ marginRight: 1 }}
+        onClick={onClick}
+        onMouseEnter={onMouseEnter}
+        onMouseMove={onMouseMove}
+        onMouseLeave={onMouseLeave}
+        onKeyDown={onKeyDown}
+        onKeyUp={onKeyUp}
+      >
         <RangePicker
           onCalendarChange={(dates) => {
             if (showTime && defaultToMidnight !== true) handleCalendarRangeChange(dates);
@@ -249,7 +255,16 @@ export const DatePickerWrapper = forwardRef<HTMLDivElement, IDateFieldProps>((pr
   }
 
   return (
-    <div ref={ref} style={{ marginRight: 1 }} {...wrapperEvents}>
+    <div
+      ref={ref}
+      style={{ marginRight: 1 }}
+      onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
+      onKeyDown={onKeyDown}
+      onKeyUp={onKeyUp}
+    >
       <DatePicker
         className={styles.dateField}
         disabledDate={(e) => disabledDate(props, e, formData, globalState)}
