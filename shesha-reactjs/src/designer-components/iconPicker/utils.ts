@@ -30,7 +30,7 @@ export const defaultStyles = (): IStyleValue => {
           color: '#d9d9d9',
         },
       },
-      radius: { all: 0 },
+      radius: { all: 6 },
       borderType: 'all',
       radiusType: 'all',
     },
@@ -49,10 +49,10 @@ export const defaultStyles = (): IStyleValue => {
       marginLeft: "0",
       marginRight: "0",
       marginTop: "0",
-      paddingBottom: "0",
-      paddingLeft: "0",
-      paddingRight: "0",
-      paddingTop: "0",
+      paddingBottom: "4",
+      paddingLeft: "4",
+      paddingRight: "4",
+      paddingTop: "4",
     },
   };
 };
