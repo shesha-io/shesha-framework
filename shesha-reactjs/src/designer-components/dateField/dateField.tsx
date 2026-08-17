@@ -152,6 +152,16 @@ const DateField: DateFieldDefinition = {
       }
 
       return model;
+    })
+    /* The Today/Now shortcut is no longer configurable — the picker always shows it — so the two
+       properties that used to drive it are dropped rather than left as dead config. */
+    .add<IDateFieldProps>(9, (prev) => {
+      const model = { ...prev } as IDateFieldPropsV1;
+
+      delete model.showNow;
+      delete model.showToday;
+
+      return model;
     }),
   linkToModelMetadata: (model, metadata): IDateFieldProps => {
     return {

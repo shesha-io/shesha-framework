@@ -16,7 +16,6 @@ export const DateWrapper: FCUnwrapped<IDateSettingsInputProps> = (props) => {
       hideBorder={false}
       range={false}
       selectionType="date"
-      showNow={false}
       defaultToMidnight={false}
       resolveToUTC={false}
       dateFormat={undefined}

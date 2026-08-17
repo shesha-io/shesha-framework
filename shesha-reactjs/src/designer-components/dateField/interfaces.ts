@@ -1,7 +1,7 @@
 import { DatePickerFocusEventHandler } from '@/components/antd/datepicker';
 import { ComponentDefinition } from '@/interfaces';
 import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
-import { CSSProperties } from 'react';
+import { CSSProperties, KeyboardEventHandler, MouseEventHandler } from 'react';
 
 export type RangeType = 'start' | 'end';
 
@@ -64,7 +64,6 @@ export interface IDateFieldProps extends IConfigurableFormComponent, IInputStyle
   minuteStep?: MinuteStep | undefined;
 
   defaultToMidnight?: boolean | undefined;
-  showNow?: boolean | undefined;
   timeFormat?: string | undefined;
   yearFormat?: string | undefined;
   quarterFormat?: string | undefined;
@@ -86,17 +85,25 @@ export interface IDateFieldProps extends IConfigurableFormComponent, IInputStyle
 
   onFocus?: DatePickerFocusEventHandler | undefined;
   onBlur?: DatePickerFocusEventHandler | undefined;
+  onClick?: MouseEventHandler<HTMLDivElement> | undefined;
+  onMouseEnter?: MouseEventHandler<HTMLDivElement> | undefined;
+  onMouseMove?: MouseEventHandler<HTMLDivElement> | undefined;
+  onMouseLeave?: MouseEventHandler<HTMLDivElement> | undefined;
+  onKeyDown?: KeyboardEventHandler<HTMLDivElement> | undefined;
+  onKeyUp?: KeyboardEventHandler<HTMLDivElement> | undefined;
 }
 
 /**
  * Pre-refactor shape. Kept so the early migrator steps stay typed against the model they actually
- * received: `picker` and `showTime` are gone from `IDateFieldProps`, but old saved forms still carry
- * them and step 8 is what folds them into `selectionType`.
+ * received: `picker`, `showTime`, `showToday` and `showNow` are gone from `IDateFieldProps`, but old
+ * saved forms still carry them — step 8 folds `picker`/`showTime` into `selectionType` and step 9
+ * strips the Today/Now pair, which the picker now always shows.
  */
 export interface IDateFieldPropsV1 extends Omit<IDateFieldProps, 'selectionType'> {
   picker?: 'time' | 'date' | 'week' | 'month' | 'quarter' | 'year' | undefined;
   showTime?: boolean | undefined;
   showToday?: boolean | undefined;
+  showNow?: boolean | undefined;
   selectionType?: DateSelectionType | undefined;
 }
 

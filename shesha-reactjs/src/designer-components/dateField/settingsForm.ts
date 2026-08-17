@@ -130,7 +130,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   visibleJs: hasMinutesJs,
                 })
                 .addSettingsInput({ inputType: 'switch', propertyName: 'resolveToUTC', label: 'Convert to/from UTC', size: 'small', layout: 'horizontal', jsSetting: true })
-                .addSettingsInput({ inputType: 'switch', propertyName: 'showNow', label: 'Show Today/Now', size: 'small', layout: 'horizontal', jsSetting: true })
                 .addSettingsInput({ inputType: 'switch', propertyName: 'defaultToMidnight', label: 'Default time to midnight', size: 'small', layout: 'horizontal', jsSetting: true, visibleJs: isDateTimeJs })
                 .addSettingsInput({
                   inputType: 'dropdown', propertyName: 'dateRestriction', label: 'Date Restriction', size: 'small', jsSetting: true,

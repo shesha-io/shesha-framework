@@ -28,12 +28,23 @@ export const DatePickerWrapper = forwardRef<HTMLDivElement, IDateFieldProps>((pr
     hideBorder,
     range,
     value,
-    showNow,
     onChange,
     readOnly,
     defaultToMidnight,
     minuteStep,
   } = props;
+
+  /* antd's picker accepts only onFocus/onBlur, so the remaining handlers from `getComponentEvents`
+     are bound to the wrapper element. Click, mouse-move and both key events bubble up from the
+     inner input; enter/leave fire on the wrapper itself. */
+  const wrapperEvents = {
+    onClick: props.onClick,
+    onMouseEnter: props.onMouseEnter,
+    onMouseMove: props.onMouseMove,
+    onMouseLeave: props.onMouseLeave,
+    onKeyDown: props.onKeyDown,
+    onKeyUp: props.onKeyUp,
+  };
 
   const picker = getPicker(props);
   const showTime = hasTimePart(props);
@@ -197,7 +208,7 @@ export const DatePickerWrapper = forwardRef<HTMLDivElement, IDateFieldProps>((pr
 
   if (range === true) {
     return (
-      <div ref={ref} style={{ marginRight: 1 }}>
+      <div ref={ref} style={{ marginRight: 1 }} {...wrapperEvents}>
         <RangePicker
           onCalendarChange={(dates) => {
             if (showTime && defaultToMidnight !== true) handleCalendarRangeChange(dates);
@@ -238,7 +249,7 @@ export const DatePickerWrapper = forwardRef<HTMLDivElement, IDateFieldProps>((pr
   }
 
   return (
-    <div ref={ref} style={{ marginRight: 1 }}>
+    <div ref={ref} style={{ marginRight: 1 }} {...wrapperEvents}>
       <DatePicker
         className={styles.dateField}
         disabledDate={(e) => disabledDate(props, e, formData, globalState)}
@@ -246,7 +257,7 @@ export const DatePickerWrapper = forwardRef<HTMLDivElement, IDateFieldProps>((pr
         onChange={handleDatePickerChange}
         {...(hideBorder === true ? { variant: 'borderless' } : {})}
         showTime={showTimeConfig}
-        showNow={showNow === true}
+        showNow
         picker={picker}
         format={pickerFormat}
         onCalendarChange={(dates) => {
