@@ -32,7 +32,7 @@ export const useStyles = createStyles(({ css, cx }, model: ITextAreaComponentPro
       ${configuredAppearance}
       ${paddingStyles(model.stylingBoxJson)}
       ${configuredDimensions}
-      ${fontStyles(model.font)}
+      ${fontStyles(model.font, model.styleCss)}
       ${marginStyles(model.stylingBoxJson)}
 
       ${statefulAppearance}
@@ -58,7 +58,7 @@ export const useStyles = createStyles(({ css, cx }, model: ITextAreaComponentPro
         ${dimensionsStyles(model.dimensions)}
         ${marginStyles(model.stylingBoxJson)}
         /* The inner textarea and the clear icon both inherit their font from here. */
-        ${fontStyles(model.font)}
+        ${fontStyles(model.font, model.styleCss)}
         ${statefulAppearance}
 
         /* The inner textarea still carries the textArea class, so its own copy of the
@@ -85,7 +85,7 @@ export const useStyles = createStyles(({ css, cx }, model: ITextAreaComponentPro
           /* The font is restated because it belongs on the element rendering the text: with
              Allow Clear the textarea no longer carries the textArea class, so this is the
              only place the configured font reaches it. */
-          ${fontStyles(model.font)}
+          ${fontStyles(model.font, model.styleCss)}
         }
 
         /* The clear icon takes its colour from the wrapper text colour by default, which the

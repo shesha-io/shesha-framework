@@ -14,7 +14,8 @@ import { InputRef } from 'antd';
 interface IAutoCompletePlacesFieldProps extends IAddressCompomentBaseProps {
   value?: string;
   onChange?: (value: string) => void;
-  font?: IStyleValue['font'];
+  /** The Appearance properties, so the suggestion list can share the input's appearance. */
+  styleValue?: IStyleValue | undefined;
 
   readOnly?: boolean | undefined;
   disabled?: boolean | undefined;
@@ -86,7 +87,7 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
         className={className}
         inputRef={inputRef}
         inputProps={inputProps}
-        font={model.font}
+        styleValue={model.styleValue}
 
         onChange={onChange}
         onFocus={onFocus}

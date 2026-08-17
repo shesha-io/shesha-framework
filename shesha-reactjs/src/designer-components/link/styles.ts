@@ -29,7 +29,7 @@ export const useStyles = createStyles(({ css, cx }, model: ILinkComponentProps) 
       ${dimensionsStyles(model.dimensions)}
 
       .${shaLink} {
-        ${fontStyles(model.font)}
+        ${fontStyles(model.font, model.styleCss)}
         height: unset;
       }
   `);

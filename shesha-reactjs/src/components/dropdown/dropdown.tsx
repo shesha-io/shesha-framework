@@ -5,7 +5,6 @@ import { IDropdownProps, ILabelValue } from './model';
 import { Select } from 'antd';
 import GenericRefListDropDown from '@/components/refListDropDown/genericRefListDropDown';
 import { CustomLabeledValue, GetLabeledValueFunc, GetOptionFromFetchedItemFunc, IncomeValueFunc, ISelectOption, OutcomeValueFunc } from '@/components/refListDropDown/models';
-import { useStyles } from './style';
 import ReflistTag from '../refListDropDown/reflistTag';
 import { getNumberOrUndefined } from '@/utils/string';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
@@ -33,6 +32,7 @@ export const Dropdown: FC<IDropdownProps> = ({
   placeholder,
   readOnlyPlaceholder,
   readOnly,
+  disabled,
   style,
   size,
   showIcon,
@@ -46,6 +46,7 @@ export const Dropdown: FC<IDropdownProps> = ({
   tagStyle,
   enableStyleOnReadonly,
   className,
+  popupClassName,
   selectRef,
   events,
   styleValue,
@@ -57,10 +58,13 @@ export const Dropdown: FC<IDropdownProps> = ({
     ? (enableMultiSelect ? 'multiple' : 'single')
     : configuredMode;
 
-  const { styles } = useStyles({ style: style ?? {} });
-  // The caller's Appearance class is merged in rather than replacing the component's own class,
-  // so the base layout rules survive when a form supplies configured styles.
-  const selectClassName = isNullOrWhiteSpace(className) ? styles.dropdown : `${styles.dropdown} ${className}`;
+  /* The Appearance class comes from `./styles`, but it is built by the caller (the designer
+     component) and handed over as `className` — this component deliberately does not call the hook
+     itself. Only the caller has the full component model plus the evaluated `tagStyleJson`; here
+     `styleValue` is an `IStyleValue`, which has no `tag`/`tagVariant`/`tagStyleJson`, so a class
+     built from it would silently drop every tag style. Building one anyway would also put two
+     equal-specificity classes on the same element, leaving the winner to emotion's insertion order. */
+  const selectClassName = className ?? '';
 
   const value = isDefined(inputValue)
     ? Array.isArray(inputValue)
@@ -175,11 +179,13 @@ export const Dropdown: FC<IDropdownProps> = ({
           filters={ignoredValues}
           placeholder={placeholder}
           readOnly={readOnly}
+          disabled={disabled === true}
           size={size}
           showIcon={showIcon}
           tagVariant={tagVariant}
           showItemName={showItemName}
           className={selectClassName}
+          {...(isDefined(popupClassName) ? { popupClassName } : {})}
           style={{ ...style }}
           tagStyle={tagStyle}
           allowClear={allowClear}
@@ -259,11 +265,12 @@ export const Dropdown: FC<IDropdownProps> = ({
         ref={selectRef}
         {...events}
         className={selectClassName}
+        {...(isDefined(popupClassName) ? { classNames: { popup: { root: popupClassName } } } : {})}
         allowClear={allowClear}
         {...(onChange ? { onChange } : {})}
         value={selectedValue ?? null}
         variant="borderless"
-        disabled={readOnly ?? false}
+        disabled={disabled === true}
         {...(selectedMode ? { mode: selectedMode } : {})}
         placeholder={placeholder}
         size={size}
@@ -298,11 +305,12 @@ export const Dropdown: FC<IDropdownProps> = ({
       ref={selectRef}
       {...events}
       className={selectClassName}
+      {...(isDefined(popupClassName) ? { classNames: { popup: { root: popupClassName } } } : {})}
       allowClear={allowClear}
       {...(onChange ? { onChange } : {})}
       value={selectedValue ?? null}
       variant="borderless"
-      disabled={readOnly ?? false}
+      disabled={disabled === true}
       {...(selectedMode ? { mode: selectedMode } : {})}
       placeholder={placeholder}
       size={size}

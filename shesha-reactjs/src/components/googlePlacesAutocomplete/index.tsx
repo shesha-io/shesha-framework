@@ -55,7 +55,7 @@ export interface IGooglePlacesAutocompleteProps {
   biasedCoordinates?: LatLngPolygon | PointPolygon | undefined;
   style?: CSSProperties | undefined;
   size?: SizeType | undefined;
-  font?: IStyleValue['font'] | undefined;
+  styleValue?: IStyleValue | undefined;
   searchOptions?: PropTypes['searchOptions'] | undefined;
   onFocus?: ((event: React.FocusEvent<HTMLInputElement, Element>) => void) | undefined;
   /** Applied to the antd `Input`, so a caller can style the field itself. */
@@ -82,15 +82,15 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
   tabIndex,
   biasedCoordinates,
   style,
-  font,
   size,
+  styleValue,
   searchOptions,
   onFocus,
   className,
   inputRef,
   inputProps: extraInputProps,
 }) => {
-  const { styles } = useStyles({ fontFamily: font?.type, fontWeight: font?.weight, textAlign: font?.align, color: font?.color, fontSize: font?.size });
+  const { styles } = useStyles(styleValue ?? {});
   const [highlightedPlaceId, setHighlightedPlaceId] = useState('');
   const [showSuggestionsDropdownContainer, setShowSuggestionsDropdownContainer] = useState(true);
   const suggestionRef = useRef<ISuggestion[]>([]);

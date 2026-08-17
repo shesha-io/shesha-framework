@@ -345,6 +345,16 @@ export type CheckboxFieldApi = InputComponentApi<boolean | undefined>;
 
 export type DropdownApi = InputComponentApi<number | number[] | string | string[] | (string | number)[] | undefined>;
 
+/**
+ * Autocomplete. The value shape follows the component's Value Format setting: a plain key for
+ * `simple`, an entity reference object for `entityReference`, or whatever the configured Value
+ * Function returns for `custom`. In multiple selection mode it is an array of those.
+ */
+export interface AutocompleteApi extends InputComponentApi<unknown> {
+  /** Whether the component currently allows selecting more than one item. Read-only. */
+  readonly multiple: boolean;
+};
+
 /** Checkbox group. Multi-select only, so the value is always the list of selected item values. */
 export type CheckboxGroupApi = InputComponentApi<string[] | undefined>;
 

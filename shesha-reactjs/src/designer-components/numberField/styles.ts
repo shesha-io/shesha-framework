@@ -43,7 +43,7 @@ export const useStyles = createStyles(({ css, cx }, model: INumberFieldComponent
         padding-left: ${hasPrefix ? '4px' : '8px'} !important;
         padding-right: ${hasSuffix ? '4px' : '8px'} !important;
         padding-bottom: 5px !important;
-        ${fontStyles(model.font)}
+        ${fontStyles(model.font, model.styleCss)}
       }
 
       .ant-input-number-input-wrap {

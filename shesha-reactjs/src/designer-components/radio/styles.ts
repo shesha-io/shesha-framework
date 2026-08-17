@@ -35,11 +35,11 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: RadioStyle
     ${marginStyles(model.stylingBoxJson)}
     ${shadowStyles(model.shadow)}
     .${prefixCls}-radio-wrapper {
-      ${fontStyles(model.font)}
+      ${fontStyles(model.font, model.styleCss)}
       ${paddingStyles(model.radio?.stylingBoxJson)}
       ${marginStyles(model.radio?.stylingBoxJson)}
       span.${prefixCls}-radio + * {
-        ${fontStyles(model.font)}
+        ${fontStyles(model.font, model.styleCss)}
       }
 
       .ant-wave-target {

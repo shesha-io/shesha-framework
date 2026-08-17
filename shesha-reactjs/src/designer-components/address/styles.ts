@@ -1,14 +1,17 @@
 import { createStyles } from '@/styles';
 import { IAddressCompomentProps } from './models';
-import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
+import { backgroundStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, paddingStyles, shadowStyles, splitTextProperties } from '../_common/styles/utils';
 
 export const useStyles = createStyles(({ css, cx, prefixCls }, model: IAddressCompomentProps) => {
+  const { width: _w, height: _h, ...popupCustomStyle } = model.styleCss ?? {};
+  const { text: customTextStyle, box: customBoxStyle } = splitTextProperties(popupCustomStyle);
   // Border, background and shadow are what antd repaints in the interactive and validation
   // states, so they are kept together and re-asserted wherever antd would override them.
   const configuredAppearance = `
     ${borderStyles(model.border)}
     ${backgroundStyles(model.background)}
     ${shadowStyles(model.shadow)}
+    ${cssPropertiesToString(customBoxStyle)}
   `;
 
   const boxStyles = `
@@ -19,7 +22,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: IAddressCo
   const address = cx('sha-address', css`
       ${configuredAppearance}
       ${boxStyles}
-      ${fontStyles(model.font)}
+      ${fontStyles(model.font, customTextStyle)}
 
       /* antd repaints the background on :hover (hoverBg), :focus/:focus-within (activeBg) and
          on the error/warning statuses — the latter with the \`background\` shorthand, which also
@@ -31,6 +34,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: IAddressCo
       &&&&[class*="-status-error"],
       &&&&[class*="-status-warning"] {
         ${configuredAppearance}
+        ${fontStyles(model.font, customTextStyle)}
       }
 
       /* The control renders an antd Input with both \`allowClear\` and a prefix icon, so it is
@@ -52,12 +56,12 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: IAddressCo
           margin: 0;
           padding: 0;
           height: 100%;
-          ${fontStyles(model.font)}
+          ${fontStyles(model.font, customTextStyle)}
         }
       }
 
       input.${prefixCls}-input {
-        ${fontStyles(model.font)}
+        ${fontStyles(model.font, customTextStyle)}
       }
   `);
 

@@ -83,6 +83,7 @@ export const UrlAutocomplete = <TValue = unknown>(props: UrlAutocompleteProps<TV
       onChange={props.onChange}
       mode={props.mode}
       readOnly={props.readOnly}
+      disabled={props.disabled}
       allowFreeText={props.allowFreeText}
       allowClear={props.allowClear}
 
@@ -99,6 +100,13 @@ export const UrlAutocomplete = <TValue = unknown>(props: UrlAutocompleteProps<TV
 
       placeholder={props.placeholder}
       size={props.size}
+      className={props.className}
+      popupClassName={props.popupClassName}
+      selectRef={props.selectRef}
+      events={props.events}
+      styleValue={props.styleValue}
+      enableStyleOnReadonly={props.enableStyleOnReadonly}
+      disableSearch={props.disableSearch}
     />
   );
 };

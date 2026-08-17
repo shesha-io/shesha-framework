@@ -12,11 +12,11 @@ export const useStyles = createStyles(({ css, cx, token }, model: ITextFieldComp
       ${borderStyles(model.border)}
       ${backgroundStyles(model.background)}
       ${shadowStyles(model.shadow)}
-      ${fontStyles(model.font)}
+      ${fontStyles(model.font, model.styleCss)}
       ${inputBoxStyles}
 
       .ant-input {
-        ${fontStyles(model.font)}
+        ${fontStyles(model.font, model.styleCss)}
       }
 
       :hover {
