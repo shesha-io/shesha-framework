@@ -1,6 +1,7 @@
 import { useFormComponentStyles } from "@/hooks/formComponentHooks";
 import { IConfigurableFormComponent, UnwrapCodeEvaluators, useShaFormInstance } from "@/providers";
-import React, { FC, useMemo } from "react";
+import { FC, useMemo } from "react";
+import * as React from "react";
 import { stylingUtils } from "../utils/stylingUtils";
 
 interface FormComponentPrepareAllStylesProps {

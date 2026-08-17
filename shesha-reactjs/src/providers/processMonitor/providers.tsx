@@ -1,4 +1,5 @@
-import React, { FC, PropsWithChildren, useEffect, useState } from "react";
+import { FC, PropsWithChildren, useEffect, useState } from "react";
+import * as React from "react";
 import { IProcessMonitor } from "./interfaces";
 import { createNamedContext } from "@/utils/react";
 import { ProcessMonitorInstance } from "./instance";

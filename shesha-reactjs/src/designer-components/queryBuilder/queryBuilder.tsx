@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { IQueryBuilderComponentPropsUnwrapped } from './interfaces';
 import { QueryBuilderRenderer } from './queryBuilderRenderer';
 import { QueryBuilderWithModelType } from './queryBuilderWithModelType';

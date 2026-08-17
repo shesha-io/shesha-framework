@@ -1,8 +1,9 @@
 /* eslint @typescript-eslint/strict-boolean-expressions: "error" */
 import { Button, Dropdown, Input, MenuProps, Spin, Tooltip, Tree, TreeProps } from 'antd';
-import React, { FC, useMemo, useRef, useState } from 'react';
+import { FC, useMemo, useRef, useState, useEffect } from 'react';
+import * as React from 'react';
 import { MoveNodePayload } from '../../apis';
-import { isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, isNodeWithChildren, TreeNode } from '../../models';
+import { isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, isNodeWithChildren, isTreeNode, TreeNode, TreeNodeType } from '../../models';
 import { CaretDownOutlined, CaretRightOutlined, RightOutlined } from '@ant-design/icons';
 import { ValidationErrors } from '@/components/validationErrors';
 import { useCsTree, useCsTreeDnd } from '../../cs/hooks';
@@ -33,7 +34,8 @@ type OnDragStart = TreeProps<TreeNode>['onDragStart'];
 type OnDragEnd = TreeProps<TreeNode>['onDragEnd'];
 
 const isNodeDraggable: IsDraggable = (node): boolean => {
-  return isConfigItemTreeNode(node) || isFolderTreeNode(node);
+  // Also gates onDragEnter/onDragOver/onDrop, so the placeholder (filter.ts) must return true here to receive drops.
+  return isConfigItemTreeNode(node) || isFolderTreeNode(node) || (isTreeNode(node) && node.nodeType === TreeNodeType.Placeholder);
 };
 
 const allowDropNode = (dragNode: TreeNode, dropNode: TreeNode, dropPosition: number): boolean => {
@@ -45,6 +47,10 @@ const allowDropNode = (dragNode: TreeNode, dropNode: TreeNode, dropPosition: num
         dragNode.parentId !== dropNode.parentId;
     }
     case DropPositions.Inside: {
+      // The empty-container placeholder (see filter.ts) stands in for its real parent folder/module.
+      if (dropNode.nodeType === TreeNodeType.Placeholder)
+        return dragNode.moduleId === dropNode.moduleId && dragNode.parentId !== dropNode.parentId;
+
       if (!isFolderTreeNode(dropNode) && !isModuleTreeNode(dropNode))
         return false;
       if (dragNode.moduleId !== dropNode.moduleId)
@@ -67,7 +73,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
   const cs = useConfigurationStudio();
   const { getDocumentDefinition } = useConfigurationStudioEnvironment();
   const { treeNodes, loadTreeAsync, treeLoadingState, expandedKeys, selectedKeys, selectedNodes, onNodeExpand, quickSearch, setQuickSearch, getTreeNodeById } = useCsTree();
-  const { setIsDragging } = useCsTreeDnd();
+  const { isDragging, setIsDragging } = useCsTreeDnd();
   // Anchor for shift+click/shift+arrow range selection: the last node clicked without shift.
   const lastClickedKeyRef = useRef<React.Key | null>(null);
   // End of the shift-selection range; also drives Tree's controlled `activeKey` (null = uncontrolled).
@@ -78,12 +84,70 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
 
   const filteredTreeNodes = useFilteredTreeNodes(treeNodes, quickSearch);
 
-  // Flat DFS walk of currently visible (expanded) nodes — used for shift+click range and shift+arrow.
+  // Auto-expand a collapsed folder hovered during a drag, bypassing antd Tree's own gated drag events.
+  useEffect(() => {
+    if (!isDragging)
+      return undefined;
+
+    let hoveredNodeId: string | null = null;
+    let expandTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    const clearPending = (): void => {
+      hoveredNodeId = null;
+      if (expandTimeout !== null) {
+        clearTimeout(expandTimeout);
+        expandTimeout = null;
+      }
+    };
+
+    const handleNativeDragOver = (event: DragEvent): void => {
+      const target = event.target instanceof Element ? event.target : null;
+      const nodeId = target?.closest<HTMLElement>('[data-node-id]')?.dataset['nodeId'] ?? null;
+
+      if (nodeId === hoveredNodeId)
+        return;
+
+      clearPending();
+      if (nodeId === null)
+        return;
+
+      const node = getTreeNodeById(nodeId);
+      if (!isDefined(node) || !isNodeWithChildren(node) || (expandedKeys ?? []).includes(node.key))
+        return;
+
+      hoveredNodeId = nodeId;
+      expandTimeout = setTimeout(() => {
+        expandTimeout = null;
+        cs.onTreeNodeExpand([...(expandedKeys ?? []), node.key]);
+      }, 500);
+    };
+
+    // A null relatedTarget means the cursor left the whole page, not just moved between rows.
+    const handleDocumentDragLeave = (event: DragEvent): void => {
+      if (!(event.relatedTarget instanceof Element))
+        clearPending();
+    };
+    const handleWindowBlur = (): void => {
+      clearPending();
+    };
+
+    document.addEventListener('dragover', handleNativeDragOver, true);
+    document.addEventListener('dragleave', handleDocumentDragLeave, true);
+    window.addEventListener('blur', handleWindowBlur);
+    return () => {
+      document.removeEventListener('dragover', handleNativeDragOver, true);
+      document.removeEventListener('dragleave', handleDocumentDragLeave, true);
+      window.removeEventListener('blur', handleWindowBlur);
+      clearPending();
+    };
+  }, [isDragging, expandedKeys, getTreeNodeById, cs]);
+
   const flatVisibleNodes = useMemo<TreeNode[]>(() => {
     const result: TreeNode[] = [];
     const walk = (nodes: TreeNode[]): void => {
       for (const node of nodes) {
-        result.push(node);
+        if (node.nodeType !== TreeNodeType.Placeholder)
+          result.push(node);
         if (isNodeWithChildren(node) && isDefined(expandedKeys) && expandedKeys.includes(node.key))
           walk(node.children as TreeNode[]);
       }
@@ -122,6 +186,8 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
   };
 
   const handleClick: OnClickHandler = (_, node) => {
+    if (node.nodeType === TreeNodeType.Placeholder)
+      return;
     cs.clickTreeNode(node);
   };
 
@@ -136,6 +202,13 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
         return isFolderTreeNode(dropNodeParent) ? dropNodeParent.id : undefined;
       }
       default: {
+        // Placeholders exist under empty folders and modules - only resolve to an id if the parent is a folder.
+        if (dropNode.nodeType === TreeNodeType.Placeholder) {
+          const parentNode = isDefined(dropNode.parentId)
+            ? getTreeNodeById(dropNode.parentId)
+            : undefined;
+          return isFolderTreeNode(parentNode) ? parentNode.id : undefined;
+        }
         return isFolderTreeNode(dropNode) ? dropNode.id : undefined;
       }
     }
@@ -181,6 +254,11 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
 
   const handleNodeRightClick: OnRightClick = ({ event, node }) => {
     event.preventDefault();
+    if (node.nodeType === TreeNodeType.Placeholder) {
+      // preventDefault() alone doesn't stop this from bubbling to the wrapping Dropdown.
+      event.stopPropagation();
+      return;
+    }
     setContextNode(node);
   };
 
@@ -297,6 +375,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
                   showLine
                   showIcon
                   multiple
+                  virtual={false}
                   switcherIcon={(node) => node.expanded === true ? <CaretDownOutlined /> : <CaretRightOutlined />}
 
                   treeData={filteredTreeNodes}

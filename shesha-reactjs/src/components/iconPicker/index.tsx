@@ -1,4 +1,5 @@
-import React, { FC, ReactNode, useMemo, useState } from 'react';
+import { FC, ReactNode, useMemo, useState } from 'react';
+import * as React from 'react';
 import { IconBaseProps } from '@ant-design/icons/lib/components/Icon';
 import { FilledIconTypes, FILLED_ICON_GROUPS } from './iconNamesFilled';
 import { ShaIcon } from '@/components/shaIcon';

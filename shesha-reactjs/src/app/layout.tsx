@@ -1,4 +1,5 @@
-import React, { Suspense } from 'react';
+import { Suspense } from 'react';
+import * as React from 'react';
 
 import { AppProvider } from './app-provider';
 import { unstable_noStore as noStore } from 'next/cache';
@@ -28,4 +29,4 @@ export default function RootLayout({
       </body>
     </html>
   );
-};
+}

@@ -1,5 +1,6 @@
 import { ISidebarMenuItem, isSidebarGroup } from '@/interfaces/sidebar';
-import React, { FC } from 'react';
+import { FC } from 'react';
+import * as React from 'react';
 import { SidebarListGroup } from './sidebarListGroup';
 import { SidebarListItem } from './sidebarListItem';
 import { ItemChangeDetails, NestedItemsRenderingArgs } from '@/components/listEditor';

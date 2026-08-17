@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { CodeEditor } from './codeEditor';
 import { ICodeEditorProps } from './interfaces';
 import { useAvailableStandardConstantsMetadata } from '@/utils/metadata/hooks';

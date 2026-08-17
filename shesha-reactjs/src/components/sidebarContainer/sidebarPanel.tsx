@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
 import classNames from 'classnames';
 import { RightOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';

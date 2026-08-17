@@ -1,9 +1,4 @@
-import React, {
-  FC,
-  PropsWithChildren,
-  useContext,
-  useState,
-} from 'react';
+import { FC, PropsWithChildren, useContext, useState } from 'react';
 import { FormFullName, FormIdentifier } from '@/interfaces';
 import { IConfigurableActionConfiguration, useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { IKeyValue } from '@/interfaces/keyValue';

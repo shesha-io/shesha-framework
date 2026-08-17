@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC } from 'react';
+import { CSSProperties, FC } from 'react';
 import { IconType, StoredFilesRendererBase } from '@/components/';
 import { IInputStyles, IStyleValue, useAttachmentsEditorActions, useAttachmentsEditorState } from '@/providers';
 import { LayoutType, ListType } from '@/designer-components/attachmentsEditor/attachmentsEditor';

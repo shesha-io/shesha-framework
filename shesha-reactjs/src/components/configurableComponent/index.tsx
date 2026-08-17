@@ -1,4 +1,5 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
+import * as React from 'react';
 import { IHasVersion, Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 
 export interface IComponentStateProps<TSettings = unknown> {
@@ -21,7 +22,7 @@ export interface ISettingsEditorProps<TSettings = unknown> {
   settings: TSettings | undefined;
   onSave: (settings: TSettings) => void;
   onCancel: () => void;
-};
+}
 
 export interface ISettingsEditor<TSettings = unknown> {
   render: (props: ISettingsEditorProps<TSettings>) => ReactNode;

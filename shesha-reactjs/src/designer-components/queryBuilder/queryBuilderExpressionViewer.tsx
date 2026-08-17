@@ -1,6 +1,6 @@
 import { CodeEditor } from '@/components/codeEditor/codeEditor';
 import { useAvailableStandardConstantsMetadata } from '@/utils/metadata/hooks';
-import React, { FC } from 'react';
+import { FC } from 'react';
 
 type JsonPrimitive = string | number | boolean | null;
 export type JsonValue = JsonPrimitive | JsonValue[] | { [key: string]: JsonValue };

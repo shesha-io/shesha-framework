@@ -29,6 +29,7 @@ namespace Shesha.ConfigurationStudio
                     Id = e.Id,
                     ParentId = e.ParentId,
                     ModuleId = e.ModuleId,
+                    ApplicationId = e.ApplicationId,
                     NodeType = e.NodeType,
                     ItemType = !string.IsNullOrWhiteSpace(e.Discriminator)
                         ? CiHelper.GetItemTypeByDiscriminator(e.Discriminator)

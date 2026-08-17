@@ -26,6 +26,10 @@ export type CheckboxGroupCommonProps = IInputStyles & INestedStyleValue<'checkbo
   referenceListName?: string | undefined;
   referenceListId?: IReferenceListIdentifier | undefined;
   dataSourceType: DataSourceType;
+  /** Endpoint backing the `url` data source. */
+  dataSourceUrl?: string | undefined;
+  /** Script mapping the `url` response to `{ label, value }` pairs. */
+  reducerFunc?: string | undefined;
   direction?: DirectionType | undefined;
   style?: CSSProperties | undefined;
   styleJson?: CSSProperties | undefined;
@@ -60,4 +64,6 @@ export type ICheckboxGroupProps<TValue = string> = CheckboxGroupCommonProps & {
   onKeyUp?: KeyboardEventHandler<HTMLDivElement> | undefined;
   /** Imperative handle backing the component API's `focus()` — the group has no single input element. */
   focusRef?: RefObject<CheckboxGroupFocusHandle | null> | undefined;
+  /** The evaluated `checkbox.style` expression, emitted onto each checkbox by useStyles. */
+  checkboxStyleJson?: CSSProperties | undefined;
 };

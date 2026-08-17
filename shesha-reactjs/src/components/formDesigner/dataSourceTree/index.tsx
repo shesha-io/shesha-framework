@@ -1,6 +1,7 @@
 import { Tree } from 'antd';
 import { DataNode } from 'antd/lib/tree';
-import React, { FC, useMemo, useState, useEffect, ReactNode, Key } from 'react';
+import { FC, useMemo, useState, useEffect, ReactNode, Key } from 'react';
+import * as React from 'react';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { IPropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { TOOLBOX_DATA_ITEM_DROPPABLE_KEY } from '@/providers/form/models';

@@ -1,5 +1,5 @@
 import { isDefined } from '@/utils/nullables';
-import React, { FC, Fragment, ReactNode } from 'react';
+import { isValidElement, FC, Fragment, ReactNode } from 'react';
 
 export type ReactNodeOrFunc = ReactNode | (() => ReactNode);
 
@@ -14,9 +14,9 @@ export const NodeOrFuncRenderer: FC<NodeOrFuncRendererProps> = ({ children }) =>
 
   if (!isDefined(value)) return value;
 
-  const isRactArray = Array.isArray(value) && value.every((item) => !isDefined(item) || React.isValidElement<unknown>(item as unknown));
+  const isRactArray = Array.isArray(value) && value.every((item) => !isDefined(item) || isValidElement<unknown>(item as unknown));
   const element = typeof value === 'object'
-    ? React.isValidElement(value) || isRactArray
+    ? isValidElement(value) || isRactArray
       ? value
       : '[object]'
     : value;

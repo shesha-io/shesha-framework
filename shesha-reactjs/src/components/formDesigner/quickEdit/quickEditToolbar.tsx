@@ -1,6 +1,6 @@
 import { useFormDesignerReadOnly } from '@/providers/formDesigner';
 import { App, Space } from 'antd';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { DebugButton } from '../toolbar/debugButton';
 import { FormSettingsButton } from '../toolbar/formSettingsButton';
 import { OpenOnNewPageButton } from '../toolbar/openOnNewPageButton';

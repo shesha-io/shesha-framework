@@ -2,9 +2,10 @@ import { createStyles } from '@/styles';
 import { getOverflowStyle } from '../_settings/utils/overflow/util';
 import { CSSObject } from 'antd-style';
 import { IContainerComponentProps } from './interfaces';
-import { backgroundStyles, borderStyles, marginStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
+import { backgroundStyles, borderStyles, dimensionsStyles, marginStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
 import { isDefined } from '@/utils';
 import { addPx } from '@/utils/style';
+import { getFullSizeComponentDimensions } from '@/components/formDesigner/utils/stylingUtils';
 
 export const useStyles = createStyles(({ css, cx }, model: IContainerComponentProps) => {
   const overflowStyles = { ...getOverflowStyle(true, false) };
@@ -18,15 +19,15 @@ export const useStyles = createStyles(({ css, cx }, model: IContainerComponentPr
   const gridRowHeight = addPx(model.gridRowsHeight) ?? 'auto';
 
   const container = cx("sha-container-component", css`
+        transition: all 0.2s ease;
+
         overflow: hidden;
+        ${dimensionsStyles(getFullSizeComponentDimensions(model.dimensions))}
         ${borderStyles(model.border)}
         ${backgroundStyles(model.background)}
         ${shadowStyles(model.shadow)}
-        ${marginStyles(model.stylingBoxJson)}
         ${paddingStyles(model.stylingBoxJson)}
-        /* dimensions will by applied to the wrapper div */
-        height: 100%;
-        width: 100%;
+        ${marginStyles(model.stylingBoxJson)}
 
         ${isDefined(model.alignSelf) ? `align-self: ${model.alignSelf};` : ''}
         ${isDefined(model.justifySelf) ? `justify-self: ${model.justifySelf};` : ''}

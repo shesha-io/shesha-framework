@@ -1,5 +1,4 @@
 import { IColorPickerSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React from 'react';
 import { FCUnwrapped } from '@/providers/form/models';
 import { ColorPicker } from '@/components/colorPicker';
 import { ColorValueType } from 'antd/es/color-picker/interface';

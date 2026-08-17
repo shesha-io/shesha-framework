@@ -2,7 +2,6 @@ import { IToolboxComponent } from '@/interfaces';
 import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
 import { ApartmentOutlined } from '@ant-design/icons';
 import settingsFormJson from './settingsForm.json';
-import React from 'react';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import PermissionedObjectsTree from '@/components/permissionedObjectsTree';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';

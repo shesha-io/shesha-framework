@@ -1,4 +1,12 @@
-import React, { FC, PropsWithChildren, ReactNode, useEffect, useState, useMemo, useCallback } from 'react';
+import {
+  FC,
+  PropsWithChildren,
+  ReactNode,
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+} from 'react';
 import classNames from 'classnames';
 
 import { ISidebarProps, SidebarPanelPosition } from './models';

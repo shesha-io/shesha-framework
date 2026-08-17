@@ -1,4 +1,4 @@
-import React, { useMemo, FC, Fragment, PropsWithChildren, ReactNode } from 'react';
+import { useMemo, FC, Fragment, PropsWithChildren, ReactNode } from 'react';
 
 export interface IShowProps {
   when: boolean;

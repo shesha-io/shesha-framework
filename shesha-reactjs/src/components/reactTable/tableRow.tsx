@@ -1,6 +1,7 @@
 import { MoreOutlined } from '@ant-design/icons';
 import classNames from 'classnames';
-import React, { FC, ReactNode, useRef } from 'react';
+import { FC, ReactNode, useRef } from 'react';
+import * as React from 'react';
 import { Row } from 'react-table';
 import { RowCell } from './rowCell';
 import { CrudProvider } from '@/providers/crudContext';

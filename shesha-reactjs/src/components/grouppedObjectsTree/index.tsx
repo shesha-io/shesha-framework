@@ -1,4 +1,5 @@
-import React, { useMemo, useEffect, ReactNode, useCallback } from 'react';
+import { useMemo, useEffect, ReactNode, useCallback } from 'react';
+import * as React from 'react';
 import { Collapse, Empty } from 'antd';
 import { getLastSection } from '@/utils/string';
 import { ObjectsTree } from './objectsTree';

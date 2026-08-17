@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren } from 'react';
+import { FC, PropsWithChildren } from 'react';
 import { QueryBuilderProvider, useMetadataOrUndefined } from '@/providers';
 
 export const QueryBuilderWrapper: FC<PropsWithChildren> = ({ children }) => {

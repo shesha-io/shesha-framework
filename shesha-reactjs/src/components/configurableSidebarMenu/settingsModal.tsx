@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
 import { SidebarConfigurator } from './configurator';
 import { ISettingsEditorProps } from '@/components/configurableComponent';
 import { ISideBarMenuProps } from '.';

@@ -1,7 +1,7 @@
 import { EditMode, IPropertySetting } from '@/providers';
 import { getPropertySettingsFromValue, isPropertySettings } from '@/designer-components/_settings/utils/utils';
 import { getStringPropertyOrUndefined } from '@/utils/object';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 export const migrateFunctionToProp = <T extends object = object>(
   prev: T,
@@ -51,7 +51,7 @@ export const migrateCustomFunctions = <T extends object = object>(prev: T): T =>
 export const migratePropertyName = <T extends object = object>(prev: T): T => {
   const name = getStringPropertyOrUndefined(prev, "name");
   const propertyName = getStringPropertyOrUndefined(prev, "propertyName");
-  if (!!name && !propertyName)
+  if (!isNullOrWhiteSpace(name) && isNullOrWhiteSpace(propertyName))
     return { ...prev, componentName: name, propertyName: name } as T;
   else
     return { ...prev } as T;
@@ -73,7 +73,7 @@ export const migratePropToInverseProp = <T, V>(prev: T, fromProp: keyof T, toPro
 
   if (isPropertySettings(model[toProp])) {
     const existingCode = model[toProp]['_code'];
-    if (!existingCode) return model;
+    if (isNullOrWhiteSpace(existingCode)) return model;
     const func = `// Automatically updated from '${String(fromProp)}' property, please review\n\nreturn !(() => {\n    // Source code\n\n${existingCode}\n\n})();`;
     model[toProp] = { ...model[toProp] as IPropertySetting<V>, _code: func, _value: model[toProp]['_value'] } as T[keyof T];
   }
@@ -84,8 +84,10 @@ export const migratePropToInverseProp = <T, V>(prev: T, fromProp: keyof T, toPro
   return model;
 };
 
-export const migrateHiddenToVisible = <T>(prev: T): T => {
-  const newModel = migratePropToInverseProp(prev, 'hidden' as keyof T, 'visible' as keyof T);
+export const migrateHiddenToVisible = <T extends { visible?: boolean | undefined; hidden?: boolean | undefined }>(
+  prev: T,
+): Omit<T, 'hidden'> & { visible?: boolean | undefined } => {
+  const newModel = !isDefined(prev.visible) ? migratePropToInverseProp(prev, 'hidden' as keyof T, 'visible' as keyof T) : { ...prev };
   delete newModel['hidden' as keyof T];
   return newModel;
 };

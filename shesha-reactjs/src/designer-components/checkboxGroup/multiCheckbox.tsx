@@ -1,13 +1,14 @@
 import { useReferenceList } from '@/providers/referenceListDispatcher';
 import { nanoid } from '@/utils/uuid';
 import { Checkbox, CheckboxOptionType } from 'antd';
-import React, { CSSProperties, FC, useImperativeHandle, useMemo, useRef } from 'react';
+import { CSSProperties, FC, useImperativeHandle, useMemo, useRef } from 'react';
 import { getDataSourceList } from '../radio/utils';
 import { ICheckboxGroupProps } from './interfaces';
 import { DEFAULT_MARGINS } from '@/components/formDesigner/utils/designerConstants';
 import { isDefined } from '@/utils/nullables';
 import { useStyles } from './styles';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
+import { useUrlDataSource } from '../_common/useUrlDataSource';
 
 const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
   const { items = [], referenceListId, direction, value, onChange } = model;
@@ -28,11 +29,12 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
   }), [isDisabled]);
 
   const { data: refList } = useReferenceList(referenceListId);
+  const urlData = useUrlDataSource(model);
 
   const options = useMemo<CheckboxOptionType[]>(() => {
-    const list = getDataSourceList(model.dataSourceType, items, refList?.items);
+    const list = getDataSourceList(model.dataSourceType, items, refList?.items, urlData);
     return list.map<CheckboxOptionType>((item) => (item.id ? item : { ...item, id: nanoid(), key: nanoid() }));
-  }, [model.dataSourceType, items, refList?.items]);
+  }, [model.dataSourceType, items, refList?.items, urlData]);
 
   // Per-checkbox appearance (check mark, dimensions, border, background, etc.)
   // is emitted by the scoped emotion class onto each `.ant-checkbox-inner`;
@@ -45,7 +47,7 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
     flexWrap: direction === 'vertical' ? 'nowrap' : 'wrap',
     gap: '8px',
     // Honour the Custom style (styleJson) at the group level.
-    ...(isDefined(model.styleJson) ? model.styleJson : {}),
+    ...(isDefined(model.styleCss) ? model.styleCss : {}),
   };
 
   const selectedValues = isDefined(value) ? (Array.isArray(value) ? value : [value]) : [];
@@ -61,7 +63,7 @@ const MultiCheckbox: FC<ICheckboxGroupProps> = (model) => {
     return (
       <ReadOnlyDisplayFormItem
         value={selectedLabels}
-        style={model.styleJson}
+        style={model.styleCss}
         styleValue={model}
       />
     );

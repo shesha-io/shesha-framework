@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 import { INumberFieldComponentProps } from './interfaces';
-import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, marginStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
+import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
 import { isDefined, isNotNullOrWhiteSpace } from '@/utils';
 
 export const useStyles = createStyles(({ css, cx }, model: INumberFieldComponentProps) => {
@@ -17,7 +17,6 @@ export const useStyles = createStyles(({ css, cx }, model: INumberFieldComponent
       ${backgroundStyles(model.background)}
       ${shadowStyles(model.shadow)}
       ${paddingStyles(model.stylingBoxJson)}
-      ${marginStyles(model.stylingBoxJson)}
       ${dimensionsStyles(model.dimensions)}
       
       //&:focus {
@@ -25,12 +24,21 @@ export const useStyles = createStyles(({ css, cx }, model: INumberFieldComponent
       //}
 
       &:hover {
-        // ${model.background && model.background.type === 'color' && `background-color: ${model.background.color};`}
         ${!hasSuffix && 'padding-right: 28px !important;'}
         transition: padding-right 0.2s ease;
       }
 
-      .ant-input-number-input {
+      /* antd repaints the background on :hover (hoverBg), :focus/:focus-within (activeBg) and the
+         error/warning statuses. Re-assert the configured background at higher specificity so those
+         states only affect the border and never the background the user configured. */
+      &&&&:hover,
+      &&&&:focus,
+      &&&&:focus-within,
+      &&&&[class*="-status-error"],
+      &&&&[class*="-status-warning"] {
+        ${backgroundStyles(model.background)}
+      }
+.ant-input-number-input {
         height: 100% !important;
         padding-left: ${hasPrefix ? '4px' : '8px'} !important;
         padding-right: ${hasSuffix ? '4px' : '8px'} !important;

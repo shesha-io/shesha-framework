@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { MusicNoteOutlined } from './musicNote';
 import { FileExcelOutlined, FileImageOutlined, FilePdfOutlined, FilePptOutlined, FileTextOutlined, FileWordOutlined, FileZipOutlined, PaperClipOutlined } from '@ant-design/icons';
 import { MovieOutlined } from './movieOutlined';

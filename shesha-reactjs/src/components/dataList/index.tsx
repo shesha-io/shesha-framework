@@ -26,7 +26,20 @@ import { Button, Checkbox, Collapse, Divider, Typography } from 'antd';
 import classNames from 'classnames';
 import { isEqual } from 'lodash';
 import moment from 'moment';
-import React, { CSSProperties, FC, ReactElement, ReactNode, RefObject, useEffect, useMemo, useRef, useState } from 'react';
+
+import {
+  CSSProperties,
+  FC,
+  ReactElement,
+  ReactNode,
+  RefObject,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+
+import * as React from 'react';
 import { usePrevious } from 'react-use';
 import { EmptyState } from "..";
 import AttributeDecorator from '../attributeDecorator';
@@ -285,7 +298,7 @@ export const DataList: FC<IDataListProps> = ({
 
   const persistedCreateFormProps = createFormInfo.current?.formConfiguration;
 
-  const fcContainerStyles = useFormComponentStyles({ ...props.container ?? {} });
+  const fcContainerStyles = useFormComponentStyles({ ...(props.container ?? {}) });
 
   const isReady = (forms: EntityForm[]): void => {
     // Check if all forms have finished loading (either successfully or with an error)

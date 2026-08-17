@@ -188,6 +188,7 @@ export interface ICodeEditorSettingsInputProps extends ISettingsInputBase<string
   resultTypeExpression?: string | GetResultTypeFunc | undefined;
   availableConstantsExpression?: string | undefined;
   availableConstants?: IObjectMetadata | undefined;
+  /** @deprecated use availableConstantsExpression or availableConstants */
   exposedVariables?: string[] | ICodeExposedVariable[] | undefined;
 }
 
@@ -334,7 +335,7 @@ export interface IIconPickerSettingsInputProps extends ISettingsInputBase<string
 }
 
 // Multi Color Picker
-export interface IMultiColorPickerSettingsInputProps extends ISettingsInputBase<{ [key: string]: string | undefined }> {
+export interface IMultiColorPickerSettingsInputProps extends ISettingsInputBase<string[] | Record<string, string | undefined>> {
   type: 'multiColorPicker';
 }
 
@@ -548,7 +549,6 @@ export type ISettingsInputSettingsInputProps = {
 }[InputTypes];
 
 export type ISettingsInputProps = (BaseInputProps | ISettingsInputSettingsInputProps) & {
-  skipInheritance?: boolean;
   permissionSettings?: boolean;
 };
 

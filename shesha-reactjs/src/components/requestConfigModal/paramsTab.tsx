@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { Button, Input, Switch, Table, Tooltip } from 'antd';
 import { DeleteOutlined, PlusOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { IRequestParam } from './models';

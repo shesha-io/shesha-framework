@@ -2,7 +2,7 @@ import { ButtonType } from 'antd/es/button/buttonHelpers';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IDynamicActionsConfiguration } from '@/designer-components/dynamicActionsConfigurator/models';
-import React from 'react';
+import * as React from 'react';
 import { IFullAuditedEntity } from '@/publicJsApis/apis/entities';
 import { ListItemWithId } from '@/components/listEditor/models';
 import { isDefined } from '@/utils/nullables';
@@ -34,7 +34,9 @@ export interface IButtonGroupItemBase extends IStyleValue {
   tooltip?: string | undefined;
   sortOrder?: number | undefined;
   danger?: boolean | undefined;
+  /** @deprecated use visible instead. Will be removed after refactoring all components */
   hidden?: boolean | undefined;
+  visible?: boolean | undefined;
   isDynamic?: boolean | undefined;
   itemType?: ButtonGroupItemType | undefined;
   icon?: string | undefined;
@@ -46,6 +48,7 @@ export interface IButtonGroupItemBase extends IStyleValue {
   size?: SizeType | undefined;
   editMode?: EditMode | undefined;
   readOnly?: boolean | undefined;
+  disabled?: boolean | undefined;
   width?: string | undefined;
   height?: string | undefined;
   backgroundColor?: string | undefined;

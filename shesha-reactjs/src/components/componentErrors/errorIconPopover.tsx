@@ -1,4 +1,5 @@
-import React, { FC, PropsWithChildren } from 'react';
+import { FC, PropsWithChildren } from 'react';
+import * as React from 'react';
 import { InfoCircleFilled } from '@ant-design/icons';
 import { Popover } from 'antd';
 import { IModelValidation, ISheshaErrorTypes } from '@/utils/errors';

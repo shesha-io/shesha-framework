@@ -1,5 +1,5 @@
 import { Menu, Collapse, Empty, Spin, Checkbox, Divider } from 'antd';
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 import { useLocalStorage } from '@/hooks';
 import SearchBox from './searchBox';
 import { useSettingsEditor } from './provider/index';

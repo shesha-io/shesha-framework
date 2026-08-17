@@ -1,4 +1,4 @@
-import React, { ReactNode, SyntheticEvent } from "react";
+import { ReactNode, SyntheticEvent } from "react";
 import { Form, FormItemProps } from "antd";
 import { IConfigurableFormItemChildFunc } from "./model";
 import { DataBinder } from "@/hocs/dataBinder";

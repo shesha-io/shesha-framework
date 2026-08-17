@@ -6,7 +6,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { GroupOutlined } from '@ant-design/icons';
 import { nanoid } from '@/utils/uuid';
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { CollapsiblePanelComponentDefinition, ICollapsiblePanelComponentProps, ICollapsiblePanelComponentPropsV0, ICollapsiblePanelContent } from './interfaces';
 import ParentProvider from '@/providers/parentProvider/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
@@ -27,6 +27,8 @@ import { useEvents } from '@/components/formDesigner/components/eventsAndApiValu
 import { getComponentEvents } from '../_common/events';
 import { getStyleValueFromModel } from '../_common/styles/utils';
 import { IStyleValue } from '@/providers';
+import { getFullSizeWrapperDesignerStyle } from '@/components/formDesigner/utils/stylingUtils';
+import { EMPTY_STYLE } from '@/styles/variables';
 
 const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
   allowInherit: true,
@@ -34,7 +36,7 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
   isInput: false,
   name: 'Panel',
   icon: <GroupOutlined />,
-  getWrapperStyle: (model) => ({ dimensions: model?.dimensions, stylingBoxJson: { _type: 'styleBox', paddingLeft: 2, paddingRight: 2, paddingTop: 2, paddingBottom: 2 } }),
+  getWrapperStyle: (model) => getFullSizeWrapperDesignerStyle(model),
   useCalculateModel(model, allData) {
     const evaluatedLabel = typeof model.label === 'string' ? evaluateString(model.label, { data: allData.data }) : model.label;
     const calcModel = useMemo(() => ({ evaluatedLabel }), [evaluatedLabel]);
@@ -87,15 +89,14 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
         <CollapsiblePanel
           {...getStyleValueFromModel(model)}
           headerStyles={model.headerStyles}
-          style={model.styleJson ?? {}}
+          style={model.styleCss ?? EMPTY_STYLE}
           header={isDefined(model.header) && isNonEmptyArray(model.header.components) ? (
-            <div {...getComponentEvents<void>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent }, undefined, undefined, 'headerEvents')}>
-              <ComponentsContainer
-                containerId={model.header.id}
-                dynamicComponents={isDynamic === true ? model.header.components : []}
-                className={shaHeaderComponentsContainer}
-              />
-            </div>
+            <ComponentsContainer
+              containerId={model.header.id}
+              dynamicComponents={isDynamic === true ? model.header.components : []}
+              className={shaHeaderComponentsContainer}
+              additionalDomProperties={getComponentEvents<void>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent }, undefined, undefined, 'headerEvents')}
+            />
           ) : calculatedModel.evaluatedLabel}
           {...(!isIconHidden && expandIconPosition ? { expandIconPlacement: expandIconPosition } : {})}
           showArrow={collapsible !== 'disabled' && !isIconHidden}
@@ -112,12 +113,11 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
           onChange={onChange}
         >
           {isDefined(content) && (
-            <div {...getComponentEvents<void, ICollapsiblePanelComponentProps>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent })}>
-              <ComponentsContainer
-                containerId={content.id}
-                dynamicComponents={isDynamic === true ? content.components : []}
-              />
-            </div>
+            <ComponentsContainer
+              containerId={content.id}
+              dynamicComponents={isDynamic === true ? content.components : []}
+              additionalDomProperties={getComponentEvents<void, ICollapsiblePanelComponentProps>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent })}
+            />
           )}
         </CollapsiblePanel>
       </ParentProvider>
@@ -188,9 +188,9 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
 
         const accentStyle = prev.overflow === undefined;
         return {
-          ...prev, accentStyle, desktop: { ...prev.desktop, accentStyle },
-          tablet: { ...prev.tablet, accentStyle },
-          mobile: { ...prev.mobile, accentStyle },
+          ...prev, accentStyle, desktop: { styleCss: {}, ...prev.desktop, accentStyle },
+          tablet: { styleCss: {}, ...prev.tablet, accentStyle },
+          mobile: { styleCss: {}, ...prev.mobile, accentStyle },
         };
       })
       .add<ICollapsiblePanelComponentProps>(9, (prev, ctx) => {
@@ -199,9 +199,9 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
         const newModel = migratePrevStyles(prev, getDefaultStyles(prev));
         const defaultHeaderStyle = (): IStyleValue => ({ ...getDefaultHeaderStyles(prev) });
         return {
-          ...newModel, desktop: { ...newModel.desktop, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle() },
-          tablet: { ...newModel.tablet, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle() },
-          mobile: { ...newModel.mobile, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle() },
+          ...newModel, desktop: { styleCss: {}, ...newModel.desktop, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle() },
+          tablet: { styleCss: {}, ...newModel.tablet, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle() },
+          mobile: { styleCss: {}, ...newModel.mobile, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle() },
         };
       })
       .add<ICollapsiblePanelComponentProps>(10, migrateV9toV10)

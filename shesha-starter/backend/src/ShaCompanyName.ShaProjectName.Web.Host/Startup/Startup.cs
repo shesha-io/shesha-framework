@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
@@ -215,7 +216,10 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
 					Authorization = new[] { new HangfireAuthorizationFilter() }
 				});
 			app.UseMiddleware<GraphQLMiddleware>();
-			app.UseGraphQLPlayground(); //to explorer API navigate https://*DOMAIN*/ui/playground
+			if (_hostEnvironment.IsDevelopment())
+			{
+				app.UseGraphQLPlayground(); //to explorer API navigate https://*DOMAIN*/ui/playground
+			}
 		}
 
 		private void AddApiVersioning(IServiceCollection services)
@@ -234,6 +238,9 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
 
                 options.SchemaFilter<DynamicDtoSchemaFilter>();
                 options.OperationFilter<SwaggerOperationFilter>();
+                // The line below will need to be uncommented when SwaggerUiDocumentFilter
+                // becomes available in Shesha
+                //options.DocumentFilter<SwaggerUiDocumentFilter>();
 
 				options.CustomSchemaIds(type => SwaggerHelper.GetSchemaId(type));
 

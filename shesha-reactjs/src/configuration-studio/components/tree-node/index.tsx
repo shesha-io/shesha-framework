@@ -1,8 +1,9 @@
+/* eslint @typescript-eslint/strict-boolean-expressions: "error" */
 import { DateDisplay } from '@/components/dateDisplay';
 import { isConfigItemTreeNode, ITEM_TYPES, TreeNode } from '@/configuration-studio/models';
 import { useIsDevMode } from '@/hooks/useIsDevMode';
 import { Popover, Typography } from 'antd';
-import React, { FC, PropsWithChildren, ReactNode, useMemo } from 'react';
+import { Fragment, FC, PropsWithChildren, ReactNode, useMemo } from 'react';
 import { NodeIndicator } from './nodeIndicators';
 import { gray } from '@ant-design/colors';
 import { useCsTreeDnd } from '@/configuration-studio/cs/hooks';
@@ -53,6 +54,12 @@ const LabelValue: FC<LabelValueProps> = ({ data }) => {
 
 const GRAY_OUT_STYLE = { color: gray.primary };
 
+const getNodeTitle = (node: TreeNode): string | undefined => {
+  return isConfigItemTreeNode(node) && !isNullOrWhiteSpace(node.applicationName)
+    ? `Application: ${node.applicationName}`
+    : undefined;
+};
+
 export const CsTreeNode: FC<ICsTreeNodeProps> = ({ node, children }) => {
   const isDevMode = useIsDevMode();
   const { isDragging } = useCsTreeDnd();
@@ -65,6 +72,9 @@ export const CsTreeNode: FC<ICsTreeNodeProps> = ({ node, children }) => {
     if (isDevMode)
       result.push({ label: 'Id', value: <Typography.Text copyable>{node.id}</Typography.Text> });
 
+    if (!isNullOrWhiteSpace(node.applicationName))
+      result.push({ label: 'Application', value: node.applicationName });
+
     if (node.flags.isExposed)
       result.push({ label: 'Exposed from', value: node.baseModule });
     if (!isNullOrWhiteSpace(node.description))
@@ -73,7 +83,7 @@ export const CsTreeNode: FC<ICsTreeNodeProps> = ({ node, children }) => {
       const typeName = getItemTypeFriendlyName(node.itemType);
       const modUser = node.lastModifierUser;
       const modTime = node.lastModificationTime;
-      if (modUser && modTime) {
+      if (!isNullOrWhiteSpace(modUser) && !isNullOrWhiteSpace(modTime)) {
         result.push(
           <div>
             {typeName} was last updated by {modUser} on{' '}
@@ -81,9 +91,9 @@ export const CsTreeNode: FC<ICsTreeNodeProps> = ({ node, children }) => {
             <DateDisplay format="h:mm A">{modTime}</DateDisplay>
           </div>,
         );
-      } else if (modUser) {
+      } else if (!isNullOrWhiteSpace(modUser)) {
         result.push(<div>{typeName} was last updated by {modUser}</div>);
-      } else if (modTime) {
+      } else if (!isNullOrWhiteSpace(modTime)) {
         result.push(
           <div>
             {typeName} was last updated on{' '}
@@ -97,7 +107,7 @@ export const CsTreeNode: FC<ICsTreeNodeProps> = ({ node, children }) => {
     } else {
       const modUser = node.lastModifierUser;
       const modTime = node.lastModificationTime;
-      if (modUser && modTime) {
+      if (!isNullOrWhiteSpace(modUser) && !isNullOrWhiteSpace(modTime)) {
         const typeName = getItemTypeFriendlyName(node.itemType);
         result.push(
           <div>
@@ -121,7 +131,7 @@ export const CsTreeNode: FC<ICsTreeNodeProps> = ({ node, children }) => {
       <Popover
         content={(
           <div>
-            {items.map((item, index) => (isLabelValueItem(item) ? <LabelValue key={index} data={item} /> : <React.Fragment key={index}>{item}</React.Fragment>))}
+            {items.map((item, index) => (isLabelValueItem(item) ? <LabelValue key={index} data={item} /> : <Fragment key={index}>{item}</Fragment>))}
           </div>
         )}
         trigger="hover"
@@ -131,5 +141,5 @@ export const CsTreeNode: FC<ICsTreeNodeProps> = ({ node, children }) => {
         <span style={nodeStyle}>{children} <NodeIndicator node={node} /></span>
       </Popover>
     )
-    : <span style={nodeStyle}>{children} <NodeIndicator node={node} /></span>;
+    : <span style={nodeStyle} title={getNodeTitle(node)}>{children} <NodeIndicator node={node} /></span>;
 };

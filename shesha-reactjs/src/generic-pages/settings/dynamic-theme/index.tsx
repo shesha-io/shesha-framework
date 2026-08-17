@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { Page } from '@/components/page';
 import { ConfigurableThemeContent } from './content';
 import { useTheme } from '@/providers/theme';

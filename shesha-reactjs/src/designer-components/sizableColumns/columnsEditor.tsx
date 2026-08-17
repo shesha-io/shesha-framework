@@ -1,6 +1,6 @@
 import { ListEditor } from '@/components/listEditor';
 import { ListItem } from '@/components/listEditor/models';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { ISizableColumnProps } from './interfaces';
 import { nanoid } from '@/utils/uuid';
 import { InputNumber } from 'antd';

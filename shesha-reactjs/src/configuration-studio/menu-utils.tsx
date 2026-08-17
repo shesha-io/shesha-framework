@@ -1,6 +1,5 @@
 import { BranchesOutlined, ExportOutlined, ImportOutlined } from "@ant-design/icons";
 import { MenuProps } from "antd";
-import React from "react";
 import { ConfigItemTreeNode, DocumentDefinition, FolderTreeNode, isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, ModuleTreeNode, TreeNode, TreeNodeType } from "./models";
 import { getIcon } from "./tree-utils";
 import { IConfigurationStudio } from "./cs/interfaces";

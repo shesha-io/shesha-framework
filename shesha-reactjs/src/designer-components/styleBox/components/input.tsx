@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { IInputDirection, IValue } from '../interfaces';
 import { getStyleClassName } from '../styles/styles';
 import camelcase from 'camelcase';

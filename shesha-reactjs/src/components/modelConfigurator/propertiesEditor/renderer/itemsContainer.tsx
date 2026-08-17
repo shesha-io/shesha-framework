@@ -1,4 +1,5 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
+import * as React from 'react';
 import { IModelItem, ISortableItem } from '@/interfaces/modelConfigurator';
 import { ReactSortable } from 'react-sortablejs';
 import { usePropertiesEditor } from '../provider';

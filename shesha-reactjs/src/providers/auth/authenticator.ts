@@ -7,7 +7,7 @@ import { AuthenticateResultModelAjaxResponse } from '@/apis/tokenAuth';
 import { GetCurrentLoginInfoOutput, GetCurrentLoginInfoOutputAjaxResponse, InitializationErrorsInfoDto, UserLoginInfoDto } from '@/apis/session';
 import { getQueryParam, isSameUrls, removeURLParameter } from '@/utils/url';
 import { IRouter } from '../shaRouting';
-import React from 'react';
+import { useRef, useState } from 'react';
 import { IAccessToken, IHttpHeaders } from '@/interfaces/accessToken';
 import { getLocalizationOrDefault } from '@/utils/localization';
 import { getTenantId } from '@/utils/multitenancy';
@@ -276,7 +276,7 @@ export class Authenticator implements IAuthenticator {
   };
 
   logoutUser = async (): Promise<void> => {
-    if (!await this.#shaRouter.validateNavigation(this.#unauthorizedRedirectUrl))
+    if (!(await this.#shaRouter.validateNavigation(this.#unauthorizedRedirectUrl)))
       return;
 
     // Get the current token before clearing (needed for logout API call)
@@ -429,8 +429,8 @@ export class Authenticator implements IAuthenticator {
 }
 
 export const useAuthenticatorInstance = (args: AuthenticatorArgs): [IAuthenticator] => {
-  const authenticatorRef = React.useRef<IAuthenticator>(undefined);
-  const [, forceUpdate] = React.useState({});
+  const authenticatorRef = useRef<IAuthenticator>(undefined);
+  const [, forceUpdate] = useState({});
 
   if (!authenticatorRef.current) {
     const forceReRender = (): void => {

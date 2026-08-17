@@ -5,7 +5,7 @@ import { DesignerMainArea } from "@/components/formDesigner/designerMainArea";
 import { useMainStyles } from "@/components/formDesigner/styles/styles";
 import { CanvasConfig } from "@/components/formDesigner/toolbar/canvasConfig";
 import { Space } from "antd";
-import React, { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect } from "react";
 import { FormToolbar } from "./toolbar";
 import { useFormDesigner } from "@/providers/formDesigner";
 import { useConfigurationStudio } from "@/configuration-studio/cs/contexts";

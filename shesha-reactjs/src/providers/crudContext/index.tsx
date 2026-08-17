@@ -1,5 +1,6 @@
 import { Form } from 'antd';
-import React, { PropsWithChildren, useCallback, useContext, useEffect, useReducer, useRef } from 'react';
+import { PropsWithChildren, useCallback, useContext, useEffect, useReducer, useRef } from 'react';
+import * as React from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { RowDataInitializer } from '@/components/reactTable/interfaces';
 import { IErrorInfo } from '@/interfaces/errorInfo';

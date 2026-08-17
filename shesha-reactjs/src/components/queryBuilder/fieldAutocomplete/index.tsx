@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { FactoryWithContext, FieldProps } from '@react-awesome-query-builder/antd';
 import { SELECT_WIDTH_OFFSET_RIGHT, calcTextWidth } from "../domUtils";
 import { IPropertyItem, IPropertySelectProps, isPropertyMetadata, PropertySelect } from "../../propertyAutocomplete/propertySelect";

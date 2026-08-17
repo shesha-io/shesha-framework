@@ -8,7 +8,7 @@ export const defaultStyles = (prev: ICollapsiblePanelComponentProps): IStyleValu
 
   return {
     background: { type: 'color', color: bodyColor },
-    dimensions: { width: 'auto', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
+    dimensions: { width: 'auto', height: 'fit-content', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
     border: {
       radiusType: 'all', borderType: 'custom',
       border: {

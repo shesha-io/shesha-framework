@@ -1,5 +1,6 @@
 import { Tag } from 'antd';
-import React, { FC, PropsWithChildren } from 'react';
+import { FC, PropsWithChildren } from 'react';
+import * as React from 'react';
 interface ITagProps {
   color?: string;
   icon?: React.ReactNode;

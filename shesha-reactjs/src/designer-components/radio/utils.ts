@@ -38,7 +38,7 @@ const defaultWrapperStyles = (): IStyleValue => {
           color: '#d9d9d9',
         },
       },
-      radius: { all: '50%' },
+      radius: { all: 0 },
       borderType: 'all',
       radiusType: 'all',
     },
@@ -84,8 +84,8 @@ const defaultRadioStyles = (): IStyleValue => {
       radiusType: 'all',
     },
     dimensions: {
-      width: 'auto',
-      height: 'auto',
+      width: '14px',
+      height: '14px',
       minHeight: '0px',
       maxHeight: 'auto',
       minWidth: '0px',
@@ -116,12 +116,15 @@ export const getDataSourceList = (
   dataSource: DataSourceType,
   values: ILabelValue[],
   refList: ReferenceListItemDto[] | undefined,
+  urlData?: ILabelValue[] | undefined,
 ): ILabelValue[] => {
   switch (dataSource) {
     case 'values':
       return values;
     case 'referenceList':
       return (refList ?? []).map(({ id, item, itemValue }) => ({ id, value: itemValue, label: item ?? "" }));
+    case 'url':
+      return urlData ?? [];
     default:
       return [];
   }

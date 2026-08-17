@@ -1,6 +1,5 @@
 import { IIconPickerSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
 import { useAvailableConstantsDataNoRefresh } from '@/providers/form/utils';
-import React from 'react';
 import { FCUnwrapped } from '@/providers/form/models';
 import { IconPickerWrapper as IconPicker } from '../../iconPicker/iconPickerWrapper';
 

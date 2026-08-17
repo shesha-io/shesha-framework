@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { ReactSortable } from 'react-sortablejs';
 import { useStyles } from './styles/styles';
 import { RefListGroupItemProps } from '../provider/models';

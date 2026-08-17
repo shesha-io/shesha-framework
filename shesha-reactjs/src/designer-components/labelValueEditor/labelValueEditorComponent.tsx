@@ -4,7 +4,6 @@ import { ILabelValueItem, LabelValueEditor } from '@/components/labelValueEditor
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { ILabelValueEditorComponentProps, LabelValueEditorComponentDefinition } from './interfaces';
 import settingsFormJson from './settingsForm.json';
-import React from 'react';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';

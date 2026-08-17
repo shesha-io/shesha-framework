@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { SwitcherOutlined } from '@ant-design/icons';
 import { Switch } from 'antd';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
@@ -69,7 +69,7 @@ const SwitchComponent: SwitchComponentDefinition = {
               className={styles.switchStyles}
               disabled={model.disabled === true || model.readOnly === true}
               checked={value ?? false}
-              {...(isDefined(model.styleJson) ? { style: model.styleJson } : {})}
+              {...(isDefined(model.styleCss) ? { style: model.styleCss } : {})}
               onChange={(checked, event) => {
                 ctx?.handleEvent(event, { value: checked }, model.onChangeCustom);
                 onChange(checked);

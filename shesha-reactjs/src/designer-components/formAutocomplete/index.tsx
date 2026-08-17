@@ -1,5 +1,4 @@
 import { FileSearchOutlined } from '@ant-design/icons';
-import React from 'react';
 import { FormAutocompleteComponentDefinition, IFormAutocompleteComponentProps } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { IConfigurableItemAutocompleteComponentProps } from '../configurableItemAutocomplete/interfaces';

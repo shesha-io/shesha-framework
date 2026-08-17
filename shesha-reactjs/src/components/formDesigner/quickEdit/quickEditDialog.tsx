@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { FormIdentifier } from '@/interfaces';
 import { Modal } from 'antd';
 import { FormDesigner } from '../index';

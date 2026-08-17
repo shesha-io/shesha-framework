@@ -1,4 +1,5 @@
-import React, { PropsWithChildren, useCallback, useEffect, useId, useRef, useState } from "react";
+import { PropsWithChildren, useCallback, useEffect, useId, useRef, useState } from "react";
+import * as React from "react";
 import { IContextMetadata, IModelMetadata } from "@/interfaces/metadata";
 import { MetadataProvider, useMetadataDispatcher } from "@/providers";
 import { useDataContextManagerActions, useDataContextRegister } from "@/providers/dataContextManager/hooks";
@@ -109,7 +110,7 @@ const DataContextBinder = <TData extends object = object>(props: PropsWithChildr
     if (props.setFieldValue) {
       props.setFieldValue(name, value, onChangeContextData);
     } else {
-      const newData = setValueByPropertyName({ ...dataRef.current ?? {} as TData }, name.toString(), value, true);
+      const newData = setValueByPropertyName({ ...(dataRef.current ?? {} as TData) }, name.toString(), value, true);
       const changedData = setValueByPropertyName({}, name.toString(), value);
 
       if (onChangeData)

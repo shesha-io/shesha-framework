@@ -1,5 +1,5 @@
 import { IEditModeSelectorSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { FCUnwrapped } from '@/providers/form/models';
 import EditModeSelector from '@/components/editModeSelector';
 import { useStyles } from '../styles';

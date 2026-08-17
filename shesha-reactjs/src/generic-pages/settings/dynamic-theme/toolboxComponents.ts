@@ -4,7 +4,7 @@
  * Used to build the navigation menu for component appearance settings
  */
 
-import React from 'react';
+import * as React from 'react';
 import { getToolboxComponents } from "@/providers/form/defaults/toolboxComponents";
 
 export interface IMenuItem {

@@ -31,7 +31,7 @@ import { throwError } from '@/utils/errors';
 import { isDefined } from '@/utils/nullables';
 import { firstNonEmptyString } from '@/utils/string';
 import { Result } from 'antd';
-import React, { FC, PropsWithChildren, useContext, useEffect, useRef } from 'react';
+import { FC, PropsWithChildren, useContext, useEffect, useRef } from 'react';
 import { SHESHA_ROOT_DATA_CONTEXT_MANAGER, SheshaCommonContexts } from '../dataContextManager/models';
 import { DataContextProvider } from '../dataContextProvider';
 import { WebStorageContextProvider } from '../dataContextProvider/contexts/webStorageContext';

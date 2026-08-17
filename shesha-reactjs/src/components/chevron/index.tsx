@@ -1,4 +1,5 @@
-import React, { CSSProperties, FC, ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { CSSProperties, FC, ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import * as React from "react";
 import { fadeColor } from "@/components/refListSelectorDisplay/provider/utils";
 import { getFontStyle } from "@/designer-components/_settings/utils/font/utils";
 import ConfigurableButton from "@/designer-components/button/configurableButton";
@@ -8,7 +9,7 @@ import { useTheme } from "@/providers/theme";
 import { isDefined } from "@/utils/nullables";
 import { jsonSafeParse } from "@/utils/object";
 import { addPx } from '@/utils/style';
-import { Button, Form, FormInstance } from "antd";
+import { Button } from "antd";
 import classNames from "classnames";
 import { IChevronButton, IChevronControlProps, isChevronItem } from "./models";
 import { useRefListItemGroupConfigurator } from "@/components/refListSelectorDisplay/provider";
@@ -23,7 +24,6 @@ export const ChevronControl: FC<IChevronControlProps> = (props) => {
   // so the designer, preview and runtime cannot drift apart.
   const items = useMemo(() => refListItems.filter(isChevronItem), [refListItems]);
   const { styles } = useStyles({ height });
-  const [form] = Form.useForm();
   const { theme } = useTheme();
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
@@ -31,7 +31,7 @@ export const ChevronControl: FC<IChevronControlProps> = (props) => {
   const stylingBoxJSON = jsonSafeParse<StyleBoxValue>(stylingBox || '{}');
   const stylingBoxCSS = pickStyleFromModel(stylingBoxJSON);
 
-  const renderButton = (props: IChevronButton, uuid: string, form?: FormInstance): ReactNode => {
+  const renderButton = (props: IChevronButton, uuid: string): ReactNode => {
     function getColor(source: string): string | undefined {
       switch (source) {
         case 'primary':
@@ -58,17 +58,15 @@ export const ChevronControl: FC<IChevronControlProps> = (props) => {
 
     };
 
-    return props.hidden !== true
+    return props.visible === true
       ? (
         <div className={styles.chevronButton}>
           <ConfigurableButton
             key={uuid}
             {...props}
-            icon={showIcons ? props.icon : undefined}
-            style={{ ...newStyles, ...stylingBoxCSS, alignContent: fontStyles.textAlign, justifyContent: fontStyles.textAlign }}
-            readOnly={props.readOnly}
+            icon={showIcons === true ? props.icon : undefined}
+            styleCss={{ ...newStyles, ...stylingBoxCSS, alignContent: fontStyles.textAlign, justifyContent: fontStyles.textAlign }}
             buttonType="text"
-            form={form}
             label={props.item}
           />
         </div>
@@ -110,7 +108,7 @@ export const ChevronControl: FC<IChevronControlProps> = (props) => {
       )}
       <div ref={containerRef} className={styles.pipelineStages}>
         {items.map((item) => {
-          return renderButton(item, item.id, form);
+          return renderButton(item, item.id);
         })}
       </div>
       {showRightArrow && (

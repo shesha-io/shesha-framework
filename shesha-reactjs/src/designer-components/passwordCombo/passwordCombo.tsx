@@ -1,5 +1,6 @@
 import { FormItemProps, FormProps, InputProps } from 'antd';
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
+import * as React from 'react';
 import PasswordInputCombo from '@/components/passwordInputCombo';
 
 export interface IProps {

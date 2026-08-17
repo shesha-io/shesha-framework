@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import * as React from "react";
 import {
   AfterSubmitHandler,
   ForceUpdateTrigger,
@@ -154,7 +155,7 @@ class PublicFormApi<Values extends object = object> implements IFormApi<Values> 
   get components(): Record<string, Record<string, unknown>> {
     return this.#componentApi?.components ?? {};
   }
-};
+}
 
 export type ShaFormSubscription<Values extends object = object> = (cs: IShaFormInstance<Values>) => void;
 export type ShaFormSubscriptionType = 'data-modified';
@@ -494,7 +495,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     // `isDefined('')` is true, which would fetch metadata for an empty type and 400. isEntityTypeIdEmpty
     // also covers identifier objects (missing/blank name) as well as null/undefined/whitespace strings.
     this.modelMetadata = !isEntityTypeIdEmpty(settings?.modelType)
-      ? await this.metadataDispatcher.getMetadata({ modelType: settings.modelType, dataType: DataTypes.entityReference }) ?? undefined
+      ? (await this.metadataDispatcher.getMetadata({ modelType: settings.modelType, dataType: DataTypes.entityReference })) ?? undefined
       : undefined;
   };
 
@@ -739,8 +740,11 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
           // this.forceRootUpdate();
         },
       });
-      if (this.dataLoadingState.status === 'failed')
+      if (this.dataLoadingState.status === 'failed') {
+        // note : the loading callback doesn't re-render, the failed state must be rendered before the error is rethrown
+        this.forceRootUpdate();
         throw this.dataLoadingState.error;
+      }
 
       this.initialValues = data;
       this.formData = data;

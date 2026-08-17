@@ -1,5 +1,5 @@
 import { NumberOutlined } from '@ant-design/icons';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { DataTypes, NumberFormats } from '@/interfaces/dataTypes';
@@ -104,7 +104,7 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
       // ...(isDefined(model.validate?.maxValue) ? { max: model.validate.maxValue } : {}),
       // ...(isDefined(model.validate?.minValue) ? { min: model.validate.minValue } : {}),
 
-      ...(isDefined(model.styleJson) ? { style: model.styleJson } : {}),
+      ...(isDefined(model.styleCss) ? { style: model.styleCss } : {}),
       className: styles.numberStyles,
 
     };
@@ -159,7 +159,7 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
                 // ToDo: AS - implement custom number formatting and merge with code from this component
                 value={numberToFormattedString(value?.toString(), getDataProperty(properties, model.propertyName ?? '', 'dataFormat'))}
                 enableFullStyle={model.enableStyleOnReadonly}
-                style={model.styleJson}
+                style={model.styleCss}
                 styleValue={model}
               />
             )

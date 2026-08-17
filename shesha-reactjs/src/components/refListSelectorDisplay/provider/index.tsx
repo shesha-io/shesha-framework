@@ -1,4 +1,13 @@
-import React, { FC, useReducer, useContext, PropsWithChildren, useEffect, useCallback, useMemo, useRef } from 'react';
+import {
+  FC,
+  useReducer,
+  useContext,
+  PropsWithChildren,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+} from 'react';
 import {
   IUpdateItemSettingsPayload,
   RefListItemGroupConfiguratorActionsContext,

@@ -1,5 +1,4 @@
 import { IDynamicItemsConfiguratorSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React from 'react';
 import { FCUnwrapped } from '@/providers/form/models';
 import { DynamicActionsConfigurator } from '@/designer-components/dynamicActionsConfigurator/configurator';
 

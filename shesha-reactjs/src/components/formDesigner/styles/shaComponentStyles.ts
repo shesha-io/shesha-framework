@@ -11,7 +11,8 @@ const getShaComponentStyles = createStyles(({ css, cx, token }, wrapperStyle: IS
   const wrapperPadding = paddingStyles(wrapperStyle.stylingBoxJson);
 
   const shaComponent = cx(designerClassNames.shaComponent, css`
-    ${dimensionsStyles({ height: "auto", ...wrapperStyle.dimensions })}
+    ${dimensionsStyles({ height: 'auto', width: 'auto', ...wrapperStyle.dimensions })}
+
     ${wrapperMargin}
   `);
 
@@ -36,15 +37,17 @@ const getShaComponentStyles = createStyles(({ css, cx, token }, wrapperStyle: IS
 });
 
 export const useShaComponentStyles = (
-  { componentModel, toolboxComponent }: { componentModel: IConfigurableFormComponent; toolboxComponent: IToolboxComponent },
+  { componentModel, toolboxComponent, isDesigner }: { componentModel: IConfigurableFormComponent; toolboxComponent: IToolboxComponent; isDesigner: boolean },
 ): ReturnStyles<{ shaComponent: string; componentDragHandle: string }> => {
   const defaultWrapperStyle: IStyleValue = useMemo(() => ({
-    dimensions: { gridRow: componentModel.dimensions?.gridRow, gridColumn: componentModel.dimensions?.gridColumn, width: '100%' },
+    dimensions: { gridRow: componentModel.dimensions?.gridRow, gridColumn: componentModel.dimensions?.gridColumn },
   }), [componentModel]);
 
   const wrapperStyle = useMemo(() => {
-    return deepMergeValues(defaultWrapperStyle, toolboxComponent.getWrapperStyle?.({ ...componentModel }));
-  }, [componentModel, defaultWrapperStyle, toolboxComponent]);
+    const wrapperStyles = toolboxComponent.getWrapperStyle?.(componentModel);
+    const wrapperStyle = isDesigner ? deepMergeValues(wrapperStyles?.style ?? {}, wrapperStyles?.designerStyle ?? {}) : wrapperStyles?.style;
+    return deepMergeValues(defaultWrapperStyle, wrapperStyle);
+  }, [componentModel, defaultWrapperStyle, isDesigner, toolboxComponent]);
 
   return getShaComponentStyles(wrapperStyle);
 };
