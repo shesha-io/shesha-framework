@@ -56,26 +56,15 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls }, model: IIconP
         flex: 1;
       }
 
-      /*
-       * The two states render different elements: with a value it is a bare .anticon glyph, with
-       * none it is an antd Button wrapping its own .anticon. The configured box must land on
-       * exactly one element per state, so it targets the glyph only when that glyph is NOT inside
-       * a button, and the button itself otherwise. Applying it to .anticon unconditionally paints
-       * the box on the inner glyph *and* leaves the button drawing its own frame around it, which
-       * is the nested double-box in the empty state.
-       */
-      /* &&&& out-specifies the base stylesheet, which styles .sha-icon-picker-selected-icon
+      &&&& out-specifies the base stylesheet, which styles .sha-icon-picker-selected-icon
          .ant-btn two classes deep and would otherwise reset the configured background. */
       &&&& .${iconPrefixCls}:not(.ant-btn .${iconPrefixCls}),
       &&&& .ant-btn {
         ${configuredAppearance}
         ${fontStyles(model.font)}
         box-sizing: border-box;
-        /* The base stylesheet adds a right margin to every .anticon in the picker, which offsets
-           the icon inside its box. The box is the alignment reference here, so drop it. */
+        
         margin-right: 0;
-        /* The button sizes itself from the antd control height; let both states be sized by the
-           configured font and padding so they look identical. */
         height: auto;
         width: auto;
         min-width: 0;
@@ -84,12 +73,6 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls }, model: IIconP
         justify-content: center;
       }
 
-      /*
-       * Neutralise the chrome antd puts on the button per state. This deliberately does NOT reset
-       * box-shadow: it shares the specificity of the rule above and comes later, so resetting the
-       * shadow here would override a configured one in the empty state. The configured appearance
-       * already sets background, border and shadow, so only colour needs pinning.
-       */
       &&&& .ant-btn,
       &&&& .ant-btn:hover,
       &&&& .ant-btn:focus,
@@ -97,8 +80,6 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls }, model: IIconP
         color: inherit;
       }
 
-      /* The glyph inside the placeholder button is content, not a box: it inherits the font but
-         must not repeat the border/background that the button now carries. */
       &&&& .ant-btn .${iconPrefixCls} {
         font-size: inherit;
         color: inherit;
@@ -120,18 +101,10 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls }, model: IIconP
       }
     `);
 
-  /**
-   * Disabled state. Read-only renders the icon at full strength (the value is still being
-   * presented); disabled greys it out and blocks pointer interaction, matching how antd disables
-   * its own inputs. `IconPicker` renders no focusable element once selection is blocked, so
-   * removing it from the tab order needs nothing beyond that.
-   */
   const disabled = cx('sha-icon-picker-disabled', css`
       cursor: not-allowed;
       opacity: 0.4;
 
-      /* The trigger sets pointer-events: all on itself when not read-only, so the block has to be
-         re-applied on the descendant rather than only on this container. */
       &&& * {
         pointer-events: none;
       }
