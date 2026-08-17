@@ -200,8 +200,23 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
 
   addSettingsInput = (props: FluentSettings<SettingsInputComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'settingsInput', meta);
 
+  /**
+   * `_addProperty` converts `visibleJs` into a `visible` code evaluator, but only for the row
+   * component itself — the inputs inside it are plain objects it never walks, so their `visibleJs`
+   * was carried into the markup as an inert string and the input always rendered. Convert each one
+   * here instead: `getActualModel` resolves the evaluator when it recurses into the `inputs` array,
+   * and `SettingInput` already treats `visible === false` as hidden.
+   */
   addSettingsInputRow = (props: FluentSettings<ISettingsInputRowProps & IConfigurableFormComponent>, meta?: IPropertyMetadata): FormBuilder => {
-    return this._addProperty(props, 'settingsInputRow', meta);
+    const inputs = props.inputs?.map((input) => {
+      const { visibleJs, ...rest } = input;
+      return typeof visibleJs === 'string'
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        ? { ...rest, visible: { _code: visibleJs, _mode: 'code', _value: false } as any } as typeof input // eslint-disable-line @typescript-eslint/no-explicit-any
+        : input;
+    });
+
+    return this._addProperty(isDefined(inputs) ? { ...props, inputs } : props, 'settingsInputRow', meta);
   };
 
   stdPropertyLabelInputs = (): FormBuilder => {
