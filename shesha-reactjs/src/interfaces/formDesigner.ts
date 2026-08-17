@@ -1,5 +1,5 @@
 import { ColProps, FormInstance } from 'antd';
-import { Rule } from 'antd/lib/form';
+import type { Rule } from 'antd/lib/form';
 import { FormLayout } from 'antd/lib/form/Form';
 import { FC, RefObject, ReactNode } from 'react';
 import { ConfigurableFormInstance } from '@/providers/form/contexts';

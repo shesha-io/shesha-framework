@@ -255,7 +255,7 @@ const PhoneNumberComponent: PhoneNumberComponentDefinition = {
   getExtraValidationRules: (model) => [
     {
       validator: (_rule, value: PhoneNumberValue) =>
-        isValidPhoneValue(value, model.defaultCountry) ? Promise.resolve() : Promise.reject(new Error('Please enter a valid phone number.')),
+        isValidPhoneValue(value, model.country ?? model.defaultCountry) ? Promise.resolve() : Promise.reject(new Error('Please enter a valid phone number.')),
     },
   ],
   initModel: (model) => ({
