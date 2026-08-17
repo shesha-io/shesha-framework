@@ -1,6 +1,29 @@
-import { CountryCode, getExampleNumber } from 'libphonenumber-js';
+import { CountryCode, getExampleNumber, isSupportedCountry, parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import examples from 'libphonenumber-js/mobile/examples';
 import { IStyleValue } from '@/providers/form/models';
+import { IPhoneNumberValue } from './interfaces';
+
+/**
+ * Normalizes a country code to the upper-case ISO 3166-1 alpha-2 format expected by
+ * libphonenumber-js and antd-phone-input, returning undefined for unsupported/invalid values.
+ */
+export const normalizeCountryCode = (value?: string): CountryCode | undefined => {
+  const normalized = value?.trim().toUpperCase();
+  return normalized && isSupportedCountry(normalized) ? normalized : undefined;
+};
+
+/**
+ * Checks whether a stored phone-number field value (string or `IPhoneNumberValue`) parses to a valid,
+ * possible number. Empty/undefined values are considered valid (leave `required` to enforce presence).
+ */
+export const isValidPhoneValue = (value: string | IPhoneNumberValue | null | undefined, defaultCountry?: string): boolean => {
+  const phoneNumberString = typeof value === 'string' ? value : value?.number;
+  const trimmed = phoneNumberString?.trim();
+  if (!trimmed) return true;
+
+  const parsed = parsePhoneNumberFromString(trimmed, normalizeCountryCode(defaultCountry));
+  return Boolean(parsed?.isValid() && parsed.isPossible());
+};
 
 /**
  * Splits a national phone number into area code and remaining digits, using
@@ -11,9 +34,10 @@ import { IStyleValue } from '@/providers/form/models';
 export const splitPhoneNumber = (nationalNumber: string, countryCode?: string): { areaCode: string; phoneNumber: string } => {
   if (!nationalNumber) return { areaCode: '', phoneNumber: '' };
 
-  if (countryCode) {
+  const normalizedCountryCode = normalizeCountryCode(countryCode);
+  if (normalizedCountryCode) {
     try {
-      const exampleNumber = getExampleNumber(countryCode.toUpperCase() as CountryCode, examples);
+      const exampleNumber = getExampleNumber(normalizedCountryCode, examples);
       if (exampleNumber) {
         const exampleFormatted = exampleNumber.formatNational();
         const areaCodeMatch = exampleFormatted.match(/^[(\s]*(\d+)[)\s]/);

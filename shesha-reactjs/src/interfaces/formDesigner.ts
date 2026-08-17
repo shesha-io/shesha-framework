@@ -1,4 +1,5 @@
 import { ColProps, FormInstance } from 'antd';
+import { Rule } from 'antd/lib/form';
 import { FormLayout } from 'antd/lib/form/Form';
 import { FC, RefObject, ReactNode } from 'react';
 import { ConfigurableFormInstance } from '@/providers/form/contexts';
@@ -264,6 +265,12 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
    * Validate model before rendering a component, used to add user-friendly messages about the need to correctly configure the component fields in the designer
    */
   validateModel?: (model: TModel, addModelError: (propertyName: string, error: string) => void) => void;
+
+  /**
+   * Returns additional Form.Item validation rules contributed by the component itself (e.g. intrinsic
+   * value-format validity), merged with the generic rules built from `model.validate`
+   */
+  getExtraValidationRules?: (model: TModel) => Rule[];
 
   /**
    * Configuration is used to show a preview of the component in the some places (like theme component configurator)

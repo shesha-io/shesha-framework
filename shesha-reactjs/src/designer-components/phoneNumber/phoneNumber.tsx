@@ -1,7 +1,7 @@
 import { PhoneOutlined } from '@ant-design/icons';
 import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import PhoneInput, { PhoneNumber as IAntdPhoneNumber } from 'antd-phone-input';
-import { CountryCode, parsePhoneNumberFromString } from 'libphonenumber-js';
+import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
@@ -16,7 +16,7 @@ import { IInputStyles } from '@/providers/form/models';
 import { IPhoneNumberComponentProps, IPhoneNumberValue, PhoneNumberComponentDefinition } from './interfaces';
 import { getSettings } from './settingsForm';
 import { useStyles } from './styles';
-import { defaultStyles, parseCountryCodes, splitPhoneNumber } from './utils';
+import { defaultStyles, isValidPhoneValue, normalizeCountryCode, parseCountryCodes, splitPhoneNumber } from './utils';
 
 type PhoneNumberValue = string | IPhoneNumberValue | null | undefined;
 
@@ -62,34 +62,19 @@ const PhoneNumberControl: FC<IPhoneNumberComponentProps & { value?: PhoneNumberV
     prevValueRef.current = value;
   }, [value]);
 
+  const activeCountry = useMemo(
+    () => (normalizeCountryCode(country) || normalizeCountryCode(defaultCountry) || 'ZA').toLowerCase(),
+    [country, defaultCountry],
+  );
+
   const parsedOnlyCountries = useMemo(() => parseCountryCodes(onlyCountries), [onlyCountries]);
   const parsedExcludeCountries = useMemo(() => parseCountryCodes(excludeCountries), [excludeCountries]);
   const parsedPreferredCountries = useMemo(() => parseCountryCodes(preferredCountries), [preferredCountries]);
 
-  const onChangeInternal = (phoneNumber: IAntdPhoneNumber | string): void => {
-    let rawValue: string;
-    let detectedCountryCode: string | undefined;
-
-    if (typeof phoneNumber === 'string') {
-      rawValue = phoneNumber;
-    } else {
-      const phoneObj = phoneNumber as { areaCode?: string; phoneNumber?: string; countryCode?: string | number; isoCode?: string; target?: { value?: string }; value?: string; number?: string };
-      if ('areaCode' in phoneObj || 'phoneNumber' in phoneObj) {
-        const areaCode = phoneObj.areaCode || '';
-        const phoneNum = phoneObj.phoneNumber || '';
-        const countryCode = phoneObj.countryCode ? `+${phoneObj.countryCode}` : '';
-        detectedCountryCode = phoneObj.isoCode?.toUpperCase();
-        rawValue = `${countryCode}${areaCode}${phoneNum}`.trim();
-      } else if (phoneObj.target?.value) {
-        rawValue = phoneObj.target.value;
-      } else if (phoneObj.value) {
-        rawValue = phoneObj.value;
-      } else if (phoneObj.number) {
-        rawValue = phoneObj.number;
-      } else {
-        rawValue = '';
-      }
-    }
+  const onChangeInternal = (phoneNumber: IAntdPhoneNumber): void => {
+    const { areaCode, phoneNumber: phoneNum, countryCode, isoCode } = phoneNumber;
+    const dialCodePrefix = countryCode ? `+${countryCode}` : '';
+    const rawValue = `${dialCodePrefix}${areaCode || ''}${phoneNum || ''}`.trim();
 
     const trimmed = rawValue.trim();
 
@@ -99,17 +84,12 @@ const PhoneNumberControl: FC<IPhoneNumberComponentProps & { value?: PhoneNumberV
       setValidationMessage(undefined);
       nextValue = '';
     } else {
-      const phoneObj = phoneNumber as { countryCode?: string | number; short?: string; isoCode?: string } | undefined;
-      const countryCodeValue = detectedCountryCode || phoneObj?.countryCode || phoneObj?.short || phoneObj?.isoCode;
-      const normalizedCountryCode = countryCodeValue?.toString().toUpperCase();
+      const normalizedCountryCode = normalizeCountryCode(isoCode);
 
-      let parsed = parsePhoneNumberFromString(
-        trimmed,
-        normalizedCountryCode && /^[A-Z]{2}$/.test(normalizedCountryCode) ? (normalizedCountryCode as CountryCode) : undefined,
-      );
+      let parsed = parsePhoneNumberFromString(trimmed, normalizedCountryCode);
 
       if ((!parsed || !parsed.isValid()) && defaultCountry) {
-        parsed = parsePhoneNumberFromString(trimmed, defaultCountry.toUpperCase() as CountryCode);
+        parsed = parsePhoneNumberFromString(trimmed, normalizeCountryCode(defaultCountry));
       }
 
       if (!parsed || !parsed.isValid()) {
@@ -135,7 +115,7 @@ const PhoneNumberControl: FC<IPhoneNumberComponentProps & { value?: PhoneNumberV
         nextValue = valueFormat === 'object' ? null : trimmed;
       } else {
         const internationalNumber = parsed!.number;
-        const nationalNumber = parsed!.nationalNumber.toString() || '';
+        const nationalNumber = parsed!.formatNational().replace(/\D/g, '');
         const dialCode = parsed!.countryCallingCode ? `+${parsed!.countryCallingCode}` : '';
         const parsedCountryCode = parsed!.country ?? '';
 
@@ -198,7 +178,7 @@ const PhoneNumberControl: FC<IPhoneNumberComponentProps & { value?: PhoneNumberV
 
     let parsed = parsePhoneNumberFromString(phoneNumberString);
     if (!parsed && defaultCountry) {
-      parsed = parsePhoneNumberFromString(phoneNumberString, defaultCountry.toUpperCase() as CountryCode);
+      parsed = parsePhoneNumberFromString(phoneNumberString, normalizeCountryCode(defaultCountry));
     }
 
     if (!parsed) return phoneNumberString;
@@ -240,7 +220,7 @@ const PhoneNumberControl: FC<IPhoneNumberComponentProps & { value?: PhoneNumberV
         distinct={distinct}
         disableParentheses={disableParentheses}
         disableDropdown={disableDropdown}
-        country={country || defaultCountry || 'za'}
+        country={activeCountry}
         style={styleCss}
         {...(!isValid ? { status: 'error' as const } : {})}
         {...(phoneInputValue !== undefined ? { value: phoneInputValue } : {})}
@@ -272,6 +252,12 @@ const PhoneNumberComponent: PhoneNumberComponentDefinition = {
   },
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+  getExtraValidationRules: (model) => [
+    {
+      validator: (_rule, value: PhoneNumberValue) =>
+        isValidPhoneValue(value, model.defaultCountry) ? Promise.resolve() : Promise.reject(new Error('Please enter a valid phone number.')),
+    },
+  ],
   initModel: (model) => ({
     ...model,
     valueFormat: model.valueFormat || 'string',

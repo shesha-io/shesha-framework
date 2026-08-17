@@ -41,7 +41,7 @@ export const useStyles = createStyles(({ css, cx, token }, model: IPhoneNumberCo
         }
       }
 
-      :hover {
+      &:hover {
         border-color: ${token.colorPrimary} !important;
       }
 
