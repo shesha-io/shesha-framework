@@ -131,25 +131,30 @@ const RadioComponent: RadioComponentDefinition = {
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   validateModel: (model, addModelError) => {
-    if (model.dataSourceType === 'referenceList' && !isDefined(model.referenceListId))
+    const dataSourceType = model.dataSourceType ?? 'values';
+    if (dataSourceType === 'referenceList' && !isDefined(model.referenceListId))
       addModelError('referenceListId', 'Select `Reference List` on the settings panel');
-    if (model.dataSourceType === 'values' && (model.items ?? []).length === 0)
+    if (dataSourceType === 'values' && (model.items ?? []).length === 0)
       addModelError('items', 'Add `Items` on the settings panel, or select a different `Data Source Type`');
-    if (model.dataSourceType === 'url' && isNullOrWhiteSpace(model.dataSourceUrl))
+    if (dataSourceType === 'url' && isNullOrWhiteSpace(model.dataSourceUrl))
       addModelError('dataSourceUrl', 'Enter a `Data Source URL` on the settings panel');
   },
   getDefaultStyles: () => defaultStyles(),
   migrator: (m) =>
     m
-      .add<IRadioComponentProps>(0, (prev) => ({
-        ...prev,
-        dataSourceType: "dataSourceType" in prev && typeof (prev.dataSourceType) === 'string'
+      .add<IRadioComponentProps>(0, (prev, context) => {
+        const configured = "dataSourceType" in prev && typeof (prev.dataSourceType) === 'string'
           ? (prev.dataSourceType as DataSourceType)
-          : 'values',
-        direction: "direction" in prev && typeof (prev.direction) === 'string'
-          ? prev.direction as "horizontal" | "vertical"
-          : 'horizontal',
-      }))
+          : undefined;
+
+        return {
+          ...prev,
+          dataSourceType: configured ?? (context.isNew === true ? undefined : 'values'),
+          direction: "direction" in prev && typeof (prev.direction) === 'string'
+            ? prev.direction as "horizontal" | "vertical"
+            : 'horizontal',
+        };
+      })
       .add<IRadioComponentProps>(1, (prev) => {
         return {
           ...prev,

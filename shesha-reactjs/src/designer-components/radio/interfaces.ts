@@ -8,7 +8,7 @@ import { IInputStyles, INestedStyleValue } from '@/providers/form/models';
 export interface IRadioOptionsSource {
   items?: ILabelValue[] | undefined;
   referenceListId?: IReferenceListIdentifier | undefined;
-  dataSourceType: DataSourceType;
+  dataSourceType?: DataSourceType | undefined;
   /** Endpoint backing the `url` data source. */
   dataSourceUrl?: string | undefined;
   /** Script mapping the `url` response to `{ label, value }` pairs. */
