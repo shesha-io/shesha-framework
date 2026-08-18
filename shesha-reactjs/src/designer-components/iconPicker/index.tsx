@@ -10,6 +10,7 @@ import {
   migrateHiddenToVisible,
   migratePropertyName,
   migrateReadOnly,
+  migrateStylingBoxToJson,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { legacyColor2Hex } from '@/designer-components/_common-migrations/migrateColor';
@@ -90,11 +91,6 @@ const IconPickerComponent: IconPickerComponentDefinition = {
       .add<IIconPickerComponentPropsV1>(1, (prev) => migrateVisibility(prev))
       .add<IIconPickerComponentPropsV1>(2, (prev) => ({ ...prev, color: legacyColor2Hex(prev.color) }))
       .add<IIconPickerComponentPropsV1>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-      // Freezes the pre-refactor appearance into all three device models. `migrateStyles` reads the
-      // legacy flat properties itself (`color`, `fontSize`, `borderWidth`/`borderColor`/
-      // `borderRadius`, `backgroundColor`), so this one step covers the whole translation to the
-      // style panels. The `isNew` guard is the only change: a freshly dropped component must
-      // inherit from `getDefaultStyles`/metadata rather than have defaults baked into its model.
       .add<IIconPickerComponentPropsV1>(4, (prev, context) => context.isNew === true
         ? prev
         : { ...migratePrevStyles(prev, defaultStyles()) })
@@ -103,7 +99,7 @@ const IconPickerComponent: IconPickerComponentDefinition = {
         return prev;
       })
       .add<IIconPickerComponentPropsV1>(6, (prev) => migrateReadOnly(prev))
-      .add<IIconPickerComponentProps>(7, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev))),
+      .add<IIconPickerComponentProps>(7, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
   previewConfiguration: {
     type: 'iconPicker',
     id: 'iconPicker',
