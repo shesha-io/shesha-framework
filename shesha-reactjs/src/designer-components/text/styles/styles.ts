@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 import { ITextComponentProps } from '../models';
-import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, paddingStyles } from '@/designer-components/_common/styles/utils';
+import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, marginStyles, paddingStyles } from '@/designer-components/_common/styles/utils';
 import { getFullSizeComponentDimensions } from '@/components/formDesigner/utils/stylingUtils';
 
 export const useStyles = createStyles(({ css, cx, token }, model: ITextComponentProps) => {
@@ -10,11 +10,9 @@ export const useStyles = createStyles(({ css, cx, token }, model: ITextComponent
       ${dimensionsStyles(getFullSizeComponentDimensions(model.dimensions))}    
       ${borderStyles(model.border)}
       ${backgroundStyles(model.background)}
+      ${marginStyles(model.stylingBoxJson)}
       ${paddingStyles(model.stylingBoxJson)}
       ${fontStyles(model.font)}
-      &&&& {
-        margin: 0px;
-      }
     
       &.ant-form-item-control-input {
         margin: 0px;
