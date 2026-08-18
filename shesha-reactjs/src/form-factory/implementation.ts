@@ -56,6 +56,7 @@ import { isPropertySettings } from "@/designer-components/_settings/utils/utils"
 import { getEventConfig, StandardEventHandler } from "@/designer-components/_common/events";
 import { ALIGN_ITEMS, ALIGN_ITEMS_GRID, ALIGN_SELF, FLEX_DIRECTION, FLEX_WRAP, JUSTIFY_CONTENT, JUSTIFY_ITEMS, JUSTIFY_SELF } from "@/designer-components/container/data";
 import { IContainerCheckerComponentProps } from "@/designer-components/containerChecker/interfaces";
+import { resolveInputVisibility } from "./inputVisibility";
 
 /**
  * Returns `true` when `propertyName`'s trailing segment (the part after the last `.`) is listed in
@@ -208,13 +209,7 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
    * and `SettingInput` already treats `visible === false` as hidden.
    */
   addSettingsInputRow = (props: FluentSettings<ISettingsInputRowProps & IConfigurableFormComponent>, meta?: IPropertyMetadata): FormBuilder => {
-    const inputs = props.inputs?.map((input) => {
-      const { visibleJs, ...rest } = input;
-      return typeof visibleJs === 'string'
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        ? { ...rest, visible: { _code: visibleJs, _mode: 'code', _value: false } as any } as typeof input // eslint-disable-line @typescript-eslint/no-explicit-any
-        : input;
-    });
+    const inputs = isDefined(props.inputs) ? resolveInputVisibility(props.inputs) : undefined;
 
     return this._addProperty(isDefined(inputs) ? { ...props, inputs } : props, 'settingsInputRow', meta);
   };
