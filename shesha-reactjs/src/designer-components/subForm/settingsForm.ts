@@ -2,6 +2,8 @@ import { SettingsFormMarkupFactory } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 
+const apiDataSourceJs = 'return getSettingValue(data?.dataSource) === "api";';
+
 export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const commonTabId = nanoid();
   const eventsTabId = nanoid();
@@ -31,37 +33,34 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
               })
               .addSettingsInput({ inputType: "dropdown", propertyName: "apiMode", label: "API Mode", tooltip: "The API mode to use to fetch data", jsSetting: true,
                 dropdownOptions: [{ label: "Entity name", value: "entityName" }, { label: "URL", value: "url" }],
-                visibleJs: 'return getSettingValue(data?.dataSource) !== "form";',
+                visibleJs: apiDataSourceJs,
               })
               .addSettingsInput({ inputType: "entityTypeAutocomplete", propertyName: "entityType", label: "Entity Type", jsSetting: true,
-                visibleJs: 'return getSettingValue(data?.apiMode) === "entityName" && (getSettingValue(data?.dataSource) !== "form" || getSettingValue(data?.formSelectionMode) === "dynamic");',
+                visibleJs: 'return getSettingValue(data?.apiMode) === "entityName" && (getSettingValue(data?.dataSource) === "api" || getSettingValue(data?.formSelectionMode) === "dynamic");',
               })
               .addSettingsInput({ inputType: "codeEditor", propertyName: "properties", label: "Properties", language: "graphql", description: "Properties in GraphQL-like syntax",
-                jsSetting: true, mode: "inline", wrapInTemplate: false, visibleJs: 'return getSettingValue(data?.entityType);',
+                jsSetting: true, mode: "inline", wrapInTemplate: false, visibleJs: 'return getSettingValue(data?.dataSource) === "api" && Boolean(getSettingValue(data?.entityType));',
                 desktop: { dimensions: { height: 'fit-content' } },
               })
-              .addSettingsInputRow({ inputs: [
+              .addSettingsInputRow({ visibleJs: apiDataSourceJs, inputs: [
                 { type: "codeEditor", propertyName: "queryParams", label: "Query Params",
-                  visibleJs: 'return getSettingValue(data?.dataSource) !== "form";',
                   tooltip: "The code that returns the query parameters to be used to fetch the data. Ideally this should be a function that returns an object with the entity id",
                   description: "The code that returns the query parameters to be used to fetch the data. Ideally this should be a function that returns an object with the entity id",
                   wrapInTemplate: true, templateSettings: { functionName: 'getQueryParams' },
                 },
                 { type: "codeEditor", propertyName: "getUrl", label: "GET URL", tooltip: "The API URL that will be used to fetch the data. Write the code that returns the string",
                   mode: "dialog", description: "The API URL that will be used to fetch the data. Write the code that returns the string",
-                  visibleJs: 'return getSettingValue(data?.dataSource) !== "form" && getSettingValue(data?.apiMode) !== "entityName";',
+                  hidden: { _code: 'return getSettingValue(data?.apiMode) === "entityName";', _mode: 'code', _value: false },
                   wrapInTemplate: true, templateSettings: { functionName: 'getGetUrl' },
                 },
               ] })
-              .addSettingsInputRow({ inputs: [
+              .addSettingsInputRow({ visibleJs: apiDataSourceJs, inputs: [
                 { type: "codeEditor", propertyName: "postUrl", label: "POST URL", tooltip: "The API URL that will be used to create new data. Write a function that returns this URL as a string.",
                   mode: "dialog", description: "The API URL that will be used to update data. Write the code that returns the string",
-                  visibleJs: 'return getSettingValue(data?.dataSource) !== "form";',
                   wrapInTemplate: true, templateSettings: { functionName: 'getPostUrl' },
                 },
                 { type: "codeEditor", propertyName: "putUrl", label: "PUT URL", tooltip: "The API URL that will be used to update data. Write the code that returns the string",
                   mode: "dialog", description: "The API URL that will be used to update data. Write the code that returns the string",
-                  visibleJs: 'return getSettingValue(data?.dataSource) !== "form";',
                   wrapInTemplate: true, templateSettings: { functionName: 'getPutUrl' },
                 },
               ] })
