@@ -72,6 +72,9 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
   const hasMinutesJs = 'return ["dateTimeMinutes", "dateTimeSeconds"].includes(getSettingValue(data?.selectionType) ?? "dateTimeMinutes");';
   // Date Format applies to every selection except the calendar-unit pickers, which have their own.
   const isDateBasedJs = 'return !["week", "month", "quarter", "year"].includes(getSettingValue(data?.selectionType) ?? "dateTimeMinutes");';
+  // Inverse of the above: hides the whole row rather than leaving an empty one behind when only the
+  // per-input conditions match, since exactly one of its four fields can ever apply.
+  const isCalendarUnitJs = 'return ["week", "month", "quarter", "year"].includes(getSettingValue(data?.selectionType) ?? "dateTimeMinutes");';
 
   const json = {
     components: fbf('root')
@@ -122,6 +125,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                     { type: 'textField', propertyName: 'quarterFormat', label: 'Quarter Format', size: 'small', jsSetting: true, visibleJs: 'return getSettingValue(data?.selectionType) === "quarter";' },
                     { type: 'textField', propertyName: 'yearFormat', label: 'Year Format', size: 'small', jsSetting: true, visibleJs: 'return getSettingValue(data?.selectionType) === "year";' },
                   ],
+                  visibleJs: isCalendarUnitJs,
                 })
                 .addSettingsInput({
                   inputType: 'dropdown', propertyName: 'minuteStep', label: 'Minute steps', size: 'small', jsSetting: true,
@@ -130,7 +134,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   visibleJs: hasMinutesJs,
                 })
                 .addSettingsInput({ inputType: 'switch', propertyName: 'resolveToUTC', label: 'Convert to/from UTC', size: 'small', layout: 'horizontal', jsSetting: true })
-                .addSettingsInput({ inputType: 'switch', propertyName: 'showNow', label: 'Show Today/Now', size: 'small', layout: 'horizontal', jsSetting: true })
                 .addSettingsInput({ inputType: 'switch', propertyName: 'defaultToMidnight', label: 'Default time to midnight', size: 'small', layout: 'horizontal', jsSetting: true, visibleJs: isDateTimeJs })
                 .addSettingsInput({
                   inputType: 'dropdown', propertyName: 'dateRestriction', label: 'Date Restriction', size: 'small', jsSetting: true,

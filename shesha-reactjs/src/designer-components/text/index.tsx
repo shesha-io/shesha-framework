@@ -1,6 +1,6 @@
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { legacyColor2Hex } from '@/designer-components/_common-migrations/migrateColor';
-import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { evaluateString, validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { LineHeightOutlined } from '@ant-design/icons';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
@@ -102,7 +102,7 @@ const TextComponent: TextComponentDefinition = {
       .add<ITextComponentProps>(6, (prev, ctx) => ctx.isNew === true
         ? prev
         : { ...prev, desktop: { ...prev.desktop, level: prev.textType === 'title' && Number.isInteger(prev.level) ? Number(prev.level) as LevelType : 0 } })
-      .add<ITextComponentProps>(7, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev))),
+      .add<ITextComponentProps>(7, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
   previewConfiguration: {
     type: 'text',
     code: false,

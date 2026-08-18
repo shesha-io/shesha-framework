@@ -28,12 +28,20 @@ export const DatePickerWrapper = forwardRef<HTMLDivElement, IDateFieldProps>((pr
     hideBorder,
     range,
     value,
-    showNow,
     onChange,
     readOnly,
     disabled,
     defaultToMidnight,
     minuteStep,
+    /* antd's picker accepts only onFocus/onBlur, so the remaining handlers from `getComponentEvents`
+       are bound to the wrapper element. Click, mouse-move and both key events bubble up from the
+       inner input; enter/leave fire on the wrapper itself. */
+    onClick,
+    onMouseEnter,
+    onMouseMove,
+    onMouseLeave,
+    onKeyDown,
+    onKeyUp,
   } = props;
 
   const picker = getPicker(props);
@@ -198,7 +206,16 @@ export const DatePickerWrapper = forwardRef<HTMLDivElement, IDateFieldProps>((pr
 
   if (range === true) {
     return (
-      <div ref={ref} style={{ marginRight: 1 }}>
+      <div
+        ref={ref}
+        style={{ marginRight: 1 }}
+        onClick={onClick}
+        onMouseEnter={onMouseEnter}
+        onMouseMove={onMouseMove}
+        onMouseLeave={onMouseLeave}
+        onKeyDown={onKeyDown}
+        onKeyUp={onKeyUp}
+      >
         <RangePicker
           onCalendarChange={(dates) => {
             if (showTime && defaultToMidnight !== true) handleCalendarRangeChange(dates);
@@ -241,7 +258,16 @@ export const DatePickerWrapper = forwardRef<HTMLDivElement, IDateFieldProps>((pr
   }
 
   return (
-    <div ref={ref} style={{ marginRight: 1 }}>
+    <div
+      ref={ref}
+      style={{ marginRight: 1 }}
+      onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
+      onKeyDown={onKeyDown}
+      onKeyUp={onKeyUp}
+    >
       <DatePicker
         className={styles.dateField}
         // The calendar panel is portalled outside the picker, so it takes its own class.
@@ -252,7 +278,7 @@ export const DatePickerWrapper = forwardRef<HTMLDivElement, IDateFieldProps>((pr
         disabled={disabled === true}
         {...(hideBorder === true ? { variant: 'borderless' } : {})}
         showTime={showTimeConfig}
-        showNow={showNow === true}
+        showNow
         picker={picker}
         format={pickerFormat}
         onCalendarChange={(dates) => {

@@ -18,7 +18,7 @@ import { isDefined } from '@/utils';
 import { EMPTY_STYLE } from '@/styles/variables';
 import { getFullSizeWrapperDesignerStyle } from '@/components/formDesigner/utils/stylingUtils';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
-import { migrateHiddenToVisible } from '../_common-migrations';
+import { migrateHiddenToVisible, migrateStylingBoxToJson } from '../_common-migrations';
 import { useEvents } from '@/components/formDesigner/components/eventsAndApiValueProcessor';
 import { getComponentEvents } from '../_common/events';
 import { useMemo } from 'react';
@@ -92,7 +92,7 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
         tablet: { ...prev.tablet, dimensions: { ...prev.tablet?.dimensions, width: 'auto', height: 'fit-content' } },
         mobile: { ...prev.mobile, dimensions: { ...prev.mobile?.dimensions, width: 'auto', height: 'fit-content' } },
       })
-    .add<ICardComponentProps>(5, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev))),
+    .add<ICardComponentProps>(5, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
 };
 
 export default CardComponent;
