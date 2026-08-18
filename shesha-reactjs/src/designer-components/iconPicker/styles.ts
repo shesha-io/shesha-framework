@@ -3,9 +3,9 @@ import { IIconPickerComponentProps } from './interfaces';
 import { backgroundStyles, borderStyles, fontStyles, marginStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
 
 /**
- * The container is a flex box (so a configured height can centre the icon vertically), which makes
- * `text-align` inert. Map the Font panel's alignment onto `justify-content` instead so the Align
- * input keeps working. `justify` has no flex equivalent for a single item and falls back to start.
+ * The trigger is laid out as a flex row, which makes `text-align` inert. Map the Font panel
+ * alignment onto `justify-content` so the Align input keeps working. `justify` has no flex
+ * equivalent for a single item and falls back to start.
  */
 const justifyContentFor = (align: AlignSetting | undefined): string => {
   switch (align) {
@@ -21,33 +21,28 @@ const justifyContentFor = (align: AlignSetting | undefined): string => {
 
 export const useStyles = createStyles(({ css, cx, iconPrefixCls }, model: IIconPickerComponentProps) => {
   /*
-   * The configured box (border, background, shadow, padding) sits on the glyph rather than on the
-   * picker root. The root is a block-level flex container that spans the form column, so a border
-   * or background there would draw a full-width box around a small icon. On the glyph it hugs the
-   * icon, which is what "style the icon" means for a glyph-only component.
+   * The configured box goes on the glyph, not on the picker root: the root spans the whole form
+   * column, so a border or background there would draw a full-width box around a small icon.
+   * On the glyph it hugs the icon, which is what styling a glyph-only component should mean.
    */
   const configuredAppearance = `
     ${borderStyles(model.border)}
     ${backgroundStyles(model.background)}
     ${shadowStyles(model.shadow)}
     ${paddingStyles(model.stylingBoxJson)}
+    ${fontStyles(model.font)}
   `;
 
   const iconPickerStyles = cx('sha-icon-picker-container', css`
       ${marginStyles(model.stylingBoxJson)}
-
       box-sizing: border-box;
 
-      /* The picker renders either the chosen glyph or a "select icon" button. Centre whichever it
-         is on the cross axis, and use justify-content for the Font panel horizontal alignment,
-         since a flex container makes text-align inert (see justifyContentFor). */
+      /* Align the trigger within the form column. IconPicker nests the glyph two unstyled,
+         block-level divs deep, so the alignment has to be passed down or those full-width divs
+         swallow it before it reaches the icon. */
       display: flex;
-      align-items: center;
       justify-content: ${justifyContentFor(model.font?.align)};
 
-      /* IconPicker nests the glyph two unstyled divs deep. Those are block-level and so span the
-         full width, which would swallow the alignment above — make them pass the flex through so
-         the alignment actually reaches the icon. */
       > div,
       > div > .sha-icon-picker-selected-icon {
         display: flex;
@@ -56,55 +51,50 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls }, model: IIconP
         flex: 1;
       }
 
-      &&&& out-specifies the base stylesheet, which styles .sha-icon-picker-selected-icon
-         .ant-btn two classes deep and would otherwise reset the configured background. */
-      &&&& .${iconPrefixCls}:not(.ant-btn .${iconPrefixCls}),
-      &&&& .ant-btn {
+      /*
+       * Both states resolve to a single glyph: with a value it is a bare .anticon, without one it
+       * is an .anticon inside a placeholder button whose chrome the base stylesheet already
+       * strips. Styling .anticon therefore covers both, and the button needs no rule of its own.
+       *
+       * &&&& out-specifies the base stylesheet, which reaches the same elements two classes deep.
+       */
+      &&&& .${iconPrefixCls} {
         ${configuredAppearance}
-        ${fontStyles(model.font)}
         box-sizing: border-box;
-        
-        margin-right: 0;
-        height: auto;
-        width: auto;
-        min-width: 0;
         display: inline-flex;
         align-items: center;
         justify-content: center;
       }
 
-      &&&& .ant-btn,
-      &&&& .ant-btn:hover,
-      &&&& .ant-btn:focus,
-      &&&& .ant-btn:active {
-        color: inherit;
-      }
-
-      &&&& .ant-btn .${iconPrefixCls} {
-        font-size: inherit;
-        color: inherit;
-        border: none;
-        background: none;
-        box-shadow: none;
+      /* Size the placeholder button from the configured font and padding rather than the antd
+         control height, so the empty state matches the selected one. */
+      &&&& .ant-btn {
+        height: auto;
+        width: auto;
+        min-width: 0;
         padding: 0;
-        margin-right: 0;
+        border: none;
       }
 
-      /* Keep the configured box through hover/focus so it does not flash back to antd defaults. */
-      &&&&:hover .${iconPrefixCls}:not(.ant-btn .${iconPrefixCls}),
-      &&&&:focus .${iconPrefixCls}:not(.ant-btn .${iconPrefixCls}),
-      &&&&:focus-within .${iconPrefixCls}:not(.ant-btn .${iconPrefixCls}),
-      &&&&:hover .ant-btn,
-      &&&&:focus .ant-btn,
-      &&&&:focus-within .ant-btn {
+      /* Hold the configured box through hover and focus so it does not fall back to antd
+         defaults mid-interaction. */
+      &&&&:hover .${iconPrefixCls},
+      &&&&:focus .${iconPrefixCls},
+      &&&&:focus-within .${iconPrefixCls} {
         ${configuredAppearance}
       }
     `);
 
+  /**
+   * Disabled greys the picker out and blocks interaction; read-only leaves it at full strength
+   * because the value is still being presented.
+   */
   const disabled = cx('sha-icon-picker-disabled', css`
       cursor: not-allowed;
       opacity: 0.4;
 
+      /* The trigger sets pointer-events: all on itself when not read-only, so the block has to be
+         re-applied on the descendant rather than only here. */
       &&& * {
         pointer-events: none;
       }
