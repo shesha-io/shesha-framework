@@ -78,7 +78,6 @@ const IconPicker: FC<IIconPickerProps> = ({
   iconSize,
   twoToneColor,
   className,
-  rootStyle,
   ...props
 }) => {
   const { styles, cx } = useStyles();
@@ -139,7 +138,7 @@ const IconPicker: FC<IIconPickerProps> = ({
   return (
     // The caller's className goes on the root so a configured appearance (border, background,
     // padding) applies to the picker as a whole, and its descendant rules can reach the glyph.
-    <div className={cx(styles.shaIconPicker, className)} style={rootStyle}>
+    <div className={cx(styles.shaIconPicker, className)}>
       <div>
         <div
           onClick={toggleModalVisibility}

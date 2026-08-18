@@ -37,7 +37,6 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
     description,
     iconSize,
     className,
-    style,
   } = props;
 
   const onIconChange = useCallback<Required<IIconPickerProps>["onIconChange"]>((_icon, iconName): void => {
@@ -60,9 +59,6 @@ export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {
       // rules can reach the glyph. No inline style beyond the evaluated Custom style, which
       // keeps the cascade open for form- and theme-level overrides.
       className={className}
-      // `rootStyle`, not `style`: the latter targets the glyph, while the Custom style script is
-      // meant to style the component as a whole.
-      {...(isDefined(style) ? { rootStyle: style } : {})}
     />
   );
 

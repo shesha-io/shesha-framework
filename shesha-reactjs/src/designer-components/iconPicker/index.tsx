@@ -19,7 +19,7 @@ import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
-import { useStyles } from './styles';
+import { useStyles } from '@/components/iconPicker/styles/styles';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { IconPickerApi } from '../../componentsApi/componentApi';

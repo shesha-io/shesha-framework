@@ -41,12 +41,10 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
           },
           {
             key: 'appearance', title: 'Appearance', id: appearanceTabId,
-            // The icon is glyph-only, so Font carries its size, colour and alignment. Weight and
-            // family have nothing to act on and are excluded.
             components: fbf(appearanceTabId)
               .stdAppearancePanels(
                 [
-                  { name: 'font', exclude: ['weight', 'type'], panelTitle: 'Icon Style' },
+                  { name: 'font', exclude: ['weight', 'type', 'align'], panelTitle: 'Icon Style' },
                   'border',
                   'background',
                   'shadow',
