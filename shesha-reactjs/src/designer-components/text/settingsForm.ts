@@ -16,41 +16,16 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
       .addSearchableTabs({ id: searchableTabsId, propertyName: 'settingsTabs', label: 'Settings', hideLabel: true, labelAlign: 'right', size: 'small',
         tabs: [
           { key: 'common', title: 'Common', id: commonTabId, components: fbf(commonTabId)
-            .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true }, jsSetting: true })
-            .addSettingsInputRow({ inputs: [
-              { type: 'dropdown', propertyName: 'contentDisplay', label: 'Content Display', size: 'small', jsSetting: true,
-                dropdownOptions: [{ label: 'Content', value: 'content' }, { label: 'Property name', value: 'name' }],
-              },
-              { type: 'dropdown', propertyName: 'dataType', label: 'Data Type', size: 'small', jsSetting: true,
-                dropdownOptions: [{ label: 'String', value: 'string' }, { label: 'Date time', value: 'date-time' }, { label: 'Number', value: 'number' }, { label: 'Boolean', value: 'boolean' }],
-                visibleJs: 'return data?.contentDisplay === "name";',
-              },
-            ],
-            })
+            .addSettingsInput({ inputType: 'textField', propertyName: 'componentName', label: 'Component Name', size: 'small', validate: { required: true }, jsSetting: true })
             .addSettingsInputRow({ inputs: [
               { type: 'switch', propertyName: 'visible', label: 'Visible', size: 'small', jsSetting: true, permissionSettings: true },
             ],
             })
-            .addSettingsInput({ inputType: 'textField', propertyName: 'dateFormat', label: 'Date Format', size: 'small', jsSetting: true, placeholder: 'Date Format', visibleJs: 'return getSettingValue(data?.dataType) === "date-time";' })
-            .addSettingsInput({
-              inputType: 'dropdown', propertyName: 'numberFormat', label: 'Number Format', size: 'small', jsSetting: true, visibleJs: 'return  getSettingValue(data?.dataType) === "number";',
-              dropdownOptions: [{ label: 'Currency', value: 'currency' }, { label: 'Double', value: 'double' }, { label: 'Round', value: 'round' }, { label: 'Thousand separator', value: 'thousandSeparator' }],
-            })
-            .addSettingsInput({ inputType: 'textArea', propertyName: 'content', label: 'Content', size: 'small', jsSetting: true, visibleJs: 'return getSettingValue(data?.contentDisplay) !== "name";' })
+            .addSettingsInput({ inputType: 'textArea', propertyName: 'content', label: 'Content', size: 'small', jsSetting: true })
             .addSettingsInputRow({ inputs: [
               { type: 'switch', propertyName: 'italic', label: 'Italic', size: 'small', jsSetting: true },
-              { type: 'switch', propertyName: 'code', label: 'Code', size: 'small', jsSetting: true },
-            ] })
-            .addSettingsInputRow({ inputs: [
-              { type: 'switch', propertyName: 'delete', label: 'Strikethrough', size: 'small', jsSetting: true },
               { type: 'switch', propertyName: 'underline', label: 'Underline', size: 'small', jsSetting: true },
-            ] })
-            .addSettingsInputRow({ inputs: [
-              { type: 'switch', propertyName: 'ellipsis', label: 'Ellipsis', size: 'small', jsSetting: true },
-              { type: 'switch', propertyName: 'mark', label: 'Mark', size: 'small', jsSetting: true },
-            ] })
-            .addSettingsInputRow({ inputs: [
-              { type: 'switch', propertyName: 'keyboard', label: 'Keyboard', size: 'small', jsSetting: true },
+              { type: 'switch', propertyName: 'delete', label: 'Strikethrough', size: 'small', jsSetting: true },
               { type: 'switch', propertyName: 'copyable', label: 'Copyable', size: 'small', jsSetting: true },
             ] })
             .addPropertyRouter({ id: styleRouter1Id, componentName: 'propertyRouter1', label: 'Property router1', labelAlign: 'right',

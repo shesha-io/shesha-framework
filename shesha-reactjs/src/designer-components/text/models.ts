@@ -65,8 +65,7 @@ export interface ITypographyProps {
   style: CSSProperties | undefined;
 }
 
-export interface ITextComponentProps extends IConfigurableFormComponent {
-  /** @deprecated will be removed */
+export interface ITextComponentPropsV0 extends IConfigurableFormComponent {
   textType?: 'span' | 'paragraph' | 'title' | undefined;
   content: string;
   contentType?: ContentType | undefined;
@@ -94,10 +93,23 @@ export interface ITextComponentProps extends IConfigurableFormComponent {
   shadow?: IShadowValue | undefined;
 }
 
-interface ITextCalculatedModel {
-  evaluateValue: (value: unknown) => string | undefined;
+export interface ITextComponentProps extends IConfigurableFormComponent {
+  content: string;
+  contentType?: ContentType | undefined;
+  color?: string | undefined;
+  backgroundColor?: string | undefined;
+  level?: LevelType | undefined;
+  fontSize?: TypographyFontSize | string | number | undefined;
+  padding?: TypographyPaddingSize | undefined;
+  italic?: boolean | undefined;
+  copyable?: boolean | undefined;
+  delete?: boolean | undefined;
+  underline?: boolean | undefined;
+  value?: unknown | undefined;
+  textAlign?: string | undefined;
+  styles?: CSSProperties | undefined;
 }
 
-export type TextComponentDefinition = ComponentDefinition<"text", ITextComponentProps, ITextCalculatedModel>;
+export type TextComponentDefinition = ComponentDefinition<"text", ITextComponentProps>;
 
 export const isTextComponent = (component: IConfigurableFormComponent): component is ITextComponentProps => component.type === 'text';
