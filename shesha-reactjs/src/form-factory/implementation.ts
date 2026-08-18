@@ -56,6 +56,7 @@ import { isPropertySettings } from "@/designer-components/_settings/utils/utils"
 import { getEventConfig, StandardEventHandler } from "@/designer-components/_common/events";
 import { ALIGN_ITEMS, ALIGN_ITEMS_GRID, ALIGN_SELF, FLEX_DIRECTION, FLEX_WRAP, JUSTIFY_CONTENT, JUSTIFY_ITEMS, JUSTIFY_SELF } from "@/designer-components/container/data";
 import { IContainerCheckerComponentProps } from "@/designer-components/containerChecker/interfaces";
+import { resolveInputVisibility } from "./inputVisibility";
 
 /**
  * Returns `true` when `propertyName`'s trailing segment (the part after the last `.`) is listed in
@@ -200,8 +201,17 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
 
   addSettingsInput = (props: FluentSettings<SettingsInputComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'settingsInput', meta);
 
+  /**
+   * `_addProperty` converts `visibleJs` into a `visible` code evaluator, but only for the row
+   * component itself — the inputs inside it are plain objects it never walks, so their `visibleJs`
+   * was carried into the markup as an inert string and the input always rendered. Convert each one
+   * here instead: `getActualModel` resolves the evaluator when it recurses into the `inputs` array,
+   * and `SettingInput` already treats `visible === false` as hidden.
+   */
   addSettingsInputRow = (props: FluentSettings<ISettingsInputRowProps & IConfigurableFormComponent>, meta?: IPropertyMetadata): FormBuilder => {
-    return this._addProperty(props, 'settingsInputRow', meta);
+    const inputs = isDefined(props.inputs) ? resolveInputVisibility(props.inputs) : undefined;
+
+    return this._addProperty(isDefined(inputs) ? { ...props, inputs } : props, 'settingsInputRow', meta);
   };
 
   stdPropertyLabelInputs = (): FormBuilder => {
