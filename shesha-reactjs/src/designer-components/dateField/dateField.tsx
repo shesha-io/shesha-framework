@@ -1,5 +1,5 @@
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateReadOnly, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers/form/models';
@@ -129,7 +129,7 @@ const DateField: DateFieldDefinition = {
       ? prev
       : { ...migratePrevStyles(prev, defaultStyles()) })
     .add<IDateFieldProps>(8, (prev) => {
-      const model = { ...migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev)) } as IDateFieldProps;
+      const model = { ...migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev))) } as IDateFieldProps;
       const legacy = prev as IDateFieldPropsV1;
 
       // picker + showTime -> selectionType

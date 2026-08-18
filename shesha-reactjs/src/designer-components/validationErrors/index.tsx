@@ -13,6 +13,8 @@ import { useStyles } from './styles';
 import { useEvents } from '@/components/formDesigner/components/eventsAndApiValueProcessor';
 import { getComponentEvents } from '../_common/events';
 import { EMPTY_STYLE } from '@/styles/variables';
+import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
+import { migrateHiddenToVisible, migrateStylingBoxToJson } from '../_common-migrations';
 
 export interface IValidationErrorsComponentProps extends IConfigurableFormComponent, IStyleValue {
   className?: string | undefined;
@@ -61,8 +63,9 @@ const ValidationErrorsComponent: IToolboxComponent<IValidationErrorsComponentPro
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   getDefaultStyles: defaultStyles,
   settingsFormMarkup: getSettings,
-  migrator: (m) =>
-    m.add<IValidationErrorsComponentProps>(0, (prev, ctx) => ctx.isNew === true ? prev : { ...migratePrevStyles(prev, defaultStyles()) }),
+  migrator: (m) => m
+    .add<IValidationErrorsComponentProps>(0, (prev, ctx) => ctx.isNew === true ? prev : { ...migratePrevStyles(prev, defaultStyles()) })
+    .add<IValidationErrorsComponentProps>(1, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
 };
 
 export default ValidationErrorsComponent;

@@ -1,7 +1,8 @@
-import { EditMode, IPropertySetting } from '@/providers';
+import { EditMode, IPropertySetting, IStyleValue } from '@/providers';
 import { getPropertySettingsFromValue, isPropertySettings } from '@/designer-components/_settings/utils/utils';
 import { getStringPropertyOrUndefined } from '@/utils/object';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { getStyleBoxValue } from '../styleBox/utils';
 
 export const migrateFunctionToProp = <T extends object = object>(
   prev: T,
@@ -114,4 +115,8 @@ export const migrateReadOnly = <T>(prev: T, defaultValue?: EditMode): T => {
   } as T;
 
   return migratePropToInverseProp(model, 'editMode' as keyof T, 'editMode' as keyof T, undefined, defaultValue);
+};
+
+export const migrateStylingBoxToJson = <T extends IStyleValue>(prev: T): T => {
+  return { ...prev, stylingBoxJson: prev.stylingBoxJson ?? getStyleBoxValue(prev.stylingBox) };
 };
