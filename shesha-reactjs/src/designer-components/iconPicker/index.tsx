@@ -22,7 +22,6 @@ import { useStyles } from './styles';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { IconPickerApi } from '../../componentsApi/componentApi';
-import { isDefined } from '@/utils/nullables';
 import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '../_common/events';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
@@ -65,7 +64,6 @@ const IconPickerComponent: IconPickerComponentDefinition = {
           >
             <IconPickerWrapper
               className={cx(styles.iconPickerStyles, { [styles.disabled]: model.disabled === true })}
-              {...(isDefined(model.styleCss) ? { style: model.styleCss } : {})}
               value={value}
               defaultValue={model.defaultIcon}
               description={model.description}

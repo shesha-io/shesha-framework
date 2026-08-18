@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 import { IIconPickerComponentProps } from './interfaces';
-import { backgroundStyles, borderStyles, fontStyles, marginStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
+import { backgroundStyles, borderStyles, cssPropertiesToString, fontStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
 
 /**
  * The trigger is laid out as a flex row, which makes `text-align` inert. Map the Font panel
@@ -31,10 +31,10 @@ export const useStyles = createStyles(({ css, cx, iconPrefixCls }, model: IIconP
     ${shadowStyles(model.shadow)}
     ${paddingStyles(model.stylingBoxJson)}
     ${fontStyles(model.font)}
+    ${cssPropertiesToString(model.styleCss)}
   `;
 
   const iconPickerStyles = cx('sha-icon-picker-container', css`
-      ${marginStyles(model.stylingBoxJson)}
       box-sizing: border-box;
 
       /* Align the trigger within the form column. IconPicker nests the glyph two unstyled,
