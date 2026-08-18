@@ -1,5 +1,5 @@
 import IconPicker, { IIconPickerProps, ShaIconTypes } from '@/components/iconPicker';
-import { CSSProperties, FC, useCallback } from 'react';
+import { FC, useCallback } from 'react';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { Tooltip } from 'antd';
 import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
@@ -22,8 +22,6 @@ interface IconPickerWrapperProps {
   iconSize?: number | undefined;
   /** Emotion class carrying the configured appearance. */
   className?: string | undefined;
-  /** Evaluated Custom style script. */
-  style?: CSSProperties | undefined;
 }
 
 export const IconPickerWrapper: FC<IconPickerWrapperProps> = (props) => {

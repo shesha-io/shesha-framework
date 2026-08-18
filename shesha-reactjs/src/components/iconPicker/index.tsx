@@ -1,4 +1,4 @@
-import { CSSProperties, FC, ReactNode, useMemo, useState } from 'react';
+import { FC, ReactNode, useMemo, useState } from 'react';
 import * as React from 'react';
 import { IconBaseProps } from '@ant-design/icons/lib/components/Icon';
 import { FilledIconTypes, FILLED_ICON_GROUPS } from './iconNamesFilled';
@@ -52,12 +52,6 @@ export interface IIconPickerProps extends IconBaseProps {
   twoToneColor?: string | undefined;
 
   iconSize?: number | undefined;
-
-  /**
-   * Inline style for the picker root. `style` (from `IconBaseProps`) targets the glyph itself, so
-   * a caller styling the picker as a box needs this instead.
-   */
-  rootStyle?: CSSProperties | undefined;
 }
 
 interface IOption {
