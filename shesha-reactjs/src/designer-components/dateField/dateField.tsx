@@ -12,14 +12,17 @@ import { migratePermissionsToVisiblePermissions } from '../_common-migrations/mi
 import { DatePickerWrapper } from './datePickerWrapper';
 import { DateFieldDefinition, DateFieldValueType, DateSelectionType, IDateFieldProps, IDateFieldPropsV1, NoUndefinedRangeValueType } from './interfaces';
 import { getSettings } from './settingsForm';
-import { defaultStyles } from './utils';
+import { defaultStyles, getNumericBindingFormatWarning } from './utils';
 import { useComponentApi } from '@/providers/componentApi/provider';
+import { useMetadataOrUndefined } from '@/providers';
+import { useComponentValidation } from '@/providers/validationErrors';
+import { asPropertiesArray } from '@/interfaces/metadata';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { DateFieldApi } from '../../componentsApi/componentApi';
 import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '../_common/events';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
-import { isNotNullOrWhiteSpace } from '@/utils/nullables';
+import { isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 
 const toSelectionType = (picker: string | undefined, showTime: boolean | undefined): DateSelectionType => {
   switch (picker) {
@@ -45,6 +48,26 @@ const DateField: DateFieldDefinition = {
   Factory: ({ model }) => {
     const componentApi = useComponentApi();
     const inputRef = useRef<HTMLDivElement>(null);
+    const { properties: metaProperties } = useMetadataOrUndefined()?.metadata ?? {};
+
+    /* Ticks and Unix cannot bind to a date property — the value posts as a number and the backend
+       rejects it. Surface that in the designer, where it is a configuration mistake someone can
+       still fix, rather than leaving it to be found as a validation error at save time. */
+    useComponentValidation(() => {
+      const warning = getNumericBindingFormatWarning(model, asPropertiesArray(metaProperties, []));
+      return isNullOrWhiteSpace(warning)
+        ? undefined
+        : {
+          hasErrors: true,
+          componentId: model.id,
+          componentName: model.componentName,
+          componentType: model.type,
+          validationType: 'warning' as const,
+          errors: [{ propertyName: 'bindingFormat', error: warning }],
+        };
+      // Only the inputs the warning is derived from — `model` is a fresh object on every render, so
+      // depending on it would recompute continuously.
+    }, [model.bindingFormat, model.resolveToUTC, model.propertyName, model.id, model.componentName, model.type, metaProperties]);
 
     useEffect(() => {
       componentApi?.updateApi<DateFieldApi>({
