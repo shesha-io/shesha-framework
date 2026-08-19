@@ -54,14 +54,16 @@ export const useStyles = createStyles<StylesArgs, StylesResponse>(({ css, cx }, 
     `,
   );
 
-  // Disabled greys the tag out and removes it from the tab order — distinct from read-only, which
-  // keeps the value fully legible.
+  // Disabled greys the tag out and blocks pointer interaction, including the description tooltip —
+  // distinct from read-only, which keeps the value fully legible and still hoverable.
+  // No `cursor` here: `pointer-events: none` stops the element generating pointer events at all, so
+  // the cursor of whatever sits underneath is what shows.
   const shaStatusTagDisabled = cx(
     'sha-status-tag-disabled',
     css`
       && {
-        opacity: 0.5;
-        cursor: not-allowed;
+        filter: grayscale(100%);
+
         pointer-events: none;
       }
     `,

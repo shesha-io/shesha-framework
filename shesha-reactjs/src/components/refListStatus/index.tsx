@@ -19,7 +19,13 @@ export interface IRefListStatusProps {
   value?: number | undefined;
   isDesigner?: boolean | undefined;
   readOnly?: boolean;
-  /** Greys the tag out and takes it out of the tab order. Distinct from `readOnly`. */
+  /**
+   * Greys the tag out and blocks pointer interaction. Distinct from `readOnly`, which keeps the
+   * value fully legible and hoverable.
+   *
+   * Tab order and ARIA state are unchanged: the tag renders as a `span`, which is not focusable to
+   * begin with, and carries no interactive role for `aria-disabled` to qualify.
+   */
   disabled?: boolean | undefined;
   /** Emotion class carrying the configured appearance; applied to the tag container. */
   className?: string | undefined;

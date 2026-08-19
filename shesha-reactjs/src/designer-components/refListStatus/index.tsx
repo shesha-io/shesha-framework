@@ -1,7 +1,7 @@
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { RefListStatus } from '@/components/refListStatus/index';
-import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateReadOnly, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
@@ -16,7 +16,7 @@ import { RefListStatusApi } from '../../componentsApi/componentApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '../_common/events';
+import { ALL_INPUT_EVENTS_WITHOUT_CHANGE, getComponentEvents } from '../_common/events';
 import { IRefListStatusComponentProps, IRefListStatusComponentPropsV1, RefListStatusComponentDefinition } from './interfaces';
 import { IRefListStatusPropsV0 } from './migrations/models';
 import { getSettings } from './settings';
@@ -87,7 +87,7 @@ const RefListStatusComponent: RefListStatusComponentDefinition = {
             : (
               <div
                 className={styles.refListStatus}
-                {...getComponentEvents<number>(model, ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, ctx, value, DataTypes.number)}
+                {...getComponentEvents<number>(model, ALL_INPUT_EVENTS_WITHOUT_CHANGE, ctx, value, DataTypes.number)}
               >
                 <RefListStatus
                   value={value ?? undefined}
@@ -159,7 +159,7 @@ const RefListStatusComponent: RefListStatusComponentDefinition = {
       ? prev
       : { ...migratePrevStyles(prev, defaultStyles()) })
     .add<IRefListStatusComponentProps>(7, (prev) => migrateReadOnly(prev))
-    .add<IRefListStatusComponentProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev))),
+    .add<IRefListStatusComponentProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   linkToModelMetadata: (model, metadata): IRefListStatusComponentProps => {
