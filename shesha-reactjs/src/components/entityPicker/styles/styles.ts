@@ -1,41 +1,71 @@
 import { createStyles, sheshaStyles } from '@/styles';
-import { CSSProperties } from 'react';
+import { IStyleValue } from '@/providers/form/models';
+import { backgroundStyles, cssPropertiesToString, fontStyles, shadowStyles, borderStyles } from '@/designer-components/_common/styles/utils';
 
-export const useStyles = createStyles(({ css, cx, prefixCls, token }, { style }: { style?: CSSProperties; hoverBorderColor?: string }) => {
+export const useStyles = createStyles(({ css, cx, prefixCls }, styleValue: IStyleValue) => {
   const pickerEllipsisBtnWidth = "45px";
 
   const pickerInputGroup = "picker-input-group";
   const pickerInputGroupInput = "picker-input-group-input";
-  const pickerInputGroupEllipsis = "picker-input-group-ellipsis";
+  const pickerInputGroupEllipsis = "sha-entity-picker-button";
   const entityPickerModalPagerContainer = "entity-picker-modal-pager-container";
 
   const shaReactTable = "sha-react-table";
   const shaGlobalTableFilter = "sha-global-table-filter";
+  // Border, background and shadow are what antd repaints in the interactive and validation
+  // states, so they are kept together and re-asserted wherever antd would override them.
+  const configuredAppearance = `
+    ${borderStyles(styleValue.border)}
+    ${backgroundStyles(styleValue.background)}
+    ${shadowStyles(styleValue.shadow)}
+    ${cssPropertiesToString(styleValue.styleCss)}
+  `;
 
+  /* Layout only. The configured Appearance (border, background, font, dimensions, spacing) is
+     emitted by the designer component's own emotion class onto the wrapper inside this container,
+     so nothing here may paint a box of its own. */
   const entityPickerContainer = cx("entity-picker-container", css`
-    width: ${style?.width || '100%'};
+    width: 100%;
     .${pickerInputGroup} {
       .${pickerInputGroupInput} {
         width: calc(100% + ${pickerEllipsisBtnWidth});
       }
-        
-      .${pickerInputGroupEllipsis} {
-        width: ${pickerEllipsisBtnWidth};
-      }
-    }  
-      .${pickerInputGroupEllipsis} {
-        &:hover {
-          border-color: ${token.colorPrimary} !important;
-        }
-      }
-  
+    }
+
     .global-tablefilter {
       padding-right: unset !important;
     }
   `);
 
+  /* The dialog is portalled to the body, so the picker's own Appearance class cannot reach it via
+     a descendant selector — it gets the style model passed down instead.
+
+     It inherits background and border from the field that opened it, so the dialog reads as
+     belonging to that field rather than sitting on antd's hardcoded white panel. Shadow is
+     deliberately excluded (see popupAppearanceStyles): elevation is what makes an overlay look
+     native, so it stays with the theme. Dimensions are excluded too — the dialog is sized by its
+     own width setting, and the field's width would squash the table inside it. */
+
+
   const entityPickerModal = cx("entity-picker-modal", css`
+          ${configuredAppearance}
+         
+        /* antd paints the header and body on their own elements, which would cover the inherited
+           background on the content panel above. */
+        .${prefixCls}-modal-header,
+        .${prefixCls}-modal-body,
+        .${prefixCls}-modal-footer {
+          background: transparent;
+        }
+
+        /* antd sets font on the title element itself, so an inherited value never reaches it. */
+        .${prefixCls}-modal-title {
+          ${fontStyles(styleValue.font)}
+        }
+
         .${prefixCls}-modal-body {
+          ${fontStyles(styleValue.font)}
+
           .ant-alert {
             margin-bottom: 8px;
           }
@@ -51,7 +81,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, { style }:
           width: 100% !important;
           display: block !important;
           overflow: auto;
-          border: 1px solid #d9d9d9;
+          border: 1px solid ${styleValue.border?.border?.all?.color ?? '#d9d9d9'};
+          ${borderStyles(styleValue.border)}
           border-radius: 6px;
           box-sizing: border-box;
           ${sheshaStyles.thinScrollbars}
@@ -76,48 +107,19 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, { style }:
         }
     `);
 
+  /* Layout only, for the same reason as the container above: font and colour come from the
+     designer component's Appearance class, which scopes them to this element. */
   const entitySelect = cx("entity-select", css`
-        --ant-color-text: ${style?.color || '#000'} !important;
-        width: calc(100% - 32px) !important;
         flex-basis: unset !important;
-        &:hover {
-                border-color: ${token.colorPrimary} !important;
-              }
 
-        .ant-select-selector {
-          overflow: auto !important;
-          scrollbar-width: thin !important;
-          -ms-overflow-style: none !important;
+        .${prefixCls}-select-selector {
+          overflow: auto;
+          scrollbar-width: thin;
+          -ms-overflow-style: none;
           &::-webkit-scrollbar {
-            width: 8px !important;
+            width: 8px;
           }
         }
-
-        .ant-select-selection-overflow-item-suffix {
-          display: none !important;
-        };
-
-        .ant-select-selector > ant-select-selection-search, ant-select-selection-placeholder {
-          border-right: 1px solid #d9d9d9;
-          padding: 0 8px !important;
-          * {
-            font-size: ${style?.fontSize || '14px'} !important;
-            font-weight: ${style?.fontWeight} !important;
-            color: ${style?.color || '#000'} !important;
-            font-family: ${style?.fontFamily || 'inherit'} !important;  
-            border-top-right-radius: 0 !important;
-            border-bottom-right-radius: 0 !important;
-            }
-          }
-
-          .ant-select-selection-item {
-            font-size: ${style?.fontSize || '14px'} !important;
-            font-weight: ${style?.fontWeight} !important;
-            color: ${style?.color || '#000'} !important;
-            font-family: ${style?.fontFamily || 'inherit'} !important;  
-            
-          }
-
       `);
 
   return {

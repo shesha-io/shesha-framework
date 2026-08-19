@@ -375,6 +375,38 @@ export interface DateFieldApi extends InputComponentApi<string | [string | null,
  */
 export type AddressApi = InputComponentApi<string | undefined>;
 
+/** A single entity selected in an entity picker. */
+export interface EntityPickerSelection {
+  /** Id of the selected entity. */
+  readonly id: string;
+  /** Text shown for the entity, taken from the configured Display Property. */
+  readonly displayName: string;
+};
+
+/**
+ * Entity picker. The value follows the component's Value Format: a plain id string with `simple`,
+ * an entity reference object with `entityReference`, or whatever the custom scripts return. When
+ * Selection Type is Multiple the value is the corresponding array instead.
+ */
+export interface EntityPickerApi extends InputComponentApi<string | string[] | EntityReferenceValue | EntityReferenceValue[] | undefined> {
+  /** Entities currently selected, whatever the configured Value Format is. Read-only. */
+  readonly selectedItems: readonly EntityPickerSelection[];
+  /** Open the selection dialog. */
+  showPicker(): void;
+  /** Close the selection dialog. */
+  hidePicker(): void;
+};
+
+/** An entity reference as stored by a component bound with the `entityReference` value format. */
+export interface EntityReferenceValue {
+  /** Id of the entity. */
+  id: string;
+  /** Display text of the entity. */
+  _displayName: string;
+  /** Full class name of the entity type. */
+  _className: string;
+};
+
 export interface PanelApi extends CommonComponentApi {
   /** Whether the panel is expanded */
   isExpanded: boolean;

@@ -49,7 +49,9 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps): React.JSX.El
     onCloseModal,
   } = props;
 
-  const { styles } = useStyles({});
+  // The dialog is portalled out of the picker, so the Appearance model is handed over as a value
+  // rather than inherited through the DOM.
+  const { styles } = useStyles(props.styleValue);
   const [modalId] = useState(nanoid()); // use generated value because formId was changed. to be reviewed
   const [state, setState] = useState<IEntityPickerState>({ showModal: true });
   const hidePickerDialog = (): void => {
