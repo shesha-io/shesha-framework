@@ -1,6 +1,6 @@
 import { ButtonProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { CSSProperties, ReactNode, Ref, SyntheticEvent } from 'react';
+import { ReactNode, Ref, SyntheticEvent } from 'react';
 import { IAnyObject, IEntityReferenceDto } from '@/interfaces';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { FormIdentifier, IStyleValue } from '@/providers/form/models';
@@ -69,7 +69,6 @@ export interface IEntityPickerProps extends Omit<IWrappedEntityPickerProps, 'onD
   entityFooter?: ReactNode;
   configurableColumns?: IConfigurableColumnsProps[] | undefined;
   addNewRecordsProps?: IAddNewRecordProps | undefined;
-  style?: CSSProperties | undefined;
   readOnly?: boolean | undefined;
   placeholder?: string | undefined;
   /** Text shown when read-only and nothing is selected. */

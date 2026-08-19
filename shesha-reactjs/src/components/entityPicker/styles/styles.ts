@@ -1,8 +1,8 @@
 import { createStyles, sheshaStyles } from '@/styles';
 import { IStyleValue } from '@/providers/form/models';
-import { backgroundStyles, cssPropertiesToString, fontStyles, shadowStyles, borderStyles } from '@/designer-components/_common/styles/utils';
+import { backgroundStyles, cssPropertiesToString, fontStyles, borderStyles, splitTextProperties } from '@/designer-components/_common/styles/utils';
 
-export const useStyles = createStyles(({ css, cx, prefixCls }, styleValue: IStyleValue) => {
+export const useStyles = createStyles(({ css, cx, prefixCls }, model: IStyleValue) => {
   const pickerEllipsisBtnWidth = "45px";
 
   const pickerInputGroup = "picker-input-group";
@@ -12,14 +12,28 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, styleValue: IStyl
 
   const shaReactTable = "sha-react-table";
   const shaGlobalTableFilter = "sha-global-table-filter";
-  // Border, background and shadow are what antd repaints in the interactive and validation
-  // states, so they are kept together and re-asserted wherever antd would override them.
+
+  /* Only the box half of the Custom style. Its text half is re-emitted through `textStyle` below,
+     narrowed to family and colour, so emitting the whole thing here would put the size, weight and
+     alignment back on the dialog. */
   const configuredAppearance = `
-    ${borderStyles(styleValue.border)}
-    ${backgroundStyles(styleValue.background)}
-    ${shadowStyles(styleValue.shadow)}
-    ${cssPropertiesToString(styleValue.styleCss)}
+    ${borderStyles(model.border)}
+    ${backgroundStyles(model.background)}
+    ${cssPropertiesToString(splitTextProperties(model.styleCss).box)}
   `;
+
+  /* The background on its own, for the elements that only need to stop being opaque white rather
+     than take the full box. */
+  const configuredBackground = backgroundStyles(model.background);
+
+  /* The dialog takes only family and colour from the Font panel. Size, weight and alignment are
+     chosen for a single-line input and would fight the dialog's own layout: an input's font size
+     would blow out the table rows, and its `text-align` would shove every cell and the title to
+     one side. Those three keep cascading from the theme instead. */
+  const textStyle = fontStyles(
+    { type: model.font?.type, color: model.font?.color },
+    { fontFamily: model.styleCss?.fontFamily, color: model.styleCss?.color },
+  );
 
   /* Layout only. The configured Appearance (border, background, font, dimensions, spacing) is
      emitted by the designer component's own emotion class onto the wrapper inside this container,
@@ -37,90 +51,141 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, styleValue: IStyl
     }
   `);
 
-  /* The dialog is portalled to the body, so the picker's own Appearance class cannot reach it via
-     a descendant selector — it gets the style model passed down instead.
-
-     It inherits background and border from the field that opened it, so the dialog reads as
-     belonging to that field rather than sitting on antd's hardcoded white panel. Shadow is
-     deliberately excluded (see popupAppearanceStyles): elevation is what makes an overlay look
-     native, so it stays with the theme. Dimensions are excluded too — the dialog is sized by its
-     own width setting, and the field's width would squash the table inside it. */
-
-
+  /* The dialog is portalled to the body, so the picker's Appearance class cannot reach it through
+     a descendant selector — it gets the style model passed down as a value instead. */
   const entityPickerModal = cx("entity-picker-modal", css`
-          ${configuredAppearance}
-         
-        /* antd paints the header and body on their own elements, which would cover the inherited
-           background on the content panel above. */
-        .${prefixCls}-modal-header,
-        .${prefixCls}-modal-body,
-        .${prefixCls}-modal-footer {
-          background: transparent;
-        }
+    /* antd paints the dialog panel on -modal-container; the class itself lands on the outer
+       element, whose background sits behind that panel and never shows. */
+    .${prefixCls}-modal-container {
+      ${configuredAppearance}
+    }
 
-        /* antd sets font on the title element itself, so an inherited value never reaches it. */
-        .${prefixCls}-modal-title {
-          ${fontStyles(styleValue.font)}
-        }
+    /* antd paints the header, body and footer on their own elements, which would cover the
+       background on the panel above. */
+    .${prefixCls}-modal-header,
+    .${prefixCls}-modal-body,
+    .${prefixCls}-modal-footer {
+      background: transparent;
+    }
 
-        .${prefixCls}-modal-body {
-          ${fontStyles(styleValue.font)}
+    /* antd sets the font on each of these elements itself, so a value inherited from the panel
+       never reaches them. */
+    .${prefixCls}-modal-title {
+      ${textStyle}
+    }
 
-          .ant-alert {
-            margin-bottom: 8px;
-          }
+    .${prefixCls}-modal-body {
+      ${textStyle}
+
+      /* The alert deliberately keeps its own panel: it is an information callout, and tinting it
+         with the field background would lose the distinction it is drawn to make. */
+      .ant-alert {
+        margin-bottom: 8px;
+      }
+    }
+
+    .${shaGlobalTableFilter} {
+      ${configuredAppearance}
+      margin: unset !important;
+      width: 100%;
+      padding: unset;
+
+      .${prefixCls}-input-affix-wrapper {
+        ${configuredBackground}
+
+        input {
+          ${textStyle}
         }
-        .${shaGlobalTableFilter} {
-          margin: unset !important;
-          width: 100%;
-          padding: unset;
+      }
+
+      .${prefixCls}-btn {
+        ${configuredBackground}
+        ${textStyle}
+      }
+    }
+
+    .${shaReactTable} {
+      margin: unset !important;
+      width: 100% !important;
+      display: block !important;
+      overflow: auto;
+      ${configuredAppearance}
+      border-radius: 6px;
+      box-sizing: border-box;
+      ${sheshaStyles.thinScrollbars}
+
+      /* The table paints its own row and cell backgrounds, and sets the font on the cell elements
+         themselves, so both have to be restated all the way down. */
+      .sha-table {
+        ${configuredBackground}
+        ${textStyle}
+
+        * {
+          ${textStyle}
         }
-      
-        .${shaReactTable} {
-          margin: unset !important;
-          width: 100% !important;
-          display: block !important;
-          overflow: auto;
-          border: 1px solid ${styleValue.border?.border?.all?.color ?? '#d9d9d9'};
-          ${borderStyles(styleValue.border)}
-          border-radius: 6px;
-          box-sizing: border-box;
-          ${sheshaStyles.thinScrollbars}
+      }
+    }
+
+    .${entityPickerModalPagerContainer} {
+      ${textStyle}
+      display: flex;
+      justify-content: flex-end;
+      margin: ${sheshaStyles.paddingLG}px 0;
+
+      .ant-pagination-total-text {
+        ${textStyle}
+      }
+
+      /* Each page number is its own opaque box, which reads as a white chip against a configured
+         background. */
+      .${prefixCls}-pagination-item {
+        ${configuredBackground}
+
+        a {
+          ${textStyle}
         }
-      
-        .${entityPickerModalPagerContainer} {
-          display: flex;
-          justify-content: flex-end;
-          margin: ${sheshaStyles.paddingLG}px 0;
-      
-          .${prefixCls}-pagination-options-size-changer {
-            margin-right: 0 !important;
-          }
-        }
-      
-        .${prefixCls}-modal-footer {
-          padding: 12px 0 !important;
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between;
-          column-gap: 12px;
-        }
-    `);
+      }
+
+      /* The declaration order here is deliberate: configuredAppearance comes last so its
+         background wins over the transparent one above. Swapping the two changes what the page
+         size changer is painted with. */
+      .${prefixCls}-select {
+        margin-right: 0 !important;
+        background: transparent;
+        ${configuredAppearance}
+        ${textStyle}
+      }
+    }
+
+    .${prefixCls}-modal-footer {
+      padding: 12px 0 !important;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      column-gap: 12px;
+
+      .${prefixCls}-btn {
+        ${configuredAppearance}
+        ${textStyle}
+      }
+    }
+  `);
 
   /* Layout only, for the same reason as the container above: font and colour come from the
      designer component's Appearance class, which scopes them to this element. */
   const entitySelect = cx("entity-select", css`
-        flex-basis: unset !important;
+    flex-basis: unset !important;
 
-        .${prefixCls}-select-selector {
-          overflow: auto;
-          scrollbar-width: thin;
-          -ms-overflow-style: none;
-          &::-webkit-scrollbar {
-            width: 8px;
-          }
-        }
-      `);
+    .${prefixCls}-select-selector {
+      overflow: auto;
+      scrollbar-width: thin;
+      -ms-overflow-style: none;
+
+      &::-webkit-scrollbar {
+        width: 8px;
+      }
+    }
+  `);
 
   return {
     entityPickerContainer,

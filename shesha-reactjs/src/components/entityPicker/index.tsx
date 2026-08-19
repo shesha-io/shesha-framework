@@ -61,7 +61,6 @@ const EntityPickerReadOnly = (props: IEntityPickerProps): React.JSX.Element => {
     : (
       <ReadOnlyDisplayFormItem
         value={displayText}
-        style={props.style}
         styleValue={props.styleValue}
         enableFullStyle={props.enableFullStyle}
       />
@@ -78,7 +77,6 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
     value,
     mode,
     size,
-    style,
     className,
     useButtonPicker,
     pickerButtonProps,
@@ -90,7 +88,7 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
     pickerRef,
   } = props;
 
-  const { styles } = useStyles({});
+  const { styles } = useStyles({ ...props });
   const selectRef = useRef<SelectRef>(null);
   const [showModal, setShowModal] = useState(false);
 
@@ -207,7 +205,6 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
           size={size}
           disabled={disabled}
           {...(pickerButtonProps || {})}
-          {...(isDefined(style) ? { style } : {})}
           {...(isNotNullOrWhiteSpace(className) ? { className } : {})}
         >
           {title}
@@ -221,7 +218,7 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
     <div className={styles.entityPickerContainer}>
       {/* The wrapper carries the configured appearance; the select and the button inside it are
           neutralised by the same class so the field reads as one box. */}
-      <div className={className} style={style} {...events}>
+      <div className={className} {...events}>
         <Select<string | string[]>
           size={size}
           onOpenChange={(_e) => {

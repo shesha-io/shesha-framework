@@ -250,13 +250,9 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps): React.JSX.El
         <DataTable
           onDblClick={onDblClick}
           options={{ omitClick: true }}
-          striped
           rowDividers
           rowAlternateBackgroundColor={getTableDefaults().rowAlternateBackgroundColor}
-          headerBackgroundColor="#ffffff"
-          headerFontSize={getTableDefaults().headerFontSize}
-          headerFontWeight={getTableDefaults().headerFontWeight}
-          headerFontFamily={getTableDefaults().headerFontFamily}
+          headerBackgroundColor="transparent"
         />
       </>
     </Modal>
