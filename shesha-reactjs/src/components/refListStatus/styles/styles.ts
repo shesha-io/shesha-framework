@@ -54,7 +54,7 @@ export const useStyles = createStyles<StylesArgs, StylesResponse>(({ css, cx }, 
     `,
   );
 
-  // Disabled greys the tag out and blocks pointer interaction, including the description tooltip —
+  // Disabled blocks pointer interaction, including the description tooltip —
   // distinct from read-only, which keeps the value fully legible and still hoverable.
   // No `cursor` here: `pointer-events: none` stops the element generating pointer events at all, so
   // the cursor of whatever sits underneath is what shows.
@@ -62,8 +62,7 @@ export const useStyles = createStyles<StylesArgs, StylesResponse>(({ css, cx }, 
     'sha-status-tag-disabled',
     css`
       && {
-        filter: grayscale(100%);
-
+        opacity: 0.5;
         pointer-events: none;
       }
     `,
