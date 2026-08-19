@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { IAlertComponentProps } from "@/designer-components/alert/interfaces";
 import { IAutocompleteComponentProps } from "@/designer-components/autocomplete/interfaces";
 import { IButtonsProps } from "@/designer-components/button/buttonGroup/buttonsComponent/interfaces";
@@ -47,7 +48,6 @@ import { DEFAULT_FORM_SETTINGS, IConfigurableFormComponent, IContainerComponentP
 import { AllComponentsConfig, FluentSettings, FormBuilder, FormBuilderFactory, StandardAppearancePanel, StandardAppearancePanelConfig, StandardFormBuilderMethods } from "./interfaces";
 import { nanoid } from "@/utils/uuid";
 import { linkComponentToModelMetadata, upgradeComponent } from "@/providers/form/utils";
-import { getComponentDefinitions } from "@/providers/form/defaults/toolboxComponents";
 import { fontTypes, fontWeightsOptions, textAlignOptions } from "@/designer-components/_settings/utils/font/utils";
 import { getBorderInputs, getCornerInputs } from "@/designer-components/_settings/utils/border/utils";
 import { backgroundTypeOptions, gradientDirectionOptions, positionOptions, repeatOptions, sizeOptions } from "@/designer-components/_settings/utils/background/utils";
@@ -203,7 +203,7 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
 
   /**
    * `_addProperty` converts `visibleJs` into a `visible` code evaluator, but only for the row
-   * component itself â€” the inputs inside it are plain objects it never walks, so their `visibleJs`
+   * component itself — the inputs inside it are plain objects it never walks, so their `visibleJs`
    * was carried into the markup as an inert string and the input always rendered. Convert each one
    * here instead: `getActualModel` resolves the evaluator when it recurses into the `inputs` array,
    * and `SettingInput` already treats `visible === false` as hidden.
@@ -613,7 +613,7 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
     return this.componentDefinitions?.get(type);
   };
 
-  constructor(componentDefinitions?: Map<string, IToolboxComponent>, rootId?: string) {
+  constructor(componentDefinitions: Map<string, IToolboxComponent> | undefined, rootId?: string) {
     this.componentDefinitions = componentDefinitions;
     this.form = [];
     this.rootId = rootId ?? nanoid();
@@ -681,7 +681,6 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
   }
 };
 
-export const makeFormBuliderFactory: () => FormBuilderFactory = () => {
-  const components = getComponentDefinitions();
+export const makeFormBuliderFactory: (components: Map<string, IToolboxComponent>) => FormBuilderFactory = (components) => {
   return (rootId?: string) => new FormBuilderImplementation(components, rootId);
 };
