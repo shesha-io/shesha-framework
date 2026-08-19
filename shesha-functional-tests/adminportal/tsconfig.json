@@ -27,9 +27,9 @@
     },
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "strict": false,
-    "strictNullChecks": false,
-    "strictPropertyInitialization": false,
+    "strict": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
     "target": "esnext",
     "typeRoots": [
       "typings",
