@@ -8,10 +8,12 @@ import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles, useForm } from '@/providers';
 import { useComponentApi } from '@/providers/componentApi/provider';
+import { useReferenceListItem } from '@/providers/referenceListDispatcher';
+import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { isDefined } from '@/utils/nullables';
 import { FileSearchOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
-import { useCallback, useEffect, useState } from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
 import { RefListStatusApi } from '../../componentsApi/componentApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
@@ -24,6 +26,43 @@ import { useStyles } from './styles';
 import { defaultStyles } from './utils';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
+
+interface IRefListStatusReadOnlyProps {
+  model: IRefListStatusComponentProps;
+  referenceListId: IReferenceListIdentifier;
+  value: number | undefined;
+  onItemTextChange: (itemText: string | null | undefined) => void;
+}
+
+/**
+ * Read-only rendering of the status.
+ *
+ * This resolves the item text itself rather than reusing the `itemText` the editable branch reports
+ * through `onItemTextChange`: that callback only fires from `RefListStatus`, which read-only mode
+ * never renders, so the text would otherwise stay undefined and the field would render empty.
+ *
+ * Resolving it through the hook also keeps it in step with `value` — the hook re-reads the list
+ * whenever the value changes.
+ */
+const RefListStatusReadOnly: FC<IRefListStatusReadOnlyProps> = ({ model, referenceListId, value, onItemTextChange }) => {
+  const item = useReferenceListItem(referenceListId.module, referenceListId.name, value);
+  const itemText = item.data?.item;
+
+  /* Reported so the component API exposes `itemText` in read-only mode too, matching the editable
+     branch. */
+  useEffect(() => {
+    onItemTextChange(itemText);
+  }, [itemText, onItemTextChange]);
+
+  return (
+    <ReadOnlyDisplayFormItem
+      value={itemText}
+      enableFullStyle={model.enableStyleOnReadonly}
+      style={model.styleCss}
+      styleValue={model}
+    />
+  );
+};
 
 const RefListStatusComponent: RefListStatusComponentDefinition = {
   allowInherit: true,
@@ -74,14 +113,14 @@ const RefListStatusComponent: RefListStatusComponentDefinition = {
       <ConfigurableFormItem<number> model={{ ...model }}>
         {(value, _onChange, _propertyName, ctx) => {
           // Read only renders the value as plain text; disabled keeps the tag but greys it out and
-          // takes it out of the tab order. The two are independent settings of Interaction Mode.
+          // blocks pointer interaction. The two are independent settings of Interaction Mode.
           return model.readOnly === true
             ? (
-              <ReadOnlyDisplayFormItem
-                value={itemText}
-                enableFullStyle={model.enableStyleOnReadonly}
-                style={model.styleCss}
-                styleValue={model}
+              <RefListStatusReadOnly
+                model={model}
+                referenceListId={referenceListId}
+                value={value ?? undefined}
+                onItemTextChange={onItemTextChange}
               />
             )
             : (

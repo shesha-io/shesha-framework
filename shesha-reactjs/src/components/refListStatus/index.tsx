@@ -100,7 +100,9 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
     <div className={cx(styles.shaStatusTagContainer, className)}>
       <DescriptionTooltip showReflistName={showReflistName} currentStatus={itemData}>
         <RefTag
-          {...(solidBackground && !isNullOrWhiteSpace(itemData.color) ? { color: itemData.color } : {})}
+          {...(solidBackground && !isNullOrWhiteSpace(itemData.color)
+            ? { color: itemData.color, variant: 'solid' as const }
+            : {})}
           icon={canShowIcon && !isNullOrWhiteSpace(itemData.icon) ? <ShaIcon iconName={itemData.icon} /> : null}
           style={!solidBackground || !itemData.color ? style : { ...rest }}
           className={cx(styles.shaStatusTag, disabled ? styles.shaStatusTagDisabled : undefined)}
