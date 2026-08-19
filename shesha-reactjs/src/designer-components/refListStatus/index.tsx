@@ -42,6 +42,13 @@ const RefListStatusComponent: RefListStatusComponentDefinition = {
     const onItemTextChange = useCallback((value: string | null | undefined) => setItemText(value ?? undefined), []);
 
     const componentApi = useComponentApi();
+    const [itemText, setItemText] = useState<string | undefined>(undefined);
+    const itemTextRef = useRef<string | undefined>(undefined);
+    const onItemTextChange = useCallback((value: string | null | undefined) => {
+      itemTextRef.current = value ?? undefined;
+      setItemText(value ?? undefined);
+    }, []);
+
     useEffect(() => {
       componentApi?.updateApi<RefListStatusApi>({
         id: model.id,
@@ -49,10 +56,10 @@ const RefListStatusComponent: RefListStatusComponentDefinition = {
         level: 3,
         typeDefinition: { typeName: 'RefListStatusApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
         properties: [
-          { name: 'itemText', getter: () => itemText },
+          { name: 'itemText', getter: () => itemTextRef.current },
         ],
       });
-    }, [apiContext, componentApi, itemText, model.componentName, model.id]);
+    }, [apiContext, componentApi, model.componentName, model.id]);
     useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
     const { styles } = useStyles(model);
