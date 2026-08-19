@@ -412,3 +412,16 @@ export interface SubFormApi extends BaseComponentApi {
   /** Put sub form data to the backend */
   putSubFormData(): void;
 };
+
+export interface TabsApiTab {
+  visible: boolean;
+  readonly key: string;
+  select(): void;
+}
+
+export interface TabsApi extends CommonComponentApi {
+  /** Current visible tab. The tab index starts from zero */
+  currentTab?: number | undefined;
+  /** List of tabs */
+  readonly tabs: TabsApiTab[];
+};

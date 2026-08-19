@@ -2,7 +2,7 @@ import { ButtonGroupItemProps, IButtonGroupItem, isGroup, isItem } from '@/provi
 import { IStyleValue } from '@/providers/form/models';
 import { deepMergeValues, getStringPropertyOrUndefined } from '@/utils/object';
 import * as React from 'react';
-import { MenuButton, MenuItem, VisibilityEvaluator } from './models';
+import { MenuButton, MenuItem, ItemBooleanEvaluator } from './models';
 import { IApplicationContext } from '@/providers/form/utils';
 import { addPx } from '@/utils/style';
 import { RenderButton } from './renderButton';
@@ -12,14 +12,15 @@ import { IToolboxComponent } from '@/interfaces';
 
 export const createMenuItem = (
   props: MenuButton,
-  getIsVisible: VisibilityEvaluator,
+  getIsVisible: ItemBooleanEvaluator,
+  getIsDisabled: ItemBooleanEvaluator,
   appContext: IApplicationContext,
   buttonComponent: IToolboxComponent,
 ): MenuItem => {
   const isDivider = isItem(props) && (props.itemSubType === 'line' || props.itemSubType === 'separator');
 
   const childItems = props.childItems && props.childItems.length > 0
-    ? props.childItems.filter(getIsVisible).map((props) => createMenuItem(props, getIsVisible, appContext, buttonComponent))
+    ? props.childItems.filter(getIsVisible).map((props) => createMenuItem(props, getIsVisible, getIsDisabled, appContext, buttonComponent))
     : undefined;
 
   // for backward compatibility
@@ -30,7 +31,7 @@ export const createMenuItem = (
     : getButtonGroupMenuItem(
       <RenderButton props={defaultStyledItem} buttonComponent={buttonComponent} />,
       props.id,
-      props.disabled,
+      getIsDisabled(props),
       childItems,
     );
 };
