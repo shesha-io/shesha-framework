@@ -20,7 +20,7 @@ const getPrevZoomLevel = (currentZoom: number): number =>
 
 export const CanvasConfig: FC = () => {
   const { styles } = useStyles();
-  const { setCanvasZoom, setCanvasAutoZoom, autoZoom, zoom } = useCanvas();
+  const { setCanvasZoom, setCanvasAutoZoom, autoZoom, autoWidth, zoom } = useCanvas();
 
   // Local state so the user can type freely before committing the value
   const [inputZoom, setInputZoom] = useState<number | null>(zoom);
@@ -97,12 +97,15 @@ export const CanvasConfig: FC = () => {
       <Space orientation="horizontal" size={5} style={{ flexWrap: "nowrap" }}>
         <DeviceOptions />
         <Space orientation="horizontal" size={2} style={{ flexWrap: "nowrap" }}>
-          <Tooltip title={autoZoom ? "Auto" : "Manual"}>
+          <Tooltip title={autoWidth ? "Auto zoom is not needed while the canvas fills the available space" : autoZoom ? "Auto" : "Manual"}>
             <Button
               size="small"
               type="default"
               icon={<ExpandOutlined size={14} />}
-              style={autoZoom ? { color: 'var(--ant-button-default-hover-color)', borderColor: 'var(--ant-button-default-hover-color)' } : {}}
+              // Auto zoom fits a fixed-width canvas into the pane. With the "Canvas" resolution the
+              // canvas already fills the pane at whatever zoom is chosen, so there is nothing to fit.
+              disabled={autoWidth}
+              style={autoZoom && !autoWidth ? { color: 'var(--ant-button-default-hover-color)', borderColor: 'var(--ant-button-default-hover-color)' } : {}}
               title={autoZoom ? "Auto" : "Manual"}
               onClick={() => {
                 setCanvasAutoZoom();

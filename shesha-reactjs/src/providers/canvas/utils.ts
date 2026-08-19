@@ -71,6 +71,21 @@ export const defaultDesignerWidth = `${(typeof window !== 'undefined' ? window.s
 /** Sentinel value for the responsive Canvas preset in the dropdown */
 export const CANVAS_PRESET_SENTINEL = '__CANVAS_RESPONSIVE__' as const;
 
+/**
+ * Width the canvas must be laid out at, in its own (pre-zoom) coordinate space, so that after the
+ * CSS `zoom` is applied it renders exactly `availableWidth` wide - i.e. it fills the area between
+ * the Builder Components and Properties panels with no horizontal scrollbar.
+ *
+ * Because `zoom` scales layout, dividing by the zoom factor means zooming out widens the layout
+ * (components get more room and re-wrap) while each component keeps the rendered scale the user
+ * picked, instead of the canvas overflowing its pane.
+ */
+export const getCanvasLayoutWidth = (availableWidth: number, zoom: number): string => {
+  const zoomFactor = (zoom > 0 ? zoom : DEFAULT_OPTIONS.defaultZoom) / 100;
+  // Floor so sub-pixel rounding can never push the canvas past the available space
+  return `${Math.max(0, Math.floor(availableWidth / zoomFactor))}px`;
+};
+
 export interface IAutoZoomParams {
   currentZoom: number;
   designerWidth?: string;
@@ -81,16 +96,16 @@ export interface IAutoZoomParams {
 };
 
 /**
- * Predefined zoom levels (percentages) that the +/- buttons step through.
+ * Predefined zoom levels (percentages) that the +/- buttons step through, in 25% increments.
  * Direct numeric entry in the zoom input is free-form within [minZoom, maxZoom]
  * and is not restricted to these levels.
  */
-export const ZOOM_LEVELS = [25, 50, 75, 80, 100, 125, 150, 200] as const;
+export const ZOOM_LEVELS = [25, 50, 75, 100, 125, 150, 175, 200] as const;
 
 export const DEFAULT_OPTIONS = {
   minZoom: 10,
   maxZoom: 400,
-  defaultZoom: 80,
+  defaultZoom: 75,
   sizes: [25, 50, 25],
   configTreePanelWidth: (val: number = 20): number => typeof window !== 'undefined' ? (val / 100) * window.innerWidth : 200,
   gutter: 4,
@@ -241,6 +256,9 @@ export const usePinchZoom = (
 
 export const screenSizeOptions = [
   {
+    label: 'Canvas', value: CANVAS_PRESET_SENTINEL, icon: DesktopOutlined,
+  },
+  {
     label: 'iPhone SE', value: '375px', icon: MobileOutlined,
   },
   {
@@ -272,9 +290,6 @@ export const screenSizeOptions = [
   },
   {
     label: 'Full HD 1920x1080', value: '1920px', icon: DesktopOutlined,
-  },
-  {
-    label: 'Canvas', value: CANVAS_PRESET_SENTINEL, icon: DesktopOutlined,
   },
 ];
 

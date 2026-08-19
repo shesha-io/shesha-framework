@@ -6,6 +6,7 @@ import {
   useState,
   useMemo,
   useCallback,
+  useRef,
 } from 'react';
 import classNames from 'classnames';
 
@@ -14,7 +15,7 @@ import { SidebarPanel } from './sidebarPanel';
 import { useStyles } from './styles/styles';
 import { SizableColumns } from '../sizableColumns';
 import { getPanelSizes } from './utilis';
-import { calculateAutoZoom, DEFAULT_OPTIONS, defaultDesignerWidth, usePinchZoom } from '@/providers/canvas/utils';
+import { calculateAutoZoom, DEFAULT_OPTIONS, defaultDesignerWidth, getCanvasLayoutWidth, usePinchZoom } from '@/providers/canvas/utils';
 import { IViewType } from '@/providers/canvas/contexts';
 import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 import { useCanvas } from '@/providers/canvas';
@@ -57,8 +58,12 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const storeKey = isNullOrWhiteSpace(storeName) ? 'sidebarContainer.transient' : storeName;
   const [isOpenLeftStore, setIsOpenLeftStore] = useLocalStorage(`${storeKey}.isOpenLeft`, false);
   const [isOpenRightStore, setIsOpenRightStore] = useLocalStorage(`${storeKey}.isOpenRight`, false);
-  const { zoom, setCanvasZoom, setViewType, designerWidth, autoZoom, configTreePanelSize } = useCanvas();
+  const { zoom, setCanvasZoom, setViewType, setAvailableCanvasWidth, designerWidth, autoZoom, autoWidth, configTreePanelSize } = useCanvas();
   const [isSidebarCollapsed] = useLocalStorage(SIDEBAR_COLLAPSE, false);
+  // Content-box width of the area between the sidebars, measured rather than derived from the
+  // window, so panel drags, collapses and the vertical scrollbar are all accounted for.
+  const mainAreaRef = useRef<HTMLDivElement>(null);
+  const [availableWidth, setAvailableWidth] = useState(0);
 
   const isOpenLeft = isNullOrWhiteSpace(storeName) ? isOpenLeftLocal : isOpenLeftStore;
   const isOpenRight = isNullOrWhiteSpace(storeName) ? isOpenRightLocal : isOpenRightStore;
@@ -102,9 +107,12 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Keep the "Canvas" preset in sync with the space actually available. Auto zoom is skipped in
+  // this mode: the canvas already fills its pane at any zoom, and letting auto zoom react to a
+  // width that is itself derived from the zoom would feed back on itself.
   useEffect(() => {
     if (canZoom) {
-      if (autoZoom) {
+      if (autoZoom && !autoWidth) {
         const newZoom = calculateAutoZoom({
           currentZoom: zoom,
           designerWidth,
@@ -119,7 +127,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
       }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [canZoom, autoZoom, windowSize.width, designerWidth, currentSizes, configTreePanelSize, setCanvasZoom, viewType, isSidebarCollapsed]);
+  }, [canZoom, autoZoom, autoWidth, windowSize.width, designerWidth, currentSizes, configTreePanelSize, setCanvasZoom, viewType, isSidebarCollapsed]);
 
   useEffect(() => {
     setCurrentSizes(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
@@ -130,6 +138,39 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   );
 
   const isDesigner = formMode === 'designer';
+  const isZoomableCanvas = isDesigner && canZoom;
+
+  // Track the width available to the canvas. The content-box excludes the vertical scrollbar, so
+  // the canvas never has to give up a horizontal scrollbar to make room for it.
+  useEffect(() => {
+    const mainArea = mainAreaRef.current;
+    if (!isZoomableCanvas || !mainArea) return undefined;
+
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const width = entry.contentBoxSize[0]?.inlineSize ?? entry.contentRect.width;
+        setAvailableWidth((prev) => (Math.abs(prev - width) < 1 ? prev : width));
+      }
+    });
+    observer.observe(mainArea);
+    setAvailableWidth(mainArea.clientWidth);
+
+    return () => observer.disconnect();
+  }, [isZoomableCanvas]);
+
+  // In "Canvas" mode the canvas is laid out at availableWidth / zoom, so once the CSS zoom is
+  // applied it renders exactly as wide as its pane: no horizontal scrollbar, components re-wrap
+  // to the space they have, and each one keeps the scale the user selected.
+  const canvasWidth = isZoomableCanvas && autoWidth && availableWidth > 0
+    ? getCanvasLayoutWidth(availableWidth, zoom)
+    : designerWidth;
+
+  // Publish it so vw-based component sizing and anything else reading the canvas width agree with
+  // what is on screen. Guarded in the reducer so it is a no-op outside "Canvas" mode.
+  useEffect(() => {
+    if (isZoomableCanvas && autoWidth && availableWidth > 0)
+      setAvailableCanvasWidth(canvasWidth);
+  }, [isZoomableCanvas, autoWidth, availableWidth, canvasWidth, setAvailableCanvasWidth]);
 
   const renderSidebar = (side: SidebarPanelPosition): ReactNode => {
     const sidebarProps = side === 'left' ? leftSidebarProps : rightSidebarProps;
@@ -168,6 +209,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
         {renderSidebar('left')}
 
         <div
+          ref={mainAreaRef}
           className={classNames(
             styles.sidebarContainerMainArea,
             styles.canvasWrapper,
@@ -184,10 +226,10 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
             ref={canvasRef}
             className={classNames(
               styles.sidebarContainerMainAreaBody,
-              { [styles.designerCanvas]: isDesigner && canZoom },
+              { [styles.designerCanvas]: isZoomableCanvas },
             )}
-            style={isDesigner && canZoom ? {
-              width: designerWidth,
+            style={isZoomableCanvas ? {
+              width: canvasWidth,
               zoom: `${zoom}%`,
             } : {}}
           >
@@ -197,7 +239,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
         {renderSidebar('right')}
       </SizableColumns>
       {/* Dedicated popup container for canvas components - applies zoom transformation */}
-      {isDesigner && canZoom && (
+      {isZoomableCanvas && (
         <div
           id="canvas-popup-container"
           className={styles.canvasPopupContainer}

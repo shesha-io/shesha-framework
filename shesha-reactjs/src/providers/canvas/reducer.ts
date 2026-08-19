@@ -4,6 +4,8 @@ import { setCanvasZoomAction,
   setScreenWidthAction,
   setDesignerDeviceAction,
   setCanvasAutoZoomAction,
+  setCanvasAutoWidthAction,
+  setAvailableCanvasWidthAction,
   setManualZoomAction,
   setConfigTreePanelSizeAction,
   setViewTypeAction } from './actions';
@@ -36,6 +38,25 @@ export const reducer = createReducer(CANVAS_CONTEXT_INITIAL_STATE, (builder) => 
         designerWidth: typeof width === 'string' ? width : `${width}px`,
         designerDevice: deviceType,
         activeDevice: getSmallerDevice(deviceType, state.physicalDevice ?? "desktop"),
+        // Picking an explicit device/resolution preset pins the canvas to that width
+        autoWidth: false,
+      };
+    })
+    .addCase(setCanvasAutoWidthAction, (state, { payload }) => {
+      return {
+        ...state,
+        autoWidth: payload !== undefined ? payload : !state.autoWidth,
+      };
+    })
+    .addCase(setAvailableCanvasWidthAction, (state, { payload }) => {
+      // The measured width is only meaningful for the responsive "Canvas" preset. Ignoring it
+      // otherwise keeps a stale measurement from overwriting a pinned device width.
+      if (!state.autoWidth || state.designerWidth === payload)
+        return state;
+
+      return {
+        ...state,
+        designerWidth: payload,
       };
     })
     .addCase(setScreenWidthAction, (state, { payload }) => {
