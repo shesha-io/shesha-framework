@@ -1,6 +1,7 @@
 import { HomeOutlined } from '@ant-design/icons';
 import { extractStyleValue } from '@/providers/form/models';
-import { migratePropertyName, migrateCustomFunctions, migrateReadOnly, migrateHiddenToVisible } from '@/designer-components/_common-migrations/migrateSettings';
+
+import { migratePropertyName, migrateCustomFunctions, migrateReadOnly, migrateHiddenToVisible, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { useEffect, useMemo, useRef } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import AutoCompletePlacesControl from './control';
@@ -115,7 +116,7 @@ const AddressCompoment: AddressComponentDefinition = {
     .add<IAddressCompomentProps>(5, (prev, context) => context.isNew === true
       ? prev
       : { ...migratePrevStyles(prev, defaultStyles()) })
-    .add<IAddressCompomentProps>(6, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev))),
+    .add<IAddressCompomentProps>(6, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
   previewConfiguration: {
     type: 'address',
     id: 'address',
