@@ -5,7 +5,8 @@ import { useFormData, useGlobalState, useSubFormOrUndefined } from '@/providers'
 import { useForm } from '@/providers/form';
 import { evaluateString } from '@/providers/form/utils';
 import { IMarkdownComponentProps } from './interfaces';
-import './styles.module.scss'; // This manually loads github-markdown-css, as per https://raw.githubusercontent.com/sindresorhus/github-markdown-css/gh-pages/github-markdown.css
+import { useStyles } from './styles';
+import classNames from 'classnames';
 
 const remarkGfmPromise = import('remark-gfm').then((mod) => mod.default);
 const darkPrismPromise = import('react-syntax-highlighter/dist/esm/styles/prism').then((mod) => mod.dark);
@@ -56,6 +57,7 @@ const Markdown: FC<IMarkdownComponentProps> = (model) => {
   const { value: subFormData } = useSubFormOrUndefined() ?? {};
   const { data: formData } = useFormData();
   const { globalState } = useGlobalState();
+  const { styles } = useStyles();
 
   const data = subFormData || formData;
 
@@ -71,7 +73,7 @@ const Markdown: FC<IMarkdownComponentProps> = (model) => {
     <Skeleton loading={true} />
   ) : (
     <React.Suspense fallback={<div>Loading editor...</div>}>
-      <div className="markdown-body" style={model.style}>
+      <div className={classNames("markdown-body", styles.markdownBody)} style={model.style}>
         <MarkdownWithGfm content={content} style={model.style} />
       </div>
     </React.Suspense>

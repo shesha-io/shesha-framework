@@ -1,6 +1,6 @@
 import * as signalR from '@microsoft/signalr';
 
-import React, { FC, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useReducer, useRef } from 'react';
+import { FC, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useReducer, useRef } from 'react';
 import {
   ISignalRActionsContext,
   ISignalRConnection,
