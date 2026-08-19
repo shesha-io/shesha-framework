@@ -22,6 +22,7 @@ import { genericActionArgumentsEvaluator } from '../form/utils';
 import { ActionParametersDictionary, GenericDictionary } from '@/interfaces';
 import { IHasVersion, Migrator } from '@/utils/fluentMigrator/migrator';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { mergeActionGroups } from './utils';
 
 const getActualActionArguments = <TArguments extends ActionParametersDictionary = ActionParametersDictionary>(action: IConfigurableActionDescriptor<TArguments>, actionArguments: TArguments | undefined): TArguments | undefined => {
   const { migrator } = action;
@@ -97,7 +98,9 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren> = ({
   };
 
   const getActions = (): IConfigurableActionGroupDictionary => {
-    return { ...parent?.getActions(), ...actions.current };
+    return isDefined(parent)
+      ? mergeActionGroups(parent.getActions(), actions.current)
+      : actions.current;
   };
 
   const registerAction: RegisterActionType = (payload) => {
@@ -265,10 +268,8 @@ function useConfigurableAction<TArguments extends object = object, TResponse = u
 
 export {
   ConfigurableActionDispatcherConsumer,
-  ConfigurableActionDispatcherProvider,
-  useConfigurableAction,
+  ConfigurableActionDispatcherProvider, getActualActionArguments, useConfigurableAction,
   useConfigurableActionDispatcher,
-  useConfigurableActionDispatcherProxy,
-  getActualActionArguments,
-  type IConfigurableActionConfiguration,
+  useConfigurableActionDispatcherProxy, type IConfigurableActionConfiguration,
 };
+
