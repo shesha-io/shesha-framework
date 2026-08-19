@@ -5,7 +5,7 @@ import { Tooltip } from 'antd';
 import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
 
 interface IconPickerWrapperProps {
-  /** Greys the picker out and takes it out of the tab order. Independent of `readOnly`. */
+  /** Contributes to `selectionBlocked`, preventing the modal from opening. Independent of `readOnly`. */
   disabled?: boolean | undefined;
   /** Renders the icon but blocks selection. Independent of `disabled`. */
   readOnly?: boolean | undefined;
@@ -14,11 +14,6 @@ interface IconPickerWrapperProps {
   selectBtnSize?: SizeType | undefined;
   defaultValue?: ShaIconTypes | undefined;
   description?: string | undefined;
-  /**
-   * Explicit glyph size in px. Used by the settings-form `iconPicker` input, which sizes the glyph
-   * directly rather than through a style model. The form component leaves this unset and sizes the
-   * glyph from the Font panel via `className` instead.
-   */
   iconSize?: number | undefined;
   /** Emotion class carrying the configured appearance. */
   className?: string | undefined;
