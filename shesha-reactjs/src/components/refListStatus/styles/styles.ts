@@ -10,6 +10,7 @@ type StylesArgs = {
 type StylesResponse = {
   shaStatusTagContainer: string;
   shaStatusTag: string;
+  shaStatusTagDisabled: string;
 };
 
 export const useStyles = createStyles<StylesArgs, StylesResponse>(({ css, cx }, { dimensionsStyles, fontStyles, readOnly }) => {
@@ -53,8 +54,22 @@ export const useStyles = createStyles<StylesArgs, StylesResponse>(({ css, cx }, 
     `,
   );
 
+  // Disabled greys the tag out and removes it from the tab order — distinct from read-only, which
+  // keeps the value fully legible.
+  const shaStatusTagDisabled = cx(
+    'sha-status-tag-disabled',
+    css`
+      && {
+        opacity: 0.5;
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+    `,
+  );
+
   return {
     shaStatusTagContainer,
     shaStatusTag,
+    shaStatusTagDisabled,
   };
 });
