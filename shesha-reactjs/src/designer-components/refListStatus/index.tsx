@@ -81,6 +81,7 @@ const RefListStatusComponent: RefListStatusComponentDefinition = {
     const onItemTextChange = useCallback((value: string | null | undefined) => setItemText(value ?? undefined), []);
 
     const componentApi = useComponentApi();
+
     useEffect(() => {
       componentApi?.updateApi<RefListStatusApi>({
         id: model.id,
