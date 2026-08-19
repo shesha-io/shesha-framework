@@ -94,7 +94,9 @@ const RefListStatusComponent: RefListStatusComponentDefinition = {
             : (
               <div
                 className={styles.refListStatus}
-                {...getComponentEvents<number>(model, ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, ctx, value, DataTypes.number)}
+                {...(model.disabled === true
+                  ? {}
+                  : getComponentEvents<number>(model, ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, ctx, value, DataTypes.number))}
               >
                 <RefListStatus
                   value={value ?? undefined}
