@@ -3,8 +3,8 @@ import { IStyleValue } from '@/providers';
 import { createStyles, sheshaStyles, getTextHoverEffects } from '@/styles';
 
 
-export const useStyles = createStyles(({ css, cx, prefixCls, token }, styleValue: IStyleValue) => {
-  const textAlign = styleValue.styleCss?.textAlign ?? styleValue.font?.align;
+export const useStyles = createStyles(({ css, cx, prefixCls, token }, styleValue?: IStyleValue) => {
+  const textAlign = styleValue?.styleCss?.textAlign ?? styleValue?.font?.align;
   const readOnlyModeToggler = "read-only-mode-toggler";
   const readOnlyDisplayFormItem = cx("read-only-display-form-item", css`
         width: 100%;
@@ -70,8 +70,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, styleValue
     margin: 0;
     overflow: hidden;
     text-overflow: ellipsis;
-    ${dimensionsStyles(styleValue.dimensions)}
-    ${fontStyles(styleValue.font, styleValue.styleCss)}
+    ${dimensionsStyles(styleValue?.dimensions)}
+    ${fontStyles(styleValue?.font, styleValue?.styleCss)}
     }
 
   `;
