@@ -1,8 +1,26 @@
 import { createStyles, sheshaStyles } from '@/styles';
 import { IStyleValue } from '@/providers/form/models';
-import { backgroundStyles, cssPropertiesToString, fontStyles, borderStyles, splitTextProperties } from '@/designer-components/_common/styles/utils';
+import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
+import { backgroundStyles, borderStyles, fontStyles } from '@/designer-components/_common/styles/utils';
 
-export const useStyles = createStyles(({ css, cx, prefixCls }, model: IStyleValue) => {
+const borderColorStyles = (model: IBorderValue | undefined): string => {
+  if (!model) return '';
+  const sides = model.borderType === 'all'
+    ? ([['border-color', model.border?.all]] as const)
+    : ([
+      ['border-top-color', model.border?.top],
+      ['border-right-color', model.border?.right],
+      ['border-bottom-color', model.border?.bottom],
+      ['border-left-color', model.border?.left],
+    ] as const);
+
+  return sides
+    .filter(([, side]) => Boolean(side?.color))
+    .map(([property, side]) => `${property}: ${side?.color} !important;`)
+    .join(' ');
+};
+
+export const useStyles = createStyles(({ css, cx, token, prefixCls }, model?: IStyleValue) => {
   const pickerEllipsisBtnWidth = "45px";
 
   const pickerInputGroup = "picker-input-group";
@@ -13,31 +31,18 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: IStyleValu
   const shaReactTable = "sha-react-table";
   const shaGlobalTableFilter = "sha-global-table-filter";
 
-  /* Only the box half of the Custom style. Its text half is re-emitted through `textStyle` below,
-     narrowed to family and colour, so emitting the whole thing here would put the size, weight and
-     alignment back on the dialog. */
   const configuredAppearance = `
-    ${borderStyles(model.border)}
-    ${backgroundStyles(model.background)}
-    ${cssPropertiesToString(splitTextProperties(model.styleCss).box)}
+    ${borderColorStyles(model?.border)}
+    ${backgroundStyles(model?.background)}
   `;
 
-  /* The background on its own, for the elements that only need to stop being opaque white rather
-     than take the full box. */
-  const configuredBackground = backgroundStyles(model.background);
+  const configuredBackground = backgroundStyles(model?.background);
 
-  /* The dialog takes only family and colour from the Font panel. Size, weight and alignment are
-     chosen for a single-line input and would fight the dialog's own layout: an input's font size
-     would blow out the table rows, and its `text-align` would shove every cell and the title to
-     one side. Those three keep cascading from the theme instead. */
   const textStyle = fontStyles(
-    { type: model.font?.type, color: model.font?.color },
-    { fontFamily: model.styleCss?.fontFamily, color: model.styleCss?.color },
+    { type: model?.font?.type, color: model?.font?.color },
+    { fontFamily: model?.styleCss?.fontFamily, color: model?.styleCss?.color },
   );
 
-  /* Layout only. The configured Appearance (border, background, font, dimensions, spacing) is
-     emitted by the designer component's own emotion class onto the wrapper inside this container,
-     so nothing here may paint a box of its own. */
   const entityPickerContainer = cx("entity-picker-container", css`
     width: 100%;
     .${pickerInputGroup} {
@@ -58,6 +63,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: IStyleValu
        element, whose background sits behind that panel and never shows. */
     .${prefixCls}-modal-container {
       ${configuredAppearance}
+      ${borderStyles(model?.border)}
     }
 
     /* antd paints the header, body and footer on their own elements, which would cover the
@@ -79,28 +85,42 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: IStyleValu
 
       /* The alert deliberately keeps its own panel: it is an information callout, and tinting it
          with the field background would lose the distinction it is drawn to make. */
-      .ant-alert {
+      .${prefixCls}-alert {
         margin-bottom: 8px;
       }
     }
 
     .${shaGlobalTableFilter} {
-      ${configuredAppearance}
       margin: unset !important;
       width: 100%;
       padding: unset;
 
-      .${prefixCls}-input-affix-wrapper {
-        ${configuredBackground}
+      .${prefixCls}-input-affix-wrapper, .${prefixCls}-btn {
+        ${configuredAppearance}
+        ${borderColorStyles(model?.border)}
+        border-width: 1px !important;
 
         input {
           ${textStyle}
+        }
+
+        &:hover,
+        &:focus,
+        &:focus-within,
+        &:active {
+          border-color: ${token.colorPrimary} !important;
         }
       }
 
       .${prefixCls}-btn {
         ${configuredBackground}
         ${textStyle}
+
+        &:hover,
+        &:active {
+        background: inherit;
+          border-color: ${token.colorPrimary} !important;
+        }
       }
     }
 
@@ -110,6 +130,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: IStyleValu
       display: block !important;
       overflow: auto;
       ${configuredAppearance}
+      border-width: 1px;
+      border-style: solid;
       border-radius: 6px;
       box-sizing: border-box;
       ${sheshaStyles.thinScrollbars}
@@ -123,6 +145,18 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: IStyleValu
         * {
           ${textStyle}
         }
+
+        .tr.tr-head {
+          &,
+          .th,
+          .th * {
+            ${textStyle}
+          }
+
+          &.tr-body {
+            border-bottom: 1px solid red;
+          }
+        }
       }
     }
 
@@ -132,7 +166,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: IStyleValu
       justify-content: flex-end;
       margin: ${sheshaStyles.paddingLG}px 0;
 
-      .ant-pagination-total-text {
+      .${prefixCls}-pagination-total-text {
         ${textStyle}
       }
 
@@ -146,6 +180,13 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: IStyleValu
         }
       }
 
+      .${prefixCls}-pagination-prev, .${prefixCls}-pagination-next {
+      color: orange;
+        .anticon {
+          ${textStyle} 
+        }
+      }
+
       /* The declaration order here is deliberate: configuredAppearance comes last so its
          background wins over the transparent one above. Swapping the two changes what the page
          size changer is painted with. */
@@ -153,7 +194,18 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: IStyleValu
         margin-right: 0 !important;
         background: transparent;
         ${configuredAppearance}
+        border-width: 1px;
         ${textStyle}
+
+        .${prefixCls}-select-selector {
+          transition: border-color 0.2s;
+        }
+
+        &:hover .${prefixCls}-select-selector,
+        &.${prefixCls}-select-focused .${prefixCls}-select-selector,
+        &:active .${prefixCls}-select-selector {
+          border-color: ${token.colorPrimary} !important;
+        }
       }
     }
 
@@ -166,7 +218,16 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: IStyleValu
 
       .${prefixCls}-btn {
         ${configuredAppearance}
+        border-width: 1px;
         ${textStyle}
+
+        transition: border-color 0.2s;
+
+        &:hover,
+        &:active {
+        background: inherit;
+          border-color: ${token.colorPrimary} !important;
+        }
       }
     }
   `);

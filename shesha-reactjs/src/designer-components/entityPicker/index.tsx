@@ -16,7 +16,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { EntityPickerRef, IncomeValueFunc, OutcomeValueFunc } from '@/components/entityPicker/models';
 import { isValidGuid } from '@/components/formDesigner/components/utils';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { getBooleanPropertyOrUndefined, getStringPropertyOrUndefined } from '@/utils/object';
+import { getBooleanPropertyOrUndefined, getStringPropertyOrUndefined, pickProps } from '@/utils/object';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { useStyles } from './styles';
@@ -24,7 +24,7 @@ import { EntityPickerComponentDefinition, IEntityPickerComponentProps } from './
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 import { migrateButtonGroupDynamicItems } from '../_common-migrations/migrateButtonGroupDynamicItems';
-import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { isEntityReferenceId } from '@/utils';
 import { getIdOrUndefined } from '@/utils/entity';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
@@ -62,7 +62,11 @@ const EntityPickerComponent: EntityPickerComponentDefinition = {
         componentName: model.componentName ?? "",
         level: 3,
         typeDefinition: { typeName: 'EntityPickerApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
-        properties: [],
+        // `selectedItems` is a read-only property rather than a method, so it is registered here
+        // and resolved on read — the declared API member was previously always `undefined`.
+        properties: [
+          { name: 'selectedItems', getter: () => pickerRef.current?.getSelectedItems() ?? [] },
+        ],
         api: {
           focus: () => pickerRef.current?.focus(),
           showPicker: () => pickerRef.current?.showPicker(),
@@ -80,7 +84,7 @@ const EntityPickerComponent: EntityPickerComponentDefinition = {
 
     const { filters, modalWidth, customWidth, widthUnits } = model;
 
-    const displayEntityKey = model.displayEntityKey || '_displayName';
+    const displayEntityKey = isNotNullOrWhiteSpace(model.displayEntityKey) ? model.displayEntityKey : '_displayName';
 
     const entityPickerFilter = useMemo<IStoredFilter[]>(() => {
       return [
@@ -139,11 +143,11 @@ const EntityPickerComponent: EntityPickerComponentDefinition = {
       return getIdOrUndefined(value);
     }, [model.valueFormat, model.outcomeCustomJs, displayEntityKey, metadata]);
 
-    if (model.background?.type === 'storedFile' && model.background.storedFile?.id && !isValidGuid(model.background.storedFile.id)) {
+    if (model.background?.type === 'storedFile' && isNotNullOrWhiteSpace(model.background.storedFile?.id) && !isValidGuid(model.background.storedFile.id)) {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
 
-    const width = modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth;
+    const width = modalWidth === 'custom' && isDefined(customWidth) ? `${customWidth}${widthUnits}` : modalWidth;
 
     return (
       <ConfigurableFormItem<EntityPickerValueType> model={model}>
@@ -155,11 +159,6 @@ const EntityPickerComponent: EntityPickerComponentDefinition = {
               placeholder={model.placeholder}
               readOnlyPlaceholder={model.readOnlyPlaceholder}
               className={styles.entityPicker}
-              // Custom style is passed through as-is; everything else is emitted as CSS by `useStyles`
-              // so unset properties keep cascading from the theme.
-              {...(isDefined(model.styleCss) ? { style: model.styleCss } : {})}
-              // Read-only rendering happens outside the picker wrapper, where the emotion class does
-              // not reach, so the style model is handed over as a value for that path.
               styleValue={model}
               enableFullStyle={model.enableStyleOnReadonly}
               formId={model.id}
@@ -170,12 +169,12 @@ const EntityPickerComponent: EntityPickerComponentDefinition = {
               filters={entityPickerFilter}
               mode={model.mode}
               hideBorder={model.hideBorder}
-              addNewRecordsProps={model.allowNewRecord
+              addNewRecordsProps={model.allowNewRecord === true
                 ? {
                   modalFormId: model.modalFormId,
                   modalTitle: model.modalTitle,
                   showModalFooter: model.showModalFooter,
-                  modalWidth: customWidth ? `${customWidth}${widthUnits}` : modalWidth,
+                  modalWidth: isDefined(customWidth) ? `${customWidth}${widthUnits}` : modalWidth,
                   buttons: model.buttons,
                   footerButtons: model.footerButtons,
                 }
@@ -233,18 +232,20 @@ const EntityPickerComponent: EntityPickerComponentDefinition = {
     .add<IEntityPickerComponentProps>(6, (prev) => migrateReadOnly(prev))
     .add<IEntityPickerComponentProps>(7, (prev, context) => ({
       ...prev,
-      valueFormat: prev.valueFormat ??
-        context.isNew
+      // `??` binds tighter than `?:`, so without the parentheses this read as
+      // `(prev.valueFormat ?? context.isNew) ? 'simple' : ...` — any saved format was truthy and
+      // was silently rewritten to 'simple'. Keep an already-configured value untouched.
+      valueFormat: prev.valueFormat ?? (context.isNew === true
         ? 'simple'
         : getBooleanPropertyOrUndefined(prev, "useRawValue") === true
           ? 'simple'
-          : 'entityReference',
+          : 'entityReference'),
     }))
     .add<IEntityPickerComponentProps>(8, (prev, context) => ({
       ...prev,
-      footerButtons: context.isNew
+      footerButtons: context.isNew === true
         ? 'default'
-        : prev.footerButtons ?? (prev.showModalFooter ? 'default' : 'none'),
+        : prev.footerButtons ?? (prev.showModalFooter === true ? 'default' : 'none'),
     }))
     .add<IEntityPickerComponentProps>(9, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
     // A newly dropped component ships empty and inherits from the entity model, so the style
@@ -254,9 +255,14 @@ const EntityPickerComponent: EntityPickerComponentDefinition = {
       : { ...migratePrevStyles(prev, defaultStyles(prev)) })
     .add<IEntityPickerComponentProps>(11, (prev, context) => ({
       ...prev,
-      // Default to Person for backward compatibility with legacy forms
-      // should explicitly set entityType for other entity types
-      entityType: context.isNew && !prev.entityType ? 'Shesha.Core.Person' : prev.entityType,
+      // Newly dropped components only: give the designer a working picker out of the box instead
+      // of one that throws until an entity type is chosen. Saved forms keep whatever they have —
+      // an existing empty `entityType` is a deliberate configuration state, and overwriting it on
+      // upgrade would silently repoint the picker at Person.
+      //
+      // `entityType` is a class name or an identifier object, so the falsy check (unchanged from
+      // the original) covers both `undefined` and `""`.
+      entityType: context.isNew === true && !Boolean(prev.entityType) ? 'Shesha.Core.Person' : prev.entityType,
     }))
     .add<IEntityPickerComponentProps>(12, (prev) => ({ ...prev, buttons: migrateButtonGroupDynamicItems(prev.buttons) }))
     .add<IEntityPickerComponentProps>(13, (prev, context) => {
@@ -264,12 +270,11 @@ const EntityPickerComponent: EntityPickerComponentDefinition = {
 
       // Carries the pre-Appearance-tab flat settings into the persisted device models, so an old
       // form keeps its look rather than following whatever the code-level defaults later become.
-      const styles: IInputStyles = {
-        size: prev.size,
-        hideBorder: prev.hideBorder,
-        stylingBox: prev.stylingBox,
-        style: prev.style,
-      };
+      //
+      // Only the keys that actually have a value are carried over: spreading the whole object would
+      // write `undefined` over a device-level `size` or `stylingBox` that the form had already
+      // saved, silently dropping that configuration on upgrade.
+      const styles: IInputStyles = pickProps(prev, ['size', 'hideBorder', 'stylingBox', 'style']);
 
       return { ...prev, desktop: { ...prev.desktop, ...styles }, tablet: { ...prev.tablet, ...styles }, mobile: { ...prev.mobile, ...styles } };
     })
@@ -288,14 +293,6 @@ const EntityPickerComponent: EntityPickerComponentDefinition = {
     entityType: 'Shesha.Core.Person',
     valueFormat: 'entityReference',
   },
-  /* Inheritance, not a defaults seeder: each property is filled only when the metadata actually
-     describes it, so anything the user configured by hand survives.
-
-     The entityType fallback matters. This used to resolve to `""` whenever the metadata guards did
-     not match, which — because `getComponentModelFromMetadata` blanks the model before calling
-     this — replaced a configured entity type with an empty string on every re-bind. The runtime
-     then had no type to query and the picker threw. Leaving it `undefined` keeps the configured
-     value instead. */
   linkToModelMetadata: (model, propMetadata): IEntityPickerComponentProps => {
     const isSingleRef = isEntityReferencePropertyMetadata(propMetadata);
     const isArrayRef = isEntityReferenceArrayPropertyMetadata(propMetadata);
@@ -318,7 +315,7 @@ const EntityPickerComponent: EntityPickerComponentDefinition = {
     if (rawModel.valueFormat === 'entityReference') {
       return [
         `${propertyName}.id`,
-        rawModel.displayEntityKey
+        isNotNullOrWhiteSpace(rawModel.displayEntityKey)
           ? `${propertyName}.${rawModel.displayEntityKey}`
           : `${propertyName}._displayName`,
         `${propertyName}._className`,
@@ -327,7 +324,7 @@ const EntityPickerComponent: EntityPickerComponentDefinition = {
     return [];
   },
   validateModel: (model, addModelError) => {
-    if (!model.entityType) addModelError('entityType', 'Select `Entity Type` on the settings panel');
+    if (!isDefined(model.entityType)) addModelError('entityType', 'Select `Entity Type` on the settings panel');
   },
 };
 

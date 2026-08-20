@@ -134,7 +134,8 @@ export const getEventConfig = (event: StandardEventHandler, valueType?: string |
   return eventConfig;
 };
 
-type EventsObject = { [k in StandardEventHandlerWithoutChange]?: (event: SyntheticEvent<Element, Event> | RadioChangeEvent | undefined) => void };
+/** The exact handler set `getComponentEvents` produces: the standard events minus `onChange`. */
+export type EventsObject = { [k in StandardEventHandlerWithoutChange]?: (event: SyntheticEvent<Element, Event> | RadioChangeEvent | undefined) => void };
 
 export const getComponentEvents = <TValue, TModel = IConfigurableFormComponent>(
   model: TModel,

@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import { EllipsisOutlined } from '@ant-design/icons';
 import { Button, type GetRef, Select, SelectProps, Skeleton } from 'antd';
 import { DefaultOptionType } from 'antd/lib/select';
@@ -88,24 +89,15 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
     pickerRef,
   } = props;
 
-  const { styles } = useStyles({ ...props });
+  const { styles } = useStyles(props.styleValue);
   const selectRef = useRef<SelectRef>(null);
   const [showModal, setShowModal] = useState(false);
 
-  // `entityType` is either a plain class name or an identifier object; both forms count as unset
-  // when they carry no name.
   const entityTypeId = typeof entityType === 'string' ? entityType : entityType?.name;
 
   const showPickerDialog = (): void => {
     setShowModal(true);
   };
-
-  // Backs the component API's `focus`, `showPicker` and `hidePicker`.
-  useImperativeHandle(pickerRef, () => ({
-    focus: () => selectRef.current?.focus(),
-    showPicker: () => setShowModal(true),
-    hidePicker: () => setShowModal(false),
-  }), []);
 
   // Check if all data for displaying is loaded
   // TODO: review this logic. It works with complex objects only
@@ -133,6 +125,27 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
       ? Array.isArray(value) ? value : [value]
       : selectionRows;
   }, [isLoaded, value, selectionRows]);
+
+  // Backs the component API's `focus`, `showPicker`, `hidePicker` and `selectedItems`. Declared
+  // after `selectedItems` so the getter closes over the resolved selection.
+  useImperativeHandle(pickerRef, () => ({
+    focus: () => selectRef.current?.focus(),
+    showPicker: () => setShowModal(true),
+    hidePicker: () => setShowModal(false),
+    // `selectedItems` holds either the bound value (a plain id or an entity reference) or the rows
+    // fetched to resolve display text, so both shapes are normalised to `{ id, displayName }` here.
+    getSelectedItems: () => (selectedItems ?? [])
+      .filter(isDefined)
+      .map((item) => {
+        // A plain id string carries no display text of its own, so it stands in for both fields.
+        if (typeof item !== 'object') return { id: String(item), displayName: String(item) };
+        const record = item as Record<string, unknown>;
+        return {
+          id: String(record['id'] ?? ''),
+          displayName: String(record[displayEntityKey] ?? ''),
+        };
+      }),
+  }), [selectedItems, displayEntityKey]);
 
   const options = useDeepCompareMemo<DefaultOptionType[]>(() => {
     if (selection.loading) {
@@ -189,10 +202,7 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
     if (onChange) onChange(null, null);
   };
 
-  /* Checked after the hooks, never before: an early return above them changes the hook order
-     between renders. A picker whose Entity Type is not set yet is a configuration state, not a
-     crash — it happens while binding a property whose metadata carries no entity type — so it
-     reports itself the way the other misconfigurations do rather than throwing past the boundary. */
+
   if (isNullOrWhiteSpace(entityTypeId)) {
     return <ValidationErrors error="Please select `Entity Type` on the settings panel" />;
   }
@@ -201,11 +211,11 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
     return (
       <div className={styles.entityPickerContainer}>
         <Button
+          {...(pickerButtonProps ?? {})}
           onClick={handleButtonPickerClick}
           size={size}
           disabled={disabled}
-          {...(pickerButtonProps || {})}
-          {...(isNotNullOrWhiteSpace(className) ? { className } : {})}
+          className={classNames(pickerButtonProps?.className, className)}
         >
           {title}
         </Button>
@@ -216,8 +226,6 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
 
   return (
     <div className={styles.entityPickerContainer}>
-      {/* The wrapper carries the configured appearance; the select and the button inside it are
-          neutralised by the same class so the field reads as one box. */}
       <div className={className} {...events}>
         <Select<string | string[]>
           size={size}
@@ -236,7 +244,7 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
           options={options}
           open={false}
           variant="borderless"
-          suffixIcon={<span />}
+          suffix={<span />}
           onChange={handleMultiChange}
           className={styles.entitySelect}
           loading={selection.loading}

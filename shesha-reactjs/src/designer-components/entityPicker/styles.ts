@@ -117,7 +117,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IEn
       margin: 0;
       border-left-style: ${divider?.style ?? 'solid'};
       border-left-width: ${isDefined(divider?.width) ? addPx(divider.width) : '1px'};
-      border-left-color: ${divider?.color ?? '#d9d9d9'};
+      border-left-color: ${divider?.color ?? token.colorBorder};
 
       &:hover,
       &:focus {
