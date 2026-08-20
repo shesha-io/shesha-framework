@@ -1,4 +1,5 @@
 import { CSSProperties, FC, useMemo } from 'react';
+import { FormOutlined } from '@ant-design/icons';
 import ShaSpin from '@/components/shaSpin';
 import ValidationErrors from '@/components/validationErrors';
 import { useSubForm } from '@/providers/subForm';
@@ -20,9 +21,10 @@ import { useStyles } from './styles';
 interface ISubFormProps {
   style?: CSSProperties | undefined;
   readOnly?: boolean | undefined;
+  formSelectionMode?: 'name' | 'dynamic' | undefined;
 }
 
-const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
+const SubForm: FC<ISubFormProps> = ({ readOnly, formSelectionMode }) => {
   const { anyOfPermissionsGranted } = useSheshaApplication();
   const { styles } = useStyles();
   const {
@@ -76,6 +78,12 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
   const formError = errors?.getForm;
   const showFormError = !isLoading && isDefined(formError) && !isNonEmptyArray(components);
 
+  // when the entity type comes from the bound value the dynamic form is resolvable at runtime only,
+  // in the designer the component collapses to nothing and can't even be selected. Show a placeholder instead
+  const showDynamicPlaceholder = form.formMode === 'designer' &&
+    formSelectionMode === 'dynamic' &&
+    !isLoading && !showFormError && !isNonEmptyArray(components);
+
   const persistedFormProps: IPersistedFormProps = { id, module, description, name };
 
   if (isDefined(formSettings) && formSettings.access === 4 && !anyOfPermissionsGranted(formSettings.permissions || [])) {
@@ -111,6 +119,12 @@ const SubForm: FC<ISubFormProps> = ({ readOnly }) => {
             {showFormError && (
               <div className={styles.shaSubFormError}>
                 <ValidationErrors error={formError} />
+              </div>
+            )}
+            {showDynamicPlaceholder && (
+              <div className={styles.shaSubFormPlaceholder}>
+                <FormOutlined />
+                <span>Sub Form — the form is resolved at runtime from the entity type of the bound value.</span>
               </div>
             )}
             <div>
