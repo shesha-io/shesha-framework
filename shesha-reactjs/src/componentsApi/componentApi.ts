@@ -390,6 +390,13 @@ export interface PanelApi extends CommonComponentApi {
   collapse(): void;
 };
 
+export interface YouTubeVideoApi extends CommonComponentApi {
+  /** Whether the viewer has started watching the video (playback began at least once) */
+  readonly isWatched: boolean;
+  /** Whether the viewer has watched the video all the way to the end */
+  readonly isWatchedEntirely: boolean;
+};
+
 export interface ButtonApi extends CommonComponentApi {
   /** Focus on component */
   focus(): void;
