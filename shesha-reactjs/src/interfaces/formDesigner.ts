@@ -4,6 +4,7 @@ import { FormLayout } from 'antd/lib/form/Form';
 import { FC, RefObject, ReactNode } from 'react';
 import { ConfigurableFormInstance } from '@/providers/form/contexts';
 import {
+  FormFullName,
   FormIdentifier,
   FormMarkup,
   IConfigurableFormComponent,
@@ -11,6 +12,7 @@ import {
   IFormComponentContainer,
   IFormSettings,
 } from '@/providers/form/models';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { IHasVersion, Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 import { IModelMetadata, IPropertyMetadata } from './metadata';
 import { IAjaxResponseBase, IApplicationContext, IErrorInfo, IObjectMetadata, IStyleValue, UnwrapCodeEvaluators } from '..';
@@ -33,6 +35,12 @@ export interface IGetFieldsToFetchContext {
    * the caller is responsible for prefixing them with its own property name
    */
   getFormFieldsAsync: (formId: FormIdentifier) => Promise<string[]>;
+  /**
+   * Resolves the form configured for the given entity type and form type (view type). When the entity
+   * has no such view configured the result is the convention-derived name `{entityName}-{formType}`,
+   * which may point to a form that does not exist. Rejects only when the entity has no configuration at all
+   */
+  getEntityFormIdAsync: (entityType: string | IEntityTypeIdentifier, formType: string) => Promise<FormFullName>;
 }
 
 export interface IFormLayoutSettings {
