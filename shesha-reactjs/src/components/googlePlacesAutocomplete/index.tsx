@@ -32,8 +32,8 @@ interface ISuggestion {
   description: string;
 }
 
-/** antd `Input` props a caller may pass through; props owned by the component (value, onChange, onKeyDown, tabIndex, allowClear, etc.) are omitted so they cannot conflict. */
-export type GooglePlacesAutocompleteInputProps = Omit<InputProps, 'value' | 'onChange' | 'prefix' | 'disabled' | 'placeholder' | 'style' | 'size' | 'className' | 'onKeyDown' | 'tabIndex' | 'allowClear'>;
+/** antd `Input` props a caller may pass through; props owned by the component (value, onChange, tabIndex, allowClear, etc.) are omitted so they cannot conflict. `onKeyDown`, `onFocus` and `onBlur` are allowed: the component composes them with its own handlers rather than replacing them. */
+export type GooglePlacesAutocompleteInputProps = Omit<InputProps, 'value' | 'onChange' | 'prefix' | 'disabled' | 'placeholder' | 'style' | 'size' | 'className' | 'tabIndex' | 'allowClear'>;
 
 export interface IGooglePlacesAutocompleteProps {
   disableGoogleEvent?: ((value: string) => boolean) | undefined;
@@ -255,9 +255,15 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
                 disabled={disabled ?? false}
                 readOnly={readOnly ?? false}
                 tabIndex={tabIndex}
+                // Composed rather than assigned, so a handler supplied through `inputProps`
+                // (the standard event set) is not silently dropped by the dedicated prop.
                 // Arrow-key navigation of the suggestions is pointless when nothing can be
-                // selected, so key handling is skipped entirely while read-only.
-                onKeyDown={readOnly === true ? undefined : onKeyDown}
+                // selected, so the internal half is skipped while read-only — the caller's half
+                // still runs, since a read-only field can legitimately react to key presses.
+                onKeyDown={(e) => {
+                  if (readOnly !== true) onKeyDown(e);
+                  extraInputProps?.onKeyDown?.(e);
+                }}
                 // Closing the suggestions dropdown is this component's own concern, so a
                 // caller-supplied onBlur is composed with it rather than replacing it.
                 onBlur={(e) => {
