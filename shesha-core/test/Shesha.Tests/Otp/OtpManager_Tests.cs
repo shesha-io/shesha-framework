@@ -71,7 +71,7 @@ namespace Shesha.Tests.Otp
             }));
 
             var otp = new OtpManager(
-                new NullSmsGateway(),
+                MockISmsGatewayFactory(),
                 LocalIocManager.Resolve<IEmailSender>(),
                 otpStorage.Object,
                 new OtpGenerator(settings),
@@ -94,7 +94,17 @@ namespace Shesha.Tests.Otp
 
             return await otp.VerifyPinAsync(verificationInput);
         }
-    
+
+        private ISmsGatewayFactory MockISmsGatewayFactory() 
+        {
+            var smsGatewayFactoryMock = new Mock<ISmsGatewayFactory>();
+            smsGatewayFactoryMock.Setup(s => s.GetSmsGatewayAsync()).Returns(() =>
+            {
+                return Task.FromResult<ISmsGateway>(new NullSmsGateway());
+            });
+            return smsGatewayFactoryMock.Object;
+        }
+
         private async Task<IVerifyPinResponse> CheckEmailLinkAsync(Action<VerifyPinInput> action)
         {
             var settings = LocalIocManager.Resolve<IOtpSettings>();
@@ -118,7 +128,7 @@ namespace Shesha.Tests.Otp
             }));
 
             var otp = new OtpManager(
-                new NullSmsGateway(),
+                MockISmsGatewayFactory(),
                 LocalIocManager.Resolve<IEmailSender>(),
                 otpStorage.Object,
                 new OtpGenerator(settings),

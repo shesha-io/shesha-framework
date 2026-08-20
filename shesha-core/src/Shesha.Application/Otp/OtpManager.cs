@@ -13,15 +13,15 @@ namespace Shesha.Otp
 {
     public class OtpManager : IOtpManager, ITransientDependency
     {
-        private readonly ISmsGateway _smsGateway;
+        private readonly ISmsGatewayFactory _smsGatewayFactory;
         private readonly IEmailSender _emailSender;
         private readonly IOtpStorage _otpStorage;
         private readonly IOtpGenerator _otpGenerator;
         private readonly IOtpSettings _otpSettings;
 
-        public OtpManager(ISmsGateway smsGateway, IEmailSender emailSender, IOtpStorage otpStorage, IOtpGenerator passwordGenerator, IOtpSettings otpSettings)
+        public OtpManager(ISmsGatewayFactory smsGatewayFactory, IEmailSender emailSender, IOtpStorage otpStorage, IOtpGenerator passwordGenerator, IOtpSettings otpSettings)
         {
-            _smsGateway = smsGateway;
+            _smsGatewayFactory = smsGatewayFactory;
             _emailSender = emailSender;
             _otpStorage = otpStorage;
             _otpGenerator = passwordGenerator;
@@ -194,7 +194,8 @@ namespace Shesha.Otp
 
                         // todo: use mustache
                         var messageBody = bodyTemplate.Replace("{{password}}", otp.Pin);
-                        await _smsGateway.SendSmsAsync(otp.SendTo, messageBody);
+                        var smsGateway = await _smsGatewayFactory.GetSmsGatewayAsync();
+                        await smsGateway.SendSmsAsync(otp.SendTo, messageBody);
                         break;
                     }
                 case OtpSendType.Email:
