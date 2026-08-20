@@ -30,10 +30,12 @@ export const CrudActionButtons = (): React.JSX.Element => {
 
   // the inline CRUD errors are otherwise only reachable by hovering the action button, so a failed
   // operation looks like nothing happened - surface it explicitly.
-  const notifyError = (error: unknown, fallbackMessage: string): void => {
-    console.error(fallbackMessage, error);
+  const notifyError = (error: unknown, title: string): void => {
+    console.error(title, error);
     notification.error({
-      message: <ValidationErrors error={extractErrorInfo(error)} renderMode="raw" />,
+      // `message` is deprecated in antd 6 in favour of `title`
+      title,
+      description: <ValidationErrors error={extractErrorInfo(error)} renderMode="raw" />,
     });
   };
 
@@ -46,7 +48,7 @@ export const CrudActionButtons = (): React.JSX.Element => {
       await performUpdate();
       switchMode('read');
     } catch (error) {
-      notifyError(error, 'Update failed: ');
+      notifyError(error, 'Update failed');
     }
   };
 
@@ -55,7 +57,7 @@ export const CrudActionButtons = (): React.JSX.Element => {
       await performCreate();
       await reset();
     } catch (error) {
-      notifyError(error, 'Create failed: ');
+      notifyError(error, 'Create failed');
     }
   };
 

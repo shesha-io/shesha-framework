@@ -185,9 +185,12 @@ export const DataList: FC<IDataListProps> = ({
     createFormInfo.current = undefined;
   }, [formId, formType, createFormId, createFormType, entityType, formSelectionMode]);
 
+  // `selectedIds` has to be here: in multiple mode the rendered `selected` flag is derived from it,
+  // and it can change without `selectedRows` changing (a controlled update from the parent, or a
+  // direct `changeSelectedIds` call), which would otherwise leave every checkbox stale.
   useDeepCompareEffect(() => {
     updateContent();
-  }, [selectedRow, selectedRows, selectionMode]);
+  }, [selectedRow, selectedRows, selectedIds, selectionMode]);
 
   const allData = useAvailableConstantsData();
   const { executeAction, useActionDynamicContext } = useConfigurableActionDispatcher();
@@ -715,6 +718,8 @@ export const DataList: FC<IDataListProps> = ({
       ? selectedIds.includes(item.id)
       : isDefined(selectedRow) && isSameRow(selectedRow.id, selectedRow.index, item.id, index);
 
+    const isSelectable = selectionMode === 'single' || selectionMode === 'multiple';
+
 
     const itemStyles: CSSProperties = {
       ...(stylesAsCSS),
@@ -738,33 +743,36 @@ export const DataList: FC<IDataListProps> = ({
     return (
       <div key={`row-${index}`} style={wrapperStyle}>
         <ConditionalWrap
-          condition={selectionMode === 'single' || selectionMode === 'multiple'}
-          wrap={(children) => selectionMode === 'single'
-            ? (
-              <Radio
-                className={classNames(styles.shaDatalistComponentItemCheckbox, { selected })}
-                checked={selected}
-                // Radio raises onChange only when it becomes checked, so clicking the already
-                // selected row would never deselect it. onClick fires either way, and antd's bubble
-                // lock keeps it to one call whether the click lands on the control or the row body.
-                onClick={() => {
-                  onSelectRowLocal(index, item);
-                }}
-              >
-                {children}
-              </Radio>
-            )
-            : (
-              <Checkbox
-                className={classNames(styles.shaDatalistComponentItemCheckbox, { selected })}
-                checked={selected}
-                onChange={() => {
-                  onSelectRowLocal(index, item);
-                }}
-              >
-                {children}
-              </Checkbox>
-            )}
+          condition={isSelectable}
+          // The selection control is a *sibling* of the row content, not its parent. Wrapping the
+          // content in antd's <label> made every click inside the row a label activation, which could
+          // only be suppressed with preventDefault - and that cancelled the default action of nested
+          // controls too, so checkboxes/radios/switches inside a row stopped toggling. Keeping them
+          // as siblings means there is nothing to suppress.
+          wrap={(children) => (
+            <div className={classNames(styles.shaDatalistComponentItemCheckbox, { selected })}>
+              {selectionMode === 'single'
+                ? (
+                  <Radio
+                    checked={selected}
+                    // Radio raises onChange only when it becomes checked, so clicking the already
+                    // selected row would never deselect it. onClick fires either way.
+                    onClick={() => {
+                      onSelectRowLocal(index, item);
+                    }}
+                  />
+                )
+                : (
+                  <Checkbox
+                    checked={selected}
+                    onChange={() => {
+                      onSelectRowLocal(index, item);
+                    }}
+                  />
+                )}
+              {children}
+            </div>
+          )}
         >
           <div
             className={classNames(
@@ -774,16 +782,15 @@ export const DataList: FC<IDataListProps> = ({
             onClick={(e) => {
               // Skip selection/click events when interacting with form fields (dropdown, picker, etc.)
               // or content rendered in portals — otherwise inline-editing clicks toggle row selection.
-              if (isInteractiveTarget(e.target)) {
-                // preventDefault is what actually suppresses the selection: this item is nested in the
-                // wrapping Checkbox's <label>, and label activation is a default action that
-                // stopPropagation does not cancel.
-                e.preventDefault();
-                e.stopPropagation();
-                return;
+              // Just bail out: the row is no longer nested in the control's <label>, so there is no
+              // default action to cancel and nested controls keep working normally.
+              if (isInteractiveTarget(e.target)) return;
+
+              // The control is a sibling now, so clicking the row body no longer activates it via the
+              // label - drive the selection explicitly to keep the whole row clickable.
+              if (isSelectable) {
+                onSelectRowLocal(index, item);
               }
-              // Selection itself is driven by the wrapping Checkbox's onChange in both single and
-              // multiple mode - calling onSelectRowLocal here as well would toggle twice and cancel out.
               if (onListItemClick) {
                 onListItemClick(index, item);
               }
