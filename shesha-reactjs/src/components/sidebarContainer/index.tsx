@@ -7,6 +7,7 @@ import {
   useMemo,
   useCallback,
   useRef,
+  useLayoutEffect,
 } from 'react';
 import classNames from 'classnames';
 
@@ -22,6 +23,10 @@ import { useCanvas } from '@/providers/canvas';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { SIDEBAR_COLLAPSE } from '../mainLayout/constant';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+
+// useLayoutEffect warns when it runs on the server, where there is nothing to measure anyway.
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
+
 export interface ISidebarContainerProps extends PropsWithChildren {
   leftSidebarProps?: ISidebarProps | undefined;
   rightSidebarProps?: ISidebarProps | undefined;
@@ -142,7 +147,12 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
 
   // Track the width available to the canvas. The content-box excludes the vertical scrollbar, so
   // the canvas never has to give up a horizontal scrollbar to make room for it.
-  useEffect(() => {
+  //
+  // Deliberately a layout effect: until the pane is measured, `canvasWidth` falls back to
+  // `designerWidth`, which in "Canvas" mode is whatever width was last pinned by a device preset.
+  // Measuring after paint would show the canvas at that stale width for a frame. Running before
+  // paint means the browser only ever paints the measured width.
+  useIsomorphicLayoutEffect(() => {
     const mainArea = mainAreaRef.current;
     if (!isZoomableCanvas || !mainArea) return undefined;
 

@@ -40,9 +40,15 @@ export const reducer = createReducer(CANVAS_CONTEXT_INITIAL_STATE, (builder) => 
       };
     })
     .addCase(setCanvasAutoWidthAction, (state, { payload }) => {
+      const autoWidth = payload !== undefined ? payload : !state.autoWidth;
+
       return {
         ...state,
-        autoWidth: payload !== undefined ? payload : !state.autoWidth,
+        autoWidth,
+        // Auto zoom has nothing to fit once the canvas sizes itself to its pane, and the toolbar
+        // button that would clear it is disabled in this mode. Leaving it set would strand the
+        // canvas with zoom neither computed automatically nor adjustable by pinch/ctrl+wheel.
+        autoZoom: autoWidth ? false : state.autoZoom,
       };
     })
     .addCase(setAvailableCanvasWidthAction, (state, { payload }) => {

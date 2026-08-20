@@ -187,7 +187,8 @@ export const usePinchZoom = (
   currentZoom: number,
   minZoom: number = DEFAULT_OPTIONS.minZoom,
   maxZoom: number = DEFAULT_OPTIONS.maxZoom,
-  isAutoWidth: boolean = false,
+  /** Suppresses manual pinch/ctrl+wheel zoom while the zoom level is driven automatically. */
+  isZoomLocked: boolean = false,
 ): RefObject<HTMLDivElement | null> => {
   const elementRef = useRef<HTMLDivElement>(null);
   const lastDistance = useRef<number>(0);
@@ -204,15 +205,15 @@ export const usePinchZoom = (
   }, []);
 
   const handleTouchStart = useCallback((e: TouchEvent) => {
-    if (isAutoWidth || e.touches.length !== 2) return;
+    if (isZoomLocked || e.touches.length !== 2) return;
 
     e.preventDefault();
     lastDistance.current = getDistance(e.touches);
     initialZoom.current = currentZoom;
-  }, [getDistance, currentZoom, isAutoWidth]);
+  }, [getDistance, currentZoom, isZoomLocked]);
 
   const handleTouchMove = useCallback((e: TouchEvent) => {
-    if (isAutoWidth || e.touches.length !== 2) return;
+    if (isZoomLocked || e.touches.length !== 2) return;
 
     e.preventDefault();
     const currentDistance = getDistance(e.touches);
@@ -222,16 +223,16 @@ export const usePinchZoom = (
       const newZoom = Math.max(minZoom, Math.min(maxZoom, initialZoom.current * scale));
       onZoomChange(Math.round(newZoom));
     }
-  }, [getDistance, onZoomChange, minZoom, maxZoom, isAutoWidth]);
+  }, [getDistance, onZoomChange, minZoom, maxZoom, isZoomLocked]);
 
   const handleWheel = useCallback((e: WheelEvent) => {
-    if (isAutoWidth || !e.ctrlKey) return;
+    if (isZoomLocked || !e.ctrlKey) return;
 
     e.preventDefault();
     const delta = e.deltaY > 0 ? -DEFAULT_OPTIONS.zoomStep : DEFAULT_OPTIONS.zoomStep;
     const newZoom = Math.max(minZoom, Math.min(maxZoom, currentZoom + delta));
     onZoomChange(newZoom);
-  }, [onZoomChange, currentZoom, minZoom, maxZoom, isAutoWidth]);
+  }, [onZoomChange, currentZoom, minZoom, maxZoom, isZoomLocked]);
 
   const handleTouchEnd = useCallback((e: TouchEvent) => {
     if (e.touches.length < 2) {
