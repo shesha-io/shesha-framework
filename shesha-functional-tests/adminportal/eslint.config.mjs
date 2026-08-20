@@ -1,0 +1,354 @@
+ 
+import jsdoc from "eslint-plugin-jsdoc";
+import typescriptEslint from "@typescript-eslint/eslint-plugin";
+import stylistic from "@stylistic/eslint-plugin";
+import globals from "globals";
+import tsParser from "@typescript-eslint/parser";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import js from "@eslint/js";
+import reactPlugin from "eslint-plugin-react";
+import hooksPlugin from "eslint-plugin-react-hooks";
+
+const hooksPluginRules = {
+    'react-hooks/rules-of-hooks': 'error',
+    'react-hooks/exhaustive-deps': 'warn',
+    'react-hooks/static-components': 'warn', /*TODO: review code and activate*/
+    'react-hooks/use-memo': 'error',
+    'react-hooks/component-hook-factories': 'error',
+    'react-hooks/preserve-manual-memoization': 'warn', /*TODO: review code and activate*/
+    'react-hooks/incompatible-library': 'warn',
+    'react-hooks/immutability': 'warn', /*TODO: review code and activate*/
+    'react-hooks/globals': 'error',
+    'react-hooks/refs': 'warn', /*TODO: review code and activate*/
+    'react-hooks/set-state-in-effect': 'warn', /*TODO: review code and activate*/
+    'react-hooks/error-boundaries': 'error',
+    'react-hooks/purity': 'error',
+    'react-hooks/set-state-in-render': 'error',
+    'react-hooks/unsupported-syntax': 'warn',
+    'react-hooks/config': 'error',
+    'react-hooks/gating': 'error'
+};
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const stylisticOverrides = {
+    ...stylistic.configs.recommended.rules,
+    "@stylistic/brace-style": ["error", "1tbs", { "allowSingleLine": false }],
+    "@stylistic/jsx-indent-props": [
+        'error',
+        2
+        // - 'first' - align with first prop (VS Code-like)
+        // - 2 - 2 space indentation (most common)
+        // - 4 - 4 space indentation  
+        // - 'tab' - use tab characters
+    ],
+    "@stylistic/jsx-one-expression-per-line": "off",
+    "@stylistic/semi": ["error", "always"],
+    "@stylistic/type-annotation-spacing": "error",
+    "@stylistic/quotes": "off",
+    "@stylistic/member-delimiter-style": ["error", {
+        multiline: {
+            delimiter: "semi",
+            requireLast: true,
+        },
+
+        singleline: {
+            delimiter: "semi",
+            requireLast: false,
+        },
+    }],
+    //"@stylistic/indent-binary-ops": "off",
+    /*
+    "@stylistic/indent-binary-ops": ["error", 2],
+    */
+    "@stylistic/jsx-quotes": ["error", "prefer-double"],
+    "@stylistic/eol-last": "error",
+    "@stylistic/space-before-blocks": "error",
+    "@stylistic/arrow-parens": ["error", "always"],
+    "@stylistic/spaced-comment": ["error", "always", { "markers": ["/", "#region", "#endregion"] }],
+    "@stylistic/operator-linebreak": ["error", "after", { "overrides": { "?": "before", ":": "before" } }],
+    "@stylistic/no-trailing-spaces": "error",
+    "@stylistic/comma-dangle": ["error", "always-multiline"],
+    "@stylistic/padded-blocks": ["error", "never"],
+    "@stylistic/no-multiple-empty-lines": "error",
+    "@stylistic/lines-between-class-members": ["error", "always"],
+    "indent": "off",
+    "@stylistic/indent": ["error", 2, {
+        "SwitchCase": 1,
+    }],
+    "@stylistic/space-infix-ops": "error",
+    "@stylistic/multiline-ternary": "off",
+    //"@stylistic/multiline-comment-style": "error",
+    "@stylistic/object-curly-spacing": ["error", "always"],
+    "@stylistic/jsx-curly-spacing": ["error", { "when": "never", "attributes": { "allowMultiline": false, "when": "never" }, "children": true }],
+};
+
+const typescriptOverrides = {
+    "@typescript-eslint/no-unused-vars": ["error", {
+        varsIgnorePattern: "^_",
+        argsIgnorePattern: "^_",
+        ignoreRestSiblings: true,
+    }],
+    "@typescript-eslint/explicit-module-boundary-types": "error",
+    "@typescript-eslint/explicit-function-return-type": [
+        "error",
+        {
+            "allowExpressions": true,
+            "allowHigherOrderFunctions": true,
+            "allowDirectConstAssertionInArrowFunctions": true
+        }
+    ],
+
+    "@typescript-eslint/no-explicit-any": "error",
+    "@typescript-eslint/no-unsafe-call": "error",
+    "@typescript-eslint/no-unsafe-member-access": "error",
+    "@typescript-eslint/no-unsafe-argument": "error",
+    "@typescript-eslint/no-unsafe-assignment": "error",
+    "@typescript-eslint/no-non-null-asserted-nullish-coalescing": "error",
+    "@typescript-eslint/no-unnecessary-condition": "error",
+    "@typescript-eslint/strict-boolean-expressions": "warn", /* TODO: change to error once code fixed */
+};
+
+const baseTsConfig = {
+    files: [
+        "src/**/*.ts",
+        "src/**/*.tsx",
+    ],
+    ignores: [
+        "src/apis/*",
+        "**/__tests__/**/*",
+    ],
+    plugins: {
+        jsdoc,
+        "react": reactPlugin,
+        "react-hooks": hooksPlugin,
+        "@typescript-eslint": typescriptEslint,
+        "@stylistic": stylistic,
+    },
+
+    languageOptions: {
+        globals: {
+            ...globals.browser,
+        },
+
+        parser: tsParser,
+        ecmaVersion: "latest",
+        sourceType: "module",
+
+        parserOptions: {
+            projectService: true, // Enable project service
+            tsconfigRootDir: __dirname,
+        },
+    },
+
+    settings: {
+        react: {
+            createClass: "createReactClass",
+            pragma: "React",
+            fragment: "Fragment",
+            version: "detect",
+            flowVersion: "0.53",
+        },
+
+        propWrapperFunctions: ["forbidExtraProps", {
+            property: "freeze",
+            object: "Object",
+        }, {
+                property: "myFavoriteWrapper",
+            }, {
+                property: "forbidExtraProps",
+                exact: true,
+            }],
+
+        componentWrapperFunctions: ["observer", {
+            property: "styled",
+        }, {
+                property: "observer",
+                object: "Mobx",
+            }, {
+                property: "observer",
+                object: "<pragma>",
+            }],
+
+        formComponents: ["CustomForm", {
+            name: "Form",
+            formAttribute: "endpoint",
+        }],
+
+        linkComponents: ["Hyperlink", {
+            name: "Link",
+            linkAttribute: "to",
+        }],
+    },
+
+    rules: {
+        "@typescript-eslint/no-deprecated": "warn",
+        "@typescript-eslint/no-floating-promises": "error",
+        "no-restricted-globals": [
+            "error",
+            {
+                "name": "module",
+                "message": "Avoid using module global, use ES6 modules instead"
+            }
+        ],
+        "memory-monitor/track-memory": "off",
+        ...hooksPluginRules,
+        ...reactPlugin.configs.recommended.rules,
+        ...reactPlugin.configs["jsx-runtime"].rules,
+
+        "react/prop-types": ["off"],
+        "require-await": "error",
+        "no-restricted-imports": ["error", {
+            paths: ["@/utils/publicUtils", "@/index", "@/components",
+                {
+                    name: "nanoid/non-secure",
+                    message: "Please import nanoid from `@/utils/uuid` instead.",
+                },
+                {
+                    name: "nanoid",
+                    message: "Please import nanoid from `@/utils/uuid` instead.",
+                },
+                {
+                    name: "antd",
+                    importNames: ["message"],
+                    message: "Please get `message` via the App instead, see example: const { message } = App.useApp();",
+                }, {
+                    name: "antd",
+                    importNames: ["notification"],
+                    message: "Please get `notification` via the App instead, see example: const { notification } = App.useApp();",
+                }],
+        }],
+
+        "sort-imports": ["off", {
+            ignoreCase: false,
+            ignoreDeclarationSort: false,
+            ignoreMemberSort: false,
+            memberSyntaxSortOrder: ["none", "all", "multiple", "single"],
+            allowSeparatedGroups: false,
+        }],
+
+        "brace-style": ["error", "1tbs"],
+        "capitalized-comments": ["off", "never"],
+        curly: "off",
+        "dot-notation": "off",
+        "eol-last": "off",
+        eqeqeq: ["error", "smart"],
+        "guard-for-in": "error",
+        "id-denylist": "off",
+        "id-match": "off",
+        "indent": "off",
+        "jsdoc/check-alignment": "error",
+        "jsdoc/check-indentation": "off",
+
+        "max-len": ["error", {
+            code: 300,
+        }],
+
+        "no-bitwise": "error",
+        "no-caller": "error",
+
+        "no-console": ["error", {
+            allow: [
+                "warn",
+                "dir",
+                "timeLog",
+                "assert",
+                "clear",
+                "count",
+                "countReset",
+                "group",
+                "groupEnd",
+                "table",
+                "dirxml",
+                "error",
+                "groupCollapsed",
+                "Console",
+                "profile",
+                "profileEnd",
+                "timeStamp",
+                "context",
+            ],
+        }],
+
+        "no-debugger": "error",
+        "no-empty": "error",
+        "no-empty-function": "off",
+        "no-eval": "error",
+        "no-new-wrappers": "error",
+        "no-redeclare": "error",
+        "no-trailing-spaces": "off",
+        "no-underscore-dangle": "off",
+        "no-unused-expressions": "off",
+        "no-unused-labels": "error",
+        "no-unused-vars": "off",
+        "no-use-before-define": "off",
+        quotes: "off",
+        radix: "error",
+        semi: "off",
+
+        "spaced-comment": ["off", "always", {
+            markers: ["/"],
+        }],
+    }
+};
+
+export default [
+    {
+        // Global ignores: an object with ONLY `ignores` (no `files`) applies repo-wide in flat config.
+        // Without this, build output under dist/ is linted before `rimraf dist` and fails on rule
+        // directives whose plugins aren't loaded for compiled JS.
+        ignores: [
+            "dist/**",
+            ".next/**",
+            "src/rollup-plugins/**",
+            "server.js",
+            "public/**",
+        ],
+    },
+    {
+        ...baseTsConfig,
+        files: [
+            "src/**/*.ts",
+            "src/**/*.tsx",
+        ],
+        ignores: [...baseTsConfig.ignores],
+        languageOptions: {
+            ...baseTsConfig.languageOptions,
+            parserOptions: {
+                projectService: true, // Enable project service
+                tsconfigRootDir: __dirname,
+            },
+        },
+        rules: {
+            ...baseTsConfig.rules,
+            ...typescriptEslint.configs.recommended.rules,
+            ...typescriptOverrides,
+            ...stylisticOverrides,
+
+            "react-hooks/exhaustive-deps": "error",
+            "no-unsafe-optional-chaining": "error",
+        },
+    },
+    {
+        files: ['**/*.js', '**/*.mjs'],
+        ignores: [
+            "dist/**",
+            ".next/**",
+            "src/rollup-plugins/**",
+            "server.js",
+        ],
+        ...js.configs.recommended,
+        languageOptions: {
+            sourceType: 'module',
+            ecmaVersion: 'latest',
+        },
+        plugins: {
+        },
+        rules: {
+            "no-console": "error",
+            '@typescript-eslint/no-var-requires': 'off', // Allow require() in JS files
+        }
+    },
+];

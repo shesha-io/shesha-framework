@@ -80,7 +80,7 @@ export const unwrapModel = <T extends object = object>(
 
   const actualModel: UnwrapCodeEvaluators<T> = executor
     ? executor(preparedData, contextProxy)
-    : getActualModel<T>(preparedData, contextProxy, parentDisabledAndReadOnly, propertyFilter, undefined, (m) => {
+    : getActualModel<T>('', preparedData, contextProxy, parentDisabledAndReadOnly, propertyFilter, undefined, (m) => {
       const newModel = m as object;
       if (isHasEditMode(newModel)) {
         const parentReadOnly = !isDefined(parentDisabledAndReadOnly?.readOnly)

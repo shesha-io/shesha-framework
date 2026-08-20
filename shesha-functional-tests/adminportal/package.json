@@ -6,7 +6,7 @@
   "engines": {
     "node": ">=24",
     "npm": ">=11"
-  },  
+  },
   "scripts": {
     "dev": "next dev --webpack",
     "build": "next build --webpack",
@@ -17,7 +17,8 @@
     "build:analyze": "ANALYZE=true npm run build",
     "lint": "eslint src/**/*.ts{,x}",
     "lint-errors": "eslint src/**/*.ts{,x} --quiet",
-    "postinstall": "shesha-copy-local-monaco"
+    "postinstall": "shesha-copy-local-monaco",
+    "knip": "knip"
   },
   "overrides": {
     "eslint": "$eslint",
@@ -33,51 +34,36 @@
     "rc-treee": "5.8.2"
   },
   "dependencies": {
-    "@ant-design/icons": "^6.1.1",
     "@ant-design/nextjs-registry": "^1.3.0",
-    "@bprogress/next": "^3.2.12",
-    "@microsoft/applicationinsights-react-js": "^3.1.2",
-    "@microsoft/applicationinsights-web": "^2.6.2",
     "@next/bundle-analyzer": "^14.2.4",
     "@shesha-io/reactjs": "file:shesha-local.tgz",
     "@types/react-dom": "^19.2.4",
     "antd": "^6.3.5",
-    "antd-style": "^3.7.1",
-    "eslint-config-next": "^16.2.2",
-    "next": "^16.2.2",
+    "next": "^16.3.1",
     "next-navigation-guard": "^0.2.0",
-    "prettier": "^2.2.1",
     "qs": "^6.14.0",
-    "rc-picker": "4.5.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "styled-components": "^5.2.1",
-    "swr": "^2.4.1",
-    "url-loader": "^4.1.1"
+    "swr": "^2.4.1"
   },
   "devDependencies": {
-    "@next/eslint-plugin-next": "^16.2.3",
-    "@testing-library/react": "^11.2.3",
+    "@eslint/js": "^10.0.1",
+    "@stylistic/eslint-plugin": "^5.10.0",
     "@types/node": "^26.2.0",
     "@types/react": "^19.2.18",
     "@types/styled-components": "^5.1.9",
-    "@typescript-eslint/eslint-plugin": "^8.52.0",
-    "@typescript-eslint/parser": "^8.52.0",
-    "copyfiles": "^2.4.1",
-    "cross-env": "^7.0.3",
-    "dotenv": "^8.2.0",
+    "@typescript-eslint/eslint-plugin": "^8.67.0",
+    "@typescript-eslint/parser": "^8.67.0",
     "eslint": "^9.39.2",
-    "eslint-import-resolver-typescript": "^4.4.4",
-    "eslint-plugin-import-x": "^4.16.1",
-    "eslint-plugin-jsdoc": "^62.0.0",
+    "eslint-plugin-jsdoc": "^64.2.1",
     "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^7.0.1",
-    "husky": "^9.0.10",
-    "isomorphic-unfetch": "^3.1.0",
-    "lint-staged": "^15.2.7",
-    "nock": "^13.0.6",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.11.0",
+    "knip": "^6.32.2",
+    "moment": "^2.30.1",
     "shx": "^0.3.4",
-    "typescript": "^5.0.3"
+    "typescript": "^5.9.3"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [

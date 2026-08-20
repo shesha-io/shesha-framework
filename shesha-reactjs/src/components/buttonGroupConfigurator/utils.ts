@@ -36,6 +36,7 @@ export const makeNewItem = (items: ButtonGroupItemProps[]): ButtonGroupItemProps
     itemSubType: 'button',
     buttonType: itemNo === 1 ? 'primary' : 'default',
     editMode: 'inherited',
+    visible: true,
     ...initialValues(),
   };
 
