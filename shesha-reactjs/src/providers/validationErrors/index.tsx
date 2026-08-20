@@ -117,7 +117,11 @@ export const FormComponentValidationProvider: FC<PropsWithChildren<IFormComponen
 
   const stateValue = useMemo<IValidationErrorsStateContext>(
     () => ({
-      errors: errorsRef.current,
+      /* A snapshot, not `errorsRef.current` itself. Consumers use this map as a memo dependency, so
+         handing out the same mutated instance left them unable to see that its contents had changed:
+         they re-rendered when `errorVersion` bumped but skipped recomputing, and kept displaying the
+         previous validation result until something else in their deps happened to change. */
+      errors: new Map(errorsRef.current),
       componentId,
       componentName,
       componentType,

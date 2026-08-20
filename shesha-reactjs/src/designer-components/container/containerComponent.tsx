@@ -2,7 +2,7 @@ import { GroupOutlined } from '@ant-design/icons';
 import { IContainerComponentProps } from '@/interfaces';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { getSettings } from './settingsForm';
-import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { IConfigurableFormComponent } from '@/providers';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -117,7 +117,7 @@ const ContainerComponent: ContainerComponentDefinition = {
       };
     })
     .add<IContainerComponentProps>(7, (prev, ctx) => ctx.isNew === true ? prev : { ...prev, ...migratePrevStyles(prev, defaultStyles(prev)) })
-    .add<IContainerComponentProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev))),
+    .add<IContainerComponentProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
 };
 
 export const isContainerComponent = (component: IConfigurableFormComponent): component is IContainerComponentProps => component.type === ContainerComponent.type;

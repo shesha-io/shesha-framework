@@ -11,6 +11,7 @@ import {
   migrateCustomFunctions,
   migrateReadOnly,
   migrateHiddenToVisible,
+  migrateStylingBoxToJson,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
@@ -113,7 +114,7 @@ const SwitchComponent: SwitchComponentDefinition = {
         // Seed the handle style set alongside the track styles, so upgraded forms get a
         // styled handle rather than an unstyled one.
         : { ...migratePrevStyles(prev, defaultStyles(prev)), handleStyles: prev.handleStyles ?? defaultHandleStyles() })
-      .add<ISwitchComponentProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev))),
+      .add<ISwitchComponentProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
   previewConfiguration: {
     type: 'switch',
     id: 'switch',

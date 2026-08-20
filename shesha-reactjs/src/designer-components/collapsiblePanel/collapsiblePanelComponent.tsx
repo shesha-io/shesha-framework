@@ -1,7 +1,7 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { CollapsiblePanel, ICollapseRef } from '@/components/panel';
 import { shaHeaderComponentsContainer } from '@/components/panel/styles/styles';
-import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { GroupOutlined } from '@ant-design/icons';
@@ -205,7 +205,7 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
         };
       })
       .add<ICollapsiblePanelComponentProps>(10, migrateV9toV10)
-      .add<ICollapsiblePanelComponentProps>(11, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev))),
+      .add<ICollapsiblePanelComponentProps>(11, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
   customContainerNames: ['header', 'content'],
   getDefaultStyles: () => {
     const defaultStyles = getDefaultStyles({} as ICollapsiblePanelComponentProps);

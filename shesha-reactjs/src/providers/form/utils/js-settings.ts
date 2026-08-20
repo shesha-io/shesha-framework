@@ -10,6 +10,7 @@ import { ObservableProxy } from '../observableProxy';
 import { TouchableProxy } from '../touchableProxy';
 import { executeScriptSync } from './scripts';
 import { IDisabledAndReadOnly } from '@/components/formDesigner/formComponent/formComponentApi';
+import { evaluateString } from '@/providers/form/utils';
 
 export type UnwrapFunc = (model: unknown, propertyName: string, value: unknown, allData: object) => UnwrapCodeEvaluators<unknown> | unknown | undefined;
 
@@ -55,7 +56,9 @@ const getSettingValue = <TValue = unknown>(
     processed.push(v);
     return v as UnwrapCodeEvaluators<TValue>;
   }
-  return value;
+  return typeof value === 'string' && /\{\{.*?\}\}/.test(value)
+    ? evaluateString(value, allData) as UnwrapCodeEvaluators<TValue>
+    : value;
 };
 
 const getValue = <TValue>(val: TValue, allData: object, calcValue: (setting: IPropertySetting, allData: object) => unknown): unknown => {
@@ -111,7 +114,7 @@ export const isHasEditMode = (value: object): value is HasEditMode => 'editMode'
  * @param allData - all form, contexts data and other data/objects/functions needed to calculate Actual Model
  * @returns - converted model
  */
-export const getActualModel = <T extends object = object>(
+export const getActualModel = <T = unknown>(
   model: T,
   allData: object,
   parentDisabledAndReadOnly?: IDisabledAndReadOnly | undefined,
@@ -127,7 +130,8 @@ export const getActualModel = <T extends object = object>(
   }
 
   if (!isDefined(model) || typeof model !== 'object')
-    return model;
+    return model as UnwrapCodeEvaluators<T>;
+
 
   const m = {} as T;
   const filteredProperties: string[] = [];

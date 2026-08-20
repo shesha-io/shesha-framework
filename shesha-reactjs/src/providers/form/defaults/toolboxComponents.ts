@@ -88,6 +88,7 @@ import HtmlRender from '@/designer-components/htmlRender';
 import { LabelValueEditorComponent } from '@/designer-components/labelValueEditor/labelValueEditorComponent';
 import { MetadataEditorComponent } from '@/designer-components/metadataEditor';
 import NumberFieldComponent from '@/designer-components/numberField/numberField';
+import PhoneNumberComponent from '@/designer-components/phoneNumber/phoneNumber';
 import QueryBuilderComponent from '@/designer-components/queryBuilder/queryBuilderComponent';
 import RefListStatusComponent from '@/designer-components/refListStatus';
 import { SortingEditorComponent } from '@/designer-components/sortingEditor/index';
@@ -142,6 +143,7 @@ export const getToolboxComponents = (
         Dropdown,
         NumberFieldComponent,
         TextFieldComponent,
+        PhoneNumberComponent,
         TextAreaComponent,
         ExpressionEditorComponent,
         Checkbox,
@@ -305,13 +307,20 @@ export const getToolboxComponents = (
   return groups.map<IToolboxComponentGroup>((group) => ({ ...group, components: group.components.map<IToolboxComponent>((c) => c as IToolboxComponent) }));
 };
 
-export const getComponentDefinitions = (): Map<string, IToolboxComponent> => {
+export const componentGroupsToComponentDefinitions = (componentGroups: IToolboxComponentGroup[]): Map<string, IToolboxComponent> => {
   const result = new Map<string, IToolboxComponent>();
 
-  for (const toolboxComponentGroup of getToolboxComponents(false, { formId: "", formProps: null })) {
+  for (const toolboxComponentGroup of componentGroups) {
     for (const toolboxComponent of toolboxComponentGroup.components) {
       result.set(toolboxComponent.type, toolboxComponent);
     }
   }
   return result;
+};
+
+
+export const getComponentDefinitions = (): Map<string, IToolboxComponent> => {
+  const componentGroups = getToolboxComponents(false, { formId: "", formProps: null });
+
+  return componentGroupsToComponentDefinitions(componentGroups);
 };

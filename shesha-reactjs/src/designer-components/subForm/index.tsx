@@ -4,7 +4,7 @@ import { isFormFullName, isFormRawId } from '@/providers/form/utils';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { ISubFormProviderProps, SubFormApiMode } from '@/providers/subForm/interfaces';
 import { IToolboxComponent } from '@/interfaces';
-import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateReadOnly, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { useFormItem, UnwrapCodeEvaluators, SubFormProvider } from '@/providers';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
@@ -71,7 +71,7 @@ const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
       onUpdated: migrateFormApi.withoutFormData(prev.onUpdated),
     }))
     .add<ISubFormComponentProps>(4, (prev) => ({ ...prev, hideLabel: true }))
-    .add<ISubFormComponentProps>(5, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev))),
+    .add<ISubFormComponentProps>(5, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
   settingsFormMarkup: getSettings,
   initModel: (model) => {
     const customProps: ISubFormComponentProps = {

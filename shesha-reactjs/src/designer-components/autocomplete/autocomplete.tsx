@@ -4,7 +4,7 @@
 import { Autocomplete } from '@/components/autocomplete';
 import { AUTOCOMPLETE_DATA_SOURCE_TYPE, AutocompleteDataSourceType, AutocompleteSelectRef, DisplayValueFunc, FilterSelectedFunc, KayValueFunc, OutcomeValueFunc } from '@/components/autocomplete/models';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateReadOnly, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
@@ -288,7 +288,7 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
         ? (rawMode as IAutocompleteComponentProps['mode'][])[0]
         : prev.mode;
       return migratePermissionsToVisiblePermissions(migrateHiddenToVisible({
-        ...prev,
+        ...migrateStylingBoxToJson(prev),
         ...(isDefined(mode) ? { mode } : {}),
       }));
     }),

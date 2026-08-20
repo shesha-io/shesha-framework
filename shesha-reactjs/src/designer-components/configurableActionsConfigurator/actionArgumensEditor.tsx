@@ -96,7 +96,7 @@ export const ActionArgumentsEditor = <TArguments extends ActionParametersDiction
       : null;
   // Disable eslint verification to avoid unnecessary re-creation of the argument editor.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [action, readOnly]);
+  }, [action, readOnly, fbf]);
 
   if (!isDefined(argumentsEditor)) return null;
 

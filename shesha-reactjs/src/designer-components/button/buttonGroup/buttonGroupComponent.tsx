@@ -4,7 +4,7 @@ import { GroupOutlined } from '@ant-design/icons';
 import { IButtonGroupComponentProps, isButtonGroupComponent } from './models';
 import { IToolboxComponent } from '@/interfaces';
 import { migrateButtonsNavigateAction } from './migrations/migrateButtonsNavigateAction';
-import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateReadOnly, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -130,14 +130,14 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
     .add<IButtonGroupComponentProps>(16, (prev, ctx) => {
       const newModel = ctx.isNew === true || prev.isInline === true ? { ...prev } : { ...prev, desktop: { ...prev.desktop, buttonGroupStyle: 'menu' } };
       const updateItems = (item: ButtonGroupItemProps): ButtonGroupItemProps => {
-        const newItem = migratePermissionsToVisiblePermissions(migrateHiddenToVisible(item));
+        const newItem = migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(item)));
         if (Array.isArray(newItem['childItems']))
           newItem['childItems'] = newItem['childItems'].map(updateItems);
         return newItem;
       };
 
       newModel.items = newModel.items.map(updateItems);
-      return migratePermissionsToVisiblePermissions(migrateHiddenToVisible(newModel));
+      return migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(newModel)));
     }),
   settingsFormMarkup: getSettings,
 };
