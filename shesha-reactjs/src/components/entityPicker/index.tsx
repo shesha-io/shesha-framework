@@ -215,7 +215,7 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
           onClick={handleButtonPickerClick}
           size={size}
           disabled={disabled}
-          className={classNames(pickerButtonProps?.className, className)}
+          className={[pickerButtonProps?.className, className].filter(isNotNullOrWhiteSpace).join(' ') || undefined}
         >
           {title}
         </Button>
