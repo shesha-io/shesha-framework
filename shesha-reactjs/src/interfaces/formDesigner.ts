@@ -35,8 +35,9 @@ export interface IGetFieldsToFetchContext {
    */
   getFormFieldsAsync: (formId: FormIdentifier) => Promise<string[]>;
   /**
-   * Resolves the form configured for the given entity type and form type (view type). Rejects when
-   * the entity has no such view configured
+   * Resolves the form configured for the given entity type and form type (view type). When the entity
+   * has no such view configured the result is the convention-derived name `{entityName}-{formType}`,
+   * which may point to a form that does not exist. Rejects only when the entity has no configuration at all
    */
   getEntityFormIdAsync: (entityType: string | IEntityTypeIdentifier, formType: string) => Promise<FormFullName>;
 }
