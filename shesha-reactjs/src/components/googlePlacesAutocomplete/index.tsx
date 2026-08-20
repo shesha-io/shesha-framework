@@ -276,10 +276,12 @@ const GooglePlacesAutocomplete: FC<IGooglePlacesAutocompleteProps> = ({
             );
           })()}
           {/* The dropdown stays hidden in both non-editable states — a suggestion list the user
-              cannot act on would otherwise cover the surrounding form. */}
+              cannot act on would otherwise cover the surrounding form — and while there is nothing
+              to suggest. The container carries the configured background, border and padding, so an
+              empty one is not invisible: it paints as a stray box under the input. */}
           <div
             className={classNames(styles.dropdownContainer, {
-              hidden: !showSuggestionsDropdownContainer || disabled === true || readOnly === true,
+              hidden: suggestions.length === 0 || !showSuggestionsDropdownContainer || disabled === true || readOnly === true,
             })}
           >
             {suggestions.map((suggestion) => {
