@@ -12,7 +12,7 @@ import { getSettings } from './formSettings';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
-import { defaultStyles } from './utils';
+import { defaultStyles, getAddressValue } from './utils';
 import { useStyles } from './styles';
 import { isIAddressAndCoords } from '@/components/googlePlacesAutocomplete';
 import { DataTypes } from '@/interfaces/dataTypes';
@@ -62,7 +62,7 @@ const AddressCompoment: AddressComponentDefinition = {
           return model.readOnly === true
             ? (
               <ReadOnlyDisplayFormItem
-                value={value}
+                value={getAddressValue(value)}
                 enableFullStyle={model.enableStyleOnReadonly}
                 styleValue={styleValue}
                 // The Custom style, so read-only matches the editable control. It lands inline on
