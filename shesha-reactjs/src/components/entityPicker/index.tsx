@@ -213,8 +213,12 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
       .filter(isNotNullOrWhiteSpace)
       .join(' ');
 
+  const handleButtonPickerClick = (): void => {
+    showPickerDialog();
+  };
+
     return (
-      <div className={styles.entityPickerContainer}>
+      <div className={styles.entityPickerContainer} {...events}>
         <Button
           {...(pickerButtonProps ?? {})}
           ref={buttonRef}
