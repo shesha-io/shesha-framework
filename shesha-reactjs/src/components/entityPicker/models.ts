@@ -1,14 +1,16 @@
 import { ButtonProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { CSSProperties, ReactNode } from 'react';
+import { ReactNode, Ref } from 'react';
 import { IAnyObject, IEntityReferenceDto } from '@/interfaces';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
-import { FormIdentifier } from '@/providers/form/models';
+import { FormIdentifier, IStyleValue } from '@/providers/form/models';
 import { ModalFooterButtons } from '@/providers/dynamicModal/models';
 import { BorderStyle } from '@/designer-components/_settings/utils/border/interfaces';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
 import { ITableRowData, IStoredFilter } from '@/providers/dataTable/interfaces';
+import { EntityPickerSelection } from '@/componentsApi/componentApi';
+import { EventsObject } from '@/designer-components/_common/events';
 
 interface IWrappedEntityPickerProps {
   entityType?: string | IEntityTypeIdentifier;
@@ -40,6 +42,23 @@ export interface IEntityPickerState {
   globalStateKey?: string;
 }
 
+/** Imperative handle backing the component API's `focus`, `showPicker` and `hidePicker`. */
+export interface EntityPickerRef {
+  focus: () => void;
+  showPicker: () => void;
+  hidePicker: () => void;
+  /** The entities currently selected, resolved to `{ id, displayName }` for the component API. */
+  getSelectedItems: () => EntityPickerSelection[];
+}
+
+/**
+ * antd event handlers produced by `getComponentEvents`, spread onto the picker wrapper.
+ *
+ * Aliased to the producer's own return type rather than a `Record<string, ...>`, so the two cannot
+ * drift: a handler the picker does not actually emit fails to type-check here.
+ */
+export type EntityPickerEvents = EventsObject;
+
 export interface IEntityPickerProps extends Omit<IWrappedEntityPickerProps, 'onDblClick'> {
   formId?: FormIdentifier | undefined;
   hideBorder?: boolean | undefined;
@@ -59,10 +78,18 @@ export interface IEntityPickerProps extends Omit<IWrappedEntityPickerProps, 'onD
   entityFooter?: ReactNode;
   configurableColumns?: IConfigurableColumnsProps[] | undefined;
   addNewRecordsProps?: IAddNewRecordProps | undefined;
-  style?: CSSProperties | undefined;
   readOnly?: boolean | undefined;
   placeholder?: string | undefined;
+  /** Text shown when read-only and nothing is selected. */
+  readOnlyPlaceholder?: string | undefined;
   incomeValueFunc: IncomeValueFunc;
   outcomeValueFunc: OutcomeValueFunc;
   dividerStyle?: BorderStyle | undefined;
+  /** Emotion class carrying the configured Appearance; applied to the wrapper. */
+  className?: string | undefined;
+  /** Style model handed to the read-only renderer, which the emotion class does not reach. */
+  styleValue?: IStyleValue | undefined;
+  enableFullStyle?: boolean | undefined;
+  events?: EntityPickerEvents | undefined;
+  pickerRef?: Ref<EntityPickerRef> | undefined;
 }
