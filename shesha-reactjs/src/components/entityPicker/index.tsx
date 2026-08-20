@@ -193,12 +193,6 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
     */
   };
 
-  const handleButtonPickerClick = (event: React.MouseEvent<HTMLElement, MouseEvent>): void => {
-    event.stopPropagation();
-
-    showPickerDialog();
-  };
-
   const onClear = (): void => {
     if (onChange) onChange(null, null);
   };
@@ -213,9 +207,9 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
       .filter(isNotNullOrWhiteSpace)
       .join(' ');
 
-  const handleButtonPickerClick = (): void => {
-    showPickerDialog();
-  };
+    const handleButtonPickerClick = (): void => {
+      showPickerDialog();
+    };
 
     return (
       <div className={styles.entityPickerContainer} {...events}>
