@@ -30,7 +30,17 @@ import { getIdOrUndefined } from '@/utils/entity';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
-import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '../_common/events';
+import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents, StandardEventHandlerWithoutChange } from '../_common/events';
+
+/**
+ * The picker has no free-text input: the Select renders with `open={false}` and no `showSearch`,
+ * and all selection happens in the modal. Keyboard events can therefore never fire on it, so
+ * `onKeyDown`/`onKeyUp` are dropped rather than offered as settings that would never run.
+ */
+const ENTITY_PICKER_RUNTIME_EVENTS: readonly StandardEventHandlerWithoutChange[] =
+  ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK.filter(
+    (event): event is StandardEventHandlerWithoutChange => event !== 'onKeyDown' && event !== 'onKeyUp',
+  );
 import { EntityPickerApi } from '../../componentsApi/componentApi';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
@@ -189,7 +199,7 @@ const EntityPickerComponent: EntityPickerComponentDefinition = {
                 onChange(newValue);
               }}
               events={getComponentEvents<EntityPickerValueType>(
-                model, ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, ctx, value, DataTypes.entityReference,
+                model, ENTITY_PICKER_RUNTIME_EVENTS, ctx, value, DataTypes.entityReference,
               )}
               size={model.size}
             />

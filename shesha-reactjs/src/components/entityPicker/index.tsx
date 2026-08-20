@@ -21,7 +21,7 @@ const isPropertyLoaded = (value: string | IEntityReferenceDto, displayEntityKey:
 };
 
 const EntityPickerReadOnly = (props: IEntityPickerProps): React.JSX.Element => {
-  const { entityType, displayEntityKey, value, readOnlyPlaceholder } = props;
+  const { entityType, displayEntityKey, value, readOnlyPlaceholder, events } = props;
 
   // Check if all data for displaying is loaded
   // TODO: review this logic. It works with complex objects only
@@ -59,11 +59,16 @@ const EntityPickerReadOnly = (props: IEntityPickerProps): React.JSX.Element => {
   return selection.loading
     ? <Skeleton paragraph={false} active />
     : (
-      <ReadOnlyDisplayFormItem
-        value={displayText}
-        styleValue={props.styleValue}
-        enableFullStyle={props.enableFullStyle}
-      />
+      // `ReadOnlyDisplayFormItem` takes no event props, so the configured handlers go on a
+      // wrapper. Without this the component's onClick (and the other pointer events) never fire
+      // in read-only mode.
+      <div {...events}>
+        <ReadOnlyDisplayFormItem
+          value={displayText}
+          styleValue={props.styleValue}
+          enableFullStyle={props.enableFullStyle}
+        />
+      </div>
     );
 };
 
@@ -207,6 +212,9 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
       .filter(isNotNullOrWhiteSpace)
       .join(' ');
 
+    // The configured `onClick` lives in `events` and is spread on the wrapper below. Calling it
+    // here as well would fire it twice for one click, so the button only opens the dialog and
+    // lets the click bubble to the wrapper for the configured handler.
     const handleButtonPickerClick = (): void => {
       showPickerDialog();
     };
@@ -228,9 +236,19 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
     );
   }
 
+  // rc-select calls `preventDefault()` on mousedown for any click that is not on its inner input
+  // (@rc-component/select SelectInput), which suppresses the native click entirely — so a handler
+  // on this wrapper never runs. Mousedown still fires, so the configured `onClick` is invoked from
+  // there instead.
+  const { onClick: configuredOnClick, ...remainingEvents } = events ?? {};
+  const selectEvents = {
+    ...remainingEvents,
+    ...(isDefined(configuredOnClick) ? { onMouseDown: configuredOnClick } : {}),
+  };
+
   return (
     <div className={styles.entityPickerContainer}>
-      <div className={className} {...events}>
+      <div className={className} {...selectEvents}>
         <Select<string | string[]>
           size={size}
           onOpenChange={(_e) => {

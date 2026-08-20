@@ -3,6 +3,14 @@ import { nanoid } from '@/utils/uuid';
 import { DataTypes, SettingsFormMarkupFactory } from '@/interfaces';
 import { ALL_INPUT_EVENTS_WITHOUT_DOUBLE_CLICK } from '../_common/events';
 
+/**
+ * The picker has no free-text input (the Select renders with `open={false}` and no `showSearch`,
+ * and selection happens in the modal), so keyboard events can never fire. They are dropped here so
+ * the Events tab does not offer handlers that would silently never run.
+ */
+const ENTITY_PICKER_SETTINGS_EVENTS = ALL_INPUT_EVENTS_WITHOUT_DOUBLE_CLICK
+  .filter((event) => event !== 'onKeyDown' && event !== 'onKeyUp');
+
 const entityTypeSelectedJs = 'return !!getSettingValue(data?.entityType);';
 const customValueFormatJs = 'return getSettingValue(data?.valueFormat) === "custom";';
 const allowNewRecordJs = 'return !!getSettingValue(data?.allowNewRecord);';
@@ -124,7 +132,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
           },
           {
             key: 'events', title: 'Events', id: eventsTabId,
-            components: [...fbf(eventsTabId).stdEventHandlers([...ALL_INPUT_EVENTS_WITHOUT_DOUBLE_CLICK], DataTypes.entityReference).toJson()],
+            components: [...fbf(eventsTabId).stdEventHandlers([...ENTITY_PICKER_SETTINGS_EVENTS], DataTypes.entityReference).toJson()],
           },
           {
             key: 'appearance', title: 'Appearance', id: appearanceTabId,
