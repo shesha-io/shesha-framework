@@ -361,6 +361,15 @@ export type CheckboxGroupApi = InputComponentApi<string[] | undefined>;
 export type SwitchFieldApi = InputComponentApi<boolean | undefined>;
 
 /**
+ * Reference list status. The value is the item value of the reference list item currently displayed,
+ * so writing it switches the component to the matching status.
+ */
+export interface RefListStatusApi extends InputComponentApi<number | undefined> {
+  /** Text shown for the current item, taken from the reference list. Read-only. */
+  readonly itemText: string | undefined;
+};
+
+/**
  * Date field. The value is the serialised date as stored in the form data, so its shape follows the
  * component's Binding Format; when Range is enabled it is a `[start, end]` pair instead.
  */

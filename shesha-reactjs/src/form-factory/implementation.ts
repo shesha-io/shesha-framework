@@ -202,7 +202,7 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
 
   /**
    * `_addProperty` converts `visibleJs` into a `visible` code evaluator, but only for the row
-   * component itself � the inputs inside it are plain objects it never walks, so their `visibleJs`
+   * component itself — the inputs inside it are plain objects it never walks, so their `visibleJs`
    * was carried into the markup as an inert string and the input always rendered. Convert each one
    * here instead: `getActualModel` resolves the evaluator when it recurses into the `inputs` array,
    * and `SettingInput` already treats `visible === false` as hidden.
