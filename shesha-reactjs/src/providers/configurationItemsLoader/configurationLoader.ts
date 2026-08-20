@@ -140,7 +140,15 @@ export class ConfigurationLoader implements IConfigurationLoader {
     if (!isDefined(dto) || isNullOrWhiteSpace(dto.name))
       throw new Error(`Form of type '${formType}' is not configured for the entity '${getEntityTypeName(entityType)}'`);
 
-    return { name: dto.name, module: dto.module };
+    // when no view of this type is configured the server falls back to the convention name
+    // `{entityName}-{typeName}`, but builds it from the `name` parameter, which is empty when the
+    // entity is identified by its class name only. Restore the entity name from the class name
+    const degenerateConventionName = `-${formType.replace(/\s/g, '').toLowerCase()}`;
+    const name = typeof entityType === 'string' && dto.name === degenerateConventionName
+      ? `${entityType.substring(entityType.lastIndexOf('.') + 1)}${dto.name}`
+      : dto.name;
+
+    return { name, module: dto.module };
   };
 
   getModulesAsync = async (): Promise<Map<string, ModuleInfo>> => {

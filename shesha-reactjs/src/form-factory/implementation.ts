@@ -1,5 +1,4 @@
-/* eslint-disable no-console */
-import { IAlertComponentProps } from "@/designer-components/alert/interfaces";
+﻿import { IAlertComponentProps } from "@/designer-components/alert/interfaces";
 import { IAutocompleteComponentProps } from "@/designer-components/autocomplete/interfaces";
 import { IButtonsProps } from "@/designer-components/button/buttonGroup/buttonsComponent/interfaces";
 import { ICheckboxComponentProps } from "@/designer-components/checkbox/interfaces";

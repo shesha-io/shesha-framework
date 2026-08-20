@@ -37,6 +37,7 @@ export interface IButtonGroupItemBase extends IStyleValue {
   /** @deprecated use visible instead. Will be removed after refactoring all components */
   hidden?: boolean | undefined;
   visible?: boolean | undefined;
+  visiblePermissions?: string[] | undefined;
   isDynamic?: boolean | undefined;
   itemType?: ButtonGroupItemType | undefined;
   icon?: string | undefined;
@@ -44,10 +45,11 @@ export interface IButtonGroupItemBase extends IStyleValue {
   downIcon?: string | undefined;
   buttonType?: ButtonType | 'ghost' | undefined;
   ghost?: boolean | undefined;
+  /** @deprecated use visiblePermissions or editModePermissions instead */
   permissions?: string[] | undefined;
   size?: SizeType | undefined;
   editMode?: EditMode | undefined;
-  readOnly?: boolean | undefined;
+  editModePermissions?: string[] | undefined;
   disabled?: boolean | undefined;
   width?: string | undefined;
   height?: string | undefined;

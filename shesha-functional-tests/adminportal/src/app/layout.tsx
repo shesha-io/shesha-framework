@@ -6,26 +6,26 @@ import { AntdRegistry } from '@ant-design/nextjs-registry';
 import { NavigationGuardProvider } from 'next-navigation-guard';
 
 export default function RootLayout({
-    children,
+  children,
 }: {
-    children: React.ReactNode;
-}) {
-    noStore();
-    const backendUrl = process.env.BACKEND_URL ?? 'http://localhost:21021';
+  children: React.ReactNode;
+}): React.ReactNode {
+  noStore();
+  const backendUrl = process.env.BACKEND_URL ?? 'http://localhost:21021';
 
-    return (
-        <html lang="en">
-            <body>
-                <AntdRegistry>
-                    <NavigationGuardProvider>
-                        <Suspense fallback={null}>
-                            <AppProvider backendUrl={backendUrl}>
-                                {children}
-                            </AppProvider>
-                        </Suspense>
-                    </NavigationGuardProvider>
-                </AntdRegistry>
-            </body>
-        </html>
-    );
+  return (
+    <html lang="en">
+      <body>
+        <AntdRegistry>
+          <NavigationGuardProvider>
+            <Suspense fallback={null}>
+              <AppProvider backendUrl={backendUrl}>
+                {children}
+              </AppProvider>
+            </Suspense>
+          </NavigationGuardProvider>
+        </AntdRegistry>
+      </body>
+    </html>
+  );
 };

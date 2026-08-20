@@ -15,6 +15,7 @@ import { evaluateString } from '@/providers/form/utils';
 export type UnwrapFunc = (model: unknown, propertyName: string, value: unknown, allData: object) => UnwrapCodeEvaluators<unknown> | unknown | undefined;
 
 const getSettingValue = <TValue = unknown>(
+  propertyName: string,
   value: TValue,
   allData: object,
   calcFunction: (setting: IPropertySetting, allData: object) => TValue | undefined,
@@ -36,7 +37,7 @@ const getSettingValue = <TValue = unknown>(
       const v = unproxiedValue.length === 0
         ? unproxiedValue
         : unproxiedValue.map((x) => {
-          return getActualModel(x, allData, parentDisabledAndReadOnly, propertyFilter, processed, postProcessModel, processFilteredProperties);
+          return getActualModel(propertyName, x, allData, parentDisabledAndReadOnly, propertyFilter, processed, postProcessModel, processFilteredProperties);
         });
       processed.push(v);
       return v as UnwrapCodeEvaluators<TValue>;
@@ -48,11 +49,12 @@ const getSettingValue = <TValue = unknown>(
         : unproxiedValue._value;
       const upv = unproxyValue(v);
       processed.push(upv);
-      return upv;
+      return unproxiedValue._mode !== 'code' && typeof upv === 'string' && /\{\{.*?\}\}/.test(upv)
+        ? evaluateString(upv, allData) as UnwrapCodeEvaluators<TValue>
+        : upv;
     }
     // update nested objects
-    // TODO: review and enable rule
-    const v = getActualModel(unproxiedValue, allData, parentDisabledAndReadOnly, propertyFilter, processed, postProcessModel, processFilteredProperties);
+    const v = getActualModel(propertyName, unproxiedValue, allData, parentDisabledAndReadOnly, propertyFilter, processed, postProcessModel, processFilteredProperties);
     processed.push(v);
     return v as UnwrapCodeEvaluators<TValue>;
   }
@@ -62,7 +64,7 @@ const getSettingValue = <TValue = unknown>(
 };
 
 const getValue = <TValue>(val: TValue, allData: object, calcValue: (setting: IPropertySetting, allData: object) => unknown): unknown => {
-  return getSettingValue(val, allData, calcValue);
+  return getSettingValue('', val, allData, calcValue);
 };
 
 interface IJsSettingsConstants<TValue> {
@@ -115,6 +117,7 @@ export const isHasEditMode = (value: object): value is HasEditMode => 'editMode'
  * @returns - converted model
  */
 export const getActualModel = <T = unknown>(
+  propertyName: string,
   model: T,
   allData: object,
   parentDisabledAndReadOnly?: IDisabledAndReadOnly | undefined,
@@ -126,7 +129,7 @@ export const getActualModel = <T = unknown>(
   const processed = isDefined(processedObjects) ? processedObjects : [];
 
   if (Array.isArray(model)) {
-    return getSettingValue(model, allData, calcValue, parentDisabledAndReadOnly, propertyFilter, processed, processModel, processFilteredProperties) as UnwrapCodeEvaluators<T>;
+    return getSettingValue(propertyName, model, allData, calcValue, parentDisabledAndReadOnly, propertyFilter, processed, processModel, processFilteredProperties) as UnwrapCodeEvaluators<T>;
   }
 
   if (!isDefined(model) || typeof model !== 'object')
@@ -138,24 +141,27 @@ export const getActualModel = <T = unknown>(
   for (const propName in model) {
     if (!model.hasOwnProperty(propName)) continue;
     const value = model[propName];
+    const fullPropertyName = isNullOrWhiteSpace(propertyName) ? propName : `${propertyName}.${propName}`;
     // skip filtered properties
-    if (typeof propertyFilter === 'function' && !propertyFilter(propName, value)) {
-      filteredProperties.push(propName);
+    if (typeof propertyFilter === 'function' && !propertyFilter(fullPropertyName, value)) {
+      filteredProperties.push(fullPropertyName);
       m[propName] = value;
       continue;
     }
-    m[propName] = getSettingValue(value, allData, calcValue, parentDisabledAndReadOnly, propertyFilter, processed, processModel, processFilteredProperties) as typeof value;
+    m[propName] = getSettingValue(fullPropertyName, value, allData, calcValue, parentDisabledAndReadOnly, propertyFilter, processed, processModel, processFilteredProperties) as typeof value;
   }
 
   processModel?.(m);
 
   // try to process filtered properties by processFilteredProperties or store as is
-  filteredProperties.forEach((propName) => {
+  filteredProperties.forEach((fullPropName) => {
+    const propName = fullPropName.split('.').pop();
+    if (propName === undefined) return;
     const value = m[propName as Extract<keyof T, string>];
     if (isDefined(processFilteredProperties) && typeof processFilteredProperties === 'function') {
       const unproxiedValue = unproxyValue(value);
       if (typeof unproxiedValue === 'object' && processed.indexOf(unproxiedValue) === -1) { // skip already processed objects to avoid infinite loop
-        const v = processFilteredProperties(m, propName, value, allData) ?? value;
+        const v = processFilteredProperties(m, fullPropName, value, allData) ?? value;
         const upv = unproxyValue(v);
         processed.push(upv);
         m[propName as Extract<keyof T, string>] = upv as T[Extract<keyof T, string>];
@@ -169,6 +175,6 @@ export const getActualModel = <T = unknown>(
 export const updateActualPropertyValue = <T>(model: T, allData: object, propertyName: keyof T): T => {
   return {
     ...model,
-    [propertyName]: getSettingValue(model[propertyName], allData, calcValue),
+    [propertyName]: getSettingValue(propertyName as string, model[propertyName], allData, calcValue),
   } as T;
 };
