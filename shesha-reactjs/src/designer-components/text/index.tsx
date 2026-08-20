@@ -41,7 +41,6 @@ const TextComponent: TextComponentDefinition = {
     ...model,
     copyable: false,
     delete: false,
-    ellipsis: false,
     italic: false,
     underline: false,
     level: 0,

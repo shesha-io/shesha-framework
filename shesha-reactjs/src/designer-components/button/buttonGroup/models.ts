@@ -34,4 +34,4 @@ export type MenuButton = ButtonGroupItemProps & {
   dividerColor?: string | undefined;
 };
 
-export type VisibilityEvaluator = (item: ButtonGroupItemProps) => boolean;
+export type ItemBooleanEvaluator = (item: ButtonGroupItemProps) => boolean;

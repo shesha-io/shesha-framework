@@ -130,7 +130,7 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
     .add<IButtonGroupComponentProps>(16, (prev, ctx) => {
       const newModel = ctx.isNew === true || prev.isInline === true ? { ...prev } : { ...prev, desktop: { ...prev.desktop, buttonGroupStyle: 'menu' } };
       const updateItems = (item: ButtonGroupItemProps): ButtonGroupItemProps => {
-        const newItem = migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(item)));
+        const newItem = migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(item), true));
         if (Array.isArray(newItem['childItems']))
           newItem['childItems'] = newItem['childItems'].map(updateItems);
         return newItem;

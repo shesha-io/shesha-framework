@@ -164,10 +164,6 @@ export type IToolboxComponentBase = {
    * Return true to indicate that the data type is supported by the component
    */
   dataTypeSupported?: (dataTypeInfo: { dataType: string; dataFormat: string | undefined }) => boolean;
-  /**
-   * Returns true if the property should be calculated for the actual model (calculated from JS code)
-   */
-  actualModelPropertyFilter?: (name: string, value: unknown) => boolean;
 
   editorAdapter?: IEditorAdapter;
 
@@ -217,6 +213,11 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
    * @returns - calculated model
    */
   calculateModel?: ((model: TModel, allData: IApplicationContext, useCalculatedModel?: TCalculatedModel) => TCalculatedModel) | undefined;
+
+  /**
+   * Returns true if the property should be calculated for the actual model (calculated from JS code)
+   */
+  actualModelPropertyFilter?: (name: string, value: unknown) => boolean;
 
   actualModelFilteredPropertyProcessor?: UnwrapFunc;
 
