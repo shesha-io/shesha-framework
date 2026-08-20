@@ -18,6 +18,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
   const sidebarContainerLeft = "sidebar-container-left";
   const sidebarContainerRight = "sidebar-container-right";
   const canvasWrapper = "canvas-wrapper";
+  const canvasAutoWidth = "canvas-auto-width";
   const designerCanvas = "designer-canvas";
   const canvasPopupContainer = "canvas-popup-container";
 
@@ -173,6 +174,16 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
           }
         }
 
+        /* "Canvas" resolution: the canvas is laid out to render exactly as wide as this pane, so a
+           horizontal scrollbar is never wanted - components re-wrap into the space instead. The
+           canvas width is computed from a measured pixel value scaled by CSS zoom, so sub-pixel
+           rounding can still leave it a fraction over; without this, that fraction shows up as a
+           scrollbar along the bottom. Only applied in this mode: a device preset wider than the
+           pane (e.g. Full HD in a narrow window) genuinely needs to scroll horizontally. */
+        .${sidebarContainerMainArea}.${canvasWrapper}.${canvasAutoWidth} {
+          overflow-x: hidden;
+        }
+
         .${designerCanvas} {
           margin: 0 auto;
           height: 100%;
@@ -246,6 +257,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
     sidebarContainerRight,
     designerCanvas,
     canvasWrapper,
+    canvasAutoWidth,
     canvasPopupContainer,
   };
 });

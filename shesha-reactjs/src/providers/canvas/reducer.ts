@@ -10,10 +10,7 @@ import { setCanvasZoomAction,
   setConfigTreePanelSizeAction,
   setViewTypeAction } from './actions';
 import { CANVAS_CONTEXT_INITIAL_STATE } from './contexts';
-import { DEFAULT_OPTIONS, getDeviceTypeByWidth, getSmallerDevice } from './utils';
-
-const clampZoom = (zoom: number): number =>
-  Math.max(DEFAULT_OPTIONS.minZoom, Math.min(DEFAULT_OPTIONS.maxZoom, zoom));
+import { clampZoom, getDeviceTypeByWidth, getSmallerDevice } from './utils';
 
 export const reducer = createReducer(CANVAS_CONTEXT_INITIAL_STATE, (builder) => {
   builder

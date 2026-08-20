@@ -19,6 +19,7 @@ import { DataTypes } from '@/interfaces/dataTypes';
 import { SheshaCommonContexts } from '../dataContextManager/models';
 import { ContextOnChangeData } from '../dataContextProvider/contexts';
 import { useLocalStorage } from '@/hooks';
+import { clampZoom } from './utils';
 
 const CanvasProvider: FC<PropsWithChildren> = ({
   children,
@@ -44,22 +45,29 @@ const CanvasProvider: FC<PropsWithChildren> = ({
   } as IObjectMetadata), []);
 
 
-  const [storedDesignerWidth, setStoredDesignerWidth] = useLocalStorage('shesha:designerWidth', CANVAS_CONTEXT_INITIAL_STATE.designerWidth);
-  const [storedDesigneZoom, setStoredDesigneZoom] = useLocalStorage('shesha:designerZoom', CANVAS_CONTEXT_INITIAL_STATE.zoom);
+  // The zoom/width keys are versioned. The canvas defaults changed (75% manual zoom, responsive
+  // "Canvas" width); without a new key, a zoom persisted by the previous version - including one
+  // the old auto-zoom computed, e.g. 47% - would silently win over the new default.
+  const [storedDesignerWidth, setStoredDesignerWidth] = useLocalStorage('shesha:designerWidth:v2', CANVAS_CONTEXT_INITIAL_STATE.designerWidth);
+  const [storedDesigneZoom, setStoredDesigneZoom] = useLocalStorage('shesha:designerZoom:v2', CANVAS_CONTEXT_INITIAL_STATE.zoom);
   const [storedAutoWidth, setStoredAutoWidth] = useLocalStorage('shesha:designerAutoWidth', CANVAS_CONTEXT_INITIAL_STATE.autoWidth);
 
   const [state, dispatch] = useReducer(reducer, {
     ...CANVAS_CONTEXT_INITIAL_STATE,
     designerWidth: storedDesignerWidth,
-    zoom: storedDesigneZoom,
+    zoom: clampZoom(storedDesigneZoom),
     autoWidth: storedAutoWidth,
   });
 
   useEffect(() => {
-    setStoredDesignerWidth(state.designerWidth);
+    // In "Canvas" mode designerWidth is a measurement of the pane, not a user choice. Persisting it
+    // would restore a stale width on the next load - and lay the canvas out at it for a frame -
+    // before the pane has been measured again.
+    if (!state.autoWidth)
+      setStoredDesignerWidth(state.designerWidth);
     setStoredDesigneZoom(state.zoom);
     setStoredAutoWidth(state.autoWidth);
-  }, [setStoredDesigneZoom, setStoredDesignerWidth, setStoredAutoWidth, state.designerWidth, state.zoom, state.autoWidth]);
+  }, [setStoredDesigneZoom, setStoredDesignerWidth, setStoredAutoWidth, state.autoWidth, state.designerWidth, state.zoom]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;

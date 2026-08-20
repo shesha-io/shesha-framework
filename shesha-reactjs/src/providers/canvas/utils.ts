@@ -115,6 +115,15 @@ export const DEFAULT_OPTIONS = {
   modalMargins: 32,
 };
 
+/**
+ * Constrains a zoom percentage to the range the canvas supports. Non-numeric input (e.g. a value
+ * restored from storage that was never a number) falls back to the default zoom.
+ */
+export const clampZoom = (zoom: number): number =>
+  Number.isFinite(zoom)
+    ? Math.max(DEFAULT_OPTIONS.minZoom, Math.min(DEFAULT_OPTIONS.maxZoom, zoom))
+    : DEFAULT_OPTIONS.defaultZoom;
+
 const SIDEBAR_WIDTH = {
   COLLAPSED: 60,
   EXPANDED: 250,

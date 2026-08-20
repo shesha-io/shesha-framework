@@ -4,13 +4,10 @@ import { Button, InputNumber, Space, Tooltip } from "antd";
 import { ExpandOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { useCanvas } from "@/providers";
 import { DeviceOptions } from "./mobileDropdown";
-import { DEFAULT_OPTIONS } from "@/providers/canvas/utils";
+import { clampZoom, DEFAULT_OPTIONS } from "@/providers/canvas/utils";
 import { useDebouncedCallback } from "use-debounce";
 
 const ZOOM_LEVELS = DEFAULT_OPTIONS.zoomLevels;
-
-const clampZoom = (zoom: number): number =>
-  Math.max(DEFAULT_OPTIONS.minZoom, Math.min(DEFAULT_OPTIONS.maxZoom, zoom));
 
 const getNextZoomLevel = (currentZoom: number): number =>
   ZOOM_LEVELS.find((level) => level > currentZoom) ?? DEFAULT_OPTIONS.maxZoom;
@@ -122,7 +119,13 @@ export const CanvasConfig: FC = () => {
               controls={false}
               style={{ width: 56 }}
               formatter={(value) => `${value}%`}
-              parser={(value) => Number((value ?? '').replace('%', ''))}
+              // An emptied field must parse to NaN, not 0: 0 is a "real" value that survives to
+              // blur and gets clamped up to minZoom, so clearing the box would jump the canvas to
+              // 10% instead of restoring the zoom that was there.
+              parser={(value) => {
+                const raw = (value ?? '').replace('%', '').trim();
+                return raw === '' ? Number.NaN : Number(raw);
+              }}
               onFocus={handleInputFocus}
               onChange={handleInputZoomChange}
               onBlur={commitInputZoom}

@@ -213,6 +213,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
           className={classNames(
             styles.sidebarContainerMainArea,
             styles.canvasWrapper,
+            { [styles.canvasAutoWidth]: isZoomableCanvas && autoWidth },
             { 'both-open': leftSidebarProps?.open === true && rightSidebarProps?.open === true },
             { 'left-only-open': leftSidebarProps?.open === true && rightSidebarProps?.open !== true },
             { 'right-only-open': rightSidebarProps?.open === true && leftSidebarProps?.open !== true },
