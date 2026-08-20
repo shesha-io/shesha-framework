@@ -55,14 +55,28 @@ export const CrudActionButtons = (): React.JSX.Element => {
   const onSaveCreateClick = async (): Promise<void> => {
     try {
       await performCreate();
-      await reset();
     } catch (error) {
       notifyError(error, 'Create failed');
+      return;
+    }
+
+    // The row exists by this point, so a `reset` failure must not be reported as a create failure -
+    // the user would retry and create a duplicate.
+    try {
+      await reset();
+    } catch (error) {
+      notifyError(error, 'Failed to reset the form');
     }
   };
 
   const onCancelEditClick = async (): Promise<void> => {
-    await reset();
+    try {
+      await reset();
+    } catch (error) {
+      // `reset` throws when there is no form in scope; without this the rejection escapes unhandled
+      // and `switchMode` below never runs, leaving the row stuck in edit mode.
+      notifyError(error, 'Failed to reset the form');
+    }
     switchMode('read');
   };
 
