@@ -10,7 +10,7 @@ import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigura
 import { executeExpression, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { migrateV0toV1 } from './migrations/migrate-v1';
-import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateReadOnly, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { IEntityMetadata, isEntityReferenceArrayPropertyMetadata, isEntityReferencePropertyMetadata, isHasFilter } from '@/interfaces/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { EntityPickerRef, IncomeValueFunc, OutcomeValueFunc } from '@/components/entityPicker/models';
@@ -271,7 +271,7 @@ const EntityPickerComponent: EntityPickerComponentDefinition = {
 
       return { ...prev, desktop: { ...prev.desktop, ...styles }, tablet: { ...prev.tablet, ...styles }, mobile: { ...prev.mobile, ...styles } };
     })
-    .add<IEntityPickerComponentProps>(14, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev))),
+    .add<IEntityPickerComponentProps>(14, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   getDefaultStyles: () => defaultStyles(),
