@@ -700,7 +700,18 @@ namespace Shesha.DynamicEntities.Binder
                     var child = prop.GetValue(entity, null);
                     if (child != null)
                     {
-                        result |= await DeleteUnreferencedEntityAsync(child, entity);
+                        var deleted = await DeleteUnreferencedEntityAsync(child, entity);
+                        if (deleted && prop.CanWrite)
+                        {
+                            // Break the association before the session is flushed. The parent is often
+                            // soft-deleted, so its row survives holding this reference, while the child
+                            // may be hard-deleted. Many-to-one references are mapped with Cascade.Persist,
+                            // so leaving the reference in place makes NHibernate try to re-save the child
+                            // that was just deleted and fail the flush with
+                            // "deleted object would be re-saved by cascade".
+                            prop.SetValue(entity, null, null);
+                        }
+                        result |= deleted;
                     }
                 }
             }
