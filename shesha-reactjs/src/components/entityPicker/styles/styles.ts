@@ -116,9 +116,9 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model?: IS
         ${configuredBackground}
         ${textStyle}
 
-        &:hover,
+       &:hover,
         &:active {
-        background: inherit;
+          ${configuredBackground}
           border-color: ${token.colorPrimary} !important;
         }
       }
@@ -151,10 +151,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model?: IS
           .th,
           .th * {
             ${textStyle}
-          }
-
-          &.tr-body {
-            border-bottom: 1px solid red;
           }
         }
       }
@@ -225,7 +221,8 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model?: IS
 
         &:hover,
         &:active {
-        background: inherit;
+          ${configuredAppearance}
+          border-width: 1px;
           border-color: ${token.colorPrimary} !important;
         }
       }

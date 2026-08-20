@@ -1,4 +1,3 @@
-import classNames from 'classnames';
 import { EllipsisOutlined } from '@ant-design/icons';
 import { Button, type GetRef, Select, SelectProps, Skeleton } from 'antd';
 import { DefaultOptionType } from 'antd/lib/select';
@@ -91,6 +90,9 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
 
   const { styles } = useStyles(props.styleValue);
   const selectRef = useRef<SelectRef>(null);
+  // Button-picker mode returns early without rendering the Select, so `selectRef` is never
+  // attached there and `focus()` would be a no-op. The button gets its own ref.
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [showModal, setShowModal] = useState(false);
 
   const entityTypeId = typeof entityType === 'string' ? entityType : entityType?.name;
@@ -129,7 +131,10 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
   // Backs the component API's `focus`, `showPicker`, `hidePicker` and `selectedItems`. Declared
   // after `selectedItems` so the getter closes over the resolved selection.
   useImperativeHandle(pickerRef, () => ({
-    focus: () => selectRef.current?.focus(),
+    focus: () => {
+      if (useButtonPicker === true) buttonRef.current?.focus();
+      else selectRef.current?.focus();
+    },
     showPicker: () => setShowModal(true),
     hidePicker: () => setShowModal(false),
     // `selectedItems` holds either the bound value (a plain id or an entity reference) or the rows
@@ -139,13 +144,16 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
       .map((item) => {
         // A plain id string carries no display text of its own, so it stands in for both fields.
         if (typeof item !== 'object') return { id: String(item), displayName: String(item) };
-        const record = item as Record<string, unknown>;
+        // Spread rather than cast: this copies the own enumerable properties into an indexable
+        // record without asserting a shape the value may not have. `isDefined` above has already
+        // excluded null/undefined.
+        const record: Record<string, unknown> = { ...item };
         return {
           id: String(record['id'] ?? ''),
           displayName: String(record[displayEntityKey] ?? ''),
         };
       }),
-  }), [selectedItems, displayEntityKey]);
+  }), [selectedItems, displayEntityKey, useButtonPicker]);
 
   const options = useDeepCompareMemo<DefaultOptionType[]>(() => {
     if (selection.loading) {
@@ -208,14 +216,19 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
   }
 
   if (useButtonPicker) {
+    const buttonClassName = [pickerButtonProps?.className, className]
+      .filter(isNotNullOrWhiteSpace)
+      .join(' ');
+
     return (
       <div className={styles.entityPickerContainer}>
         <Button
           {...(pickerButtonProps ?? {})}
+          ref={buttonRef}
           onClick={handleButtonPickerClick}
           size={size}
           disabled={disabled}
-          className={[pickerButtonProps?.className, className].filter(isNotNullOrWhiteSpace).join(' ') || undefined}
+          {...(isNotNullOrWhiteSpace(buttonClassName) ? { className: buttonClassName } : {})}
         >
           {title}
         </Button>

@@ -99,11 +99,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                     inputs: [
                       { type: 'dropdown', propertyName: 'footerButtons', label: 'Buttons Type', width: 120, jsSetting: true, dropdownOptions: footerButtonsOptions },
                       {
-                        type: 'dropdown', propertyName: 'submitHttpVerb', label: 'Submit HTTP Verb', jsSetting: true,
-                        dropdownOptions: [{ label: 'POST', value: 'POST' }, { label: 'PUT', value: 'PUT' }],
-                        visibleJs: 'return getSettingValue(data?.showModalFooter) === true || getSettingValue(data?.footerButtons) === "default";',
-                      },
-                      {
                         type: 'buttonGroupConfigurator', propertyName: 'buttons', label: 'Configure Modal Buttons', jsSetting: true,
                         visibleJs: 'return getSettingValue(data?.footerButtons) === "custom";',
                       },

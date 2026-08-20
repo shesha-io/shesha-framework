@@ -174,7 +174,7 @@ const EntityPickerComponent: EntityPickerComponentDefinition = {
                   modalFormId: model.modalFormId,
                   modalTitle: model.modalTitle,
                   showModalFooter: model.showModalFooter,
-                  modalWidth: isDefined(customWidth) ? `${customWidth}${widthUnits}` : modalWidth,
+                  modalWidth: width,
                   buttons: model.buttons,
                   footerButtons: model.footerButtons,
                 }
@@ -237,7 +237,11 @@ const EntityPickerComponent: EntityPickerComponentDefinition = {
       // was silently rewritten to 'simple'. Keep an already-configured value untouched.
       valueFormat: prev.valueFormat ?? (context.isNew === true
         ? 'simple'
-        : getBooleanPropertyOrUndefined(prev, "useRawValue") === true
+        // Migration 2 writes `useRawValues` (plural); reading the singular here matched nothing,
+        // so every legacy raw-value form fell through to 'entityReference'. The singular is kept
+        // as a fallback in case any form was persisted with it.
+        : getBooleanPropertyOrUndefined(prev, "useRawValues") === true ||
+          getBooleanPropertyOrUndefined(prev, "useRawValue") === true
           ? 'simple'
           : 'entityReference'),
     }))
