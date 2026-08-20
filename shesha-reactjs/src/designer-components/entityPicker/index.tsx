@@ -232,14 +232,8 @@ const EntityPickerComponent: EntityPickerComponentDefinition = {
     .add<IEntityPickerComponentProps>(6, (prev) => migrateReadOnly(prev))
     .add<IEntityPickerComponentProps>(7, (prev, context) => ({
       ...prev,
-      // `??` binds tighter than `?:`, so without the parentheses this read as
-      // `(prev.valueFormat ?? context.isNew) ? 'simple' : ...` — any saved format was truthy and
-      // was silently rewritten to 'simple'. Keep an already-configured value untouched.
       valueFormat: prev.valueFormat ?? (context.isNew === true
         ? 'simple'
-        // Migration 2 writes `useRawValues` (plural); reading the singular here matched nothing,
-        // so every legacy raw-value form fell through to 'entityReference'. The singular is kept
-        // as a fallback in case any form was persisted with it.
         : getBooleanPropertyOrUndefined(prev, "useRawValues") === true ||
           getBooleanPropertyOrUndefined(prev, "useRawValue") === true
           ? 'simple'
@@ -252,32 +246,17 @@ const EntityPickerComponent: EntityPickerComponentDefinition = {
         : prev.footerButtons ?? (prev.showModalFooter === true ? 'default' : 'none'),
     }))
     .add<IEntityPickerComponentProps>(9, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-    // A newly dropped component ships empty and inherits from the entity model, so the style
-    // back-fill below only exists to freeze how forms saved before these settings existed look.
     .add<IEntityPickerComponentProps>(10, (prev, context) => context.isNew === true
       ? prev
       : { ...migratePrevStyles(prev, defaultStyles(prev)) })
     .add<IEntityPickerComponentProps>(11, (prev, context) => ({
       ...prev,
-      // Newly dropped components only: give the designer a working picker out of the box instead
-      // of one that throws until an entity type is chosen. Saved forms keep whatever they have —
-      // an existing empty `entityType` is a deliberate configuration state, and overwriting it on
-      // upgrade would silently repoint the picker at Person.
-      //
-      // `entityType` is a class name or an identifier object, so the falsy check (unchanged from
-      // the original) covers both `undefined` and `""`.
       entityType: context.isNew === true && !Boolean(prev.entityType) ? 'Shesha.Core.Person' : prev.entityType,
     }))
     .add<IEntityPickerComponentProps>(12, (prev) => ({ ...prev, buttons: migrateButtonGroupDynamicItems(prev.buttons) }))
     .add<IEntityPickerComponentProps>(13, (prev, context) => {
       if (context.isNew === true) return prev;
 
-      // Carries the pre-Appearance-tab flat settings into the persisted device models, so an old
-      // form keeps its look rather than following whatever the code-level defaults later become.
-      //
-      // Only the keys that actually have a value are carried over: spreading the whole object would
-      // write `undefined` over a device-level `size` or `stylingBox` that the form had already
-      // saved, silently dropping that configuration on upgrade.
       const styles: IInputStyles = pickProps(prev, ['size', 'hideBorder', 'stylingBox', 'style']);
 
       return { ...prev, desktop: { ...prev.desktop, ...styles }, tablet: { ...prev.tablet, ...styles }, mobile: { ...prev.mobile, ...styles } };

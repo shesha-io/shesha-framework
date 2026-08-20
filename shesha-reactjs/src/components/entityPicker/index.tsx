@@ -136,17 +136,10 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
       else selectRef.current?.focus();
     },
     showPicker: () => setShowModal(true),
-    hidePicker: () => setShowModal(false),
-    // `selectedItems` holds either the bound value (a plain id or an entity reference) or the rows
-    // fetched to resolve display text, so both shapes are normalised to `{ id, displayName }` here.
-    getSelectedItems: () => (selectedItems ?? [])
+    hidePicker: () => setShowModal(false), getSelectedItems: () => (selectedItems ?? [])
       .filter(isDefined)
       .map((item) => {
-        // A plain id string carries no display text of its own, so it stands in for both fields.
         if (typeof item !== 'object') return { id: String(item), displayName: String(item) };
-        // Spread rather than cast: this copies the own enumerable properties into an indexable
-        // record without asserting a shape the value may not have. `isDefined` above has already
-        // excluded null/undefined.
         const record: Record<string, unknown> = { ...item };
         return {
           id: String(record['id'] ?? ''),

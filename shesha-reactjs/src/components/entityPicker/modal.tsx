@@ -49,14 +49,8 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps): React.JSX.El
     onCloseModal,
   } = props;
 
-  // The dialog is portalled out of the picker, so the Appearance model is handed over as a value
-  // rather than inherited through the DOM.
   const { styles } = useStyles(props.styleValue);
 
-  /* The header row is painted by the table's own rule, which falls back to a hardcoded
-     `color: #000000ff !important`. That beats the dialog's `textStyle`, so the configured colour
-     has to be handed to the table as a prop instead of being inherited. Family and colour only,
-     matching what the dialog itself takes from the Font panel. */
   const headerTextColor = props.styleValue?.font?.color ?? props.styleValue?.styleCss?.color;
   const headerFontFamily = props.styleValue?.font?.type ?? props.styleValue?.styleCss?.fontFamily;
   const [modalId] = useState(nanoid()); // use generated value because formId was changed. to be reviewed
