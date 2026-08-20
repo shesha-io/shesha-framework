@@ -1,35 +1,40 @@
-import { EntityReference, EntityReferenceValue, IEntityReferenceProps } from '@/components/entityReference';
+import { EntityReference, EntityReferenceValue } from '@/components/entityReference';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { ShaIconTypes } from '@/components/iconPicker';
 import {
   migrateCustomFunctions,
+  migrateHiddenToVisible,
   migratePropertyName,
   migrateReadOnly,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { LinkExternalOutlined } from '@/icons/linkExternalOutlined';
-import { IToolboxComponent } from '@/interfaces';
+import { DataTypes } from '@/interfaces/dataTypes';
 import { isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
-import { IConfigurableFormComponent } from '@/providers/form/models';
 import * as React from 'react';
+import { useEffect, useRef } from 'react';
 import { migrateNavigateAction } from '../_common-migrations/migrate-navigate-action';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { getSettings } from './settingsForm';
-import { defaultStyles } from './utils';
 import { migrateButtonGroupDynamicItems } from '../_common-migrations/migrateButtonGroupDynamicItems';
+import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
+import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '../_common/events';
+import { EntityReferenceComponentDefinition, IEntityReferenceControlProps } from './interfaces';
+import { getSettings } from './settingsForm';
+import { useStyles } from './styles';
+import { defaultStyles } from './utils';
+import { useComponentApi } from '@/providers/componentApi/provider';
+import { useEffectOnce } from '@/hooks/useEffectOnce';
+import { EntityReferenceApi } from '@/componentsApi/componentApi';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getIdOrUndefined } from '@/utils/entity';
 
-export type IActionParameters = [{ key: string; value: string }];
+import apiCode from "../../componentsApi/componentApi.ts?raw";
 
-export interface IEntityReferenceControlProps extends Omit<IEntityReferenceProps, 'style'>, IConfigurableFormComponent {
-  /** @deprecated Use iconName instead */
-  icon?: string;
-}
+export type { IActionParameters, IEntityReferenceControlProps } from './interfaces';
 
-// Helper function to normalize entity reference values to extract ID
+/** Reduce any of the accepted value shapes to the referenced entity's id. */
 const normalizeEntityReferenceValue = (
   value: EntityReferenceValue | string | undefined,
 ): string | null => {
@@ -45,8 +50,9 @@ const EntityReferenceWrapper: React.FC<{
   model: IEntityReferenceControlProps;
   value: EntityReferenceValue | undefined;
   onChange?: ((value: EntityReferenceValue | null) => void) | undefined;
-  style?: React.CSSProperties;
-}> = ({ model, value, onChange, style }) => {
+  className?: string | undefined;
+  style?: React.CSSProperties | undefined;
+}> = ({ model, value, onChange, className, style }) => {
   // Normalize value for display: if it's an object, extract the id
   const normalizedValue = React.useMemo(() => normalizeEntityReferenceValue(value), [value]);
 
@@ -80,31 +86,68 @@ const EntityReferenceWrapper: React.FC<{
     previousValueRef.current = value;
   }, [value, onChange]);
 
-  return <EntityReference {...model} value={normalizedValue} style={style} />;
+  return (
+    <EntityReference
+      {...model}
+      value={normalizedValue}
+      readOnly={model.readOnly === true}
+      disabled={model.disabled === true}
+      className={className}
+      style={style}
+    />
+  );
 };
 
-const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> = {
+const EntityReferenceComponent: EntityReferenceComponentDefinition = {
+  allowInherit: true,
   type: 'entityReference',
   name: 'Entity Reference',
   isInput: true,
   isOutput: true,
+  canBeJsSetting: true,
   icon: <LinkExternalOutlined />,
   preserveDimensionsInDesigner: true,
-  Factory: ({ model: passedModel }) => {
-    const { allStyles, hidden, readOnly, ...model } = passedModel;
+  dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
+  Factory: ({ model }) => {
+    const componentApi = useComponentApi();
+    const containerRef = useRef<HTMLSpanElement>(null);
 
-    if (hidden) return null;
+    useEffect(() => {
+      componentApi?.updateApi<EntityReferenceApi>({
+        id: model.id,
+        componentName: model.componentName ?? "",
+        level: 3,
+        typeDefinition: { typeName: 'EntityReferenceApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+        properties: [
+          { name: 'entityReferenceType', getter: () => model.entityReferenceType },
+        ],
+        // `focus` needs a ref to the rendered node, so it is implemented here rather than inherited.
+        api: { focus: () => containerRef.current?.querySelector<HTMLElement>('a, button')?.focus() },
+      });
+    }, [componentApi, model.componentName, model.id, model.entityReferenceType]);
+    useEffectOnce(() => () => componentApi?.removeApi(model.id));
+
+    const { styles } = useStyles(model);
 
     return (
       <ConfigurableFormItem<EntityReferenceValue> model={model}>
-        {(value, onChange) => {
+        {(value, onChange, _, ctx) => {
           return (
-            <EntityReferenceWrapper
-              model={model}
-              value={value}
-              onChange={onChange}
-              style={{ ...allStyles?.fullStyle }}
-            />
+            <span
+              ref={containerRef}
+              {...getComponentEvents<EntityReferenceValue>(model, ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, ctx, value, DataTypes.entityReference)}
+            >
+              <EntityReferenceWrapper
+                model={model}
+                value={value}
+                onChange={(newValue) => {
+                  ctx?.handleEvent(undefined, { value: newValue }, model.onChangeCustom);
+                  onChange(newValue);
+                }}
+                className={styles.entityReference}
+                {...(isDefined(model.styleCss) ? { style: model.styleCss } : {})}
+              />
+            </span>
           );
         }}
       </ConfigurableFormItem>
@@ -112,6 +155,7 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
   },
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+  getDefaultStyles: () => defaultStyles(),
   migrator: (m) =>
     m
       .add<IEntityReferenceControlProps>(0, (prev) => {
@@ -173,14 +217,41 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
           return prev.quickviewWidth; // keep keywords like 'auto', 'fit-content', etc.
         })(),
       }))
-      .add<IEntityReferenceControlProps>(11, (prev) => ({ ...prev, buttons: migrateButtonGroupDynamicItems(prev.buttons) })),
+      .add<IEntityReferenceControlProps>(11, (prev) => ({ ...prev, buttons: migrateButtonGroupDynamicItems(prev.buttons) }))
+      /* Freeze the appearance of components saved before the refactor: bake this component's real
+         defaults into all three device models, so an old form keeps the look it had rather than
+         following whatever the code-level defaults become later. New drops skip it and inherit. */
+      .add<IEntityReferenceControlProps>(12, (prev, context) => context.isNew === true
+        ? prev
+        : { ...migratePrevStyles(prev, defaultStyles()) })
+      /* Rename-only step, last and unguarded: Hidden -> Visible and permissions -> visiblePermissions,
+         which now hang off the Visible and Interaction Mode settings. */
+      .add<IEntityReferenceControlProps>(13, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev))),
   linkToModelMetadata: (model, propMetadata): IEntityReferenceControlProps => {
     return {
       ...model,
-      entityType: isEntityReferencePropertyMetadata(propMetadata) && !isNullOrWhiteSpace(propMetadata.entityType)
-        ? { name: propMetadata.entityType, module: propMetadata.entityModule ?? null }
-        : undefined,
+      /* Inheritance path, not a defaults seeder: only fill the entity type when the user has not
+         configured one. */
+      entityType: isDefined(model.entityType)
+        ? model.entityType
+        : isEntityReferencePropertyMetadata(propMetadata) && !isNullOrWhiteSpace(propMetadata.entityType)
+          ? { name: propMetadata.entityType, module: propMetadata.entityModule ?? null }
+          : undefined,
     };
+  },
+  previewConfiguration: {
+    type: 'entityReference',
+    id: 'entityReference',
+    propertyName: `entityReferenceAppearance`,
+    label: `Entity Reference Label`,
+    version: 'latest',
+    entityReferenceType: 'Quickview',
+    formSelectionMode: 'name',
+    displayProperty: '',
+    displayType: 'textTitle',
+    textTitle: 'Entity Reference',
+    handleSuccess: false,
+    handleFail: false,
   },
 };
 

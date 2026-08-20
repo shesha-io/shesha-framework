@@ -355,6 +355,17 @@ export interface AutocompleteApi extends InputComponentApi<unknown> {
   readonly multiple: boolean;
 };
 
+/**
+ * Entity reference. The value is the referenced entity's id — either stored directly as a string,
+ * or normalised out of an `{ id, _className, _displayName }` object bound from the form data.
+ */
+export interface EntityReferenceApi extends InputComponentApi<string | undefined> {
+  /** Id of the entity the component currently points at, or `undefined` when nothing is selected. Read-only. */
+  readonly entityId: string | undefined;
+  /** How the reference is opened: `Quickview`, `NavigateLink` or `Dialog`. Read-only. */
+  readonly entityReferenceType: string | undefined;
+};
+
 /** Checkbox group. Multi-select only, so the value is always the list of selected item values. */
 export type CheckboxGroupApi = InputComponentApi<string[] | undefined>;
 
