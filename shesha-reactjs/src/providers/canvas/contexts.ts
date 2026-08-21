@@ -1,5 +1,5 @@
 import { createNamedContext } from '@/utils/react';
-import { defaultDesignerWidth } from './utils';
+import { DEFAULT_OPTIONS, defaultDesignerWidth } from './utils';
 
 export type DeviceTypes = 'desktop' | 'mobile' | 'tablet' | 'custom';
 export type IViewType = 'configStudio' | 'page' | 'modal';
@@ -7,6 +7,9 @@ export type IViewType = 'configStudio' | 'page' | 'modal';
 export interface ICanvasStateContext {
   zoom: number;
   autoZoom: boolean;
+  /** "Canvas" preset: the canvas width tracks the space available between the designer panels
+   * instead of being pinned to a device/resolution preset. */
+  autoWidth: boolean;
   designerWidth: string;
   designerDevice?: DeviceTypes;
   physicalDevice?: DeviceTypes;
@@ -24,14 +27,18 @@ export interface ICanvasActionsContext {
   setCanvasWidth: (width: number | string, deviceType: DeviceTypes) => void;
   setCanvasZoom: (zoom: number) => void;
   setCanvasAutoZoom: (value?: boolean) => void;
+  setCanvasAutoWidth: (value?: boolean) => void;
+  /** Reports the width currently available to the canvas. Ignored unless `autoWidth` is on. */
+  setAvailableCanvasWidth: (width: string) => void;
   setConfigTreePanelSize: (size: number) => void;
   setViewType: (viewType: IViewType) => void;
   /* NEW_ACTION_ACTION_DECLARATION_GOES_HERE */
 }
 
 export const CANVAS_CONTEXT_INITIAL_STATE: ICanvasStateContext = {
-  zoom: 80,
+  zoom: DEFAULT_OPTIONS.defaultZoom,
   autoZoom: false,
+  autoWidth: true,
   designerDevice: 'desktop',
   designerWidth: defaultDesignerWidth,
   configTreePanelSize: typeof window !== 'undefined' ? (20 / 100) * window.innerWidth : 200,

@@ -4,14 +4,13 @@ import { setCanvasZoomAction,
   setScreenWidthAction,
   setDesignerDeviceAction,
   setCanvasAutoZoomAction,
+  setCanvasAutoWidthAction,
+  setAvailableCanvasWidthAction,
   setManualZoomAction,
   setConfigTreePanelSizeAction,
   setViewTypeAction } from './actions';
 import { CANVAS_CONTEXT_INITIAL_STATE } from './contexts';
-import { DEFAULT_OPTIONS, getDeviceTypeByWidth, getSmallerDevice } from './utils';
-
-const clampZoom = (zoom: number): number =>
-  Math.max(DEFAULT_OPTIONS.minZoom, Math.min(DEFAULT_OPTIONS.maxZoom, zoom));
+import { clampZoom, getDeviceTypeByWidth, getSmallerDevice } from './utils';
 
 export const reducer = createReducer(CANVAS_CONTEXT_INITIAL_STATE, (builder) => {
   builder
@@ -36,6 +35,31 @@ export const reducer = createReducer(CANVAS_CONTEXT_INITIAL_STATE, (builder) => 
         designerWidth: typeof width === 'string' ? width : `${width}px`,
         designerDevice: deviceType,
         activeDevice: getSmallerDevice(deviceType, state.physicalDevice ?? "desktop"),
+        // Picking an explicit device/resolution preset pins the canvas to that width
+        autoWidth: false,
+      };
+    })
+    .addCase(setCanvasAutoWidthAction, (state, { payload }) => {
+      const autoWidth = payload !== undefined ? payload : !state.autoWidth;
+
+      return {
+        ...state,
+        autoWidth,
+        // Auto zoom has nothing to fit once the canvas sizes itself to its pane, and the toolbar
+        // button that would clear it is disabled in this mode. Leaving it set would strand the
+        // canvas with zoom neither computed automatically nor adjustable by pinch/ctrl+wheel.
+        autoZoom: autoWidth ? false : state.autoZoom,
+      };
+    })
+    .addCase(setAvailableCanvasWidthAction, (state, { payload }) => {
+      // The measured width is only meaningful for the responsive "Canvas" preset. Ignoring it
+      // otherwise keeps a stale measurement from overwriting a pinned device width.
+      if (!state.autoWidth || state.designerWidth === payload)
+        return state;
+
+      return {
+        ...state,
+        designerWidth: payload,
       };
     })
     .addCase(setScreenWidthAction, (state, { payload }) => {
