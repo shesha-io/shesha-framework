@@ -361,6 +361,22 @@ export type CheckboxGroupApi = InputComponentApi<string[] | undefined>;
 export type SwitchFieldApi = InputComponentApi<boolean | undefined>;
 
 /**
+ * File upload. The value is the stored file the component is bound to: its id once the file has been
+ * persisted, the `File` itself while a synchronous upload is still pending, or `null` when no file is
+ * attached. Setting it to `null` clears the component.
+ */
+export interface FileUploadApi extends InputComponentApi<File | string | null | undefined> {
+  /** Whether the user can currently upload a file. Combines the Allow Upload setting with the interaction mode. */
+  readonly allowUpload: boolean;
+  /** Whether the user can currently replace the attached file. Combines the Allow Replace setting with the interaction mode. */
+  readonly allowReplace: boolean;
+  /** Whether the user can currently delete the attached file. Combines the Allow Delete setting with the interaction mode. */
+  readonly allowDelete: boolean;
+  /** File extensions the component accepts, e.g. `[".png", ".pdf"]`. An empty list accepts any type. */
+  allowedFileTypes: string[] | undefined;
+};
+
+/**
  * Reference list status. The value is the item value of the reference list item currently displayed,
  * so writing it switches the component to the matching status.
  */

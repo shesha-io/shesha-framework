@@ -6,13 +6,15 @@ import { useStoredFileGetFileVersions, StoredFileVersionInfoDto } from '@/apis/s
 import filesize from 'filesize';
 import { useFileUpload } from '@/providers';
 import { isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
-import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 
 interface IProps {
   readonly fileId: string;
+  /** Class for the portalled popover, so the caller can style it alongside the component. */
+  readonly popupClassName?: string | undefined;
 }
 
-export const FileVersionsPopup: FC<IProps> = ({ fileId }) => {
+export const FileVersionsPopup: FC<IProps> = ({ fileId, popupClassName }) => {
   const {
     loading: loading,
     refetch: fetchHistory,
@@ -49,7 +51,7 @@ export const FileVersionsPopup: FC<IProps> = ({ fileId }) => {
         {uploads &&
           uploads.map((item, i) => (
             <li key={i}>
-              <strong>Version {i + 1}</strong> Uploaded {item.dateUploaded && <DateDisplay>{item.dateUploaded}</DateDisplay>}{' '}
+              <strong>Version {i + 1}</strong> Uploaded {isNotNullOrWhiteSpace(item.dateUploaded) && <DateDisplay>{item.dateUploaded}</DateDisplay>}{' '}
               by {item.uploadedBy}
               <br />
               <Button type="link" onClick={() => handleVersionDownloadClick(item)}>
@@ -62,7 +64,12 @@ export const FileVersionsPopup: FC<IProps> = ({ fileId }) => {
   );
 
   return (
-    <Popover content={content} title="History" onOpenChange={handleVisibleChange}>
+    <Popover
+      content={content}
+      title="History"
+      onOpenChange={handleVisibleChange}
+      {...(isNotNullOrWhiteSpace(popupClassName) ? { rootClassName: popupClassName } : {})}
+    >
       <HistoryOutlined />
     </Popover>
   );

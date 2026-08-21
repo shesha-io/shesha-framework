@@ -247,6 +247,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       fontStyles: model.allStyles?.fontStyles ?? {},
       listType,
       hasFiles: fileList.length > 0,
+      ...rest,
     },
   });
 

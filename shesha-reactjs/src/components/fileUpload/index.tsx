@@ -42,6 +42,19 @@ export interface IFileUploadProps {
   hideFileName?: boolean | undefined;
   styles?: CSSProperties | undefined;
   type?: string | undefined;
+  /**
+   * Greys the uploader out and takes it out of the tab order, while still showing the attached file.
+   * Distinct from read-only (which is expressed by turning the allow* flags off): a disabled
+   * component is visibly inert rather than simply presenting its value.
+   */
+  disabled?: boolean | undefined;
+  /**
+   * Class names for the floating surfaces this component opens. They are portalled to the body, so
+   * the caller cannot reach them with a descendant selector and has to pass a class in.
+   */
+  popupClassName?: string | undefined;
+  modalClassName?: string | undefined;
+  imagePreviewClassName?: string | undefined;
 }
 
 export const FileUpload: FC<IFileUploadProps> = ({
@@ -58,6 +71,10 @@ export const FileUpload: FC<IFileUploadProps> = ({
   thumbnailHeight,
   hideFileName = false,
   styles: stylesProp,
+  disabled = false,
+  popupClassName,
+  modalClassName,
+  imagePreviewClassName,
 }) => {
   const {
     downloadFile,
@@ -272,6 +289,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
   const showDeleteConfirmation = (): void => {
     modal.confirm({
+      ...(isNotNullOrWhiteSpace(modalClassName) ? { className: modalClassName } : {}),
       title: 'Delete Attachment',
       content: 'Are you sure you want to delete this attachment?',
       okText: 'Yes',
@@ -341,7 +359,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
         <Space>
           {!isNullOrWhiteSpace(fileInfo.id) && (
             <a style={{ color: color }}>
-              <FileVersionsPopup fileId={fileInfo.id} />
+              <FileVersionsPopup fileId={fileInfo.id} popupClassName={popupClassName} />
             </a>
           )}
           {allowReplace && (
@@ -404,35 +422,39 @@ export const FileUpload: FC<IFileUploadProps> = ({
     return (
       <div>
         {showThumbnailControls && styledfileControls()}
-        {!hideFileName && (
-          <span title={file.name}>
-            <Space>
-              <div className="thumbnail-item-name">
+        <span title={file.name}>
+          <Space>
+            <div className="thumbnail-item-name">
+              {/* Hide File Name is a thumbnail-mode setting: it drops the caption under the tile.
+                  In file-name mode the name *is* the component, so suppressing it would leave an
+                  empty form item showing nothing but the label. The controls stay outside this
+                  condition so they remain reachable either way. */}
+              {(showTextControls || hideFileName !== true) && (
                 <a
                   style={{ marginRight: '5px' }}
                   onClick={isImageType(file.type ?? "")
                     ? onPreview
                     : () => {
                       // Use file.id if available (from stored file), otherwise use uid
-                      const fileId = file.id || file.uid;
+                      const fileId = isNotNullOrWhiteSpace(file.id) ? file.id : file.uid;
                       if (!isNullOrWhiteSpace(fileId))
                         void downloadFile({ fileId, fileName: file.name });
                     }}
                 >
                   {`${file.name} (${filesize(isDefined(file.size) ? file.size : 0)})`}
                 </a>
-                {showTextControls && fileControls(appPrimaryColor)}
-              </div>
-            </Space>
-          </span>
-        )}
+              )}
+              {showTextControls && fileControls(appPrimaryColor)}
+            </div>
+          </Space>
+        </span>
       </div>
     );
   };
 
   const fileProps: UploadProps<unknown> = {
     name: 'file',
-    disabled: !allowUpload,
+    disabled: disabled || !allowUpload,
     accept: allowedFileTypes.join(','),
     multiple: false,
     fileList: isDefined(uploadFileModel) && fileInfo?.status !== 'error' ? [uploadFileModel] : [],
@@ -456,7 +478,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     itemRender: (_originNode, file) => renderFileItem(file),
   };
 
-  const showUploadButton = allowUpload;
+  const showUploadButton = allowUpload && !disabled;
 
   const uploadButton = (
     allowUpload && (
@@ -520,7 +542,9 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
   return (
     <>
-      <span className={styles.shaStoredFilesRenderer}>{isStub ? renderStub() : renderUploader()}</span>
+      <span className={styles.shaStoredFilesRenderer} {...(disabled ? { 'aria-disabled': true } : {})}>
+        {isStub ? renderStub() : renderUploader()}
+      </span>
       {previewOpen && (
         <Image
           styles={{
@@ -529,6 +553,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
           preview={{
             visible: previewOpen,
             onVisibleChange: (visible) => setPreviewOpen(visible),
+            ...(isNotNullOrWhiteSpace(imagePreviewClassName) ? { rootClassName: imagePreviewClassName } : {}),
             toolbarRender: (original) => (
               <div style={{ display: 'flex', flexDirection: 'row-reverse' }}>
                 {isNotNullOrWhiteSpace(previewImage.uid) && (
