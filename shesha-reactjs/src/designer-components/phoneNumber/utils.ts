@@ -24,8 +24,9 @@ export const getPhoneValidationError = (value: string | IPhoneNumberValue | null
   if (!trimmed) return undefined;
 
   const parsed = parsePhoneNumberFromString(trimmed, normalizeCountryCode(defaultCountry));
-  if (!parsed || !parsed.isValid()) return 'Please enter a valid phone number.';
+  if (!parsed) return 'Please enter a valid phone number.';
   if (typeof parsed.isPossible === 'function' && !parsed.isPossible()) return 'Phone number length is invalid for the selected country.';
+  if (!parsed.isValid()) return 'Please enter a valid phone number.';
   return undefined;
 };
 
