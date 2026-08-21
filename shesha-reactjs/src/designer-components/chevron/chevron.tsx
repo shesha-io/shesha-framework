@@ -8,31 +8,43 @@ import { ConfigurableFormItem } from '@/components/formDesigner/components/formI
 import { IChevronProps } from '@/components/chevron/models';
 import { defaultStyles } from './utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
+import { migrateHiddenToVisible, migrateStylingBoxToJson } from '../_common-migrations';
+import { isDefined } from '@/utils';
 
 const ChevronComponent: IToolboxComponent<IChevronProps> = {
+  allowInherit: true,
   type: 'chevron',
   isInput: true,
   name: 'Chevron',
   preserveDimensionsInDesigner: true,
   icon: <FolderOpenOutlined />,
   Factory: ({ model }) => {
-    if (model.hidden) return null;
+    if (model.hidden === true) return null;
     return (
       <ConfigurableFormItem<number> model={model}>
         {(value) => (
           <RefListItemGroupConfiguratorProvider items={model.items ?? []} referenceList={model.referenceList} readOnly={model.readOnly}>
-            <ChevronControl
-              value={value}
-              {...model}
-            />
+            <ChevronControl value={value} {...model} />
           </RefListItemGroupConfiguratorProvider>
         )}
       </ConfigurableFormItem>
     );
   },
+  getDefaultStyles: () => defaultStyles(),
   settingsFormMarkup: getSettings,
   migrator: (m) => m
-    .add<IChevronProps>(1, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+    .add<IChevronProps>(1, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) }))
+    .add<IChevronProps>(2, (prev, ctx) => {
+      // Fix color settings - move to the device specific settings
+      const newModel: IChevronProps = ctx.isNew === true ? prev : {
+        ...prev,
+        desktop: { ...prev.desktop, colorSource: prev.colorSource, activeColor: prev.activeColor, showIcons: prev.showIcons },
+        ...(isDefined(prev.tablet) ? { tablet: { ...prev.tablet, colorSource: prev.colorSource, activeColor: prev.activeColor, showIcons: prev.showIcons } } : {}),
+        ...(isDefined(prev.mobile) ? { mobile: { ...prev.mobile, colorSource: prev.colorSource, activeColor: prev.activeColor, showIcons: prev.showIcons } } : {}),
+      };
+      return migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(newModel)));
+    }),
 };
 
 export default ChevronComponent;

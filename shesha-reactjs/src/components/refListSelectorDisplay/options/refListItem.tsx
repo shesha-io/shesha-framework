@@ -24,7 +24,7 @@ export const RefListItem: FC<IRefListGroupItemProps> = (props) => {
   };
   return (
     <div className={classNames(styles.shaToolbarItem, { selected: selectedItemId === props.id })}>
-      <div className={classNames(styles.shaToolbarItemHeader)} style={{ display: 'flex', padding: '10px', marginBottom: '5px' }}>
+      <div className={classNames(styles.shaToolbarItemHeader)}>
         <DragHandle id={props.id} />
         <span className={styles.shaToolbarItemName}>
           {props.icon && <ShaIcon iconName={props.icon as IconType} />}
