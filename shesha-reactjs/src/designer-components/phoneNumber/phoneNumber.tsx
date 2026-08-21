@@ -16,7 +16,7 @@ import { IInputStyles } from '@/providers/form/models';
 import { IPhoneNumberComponentProps, IPhoneNumberValue, PhoneNumberComponentDefinition } from './interfaces';
 import { getSettings } from './settingsForm';
 import { useStyles } from './styles';
-import { defaultStyles, isValidPhoneValue, normalizeCountryCode, parseCountryCodes, splitPhoneNumber } from './utils';
+import { defaultStyles, getPhoneValidationError, normalizeCountryCode, parseCountryCodes, splitPhoneNumber } from './utils';
 
 type PhoneNumberValue = string | IPhoneNumberValue | null | undefined;
 
@@ -45,7 +45,6 @@ const PhoneNumberControl: FC<IPhoneNumberComponentProps & { value?: PhoneNumberV
   } = props;
 
   const [isValid, setIsValid] = useState(true);
-  const [validationMessage, setValidationMessage] = useState<string | undefined>(undefined);
   const [clearKey, setClearKey] = useState(0);
   const prevValueRef = useRef(value);
   const allData = useAvailableConstantsData();
@@ -81,7 +80,6 @@ const PhoneNumberControl: FC<IPhoneNumberComponentProps & { value?: PhoneNumberV
     let nextValue: PhoneNumberValue;
     if (!trimmed) {
       setIsValid(true);
-      setValidationMessage(undefined);
       nextValue = '';
     } else {
       const normalizedCountryCode = normalizeCountryCode(isoCode);
@@ -97,19 +95,12 @@ const PhoneNumberControl: FC<IPhoneNumberComponentProps & { value?: PhoneNumberV
       }
 
       let isValidNumber = parsed?.isValid() ?? false;
-      let validationMsg: string | undefined;
 
       if (parsed && typeof parsed.isPossible === 'function' && !parsed.isPossible()) {
         isValidNumber = false;
-        validationMsg = 'Phone number length is invalid for the selected country.';
-      }
-
-      if (!isValidNumber && !validationMsg) {
-        validationMsg = 'Please enter a valid phone number.';
       }
 
       setIsValid(isValidNumber);
-      setValidationMessage(validationMsg);
 
       if (!isValidNumber) {
         nextValue = valueFormat === 'object' ? null : trimmed;
@@ -228,7 +219,6 @@ const PhoneNumberControl: FC<IPhoneNumberComponentProps & { value?: PhoneNumberV
         {...(parsedExcludeCountries !== undefined ? { excludeCountries: parsedExcludeCountries } : {})}
         {...(parsedPreferredCountries !== undefined ? { preferredCountries: parsedPreferredCountries } : {})}
       />
-      {validationMessage && <div className={styleClasses.validationMessage}>{validationMessage}</div>}
     </div>
   );
 };
@@ -254,8 +244,10 @@ const PhoneNumberComponent: PhoneNumberComponentDefinition = {
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   getExtraValidationRules: (model) => [
     {
-      validator: (_rule, value: PhoneNumberValue) =>
-        isValidPhoneValue(value, model.country ?? model.defaultCountry) ? Promise.resolve() : Promise.reject(new Error('Please enter a valid phone number.')),
+      validator: (_rule, value: PhoneNumberValue) => {
+        const error = getPhoneValidationError(value, model.country ?? model.defaultCountry);
+        return error ? Promise.reject(new Error(error)) : Promise.resolve();
+      },
     },
   ],
   initModel: (model) => ({
