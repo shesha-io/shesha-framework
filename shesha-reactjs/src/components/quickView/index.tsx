@@ -56,6 +56,11 @@ export interface IQuickViewProps extends PropsWithChildren {
 
   disabled?: boolean | undefined;
   style?: CSSProperties | undefined;
+  /**
+   * Emotion class for the popover panel. The popover is portalled to the body, so it cannot be
+   * reached by a descendant selector from the trigger and needs its own class.
+   */
+  popupClassName?: string | undefined;
   displayType?: 'textTitle' | 'icon' | 'displayProperty' | undefined;
   iconName?: ShaIconTypes | undefined;
   textTitle?: string | undefined;
@@ -77,6 +82,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   dataProperties = [],
   disabled,
   style,
+  popupClassName,
   displayType,
   iconName,
   textTitle,
@@ -264,6 +270,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
 
   return (
     <Popover
+      {...(isDefined(popupClassName) ? { rootClassName: popupClassName } : {})}
       styles={{
         root: typeof cappedWidth === 'string' && /%$/.test(cappedWidth as string) ? { width: cappedWidth } : {},
         content: typeof cappedWidth === 'string' && /%$/.test(cappedWidth as string)

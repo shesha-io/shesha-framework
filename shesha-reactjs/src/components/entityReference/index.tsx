@@ -96,6 +96,13 @@ export interface IEntityReferenceProps {
   readOnly?: boolean | undefined;
   /** Emotion class carrying the caller's Appearance settings. */
   className?: string | undefined;
+  /**
+   * Emotion class for the Quickview popover. Separate from `className` because the popover is
+   * portalled to the body, so no descendant selector from the trigger can reach it.
+   */
+  popupClassName?: string | undefined;
+  /** Emotion class for the Dialog modal, portalled to the body for the same reason. */
+  modalClassName?: string | undefined;
   displayType?: 'textTitle' | 'icon' | 'displayProperty' | undefined;
   iconName?: ShaIconTypes | undefined;
   textTitle?: string | undefined;
@@ -290,6 +297,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
               : [{ key: 'id', value: '{{entityReference.id}}' }, ...props.additionalProperties]
             : [{ key: 'id', value: '{{entityReference.id}}' }],
         modalWidth: addPx(props.modalWidth, executionContext),
+        wrapClassName: props.modalClassName,
         skipFetchData: props.skipFetchData ?? false,
         submitHttpVerb: props.submitHttpVerb ?? 'PUT',
       },
@@ -319,6 +327,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     props.footerButtons,
     props.additionalProperties,
     props.modalWidth,
+    props.modalClassName,
     props.skipFetchData,
     props.submitHttpVerb,
   ]);
@@ -398,6 +407,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
           formArguments={{ id: entityId }}
           disabled={props.disabled}
           style={props.style}
+          popupClassName={props.popupClassName}
           displayType={props.displayType}
           iconName={props.iconName}
           textTitle={props.textTitle}
