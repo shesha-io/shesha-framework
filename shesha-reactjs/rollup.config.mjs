@@ -75,7 +75,6 @@ export default {
     }),
     terser(),
     postCss({
-      plugins: [],
       extensions: ['.css'],
       use: [
         'sass',
