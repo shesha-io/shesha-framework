@@ -58,7 +58,7 @@ export const ChevronControl: FC<IChevronControlProps> = (props) => {
 
     };
 
-    return props.visible === true
+    return props.visible !== false
       ? (
         <div className={styles.chevronButton}>
           <ConfigurableButton

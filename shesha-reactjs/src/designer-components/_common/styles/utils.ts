@@ -131,9 +131,9 @@ export const getStyleValueFromModel = (model: IConfigurableFormComponent): IStyl
   };
 };
 
-const borderCss = (b: BorderStyle | undefined): string => `${addPx(b?.width) ?? ''} ${b?.style ?? ''} ${b?.color ?? 'transparent'}`;
+export const borderCss = (b: BorderStyle | undefined): string => `${addPx(b?.width) ?? '0px'} ${b?.style ?? 'none'} ${b?.color ?? 'transparent'}`;
 
-const gradientCss = (g: IGradientValue): string => {
+export const gradientCss = (g: IGradientValue): string => {
   const direction = g.direction;
   const isRadial = direction === 'radial';
   const isConic = direction === 'conic';
@@ -188,10 +188,20 @@ export const borderStyles = (model: IBorderValue | undefined, important: boolean
   return sb.build();
 };
 
+export const backgroundCss = (bg: IBackgroundValue | undefined): string => {
+  if (!isDefined(bg)) return 'transparent';
+  if (bg.type === 'color' && isDefined(bg.color)) return bg.color || 'transparent';
+  if (bg.type === 'gradient' && isDefined(bg.gradient)) return gradientCss(bg.gradient) || 'transparent';
+  if (bg.type === 'image' && isDefined(bg.uploadFile)) return `url(${bg.uploadFile.url || bg.uploadFile})`;
+  if (bg.type === 'url' && isDefined(bg.url)) return `url(${bg.url})`;
+  if (bg.type === 'storedFile' && isDefined(bg.url)) return `url(${bg.url})`;
+  return 'transparent';
+};
+
 export const backgroundStyles = (model: IBackgroundValue | undefined): string => {
   if (!model) return '';
   const sb = new StringBuilder();
-  if (model.type === 'color' && Boolean(model.color)) sb.append(`background-color: ${model.color};`);
+  if (model.type === 'color' && Boolean(model.color)) sb.append(`background: ${model.color};`);
   if (model.type === 'gradient' && model.gradient) sb.append(`background: ${gradientCss(model.gradient)};`);
   if (model.type === 'image' && model.uploadFile) sb.append(`background-image: url(${model.uploadFile.url || model.uploadFile});`);
   if (model.type === 'url' && Boolean(model.url)) sb.append(`background-image: url(${model.url});`);
