@@ -1,4 +1,4 @@
-import { FC, ReactNode, useCallback } from 'react';
+import { FC, ReactNode, useCallback, useEffect, useRef } from 'react';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { executeExpression } from '@/providers/form/utils';
 import { IDropdownProps, ILabelValue } from './model';
@@ -73,6 +73,19 @@ export const Dropdown: FC<IDropdownProps> = ({
     : undefined;
 
   const selectedMode = mode === 'multiple' || mode === 'tags' ? mode : undefined;
+
+  /* A selection belongs to the source it was made from, and antd renders a value it cannot match as
+     the label itself. The first resolve is only recorded — that is the JS setting arriving, not a switch. */
+  const lastDataSourceType = useRef(dataSourceType);
+  useEffect(() => {
+    const previousDataSourceType = lastDataSourceType.current;
+    if (previousDataSourceType === dataSourceType)
+      return;
+
+    lastDataSourceType.current = dataSourceType;
+    if (isDefined(previousDataSourceType) && readOnly !== true)
+      onChange?.(undefined);
+  }, [dataSourceType, onChange, readOnly]);
 
   // Extracts value from a fetched RefList item. Stored in the value poroperty of the item
   const incomeValueFunc = useCallback<IncomeValueFunc>((value, args) => {
