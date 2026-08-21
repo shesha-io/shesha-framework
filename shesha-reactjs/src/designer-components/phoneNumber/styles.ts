@@ -15,30 +15,46 @@ export const useStyles = createStyles(({ css, cx, token }, model: IPhoneNumberCo
       ${fontStyles(model.font)}
       ${inputBoxStyles}
 
-      width: 100%;
+      /* The Appearance-tab border/background/dimensions live on this wrapper only. antd-phone-input renders
+         a Select (country flag + dial code) and an Input joined via antd's Space.Compact - each of those has
+         its own border/box-shadow stripped below so there is exactly one visible border on the wrapper, and
+         the whole chain is stretched to 100% height so it fills whatever height is configured here rather
+         than staying at its intrinsic size pinned to the top of a taller box. */
+      display: flex;
+      align-items: stretch;
 
-      .ant-phone-input-wrapper {
+      .ant-phone-input-wrapper,
+      .ant-space-compact {
         width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: stretch;
       }
 
-      .ant-input-group-wrapper,
-      .ant-input-wrapper,
-      .ant-input-group {
-        width: 100%;
+      /* Newer antd Select variants (e.g. "outlined") render the border/background directly on .ant-select
+         itself - there is no separate .ant-select-selector wrapper in this version - so that's what needs
+         stripping here. .ant-select-selector is also covered defensively in case an older/newer antd build
+         reintroduces that nesting. */
+      .ant-select,
+      .ant-select-selector {
+        height: 100% !important;
+        display: flex !important;
+        align-items: center !important;
+        background: transparent !important;
       }
 
       .ant-input {
         width: 100%;
+        height: 100% !important;
         background: transparent !important;
         ${fontStyles(model.font)}
       }
 
-      .ant-input-group-addon {
-        background: transparent !important;
-
-        .ant-select .ant-select-selector {
-          background: transparent !important;
-        }
+      .ant-select,
+      .ant-select-selector,
+      .ant-input {
+        border: none !important;
+        box-shadow: none !important;
       }
 
       &:hover {
@@ -54,15 +70,7 @@ export const useStyles = createStyles(({ css, cx, token }, model: IPhoneNumberCo
       }
   `);
 
-  const validationMessage = cx('sha-phone-number-validation-message', css`
-    color: ${token.colorError};
-    font-size: 14px;
-    margin-top: 4px;
-    line-height: 1.5715;
-  `);
-
   return {
     phoneNumber,
-    validationMessage,
   };
 });
