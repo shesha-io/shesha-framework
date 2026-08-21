@@ -26,7 +26,7 @@ const LinkComponent: LinkComponentDefinition = {
   getWrapperStyle: () => ({ style: { dimensions: { width: 'auto' } } }),
   calculateModel: (model, allData) => ({
     isDesignerMode: allData.form?.formMode === 'designer',
-    href: evaluateString(model.href, allData.data ?? {}),
+    href: evaluateString(model.href, allData),
   }),
   Factory: ({ model, calculatedModel }) => {
     const { styles } = useStyles(model);

@@ -22,7 +22,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 },
               ] })
               .addSettingsInputRow({ inputs: [
-                { type: 'codeEditor', language: 'html', propertyName: 'html', label: 'Pure HTML', description: 'Enter HTML that will render a component', wrapInTemplate: false,
+                { type: 'codeEditor', language: 'html', propertyName: 'html', label: 'Pure HTML', description: 'Enter HTML that will render a component. To access the data, you can use the Mustache syntax.', wrapInTemplate: false,
                   visibleJs: 'return getSettingValue(data?.contentType) === "html";',
                 },
                 { type: 'codeEditor', propertyName: 'renderer', label: 'JS for Render HTML', description: 'Enter custom JSX script that will render a component',

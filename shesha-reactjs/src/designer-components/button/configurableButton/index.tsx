@@ -16,6 +16,7 @@ import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 export interface IConfigurableButtonProps extends Omit<IButtonItem, 'itemSubType'> {
   styleCss?: CSSProperties | undefined;
   ref?: React.Ref<HTMLAnchorElement | HTMLButtonElement> | undefined;
+  className?: string | undefined;
   additionalDomProperties?: Record<string, unknown> | undefined;
 }
 
@@ -91,7 +92,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
       danger={props.danger ?? false}
       icon={isNullOrWhiteSpace(props.icon) ? undefined : <ShaIcon iconName={props.icon as IconType} />}
       {...(props.iconPosition ? { iconPlacement: props.iconPosition } : {})}
-      className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable', styles.configurableButton)}
+      className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable', styles.configurableButton, props.className)}
       size={props.size}
       style={{ ...props.styleCss, ...(buttonDisabled && { pointerEvents: "none" }) }}
       ref={props.ref}
