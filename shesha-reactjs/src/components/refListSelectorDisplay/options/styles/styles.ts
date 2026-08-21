@@ -88,6 +88,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
 
             .${shaToolbarItemHeader} {
                 padding: 5px;
+                display: flex;
             }
 
             .${shaToolbarGroupHeader} {
