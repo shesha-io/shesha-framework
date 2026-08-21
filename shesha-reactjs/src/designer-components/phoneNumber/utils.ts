@@ -13,17 +13,29 @@ export const normalizeCountryCode = (value?: string): CountryCode | undefined =>
 };
 
 /**
+ * Computes the validation error message for a stored phone-number field value (string or `IPhoneNumberValue`),
+ * or `undefined` when the value is empty or a valid, possible number. This is the single source of truth for
+ * validation text: it feeds both the Form.Item rule (`getExtraValidationRules`) and the control's own
+ * error-state styling, so only one message is ever shown for a given value.
+ */
+export const getPhoneValidationError = (value: string | IPhoneNumberValue | null | undefined, defaultCountry?: string): string | undefined => {
+  const phoneNumberString = typeof value === 'string' ? value : value?.number;
+  const trimmed = phoneNumberString?.trim();
+  if (!trimmed) return undefined;
+
+  const parsed = parsePhoneNumberFromString(trimmed, normalizeCountryCode(defaultCountry));
+  if (!parsed) return 'Please enter a valid phone number.';
+  if (typeof parsed.isPossible === 'function' && !parsed.isPossible()) return 'Phone number length is invalid for the selected country.';
+  if (!parsed.isValid()) return 'Please enter a valid phone number.';
+  return undefined;
+};
+
+/**
  * Checks whether a stored phone-number field value (string or `IPhoneNumberValue`) parses to a valid,
  * possible number. Empty/undefined values are considered valid (leave `required` to enforce presence).
  */
-export const isValidPhoneValue = (value: string | IPhoneNumberValue | null | undefined, defaultCountry?: string): boolean => {
-  const phoneNumberString = typeof value === 'string' ? value : value?.number;
-  const trimmed = phoneNumberString?.trim();
-  if (!trimmed) return true;
-
-  const parsed = parsePhoneNumberFromString(trimmed, normalizeCountryCode(defaultCountry));
-  return Boolean(parsed?.isValid() && parsed.isPossible());
-};
+export const isValidPhoneValue = (value: string | IPhoneNumberValue | null | undefined, defaultCountry?: string): boolean =>
+  !getPhoneValidationError(value, defaultCountry);
 
 /**
  * Splits a national phone number into area code and remaining digits, using
