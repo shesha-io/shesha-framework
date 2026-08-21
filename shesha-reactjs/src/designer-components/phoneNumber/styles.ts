@@ -34,7 +34,8 @@ export const useStyles = createStyles(({ css, cx, token }, model: IPhoneNumberCo
       /* Newer antd Select variants (e.g. "outlined") render the border/background directly on .ant-select
          itself - there is no separate .ant-select-selector wrapper in this version - so that's what needs
          stripping here. .ant-select-selector is also covered defensively in case an older/newer antd build
-         reintroduces that nesting. */
+         reintroduces that nesting. .ant-input-affix-wrapper covers the clearable variant of the Input
+         (rendered when allowClear is set), which .ant-input alone does not reach. */
       .ant-select,
       .ant-select-selector {
         height: 100% !important;
@@ -43,7 +44,8 @@ export const useStyles = createStyles(({ css, cx, token }, model: IPhoneNumberCo
         background: transparent !important;
       }
 
-      .ant-input {
+      .ant-input,
+      .ant-input-affix-wrapper {
         width: 100%;
         height: 100% !important;
         background: transparent !important;
@@ -52,7 +54,8 @@ export const useStyles = createStyles(({ css, cx, token }, model: IPhoneNumberCo
 
       .ant-select,
       .ant-select-selector,
-      .ant-input {
+      .ant-input,
+      .ant-input-affix-wrapper {
         border: none !important;
         box-shadow: none !important;
       }
@@ -67,6 +70,17 @@ export const useStyles = createStyles(({ css, cx, token }, model: IPhoneNumberCo
       &&&&[class*="-status-error"],
       &&&&[class*="-status-warning"] {
         ${backgroundStyles(model.background)}
+      }
+
+      /* Inner controls' borders are stripped above so only the wrapper's border shows, but that also
+         swallows antd's error/warning border since the status class lands on the inner Select/Input,
+         not on this wrapper. Propagate it back here so invalid/warned values still show a visible border. */
+      &:has(.ant-select-status-error, .ant-input-status-error, .ant-input-affix-wrapper-status-error) {
+        border-color: ${token.colorError} !important;
+      }
+
+      &:has(.ant-select-status-warning, .ant-input-status-warning, .ant-input-affix-wrapper-status-warning) {
+        border-color: ${token.colorWarning} !important;
       }
   `);
 
