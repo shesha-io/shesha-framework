@@ -1,4 +1,4 @@
-import { marginStyles, paddingStyles } from '@/designer-components/_common/styles/utils';
+import { marginStyles } from '@/designer-components/_common/styles/utils';
 import { IConfigurableFormComponent } from '@/providers';
 import { createStyles } from '@/styles';
 import { addPx } from '@/utils/style';
@@ -22,7 +22,6 @@ export const useStyles = createStyles(({ css, cx, token }, model: IConfigurableF
             width: 100%;
 
             > .ant-form-item-label {
-                ${paddingStyles({ ...model.stylingBoxJson, paddingLeft: 0, paddingRight: 0, _type: 'styleBox' })}
                 align-content: center;
                 min-height: fit-content;
                 ${model.autoAlignLabel !== false
