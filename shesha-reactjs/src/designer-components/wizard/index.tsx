@@ -128,7 +128,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
 
     // Add step footer containers
     const footerContainers = model.steps
-      .filter((s) => s.hasCustomFooter)
+      .filter((s) => s.hasCustomFooter === true)
       .map((s) => ({
         id: s.stepFooter?.id ?? `${s.id}_footer`,
         parentId: model.id,

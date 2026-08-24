@@ -11,6 +11,7 @@ import AttributeDecorator from '../../attributeDecorator';
 import ErrorIconPopover from '../../componentErrors/errorIconPopover';
 import { isValidGuid } from '../components/utils';
 import { useShaComponentStyles } from '../styles/shaComponentStyles';
+import { isNonEmptyArray } from '@/utils/array';
 
 type CustomHtmlAttributes = {
   "data-sha-c-id"?: string | undefined;
@@ -68,7 +69,7 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
 
     // Collect errors from child components registered via hook
     const childValidation = validationErrors.get(componentModel.id);
-    if (isDefined(childValidation) && childValidation.hasErrors && childValidation.errors) {
+    if (isDefined(childValidation) && childValidation.hasErrors && isNonEmptyArray(childValidation.errors)) {
       errors.push(...childValidation.errors);
       // Use the child's validationType if present (prioritize 'error' > 'warning' > 'info')
       if (childValidation.validationType) {

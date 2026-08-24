@@ -145,8 +145,6 @@ export const getColumnSettings = (fbf: FormBuilderFactory, data?: object): FormM
                         propertyName: "actionConfiguration",
                         label: "Action Configuration",
                         hidden: false,
-                        validate: {},
-                        settingsValidationErrors: [],
                         parentId: "root",
                         version: 1,
                       })

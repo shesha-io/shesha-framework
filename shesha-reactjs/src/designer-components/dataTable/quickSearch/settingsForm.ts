@@ -47,7 +47,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
             labelAlign: 'right',
             parentId: 'root',
             hidden: false,
-            validate: {},
           }).toJson(),
         ],
       },

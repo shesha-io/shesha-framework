@@ -90,7 +90,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
             label: 'Allow Upload',
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
             hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false },
-            validate: {},
           })
           .addCheckbox({
             id: 'b0d75145-3f7c-424d-a1ac-c65990b4f749',
@@ -98,7 +97,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
             label: 'Allow Replace',
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
             hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false },
-            validate: {},
           })
           .addCheckbox({
             id: '88697971-8945-420e-959b-46493f9955f9',
@@ -106,7 +104,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
             label: 'Allow Delete',
             parentId: 'abc54bf6-f76d-4139-a850-c99bf06c8b69',
             hidden: { _code: 'const r = getSettingValue(data?.readOnly); return r === true || r === "readOnly";', _mode: 'code', _value: false },
-            validate: {},
           }).toJson(),
         ],
       },
@@ -194,7 +191,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
             labelAlign: 'right',
             parentId: 'root',
             hidden: false,
-            validate: {},
             jsSetting: true,
           }).toJson(),
         ],
