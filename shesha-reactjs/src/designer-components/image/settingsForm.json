@@ -14,7 +14,6 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
       "header": {
         "id": "FizvoIoyeq1cZMqAgbDLL",
         "components": []
@@ -196,7 +195,6 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
       "content": {
         "id": "111nm2re1eYM1M7pEEuf9",
         "components": [
@@ -252,7 +250,6 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
       "header": {
         "id": "FizvoIozeq2cZMqAgbDLL",
         "components": []
@@ -301,7 +298,6 @@
           "collapsible": "header",
           "ghost": true,
           "hideWhenEmpty": true,
-          "settingsValidationErrors": [],
           "header": {
             "id": "FizvkIoyeq1cZMqAgbDCC",
             "components": []
@@ -523,7 +519,6 @@
                 "hidden": false,
                 "isDynamic": false,
                 "version": 2,
-                "settingsValidationErrors": [],
                 "title": "",
                 "fontSize": "",
                 "allowClear": true,
@@ -535,8 +530,6 @@
                 "propertyName": "style",
                 "label": "Style",
                 "parentId": "aIMnm2re1exN1M7pEEur11",
-                "validate": {},
-                "settingsValidationErrors": [],
                 "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
                 "exposedVariables": [
                   {
@@ -559,8 +552,6 @@
                 "type": "styleBox",
                 "propertyName": "stylingBox",
                 "parentId": "4c413e8f-a8cd-4567-8723-726ed742bae0",
-                "validate": {},
-                "settingsValidationErrors": [],
                 "jsSetting": false
               }
             ]
@@ -591,15 +582,13 @@
             "propertyName": "permissions",
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Permissions",
-            "validate": {},
             "version": 1
           }
         ]
       },
       "collapsible": "header",
       "ghost": true,
-      "hideWhenEmpty": true,
-      "settingsValidationErrors": []
+      "hideWhenEmpty": true
     }
   ],
   "formSettings": {

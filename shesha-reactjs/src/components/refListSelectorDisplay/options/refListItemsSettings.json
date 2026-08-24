@@ -15,8 +15,6 @@
       "propertyName": "actionConfiguration",
       "label": "onDrop Action Configuration",
       "hidden": false,
-      "validate": {},
-      "settingsValidationErrors": [],
       "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
       "version": 1
     }

@@ -31,7 +31,6 @@
               "validate": {
                 "required": true
               },
-              "settingsValidationErrors": [],
               "textType": "text",
               "version": 3
             },
@@ -45,7 +44,6 @@
               "validate": {
                 "required": true
               },
-              "settingsValidationErrors": [],
               "version": 3,
               "textType": "text"
             },
@@ -79,7 +77,6 @@
             "validate": {
               "required": true
             },
-            "settingsValidationErrors": [],
             "textType": "text",
             "version": 3
           },
@@ -93,7 +90,6 @@
             "validate": {
               "required": true
             },
-            "settingsValidationErrors": [],
             "version": 3,
             "textType": "text"
           },
@@ -109,7 +105,6 @@
         ]
       },
       "collapsible": "icon",
-      "settingsValidationErrors": [],
       "ghost": true,
       "className": ""
     },
@@ -128,7 +123,6 @@
       "useRawValues": false,
       "referenceListId": null,
       "valueFormat": "simple",
-      "settingsValidationErrors": [],
       "placeholder": "",
       "description": "",
       "defaultValue": "",
@@ -144,8 +138,7 @@
           "label": "Code",
           "value": "code"
         }
-      ],
-      "validate": {}
+      ]
     },
     {
       "id": "HTeeNZ7tgwGkS7MngmPWjGx-cUtX7F",
@@ -161,7 +154,6 @@
         "_value": false
       },
       "isDynamic": false,
-      "settingsValidationErrors": [],
       "description": "",
       "customVisibility": "return data.propertySource !== 'code';"
     },
@@ -199,7 +191,6 @@
               "validate": {
                 "required": true
               },
-              "settingsValidationErrors": [],
               "values": [
                 {
                   "id": "R8Et3awUms5zQgj2ZlCT-",
@@ -292,7 +283,6 @@
               "parentId": "kr9kP05xHpwNvTcB1e9erjFNq_ir21",
               "version": 3,
               "textType": "text",
-              "settingsValidationErrors": [],
               "placeholder": "",
               "prefix": "",
               "suffix": "",
@@ -317,7 +307,6 @@
               },
               "direction": "vertical",
               "justifyContent": "left",
-              "settingsValidationErrors": [],
               "components": [
                 {
                   "id": "2ZMc7dhCaBX00rMMK1H3n",
@@ -328,8 +317,6 @@
                   "parentId": "7cYicDJe6G4QZySqcHoIM",
                   "mode": "single",
                   "dataSourceType": "values",
-                  "validate": {},
-                  "settingsValidationErrors": [],
                   "values": [
                     {
                       "id": "rwi4vhiLvAT9K23e_Ksgj",
@@ -391,7 +378,6 @@
                     "minValue": "",
                     "maxValue": ""
                   },
-                  "settingsValidationErrors": [],
                   "version": 2,
                   "disabled": {
                     "_mode": "code",
@@ -421,7 +407,6 @@
                     "minValue": "",
                     "maxValue": ""
                   },
-                  "settingsValidationErrors": [],
                   "version": 2,
                   "disabled": {
                     "_mode": "code",
@@ -446,7 +431,6 @@
                     "maxLength": "",
                     "message": ""
                   },
-                  "settingsValidationErrors": [],
                   "textType": "text",
                   "version": 3,
                   "disabled": {
@@ -485,7 +469,6 @@
               },
               "direction": "vertical",
               "justifyContent": "left",
-              "settingsValidationErrors": [],
               "components": [
                 {
                   "id": "V6PekH9pFf_Qu-vmaKxfz",
@@ -498,8 +481,6 @@
                     "single"
                   ],
                   "dataSourceType": "values",
-                  "validate": {},
-                  "settingsValidationErrors": [],
                   "values": [
                     {
                       "id": "h0LdMbbQrqIvARnQmeKGZ",
@@ -543,7 +524,6 @@
                     "minValue": "",
                     "maxValue": ""
                   },
-                  "settingsValidationErrors": [],
                   "version": 2,
                   "disabled": {
                     "_mode": "code",
@@ -569,7 +549,6 @@
                     "minValue": "",
                     "maxValue": ""
                   },
-                  "settingsValidationErrors": [],
                   "version": 2,
                   "disabled": {
                     "_mode": "code",
@@ -604,7 +583,6 @@
               },
               "direction": "vertical",
               "justifyContent": "left",
-              "settingsValidationErrors": [],
               "mode": [
                 "single"
               ],
@@ -677,7 +655,6 @@
                     "maxLength": "",
                     "message": ""
                   },
-                  "settingsValidationErrors": [],
                   "version": 3,
                   "textType": "text",
                   "disabled": {
@@ -707,7 +684,6 @@
                     "maxLength": "",
                     "message": ""
                   },
-                  "settingsValidationErrors": [],
                   "version": 3,
                   "textType": "text",
                   "disabled": {
@@ -750,7 +726,6 @@
               },
               "direction": "vertical",
               "justifyContent": "left",
-              "settingsValidationErrors": [],
               "components": [
                 {
                   "id": "6b0bd9c6-6a53-4a05-9de0-ad1b17eb0018",
@@ -761,9 +736,7 @@
                   "hidden": false,
                   "parentId": "MwjxidwaPufFS-PixP6_j",
                   "dataSourceType": "url",
-                  "validate": {},
                   "dataSourceUrl": "/api/services/app/Metadata/TypeAutocomplete",
-                  "settingsValidationErrors": [],
                   "useRawValues": true,
                   "textType": "text",
                   "version": 4,
@@ -816,7 +789,6 @@
             "validate": {
               "required": true
             },
-            "settingsValidationErrors": [],
             "values": [
               {
                 "id": "R8Et3awUms5zQgj2ZlCT-",
@@ -909,7 +881,6 @@
             "parentId": "kr9kP05xHpwNvTcB1e9erjFNq_ir21",
             "version": 3,
             "textType": "text",
-            "settingsValidationErrors": [],
             "placeholder": "",
             "prefix": "",
             "suffix": "",
@@ -934,7 +905,6 @@
             },
             "direction": "vertical",
             "justifyContent": "left",
-            "settingsValidationErrors": [],
             "components": [
               {
                 "id": "2ZMc7dhCaBX00rMMK1H3n",
@@ -945,8 +915,6 @@
                 "parentId": "7cYicDJe6G4QZySqcHoIM",
                 "mode": "single",
                 "dataSourceType": "values",
-                "validate": {},
-                "settingsValidationErrors": [],
                 "values": [
                   {
                     "id": "rwi4vhiLvAT9K23e_Ksgj",
@@ -1008,7 +976,6 @@
                   "minValue": "",
                   "maxValue": ""
                 },
-                "settingsValidationErrors": [],
                 "version": 2,
                 "disabled": {
                   "_mode": "code",
@@ -1038,7 +1005,6 @@
                   "minValue": "",
                   "maxValue": ""
                 },
-                "settingsValidationErrors": [],
                 "version": 2,
                 "disabled": {
                   "_mode": "code",
@@ -1063,7 +1029,6 @@
                   "maxLength": "",
                   "message": ""
                 },
-                "settingsValidationErrors": [],
                 "textType": "text",
                 "version": 3,
                 "disabled": {
@@ -1102,7 +1067,6 @@
             },
             "direction": "vertical",
             "justifyContent": "left",
-            "settingsValidationErrors": [],
             "components": [
               {
                 "id": "V6PekH9pFf_Qu-vmaKxfz",
@@ -1115,8 +1079,6 @@
                   "single"
                 ],
                 "dataSourceType": "values",
-                "validate": {},
-                "settingsValidationErrors": [],
                 "values": [
                   {
                     "id": "h0LdMbbQrqIvARnQmeKGZ",
@@ -1160,7 +1122,6 @@
                   "minValue": "",
                   "maxValue": ""
                 },
-                "settingsValidationErrors": [],
                 "version": 2,
                 "disabled": {
                   "_mode": "code",
@@ -1186,7 +1147,6 @@
                   "minValue": "",
                   "maxValue": ""
                 },
-                "settingsValidationErrors": [],
                 "version": 2,
                 "disabled": {
                   "_mode": "code",
@@ -1221,7 +1181,6 @@
             },
             "direction": "vertical",
             "justifyContent": "left",
-            "settingsValidationErrors": [],
             "mode": [
               "single"
             ],
@@ -1294,7 +1253,6 @@
                   "maxLength": "",
                   "message": ""
                 },
-                "settingsValidationErrors": [],
                 "version": 3,
                 "textType": "text",
                 "disabled": {
@@ -1324,7 +1282,6 @@
                   "maxLength": "",
                   "message": ""
                 },
-                "settingsValidationErrors": [],
                 "version": 3,
                 "textType": "text",
                 "disabled": {
@@ -1367,7 +1324,6 @@
             },
             "direction": "vertical",
             "justifyContent": "left",
-            "settingsValidationErrors": [],
             "components": [
               {
                 "id": "6b0bd9c6-6a53-4a05-9de0-ad1b17eb0018",
@@ -1378,9 +1334,7 @@
                 "hidden": false,
                 "parentId": "MwjxidwaPufFS-PixP6_j",
                 "dataSourceType": "url",
-                "validate": {},
                 "dataSourceUrl": "/api/services/app/Metadata/TypeAutocomplete",
-                "settingsValidationErrors": [],
                 "useRawValues": true,
                 "textType": "text",
                 "version": 4,
@@ -1411,7 +1365,6 @@
         ]
       },
       "collapsible": "icon",
-      "settingsValidationErrors": [],
       "ghost": true,
       "className": ""
     }
