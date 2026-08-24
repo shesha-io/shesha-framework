@@ -70,6 +70,13 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
   const isDateTimeJs = 'return ["dateTimeHours", "dateTimeMinutes", "dateTimeSeconds"].includes(getSettingValue(data?.selectionType) ?? "dateTimeMinutes");';
   // Minute steps only make sense once minutes are actually shown.
   const hasMinutesJs = 'return ["dateTimeMinutes", "dateTimeSeconds"].includes(getSettingValue(data?.selectionType) ?? "dateTimeMinutes");';
+  // Converting to/from UTC only means anything when a time of day is stored and the value is
+  // actually persisted as UTC — a calendar unit (week/month/quarter/year) or a bare date would just
+  // be shifted across a day boundary by the conversion.
+  // Deliberately reads only bindingFormat, never resolveToUTC: a switch whose visibility depends on
+  // its own value can be switched off but never back on. Migrator step 8 always writes bindingFormat,
+  // so there is no saved markup where the old boolean is the only thing left to read.
+  const isUtcConvertibleJs = 'return getSettingValue(data?.bindingFormat) === "utc" && ["dateTimeHours", "dateTimeMinutes", "dateTimeSeconds"].includes(getSettingValue(data?.selectionType) ?? "dateTimeMinutes");';
   // Date Format applies to every selection except the calendar-unit pickers, which have their own.
   const isDateBasedJs = 'return !["week", "month", "quarter", "year"].includes(getSettingValue(data?.selectionType) ?? "dateTimeMinutes");';
   // Inverse of the above: hides the whole row rather than leaving an empty one behind when only the
@@ -133,7 +140,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   dropdownOptions: minuteStepOptions,
                   visibleJs: hasMinutesJs,
                 })
-                .addSettingsInput({ inputType: 'switch', propertyName: 'resolveToUTC', label: 'Convert to/from UTC', size: 'small', layout: 'horizontal', jsSetting: true })
+                .addSettingsInput({ inputType: 'switch', propertyName: 'resolveToUTC', label: 'Convert to/from UTC', size: 'small', layout: 'horizontal', jsSetting: true, visibleJs: isUtcConvertibleJs })
                 .addSettingsInput({ inputType: 'switch', propertyName: 'defaultToMidnight', label: 'Default time to midnight', size: 'small', layout: 'horizontal', jsSetting: true, visibleJs: isDateTimeJs })
                 .addSettingsInput({
                   inputType: 'dropdown', propertyName: 'dateRestriction', label: 'Date Restriction', size: 'small', jsSetting: true,
