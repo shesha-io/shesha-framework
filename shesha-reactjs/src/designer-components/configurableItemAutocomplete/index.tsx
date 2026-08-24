@@ -99,6 +99,7 @@ export const ConfigurableItemAutocompleteComponent: IToolboxComponent<IConfigura
         </ConfigurableFormItem>
       );
   },
+  actualModelPropertyFilter: (name) => name !== 'filter',
   settingsFormMarkup: settingsForm,
   validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
   migrator: (m) => m

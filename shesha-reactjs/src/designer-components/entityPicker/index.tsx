@@ -208,6 +208,7 @@ const EntityPickerComponent: EntityPickerComponentDefinition = {
       </ConfigurableFormItem>
     );
   },
+  actualModelPropertyFilter: (name) => name !== 'filters',
   migrator: (m) => m
     .add<IEntityPickerComponentProps>(0, (prev) => {
       return {

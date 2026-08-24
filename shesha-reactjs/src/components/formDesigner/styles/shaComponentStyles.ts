@@ -12,6 +12,7 @@ const getShaComponentStyles = createStyles(({ css, cx, token }, wrapperStyle: IS
 
   const shaComponent = cx(designerClassNames.shaComponent, css`
     ${dimensionsStyles({ height: 'auto', width: 'auto', ...wrapperStyle.dimensions })}
+    ${wrapperStyle.dimensions?.width === 'stretch' ? 'flex: 1;' : ''}
 
     ${wrapperMargin}
   `);
