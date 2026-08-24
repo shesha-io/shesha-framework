@@ -11,6 +11,7 @@ import {
   migrateCustomFunctions,
   migrateReadOnly,
   migrateHiddenToVisible,
+  migrateStylingBoxToJson,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
@@ -66,7 +67,7 @@ const CheckboxComponent: CheckboxComponentDefinition = {
               className={styles.checkbox}
               disabled={model.disabled === true || model.readOnly === true}
               checked={value ?? false}
-              {...(isDefined(model.styleJson) ? { style: model.styleJson } : {})}
+              {...(isDefined(model.styleCss) ? { style: model.styleCss } : {})}
               onChange={(event) => {
                 ctx?.handleEvent(event, { value: event.target.checked }, model.onChangeCustom);
                 onChange(event.target.checked);
@@ -99,7 +100,7 @@ const CheckboxComponent: CheckboxComponentDefinition = {
       .add<ICheckboxComponentProps>(5, (prev, context) => context.isNew === true
         ? prev
         : migratePrevStyles(prev, defaultStyles(prev)))
-      .add<ICheckboxComponentProps>(6, (prev) => migrateHiddenToVisible(prev))
+      .add<ICheckboxComponentProps>(6, (prev) => migrateHiddenToVisible(migrateStylingBoxToJson(prev)))
       .add<ICheckboxComponentProps>(7, (prev) => migratePermissionsToVisiblePermissions(prev)),
   previewConfiguration: {
     type: 'checkbox',

@@ -118,6 +118,8 @@ export interface IShaFormInstance<Values extends object = object> {
 
   onFinish?: ((values: Values) => void) | undefined;
 
+  log: (..._args: unknown[]) => void;
+  readonly logEnabled: boolean;
   setLogEnabled: (enabled: boolean) => void;
   getPublicFormApi: () => IFormApi<Values>;
 

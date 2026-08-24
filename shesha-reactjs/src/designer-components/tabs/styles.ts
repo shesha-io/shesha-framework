@@ -1,229 +1,169 @@
 import { createStyles } from '@/styles';
-import { CSSObject } from 'antd-style';
+import { ITabsComponentProps } from './models';
+import { backgroundCss, backgroundStyles, borderCss, borderLinesStyles, borderRadiusStyles, cssPropertiesToString, dimensionsStyles, fontStyles, marginStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
+import { IBorderValue } from '../_settings/utils';
+import { isDefined, isNullOrWhiteSpace } from '@/utils';
+import { addPx } from '@/utils/style';
 import { CSSProperties } from 'react';
 
-type StylesArgs = {
-  styles: CSSProperties;
-  cardStyles: CSSProperties;
-  position?: string | undefined;
-  tabType?: string | undefined;
-  tabLineColor?: string | undefined;
-};
-type StylesResponse = {
-  content: string;
-};
+export const useStyles = createStyles(({ css, cx, token }, { model, cardStyleCss, activeCardStyleCss }: { model: ITabsComponentProps; cardStyleCss?: CSSProperties | undefined; activeCardStyleCss?: CSSProperties | undefined }) => {
+  const tabType = model.tabType ?? 'card';
 
-type BorderStylePrefix = 'borderTop' | 'borderBottom' | 'borderLeft' | 'borderRight';
+  const isLeft = model.tabPosition === 'left';
+  const isRight = model.tabPosition === 'right';
+  const isTop = model.tabPosition === 'top';
+  const isBottom = model.tabPosition === 'bottom';
 
-export const useStyles = createStyles<StylesArgs, StylesResponse>(({ css, cx, token }, { styles, cardStyles, position = 'top', tabType, tabLineColor }) => {
-  const {
-    borderWidth,
-    borderStyle,
-    borderColor,
-    borderTopWidth,
-    borderBottomWidth,
-    borderRightWidth,
-    borderLeftWidth,
-    backgroundColor,
-    backgroundImage,
-    backgroundSize,
-    backgroundPosition,
-    backgroundRepeat,
-    boxShadow,
-    marginTop = '0px',
-    marginBottom = '0px',
-    marginRight = '0px',
-    marginLeft = '0px',
-    paddingTop = '0px',
-    paddingRight = '0px',
-    paddingLeft = '0px',
-    paddingBottom = '0px',
-    borderTopLeftRadius,
-    borderTopRightRadius,
-    borderBottomRightRadius,
-    borderBottomLeftRadius,
-    fontSize,
-    fontWeight,
-    textAlign,
-    color,
-    fontFamily,
-    width,
-    ...rest
-  } = styles;
-
-  const {
-    backgroundImage: cardBgImage,
-    backgroundColor: cardBgColor,
-    width: cardWidth,
-    height: cardHeight,
-    minWidth: cardMinWidth,
-    minHeight: cardMinHeight,
-    maxWidth: cardMaxWidth,
-    maxHeight: cardMaxHeight,
-    borderTopLeftRadius: cardTopLeftRadius,
-    borderTopRightRadius: cardTopRightRadius,
-    borderBottomRightRadius: cardBottomRightRadius,
-    borderBottomLeftRadius: cardBottomLeftRadius,
-  } = cardStyles;
-
-  const isLeft = position === 'left';
-  const isRight = position === 'right';
-  const isTop = position === 'top';
-  const isBottom = position === 'bottom';
-
-  const getBorder = (side: BorderStylePrefix): string => {
-    const width = `${side}Width` as keyof CSSProperties;
-    const style = `${side}Style` as keyof CSSProperties;
-    const color = `${side}Color` as keyof CSSProperties;
-    return `${styles[width] ?? borderWidth} ${styles[style] ?? borderStyle} ${styles[color] ?? borderColor}`;
+  const borderRadius: IBorderValue = {
+    radiusType: 'custom',
+    radius: {
+      topLeft: isTop || isLeft ? 0 : model.border?.radius?.topLeft ?? model.border?.radius?.all,
+      topRight: isTop || isRight ? 0 : model.border?.radius?.topRight ?? model.border?.radius?.all,
+      bottomLeft: isBottom || isLeft ? 0 : model.border?.radius?.bottomLeft ?? model.border?.radius?.all,
+      bottomRight: isBottom || isRight ? 0 : model.border?.radius?.bottomRight ?? model.border?.radius?.all,
+    },
   };
 
-  const borderMap = {
-    top: getBorder('borderTop'),
-    bottom: getBorder('borderBottom'),
-    left: getBorder('borderLeft'),
-    right: getBorder('borderRight'),
-    default: `${borderWidth} ${borderStyle} ${borderColor}`,
+  const borderLines: IBorderValue = {
+    borderType: 'custom',
+    border: {
+      top: model.border?.borderType === 'custom' ? model.border.border?.top : model.border?.border?.all,
+      right: model.border?.borderType === 'custom' ? model.border.border?.right : model.border?.border?.all,
+      bottom: model.border?.borderType === 'custom' ? model.border.border?.bottom : model.border?.border?.all,
+      left: model.border?.borderType === 'custom' ? model.border.border?.left : model.border?.border?.all,
+    },
   };
 
-  const content = cx(
-    'content',
-    css`
-            --ant-tabs-horizontal-margin: 0 !important;
+  const borderLinesContent: IBorderValue = {
+    borderType: 'custom',
+    border: {
+      top: isTop ? { width: 0 } : borderLines.border?.top,
+      right: isRight ? { width: 0 } : borderLines.border?.right,
+      bottom: isBottom ? { width: 0 } : borderLines.border?.bottom,
+      left: isLeft ? { width: 0 } : borderLines.border?.left,
+    },
+  };
+
+  const background = backgroundCss(model.background);
+  const cardBackground = backgroundCss(model.card?.background);
+
+  const shaTabContent = cx('sha-tab-content', css`
+      &&&& {
+        ${/* --ant-tabs-horizontal-margin: 0 !important;*/ ''}
+        height: 100%;
+        ${marginStyles(model.stylingBoxJson)}
+        ${dimensionsStyles(model.dimensions)}
+      }
+
+      .ant-tabs-content-holder {
+          ${(isLeft && (model.shadow?.offsetX ?? 0) > 0) ||
+          (isRight && (model.shadow?.offsetX ?? 0) < 0) ||
+          (isTop && (model.shadow?.offsetY ?? 0) > 0) ||
+          (isBottom && (model.shadow?.offsetY ?? 0) < 0)
+            ? 'z-index: 1; /* to make shadow from tabs hidden */'
+            : ''}
+          ${/* --ant-tabs-card-bg: ${background};*/ ''}
+          width: 100%;
+          height: auto;
+          ${borderLinesStyles(borderLinesContent)}
+          ${backgroundStyles(model.background)}
+          ${borderRadiusStyles(borderRadius)}
+          ${shadowStyles(model.shadow)}
+          ${paddingStyles(model.stylingBoxJson)}
+          ${cssPropertiesToString(model.styleCss)}
+
+          .ant-tabs-content {
+              height: 100%;
+              width: 100%;
+              overflow: auto;
+              scrollbar-width: thin;
+
+              &::-webkit-scrollbar { 
+                  width: 8px;
+                  background-color: transparent;
+              }
+          }
+      }
+
+      .ant-tabs-nav {
+          margin: 0;
+          --ant-tabs-ink-bar-color: ${isNullOrWhiteSpace(model.tabLineColor) ? token.colorPrimary : model.tabLineColor} !important;
+
+          .ant-tabs-nav-wrap {
+              overflow: visible; /* to make shadow visible */
+
+              .ant-tabs-tab {
+                  --ant-tabs-card-bg: ${cardBackground};
+                  ${isDefined(model.font?.color) ? `--ant-tabs-item-hover-color: ${model.font.color} !important;` : ''}
+                  ${isDefined(model.font?.color) ? `--ant-tabs-item-active-color: ${model.font.color} !important;` : ''}
+                  --ant-line-width: ${addPx(isLeft ? borderLines.border?.left?.width ?? 0 : isRight ? borderLines.border?.right?.width ?? 0
+                    : isTop ? borderLines.border?.top?.width ?? 0 : borderLines.border?.bottom?.width ?? 0)};
+                  --ant-color-border-secondary: ${isLeft ? borderLines.border?.left?.color ?? 'none' : isRight ? borderLines.border?.right?.color ?? 'none'
+                    : isTop ? borderLines.border?.top?.color ?? 'none' : borderLines.border?.bottom?.color ?? 'none'};
+                  --ant-line-type:  ${isLeft ? borderLines.border?.left?.style ?? 'none' : isRight ? borderLines.border?.right?.style ?? 'none'
+                    : isTop ? borderLines.border?.top?.style ?? 'none' : borderLines.border?.bottom?.style ?? 'none'};          
+
+                  ${fontStyles(model.card?.font)}
+                  ${dimensionsStyles(model.card?.dimensions)}
+                  ${tabType === 'card' ? backgroundStyles(model.card?.background) : ''}
+                  ${tabType === 'card' ? shadowStyles(model.shadow) : ''}
+                  
+                  ${cssPropertiesToString(cardStyleCss)}
+
+                  .ant-tabs-tab-btn {
+                      width: 100%;
+                  }
+              }
+
+              .ant-tabs-tab.ant-tabs-tab-active {
+                  ${isLeft ? 'border-right-width: 0px;' : ''}
+                  ${isRight ? 'border-left-width: 0px;' : ''}
+                  ${isTop ? 'border-bottom-width: 0px;' : ''}
+                  ${isBottom ? 'border-top-width: 0px;' : ''}
+
+                  ${fontStyles(model.font)}
+                  --primary-color: ${token.colorPrimary} !important;
+                  --ant-tabs-card-bg: ${background};
+                  --ant-color-bg-container: ${background};
+                  --ant-line-width: ${addPx(isLeft ? borderLines.border?.left?.width ?? 0 : isRight ? borderLines.border?.right?.width ?? 0
+                    : isTop ? borderLines.border?.top?.width ?? 0 : borderLines.border?.bottom?.width ?? 0)};
+                  --ant-color-border-secondary: ${isLeft ? borderLines.border?.left?.color ?? 'none' : isRight ? borderLines.border?.right?.color ?? 'none'
+                    : isTop ? borderLines.border?.top?.color ?? 'none' : borderLines.border?.bottom?.color ?? 'none'};
+                  --ant-line-type:  ${isLeft ? borderLines.border?.left?.style ?? 'none' : isRight ? borderLines.border?.right?.style ?? 'none'
+                    : isTop ? borderLines.border?.top?.style ?? 'none' : borderLines.border?.bottom?.style ?? 'none'};          
+                  --ant-color-bg-container: ${background};
+
+                  ${tabType === 'card' ? backgroundStyles(model.background) : ''}
+                  ${dimensionsStyles(model.card?.dimensions)}
+                  z-index: 2;
+                  ${cssPropertiesToString(activeCardStyleCss)}
+              }
+              
+              .ant-tabs-tab.ant-tabs-tab-disabled {
+                color: ${token.colorTextDisabled};
+                cursor: not-allowed;
+              }                  
+          }
+      }
+
+      .ant-tabs-nav::before {
+          content: '';
+          ${isLeft ? `border-right: ${borderCss(borderLines.border?.left)};` : ''}
+          ${isRight ? `border-left: ${borderCss(borderLines.border?.right)};` : ''}
+          ${isTop ? `border-bottom: ${borderCss(borderLines.border?.top)};` : ''}
+          ${isBottom ? `border-top: ${borderCss(borderLines.border?.bottom)};` : ''}
+          
+          ${isLeft || isRight ? `
             height: 100%;
-            margin: ${marginTop} ${marginRight} ${marginBottom} ${marginLeft} !important;
-
-            &.ant-tabs-left , &.ant-tabs-right {
-                height: ${styles.height || 'auto'} !important;
-                min-height: ${styles.minHeight || 'auto'} !important;
-                max-height: ${styles.maxHeight || 'auto'} !important;
-            }
-
-            .ant-tabs-content-holder {
-                --ant-tabs-card-bg: ${backgroundImage || backgroundColor};
-                ${rest as CSSObject};
-                width: 100%;
-                height: auto;
-                border: ${borderMap.default};
-                box-shadow: ${boxShadow} !important;
-                border-left: ${isLeft ? '0px solid transparent' : borderMap.left} !important;
-                border-right: ${isRight ? '0px solid transparent' : borderMap.right} !important;
-                border-bottom: ${isBottom ? 'none' : borderMap.bottom} !important;
-                border-top: ${isTop ? 'none' : borderMap.top} !important;
-                background: ${backgroundImage || backgroundColor} !important;
-                ${isTop || isLeft ? 'border-top-left-radius: 0px;' : `border-top-left-radius: ${borderTopLeftRadius};`}
-                ${isTop || isRight ? 'border-top-right-radius: 0px;' : `border-top-right-radius: ${borderTopRightRadius};`}
-                ${isBottom || isLeft ? 'border-bottom-left-radius: 0px;' : `border-bottom-left-radius: ${borderBottomLeftRadius};`}
-                ${isBottom || isRight ? 'border-bottom-right-radius: 0px;' : `border-bottom-right-radius: ${borderBottomRightRadius};`}
-                padding: ${paddingTop} ${paddingRight} ${paddingBottom} ${paddingLeft} !important;
-                background-size: ${backgroundSize} !important;
-                background-position: ${backgroundPosition} !important;
-                background-repeat: ${backgroundRepeat} !important;
-
-                .ant-tabs-content {
-                    overflow: auto;
-                    scrollbar-width: thin;
-                    ::-webkit-scrollbar { 
-                        width: 8px;
-                        background-color: transparent;
-                    }
-                        
-                    height: 100%;
-                    width: 100%;
-                }
-            }
-
-            .ant-tabs-tab {
-                --ant-tabs-card-bg: ${cardBgImage || cardBgColor};
-                ${color && `--ant-tabs-item-hover-color: ${color} !important`};
-                ${color && `--ant-tabs-item-active-color: ${color} !important`};
-                --ant-line-width: ${isTop ? borderTopWidth || borderWidth : isBottom ? borderBottomWidth || borderWidth : isLeft ? borderLeftWidth || borderWidth : isRight ? borderRightWidth || borderWidth : isBottom};
-                --ant-color-border-secondary: ${isTop ? styles.borderTopColor || borderColor : isBottom
-                  ? styles.borderBottomColor || borderColor : isLeft ? styles.borderLeftColor || borderColor : isRight ? styles.borderRightColor || borderColor : isBottom};
-                --ant-line-type:  ${isTop ? styles.borderTopStyle || borderStyle : isBottom ? styles.borderBottomStyle || borderStyle : isLeft
-                  ? styles.borderLeftStyle || borderStyle : isRight ? styles.borderRightStyle || borderStyle : isBottom};
-                background: ${cardBgImage || cardBgColor} !important;
-                ${cardStyles as CSSObject};
-                background-repeat: ${cardStyles.backgroundRepeat} !important;
-                background-size: ${cardStyles.backgroundSize} !important;
-                background-position: ${cardStyles.backgroundPosition} !important;
-                box-shadow: ${tabType === 'card' && boxShadow} !important;
-                ${isLeft && 'border-right-width: 0px !important'}
-                ${isRight && 'border-left-width: 0px !important'}
-                ${isTop && 'border-bottom-width: 0px !important'}
-                ${isBottom && 'border-top-width: 0px !important'}
-                 border-radius: ${isTop ? `${cardTopLeftRadius} ${cardTopRightRadius} 0px 0px`
-                    : isBottom ? `0px 0px ${cardBottomLeftRadius} ${cardBottomRightRadius}`
-                      : isLeft ? `${cardTopRightRadius} 0px 0px ${cardBottomRightRadius}`
-                        : isRight ? `0px ${cardTopLeftRadius} ${cardBottomLeftRadius} 0px` : cardStyles.borderRadius};
-                .ant-tabs-tab-btn {
-                    width: 100%;
-                }
-            }
-
-            .ant-tabs-tab-active {
-                --primary-color: ${token.colorPrimary} !important;
-                --ant-tabs-card-bg: ${backgroundColor || backgroundImage};
-                --ant-color-bg-container: ${backgroundColor || backgroundImage};
-                --ant-line-width: ${isTop ? borderTopWidth || borderWidth : isBottom ? borderBottomWidth || borderWidth : isLeft ? borderLeftWidth || borderWidth : isRight ? borderRightWidth || borderWidth : isBottom};
-                --ant-color-border-secondary: ${isTop ? styles.borderTopColor || borderColor : isBottom
-                  ? styles.borderBottomColor || borderColor : isLeft ? styles.borderLeftColor || borderColor : isRight ? styles.borderRightColor || borderColor : isBottom};
-                --ant-line-type:  ${isTop ? styles.borderTopStyle || borderStyle : isBottom ? styles.borderBottomStyle || borderStyle : isLeft
-                  ? styles.borderLeftStyle || borderStyle : isRight ? styles.borderRightStyle || borderStyle : isBottom};
-                --ant-color-bg-container: ${backgroundImage || backgroundColor};
-                background: ${tabType === 'card' ? backgroundImage || backgroundColor : ''} !important;
-                ${cardStyles as CSSObject};
-                ${isLeft && `border-right-width: ${styles.borderLeftWidth} !important`}
-                ${isRight && 'border-left-width: 0px !important'}
-                ${isTop && 'border-bottom-width: 0px !important'}
-                ${isBottom && 'border-top-width: 0px !important'}
-                ${isLeft ? `margin-right: calc(var(--ant-line-width) * -1) !important` : isRight ? `margin-left: calc(var(--ant-line-width) * -1) !important` : isTop ? `margin-bottom: 0` : `margin-top: 0`};
-                width: ${cardWidth};
-                height: ${cardHeight};
-                min-width: ${cardMinWidth};
-                min-height: ${cardMinHeight};
-                max-width: ${cardMaxWidth};
-                max-height: ${cardMaxHeight};
-                z-index: 2;
-
-                .ant-tabs-tab-btn {
-                color: ${color ?? token.colorPrimary} !important;
-                font-size: ${fontSize} !important;
-                font-weight: ${fontWeight} !important;
-                font-family: ${fontFamily} !important;
-                text-align: ${textAlign} !important;
-                width: 100%;
-                }
-            }
-
-            .ant-tabs-nav {
-                --ant-tabs-ink-bar-color: ${tabLineColor || token.colorPrimary} !important;
-                margin: 0;
-                margin: ${isTop ? `${marginTop} ${marginRight} 0 ${marginLeft}` : isBottom ? `0 ${marginRight} ${marginBottom} ${marginLeft}` : isLeft ? `${marginTop} 0 ${marginBottom} ${marginLeft}` : `${marginTop} ${marginRight} ${marginBottom} 0`};
-            }
-
-            .ant-tabs-nav::before {
-                --ant-line-width: ${isLeft ? borderLeftWidth || borderWidth : isRight ? borderRightWidth || borderWidth
-                  : isTop ? borderTopWidth || borderWidth : borderBottomWidth || borderWidth};
-                --ant-color-border-secondary: ${isLeft ? styles.borderLeftColor || borderColor : isRight ? styles.borderRightColor || borderColor
-                  : isTop ? styles.borderTopColor || borderColor : styles.borderBottomColor || borderColor};
-                --ant-line-type:  ${isLeft ? styles.borderLeftStyle || borderStyle : isRight ? styles.borderRightStyle || borderStyle
-                  : isTop ? styles.borderTopStyle || borderStyle : styles.borderBottomStyle || borderStyle};
-           }
-
-           .ant-tabs-nav-list {
-                ${(isLeft && `border-right: ${borderMap.left}`) || (isRight && `border-left: ${borderMap.right}`)};
-                ${(isLeft || isRight) && `
-                    height: ${styles.height} !important;
-                    min-height: ${styles.minHeight} !important;
-                    max-height: ${styles.maxHeight} !important;
-                `};
-
-           }
-        `,
+            position: absolute;
+            top: 0;
+            ${isLeft ? `right: 0;` : `left: 0;`}
+            ` : ''}
+      }
+  `,
   );
 
   return {
-    content,
+    shaTabContent,
   };
 });

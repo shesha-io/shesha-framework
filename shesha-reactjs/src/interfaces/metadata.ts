@@ -332,7 +332,7 @@ export const isJsonEntityMetadata = (value: IModelMetadata | undefined): value i
 };
 export const isObjectMetadata = (value: IMetadata | IModelMetadata | undefined): value is IObjectMetadata => {
   // If module doesn't exist then it's object
-  return isDefined(value) && value.dataType === DataTypes.object && "module" in value && typeof value.module === 'string' && isNullOrWhiteSpace(value.module);
+  return isDefined(value) && value.dataType === DataTypes.object && !("module" in value && typeof value.module === 'string' && !isNullOrWhiteSpace(value.module));
 };
 export const isContextMetadata = (value: IModelMetadata): value is IContextMetadata => {
   return Boolean(value) && value.dataType === DataTypes.context;

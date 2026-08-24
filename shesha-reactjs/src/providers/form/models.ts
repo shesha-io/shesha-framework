@@ -3,7 +3,7 @@ import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { FormLayout } from 'antd/lib/form/Form';
 import { CSSProperties, ReactNode } from 'react';
 import * as React from 'react';
-import { IAsyncValidationError, IDictionary } from '@/interfaces';
+import { IDictionary } from '@/interfaces';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { IHasVersion } from '@/utils/fluentMigrator/migrator';
 import { ConfigurableItemFullName, ConfigurableItemIdentifier, ConfigurableItemUid } from '@/interfaces/configurableItems';
@@ -21,7 +21,6 @@ import { StringSubtype } from '@/interfaces/utilityTypes';
 export const ROOT_COMPONENT_KEY: string = 'root'; // root key of the flat components structure
 export const TOOLBOX_COMPONENT_DROPPABLE_KEY: string = 'toolboxComponent';
 export const TOOLBOX_DATA_ITEM_DROPPABLE_KEY: string = 'toolboxDataItem';
-export const SILENT_KEY: string = '_#@';
 
 export interface ISubmitActionArguments {
   validateFields?: boolean;
@@ -129,9 +128,13 @@ export interface IStyleValue {
   /** js code of calculated style */
   style?: string | undefined;
   /** calculated style */
-  styleJson?: CSSProperties | undefined;
+  styleCss?: CSSProperties | undefined;
+  /** js code of calculated wrapper style */
+  wrapperStyle?: string | undefined;
+  /** calculated wrapper style */
+  wrapperStyleCss?: CSSProperties | undefined;
   /** @deprecated use stylingBoxJson insted */
-  stylingBox?: string | undefined;
+  stylingBox?: string | /* StyleBoxValue |*/ undefined;
   stylingBoxJson?: StyleBoxValue | undefined;
   primaryTextColor?: string | undefined;
   primaryBgColor?: string | undefined;
@@ -144,12 +147,53 @@ export interface IStyleValue {
 }
 
 /**
+ * Every property of `IStyleValue`, as a runtime list.
+ *
+ * Declared `satisfies` the key union so the compiler flags it when a property is added to
+ * `IStyleValue` but not here - otherwise `extractStyleValue` would silently stop forwarding it.
+ */
+const STYLE_VALUE_KEYS = [
+  'border', 'background', 'font', 'shadow', 'dimensions', 'size',
+  'style', 'styleCss', 'wrapperStyle', 'wrapperStyleCss',
+  'stylingBox', 'stylingBoxJson', 'primaryTextColor', 'primaryBgColor', 'secondaryBgColor',
+  'secondaryTextColor', 'overflow', 'hideScrollBar', 'autoWidth', 'autoHeight',
+] as const satisfies readonly (keyof IStyleValue)[];
+
+/**
+ * Extracts just the Appearance properties from a component model.
+ *
+ * A component model carries far more than styling - data source settings, event handlers, the
+ * component id. Handing the whole model to a presentational component passes all of that as well,
+ * which widens its contract to the entire model and makes it unclear what it actually reads.
+ * This narrows it to the style properties alone.
+ *
+ * Only keys actually present on the model are copied, so an unset property stays absent rather
+ * than becoming an explicit `undefined` - style builders test for presence to decide whether to
+ * emit a rule, and an own property set to `undefined` is still "present" to a spread.
+ */
+export const extractStyleValue = (model: IStyleValue | undefined): IStyleValue => {
+  if (model === undefined) return {};
+  const result: IStyleValue = {};
+  /* Generic in the key so `target[key]` and `source[key]` resolve to the same property type: a copy
+     between mismatched properties is a compile error rather than something an `unknown` bag and a
+     cast would let through. */
+  const copyKey = <K extends keyof IStyleValue>(target: IStyleValue, source: IStyleValue, key: K): void => {
+    const value = source[key];
+    if (value !== undefined) target[key] = value;
+  };
+  STYLE_VALUE_KEYS.forEach((key) => {
+    if (key in model) copyKey(result, model, key);
+  });
+  return result;
+};
+
+/**
  * The style model of a component that exposes two independent sets of Appearance panels: the
  * bare-named properties style the component's wrapper, and a nested set styles a repeated child.
  *
  * Used by the inner components, where the wrapper is the group container and the nested set
- * styles each child component — `INestedStyleValue<'radio'>` gives `radio.border`, `radio.background`, …
- * alongside the wrapper's own `border`, `background`, ….
+ * styles each child component - `INestedStyleValue<'radio'>` gives `radio.border`, `radio.background`, �
+ * alongside the wrapper's own `border`, `background`, ...
  */
 export type INestedStyleValue<TNested extends string> = IStyleValue & { [K in TNested]?: IStyleValue | undefined };
 
@@ -189,6 +233,7 @@ export type ConfigurableFormComponentTypes =
   'dropdown' |
   'textField' |
   'textField' |
+  'phoneNumberInput' |
   'textArea' |
   'iconPicker' |
   'colorPicker' |
@@ -209,11 +254,6 @@ export interface IComponentLabelProps {
 
   /** Position of the label */
   labelAlign?: LabelAlign | undefined;
-}
-
-export interface IComponentRuntimeProps {
-  /**/
-  settingsValidationErrors?: IAsyncValidationError[] | undefined;
 }
 
 export interface IComponentEventHandlers {
@@ -314,7 +354,6 @@ export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles =
   IComponentBindingProps,
   IComponentLabelProps,
   IComponentVisibilityProps,
-  IComponentRuntimeProps,
   IComponentEventHandlers,
   IStyleValue {
   /** Type of the component */
@@ -360,8 +399,6 @@ export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles =
   availableConstantsExpression?: string | GetAvailableConstantsFunc | undefined;
 
   subscribedEventNames?: string[] | undefined;
-
-  wrapperStyle?: string | undefined;
 
   noDataText?: string | undefined;
 
@@ -430,8 +467,12 @@ export interface IComponentRelations {
 export interface IFlatComponentsStructure {
   allComponents: IComponentsDictionary;
   componentRelations: IComponentRelations;
+  parents: Record<string, string>;
 }
-export const EMPTY_FLAT_COMPONENTS_STRUCTURE: IFlatComponentsStructure = { allComponents: {}, componentRelations: {} };
+
+export const getEmptyFlatMarkup = (): IFlatComponentsStructure => ({ allComponents: {}, componentRelations: {}, parents: {} });
+
+export const EMPTY_FLAT_COMPONENTS_STRUCTURE: IFlatComponentsStructure = Object.freeze({ allComponents: Object.freeze({}), componentRelations: Object.freeze({}), parents: Object.freeze({}) });
 
 export interface IFormSettingsCommon {
   modelType?: IEntityTypeIdentifier | string | undefined;

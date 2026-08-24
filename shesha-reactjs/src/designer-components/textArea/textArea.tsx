@@ -14,6 +14,7 @@ import {
   migrateCustomFunctions,
   migrateReadOnly,
   migrateHiddenToVisible,
+  migrateStylingBoxToJson,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
@@ -98,7 +99,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
       size: model.size,
       style: {
         ...getOverflowStyle(true, false),
-        ...(isDefined(model.styleJson) ? model.styleJson : {}),
+        ...(isDefined(model.styleCss) ? model.styleCss : {}),
       },
       spellCheck: model.spellCheck ?? false,
     };
@@ -155,7 +156,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
                   value={value}
                   type="textArea"
                   enableFullStyle={model.enableStyleOnReadonly}
-                  style={{ padding: 8, ...getOverflowStyle(true, false), ...model.styleJson }}
+                  style={{ padding: 8, ...getOverflowStyle(true, false), ...model.styleCss }}
                   styleValue={model}
                 />
               ) : (
@@ -223,7 +224,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
       .add<ITextAreaComponentProps>(5, (prev, context) => context.isNew === true
         ? prev
         : { ...migratePrevStyles(prev, defaultStyles()) })
-      .add<ITextAreaComponentProps>(6, (prev) => migrateHiddenToVisible(prev))
+      .add<ITextAreaComponentProps>(6, (prev) => migrateHiddenToVisible(migrateStylingBoxToJson(prev)))
       .add<ITextAreaComponentProps>(7, (prev) => migratePermissionsToVisiblePermissions(prev)),
   linkToModelMetadata: (model, _): ITextAreaComponentProps => {
     return {

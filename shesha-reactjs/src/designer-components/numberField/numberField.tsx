@@ -6,7 +6,7 @@ import { DataTypes, NumberFormats } from '@/interfaces/dataTypes';
 import { IComponentValidationRules, IInputStyles, useMetadataOrUndefined } from '@/providers';
 import { executeScriptSync, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { INumberFieldComponentProps, INumberFieldComponentPropsV1, NumberFieldComponentDefinition } from './interfaces';
-import { migratePropertyName, migrateCustomFunctions, migrateReadOnly, migrateHiddenToVisible } from '@/designer-components/_common-migrations/migrateSettings';
+import { migratePropertyName, migrateCustomFunctions, migrateReadOnly, migrateHiddenToVisible, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { numberToFormattedString } from '@/utils/string';
 import { getDataProperty } from '@/utils/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -104,7 +104,7 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
       // ...(isDefined(model.validate?.maxValue) ? { max: model.validate.maxValue } : {}),
       // ...(isDefined(model.validate?.minValue) ? { min: model.validate.minValue } : {}),
 
-      ...(isDefined(model.styleJson) ? { style: model.styleJson } : {}),
+      ...(isDefined(model.styleCss) ? { style: model.styleCss } : {}),
       className: styles.numberStyles,
 
     };
@@ -159,7 +159,7 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
                 // ToDo: AS - implement custom number formatting and merge with code from this component
                 value={numberToFormattedString(value?.toString(), getDataProperty(properties, model.propertyName ?? '', 'dataFormat'))}
                 enableFullStyle={model.enableStyleOnReadonly}
-                style={model.styleJson}
+                style={model.styleCss}
                 styleValue={model}
               />
             )
@@ -231,7 +231,7 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
           desktop: { ...migrateStyles(prev, {}, 'desktop'), enableStyleOnReadonly: (prev.desktop as IInputStyles | undefined)?.enableStyleOnReadonly ?? false },
         })
       .add<INumberFieldComponentProps>(6, (prev) => {
-        const model = { ...migrateHiddenToVisible(prev) };
+        const model = { ...migrateHiddenToVisible(migrateStylingBoxToJson(prev)) };
         if (prev.min !== undefined || prev.max !== undefined) {
           model.validate = {
             ...(prev.validate ?? {}),

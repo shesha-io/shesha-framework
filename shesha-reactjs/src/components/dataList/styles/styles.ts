@@ -58,6 +58,14 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
                     flex-grow: 1;
                 }
             }
+
+            /* The row content is a sibling of the selection control now, not a child of its <label>,
+               so it is a div rather than antd's trailing <span> - make it take the remaining width. */
+            > .${shaDatalistComponentItem},
+            > .${shaDatalistCard} {
+                flex-grow: 1;
+                min-width: 0;
+            }
         }
     
         .${shaDatalistComponentDivider} {

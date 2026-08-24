@@ -14,7 +14,6 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
       "header": {
         "id": "FizvoIoyeq1cZMqAgbDLL",
         "components": []
@@ -111,7 +110,6 @@
             "label": "Hide border",
             "parentId": "y9SNudmMM0Wd1Sc_YI1ng",
             "hidden": false,
-            "validate": {},
             "version": 2
           }
         ]
@@ -141,8 +139,6 @@
             "propertyName": "style",
             "label": "Style",
             "parentId": "G670M5i5T85_M0HrSligg",
-            "validate": {},
-            "settingsValidationErrors": [],
             "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
             "exposedVariables": [
               {
@@ -193,8 +189,7 @@
       },
       "collapsible": "header",
       "ghost": true,
-      "hideWhenEmpty": true,
-      "settingsValidationErrors": []
+      "hideWhenEmpty": true
     },
     {
       "id": "6Vw9iiDw9d0MD_Rh5cbIp",
@@ -219,15 +214,13 @@
             "propertyName": "permissions",
             "parentId": "SsWPpiJfTbgl4iHlFA_oy",
             "label": "Permissions",
-            "validate": {},
             "version": 1
           }
         ]
       },
       "collapsible": "header",
       "ghost": true,
-      "hideWhenEmpty": true,
-      "settingsValidationErrors": []
+      "hideWhenEmpty": true
     }
   ],
   "formSettings": {

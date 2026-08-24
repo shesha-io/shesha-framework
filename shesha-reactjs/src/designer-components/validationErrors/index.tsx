@@ -12,6 +12,9 @@ import classNames from 'classnames';
 import { useStyles } from './styles';
 import { useEvents } from '@/components/formDesigner/components/eventsAndApiValueProcessor';
 import { getComponentEvents } from '../_common/events';
+import { EMPTY_STYLE } from '@/styles/variables';
+import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
+import { migrateHiddenToVisible, migrateStylingBoxToJson } from '../_common-migrations';
 
 export interface IValidationErrorsComponentProps extends IConfigurableFormComponent, IStyleValue {
   className?: string | undefined;
@@ -35,22 +38,20 @@ export interface IValidationErrorsComponentProps extends IConfigurableFormCompon
   hideBorder?: boolean | undefined;
 }
 
-const emptyStyle = {};
-
 const ValidationErrorsComponent: IToolboxComponent<IValidationErrorsComponentProps> = {
   allowInherit: true,
   type: 'validationErrors',
   isInput: false,
   name: 'Validation Errors',
   icon: <WarningOutlined />,
-  getWrapperStyle: (model) => ({ style: { dimensions: model.dimensions } }),
+  getWrapperStyle: (model) => ({ style: { styleCss: {}, dimensions: model.dimensions } }),
   Factory: ({ model }) => {
     const handleEvent = useEvents<void>(model.componentName);
     const { styles } = useStyles(model);
     const { validationErrors, formMode } = useShaFormInstance();
     return (
       <ValidationErrors
-        style={model.styleJson ?? emptyStyle}
+        style={model.styleCss ?? EMPTY_STYLE}
         error={formMode === 'designer' ? 'Validation Errors (visible in the designer only)' : validationErrors}
         renderMode="alert"
         className={classNames(styles.shaValidationErrors, model.className)}
@@ -62,8 +63,9 @@ const ValidationErrorsComponent: IToolboxComponent<IValidationErrorsComponentPro
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   getDefaultStyles: defaultStyles,
   settingsFormMarkup: getSettings,
-  migrator: (m) =>
-    m.add<IValidationErrorsComponentProps>(0, (prev, ctx) => ctx.isNew === true ? prev : { ...migratePrevStyles(prev, defaultStyles()) }),
+  migrator: (m) => m
+    .add<IValidationErrorsComponentProps>(0, (prev, ctx) => ctx.isNew === true ? prev : { ...migratePrevStyles(prev, defaultStyles()) })
+    .add<IValidationErrorsComponentProps>(1, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
 };
 
 export default ValidationErrorsComponent;

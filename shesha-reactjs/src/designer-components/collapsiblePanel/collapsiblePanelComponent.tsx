@@ -1,7 +1,7 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { CollapsiblePanel, ICollapseRef } from '@/components/panel';
 import { shaHeaderComponentsContainer } from '@/components/panel/styles/styles';
-import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { GroupOutlined } from '@ant-design/icons';
@@ -28,6 +28,7 @@ import { getComponentEvents } from '../_common/events';
 import { getStyleValueFromModel } from '../_common/styles/utils';
 import { IStyleValue } from '@/providers';
 import { getFullSizeWrapperDesignerStyle } from '@/components/formDesigner/utils/stylingUtils';
+import { EMPTY_STYLE } from '@/styles/variables';
 
 const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
   allowInherit: true,
@@ -88,15 +89,14 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
         <CollapsiblePanel
           {...getStyleValueFromModel(model)}
           headerStyles={model.headerStyles}
-          style={model.styleJson ?? {}}
+          style={model.styleCss ?? EMPTY_STYLE}
           header={isDefined(model.header) && isNonEmptyArray(model.header.components) ? (
-            <div {...getComponentEvents<void>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent }, undefined, undefined, 'headerEvents')}>
-              <ComponentsContainer
-                containerId={model.header.id}
-                dynamicComponents={isDynamic === true ? model.header.components : []}
-                className={shaHeaderComponentsContainer}
-              />
-            </div>
+            <ComponentsContainer
+              containerId={model.header.id}
+              dynamicComponents={isDynamic === true ? model.header.components : []}
+              className={shaHeaderComponentsContainer}
+              additionalDomProperties={getComponentEvents<void>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent }, undefined, undefined, 'headerEvents')}
+            />
           ) : calculatedModel.evaluatedLabel}
           {...(!isIconHidden && expandIconPosition ? { expandIconPlacement: expandIconPosition } : {})}
           showArrow={collapsible !== 'disabled' && !isIconHidden}
@@ -113,12 +113,11 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
           onChange={onChange}
         >
           {isDefined(content) && (
-            <div {...getComponentEvents<void, ICollapsiblePanelComponentProps>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent })}>
-              <ComponentsContainer
-                containerId={content.id}
-                dynamicComponents={isDynamic === true ? content.components : []}
-              />
-            </div>
+            <ComponentsContainer
+              containerId={content.id}
+              dynamicComponents={isDynamic === true ? content.components : []}
+              additionalDomProperties={getComponentEvents<void, ICollapsiblePanelComponentProps>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent })}
+            />
           )}
         </CollapsiblePanel>
       </ParentProvider>
@@ -189,9 +188,9 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
 
         const accentStyle = prev.overflow === undefined;
         return {
-          ...prev, accentStyle, desktop: { ...prev.desktop, accentStyle },
-          tablet: { ...prev.tablet, accentStyle },
-          mobile: { ...prev.mobile, accentStyle },
+          ...prev, accentStyle, desktop: { styleCss: {}, ...prev.desktop, accentStyle },
+          tablet: { styleCss: {}, ...prev.tablet, accentStyle },
+          mobile: { styleCss: {}, ...prev.mobile, accentStyle },
         };
       })
       .add<ICollapsiblePanelComponentProps>(9, (prev, ctx) => {
@@ -200,13 +199,13 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
         const newModel = migratePrevStyles(prev, getDefaultStyles(prev));
         const defaultHeaderStyle = (): IStyleValue => ({ ...getDefaultHeaderStyles(prev) });
         return {
-          ...newModel, desktop: { ...newModel.desktop, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle() },
-          tablet: { ...newModel.tablet, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle() },
-          mobile: { ...newModel.mobile, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle() },
+          ...newModel, desktop: { styleCss: {}, ...newModel.desktop, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle() },
+          tablet: { styleCss: {}, ...newModel.tablet, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle() },
+          mobile: { styleCss: {}, ...newModel.mobile, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle() },
         };
       })
       .add<ICollapsiblePanelComponentProps>(10, migrateV9toV10)
-      .add<ICollapsiblePanelComponentProps>(11, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev))),
+      .add<ICollapsiblePanelComponentProps>(11, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
   customContainerNames: ['header', 'content'],
   getDefaultStyles: () => {
     const defaultStyles = getDefaultStyles({} as ICollapsiblePanelComponentProps);

@@ -1,8 +1,10 @@
-import { ColProps, FormInstance } from 'antd';
+import { ColProps } from 'antd';
+import type { Rule } from 'antd/lib/form';
 import { FormLayout } from 'antd/lib/form/Form';
 import { FC, RefObject, ReactNode } from 'react';
 import { ConfigurableFormInstance } from '@/providers/form/contexts';
 import {
+  FormFullName,
   FormIdentifier,
   FormMarkup,
   IConfigurableFormComponent,
@@ -10,9 +12,10 @@ import {
   IFormComponentContainer,
   IFormSettings,
 } from '@/providers/form/models';
+import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { IHasVersion, Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 import { IModelMetadata, IPropertyMetadata } from './metadata';
-import { IAjaxResponseBase, IApplicationContext, IErrorInfo, IObjectMetadata, IStyleValue, UnwrapCodeEvaluators } from '..';
+import { IAjaxResponseBase, IApplicationContext, IErrorInfo, IObjectMetadata, IShaFormInstance, IStyleValue, UnwrapCodeEvaluators } from '..';
 import { ISheshaApplicationInstance } from '@/providers/sheshaApplication/application';
 import { AxiosResponse } from 'axios';
 import { FormBuilderFactory } from '@/form-factory/interfaces';
@@ -32,6 +35,12 @@ export interface IGetFieldsToFetchContext {
    * the caller is responsible for prefixing them with its own property name
    */
   getFormFieldsAsync: (formId: FormIdentifier) => Promise<string[]>;
+  /**
+   * Resolves the form configured for the given entity type and form type (view type). When the entity
+   * has no such view configured the result is the convention-derived name `{entityName}-{formType}`,
+   * which may point to a form that does not exist. Rejects only when the entity has no configuration at all
+   */
+  getEntityFormIdAsync: (entityType: string | IEntityTypeIdentifier, formType: string) => Promise<FormFullName>;
 }
 
 export interface IFormLayoutSettings {
@@ -83,9 +92,7 @@ export interface ComponentFactoryArguments<TModel extends IConfigurableFormCompo
   calculatedModel: TCalculatedModel;
   shaApplication?: ISheshaApplicationInstance;
   apiContext?: IApiContext<TModel>;
-
-  // for backward compatibility
-  form: FormInstance;
+  form: IShaFormInstance;
 }
 
 export type FormFactory<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = never> = FC<ComponentFactoryArguments<TModel, TCalculatedModel>>;
@@ -155,10 +162,6 @@ export type IToolboxComponentBase = {
    * Return true to indicate that the data type is supported by the component
    */
   dataTypeSupported?: (dataTypeInfo: { dataType: string; dataFormat: string | undefined }) => boolean;
-  /**
-   * Returns true if the property should be calculated for the actual model (calculated from JS code)
-   */
-  actualModelPropertyFilter?: (name: string, value: unknown) => boolean;
 
   editorAdapter?: IEditorAdapter;
 
@@ -208,6 +211,11 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
    * @returns - calculated model
    */
   calculateModel?: ((model: TModel, allData: IApplicationContext, useCalculatedModel?: TCalculatedModel) => TCalculatedModel) | undefined;
+
+  /**
+   * Returns true if the property should be calculated for the actual model (calculated from JS code)
+   */
+  actualModelPropertyFilter?: (name: string, value: unknown) => boolean;
 
   actualModelFilteredPropertyProcessor?: UnwrapFunc;
 
@@ -264,6 +272,12 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
    * Validate model before rendering a component, used to add user-friendly messages about the need to correctly configure the component fields in the designer
    */
   validateModel?: (model: TModel, addModelError: (propertyName: string, error: string) => void) => void;
+
+  /**
+   * Returns additional Form.Item validation rules contributed by the component itself (e.g. intrinsic
+   * value-format validity), merged with the generic rules built from `model.validate`
+   */
+  getExtraValidationRules?: (model: TModel) => Rule[];
 
   /**
    * Configuration is used to show a preview of the component in the some places (like theme component configurator)

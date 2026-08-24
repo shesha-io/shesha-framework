@@ -1,453 +1,107 @@
 import { FormLayout } from 'antd/lib/form/Form';
-import { fontTypes, fontWeightsOptions } from '../_settings/utils/font/utils';
 import { nanoid } from '@/utils/uuid';
 import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
-  const searchableTabsId = nanoid();
+export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter }) => {
   const commonTabId = nanoid();
   const appearanceTabId = nanoid();
-  const securityTabId = nanoid();
-  const styleRouterId = nanoid();
-  const fontStylePnlId = nanoid();
-  const dimensionsStylePnlId = nanoid();
+  const eventsTabId = nanoid();
+  const styleRouter1Id = nanoid();
+  const styleRouter2Id = nanoid();
 
   return {
     components: fbf()
-      .addSearchableTabs({
-        id: searchableTabsId,
-        propertyName: 'settingsTabs',
-        parentId: 'root',
-        label: 'Settings',
-        hideLabel: true,
-        labelAlign: 'right',
-        size: 'small',
+      .addSearchableTabs({ propertyName: 'settingsTabs', parentId: 'root', label: 'Settings', hideLabel: true, labelAlign: 'right', size: 'small',
         tabs: [
-          {
-            key: '1',
-            title: 'Common',
-            id: commonTabId,
-            components: [
-              ...fbf()
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'textField',
-                  parentId: commonTabId,
-                  propertyName: 'componentName',
-                  label: 'Component Name',
-                  jsSetting: true,
-                })
-                .addContainer({
-                  id: nanoid(),
-                  parentId: commonTabId,
+          { key: 'common', title: 'Common', id: commonTabId,
+            components: fbf(commonTabId)
+              .addSettingsInput({ inputType: 'textField', propertyName: 'componentName', label: 'Component Name', validate: { required: true }, jsSetting: false })
+              .addSettingsInput({ inputType: 'switch', propertyName: 'visible', label: 'Visible', jsSetting: true, layout: 'horizontal', permissionSettings: true })
+              .addSettingsInputRow({ inputs: [
+                { type: 'dropdown', propertyName: 'orientation', label: 'Orientation', jsSetting: true,
+                  dropdownOptions: [{ label: 'Horizontal', value: 'horizontal' }, { label: 'Vertical', value: 'vertical' }],
+                },
+                { type: 'switch', propertyName: 'inline', label: 'Inline', size: 'small', jsSetting: true,
                   hidden: { _code: 'return  getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: false },
-                  components: [
-                    ...fbf()
-                      .addLabelConfigurator({
-                        id: nanoid(),
-                        propertyName: 'hideLabel',
-                        label: 'Label',
-                        parentId: commonTabId,
-                        hideLabel: true,
-                        labelAlignOptions: [
-                          { value: 'left', icon: 'AlignLeftOutlined', title: 'Left' },
-                          { value: 'center', icon: 'AlignCenterOutlined', title: 'Center' },
-                          { value: 'right', icon: 'AlignRightOutlined', title: 'Right' },
-                        ],
-                      })
-                      .addSettingsInputRow({
-                        id: nanoid(),
-                        parentId: commonTabId,
-                        inputs: [
-                          {
-                            id: nanoid(),
-                            parentId: commonTabId,
-                            type: 'textArea',
-                            propertyName: 'description',
-                            label: 'Tooltip',
-                            jsSetting: true,
-                            hidden: { _code: 'return  getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: false },
-                          },
-                        ],
-                      }).toJson(),
+                },
+              ],
+              })
+              .stdContainer((fbf) => fbf
+                .addLabelConfigurator({ propertyName: 'hideLabel', label: 'Label', hideLabel: true,
+                  labelAlignOptions: [
+                    { value: 'left', icon: 'AlignLeftOutlined', title: 'Left' },
+                    { value: 'center', icon: 'AlignCenterOutlined', title: 'Center' },
+                    { value: 'right', icon: 'AlignRightOutlined', title: 'Right' },
                   ],
                 })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  inputs: [
-                    {
-                      id: nanoid(),
-                      parentId: commonTabId,
-                      type: 'dropdown',
-                      propertyName: 'orientation',
-                      label: 'Orientation',
-                      jsSetting: true,
-                      dropdownOptions: [
-                        {
-                          label: 'Horizontal',
-                          value: 'horizontal',
-                        },
-                        {
-                          label: 'Vertical',
-                          value: 'vertical',
-                        },
-                      ],
-                    },
-                    {
-                      type: 'switch',
-                      id: nanoid(),
-                      propertyName: 'inline',
-                      label: 'Inline',
-                      size: 'small',
-                      hidden: { _code: 'return  getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: false },
-                      jsSetting: true,
-                    },
-                  ],
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  inputs: [
-                    {
-                      type: 'switch',
-                      id: nanoid(),
-                      propertyName: 'hidden',
-                      label: 'Hide',
-                      jsSetting: true,
-                      layout: 'horizontal',
-                    },
-                  ],
-                })
-                .toJson(),
-            ],
-          },
-          {
-            key: '4',
-            title: 'Appearance',
-            id: appearanceTabId,
-            components: [
-              ...fbf()
-                .addPropertyRouter({
-                  id: styleRouterId,
-                  propertyName: 'propertyRouter1',
-                  componentName: 'propertyRouter',
-                  label: 'Property router1',
-                  labelAlign: 'right',
-                  parentId: appearanceTabId,
-                  hidden: false,
-                  propertyRouteName: {
-                    _mode: 'code',
-                    _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
-                    _value: '',
-                  },
-                  components: [
-                    ...fbf()
-                      .addCollapsiblePanel({
-                        id: nanoid(),
-                        propertyName: 'lineStyle',
-                        label: 'Line Style',
-                        labelAlign: 'right',
-                        ghost: true,
-                        parentId: styleRouterId,
-                        collapsible: 'header',
-                        content: {
-                          id: nanoid(),
-                          components: [
-                            ...fbf()
-                              .addSettingsInputRow({
-                                id: nanoid(),
-                                parentId: 'fontStylePnlline',
-                                inline: true,
-                                propertyName: 'lineFont',
-                                inputs: [
-                                  {
-                                    type: 'numberField',
-                                    id: nanoid(),
-                                    label: 'Thickness',
-                                    propertyName: 'lineFont.size',
-                                    hideLabel: false,
-                                    width: 50,
-                                  },
-                                  {
-                                    type: 'colorPicker',
-                                    id: nanoid(),
-                                    label: 'Color',
-                                    hideLabel: false,
-                                    propertyName: 'lineFont.color',
-                                  },
-                                  {
-                                    type: 'dropdown',
-                                    id: nanoid(),
-                                    label: 'Type',
-                                    propertyName: 'lineType',
-                                    hideLabel: false,
-                                    dropdownOptions: [
-                                      {
-                                        label: 'Solid',
-                                        value: 'solid',
-                                      },
-                                      {
-                                        label: 'Dashed',
-                                        value: 'dashed',
-                                      },
-                                      {
-                                        label: 'Dotted',
-                                        value: 'dotted',
-                                      },
-                                    ],
-                                  },
-                                ],
-                              })
-                              .toJson(),
-                          ],
-                        },
-                      })
-                      .addCollapsiblePanel({
-                        id: nanoid(),
-                        propertyName: 'pnlDimensions',
-                        label: 'Dimensions',
-                        parentId: styleRouterId,
-                        labelAlign: 'right',
-                        ghost: true,
-                        collapsible: 'header',
-                        content: {
-                          id: dimensionsStylePnlId,
-                          components: [
-                            ...fbf()
-                              .addSettingsInputRow({
-                                id: nanoid(),
-                                parentId: dimensionsStylePnlId,
-                                inline: true,
-                                hidden: {
-                                  _code: 'return  getSettingValue(data?.orientation) === "vertical";',
-                                  _mode: 'code',
-                                  _value: false,
-                                },
-                                inputs: [
-                                  {
-                                    type: 'textField',
-                                    id: nanoid(),
-                                    label: 'Width',
-                                    width: 85,
-                                    propertyName: 'lineWidth',
-                                    icon: 'widthIcon',
-                                    tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
-                                  },
-                                ],
-                              })
-                              .addSettingsInputRow({
-                                id: nanoid(),
-                                parentId: dimensionsStylePnlId,
-                                inline: true,
-                                hidden: {
-                                  _code: 'return  getSettingValue(data?.orientation) === "horizontal";',
-                                  _mode: 'code',
-                                  _value: false,
-                                },
-
-                                inputs: [
-                                  {
-                                    type: 'textField',
-                                    id: nanoid(),
-                                    label: 'Height',
-                                    width: 85,
-                                    propertyName: 'lineHeight',
-                                    icon: 'heightIcon',
-                                    tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
-                                  },
-                                ],
-                              })
-                              .toJson(),
-                          ],
-                        },
-                      })
-                      .addCollapsiblePanel({
-                        id: nanoid(),
-                        propertyName: 'titleStyle',
-                        label: 'Title Style',
-                        labelAlign: 'right',
-                        ghost: true,
-                        collapsedByDefault: true,
-                        parentId: styleRouterId,
-                        collapsible: 'header',
-                        content: {
-                          id: nanoid(),
-                          components: [
-                            ...fbf()
-                              .addCollapsiblePanel({
-                                id: nanoid(),
-                                propertyName: 'pnlFontStyle',
-                                label: 'Font',
-                                labelAlign: 'right',
-                                parentId: styleRouterId,
-                                ghost: true,
-                                collapsible: 'header',
-                                content: {
-                                  id: fontStylePnlId,
-                                  components: [
-                                    ...fbf()
-                                      .addSettingsInputRow({
-                                        id: nanoid(),
-                                        parentId: fontStylePnlId,
-                                        inline: true,
-                                        propertyName: 'font',
-                                        inputs: [
-                                          {
-                                            type: 'dropdown',
-                                            id: nanoid(),
-                                            label: 'Family',
-                                            propertyName: 'font.type',
-                                            hideLabel: true,
-                                            dropdownOptions: fontTypes,
-                                          },
-                                          {
-                                            type: 'numberField',
-                                            id: nanoid(),
-                                            label: 'Size',
-                                            propertyName: 'font.size',
-                                            hideLabel: true,
-                                            width: 50,
-                                          },
-                                          {
-                                            type: 'dropdown',
-                                            id: nanoid(),
-                                            label: 'Weight',
-                                            propertyName: 'font.weight',
-                                            hideLabel: true,
-                                            tooltip: 'Controls text thickness (light, normal, bold, etc.)',
-                                            dropdownOptions: fontWeightsOptions,
-                                            width: 100,
-                                          },
-                                          {
-                                            type: 'colorPicker',
-                                            id: nanoid(),
-                                            label: 'Color',
-                                            hideLabel: true,
-                                            propertyName: 'font.color',
-                                          },
-                                        ],
-                                      })
-                                      .toJson(),
-                                  ],
-                                },
-                              })
-                              .addCollapsiblePanel({
-                                id: nanoid(),
-                                propertyName: 'customStyle',
-                                label: 'Custom Styles',
-                                labelAlign: 'right',
-                                ghost: true,
-                                content: {
-                                  id: nanoid(),
-                                  components: [
-                                    ...fbf()
-                                      .addSettingsInput({
-                                        id: nanoid(),
-                                        inputType: 'codeEditor',
-                                        propertyName: 'titleStyle',
-                                        hideLabel: false,
-                                        label: 'Style',
-                                        description:
-                                          'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                                      })
-                                      .toJson(),
-                                  ],
-                                },
-                              })
-                              .toJson(),
-                          ],
-                        },
-                      })
-                      .addCollapsiblePanel({
-                        id: nanoid(),
-                        propertyName: 'customStyle',
-                        label: 'Container Style',
-                        labelAlign: 'right',
-                        ghost: true,
-                        collapsedByDefault: true,
-                        parentId: styleRouterId,
-                        collapsible: 'header',
-                        content: {
-                          id: nanoid(),
-                          components: [
-                            ...fbf()
-                              .addCollapsiblePanel({
-                                id: nanoid(),
-                                propertyName: 'stylingBox',
-                                label: 'Margin & Padding',
-                                labelAlign: 'right',
-                                ghost: true,
-                                collapsible: 'header',
-                                content: {
-                                  id: nanoid(),
-                                  components: [
-                                    ...fbf()
-                                      .addStyleBox({
-                                        id: nanoid(),
-                                        label: 'Margin Padding',
-                                        hideLabel: true,
-                                        propertyName: 'containerStylingBox',
-                                      })
-                                      .toJson(),
-                                  ],
-                                },
-                              })
-                              .addCollapsiblePanel({
-                                id: nanoid(),
-                                propertyName: 'customStyle',
-                                label: 'Custom Styles',
-                                labelAlign: 'right',
-                                ghost: true,
-                                content: {
-                                  id: nanoid(),
-                                  components: [
-                                    ...fbf()
-                                      .addSettingsInput({
-                                        id: nanoid(),
-                                        inputType: 'codeEditor',
-                                        propertyName: 'containerStyle',
-                                        hideLabel: false,
-                                        label: 'Style',
-                                        description:
-                                          'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                                      })
-                                      .toJson(),
-                                  ],
-                                },
-                              })
-                              .toJson(),
-                          ],
-                        },
-                      })
-                      .toJson(),
-                  ],
-                })
-                .toJson(),
-            ],
-          },
-          {
-            key: '5',
-            title: 'Security',
-            id: securityTabId,
-            components: [
-              ...fbf()
                 .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'permissions',
-                  propertyName: 'permissions',
-                  label: 'Permissions',
-                  size: 'small',
-                  jsSetting: true,
-                  parentId: securityTabId,
-                })
-                .toJson(),
-            ],
+                  inputType: 'textArea', propertyName: 'description', label: 'Tooltip', jsSetting: true,
+                  hidden: { _code: 'return  getSettingValue(data?.orientation) === "vertical";', _mode: 'code', _value: false },
+                }),
+              'return  getSettingValue(data?.orientation) !== "vertical";',
+              )
+              .addPropertyRouter({ id: styleRouter1Id, componentName: 'propertyRouter1', label: 'Property router1', labelAlign: 'right',
+                propertyRouteName: removeStyleRouter === true ? '' : { _mode: "code", _code: "    return contexts.canvasContext?.designerDevice || 'desktop';", _value: "" },
+                components: fbf(styleRouter1Id)
+                  .stdCollapsiblePanel('Line Style', (fbf) => fbf
+                    .addSettingsInputRow({ inline: true, propertyName: 'lineFont', inputs: [
+                      { type: 'numberField', label: 'Thickness', propertyName: 'lineFont.size', hideLabel: false, width: 50 },
+                      { type: 'colorPicker', label: 'Color', hideLabel: false, propertyName: 'lineFont.color' },
+                      { type: 'dropdown', label: 'Type', propertyName: 'lineType', hideLabel: false,
+                        dropdownOptions: [{ label: 'Solid', value: 'solid' }, { label: 'Dashed', value: 'dashed' }, { label: 'Dotted', value: 'dotted' }],
+                      },
+                    ] })
+                    .addSettingsInput({ visibleJs: 'return  getSettingValue(data?.orientation) === "horizontal";',
+                      inputType: 'dimensionField', dimensionType: 'width', label: 'Width', propertyName: 'lineWidth',
+                    })
+                    .addSettingsInput({ visibleJs: 'return  getSettingValue(data?.orientation) === "vertical";',
+                      inputType: 'dimensionField', dimensionType: 'height', label: 'Height', propertyName: 'lineHeight',
+                    }), true)
+                  .stdCollapsiblePanel('Title Style', (fbf) => fbf.stdFontControls(undefined, ['align']), true)
+                  .stdCollapsiblePanel('Container Style', (fbf) => fbf.addStyleBox({ label: 'Margin Padding', hideLabel: true, propertyName: 'containerStylingBoxJson', format: 'json' }), true)
+                  .toJson(),
+              })
+              .toJson(),
+          },
+          { key: 'events', title: 'Events', id: eventsTabId, components: [...fbf(eventsTabId).stdEventHandlers(['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave']).toJson()] },
+          { key: 'appearance', title: 'Appearance', id: appearanceTabId,
+            components: fbf(appearanceTabId)
+              .addPropertyRouter({ id: styleRouter2Id, componentName: 'propertyRouter2', label: 'Property router2', labelAlign: 'right',
+                propertyRouteName: removeStyleRouter === true ? '' : { _mode: "code", _code: "    return contexts.canvasContext?.designerDevice || 'desktop';", _value: "" },
+                components: fbf(styleRouter2Id)
+                  .stdCollapsiblePanel('Line Style', (fbf) => fbf
+                    .addSettingsInputRow({ inline: true, propertyName: 'lineFont', inputs: [
+                      { type: 'numberField', label: 'Thickness', propertyName: 'lineFont.size', hideLabel: false, width: 50 },
+                      { type: 'colorPicker', label: 'Color', hideLabel: false, propertyName: 'lineFont.color' },
+                      { type: 'dropdown', label: 'Type', propertyName: 'lineType', hideLabel: false,
+                        dropdownOptions: [{ label: 'Solid', value: 'solid' }, { label: 'Dashed', value: 'dashed' }, { label: 'Dotted', value: 'dotted' }],
+                      },
+                    ] })
+                    .addSettingsInput({ visibleJs: 'return  getSettingValue(data?.orientation) === "horizontal";',
+                      inputType: 'dimensionField', dimensionType: 'width', label: 'Width', propertyName: 'lineWidth',
+                    })
+                    .addSettingsInput({ visibleJs: 'return  getSettingValue(data?.orientation) === "vertical";',
+                      inputType: 'dimensionField', dimensionType: 'height', label: 'Height', propertyName: 'lineHeight',
+                    }))
+                  .stdCollapsiblePanel('Title Style', (fbf) => fbf
+                    .stdFontControls(undefined, ['align'])
+                    .addSettingsInput({ inputType: 'codeEditor', propertyName: 'style', hideLabel: false, label: 'Style',
+                      description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                    }))
+                  .stdCollapsiblePanel('Container Style', (fbf) => fbf
+                    .addStyleBox({ label: 'Margin Padding', hideLabel: true, propertyName: 'containerStylingBoxJson', format: 'json' })
+                    .addSettingsInput({ inputType: 'codeEditor', propertyName: 'wrapperStyle', hideLabel: false, label: 'Style',
+                      description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                    }))
+                  .toJson(),
+              })
+              .toJson(),
           },
         ],
       })
       .toJson(),
     formSettings: {
+      isSettingsForm: true,
       colon: false,
       layout: 'vertical' as FormLayout,
       labelCol: { span: 24 },

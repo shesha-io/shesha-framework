@@ -31,6 +31,11 @@ type LimitedSelectProps<TValue = unknown> = Pick<SelectProps<TValue>, 'mode' | '
 
 export interface IRefListDropDownProps<TValue = unknown> extends LimitedSelectProps<TValue>, IReadOnly {
   /**
+   * Emotion class for the option list, which antd portals outside the select so it cannot be reached
+   * from `className`. Built by the caller, like `className`.
+   */
+  popupClassName?: string | undefined;
+  /**
    * Reference List identifier
    */
   referenceListId: IReferenceListIdentifier;

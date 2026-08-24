@@ -37,7 +37,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
               parentId: '7d8493e3-141f-4507-a983-7f3ff7f2cf86',
               label: 'Hide Label',
               labelAlign: 'right',
-              validate: {},
             })
             .addCheckbox({
               id: nanoid(),
@@ -45,7 +44,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
               parentId: '7d8493e3-141f-4507-a983-7f3ff7f2cf86',
               label: 'hide',
               labelAlign: 'right',
-              validate: {},
             })
             .toJson(),
         ],

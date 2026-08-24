@@ -42,10 +42,8 @@
             "autoSize": false,
             "showCount": false,
             "allowClear": false,
-            "validate": {},
             "exposedVariables": [],
             "version": 2,
-            "settingsValidationErrors": [],
             "placeholder": "",
             "description": "",
             "wrapInTemplate": false,
@@ -108,8 +106,6 @@
             "propertyName": "style",
             "label": "Style",
             "parentId": "pnl54bf6-f55d-4139-a850-c99bf06c8b69",
-            "validate": {},
-            "settingsValidationErrors": [],
             "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
             "exposedVariables": [
               {
@@ -154,15 +150,13 @@
             "propertyName": "permissions",
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Permissions",
-            "validate": {},
             "version": 1
           }
         ]
       },
       "collapsible": "header",
       "ghost": true,
-      "hideWhenEmpty": true,
-      "settingsValidationErrors": []
+      "hideWhenEmpty": true
     }
   ],
   "formSettings": {

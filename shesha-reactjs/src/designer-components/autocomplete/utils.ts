@@ -2,20 +2,57 @@ import { IStyleValue } from "@/providers/form/models";
 
 export const defaultStyles = (): IStyleValue => {
   return {
-    background: { type: 'color', color: '#fff' },
-    font: { weight: '400', size: 14, color: '#000', type: 'Segoe UI' },
+    background: {
+      type: 'color',
+      color: '#fff',
+      repeat: 'no-repeat',
+      size: 'cover',
+      position: 'center',
+      gradient: { direction: 'to right', colors: [] },
+      url: '',
+    },
+    font: {
+      weight: '400',
+      size: 14,
+      color: '#000',
+      type: 'Segoe UI',
+      align: 'left',
+    },
     border: {
       border: {
-        all: { width: '1px', style: 'solid', color: '#d9d9d9' },
-        top: { width: '1px', style: 'solid', color: '#d9d9d9' },
-        bottom: { width: '1px', style: 'solid', color: '#d9d9d9' },
-        left: { width: '1px', style: 'solid', color: '#d9d9d9' },
-        right: { width: '1px', style: 'solid', color: '#d9d9d9' },
+        all: { width: 1, style: 'solid', color: '#d9d9d9' },
       },
-      radius: { all: 8, topLeft: 8, topRight: 8, bottomLeft: 8, bottomRight: 8 },
+      radius: { all: 8 },
       borderType: 'all',
       radiusType: 'all',
     },
-    dimensions: { width: '100%', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
+    dimensions: {
+      width: '100%',
+      /* A minimum rather than a fixed height: `dimensionsStyles` emits `height` on the root box, so
+         a fixed 32px clips the wrapped rows of tags a multiple-selection autocomplete grows. The
+         minimum keeps the empty control the same size it was. */
+      minHeight: '32px',
+      maxHeight: 'auto',
+      minWidth: '0px',
+      maxWidth: 'auto',
+    },
+    shadow: {
+      spreadRadius: 0,
+      blurRadius: 0,
+      color: '#000',
+      offsetX: 0,
+      offsetY: 0,
+    },
+    stylingBoxJson: {
+      _type: 'styleBox',
+      marginBottom: "0",
+      marginLeft: "0",
+      marginRight: "0",
+      marginTop: "0",
+      paddingBottom: "0",
+      paddingLeft: "0",
+      paddingRight: "0",
+      paddingTop: "0",
+    },
   };
 };

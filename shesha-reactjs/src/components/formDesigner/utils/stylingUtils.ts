@@ -71,17 +71,42 @@ export const getFullSizeWrapperStyle = (model: IStyleValue): IStyleValue => ({
   // stylingBoxJson: getMarginStyle(model.stylingBoxJson),
 });
 
+/** Calculates the padding value for the designer, taking into account the margin of the component.
+ * if the component's margin value is greater than the padding value for the designer, then padding is not applied.
+ * This allows to keep the margins the same as in the "live" forms.
+ * If the component's margin is less than the designer's padding,
+ * then the padding - margin difference is applied so that the component always has a minimum padding in designer mode. */
+export const getDesignerPadding = (value: string | number | undefined, designerValue: string | number | undefined): string | number | undefined => {
+  const stringValue = isDefined(value) ? String(value) : undefined;
+  const designerStringValue = isDefined(designerValue) ? String(designerValue) : undefined;
+  if (isNullOrWhiteSpace(stringValue) || isNullOrWhiteSpace(designerStringValue)) return designerValue;
+  const margin = parseFloat(stringValue);
+  const designerPadding = parseFloat(designerStringValue);
+
+  return margin > designerPadding ? undefined : designerPadding - margin;
+};
+
 export const getFullSizeWrapperDesignerStyle = (model: IStyleValue): IWrapperStyle => ({
   style: getFullSizeWrapperStyle(model),
-  designerStyle: DEFAULT_DESIGNER_PADDING,
+  designerStyle: {
+    ...DEFAULT_DESIGNER_PADDING,
+    // use default designer margin if component margin is not set or component margin is less than designer margin
+    stylingBoxJson: {
+      _type: 'styleBox',
+      paddingBottom: getDesignerPadding(model.stylingBoxJson?.marginBottom, DEFAULT_DESIGNER_PADDING.stylingBoxJson?.paddingBottom),
+      paddingLeft: getDesignerPadding(model.stylingBoxJson?.marginLeft, DEFAULT_DESIGNER_PADDING.stylingBoxJson?.paddingLeft),
+      paddingRight: getDesignerPadding(model.stylingBoxJson?.marginRight, DEFAULT_DESIGNER_PADDING.stylingBoxJson?.paddingRight),
+      paddingTop: getDesignerPadding(model.stylingBoxJson?.marginTop, DEFAULT_DESIGNER_PADDING.stylingBoxJson?.paddingTop),
+    },
+  },
 });
 
 export const getMarginStyle = (model: StyleBoxValue | undefined): StyleBoxValue => ({
   _type: 'styleBox',
-  marginBottom: model?.marginBottom ?? 0,
-  marginLeft: model?.marginLeft ?? 0,
-  marginRight: model?.marginRight ?? 0,
-  marginTop: model?.marginTop ?? 0,
+  marginBottom: model?.marginBottom,
+  marginLeft: model?.marginLeft,
+  marginRight: model?.marginRight,
+  marginTop: model?.marginTop,
 });
 
 /** Margin values extracted from various style sources */

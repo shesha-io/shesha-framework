@@ -8,7 +8,7 @@ import { getDisplayNameOrUndefined } from '@/utils/object';
 /** Google's Places API accepts at most 5 entries in `componentRestrictions.country`. */
 const MAX_COUNTRY_RESTRICTIONS = 5;
 
-export const getAddressValue = (value: string | IEntityReferenceDto | undefined): string => {
+export const getAddressValue = (value: string | IEntityReferenceDto | null | undefined): string => {
   if (!isDefined(value)) return '';
 
   return typeof value === "string"

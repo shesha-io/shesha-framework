@@ -6,6 +6,7 @@ import { BaseType } from 'antd/lib/typography/Base';
 import { useStyles } from './styles/styles';
 import { Typography } from 'antd';
 import { IConfigurableTheme, useTheme } from '@/providers';
+import { EMPTY_STYLE } from '@/styles/variables';
 
 const { Paragraph, Title } = Typography;
 
@@ -36,17 +37,13 @@ export const GenericText: FC<PropsWithChildren<ITextComponentProps & { additiona
   const chosenType: BaseType | undefined = isBaseType(contentType) ? contentType : undefined;
 
   const baseProps: ITypographyProps = useMemo(() => ({
-    code: model.code ?? false,
     copyable: model.copyable ?? false,
     delete: model.delete ?? false,
-    ellipsis: model.ellipsis ?? false,
-    mark: model.mark ?? false,
     underline: model.underline ?? false,
-    keyboard: model.keyboard ?? false,
     italic: model.italic ?? false,
     ...(chosenType ? { type: chosenType } : {}),
-    style: model.styleJson ?? {},
-  }), [model.code, model.copyable, model.delete, model.ellipsis, model.mark, model.underline, model.keyboard, model.italic, model.styleJson, chosenType]);
+    style: model.styleCss,
+  }), [model.copyable, model.delete, model.underline, model.italic, model.styleCss, chosenType]);
 
   const titleProps: TitleProps = useMemo(() => ({ ...baseProps, style: baseProps.style ?? {}, level: level > 0 ? level as StrongLevelType : 5 }), [baseProps, level]);
 
@@ -57,5 +54,5 @@ export const GenericText: FC<PropsWithChildren<ITextComponentProps & { additiona
 
   return level > 0
     ? <Title {...titleProps} className={className} {...model.additionalDomProperties}>{children}</Title>
-    : <Paragraph {...baseProps} className={className} style={model.styleJson ?? {}} {...model.additionalDomProperties}>{children}</Paragraph>;
+    : <Paragraph {...baseProps} className={className} style={model.styleCss ?? EMPTY_STYLE} {...model.additionalDomProperties}>{children}</Paragraph>;
 };

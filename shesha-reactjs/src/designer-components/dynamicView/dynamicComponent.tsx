@@ -70,13 +70,13 @@ const DynamicComponent: FC<IConfigurableFormComponentProps> = ({ model: componen
 
   const control = useMemo(() => (
     <Factory
-      form={shaForm.antdForm}
+      form={shaForm}
       model={actualModel}
       calculatedModel={calculatedModel}
       shaApplication={shaApplication}
       key={actualModel.id}
     />
-  ), [actualModel, calculatedModel, shaForm.antdForm, shaApplication, Factory]);
+  ), [actualModel, calculatedModel, shaForm, shaApplication, Factory]);
 
   // Run validation in both designer and runtime modes
   const errors: Array<{ propertyName?: string; error: string }> = [];

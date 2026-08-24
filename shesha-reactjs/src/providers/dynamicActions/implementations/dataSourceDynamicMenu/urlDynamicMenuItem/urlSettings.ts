@@ -14,7 +14,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
             parentId: 'root',
             label: 'Custom Endpoint',
             hidden: false,
-            settingsValidationErrors: [],
           },
           {
             id: nanoid(),
@@ -25,9 +24,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
             labelName: 'param',
             valueTitle: 'Value',
             valueName: 'value',
-            validate: {},
             description: '',
-            settingsValidationErrors: [],
             mode: 'dialog',
           },
         ],
@@ -56,8 +53,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
             propertyName: 'tooltipProperty',
             label: 'Tooltip Property',
             labelAlign: 'right',
-            validate: {},
-            settingsValidationErrors: [],
           },
         ],
       })

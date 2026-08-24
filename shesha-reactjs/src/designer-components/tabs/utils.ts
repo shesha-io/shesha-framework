@@ -51,7 +51,7 @@ export const onAddNewItem = (items: ITabPaneProps[]): ITabPaneProps => {
     key: id,
     title: `Tab ${count + 1}`,
     editMode: 'inherited',
-    selectMode: 'editable',
+    visible: true,
     components: [],
   };
 

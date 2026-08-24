@@ -13,14 +13,13 @@ import {
   isRawComponentsContainer,
 } from '@/providers/form/models';
 import { ITabPaneProps } from '@/designer-components/propertiesTabs/models';
-import { makeFormBuliderFactory } from '@/form-factory/implementation';
 import { ItemType } from 'antd/es/menu/interface';
 import { ComponentDefaultsPreview } from './preview';
 import { ComponentDefaultsSettings } from './settings';
 import DefaultModelProvider from '@/designer-components/_settings/defaultModelProvider/defaultModelProvider';
 import { IToolboxComponent } from '../../../../interfaces/formDesigner';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
-
+import { useFormBuilderFactory } from '../../../..';
 /** Markup node that wraps designer settings tabs (e.g. Appearance). */
 export interface SearchableTabsMarkup extends IConfigurableFormComponent {
   type: 'propertiesTabs' | 'searchableTabs';
@@ -55,6 +54,7 @@ const componentMenuCardStyle = { height: '600px', overflowY: 'auto' } as CSSProp
 export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value: theme, onChange, readOnly: readonly }) => {
   const { styles } = useStyles();
   const [selectedKey, setSelectedKey] = useState<string>('button');
+  const fbf = useFormBuilderFactory();
 
   const selectedNode = useMemo(() => findComponentNode(selectedKey), [selectedKey]);
   const componentType = selectedNode?.type;
@@ -90,7 +90,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
 
     // If it's a function (SettingsFormMarkupFactory), execute it to get the markup
     const markup = typeof settingsFormMarkup === 'function'
-      ? settingsFormMarkup({ fbf: makeFormBuliderFactory(), removeStyleRouter: true })
+      ? settingsFormMarkup({ fbf: fbf, removeStyleRouter: true })
       : settingsFormMarkup;
 
     // Handle both FormRawMarkup (array) and FormMarkupWithSettings (object with components)
@@ -121,7 +121,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
       components: appearanceMarkupComponents,
       formSettings: { ...(formSettings ?? DEFAULT_FORM_SETTINGS), isSettingsForm: true },
     };
-  }, [settingsFormMarkup]);
+  }, [settingsFormMarkup, fbf]);
 
   const initialModel = useMemo(() => theme?.components?.[componentType ?? ''] as object | undefined ?? {}, [componentType, theme?.components]);
   const selectedKeys = useMemo(() => [selectedKey], [selectedKey]);

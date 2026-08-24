@@ -59,7 +59,6 @@
             "message": ""
           },
           "quickviewWidth": "",
-          "settingsValidationErrors": [],
           "version": 5,
           "editMode": "readOnly",
           "desktop": {},
@@ -92,7 +91,6 @@
             "message": ""
           },
           "quickviewWidth": "",
-          "settingsValidationErrors": [],
           "version": 5,
           "desktop": {},
           "tablet": {},
@@ -113,7 +111,6 @@
           "defaultValue": null,
           "entityTypeShortAlias": "",
           "dataSourceUrl": "",
-          "validate": {},
           "values": [
             {
               "id": "EVQV8Kf_dyUYwd56cb_b8",
@@ -141,7 +138,6 @@
               "value": "5"
             }
           ],
-          "settingsValidationErrors": [],
           "version": 7,
           "useRawValues": false,
           "referenceListId": null,
@@ -165,9 +161,7 @@
           "isDynamic": false,
           "autocompleteUrl": "/api/services/app/permission/autocomplete",
           "placeholder": "",
-          "validate": {},
-          "version": 1,
-          "settingsValidationErrors": []
+          "version": 1
         },
         {
           "id": "V4ZLolRl8UZK1HHiNvYO_",
@@ -183,10 +177,8 @@
           },
           "isDynamic": false,
           "disabled": true,
-          "validate": {},
           "autocompleteUrl": "",
           "placeholder": "",
-          "settingsValidationErrors": [],
           "version": 2
         },
         {
@@ -210,7 +202,6 @@
           "defaultValue": "",
           "entityTypeShortAlias": "",
           "dataSourceUrl": "",
-          "validate": {},
           "values": [
             {
               "id": "-R48wPdyuhwtHUuqXA9GZ",
@@ -238,7 +229,6 @@
               "value": "5"
             }
           ],
-          "settingsValidationErrors": [],
           "version": 7,
           "useRawValues": false,
           "referenceListId": null,

@@ -1,16 +1,18 @@
-import { FC, ReactNode, useCallback } from 'react';
+import { FC, ReactNode, useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { executeExpression } from '@/providers/form/utils';
 import { IDropdownProps, ILabelValue } from './model';
 import { Select } from 'antd';
 import GenericRefListDropDown from '@/components/refListDropDown/genericRefListDropDown';
 import { CustomLabeledValue, GetLabeledValueFunc, GetOptionFromFetchedItemFunc, IncomeValueFunc, ISelectOption, OutcomeValueFunc } from '@/components/refListDropDown/models';
-import { useStyles } from './style';
 import ReflistTag from '../refListDropDown/reflistTag';
 import { getNumberOrUndefined } from '@/utils/string';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 
 const normalizeValue = (value: number | string): number | string => getNumberOrUndefined(value) ?? value;
+
+/** Layout effects do not run on the server, so fall back to `useEffect` there. */
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 export const Dropdown: FC<IDropdownProps> = ({
   // Read deliberately: forms saved before Binding Format still resolve their values through it.
@@ -33,6 +35,7 @@ export const Dropdown: FC<IDropdownProps> = ({
   placeholder,
   readOnlyPlaceholder,
   readOnly,
+  disabled,
   style,
   size,
   showIcon,
@@ -46,6 +49,7 @@ export const Dropdown: FC<IDropdownProps> = ({
   tagStyle,
   enableStyleOnReadonly,
   className,
+  popupClassName,
   selectRef,
   events,
   styleValue,
@@ -57,10 +61,13 @@ export const Dropdown: FC<IDropdownProps> = ({
     ? (enableMultiSelect ? 'multiple' : 'single')
     : configuredMode;
 
-  const { styles } = useStyles({ style: style ?? {} });
-  // The caller's Appearance class is merged in rather than replacing the component's own class,
-  // so the base layout rules survive when a form supplies configured styles.
-  const selectClassName = isNullOrWhiteSpace(className) ? styles.dropdown : `${styles.dropdown} ${className}`;
+  /* The Appearance class comes from `./styles`, but it is built by the caller (the designer
+     component) and handed over as `className` — this component deliberately does not call the hook
+     itself. Only the caller has the full component model plus the evaluated `tagStyleJson`; here
+     `styleValue` is an `IStyleValue`, which has no `tag`/`tagVariant`/`tagStyleJson`, so a class
+     built from it would silently drop every tag style. Building one anyway would also put two
+     equal-specificity classes on the same element, leaving the winner to emotion's insertion order. */
+  const selectClassName = className ?? '';
 
   const value = isDefined(inputValue)
     ? Array.isArray(inputValue)
@@ -69,6 +76,19 @@ export const Dropdown: FC<IDropdownProps> = ({
     : undefined;
 
   const selectedMode = mode === 'multiple' || mode === 'tags' ? mode : undefined;
+
+  /* A selection belongs to the source it was made from, and antd renders a value it cannot match as the
+     label itself. Cleared before paint so it never shows; the first resolve is only recorded, not acted on. */
+  const lastDataSourceType = useRef(dataSourceType);
+  useIsomorphicLayoutEffect(() => {
+    const previousDataSourceType = lastDataSourceType.current;
+    if (previousDataSourceType === dataSourceType)
+      return;
+
+    lastDataSourceType.current = dataSourceType;
+    if (isDefined(previousDataSourceType) && readOnly !== true)
+      onChange?.(undefined);
+  }, [dataSourceType, onChange, readOnly]);
 
   // Extracts value from a fetched RefList item. Stored in the value poroperty of the item
   const incomeValueFunc = useCallback<IncomeValueFunc>((value, args) => {
@@ -175,11 +195,13 @@ export const Dropdown: FC<IDropdownProps> = ({
           filters={ignoredValues}
           placeholder={placeholder}
           readOnly={readOnly}
+          disabled={disabled === true}
           size={size}
           showIcon={showIcon}
           tagVariant={tagVariant}
           showItemName={showItemName}
           className={selectClassName}
+          {...(isDefined(popupClassName) ? { popupClassName } : {})}
           style={{ ...style }}
           tagStyle={tagStyle}
           allowClear={allowClear}
@@ -259,11 +281,12 @@ export const Dropdown: FC<IDropdownProps> = ({
         ref={selectRef}
         {...events}
         className={selectClassName}
+        {...(isDefined(popupClassName) ? { classNames: { popup: { root: popupClassName } } } : {})}
         allowClear={allowClear}
         {...(onChange ? { onChange } : {})}
         value={selectedValue ?? null}
         variant="borderless"
-        disabled={readOnly ?? false}
+        disabled={disabled === true}
         {...(selectedMode ? { mode: selectedMode } : {})}
         placeholder={placeholder}
         size={size}
@@ -298,11 +321,12 @@ export const Dropdown: FC<IDropdownProps> = ({
       ref={selectRef}
       {...events}
       className={selectClassName}
+      {...(isDefined(popupClassName) ? { classNames: { popup: { root: popupClassName } } } : {})}
       allowClear={allowClear}
       {...(onChange ? { onChange } : {})}
       value={selectedValue ?? null}
       variant="borderless"
-      disabled={readOnly ?? false}
+      disabled={disabled === true}
       {...(selectedMode ? { mode: selectedMode } : {})}
       placeholder={placeholder}
       size={size}

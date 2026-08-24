@@ -85,7 +85,7 @@ const migrateContainerProperties = (
   return {
     stylingBox: isNotNullOrWhiteSpace(props.stylingBox)
       ? props.stylingBox
-      : isNotNullOrWhiteSpace(existingContainer.stylingBox)
+      : typeof (existingContainer.stylingBox) === "string" && isNotNullOrWhiteSpace(existingContainer.stylingBox)
         ? existingContainer.stylingBox
         : defaultContainer.stylingBox,
     style: isNotNullOrWhiteSpace(props.style)

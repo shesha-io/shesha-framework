@@ -36,6 +36,7 @@ const TableContextComponent: TableContextComponentDefinition = {
 
     return initialModel;
   },
+  actualModelPropertyFilter: (name) => name !== 'permanentFilter',
   settingsFormMarkup: (data) => getSettings(data),
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   getFieldsToFetch: (propertyName, rawModel) => {

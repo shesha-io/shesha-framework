@@ -43,11 +43,10 @@ import { ITextComponentProps } from "@/designer-components/text/models";
 import { ITextAreaComponentProps } from "@/designer-components/textArea/interfaces";
 import { ITextFieldComponentProps } from "@/designer-components/textField/interfaces";
 import { ITimePickerComponentProps } from "@/designer-components/timeField/models";
-import { DEFAULT_FORM_SETTINGS, IConfigurableFormComponent, IContainerComponentProps, InteractionType, IPropertyMetadata, IToolboxComponent } from "@/interfaces";
+import { DEFAULT_FORM_SETTINGS, getEmptyFlatMarkup, IConfigurableFormComponent, IContainerComponentProps, InteractionType, IPropertyMetadata, IToolboxComponent } from "@/interfaces";
 import { AllComponentsConfig, FluentSettings, FormBuilder, FormBuilderFactory, StandardAppearancePanel, StandardAppearancePanelConfig, StandardFormBuilderMethods } from "./interfaces";
 import { nanoid } from "@/utils/uuid";
 import { linkComponentToModelMetadata, upgradeComponent } from "@/providers/form/utils";
-import { getComponentDefinitions } from "@/providers/form/defaults/toolboxComponents";
 import { fontTypes, fontWeightsOptions, textAlignOptions } from "@/designer-components/_settings/utils/font/utils";
 import { getBorderInputs, getCornerInputs } from "@/designer-components/_settings/utils/border/utils";
 import { backgroundTypeOptions, gradientDirectionOptions, positionOptions, repeatOptions, sizeOptions } from "@/designer-components/_settings/utils/background/utils";
@@ -56,6 +55,7 @@ import { isPropertySettings } from "@/designer-components/_settings/utils/utils"
 import { getEventConfig, StandardEventHandler } from "@/designer-components/_common/events";
 import { ALIGN_ITEMS, ALIGN_ITEMS_GRID, ALIGN_SELF, FLEX_DIRECTION, FLEX_WRAP, JUSTIFY_CONTENT, JUSTIFY_ITEMS, JUSTIFY_SELF } from "@/designer-components/container/data";
 import { IContainerCheckerComponentProps } from "@/designer-components/containerChecker/interfaces";
+import { resolveInputVisibility } from "./inputVisibility";
 
 /**
  * Returns `true` when `propertyName`'s trailing segment (the part after the last `.`) is listed in
@@ -200,8 +200,17 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
 
   addSettingsInput = (props: FluentSettings<SettingsInputComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'settingsInput', meta);
 
+  /**
+   * `_addProperty` converts `visibleJs` into a `visible` code evaluator, but only for the row
+   * component itself the inputs inside it are plain objects it never walks, so their `visibleJs`
+   * was carried into the markup as an inert string and the input always rendered. Convert each one
+   * here instead: `getActualModel` resolves the evaluator when it recurses into the `inputs` array,
+   * and `SettingInput` already treats `visible === false` as hidden.
+   */
   addSettingsInputRow = (props: FluentSettings<ISettingsInputRowProps & IConfigurableFormComponent>, meta?: IPropertyMetadata): FormBuilder => {
-    return this._addProperty(props, 'settingsInputRow', meta);
+    const inputs = isDefined(props.inputs) ? resolveInputVisibility(props.inputs) : undefined;
+
+    return this._addProperty(isDefined(inputs) ? { ...props, inputs } : props, 'settingsInputRow', meta);
   };
 
   stdPropertyLabelInputs = (): FormBuilder => {
@@ -303,19 +312,24 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
     return this;
   };
 
+  stdFontControls = (propertyName: string = 'font', exclude?: string[], panelTitle: string = 'Font', showSeparator: boolean = true): FormBuilder => {
+    if (showSeparator)
+      this.addSectionSeparator({ label: panelTitle, containerStylingBoxJson: { _type: 'styleBox', marginBottom: 8 } });
+    this.addSettingsInputRow({
+      inline: true,
+      propertyName: propertyName,
+      inputs: excludeInputs([
+        { type: 'dropdown', label: 'Family', propertyName: `${propertyName}.type`, hideLabel: true, dropdownOptions: fontTypes },
+        { type: 'numberField', label: 'Size', propertyName: `${propertyName}.size`, hideLabel: true, width: 50 },
+        { type: 'dropdown', label: 'Weight', propertyName: `${propertyName}.weight`, hideLabel: true, dropdownOptions: fontWeightsOptions, width: 48, tooltip: 'Controls text thickness (light, normal, bold, etc.)' },
+        { type: 'colorPicker', label: 'Color', hideLabel: true, propertyName: `${propertyName}.color` },
+        { type: 'dropdown', label: 'Align', propertyName: `${propertyName}.align`, hideLabel: true, width: 48, dropdownOptions: textAlignOptions },
+      ], exclude) });
+    return this;
+  };
+
   stdFontPanel = (propertyName: string = 'font', exclude?: string[], panelTitle: string = 'Font'): FormBuilder => {
-    this.stdCollapsiblePanel(panelTitle, (f) => f
-      .addSettingsInputRow({
-        inline: true,
-        propertyName: propertyName,
-        inputs: excludeInputs([
-          { type: 'dropdown', label: 'Family', propertyName: `${propertyName}.type`, hideLabel: true, dropdownOptions: fontTypes },
-          { type: 'numberField', label: 'Size', propertyName: `${propertyName}.size`, hideLabel: true, width: 50 },
-          { type: 'dropdown', label: 'Weight', propertyName: `${propertyName}.weight`, hideLabel: true, dropdownOptions: fontWeightsOptions, width: 48, tooltip: 'Controls text thickness (light, normal, bold, etc.)' },
-          { type: 'colorPicker', label: 'Color', hideLabel: true, propertyName: `${propertyName}.color` },
-          { type: 'dropdown', label: 'Align', propertyName: `${propertyName}.align`, hideLabel: true, width: 48, dropdownOptions: textAlignOptions },
-        ], exclude),
-      }));
+    this.stdCollapsiblePanel(panelTitle, (f) => f.stdFontControls(propertyName, exclude, panelTitle, false));
     return this;
   };
 
@@ -598,7 +612,7 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
     return this.componentDefinitions?.get(type);
   };
 
-  constructor(componentDefinitions?: Map<string, IToolboxComponent>, rootId?: string) {
+  constructor(componentDefinitions: Map<string, IToolboxComponent> | undefined, rootId?: string) {
     this.componentDefinitions = componentDefinitions;
     this.form = [];
     this.rootId = rootId ?? nanoid();
@@ -635,10 +649,7 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
       if (componentDefinition.initModel) formComponent = componentDefinition.initModel(formComponent);
 
       if (componentDefinition.migrator) {
-        formComponent = upgradeComponent(formComponent, componentDefinition, DEFAULT_FORM_SETTINGS, {
-          allComponents: {},
-          componentRelations: {},
-        }, true);
+        formComponent = upgradeComponent(formComponent, componentDefinition, DEFAULT_FORM_SETTINGS, getEmptyFlatMarkup(), true);
       }
     } else
       formComponent.version = "latest";
@@ -666,7 +677,6 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
   }
 };
 
-export const makeFormBuliderFactory: () => FormBuilderFactory = () => {
-  const components = getComponentDefinitions();
+export const makeFormBuliderFactory: (components: Map<string, IToolboxComponent>) => FormBuilderFactory = (components) => {
   return (rootId?: string) => new FormBuilderImplementation(components, rootId);
 };

@@ -1,23 +1,43 @@
+import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, marginStyles, paddingStyles, shadowStyles } from "@/designer-components/_common/styles/utils";
+import { IKeyInformationBarComponentProps } from "@/designer-components/keyInformationBar/interfaces";
 import { createStyles } from "@/styles";
-import { CSSObject } from "antd-style";
+import { getFullSizeComponentDimensions } from "../formDesigner/utils/stylingUtils";
+import { addPx } from "@/utils/style";
+import { getDefault, isDefined } from "@/utils";
 
-export const useStyles = createStyles(({ css, cx, token }, { dimensions }: { dimensions: CSSObject }) => {
+export const useStyles = createStyles(({ css, cx, token }, model: IKeyInformationBarComponentProps) => {
+  const vertical = model.orientation === 'vertical';
+  const divThickness = getDefault(addPx(model.dividerThickness), '0.62px');
+  const width = getDefault(addPx(model.dividerWidth), '100%');
+  const height = getDefault(addPx(model.dividerHeight), '100%');
+  const margin = addPx(model.dividerMargin ?? 0);
+
   const flexItem = "flex-item";
   const flexItemWrapper = "flex-item-wrapper";
-  const flexItemWrapperVertical = "flex-item-wrapper-vertical";
   const divider = "divider";
   const content = "content";
   const flexContainer = cx("flex-container", css`
         background-color: ${token.colorTextLightSolid};
         flex-wrap: wrap;
-        ${dimensions}
+        ${dimensionsStyles(getFullSizeComponentDimensions(model.dimensions))}
+        ${isDefined(model.alignItems)
+            ? !vertical ? `justify-content: ${model.alignItems};` : `align-items: ${model.alignItems};`
+            : ''
+        }
+        ${borderStyles(model.border)}
+        ${backgroundStyles(model.background)}
+        ${shadowStyles(model.shadow)}
+        ${fontStyles(model.font)}
+        ${paddingStyles(model.stylingBoxJson)}
+        ${marginStyles(model.stylingBoxJson)}
         
-        .${flexItemWrapper}, .${flexItemWrapperVertical} {
+        .${flexItemWrapper} {
             display: flex;
             min-width: 0px;
             box-sizing: border-box;
             flex: 1;
-           
+            flex-direction: ${vertical ? 'column' : 'row'};
+
             .${content} {
                 flex: 1;
                 display: flex;
@@ -63,13 +83,12 @@ export const useStyles = createStyles(({ css, cx, token }, { dimensions }: { dim
             }
         }
     
-        .${flexItemWrapper} {
-            flex-direction: row;
-        }
-        .${flexItemWrapperVertical} {
-            flex-direction: column;
-        }
         .${divider}{
+            align-self: center;
+            background-color: ${model.dividerColor ?? '#b4b4b4'};
+            width: ${!vertical ? divThickness : width};
+            height: ${vertical ? divThickness : height};
+            margin: ${vertical ? `${margin} 0px` : `0px ${margin}`};
             max-height: 100%;
             max-width: 100%;
             flex-shrink: 0;
@@ -80,7 +99,6 @@ export const useStyles = createStyles(({ css, cx, token }, { dimensions }: { dim
     flexContainer,
     flexItem,
     flexItemWrapper,
-    flexItemWrapperVertical,
     divider,
     content,
   };

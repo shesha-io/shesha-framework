@@ -7,9 +7,7 @@
       "label": "Suppress",
       "labelAlign": "right",
       "parentId": "root",
-      "customEnabled": "return !data.suppressHardcoded;",
-      "validate": {},
-      "settingsValidationErrors": []
+      "customEnabled": "return !data.suppressHardcoded;"
     },
     {
       "id": "UIUv_8sUeAdK_JQqdFm1e",
@@ -29,7 +27,6 @@
       "validate": {
         "required": true
       },
-      "settingsValidationErrors": [],
       "textType": "text"
     },
     {
@@ -41,8 +38,7 @@
       "parentId": "root",
       "validate": {
         "required": true
-      },
-      "settingsValidationErrors": []
+      }
     },
     {
       "id": "4SvCStsfdAUCwndFWVxi_",
@@ -73,7 +69,6 @@
       "validate": {
         "required": true
       },
-      "settingsValidationErrors": [],
       "values": [
         {
           "id": "R8Et3awUms5zQgj2ZlCT-",
@@ -158,7 +153,6 @@
       "hidden": {"_code": "return !(getSettingValue(data?.dataType) === 'string');", "_mode": "code", "_value": false},
       "direction": "vertical",
       "justifyContent": "left",
-      "settingsValidationErrors": [],
       "components": [
         {
           "id": "2ZMc7dhCaBX00rMMK1H3n",
@@ -169,8 +163,6 @@
           "parentId": "7cYicDJe6G4QZySqcHoIM",
           "mode": "single",
           "dataSourceType": "values",
-          "validate": {},
-          "settingsValidationErrors": [],
           "values": [
             {
               "id": "rwi4vhiLvAT9K23e_Ksgj",
@@ -228,8 +220,7 @@
           "validate": {
             "minValue": "",
             "maxValue": ""
-          },
-          "settingsValidationErrors": []
+          }
         },
         {
           "id": "XEyIWE4U614Ip_x0FqVi1",
@@ -248,8 +239,7 @@
           "validate": {
             "minValue": "",
             "maxValue": ""
-          },
-          "settingsValidationErrors": []
+          }
         },
         {
           "id": "aYeIfcjqrSZpmuKd6Fij1",
@@ -262,7 +252,6 @@
           "validate": {
             "required": false
           },
-          "settingsValidationErrors": [],
           "textType": "text"
         }
       ]
@@ -277,7 +266,6 @@
       "hidden": {"_code": "return !(getSettingValue(data?.dataType) === 'number');", "_mode": "code", "_value": false},
       "direction": "vertical",
       "justifyContent": "left",
-      "settingsValidationErrors": [],
       "components": [
         {
           "id": "V6PekH9pFf_Qu-vmaKxfz",
@@ -288,8 +276,6 @@
           "parentId": "ipxZABhhFbnZBrO1iijxF",
           "mode": ["single"],
           "dataSourceType": "values",
-          "validate": {},
-          "settingsValidationErrors": [],
           "values": [
             {
               "id": "h0LdMbbQrqIvARnQmeKGZ",
@@ -329,8 +315,7 @@
           "validate": {
             "minValue": "",
             "maxValue": ""
-          },
-          "settingsValidationErrors": []
+          }
         },
         {
           "id": "XEyIWE4U614Ip_x0FqV12",
@@ -346,8 +331,7 @@
           "validate": {
             "minValue": "",
             "maxValue": ""
-          },
-          "settingsValidationErrors": []
+          }
         }
       ]
     },
@@ -362,7 +346,6 @@
       "hidden": {"_code": "return !(getSettingValue(data?.dataType) === 'reference-list-item');", "_mode": "code", "_value": false},
       "direction": "vertical",
       "justifyContent": "left",
-      "settingsValidationErrors": [],
       "mode": ["single"],
       "dataSourceType": "values",
       "validate": {
@@ -428,9 +411,7 @@
           "label": "Reference List name",
           "labelAlign": "right",
           "customEnabled": "return data.source != 1;",
-          "parentId": "gTpIAiV940w7puAHNwu5H",
-          "validate": {},
-          "settingsValidationErrors": []
+          "parentId": "gTpIAiV940w7puAHNwu5H"
         },
         {
           "id": "dsiSpDTinQZxtfTlJW4AE",
@@ -439,9 +420,7 @@
           "label": "Reference List namespace",
           "labelAlign": "right",
           "customEnabled": "return data.source != 1;",
-          "parentId": "gTpIAiV940w7puAHNwu5H",
-          "validate": {},
-          "settingsValidationErrors": []
+          "parentId": "gTpIAiV940w7puAHNwu5H"
         }
       ]
     },
@@ -455,9 +434,7 @@
       "parentId": "root",
       "customEnabled": "return data.source != 1;",
       "dataSourceType": "url",
-      "validate": {},
       "dataSourceUrl": "/api/services/app/Metadata/TypeAutocomplete",
-      "settingsValidationErrors": [],
       "useRawValues": true,
       "textType": "text"
     },
@@ -471,7 +448,6 @@
       "validate": {
         "required": false
       },
-      "settingsValidationErrors": [],
       "textType": "text"
     },
     {
@@ -489,9 +465,7 @@
       "label": "Audited",
       "labelAlign": "right",
       "parentId": "root",
-      "customEnabled": "return !data.auditedHardcoded;",
-      "validate": {},
-      "settingsValidationErrors": []
+      "customEnabled": "return !data.auditedHardcoded;"
     },
     {
       "id": "-X1emhZPx1rM7w22GOc13",
@@ -500,9 +474,7 @@
       "label": "Required",
       "labelAlign": "right",
       "parentId": "root",
-      "customEnabled": "return !data.requiredHardcoded;",
-      "validate": {},
-      "settingsValidationErrors": []
+      "customEnabled": "return !data.requiredHardcoded;"
     },
     {
       "id": "-X1emhZPx1rM7w22GOc14",
@@ -511,9 +483,7 @@
       "label": "ReadOnly",
       "labelAlign": "right",
       "parentId": "root",
-      "customEnabled": "return !data.readOnlyHardcoded;",
-      "validate": {},
-      "settingsValidationErrors": []
+      "customEnabled": "return !data.readOnlyHardcoded;"
     },
     {
       "id": "MwjxidwaPufFS-PixP6_1",
@@ -525,7 +495,6 @@
       "hidden": {"_code": "return !(getSettingValue(data?.dataType) === 'entity');", "_mode": "code", "_value": false},
       "direction": "vertical",
       "justifyContent": "left",
-      "settingsValidationErrors": [],
       "components": [
         {
           "id": "UIUv_8sUeAdK_JQqdF123",
@@ -543,9 +512,7 @@
           "description": "Allows to create child/nested entity",
           "labelAlign": "right",
           "parentId": "root",
-          "customEnabled": "return !data.cascadeCreateHardcoded;",
-          "validate": {},
-          "settingsValidationErrors": []
+          "customEnabled": "return !data.cascadeCreateHardcoded;"
         },
         {
           "id": "-X1emhZPx1rM7w22GO125",
@@ -555,9 +522,7 @@
           "description": "Allows to update child/nested entity",
           "labelAlign": "right",
           "parentId": "root",
-          "customEnabled": "return !data.cascadeUpdateHardcoded;",
-          "validate": {},
-          "settingsValidationErrors": []
+          "customEnabled": "return !data.cascadeUpdateHardcoded;"
         },
         {
           "id": "-X1emhZPx1rM7w22GO126",
@@ -567,9 +532,7 @@
           "description": "Delete child/nested entity if reference was removed and the child/nested entity doesn't have nother references",
           "labelAlign": "right",
           "parentId": "root",
-          "customEnabled": "return !data.cascadeDeleteUnreferencedHardcoded;",
-          "validate": {},
-          "settingsValidationErrors": []
+          "customEnabled": "return !data.cascadeDeleteUnreferencedHardcoded;"
         }
       ]
     }

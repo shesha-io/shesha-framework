@@ -1,4 +1,5 @@
-﻿using Abp.Dependency;
+﻿using Abp.Configuration.Startup;
+using Abp.Dependency;
 using Abp.Domain.Uow;
 using Abp.MultiTenancy;
 using Abp.Reflection;
@@ -7,10 +8,14 @@ using Microsoft.Extensions.Configuration;
 using Shesha.Attributes;
 using Shesha.Bootstrappers;
 using Shesha.Configuration.Runtime;
+using Shesha.Configuration.Startup;
 using Shesha.ConfigurationItems;
 using Shesha.FluentMigrator;
 using Shesha.Locks;
+using Shesha.NHibernate.DbHealth;
+using Shesha.Otp;
 using Shesha.Reflection;
+using Shesha.Services;
 using Shesha.Startup;
 using System;
 using System.Collections.Generic;
@@ -23,11 +28,11 @@ namespace Shesha.NHibernate
     {
         public const string SkipMigrationsSetting = "skipMigrations";
         public const string SkipBootstrappersSetting = "skipBootstrappers";
+        public const string SkipDbHealthChecksSetting = "skipDbHealthChecks";
 
         const string seedDbKey = "AppStart:SeedDb";
         const string migrationDbFinishedOnKey = "MigrationDbFinishedOn";
         const string seedDbFinishedOnKey = "SeedDbFinishedOn";
-
 
         private readonly Castle.Core.Logging.ILogger _logger;
         private readonly IIocManager _ioc;
@@ -57,6 +62,7 @@ namespace Shesha.NHibernate
             if (skipMigration)
             {
                 _logger.Warn($"Database migration skipped due to configuration (`{SkipMigrationsSetting}` is {skipMigration})");
+                await CheckDbHealthAsync();
                 return;
             }
 
@@ -87,6 +93,7 @@ namespace Shesha.NHibernate
                     ))
                 {
                     _logger.Warn("Database migrated by another application instance");
+                    await CheckDbHealthAsync();
                     return;
                 }
 
@@ -123,6 +130,8 @@ namespace Shesha.NHibernate
 
                         _logger.Warn($"Migrations skipped due to configuration (`{SkipMigrationsSetting}` is {skipMigration})");
                     }
+
+                    await CheckDbHealthAsync();
 
                     // Log application start if DB was not ready for logging before the migrations
                     if (_startupDto == null)
@@ -287,6 +296,28 @@ namespace Shesha.NHibernate
 
             _logger.Warn("Initialization data from Database finished");
 
+        }
+
+        private async Task CheckDbHealthAsync()
+        {
+            var startupConfig = _ioc.Resolve<IAbpStartupConfiguration>();
+            var nhConfig = startupConfig.Modules.ShaNHibernate();
+            
+            var skipDbHealthChecks = _configuration.GetValue<bool>(SkipDbHealthChecksSetting);
+
+            // Check DB health
+            if (!skipDbHealthChecks)
+            {
+                _logger.Warn("Check DB health...");
+
+                var dbHealthCheckers = _ioc.ResolveAll<IDbHealthChecker>();
+                foreach (var dbHealthChecker in dbHealthCheckers)
+                    await dbHealthChecker.CheckHealthAsync(new CheckHealthArguments { DatabaseType = nhConfig.DatabaseType });
+
+                _logger.Warn("Check DB health - finished");
+            }
+            else
+                _logger.Warn($"DB health checks skipped due to configuration (`{SkipDbHealthChecksSetting}` is {skipDbHealthChecks})");
         }
 
         public virtual void Dispose()
