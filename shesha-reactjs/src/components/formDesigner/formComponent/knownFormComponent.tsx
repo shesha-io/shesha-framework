@@ -39,7 +39,7 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
   const control = useMemo(() => {
     return (
       <toolboxComponent.Factory
-        form={shaForm.antdForm}
+        form={shaForm}
         model={componentModel}
         calculatedModel={calculatedModel}
         shaApplication={shaApplication}
@@ -47,7 +47,7 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
         key={componentModel.id}
       />
     );
-  }, [toolboxComponent, shaForm.antdForm, componentModel, calculatedModel, shaApplication, apiContext]);
+  }, [toolboxComponent, shaForm, componentModel, calculatedModel, shaApplication, apiContext]);
 
   // Run validation in both designer and runtime modes
   // Collect errors from:
