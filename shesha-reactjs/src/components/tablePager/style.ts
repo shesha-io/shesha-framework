@@ -9,8 +9,8 @@ export const useStyles = createStyles(({ css, cx }, model: Pick<ITablePagerBaseP
           ${fontStyles(model.font)}
           ${isDefined(model.font?.size)
             ? `
-            --ant-pagination-item-size-sm: calc(${model.font.size} * 1.5px);
-            --ant-pagination-item-size: calc(${model.font.size} * 1.5px);
+            --ant-pagination-item-size-sm: calc(${model.font.size}px * 1.5px);
+            --ant-pagination-item-size: calc(${model.font.size}px * 1.5px);
             `
             : ''}
           -ms-overflow-style: none;
@@ -26,14 +26,14 @@ export const useStyles = createStyles(({ css, cx }, model: Pick<ITablePagerBaseP
           position: absolute;
           }
           .ant-pagination-next button {
-              ${isDefined(model.font?.size) ? `font-size: ${model.font.size}};` : ''}                
+              ${isDefined(model.font?.size) ? `font-size: ${model.font.size}px;` : ''}                
           }
       }
   `);
 
   const dropdown = cx("sha-dropdown", css`
       .ant-select-selection-item {
-          ${isDefined(model.font?.size) ? `height: calc(${model.font.size} * 1.5);` : ''}            
+          ${isDefined(model.font?.size) ? `height: calc(${model.font.size}px * 1.5px);` : ''}            
           display: flex;
           align-items: center;
       }

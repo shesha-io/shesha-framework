@@ -5,7 +5,7 @@ import { ITablePagerBaseProps } from './tablePaging';
 
 
 export const TableNoPaging: FC<Pick<ITablePagerBaseProps, 'totalRows' | 'style' | 'font' | 'stylingBoxJson'>> = (props) => {
-  const { styles } = useStyles(props);
+  const { styles } = useStyles({ font: props.font, stylingBoxJson: props.stylingBoxJson });
   const isWider = useMedia('(min-width: 1202px)');
 
   if (!isWider) return null;

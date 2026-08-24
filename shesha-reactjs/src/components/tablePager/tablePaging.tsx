@@ -36,7 +36,7 @@ export interface ITablePagerBaseProps extends Pick<IStyleValue, 'font' | 'stylin
 
 export const TablePaging: FC<ITablePagerBaseProps> = (props) => {
   const isWider = useMedia('(min-width: 1202px)');
-  const { styles } = useStyles(props);
+  const { styles } = useStyles({ font: props.font, stylingBoxJson: props.stylingBoxJson });
 
   const {
     disabled = false,

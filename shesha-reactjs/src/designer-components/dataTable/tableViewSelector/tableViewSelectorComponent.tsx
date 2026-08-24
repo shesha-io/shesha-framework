@@ -46,6 +46,7 @@ const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
       </ConfigurableFormItem>
     );
   },
+  actualModelPropertyFilter: (name) => name !== 'filters',
   initModel: (model: ITableViewSelectorComponentProps) => {
     // Ensure component always has at least 1 filter for WYSIWYG display
     const defaultFilters = isNonEmptyArray(model.filters)

@@ -1092,7 +1092,7 @@ export const evaluateComplexStringWithResult = (
   requireNonEmptyResult: boolean,
 ): IEvaluateComplexStringResult => {
   if (isNullOrWhiteSpace(expression))
-    return expression;
+    return { result: expression, success: true, unevaluatedExpressions: [] };
 
   const matches = new Set([...expression.matchAll(/\{\{(?:(?!}}).)*\}\}/g)].flat());
 

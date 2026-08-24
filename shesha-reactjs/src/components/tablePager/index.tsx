@@ -25,8 +25,8 @@ const EmptyPager: FC<ITablePagerProps> = (props) => {
       currentPage={1}
       totalRows={100}
       selectedPageSize={10}
-      showSizeChanger
-      showTotalItems
+      showSizeChanger={props.showSizeChanger}
+      showTotalItems={props.showTotalItems}
       setCurrentPage={emptyFunc}
       changePageSize={emptyFunc}
       font={props.font}
