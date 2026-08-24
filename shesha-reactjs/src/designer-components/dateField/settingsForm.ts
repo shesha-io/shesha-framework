@@ -73,13 +73,10 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
   // Converting to/from UTC only means anything when a time of day is stored and the value is
   // actually persisted as UTC — a calendar unit (week/month/quarter/year) or a bare date would just
   // be shifted across a day boundary by the conversion.
-  const isUtcConvertibleJs = [
-    // Mirrors getBindingFormat(): pre-migration markup carries the old boolean and no Binding Format,
-    // and hiding the switch there would strand a setting that is still driving the behaviour.
-    'var bindingFormat = getSettingValue(data?.bindingFormat) ?? (getSettingValue(data?.resolveToUTC) === true ? "utc" : "isoLocal");',
-    'return bindingFormat === "utc"',
-    '  && ["dateTimeHours", "dateTimeMinutes", "dateTimeSeconds"].includes(getSettingValue(data?.selectionType) ?? "dateTimeMinutes");',
-  ].join('\r\n');
+  // Deliberately reads only bindingFormat, never resolveToUTC: a switch whose visibility depends on
+  // its own value can be switched off but never back on. Migrator step 8 always writes bindingFormat,
+  // so there is no saved markup where the old boolean is the only thing left to read.
+  const isUtcConvertibleJs = 'return getSettingValue(data?.bindingFormat) === "utc" && ["dateTimeHours", "dateTimeMinutes", "dateTimeSeconds"].includes(getSettingValue(data?.selectionType) ?? "dateTimeMinutes");';
   // Date Format applies to every selection except the calendar-unit pickers, which have their own.
   const isDateBasedJs = 'return !["week", "month", "quarter", "year"].includes(getSettingValue(data?.selectionType) ?? "dateTimeMinutes");';
   // Inverse of the above: hides the whole row rather than leaving an empty one behind when only the
