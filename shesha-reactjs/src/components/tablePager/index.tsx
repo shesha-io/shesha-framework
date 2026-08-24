@@ -1,73 +1,52 @@
 import { CSSProperties, FC } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import { PHONE_SIZE_QUERY } from '@/shesha-constants/media-queries';
-import { useComponentValidation, useDataTableStoreOrUndefined } from '@/providers';
+import { IStyleValue, useComponentValidation, useDataTableStoreOrUndefined } from '@/providers';
 import TablePaging from './tablePaging';
 import TableNoPaging from './tableNoPaging';
-import { IFontValue } from '@/designer-components/_settings/utils/font/interfaces';
-import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
-import { IBackgroundValue } from '@/designer-components/_settings/utils/background/interfaces';
-import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
-import { Pagination } from 'antd';
-import { useStyles } from '@/designer-components/dataTable/tableContext/styles';
 import { validationError } from '@/designer-components/dataTable/utils';
 import { isDefined } from '@/utils/nullables';
 
 const outsideContextValidationError = validationError('Table Pager');
 
-export interface ITablePagerProps {
-  showSizeChanger?: boolean;
-  showTotalItems?: boolean;
-  font?: IFontValue;
-  shadow?: IShadowValue;
-  background?: IBackgroundValue;
-  border?: IBorderValue;
-  style?: CSSProperties;
+export interface ITablePagerProps extends Pick<IStyleValue, 'font' | 'stylingBoxJson'> {
+  showSizeChanger?: boolean | undefined;
+  showTotalItems?: boolean | undefined;
+  style?: CSSProperties | undefined;
 }
 
-type EmptyPagerProps = {
-  style?: CSSProperties | undefined;
-};
+const emptyFunc = (): void => {};
 
-const EmptyPager: FC<EmptyPagerProps> = ({ style }) => {
-  const { styles } = useStyles();
+const EmptyPager: FC<ITablePagerProps> = (props) => {
   return (
-    <div className={styles.tablePagerContainer} style={style}>
-      <div className={styles.disabledComponentWrapper}>
-        <Pagination
-          size="small"
-          disabled
-          current={1}
-          onChange={() => {
-            // noop
-          }}
-          total={100}
-          pageSize={10}
-          showSizeChanger
-          showQuickJumper={false}
-          showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`}
-        />
-      </div>
-    </div>
+    <TablePaging
+      disabled
+      pageSizeOptions={[10]}
+      currentPage={1}
+      totalRows={100}
+      selectedPageSize={10}
+      showSizeChanger
+      showTotalItems
+      setCurrentPage={emptyFunc}
+      changePageSize={emptyFunc}
+      font={props.font}
+      stylingBoxJson={props.stylingBoxJson}
+      style={props.style}
+    />
   );
 };
 
-export const TablePager: FC<ITablePagerProps> = ({ showSizeChanger, showTotalItems, style }) => {
+export const TablePager: FC<ITablePagerProps> = (props) => {
   const dataTableContext = useDataTableStoreOrUndefined();
 
-  useComponentValidation(
-    () => !dataTableContext ? outsideContextValidationError : undefined,
-    [dataTableContext],
-  );
+  useComponentValidation(() => !dataTableContext ? outsideContextValidationError : undefined, [dataTableContext]);
 
-  const hideTotalItems = useMediaQuery({
-    query: PHONE_SIZE_QUERY,
-  });
+  const hideTotalItems = useMediaQuery({ query: PHONE_SIZE_QUERY });
+
+  const { showSizeChanger, showTotalItems, font, stylingBoxJson, style } = props;
 
   // Fallback UI when not in a Data Context
-  if (!dataTableContext) {
-    return (<EmptyPager style={style} />);
-  }
+  if (!dataTableContext) return (<EmptyPager {...props} />);
 
   const {
     pageSizeOptions,
@@ -80,9 +59,7 @@ export const TablePager: FC<ITablePagerProps> = ({ showSizeChanger, showTotalIte
   } = dataTableContext;
 
   // Fallback UI when in Data Context but no configured DataTable/DataList
-  if (!isDefined(totalRows)) {
-    return (<EmptyPager style={style} />);
-  }
+  if (!isDefined(totalRows)) return (<EmptyPager {...props} />);
 
   return dataFetchingMode === 'paging' ? (
     <TablePaging
@@ -96,11 +73,13 @@ export const TablePager: FC<ITablePagerProps> = ({ showSizeChanger, showTotalIte
         setCurrentPage,
         changePageSize,
         dataFetchingMode,
+        font,
+        stylingBoxJson,
         style,
       }}
     />
   ) : (
-    <TableNoPaging totalRows={totalRows} style={style} />
+    <TableNoPaging totalRows={totalRows} style={style} font={props.font} stylingBoxJson={props.stylingBoxJson} />
   );
 };
 

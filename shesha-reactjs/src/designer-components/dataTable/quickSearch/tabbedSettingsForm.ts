@@ -12,6 +12,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
         tabs: [
           { key: 'common', title: 'Common', id: commonTabId,
             components: fbf(commonTabId)
+              .addSettingsInput({ inputType: 'textField', propertyName: 'componentName', label: 'Component Name', validate: { required: true }, jsSetting: false })
               .addSettingsInput({ inputType: 'switch', propertyName: 'visible', label: 'Visible', jsSetting: true, layout: 'horizontal', permissionSettings: true })
               .addPropertyRouter({ id: styleRouterId, componentName: 'propertyRouter2', label: 'Property router2', labelAlign: 'right',
                 propertyRouteName: removeStyleRouter === true ? '' : { _mode: "code", _code: "return contexts.canvasContext?.designerDevice || 'desktop';", _value: "" },
