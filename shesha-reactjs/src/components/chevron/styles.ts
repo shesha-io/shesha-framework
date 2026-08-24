@@ -5,13 +5,18 @@ import { paddingStyles } from '@/designer-components/_common/styles/utils';
 import { isDefined } from '@/utils';
 
 export const useStyles = createStyles(({ css, cx }, model: IChevronControlProps) => {
+  const DEFAULT_HEIGHT = '35px';
+  const DEFAULT_WIDTH = '150px';
+  const height = isDefined(model.height) ? addPx(model.height) : DEFAULT_HEIGHT;
+  const width = isDefined(model.width) ? addPx(model.width) : DEFAULT_WIDTH;
+
   const chevronButton = cx(`sha-chevron-btn`, css`
       clip-path: polygon(95% 0, 100% 50%, 95% 100%, 0% 100%, 5% 50%, 0% 0%);
       cursor: pointer;
       outline: none;
-      height: ${isDefined(model.height) ? addPx(model.height) : '35px'};
-      width: ${isDefined(model.width) ? addPx(model.width) : '150px'};
-      min-width: ${isDefined(model.width) ? addPx(model.width) : '150px'};
+      height: ${height};
+      width: ${width};
+      min-width: ${width};
       border-radius: 0;
       ${paddingStyles(model.stylingBoxJson)};
 
@@ -28,12 +33,10 @@ export const useStyles = createStyles(({ css, cx }, model: IChevronControlProps)
       position: relative;
       display: block;
       margin: 0 10px;
-      height: ${isDefined(model.height) ? addPx(model.height) : '35px'};
+      height: ${height};
   `);
 
   const pipelineStages = cx(`sha-pipeline-stages`, css`
-      top: 0;
-      left: 0;
       width: 100%;
       height: 100%;
       display: flex;

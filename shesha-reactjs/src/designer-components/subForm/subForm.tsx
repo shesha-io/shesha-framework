@@ -127,7 +127,7 @@ const SubForm: FC<ISubFormProps> = ({ readOnly, formSelectionMode }) => {
                 <span>Sub Form — the form is resolved at runtime from the entity type of the bound value.</span>
               </div>
             )}
-            {!showDynamicPlaceholder && !isLoading && !showFormError && !isNonEmptyArray(components) && (
+            {form.formMode === 'designer' && !showDynamicPlaceholder && !isLoading && !showFormError && !isNonEmptyArray(components) && (
               <div className={styles.shaSubFormPlaceholder}>
                 <FormOutlined />
                 <span>Please, configure subform components</span>

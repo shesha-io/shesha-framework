@@ -22,9 +22,4 @@ export interface ILinkComponentProps extends IConfigurableFormComponent {
   components?: IConfigurableFormComponent[] | undefined;
 }
 
-export type LinkCalculatedModel = {
-  href: string | undefined;
-  isDesignerMode: boolean | undefined;
-};
-
-export type LinkComponentDefinition = ComponentDefinition<"link", ILinkComponentProps, LinkCalculatedModel>;
+export type LinkComponentDefinition = ComponentDefinition<"link", ILinkComponentProps>;

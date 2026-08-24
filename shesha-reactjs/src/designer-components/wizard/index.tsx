@@ -27,7 +27,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   name: 'Wizard',
   icon: <DoubleRightOutlined />,
   Factory: ({ model, form }) => {
-    return <Tabs {...model} form={form} />;
+    return <Tabs {...model} form={form.antdForm} />;
   },
   initModel: (model) => ({
     ...model,
