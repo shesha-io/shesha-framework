@@ -46,6 +46,7 @@ export const designerClassNames = {
   toolbarWrapper: "form-toolbar-wrapper",
   unregisteredComponentContainer: "unregistered-component-container",
   unregisteredComponentMessage: "unregistered-component-message",
+  selectedComponent: "selected",
 };
 const useStylesResponse = {
   styles: designerClassNames,
@@ -430,15 +431,18 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               margin-bottom: 0;
             }
 
-            &.selected {
+            &.${designerClassNames.selectedComponent} {
               border: ${token.colorPrimary} 1px solid;
               border-radius: 4px;
               background-color: ${token.colorPrimaryBg}80;
             }
 
             &.${hasConfigErrors} {
-              border: ${token.colorErrorBg} 1px solid;
-              border-radius: 4px;
+              background-color: ${token.colorErrorBg};
+              &:not(.${designerClassNames.selectedComponent}){
+                border: ${token.colorErrorBg} 1px solid;
+                border-radius: 4px;
+              }             
 
               .${shaComponentIndicator} {
                 display: none;
@@ -486,5 +490,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     designerPage,
     formDesigner,
     quickEditModal,
+    hasConfigErrors: designerClassNames.hasConfigErrors,
+    selectedComponent: designerClassNames.selectedComponent,
   };
 });

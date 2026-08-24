@@ -38,7 +38,7 @@ export const migrateFormSettings = (form: IFormDto, designerComponents: IToolbox
   const fluent = formSettingsMigrations(migrator);
 
   const version = form.settings?.version ?? -1;
-  const settings = { ...DEFAULT_FORM_SETTINGS, ...form.settings, version: version } satisfies IFormSettings;
+  const settings = { ...(form.settings ?? DEFAULT_FORM_SETTINGS), version: version } satisfies IFormSettings;
 
   const upToDateSettings = fluent.migrator.upgrade(settings, { form, designerComponents });
   return { ...form, settings: upToDateSettings };

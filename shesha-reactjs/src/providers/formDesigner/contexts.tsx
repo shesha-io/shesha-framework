@@ -1,12 +1,11 @@
 import {
   IAsyncValidationError,
-  IComponentSettingsFormFactory,
-  IFormValidationErrors,
-  ISettingsFormFactory,
+  IComponentSettingsFormFactory, ISettingsFormFactory,
 } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import {
   DEFAULT_FORM_SETTINGS,
+  FormMarkup,
   FormMode,
   IConfigurableFormComponent,
   IFlatComponentsStructure,
@@ -15,6 +14,7 @@ import {
 } from '../form/models';
 import { createNamedContext } from '@/utils/react';
 import { BaseHistoryItem, FormDesignerSubscription, FormDesignerSubscriptionType } from './models';
+import { IValidationCollector } from '../validator/interfaces';
 
 export interface AddComponentPayloadBase {
   index: number;
@@ -51,10 +51,14 @@ export interface IComponentUpdatePayload<TModel extends IConfigurableFormCompone
   updater: (model: TModel) => TModel;
 }
 
-export interface IComponentUpdateSettingsValidationPayload {
-  componentId: string;
+export const VALIDATABLE_ITEM_TYPES = {
+  COMPONENT: "component",
+  FORM_SETTINGS: "form-settings",
+};
+
+export type IValidationResultsPayload = ({ type: 'component'; componentId: string } | { type: 'form-settings' }) & {
   validationErrors: IAsyncValidationError[];
-}
+};
 
 export interface ISetSelectedComponentPayload {
   id: string;
@@ -74,7 +78,6 @@ export type IUndoable = {
 export type FormDesignerFormState = {
   formSettings: IFormSettings;
   formFlatMarkup: IFlatComponentsStructure;
-  validationErrors?: IFormValidationErrors | undefined;
 };
 
 export type FormDesignerState = {
@@ -92,6 +95,8 @@ export type FormDesignerState = {
   activeSettingsTabKey: string | undefined;
 
   settingsPanelElement: HTMLDivElement | null;
+  validationCollector: IValidationCollector;
+  formSettingsFormMarkup: FormMarkup;
 };
 
 export type FormDesignerActions = {
@@ -104,8 +109,6 @@ export type FormDesignerActions = {
   duplicateComponent: (payload: IComponentDuplicatePayload) => void;
   updateChildComponents: (payload: IUpdateChildComponentsPayload) => void;
   addDataProperty: (payload: IAddDataPropertyPayload) => void;
-
-  setValidationErrors: (payload: IFormValidationErrors) => void;
 
   startDraggingNewItem: () => void;
   endDraggingNewItem: () => void;
@@ -130,6 +133,7 @@ export type FormDesignerActions = {
   saveAsync: () => Promise<void>;
 
   setSettingsPanelElement: (element: HTMLDivElement | null) => void;
+  validateFormAsync: () => Promise<void>;
 };
 
 
@@ -138,6 +142,7 @@ export const FORM_INITIAL_STATE: FormDesignerFormState = {
   formFlatMarkup: {
     allComponents: {},
     componentRelations: { [ROOT_COMPONENT_KEY]: [] },
+    parents: {},
   },
 };
 

@@ -139,7 +139,7 @@ const ComponentWrapper: FC<IComponentWrapperProps> = React.memo((props) => {
         customComponent.settings,
         component,
         DEFAULT_FORM_SETTINGS,
-        { allComponents: { component: customComponent.settings }, componentRelations: {} },
+        { allComponents: { component: customComponent.settings }, componentRelations: {}, parents: {} },
       )
       : undefined;
   }, [customComponent.settings, component]);

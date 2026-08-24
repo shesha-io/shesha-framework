@@ -1,6 +1,7 @@
 import { DependencyList, useEffect, useMemo } from 'react';
 import { IModelValidation } from '@/utils/errors';
 import { useValidationErrorsActionsOrDefault } from './index';
+import { isDefined } from '@/utils/nullables';
 
 /**
  * Hook for components to register validation errors with the parent FormComponent
@@ -42,7 +43,7 @@ import { useValidationErrorsActionsOrDefault } from './index';
  * ```
  */
 export const useComponentValidation = (
-  validationFn: () => Partial<IModelValidation> | undefined,
+  validationFn: () => IModelValidation | undefined,
   deps: DependencyList,
 ): IModelValidation | undefined => {
   // Get the validation actions from the provider
@@ -51,7 +52,7 @@ export const useComponentValidation = (
   const validationResult = useMemo((): IModelValidation | undefined => {
     const partialResult = validationFn();
 
-    if (!partialResult || !partialResult.hasErrors) {
+    if (!isDefined(partialResult) || !partialResult.hasErrors) {
       return undefined;
     }
 
@@ -59,7 +60,6 @@ export const useComponentValidation = (
       ...partialResult,
       hasErrors: true,
     };
-    // TODO: review usage of validationFn and include into dependenceis
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 
