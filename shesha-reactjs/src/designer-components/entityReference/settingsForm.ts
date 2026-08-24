@@ -112,7 +112,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     },
                   },
                   validationDependencies: ['getEntityUrl'],
-                  settingsValidationErrors: [],
                   jsSetting: true,
                 })
                 .addSettingsInput({
@@ -136,7 +135,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     },
                   },
                   validationDependencies: ['entityType'],
-                  settingsValidationErrors: [],
                 })
                 .addSettingsInputRow({
                   id: nanoid(),

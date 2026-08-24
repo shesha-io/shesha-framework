@@ -9,14 +9,15 @@ import { IPersistedFormProps } from '@/providers/form/models';
 import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
 import { ComponentsContainerSubForm } from './componentsContainerSubForm';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
-import { Button, Result } from 'antd';
-import Link from 'antd/es/typography/Link';
+import { Button, Result, Typography } from 'antd';
 import { useValidator } from '@/providers/validateProvider';
 import AttributeDecorator from '@/components/attributeDecorator';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { ValidateErrorEntity } from '@/interfaces';
 import { isNonEmptyArray } from '@/utils/array';
 import { useStyles } from './styles';
+
+const { Link } = Typography;
 
 interface ISubFormProps {
   style?: CSSProperties | undefined;
