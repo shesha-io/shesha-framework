@@ -2,6 +2,8 @@ import { DataTypes } from '@/interfaces/dataTypes';
 import { evaluateComplexStringWithResult, IEvaluateComplexStringResult, IMatchData } from '@/providers/form/utils';
 import { executeFunction } from '@/utils';
 import { isDefined, isNullOrWhiteSpace } from './nullables';
+import { JsonLogicFilter } from '@/interfaces/jsonLogic';
+import { isNonEmptyArray } from './array';
 
 export type EvaluationType = 'mustache' | 'javascript';
 export interface IEvaluateNodeArgs {
@@ -19,7 +21,7 @@ export interface IEvaluateJsonLogicNode {
 }
 
 const isEvaluateJsonLogicNode = (node: object): node is IEvaluateJsonLogicNode => {
-  if ('evaluate' in node && Array.isArray(node.evaluate) && node.evaluate.length === 1) {
+  if (isDefined(node) && 'evaluate' in node && Array.isArray(node.evaluate) && node.evaluate.length === 1) {
     const evaluateNode: unknown = node.evaluate[0];
     return isDefined(evaluateNode) && typeof (evaluateNode) === 'object' && 'expression' in evaluateNode && typeof evaluateNode.expression === 'string';
   } else
@@ -434,3 +436,13 @@ export interface IMustacheEvaluateNodeArgs {
 export interface IMustacheEvaluateNode {
   evaluate: IMustacheEvaluateNodeArgs[];
 }
+
+export const combineExpressionsWithAnd = (filters: JsonLogicFilter[]): JsonLogicFilter | undefined => {
+  return isNonEmptyArray(filters)
+    ? filters.length > 1
+      ? {
+        and: filters,
+      }
+      : filters[0]
+    : undefined;
+};

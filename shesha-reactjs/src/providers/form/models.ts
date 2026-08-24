@@ -1,7 +1,8 @@
 import { ColProps } from 'antd';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { FormLayout } from 'antd/lib/form/Form';
-import React, { CSSProperties, ReactNode } from 'react';
+import { CSSProperties, ReactNode } from 'react';
+import * as React from 'react';
 import { IAsyncValidationError, IDictionary } from '@/interfaces';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { IHasVersion } from '@/utils/fluentMigrator/migrator';
@@ -125,8 +126,14 @@ export interface IStyleValue {
   shadow?: IShadowValue | undefined;
   dimensions?: IDimensionsValue | undefined;
   size?: SizeType | undefined;
+  /** js code of calculated style */
   style?: string | undefined;
-  styleJson?: CSSProperties | undefined;
+  /** calculated style */
+  styleCss?: CSSProperties | undefined;
+  /** js code of calculated wrapper style */
+  wrapperStyle?: string | undefined;
+  /** calculated wrapper style */
+  wrapperStyleCss?: CSSProperties | undefined;
   /** @deprecated use stylingBoxJson insted */
   stylingBox?: string | undefined;
   stylingBoxJson?: StyleBoxValue | undefined;
@@ -139,6 +146,57 @@ export interface IStyleValue {
   autoWidth?: boolean | undefined;
   autoHeight?: boolean | undefined;
 }
+
+/**
+ * Every property of `IStyleValue`, as a runtime list.
+ *
+ * Declared `satisfies` the key union so the compiler flags it when a property is added to
+ * `IStyleValue` but not here — otherwise `extractStyleValue` would silently stop forwarding it.
+ */
+const STYLE_VALUE_KEYS = [
+  'border', 'background', 'font', 'shadow', 'dimensions', 'size',
+  'style', 'styleCss', 'wrapperStyle', 'wrapperStyleCss',
+  'stylingBox', 'stylingBoxJson', 'primaryTextColor', 'primaryBgColor', 'secondaryBgColor',
+  'secondaryTextColor', 'overflow', 'hideScrollBar', 'autoWidth', 'autoHeight',
+] as const satisfies readonly (keyof IStyleValue)[];
+
+/**
+ * Extracts just the Appearance properties from a component model.
+ *
+ * A component model carries far more than styling — data source settings, event handlers, the
+ * component id. Handing the whole model to a presentational component passes all of that as well,
+ * which widens its contract to the entire model and makes it unclear what it actually reads.
+ * This narrows it to the style properties alone.
+ *
+ * Only keys actually present on the model are copied, so an unset property stays absent rather
+ * than becoming an explicit `undefined` — style builders test for presence to decide whether to
+ * emit a rule, and an own property set to `undefined` is still "present" to a spread.
+ */
+export const extractStyleValue = (model: IStyleValue | undefined): IStyleValue => {
+  if (model === undefined) return {};
+  const result: IStyleValue = {};
+  /* Generic in the key so `target[key]` and `source[key]` resolve to the same property type: a copy
+     between mismatched properties is a compile error rather than something an `unknown` bag and a
+     cast would let through. */
+  const copyKey = <K extends keyof IStyleValue>(target: IStyleValue, source: IStyleValue, key: K): void => {
+    const value = source[key];
+    if (value !== undefined) target[key] = value;
+  };
+  STYLE_VALUE_KEYS.forEach((key) => {
+    if (key in model) copyKey(result, model, key);
+  });
+  return result;
+};
+
+/**
+ * The style model of a component that exposes two independent sets of Appearance panels: the
+ * bare-named properties style the component's wrapper, and a nested set styles a repeated child.
+ *
+ * Used by the inner components, where the wrapper is the group container and the nested set
+ * styles each child component — `INestedStyleValue<'radio'>` gives `radio.border`, `radio.background`, …
+ * alongside the wrapper's own `border`, `background`, ….
+ */
+export type INestedStyleValue<TNested extends string> = IStyleValue & { [K in TNested]?: IStyleValue | undefined };
 
 export interface IInputStyles extends IStyleValue {
   borderSize?: string | number | undefined;
@@ -167,9 +225,7 @@ export interface IInputStyles extends IStyleValue {
   backgroundStoredFileId?: string | undefined;
   enableStyleOnReadonly?: boolean | undefined;
   container?: IStyleValue | undefined;
-  display?: 'block' | 'flex' | 'grid' | 'inline-grid' | undefined;
-  gap?: string | number | SizeType | undefined;
-};
+}
 
 export type ConfigurableFormComponentTypes =
   | 'alert' |
@@ -178,6 +234,7 @@ export type ConfigurableFormComponentTypes =
   'dropdown' |
   'textField' |
   'textField' |
+  'phoneNumberInput' |
   'textArea' |
   'iconPicker' |
   'colorPicker' |
@@ -203,7 +260,11 @@ export interface IComponentLabelProps {
 export interface IComponentRuntimeProps {
   /**/
   settingsValidationErrors?: IAsyncValidationError[] | undefined;
+}
 
+export interface IComponentEventHandlers {
+  /** Custom onInput handler */
+  onInputCustom?: string | undefined;
   /** Custom onBlur handler */
   onBlurCustom?: string | undefined;
 
@@ -212,6 +273,9 @@ export interface IComponentRuntimeProps {
 
   /** Custom onClick handler */
   onClickCustom?: string | undefined;
+
+  /** Custom onDoubleClick handler */
+  onDoubleClickCustom?: string | undefined;
 
   /** Custom onFocus handler */
   onFocusCustom?: string | undefined;
@@ -250,12 +314,13 @@ export interface IComponentBindingProps {
 }
 
 export interface IComponentVisibilityProps {
-  /** Hidden field is still a part of the form but not visible on it */
+  /** Hidden field is still a part of the form but not visible on it
+   * It may also depend on the permissions and/or state of the parent container/form
+   */
   hidden?: boolean | undefined;
 
   /** Visible field contains only the value from the component settings (set explicitly or calculated),
-   * but does not reflect the actual visibility of the component.
-   * It may also depend on the permissions and/or state of the parent container/form
+   * but does not reflect the actual visibility of the component (It may also depend on the permissions and/or state of the parent container/form)
    * Use `hidden` to get actual visible/hidden state of the component */
   visible?: boolean | undefined;
   visiblePermissions?: string[] | undefined;
@@ -296,6 +361,7 @@ export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles =
   IComponentLabelProps,
   IComponentVisibilityProps,
   IComponentRuntimeProps,
+  IComponentEventHandlers,
   IStyleValue {
   /** Type of the component */
   type: string;
@@ -340,8 +406,6 @@ export interface IConfigurableFormComponent<TDeviceStyles extends IInputStyles =
   availableConstantsExpression?: string | GetAvailableConstantsFunc | undefined;
 
   subscribedEventNames?: string[] | undefined;
-
-  wrapperStyle?: string | undefined;
 
   noDataText?: string | undefined;
 

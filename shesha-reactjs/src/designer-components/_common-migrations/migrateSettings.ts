@@ -1,7 +1,8 @@
-import { EditMode, IPropertySetting } from '@/providers';
+import { EditMode, IConfigurableFormComponent, IPropertySetting, isConfigurableFormComponent, IStyleValue } from '@/providers';
 import { getPropertySettingsFromValue, isPropertySettings } from '@/designer-components/_settings/utils/utils';
 import { getStringPropertyOrUndefined } from '@/utils/object';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { getStyleBoxValue } from '../styleBox/utils';
 
 export const migrateFunctionToProp = <T extends object = object>(
   prev: T,
@@ -51,7 +52,7 @@ export const migrateCustomFunctions = <T extends object = object>(prev: T): T =>
 export const migratePropertyName = <T extends object = object>(prev: T): T => {
   const name = getStringPropertyOrUndefined(prev, "name");
   const propertyName = getStringPropertyOrUndefined(prev, "propertyName");
-  if (!!name && !propertyName)
+  if (!isNullOrWhiteSpace(name) && isNullOrWhiteSpace(propertyName))
     return { ...prev, componentName: name, propertyName: name } as T;
   else
     return { ...prev } as T;
@@ -73,9 +74,9 @@ export const migratePropToInverseProp = <T, V>(prev: T, fromProp: keyof T, toPro
 
   if (isPropertySettings(model[toProp])) {
     const existingCode = model[toProp]['_code'];
-    if (!existingCode) return model;
+    if (isNullOrWhiteSpace(existingCode)) return model;
     const func = `// Automatically updated from '${String(fromProp)}' property, please review\n\nreturn !(() => {\n    // Source code\n\n${existingCode}\n\n})();`;
-    model[toProp] = { ...model[toProp] as IPropertySetting<V>, _code: func, _value: model[toProp]['_value'] } as T[keyof T];
+    model[toProp] = { ...model[toProp] as IPropertySetting<V>, _code: func, _value: !(model[toProp]['_value'] as boolean) } as T[keyof T];
   }
 
   if (model[toProp] === undefined && defaultValue !== undefined)
@@ -84,8 +85,11 @@ export const migratePropToInverseProp = <T, V>(prev: T, fromProp: keyof T, toPro
   return model;
 };
 
-export const migrateHiddenToVisible = <T>(prev: T): T => {
-  const newModel = migratePropToInverseProp(prev, 'hidden' as keyof T, 'visible' as keyof T);
+export const migrateHiddenToVisible = <T extends { visible?: boolean | IPropertySetting<boolean> | undefined; hidden?: boolean | IPropertySetting<boolean> | undefined }>(
+  prev: T,
+  defaultValue?: boolean | undefined,
+): Omit<T, 'hidden'> & { visible?: boolean | IPropertySetting<boolean> | undefined } => {
+  const newModel = !isDefined(prev.visible) ? migratePropToInverseProp(prev, 'hidden' as keyof T, 'visible' as keyof T, undefined, defaultValue) : { ...prev };
   delete newModel['hidden' as keyof T];
   return newModel;
 };
@@ -112,4 +116,20 @@ export const migrateReadOnly = <T>(prev: T, defaultValue?: EditMode): T => {
   } as T;
 
   return migratePropToInverseProp(model, 'editMode' as keyof T, 'editMode' as keyof T, undefined, defaultValue);
+};
+
+export const migrateStylingBoxToJson = <T extends IConfigurableFormComponent | IStyleValue>(prev: T): T => {
+  if (isConfigurableFormComponent(prev)) {
+    return {
+      ...prev,
+      ...(isDefined(prev.desktop) && isDefined(prev.desktop.stylingBox) && !isDefined(prev.desktop.stylingBoxJson) ? { desktop: { ...prev.desktop, stylingBoxJson: getStyleBoxValue(prev.desktop.stylingBox) } } : {}),
+      ...(isDefined(prev.tablet) && isDefined(prev.tablet.stylingBox) && !isDefined(prev.tablet.stylingBoxJson) ? { tablet: { ...prev.tablet, stylingBoxJson: getStyleBoxValue(prev.tablet.stylingBox) } } : {}),
+      ...(isDefined(prev.mobile) && isDefined(prev.mobile.stylingBox) && !isDefined(prev.mobile.stylingBoxJson) ? { mobile: { ...prev.mobile, stylingBoxJson: getStyleBoxValue(prev.mobile.stylingBox) } } : {}),
+    };
+  }
+
+  return {
+    ...prev,
+    stylingBoxJson: prev.stylingBoxJson ?? getStyleBoxValue(prev.stylingBox),
+  };
 };

@@ -7,10 +7,7 @@ import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 import { Button, Form, Result } from 'antd';
 import classNames from 'classnames';
 import Link from 'next/link';
-import React, {
-  PropsWithChildren,
-  ReactNode,
-} from 'react';
+import { PropsWithChildren, ReactNode } from 'react';
 import { ShaSpin } from '..';
 import ComponentsContainer from '../formDesigner/containers/componentsContainer';
 import { ComponentsContainerForm } from '../formDesigner/containers/componentsContainerForm';

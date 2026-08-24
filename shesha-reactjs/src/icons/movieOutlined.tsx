@@ -1,5 +1,5 @@
 import Icon from '@ant-design/icons/lib/components/Icon';
-import React from 'react';
+import * as React from 'react';
 import { CustomIconProps } from './interfaces';
 
 const MovieOutlinedSvg = (): React.JSX.Element => (

@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/strict-boolean-expressions: "error" */
 import ConfigurationItemsExport, { IExportInterface } from "@/components/configurationFramework/itemsExport";
 import { ConfigurationItemsImport, IImportInterface } from "@/components/configurationFramework/itemsImport";
 import { IAjaxResponse } from "@/interfaces";
@@ -7,7 +8,8 @@ import { ConfigurationItemsExportFooter } from "@/providers/sheshaApplication/co
 import { ConfigurationItemsImportFooter } from "@/providers/sheshaApplication/configurable-actions/configuration-items-import";
 import { buildUrl } from "@/utils/url";
 import { HomeOutlined, SettingOutlined } from "@ant-design/icons";
-import React, { RefObject, ReactNode } from "react";
+import { RefObject, ReactNode } from "react";
+import * as React from "react";
 import { isDefined, isNullOrWhiteSpace } from "../../utils/nullables";
 import { deleteConfigurationItemAsync, deleteFolderAsync, duplicateItemAsync, fetchFlatTreeAsync, fetchItemTypesAsync, getRevisionJsonAsync, MoveNodePayload, moveTreeNodeAsync, restoreItemRevisionAsync } from "../apis";
 import { confirmSaveDocumentAsync } from "../components/save-confirmation";
@@ -17,8 +19,7 @@ import {
   ConfigItemTreeNode,
   DocumentBase,
   FolderTreeNode,
-  ForceRenderFunc,
-  IDocumentInstance,
+  ForceRenderFunc, IDocumentInstance,
   isCIDocument,
   isConfigItemTreeNode,
   isFolderTreeNode, isModuleTreeNode, isSpecialTreeNode, ItemTypeDefinition,
@@ -92,7 +93,11 @@ const STORAGE_KEYS = {
 
 interface CreateItemResponse {
   id: string;
-};
+}
+
+interface CreateFolderResponse {
+  id: string;
+}
 
 export type CsSubscription = (cs: IConfigurationStudio) => void;
 
@@ -197,7 +202,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
     this.notificationApi = args.notificationApi;
     this.storage = args.storage;
     // eslint-disable-next-line no-console
-    this.log = args.logEnabled ? console.log : () => {};
+    this.log = args.logEnabled === true ? console.log : () => {};
     this.treeLoadingState = { status: 'waiting' };
     this.subscriptions = new Map<CsSubscriptionType, Set<CsSubscription>>();
     this.toolbarRef = args.toolbarRef;
@@ -244,7 +249,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
   };
 
   restoreRevisionAsync = async (args: RestoreRevisionArgs): Promise<boolean> => {
-    if (!await this.modalApi.confirmYesNoAsync({ title: 'Confirm Revision Restore', content: `Are you sure you want to restore revision '${args.revisionFriendlyName}'?` }))
+    if (!(await this.modalApi.confirmYesNoAsync({ title: 'Confirm Revision Restore', content: `Are you sure you want to restore revision '${args.revisionFriendlyName}'?` })))
       return false;
     await restoreItemRevisionAsync(this.httpClient, { itemId: args.itemId, revisionId: args.revisionId });
     return true;
@@ -310,11 +315,11 @@ export class ConfigurationStudio implements IConfigurationStudio {
   };
 
   private loadTreeExpandedNodesAsync = async (): Promise<void> => {
-    this._treeExpandedKeys = await this.storage.getAsync(STORAGE_KEYS.TREE_EXPANDED_KEYS) ?? [];
+    this._treeExpandedKeys = (await this.storage.getAsync(STORAGE_KEYS.TREE_EXPANDED_KEYS)) ?? [];
   };
 
   private loadQuickSearchAsync = async (): Promise<void> => {
-    this._quickSearch = await this.storage.getAsync<string>(STORAGE_KEYS.QUICK_SEARCH, false) ?? "";
+    this._quickSearch = (await this.storage.getAsync<string>(STORAGE_KEYS.QUICK_SEARCH, false)) ?? "";
   };
 
   private loadTreeStateAsync = async (): Promise<void> => {
@@ -434,7 +439,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
   private loadOpenedDocsAsync = async (): Promise<void> => {
     // TODO: check type of stored value, filter/proceess documents taking into account loaded tree nodes
-    const docs = await this.storage.getAsync<StoredDocumentInfo[]>(STORAGE_KEYS.OPENED_DOCS) ?? [];
+    const docs = (await this.storage.getAsync<StoredDocumentInfo[]>(STORAGE_KEYS.OPENED_DOCS)) ?? [];
 
     this.log('Convert restored docs');
     const mappedDocs = docs.map<IDocumentInstance | undefined>((d) => {
@@ -452,6 +457,8 @@ export class ConfigurationStudio implements IConfigurationStudio {
           moduleId: node.moduleId,
           moduleName: node.moduleName,
           flags: node.flags,
+          applicationId: node.applicationId,
+          applicationName: node.applicationName,
         });
       }
 
@@ -466,6 +473,8 @@ export class ConfigurationStudio implements IConfigurationStudio {
           label: node.name,
           moduleId: node.moduleId,
           moduleName: "",
+          applicationId: undefined,
+          applicationName: undefined,
         });
       }
 
@@ -507,6 +516,8 @@ export class ConfigurationStudio implements IConfigurationStudio {
       moduleId: node.moduleId,
       moduleName: node.moduleName,
       flags: node.flags,
+      applicationId: node.applicationId,
+      applicationName: node.applicationName,
     });
 
     this.docs = [...this.docs, newDocument];
@@ -530,6 +541,8 @@ export class ConfigurationStudio implements IConfigurationStudio {
       label: node.name,
       moduleId: node.moduleId,
       moduleName: "",
+      applicationId: undefined,
+      applicationName: undefined,
     });
 
     this.docs = [...this.docs, newDocument];
@@ -753,9 +766,9 @@ export class ConfigurationStudio implements IConfigurationStudio {
       const treeNodes: TreeNode[] = [];
 
       // First pass: create map and shallow copies
-      flatTreeNodes.forEach((node) => {
-        treeNodeMap.set(node.id, flatNode2TreeNode(this.csEnvironment, node));
-      });
+      for await (const node of flatTreeNodes) {
+        treeNodeMap.set(node.id, await flatNode2TreeNode(this.csEnvironment, node));
+      };
 
       // Second pass: build hierarchy
       flatTreeNodes.forEach((node) => {
@@ -808,7 +821,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
   //#region crud operations
 
   createFolderAsync = async ({ moduleId, folderId }: CreateFolderArgs): Promise<void> => {
-    await this.modalApi.showModalFormAsync({
+    const response = await this.modalApi.showModalFormAsync<CreateFolderResponse>({
       title: 'Create Folder',
       formId: FORMS.CREATE_FOLDER,
       formArguments: {
@@ -817,11 +830,25 @@ export class ConfigurationStudio implements IConfigurationStudio {
       },
     });
     await this.loadTreeAsync();
-    // TODO: select created folder
+    if (!isNullOrWhiteSpace(response?.id)) {
+      const treeNode = this._treeNodesMap.get(response.id);
+
+      if (treeNode) {
+        if (isDefined(treeNode.parentId) && !(this.isTreeNodeExpanded(treeNode.parentId))) {
+          this.expandTreeNode(treeNode.parentId);
+        }
+
+        // select new tab
+        await this.doSelectTreeNodeAsync(treeNode);
+        this.notifySubscribers(['tree']);
+      }
+    }
   };
 
   deleteFolderAsync = async (node: FolderTreeNode): Promise<void> => {
-    if (node.children.length > 0) {
+    // node.children may include the synthetic empty-folder placeholder (filter.ts) - exclude it.
+    const hasRealChildren = node.children.some((child: TreeNode) => child.nodeType !== TreeNodeType.Placeholder);
+    if (hasRealChildren) {
       await this.modalApi.warning({
         title: 'Delete Folder',
         content: (
@@ -832,7 +859,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
       });
       return;
     }
-    if (!await this.modalApi.confirmYesNoAsync({ title: 'Confirm Deletion', content: `Are you sure you want to delete '${node.name}'?` }))
+    if (!(await this.modalApi.confirmYesNoAsync({ title: 'Confirm Deletion', content: `Are you sure you want to delete '${node.name}'?` })))
       return;
 
     try {
@@ -913,7 +940,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
   deleteItemAsync = async (node: ConfigItemTreeNode): Promise<void> => {
     const definition = this.getItemTypeDefinition(node.discriminator);
-    if (!await this.modalApi.confirmYesNoAsync({ title: 'Confirm Deletion', content: `Are you sure you want to delete ${definition.friendlyName} '${node.name}'?` }))
+    if (!(await this.modalApi.confirmYesNoAsync({ title: 'Confirm Deletion', content: `Are you sure you want to delete ${definition.friendlyName} '${node.name}'?` })))
       return;
 
     const docId = node.id;
@@ -1041,7 +1068,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
       return {
         title: 'Import Configuration',
         content: <ConfigurationItemsImport onImported={onImported} setImporterApi={(api) => importerApi.setApi(api)} />,
-        footer: <ConfigurationItemsImportFooter hideModal={hideModal} importerApi={importerApi} />,
+        footer: <ConfigurationItemsImportFooter hideModal={hideModal} importerApi={importerApi} onImported={onImported} />,
       };
     });
 
@@ -1098,7 +1125,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
 
   getDocIdFromRoute = (): string | undefined => {
     const { docId } = this.shaRouter.router.query;
-    return docId && typeof (docId) === 'string' && !isNullOrWhiteSpace(docId)
+    return isDefined(docId) && typeof (docId) === 'string' && !isNullOrWhiteSpace(docId)
       ? docId
       : undefined;
   };
@@ -1106,7 +1133,7 @@ export class ConfigurationStudio implements IConfigurationStudio {
   navigateAfterInitAsync = async (): Promise<void> => {
     // get id of the document from the router and open tab
     const docId = this.getDocIdFromRoute();
-    if (docId) {
+    if (!isNullOrWhiteSpace(docId)) {
       // open document
       await this.openDocumentByIdAsync(docId);
     } else {

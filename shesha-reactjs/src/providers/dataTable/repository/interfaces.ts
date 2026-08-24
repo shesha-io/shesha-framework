@@ -27,6 +27,7 @@ export interface IRepository<TCreateOptions extends DefaultCreateOptions = Defau
   performUpdate: <TData extends ITableRowData = ITableRowData>(rowIndex: number, data: TData, options?: TUpdateOptions) => Promise<TData>;
   performDelete: <TData extends ITableRowData = ITableRowData>(rowIndex: number, data: TData, options?: TDeleteOptions) => Promise<TData>;
   entityType?: string | IEntityTypeIdentifier | undefined;
+  fetchingSettingsHash: string;
 };
 
 export interface IHasModelType {

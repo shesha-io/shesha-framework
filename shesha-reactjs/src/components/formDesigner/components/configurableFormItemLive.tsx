@@ -1,4 +1,4 @@
-import React, { ReactNode, useMemo } from 'react';
+import { ReactNode, useMemo } from 'react';
 import { Form, FormItemProps } from 'antd';
 import { getFieldNameFromExpression, getValidationRules, useAvailableConstantsDataNoRefresh } from '@/providers/form/utils';
 import classNames from 'classnames';
@@ -6,10 +6,11 @@ import { UnwrapCodeEvaluators, useFormItem, useShaFormInstance } from '@/provide
 import { IConfigurableFormItemProps } from './model';
 import { ConfigurableFormItemCtx } from './configurableFormItemContext';
 import { ConfigurableFormItemForm } from './configurableFormItemForm';
-import { designerConstants } from '../utils/designerConstants';
 import { addPx } from '@/utils/style';
 import { useStyles } from './styles';
-import { isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
+import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
+import { designerConstants } from '../utils/designerConstants';
 
 export const ConfigurableFormItemLive = <TValue = unknown>({
   children,
@@ -21,12 +22,16 @@ export const ConfigurableFormItemLive = <TValue = unknown>({
   wrapperCol,
   autoAlignLabel = true,
 }: UnwrapCodeEvaluators<IConfigurableFormItemProps<TValue>>): ReactNode => {
+  const toolboxComponent = useFormDesignerComponentGetter()(model.type);
+
   const shaForm = useShaFormInstance();
   const getFormData = shaForm.getPublicFormApi().getFormData;
   const formItem = useFormItem();
   const { namePrefix, wrapperCol: formItemWrapperCol, labelCol: formItemlabelCol } = formItem;
   const allData = useAvailableConstantsDataNoRefresh();
-  const { styles } = useStyles({ autoAlignLabel });
+  // Pin the label to the input's configured height so a validation message cannot shift it.
+  // 'auto' carries no fixed height, so fall back to the default alignment in that case.
+  const { styles } = useStyles({ ...model, autoAlignLabel });
 
   const layout = useMemo(() => {
     // Make sure the `wrapperCol` and `labelCol` from `FormItemProver` override the ones from the main form
@@ -46,6 +51,16 @@ export const ConfigurableFormItemLive = <TValue = unknown>({
     marginLeft = defaultMarginLeft,
   } = (model.stylingBoxJson || {});
 
+  // ToDo: AS - remove after migration all components to the new styles
+  const marginStyle = toolboxComponent?.allowInherit === true
+    ? {}
+    : {
+      marginTop: addPx(marginTop, allData),
+      marginBottom: addPx(marginBottom, allData),
+      marginRight: addPx(marginRight, allData),
+      marginLeft: addPx(marginLeft, allData),
+    };
+
   const propName = isNotNullOrWhiteSpace(namePrefix) && isNullOrWhiteSpace(model.initialContext)
     ? namePrefix + '.' + model.propertyName
     : model.propertyName;
@@ -58,15 +73,10 @@ export const ConfigurableFormItemLive = <TValue = unknown>({
     ...(isNotNullOrWhiteSpace(valuePropName) ? { valuePropName: valuePropName } : {}),
     initialValue: initialValue,
     tooltip: isNotNullOrWhiteSpace(model.description) ? model.description : undefined,
-    rules: getValidationRules(model, { getFormData }),
-    ...(model.validationDependencies?.length ? { dependencies: model.validationDependencies } : {}),
+    rules: [...getValidationRules(model, { getFormData }), ...(toolboxComponent?.getExtraValidationRules?.(model) ?? [])],
+    ...(isDefined(model.validationDependencies?.length) ? { dependencies: model.validationDependencies } : {}),
     name: isNotNullOrWhiteSpace(model.context) ? undefined : getFieldNameFromExpression(propName),
-    style: {
-      marginTop: addPx(marginTop, allData),
-      marginBottom: addPx(marginBottom, allData),
-      marginRight: addPx(marginRight, allData),
-      marginLeft: addPx(marginLeft, allData),
-    },
+    style: marginStyle,
     ...(model.labelAlign ? { labelAlign: model.labelAlign } : {}),
     ...(!Boolean(hideLabel) ? { label: model.label } : {}),
     ...(layout.labelCol ? { labelCol: layout.labelCol } : {}),

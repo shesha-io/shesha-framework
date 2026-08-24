@@ -1,10 +1,5 @@
-import React, {
-  ChangeEvent,
-  FC,
-  Fragment,
-  useMemo,
-  useState,
-} from 'react';
+import { ChangeEvent, FC, Fragment, useMemo, useState } from 'react';
+import * as React from 'react';
 import {
   Checkbox,
   Dropdown,
@@ -337,6 +332,7 @@ export interface IColumnItemFilterProps {
   onChangeFilterOption?: ((filterId: string, filterOption: IndexColumnFilterOption) => void) | undefined;
   onChangeFilter?: ((filterId: string, filter: ColumnFilter) => void) | undefined;
   applyFilters?: (() => void) | undefined;
+  removeColumnFilter?: ((columnId: string) => void) | undefined;
 }
 
 export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
@@ -350,6 +346,7 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
   onChangeFilter,
   filter,
   applyFilters,
+  removeColumnFilter,
   referenceListName,
   referenceListModule,
   entityTypeName,
@@ -387,6 +384,14 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
 
   const handleStringFilter = (changeValue: ChangeEvent<HTMLInputElement>): void => {
     const value = (changeValue as ChangeEvent<HTMLInputElement>).target.value;
+    if (value === '') {
+      if (removeColumnFilter) {
+        removeColumnFilter(id);
+      } else {
+        onChangeFilter?.(id, '');
+      }
+      return;
+    }
     onChangeFilter?.(id, value);
   };
 

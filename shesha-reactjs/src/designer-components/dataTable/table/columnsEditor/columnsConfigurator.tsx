@@ -1,5 +1,5 @@
 import { Alert } from 'antd';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { ColumnProperties } from './columnProperties';
 import { ColumnsItemProps, IDataColumnsProps, standardCellComponentTypes } from '@/providers/datatableColumnsConfigurator/models';
 import { nanoid } from '@/utils/uuid';
@@ -52,6 +52,7 @@ export const ColumnsConfigurator: FC<IColumnsConfiguratorProps> = ({ value, onCh
       )}
       itemProperties={(itemProps) => (
         <ColumnProperties
+          key={itemProps.item.id}
           item={itemProps.item}
           onChange={itemProps.onChange}
           readOnly={itemProps.readOnly}

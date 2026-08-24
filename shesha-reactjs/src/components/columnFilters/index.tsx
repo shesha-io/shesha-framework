@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { useDataTableStore } from '@/providers';
 import ColumnFiltersBase from '@/components/columnFiltersBase';
 
@@ -11,6 +11,7 @@ export const ColumnFilters: FC = () => {
     changeFilter,
     toggleColumnFilter,
     applyFilters,
+    removeColumnFilter,
   } = useDataTableStore();
   const currentFilter = tableFilterDirty ?? tableFilter;
   return (
@@ -21,6 +22,7 @@ export const ColumnFilters: FC = () => {
         changeFilter,
         toggleColumnFilter,
         applyFilters,
+        removeColumnFilter,
       }}
       currentFilter={currentFilter}
     />

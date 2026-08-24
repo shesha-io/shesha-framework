@@ -4,7 +4,7 @@ import { FileImageOutlined } from '@ant-design/icons';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
 import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import React, { ReactElement, ReactNode } from 'react';
+import { ReactElement, ReactNode } from 'react';
 import {
   migrateCustomFunctions,
   migratePropertyName,
@@ -49,6 +49,7 @@ const ImageComponent: IToolboxComponent<IImageProps, ImageComponentCalculatedMod
   isInput: true,
   isOutput: true,
   preserveDimensionsInDesigner: true,
+  getWrapperStyle: () => ({ style: { dimensions: { width: 'auto' } } }),
   calculateModel: (model, allData) => ({
     ownerId: model.ownerId ? evaluateString(model.ownerId, allData) : undefined,
     dataId: allData.data ? (allData.data as { Id: string }).Id : undefined, // TODO: review and remove

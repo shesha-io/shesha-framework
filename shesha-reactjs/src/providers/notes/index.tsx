@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
+import { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
 import {
   INotesEditorActions,
   INotesEditorInstance,
@@ -69,6 +69,8 @@ const useNotesEditorState = (): INotesEditorState => {
     notes: instance.notes,
     isFetchingNotes: instance.isFetchingNotes,
     isPostingNotes: instance.isPostingNotes,
+    canPostNotes: instance.canPostNotes,
+    isDesignerMode: instance.isDesignerMode,
   };
 };
 

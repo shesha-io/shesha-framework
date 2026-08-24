@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { DataList } from '@/components/dataList';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import classNames from 'classnames';
@@ -17,6 +17,8 @@ import { DataListPlaceholder } from './dataListPlaceholder';
 import { isDefined } from '@/utils/nullables';
 import { ActionRefType } from '@/components/dataList/models';
 import { ITableRowData } from '@/providers/dataTable/interfaces';
+import { useMetadataOrUndefined } from '@/providers/metadata';
+import { useEnsureFetchColumns } from '@/designer-components/dataTable/table/useEnsureFetchColumns';
 
 const DataListControl: FCUnwrapped<IDataListWithDataSourceProps, "dataSourceInstance"> = (props) => {
   const {
@@ -61,6 +63,8 @@ const DataListControl: FCUnwrapped<IDataListWithDataSourceProps, "dataSourceInst
     clearSelectedRow,
     setMultiSelectedRow,
   } = dataSource;
+  const metadata = useMetadataOrUndefined()?.metadata;
+  useEnsureFetchColumns(props.id, dataSource, metadata);
   const { styles } = useStyles();
   const appContext = useAvailableConstantsData();
   const { formMode } = useForm();
@@ -70,7 +74,7 @@ const DataListControl: FCUnwrapped<IDataListWithDataSourceProps, "dataSourceInst
   const repository = getRepository();
 
   // Check if form configuration is invalid (for placeholder display in designer mode)
-  const hasInvalidFormConfig = React.useMemo(() => {
+  const hasInvalidFormConfig = useMemo(() => {
     if (!isDesignMode) return false;
 
     if (props.formSelectionMode === "name") {

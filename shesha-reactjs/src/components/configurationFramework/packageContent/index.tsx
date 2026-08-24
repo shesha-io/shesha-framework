@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 import { PackageAnalyzeResult } from '../itemsImport/models';
 import { DataTableProvider } from '@/providers';
 import { PackageItemsTable } from './packageItemsTable';

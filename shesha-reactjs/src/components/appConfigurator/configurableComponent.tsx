@@ -1,4 +1,5 @@
-import React, { FC, PropsWithChildren, ReactNode } from 'react';
+import { FC, PropsWithChildren, ReactNode } from 'react';
+import * as React from 'react';
 import { useAppConfigurator } from '@/providers';
 import { useStyles } from './styles/styles';
 import { isDefined } from '@/utils/nullables';

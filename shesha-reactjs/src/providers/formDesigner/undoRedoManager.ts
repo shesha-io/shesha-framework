@@ -8,7 +8,7 @@ export interface IUndoRedoManager<T> {
   undo(): boolean;
   redo(): boolean;
   getState(): T;
-  executeChange(change: (state: T) => T, description: string): void;
+  executeChange(change: (state: T) => T, description: string): boolean;
   setState(state: T): void;
   canUndo: boolean;
   canRedo: boolean;
@@ -53,26 +53,15 @@ export class UndoRedoManager<T> implements IUndoRedoManager<T> {
   }
 
   // For simple state changes
-  executeChange(change: (state: T) => T, description: string): void {
+  executeChange(change: (state: T) => T, description: string): boolean {
     const newState = change(this.state);
     if (newState === this.state)
-      return;
+      return false;
 
     this.saveState(newState, description);
     this.state = newState;
+    return true;
   }
-
-  /*
-  // For complex operations that need their own undo logic
-  executeCommand(command: {
-    execute(state: T): void;
-    undo(state: T): void;
-    description: string;
-  }): void {
-    command.execute(this.state);
-    this.saveState(command.description);
-  }
-  */
 
   private saveState(state: T, description: string): void {
     // Remove any future states if we're not at the end

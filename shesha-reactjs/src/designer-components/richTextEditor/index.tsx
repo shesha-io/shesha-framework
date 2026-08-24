@@ -1,4 +1,3 @@
-import React from 'react';
 import RichTextEditor from '@/components/richTextEditor';
 import settingsFormJson from './settingsForm.json';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';

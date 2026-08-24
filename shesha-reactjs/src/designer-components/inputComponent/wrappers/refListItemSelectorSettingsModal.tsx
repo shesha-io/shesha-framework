@@ -1,6 +1,5 @@
 import RefListItemSelectorSettingsModal from '@/components/refListSelectorDisplay/options/modal';
 import { IRefListItemSelectorSettingsModalProps } from '@/designer-components/settingsInput/interfaces';
-import React from 'react';
 import { FCUnwrapped } from '@/providers/form/models';
 
 export const RefListItemSelectorSettingsModalWrapper: FCUnwrapped<IRefListItemSelectorSettingsModalProps> = (props) => {
@@ -10,7 +9,7 @@ export const RefListItemSelectorSettingsModalWrapper: FCUnwrapped<IRefListItemSe
       {...props}
       value={value}
       onChange={(e) => onChange?.(e)}
-      referenceList={referenceList}
+      referenceList={referenceList ? { name: referenceList.name, module: referenceList.module ?? null } : undefined}
       readOnly={false}
     />
   );

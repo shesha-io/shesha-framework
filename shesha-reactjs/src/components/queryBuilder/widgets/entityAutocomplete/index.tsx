@@ -1,4 +1,3 @@
-import React from 'react';
 import { BasicConfig, SelectFieldSettings, TextWidget } from '@react-awesome-query-builder/antd';
 import { Autocomplete } from '@/components/autocomplete';
 import { CustomFieldSettings } from '@/providers/queryBuilder/models';
@@ -19,7 +18,6 @@ const EntityAutocompleteWidget: EntityAutocompleteWidgetType = {
         displayPropName="_displayName"
         keyPropName="id"
         mode="single"
-        allowInherited={customSettings.allowInherited}
         value={value}
         onChange={(newValue) => {
           setValue(typeof (newValue) === "string" ? newValue : undefined);

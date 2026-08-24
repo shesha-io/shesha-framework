@@ -1,6 +1,6 @@
 import { ListEditor } from '@/components/listEditor';
 import { nanoid } from '@/utils/uuid';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { FilterItem } from './filterItem';
 import { ListItem } from '@/components/listEditor/models';
 import { IStoredFilter } from '@/interfaces';

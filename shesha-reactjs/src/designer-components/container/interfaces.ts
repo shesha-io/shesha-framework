@@ -1,7 +1,8 @@
 import { ContainerDirection } from '@/components/formDesigner/common/interfaces';
 import { ComponentDefinition } from '@/interfaces';
 import { StringSubtype } from '@/interfaces/utilityTypes';
-import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
+import { IConfigurableFormComponent, IInputStyles, IStyleValue } from '@/providers/form/models';
+import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export const JUSTIFY_CONTENTS = [
   'center',
@@ -150,7 +151,7 @@ export type ShadowStyleType = 'none' | 'above' | 'below';
 export const DISPLAY_TYPES = ['block', 'flex', 'grid', 'inline-grid'] as const;
 export type DisplayType = StringSubtype<typeof DISPLAY_TYPES>;
 
-export interface ICommonContainerProps extends Omit<IInputStyles, 'style'> {
+export interface ICommonContainerPropsV0 extends Omit<IInputStyles, 'style'> {
   display?: DisplayType | undefined;
   direction?: ContainerDirection | undefined;
   flexWrap?: FlexWrap | undefined;
@@ -175,10 +176,46 @@ export interface ICommonContainerProps extends Omit<IInputStyles, 'style'> {
   borderRadius?: string | number | undefined;
   shadowStyle?: string | undefined;
   style?: React.CSSProperties | undefined;
+  gap?: string | number | SizeType | undefined;
 }
+
+export interface ICommonContainerProps extends IStyleValue {
+  display?: DisplayType | undefined;
+  direction?: ContainerDirection | undefined;
+  flexWrap?: FlexWrap | undefined;
+  flexDirection?: FlexDirection | undefined;
+  justifyContent?: JustifyContent | undefined;
+  alignItems?: AlignItems | undefined;
+  alignSelf?: AlignSelf | undefined;
+  justifyItems?: JustifyItems | undefined;
+  textJustify?: TextJustify | undefined;
+  justifySelf?: JustifySelf | undefined;
+  noDefaultStyling?: boolean | undefined;
+  gridColumnsCount?: number | undefined;
+  gridRowsCount?: number | undefined;
+  gridColumnsWidth?: string | number | undefined;
+  gridRowsHeight?: string | number | undefined;
+  gap?: string | number | undefined;
+}
+
 
 export const IMAGE_SOURCE_TYPES = ['storedFileId', 'base64', 'url'] as const;
 export type ImageSourceType = StringSubtype<typeof IMAGE_SOURCE_TYPES>;
+
+export interface IContainerComponentPropsV0 extends IConfigurableFormComponent, Omit<ICommonContainerPropsV0, 'style'> {
+  backgroundCover?: 'contain' | 'cover' | undefined;
+  backgroundRepeat?: 'repeat' | 'no-repeat' | 'repeat-x' | 'repeat-y' | 'round' | undefined;
+  className?: string | undefined;
+  wrapperStyle?: string | undefined;
+  components: IConfigurableFormComponent[]; // Only important for fluent API
+  backgroundType?: 'image' | 'color' | undefined;
+  backgroundColor?: string | undefined;
+  backgroundDataSource?: ImageSourceType | undefined;
+  backgroundUrl?: string | undefined;
+  backgroundBase64?: string | undefined;
+  backgroundStoredFileId?: string | undefined;
+  showAdvanced?: boolean;
+}
 
 export interface IContainerComponentProps extends IConfigurableFormComponent, Omit<ICommonContainerProps, 'style'> {
   backgroundCover?: 'contain' | 'cover' | undefined;
@@ -192,9 +229,6 @@ export interface IContainerComponentProps extends IConfigurableFormComponent, Om
   backgroundUrl?: string | undefined;
   backgroundBase64?: string | undefined;
   backgroundStoredFileId?: string | undefined;
-  // desktop?: IInputStyles | undefined;
-  // tablet?: IInputStyles | undefined;
-  // mobile?: IInputStyles | undefined;
   showAdvanced?: boolean;
 }
 

@@ -1,4 +1,4 @@
-import React, { FC, Fragment, useState } from 'react';
+import { FC, Fragment, useState } from 'react';
 import { Button, Modal, Space } from 'antd';
 import { ColumnsEditor } from './columnsEditor';
 import { IColumnProps } from './interfaces';

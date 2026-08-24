@@ -1,35 +1,48 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
-import { CollapsiblePanel } from '@/components/panel';
-import { useStyles } from '@/components/panel/styles/styles';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { CollapsiblePanel, ICollapseRef } from '@/components/panel';
+import { shaHeaderComponentsContainer } from '@/components/panel/styles/styles';
+import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { GroupOutlined } from '@ant-design/icons';
 import { nanoid } from '@/utils/uuid';
-import React, { useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { CollapsiblePanelComponentDefinition, ICollapsiblePanelComponentProps, ICollapsiblePanelComponentPropsV0, ICollapsiblePanelContent } from './interfaces';
 import ParentProvider from '@/providers/parentProvider/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeComponents } from '../_common-migrations/removeComponents';
 import { getSettings } from './settingsForm';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { defaultHeaderStyles, defaultStyles } from './utils';
-import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { migrateV9toV10 } from './migrations/migrate-v10';
 import { isDefined } from '@/utils/nullables';
 import { isNonEmptyArray } from '@/utils/array';
+import { defaultHeaderStyles as getDefaultHeaderStyles, defaultStyles as getDefaultStyles } from './utils';
+import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
+import { useComponentApi } from '@/providers/componentApi/provider';
+import { useEffectOnce } from '@/hooks/useEffectOnce';
+import { PanelApi } from '@/componentsApi/componentApi';
+
+import apiCode from "../../componentsApi/componentApi.ts?raw";
+import { useEvents } from '@/components/formDesigner/components/eventsAndApiValueProcessor';
+import { getComponentEvents } from '../_common/events';
+import { getStyleValueFromModel } from '../_common/styles/utils';
+import { IStyleValue } from '@/providers';
+import { getFullSizeWrapperDesignerStyle } from '@/components/formDesigner/utils/stylingUtils';
+import { EMPTY_STYLE } from '@/styles/variables';
 
 const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
+  allowInherit: true,
   type: 'collapsiblePanel',
   isInput: false,
   name: 'Panel',
   icon: <GroupOutlined />,
+  getWrapperStyle: (model) => getFullSizeWrapperDesignerStyle(model),
   useCalculateModel(model, allData) {
     const evaluatedLabel = typeof model.label === 'string' ? evaluateString(model.label, { data: allData.data }) : model.label;
     const calcModel = useMemo(() => ({ evaluatedLabel }), [evaluatedLabel]);
     return calcModel;
   },
-  Factory: ({ model, calculatedModel }) => {
+  Factory: ({ model: sourceModel, calculatedModel }) => {
     const {
       expandIconPosition,
       collapsedByDefault,
@@ -43,21 +56,46 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
       content,
       className,
       hidden,
-    } = model;
+    } = sourceModel;
 
-    const headerStyles = useFormComponentStyles({ ...{ ...model.headerStyles, border: ghost ? undefined : model.headerStyles?.border } }).fullStyle;
-    const { styles } = useStyles();
+    const model = useMemo(() => {
+      return {
+        ...sourceModel,
+        dimensions: { ...sourceModel.dimensions, height: '100%', width: '100%' }, // height and width will be applied to the wrapper
+      };
+    }, [sourceModel]);
+
+    const collapsedRef = useRef<ICollapseRef>(undefined);
+    const componentApi = useComponentApi();
+    useEffect(() => {
+      componentApi?.updateApi<PanelApi>({
+        id: model.id,
+        componentName: model.componentName ?? "",
+        level: 3,
+        typeDefinition: { typeName: 'PanelApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+        properties: [{ name: 'isExpanded', getter: () => collapsedRef.current?.collapsed !== true, setter: (value) => collapsedRef.current?.setCollapsed(!value) }],
+        api: { expand: () => collapsedRef.current?.setCollapsed(false), collapse: () => collapsedRef.current?.setCollapsed(true) },
+      });
+    }, [componentApi, model.componentName, model.id]);
+    useEffectOnce(() => () => componentApi?.removeApi(model.id));
+    const handleEvent = useEvents<void>(model.componentName);
 
     const isIconHidden = expandIconPosition === 'hide';
 
-    return hidden ? null : (
+    const onChange = useCallback((newValue: boolean) => handleEvent(undefined, { isExpanded: newValue }, model.onChangeCustom), [handleEvent, model.onChangeCustom]);
+
+    return hidden === true ? null : (
       <ParentProvider model={model} name={`CollapsiblePanel-${model.id}`}>
         <CollapsiblePanel
+          {...getStyleValueFromModel(model)}
+          headerStyles={model.headerStyles}
+          style={model.styleCss ?? EMPTY_STYLE}
           header={isDefined(model.header) && isNonEmptyArray(model.header.components) ? (
             <ComponentsContainer
               containerId={model.header.id}
-              dynamicComponents={isDynamic ? model.header.components : []}
-              className={styles.shaHeaderComponentsContainer}
+              dynamicComponents={isDynamic === true ? model.header.components : []}
+              className={shaHeaderComponentsContainer}
+              additionalDomProperties={getComponentEvents<void>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent }, undefined, undefined, 'headerEvents')}
             />
           ) : calculatedModel.evaluatedLabel}
           {...(!isIconHidden && expandIconPosition ? { expandIconPlacement: expandIconPosition } : {})}
@@ -65,20 +103,20 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
           collapsedByDefault={collapsedByDefault}
           collapsible={collapsible === 'header' ? 'header' : 'icon'}
           ghost={ghost ?? false}
-          bodyStyle={{ ...model.allStyles?.fullStyle }}
-          headerStyle={{ ...headerStyles, width: '100%' }}
           className={className ?? ""}
           bodyColor={bodyColor}
           isSimpleDesign={isSimpleDesign}
           hideCollapseContent={hideCollapseContent}
           hideWhenEmpty={hideWhenEmpty}
           accentStyle={model.accentStyle}
-          overflowStyle={model.allStyles?.overflowStyles}
+          ref={collapsedRef}
+          onChange={onChange}
         >
           {isDefined(content) && (
             <ComponentsContainer
               containerId={content.id}
-              dynamicComponents={isDynamic ? content.components : []}
+              dynamicComponents={isDynamic === true ? content.components : []}
+              additionalDomProperties={getComponentEvents<void, ICollapsiblePanelComponentProps>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent })}
             />
           )}
         </CollapsiblePanel>
@@ -145,27 +183,39 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
         ...prev,
         customHeader: { id: nanoid(), components: [] },
       }))
-      .add<ICollapsiblePanelComponentProps>(8, (prev) => {
+      .add<ICollapsiblePanelComponentProps>(8, (prev, ctx) => {
+        if (ctx.isNew === true) return prev;
+
         const accentStyle = prev.overflow === undefined;
-
         return {
-          ...prev, accentStyle, desktop: { ...prev.desktop, accentStyle },
-          tablet: { ...prev.tablet, accentStyle },
-          mobile: { ...prev.mobile, accentStyle },
+          ...prev, accentStyle, desktop: { styleCss: {}, ...prev.desktop, accentStyle },
+          tablet: { styleCss: {}, ...prev.tablet, accentStyle },
+          mobile: { styleCss: {}, ...prev.mobile, accentStyle },
         };
       })
-      .add<ICollapsiblePanelComponentProps>(9, (prev) => {
-        const newModel = migratePrevStyles(prev, defaultStyles(prev));
-        const defaultHeaderStyle = { ...defaultHeaderStyles(prev) };
+      .add<ICollapsiblePanelComponentProps>(9, (prev, ctx) => {
+        if (ctx.isNew === true) return prev;
 
+        const newModel = migratePrevStyles(prev, getDefaultStyles(prev));
+        const defaultHeaderStyle = (): IStyleValue => ({ ...getDefaultHeaderStyles(prev) });
         return {
-          ...newModel, desktop: { ...newModel.desktop, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle },
-          tablet: { ...newModel.tablet, overflow: prev.overflow || 'auto', headerStyles: defaultHeaderStyle },
-          mobile: { ...newModel.mobile, overflow: prev.overflow || 'auto', headerStyles: defaultHeaderStyle },
+          ...newModel, desktop: { styleCss: {}, ...newModel.desktop, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle() },
+          tablet: { styleCss: {}, ...newModel.tablet, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle() },
+          mobile: { styleCss: {}, ...newModel.mobile, overflow: prev.overflow ?? 'auto', headerStyles: defaultHeaderStyle() },
         };
       })
-      .add<ICollapsiblePanelComponentProps>(10, migrateV9toV10),
+      .add<ICollapsiblePanelComponentProps>(10, migrateV9toV10)
+      .add<ICollapsiblePanelComponentProps>(11, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
   customContainerNames: ['header', 'content'],
+  getDefaultStyles: () => {
+    const defaultStyles = getDefaultStyles({} as ICollapsiblePanelComponentProps);
+    const defaultHeaderStyles = getDefaultHeaderStyles({} as ICollapsiblePanelComponentProps);
+
+    return {
+      ...defaultStyles,
+      headerStyles: defaultHeaderStyles,
+    };
+  },
 };
 
 export default CollapsiblePanelComponent;

@@ -1,6 +1,5 @@
 ﻿using Abp.Application.Services;
 using Abp.Reflection;
-using FirebirdSql.Data.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
@@ -49,6 +48,7 @@ namespace Shesha.Swagger
                 .Distinct(new AssemblyFullNameComparer())
                 .Where(a => a.GetTypes().Any(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t)))
                 .SelectMany(a => a.GetTypes().Where(t => MappingHelper.IsEntity(t) || MappingHelper.IsJsonEntity(t)))
+                .OrderBy(t => t.Name)
                 .ToList();
         }
 
@@ -81,19 +81,24 @@ namespace Shesha.Swagger
             var docs = new Dictionary<string, OpenApiInfo>();
 
             // 1. add controllers
-            var controllers = types.Where(t => typeof(ControllerBase).IsAssignableFrom(t)).ToList();
+            var controllers = types.Where(t => typeof(ControllerBase).IsAssignableFrom(t)).OrderBy(t => t.Name).ToList();
             foreach (var controller in controllers)
             {
                 var serviceName = MvcHelper.GetControllerName(controller);
-                docs.Add(GetDocumentNameForService(controller), new OpenApiInfo() { Title = $"{serviceName} (ControllerBase)", Version = "v1" });
+                var documentName = GetDocumentNameForService(controller);
+                if (!docs.ContainsKey(documentName))
+                    docs.Add(documentName, new OpenApiInfo() { Title = $"{serviceName} (ControllerBase)", Version = "v1" });
             }
 
             // 2. add application services
-            var appServices = types.Where(t => typeof(IApplicationService).IsAssignableFrom(t)).ToList();
+            var appServices = types.Where(t => typeof(IApplicationService).IsAssignableFrom(t)).OrderBy(t => t.Name).ToList();
             foreach (var service in appServices)
             {
                 var serviceName = MvcHelper.GetControllerName(service);
-                docs.Add(GetDocumentNameForService(service), new OpenApiInfo() { Title = $"API {serviceName} (IApplicationService)", Version = "v1" });
+                var documentName = GetDocumentNameForService(service);
+
+                if (!docs.ContainsKey(documentName))
+                    docs.Add(documentName, new OpenApiInfo() { Title = $"API {serviceName} (IApplicationService)", Version = "v1" });
             }
 
             var entityTypes = EntityTypesFunc();
@@ -102,8 +107,9 @@ namespace Shesha.Swagger
             foreach (var entity in entityTypes)
             {
                 var serviceName = entity.Name + "Crud";
-                if (!docs.ContainsKey(GetDocumentNameForService(serviceName)))
-                    docs.Add(GetDocumentNameForService(serviceName), new OpenApiInfo() { Title = $"API {serviceName} (IApplicationService)", Version = "v1" });
+                var documentName = GetDocumentNameForService(serviceName);
+                if (!docs.ContainsKey(documentName))
+                    docs.Add(documentName, new OpenApiInfo() { Title = $"API {serviceName} (IApplicationService)", Version = "v1" });
             }
 
             options.SwaggerGeneratorOptions.SwaggerDocs.Clear();
@@ -122,6 +128,7 @@ namespace Shesha.Swagger
                 prefix = service.GetGenericInterfaces(typeof(IEntityAppService<,>)).FirstOrDefault()?.GetGenericArguments().FirstOrDefault()?.Assembly.GetName().Name;
             // Add prefix for all EntityAppServices to process later in GroupInclusionPredicate
             prefix = prefix == null ? "" : prefix + ":";
+            
             var serviceName = prefix + MvcHelper.GetControllerName(service);
             return serviceName;
         }

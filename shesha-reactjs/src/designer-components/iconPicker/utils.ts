@@ -2,33 +2,49 @@ import { IStyleValue } from "@/providers/form/models";
 
 export const defaultStyles = (): IStyleValue => {
   return {
-    background: { type: 'color', color: '#fff' },
+    background: {
+      type: 'color',
+      color: 'transparent',
+      repeat: 'no-repeat',
+      size: 'cover',
+      position: 'center',
+      gradient: { direction: 'to right', colors: [] },
+      url: '',
+    },
     font: {
-      weight: '400',
       size: 24,
       color: '#000',
-      type: 'Segoe UI',
+      align: 'left',
     },
     border: {
       border: {
         all: {
           width: 0,
           style: 'solid',
-          color: '#ffffff',
+          color: '#d9d9d9',
         },
       },
-      radius: { all: 8 },
+      radius: { all: 6 },
       borderType: 'all',
       radiusType: 'all',
     },
-    dimensions: {
-      width: 'auto',
-      height: 'auto',
-      minHeight: '0px',
-      maxHeight: 'auto',
-      minWidth: '0px',
-      maxWidth: 'auto',
-
+    shadow: {
+      spreadRadius: 0,
+      blurRadius: 0,
+      color: '#000',
+      offsetX: 0,
+      offsetY: 0,
+    },
+    stylingBoxJson: {
+      _type: 'styleBox',
+      marginBottom: "0",
+      marginLeft: "0",
+      marginRight: "0",
+      marginTop: "0",
+      paddingBottom: "4",
+      paddingLeft: "4",
+      paddingRight: "4",
+      paddingTop: "4",
     },
   };
 };

@@ -1,5 +1,6 @@
-import GooglePlacesAutocomplete, { IAddressAndCoords } from '@/components/googlePlacesAutocomplete';
-import React, { CSSProperties, FC, Fragment, useEffect, useState } from 'react';
+import GooglePlacesAutocomplete, { GooglePlacesAutocompleteInputProps, IAddressAndCoords } from '@/components/googlePlacesAutocomplete';
+import { CSSProperties, FC, Fragment, useEffect, useState } from 'react';
+import * as React from 'react';
 import ValidationErrors from '@/components/validationErrors';
 import { getAddressValue, getSearchOptions, loadGooglePlaces } from './utils';
 import { IAddressCompomentBaseProps } from './models';
@@ -8,20 +9,27 @@ import { IOpenCageResponse } from '@/components/googlePlacesAutocomplete/models'
 import { IStyleValue } from '@/providers/form/models';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getNumericValue } from '@/utils/string';
+import { InputRef } from 'antd';
 
-interface IAutoCompletePlacesFieldProps extends IAddressCompomentBaseProps /* UnwrapCodeEvaluators<IAddressCompomentProps>*/ {
+interface IAutoCompletePlacesFieldProps extends IAddressCompomentBaseProps {
   value?: string;
   onChange?: (value: string) => void;
-  font?: IStyleValue['font'];
+  /** The Appearance properties, so the suggestion list can share the input's appearance. */
+  styleValue?: IStyleValue | undefined;
 
   readOnly?: boolean | undefined;
+  disabled?: boolean | undefined;
   onFocus?: ((event: React.FocusEvent<HTMLInputElement, Element>) => void) | undefined;
   onSelect?: (address: IOpenCageResponse | IAddressAndCoords) => void;
   style?: CSSProperties | undefined;
+  className?: string | undefined;
+  inputRef?: React.Ref<InputRef> | undefined;
+  /** Standard event handlers bound by the component, passed straight to the antd input. */
+  inputProps?: GooglePlacesAutocompleteInputProps | undefined;
 }
 
 const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => {
-  const { debounce, minCharactersSearch, onChange, openCageApiKey, placeholder, prefix, value, readOnly, googleMapsApiKey, onFocus, onSelect, style } = model;
+  const { debounce, minCharactersSearch, onChange, openCageApiKey, placeholder, prefix, value, readOnly, disabled, googleMapsApiKey, onFocus, onSelect, style, className, inputRef, inputProps } = model;
 
   const { loading, error, refetch } = useGet<IOpenCageResponse>({
     base: 'https://api.opencagedata.com',
@@ -56,19 +64,6 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
 
     const details = await fetchAddressDetails(event);
     onSelect(details);
-    /*
-      const expression = model.onSelectCustom;
-      if (Boolean(expression)) {
-        // Ensure lat/lng are preserved from event in case they were lost
-        const addressData = {
-          ...payload,
-          ...event,
-        };
-        return !isNullOrWhiteSpace(expression)
-          ? executeScriptSync(expression, addContextData(context, { event: addressData }))
-          : Promise.resolve();
-      }
-        */
   };
 
   return (
@@ -81,11 +76,18 @@ const AutoCompletePlacesControl: FC<IAutoCompletePlacesFieldProps> = (model) => 
         externalLoader={loading}
         placeholder={placeholder}
         prefix={prefix}
-        disabled={readOnly}
+        // `disabled` and `readOnly` are distinct states: disabled greys the field out and takes it
+        // out of the tab order, read-only keeps it looking and reading normally but blocks editing.
+        // Read-only additionally suppresses the Places lookup, since there is nothing to select into.
+        disabled={disabled === true}
+        readOnly={readOnly === true}
         disableGoogleEvent={disableGoogleEvent}
         searchOptions={getSearchOptions(model)}
         style={style}
-        font={model.font}
+        className={className}
+        inputRef={inputRef}
+        inputProps={inputProps}
+        styleValue={model.styleValue}
 
         onChange={onChange}
         onFocus={onFocus}

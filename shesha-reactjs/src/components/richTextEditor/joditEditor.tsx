@@ -1,4 +1,4 @@
-import React, { FC, lazy, useMemo } from 'react';
+import { Suspense, FC, lazy, useMemo } from 'react';
 import { Skeleton } from 'antd';
 import { JoditEditorProps } from "jodit-react";
 import DOMPurify from 'dompurify';
@@ -40,13 +40,13 @@ export const JoditEditorWrapper: FC<IJoditEditorProps> = (props) => {
   return isSSR ? (
     <Skeleton loading={true} />
   ) : (
-    <React.Suspense fallback={<div>Loading editor...</div>}>
+    <Suspense fallback={<div>Loading editor...</div>}>
       <JoditEditor
         value={sanitizedValue}
         {...(config ? { config } : {})}
         onBlur={handleBlur} // preferred to use only this option to update the content for performance reasons
       />
-    </React.Suspense>
+    </Suspense>
   );
 };
 

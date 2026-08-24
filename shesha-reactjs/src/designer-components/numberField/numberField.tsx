@@ -1,12 +1,12 @@
 import { NumberOutlined } from '@ant-design/icons';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { DataTypes, NumberFormats } from '@/interfaces/dataTypes';
 import { IComponentValidationRules, IInputStyles, useMetadataOrUndefined } from '@/providers';
 import { executeScriptSync, validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { INumberFieldComponentProps, INumberFieldComponentPropsV1, NumberFieldComponentDefinition } from './interfaces';
-import { migratePropertyName, migrateCustomFunctions, migrateReadOnly, migrateHiddenToVisible } from '@/designer-components/_common-migrations/migrateSettings';
+import { migratePropertyName, migrateCustomFunctions, migrateReadOnly, migrateHiddenToVisible, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { numberToFormattedString } from '@/utils/string';
 import { getDataProperty } from '@/utils/metadata';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -27,7 +27,7 @@ import { useEffectOnce } from '@/hooks/useEffectOnce';
 import apiCode from "../../componentsApi/componentApi.ts?raw";
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
-import { getComponentEvents } from '../_common/events';
+import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '../_common/events';
 
 const suffixStyle = { color: 'rgba(0,0,0,.45)' };
 
@@ -55,7 +55,7 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
       executeCustomFormat: (value: unknown, code: string): string => executeScriptSync(code, addContextData(allData, { value })) ?? "",
     };
   },
-  Factory: ({ model, calculatedModel }) => {
+  Factory: ({ model, calculatedModel, apiContext }) => {
     const [, forceRefresh] = useState({});
 
     const componentApi = useComponentApi();
@@ -66,9 +66,13 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
         componentName: model.componentName ?? "",
         level: 3,
         typeDefinition: { typeName: 'NumberFieldApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+        properties: [
+          { name: 'min', getter: () => model.validate?.minValue, setter: (value) => apiContext?.updateApiModel({ validate: { minValue: value } }) },
+          { name: 'max', getter: () => model.validate?.maxValue, setter: (value) => apiContext?.updateApiModel({ validate: { maxValue: value } }) },
+        ],
         api: { focus: () => inputRef.current?.focus() },
       });
-    }, [componentApi, model.componentName, model.id]);
+    }, [apiContext, componentApi, model.componentName, model.id, model.validate?.minValue, model.validate?.maxValue]);
     useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
     const { styles } = useStyles(model);
@@ -99,7 +103,10 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
       controls: false,
       // ...(isDefined(model.validate?.maxValue) ? { max: model.validate.maxValue } : {}),
       // ...(isDefined(model.validate?.minValue) ? { min: model.validate.minValue } : {}),
-      ...(isDefined(model.styleJson) ? { style: model.styleJson } : {}),
+
+      ...(isDefined(model.styleCss) ? { style: model.styleCss } : {}),
+      className: styles.numberStyles,
+
     };
 
     // ToDo: AS - implement custom number formatting
@@ -152,7 +159,7 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
                 // ToDo: AS - implement custom number formatting and merge with code from this component
                 value={numberToFormattedString(value?.toString(), getDataProperty(properties, model.propertyName ?? '', 'dataFormat'))}
                 enableFullStyle={model.enableStyleOnReadonly}
-                style={model.styleJson}
+                style={model.styleCss}
                 styleValue={model}
               />
             )
@@ -187,7 +194,7 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
                   // force refresh because Antd InputNumber does not trigger render
                   forceRefresh({});
                 }}
-                {...getComponentEvents<number>(model, ['onFocus', 'onBlur', 'onClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave', 'onKeyDown', 'onKeyUp'], ctx, value, DataTypes.number)}
+                {...getComponentEvents<number>(model, ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, ctx, value, DataTypes.number)}
               />
             );
         }}
@@ -224,7 +231,7 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
           desktop: { ...migrateStyles(prev, {}, 'desktop'), enableStyleOnReadonly: (prev.desktop as IInputStyles | undefined)?.enableStyleOnReadonly ?? false },
         })
       .add<INumberFieldComponentProps>(6, (prev) => {
-        const model = { ...migrateHiddenToVisible(prev) };
+        const model = { ...migrateHiddenToVisible(migrateStylingBoxToJson(prev)) };
         if (prev.min !== undefined || prev.max !== undefined) {
           model.validate = {
             ...(prev.validate ?? {}),

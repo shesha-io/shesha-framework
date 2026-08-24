@@ -1,5 +1,5 @@
-import React, { ReactNode } from "react";
-import { ConfigItemTreeNode, CustomDocument, FlatTreeNode, FolderTreeNode, isConfigItemTreeNode, isTreeNode, ModuleTreeNode, SpecialTreeNode, TREE_NODE_TYPES, TreeNode, TreeNodeType } from "./models";
+import { ReactNode } from "react";
+import { ConfigItemTreeNode, CustomDocument, FlatTreeNode, FolderTreeNode, FrontEndAppDto, isConfigItemTreeNode, isTreeNode, ModuleTreeNode, SpecialTreeNode, TREE_NODE_TYPES, TreeNode, TreeNodeType } from "./models";
 import { FileUnknownOutlined, FolderOpenOutlined, FolderOutlined, HomeOutlined, ProductOutlined, SettingOutlined } from "@ant-design/icons";
 
 import { TreeNodeProps } from "antd";
@@ -44,17 +44,29 @@ export const renderCsTreeNode = (node: TreeNode, displayText?: ReactNode): React
   return <CsTreeNode node={node}>{displayText ?? node.name}</CsTreeNode>;
 };
 
-export const flatNode2TreeNode = (csEnvironment: IConfigurationStudioEnvironment, node: FlatTreeNode): TreeNode => {
+export const flatNode2TreeNode = async (csEnvironment: IConfigurationStudioEnvironment, node: FlatTreeNode): Promise<TreeNode> => {
   const baseProps: TreeNode = {
-    id: node.id,
-    parentId: node.parentId ?? undefined,
-    key: node.id,
-    name: node.name,
-    label: node.label,
-    nodeType: node.nodeType,
-    title: (node) => isTreeNode(node) ? renderCsTreeNode(node, undefined) : undefined,
-    moduleId: node.moduleId,
-    description: node.description ?? undefined,
+    "id": node.id,
+    "parentId": node.parentId ?? undefined,
+    "key": node.id,
+    "name": node.name,
+    "label": node.label,
+    "nodeType": node.nodeType,
+    "title": (node) => isTreeNode(node) ? renderCsTreeNode(node, undefined) : undefined,
+    "moduleId": node.moduleId,
+    "description": node.description ?? undefined,
+    'data-node-id': node.id,
+  };
+
+
+  let applicationsMap: Promise<Map<string, FrontEndAppDto>> | undefined;
+  const getApplicationNameAsync = async (applicationId: string): Promise<string> => {
+    try {
+      const map = await (applicationsMap ??= csEnvironment.getFrontEndAppsMapAsync());
+      return map.get(applicationId)?.name ?? "unknown";
+    } catch {
+      return "unknown";
+    }
   };
 
   switch (node.nodeType) {
@@ -91,6 +103,10 @@ export const flatNode2TreeNode = (csEnvironment: IConfigurationStudioEnvironment
       if (!isDefined(node.discriminator))
         throw new Error("Missing discriminator in node", { cause: node });
 
+      const applicationName = isDefined(node.applicationId)
+        ? await getApplicationNameAsync(node.applicationId)
+        : undefined;
+
       const itemNode: ConfigItemTreeNode = {
         ...baseProps,
         itemType: node.itemType,
@@ -104,8 +120,10 @@ export const flatNode2TreeNode = (csEnvironment: IConfigurationStudioEnvironment
         },
         lastModifierUser: node.lastModifierUser ?? undefined,
         lastModificationTime: node.lastModificationTime ?? undefined,
-        baseModule: node.baseModule ?? undefined,
         moduleName: "",
+        baseModule: node.baseModule ?? undefined,
+        applicationId: node.applicationId ?? undefined,
+        applicationName: applicationName,
       };
       applyIcon(csEnvironment, itemNode);
       return itemNode;

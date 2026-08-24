@@ -1,4 +1,3 @@
-import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
 import { TagOutlined } from '@ant-design/icons';

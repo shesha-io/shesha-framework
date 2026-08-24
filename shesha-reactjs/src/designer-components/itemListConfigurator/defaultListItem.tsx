@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { DefaultItemRenderingProps } from './interfaces';
 import { IconType, ShaIcon } from '@/components/shaIcon';
 import { Tooltip } from 'antd';

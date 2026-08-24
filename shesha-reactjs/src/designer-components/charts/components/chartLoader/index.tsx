@@ -1,4 +1,5 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
+import * as React from 'react';
 import useStyles from '../../styles';
 import { TChartType } from '../../model';
 import { Button } from 'antd';

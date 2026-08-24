@@ -1,6 +1,6 @@
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Button, Card, Col, Radio, Row, Slider, Space, Tooltip, Typography } from 'antd';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { ColorPicker } from '@/components/colorPicker';
 import { IConfigurableTheme, SidebarTheme } from '@/providers/theme/contexts';
 import { ComponentDefaultsPanel } from './componentSettings/componentSettingsPanel';

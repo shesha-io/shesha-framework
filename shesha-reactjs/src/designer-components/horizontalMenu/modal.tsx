@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 import { ISideBarMenuProps } from "@/components/configurableSidebarMenu";
 import { ComponentSettingsModal } from "@/components/configurableSidebarMenu/settingsModal";
 import { ISettingsEditorProps } from "@/components/configurableComponent";

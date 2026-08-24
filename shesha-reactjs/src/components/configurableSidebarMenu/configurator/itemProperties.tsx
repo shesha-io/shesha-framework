@@ -1,7 +1,4 @@
-import React, {
-  FC,
-  useMemo,
-} from 'react';
+import { FC, useMemo } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { ISidebarMenuItem, isSidebarGroup } from '@/interfaces/sidebar';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';

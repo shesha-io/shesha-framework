@@ -13,6 +13,8 @@ export enum TreeNodeType {
   ConfigurationItem = 2,
   Folder = 3,
   Special = 4,
+  // Synthetic child injected into empty folders/modules for drag-and-drop hit-testing (see filter.ts).
+  Placeholder = 5,
 }
 
 export type DocumentFlags = {
@@ -24,13 +26,15 @@ export type DocumentFlags = {
 };
 
 export type TreeNode = DataNode & {
-  id: string;
-  parentId?: string | undefined;
-  moduleId: string;
-  name: string;
-  label: string;
-  description?: string | undefined;
-  nodeType: TreeNodeType;
+  "id": string;
+  "parentId"?: string | undefined;
+  "moduleId": string;
+  "name": string;
+  "label": string;
+  "description"?: string | undefined;
+  "nodeType": TreeNodeType;
+  // rc-tree spreads data-*/aria-* fields onto the row's DOM element (used for drag-hover auto-expand).
+  'data-node-id'?: string;
 };
 
 export type ConfigItemTreeNode = TreeNode & {
@@ -41,6 +45,8 @@ export type ConfigItemTreeNode = TreeNode & {
   lastModificationTime?: string | undefined;
   moduleName: string;
   baseModule?: string | undefined;
+  applicationId: string | undefined;
+  applicationName: string | undefined;
 };
 
 export type NodeWithChilds = {
@@ -57,11 +63,11 @@ export type SpecialTreeNode = TreeNode & {
   itemType: string;
 };
 
-
 export type FlatTreeNode = DocumentFlags & {
   id: string;
   parentId: string | null;
   moduleId: string;
+  applicationId: string | null;
   name: string;
   label: string;
   nodeType: number;
@@ -96,6 +102,12 @@ export const isModuleTreeNode = (node?: DataNode): node is ModuleTreeNode => {
 
 export const isNodeWithChildren = (node?: DataNode): node is ModuleTreeNode | FolderTreeNode => {
   return isModuleTreeNode(node) || isFolderTreeNode(node);
+};
+
+export type FrontEndAppDto = {
+  id: string;
+  name: string;
+  appKey: string;
 };
 
 export const TREE_NODE_TYPES = {
@@ -153,6 +165,8 @@ export type CIDocument = DocumentBase & {
   flags: DocumentFlags;
   moduleId: string;
   moduleName: string;
+  applicationId: string | undefined;
+  applicationName: string | undefined;
 };
 
 export type CustomDocument = DocumentBase & {
@@ -192,6 +206,8 @@ export type DocumentInstanceFactoryArgs = {
   label: string;
   moduleId: string;
   moduleName: string;
+  applicationId: string | undefined;
+  applicationName: string | undefined;
   flags?: DocumentFlags;
 };
 export type DocumentInstanceFactory = (args: DocumentInstanceFactoryArgs) => IDocumentInstance;

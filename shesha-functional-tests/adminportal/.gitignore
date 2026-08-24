@@ -1,1 +1,3 @@
 .vscode
+public/monaco
+next-env.d.ts

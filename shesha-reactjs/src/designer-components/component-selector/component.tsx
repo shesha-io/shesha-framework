@@ -1,6 +1,5 @@
 import { BorderOutlined } from '@ant-design/icons';
 import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import React from 'react';
 import { FormComponentSelector } from '@/components/formComponentSelector';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { IToolboxComponent } from '@/interfaces';

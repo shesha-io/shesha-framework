@@ -8,7 +8,7 @@ import { useAvailableStandardConstantsMetadata } from '@/utils/metadata/hooks';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { nanoid } from '@/utils/uuid';
 import { Collapse, Form } from 'antd';
-import React, { FC, ReactNode, useMemo } from 'react';
+import { FC, ReactNode, useMemo } from 'react';
 import FormItem from '../_settings/components/formItem';
 import { StyledLabel } from '../_settings/utils/utils';
 import { SettingInput } from '../settingsInput/settingsInput';
@@ -19,7 +19,7 @@ import { IConfigurableActionConfiguratorComponentProps } from './interfaces';
 const { Panel } = Collapse;
 
 const getActionFullName = (actionOwner: string, actionName: string | undefined): string | null => {
-  return actionName
+  return !isNullOrWhiteSpace(actionName)
     ? `${actionOwner}:${actionName}`
     : null;
 };
@@ -93,7 +93,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
 
   const { actionName, actionOwner } = value ?? {};
   const selectedAction = useMemo<IConfigurableActionDescriptor | null>(() => {
-    return actionName && actionOwner
+    return !isNullOrWhiteSpace(actionName) && !isNullOrWhiteSpace(actionOwner)
       ? getConfigurableActionOrNull({ owner: actionOwner, name: actionName })
       : null;
   }, [actionName, actionOwner, getConfigurableActionOrNull]);
@@ -149,7 +149,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
           <>
             <SettingInput propertyName="handleSuccess" label="Handle Success" type="switch" id={nanoid()} />
             {
-              value?.handleSuccess && (
+              value?.handleSuccess === true && (
                 <Collapse defaultActiveKey={['1']}>
                   <Panel header={<StyledLabel label="On Success Handler" />} key="1">
                     <Form.Item name="onSuccess">
@@ -161,7 +161,7 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
             }
             <SettingInput propertyName="handleFail" label="Handle Fail" type="switch" id={nanoid()} />
             {
-              value?.handleFail && (
+              value?.handleFail === true && (
                 <Collapse defaultActiveKey={['1']}>
                   <Panel header={<StyledLabel label="On Fail Handler" />} key="1">
                     <Form.Item name="onFail">

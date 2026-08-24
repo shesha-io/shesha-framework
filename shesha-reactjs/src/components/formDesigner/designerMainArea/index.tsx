@@ -1,7 +1,7 @@
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { ConditionalMetadataProvider, useShaFormInstance } from '@/providers';
-import { useFormDesigner, useFormDesignerFormMode, useFormDesignerReadOnly, useFormDesignerSelectedComponent, useFormDesignerSettings } from '@/providers/formDesigner';
-import React, { FC, useMemo, useEffect, useCallback } from 'react';
+import { useFormDesigner, useFormDesignerFormMode, useFormDesignerReadOnly, useFormDesignerSettings, useFormDesignerSettingsPanelElement } from '@/providers/formDesigner';
+import { FC, useMemo, useEffect, useCallback } from 'react';
 import { ComponentPropertiesPanel } from '../componentPropertiesPanel';
 import { ComponentPropertiesTitle } from '../componentPropertiesTitle';
 import { useStyles } from '../styles/styles';
@@ -22,10 +22,8 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
   const formMode = useFormDesignerFormMode();
   const { antdForm } = useShaFormInstance();
   const { styles } = useStyles();
-  const { deleteComponent, settingsPanelElement } = useFormDesigner();
-  const component = useFormDesignerSelectedComponent();
-
-  const selectedComponentId = component?.id;
+  const { deleteSelectedComponent } = useFormDesigner();
+  const settingsPanelElement = useFormDesignerSettingsPanelElement();
 
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
     if (readOnly || formMode !== 'designer' || event.repeat) return;
@@ -43,11 +41,8 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
     if (settingsPanelElement && settingsPanelElement.contains(target))
       return;
 
-    if (selectedComponentId) {
-      event.preventDefault();
-      deleteComponent({ componentId: selectedComponentId });
-    }
-  }, [readOnly, formMode, selectedComponentId, deleteComponent, settingsPanelElement]);
+    if (deleteSelectedComponent()) event.preventDefault();
+  }, [readOnly, formMode, settingsPanelElement, deleteSelectedComponent]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);

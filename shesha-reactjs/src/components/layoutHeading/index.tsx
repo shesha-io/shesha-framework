@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { CSSProperties, FC, ReactNode } from 'react';
+import { CSSProperties, FC, ReactNode } from 'react';
 import { useStyles } from './styles/styles';
 
 export interface ILayoutHeadingProps {

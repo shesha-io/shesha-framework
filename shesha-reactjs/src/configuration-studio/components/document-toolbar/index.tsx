@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
 import { IDocumentInstance } from '../../models';
 import { useConfigurationStudio } from '../../cs/contexts';
 import { CustomErrorBoundary } from '@/components/customErrorBoundary';

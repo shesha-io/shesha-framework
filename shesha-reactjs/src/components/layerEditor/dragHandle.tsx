@@ -1,5 +1,5 @@
 import { MoreOutlined } from '@ant-design/icons';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { useStyles } from './styles/styles';
 import { useLayerGroupConfigurator } from '@/providers/layersProvider';
 

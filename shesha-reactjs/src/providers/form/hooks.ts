@@ -6,6 +6,9 @@ import { useFormPersisterIfAvailable } from '../formPersisterProvider';
 import { useIsDevMode } from '@/hooks/useIsDevMode';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
+/**
+ * Returns form designer components available in current form
+ */
 export const useFormDesignerComponentGroups = (): IToolboxComponentGroup[] => {
   const app = useSheshaApplication();
   const isDevMode = useIsDevMode();
@@ -17,6 +20,22 @@ export const useFormDesignerComponentGroups = (): IToolboxComponentGroup[] => {
 
     return [...defaultToolboxComponents, ...appComponentGroups];
   }, [formPersister, isDevMode, app.formDesignerComponentGroups]);
+
+  return toolboxComponentGroups;
+};
+
+/**
+ * Returns all available form designer components including dev components. Note: this hook shouldn't be used in components palette
+ */
+export const useAllFormDesignerComponentGroups = (): IToolboxComponentGroup[] => {
+  const app = useSheshaApplication();
+
+  const toolboxComponentGroups = useMemo(() => {
+    const defaultToolboxComponents = getToolboxComponents(true, undefined);
+    const appComponentGroups = app.formDesignerComponentGroups;
+
+    return [...defaultToolboxComponents, ...appComponentGroups];
+  }, [app.formDesignerComponentGroups]);
 
   return toolboxComponentGroups;
 };

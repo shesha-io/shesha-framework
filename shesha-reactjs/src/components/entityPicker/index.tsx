@@ -1,19 +1,17 @@
 import { EllipsisOutlined } from '@ant-design/icons';
 import { Button, type GetRef, Select, SelectProps, Skeleton } from 'antd';
 import { DefaultOptionType } from 'antd/lib/select';
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { useEntitySelectionData } from '@/utils/entity';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
-import { IEntityPickerProps } from './models';
+import { EntityPickerRef, IEntityPickerProps } from './models';
 import { useDeepCompareMemo } from '@/hooks';
 import { useStyles } from './styles/styles';
 import { EntityPickerModal } from './modal';
 import { getValueByPropertyName } from '@/utils/object';
-import { SheshaError } from '@/utils/errors';
-import { addPx } from '@/utils/style';
-import { useAvailableConstantsData } from '@/providers/form/utils';
+import { ValidationErrors } from '@/components/validationErrors';
 import { IEntityReferenceDto } from '@/interfaces';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 
 type SelectRef = GetRef<typeof Select>; // Resolves to BaseSelectRef
 type OnSelectChange<TValue> = SelectProps<TValue>["onChange"];
@@ -23,7 +21,7 @@ const isPropertyLoaded = (value: string | IEntityReferenceDto, displayEntityKey:
 };
 
 const EntityPickerReadOnly = (props: IEntityPickerProps): React.JSX.Element => {
-  const { entityType, displayEntityKey, value } = props;
+  const { entityType, displayEntityKey, value, readOnlyPlaceholder, events } = props;
 
   // Check if all data for displaying is loaded
   // TODO: review this logic. It works with complex objects only
@@ -54,10 +52,24 @@ const EntityPickerReadOnly = (props: IEntityPickerProps): React.JSX.Element => {
   }, [isLoaded, value, selectionRows]);
 
   const displayText = useMemo(() => {
-    return selectedItems?.map((ent) => typeof (ent) === "object" ? getValueByPropertyName(ent, displayEntityKey as keyof IEntityReferenceDto) : "").join(', ');
-  }, [selectedItems, displayEntityKey]);
+    const text = selectedItems?.map((ent) => typeof (ent) === "object" ? getValueByPropertyName(ent, displayEntityKey as keyof IEntityReferenceDto) : "").join(', ');
+    return isNotNullOrWhiteSpace(text) ? text : readOnlyPlaceholder;
+  }, [selectedItems, displayEntityKey, readOnlyPlaceholder]);
 
-  return selection.loading ? <Skeleton paragraph={false} active /> : <ReadOnlyDisplayFormItem value={displayText} style={props.style} />;
+  return selection.loading
+    ? <Skeleton paragraph={false} active />
+    : (
+      // `ReadOnlyDisplayFormItem` takes no event props, so the configured handlers go on a
+      // wrapper. Without this the component's onClick (and the other pointer events) never fire
+      // in read-only mode.
+      <div {...events}>
+        <ReadOnlyDisplayFormItem
+          value={displayText}
+          styleValue={props.styleValue}
+          enableFullStyle={props.enableFullStyle}
+        />
+      </div>
+    );
 };
 
 const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
@@ -70,24 +82,29 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
     value,
     mode,
     size,
-    style = {},
+    className,
     useButtonPicker,
     pickerButtonProps,
     title = 'Select Item',
     outcomeValueFunc,
     incomeValueFunc,
     placeholder,
-    dividerStyle,
+    events,
+    pickerRef,
   } = props;
 
-  if (!entityType)
-    throw SheshaError.throwPropertyError('entityType');
-
-  const { styles } = useStyles({ style });
+  const { styles } = useStyles(props.styleValue);
   const selectRef = useRef<SelectRef>(null);
-  const allData = useAvailableConstantsData();
-
+  // Button-picker mode returns early without rendering the Select, so `selectRef` is never
+  // attached there and `focus()` would be a no-op. The button gets its own ref.
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [showModal, setShowModal] = useState(false);
+
+  const entityTypeId = typeof entityType === 'string' ? entityType : entityType?.name;
+
+  const showPickerDialog = (): void => {
+    setShowModal(true);
+  };
 
   // Check if all data for displaying is loaded
   // TODO: review this logic. It works with complex objects only
@@ -115,6 +132,26 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
       ? Array.isArray(value) ? value : [value]
       : selectionRows;
   }, [isLoaded, value, selectionRows]);
+
+  // Backs the component API's `focus`, `showPicker`, `hidePicker` and `selectedItems`. Declared
+  // after `selectedItems` so the getter closes over the resolved selection.
+  useImperativeHandle(pickerRef, () => ({
+    focus: () => {
+      if (useButtonPicker === true) buttonRef.current?.focus();
+      else selectRef.current?.focus();
+    },
+    showPicker: () => setShowModal(true),
+    hidePicker: () => setShowModal(false), getSelectedItems: () => (selectedItems ?? [])
+      .filter(isDefined)
+      .map((item) => {
+        if (typeof item !== 'object') return { id: String(item), displayName: String(item) };
+        const record: Record<string, unknown> = { ...item };
+        return {
+          id: String(record['id'] ?? ''),
+          displayName: String(record[displayEntityKey] ?? ''),
+        };
+      }),
+  }), [selectedItems, displayEntityKey, useButtonPicker]);
 
   const options = useDeepCompareMemo<DefaultOptionType[]>(() => {
     if (selection.loading) {
@@ -161,112 +198,87 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
     */
   };
 
-  const showPickerDialog = (): void => {
-    setShowModal(true);
-  };
-
-  const handleButtonPickerClick = (event: React.MouseEvent<HTMLElement, MouseEvent>): void => {
-    event.stopPropagation();
-
-    showPickerDialog();
-  };
-
   const onClear = (): void => {
     if (onChange) onChange(null, null);
   };
 
-  const { borderBottomLeftRadius,
-    borderTopLeftRadius, borderTopRightRadius,
-    borderBottomRightRadius, width, minWidth,
-    maxWidth, boxShadow, background, backgroundImage,
-    marginTop, marginRight, marginBottom,
-    height, minHeight, maxHeight,
-    marginLeft, paddingTop, paddingRight, paddingBottom,
-    backgroundSize, backgroundPosition, backgroundRepeat,
-    paddingLeft, ...restStyle } = style;
 
-  const borderRadii = style.borderRadius?.toString().split(' ');
+  if (isNullOrWhiteSpace(entityTypeId)) {
+    return <ValidationErrors error="Please select `Entity Type` on the settings panel" />;
+  }
+
+  if (useButtonPicker) {
+    const buttonClassName = [pickerButtonProps?.className, className]
+      .filter(isNotNullOrWhiteSpace)
+      .join(' ');
+
+    // The configured `onClick` lives in `events` and is spread on the wrapper below. Calling it
+    // here as well would fire it twice for one click, so the button only opens the dialog and
+    // lets the click bubble to the wrapper for the configured handler.
+    const handleButtonPickerClick = (): void => {
+      showPickerDialog();
+    };
+
+    return (
+      <div className={styles.entityPickerContainer} {...events}>
+        <Button
+          {...(pickerButtonProps ?? {})}
+          ref={buttonRef}
+          onClick={handleButtonPickerClick}
+          size={size}
+          disabled={disabled}
+          {...(isNotNullOrWhiteSpace(buttonClassName) ? { className: buttonClassName } : {})}
+        >
+          {title}
+        </Button>
+        {showModal && <EntityPickerModal {...props} onCloseModal={() => setShowModal(false)} />}
+      </div>
+    );
+  }
+
+  // rc-select calls `preventDefault()` on mousedown for any click that is not on its inner input
+  // (@rc-component/select SelectInput), which suppresses the native click entirely — so a handler
+  // on this wrapper never runs. Mousedown still fires, so the configured `onClick` is invoked from
+  // there instead.
+  const { onClick: configuredOnClick, ...remainingEvents } = events ?? {};
+  const selectEvents = {
+    ...remainingEvents,
+    ...(isDefined(configuredOnClick) ? { onMouseDown: configuredOnClick } : {}),
+  };
 
   return (
-    <div className={styles.entityPickerContainer} style={{ width, minWidth, maxWidth }}>
-      <div>
-        {useButtonPicker ? (
-          <Button onClick={handleButtonPickerClick} size={size} {...(pickerButtonProps || {})} style={style}>
-            {title}
-          </Button>
-        ) : (
-          <div style={{
-            display: 'flex', flexDirection: 'row', alignItems: 'stretch', position: 'relative', backgroundSize, backgroundPosition, backgroundRepeat,
-            boxShadow, marginTop, marginRight, marginBottom, marginLeft, background, backgroundImage, borderTopLeftRadius, borderTopRightRadius, borderBottomLeftRadius, borderBottomRightRadius, height, minHeight, maxHeight,
+    <div className={styles.entityPickerContainer}>
+      <div className={className} {...selectEvents}>
+        <Select<string | string[]>
+          size={size}
+          onOpenChange={(_e) => {
+            selectRef.current?.blur();
+            showPickerDialog();
           }}
-          >
-            <Select<string | string[]>
-              size={size}
-              onOpenChange={(_e) => {
-                selectRef.current?.blur();
-                showPickerDialog();
-              }}
-              onClear={onClear}
-              value={selection.loading ? null : (valueId ?? null)}
-              placeholder={selection.loading ? 'Loading...' : placeholder}
-              notFoundContent=""
-              disabled={disabled || selection.loading}
-              ref={selectRef}
-              allowClear
-              {...(selectedMode ? { mode: selectedMode } : {})}
-              options={options}
-              variant="borderless"
-              suffixIcon={<span />}
-              onChange={handleMultiChange}
-              className={styles.entitySelect}
-              style={{
-                ...restStyle,
-                height: '100%',
-                borderRightStyle: 'none',
-                marginTop: 0,
-                marginRight: 0, marginBottom: 0, marginLeft: 0, paddingTop, paddingRight, paddingBottom, paddingLeft,
-                borderTopRightRadius: 0, borderBottomRightRadius: 0,
-                borderTopLeftRadius,
-                borderBottomLeftRadius,
-              }}
-              loading={selection.loading}
-            >
-
-            </Select>
-            <Button
-              onClick={showPickerDialog}
-              className={styles.pickerInputGroupEllipsis}
-              disabled={disabled}
-              loading={loading ?? false}
-              icon={<EllipsisOutlined />}
-              style={{
-                ...restStyle,
-                borderTopLeftRadius: 0,
-                borderBottomLeftRadius: 0,
-                borderTopRightRadius,
-                borderBottomRightRadius,
-                marginTop: 0,
-                marginRight: 0,
-                marginBottom: 0,
-                marginLeft: 0,
-                paddingTop,
-                paddingRight,
-                paddingBottom,
-                paddingLeft,
-                borderLeftStyle: dividerStyle?.style ?? 'solid',
-                borderLeftWidth: addPx(dividerStyle?.width, allData) ?? '1px',
-                borderLeftColor: dividerStyle?.color ?? '#d9d9d9',
-                borderRadius: `0px ${borderRadii?.[1]} ${borderRadii?.[2]} 0px`,
-                height: '100%',
-                minHeight: '100%',
-                maxHeight: '100%',
-                position: 'absolute',
-                left: 'calc(100% - 32px)',
-              }}
-              type="text"
-            />
-          </div>
-        )}
+          onClear={onClear}
+          value={selection.loading ? null : (valueId ?? null)}
+          placeholder={selection.loading ? 'Loading...' : placeholder}
+          notFoundContent=""
+          disabled={disabled || selection.loading}
+          ref={selectRef}
+          allowClear={!disabled}
+          {...(selectedMode ? { mode: selectedMode } : {})}
+          options={options}
+          open={false}
+          variant="borderless"
+          suffix={<span />}
+          onChange={handleMultiChange}
+          className={styles.entitySelect}
+          loading={selection.loading}
+        />
+        <Button
+          onClick={showPickerDialog}
+          className={styles.pickerInputGroupEllipsis}
+          disabled={disabled}
+          loading={loading ?? false}
+          icon={<EllipsisOutlined />}
+          type="text"
+        />
       </div>
 
       {showModal && <EntityPickerModal {...props} onCloseModal={() => setShowModal(false)} />}
@@ -275,11 +287,13 @@ const EntityPickerEditable = (props: IEntityPickerProps): React.JSX.Element => {
 };
 
 export const EntityPicker = ({ displayEntityKey = '_displayName', ...restProps }: IEntityPickerProps): React.JSX.Element => {
-  return restProps.readOnly ? (
-    <EntityPickerReadOnly {...restProps} displayEntityKey={displayEntityKey} style={restProps.style} />
+  return restProps.readOnly === true ? (
+    <EntityPickerReadOnly {...restProps} displayEntityKey={displayEntityKey} />
   ) : (
     <EntityPickerEditable {...restProps} displayEntityKey={displayEntityKey} />
   );
 };
+
+export type { EntityPickerRef };
 
 export default EntityPicker;

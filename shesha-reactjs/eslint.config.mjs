@@ -198,6 +198,7 @@ const baseTsConfig = {
         "memory-monitor/track-memory": "off",
         ...hooksPluginRules,
         ...reactPlugin.configs.recommended.rules,
+        ...reactPlugin.configs["jsx-runtime"].rules,
 
         "react/prop-types": ["off"],
         "require-await": "error",
@@ -296,6 +297,18 @@ const baseTsConfig = {
 };
 
 export default [
+    {
+        // Global ignores: an object with ONLY `ignores` (no `files`) applies repo-wide in flat config.
+        // Without this, build output under dist/ is linted before `rimraf dist` and fails on rule
+        // directives whose plugins aren't loaded for compiled JS.
+        ignores: [
+            "dist/**",
+            ".next/**",
+            "src/rollup-plugins/**",
+            "server.js",
+            "public/**",
+        ],
+    },
     {
         ...baseTsConfig,
         files: [

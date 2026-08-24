@@ -2,7 +2,7 @@ import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/model
 import { IconType } from '@/components/shaIcon';
 import { ComponentDefinition } from '@/interfaces';
 
-export type TextType = 'text' | 'password';
+export type TextType = 'text' | 'password' | 'email' | 'url' | 'phone';
 
 export interface ITextFieldComponentProps extends IConfigurableFormComponent, IInputStyles {
   placeholder?: string | undefined;
@@ -18,6 +18,9 @@ export interface ITextFieldComponentProps extends IConfigurableFormComponent, II
   spellCheck?: boolean | undefined;
   regExp?: string | undefined;
   useStandardPasswordValidation?: boolean | undefined;
+  enableFormatting?: boolean | undefined;
+  formatGroups?: string | undefined;
+  formatSeparator?: string | undefined;
 }
 
 export type TextFieldComponentDefinition = ComponentDefinition<"textField", ITextFieldComponentProps>;

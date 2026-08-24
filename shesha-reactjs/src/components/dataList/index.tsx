@@ -22,11 +22,24 @@ import { getClassNameOrUndefined } from '@/utils/entity';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { toCamelCase } from '@/utils/string';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Collapse, Divider, Typography } from 'antd';
+import { Button, Checkbox, Collapse, Divider, Radio, Typography } from 'antd';
 import classNames from 'classnames';
 import { isEqual } from 'lodash';
 import moment from 'moment';
-import React, { CSSProperties, FC, ReactElement, ReactNode, RefObject, useEffect, useMemo, useRef, useState } from 'react';
+
+import {
+  CSSProperties,
+  FC,
+  ReactElement,
+  ReactNode,
+  RefObject,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+
+import * as React from 'react';
 import { usePrevious } from 'react-use';
 import { EmptyState } from "..";
 import AttributeDecorator from '../attributeDecorator';
@@ -68,6 +81,19 @@ const isInteractiveTarget = (target: EventTarget | null): boolean => {
     !!target.closest('[contenteditable="true"]')
   );
 };
+
+/**
+ * Match a selected row against a rendered item. Prefers `id` so that sorting, filtering or paging
+ * can't shift the match onto the wrong row, and falls back to the positional index for rows that
+ * have no id yet (e.g. newly added, unsaved items).
+ */
+const isSameRow = (
+  selectedId: string | undefined,
+  selectedIndex: number | undefined,
+  itemId: string | undefined,
+  itemIndex: number,
+): boolean =>
+  isDefined(selectedId) && isDefined(itemId) ? selectedId === itemId : selectedIndex === itemIndex;
 
 interface EntityForm {
   entityType: string | IEntityTypeIdentifier;
@@ -159,9 +185,12 @@ export const DataList: FC<IDataListProps> = ({
     createFormInfo.current = undefined;
   }, [formId, formType, createFormId, createFormType, entityType, formSelectionMode]);
 
+  // `selectedIds` has to be here: in multiple mode the rendered `selected` flag is derived from it,
+  // and it can change without `selectedRows` changing (a controlled update from the parent, or a
+  // direct `changeSelectedIds` call), which would otherwise leave every checkbox stale.
   useDeepCompareEffect(() => {
     updateContent();
-  }, [selectedRow, selectedRows, selectionMode]);
+  }, [selectedRow, selectedRows, selectedIds, selectionMode]);
 
   const allData = useAvailableConstantsData();
   const { executeAction, useActionDynamicContext } = useConfigurableActionDispatcher();
@@ -205,8 +234,11 @@ export const DataList: FC<IDataListProps> = ({
         onSelectionChange(selectedItems, selectedIndices);
       }
     } else {
-      // Single selection mode
-      const isCurrentlySelected = selectedRow?.index === index;
+      // Single selection mode. Match on id where possible so the toggle agrees with the `selected`
+      // flag used for rendering - matching purely on index disagrees with it once rows are sorted,
+      // filtered or paged.
+      const isCurrentlySelected =
+        isDefined(selectedRow) && isSameRow(selectedRow.id, selectedRow.index, row.id, index);
 
       if (isCurrentlySelected) {
         // Deselecting - don't trigger onListItemSelect
@@ -276,7 +308,11 @@ export const DataList: FC<IDataListProps> = ({
   const getFormIdFromExpression = (item: ITableRowData): FormFullName | undefined => {
     if (!formIdExpression) return undefined;
 
-    return executeScriptSync(formIdExpression, { ...allData, item });
+    // `data` on the application context is the host form's data, which is empty when the DataList
+    // is the page content - expose the row under `data` so per-row expressions work, matching the
+    // context shape used by DataTable and the DataList designer component. `item` is kept for
+    // backwards compatibility with existing expressions.
+    return executeScriptSync(formIdExpression, { ...allData, item, data: item });
   };
 
   const { formInfoBlockVisible } = useAppConfigurator();
@@ -285,7 +321,7 @@ export const DataList: FC<IDataListProps> = ({
 
   const persistedCreateFormProps = createFormInfo.current?.formConfiguration;
 
-  const fcContainerStyles = useFormComponentStyles({ ...props.container ?? {} });
+  const fcContainerStyles = useFormComponentStyles({ ...(props.container ?? {}) });
 
   const isReady = (forms: EntityForm[]): void => {
     // Check if all forms have finished loading (either successfully or with an error)
@@ -449,8 +485,10 @@ export const DataList: FC<IDataListProps> = ({
   }, [records, formId, formType, createFormId, createFormType, entityType, formSelectionMode, showEditIcons, canEditInline, canDeleteInline, noDataIcon, noDataSecondaryText, noDataText, style, groupStyle, orientation]);
 
   const renderSubForm = (item: ITableRowData, index: number): ReactNode => {
-    let formEntityType = null;
-    let fType = null;
+    // Note: keep these `undefined` (not `null`) so they match the values used when the entity form is
+    // registered above; the lookup below compares `x.formType === fType`, and `undefined === null` is false.
+    let formEntityType: string | IEntityTypeIdentifier | undefined = undefined;
+    let fType: string | undefined = undefined;
     if (formSelectionMode === 'name') {
       formEntityType = '$formName$';
     }
@@ -672,10 +710,15 @@ export const DataList: FC<IDataListProps> = ({
       });
     };
 
-    const selected = isDefined(selectedRow) && (
-      (selectedRow.index === index && !(selectedRows.length > 0)) ||
-      (selectedRows.length > 0 && selectedRows.some(({ id }) => id === item.id))
-    );
+    // Read the same state the toggle in `onSelectRowLocal` writes, per mode. The previous version
+    // gated both branches on `selectedRow`, which is only ever set in single mode - in multiple mode
+    // it left every checkbox permanently unchecked while `selectedIds` tracked the selection
+    // correctly underneath, so rows never appeared to tick but Select All still reacted to them.
+    const selected = selectionMode === 'multiple'
+      ? selectedIds.includes(item.id)
+      : isDefined(selectedRow) && isSameRow(selectedRow.id, selectedRow.index, item.id, index);
+
+    const isSelectable = selectionMode === 'single' || selectionMode === 'multiple';
 
 
     const itemStyles: CSSProperties = {
@@ -700,17 +743,35 @@ export const DataList: FC<IDataListProps> = ({
     return (
       <div key={`row-${index}`} style={wrapperStyle}>
         <ConditionalWrap
-          condition={selectionMode === 'multiple'}
+          condition={isSelectable}
+          // The selection control is a *sibling* of the row content, not its parent. Wrapping the
+          // content in antd's <label> made every click inside the row a label activation, which could
+          // only be suppressed with preventDefault - and that cancelled the default action of nested
+          // controls too, so checkboxes/radios/switches inside a row stopped toggling. Keeping them
+          // as siblings means there is nothing to suppress.
           wrap={(children) => (
-            <Checkbox
-              className={classNames(styles.shaDatalistComponentItemCheckbox, { selected })}
-              checked={selected}
-              onChange={() => {
-                onSelectRowLocal(index, item);
-              }}
-            >
+            <div className={classNames(styles.shaDatalistComponentItemCheckbox, { selected })}>
+              {selectionMode === 'single'
+                ? (
+                  <Radio
+                    checked={selected}
+                    // Radio raises onChange only when it becomes checked, so clicking the already
+                    // selected row would never deselect it. onClick fires either way.
+                    onClick={() => {
+                      onSelectRowLocal(index, item);
+                    }}
+                  />
+                )
+                : (
+                  <Checkbox
+                    checked={selected}
+                    onChange={() => {
+                      onSelectRowLocal(index, item);
+                    }}
+                  />
+                )}
               {children}
-            </Checkbox>
+            </div>
           )}
         >
           <div
@@ -720,14 +781,14 @@ export const DataList: FC<IDataListProps> = ({
             )}
             onClick={(e) => {
               // Skip selection/click events when interacting with form fields (dropdown, picker, etc.)
-              // or content rendered in portals — otherwise inline-editing clicks toggle row selection
-              // and, in multiple-select mode, double-toggle via the wrapping Checkbox label.
-              if (isInteractiveTarget(e.target)) {
-                e.stopPropagation();
-                return;
-              }
-              // In multiple mode the wrapping Checkbox handles selection via onChange
-              if (selectionMode === 'single') {
+              // or content rendered in portals — otherwise inline-editing clicks toggle row selection.
+              // Just bail out: the row is no longer nested in the control's <label>, so there is no
+              // default action to cancel and nested controls keep working normally.
+              if (isInteractiveTarget(e.target)) return;
+
+              // The control is a sibling now, so clicking the row body no longer activates it via the
+              // label - drive the selection explicitly to keep the whole row clickable.
+              if (isSelectable) {
                 onSelectRowLocal(index, item);
               }
               if (onListItemClick) {

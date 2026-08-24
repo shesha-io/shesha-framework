@@ -18,6 +18,15 @@ namespace Shesha.Dto
         /// Module name
         /// </summary>
         public string? Module { get; set; }
+        /// <summary>
+        /// Front-end application id
+        /// </summary>
+        public Guid? ApplicationId { get; set; }
+
+        /// <summary>
+        /// Front-end application
+        /// </summary>
+        public string? Application { get; set; }
 
         public string Name { get; set; } = string.Empty;
         public string? Label { get; set; }

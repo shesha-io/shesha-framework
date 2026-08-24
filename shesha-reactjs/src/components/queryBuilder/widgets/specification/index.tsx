@@ -1,4 +1,3 @@
-import React from 'react';
 import { BasicConfig, SelectFieldSettings, TextWidget } from '@react-awesome-query-builder/antd';
 import { SpecificationConditionEditor } from './specificationConditionEditor';
 

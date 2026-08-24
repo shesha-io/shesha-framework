@@ -13,7 +13,7 @@ import { useHttpClient } from "@/providers";
 import { buildUrl } from "./url";
 
 export const isEntityReferenceId = (data: unknown): data is IEntityReferenceDto => {
-  if (data === null || typeof data !== "object" || Array.isArray(data))
+  if (!isDefined(data) || typeof data !== "object" || Array.isArray(data))
     return false;
 
   const candidate = data as { id?: unknown; _className?: unknown };
@@ -153,7 +153,17 @@ export const useEntityDisplayText = (props: IUseEntityDisplayTextProps): string 
  * @returns The value of the 'id' property if it exists, otherwise undefined.
  */
 export const getIdOrUndefined = (val: unknown): string | undefined => {
-  return isDefined(val) && typeof (val) === 'object' && "id" in val && typeof (val.id) === 'string' ? val.id : undefined;
+  if (!isDefined(val))
+    return undefined;
+  if (typeof val === 'string')
+    return !isNullOrWhiteSpace(val) ? val : undefined;
+  // note: any object with a string id qualifies, `_className` must not be required here (see isEntityReferenceId),
+  // sources like form arguments and query params carry a plain { id } only
+  if (typeof val !== 'object' || Array.isArray(val) || !('id' in val))
+    return undefined;
+
+  const id = val.id;
+  return typeof id === 'string' && !isNullOrWhiteSpace(id) ? id : undefined;
 };
 
 /**
@@ -178,7 +188,10 @@ export const isOwnerReferenceValid = (value: OwnerEntityReference): boolean => {
 
 /**
  * Convert an owner type to a string. To use for internal purposes only e.g. as a cache key
- * @param ownerType owner type
+ * @param ownerType owner type. May be unset while the component is being configured in the designer
  * @returns string representation or owher type
  */
-export const ownerTypeToString = (ownerType: string | IEntityTypeIdentifier): string => typeof (ownerType) === 'string' ? ownerType : `${ownerType.module}/${ownerType.name}`;
+export const ownerTypeToString = (ownerType: string | IEntityTypeIdentifier | undefined): string =>
+  !isDefined(ownerType)
+    ? ""
+    : typeof (ownerType) === 'string' ? ownerType : `${ownerType.module}/${ownerType.name}`;

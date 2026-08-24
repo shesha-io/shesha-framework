@@ -1,6 +1,10 @@
 import { asPropertiesArray, IApiEndpoint, IModelMetadata, isApiEndpoint, isPropertiesArray, StandardEntityActions } from "@/interfaces/metadata";
 import { GetGqlFieldsPayload, IFieldData, IFormDataLoader, GetFormFieldsPayload, FormDataLoadingPayload, isGqlLoaderSettings, GqlLoaderSettings } from "./interfaces";
-import { DataTypes, extractAjaxResponse, IAjaxResponse, IAnyObject, IToolboxComponents } from "@/interfaces";
+import { configurableItemIdentifierToString, DataTypes, extractAjaxResponse, IAjaxResponse, IAnyObject, IGetFieldsToFetchContext, IToolboxComponents } from "@/interfaces";
+import { IConfigurationLoader } from "@/providers/configurationItemsLoader/configurationLoader";
+import { useConfigurationItemsLoader } from "@/providers/configurationItemsLoader";
+import { componentsTreeToFlatStructure, upgradeComponents } from "../utils";
+import { DEFAULT_FORM_SETTINGS, FormIdentifier } from "../models";
 import { HttpClientApi, useHttpClient } from "@/providers/sheshaApplication/publicApi";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
 import { IEntityEndpointsEvaluator, useModelApiHelper } from "@/components/configurableForm/useActionEndpoint";
@@ -18,6 +22,7 @@ export interface GqlLoaderArguments {
   metadataDispatcher: IMetadataDispatcher;
   toolboxComponents: IToolboxComponents;
   endpointsEvaluator: IEntityEndpointsEvaluator;
+  configurationLoader: IConfigurationLoader;
 }
 
 // register loader factory and accept only form-specific parameters
@@ -31,11 +36,14 @@ export class GqlLoader<Values extends object = object> implements IFormDataLoade
 
   #endpointsEvaluator: IEntityEndpointsEvaluator;
 
+  #configurationLoader: IConfigurationLoader;
+
   constructor(args: GqlLoaderArguments) {
     this.#httpClient = args.httpClient;
     this.#metadataDispatcher = args.metadataDispatcher;
     this.#toolboxComponents = args.toolboxComponents;
     this.#endpointsEvaluator = args.endpointsEvaluator;
+    this.#configurationLoader = args.configurationLoader;
   }
 
   canLoadData = (formArguments: object | undefined): boolean => {
@@ -73,13 +81,25 @@ export class GqlLoader<Values extends object = object> implements IFormDataLoade
     }
   };
 
+  #missingDataIdError = (payload: FormDataLoadingPayload, endpointUrl: string): Error => {
+    const { formSettings, formArguments } = payload;
+    const { modelType } = formSettings;
+    const modelTypeName = typeof modelType === 'string' ? modelType : modelType?.name;
+
+    const argumentNames = isDefined(formArguments) ? Object.keys(formArguments) : [];
+    const receivedArguments = argumentNames.length > 0
+      ? `received form arguments: ${argumentNames.join(', ')}`
+      : 'no form arguments were passed';
+
+    return new Error(
+      `Data id is missing: the form loads data by id${isNullOrWhiteSpace(modelTypeName) ? '' : ` from '${modelTypeName}'`} using '${endpointUrl}', but no 'id' was found in the form arguments (${receivedArguments}).`,
+    );
+  };
+
   loadAsync = async (payload: FormDataLoadingPayload): Promise<Values | undefined> => {
     const { loadingCallback, formSettings, formArguments, formFlatStructure } = payload;
+    const dataId = getIdOrUndefined(formArguments);
     try {
-      const dataId = getIdOrUndefined(formArguments);
-      if (!dataId)
-        throw new Error('Data id is missing');
-
       const endpoint = await this.getEndpointAsync(payload);
 
       // TODO: implement data loading using different http verbs
@@ -106,6 +126,10 @@ export class GqlLoader<Values extends object = object> implements IFormDataLoade
 
       const responseData = extractAjaxResponse(response.data, 'Failed to load data');
 
+      // note: checked after the request so that more specific failures (endpoint, server, permissions) surface first
+      if (!dataId)
+        throw this.#missingDataIdError(payload, getDataUrl);
+
       loadingCallback?.({ loadingState: 'ready', loaderHint: undefined });
 
       return responseData;
@@ -124,15 +148,47 @@ export class GqlLoader<Values extends object = object> implements IFormDataLoade
     return match.map((item) => item[0].replace('data.', ''));
   };
 
-  #getFormFields = (payload: GetFormFieldsPayload, metadata: IModelMetadata): string[] => {
+  /**
+   * Returns fields of the form with the specified identifier, relative to the root of that form.
+   * `visitedForms` protects from the infinite recursion on the forms referencing each other
+   */
+  #getNestedFormFieldsAsync = async (formId: FormIdentifier, visitedForms: Set<string>): Promise<string[]> => {
+    const formKey = configurableItemIdentifierToString(formId);
+    if (visitedForms.has(formKey))
+      return [];
+
+    const form = await this.#configurationLoader.getFormAsync({ formId, skipCache: false });
+    const formSettings = form.settings ?? DEFAULT_FORM_SETTINGS;
+
+    const flatStructure = componentsTreeToFlatStructure(this.#toolboxComponents, form.markup ?? []);
+    upgradeComponents(this.#toolboxComponents, formSettings, flatStructure);
+
+    const metadata = isDefined(formSettings.modelType)
+      ? await this.#metadataDispatcher.getMetadata({ dataType: DataTypes.entityReference, modelType: formSettings.modelType }) ?? undefined
+      : undefined;
+
+    return await this.#getFormFieldsAsync(
+      { formFlatStructure: flatStructure, formSettings: formSettings },
+      metadata,
+      new Set(visitedForms).add(formKey),
+    );
+  };
+
+  #getFormFieldsAsync = async (payload: GetFormFieldsPayload, metadata: IModelMetadata | undefined, visitedForms: Set<string>): Promise<string[]> => {
     const { formFlatStructure, formSettings } = payload;
 
     const gqlSettings = this.#getGqlSettings(formSettings);
 
     const toolboxComponents = this.#toolboxComponents;
 
+    const fieldsContext: IGetFieldsToFetchContext = {
+      getFormFieldsAsync: (formId) => this.#getNestedFormFieldsAsync(formId, visitedForms),
+      getEntityFormIdAsync: (entityType, formType) => this.#configurationLoader.getEntityFormIdAsync(entityType, formType),
+    };
+
     const { allComponents: components } = formFlatStructure;
     let fieldNames: string[] = [];
+    const asyncFieldNames: Promise<string[]>[] = [];
     for (const key in components) {
       if (components.hasOwnProperty(key) && isConfigurableFormComponent(components[key])) {
         var model = components[key];
@@ -145,15 +201,32 @@ export class GqlLoader<Values extends object = object> implements IFormDataLoade
 
           // TODO: AS - calc actual propName from JS setting
           if (typeof propName === 'string') {
+            const asyncFieldsFunc = component.getFieldsToFetchAsync;
             const fieldsFunc = component.getFieldsToFetch;
-            if (isDefined(fieldsFunc))
-              fieldNames = fieldNames.concat(fieldsFunc(propName, model, metadata));
-            else
+            // note: the components calculate their fields using metadata, skip them if it's not available
+            if (isDefined(asyncFieldsFunc)) {
+              if (isDefined(metadata))
+                asyncFieldNames.push(
+                  asyncFieldsFunc(propName, model, metadata, fieldsContext)
+                    .catch((error) => {
+                      // fields of the nested form are not critical, fetch the rest of the form data
+                      console.error(`Failed to get fields to fetch for the component '${propName}'`, error);
+                      return [];
+                    }),
+                );
+            } else if (isDefined(fieldsFunc)) {
+              if (isDefined(metadata))
+                fieldNames = fieldNames.concat(fieldsFunc(propName, model, metadata));
+            } else
               fieldNames.push(propName);
           }
         }
       }
     }
+
+    (await Promise.all(asyncFieldNames)).forEach((names) => {
+      fieldNames = fieldNames.concat(names);
+    });
 
     fieldNames = fieldNames.concat(gqlSettings.fieldsToFetch ?? []);
 
@@ -189,7 +262,7 @@ export class GqlLoader<Values extends object = object> implements IFormDataLoade
 
     let fields: IFieldData[] = [];
 
-    const fieldNames = this.#getFormFields(payload, metadata);
+    const fieldNames = await this.#getFormFieldsAsync(payload, metadata, new Set<string>());
 
     const metaProperties = asPropertiesArray(metadata.properties, []);
 
@@ -264,6 +337,7 @@ export const useGqlLoader = (): IFormDataLoader => {
   const endpointsEvaluator = useModelApiHelper();
   const metadataDispatcher = useMetadataDispatcher();
   const toolboxComponents = useFormDesignerComponents();
+  const configurationLoader = useConfigurationItemsLoader();
 
   const [loader] = useState<IFormDataLoader>(() => {
     return new GqlLoader({
@@ -271,6 +345,7 @@ export const useGqlLoader = (): IFormDataLoader => {
       endpointsEvaluator: endpointsEvaluator,
       metadataDispatcher: metadataDispatcher,
       toolboxComponents: toolboxComponents,
+      configurationLoader: configurationLoader,
     });
   });
   return loader;

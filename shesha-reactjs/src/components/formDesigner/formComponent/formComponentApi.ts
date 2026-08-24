@@ -1,7 +1,7 @@
 import { IComponentStyle, InputComponentApi } from "@/componentsApi/componentApi";
-import { IBackgroundValue, IBorderValue, IFontValue } from "@/designer-components/_settings/utils";
+import { IBackgroundValue, IBorderValue, IFontValue, IShadowValue } from "@/designer-components/_settings/utils";
 import { IShaFormInstance } from "@/providers/form/store/interfaces";
-import { EditMode, IConfigurableFormComponent, IStyleValue } from "@/providers";
+import { EditMode, IConfigurableFormComponent, IStyleValue, StyleBoxValue } from "@/providers";
 import { ComponentApiProperty, IComponentApi, IComponentApiDescription } from "@/providers/componentApi/model";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { deepMergeValues, getValueByPropertyName, removeUndefinedProps, setValueByPropertyName } from "@/utils/object";
@@ -26,7 +26,7 @@ export const getDisabledAndReadOnly = (mode: Exclude<EditMode, 'inherited'>): ID
           ? { disabled: false, readOnly: true }
           : { disabled: true, readOnly: false };
 
-const updateApiModel = <T extends object>(func: (f: (prev: T) => T) => void, value: Partial<T>): void => {
+export const updateApiModel = <T extends object>(func: (f: (prev: T) => T) => void, value: Partial<T>): void => {
   func((prev) => removeUndefinedProps(deepMergeValues(prev, value)) as T);
 };
 
@@ -85,6 +85,8 @@ export const updateApi = (args: IUpdateApiArgs): void => {
           componentApi.createOrUpdateApiProperty(style, { name: 'font', getter: () => apiModel.font, setter: (value) => updateApiModel(setApiStyles, { font: value as IFontValue }) });
           componentApi.createOrUpdateApiProperty(style, { name: 'background', getter: () => apiModel.background, setter: (value) => updateApiModel(setApiStyles, { background: value as IBackgroundValue }) });
           componentApi.createOrUpdateApiProperty(style, { name: 'border', getter: () => apiModel.border, setter: (value) => updateApiModel(setApiStyles, { border: value as IBorderValue }) });
+          componentApi.createOrUpdateApiProperty(style, { name: 'shadow', getter: () => apiModel.shadow, setter: (value) => updateApiModel(setApiStyles, { shadow: value as IShadowValue }) });
+          componentApi.createOrUpdateApiProperty(style, { name: 'styleBox', getter: () => apiModel.stylingBoxJson, setter: (value) => updateApiModel(setApiStyles, { stylingBoxJson: value as StyleBoxValue }) });
           return style;
         },
       },

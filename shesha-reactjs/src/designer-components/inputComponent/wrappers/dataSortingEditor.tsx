@@ -1,6 +1,5 @@
 import { SortingEditor } from '@/components/dataTable/sortingConfigurator';
 import { IDataSortingEditorSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React from 'react';
 import { FCUnwrapped } from '@/providers/form/models';
 import { ISortingItem } from '@/providers/dataTable/interfaces';
 

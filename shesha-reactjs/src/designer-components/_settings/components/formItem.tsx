@@ -1,4 +1,5 @@
-import React, { cloneElement, FC, ReactElement, useState, isValidElement, SyntheticEvent } from 'react';
+import { cloneElement, FC, ReactElement, useState, isValidElement, SyntheticEvent } from 'react';
+import * as React from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import SettingsControl, { SettingsControlChildrenFunc } from '../settingsControl';
 import { ISettingsFormItemProps } from '../settingsFormItem';
@@ -22,15 +23,24 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
   const { name, label, tooltip, required, validationDependencies, hidden, jsSetting, children, valuePropName = 'value', layout, availableConstantsExpression, permissionSettings } = props;
   const [hasCode, setHasCode] = useState(false);
 
-  useDefaultModelPropertyUpdateSubscription(name);
-
   const { namePrefix } = useFormItem();
   const defaultModelPropName = isNotNullOrWhiteSpace(namePrefix) ? namePrefix + '.' + name : name;
+
+  useDefaultModelPropertyUpdateSubscription(defaultModelPropName);
 
   const defaultModel = useDefaultModelActionsOrUndefined();
   const valueInfo = defaultModel?.getValueInfo(defaultModelPropName);
   const defaultValue = getValueByPropertyName(defaultModel?.getDefaultModel() as Record<string, unknown>, defaultModelPropName);
   const className = valueInfo?.state === 'usedDefault' ? styles.inheritedValue : valueInfo?.state === 'usedModel' ? styles.overriddenValue : '';
+
+  // When the value is inherited or overridden, InputComponent renders an inheritance popover on
+  // the input that already includes this tooltip text alongside the Override / Reset actions.
+  // Drop the label's own `?` icon in that case so the same text is not shown in two popups.
+  // However, if children is a function (custom component), it likely bypasses InputComponent
+  // and won't show the inheritance popover, so we should preserve the tooltip in that case.
+  const showsInheritancePopover = valueInfo?.state === 'usedDefault' || valueInfo?.state === 'usedModel';
+  const isCustomComponent = typeof children === 'function';
+  const labelTooltip = showsInheritancePopover && !isCustomComponent ? undefined : tooltip;
 
   let childFunc: SettingsControlChildrenFunc = () => <></>;
   let readOnly = props.readOnly ?? false;
@@ -72,7 +82,7 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
         label: <div className={styles.label}>{label}</div>,
         type: '',
         id: '',
-        description: tooltip,
+        description: labelTooltip,
         validate: { required },
         validationDependencies,
         hidden,
@@ -82,7 +92,7 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
       className={`sha-js-label ${className}`}
     >
       {(value, onChange) => {
-        const localValue = defaultModel?.getValueInfo(defaultModelPropName)?.state === 'usedDefault' ? defaultValue : value;
+        const localValue = valueInfo?.state === 'usedDefault' ? defaultValue : value;
         return !Boolean(jsSetting) ? (
           <PermissionsControl enabled={permissionSettings ?? false} propertyName={permissionPropertyName} readOnly={readOnly}>
             {childFunc(localValue, onChange, name)}

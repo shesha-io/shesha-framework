@@ -1,4 +1,3 @@
-import React from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
 import { IToolboxComponent } from '@/interfaces';
@@ -156,9 +155,24 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
         weight: '400',
         color: '#000000',
       },
+      axisLabelFont: prev.axisLabelFont ?? prev.titleFont ?? {
+        family: 'Segoe UI',
+        size: 16,
+        weight: '400',
+        color: '#000000',
+      },
       legendFont: prev.legendFont ?? {
         family: 'Segoe UI',
         size: 12,
+        weight: '400',
+        color: '#000000',
+      },
+    }))
+    .add<IChartProps>(10, (prev) => ({
+      ...prev,
+      axisLabelFont: prev.axisLabelFont ?? prev.titleFont ?? {
+        family: 'Segoe UI',
+        size: 16,
         weight: '400',
         color: '#000000',
       },

@@ -14,7 +14,6 @@ import {
   getActualModel,
   getParentDisabled,
   getParentReadOnly,
-  isConfigurableFormComponent,
   pickStyleFromModel,
   useAvailableConstantsContexts,
   useAvailableConstantsContextsNoRefresh,
@@ -37,7 +36,7 @@ import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { useIsFirstRender } from "./useIsFirstRender";
 import { ISheshaApplicationInstance } from "@/providers/sheshaApplication/application";
 import { getDisabledAndReadOnly, IDisabledAndReadOnly } from "@/components/formDesigner/formComponent/formComponentApi";
-import { isHasEditMode } from "@/providers/form/utils/js-settings";
+import { isHasEditMode, UnwrapFunc } from "@/providers/form/utils/js-settings";
 
 type MayHaveEditMode<T> = T & {
   editMode?: unknown | undefined;
@@ -62,12 +61,13 @@ export const useTouchableProxy = <T>(accessors: ProxyPropertiesAccessors<T>, add
   return proxy;
 };
 
-const unwrapModel = <T extends object = object>(
+export const unwrapModel = <T extends object = object>(
   model: T,
   contextProxy: TypedProxy<IApplicationContext>,
   propertyFilter?: (name: string, value: unknown) => boolean,
   executor?: (data: T, context: TypedProxy<IApplicationContext>) => UnwrapCodeEvaluators<T>,
   parentDisabledAndReadOnly?: IDisabledAndReadOnly,
+  processFilteredProperties?: UnwrapFunc | undefined,
 ): UnwrapCodeEvaluators<T> => {
   const hasEditMode = model.hasOwnProperty('editMode');
 
@@ -80,7 +80,7 @@ const unwrapModel = <T extends object = object>(
 
   const actualModel: UnwrapCodeEvaluators<T> = executor
     ? executor(preparedData, contextProxy)
-    : getActualModel<T>(preparedData, contextProxy, parentDisabledAndReadOnly, propertyFilter, undefined, (m) => {
+    : getActualModel<T>('', preparedData, contextProxy, parentDisabledAndReadOnly, propertyFilter, undefined, (m) => {
       const newModel = m as object;
       if (isHasEditMode(newModel)) {
         const parentReadOnly = !isDefined(parentDisabledAndReadOnly?.readOnly)
@@ -88,13 +88,15 @@ const unwrapModel = <T extends object = object>(
           : parentDisabledAndReadOnly.readOnly;
         const disabledAndReadOnly =
           // Calculate disabled and readOnly, use parent values if editMode is not set or Inherited
-          isConfigurableFormComponent(newModel) && isDefined(newModel.editMode) && newModel.editMode !== 'inherited' && newModel.editMode !== true
+          isDefined(newModel.editMode) && newModel.editMode !== 'inherited' && newModel.editMode !== true
             ? getDisabledAndReadOnly(newModel.editMode)
             : { disabled: parentDisabledAndReadOnly?.disabled ?? false, readOnly: parentReadOnly };
         newModel.readOnly = disabledAndReadOnly.readOnly;
         newModel.disabled = disabledAndReadOnly.disabled;
       }
-    });
+    },
+    processFilteredProperties,
+    );
   return actualModel;
 };
 
@@ -104,6 +106,7 @@ export function useActualContextData<T extends object = object>(
   additionalData?: object,
   propertyFilter?: (name: string, value: unknown) => boolean,
   executor?: (data: T, context: TypedProxy<IApplicationContext>) => UnwrapCodeEvaluators<T>,
+  processFilteredProperties?: UnwrapFunc | undefined,
 ): UnwrapCodeEvaluators<T> {
   const parent = useParentOrUndefined();
   const fullContext = useAvailableConstantsContexts();
@@ -125,7 +128,7 @@ export function useActualContextData<T extends object = object>(
   let actualModel: UnwrapCodeEvaluators<T> | undefined = undefined;
   const modelChanged = !isEqual(prevModel.current, model);
   if (!isDefined(actualModelRef.current) || contextProxy.changed || modelChanged || !isEqual(prevParentReadonly.current, pDisabledAndReadOnly)) {
-    actualModel = unwrapModel(model, context, propertyFilter, executor, pDisabledAndReadOnly);
+    actualModel = unwrapModel(model, context, propertyFilter, executor, pDisabledAndReadOnly, processFilteredProperties);
 
     // ToDo: AS - review copy and compare for performance and reliability
     const actualModelJson = JSON.stringify(actualModel);
@@ -272,7 +275,7 @@ export const useBackgroundStoredFile = (model: IBackgroundValue | undefined, app
 };
 
 // ToDo: AS - remove after migration all components to the new styles
-
+/** @deprecated will be removed after migration all components to the new styles */
 export const useFormComponentStyles = <TModel extends IStyleValue & Pick<IConfigurableFormComponent, 'style' | 'wrapperStyle'>>(
   model: TModel/* & IStyleValue & Omit<IConfigurableFormComponent, 'id' | 'type'>*/,
   options?: IUseFormComponentStylesOptions,
@@ -285,11 +288,13 @@ export const useFormComponentStyles = <TModel extends IStyleValue & Pick<IConfig
   const jsStyle = useActualContextExecution(styleSource, undefined, {}); // use default style if empty or error
   const { designerWidth } = useCanvas();
 
-  const { dimensions, border, font, shadow, background, stylingBox, overflow } = model;
+  const { dimensions, border, font, shadow, background, stylingBox, stylingBoxJson, overflow } = model;
 
   const backgroundLocal = useMemo(() => getBackgroundStyle(background, jsStyle, background?.url), [background, jsStyle]);
 
-  const stylingBoxParsed = useMemo(() => !isNullOrWhiteSpace(stylingBox) ? jsonSafeParse<StyleBoxValue>(stylingBox) : {}, [stylingBox]);
+  const stylingBoxParsed = useMemo(() =>
+    stylingBoxJson ?? (!isNullOrWhiteSpace(stylingBox) ? jsonSafeParse<StyleBoxValue>(stylingBox) : {}),
+  [stylingBoxJson, stylingBox]);
 
   const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
   const fontStyles = useMemo(() => getFontStyle(font), [font]);

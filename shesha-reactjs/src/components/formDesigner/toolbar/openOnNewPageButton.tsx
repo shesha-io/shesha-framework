@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { ArrowsAltOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import { useFormDesignerUrl } from '@/providers/form/hooks';

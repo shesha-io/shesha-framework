@@ -1,5 +1,4 @@
 import { FolderAddOutlined } from '@ant-design/icons';
-import React from 'react';
 import { IconType } from '@/components/shaIcon';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { DataTypes, IToolboxComponent } from '@/interfaces';
@@ -28,12 +27,14 @@ import { getIdOrUndefined } from '@/utils/entity';
 import CustomFile from '@/components/customFile';
 import { OnFileDownloaded, OnFileListChanged } from '@/providers/storedFiles/models';
 import { StoredFileModel } from '@/utils/storedFile/models';
+import { SizeType } from 'antd/lib/config-provider/SizeContext';
 
 export type LayoutType = 'vertical' | 'horizontal' | 'grid';
 export type ListType = 'text' | 'thumbnail';
 
-export interface IAttachmentsEditorDeviceStyles extends IInputStyles {
+export interface IAttachmentsEditorDeviceStyles extends IStyleValue {
   filesLayout?: LayoutType | undefined;
+  gap?: string | number | SizeType | undefined;
 }
 
 const DEVICE_TYPES = ['desktop', 'mobile', 'tablet'] as const;

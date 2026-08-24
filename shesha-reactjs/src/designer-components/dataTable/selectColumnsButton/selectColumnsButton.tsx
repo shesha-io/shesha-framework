@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { Button } from 'antd';
 import { SlidersOutlined } from '@ant-design/icons';
 import { useDataTableStore } from '@/providers';

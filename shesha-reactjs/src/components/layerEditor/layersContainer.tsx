@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import LayerItem from './layerItem';
 import { useStyles } from './styles/styles';

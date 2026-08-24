@@ -28,6 +28,7 @@ export * from './settings';
 export * from './shaRouting';
 export * from './sheshaApplication';
 export * from './sheshaApplication/publicApi';
+export * from './signalR';
 export * from './storedFile';
 export * from './storedFiles';
 export * from './subForm';
@@ -42,5 +43,8 @@ export * from './canvas';
 export * from './sourceFileManager/sourcesFolderProvider';
 export * from './chartData';
 export * from './sheshaApplication/hooks/useSettingsComponents';
+export * from './monacoLoader';
+export { type MonacoLoaderSettings } from './monacoLoader/models';
+export { type IHttpHeadersDictionary } from './sheshaApplication/contexts';
 
 export { useApplicationContextData, useApplicationContextMetadata };

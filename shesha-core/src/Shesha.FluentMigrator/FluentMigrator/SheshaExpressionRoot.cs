@@ -7,8 +7,6 @@ using Shesha.FluentMigrator.Modules;
 using Shesha.FluentMigrator.Notifications;
 using Shesha.FluentMigrator.ReferenceLists;
 using Shesha.FluentMigrator.Settings;
-using System.Reflection;
-using System.Text;
 
 namespace Shesha.FluentMigrator
 {
@@ -36,11 +34,10 @@ namespace Shesha.FluentMigrator
                 var dbType = _context.QuerySchema is IMigrationProcessor mp
                     ? mp.DatabaseType
                     : null;
-                return dbType switch {
-                    "PostgreSQL" or "Postgres" => DbmsType.PostgreSQL,                     
-                    "SQLServer" => DbmsType.SQLServer,
-                    _ => DbmsType.SQLServer,
-                };
+
+                return !string.IsNullOrWhiteSpace(dbType) && dbType.StartsWith("Postgre")
+                    ? DbmsType.PostgreSQL
+                    : DbmsType.SQLServer;
             }
         }
 

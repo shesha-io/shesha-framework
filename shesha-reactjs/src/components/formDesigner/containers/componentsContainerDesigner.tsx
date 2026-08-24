@@ -1,8 +1,7 @@
 import classNames from 'classnames';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { ConfigurableFormComponent } from '../configurableFormComponent';
-import React, { FC, PropsWithChildren, ReactNode, useMemo } from 'react';
-import { getAlignmentStyle } from './util';
+import { FC, PropsWithChildren, ReactNode, useMemo } from 'react';
 import { IComponentsContainerProps } from './componentsContainer';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { TOOLBOX_COMPONENT_DROPPABLE_KEY, TOOLBOX_DATA_ITEM_DROPPABLE_KEY } from '@/providers/form/models';
@@ -24,10 +23,11 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
     render,
     itemsLimit = -1,
     wrapperStyle,
-    style: incomingStyle,
+    style,
     noDefaultStyling,
     emptyInsertThreshold = 20,
     showHintWhenEmpty = true,
+    additionalDomProperties,
   } = props;
 
   const { styles } = useStyles();
@@ -117,11 +117,9 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
     return typeof render === 'function' ? render(renderedComponents) : renderedComponents;
   };
 
-  const style = getAlignmentStyle(props);
-
   return (
     <ConditionalWrap
-      condition={!noDefaultStyling}
+      condition={noDefaultStyling !== true}
       wrap={(content) => (
         <div className={classNames(styles.shaComponentsContainer, direction, className)} style={wrapperStyle}>
           {content}
@@ -129,7 +127,7 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
       )}
     >
       <>
-        {childIds.length === 0 && showHintWhenEmpty && <div className={styles.shaDropHint}>Drag and Drop form component</div>}
+        {childIds.length === 0 && showHintWhenEmpty && <div className={styles.shaDropHintContainer}><div className={styles.shaDropHint}>Drag and Drop form component</div></div>}
         <ReactSortable
           disabled={readOnly}
           onStart={onDragStart}
@@ -151,8 +149,9 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
           scroll={true}
           bubbleScroll={true}
           direction={direction}
-          className={noDefaultStyling ? '' : styles.shaComponentsContainerInner}
-          style={{ ...style, ...incomingStyle }}
+          className={noDefaultStyling === true ? '' : styles.shaComponentsContainerInner}
+          style={style}
+          {...additionalDomProperties}
         >
           {renderComponents()}
         </ReactSortable>

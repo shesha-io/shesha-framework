@@ -1,24 +1,10 @@
-import React, { FC } from 'react';
-import RadioGroup from '../radio/radioGroup';
+import { FC } from 'react';
 import MultiCheckbox from './multiCheckbox';
 import { ICheckboxGroupProps } from './interfaces';
 
+// Checkboxes are designed for multiple independent selections, so the group
+// always renders in multi-select mode.
 export const RefListCheckboxGroup: FC<ICheckboxGroupProps> = (props) => {
-  if (props.mode === 'single') {
-    return (
-      <RadioGroup
-        {...props}
-        value={!Array.isArray(props.value) ? props.value : undefined}
-        onChange={(event) => {
-          if (!props.onChange)
-            return;
-          const newValue = event.target.value as string ? String(event.target.value) : undefined;
-          props.onChange(newValue);
-        }}
-      />
-    );
-  }
-
   return <MultiCheckbox {...props} />;
 };
 

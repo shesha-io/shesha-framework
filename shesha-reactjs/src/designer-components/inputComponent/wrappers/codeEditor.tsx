@@ -1,6 +1,5 @@
 import { ICodeEditorSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
 import { useCallback, useMemo } from 'react';
-import camelcase from 'camelcase';
 import { ICodeEditorProps } from '@/designer-components/codeEditor/interfaces';
 import { IObjectMetadata } from '@/interfaces';
 import { executeScript } from '@/providers/form/utils/scripts';
@@ -8,10 +7,11 @@ import { FCUnwrapped, useShaFormInstance } from '@/providers';
 import { useMetadataBuilderFactory } from '@/utils';
 import { getEditor } from '../utils';
 import { isObjectMetadata } from '@/interfaces/metadata';
+import { toCamelCase } from '@/utils/string';
 
 export const CodeEditorWrapper: FCUnwrapped<ICodeEditorSettingsInputProps> = (props) => {
   const { mode, language, availableConstantsExpression, resultTypeExpression, value, readOnly, description, label, propertyName, onChange, templateSettings, wrapInTemplate } = props;
-  const functionName = `get${camelcase((typeof label === 'string' ? label : undefined) || propertyName, { pascalCase: true })}`;
+  const functionName = `get${toCamelCase((typeof label === 'string' ? label : undefined) || propertyName, { pascalCase: true })}`;
 
   const codeEditorProps: ICodeEditorProps = {
     readOnly: readOnly,

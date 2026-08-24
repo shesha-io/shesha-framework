@@ -940,7 +940,7 @@ namespace Shesha.DynamicEntities
             if (useExposed)
             {
                 // Find Module of exposed Entity if needed
-                var inheritance = await GetActualInheritanceOrNullAsync(entityModuleName.NotNull(), $"{className}");
+                var inheritance = await GetActualInheritanceOrNullAsync(entityModuleName.NotNull(), $"{className}", null);
                 entityModuleName = inheritance?.ExposedInModuleName ?? entityModuleName;
             }
 
@@ -1013,7 +1013,7 @@ namespace Shesha.DynamicEntities
             if (useExposed && !entityModuleName.IsNullOrEmpty())
             {
                 // Find Module of exposed Entity if needed
-                var inheritance = await GetActualInheritanceOrNullAsync(entityModuleName.NotNull(), $"{entityTypeName}");
+                var inheritance = await GetActualInheritanceOrNullAsync(entityModuleName.NotNull(), $"{entityTypeName}", null);
                 entityModuleName = inheritance?.ExposedInModuleName ?? entityModuleName;
             }
 

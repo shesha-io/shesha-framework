@@ -1,6 +1,7 @@
 import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
 import { DataTypes, SettingsFormMarkupFactory } from '@/interfaces';
+import { ALL_INPUT_EVENTS_WITHOUT_DOUBLE_CLICK } from '../_common/events';
 
 export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter }) => {
   const searchableTabsId = nanoid();
@@ -18,58 +19,48 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
 
   const json = {
     components: fbf('root')
-      .addSearchableTabs({
-        id: searchableTabsId,
-        propertyName: 'settingsTabs',
-        label: 'Settings',
-        hideLabel: true,
-        labelAlign: 'right',
-        size: 'small',
+      .addSearchableTabs({ id: searchableTabsId, propertyName: 'settingsTabs', label: 'Settings', hideLabel: true, labelAlign: 'right', size: 'small',
         tabs: [
-          {
-            key: '1', title: 'Common', id: commonTabId,
-            components: [
-              ...fbf(commonTabId)
-                .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true }, jsSetting: true })
-                .addLabelConfigurator({ propertyName: 'label', label: 'Label', hideLabel: true })
-                .stdPlaceholderDescriptionInputs()
-                .stdVisibleEditableInputs('full')
-                .stdCollapsiblePanel('Format', (fb) => fb
-                  .addSettingsInput({ inputType: 'dropdown', propertyName: 'numberFormat', label: 'Format', dropdownOptions: numberFormatOptions })
-                  .addSettingsInputRow({ inputs: [
-                    { type: 'numberField', propertyName: `numDecimalPlaces`, label: 'Num decimal places' },
-                    { type: 'textField', propertyName: `thousandsSeparator`, label: 'Thousands separator' },
-                  ], visibleJs: 'return data?.numberFormat !== "integer";' })
-                  .addSettingsInputRow({ inputs: [
-                    { type: 'textField', propertyName: `customFormat`, label: 'Custom format', tooltip: 'numbro.js like format (https://numbrojs.com/old-format.html) or you can use JS mode to implement any transformation',
-                      jsSetting: 'lazy', availableConstantsExpression: 'return metadataBuilder.object("constants").addAllStandard().addString("value", "Component current value").build();' },
-                    { type: 'switch', propertyName: 'highPrecision', label: 'String format', tooltip: 'Save value as string to prevent loss of precision' },
-                  ], visibleJs: 'return data?.numberFormat !== "integer";' })
-                  .addSettingsInputRow({ inputs: [
-                    { type: 'textField', propertyName: `thousandsSeparator`, label: 'Thousands separator' },
-                    { type: 'textField', propertyName: `customFormat`, label: 'Custom format', tooltip: 'numbro.js like format (https://numbrojs.com/old-format.html) or you can use JS mode to implement any transformation',
-                      jsSetting: 'lazy', availableConstantsExpression: 'return metadataBuilder.object("constants").addAllStandard().addString("value", "Component current value").build();' },
-                  ], visibleJs: 'return data?.numberFormat === "integer";' }))
-                .stdPrefixSuffixInputs('return ["currency", "custom"].includes(data?.numberFormat);')
-                .stdCollapsiblePanel('Validations', (fb) => fb
-                  .addSettingsInput({ inputType: 'switch', propertyName: 'validate.required', label: 'Required', size: 'small', layout: 'horizontal', jsSetting: true })
-                  .addSettingsInputRow({
-                    inputs: [
-                      { type: 'numberField', propertyName: 'validate.minValue', label: 'Min Value', size: 'small', jsSetting: true, tooltip: 'Minimum allowed value, leave empty for no limit' },
-                      { type: 'numberField', propertyName: 'validate.maxValue', label: 'Max Value', size: 'small', jsSetting: true, tooltip: 'Maximum allowed value, leave empty for no limit' },
-                    ],
-                  }))
+          { key: 'common', title: 'Common', id: commonTabId, components: fbf(commonTabId)
+            .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true }, jsSetting: true })
+            .addLabelConfigurator({ propertyName: 'hideLabel', label: 'Label', hideLabel: true })
+            .stdPlaceholderDescriptionInputs()
+            .stdVisibleEditableInputs('full')
+            .stdCollapsiblePanel('Format', (fb) => fb
+              .addSettingsInput({ inputType: 'dropdown', propertyName: 'numberFormat', label: 'Format', dropdownOptions: numberFormatOptions })
+              .addSettingsInputRow({ inputs: [
+                { type: 'numberField', propertyName: `numDecimalPlaces`, label: 'Num decimal places' },
+                { type: 'textField', propertyName: `thousandsSeparator`, label: 'Thousands separator' },
+              ], visibleJs: 'return data?.numberFormat !== "integer";' })
+              .addSettingsInputRow({ inputs: [
+                { type: 'textField', propertyName: `customFormat`, label: 'Custom format', tooltip: 'numbro.js like format (https://numbrojs.com/old-format.html) or you can use JS mode to implement any transformation',
+                  jsSetting: 'lazy', availableConstantsExpression: 'return metadataBuilder.object("constants").addAllStandard().addString("value", "Component current value").build();' },
+                { type: 'switch', propertyName: 'highPrecision', label: 'String format', tooltip: 'Save value as string to prevent loss of precision' },
+              ], visibleJs: 'return data?.numberFormat !== "integer";' })
+              .addSettingsInputRow({ inputs: [
+                { type: 'textField', propertyName: `thousandsSeparator`, label: 'Thousands separator' },
+                { type: 'textField', propertyName: `customFormat`, label: 'Custom format', tooltip: 'numbro.js like format (https://numbrojs.com/old-format.html) or you can use JS mode to implement any transformation',
+                  jsSetting: 'lazy', availableConstantsExpression: 'return metadataBuilder.object("constants").addAllStandard().addString("value", "Component current value").build();' },
+              ], visibleJs: 'return data?.numberFormat === "integer";' }))
+            .stdPrefixSuffixInputs('return ["currency", "custom"].includes(data?.numberFormat);')
+            .stdCollapsiblePanel('Validations', (fb) => fb
+              .addSettingsInput({ inputType: 'switch', propertyName: 'validate.required', label: 'Required', size: 'small', layout: 'horizontal', jsSetting: true })
+              .addSettingsInputRow({
+                inputs: [
+                  { type: 'numberField', propertyName: 'validate.minValue', label: 'Min Value', size: 'small', jsSetting: true, tooltip: 'Minimum allowed value, leave empty for no limit' },
+                  { type: 'numberField', propertyName: 'validate.maxValue', label: 'Max Value', size: 'small', jsSetting: true, tooltip: 'Maximum allowed value, leave empty for no limit' },
+                ],
+              }))
 
-                .toJson(),
-            ],
+            .toJson(),
           },
           {
-            key: '2', title: 'Events', id: eventsTabId,
-            components: [...fbf(eventsTabId).stdEventHandlers(['onChange', 'onFocus', 'onBlur', 'onClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave', 'onKeyDown', 'onKeyUp'], DataTypes.number).toJson()],
+            key: 'events', title: 'Events', id: eventsTabId,
+            components: fbf(eventsTabId).stdEventHandlers([...ALL_INPUT_EVENTS_WITHOUT_DOUBLE_CLICK], DataTypes.number).toJson(),
           },
           {
-            key: '3', title: 'Appearance', id: appearanceTabId,
-            components: [...fbf(appearanceTabId).stdAppearancePanels(['font', 'dimensions', 'border', 'background', 'shadow', 'marginPadding', 'customStyle'], removeStyleRouter).toJson()],
+            key: 'appearance', title: 'Appearance', id: appearanceTabId,
+            components: fbf(appearanceTabId).stdAppearancePanels(['font', 'dimensions', 'border', 'background', 'shadow', 'marginPadding', 'customStyle'], removeStyleRouter).toJson(),
           },
         ],
       })

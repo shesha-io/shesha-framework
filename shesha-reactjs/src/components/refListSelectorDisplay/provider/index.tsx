@@ -1,4 +1,13 @@
-import React, { FC, useReducer, useContext, PropsWithChildren, useEffect } from 'react';
+import {
+  FC,
+  useReducer,
+  useContext,
+  PropsWithChildren,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+} from 'react';
 import {
   IUpdateItemSettingsPayload,
   RefListItemGroupConfiguratorActionsContext,
@@ -58,38 +67,45 @@ const RefListSelectorDisplayProvider: FC<PropsWithChildren<IRefListItemGroupConf
     });
   }, [getReferenceList, props.items, props.referenceList]);
 
-  const selectItem = (uid: string): void => {
+  const selectItem = useCallback((uid: string): void => {
     dispatch(selectItemAction(uid));
-  };
+  }, []);
 
-  const updateItem = (payload: IUpdateItemSettingsPayload): void => {
+  const updateItem = useCallback((payload: IUpdateItemSettingsPayload): void => {
     if (!state.readOnly) dispatch(updateItemAction(payload));
-  };
+  }, [state.readOnly]);
 
-  const getItem = (uid: string): RefListGroupItemProps | undefined => {
-    return getItemById(state.items, uid);
-  };
+  // note: the items are read through a ref so that getItem keeps a stable identity - consumers
+  // memoize on it and must not recompute every time an item is updated (#5125)
+  const itemsRef = useRef(state.items);
+  useEffect(() => {
+    itemsRef.current = state.items;
+  }, [state.items]);
 
-  const updateChildItems = (payload: IUpdateChildItemsPayload): void => {
+  const getItem = useCallback((uid: string): RefListGroupItemProps | undefined => {
+    return getItemById(itemsRef.current, uid);
+  }, []);
+
+  const updateChildItems = useCallback((payload: IUpdateChildItemsPayload): void => {
     if (!state.readOnly) dispatch(updateChildItemsAction(payload));
-  };
+  }, [state.readOnly]);
 
-  const storeSettings = (columnId: string, isCollapsed: boolean): Promise<void> => {
+  const storeSettings = useCallback((columnId: string, isCollapsed: boolean): Promise<void> => {
     dispatch(storeSettingsAction({ columnId: columnId, isCollapsed: isCollapsed }));
     return Promise.resolve();
-  };
+  }, []);
+
+  const actions = useMemo<IRefListItemGroupConfiguratorActionsContext>(() => ({
+    selectItem,
+    updateItem,
+    getItem,
+    updateChildItems,
+    storeSettings,
+  }), [selectItem, updateItem, getItem, updateChildItems, storeSettings]);
 
   return (
     <RefListItemGroupConfiguratorStateContext.Provider value={state}>
-      <RefListItemGroupConfiguratorActionsContext.Provider
-        value={{
-          selectItem,
-          updateItem,
-          getItem,
-          updateChildItems,
-          storeSettings,
-        }}
-      >
+      <RefListItemGroupConfiguratorActionsContext.Provider value={actions}>
         {children}
       </RefListItemGroupConfiguratorActionsContext.Provider>
     </RefListItemGroupConfiguratorStateContext.Provider>

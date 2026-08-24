@@ -1,7 +1,7 @@
 import { IModalApi } from '@/configuration-studio/cs/modalApi';
 import { IDocumentInstance, SaveDocumentResponse } from '@/configuration-studio/models';
 import { App, Button, Typography } from 'antd';
-import React, { FC } from 'react';
+import { useState, FC } from 'react';
 
 type SaveConfirmationBodyProps = {
   doc: IDocumentInstance;
@@ -27,7 +27,7 @@ type SaveConfirmationFooterProps = {
 };
 
 const SaveConfirmationFooter: FC<SaveConfirmationFooterProps> = ({ onResponse, doc }) => {
-  const [isSaving, setIsSaving] = React.useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const { message } = App.useApp();
   const onSaveClick = async (): Promise<void> => {
     setIsSaving(true);

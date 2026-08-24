@@ -1,4 +1,3 @@
-import React from 'react';
 import { DoubleRightOutlined } from '@ant-design/icons';
 import { IConfigurableFormComponent, IFormComponentContainer } from '@/providers/form/models';
 import { IToolboxComponent } from '@/interfaces';

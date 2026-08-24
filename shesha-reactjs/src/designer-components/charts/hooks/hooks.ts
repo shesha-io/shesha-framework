@@ -119,7 +119,7 @@ export const useProcessedChartData = (): IChartData => {
         }),
         fill: false,
         borderColor: strokeColor || '#fff',
-        backgroundColor: isNonEmptyArray(colors) ? colors[0] : undefined,
+        backgroundColor: isNonEmptyArray(colors) ? colors : undefined,
         pointRadius: 5,
         borderWidth: typeof strokeWidth === 'number' ? strokeWidth : 0,
         tension: typeof tension === 'number' ? tension : 0.0,
@@ -162,7 +162,7 @@ export const useProcessedChartData = (): IChartData => {
         }),
         fill: false,
         borderColor: (simpleOrPivot === 'pivot' && chartType === 'line') ? getPredictableColor(strLegend) : strokeColor ?? '#000000',
-        backgroundColor: isNonEmptyArray(colors) ? colors[0] : undefined,
+        backgroundColor: isNonEmptyArray(colors) ? colors : undefined,
         pointRadius: 5,
         borderWidth: typeof strokeWidth === 'number' ? strokeWidth : 1,
         tension: typeof tension === 'number' ? tension : 0.0,
@@ -183,17 +183,23 @@ export const useProcessedChartData = (): IChartData => {
  * @returns prepared chart data from URL
  */
 export const useChartURLData = (): IChartData => {
-  const { urlTypeData, strokeColor, strokeWidth, tension } = useChartDataStateContext();
+  const { urlTypeData, strokeColor, strokeWidth, tension, chartType } = useChartDataStateContext();
+  const labels = urlTypeData?.labels ?? [];
+
+  const generatedColors = labels.map((label) => {
+    const labelStr = typeof label === 'string' ? label : label + '';
+    return chartType === 'polarArea' ? getPredictableColorPolarArea(labelStr) : getPredictableColor(labelStr);
+  });
 
   return {
-    labels: urlTypeData?.labels ?? [],
-    datasets: (urlTypeData?.datasets ?? []).map((dataset) => {
-      dataset.borderColor = strokeColor || 'black';
-      dataset.borderWidth = typeof strokeWidth === 'number' && strokeWidth > 1 ? strokeWidth : 1;
-      dataset.strokeColor = strokeColor || 'black';
-      dataset.tension = typeof tension === 'number' ? tension : 0.0;
-
-      return dataset;
-    }),
+    labels,
+    datasets: (urlTypeData?.datasets ?? []).map((dataset) => ({
+      ...dataset,
+      backgroundColor: isNonEmptyArray(generatedColors) ? generatedColors : dataset.backgroundColor,
+      borderColor: strokeColor || 'black',
+      borderWidth: typeof strokeWidth === 'number' && strokeWidth > 1 ? strokeWidth : 1,
+      strokeColor: strokeColor || 'black',
+      tension: typeof tension === 'number' ? tension : 0.0,
+    })),
   };
 };

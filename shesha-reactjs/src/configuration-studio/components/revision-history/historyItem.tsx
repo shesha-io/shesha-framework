@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { ConfigurationItemRevision, CreationMethod } from './hooks';
 import { DateDisplay } from '@/components/dateDisplay';
 import { Button, Col, Row, Space, Typography } from 'antd';
@@ -80,7 +80,7 @@ export const HistoryItem: FC<IHistoryItemProps> = ({ revision, docId, onUpdated 
         <div className={styles.csRevisionButtons}>
           <Button icon={<UndoOutlined />} type="link" title="Restore" onClick={onRestoreClick} />
           <Button icon={<EditOutlined />} type="link" title="Name revision" onClick={onRenameClick} />
-          <Button icon={<ExportOutlined />} type="link" title="Open" onClick={onOpenClick} />
+          <Button icon={<ExportOutlined />} type="link" title="Export" onClick={onOpenClick} />
         </div>
       )}
     </div>

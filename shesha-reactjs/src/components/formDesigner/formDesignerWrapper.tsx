@@ -13,7 +13,7 @@ import {
   Skeleton,
 } from 'antd';
 import { ResultStatusType } from 'antd/lib/result';
-import React, { FC, PropsWithChildren, useEffect } from 'react';
+import { FC, PropsWithChildren, useEffect } from 'react';
 
 export interface IFormProviderWrapperProps {
   formId: FormIdentifier;
@@ -56,7 +56,7 @@ const FormProviderWrapperInner: FC<PropsWithChildren<{ form: FormInstance }>> = 
           form={form}
           shaForm={shaForm}
         >
-          {formSettings.modelType ? (
+          {isDefined(formSettings.modelType) && formSettings.modelType !== '' ? (
             <MetadataProvider id="designer" modelType={formSettings.modelType}>
               {children}
             </MetadataProvider>

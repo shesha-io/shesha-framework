@@ -4,7 +4,7 @@ import { sheshaStyles } from '@/styles';
 export const defaultStyles = (): IStyleValue => {
   return {
     background: { type: "color", color: '' },
-    font: { weight: '400', size: 14, color: '#000', type: 'Segoe UI' },
+    font: { weight: '400', size: 14, color: '#000', type: 'Segoe UI', align: 'left' },
     dimensions: { width: '100%', height: 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
     border: {
       border: {
@@ -18,6 +18,13 @@ export const defaultStyles = (): IStyleValue => {
       borderType: 'all',
       radiusType: 'all',
     },
-    stylingBox: `{"paddingLeft":${sheshaStyles.paddingLG},"paddingBottom":${sheshaStyles.paddingLG},"paddingTop":${sheshaStyles.paddingLG},"paddingRight":${sheshaStyles.paddingLG},"marginBottom":"${sheshaStyles.paddingMD}"}`,
+    stylingBoxJson: {
+      _type: 'styleBox',
+      paddingLeft: sheshaStyles.paddingLG,
+      paddingBottom: sheshaStyles.paddingLG,
+      paddingTop: sheshaStyles.paddingLG,
+      paddingRight: sheshaStyles.paddingLG,
+      marginBottom: sheshaStyles.paddingMD,
+    },
   };
 };

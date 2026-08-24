@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Shesha.Application.Services;
 using Shesha.Reflection;
-using Shesha.Utilities;
 using System.Linq;
 
 namespace Shesha.Swagger

@@ -95,7 +95,8 @@ namespace Shesha.DynamicEntities
                         if (dynamicAppServiceType != null)
                         {
                             var controller = dynamicAppServiceType.GetTypeInfo();
-                            feature.Controllers.Add(controller);
+                            if (!feature.Controllers.Contains(controller))
+                                feature.Controllers.Add(controller);
                             entityConfigurationStore.SetDynamicAppService(entityType, dynamicAppServiceType);
 
                             if (!_iocManager.IsRegistered(dynamicAppServiceType))

@@ -1,7 +1,10 @@
 import { Tag } from 'antd';
-import React, { FC, PropsWithChildren } from 'react';
+import { FC, PropsWithChildren } from 'react';
+import * as React from 'react';
 interface ITagProps {
   color?: string;
+  /** antd tag variant. `solid` paints the background in `color` instead of a lightened tint. */
+  variant?: 'filled' | 'solid' | 'outlined';
   icon?: React.ReactNode;
   style?: React.CSSProperties;
   className?: string;

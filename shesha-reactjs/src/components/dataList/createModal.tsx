@@ -1,6 +1,6 @@
 import FormInfo from '../configurableForm/formInfo';
 import ParentProvider from '@/providers/parentProvider/index';
-import React, { FC, ReactNode, useState } from 'react';
+import { FC, ReactNode, useState } from 'react';
 import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
 import { DataListCrudProvider, DataProcessor, useDataListCrud } from '@/providers/dataListCrudContext/index';
 import { FormMarkupConverter } from '@/providers/formMarkupConverter/index';

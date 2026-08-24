@@ -197,6 +197,9 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
       padding: 0 !important;
       border: unset !important;
       width: ${layout ? width : '100%'};
+      /* With the file name hidden there is no name row, so the item must collapse to exactly the
+         thumbnail height instead of reserving antd's default name-row space below it. */
+      ${model.hideFileName === true ? `height: ${thumbnailHeight} !important;` : ''}
       :before {
         ${rest as CSSObject}
         display: none;
@@ -205,6 +208,9 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
 
     .ant-upload-list-item-thumbnail {
       ${rest as CSSObject}
+      /* Draw the configured border inside the fixed thumbnail box so the image (below) doesn't
+         overpaint it — without border-box the image sized to the full width/height covers the border. */
+      box-sizing: border-box !important;
       background: ${background ?? backgroundImage ?? (backgroundColor ?? 'transparent')} !important;
       background-size: ${backgroundSize ?? 'cover'} !important;
       background-position: ${backgroundPosition ?? 'center'} !important;
@@ -212,6 +218,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
       box-shadow: ${boxShadow};
       border-radius: ${borderRadius} !important;
       height: ${thumbnailHeight} !important;
+      overflow: hidden !important;
       display: flex !important;
       justify-content: center !important;
       align-items: center !important;
@@ -223,10 +230,12 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
        justify-content: center;
        align-items: center;
       }
-      
+
       img {
-        width: ${thumbnailWidth} !important;
-        height: ${thumbnailHeight} !important;
+        /* Fill the bordered container's content box (not the full outer size) so the border stays
+           visible around the image. */
+        width: 100% !important;
+        height: 100% !important;
         border-radius: ${borderRadius} !important;
         object-fit: cover !important;
         display: flex !important;
@@ -239,7 +248,7 @@ export const useStyles = createStyles(({ token, css, cx, prefixCls }, { style = 
     }
 
     .ant-upload-list-item-name {
-      ${layout || model.hideFileName ? 'display: none !important' : ''};
+      ${layout || model.hideFileName ? 'display: none !important; height: 0 !important; margin: 0 !important; padding: 0 !important;' : ''};
     }
 
     .ant-upload-list-text {

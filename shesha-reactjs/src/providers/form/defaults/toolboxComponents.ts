@@ -88,6 +88,7 @@ import HtmlRender from '@/designer-components/htmlRender';
 import { LabelValueEditorComponent } from '@/designer-components/labelValueEditor/labelValueEditorComponent';
 import { MetadataEditorComponent } from '@/designer-components/metadataEditor';
 import NumberFieldComponent from '@/designer-components/numberField/numberField';
+import PhoneNumberComponent from '@/designer-components/phoneNumber/phoneNumber';
 import QueryBuilderComponent from '@/designer-components/queryBuilder/queryBuilderComponent';
 import RefListStatusComponent from '@/designer-components/refListStatus';
 import { SortingEditorComponent } from '@/designer-components/sortingEditor/index';
@@ -118,12 +119,15 @@ import PieChartComponent from '@/designer-components/charts/pie';
 import PolarAreaChartComponent from '@/designer-components/charts/polarArea';
 import { ConfigurableItemAutocompleteComponent } from '@/designer-components/configurableItemAutocomplete';
 import { DividerComponent } from '@/designer-components/_legacyComponents/divider';
+import YoutubeVideoComponent from '@/designer-components/youtubeVideo';
 import EntityTypeAutocompleteComponent from '@/designer-components/configurableItemAutocomplete/entityTypeAutocomplete';
 import CalendarComponent from '@/designer-components/calendar';
 import TableContextComponentLegacy from '@/designer-components/dataTable/tableContext/tableContextComponentLegacy';
 import { isDefined } from '@/utils/nullables';
+import ContainerCheckerComponent from '@/designer-components/containerChecker';
 
 type IToolboxComponentGroupRelaxed = Omit<IToolboxComponentGroup, 'components'> & { components: IToolboxComponentBase[] };
+
 
 export const getToolboxComponents = (
   devMode: boolean,
@@ -139,6 +143,7 @@ export const getToolboxComponents = (
         Dropdown,
         NumberFieldComponent,
         TextFieldComponent,
+        PhoneNumberComponent,
         TextAreaComponent,
         ExpressionEditorComponent,
         Checkbox,
@@ -154,7 +159,7 @@ export const getToolboxComponents = (
     {
       name: 'Data display',
       visible: true,
-      components: [Alert, Link, Statistic, Text, ValidationErrors, BarChartComponent, LineChartComponent, PieChartComponent, PolarAreaChartComponent],
+      components: [Alert, Link, Statistic, Text, ValidationErrors, BarChartComponent, LineChartComponent, PieChartComponent, PolarAreaChartComponent, YoutubeVideoComponent],
     },
     {
       name: 'Advanced',
@@ -251,6 +256,7 @@ export const getToolboxComponents = (
       visible: devMode,
       name: 'Dev',
       components: [
+        ContainerCheckerComponent,
         PropertyRouterComponent,
         ThemeEditorComponent,
         MainMenuEditorComponent,
@@ -301,13 +307,20 @@ export const getToolboxComponents = (
   return groups.map<IToolboxComponentGroup>((group) => ({ ...group, components: group.components.map<IToolboxComponent>((c) => c as IToolboxComponent) }));
 };
 
-export const getComponentDefinitions = (): Map<string, IToolboxComponent> => {
+export const componentGroupsToComponentDefinitions = (componentGroups: IToolboxComponentGroup[]): Map<string, IToolboxComponent> => {
   const result = new Map<string, IToolboxComponent>();
 
-  for (const toolboxComponentGroup of getToolboxComponents(false, { formId: "", formProps: null })) {
+  for (const toolboxComponentGroup of componentGroups) {
     for (const toolboxComponent of toolboxComponentGroup.components) {
       result.set(toolboxComponent.type, toolboxComponent);
     }
   }
   return result;
+};
+
+
+export const getComponentDefinitions = (): Map<string, IToolboxComponent> => {
+  const componentGroups = getToolboxComponents(false, { formId: "", formProps: null });
+
+  return componentGroupsToComponentDefinitions(componentGroups);
 };

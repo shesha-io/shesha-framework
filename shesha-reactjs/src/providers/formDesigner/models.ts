@@ -125,7 +125,8 @@ export type FormDesignerActions = {
 
   getCachedComponentEditor: (type: string, evaluator: () => ISettingsFormFactory) => ISettingsFormFactory | undefined;
 
-  subscribe: (type: FormDesignerSubscriptionType, callback: FormDesignerSubscription) => void;
+  /** Returns a function that cancels the subscription */
+  subscribe: (type: FormDesignerSubscriptionType, callback: FormDesignerSubscription) => () => void;
 
   setSettingsPanelElement: (element: HTMLDivElement | null) => void;
 };

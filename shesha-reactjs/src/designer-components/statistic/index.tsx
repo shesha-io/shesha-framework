@@ -9,7 +9,7 @@ import {
 } from '@/providers/form/utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { BarChartOutlined } from '@ant-design/icons';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { IFontValue } from '../_settings/utils/font/interfaces';
@@ -64,7 +64,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
             <ShaStatistic
               value={(value || passedModel.value || passedModel.placeholder) ?? ""}
               {...(passedModel.precision ? { precision: passedModel.precision } : {})}
-              title={<div style={removeUndefinedProps({ ...titleFontStyles, ...titleStyles })}>{passedModel.title}</div>}
+              title={passedModel.title}
               prefix={(
                 <div>
                   {passedModel.prefixIcon && <ShaIcon iconName={prefixIcon as IconType} />}
@@ -81,6 +81,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
               )}
               style={removeUndefinedProps({ ...allStyles?.fullStyle })}
               styles={{
+                title: removeUndefinedProps({ ...titleFontStyles, ...titleStyles }),
                 content: removeUndefinedProps({
                   ...valueFontStyles,
                   ...valueStyles,

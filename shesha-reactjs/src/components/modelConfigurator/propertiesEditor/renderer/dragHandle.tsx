@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { MoreOutlined } from '@ant-design/icons';
 import { usePropertiesEditor } from '../provider';
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';

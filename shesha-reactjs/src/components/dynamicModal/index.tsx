@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useState } from 'react';
+import { FC, ReactNode, useState } from 'react';
 import { ButtonGroup } from '@/designer-components/button/buttonGroup/buttonGroup';
 import { ConfigurableForm, IConfigurableFormProps, Show } from '@/components/';
 import { Form, Modal } from 'antd';
@@ -138,7 +138,7 @@ export const DynamicModalWithForm = <Values extends object = object>(props: IDyn
   const content = (
     <Show when={footerButtons === 'custom' && Boolean(buttons.length)}>
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <ButtonGroup items={buttons} id="" size="middle" isInline noStyles form={form} />
+        <ButtonGroup items={buttons} id="" size="middle" buttonGroupStyle="horizontal" noStyles />
       </div>
     </Show>
   );

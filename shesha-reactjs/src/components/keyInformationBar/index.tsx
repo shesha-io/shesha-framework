@@ -1,139 +1,50 @@
 import { IKeyInformationBarComponentProps, KeyInfomationBarItemProps } from '@/designer-components/keyInformationBar/interfaces';
-import { getStyle, pickStyleFromModel, useAvailableConstantsData } from '@/providers/form/utils';
 import { Flex } from 'antd';
-import React, { CSSProperties, FC, useMemo } from 'react';
+import { CSSProperties, FC } from 'react';
 import { useStyles } from './style';
-import { jsonSafeParse, removeUndefinedProps } from '@/utils/object';
-import { getFontStyle } from '@/designer-components/_settings/utils/font/utils';
-import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
-import { getBorderStyle } from '@/designer-components/_settings/utils/border/utils';
 import { addPx } from '@/utils/style';
-import { getDimensionsStyle } from '@/designer-components/_settings/utils/dimensions/utils';
-import { useFormData } from '@/providers/formContext';
-import { StyleBoxValue } from '@/providers/form/models';
-import { ValidationErrors } from '../validationErrors';
-import { isValidGuid } from '../formDesigner/components/utils';
 import ComponentsContainer from '../formDesigner/containers/componentsContainer';
-import { useBackgroundStyles } from '@/designer-components/_settings/utils/background/useBackground';
-import { CSSObject } from 'antd-style';
+import { isNullOrWhiteSpace } from '@/utils';
 
 export const KeyInformationBar: FC<IKeyInformationBarComponentProps> = (props) => {
-  const { data } = useFormData();
-  const {
-    columns,
-    hidden,
-    orientation,
-    style,
-    dividerMargin,
-    dividerHeight,
-    dividerWidth,
-    dividerThickness = '0.62px',
-    dividerColor,
-    gap,
-    stylingBox,
-    alignItems,
-  } = props;
-  const allData = useAvailableConstantsData();
+  const { styles } = useStyles(props);
+  const { columns, hidden, orientation, gap, alignItems, styleCss, wrapperStyleCss, isDynamic } = props;
 
-  const dimensions = props.dimensions;
-  const border = props.border;
-  const font = props.font;
-  const shadow = props.shadow;
-  const background = props.background;
-  const jsStyle = getStyle(props.style, data);
+  if (hidden === true) return null;
 
-  const borderStyles = useMemo(() => getBorderStyle(border, jsStyle), [border, jsStyle]);
-  const fontStyles = useMemo(() => getFontStyle(font), [font]);
-  const backgroundStyles = useBackgroundStyles({ background, jsStyle });
-  const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
-
-  const styling = jsonSafeParse<StyleBoxValue>(props.stylingBox || '{}');
-  const stylingBoxAsCSS = pickStyleFromModel(styling);
-
-  const additionalStyles: CSSProperties = removeUndefinedProps({
-    ...stylingBoxAsCSS,
-    ...borderStyles,
-    ...fontStyles,
-    ...backgroundStyles,
-    ...shadowStyles,
-  });
-
-  const dimensionStyles = getDimensionsStyle(dimensions);
-
-  const { styles } = useStyles({ dimensions: dimensionStyles as CSSObject });
-
-  const finalStyle = removeUndefinedProps({
-    ...additionalStyles,
-  });
-
-  if (
-    props.background?.type === 'storedFile' &&
-    props.background.storedFile?.id &&
-    !isValidGuid(props.background.storedFile.id)
-  ) {
-    return <ValidationErrors error="The provided StoredFileId is invalid" />;
-  }
-
-  if (hidden) return null;
-
-  const stylingBoxJSON = jsonSafeParse<StyleBoxValue>(stylingBox || '{}');
   const vertical = orientation === 'vertical';
-  const computedStyle = { ...getStyle(style, data), ...pickStyleFromModel(stylingBoxJSON) };
-  const barStyle = !vertical ? { justifyContent: alignItems } : { alignItems: alignItems };
 
-  const containerStyle = (item: KeyInfomationBarItemProps): CSSProperties => ({
+  const containerStyle = (item: KeyInfomationBarItemProps, gap?: number | undefined): CSSProperties => ({
     textAlign: item.textAlign,
     display: 'flex',
     flexDirection: item.flexDirection ? item.flexDirection : 'column',
     alignItems: item.textAlign,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
+    gap: addPx(gap ?? 0),
   });
 
-  const divThickness = addPx(dividerThickness || '0.62px', allData);
-  const width = addPx(dividerWidth || '100%', allData);
-  const height = addPx(dividerHeight || '100%', allData);
-  const margin = dividerMargin ? addPx(dividerMargin || 0, allData) : 0;
-
-  const dividerStyle = {
-    backgroundColor: dividerColor ?? '#b4b4b4',
-    width: !vertical && width ? divThickness || '0.62px' : width,
-    height: vertical && height ? divThickness || '0.62px' : height,
-    margin: vertical ? `${margin} 0` : `0 ${margin}`,
-  };
-
   return (
-    <Flex
-      vertical={vertical}
-      className={styles.flexContainer}
-      style={{
-        ...computedStyle,
-        ...barStyle,
-        ...finalStyle,
-      }}
-    >
+    <Flex vertical={vertical} className={styles.flexContainer} style={styleCss}>
       {columns?.map((item, i) => {
-        const itemWidth = vertical ? addPx(item.width, allData) || '100%' : addPx(item.width, allData);
+        const itemWidth = addPx(item.width);
         return (
           <div
             key={item.id}
-            className={vertical ? styles.flexItemWrapperVertical : styles.flexItemWrapper}
-            style={vertical ? { width: itemWidth, justifyContent: alignItems } : { maxWidth: itemWidth }}
+            className={styles.flexItemWrapper}
+            style={vertical ? { width: isNullOrWhiteSpace(itemWidth) ? '100%' : itemWidth, justifyContent: alignItems } : { maxWidth: itemWidth }}
           >
-            {i !== 0 && (
-              <div key={'divider' + i} className={styles.divider} style={{ ...dividerStyle, alignSelf: 'center' }} />
-            )}
+            {i !== 0 && <div key={'divider' + i} className={styles.divider} />}
             <div className={styles.content} style={{ justifyContent: item.textAlign }}>
               <ComponentsContainer
                 containerId={item.id}
-                gap={gap}
                 wrapperStyle={{
-                  padding: addPx(item.padding || 0, allData),
-                  maxWidth: vertical ? '100%' : addPx(item.width, allData),
+                  padding: addPx(item.padding) ?? '0px',
+                  maxWidth: vertical ? '100%' : addPx(item.width),
                   boxSizing: 'border-box',
                 }}
-                style={containerStyle(item)}
-                dynamicComponents={props.isDynamic ? item.components : []}
+                style={{ ...containerStyle(item, gap), ...wrapperStyleCss }}
+                dynamicComponents={isDynamic === true ? item.components : []}
               />
             </div>
           </div>

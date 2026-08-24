@@ -106,8 +106,8 @@ export interface IBorderValue {
       readonly style?: IBorderType;
     };
   };
-  readonly radiusType?: string;
-  readonly borderType?: string;
+  readonly radiusType?: 'all' | 'custom' | undefined;
+  readonly borderType?: 'all' | 'custom' | undefined;
   readonly hideBorder?: boolean;
 }
 
@@ -132,8 +132,8 @@ export interface IBackgroundValue {
 
   /** Gradient configuration – required when `type = "gradient"`.
    * - `direction`: gradient direction (e.g., `"to right"`, `"45deg"`)
-   * - `colors`: mapping of color stops (e.g., `{ "0%": "#fff", "100%": "#000" }`) */
-  readonly gradient?: { direction: string; colors: Record<string, string> } | undefined;
+   * - `colors`: color stops in render order (e.g., `["#fff", "#000"]`) */
+  readonly gradient?: { direction: string; colors: string[] } | undefined;
 
   /** Solid color string (CSS format) – used when `type = "color"`. */
   readonly color?: string | undefined;
@@ -186,6 +186,25 @@ export interface IFontValue {
   readonly transform?: string;
 }
 
+export interface IShadowValue {
+  readonly offsetX?: number | undefined;
+  readonly offsetY?: number | undefined;
+  readonly blurRadius?: number | undefined;
+  readonly spreadRadius?: number | undefined;
+  readonly color?: string | undefined;
+}
+
+export interface IStyleBoxValue {
+  readonly marginTop?: number | undefined;
+  readonly marginRight?: number | undefined;
+  readonly marginBottom?: number | undefined;
+  readonly marginLeft?: number | undefined;
+  readonly paddingTop?: number | undefined;
+  readonly paddingRight?: number | undefined;
+  readonly paddingBottom?: number | undefined;
+  readonly paddingLeft?: number | undefined;
+}
+
 export interface IComponentStyle extends Record<string, unknown> {
   /** **Font style**
    *
@@ -228,23 +247,54 @@ export interface IComponentStyle extends Record<string, unknown> {
    * Nested fields are read-only
    */
   border: IBorderValue;
+
+  /** **Shadow style**
+   *
+   * If you want to customize shadow styles for a component, use this property and specify values in the object's properties, for example:
+   *
+   * `components.textField.sahdow = {offsetX: 5, offsetY: 5, blurRadius: 10, spreadRadius: 3, color: 'black'};`. The specified properties will be used, the rest will not be changed.
+   *
+   * If you want to use the original values, specify `undefined` for the properties, for example:
+   *
+   * `components.textField.sahdow = {offsetX: undefined, offsetY: undefined, blurRadius: undefined, spreadRadius: undefined, color: undefined};` or `components.textField.border = undefined;`
+   *
+   * Nested fields are read-only
+   */
+  shadow: IShadowValue;
+
+  /** **Margin and padding style**
+   *
+   * If you want to customize margin and padding styles for a component, use this property and specify values in the object's properties, for example:
+   *
+   * `components.textField.styleBox = {marginLeft: 5};`. The specified properties will be used, the rest will not be changed.
+   *
+   * If you want to use the original values, specify `undefined` for the properties, for example:
+   *
+   * `components.textField.styleBox = {marginLeft: undefined};`
+   *
+   * Nested fields are read-only
+   */
+  styleBox: IStyleBoxValue;
 }
 
 export type InteractionMode = 'editable' | 'readOnly' | 'disabled' | 'inherited' | boolean;
 
-export interface CommonComponentApi {
+export interface BaseComponentApi {
   /** Name of the component (e.g., `"textField"`, `"numberField"`). */
   readonly componentName: string;
   /** Context to which the component is bound (e.g., formContext, pageContext, undefined for form data). */
   readonly context?: string | undefined;
   /** Name of the property this component is bound to. */
   readonly propertyName: string;
-  /** Current style overrides applied to the component. */
-  readonly style: IComponentStyle;
   /** Whether the component is visible in the UI. */
   visible: boolean;
   /** Current interaction mode of the component. */
   interactionMode: InteractionMode | undefined;
+}
+
+export interface CommonComponentApi extends BaseComponentApi {
+  /** Current style overrides applied to the component. */
+  readonly style: IComponentStyle;
 }
 
 export interface InputComponentApi<T = unknown> extends CommonComponentApi {
@@ -268,4 +318,151 @@ export interface InputComponentApi<T = unknown> extends CommonComponentApi {
 // Components API
 
 export type TextFieldApi = InputComponentApi<string | undefined>;
-export type NumberFieldApi = InputComponentApi<number | undefined>;
+
+export type TextAreaApi = InputComponentApi<string | undefined>;
+
+export interface NumberFieldApi extends InputComponentApi<number | undefined> {
+  /** Minimum value */
+  min?: number;
+  /** Maximum value */
+  max?: number;
+};
+
+/** A single selectable option of a radio group. */
+export interface RadioOption {
+  /** Text displayed next to the radio button. */
+  readonly label: string;
+  /** Value assigned to the component when this option is selected. */
+  readonly value: string | number | undefined;
+}
+
+export interface RadioApi extends InputComponentApi<number | string | undefined> {
+  /** Options currently displayed by the radio group, whatever the configured data source is. Read-only. */
+  readonly options: readonly RadioOption[];
+};
+
+export type CheckboxFieldApi = InputComponentApi<boolean | undefined>;
+
+export type DropdownApi = InputComponentApi<number | number[] | string | string[] | (string | number)[] | undefined>;
+
+/**
+ * Autocomplete. The value shape follows the component's Value Format setting: a plain key for
+ * `simple`, an entity reference object for `entityReference`, or whatever the configured Value
+ * Function returns for `custom`. In multiple selection mode it is an array of those.
+ */
+export interface AutocompleteApi extends InputComponentApi<unknown> {
+  /** Whether the component currently allows selecting more than one item. Read-only. */
+  readonly multiple: boolean;
+};
+
+/** Checkbox group. Multi-select only, so the value is always the list of selected item values. */
+export type CheckboxGroupApi = InputComponentApi<string[] | undefined>;
+
+export type SwitchFieldApi = InputComponentApi<boolean | undefined>;
+
+/**
+ * Reference list status. The value is the item value of the reference list item currently displayed,
+ * so writing it switches the component to the matching status.
+ */
+export interface RefListStatusApi extends InputComponentApi<number | undefined> {
+  /** Text shown for the current item, taken from the reference list. Read-only. */
+  readonly itemText: string | undefined;
+};
+
+/**
+ * Date field. The value is the serialised date as stored in the form data, so its shape follows the
+ * component's Binding Format; when Range is enabled it is a `[start, end]` pair instead.
+ */
+export interface DateFieldApi extends InputComponentApi<string | [string | null, string | null] | null | undefined> {
+  /** Whether the component is currently picking a range rather than a single date. Read-only. */
+  readonly isRange: boolean;
+};
+
+/**
+ * Address field. The value is the formatted address as entered or as selected from the Google
+ * Places suggestions.
+ */
+export type AddressApi = InputComponentApi<string | undefined>;
+
+/** A single entity selected in an entity picker. */
+export interface EntityPickerSelection {
+  /** Id of the selected entity. */
+  readonly id: string;
+  /** Text shown for the entity, taken from the configured Display Property. */
+  readonly displayName: string;
+};
+
+/**
+ * Entity picker. The value follows the component's Value Format: a plain id string with `simple`,
+ * an entity reference object with `entityReference`, or whatever the custom scripts return. When
+ * Selection Type is Multiple the value is the corresponding array instead.
+ */
+export interface EntityPickerApi extends InputComponentApi<string | string[] | EntityReferenceValue | EntityReferenceValue[] | undefined> {
+  /** Entities currently selected, whatever the configured Value Format is. Read-only. */
+  readonly selectedItems: readonly EntityPickerSelection[];
+  /** Open the selection dialog. */
+  showPicker(): void;
+  /** Close the selection dialog. */
+  hidePicker(): void;
+};
+
+/** An entity reference as stored by a component bound with the `entityReference` value format. */
+export interface EntityReferenceValue {
+  /** Id of the entity. */
+  id: string;
+  /** Display text of the entity. */
+  _displayName: string;
+  /** Full class name of the entity type. */
+  _className: string;
+};
+
+/**
+ * Icon picker. The value is the name of the selected Ant Design icon (for example
+ * `"HeartOutlined"`), or `undefined` when no icon is selected.
+ */
+export type IconPickerApi = InputComponentApi<string | undefined>;
+
+export interface PanelApi extends CommonComponentApi {
+  /** Whether the panel is expanded */
+  isExpanded: boolean;
+  /** Expand the panel */
+  expand(): void;
+  /** Collapse the panel */
+  collapse(): void;
+};
+
+export interface ButtonApi extends CommonComponentApi {
+  /** Focus on component */
+  focus(): void;
+  /** Click on button */
+  click(): void;
+};
+
+export interface AlertApi extends CommonComponentApi {
+  /** Text of the alert */
+  text?: string;
+  /** Description of the alert */
+  description?: string;
+};
+
+export interface SubFormApi extends BaseComponentApi {
+  /** Get sub form data from the backend */
+  getSubFormData(): void;
+  /** Post sub form data to the backend */
+  postSubFormData(): void;
+  /** Put sub form data to the backend */
+  putSubFormData(): void;
+};
+
+export interface TabsApiTab {
+  visible: boolean;
+  readonly key: string;
+  select(): void;
+}
+
+export interface TabsApi extends CommonComponentApi {
+  /** Current visible tab. The tab index starts from zero */
+  currentTab?: number | undefined;
+  /** List of tabs */
+  readonly tabs: TabsApiTab[];
+};

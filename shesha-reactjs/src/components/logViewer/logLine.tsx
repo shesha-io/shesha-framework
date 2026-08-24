@@ -1,6 +1,6 @@
 import { CSSProperties, FC, memo, ReactElement, useCallback } from "react";
 import { LogLine } from "./interfaces";
-import React from "react";
+import * as React from "react";
 import { TimelineIndicator } from "./timelineIndicator";
 import { LogLevel } from "@/providers/processMonitor/interfaces";
 import { useStyles } from "./styles";

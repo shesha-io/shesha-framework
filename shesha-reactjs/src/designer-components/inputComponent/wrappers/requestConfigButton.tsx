@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { IRequestConfigButtonSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
 import { RequestConfigButton } from '@/designer-components/requestConfigButton';
 import { IRequestConfig } from '@/components/requestConfigModal';

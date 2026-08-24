@@ -1,22 +1,71 @@
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
+import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { RefListStatus } from '@/components/refListStatus/index';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateReadOnly, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
-import { IToolboxComponent } from '@/interfaces';
+import { useEffectOnce } from '@/hooks/useEffectOnce';
+import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles, useForm } from '@/providers';
+import { useComponentApi } from '@/providers/componentApi/provider';
+import { useReferenceListItem } from '@/providers/referenceListDispatcher';
+import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { isDefined } from '@/utils/nullables';
 import { FileSearchOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
-import React from 'react';
+import { FC, useCallback, useEffect, useState } from 'react';
+import { RefListStatusApi } from '../../componentsApi/componentApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { ALL_INPUT_EVENTS_WITHOUT_CHANGE, getComponentEvents } from '../_common/events';
+import { IRefListStatusComponentProps, IRefListStatusComponentPropsV1, RefListStatusComponentDefinition } from './interfaces';
 import { IRefListStatusPropsV0 } from './migrations/models';
-import { IRefListStatusProps } from './models';
 import { getSettings } from './settings';
+import { useStyles } from './styles';
 import { defaultStyles } from './utils';
 
-const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
+import apiCode from "../../componentsApi/componentApi.ts?raw";
+
+interface IRefListStatusReadOnlyProps {
+  model: IRefListStatusComponentProps;
+  referenceListId: IReferenceListIdentifier;
+  value: number | undefined;
+  onItemTextChange: (itemText: string | null | undefined) => void;
+}
+
+/**
+ * Read-only rendering of the status.
+ *
+ * This resolves the item text itself rather than reusing the `itemText` the editable branch reports
+ * through `onItemTextChange`: that callback only fires from `RefListStatus`, which read-only mode
+ * never renders, so the text would otherwise stay undefined and the field would render empty.
+ *
+ * Resolving it through the hook also keeps it in step with `value` — the hook re-reads the list
+ * whenever the value changes.
+ */
+const RefListStatusReadOnly: FC<IRefListStatusReadOnlyProps> = ({ model, referenceListId, value, onItemTextChange }) => {
+  const item = useReferenceListItem(referenceListId.module, referenceListId.name, value);
+  const itemText = item.data?.item;
+
+  /* Reported so the component API exposes `itemText` in read-only mode too, matching the editable
+     branch. */
+  useEffect(() => {
+    onItemTextChange(itemText);
+  }, [itemText, onItemTextChange]);
+
+  return (
+    <ReadOnlyDisplayFormItem
+      value={itemText}
+      enableFullStyle={model.enableStyleOnReadonly}
+      style={model.styleCss}
+      styleValue={model}
+    />
+  );
+};
+
+const RefListStatusComponent: RefListStatusComponentDefinition = {
+  allowInherit: true,
   type: 'refListStatus',
   isInput: true,
   isOutput: true,
@@ -24,11 +73,29 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
   preserveDimensionsInDesigner: true,
   name: 'Reference list status',
   icon: <FileSearchOutlined />,
-  Factory: ({ model }) => {
+  Factory: ({ model, apiContext }) => {
     const { formMode } = useForm();
     const { solidBackground = true, referenceListId, showReflistName = true } = model;
 
-    if (model.hidden && formMode !== 'designer') return null;
+    const [itemText, setItemText] = useState<string | undefined>(undefined);
+    const onItemTextChange = useCallback((value: string | null | undefined) => setItemText(value ?? undefined), []);
+
+    const componentApi = useComponentApi();
+
+    useEffect(() => {
+      componentApi?.updateApi<RefListStatusApi>({
+        id: model.id,
+        componentName: model.componentName ?? "",
+        level: 3,
+        typeDefinition: { typeName: 'RefListStatusApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+        properties: [
+          { name: 'itemText', getter: () => itemText },
+        ],
+      });
+    }, [apiContext, componentApi, itemText, model.componentName, model.id]);
+    useEffectOnce(() => () => componentApi?.removeApi(model.id));
+
+    const { styles } = useStyles(model);
 
     if (!isDefined(referenceListId)) {
       return formMode === 'designer'
@@ -45,31 +112,48 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
 
     return (
       <ConfigurableFormItem<number> model={{ ...model }}>
-        {(value) => {
-          return (
-            <RefListStatus
-              value={value ?? undefined}
-              referenceListId={referenceListId}
-              showIcon={model.showIcon}
-              showReflistName={showReflistName}
-              solidBackground={solidBackground}
-              style={model.allStyles?.fullStyle ?? {}}
-              isDesigner={formMode === 'designer'}
-              readOnly={formMode === 'readonly'}
-            />
-          );
+        {(value, _onChange, _propertyName, ctx) => {
+          // Read only renders the value as plain text; disabled keeps the tag but greys it out and
+          // blocks pointer interaction. The two are independent settings of Interaction Mode.
+          return model.readOnly === true
+            ? (
+              <RefListStatusReadOnly
+                model={model}
+                referenceListId={referenceListId}
+                value={value ?? undefined}
+                onItemTextChange={onItemTextChange}
+              />
+            )
+            : (
+              <div
+                className={styles.refListStatus}
+                {...getComponentEvents<number>(model, ALL_INPUT_EVENTS_WITHOUT_CHANGE, ctx, value, DataTypes.number)}
+              >
+                <RefListStatus
+                  value={value ?? undefined}
+                  referenceListId={referenceListId}
+                  showIcon={model.showIcon}
+                  showReflistName={showReflistName}
+                  solidBackground={solidBackground}
+                  isDesigner={formMode === 'designer'}
+                  disabled={model.disabled === true}
+                  onItemTextChange={onItemTextChange}
+                />
+              </div>
+            );
         }}
       </ConfigurableFormItem>
     );
   },
 
   initModel: (model) => {
-    const customModel: IRefListStatusProps = {
+    const customModel: IRefListStatusComponentProps = {
       ...model,
       hideLabel: true,
     };
     return customModel;
   },
+  getDefaultStyles: () => defaultStyles(),
   migrator: (m) => m
     .add<IRefListStatusPropsV0>(0, (prev) => {
       const result: IRefListStatusPropsV0 = {
@@ -80,9 +164,9 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
       };
       return result;
     })
-    .add<IRefListStatusProps>(1, (prev) => {
+    .add<IRefListStatusComponentPropsV1>(1, (prev) => {
       const { module, nameSpace, ...restProps } = prev;
-      const result: IRefListStatusProps = {
+      const result: IRefListStatusComponentPropsV1 = {
         ...restProps,
         referenceListId: nameSpace
           ? { module: module, name: nameSpace /* note the property was named wrong initially */ }
@@ -90,10 +174,12 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
       };
       return result;
     })
-    .add<IRefListStatusProps>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-    .add<IRefListStatusProps>(3, (prev) => migrateVisibility(prev))
-    .add<IRefListStatusProps>(4, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-    .add<IRefListStatusProps>(5, (prev) => {
+    .add<IRefListStatusComponentPropsV1>(2, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+    .add<IRefListStatusComponentPropsV1>(3, (prev) => migrateVisibility(prev))
+    .add<IRefListStatusComponentPropsV1>(4, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
+    .add<IRefListStatusComponentPropsV1>(5, (prev, context) => {
+      if (context.isNew === true) return prev;
+
       const styles: IInputStyles = {
         size: prev.size,
         width: prev.width,
@@ -109,19 +195,34 @@ const RefListStatusComponent: IToolboxComponent<IRefListStatusProps> = {
       };
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-    .add<IRefListStatusProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+    .add<IRefListStatusComponentPropsV1>(6, (prev, context) => context.isNew === true
+      ? prev
+      : { ...migratePrevStyles(prev, defaultStyles()) })
+    .add<IRefListStatusComponentProps>(7, (prev) => migrateReadOnly(prev))
+    .add<IRefListStatusComponentProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
-  linkToModelMetadata: (model, metadata): IRefListStatusProps => {
+  linkToModelMetadata: (model, metadata): IRefListStatusComponentProps => {
     return {
       ...model,
-      referenceListId: metadata.referenceListName
-        ? {
-          module: metadata.referenceListModule ?? null,
-          name: metadata.referenceListName,
-        }
-        : undefined,
+      referenceListId: isDefined(model.referenceListId)
+        ? model.referenceListId
+        : metadata.referenceListName
+          ? {
+            module: metadata.referenceListModule ?? null,
+            name: metadata.referenceListName,
+          }
+          : undefined,
     };
+  },
+  previewConfiguration: {
+    type: 'refListStatus',
+    id: 'refListStatus',
+    propertyName: 'refListStatusAppearance',
+    label: 'Reference List Status Label',
+    version: 'latest',
+    showReflistName: true,
+    solidBackground: true,
   },
 };
 

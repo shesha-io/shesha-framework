@@ -250,7 +250,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   inputType: 'referenceListAutocomplete',
                   propertyName: 'referenceList',
                   label: 'Reference List',
-                  tooltip: 'Make sure to reselect the reference list if any changes are made to its items',
+                  tooltip: 'The reference list whose items are rendered as columns. Changes to its items are picked up automatically',
                   filter: { and: [{ '==': [{ var: 'isLast' }, true] }] },
                 })
                 .addSettingsInput({
@@ -1032,12 +1032,12 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                       .addContainer({
                                         id: colBorderContainerId,
                                         parentId: colBorderContentId,
-                                        components: getBorderInputs(fbf, 'columnStyles', true),
+                                        components: getBorderInputs(fbf, 'columnStyles.border', true),
                                       })
                                       .addContainer({
                                         id: colBorderRadiusRowId,
                                         parentId: colBorderContentId,
-                                        components: getCornerInputs(fbf, 'columnStyles', true),
+                                        components: getCornerInputs(fbf, 'columnStyles.border', true),
                                       })
                                       .toJson(),
                                   ],

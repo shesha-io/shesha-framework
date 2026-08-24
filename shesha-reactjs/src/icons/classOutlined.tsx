@@ -1,5 +1,5 @@
 import Icon, { CustomIconComponentProps } from '@ant-design/icons/lib/components/Icon';
-import React from 'react';
+import * as React from 'react';
 
 
 const ClassOutlinedSvg = (): React.JSX.Element => (

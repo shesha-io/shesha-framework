@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { Space } from 'antd';
 import { SaveButton } from '@/components/modelConfigurator/toolbar/saveButton';
 

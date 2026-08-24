@@ -2,7 +2,7 @@ import { IStyleValue } from "@/providers/form/models";
 
 export const defaultStyles = (): IStyleValue => {
   return {
-    background: { type: 'color', color: '#fff' },
+    background: { type: 'color', color: '#fff', repeat: 'repeat', position: 'center' },
     font: {
       weight: '400',
       size: 14,

@@ -15,8 +15,6 @@ namespace Shesha.RateLimiting
             configure?.Invoke(settings);
 
             var defaults = new SheshaRateLimitingOptions();
-            if (settings.GlobalPermitLimit <= 0) settings.GlobalPermitLimit = defaults.GlobalPermitLimit;
-            if (settings.GlobalWindowSeconds <= 0) settings.GlobalWindowSeconds = defaults.GlobalWindowSeconds;
             if (settings.AuthPermitLimit <= 0) settings.AuthPermitLimit = defaults.AuthPermitLimit;
             if (settings.AuthWindowSeconds <= 0) settings.AuthWindowSeconds = defaults.AuthWindowSeconds;
             if (settings.OtpPermitLimit <= 0) settings.OtpPermitLimit = defaults.OtpPermitLimit;
@@ -25,16 +23,10 @@ namespace Shesha.RateLimiting
 
             services.AddRateLimiter(options =>
             {
-                options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
-                    RateLimitPartition.GetFixedWindowLimiter(
-                        partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
-                        factory: _ => new FixedWindowRateLimiterOptions
-                        {
-                            PermitLimit = settings.GlobalPermitLimit,
-                            Window = TimeSpan.FromSeconds(settings.GlobalWindowSeconds),
-                            QueueLimit = 0
-                        }));
-
+                // Rate limiting is applied only to sensitive endpoints (login/OTP) via the named
+                // policies below and their [EnableRateLimiting] attributes. No global limiter is
+                // registered so that normal application traffic (e.g. configuration work, form
+                // loading) is never throttled. See issue #4771.
                 options.AddPolicy<string>(SheshaRateLimitingPolicies.Auth, context =>
                     RateLimitPartition.GetFixedWindowLimiter(
                         partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",

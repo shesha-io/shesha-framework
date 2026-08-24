@@ -1,11 +1,5 @@
-import React, {
-  FC,
-  Fragment,
-  useMemo,
-  useRef,
-  useEffect,
-  useState,
-} from 'react';
+import { FC, Fragment, useMemo, useRef, useEffect, useState } from 'react';
+import * as React from 'react';
 import { collectMetadataPropertyPaths, filterVisibility, calculateDefaultColumns, convertRowDimensionsToHeight, convertRowBorderStyleToBorder, convertRowStylingBoxToPadding, convertRowPaddingFieldsToPadding, flattenConfiguredColumns, getDataColumnAccessor } from './utils';
 import { getStyle } from '@/providers/form/utils';
 import { ITableComponentProps } from './models';
@@ -471,6 +465,7 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
         content: renderSidebarContent,
       }}
       allowFullCollapse
+      embedded
     >
       <GlobalTableStyles />
       {tableFilter.length > 0 && <FilterList filters={tableFilter} rows={totalRows ?? 0} clearFilters={clearFilters} removeColumnFilter={removeColumnFilter} />}

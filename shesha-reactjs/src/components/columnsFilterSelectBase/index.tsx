@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { Select } from 'antd';
 import { ITableColumn } from '@/providers/dataTable/interfaces';
 import { useStyles } from './styles/styles';

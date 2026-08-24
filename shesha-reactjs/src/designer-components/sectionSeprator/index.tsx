@@ -1,65 +1,56 @@
 import SectionSeparator from '@/components/sectionSeparator';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
-import { StyleBoxValue, useFormData } from '@/providers';
-import { getStyle, pickStyleFromModel, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { getBooleanPropertyOrUndefined, jsonSafeParse } from '@/utils/object';
+import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { getBooleanPropertyOrUndefined } from '@/utils/object';
 import { LineOutlined } from '@ant-design/icons';
-import React, { useMemo } from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { getDimensionsStyle } from '../_settings/utils/dimensions/utils';
-import { getFontStyle } from '../_settings/utils/font/utils';
-import { ISectionSeparatorComponentProps, SectionSeparatorComponentDefinition } from './interfaces';
+import { ISectionSeparatorComponentProps, ISectionSeparatorComponentPropsV0, SectionSeparatorComponentDefinition } from './interfaces';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
+import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
+import { isDefined } from '@/utils';
+import { useEvents } from '@/components/formDesigner/components/eventsAndApiValueProcessor';
+import { getComponentEvents } from '../_common/events';
+import { getStyleBoxValue } from '../styleBox/utils';
+import { DEFAULT_DESIGNER_PADDING, getDesignerPadding } from '@/components/formDesigner/utils/stylingUtils';
 
 const SectionSeparatorComponent: SectionSeparatorComponentDefinition = {
+  allowInherit: true,
   type: 'sectionSeparator',
   isInput: false,
   name: 'Section Separator',
   icon: <LineOutlined />,
+  getWrapperStyle: (model) => ({
+    designerStyle: {
+      ...DEFAULT_DESIGNER_PADDING,
+      // use default designer margin if component margin is not set or component margin is less than designer margin
+      stylingBoxJson: {
+        _type: 'styleBox',
+        paddingBottom: getDesignerPadding(model.stylingBoxJson?.marginBottom, DEFAULT_DESIGNER_PADDING.stylingBoxJson?.paddingBottom),
+        paddingLeft: getDesignerPadding(model.stylingBoxJson?.marginLeft, DEFAULT_DESIGNER_PADDING.stylingBoxJson?.paddingLeft),
+        paddingRight: getDesignerPadding(model.stylingBoxJson?.marginRight, DEFAULT_DESIGNER_PADDING.stylingBoxJson?.paddingRight),
+        paddingTop: getDesignerPadding(model.stylingBoxJson?.marginTop, DEFAULT_DESIGNER_PADDING.stylingBoxJson?.paddingTop),
+      },
+    },
+  }),
   Factory: ({ model }) => {
-    const { lineWidth, lineHeight } = model;
-    const { data: formData } = useFormData();
-    const { lineFont, font } = model;
-    const fontStyles = useMemo(() => getFontStyle(font), [font]);
+    const handleEvent = useEvents<void>(model.componentName);
 
-    const extractedDimensions = {
-      width: lineWidth,
-      height: lineHeight,
-    };
-
-    const titleAdditionalStyles = {
-      ...fontStyles,
-      ...getStyle(model.titleStyle, formData),
-    };
-
-    const containerstyling = jsonSafeParse<StyleBoxValue>(model.containerStylingBox || '{}');
-    const containerstylingBoxAsCSS = pickStyleFromModel(containerstyling);
-
-    const containerAdditionalStyles = {
-      ...containerstylingBoxAsCSS,
-      ...getStyle(model.containerStyle, formData),
-    };
-
-    const dimensions = getDimensionsStyle(extractedDimensions);
-
-    const inputProps = {
-      ...model,
-      lineThickness: lineFont?.size,
-      lineColor: lineFont?.color,
-    };
-    if (model.hidden) return null;
+    if (model.hidden === true) return null;
+    const inputProps = { ...model, lineThickness: model.lineFont?.size, lineColor: model.lineFont?.color };
     return (
       <SectionSeparator
         {...inputProps}
-        title={!model.hideLabel && model.label}
-        containerStyle={{ ...dimensions, ...containerAdditionalStyles }}
-        titleStyle={titleAdditionalStyles}
+        title={model.hideLabel !== true ? model.label : undefined}
         tooltip={model.description}
+        containerStyle={model.wrapperStyleCss}
+        titleStyle={model.styleCss}
+        additionalDomProperties={getComponentEvents<void, ISectionSeparatorComponentProps>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent })}
       />
     );
   },
+  getDefaultStyles: defaultStyles,
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   initModel: (model) => {
@@ -73,11 +64,13 @@ const SectionSeparatorComponent: SectionSeparatorComponentDefinition = {
   },
   migrator: (m) =>
     m
-      .add<ISectionSeparatorComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
-      .add<ISectionSeparatorComponentProps>(1, (prev) => ({ ...migrateFormApi.properties(prev) }))
-      .add<ISectionSeparatorComponentProps>(2, (prev) => ({ ...prev, labelAlign: 'left' }))
-      .add<ISectionSeparatorComponentProps>(3, (prev) => ({ ...prev, titleMargin: getBooleanPropertyOrUndefined(prev, 'noMargin') ? 0 : null }))
-      .add<ISectionSeparatorComponentProps>(4, (prev) => {
+      .add<ISectionSeparatorComponentPropsV0>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
+      .add<ISectionSeparatorComponentPropsV0>(1, (prev) => ({ ...migrateFormApi.properties(prev) }))
+      .add<ISectionSeparatorComponentPropsV0>(2, (prev) => ({ ...prev, labelAlign: 'left' }))
+      .add<ISectionSeparatorComponentPropsV0>(3, (prev, ctx) => ctx.isNew === true ? prev : { ...prev, titleMargin: getBooleanPropertyOrUndefined(prev, 'noMargin') === true ? 0 : undefined })
+      .add<ISectionSeparatorComponentPropsV0>(4, (prev, ctx) => {
+        if (ctx.isNew === true) return prev;
+
         const prevStyles = {
           containerStyle: prev.containerStyle,
           titleStyle: prev.titleStyle,
@@ -85,7 +78,7 @@ const SectionSeparatorComponent: SectionSeparatorComponentDefinition = {
           font: prev.font,
           titleStylingBox: prev.titleStylingBox,
           containerStylingBox: prev.containerStylingBox,
-          lineType: prev.dashed ? 'dashed' : 'solid',
+          lineType: prev.dashed === true ? 'dashed' : 'solid',
         };
 
         return {
@@ -95,7 +88,27 @@ const SectionSeparatorComponent: SectionSeparatorComponentDefinition = {
           mobile: { ...prev.mobile, ...prevStyles },
         };
       })
-      .add<ISectionSeparatorComponentProps>(5, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+      .add<ISectionSeparatorComponentPropsV0>(5, (prev, ctx) => ctx.isNew === true ? prev : { ...migratePrevStyles(prev, defaultStyles()) })
+      .add<ISectionSeparatorComponentPropsV0>(6, (prev, ctx) => {
+        // move titleStyle and containerStyle to style and wrapperStyle because of new style model with automatic calculation
+        if (ctx.isNew === true) return prev;
+        const getNewStyles = (value: Partial<ISectionSeparatorComponentPropsV0> | undefined): Partial<ISectionSeparatorComponentProps> | undefined => {
+          if (!isDefined(value)) return value;
+          return {
+            style: value.titleStyle,
+            wrapperStyle: value.containerStyle,
+            titleStylingBoxJson: getStyleBoxValue(value.titleStylingBox),
+            containerStylingBoxJson: getStyleBoxValue(value.containerStylingBox),
+          };
+        };
+        return {
+          ...prev,
+          desktop: { ...prev.desktop, ...getNewStyles(prev.desktop) },
+          tablet: { ...prev.tablet, ...getNewStyles(prev.tablet) },
+          mobile: { ...prev.mobile, ...getNewStyles(prev.mobile) },
+        };
+      })
+      .add<ISectionSeparatorComponentProps>(7, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
 };
 
 export default SectionSeparatorComponent;

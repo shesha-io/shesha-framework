@@ -5,7 +5,7 @@ import { BaseType, EllipsisConfig } from 'antd/lib/typography/Base';
 import { CSSProperties } from 'react';
 import { IShadowValue } from '../_settings/utils/shadow/interfaces';
 
-type LevelType = 1 | 2 | 3 | 4 | 5;
+export type LevelType = 0 | 1 | 2 | 3 | 4 | 5;
 
 export type ContentType = 'primary' | 'secondary' | 'success' | 'warning' | 'info' | 'danger' | 'custom' | '';
 export type ContentDisplay = 'content' | 'name';
@@ -65,14 +65,14 @@ export interface ITypographyProps {
   style: CSSProperties | undefined;
 }
 
-export interface ITextComponentProps extends IConfigurableFormComponent {
-  textType: 'span' | 'paragraph' | 'title';
+export interface ITextComponentPropsV0 extends IConfigurableFormComponent {
+  textType?: 'span' | 'paragraph' | 'title' | undefined;
   content: string;
   contentType?: ContentType | undefined;
   contentDisplay: ContentDisplay | undefined;
   color?: string | undefined;
   backgroundColor?: string | undefined;
-  level?: LevelType | TypographyFontSize | undefined;
+  level?: LevelType | undefined;
   fontSize?: TypographyFontSize | string | number | undefined;
   padding?: TypographyPaddingSize | undefined;
   dataType?: string | undefined;
@@ -91,6 +91,23 @@ export interface ITextComponentProps extends IConfigurableFormComponent {
   textAlign?: string | undefined;
   styles?: CSSProperties | undefined;
   shadow?: IShadowValue | undefined;
+}
+
+export interface ITextComponentProps extends IConfigurableFormComponent {
+  content: string;
+  contentType?: ContentType | undefined;
+  color?: string | undefined;
+  backgroundColor?: string | undefined;
+  level?: LevelType | undefined;
+  fontSize?: TypographyFontSize | string | number | undefined;
+  padding?: TypographyPaddingSize | undefined;
+  italic?: boolean | undefined;
+  copyable?: boolean | undefined;
+  delete?: boolean | undefined;
+  underline?: boolean | undefined;
+  value?: unknown | undefined;
+  textAlign?: string | undefined;
+  styles?: CSSProperties | undefined;
 }
 
 export type TextComponentDefinition = ComponentDefinition<"text", ITextComponentProps>;

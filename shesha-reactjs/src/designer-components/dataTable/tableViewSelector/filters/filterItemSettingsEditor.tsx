@@ -1,10 +1,9 @@
-import { CodeVariablesTables } from '@/components/codeVariablesTable';
 import { ListEditorRenderer } from '@/components/listEditorRenderer';
 import QueryBuilderExpressionViewer, { JsonValue } from '@/designer-components/queryBuilder/queryBuilderExpressionViewer';
 import { QueryBuilderPlainRenderer } from '@/designer-components/queryBuilder/queryBuilderFieldPlain';
 import { QueryBuilderProvider, useMetadataOrUndefined } from '@/providers';
 import { Tabs } from 'antd';
-import React, { FC, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 import { BaseFilterProperties, FilterItemProperties } from './filterItemProperties';
 import { IStoredFilter } from '@/interfaces';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
@@ -65,28 +64,6 @@ export const FilterItemSettingsEditor: FC<IFilterItemSettingsEditorProps> = ({ v
             key: 'expressionViewerTab',
             label: 'Query expression viewer',
             children: <QueryBuilderExpressionViewer value={expressionObject as JsonValue | undefined} />,
-          },
-          {
-            key: 'exposedVariables',
-            label: 'Variables',
-            children: (
-              <CodeVariablesTables
-                data={[
-                  {
-                    id: '61955479-c9fd-4613-b639-d2be14795245',
-                    name: 'data',
-                    description: 'The state of the form',
-                    type: 'object',
-                  },
-                  {
-                    id: 'e27dd783-c204-4b53-a6a0-babe4cb46e39',
-                    name: 'globalState',
-                    description: 'The global state',
-                    type: 'object',
-                  },
-                ]}
-              />
-            ),
           },
         ]}
       />

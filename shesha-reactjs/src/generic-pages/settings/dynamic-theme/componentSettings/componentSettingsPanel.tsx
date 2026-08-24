@@ -1,5 +1,6 @@
 import { Card, Col, Menu, Row } from 'antd';
-import React, { CSSProperties, FC, useCallback, useMemo, useState } from 'react';
+import { CSSProperties, FC, useCallback, useMemo, useState } from 'react';
+import * as React from 'react';
 import { IConfigurableTheme } from '@/providers/theme/contexts';
 import { useStyles } from '../styles/styles';
 import { findComponentNode, getMenuItems, IMenuItem } from '../toolboxComponents';
@@ -12,14 +13,13 @@ import {
   isRawComponentsContainer,
 } from '@/providers/form/models';
 import { ITabPaneProps } from '@/designer-components/propertiesTabs/models';
-import { makeFormBuliderFactory } from '@/form-factory/implementation';
 import { ItemType } from 'antd/es/menu/interface';
 import { ComponentDefaultsPreview } from './preview';
 import { ComponentDefaultsSettings } from './settings';
 import DefaultModelProvider from '@/designer-components/_settings/defaultModelProvider/defaultModelProvider';
 import { IToolboxComponent } from '../../../../interfaces/formDesigner';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
-
+import { useFormBuilderFactory } from '../../../..';
 /** Markup node that wraps designer settings tabs (e.g. Appearance). */
 export interface SearchableTabsMarkup extends IConfigurableFormComponent {
   type: 'propertiesTabs' | 'searchableTabs';
@@ -54,6 +54,7 @@ const componentMenuCardStyle = { height: '600px', overflowY: 'auto' } as CSSProp
 export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value: theme, onChange, readOnly: readonly }) => {
   const { styles } = useStyles();
   const [selectedKey, setSelectedKey] = useState<string>('button');
+  const fbf = useFormBuilderFactory();
 
   const selectedNode = useMemo(() => findComponentNode(selectedKey), [selectedKey]);
   const componentType = selectedNode?.type;
@@ -89,7 +90,7 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
 
     // If it's a function (SettingsFormMarkupFactory), execute it to get the markup
     const markup = typeof settingsFormMarkup === 'function'
-      ? settingsFormMarkup({ fbf: makeFormBuliderFactory(), removeStyleRouter: true })
+      ? settingsFormMarkup({ fbf: fbf, removeStyleRouter: true })
       : settingsFormMarkup;
 
     // Handle both FormRawMarkup (array) and FormMarkupWithSettings (object with components)
@@ -118,9 +119,9 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
 
     return {
       components: appearanceMarkupComponents,
-      formSettings: formSettings ?? DEFAULT_FORM_SETTINGS,
+      formSettings: { ...(formSettings ?? DEFAULT_FORM_SETTINGS), isSettingsForm: true },
     };
-  }, [settingsFormMarkup]);
+  }, [settingsFormMarkup, fbf]);
 
   const initialModel = useMemo(() => theme?.components?.[componentType ?? ''] as object | undefined ?? {}, [componentType, theme?.components]);
   const selectedKeys = useMemo(() => [selectedKey], [selectedKey]);
@@ -154,7 +155,11 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
       {/* Right: Component Appearance Settings */}
       <Col xs={24} sm={24} md={18} lg={18} xl={18} xxl={18}>
         {/* Edit Card: allows editing the component's appearance/theme values */}
-        <DefaultModelProvider name="Component Default Styles" model={initialModel} defaultModel={defaultStyles}>
+        {/* updateModelIfChanged keeps the instance's model in step with the stored theme entry —
+            without it the provider never registers the theme values as the model, so every value
+            reports as 'Inherited' and Reset to default/Override state never reflects reality. */}
+        <DefaultModelProvider key={componentType ?? 'none'} name="Component Default Styles" model={initialModel} defaultModel={defaultStyles} updateModelIfChanged>
+
           <ComponentDefaultsSettings componentTitle={componentTitle} componentType={componentType} markup={appearanceMarkup} initialModel={initialModel} readonly={readonly ?? false} onChange={handleFormDataChange} />
         </DefaultModelProvider>
         {/* Preview Card: renders the component with the current theme to show a live preview */}
