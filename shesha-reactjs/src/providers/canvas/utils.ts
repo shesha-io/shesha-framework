@@ -85,8 +85,15 @@ const PERCENT_WIDTH_REGEX = /^\s*(\d+(?:\.\d+)?)\s*%\s*$/;
  * [0, `MAX_CANVAS_WIDTH_PERCENT`]. A value above 100% - or one that is not a usable number -
  * falls back to 100%, i.e. the full available width.
  *
- * Returns `undefined` when the value is not a percentage at all (a device preset such as "1024px"),
- * so callers can tell "not a percentage" apart from "a percentage that clamped to 100".
+ * Returns `undefined` when the value is not a usable percentage - a device preset such as "1024px",
+ * but equally a malformed entry such as "-10%" or "abc%". Those are left to the caller, which
+ * ignores anything it cannot read as a width rather than guessing at one: a typo should not quietly
+ * resize the canvas. Only a well-formed percentage returns a number, so callers can tell that apart
+ * from "a percentage that clamped to 100".
+ *
+ * Note: every percentage currently puts the canvas into the responsive "Canvas" mode, which fills
+ * the pane - the clamped fraction is not (yet) applied as a partial width. Read the percentage as
+ * "fit the canvas to the space available, up to 100%".
  */
 export const parseCanvasWidthPercent = (value: string): number | undefined => {
   const match = PERCENT_WIDTH_REGEX.exec(value);

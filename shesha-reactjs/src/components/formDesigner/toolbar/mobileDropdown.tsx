@@ -18,7 +18,7 @@ export const DeviceOptions: FC = () => {
       optionFilterProp="label"
       style={{ width: '120px' }}
       size="small"
-      customTooltip='Add a custom screen size e.g "1024px", or a percentage of the available space e.g "100%" (capped at 100%).'
+      customTooltip='Add a custom screen size e.g "1024px". A percentage fits the canvas to the available space; 100% is the maximum, so anything larger is treated as 100%.'
       popupMatchSelectWidth={false}
       onChange={(val) => {
         // The responsive "Canvas" option - and any percentage width - fills the available space;
