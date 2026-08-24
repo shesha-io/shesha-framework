@@ -54,7 +54,7 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
   // 1. Toolbox validateModel function
   // 2. Child components registered via useComponentValidation hook
   const validationResult = useMemo((): IModelValidation | undefined => {
-    const errors: Array<{ propertyName?: string; error: string }> = [];
+    const errors: Array<{ propertyName?: string | undefined; error: string }> = [];
     let validationType: ISheshaErrorTypes | undefined;
 
     if (componentModel.background?.type === 'storedFile' && isDefined(componentModel.background.storedFile?.id) && !isValidGuid(componentModel.background.storedFile.id)) {
