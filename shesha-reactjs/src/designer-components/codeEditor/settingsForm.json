@@ -14,7 +14,6 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
       "header": {
         "id": "pnl11bf6-f76d-4139-a850-c99bf06c8b69",
         "components": []
@@ -110,7 +109,6 @@
             "defaultValue": "",
             "entityTypeShortAlias": "",
             "dataSourceUrl": "",
-            "validate": {},
             "values": [
               {
                 "id": "s8AEjax1wAvs14Kryi2y7",
@@ -123,7 +121,6 @@
                 "value": "inline"
               }
             ],
-            "settingsValidationErrors": [],
             "version": 7,
             "useRawValues": false,
             "referenceListId": null,
@@ -183,7 +180,6 @@
       "useRawValues": false,
       "referenceListId": null,
       "valueFormat": "simple",
-      "settingsValidationErrors": [],
       "placeholder": "",
       "description": "",
       "defaultValue": "",
@@ -204,7 +200,6 @@
           "value": "typescript"
         }
       ],
-      "validate": {},
       "desktop": {},
       "tablet": {},
       "mobile": {}
@@ -227,7 +222,6 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
       "header": {
         "id": "pnl11bf6-f76d-4139-a850-c99bf06c8111",
         "components": []
@@ -242,9 +236,7 @@
             "parentId": "pnl54bf6-f76d-4139-a850-c99bf06c8111",
             "label": "Use function wrapper",
             "version": 4,
-            "settingsValidationErrors": [],
             "description": "If true, a code will be wrapped in a standard function wrapper template",
-            "validate": {},
             "desktop": {},
             "tablet": {},
             "mobile": {}
@@ -283,7 +275,6 @@
                 "useRawValues": false,
                 "referenceListId": null,
                 "valueFormat": "simple",
-                "settingsValidationErrors": [],
                 "placeholder": "",
                 "description": "",
                 "defaultValue": "",
@@ -304,7 +295,6 @@
                     "value": "back-end"
                   }
                 ],
-                "validate": {},
                 "desktop": {},
                 "tablet": {},
                 "mobile": {}
@@ -316,13 +306,11 @@
                 "parentId": "VFdBsvA_Ormsw2RvS6T5wcOMZXvHxH",
                 "label": "Async declaration",
                 "version": 4,
-                "settingsValidationErrors": [],
                 "description": "",
                 "hidden": {
                   "_mode": "code",
                   "_code": null
                 },
-                "validate": {},
                 "context": null,
                 "desktop": {},
                 "tablet": {},
@@ -340,7 +328,6 @@
                 "hidden": false,
                 "isDynamic": false,
                 "version": 5,
-                "settingsValidationErrors": [],
                 "placeholder": "",
                 "description": "",
                 "prefix": "",
@@ -368,14 +355,12 @@
                 "isDynamic": false,
                 "mode": "dialog",
                 "version": 4,
-                "settingsValidationErrors": [],
                 "placeholder": "",
                 "description": "",
                 "templateSettings": {
                   "functionName": "getAvailableConstants",
                   "useAsyncDeclaration": true
                 },
-                "validate": {},
                 "wrapInTemplate": true,
                 "language": "typescript",
                 "availableConstantsExpression": "    return metadataBuilder.object(\"constants\")\n        .addAllStandard()\n        .addStandard(\"shesha:metadataBuilder\")\n        .build();",
@@ -394,14 +379,12 @@
                 "isDynamic": false,
                 "mode": "dialog",
                 "version": 4,
-                "settingsValidationErrors": [],
                 "placeholder": "",
                 "description": "",
                 "templateSettings": {
                   "functionName": "getResultType",
                   "useAsyncDeclaration": true
                 },
-                "validate": {},
                 "wrapInTemplate": true,
                 "language": "typescript",
                 "availableConstantsExpression": "    return metadataBuilder.object()\r\n        .addStandard([\"shesha:metadataBuilder\", \"shesha:form\", \"shesha:formData\"])\r\n        .build();",
@@ -409,7 +392,6 @@
                 "environment": "front-end"
               }
             ],
-            "settingsValidationErrors": [],
             "gap": "",
             "className": "",
             "desktop": {
@@ -446,7 +428,6 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
       "header": {
         "id": "ZR_WaccfGsonIFaRTZoSsOdyvVMgJg",
         "components": []
@@ -496,7 +477,6 @@
             "propertyName": "permissions",
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Permissions",
-            "validate": {},
             "version": 1
           }
         ]
@@ -504,7 +484,6 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
       "customHeader": {
         "id": "ozVXbAHJ0eWc0qHfDcNxvUfjLTBOEA",
         "components": []

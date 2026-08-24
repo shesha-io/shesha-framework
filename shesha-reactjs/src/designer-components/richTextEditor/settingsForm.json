@@ -15,7 +15,6 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
       "header": {
         "id": "FizvoIoyeq1cZMqAgbDLL",
         "components": []
@@ -87,7 +86,6 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
       "header": {
         "id": "2FizvoIoyeq1cZMqAgbDLL",
         "components": []
@@ -156,7 +154,6 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
       "header": {
         "id": "3FizvoIoyeq1cZMqAgbDLL",
         "components": []
@@ -350,7 +347,6 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
       "header": {
         "id": "4FizvoIoyeq1cZMqAgbDLL",
         "components": []
@@ -460,7 +456,6 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
       "header": {
         "id": "5FizvoIoyeq1cZMqAgbDLL",
         "components": []
@@ -584,7 +579,6 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
       "header": {
         "id": "1FizvoIoyeq1cZMqAgbDLL",
         "components": []
@@ -598,8 +592,6 @@
             "propertyName": "style",
             "label": "Style",
             "parentId": "1y9SNudmMM0Wd1Sc_YI1ng",
-            "validate": {},
-            "settingsValidationErrors": [],
             "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
             "exposedVariables": [{ "name": "data", "description": "Form values", "type": "object" }]
           },
@@ -645,15 +637,13 @@
             "propertyName": "permissions",
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Permissions",
-            "validate": {},
             "version": 1
           }
         ]
       },
       "collapsible": "header",
       "ghost": true,
-      "hideWhenEmpty": true,
-      "settingsValidationErrors": []
+      "hideWhenEmpty": true
     }
   ],
   "formSettings": {

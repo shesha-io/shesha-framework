@@ -39,8 +39,6 @@
       "propertyName": "onSelectAction",
       "label": "On select action",
       "hidden": false,
-      "validate": {},
-      "settingsValidationErrors": [],
       "parentId": "root",
       "version": 1
     },
