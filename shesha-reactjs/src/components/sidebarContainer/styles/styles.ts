@@ -186,8 +186,20 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
 
         .${designerCanvas} {
           margin: 0 auto;
-          height: 100%;
-          overflow: auto;
+          /* The canvas deliberately does not scroll itself. A vertical scrollbar inside a pane that
+             already scrolls leaves the canvas cut off short of the pane - and because CSS zoom
+             scales the resolved height, the further the canvas is zoomed out the shorter that box
+             gets. Growing with the content and letting the wrapper scroll keeps one scrollbar in
+             one place at any zoom, while min-height keeps the canvas filling the pane when the
+             form is short. */
+          min-height: 100%;
+          overflow: visible;
+          /* Breathing room so components are not flush against the canvas edge. Explicit
+             border-box: the canvas width is a measured pixel value, so padding must eat into it
+             rather than add to it - otherwise the canvas ends up wider than the pane it was sized
+             to fill. */
+          box-sizing: border-box;
+          padding: ${sheshaStyles.paddingLG}px;
           transform-origin: top left;
           box-shadow: 1px 1px 5px 5px #00000080;
         }
@@ -205,7 +217,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
           justify-content: center;
 
           .${designerCanvas} {
-            height: auto;
+            min-height: auto;
           }
         }
       }

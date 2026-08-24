@@ -72,6 +72,33 @@ export const defaultDesignerWidth = `${(typeof window !== 'undefined' ? window.s
 export const CANVAS_PRESET_SENTINEL = '__CANVAS_RESPONSIVE__' as const;
 
 /**
+ * Upper bound for a percentage canvas width. 100% is the whole pane the canvas sits in; asking for
+ * more has nothing to expand into, so anything greater is capped here rather than pushed past the
+ * pane edge.
+ */
+export const MAX_CANVAS_WIDTH_PERCENT = 100;
+
+const PERCENT_WIDTH_REGEX = /^\s*(\d+(?:\.\d+)?)\s*%\s*$/;
+
+/**
+ * Reads a percentage width entered as a custom resolution (e.g. "80%") and clamps it to
+ * [0, `MAX_CANVAS_WIDTH_PERCENT`]. A value above 100% - or one that is not a usable number -
+ * falls back to 100%, i.e. the full available width.
+ *
+ * Returns `undefined` when the value is not a percentage at all (a device preset such as "1024px"),
+ * so callers can tell "not a percentage" apart from "a percentage that clamped to 100".
+ */
+export const parseCanvasWidthPercent = (value: string): number | undefined => {
+  const match = PERCENT_WIDTH_REGEX.exec(value);
+  if (!match) return undefined;
+
+  const percent = parseFloat(match[1] ?? '');
+  return Number.isFinite(percent) && percent > 0 && percent < MAX_CANVAS_WIDTH_PERCENT
+    ? percent
+    : MAX_CANVAS_WIDTH_PERCENT;
+};
+
+/**
  * Width the canvas must be laid out at, in its own (pre-zoom) coordinate space, so that after the
  * CSS `zoom` is applied it renders exactly `availableWidth` wide - i.e. it fills the area between
  * the Builder Components and Properties panels with no horizontal scrollbar.
