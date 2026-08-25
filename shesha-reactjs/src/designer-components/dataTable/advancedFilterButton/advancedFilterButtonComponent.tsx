@@ -1,4 +1,4 @@
-import { migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateHiddenToVisible, migrateReadOnly, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
 import { IToolboxComponent } from '@/interfaces';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
@@ -11,34 +11,24 @@ import { useStyles } from '@/designer-components/dataTable/tableContext/styles';
 import { IAdvancedFilterButtonComponentProps } from './types';
 import { useComponentValidation } from '@/providers/validationErrors';
 import { validationError } from '../utils';
+import { DEFAULT_DESIGNER_PADDING } from '@/components/formDesigner/utils/stylingUtils';
+import { migratePermissionsToVisiblePermissions } from '@/designer-components/_common-migrations/migratePermissionsToVisiblePermissions';
 
 const outsideContextValidationError = validationError('Table Filter');
 
 const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComponentProps> = {
+  allowInherit: true,
   type: 'datatable.filter',
   isInput: false,
   name: 'Table Filter',
   icon: <FilterOutlined />,
+  getWrapperStyle: () => ({ designerStyle: DEFAULT_DESIGNER_PADDING }),
   Factory: ({ model }) => {
     const store = useDataTableStoreOrUndefined();
+    useComponentValidation(() => !store ? outsideContextValidationError : undefined, [store]);
     const { styles } = useStyles();
 
-    const finalStyle = {
-      ...model.allStyles?.dimensionsStyles,
-      ...(['primary', 'default'].includes(model.buttonType) && model.allStyles?.borderStyles),
-      ...model.allStyles?.fontStyles,
-      ...(['dashed', 'default'].includes(model.buttonType) && model.allStyles?.backgroundStyles),
-      ...(['primary', 'default', 'dashed'].includes(model.buttonType) && model.allStyles?.shadowStyles),
-      ...model.allStyles?.stylingBoxAsCSS,
-      ...model.allStyles?.jsStyle,
-    };
-
-    useComponentValidation(
-      () => !store ? outsideContextValidationError : undefined,
-      [store],
-    );
-
-    if (model.hidden) return null;
+    if (model.hidden === true) return null;
 
     return !store ? (
       <div className={styles.hintContainer}>
@@ -50,30 +40,24 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComp
         </div>
       </div>
     ) : (
-      <AdvancedFilterButton {...model} styles={finalStyle} />
+      <AdvancedFilterButton {...model} styles={model.styleCss} />
     );
   },
-  initModel: (model) => {
-    return {
-      ...model,
-      buttonType: 'link',
-      label: '',
-    };
-  },
+  getDefaultStyles: defaultStyles,
+  initModel: (model): IAdvancedFilterButtonComponentProps => ({ ...model, label: '' }),
   settingsFormMarkup: getSettings,
   validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
-  migrator: (m) =>
-    m
-      .add<IAdvancedFilterButtonComponentProps>(3, (prev) => migrateReadOnly(prev as IAdvancedFilterButtonComponentProps, 'inherited'))
-      .add<IAdvancedFilterButtonComponentProps>(4, (prev) => {
-        // Omit buttonType when calling defaultStyles as it expects Omit<IButtonComponentProps, 'buttonType'>
-        const { buttonType, ...rest } = prev;
-        return { ...migratePrevStyles(prev, defaultStyles(rest)), buttonType };
-      })
-      .add<IAdvancedFilterButtonComponentProps>(5, (prev, context) => ({
-        ...prev,
-        editMode: (context.isNew ? 'editable' : prev.editMode),
-      })),
+  migrator: (m) => m
+    .add<IAdvancedFilterButtonComponentProps>(3, (prev) => migrateReadOnly(prev as IAdvancedFilterButtonComponentProps, 'inherited'))
+    .add<IAdvancedFilterButtonComponentProps>(4, (prev, ctx) => ctx.isNew === true ? prev : { ...migratePrevStyles(prev, defaultStyles(prev)) })
+    .add<IAdvancedFilterButtonComponentProps>(5, (prev) => prev) // this migration was changed because it configured editable mode and now it is not necessary
+    .add<IAdvancedFilterButtonComponentProps>(6, (prev, ctx) => ctx.isNew === true ? prev : {
+      ...prev,
+      desktop: { ...prev.desktop, buttonType: prev.buttonType ?? 'link' },
+      mobile: { ...prev.mobile, buttonType: prev.buttonType ?? 'link' },
+      tablet: { ...prev.tablet, buttonType: prev.buttonType ?? 'link' },
+    })
+    .add<IAdvancedFilterButtonComponentProps>(7, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
 };
 
 export default AdvancedFilterButtonComponent;

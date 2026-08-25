@@ -16,14 +16,14 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
       .addSearchableTabs({ propertyName: 'settingsTabs', parentId: 'root', label: 'Settings', hideLabel: true, labelAlign: 'right', size: 'small',
         tabs: [
           { key: 'common', title: 'Common', id: commonTabId,
-            components: [...fbf(commonTabId)
-              .addSettingsInput({ inputType: 'textField', propertyName: 'componentName', label: 'Component Name', size: 'small', validate: { required: true }, jsSetting: true })
+            components: fbf(commonTabId)
+              .addSettingsInput({ inputType: 'textField', propertyName: 'componentName', label: 'Component Name', size: 'small', validate: { required: true } })
               .addSettingsInput({ propertyName: 'label', label: 'Caption', inputType: 'textField', jsSetting: true })
               .addPropertyRouter({ id: styleRouter1Id, componentName: 'propertyRouter1', label: 'Property router1', labelAlign: 'right',
                 propertyRouteName: removeStyleRouter === true ? '' : { _mode: "code", _code: "    return contexts.canvasContext?.designerDevice || 'desktop';", _value: "" },
-                components: [...fbf(styleRouter1Id)
+                components: fbf(styleRouter1Id)
                   .addSettingsInput({ propertyName: 'buttonType', label: 'Style', validate: { required: true }, inputType: 'dropdown', dropdownOptions: buttonTypes })
-                  .toJson()],
+                  .toJson(),
               })
               .addSettingsInputRow({ inputs: [
                 { type: 'iconPicker', propertyName: 'icon', label: 'Icon', size: 'small', jsSetting: true },
@@ -40,21 +40,20 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
               .addConfigurableActionConfigurator({ propertyName: 'actionConfiguration', label: 'On Click' })
               .addPropertyRouter({ id: styleRouter2Id, componentName: 'propertyRouter2', label: 'Property router2', labelAlign: 'right',
                 propertyRouteName: removeStyleRouter === true ? '' : { _mode: "code", _code: "    return contexts.canvasContext?.designerDevice || 'desktop';", _value: "" },
-                components: [...fbf(styleRouter2Id)
+                components: fbf(styleRouter2Id)
                   .stdFontPanel()
                   .stdDimensionsPanel()
                   .stdMarginPaddingPanel()
-                  .toJson()],
+                  .toJson(),
               })
               .toJson(),
-            ],
           },
-          { key: 'events', title: 'Events', id: eventsTabId, components: [...fbf(eventsTabId).stdEventHandlers(['onMouseEnter', 'onMouseMove', 'onMouseLeave']).toJson()] },
+          { key: 'events', title: 'Events', id: eventsTabId, components: fbf(eventsTabId).stdEventHandlers(['onMouseEnter', 'onMouseMove', 'onMouseLeave']).toJson() },
           { key: 'appearance', title: 'Appearance', id: appearanceTabId,
-            components: [...fbf(appearanceTabId)
+            components: fbf(appearanceTabId)
               .addPropertyRouter({ id: styleRouter3Id, componentName: 'propertyRouter3', label: 'Property router3', labelAlign: 'right',
                 propertyRouteName: removeStyleRouter === true ? '' : { _mode: "code", _code: "    return contexts.canvasContext?.designerDevice || 'desktop';", _value: "" },
-                components: [...fbf(styleRouter3Id)
+                components: fbf(styleRouter3Id)
                   .addSettingsInput({ propertyName: 'buttonType', label: 'Style', validate: { required: true }, inputType: 'dropdown', dropdownOptions: buttonTypes })
                   .stdFontPanel()
                   .stdDimensionsPanel()
@@ -63,12 +62,13 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   .stdShadowPanel()
                   .stdMarginPaddingPanel()
                   .addSettingsInput({ inputType: 'codeEditor', propertyName: 'style', label: 'Custom Style', description: 'A script that returns the style of the element as an object. This should conform to CSSProperties' })
-                  .toJson()],
-              }).toJson()],
+                  .toJson(),
+              }).toJson(),
           },
         ],
       }).toJson(),
     formSettings: {
+      isSettingsForm: true,
       colon: false,
       layout: 'vertical' as FormLayout,
       labelCol: { span: 24 },

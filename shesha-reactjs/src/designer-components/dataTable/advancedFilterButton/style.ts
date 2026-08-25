@@ -1,41 +1,24 @@
 import { createStyles } from "@/styles";
+import { IAdvancedFilterButtonComponentProps } from "./types";
+import { isDefined } from "@/utils";
+import { marginStyles } from "@/designer-components/_common/styles/utils";
 
-export const useStyles = createStyles(({ token, cx, css }, fontSize: string | number) => {
+export const useStyles = createStyles(({ token, cx, css }, model: IAdvancedFilterButtonComponentProps) => {
   const primaryColor = token.colorPrimary;
-  const secondaryColor = token.colorPrimaryBgHover;
-  const arrowLeft = "scroll-arrow-left";
-  const arrowRight = "scroll-arrow-right";
-  const tag = "tag";
-  const resultCount = "result-count";
-  const clearAllButton = "clear-all-button";
-  const filters = "filters";
+  const disabledColor = token.colorTextDisabled;
 
-  const wrapper = cx("filter-wrapper", css`
-      display: flex;
-      white-space: nowrap;
-      justify-content: center;
-      margin: 0 6px;
+  const buttonContainer = cx("sha-filter-button-container", css`
+    ${marginStyles(model.stylingBoxJson)}
 
-      .${resultCount} {
-        text-align: end;
-        white-space: nowrap;
-        margin: 6px 0;
-        align-self: center;
-      }
-
-      .${clearAllButton} {
-        text-align: start;
-        margin: 6px 0;
-        white-space: nowrap;
-        padding-left: 0px;
-        padding-bottom: 6px;
-        align-self: center;
-      `);
+    &.disabled {
+      opacity: 0.5;
+    }
+  `);
 
   const button = cx("filter-btn", css`
     .ant-btn-icon{
      svg {
-      font-size: ${fontSize} !important;
+      font-size: ${isDefined(model.font?.size) ? `${model.font.size}px` : '14px'} !important;
      }
     }
       &.ant-btn-icon-only {
@@ -45,83 +28,10 @@ export const useStyles = createStyles(({ token, cx, css }, fontSize: string | nu
       }    
     `);
 
-  const disabledColor = token.colorTextDisabled;
-
-  const scrollableTagsContainer = cx("scrollable-tags-container", css`
-      max-width: 700px;
-      margin: 0 6px;
-      justify-content: center;
-      overflow: hidden;
-      display: flex;
-      position: relative;
-      user-select: none;
-      ::-webkit-scrollbar {
-        display: none;
-      }
-
-      * {
-        -ms-overflow-style: none; /* for Internet Explorer, Edge */
-        scrollbar-width: none; /* for Firefox */
-      }
-
-      p {
-        white-space: nowrap;
-      }
-
-      .${filters} {
-        display: flex;
-        overflow-x: scroll;
-        scroll-behavior: smooth;
-        align-items: center;
-
-        span:last-child {
-          margin-right: 0px;
-        }
-      }
-
-      .${arrowLeft}, .${arrowRight} {
-        color: ${token.colorPrimary};
-        cursor: pointer;
-        position: absolute;
-        height: 100%;
-        top: 0;
-        width: 24px;
-        justify-content: center;
-        display: flex;
-      }
-
-      .hidden {
-        display: none;
-      }
-
-      .${arrowLeft} {
-        left: 0;
-        border-radius: 4px 0 0 4px;
-      }
-
-       .${arrowRight} {
-        right: 0;
-        border-radius: 0 4px 4px 0;
-      }
-      
-      .${tag} {
-        color: ${token.colorPrimary};
-        marginBottom: .32em;
-        vertical-align: middle;
-    `);
-
   return {
-    secondaryColor,
     primaryColor,
-    arrowLeft,
-    arrowRight,
-    tag,
-    wrapper,
-    scrollableTagsContainer,
     disabledColor,
+    buttonContainer,
     button,
-    resultCount,
-    clearAllButton,
-    filters,
   };
 });
