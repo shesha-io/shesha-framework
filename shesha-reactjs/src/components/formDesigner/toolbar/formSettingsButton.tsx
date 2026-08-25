@@ -30,9 +30,7 @@ export const FormSettingsButton: FC<IFormSettingsButtonProps> = ({ buttonText, s
   return (
     <>
       {isDevMode && (
-        <Button icon={<CheckCircleTwoTone />} size={size} onClick={onValidateClick} title="Validate Form">
-          {buttonText !== undefined ? buttonText : "Settings"}
-        </Button>
+        <Button icon={<CheckCircleTwoTone />} size={size} onClick={onValidateClick} title="Validate Form" />
       )}
       <Button icon={<SettingOutlined />} size={size} onClick={onSettingsClick} title="Form Settings">
         {buttonText !== undefined ? buttonText : "Settings"}
