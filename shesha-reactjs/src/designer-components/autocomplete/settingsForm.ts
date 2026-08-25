@@ -1,7 +1,7 @@
 import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
 import { DataTypes, SettingsFormMarkupFactory } from '@/interfaces';
-import { ISetFormDataPayload } from '@/providers/form/contexts';
+import { ISettingsInputBase } from '../settingsInput/interfaces';
 import { ALL_INPUT_EVENTS_WITHOUT_DOUBLE_CLICK } from '../_common/events';
 
 const urlVisibleJs = "return getSettingValue(data?.dataSourceType) === 'url';";
@@ -49,7 +49,11 @@ return getSettingValue(data?.entityType);`;
 
 const entityTypeModelType = { _code: 'return getSettingValue(data?.entityType);', _mode: 'code' as const };
 
-type ChangeSettingHandler = (value: unknown, data: unknown, setFormData: (payload: ISetFormDataPayload) => void) => void;
+type ChangeSettingHandler = NonNullable<ISettingsInputBase['onChangeSetting']>;
+type ChangeSettingData = Parameters<ChangeSettingHandler>[1];
+
+const hasEntityReferenceFormat = (data: ChangeSettingData): boolean =>
+  typeof data === 'object' && data !== null && 'valueFormat' in data && data.valueFormat === 'entityReference';
 
 /* The display property is derived from the entity type (entities list) or from the source URL, so it
    is stale as soon as either changes. Entity reference is only offered for an entities list, so a
@@ -57,8 +61,7 @@ type ChangeSettingHandler = (value: unknown, data: unknown, setFormData: (payloa
    than in the expressions above because those are re-evaluated on every render: writing to the form
    from one re-renders the panel and re-runs the expression, looping forever. */
 const onDataSourceTypeChange: ChangeSettingHandler = (value, data, setFormData) => {
-  const downgradeValueFormat = value !== 'entitiesList' &&
-    (data as Record<string, unknown> | undefined)?.['valueFormat'] === 'entityReference';
+  const downgradeValueFormat = value !== 'entitiesList' && hasEntityReferenceFormat(data);
   setFormData({
     values: { displayPropName: undefined, ...(downgradeValueFormat ? { valueFormat: 'simple' } : {}) },
     mergeValues: true,
