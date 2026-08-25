@@ -68,7 +68,7 @@ const onDataSourceTypeChange: ChangeSettingHandler = (value, data, setFormData) 
   });
 };
 
-const onDataSourceUrlChange: ChangeSettingHandler = (_value, _data, setFormData) =>
+const onEntityTypeChange: ChangeSettingHandler = (_value, _data, setFormData) =>
   setFormData({ values: { displayPropName: undefined }, mergeValues: true });
 
 export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter }) => {
@@ -108,13 +108,13 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                 .addSettingsInput({ inputType: 'switch', propertyName: 'disableSearch', label: 'Disable Search', size: 'small', layout: 'horizontal', jsSetting: true })
                 .stdCollapsiblePanel('Data', (fb) => fb
                   .addSettingsInput({ inputType: 'dropdown', propertyName: 'dataSourceType', label: 'Data Source Type', size: 'small', jsSetting: true, dropdownOptions: dataSourceTypeOptions, onChangeSetting: onDataSourceTypeChange })
-                  .addSettingsInput({ inputType: 'endpointsAutocomplete', propertyName: 'dataSourceUrl', label: 'Data Source URL', size: 'small', jsSetting: true, mode: 'url', httpVerb: 'get', isDynamic: false, visibleJs: urlVisibleJs, onChangeSetting: onDataSourceUrlChange })
+                  .addSettingsInput({ inputType: 'endpointsAutocomplete', propertyName: 'dataSourceUrl', label: 'Data Source URL', size: 'small', jsSetting: true, mode: 'url', httpVerb: 'get', isDynamic: false, visibleJs: urlVisibleJs })
                   .addSettingsInput({
                     inputType: 'labelValueEditor', propertyName: 'queryParams', label: 'Query Param',
                     labelName: 'param', labelTitle: 'Param', valueName: 'value', valueTitle: 'Value',
                     mode: 'dialog', jsSetting: true, version: 2, visibleJs: urlVisibleJs, valueEditor: 'expression',
                   })
-                  .addSettingsInput({ inputType: 'entityTypeAutocomplete', propertyName: 'entityType', label: 'Entity Type', labelAlign: 'right', jsSetting: true, visibleJs: entitiesListVisibleJs })
+                  .addSettingsInput({ inputType: 'entityTypeAutocomplete', propertyName: 'entityType', label: 'Entity Type', labelAlign: 'right', jsSetting: true, visibleJs: entitiesListVisibleJs, onChangeSetting: onEntityTypeChange })
                   .addSettingsInput({
                     inputType: 'queryBuilder', propertyName: 'filter', label: 'Entity Filter', isDynamic: true, validate: {},
                     modelType: entityTypeModelType,
