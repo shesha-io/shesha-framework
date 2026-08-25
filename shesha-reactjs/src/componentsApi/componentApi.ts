@@ -377,6 +377,38 @@ export interface FileUploadApi extends InputComponentApi<File | string | null | 
 };
 
 /**
+ * File list. The value is the collection of files currently attached to the component's owner. The
+ * files are managed by the storage provider, so the list is read through this API and mutated by the
+ * user through the component itself; assigning the value replaces the attached collection.
+ */
+export interface FileListApi extends InputComponentApi<StoredFileApiModel[] | undefined> {
+  /** Whether the user can currently add files. Combines the Allow Add setting with the interaction mode. */
+  readonly allowAdd: boolean;
+  /** Whether the user can currently delete files. Combines the Allow Remove setting with the interaction mode. */
+  readonly allowDelete: boolean;
+  /** Whether the user can currently replace a file. Combines the Allow Replace setting with the interaction mode. */
+  readonly allowReplace: boolean;
+  /** Whether the user can currently rename a file. Combines the Allow Rename setting with the interaction mode. */
+  readonly allowRename: boolean;
+  /** File extensions the component accepts, e.g. `[".png", ".pdf"]`. An empty list accepts any type. */
+  allowedFileTypes: string[] | undefined;
+};
+
+/** One file in a File list. Mirrors the stored-file record the back-end returns. */
+export interface StoredFileApiModel {
+  /** Identifier of the persisted file. */
+  readonly id: string;
+  /** File name including its extension. */
+  readonly name: string;
+  /** Size of the file in bytes. */
+  readonly size: number;
+  /** MIME type reported for the file. */
+  readonly type: string;
+  /** Url the file can be downloaded from. */
+  readonly url: string | undefined;
+}
+
+/**
  * Reference list status. The value is the item value of the reference list item currently displayed,
  * so writing it switches the component to the matching status.
  */

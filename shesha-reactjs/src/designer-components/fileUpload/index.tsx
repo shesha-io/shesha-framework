@@ -125,9 +125,9 @@ const FileUploadComponent: FileUploadComponentDefinition = {
                   thumbnailWidth={model.thumbnailWidth}
                   thumbnailHeight={model.thumbnailHeight}
                   disabled={disabled}
-                  popupClassName={styles.popup}
-                  modalClassName={styles.modal}
-                  imagePreviewClassName={styles.imagePreview}
+                  // popupClassName={styles.popup}
+                  // modalClassName={styles.modal}
+                  // imagePreviewClassName={styles.imagePreview}
                 />
               </div>
             </FileUploadProvider>

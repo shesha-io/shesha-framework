@@ -3,18 +3,18 @@ import { InboxOutlined } from '@ant-design/icons';
 import { FileUploadStylesResponse } from './styles/styles';
 
 interface DraggerStubProps {
-  styles: FileUploadStylesResponse;
+  styles?: FileUploadStylesResponse;
   type?: string;
 }
 
 export const DraggerStub = ({ styles, type }: DraggerStubProps): React.JSX.Element => {
   return (
     <div>
-      <p className={styles.antUploadDragIcon}>
-        <InboxOutlined className={`${styles.antUploadDragIcon} icon`} />
+      <p className={styles?.antUploadDragIcon}>
+        <InboxOutlined className={`${styles?.antUploadDragIcon} icon`} />
       </p>
-      <p className={styles.antUploadText}>Click or drag file to this area to upload</p>
-      <p className={styles.antUploadHint}>
+      <p className={styles?.antUploadText}>Click or drag file to this area to upload</p>
+      <p className={styles?.antUploadHint}>
         {type === 'fileUpload'
           ? 'Support for a single file upload. Strictly prohibit from uploading company data or other band files'
           : 'Support for a single or bulk upload. Strictly prohibit from uploading company data or other band files'}

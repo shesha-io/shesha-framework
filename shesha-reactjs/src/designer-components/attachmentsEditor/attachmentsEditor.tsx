@@ -1,9 +1,8 @@
 import { FolderAddOutlined } from '@ant-design/icons';
-import { IconType } from '@/components/shaIcon';
+import { CSSProperties, useEffect } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import { DataTypes, IToolboxComponent } from '@/interfaces';
-import { IStyleValue, useForm, useFormData, useGlobalState } from '@/providers';
-import { FormIdentifier, IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
+import { DataTypes } from '@/interfaces';
+import { IInputStyles, IStyleValue, useForm, useFormData, useGlobalState } from '@/providers';
 import {
   evaluateString,
   executeScriptSync,
@@ -11,31 +10,38 @@ import {
   validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
 import { AttachmentsEditorProvider } from '@/providers/storedFiles';
-import { getSettings } from './settings';
-import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { getSettings } from './settingsForm';
+import {
+  migrateCustomFunctions,
+  migrateHiddenToVisible,
+  migratePropertyName,
+  migrateReadOnly,
+  migrateStylingBoxToJson,
+} from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { GHOST_PAYLOAD_KEY } from '@/utils/form';
-import { containerDefaultStyles, defaultStyles, downloadedFileDefaultStyles } from './utils';
-import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
+import { containerDefaultStyles, defaultStyles, downloadedFileDefaultStyles, thumbnailDefaultStyles } from './utils';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
-import { useFormComponentStyles } from '@/hooks/formComponentHooks';
-import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
 import { AdvancedFormats } from '@/interfaces/dataTypes';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getIdOrUndefined } from '@/utils/entity';
 import CustomFile from '@/components/customFile';
 import { OnFileDownloaded, OnFileListChanged } from '@/providers/storedFiles/models';
 import { StoredFileModel } from '@/utils/storedFile/models';
-import { SizeType } from 'antd/lib/config-provider/SizeContext';
+import { AttachmentsEditorComponentDefinition, IAttachmentsEditorDeviceStyles, IAttachmentsEditorProps } from './interfaces';
+import { swapContainerAndThumbnailStyles } from './migrations/migrate-style-sets';
+import { useStyles } from './styles';
+import { useActualContextExecution } from '@/hooks';
+import { useComponentApi } from '@/providers/componentApi/provider';
+import { useEffectOnce } from '@/hooks/useEffectOnce';
+import { FileListApi } from '../../componentsApi/componentApi';
 
-export type LayoutType = 'vertical' | 'horizontal' | 'grid';
-export type ListType = 'text' | 'thumbnail';
+import apiCode from "../../componentsApi/componentApi.ts?raw";
 
-export interface IAttachmentsEditorDeviceStyles extends IStyleValue {
-  filesLayout?: LayoutType | undefined;
-  gap?: string | number | SizeType | undefined;
-}
+export type { LayoutType, ListType, IAttachmentsEditorDeviceStyles, IAttachmentsEditorProps } from './interfaces';
 
 const DEVICE_TYPES = ['desktop', 'mobile', 'tablet'] as const;
 type DeviceType = typeof DEVICE_TYPES[number];
@@ -170,58 +176,64 @@ const removeLegacyProperties = (result: Record<string, unknown>): void => {
   });
 };
 
-export interface IAttachmentsEditorProps extends IConfigurableFormComponent<IAttachmentsEditorDeviceStyles>, IInputStyles {
-  ownerId: string;
-  ownerType: string | IEntityTypeIdentifier;
-  filesCategory?: string | undefined;
-  allowedFileTypes?: string[] | undefined;
-  ownerName?: string | undefined;
-  allowAdd: boolean;
-  allowDelete: boolean;
-  allowReplace: boolean;
-  allowRename: boolean;
-  allowViewHistory: boolean;
-  customActions?: ButtonGroupItemProps[] | undefined;
-  customContent?: boolean | undefined;
-  extraFormId?: FormIdentifier | undefined;
-  isDynamic?: boolean | undefined;
-  isDragger?: boolean | undefined;
-  maxHeight?: string | undefined;
-  onFileChanged?: string | undefined;
-  onDownload?: string | undefined;
-  downloadZip?: boolean | undefined;
-  filesLayout?: LayoutType | undefined;
-  gap?: number | undefined;
-  listType: ListType;
-  thumbnailWidth?: string | undefined;
-  thumbnailHeight?: string | undefined;
-  borderRadius?: number | undefined;
-  hideFileName?: boolean | undefined;
-  container?: IStyleValue | undefined;
-  downloadedFileStyles?: IStyleValue | undefined;
-  styleDownloadedFiles?: boolean | undefined;
-  downloadedIcon?: IconType | undefined;
-}
-
-const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
+const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
+  allowInherit: true,
   type: 'attachmentsEditor',
   isInput: true,
   name: 'File list',
   preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.advanced && dataFormat === AdvancedFormats.fileList,
   icon: <FolderAddOutlined />,
-  Factory: ({ model }) => {
+  Factory: ({ model, apiContext }) => {
     const form = useForm();
     const { data } = useFormData();
     const { globalState } = useGlobalState();
     const executionContext = useAvailableConstantsData();
     const ownerId = evaluateString(model.ownerId, { data: data, globalState });
-    const resolvedOwnerId = !isNullOrWhiteSpace(ownerId) ? ownerId : getIdOrUndefined(data) ?? "";
-    const enabled = !Boolean(model.readOnly);
+    const resolvedOwnerId = isNotNullOrWhiteSpace(ownerId) ? ownerId : getIdOrUndefined(data) ?? "";
 
-    const {
-      fullStyle: downloadedFileFullStyle,
-    } = useFormComponentStyles(model.downloadedFileStyles ?? downloadedFileDefaultStyles());
+    // Both non-editable modes stop the user mutating the attachment list: read-only shows the files
+    // as a plain, still-downloadable list, and disabled greys the whole control out. Anything that
+    // would change the list has to be suppressed in both, so they are combined into one flag here
+    // and `disabled` is passed on separately for the greying.
+    const isDisabled = model.disabled === true;
+    const enabled = model.readOnly !== true && !isDisabled;
+
+    /* The framework evaluates only the root `model.style` into `model.styleCss`; the two nested
+       Custom style scripts are not executed for us, so a nested panel would otherwise save a value
+       that never renders. */
+    const thumbnailStyleCss = useActualContextExecution<CSSProperties>(model.thumbnail?.style, undefined, {});
+    const downloadedFileStyleCss = useActualContextExecution<CSSProperties>(model.downloadedFileStyles?.style, undefined, {});
+
+    const { styles } = useStyles({ ...model, thumbnailStyleCss, downloadedFileStyleCss });
+
+    const componentApi = useComponentApi();
+    useEffect(() => {
+      componentApi?.updateApi<FileListApi>({
+        id: model.id,
+        componentName: model.componentName ?? "",
+        level: 3,
+        typeDefinition: { typeName: 'FileListApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+        properties: [
+          { name: 'allowAdd', getter: () => enabled && model.allowAdd },
+          { name: 'allowDelete', getter: () => enabled && model.allowDelete },
+          { name: 'allowReplace', getter: () => enabled && model.allowReplace },
+          { name: 'allowRename', getter: () => enabled && model.allowRename },
+          {
+            name: 'allowedFileTypes',
+            getter: () => model.allowedFileTypes,
+            setter: (value: string[] | undefined) => apiContext?.updateApiModel({ allowedFileTypes: value }),
+          },
+        ],
+        // The list has no focusable control of its own — files are added through the antd Upload
+        // trigger — so no `focus` is registered rather than one that would do nothing.
+        api: {},
+      });
+    }, [
+      apiContext, componentApi, enabled, model.allowAdd, model.allowDelete, model.allowRename,
+      model.allowReplace, model.allowedFileTypes, model.componentName, model.id,
+    ]);
+    useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
     const executeScript = (script: string, value: unknown): void => {
       executeScriptSync(script, {
@@ -239,11 +251,13 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         model={{ ...model, propertyName: `${GHOST_PAYLOAD_KEY}_${model.id}` }}
         autoAlignLabel={false}
       >
-        {(value, onChange) => {
+        {(value, onChange, _, ctx) => {
           const onFileListChanged: OnFileListChanged = (fileList, isUserAction = false): void => {
             onChange(fileList);
             // Only execute custom script if this is a user action (upload/delete)
-            if (isUserAction && isNotNullOrWhiteSpace(model.onChangeCustom)) executeScript(model.onChangeCustom, fileList);
+            if (isUserAction && isNotNullOrWhiteSpace(model.onChangeCustom)) {
+              ctx?.handleEvent(undefined, { value: fileList }, model.onChangeCustom);
+            }
           };
 
           const onDownload: OnFileDownloaded = (fileList, isUserAction = false): void => {
@@ -270,7 +284,6 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
             >
               <CustomFile
                 isStub={form.formMode === 'designer'}
-                disabled={model.readOnly}
                 customActions={model.customActions}
                 allowedFileTypes={model.allowedFileTypes}
                 maxHeight={model.maxHeight}
@@ -281,16 +294,37 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
                 isDynamic={model.isDynamic}
                 extraFormId={model.extraFormId}
                 {...model}
+                disabled={isDisabled}
                 allowAdd={enabled && model.allowAdd}
                 allowDelete={enabled && model.allowDelete}
                 allowReplace={enabled && model.allowReplace}
                 allowRename={enabled && model.allowRename}
                 allowViewHistory={model.allowViewHistory}
-                container={model.container}
+                /* The container is the root style set now, and it is applied through
+                   `classNames.container` below rather than as a style model.
+
+                   The thumbnail set is passed as a model rather than only as a class because the
+                   renderer reads it directly for things CSS cannot supply: the thumbnail request
+                   dimensions it fetches images at, the icon size, and the designer stub box. */
+                thumbnail={model.thumbnail}
                 enableStyleOnReadonly={model.enableStyleOnReadonly}
                 ownerId={resolvedOwnerId}
-                downloadedFileStyles={model.styleDownloadedFiles ?? false ? downloadedFileFullStyle : {}}
+                /* The downloaded-file appearance is emitted as a class now, so the renderer's legacy
+                   CSSProperties prop is cleared: leaving the model's style set to arrive through the
+                   spread above would hand it an object shaped like a style model, not CSS. */
+                downloadedFileStyles={undefined}
+                styleDownloadedFiles={model.styleDownloadedFiles ?? false}
                 downloadedIcon={model.styleDownloadedFiles ?? false ? model.downloadedIcon : undefined}
+                /* Only the popups are styled from here. The wrapper, the file boxes and the
+                   downloaded markers are all emitted by the renderer from the style model it
+                   already receives — passing classes for those as well would mean two sources
+                   painting the same elements. */
+                classNames={{
+                  actionsPopover: styles.actionsPopover,
+                  historyPopover: styles.historyPopover,
+                  confirmPopover: styles.confirmPopover,
+                  previewMask: styles.previewMask,
+                }}
               />
             </AttachmentsEditorProvider>
           );
@@ -304,13 +338,24 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     ...model,
     filesCategory: metadata.path,
   }),
-  initModel: (model) => ({
-    ...model,
-    gap: 8,
-    filesLayout: 'horizontal',
-  }),
+  getDefaultStyles: () => defaultStyles(),
   // remove field from the payload even if propertyName is provided
   getFieldsToFetch: () => [],
+  previewConfiguration: {
+    type: 'attachmentsEditor',
+    id: 'attachmentsEditor',
+    propertyName: 'fileListAppearance',
+    label: 'File List Label',
+    version: 'latest',
+    listType: 'thumbnail',
+    allowAdd: true,
+    allowDelete: true,
+    allowReplace: true,
+    allowRename: true,
+    allowViewHistory: true,
+    ownerId: '',
+    ownerType: '',
+  },
   migrator: (m) => m
     .add<IAttachmentsEditorProps>(0, (prev) => {
       return {
@@ -340,42 +385,48 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
       onFileChanged: migrateFormApi.withoutFormData(prev.onFileChanged),
     }))
     .add<IAttachmentsEditorProps>(6, (prev) => ({ ...prev, listType: isNullOrWhiteSpace(prev.listType) ? 'text' : prev.listType, filesLayout: prev.filesLayout ?? 'horizontal' }))
-    .add<IAttachmentsEditorProps>(7, (prev) => ({ ...prev, desktop: { ...defaultStyles(), container: containerDefaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } }))
+    .add<IAttachmentsEditorProps>(7, (prev, context) => context.isNew === true
+      ? prev
+      : { ...prev, desktop: { ...defaultStyles(), container: containerDefaultStyles() }, mobile: { ...defaultStyles() }, tablet: { ...defaultStyles() } })
     .add<IAttachmentsEditorProps>(8, (prev) => ({ ...prev, downloadZip: prev.downloadZip ?? false, propertyName: prev.propertyName ?? '', onChangeCustom: prev.onFileChanged }))
-    .add<IAttachmentsEditorProps>(9, (prev) => ({
-      ...prev,
-      desktop: {
-        ...defaultStyles(),
-        container: {
-          ...containerDefaultStyles(),
-          stylingBox: isNotNullOrWhiteSpace(prev.stylingBox) ? prev.stylingBox : '{}',
-          style: prev.style ?? '',
+    .add<IAttachmentsEditorProps>(9, (prev, context) => context.isNew === true
+      ? prev
+      : {
+        ...prev,
+        desktop: {
+          ...defaultStyles(),
+          container: {
+            ...containerDefaultStyles(),
+            stylingBox: isNotNullOrWhiteSpace(prev.stylingBox) ? prev.stylingBox : '{}',
+            style: prev.style ?? '',
+          },
         },
-      },
-      mobile: {
-        ...defaultStyles(),
-        container: {
-          ...containerDefaultStyles(),
-          stylingBox: isNotNullOrWhiteSpace(prev.stylingBox) ? prev.stylingBox : '{}',
-          style: prev.style ?? '',
+        mobile: {
+          ...defaultStyles(),
+          container: {
+            ...containerDefaultStyles(),
+            stylingBox: isNotNullOrWhiteSpace(prev.stylingBox) ? prev.stylingBox : '{}',
+            style: prev.style ?? '',
+          },
         },
-      },
-      tablet: {
-        ...defaultStyles(),
-        container: {
-          ...containerDefaultStyles(),
-          stylingBox: isNotNullOrWhiteSpace(prev.stylingBox) ? prev.stylingBox : '{}',
-          style: prev.style ?? '',
+        tablet: {
+          ...defaultStyles(),
+          container: {
+            ...containerDefaultStyles(),
+            stylingBox: isNotNullOrWhiteSpace(prev.stylingBox) ? prev.stylingBox : '{}',
+            style: prev.style ?? '',
+          },
         },
-      },
-    }))
+      })
     .add<IAttachmentsEditorProps>(10, (prev) => ({ ...prev, downloadZip: prev.downloadZip ?? false, propertyName: prev.propertyName ?? '' }))
     .add<IAttachmentsEditorProps>(11, (prev) => ({ ...prev, propertyName: prev.propertyName ?? '', onChangeCustom: prev.onFileChanged }))
-    .add<IAttachmentsEditorProps>(12, (prev) => ({
-      ...prev, desktop: { ...prev.desktop, downloadedFileStyles: { ...downloadedFileDefaultStyles() } },
-      mobile: { ...prev.mobile, downloadedFileStyles: { ...downloadedFileDefaultStyles() } },
-      tablet: { ...prev.tablet, downloadedFileStyles: { ...downloadedFileDefaultStyles() } },
-    }))
+    .add<IAttachmentsEditorProps>(12, (prev, context) => context.isNew === true
+      ? prev
+      : {
+        ...prev, desktop: { ...prev.desktop, downloadedFileStyles: { ...downloadedFileDefaultStyles() } },
+        mobile: { ...prev.mobile, downloadedFileStyles: { ...downloadedFileDefaultStyles() } },
+        tablet: { ...prev.tablet, downloadedFileStyles: { ...downloadedFileDefaultStyles() } },
+      })
     .add<IAttachmentsEditorProps>(13, (prev: IAttachmentsEditorProps) => {
       // Handle components with root-level styling properties from legacy imports
       // This covers v0.43 imports that have styling properties at root level instead of device-specific structure
@@ -426,7 +477,34 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
         filesLayout: prev.tablet?.filesLayout ?? prev.filesLayout ?? 'horizontal',
         gap: prev.tablet?.gap ?? prev.gap ?? 8,
       },
-    })),
+    }))
+    /* Freeze the appearance of every already-saved component by baking the real defaults into all
+       three device models, so a later change to `defaultStyles()` cannot shift how an existing form
+       renders. A newly dropped component skips this and inherits from metadata instead. */
+    .add<IAttachmentsEditorProps>(16, (prev, context) => {
+      return context.isNew === true
+        ? prev
+        : { ...migratePrevStyles(prev, defaultStyles()) };
+    })
+    .add<IAttachmentsEditorProps>(17, (prev) => {
+      return swapContainerAndThumbnailStyles(prev);
+    })
+    .add<IAttachmentsEditorProps>(18, (prev) => {
+      const withThumbnail = (device: IAttachmentsEditorDeviceStyles | undefined): IAttachmentsEditorDeviceStyles | undefined =>
+        isDefined(device)
+          ? { ...device, thumbnail: { ...thumbnailDefaultStyles(), ...device.thumbnail } }
+          : device;
+
+      return {
+        ...prev,
+        desktop: withThumbnail(prev.desktop),
+        tablet: withThumbnail(prev.tablet),
+        mobile: withThumbnail(prev.mobile),
+      };
+    })
+  /* Rename-only step: runs for new and old alike, and carries the permissions that used to live on
+       the Security tab onto the Visible / Interaction Mode settings. */
+    .add<IAttachmentsEditorProps>(19, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
 };
 
 export default AttachmentsEditor;
