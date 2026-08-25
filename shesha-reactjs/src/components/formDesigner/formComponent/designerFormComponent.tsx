@@ -77,7 +77,8 @@ const DesignerFormComponentInner: FC<IDesignerFormComponentProps> = ({
       className={classNames(shaComponentStyles.shaComponent, shaComponentStyles.componentDragHandle,
         {
           [styles.selectedComponent]: isSelected,
-          [styles.hasConfigErrors]: isNonEmptyArray(validationResults),
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+          [styles.hasConfigErrors]: false && isNonEmptyArray(validationResults),
         })}
     >
       <span className={styles.shaComponentIndicator}>
