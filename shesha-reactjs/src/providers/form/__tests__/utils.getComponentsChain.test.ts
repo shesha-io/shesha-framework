@@ -3,7 +3,6 @@ import { getComponentDefinitions } from '../defaults/toolboxComponents';
 import { DEFAULT_FORM_SETTINGS, FormMarkupWithSettings, IFormSettings } from '../models';
 import { componentsTreeToFlatStructure, findComponent, isComponentHidden } from '../utils';
 import { makeFormBuliderFactory } from '@/form-factory/implementation';
-import { IDictionary } from '@/interfaces';
 import { GqlLoaderSettings } from '../loaders/interfaces';
 
 describe('getComponentsChain()', () => {
@@ -18,7 +17,7 @@ describe('getComponentsChain()', () => {
   const formSettingsData: IFormSettings = {
     ...DEFAULT_FORM_SETTINGS,
     dataLoaderType: 'gql',
-    dataLoadersSettings: gqlLoaderSettings as unknown as IDictionary<object>,
+    dataLoadersSettings: { gql: gqlLoaderSettings },
   };
 
   it('should validate default settings', () => {

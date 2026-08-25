@@ -1303,6 +1303,26 @@ export const getComponentsAndSettings = (markup: FormMarkup): FormMarkupWithSett
 
 type RulesDescriptor = Record<string, RuleItem | RuleItem[] | { type: 'object' | 'array'; fields?: RulesDescriptor }>;
 export const isRuleItem = (rule: unknown): rule is RuleItem => isDefined(rule) && typeof rule === 'object' && "type" in rule && rule.type === 'object';
+export const isRuleItemArray = (rule: unknown): rule is RuleItem[] => isDefined(rule) && Array.isArray(rule) && rule.every(isRuleItem);
+export const isRuleItemOrArray = (rule: unknown): rule is RuleItem | RuleItem[] => isRuleItem(rule) || isRuleItemArray(rule);
+
+
+export const getObjectRule = (rule: RuleItem | RuleItem[]): RuleItem | undefined => {
+  if (Array.isArray(rule)) {
+    return rule.find((rule) => rule.type === 'object');
+  } else {
+    return rule.type === 'object' ? rule : undefined;
+  }
+};
+
+export const isRequired = (rule: RuleItem | RuleItem[]): boolean => {
+  if (Array.isArray(rule)) {
+    return rule.some(isRequiredRule);
+  } else {
+    return isRequiredRule(rule);
+  }
+};
+
 type RequiredRule = RuleItem & { required: true };
 const isRequiredRule = (rule: unknown): rule is RequiredRule => isDefined(rule) && typeof rule === 'object' && "required" in rule && rule.required === true;
 export const setRuleAtPath = (rules: RulesDescriptor, path: string, rule: RuleItem | RuleItem[]): void => {
@@ -1352,10 +1372,18 @@ export const setRuleAtPath = (rules: RulesDescriptor, path: string, rule: RuleIt
           current = newFields;
         } else
           current = currentSegment.fields;
-      } else {
+      } else if (Array.isArray(currentSegment)) {
+        const objectRule = currentSegment.find((rule) => rule.type === 'object');
+        if (isDefined(objectRule)) {
+          current = (objectRule.fields = {});
+        } else {
+          const newFields: RulesDescriptor = {};
+          currentSegment.push({ type: 'object', fields: newFields });
+          current = newFields;
+        }
+      } else
         // Cannot traverse – invalid structure; abort this path
         return;
-      }
     }
   }
 };
