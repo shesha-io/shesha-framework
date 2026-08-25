@@ -12,12 +12,14 @@ import { useStyles } from './style';
 import { DataContextTopLevels } from '@/providers/dataContextManager';
 import { isNavigationActionConfiguration, useShaRouting } from '@/providers/shaRouting';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { useDebouncedCallback } from 'use-debounce';
 
 export interface IConfigurableButtonProps extends Omit<IButtonItem, 'itemSubType'> {
   styleCss?: CSSProperties | undefined;
   ref?: React.Ref<HTMLAnchorElement | HTMLButtonElement> | undefined;
   className?: string | undefined;
   additionalDomProperties?: Record<string, unknown> | undefined;
+  onClick?: React.MouseEventHandler<HTMLElement> | undefined;
 }
 
 export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
@@ -28,6 +30,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
   const evaluationContext = useAvailableConstantsData({ topContextId: DataContextTopLevels.Full }, { ...dynamicContext, dynamicItem });
 
   const [loading, setLoading] = useState(false);
+  const debouncedLoading = useDebouncedCallback(setLoading, 100);
   const [isModal, setModal] = useState(false);
 
   const navigationUrl = useAsyncMemo(async () => {
@@ -47,6 +50,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
     buttonDisabled: props.disabled === true || (loading && isModal),
   };
 
+
   const onButtonClick = (event: React.MouseEvent<HTMLElement, MouseEvent>): void => {
     event.preventDefault();
 
@@ -55,22 +59,27 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
       return;
     }
 
+    if (props.onClick) {
+      props.onClick(event);
+      return;
+    }
+
     try {
       if (actionConfiguration) {
         if (['Show Dialog', 'Show Confirmation Dialog'].includes(actionConfiguration.actionName)) {
           setModal(true);
         }
-        setLoading(true);
+        debouncedLoading(true);
         void executeAction({
           actionConfiguration: { ...actionConfiguration },
           argumentsEvaluationContext: evaluationContext,
         })
           .finally(() => {
-            setLoading(false);
+            debouncedLoading(false);
           });
-      } else console.error('Action is not configured');
+      } else console.warn('Action is not configured');
     } catch (error) {
-      setLoading(false);
+      debouncedLoading(false);
       console.error('Validation failed:', error);
     }
   };
