@@ -1375,7 +1375,7 @@ export const setRuleAtPath = (rules: RulesDescriptor, path: string, rule: RuleIt
       } else if (Array.isArray(currentSegment)) {
         const objectRule = currentSegment.find((rule) => rule.type === 'object');
         if (isDefined(objectRule)) {
-          current = (objectRule.fields = {});
+          current = (objectRule.fields ??= {});
         } else {
           const newFields: RulesDescriptor = {};
           currentSegment.push({ type: 'object', fields: newFields });
