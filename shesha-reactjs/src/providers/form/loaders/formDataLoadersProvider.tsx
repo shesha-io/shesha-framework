@@ -15,7 +15,7 @@ export const FormDataLoadersProvider: FC<PropsWithChildren> = ({ children }) => 
   const gqlLoader = useGqlLoader();
   const [customLoader] = useState(() => new CustomLoader());
 
-  const getFormDataLoader = (type: string): IFormDataLoader | undefined => {
+  const getFormDataLoader = (type: string): IFormDataLoader | undefined => {  
     switch (type) {
       case 'gql':
         return gqlLoader;

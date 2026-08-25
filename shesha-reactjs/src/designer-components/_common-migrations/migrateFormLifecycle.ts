@@ -125,7 +125,7 @@ export const migrateFormLifecycle = (settings: IFormSettings): IFormSettings => 
   const gqlLoaderSettings: GqlLoaderSettings = {
     // url: getUrl,
     fieldsToFetch,
-    endpointType: isNullOrWhiteSpace(getUrl) ? 'static' : 'default',
+    endpointType: isNullOrWhiteSpace(getUrl) ? 'default' : 'static',
     staticEndpoint: !isNullOrWhiteSpace(getUrl) ? { httpVerb: 'get', url: getUrl } : undefined,
   };
 

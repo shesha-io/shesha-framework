@@ -5,6 +5,7 @@ import { migrateDefaults, migrateFormLifecycle } from "@/designer-components/_co
 import { migrateDefaultApiEndpoints } from "@/designer-components/_common-migrations/migrateDefaultApiEndpoints";
 import { migrateFieldsToFetchAndOnDataLoad } from "@/designer-components/_common-migrations/migrateFieldsToFetchAndOnDataLoad";
 import { migrateGqlCustomEndpoint } from "@/designer-components/_common-migrations/migrateGqlCustomEndpoint";
+import { migrateEmptyStaticLoaderEndpoint } from "@/designer-components/_common-migrations/migrateEmptyStaticLoaderEndpoint";
 import { IToolboxComponents } from "@/interfaces";
 import { IFormMigrationContext } from "@/designer-components/_common-migrations/models";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
@@ -31,6 +32,7 @@ const formSettingsMigrations = (migrator: Migrator<IFormSettings, IFormSettings,
       labelCol: isDefined(prev.labelCol) ? prev.labelCol : { span: 6 },
       wrapperCol: isDefined(prev.wrapperCol) ? prev.wrapperCol : { span: 18 },
     }))
+    .add(9, (prev) => migrateEmptyStaticLoaderEndpoint(prev))
   ;
 
 export const migrateFormSettings = (form: IFormDto, designerComponents: IToolboxComponents): Omit<IFormDto, 'settings'> & { settings: IFormSettings } => {
