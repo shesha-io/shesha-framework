@@ -29,9 +29,9 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
   const dynamicContext = useActionDynamicContext(actionConfiguration);
   const evaluationContext = useAvailableConstantsData({ topContextId: DataContextTopLevels.Full }, { ...dynamicContext, dynamicItem });
 
+  const [clickDisabled, setClickDisabled] = useState(false);
   const [loading, setLoading] = useState(false);
   const debouncedLoading = useDebouncedCallback(setLoading, 100);
-  const [isModal, setModal] = useState(false);
 
   const navigationUrl = useAsyncMemo(async () => {
     if (!isNavigationActionConfiguration(actionConfiguration) || !actionConfiguration.actionArguments)
@@ -46,8 +46,8 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
   const { styles } = useStyles({ model: props, isSameUrl, isGhostType });
 
   const { buttonLoading, buttonDisabled } = {
-    buttonLoading: loading && !isModal,
-    buttonDisabled: props.disabled === true || (loading && isModal),
+    buttonLoading: loading,
+    buttonDisabled: props.disabled === true || clickDisabled,
   };
 
 
@@ -66,19 +66,21 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
 
     try {
       if (actionConfiguration) {
-        if (['Show Dialog', 'Show Confirmation Dialog'].includes(actionConfiguration.actionName)) {
-          setModal(true);
-        }
-        debouncedLoading(true);
+        // Show loading indicator only if action is not related to Modal Dialog
+        if (!['Show Dialog', 'Show Confirmation Dialog'].includes(actionConfiguration.actionName))
+          debouncedLoading(true);
+        setClickDisabled(true);
         void executeAction({
           actionConfiguration: { ...actionConfiguration },
           argumentsEvaluationContext: evaluationContext,
         })
           .finally(() => {
+            setClickDisabled(false);
             debouncedLoading(false);
           });
       } else console.warn('Action is not configured');
     } catch (error) {
+      setClickDisabled(false);
       debouncedLoading(false);
       console.error('Validation failed:', error);
     }

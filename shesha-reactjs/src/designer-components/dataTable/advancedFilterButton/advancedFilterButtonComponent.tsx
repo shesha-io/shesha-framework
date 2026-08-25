@@ -53,9 +53,9 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComp
     .add<IAdvancedFilterButtonComponentProps>(5, (prev) => prev) // this migration was changed because it configured editable mode and now it is not necessary
     .add<IAdvancedFilterButtonComponentProps>(6, (prev, ctx) => ctx.isNew === true ? prev : {
       ...prev,
-      desktop: { ...prev.desktop, buttonType: prev.buttonType || 'default' },
-      mobile: { ...prev.mobile, buttonType: prev.buttonType || 'default' },
-      tablet: { ...prev.tablet, buttonType: prev.buttonType || 'default' },
+      desktop: { ...prev.desktop, buttonType: prev.buttonType ?? 'link' },
+      mobile: { ...prev.mobile, buttonType: prev.buttonType ?? 'link' },
+      tablet: { ...prev.tablet, buttonType: prev.buttonType ?? 'link' },
     })
     .add<IAdvancedFilterButtonComponentProps>(7, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
 };

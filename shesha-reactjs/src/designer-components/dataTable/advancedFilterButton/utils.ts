@@ -1,7 +1,7 @@
 import { IButtonComponentProps, IButtonStyleValue } from "@/designer-components/button/interfaces";
 import { isNullOrWhiteSpace } from "@/utils";
 
-export const defaultStyles = (prev?: IButtonComponentProps | undefined): IButtonStyleValue  => {
+export const defaultStyles = (prev?: IButtonComponentProps | undefined): IButtonStyleValue => {
   return {
     buttonType: isNullOrWhiteSpace(prev?.buttonType) ? 'link' : prev.buttonType,
     background: { type: 'color' },

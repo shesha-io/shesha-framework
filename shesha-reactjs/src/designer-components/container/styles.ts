@@ -35,6 +35,7 @@ export const useStyles = createStyles(({ css, cx }, model: IContainerComponentPr
           ${paddingStyles(model.stylingBoxJson)}
           height: 100%;
           width: 100%;
+          box-sizing: border-box;
           
           ${overflowStyles as CSSObject}
           

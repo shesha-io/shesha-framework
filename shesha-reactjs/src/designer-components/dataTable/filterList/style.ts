@@ -59,6 +59,10 @@ export const useStyles = createStyles(({ token, cx, css }) => {
         overflow-x: scroll;
         scroll-behavior: smooth;
         align-items: center;
+        
+        ::-webkit-scrollbar {
+          display: none;
+        }
 
         span:last-child {
           margin-right: 0px;

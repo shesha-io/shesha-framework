@@ -22,7 +22,7 @@ const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
   isInput: false,
   name: 'Table View Selector',
   icon: <SelectOutlined />,
-  getWrapperStyle: () => ({ style: { stylingBoxJson: { marginBottom: 0, marginTop: 0, marginLeft: 0, marginRight: 0, _type: 'styleBox'}} }),
+  getWrapperStyle: () => ({ style: { stylingBoxJson: { marginBottom: 0, marginTop: 0, marginLeft: 0, marginRight: 0, _type: 'styleBox' } } }),
   Factory: ({ model }) => {
     const store = useDataTableStoreOrUndefined();
     const { styles } = useStyles();
@@ -57,7 +57,7 @@ const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
       const prevTyped = prev as ITableViewSelectorComponentProps;
       return {
         ...prev,
-        filters: isDefined(prevTyped.filters)
+        filters: isDefined(prevTyped.filters) && Array.isArray(prevTyped.filters)
           ? prevTyped.filters
           : [{
             id: 'default-all-records',
