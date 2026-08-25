@@ -1,13 +1,14 @@
+/* eslint @typescript-eslint/strict-boolean-expressions: "error" */
 import {
+  FormMarkup,
   FormMarkupWithSettings,
   FormMode,
+  IAsyncValidationError,
   IComponentRelations,
   IComponentsDictionary,
   IConfigurableFormComponent,
   IFlatComponentsStructure,
-  IFormSettings,
-  IFormValidationErrors,
-  IRawComponentsContainer,
+  IFormSettings, IRawComponentsContainer,
   isConfigurableFormComponent,
   ISettingsFormFactory,
   isRawComponentsContainer,
@@ -20,7 +21,7 @@ import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { camelcaseDotNotation } from '@/utils/string';
 import { nanoid } from "@/utils/uuid";
 import { toolbarGroupsToComponents } from "../form/hooks";
-import { componentsFlatStructureToTree, createComponentModelForDataProperty, processRecursive, upgradeComponent } from "../form/utils";
+import { componentsFlatStructureToTree, createComponentModelForDataProperty, isValidationError, processRecursive, upgradeComponent, validateConfigurableComponentSettings } from "../form/utils";
 import {
   FormDesignerFormState,
   IAddDataPropertyPayload,
@@ -28,13 +29,17 @@ import {
   IComponentDeletePayload,
   IComponentDuplicatePayload,
   IComponentUpdatePayload,
-  IComponentUpdateSettingsValidationPayload,
+  IValidationResultsPayload,
   IFormDesignerInstance,
   IUpdateChildComponentsPayload,
 } from "./contexts";
 import { BaseHistoryItem, FormDesignerSubscription, FormDesignerSubscriptionType, IComponentSettingsEditorsCache } from "./models";
 import { IUndoRedoManager, UndoRedoManager } from "./undoRedoManager";
 import { IFormPersisterContext } from "../formPersisterProvider/contexts";
+import { ValidationCollector } from "../validator";
+import { IValidationCollector, ValidationResult } from "../validator/interfaces";
+import { FormBuilderFactory } from "@/form-factory/interfaces";
+import { getFormSettingsFormMarkup } from "@/components/formDesigner/formSettings";
 
 export type FormDesignerArgs = {
   readOnly: boolean;
@@ -43,6 +48,7 @@ export type FormDesignerArgs = {
   formSettings: IFormSettings;
   logEnabled?: boolean;
   formPersister: IFormPersisterContext;
+  formBuilderFactory: FormBuilderFactory;
 };
 
 const isComponentsArray = (value: unknown): value is IConfigurableFormComponent[] => {
@@ -83,6 +89,12 @@ export class FormDesignerInstance implements IFormDesignerInstance {
 
   activeSettingsTabKey: string | undefined;
 
+  validationCollector: IValidationCollector;
+
+  formBuilderFactory: FormBuilderFactory;
+
+  formSettingsFormMarkup: FormMarkup;
+
   get state(): FormDesignerFormState {
     return this.undoableState.getState();
   }
@@ -99,15 +111,20 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     this.isDataModified = false;
     this.activeSettingsTabKey = undefined;
     this.subscriptions = new Map<FormDesignerSubscriptionType, Set<FormDesignerSubscription>>();
+    this.validationCollector = new ValidationCollector();
+    this.formBuilderFactory = args.formBuilderFactory;
+
+    this.formSettingsFormMarkup = getFormSettingsFormMarkup({ fbf: this.formBuilderFactory });
 
     // eslint-disable-next-line no-console
-    this.log = args.logEnabled ? console.log : () => { };
+    this.log = args.logEnabled === true ? console.log : () => { };
 
     const initialState: FormDesignerFormState = {
       formFlatMarkup: args.formFlatMarkup,
       formSettings: args.formSettings,
     };
     this.undoableState = new UndoRedoManager<FormDesignerFormState>(initialState);
+    void this.validateFormAsync();
   }
 
   isDataModified: boolean;
@@ -144,9 +161,8 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     this.activeSettingsTabKey = undefined;
     this.isDataModified = false;
     this.notifySubscribers(['markup', 'selection', 'history', 'data-modified']);
+    void this.validateFormAsync();
   };
-
-  validationErrors?: IFormValidationErrors | undefined;
 
   selectedComponentId: string | undefined;
 
@@ -341,6 +357,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     return {
       allComponents,
       componentRelations,
+      parents: formFlatMarkup.parents,
     };
   };
 
@@ -357,7 +374,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
       delete componentRelations[payload.componentId];
 
       // delete self as child
-      if (isConfigurableFormComponent(component) && component.parentId) {
+      if (isConfigurableFormComponent(component) && !isNullOrWhiteSpace(component.parentId)) {
         const parentRelations = [...(componentRelations[component.parentId] ?? [])];
         const childIndex = parentRelations.indexOf(payload.componentId);
         parentRelations.splice(childIndex, 1);
@@ -374,6 +391,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
         formFlatMarkup: {
           allComponents,
           componentRelations,
+          parents: formFlatMarkup.parents,
         },
       };
     }, `Removed component ${payload.componentId}`);
@@ -416,7 +434,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
       clone.componentName = camelcaseDotNotation(componentName);
       clone.label = componentName;
 
-      const parentRelations = srcComponent.parentId
+      const parentRelations = !isNullOrWhiteSpace(srcComponent.parentId)
         ? [...(formFlatMarkup.componentRelations[srcComponent.parentId] ?? [])]
         : [];
 
@@ -425,7 +443,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
 
       const componentRelations = {
         ...formFlatMarkup.componentRelations,
-        ...(srcComponent.parentId ? { [srcComponent.parentId]: parentRelations } : {}),
+        ...(!isNullOrWhiteSpace(srcComponent.parentId) ? { [srcComponent.parentId]: parentRelations } : {}),
         ...nestedRelations,
       };
       const allComponents = {
@@ -442,14 +460,13 @@ export class FormDesignerInstance implements IFormDesignerInstance {
         formFlatMarkup: {
           allComponents,
           componentRelations,
+          parents: formFlatMarkup.parents,
         },
       };
     }, `Duplicated component ${payload.componentId}`);
   };
 
   updateComponent = <TModel extends IConfigurableFormComponent = IConfigurableFormComponent>(payload: IComponentUpdatePayload<TModel>): void => {
-    // TODO: review validation from Alex
-    // TODO: restore component validation
     this.updateState((state): FormDesignerFormState => {
       const { formFlatMarkup } = state;
       const component = this.getComponent(payload.componentId) as TModel;
@@ -500,29 +517,93 @@ export class FormDesignerInstance implements IFormDesignerInstance {
         formFlatMarkup: {
           allComponents: newComponents,
           componentRelations,
+          parents: formFlatMarkup.parents,
         },
       };
     }, `Component ${payload.componentId} updated`);
   };
 
-  componentUpdateSettingsValidation = (payload: IComponentUpdateSettingsValidationPayload): void => {
-    this.log('FD: componentUpdateSettingsValidation', payload);
-    this.updateState((state): FormDesignerFormState => {
-      const { formFlatMarkup } = state;
-      const component = this.getComponent(payload.componentId);
-      const newComponent: IConfigurableFormComponent = {
-        ...component,
-        settingsValidationErrors: payload.validationErrors,
-      };
+  validateComponentAsync = async <TModel extends IConfigurableFormComponent = IConfigurableFormComponent>(component: TModel): Promise<void> => {
+    const toolboxComponent = this.getToolboxComponent(component.type);
 
-      return {
-        ...state,
-        formFlatMarkup: {
-          ...formFlatMarkup,
-          allComponents: { ...formFlatMarkup.allComponents, [payload.componentId]: newComponent },
-        },
-      };
-    }, `Component validated ${payload.componentId}`);
+    const validationErrors: IAsyncValidationError[] = [];
+    if (isDefined(toolboxComponent.validateModel)) {
+      toolboxComponent.validateModel(component, (propertyName, error) => {
+        validationErrors.push({ field: propertyName, message: error });
+      });
+    }
+
+    if (isDefined(toolboxComponent.validateSettings)) {
+      try {
+        await toolboxComponent.validateSettings(component);
+      } catch (error: unknown) {
+        if (isValidationError(error)) {
+          error.errors.forEach((fieldError) => {
+            validationErrors.push({ field: fieldError.field ?? "", message: fieldError.message ?? "Unknown error" });
+          });
+        } else {
+          console.error('Unknown error ocurred while validating settings', error);
+        }
+      }
+    }
+
+    this.updateValidationResults({ type: "component", componentId: component.id, validationErrors: validationErrors });
+  };
+
+  validateAllComponentsAsync = async (): Promise<void> => {
+    this.log('FD: validateComponentAllComponents');
+
+    this.validationCollector.clear((item) => item.itemType === "component");
+
+    const { formFlatMarkup } = this.state;
+    const { allComponents } = formFlatMarkup;
+    for (const key in allComponents) {
+      if (allComponents.hasOwnProperty(key)) {
+        const item = allComponents[key];
+        if (isConfigurableFormComponent(item))
+          await this.validateComponentAsync(item);
+      }
+    }
+  };
+
+  validateFormSettingsAsync = async (): Promise<void> => {
+    this.log('FD: validateFormSettings');
+    const { formSettings } = this.state;
+
+    const validationErrors: IAsyncValidationError[] = [];
+    try {
+      this.log('FD: validateFormSettingsAsync');
+      await validateConfigurableComponentSettings(this.formSettingsFormMarkup, formSettings);
+    } catch (error: unknown) {
+      if (isValidationError(error)) {
+        error.errors.forEach((fieldError) => {
+          validationErrors.push({ field: fieldError.field ?? "", message: fieldError.message ?? "Unknown error" });
+        });
+      } else {
+        console.error('Unknown error ocurred while validating settings', error);
+      }
+    }
+    this.updateValidationResults({ type: "form-settings", validationErrors: validationErrors });
+  };
+
+  validateFormAsync = async (): Promise<void> => {
+    await this.validateAllComponentsAsync();
+    await this.validateFormSettingsAsync();
+  };
+
+  updateValidationResults = (payload: IValidationResultsPayload): void => {
+    // update validation collector
+    const results: ValidationResult[] = [];
+    payload.validationErrors.forEach((err) => {
+      results.push({
+        message: err.message,
+        type: 'error',
+        description: undefined,
+        documentationUrl: undefined,
+      });
+    });
+
+    this.validationCollector.updateValidationResults(payload.type, payload.type === "component" ? payload.componentId : "", results);
   };
 
   addComponent = (payload: IComponentAddPayload): void => {
@@ -541,7 +622,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
         componentRelations: { ...formFlatMarkup.componentRelations },
       };
       let newComponents: IConfigurableFormComponent[] = [];
-      if (toolboxComponent.isTemplate) {
+      if (toolboxComponent.isTemplate === true) {
         const allComponents = toolbarGroupsToComponents(this.toolboxComponentGroups);
         const builtResult = toolboxComponent.build(allComponents);
         newComponents = this.cloneComponents(builtResult);
@@ -567,6 +648,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
           formComponent = upgradeComponent(formComponent, toolboxComponent, state.formSettings, {
             allComponents: newFlatMarkup.allComponents,
             componentRelations: newFlatMarkup.componentRelations,
+            parents: newFlatMarkup.parents,
           }, true);
         }
 
@@ -621,6 +703,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
         formFlatMarkup: {
           componentRelations,
           allComponents,
+          parents: formFlatMarkup.parents,
         },
       };
     }, `Updated child components ${payload.containerId}`);
@@ -648,12 +731,6 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     this.selectedComponentId = id;
     this.activeSettingsTabKey = undefined;
     this.notifySubscribers(['selection']);
-  };
-
-  setValidationErrors = (payload: IFormValidationErrors): void => {
-    this.updateState((state): FormDesignerFormState => {
-      return { ...state, validationErrors: payload };
-    }, 'Validation errors updated');
   };
 
   setDebugMode = (isDebug: boolean): void => {
@@ -684,6 +761,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
           return upgradeComponent(fc, tc, state.formSettings, {
             allComponents: formFlatMarkup.allComponents,
             componentRelations: formFlatMarkup.componentRelations,
+            parents: formFlatMarkup.parents,
           }, true);
         },
       );
@@ -738,6 +816,8 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     if (this.undoableState.executeChange(updater, description)) {
       this.isDataModified = true;
       this.notifySubscribers(['markup', 'selection', 'history', 'data-modified']);
+
+      void this.validateFormAsync();
     }
   };
 
@@ -746,6 +826,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     this.undoableState.undo();
     this.isDataModified = this.undoableState.index > 0;
     this.notifySubscribers(['markup', 'selection', 'history', 'data-modified']);
+    void this.validateFormAsync();
   };
 
   redo = (): void => {
@@ -753,6 +834,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     this.undoableState.redo();
     this.isDataModified = true;
     this.notifySubscribers(['markup', 'selection', 'history', 'data-modified']);
+    void this.validateFormAsync();
   };
 
   get canUndo(): boolean {

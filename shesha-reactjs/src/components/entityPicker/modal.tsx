@@ -21,7 +21,7 @@ import TablePager from '../tablePager';
 import { DataTable } from '../dataTable';
 import DataTableProvider from '@/providers/dataTable';
 import { ITableRowData } from '@/providers/dataTable/interfaces';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
 import { isNonEmptyArray } from '@/utils/array';
 import { IEntityReferenceDto } from '@/interfaces';
 
@@ -49,7 +49,10 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps): React.JSX.El
     onCloseModal,
   } = props;
 
-  const { styles } = useStyles({});
+  const { styles } = useStyles(props.styleValue);
+
+  const headerTextColor = props.styleValue?.font?.color ?? props.styleValue?.styleCss?.color;
+  const headerFontFamily = props.styleValue?.font?.type ?? props.styleValue?.styleCss?.fontFamily;
   const [modalId] = useState(nanoid()); // use generated value because formId was changed. to be reviewed
   const [state, setState] = useState<IEntityPickerState>({ showModal: true });
   const hidePickerDialog = (): void => {
@@ -248,13 +251,11 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps): React.JSX.El
         <DataTable
           onDblClick={onDblClick}
           options={{ omitClick: true }}
-          striped
           rowDividers
           rowAlternateBackgroundColor={getTableDefaults().rowAlternateBackgroundColor}
-          headerBackgroundColor="#ffffff"
-          headerFontSize={getTableDefaults().headerFontSize}
-          headerFontWeight={getTableDefaults().headerFontWeight}
-          headerFontFamily={getTableDefaults().headerFontFamily}
+          headerBackgroundColor="transparent"
+          {...(isNotNullOrWhiteSpace(headerTextColor) ? { headerTextColor } : {})}
+          {...(isNotNullOrWhiteSpace(headerFontFamily) ? { headerFontFamily } : {})}
         />
       </>
     </Modal>

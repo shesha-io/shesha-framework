@@ -2,7 +2,7 @@ import { CSSProperties, ReactNode, useEffect, useRef } from 'react';
 import * as React from 'react';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
-import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { getSettings } from './settingsForm';
 import { ShaIcon } from '@/components/shaIcon';
 import { AlertComponentDefinition, AlertType, IAlertComponentProps } from './interfaces';
@@ -55,9 +55,7 @@ const AlertComponent: AlertComponentDefinition = {
   name: 'Alert',
   icon: <ExclamationCircleOutlined />,
   getWrapperStyle: (model) => ({ style: { dimensions: model.dimensions } }),
-  calculateModel: (model, allData) => ({
-    evaluatedMessage: evaluateString(model.text, allData),
-    evaluatedDescription: evaluateString(model.description, allData),
+  calculateModel: (_model, allData) => ({
     formMode: allData.form?.formMode ?? 'readonly',
   }),
   Factory: ({ model, calculatedModel, apiContext }) => {
@@ -65,7 +63,7 @@ const AlertComponent: AlertComponentDefinition = {
     const handleEvent = useEvents<void>(model.componentName);
 
     const { alertType, showIcon, closable, icon } = model;
-    let { evaluatedMessage, evaluatedDescription, formMode } = calculatedModel;
+    let { formMode } = calculatedModel;
 
     const componentApi = useComponentApi();
     const inputRef = useRef(null);
@@ -85,18 +83,10 @@ const AlertComponent: AlertComponentDefinition = {
 
     if (model.hidden === true) return null;
 
-    if (formMode === 'designer') {
-      const previewData = alertType ? defaultTextForPreview[alertType] : undefined;
-      if (previewData) {
-        if (isNullOrWhiteSpace(evaluatedMessage))
-          evaluatedMessage = previewData.text;
-        if (isNullOrWhiteSpace(evaluatedDescription))
-          evaluatedDescription = previewData.description;
-      }
-    }
+    const previewData = formMode === 'designer' && isDefined(alertType) ? defaultTextForPreview[alertType] : undefined;
 
     const renderContent = (content: string | React.ReactNode): ReactNode => {
-      if (typeof content === 'string') {
+      if (typeof content === 'string' && !isNullOrWhiteSpace(content)) {
         const contentStr = isDefined(content) ? content.replaceAll('\n', '<br>') : '';
         const hasHtmlTags = contentStr.match(/<\/?[a-z][\s\S]*>/i);
 
@@ -126,8 +116,8 @@ const AlertComponent: AlertComponentDefinition = {
       return null;
     };
 
-    const messageContent = renderContent(evaluatedMessage);
-    const descriptionContent = evaluatedDescription ? renderContent(evaluatedDescription) : null;
+    const messageContent = renderContent(isNullOrWhiteSpace(model.text) ? previewData?.text ?? '' : model.text);
+    const descriptionContent = renderContent(isNullOrWhiteSpace(model.description) ? previewData?.description ?? '' : model.description);
 
     return (
       <Alert

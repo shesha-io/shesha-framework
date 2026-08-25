@@ -112,19 +112,21 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     },
                   },
                   validationDependencies: ['getEntityUrl'],
-                  settingsValidationErrors: [],
                   jsSetting: true,
                 })
                 .addSettingsInput({
                   id: nanoid(),
-                  inputType: 'autocomplete',
+                  inputType: 'endpointsAutocomplete',
                   allowClear: true,
                   propertyName: 'getEntityUrl',
                   label: 'Get Entity URL',
                   labelAlign: 'right',
                   parentId: dataTabId,
                   hidden: false,
-                  dataSourceType: 'url',
+                  size: 'small',
+                  mode: 'url',
+                  httpVerb: 'get',
+                  jsSetting: true,
                   validate: {
                     required: {
                       _code: 'return !getSettingValue(data?.entityType);',
@@ -133,9 +135,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     },
                   },
                   validationDependencies: ['entityType'],
-                  dataSourceUrl: '/api/services/app/Api/Endpoints',
-                  settingsValidationErrors: [],
-                  useRawValues: true,
                 })
                 .addSettingsInputRow({
                   id: nanoid(),
@@ -411,6 +410,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               valueTitle: 'Value',
                               labelName: 'key',
                               valueName: 'value',
+                              valueEditor: 'expression',
                               tooltip:
                                 'Additional properties you want to be passed when the form gets submitted like parentId in the case where the modal is used in a childTable. ' +
                                 'Also note you can use Mustache expression like {{id}} for value property. \n\n' +

@@ -1,12 +1,5 @@
-import {
-  FC,
-  PropsWithChildren,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-  useSyncExternalStore,
-} from 'react';
+/* eslint @typescript-eslint/strict-boolean-expressions: "error" */
+import { FC, PropsWithChildren, useCallback, useContext, useEffect, useState, useSyncExternalStore } from 'react';
 import { useFormDesignerComponentGroups } from '../form/hooks';
 import { FormMode, IConfigurableFormComponent, IFlatComponentsStructure, IFormSettings, isConfigurableFormComponent } from '../form/models';
 import {
@@ -24,6 +17,8 @@ import ConditionalWrap from '@/components/conditionalWrapper';
 import { DataContextProvider } from '../dataContextProvider';
 import ParentProvider from '../parentProvider';
 import { SheshaCommonContexts } from '../dataContextManager/models';
+import { ValidationCollectorContext } from '../validator/contexts';
+import { useFormBuilderFactory } from '@/form-factory/hooks';
 
 export interface IFormDesignerProviderProps {
   flatMarkup: IFlatComponentsStructure;
@@ -41,6 +36,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   const formPersister = useFormPersister();
   const devMode = useIsDevMode();
   const noPageContext = !Boolean(useDataContextManagerActionsOrUndefined()?.getPageContext());
+  const formBuilderFactory = useFormBuilderFactory();
 
   const [formDesigner] = useState<IFormDesignerInstance>(() => {
     return new FormDesignerInstance({
@@ -50,6 +46,7 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
       formFlatMarkup: flatMarkup,
       formSettings,
       logEnabled: devMode,
+      formBuilderFactory,
     });
   });
 
@@ -90,7 +87,9 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
         )}
       >
         <FormDesignerContext.Provider value={formDesigner}>
-          {children}
+          <ValidationCollectorContext.Provider value={formDesigner.validationCollector}>
+            {children}
+          </ValidationCollectorContext.Provider>
         </FormDesignerContext.Provider>
       </ConditionalWrap>
     </ParentProvider>
@@ -201,17 +200,17 @@ const useFormDesignerActiveSettingsTabKey = (): string | undefined => {
 
 export {
   FormDesignerProvider,
-  useFormDesignerOrUndefined,
   useFormDesigner,
-  useFormDesignerMarkup,
-  useFormDesignerSettings,
-  useFormDesignerSelectedComponentId,
-  useFormDesignerSelectedComponent,
-  useFormDesignerSettingsPanelElement,
-  useFormDesignerReadOnly,
-  useFormDesignerIsDebug,
-  useFormDesignerFormMode,
-  useFormDesignerUndoRedo,
-  useFormDesignerIsModified,
   useFormDesignerActiveSettingsTabKey,
+  useFormDesignerFormMode,
+  useFormDesignerIsDebug,
+  useFormDesignerIsModified,
+  useFormDesignerMarkup,
+  useFormDesignerOrUndefined,
+  useFormDesignerReadOnly,
+  useFormDesignerSelectedComponent,
+  useFormDesignerSelectedComponentId,
+  useFormDesignerSettings,
+  useFormDesignerSettingsPanelElement,
+  useFormDesignerUndoRedo,
 };

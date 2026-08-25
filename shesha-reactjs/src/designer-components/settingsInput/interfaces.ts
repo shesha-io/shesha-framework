@@ -47,7 +47,7 @@ export interface IHasModelType {
 
 // Base interface without type-specific properties
 export interface ISettingsInputBase<TValue = unknown> extends IComponentLabelProps,
-  Omit<IConfigurableFormComponent, 'id' | 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName' | 'hidden'> {
+  Omit<IConfigurableFormComponent, 'id' | 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName' | 'hidden' | 'visible'> {
   id?: string | undefined;
   label: string | React.ReactNode;
   propertyName: string;
@@ -66,7 +66,11 @@ export interface ISettingsInputBase<TValue = unknown> extends IComponentLabelPro
 
   /** @deprecated Use `visible` instead (inversion of `hidden`) */
   hidden?: boolean | IPropertySetting<boolean> | undefined;
-  visible?: boolean | undefined;
+  /**
+   * A code evaluator as well as a plain boolean: `addSettingsInputRow` converts a nested input's
+   * `visibleJs` into one, and `getActualModel` resolves it before the input is rendered.
+   */
+  visible?: ValueOrCodeEvaluator<boolean> | undefined;
   visibleJs?: string | undefined;
 
   width?: string | number | undefined;
@@ -365,6 +369,7 @@ export interface BaseLabelValueEditorProps extends ISettingsInputBase<ILabelValu
   valueTitle?: string | undefined;
   valueName?: string | undefined;
   mode?: 'dialog' | 'inline' | undefined;
+  valueEditor?: 'input' | 'expression' | undefined;
 }
 export interface ILabelValueEditorSettingsInputProps extends BaseLabelValueEditorProps {
   type: 'labelValueEditor';

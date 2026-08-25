@@ -1,5 +1,5 @@
 import KeyInformationBar from '@/components/keyInformationBar';
-import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import ParentProvider from '@/providers/parentProvider/index';
@@ -56,7 +56,7 @@ const KeyInformationBarComponent: KeyInformationBarComponentDefinition = {
       });
     })
     .add<IKeyInformationBarComponentProps>(4, (prev, ctx) => ctx.isNew === true ? prev : { ...migratePrevStyles(prev, defaultStyles()) })
-    .add<IKeyInformationBarComponentProps>(5, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev))),
+    .add<IKeyInformationBarComponentProps>(5, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
   initModel: (model) => {
     const tabsModel: IKeyInformationBarComponentProps = {
       ...model,

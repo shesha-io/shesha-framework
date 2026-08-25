@@ -1,22 +1,19 @@
-import { CSSProperties, FC } from 'react';
+import { FC } from 'react';
 import { useMedia } from 'react-use';
+import { useStyles } from './style';
+import { ITablePagerBaseProps } from './tablePaging';
 
-export interface ITablePagerBaseProps {
-  /** Total number of rows to display on the table */
-  totalRows: number;
-  style?: CSSProperties | undefined;
-}
 
-export const TableNoPaging: FC<ITablePagerBaseProps> = ({
-  totalRows,
-  style,
-}) => {
+export const TableNoPaging: FC<Pick<ITablePagerBaseProps, 'totalRows' | 'style' | 'font' | 'stylingBoxJson'>> = (props) => {
+  const { styles } = useStyles({ font: props.font, stylingBoxJson: props.stylingBoxJson });
   const isWider = useMedia('(min-width: 1202px)');
 
   if (!isWider) return null;
 
   return (
-    <span style={style}>Total {totalRows} items</span>
+    <div className={styles.pagerContainer} style={props.style}>
+      <span className={styles.pagerItemsNumber}>Total {props.totalRows} items</span>
+    </div>
   );
 };
 

@@ -28,11 +28,20 @@ export const DatePickerWrapper = forwardRef<HTMLDivElement, IDateFieldProps>((pr
     hideBorder,
     range,
     value,
-    showNow,
     onChange,
     readOnly,
+    disabled,
     defaultToMidnight,
     minuteStep,
+    /* antd's picker accepts only onFocus/onBlur, so the remaining handlers from `getComponentEvents`
+       are bound to the wrapper element. Click, mouse-move and both key events bubble up from the
+       inner input; enter/leave fire on the wrapper itself. */
+    onClick,
+    onMouseEnter,
+    onMouseMove,
+    onMouseLeave,
+    onKeyDown,
+    onKeyUp,
   } = props;
 
   const picker = getPicker(props);
@@ -197,12 +206,23 @@ export const DatePickerWrapper = forwardRef<HTMLDivElement, IDateFieldProps>((pr
 
   if (range === true) {
     return (
-      <div ref={ref} style={{ marginRight: 1 }}>
+      <div
+        ref={ref}
+        style={{ marginRight: 1 }}
+        onClick={onClick}
+        onMouseEnter={onMouseEnter}
+        onMouseMove={onMouseMove}
+        onMouseLeave={onMouseLeave}
+        onKeyDown={onKeyDown}
+        onKeyUp={onKeyUp}
+      >
         <RangePicker
           onCalendarChange={(dates) => {
             if (showTime && defaultToMidnight !== true) handleCalendarRangeChange(dates);
           }}
           className={styles.rangePicker}
+          // The calendar panel is portalled outside the picker, so it takes its own class.
+          classNames={{ popup: { root: styles.popup } }}
           disabledDate={(e) => disabledDate(props, e, formData, globalState)}
           disabledTime={disabledTime(props, formData, globalState)}
           onChange={(dates, datesString) => handleRangePicker(dates, datesString)}
@@ -210,7 +230,7 @@ export const DatePickerWrapper = forwardRef<HTMLDivElement, IDateFieldProps>((pr
           value={rangeMomentValue}
           picker={picker}
           showTime={rangeShowTimeConfig}
-          disabled={readOnly === true}
+          disabled={disabled === true || readOnly === true}
           allowClear
           {...(isDefined(props.styleCss) ? { style: props.styleCss } : {})}
           {...(hideBorder === true ? { variant: 'borderless' } : {})}
@@ -238,15 +258,27 @@ export const DatePickerWrapper = forwardRef<HTMLDivElement, IDateFieldProps>((pr
   }
 
   return (
-    <div ref={ref} style={{ marginRight: 1 }}>
+    <div
+      ref={ref}
+      style={{ marginRight: 1 }}
+      onClick={onClick}
+      onMouseEnter={onMouseEnter}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
+      onKeyDown={onKeyDown}
+      onKeyUp={onKeyUp}
+    >
       <DatePicker
         className={styles.dateField}
+        // The calendar panel is portalled outside the picker, so it takes its own class.
+        classNames={{ popup: { root: styles.popup } }}
         disabledDate={(e) => disabledDate(props, e, formData, globalState)}
         disabledTime={disabledTime(props, formData, globalState)}
         onChange={handleDatePickerChange}
+        disabled={disabled === true}
         {...(hideBorder === true ? { variant: 'borderless' } : {})}
         showTime={showTimeConfig}
-        showNow={showNow === true}
+        showNow
         picker={picker}
         format={pickerFormat}
         onCalendarChange={(dates) => {

@@ -90,41 +90,46 @@ export const CustomLabelValueEditorInputs = (props: ILabelValueEditorProps): Rea
     >
       {({ item, itemOnChange, readOnly }) => {
         const data = item as Record<string, string | null>;
-        // nowrap keeps Label, Value, Colour and Icon on a single line as designed.
-        // The text fields flex-shrink and the colour/icon group stays compact.
+        // Each input is wrapped in its own flex item: InputComponent adds a plain <div>
+        // around the editor when it renders the inheritance popover, so the flex sizing
+        // cannot be put on the editor itself and stay consistent.
         return (
-          <div className={styles.rowInputs} style={{ gap: 8, flexWrap: 'nowrap', alignItems: 'center' }}>
+          <div className={styles.labelValueRow}>
             {!isNullOrWhiteSpace(labelName) && (
-              <InputComponent
-                type="textField"
-                placeholder={labelTitle}
-                size="small"
-                label=""
-                id={labelName}
-                propertyName={labelName}
-                value={data[labelName] ?? ""}
-                width={getWidth("textField", 70)}
-                onChange={(value) => {
-                  itemOnChange({ ...data, [labelName]: value } as ILabelValueItem, undefined);
-                }}
-              />
+              <div className={styles.labelValueField}>
+                <InputComponent
+                  type="textField"
+                  placeholder={labelTitle}
+                  size="small"
+                  label=""
+                  id={labelName}
+                  propertyName={labelName}
+                  value={data[labelName] ?? ""}
+                  width="100%"
+                  onChange={(value) => {
+                    itemOnChange({ ...data, [labelName]: value } as ILabelValueItem, undefined);
+                  }}
+                />
+              </div>
             )}
             {!isNullOrWhiteSpace(valueName) && (
-              <InputComponent
-                type="textField"
-                placeholder={valueTitle}
-                size="small"
-                label=""
-                id={valueName}
-                propertyName={valueName}
-                value={data[valueName]}
-                width={getWidth("textField", 70)}
-                onChange={(value) => {
-                  itemOnChange({ ...data, [valueName]: value } as ILabelValueItem, undefined);
-                }}
-              />
+              <div className={styles.labelValueField}>
+                <InputComponent
+                  type="textField"
+                  placeholder={valueTitle}
+                  size="small"
+                  label=""
+                  id={valueName}
+                  propertyName={valueName}
+                  value={data[valueName]}
+                  width="100%"
+                  onChange={(value) => {
+                    itemOnChange({ ...data, [valueName]: value } as ILabelValueItem, undefined);
+                  }}
+                />
+              </div>
             )}
-            <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
+            <div className={styles.labelValueExtras}>
               {!isNullOrWhiteSpace(colorName) && (
                 <>
                   <InputComponent

@@ -183,6 +183,7 @@ export class GqlLoader<Values extends object = object> implements IFormDataLoade
 
     const fieldsContext: IGetFieldsToFetchContext = {
       getFormFieldsAsync: (formId) => this.#getNestedFormFieldsAsync(formId, visitedForms),
+      getEntityFormIdAsync: (entityType, formType) => this.#configurationLoader.getEntityFormIdAsync(entityType, formType),
     };
 
     const { allComponents: components } = formFlatStructure;

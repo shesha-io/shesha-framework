@@ -15,8 +15,6 @@ export interface IAlertComponentProps extends IConfigurableFormComponent {
 }
 
 interface IAlertComponentCalulatedValues {
-  evaluatedMessage: string;
-  evaluatedDescription: string;
   formMode: FormMode;
 }
 

@@ -206,6 +206,13 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     () => props.apiMode === 'entityName' ? entityType : classNameFromValue,
     [props.apiMode, entityType, classNameFromValue],
   );
+  // `apiMode` decides where the data comes from and only exists for the `api` data source. With the `form`
+  // data source the dynamic mode resolves from the configured/linked entity type, falling back to the type
+  // of the bound value. Scoped to the form resolution only, data fetching keeps using `internalEntityType`
+  const dynamicFormEntityType = useDeepCompareMemo(
+    () => dataSource === 'form' ? (entityType ?? classNameFromValue) : internalEntityType,
+    [dataSource, entityType, classNameFromValue, internalEntityType],
+  );
   const prevRenderedEntityTypeForm = useRef<IRenderedDynamicForm | null>(null);
 
   // the "no entity type" branch below dispatches new state on every call, without this guard it loops.
@@ -295,16 +302,16 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   // show form based on the entity type
   useEffect(() => {
     if (formSelectionMode === 'dynamic') {
-      if (internalEntityType) {
+      if (dynamicFormEntityType) {
         clearedForMissingEntityType.current = false;
         const renderedForm = prevRenderedEntityTypeForm.current;
         const isAlreadyRendered = isDefined(renderedForm) &&
-          isEntityTypeIdEqual(internalEntityType, renderedForm.entityType) &&
+          isEntityTypeIdEqual(dynamicFormEntityType, renderedForm.entityType) &&
           renderedForm.formType === formType;
 
         if (!isAlreadyRendered) {
-          const currentForm: IRenderedDynamicForm = { entityType: internalEntityType, formType };
-          const cachedFormDto = entityTypeFormCache.current[getDynamicFormCacheKey(internalEntityType, formType)];
+          const currentForm: IRenderedDynamicForm = { entityType: dynamicFormEntityType, formType };
+          const cachedFormDto = entityTypeFormCache.current[getDynamicFormCacheKey(dynamicFormEntityType, formType)];
           if (cachedFormDto) {
             // the markup of the previously resolved form is not needed anymore, a pending request
             // would overwrite what is rendered here
@@ -325,15 +332,15 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
             // this branch keeps no rendered identity, so it re-runs until the form type is set and must stay idempotent
             clearResolvedForm();
             setLoadingError(new Error("'Form Type' is required when 'Form Selection Mode' = 'Dynamic'"));
-          } else if (resolutionInFlightKey.current !== getDynamicFormCacheKey(internalEntityType, formType)) {
+          } else if (resolutionInFlightKey.current !== getDynamicFormCacheKey(dynamicFormEntityType, formType)) {
             // the counters must only advance when a request actually starts - bumping them on a pass that
             // resolves nothing discards the response already in flight, and nothing replaces it
             const requestId = ++formResolutionRequestId.current;
             markupRequestId.current++;
-            const inFlightKey = getDynamicFormCacheKey(internalEntityType, formType);
+            const inFlightKey = getDynamicFormCacheKey(dynamicFormEntityType, formType);
             resolutionInFlightKey.current = inFlightKey;
             setFormLoadingState({ isLoading: true, error: null });
-            getEntityFormIdAsync(internalEntityType, formType)
+            getEntityFormIdAsync(dynamicFormEntityType, formType)
               .finally(() => {
                 // an invalidated request no longer owns the key, the replacement request that took it must keep it
                 if (formResolutionRequestId.current === requestId && resolutionInFlightKey.current === inFlightKey)
@@ -367,9 +374,9 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         // the discarded request keeps the key otherwise, and the same entity type coming back resolves nothing
         resolutionInFlightKey.current = null;
         clearResolvedForm();
-        // note : in the `entityName` mode the entity type is part of the configuration, so its absence is the reason
-        // nothing renders and must be stated. In the other modes it comes from the value and isn't known yet
-        setLoadingError(props.apiMode === 'entityName'
+        // note : in the api `entityName` mode the entity type is part of the configuration, so its absence is the
+        // reason nothing renders and must be stated. In the other modes it comes from the value and isn't known yet
+        setLoadingError(dataSource === 'api' && props.apiMode === 'entityName'
           ? new Error("'Entity Type' is required when 'Form Selection Mode' = 'Dynamic'. Bind the sub form to an entity reference property, or set the entity type explicitly.")
           : null);
         setMarkup({
@@ -384,7 +391,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         prevRenderedEntityTypeForm.current = null;
       }
     }
-  }, [clearResolvedForm, formSelectionMode, formType, getEntityFormIdAsync, internalEntityType, props.apiMode, setLoadingError, setMarkup, value]);
+  }, [clearResolvedForm, dataSource, formSelectionMode, formType, getEntityFormIdAsync, dynamicFormEntityType, props.apiMode, setLoadingError, setMarkup, value]);
 
   /**
    * Get final query params taking into account all settings
@@ -565,8 +572,8 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
             return;
           setFormLoadingState({ isLoading: false, error: null });
 
-          if (internalEntityType && formSelectionMode === 'dynamic') {
-            const cacheKey = getDynamicFormCacheKey(internalEntityType, formType);
+          if (dynamicFormEntityType && formSelectionMode === 'dynamic') {
+            const cacheKey = getDynamicFormCacheKey(dynamicFormEntityType, formType);
             if (!entityTypeFormCache.current[cacheKey])
               entityTypeFormCache.current[cacheKey] = response;
           }
@@ -587,7 +594,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
           // the form that failed to load replaces whatever was rendered before, keeping the previous one
           // shows a form that does not belong to the current selection
           setMarkup({ components: [], formSettings: DEFAULT_FORM_SETTINGS, hasFetchedConfig: false });
-          setFormLoadingState({ isLoading: false, error: describeDynamicFormLoadingError(e, formSelectionMode, internalEntityType, formType, formConfig.formId) });
+          setFormLoadingState({ isLoading: false, error: describeDynamicFormLoadingError(e, formSelectionMode, dynamicFormEntityType, formType, formConfig.formId) });
         });
     }
 
@@ -765,7 +772,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
             isScope
             name={`SubForm ${componentName || (formId ? configurableItemIdentifierToString(formId) : "")}`}
             formApi={subFormApi}
-            formFlatMarkup={{ allComponents: state.allComponents, componentRelations: state.componentRelations }}
+            formFlatMarkup={{ allComponents: state.allComponents, componentRelations: state.componentRelations, parents: state.parents }}
           >
             {children}
           </ParentProvider>

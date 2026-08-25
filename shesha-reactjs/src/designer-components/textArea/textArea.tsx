@@ -14,6 +14,7 @@ import {
   migrateCustomFunctions,
   migrateReadOnly,
   migrateHiddenToVisible,
+  migrateStylingBoxToJson,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
@@ -223,7 +224,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
       .add<ITextAreaComponentProps>(5, (prev, context) => context.isNew === true
         ? prev
         : { ...migratePrevStyles(prev, defaultStyles()) })
-      .add<ITextAreaComponentProps>(6, (prev) => migrateHiddenToVisible(prev))
+      .add<ITextAreaComponentProps>(6, (prev) => migrateHiddenToVisible(migrateStylingBoxToJson(prev)))
       .add<ITextAreaComponentProps>(7, (prev) => migratePermissionsToVisiblePermissions(prev)),
   linkToModelMetadata: (model, _): ITextAreaComponentProps => {
     return {

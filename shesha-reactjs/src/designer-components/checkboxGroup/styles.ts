@@ -59,12 +59,12 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: CheckboxGr
       ${dimensionsStyles(model.dimensions)}
       ${paddingStyles(model.stylingBoxJson)}
       ${marginStyles(model.stylingBoxJson)}
-      ${fontStyles(model.font)}
+      ${fontStyles(model.font, model.styleCss)}
 
       >.${prefixCls}-checkbox-wrapper {
         height: 100%;
         align-items: center !important;
-        ${fontStyles(model.font)}
+        ${fontStyles(model.font, model.styleCss)}
       }
 
       /* Checkbox set — styles the box of each option. */

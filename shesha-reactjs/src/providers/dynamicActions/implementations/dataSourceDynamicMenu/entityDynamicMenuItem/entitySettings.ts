@@ -16,7 +16,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
             labelAlign: 'right',
             hidden: false,
             entityAutocompleteType: 'Entity',
-            validate: {},
           },
           {
             id: nanoid(),
@@ -25,8 +24,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
             label: 'Max Result Count',
             labelAlign: 'right',
             hidden: false,
-            validate: {},
-            settingsValidationErrors: [],
           },
         ],
       })
@@ -48,8 +45,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
               label: 'Entity Filter',
               labelAlign: 'right',
               isDynamic: false,
-              validate: {},
-              settingsValidationErrors: [],
               modelType: {
                 _code: 'return getSettingValue(data?.entityType);',
                 _mode: 'code',
@@ -94,7 +89,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
             isDynamic: false,
             placeholder: '',
             description: 'Name of the property that should be used for the tooltip of the button.',
-            validate: {},
             modelType: {
               _code: 'return getSettingValue(data?.entityType);',
               _mode: 'code',

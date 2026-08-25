@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { Alert, Menu, Space } from 'antd';
 import { ButtonGroupItemProps, IButtonGroup, isGroup, isItem } from '@/providers/buttonGroupConfigurator/models';
 import { useAvailableConstantsData } from '@/providers/form/utils';
-import { IButtonGroupProps, VisibilityEvaluator } from './models';
+import { IButtonGroupProps, ItemBooleanEvaluator } from './models';
 import { useSheshaApplication } from '@/providers';
 import { useStyles } from './styles/styles';
 import classNames from 'classnames';
@@ -28,15 +28,25 @@ export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
   const isDesignMode = allData.form?.formMode === 'designer';
 
   const isVisibleBase = (item: ButtonGroupItemProps): boolean => {
-    const { permissions, visible, hidden } = item;
-    if (visible === false || (visible === undefined && hidden === true))
+    const { visiblePermissions, visible } = item;
+    if (visible === false)
       return false;
 
-    const granted = anyOfPermissionsGranted(permissions || []);
+    const granted = anyOfPermissionsGranted(visiblePermissions || []);
     return granted;
   };
 
-  const isGroupVisible = (group: IButtonGroup, itemVibilityFunc: VisibilityEvaluator): boolean => {
+  const isDisabledBase = (item: ButtonGroupItemProps): boolean => {
+    const { editModePermissions, disabled } = item;
+    if (disabled === true)
+      return true;
+
+    const granted = anyOfPermissionsGranted(editModePermissions || []);
+    return !granted;
+  };
+
+
+  const isGroupVisible = (group: IButtonGroup, itemVibilityFunc: ItemBooleanEvaluator): boolean => {
     if (!isVisibleBase(group))
       return false;
 
@@ -56,8 +66,12 @@ export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
   const getIsVisible = (item: ButtonGroupItemProps): boolean => {
     if (isDesignMode)
       return true; // show visibility indicator
-
     return (isItem(item) && isVisibleBase(item)) || (isGroup(item) && isGroupVisible(item, getIsVisible));
+  };
+
+  // Return the disabled state of a button. A button is disabled if the user is not permitted or disabled setting is true
+  const getIsDisabled = (item: ButtonGroupItemProps): boolean => {
+    return isDisabledBase(item);
   };
 
   const resolvedItems = props.items;
@@ -71,14 +85,24 @@ export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
     return (
       <Space.Compact size={size} style={{ ...props.styleCss, ...getOverflowStyle(true, false) }} className={classNames(styles.shaHideEmpty, styles.shaButtonGroupContainer)}>
         <Space size={gap}>
-          {filteredItems.map((item) =>
-            (<InlineItem styles={item.styleCss} item={item} uuid={item.id} size={item.size ?? size} getIsVisible={getIsVisible} appContext={allData} key={item.id} buttonComponent={buttonComponent} />),
-          )}
+          {filteredItems.map((item) => (
+            <InlineItem
+              styles={item.styleCss}
+              item={item}
+              uuid={item.id}
+              size={item.size ?? size}
+              getIsVisible={getIsVisible}
+              getIsDisabled={getIsDisabled}
+              appContext={allData}
+              key={item.id}
+              buttonComponent={buttonComponent}
+            />
+          ))}
         </Space>
       </Space.Compact>
     );
   } else {
-    const menuItems = filteredItems.map((item) => createMenuItem(item, getIsVisible, allData, buttonComponent));
+    const menuItems = filteredItems.map((item) => createMenuItem(item, getIsVisible, getIsDisabled, allData, buttonComponent));
 
     return (
       <div className={classNames(styles.shaResponsiveButtonGroupContainer)}>

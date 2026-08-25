@@ -33,13 +33,12 @@ export const ComponentsContainerSubForm: FC<IComponentsContainerSubFormProps> = 
     [subFormData, globalState],
   );
 
+  const filtered = components.filter(({ customVisibility }) => isNullOrWhiteSpace(customVisibility) || executeExpression(customVisibility));
+
   return (
     <div style={removeUndefinedProperties(style)}>
-      {components
-        .filter(({ customVisibility }) => {
-          return isNullOrWhiteSpace(customVisibility) || executeExpression(customVisibility);
-        })
-        .map((model) => {
+      {filtered.length > 0
+        ? filtered.map((model) => {
           return (
             <FormComponent
               componentModel={{
@@ -52,7 +51,8 @@ export const ComponentsContainerSubForm: FC<IComponentsContainerSubFormProps> = 
               key={model.id}
             />
           );
-        })}
+        })
+        : null}
     </div>
   );
 };

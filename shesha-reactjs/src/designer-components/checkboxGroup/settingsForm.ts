@@ -42,7 +42,8 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                       labelTitle: 'Label', labelName: 'label', valueTitle: 'Value', valueName: 'value',
                       mode: 'dialog', jsSetting: true,
                     }],
-                    visibleJs: 'return getSettingValue(data?.dataSourceType) === "values";',
+                    // An unset data source renders as `values`, so the Items editor stays visible for it.
+                    visibleJs: 'return (getSettingValue(data?.dataSourceType) ?? "values") === "values";',
                   })
                   .addSettingsInputRow({
                     inputs: [{ type: 'referenceListAutocomplete', propertyName: 'referenceListId', label: 'Reference List', jsSetting: true }],

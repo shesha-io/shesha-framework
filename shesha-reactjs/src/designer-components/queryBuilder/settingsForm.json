@@ -47,7 +47,6 @@
             "useRawValues": true,
             "placeholder": "",
             "description": "Type of model that can be fetched using MetadataProvider. Leave empty to use closest metadata provider. Note: you can use mustache syntax to access form fields.",
-            "validate": {},
             "quickviewWidth": "",
             "defaultValue": "",
             "dataSourceUrl": "/api/services/app/Metadata/TypeAutocomplete",
@@ -55,8 +54,7 @@
             "valuePropName": "",
             "quickviewFormPath": "",
             "quickviewGetEntityUrl": "",
-            "quickviewDisplayPropertyName": "",
-            "settingsValidationErrors": []
+            "quickviewDisplayPropertyName": ""
           },
           {
             "id": "MtPY0VOhzmZ1oHiheHYkM",
@@ -78,8 +76,7 @@
               "maxLength": "",
               "message": ""
             },
-            "quickviewWidth": "",
-            "settingsValidationErrors": []
+            "quickviewWidth": ""
           },
           {
             "id": "4367bba8-35c0-4622-bc57-bd8a58eec966",
@@ -89,9 +86,7 @@
             "labelAlign": "right",
             "parentId": "pnl54bf6-f76d-4139-a850-c99bf06c8b69",
             "hidden": false,
-            "description": "If true, the JSON content block is expanded by default",
-            "validate": {},
-            "settingsValidationErrors": []
+            "description": "If true, the JSON content block is expanded by default"
           },
           {
             "id": "cfd7d45e-c7e3-4a27-987b-dc525c412448",

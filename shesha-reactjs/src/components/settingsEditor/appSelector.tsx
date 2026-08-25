@@ -1,5 +1,4 @@
-import { Select } from 'antd';
-import FormItem from 'antd/es/form/FormItem';
+import { Select, Form } from 'antd';
 import { FC } from 'react';
 import { useSettingsEditor } from './provider';
 import { DefaultOptionType } from 'antd/es/select';
@@ -18,9 +17,9 @@ export const AppSelector: FC = () => {
   ];
 
   return (
-    <FormItem>
+    <Form.Item>
       <Select<string> style={{ width: "100%" }} onChange={onSelect} options={options} />
-    </FormItem>
+    </Form.Item>
   );
 };
 

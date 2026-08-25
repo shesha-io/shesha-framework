@@ -10,7 +10,7 @@ import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { DataSourceType, DropdownComponentDefinition, IDropdownComponentProps, IDropdownComponentPropsV1 } from './model';
 import { DropdownSelectRef } from '@/components/dropdown/model';
-import { migrateCustomFunctions, migratePropertyName, migrateReadOnly, migrateHiddenToVisible } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migratePropertyName, migrateReadOnly, migrateHiddenToVisible, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { Dropdown } from '@/components/dropdown/dropdown';
@@ -18,7 +18,7 @@ import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { migratePrevStyles, migrateStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles, defaultTagStyles } from './utils';
-import { useStyles } from './styles';
+import { useStyles } from '@/components/dropdown/styles';
 import { getBooleanPropertyOrUndefined } from '@/utils/object';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { useComponentApi } from '@/providers/componentApi/provider';
@@ -73,6 +73,7 @@ const DropdownComponent: DropdownComponentDefinition = {
             <Dropdown
               {...modelWithoutStyle}
               className={styles.dropdown}
+              popupClassName={styles.popup}
               // Custom style is passed through as-is; everything else is emitted as CSS by `useStyles`
               // so unset properties keep cascading from the theme.
               {...(isDefined(model.styleCss) ? { style: model.styleCss } : {})}
@@ -198,7 +199,7 @@ const DropdownComponent: DropdownComponentDefinition = {
       return result;
     })
     .add<IDropdownComponentPropsV1>(12, (prev) => ({ ...prev, mode: prev.mode ?? 'single' }))
-    .add<IDropdownComponentPropsV1>(13, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev)))
+    .add<IDropdownComponentPropsV1>(13, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev))))
     .add<IDropdownComponentPropsV1>(14, (prev) => {
       const { solidColor: _removed, ...rest } = prev;
       const model: IDropdownComponentProps = { ...rest };

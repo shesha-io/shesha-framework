@@ -3,151 +3,47 @@ import { nanoid } from '@/utils/uuid';
 import { SettingsFormMarkupFactory } from '@/interfaces';
 
 export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
-  const searchableTabsId = nanoid();
   const commonTabId = nanoid();
-  const appearanceTabId = nanoid();
-  const securityTabId = nanoid();
+  const eventsTabId = nanoid();
   const styleRouterId = nanoid();
 
   return {
     components: fbf()
-      .addSearchableTabs({
-        id: searchableTabsId,
-        propertyName: 'settingsTabs',
-        parentId: 'root',
-        label: 'Settings',
-        hideLabel: true,
-        labelAlign: 'right',
-        size: 'small',
+      .addSearchableTabs({ propertyName: 'settingsTabs', parentId: 'root', label: 'Settings', hideLabel: true, labelAlign: 'right', size: 'small',
         tabs: [
-          {
-            key: '1',
-            title: 'Common',
-            id: commonTabId,
-            components: [
-              ...fbf()
-                .addContextPropertyAutocomplete({
-                  id: nanoid(),
-                  propertyName: 'propertyName',
-                  label: 'Property Name',
-                  parentId: commonTabId,
-                  styledLabel: true,
-                  size: 'small',
-                  validate: {
-                    required: true,
-                  },
-                  jsSetting: true,
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  inputs: [{
-                    id: nanoid(),
-                    type: 'codeEditor',
-                    propertyName: 'renderer',
-                    parentId: commonTabId,
-                    label: 'Render HTML',
-                    description: 'Enter custom JSX script that will render a component',
-                    exposedVariables: [
-                      {
-                        id: nanoid(),
-                        name: 'data',
-                        description: 'Form data',
-                        type: 'object',
-                      }.toString(),
-                      {
-                        id: nanoid(),
-                        name: 'globalState',
-                        description: 'The global state',
-                        type: 'object',
-                      }.toString(),
-                    ],
-                  },
-                  {
-                    type: 'switch',
-                    id: nanoid(),
-                    propertyName: 'hidden',
-                    label: 'Hide',
-                    jsSetting: true,
-                    layout: 'horizontal',
-                  },
-                  ],
-                })
-                .toJson(),
-            ],
+          { key: 'common', title: 'Common', id: commonTabId,
+            components: fbf(commonTabId)
+              .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true } })
+              .addSettingsInput({ inputType: 'switch', propertyName: 'visible', label: 'Visible', jsSetting: true, layout: 'horizontal', permissionSettings: true })
+              .addSettingsInputRow({ inputs: [
+                { type: 'dropdown', propertyName: 'contentType', label: 'Content Type', dropdownOptions: [{ label: 'HTML', value: 'html' }, { label: 'JSX', value: 'jsx' }] },
+                { type: 'switch', propertyName: 'sanitize', label: 'Sanitize',
+                  tooltip: 'Remove all scripts and styles. Switch off to allow scripts and styles. This will make it possible to create complex, stylized, and interactive components. USE WITH CAUTION!',
+                },
+              ] })
+              .addSettingsInputRow({ inputs: [
+                { type: 'codeEditor', language: 'html', propertyName: 'html', label: 'Pure HTML', description: 'Enter HTML that will render a component. To access the data, you can use the Mustache syntax.', wrapInTemplate: false,
+                  visibleJs: 'return getSettingValue(data?.contentType) === "html";',
+                },
+                { type: 'codeEditor', propertyName: 'renderer', label: 'JS for Render HTML', description: 'Enter custom JSX script that will render a component',
+                  visibleJs: 'return getSettingValue(data?.contentType) === "jsx";',
+                },
+              ] })
+              .addPropertyRouter({ id: styleRouterId, propertyName: 'propertyRouter1', componentName: 'propertyRouter', label: 'Property router1', labelAlign: 'right',
+                propertyRouteName: { _mode: "code", _code: "    return contexts.canvasContext?.designerDevice || 'desktop';", _value: "" },
+                components: fbf()
+                  .addSettingsInput({ id: nanoid(), inputType: 'codeEditor', propertyName: 'style', label: 'Container Style',
+                    description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
+                  }).toJson(),
+              })
+              .toJson(),
           },
-
-          {
-            key: 'appearance',
-            title: 'Appearance',
-            id: appearanceTabId,
-            components: [
-              ...fbf()
-                .addPropertyRouter({
-                  id: styleRouterId,
-                  propertyName: 'propertyRouter1',
-                  componentName: 'propertyRouter',
-                  label: 'Property router1',
-                  labelAlign: 'right',
-                  parentId: appearanceTabId,
-                  hidden: false,
-                  propertyRouteName: {
-                    _mode: "code",
-                    _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
-                    _value: "",
-                  },
-                  components: [
-                    ...fbf()
-                      .addCollapsiblePanel({
-                        id: nanoid(),
-                        propertyName: 'customStyle',
-                        label: 'Custom Styles',
-                        labelAlign: 'right',
-                        ghost: true,
-                        parentId: styleRouterId,
-                        collapsible: 'header',
-                        content: {
-                          id: nanoid(),
-                          components: [...fbf()
-                            .addSettingsInput({
-                              id: nanoid(),
-                              inputType: 'codeEditor',
-                              propertyName: 'style',
-                              label: 'Style',
-                              description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                            })
-                            .toJson(),
-                          ],
-                        },
-                      })
-                      .toJson(),
-                  ],
-                })
-                .toJson(),
-            ],
-          },
-          {
-            key: '4',
-            title: 'Security',
-            id: securityTabId,
-            components: [
-              ...fbf()
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'permissions',
-                  propertyName: 'permissions',
-                  label: 'Permissions',
-                  jsSetting: true,
-                  size: 'small',
-                  parentId: securityTabId,
-                })
-                .toJson(),
-            ],
-          },
+          { key: 'events', title: 'Events', id: eventsTabId, components: [...fbf(eventsTabId).stdEventHandlers(['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave']).toJson()] },
         ],
       })
       .toJson(),
     formSettings: {
+      isSettingsForm: true,
       colon: false,
       layout: 'vertical' as FormLayout,
       labelCol: { span: 24 },

@@ -345,10 +345,29 @@ export type CheckboxFieldApi = InputComponentApi<boolean | undefined>;
 
 export type DropdownApi = InputComponentApi<number | number[] | string | string[] | (string | number)[] | undefined>;
 
+/**
+ * Autocomplete. The value shape follows the component's Value Format setting: a plain key for
+ * `simple`, an entity reference object for `entityReference`, or whatever the configured Value
+ * Function returns for `custom`. In multiple selection mode it is an array of those.
+ */
+export interface AutocompleteApi extends InputComponentApi<unknown> {
+  /** Whether the component currently allows selecting more than one item. Read-only. */
+  readonly multiple: boolean;
+};
+
 /** Checkbox group. Multi-select only, so the value is always the list of selected item values. */
 export type CheckboxGroupApi = InputComponentApi<string[] | undefined>;
 
 export type SwitchFieldApi = InputComponentApi<boolean | undefined>;
+
+/**
+ * Reference list status. The value is the item value of the reference list item currently displayed,
+ * so writing it switches the component to the matching status.
+ */
+export interface RefListStatusApi extends InputComponentApi<number | undefined> {
+  /** Text shown for the current item, taken from the reference list. Read-only. */
+  readonly itemText: string | undefined;
+};
 
 /**
  * Date field. The value is the serialised date as stored in the form data, so its shape follows the
@@ -364,6 +383,44 @@ export interface DateFieldApi extends InputComponentApi<string | [string | null,
  * Places suggestions.
  */
 export type AddressApi = InputComponentApi<string | undefined>;
+
+/** A single entity selected in an entity picker. */
+export interface EntityPickerSelection {
+  /** Id of the selected entity. */
+  readonly id: string;
+  /** Text shown for the entity, taken from the configured Display Property. */
+  readonly displayName: string;
+};
+
+/**
+ * Entity picker. The value follows the component's Value Format: a plain id string with `simple`,
+ * an entity reference object with `entityReference`, or whatever the custom scripts return. When
+ * Selection Type is Multiple the value is the corresponding array instead.
+ */
+export interface EntityPickerApi extends InputComponentApi<string | string[] | EntityReferenceValue | EntityReferenceValue[] | undefined> {
+  /** Entities currently selected, whatever the configured Value Format is. Read-only. */
+  readonly selectedItems: readonly EntityPickerSelection[];
+  /** Open the selection dialog. */
+  showPicker(): void;
+  /** Close the selection dialog. */
+  hidePicker(): void;
+};
+
+/** An entity reference as stored by a component bound with the `entityReference` value format. */
+export interface EntityReferenceValue {
+  /** Id of the entity. */
+  id: string;
+  /** Display text of the entity. */
+  _displayName: string;
+  /** Full class name of the entity type. */
+  _className: string;
+};
+
+/**
+ * Icon picker. The value is the name of the selected Ant Design icon (for example
+ * `"HeartOutlined"`), or `undefined` when no icon is selected.
+ */
+export type IconPickerApi = InputComponentApi<string | undefined>;
 
 export interface PanelApi extends CommonComponentApi {
   /** Whether the panel is expanded */
@@ -395,4 +452,17 @@ export interface SubFormApi extends BaseComponentApi {
   postSubFormData(): void;
   /** Put sub form data to the backend */
   putSubFormData(): void;
+};
+
+export interface TabsApiTab {
+  visible: boolean;
+  readonly key: string;
+  select(): void;
+}
+
+export interface TabsApi extends CommonComponentApi {
+  /** Current visible tab. The tab index starts from zero */
+  currentTab?: number | undefined;
+  /** List of tabs */
+  readonly tabs: TabsApiTab[];
 };
