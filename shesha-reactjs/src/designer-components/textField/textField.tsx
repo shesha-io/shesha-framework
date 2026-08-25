@@ -81,9 +81,11 @@ const TextFieldComponent: TextFieldComponentDefinition = {
     const passwordComplexity = usePasswordComplexitySettings();
     const formatConfig = isDefined(model.textType) ? TEXT_TYPE_FORMATS[model.textType] : undefined;
 
+    // Auto-format is only configurable for the 'text' type, so ignore any leftover
+    // formatting settings when the type has been switched to email/url/phone/password.
     const formatGroupLengths = useMemo(
-      () => model.enableFormatting === true ? parseGroupLengths(model.formatGroups) : [],
-      [model.enableFormatting, model.formatGroups],
+      () => model.textType === 'text' && model.enableFormatting === true ? parseGroupLengths(model.formatGroups) : [],
+      [model.textType, model.enableFormatting, model.formatGroups],
     );
     const formatSeparator = model.formatSeparator ?? '-';
 
