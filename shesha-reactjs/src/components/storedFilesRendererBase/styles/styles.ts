@@ -258,6 +258,7 @@ export const useStyles = createStyles((
       }
 
       .${prefixCls}-upload-select {
+        width: 100%;
         ${isThumbnail ? thumbnailDimensions : ''}
         flex: 0 0 auto;
         ${uploadControlFont}
@@ -335,17 +336,17 @@ export const useStyles = createStyles((
 
       /* Buttons take the font but keep their own colour — the delete icon stays red, and the upload
          trigger stays the theme link colour, which is what marks them as controls. */
-      .${prefixCls}-btn,
       .${prefixCls}-btn * {
         ${fontStylesNoColor}
-        justify-content: ${justifyContent}
+      }
+
+      .${prefixCls}-btn {
+        justify-content: ${isThumbnail ? '' : justifyContent};
       }
 
       ${isThumbnail ? '' : `
       .${prefixCls}-upload-select .${prefixCls}-btn {
         justify-content: ${justifyContent};
-        /* A shrink-to-fit button has no free space, so justify-content would compute correctly and
-           change nothing visible. The trigger sits on its own row, so it can fill it. */
         width: 100%;
       }
       `}
