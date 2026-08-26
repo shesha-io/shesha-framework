@@ -61,7 +61,7 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent<IAtt
   onDownload?: string | undefined;
   downloadZip?: boolean | undefined;
   filesLayout?: LayoutType | undefined;
-  gap?: number | undefined;
+  gap?: string | number | SizeType | undefined;
   listType: ListType;
   thumbnailWidth?: string | undefined;
   thumbnailHeight?: string | undefined;
