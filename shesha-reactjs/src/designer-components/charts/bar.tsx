@@ -1,5 +1,5 @@
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
+
 import { IToolboxComponent } from '@/interfaces';
 import { BarChartOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
@@ -99,7 +99,7 @@ const BarChartComponent: IToolboxComponent<IChartProps> = {
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   migrator: (m) => m
     .add<IChartProps>(0, (prev) => ({
       chartType: 'bar',

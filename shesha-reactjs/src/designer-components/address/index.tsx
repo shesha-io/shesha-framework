@@ -16,7 +16,7 @@ import { defaultStyles, getAddressValue } from './utils';
 import { useStyles } from './styles';
 import { isIAddressAndCoords } from '@/components/googlePlacesAutocomplete';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { AddressApi } from '@/componentsApi/componentApi';
 import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '../_common/events';
@@ -105,7 +105,7 @@ const AddressCompoment: AddressComponentDefinition = {
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   getDefaultStyles: () => defaultStyles(),
   migrator: (m) => m
     .add<IAddressCompomentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))

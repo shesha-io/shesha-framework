@@ -1,5 +1,5 @@
 import { IToolboxComponent } from '@/interfaces';
-import { executeScriptSync, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { executeScriptSync } from '@/providers/form/utils';
 import { HighlightOutlined } from '@ant-design/icons';
 import parse from 'html-react-parser';
 import DOMPurify from 'dompurify';
@@ -48,7 +48,7 @@ const HtmlComponent: IToolboxComponent<IHtmlComponentProps, IHtmlComponentCalula
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   initModel: (model) => ({
     ...model,
     contentType: model.contentType ?? 'jsx',

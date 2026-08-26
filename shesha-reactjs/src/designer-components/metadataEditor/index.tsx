@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import settingsFormJson from './settingsForm.json';
 import { ApartmentOutlined } from '@ant-design/icons';
 import { FormMarkup } from '@/providers/form/models';
-import { executeScriptSync, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { executeScriptSync } from '@/providers/form/utils';
 import { IToolboxComponent } from '@/interfaces';
 import { IMetadataEditorComponentProps } from './interfaces';
 import { MetadataEditor } from './metadataEditor';
@@ -55,5 +55,5 @@ export const MetadataEditorComponent: IToolboxComponent<IMetadataEditorComponent
     );
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+
 };

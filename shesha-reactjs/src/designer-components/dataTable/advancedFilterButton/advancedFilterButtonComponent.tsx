@@ -1,7 +1,7 @@
 import { migrateHiddenToVisible, migrateReadOnly, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
 import { IToolboxComponent } from '@/interfaces';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { FilterOutlined } from '@ant-design/icons';
 import { AdvancedFilterButton } from './advancedFilterButton';
 import { getSettings } from './settingsForm';
@@ -46,7 +46,7 @@ const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComp
   getDefaultStyles: defaultStyles,
   initModel: (model): IAdvancedFilterButtonComponentProps => ({ ...model, label: '' }),
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   migrator: (m) => m
     .add<IAdvancedFilterButtonComponentProps>(3, (prev) => migrateReadOnly(prev as IAdvancedFilterButtonComponentProps, 'inherited'))
     .add<IAdvancedFilterButtonComponentProps>(4, (prev, ctx) => ctx.isNew === true ? prev : { ...migratePrevStyles(prev, defaultStyles(prev)) })

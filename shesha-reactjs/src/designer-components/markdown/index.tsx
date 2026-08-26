@@ -1,6 +1,6 @@
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
-import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
+
 import { IToolboxComponent } from '@/interfaces';
 import { IInputStyles } from '@/providers/form/models';
 import { removeUndefinedProps } from '@/utils/object';
@@ -46,7 +46,7 @@ const MarkdownComponent: IToolboxComponent<IMarkdownProps> = {
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   initModel: (model) => ({
     ...model,
     content: (!isNullOrWhiteSpace(model.content)

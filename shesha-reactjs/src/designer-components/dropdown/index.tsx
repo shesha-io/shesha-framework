@@ -7,7 +7,7 @@ import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { DownSquareOutlined } from '@ant-design/icons';
 import { IInputStyles, INestedStyleValue, IStyleValue } from '@/providers/form/models';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { DataSourceType, DropdownComponentDefinition, IDropdownComponentProps, IDropdownComponentPropsV1 } from './model';
 import { DropdownSelectRef } from '@/components/dropdown/model';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly, migrateHiddenToVisible, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
@@ -227,7 +227,7 @@ const DropdownComponent: DropdownComponentDefinition = {
       return model;
     }),
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   getDefaultStyles: () => defaultStyles(),
   previewConfiguration: {
     type: 'dropdown',

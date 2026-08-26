@@ -2,7 +2,7 @@ import { IToolboxComponent } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { WarningOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { IStyleValue } from '@/providers';
 import ValidationErrors from '@/components/validationErrors';
 import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
@@ -60,7 +60,7 @@ const ValidationErrorsComponent: IToolboxComponent<IValidationErrorsComponentPro
     );
   },
   /** validationErrors is never hidden and depends on permission */
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   getDefaultStyles: defaultStyles,
   settingsFormMarkup: getSettings,
   migrator: (m) => m

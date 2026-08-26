@@ -3,7 +3,7 @@ import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, mi
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers/form/models';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { CalendarOutlined } from '@ant-design/icons';
 import { useEffect, useRef } from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
@@ -105,7 +105,7 @@ const DateField: DateFieldDefinition = {
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   initModel: (model) => ({
     ...model,
   }),

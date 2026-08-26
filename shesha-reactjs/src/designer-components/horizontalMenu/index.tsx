@@ -3,7 +3,7 @@ import LayoutMenu from "@/components/menu";
 import { ILayoutColor } from "@/components/menu/model";
 import { IConfigurableFormComponent, IToolboxComponent } from "@/interfaces/formDesigner";
 import { IConfigurableComponentContext } from '@/providers/configurableComponent/contexts';
-import { getStyle, validateConfigurableComponentSettings } from "@/providers/form/utils";
+import { getStyle } from "@/providers/form/utils";
 import { useFormData } from "@/providers/formContext";
 import { IConfigurableMainMenu, useMainMenu } from "@/providers/mainMenu";
 import { filterObjFromKeys } from "@/utils";
@@ -175,7 +175,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   migrator: (m) => m
     .add<IMenuListProps>(0, (prev) => ({
       ...migratePrevStyles(prev, defaultStyles()),

@@ -1,7 +1,7 @@
 import { MonitorOutlined } from '@ant-design/icons';
 import { IToolboxComponent } from '@/interfaces';
 import { FormMarkup } from '@/providers/form/models';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
 import { ProcessMonitorProvider } from '@/providers/processMonitor/providers';
@@ -34,7 +34,7 @@ const ProcessMonitor: IToolboxComponent<IProcessMonitorProps> = {
     };
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+
 };
 
 export default ProcessMonitor;

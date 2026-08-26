@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { CheckSquareOutlined } from '@ant-design/icons';
 import { Checkbox, CheckboxRef } from 'antd';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers';
 import { CheckboxComponentDefinition, ICheckboxComponentProps } from './interfaces';
@@ -81,7 +81,7 @@ const CheckboxComponent: CheckboxComponentDefinition = {
   },
   settingsFormMarkup: getSettings,
   getDefaultStyles: () => defaultStyles(),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   migrator: (m) =>
     m
       .add<ICheckboxComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))

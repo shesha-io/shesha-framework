@@ -3,7 +3,7 @@ import EntityTypeAutocomplete, { EntityIdentifier } from "@/components/configura
 import { FormMarkup } from "@/interfaces";
 import { FileSearchOutlined } from "@ant-design/icons";
 import settingsFormJson from './settingsForm.json';
-import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
+
 import { EntityTypeAutocompleteComponentDefinition, IEntityTypeAutocompleteComponentProps } from './interfaces';
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -34,7 +34,7 @@ const EntityTypeAutocompleteComponent: EntityTypeAutocompleteComponentDefinition
     );
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+
   migrator: (m) => m
     .add<IEntityTypeAutocompleteComponentProps>(0, (prev) => ({
       ...prev,
