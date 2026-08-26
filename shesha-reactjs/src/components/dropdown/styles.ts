@@ -2,6 +2,7 @@ import { createStyles } from '@/styles';
 import { IDropdownComponentProps } from '@/designer-components/dropdown/model';
 import { backgroundStyles, borderRadiusStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, marginStyles, paddingStyles, popupAppearanceStyles, shadowStyles, splitBackgroundProperties } from '@/designer-components/_common/styles/utils';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { addPx } from '@/utils/style';
 import { CSSProperties } from 'react';
 
 /**
@@ -62,11 +63,22 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IDr
     .map((colour) => `:not(.${prefixCls}-tag-${colour})`)
     .join('')}`;
 
-  /* Only Filled is borderless. Outlined's border *is* the variant, so it keeps both antd's border
-     and the configured one; Solid draws its own transparent border and likewise keeps it. */
+  /* Only Filled is borderless. Outlined's border *is* the variant, so selecting it draws a line
+     without the Border panel being filled in; Solid keeps whatever the panel configured. */
   const tagVariant = model.tagVariant ?? 'solid';
   const hidesBorder = tagVariant === 'filled';
-  const configuredTagBorder = hidesBorder ? '' : borderStyles(tag?.border);
+  /* Written from the parts rather than through `borderStyles`, whose `border` shorthand collapses an
+     unset width or style to `0px none` — so setting only a colour used to erase the line. */
+  const outlinedLine = tag?.border?.border?.all;
+  const outlinedTagBorder = `
+    border-width: ${addPx(outlinedLine?.width) ?? `${token.lineWidth}px`};
+    border-style: ${isNullOrWhiteSpace(outlinedLine?.style) ? 'solid' : outlinedLine.style};
+    ${isNullOrWhiteSpace(outlinedLine?.color) ? '' : `border-color: ${outlinedLine.color};`}
+    ${borderRadiusStyles(tag?.border)}
+  `;
+  const configuredTagBorder = hidesBorder
+    ? ''
+    : tagVariant === 'outlined' ? outlinedTagBorder : borderStyles(tag?.border);
 
   /* The Font colour is split out for the same reason the background is: emitted at `&&&&` it beats
      the colour each Variant paints. The rest of the font is unrelated and stays on the base rule. */
