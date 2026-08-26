@@ -14,8 +14,8 @@ export type ListType = 'text' | 'thumbnail';
  *
  * The root style groups describe the **list container** — the scrolling box the files sit in — which
  * is what the Appearance tab edits by default. The individual file box has its own nested set under
- * `thumbnail`. (Before v18 this was the other way round: the root held the file box and the
- * container was the nested set. Migration 18 swaps them.)
+ * `thumbnail`. (Before v17 this was the other way round: the root held the file box and the
+ * container was the nested set. Migration 17 swaps them.)
  */
 export interface IAttachmentsEditorDeviceStyles extends IStyleValue {
   filesLayout?: LayoutType | undefined;
@@ -32,7 +32,7 @@ export interface IAttachmentsEditorDeviceStyles extends IStyleValue {
   /** Badge shown on a downloaded file. Device-scoped for the same reason as the toggle above. */
   downloadedIcon?: IconType | undefined;
   /**
-   * Pre-v18 style set for the scrolling container. Retained so the migration can read it off old
+   * Pre-v17 style set for the scrolling container. Retained so the migration can read it off old
    * saved models; nothing renders from it any more.
    *
    * @deprecated the container is the root style set now — use the root groups instead.
@@ -69,7 +69,7 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent<IAtt
   hideFileName?: boolean | undefined;
   /** Style set for one file — see {@link IAttachmentsEditorDeviceStyles.thumbnail}. */
   thumbnail?: IStyleValue | undefined;
-  /** @deprecated the container is the root style set now. Kept so migration 18 can read it. */
+  /** @deprecated the container is the root style set now. Kept so migration 17 can read it. */
   container?: IStyleValue | undefined;
   downloadedFileStyles?: IStyleValue | undefined;
   /** @deprecated device-scoped now. Kept so migration 20 can read it off old saved models. */

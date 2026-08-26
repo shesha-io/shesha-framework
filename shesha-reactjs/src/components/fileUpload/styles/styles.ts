@@ -165,8 +165,12 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
   const shaStoredFilesRenderer = cx(
     'sha-stored-files-renderer',
     css`
-      --thumbnail-width: ${layout ? (width ?? height ?? '54px') : '100%'};
-      --thumbnail-height: ${layout ? (height ?? width ?? '54px') : '100%'};
+      /* firstSet, not nullish-coalescing: these come from caller-supplied CSSProperties, where a
+         dimension can be an empty string. Nullish-coalescing would pass that through, and a custom
+         property that is set but empty does NOT activate the var() fallback at the use site — it
+         just yields an invalid declaration. firstSet treats empty as unset, as CSS does. */
+      --thumbnail-width: ${layout ? firstSet(width, height, '54px') : '100%'};
+      --thumbnail-height: ${layout ? firstSet(height, width, '54px') : '100%'};
       ${styleProvided ? `
       --ant-border-radius-xs: ${borderRadius} !important;
       --ant-border-radius-sm: ${borderRadius} !important;

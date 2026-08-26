@@ -1,6 +1,7 @@
 import { ListType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { createStyles } from '@/styles';
 import { CSSProperties } from 'react';
+import { addPx } from '@/utils/style';
 import { IStyleValue } from '@/providers';
 import { backgroundStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, paddingStyles, shadowStyles } from '@/designer-components/_common/styles/utils';
 interface IModelInterface extends IStyleValue {
@@ -81,10 +82,12 @@ export const useStyles = createStyles((
   ${cssPropertiesToString(model.thumbnailStyleCss)}
 `;
 
+  /* A bare number is not valid CSS for a non-zero length, so configured values go through `addPx`
+     and the fallback carries its own unit. */
   const thumbnailDimensions = `
     ${dimensionsStyles(thumbnail?.dimensions)}
-    width: ${thumbnail?.dimensions?.width ?? 54} !important;
-    height: ${thumbnail?.dimensions?.height ?? 54} !important;
+    width: ${addPx(thumbnail?.dimensions?.width) ?? '54px'} !important;
+    height: ${addPx(thumbnail?.dimensions?.height) ?? '54px'} !important;
   `;
 
   /* Downloaded files are marked by the colour of the name and the badge, not a second box. */

@@ -3,9 +3,9 @@ import { useEffect } from 'react';
 import { FileUpload } from '@/components/fileUpload';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { DataTypes } from '@/interfaces';
-import { FileUploadProvider, IInputStyles, useFormData, useGlobalState } from '@/providers';
+import { FileUploadProvider, IInputStyles, useFormData } from '@/providers';
 import { useForm } from '@/providers/form';
-import { evaluateString } from '@/providers/form/utils';
+import { evaluateString, useAvailableConstantsData } from '@/providers/form/utils';
 import {
   migrateCustomFunctions,
   migrateHiddenToVisible,
@@ -22,7 +22,7 @@ import { useStyles } from './styles';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { FileUploadComponentDefinition, IFileUploadProps } from './interfaces';
-import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getIdOrUndefined } from '@/utils/entity';
 import { getFirstNonEmptyStringPropertyOrUndefined, getStringPropertyOrUndefined } from '@/utils/object';
 import { FileUploadValue } from '@/providers/storedFile/models';
@@ -47,8 +47,11 @@ const FileUploadComponent: FileUploadComponentDefinition = {
     // TODO: refactor and implement a generic way for values evaluation
     const { formSettings, formMode } = useForm();
     const { data } = useFormData();
-    const { globalState } = useGlobalState();
-    const ownerId = evaluateString(model.ownerId, { data, globalState });
+    /* Resolve the template against the DataContext model (application/page/form/contexts) rather
+       than the deprecated GlobalState. The context bag still exposes `globalState`, so an existing
+       `{{globalState.x}}` owner template keeps resolving. */
+    const executionContext = useAvailableConstantsData();
+    const ownerId = evaluateString(model.ownerId, executionContext);
 
     const { styles } = useStyles(model);
 
@@ -90,8 +93,12 @@ const FileUploadComponent: FileUploadComponentDefinition = {
             <FileUploadProvider
               value={value}
               onChange={(newValue) => {
-                ctx?.handleEvent(undefined, { value: newValue }, model.onChangeCustom);
+                /* Update the form value first, so a script reading the field sees the new value
+                   rather than the previous one, and only run the handler when one is configured —
+                   matching the attachments editor. */
                 onChange(newValue);
+                if (isNotNullOrWhiteSpace(model.onChangeCustom))
+                  ctx?.handleEvent(undefined, { value: newValue }, model.onChangeCustom);
               }}
               ownerId={!isNullOrWhiteSpace(ownerId) ? ownerId : getIdOrUndefined(data) ?? ""}
               ownerType={!isEntityTypeIdEmpty(model.ownerType)

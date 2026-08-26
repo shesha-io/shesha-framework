@@ -68,7 +68,7 @@ export const FileVersionsPopup: FC<IProps> = ({ fileId, popupClassName }) => {
       content={content}
       title="History"
       onOpenChange={handleVisibleChange}
-      {...(isNotNullOrWhiteSpace(popupClassName) ? { rootClassName: popupClassName } : {})}
+      {...(isNotNullOrWhiteSpace(popupClassName) ? { classNames: { root: popupClassName } } : {})}
     >
       <HistoryOutlined />
     </Popover>

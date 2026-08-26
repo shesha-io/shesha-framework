@@ -300,5 +300,6 @@ export const popupAppearanceStyles = (model: {
   background?: IBackgroundValue | undefined;
   border?: IBorderValue | undefined;
 }): string => `
+  ${borderStyles(model.border)}
   ${backgroundStyles(model.background)}
 `;

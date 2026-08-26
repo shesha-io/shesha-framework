@@ -1,6 +1,6 @@
 import { ComponentDefinition } from '@/interfaces';
 import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
-import { ListType } from '../attachmentsEditor/attachmentsEditor';
+import { ListType } from '../attachmentsEditor/interfaces';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
 export interface IFileUploadProps extends IConfigurableFormComponent, IInputStyles {

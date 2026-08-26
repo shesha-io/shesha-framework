@@ -1,4 +1,5 @@
 import { CSSProperties } from 'react';
+import { isDefined } from '@/utils/nullables';
 import { thumbnailDefaultStyles } from '@/designer-components/attachmentsEditor/utils';
 
 /** The thumbnail box appearance, already resolved to CSS by `useFormComponentStyles`. */
@@ -45,8 +46,17 @@ export const calculateFileUploadStyles = (options: IFileUploadStyleOptions): CSS
   if (!enableStyleOnReadonly && isReadOnly && listType !== 'thumbnail') {
     // Text mode falls back to the plain default border. This is the *thumbnail* default: the root
     // style set describes the scrolling container, whose default border is deliberately none.
-    const defaultBorder = thumbnailDefaultStyles().border?.border?.all ?? {};
-    return { ...dimensions, border: `${defaultBorder.width} ${defaultBorder.style} ${defaultBorder.color}` };
+    const defaultBorder = thumbnailDefaultStyles().border?.border?.all;
+    /* Every part of the shorthand is optional, and a missing one would produce the literal
+       "undefined undefined undefined" rather than a border. Emit it only when all three are set,
+       and otherwise leave the border alone. */
+    const hasAllParts = isDefined(defaultBorder) &&
+      isDefined(defaultBorder.width) &&
+      isDefined(defaultBorder.style) &&
+      isDefined(defaultBorder.color);
+    return hasAllParts
+      ? { ...dimensions, border: `${defaultBorder.width} ${defaultBorder.style} ${defaultBorder.color}` }
+      : { ...dimensions };
   }
 
   return box;

@@ -16,7 +16,13 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
   /* A dragger renders a drop area with a plain text list and has no tile, whatever listType says —
      so the tile's box panels must not be offered for one either. */
   const THUMBNAIL_ONLY_JS = 'return getSettingValue(data?.listType) === "thumbnail" && getSettingValue(data?.isDragger) !== true;';
-  const FILE_NAME_ONLY_JS = 'return getSettingValue(data?.listType) !== "thumbnail";';
+  /* Align applies only to a plain file-name list: a thumbnail tile centres its content, and so does a
+     dragger's drop area. The two Font variants must between them cover every combination, or a model
+     saved with both thumbnail and dragger set (reachable through jsSetting, and possible in older
+     saved forms) would show no Font panel at all — so the no-Align variant is the fallback rather
+     than a second positive condition. */
+  const FILE_NAME_WITH_ALIGN_JS = 'return getSettingValue(data?.listType) !== "thumbnail" && getSettingValue(data?.isDragger) !== true;';
+  const NO_ALIGN_JS = 'return getSettingValue(data?.listType) === "thumbnail" || getSettingValue(data?.isDragger) === true;';
 
   const listTypeOptions = [
     { value: 'text', label: 'File name' },
@@ -84,8 +90,8 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                     // content is forced to centre, so the input would collect a value that never
                     // renders. Two variants of the panel, one with Align and one without, keep it
                     // visible only where it does something (matching releases/0.45).
-                    .stdContainer((fb) => fb.stdFontPanel('font'), FILE_NAME_ONLY_JS)
-                    .stdContainer((fb) => fb.stdFontPanel('font', ['font.align']), THUMBNAIL_ONLY_JS)
+                    .stdContainer((fb) => fb.stdFontPanel('font'), FILE_NAME_WITH_ALIGN_JS)
+                    .stdContainer((fb) => fb.stdFontPanel('font', ['font.align']), NO_ALIGN_JS)
                     // The box styles describe the thumbnail tile, which only exists in thumbnail
                     // mode. In file-name mode the component is a plain file name and an upload
                     // button with no box to style, so these panels are hidden rather than left to

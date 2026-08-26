@@ -755,6 +755,9 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           content={actions}
           trigger="hover"
           placement="top"
+          /* Same pair as the text-mode path below: the built-in padding rule plus whatever the
+             Appearance tab configured. The popover is portalled, so it cannot inherit either. */
+          classNames={{ root: classNames(styles.actionsPopover, componentClassNames.actionsPopover) }}
         >
           {content}
         </Popover>

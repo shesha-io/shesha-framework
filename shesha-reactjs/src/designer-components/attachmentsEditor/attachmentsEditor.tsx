@@ -1,8 +1,8 @@
 import { FolderAddOutlined } from '@ant-design/icons';
-import { CSSProperties, useEffect } from 'react';
+import { CSSProperties, useEffect, useMemo } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { DataTypes } from '@/interfaces';
-import { IInputStyles, IStyleValue, useForm, useFormData, useGlobalState } from '@/providers';
+import { IInputStyles, IStyleValue, useForm, useFormData } from '@/providers';
 import {
   evaluateString,
   executeScriptSync,
@@ -186,9 +186,11 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
   Factory: ({ model, apiContext }) => {
     const form = useForm();
     const { data } = useFormData();
-    const { globalState } = useGlobalState();
     const executionContext = useAvailableConstantsData();
-    const ownerId = evaluateString(model.ownerId, { data: data, globalState });
+    /* Resolve the template against the DataContext model (application/page/form/contexts) rather
+       than the deprecated GlobalState. The context bag still exposes `globalState`, so an existing
+       `{{globalState.x}}` owner template keeps resolving. */
+    const ownerId = evaluateString(model.ownerId, executionContext);
     const resolvedOwnerId = isNotNullOrWhiteSpace(ownerId) ? ownerId : getIdOrUndefined(data) ?? "";
 
     // Both non-editable modes stop the user mutating the attachment list: read-only shows the files
@@ -205,6 +207,30 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
     const downloadedFileStyleCss = useActualContextExecution<CSSProperties>(model.downloadedFileStyles?.style, undefined, {});
 
     const { styles } = useStyles({ ...model, thumbnailStyleCss, downloadedFileStyleCss });
+
+    /* Both are device-scoped (see IAttachmentsEditorDeviceStyles). The framework merges the active
+       device's style set onto the root before the Factory runs, so the value on `model` is already
+       the device one — but the root declaration it resolves through is the deprecated pre-migration
+       property. Reading via the device-styles view says which of the two is meant, and keeps the
+       deprecated declaration reserved for migration 20, its only remaining reader. */
+    const { styleDownloadedFiles = false, downloadedIcon } = model as IAttachmentsEditorDeviceStyles;
+
+
+    /* The renderer marks a downloaded file by colour, and reads that colour off a plain
+       CSSProperties object. Compose it from the Font panel with the evaluated Custom style last, so
+       Custom wins — the same precedence the other style sets use. Only emitted when the feature is
+       on; otherwise the renderer falls back to its own default. */
+    const downloadedFileCss = useMemo<CSSProperties | undefined>(
+      () => styleDownloadedFiles
+        ? {
+          ...(isNotNullOrWhiteSpace(model.downloadedFileStyles?.font?.color)
+            ? { color: model.downloadedFileStyles.font.color }
+            : {}),
+          ...downloadedFileStyleCss,
+        }
+        : undefined,
+      [styleDownloadedFiles, model.downloadedFileStyles?.font, downloadedFileStyleCss],
+    );
 
     const componentApi = useComponentApi();
     useEffect(() => {
@@ -240,13 +266,6 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
         ...executionContext,
       });
     };
-
-    /* Both are device-scoped (see IAttachmentsEditorDeviceStyles). The framework merges the active
-       device's style set onto the root before the Factory runs, so the value on `model` is already
-       the device one — but the root declaration it resolves through is the deprecated pre-migration
-       property. Reading via the device-styles view says which of the two is meant, and keeps the
-       deprecated declaration reserved for migration 20, its only remaining reader. */
-    const { styleDownloadedFiles = false, downloadedIcon } = model as IAttachmentsEditorDeviceStyles;
 
     const hasExtraContent = Boolean(model.customContent);
 
@@ -317,7 +336,7 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
                 }}
                 enableStyleOnReadonly={model.enableStyleOnReadonly}
                 ownerId={resolvedOwnerId}
-                downloadedFileStyles={undefined}
+                downloadedFileStyles={downloadedFileCss}
                 styleDownloadedFiles={styleDownloadedFiles}
                 downloadedIcon={styleDownloadedFiles ? downloadedIcon : undefined}
               />

@@ -91,8 +91,12 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: IFileUploa
         height: auto;
         box-sizing: border-box;
 
+        /* antd repaints the drop area on hover and while a file is dragged over it, so the
+           configured appearance is restated at higher specificity or it visibly disappears
+           mid-interaction — the same reason the tile rule above restates it. */
         &&&&:hover,
         &&&&.${prefixCls}-upload-drag-hover {
+          ${configuredAppearance}
         }
       }
     `

@@ -74,6 +74,16 @@ const swapDeviceStyles = (
   const rest = withoutStyleGroups(device);
   delete rest.container;
 
+  /* In the old shape this legacy key described the *file box*, so leaving it at the device root
+     would hand the file box's spacing to the new scrolling container: migration 19 converts a root
+     `stylingBox` into `stylingBoxJson` when the root has no JSON value yet, baking it in.
+
+     It is dropped rather than moved to `thumbnail`, because migration 19 only ever looks at the
+     device root — a `thumbnail.stylingBox` would be converted by nobody and read by nobody. The
+     real spacing is not lost: `stylingBoxJson` is the live value and travels with the style groups
+     above, and this string is only the superseded form of the same setting. */
+  delete (rest as Record<string, unknown>)[LEGACY_STYLING_BOX];
+
   return {
     // `rest` still carries the old root `font` (it is not in STYLE_GROUPS), which is exactly right:
     // that font described the file name and the file name still reads it from the root.

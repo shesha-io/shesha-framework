@@ -556,7 +556,9 @@ export const FileUpload: FC<IFileUploadProps> = ({
           preview={{
             visible: previewOpen,
             onVisibleChange: (visible) => setPreviewOpen(visible),
-            ...(isNotNullOrWhiteSpace(imagePreviewClassName) ? { rootClassName: imagePreviewClassName } : {}),
+            /* antd 6 deprecates `rootClassName` in favour of the semantic `classNames` API; the
+               portalled preview may never receive the class through the old prop. */
+            ...(isNotNullOrWhiteSpace(imagePreviewClassName) ? { classNames: { root: imagePreviewClassName } } : {}),
             toolbarRender: (original) => (
               <div style={{ display: 'flex', flexDirection: 'row-reverse' }}>
                 {isNotNullOrWhiteSpace(previewImage.uid) && (
