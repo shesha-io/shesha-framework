@@ -1,6 +1,7 @@
 import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
 import { DataTypes, SettingsFormMarkupFactory } from '@/interfaces';
+import { ALL_INPUT_EVENTS_WITHOUT_DOUBLE_CLICK } from '../_common/events';
 
 const isThumbnailJs = 'return getSettingValue(data?.listType) === "thumbnail";';
 const isNotThumbnailJs = 'return getSettingValue(data?.listType) !== "thumbnail";';
@@ -132,11 +133,11 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
           {
             key: 'events', title: 'Events', id: eventsTabId,
             components: fbf(eventsTabId)
-              // The list has no free-text input and no focusable control of its own: files are added
-              // through the antd Upload trigger and acted on through the hover popover. Only the two
-              // events the component actually emits are offered, so the tab cannot advertise a
-              // handler that would silently never run.
-              .stdEventHandlers(['onChange'], DataTypes.array, undefined, 'File List ')
+              /* The same set the other inputs expose, minus onDoubleClick (the house convention for
+                 every input component). The pointer, focus and keyboard events are bound to the
+                 wrapper the component renders into, so they fire for the list as a whole rather than
+                 for an individual file. */
+              .stdEventHandlers([...ALL_INPUT_EVENTS_WITHOUT_DOUBLE_CLICK], DataTypes.array, undefined, 'File List ')
               .addSettingsInput({
                 inputType: 'codeEditor', propertyName: 'onDownload', label: 'On Download', labelAlign: 'right',
                 tooltip: 'Callback that is triggered when a file is downloaded.',

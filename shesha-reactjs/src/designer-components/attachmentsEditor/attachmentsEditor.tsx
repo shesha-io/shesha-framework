@@ -25,6 +25,7 @@ import { GHOST_PAYLOAD_KEY } from '@/utils/form';
 import { containerDefaultStyles, defaultStyles, downloadedFileDefaultStyles, thumbnailDefaultStyles } from './utils';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 import { AdvancedFormats } from '@/interfaces/dataTypes';
+import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '../_common/events';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getIdOrUndefined } from '@/utils/entity';
 import CustomFile from '@/components/customFile';
@@ -41,6 +42,9 @@ import { FileListApi, StoredFileApiModel } from '../../componentsApi/componentAp
 import apiCode from "../../componentsApi/componentApi.ts?raw";
 
 export type { LayoutType, ListType, IAttachmentsEditorDeviceStyles, IAttachmentsEditorProps } from './interfaces';
+
+/** Keeps the events wrapper out of the layout; see the note at its use site. */
+const DISPLAY_CONTENTS: CSSProperties = { display: 'contents' };
 
 const DEVICE_TYPES = ['desktop', 'mobile', 'tablet'] as const;
 type DeviceType = typeof DEVICE_TYPES[number];
@@ -314,6 +318,12 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
             // Only execute custom script if this is a user action (download)
             if (isUserAction && isNotNullOrWhiteSpace(model.onDownload)) executeScript(model.onDownload, fileList);
           };
+
+          /* onChange is bound above instead: it also has to update the component's value, which
+             getComponentEvents does not do. */
+          const listEvents = getComponentEvents<StoredFileModel[]>(
+            model, ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, ctx, value ?? undefined, DataTypes.array,
+          );
           return (
             <AttachmentsEditorProvider
               name={model.componentName}
@@ -330,40 +340,42 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
               onDownload={onDownload}
               value={value ?? undefined}
             >
-              <CustomFile
-                isStub={form.formMode === 'designer'}
-                customActions={model.customActions}
-                allowedFileTypes={model.allowedFileTypes}
-                maxHeight={model.maxHeight}
-                isDragger={model.isDragger}
-                downloadZip={model.downloadZip}
-                filesLayout={model.filesLayout}
-                hasExtraContent={hasExtraContent}
-                isDynamic={model.isDynamic}
-                extraFormId={model.extraFormId}
-                {...model}
-                disabled={isDisabled}
-                allowAdd={enabled && model.allowAdd}
-                allowDelete={enabled && model.allowDelete}
-                allowReplace={enabled && model.allowReplace}
-                allowRename={enabled && model.allowRename}
-                allowViewHistory={model.allowViewHistory}
-                thumbnail={model.thumbnail}
-                thumbnailStyleCss={thumbnailStyleCss}
-                /* The four popups are portalled to the body, so no descendant selector from the
-                   field can reach them — each needs its class handed over explicitly. */
-                classNames={{
-                  actionsPopover: styles.actionsPopover,
-                  historyPopover: styles.historyPopover,
-                  confirmPopover: styles.confirmPopover,
-                  previewMask: styles.previewMask,
-                }}
-                enableStyleOnReadonly={model.enableStyleOnReadonly}
-                ownerId={resolvedOwnerId}
-                downloadedFileStyles={downloadedFileCss}
-                styleDownloadedFiles={styleDownloadedFiles}
-                downloadedIcon={styleDownloadedFiles ? downloadedIcon : undefined}
-              />
+              <div style={DISPLAY_CONTENTS} {...listEvents}>
+                <CustomFile
+                  isStub={form.formMode === 'designer'}
+                  customActions={model.customActions}
+                  allowedFileTypes={model.allowedFileTypes}
+                  maxHeight={model.maxHeight}
+                  isDragger={model.isDragger}
+                  downloadZip={model.downloadZip}
+                  filesLayout={model.filesLayout}
+                  hasExtraContent={hasExtraContent}
+                  isDynamic={model.isDynamic}
+                  extraFormId={model.extraFormId}
+                  {...model}
+                  disabled={isDisabled}
+                  allowAdd={enabled && model.allowAdd}
+                  allowDelete={enabled && model.allowDelete}
+                  allowReplace={enabled && model.allowReplace}
+                  allowRename={enabled && model.allowRename}
+                  allowViewHistory={model.allowViewHistory}
+                  thumbnail={model.thumbnail}
+                  thumbnailStyleCss={thumbnailStyleCss}
+                  /* The four popups are portalled to the body, so no descendant selector from the
+                     field can reach them — each needs its class handed over explicitly. */
+                  classNames={{
+                    actionsPopover: styles.actionsPopover,
+                    historyPopover: styles.historyPopover,
+                    confirmPopover: styles.confirmPopover,
+                    previewMask: styles.previewMask,
+                  }}
+                  enableStyleOnReadonly={model.enableStyleOnReadonly}
+                  ownerId={resolvedOwnerId}
+                  downloadedFileStyles={downloadedFileCss}
+                  styleDownloadedFiles={styleDownloadedFiles}
+                  downloadedIcon={styleDownloadedFiles ? downloadedIcon : undefined}
+                />
+              </div>
             </AttachmentsEditorProvider>
           );
         }}
