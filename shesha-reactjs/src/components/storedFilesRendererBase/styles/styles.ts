@@ -372,7 +372,7 @@ export const useStyles = createStyles((
           transition: none !important;
         }
         height: auto !important;
-        width: ${isThumbnail ? thumbnail?.dimensions?.width ?? '54' : ''} !important;
+        ${isThumbnail ? `width: ${addPx(thumbnail?.dimensions?.width) ?? '54px'} !important;` : ''}
       }
 
       .${prefixCls}-upload-list-item-action {
