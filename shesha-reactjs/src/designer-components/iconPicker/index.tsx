@@ -94,9 +94,9 @@ const IconPickerComponent: IconPickerComponentDefinition = {
       .add<IIconPickerComponentPropsV1>(4, (prev, context) => context.isNew === true
         ? prev
         : { ...migratePrevStyles(prev, defaultStyles()) })
-      .add<IIconPickerComponentPropsV1>(5, (prev) => {
-        prev.hideLabel = true;
-        return prev;
+      .add<IIconPickerComponentPropsV1>(5, (prev, context) => {
+        const defaultHideLabel = context.isNew === true ? false : true;
+        return { ...prev, hideLabel: prev.hideLabel ?? defaultHideLabel };
       })
       .add<IIconPickerComponentPropsV1>(6, (prev) => migrateReadOnly(prev))
       .add<IIconPickerComponentProps>(7, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
