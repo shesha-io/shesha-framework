@@ -29,6 +29,11 @@ import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } 
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
 
+/* The colours step 10 seeded into `tag` before the Variant owned them. Migration 15 clears these. */
+const SEEDED_TAG_BACKGROUND = '#f0f0f0';
+const SEEDED_TAG_BORDER = { width: '1px', style: 'solid', color: '#d9d9d9' } as const;
+const SEEDED_TAG_FONT_COLOUR = '#000';
+
 const DropdownComponent: DropdownComponentDefinition = {
   allowInherit: true,
   type: 'dropdown',
@@ -225,6 +230,49 @@ const DropdownComponent: DropdownComponentDefinition = {
       model.tagVariant = prev.tagVariant ?? (prev.solidColor === false ? 'outlined' : 'solid');
 
       return model;
+    })
+    /* Step 10 seeded tag colours that beat antd's Variant rules, and saved forms still carry them.
+       Only values still equal to those seeds are cleared — a restyled tag keeps what the user set. */
+    .add<IDropdownComponentProps>(15, (prev) => {
+      const clearSeededTagColours = (style: IStyleValue | undefined): IStyleValue | undefined => {
+        if (!isDefined(style)) return style;
+
+        const result: IStyleValue = { ...style };
+
+        if (result.background?.type === 'color' && result.background.color === SEEDED_TAG_BACKGROUND)
+          result.background = { ...result.background, color: '' };
+
+        const sides = result.border?.border;
+        const line = sides?.all;
+        if (isDefined(sides) && isDefined(line) && line.width === SEEDED_TAG_BORDER.width && line.style === SEEDED_TAG_BORDER.style && line.color === SEEDED_TAG_BORDER.color) {
+          const { all: _cleared, ...otherSides } = sides;
+          result.border = { ...result.border, border: otherSides };
+        }
+
+        if (result.font?.color === SEEDED_TAG_FONT_COLOUR) {
+          const { color: _cleared, ...otherFont } = result.font;
+          result.font = otherFont;
+        }
+
+        return result;
+      };
+
+      // The per-device models nest their own `tag` set, the same shape step 10 seeded.
+      const clearDeviceTagColours = (device: IStyleValue | undefined): IStyleValue | undefined => {
+        if (!isDefined(device)) return device;
+        const nested = device as INestedStyleValue<'tag'>;
+        return isDefined(nested.tag)
+          ? { ...nested, tag: clearSeededTagColours(nested.tag) } as IStyleValue
+          : device;
+      };
+
+      return {
+        ...prev,
+        tag: clearSeededTagColours(prev.tag),
+        desktop: clearDeviceTagColours(prev.desktop),
+        tablet: clearDeviceTagColours(prev.tablet),
+        mobile: clearDeviceTagColours(prev.mobile),
+      };
     }),
   settingsFormMarkup: getSettings,
 

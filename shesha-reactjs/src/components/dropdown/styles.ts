@@ -1,7 +1,7 @@
 import { createStyles } from '@/styles';
 import { IDropdownComponentProps } from '@/designer-components/dropdown/model';
 import { backgroundStyles, borderRadiusStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, marginStyles, paddingStyles, popupAppearanceStyles, shadowStyles, splitBackgroundProperties } from '@/designer-components/_common/styles/utils';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { CSSProperties } from 'react';
 
 /**
@@ -62,11 +62,16 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IDr
     .map((colour) => `:not(.${prefixCls}-tag-${colour})`)
     .join('')}`;
 
-  /* Filled and Outlined are borderless variants, so the configured Border is not emitted for them
-     and any border antd would otherwise draw is removed below. Solid keeps the configured border. */
+  /* Only Filled is borderless. Outlined's border *is* the variant, so it keeps both antd's border
+     and the configured one; Solid draws its own transparent border and likewise keeps it. */
   const tagVariant = model.tagVariant ?? 'solid';
-  const hidesBorder = tagVariant === 'filled' || tagVariant === 'outlined';
+  const hidesBorder = tagVariant === 'filled';
   const configuredTagBorder = hidesBorder ? '' : borderStyles(tag?.border);
+
+  /* The Font colour is split out for the same reason the background is: emitted at `&&&&` it beats
+     the colour each Variant paints. The rest of the font is unrelated and stays on the base rule. */
+  const tagFontWithoutColour = fontStyles(isDefined(tag?.font) ? { ...tag.font, color: undefined } : undefined);
+  const tagFontColour = isNullOrWhiteSpace(tag?.font?.color) ? '' : `color: ${tag.font.color};`;
 
   const dropdown = cx('sha-dropdown', css`
       ${marginStyles(model.stylingBoxJson)}
@@ -131,6 +136,9 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IDr
       }
 
       &&&& .${prefixCls}-tag {
+        /* .ant-select-selection-item zeroes --ant-line-width, and custom properties inherit — so
+           without restoring it the tag's own border resolves to 0 and Outlined looks like Filled. */
+        --ant-line-width: ${token.lineWidth}px;
         display: inline-flex;
         align-items: center;
         overflow: hidden;
@@ -140,15 +148,15 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IDr
         ${shadowStyles(tag?.shadow)}
         ${dimensionsStyles(tag?.dimensions)}
         ${paddingStyles(tag?.stylingBoxJson)}
-        ${fontStyles(tag?.font)}
+        ${tagFontWithoutColour}
         ${marginStyles(tag?.stylingBoxJson)}
         ${cssPropertiesToString(tagCustomStyle.rest)}
 
-        /* The label and icon inside the tag carry their own font rules, so the configured font has
-           to be restated here or the tag box resizes without its text following. */
+        /* Restated or the tag box resizes without its text following. Colour is left off so the
+           label keeps inheriting whichever colour won on the tag itself. */
         .anticon,
         span {
-          ${fontStyles(tag?.font)}
+          ${tagFontWithoutColour}
         }
       }
 
@@ -158,13 +166,13 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IDr
          overwrite it. */
       &&&& ${tagColourSelector} {
         ${configuredTagBorder}
+        ${tagFontColour}
         ${backgroundStyles(tag?.background)}
         ${cssPropertiesToString(tagCustomStyle.background)}
       }
 
-      /* Filled and Outlined are borderless by intent, so the tag shows no border regardless of the
-         option colour. (For a colour-carrying tag antd sets its own borderColor on outlined and
-         solid but none on filled, so without this the base border would leak through on filled.) */
+      /* Filled is borderless by intent. antd sets no borderColor for it, so without this the base
+         border would leak through regardless of the option colour. */
       ${hidesBorder ? `
       &&&& .${prefixCls}-tag {
         border: none;
