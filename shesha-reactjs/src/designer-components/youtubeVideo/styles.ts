@@ -63,15 +63,6 @@ export const useStyles = createStyles(({ css, cx }) => {
         }
       }
     }
-
-    .youtube-completion-warning {
-      margin-top: 8px;
-      padding: 8px 12px;
-      background-color: #fff7e6;
-      border: 1px solid #ffd591;
-      border-radius: 4px;
-      font-size: 13px;
-    }
   `);
 
   const youtubeVideoPlaceholder = cx("youtube-video-placeholder", css`
