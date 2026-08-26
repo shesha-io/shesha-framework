@@ -5,7 +5,7 @@ import {
   backgroundStyles,
   fontStyles,
 } from '../_common/styles/utils';
-import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
+import { isNotNullOrWhiteSpace } from '@/utils/nullables';
 
 /**
  * The evaluated nested Custom styles. The framework only executes the root `model.style` into
@@ -124,7 +124,7 @@ export const useStyles = createStyles((
      follows the configured font family. */
   const previewMask = cx('sha-file-list-preview', css`
     &&& .${prefixCls}-image-preview-operations {
-      ${isDefined(model.font?.type) ? `font-family: ${model.font.type};` : ''}
+      ${isNotNullOrWhiteSpace(model.font?.type) ? `font-family: ${model.font.type};` : ''}
     }
   `);
 
