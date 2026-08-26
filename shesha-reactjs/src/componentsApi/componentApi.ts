@@ -297,7 +297,15 @@ export interface CommonComponentApi extends BaseComponentApi {
   readonly style: IComponentStyle;
 }
 
-export interface InputComponentApi<T = unknown> extends CommonComponentApi {
+/**
+ * Everything an input exposes **except** its value: focus, validation and the required flag.
+ *
+ * Split out so a component whose value cannot be assigned can inherit the rest without also
+ * inheriting a writable `value`. Redeclaring `value` as `readonly` on a subinterface is not enough
+ * on its own — `readonly` is not part of assignability, so widening the object back to
+ * `InputComponentApi` restores the write.
+ */
+export interface InputComponentApiBase extends CommonComponentApi {
   /** If 'true', the component is required (for now is working only for binding to the form data) */
   required: boolean;
 
@@ -310,7 +318,9 @@ export interface InputComponentApi<T = unknown> extends CommonComponentApi {
   getErrors(): Promise<string[]>;
   /** Reset to the default value (for now is working only for binding to the form data) */
   reset(): void;
+}
 
+export interface InputComponentApi<T = unknown> extends InputComponentApiBase {
   /** Component value. Readable and writable */
   value: T;
 }
@@ -381,6 +391,63 @@ export interface EntityReferenceApi extends InputComponentApi<string | undefined
 export type CheckboxGroupApi = InputComponentApi<string[] | undefined>;
 
 export type SwitchFieldApi = InputComponentApi<boolean | undefined>;
+
+/**
+ * File upload. The value is the stored file the component is bound to: its id once the file has been
+ * persisted, the `File` itself while a synchronous upload is still pending, or `null` when no file is
+ * attached. Setting it to `null` clears the component.
+ */
+export interface FileUploadApi extends InputComponentApi<File | string | null | undefined> {
+  /** Whether the user can currently upload a file. Combines the Allow Upload setting with the interaction mode. */
+  readonly allowUpload: boolean;
+  /** Whether the user can currently replace the attached file. Combines the Allow Replace setting with the interaction mode. */
+  readonly allowReplace: boolean;
+  /** Whether the user can currently delete the attached file. Combines the Allow Delete setting with the interaction mode. */
+  readonly allowDelete: boolean;
+  /** File extensions the component accepts, e.g. `[".png", ".pdf"]`. An empty list accepts any type. */
+  allowedFileTypes: string[] | undefined;
+};
+
+/**
+ * File list. The value is the collection of files currently attached to the component's owner.
+ *
+ * **Read-only.** The files belong to the storage provider, keyed by owner — they are not part of the
+ * form payload. The component binds to a ghost property that `removeGhostKeys` strips before save,
+ * and `AttachmentsEditorProvider` takes no `value` prop, so an assignment here would update neither
+ * the stored collection nor anything that is persisted. Files are added, replaced and removed by the
+ * user through the component itself, or through the storage provider's own API.
+ */
+export interface FileListApi extends InputComponentApiBase {
+  /**
+   * The files currently attached to the owner. Read-only, and so is the array: the collection is the
+   * storage provider's, so replacing it or mutating it in place changes nothing that is persisted.
+   */
+  readonly value: readonly StoredFileApiModel[] | undefined;
+  /** Whether the user can currently add files. Combines the Allow Add setting with the interaction mode. */
+  readonly allowAdd: boolean;
+  /** Whether the user can currently delete files. Combines the Allow Remove setting with the interaction mode. */
+  readonly allowDelete: boolean;
+  /** Whether the user can currently replace a file. Combines the Allow Replace setting with the interaction mode. */
+  readonly allowReplace: boolean;
+  /** Whether the user can currently rename a file. Combines the Allow Rename setting with the interaction mode. */
+  readonly allowRename: boolean;
+  /** File extensions the component accepts, e.g. `[".png", ".pdf"]`. An empty list accepts any type. */
+  allowedFileTypes: string[] | undefined;
+};
+
+/** One file in a File list. Mirrors the stored-file record the back-end returns. */
+export interface StoredFileApiModel {
+  /** Identifier of the persisted file. */
+  readonly id: string;
+  /** File name including its extension. */
+  readonly name: string;
+  /** Size of the file in bytes. */
+  readonly size: number;
+  /** MIME type reported for the file. */
+  readonly type: string;
+  /** Url the file can be downloaded from. */
+  readonly url: string | undefined;
+}
 
 /**
  * Reference list status. The value is the item value of the reference list item currently displayed,
