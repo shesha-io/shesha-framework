@@ -25,7 +25,7 @@ import { defaultStyles } from './utils';
 import { useStyles } from './styles';
 import { getOverflowStyle } from '../_settings/utils/overflow/util';
 import { ALL_INPUT_EVENTS_WITHOUT_CHANGE, getComponentEvents } from '../_common/events';
-import { useComponentApi } from '@/providers/componentApi/provider';
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { TextAreaApi } from '@/componentsApi/componentApi';
 import { isDefined } from '@/utils/nullables';
 
@@ -65,7 +65,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string && dataFormat === StringFormats.multiline,
   Factory: ({ model }) => {
-    const componentApi = useComponentApi();
+    const componentApi = useComponentApiProvider();
     const inputRef = useRef<TextAreaRef>(null);
     useEffect(() => {
       const apiId = model.id;

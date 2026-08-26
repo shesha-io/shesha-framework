@@ -21,7 +21,7 @@ import { defaultStyles, defaultTagStyles, SEEDED_TAG_BACKGROUND, SEEDED_TAG_BORD
 import { useStyles } from '@/components/dropdown/styles';
 import { getBooleanPropertyOrUndefined } from '@/utils/object';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
-import { useComponentApi } from '@/providers/componentApi/provider';
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { DropdownApi } from '../../componentsApi/componentApi';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { useActualContextExecution } from '@/hooks/formComponentHooks';
@@ -41,7 +41,7 @@ const DropdownComponent: DropdownComponentDefinition = {
   preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.referenceListItem || (dataType === DataTypes.array && dataFormat === ArrayFormats.multivalueReferenceList),
   Factory: ({ model }) => {
-    const componentApi = useComponentApi();
+    const componentApi = useComponentApiProvider();
     const selectRef = useRef<DropdownSelectRef>(null);
     useEffect(() => {
       componentApi?.updateApi<DropdownApi>({

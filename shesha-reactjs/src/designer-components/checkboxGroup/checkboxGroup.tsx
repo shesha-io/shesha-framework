@@ -29,7 +29,7 @@ import { migratePrevStyles } from '../_common-migrations';
 import { defaultStyles } from './utils';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { migrateHiddenToVisible } from '@/designer-components/_common-migrations/migrateSettings';
-import { useComponentApi } from '@/providers/componentApi/provider';
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { CheckboxGroupApi } from '../../componentsApi/componentApi';
 import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '../_common/events';
 
@@ -62,7 +62,7 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
       : model.dataSourceUrl,
   }),
   Factory: ({ model, calculatedModel }) => {
-    const componentApi = useComponentApi();
+    const componentApi = useComponentApiProvider();
     // The group has no single input element, so focus goes through an imperative
     // handle exposed by the group's wrapper div.
     const focusRef = useRef<CheckboxGroupFocusHandle>(null);

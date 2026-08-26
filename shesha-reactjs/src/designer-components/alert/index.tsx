@@ -16,7 +16,7 @@ import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getStringPropertyOrUndefined } from '@/utils/object';
 import { useStyles } from './styles';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
-import { useComponentApi } from '@/providers/componentApi/provider';
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { useEffectOnce } from 'react-use';
 import { AlertApi } from '@/componentsApi/componentApi';
 
@@ -65,7 +65,7 @@ const AlertComponent: AlertComponentDefinition = {
     const { alertType, showIcon, closable, icon } = model;
     let { formMode } = calculatedModel;
 
-    const componentApi = useComponentApi();
+    const componentApi = useComponentApiProvider();
     const inputRef = useRef(null);
     useEffect(() => {
       componentApi?.updateApi<AlertApi>({

@@ -20,7 +20,7 @@ import { migratePermissionsToVisiblePermissions } from '../_common-migrations/mi
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { useStyles } from '@/components/iconPicker/styles/styles';
-import { useComponentApi } from '@/providers/componentApi/provider';
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { IconPickerApi } from '../../componentsApi/componentApi';
 import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '../_common/events';
@@ -37,7 +37,7 @@ const IconPickerComponent: IconPickerComponentDefinition = {
   canBeJsSetting: true,
   preserveDimensionsInDesigner: true,
   Factory: ({ model }) => {
-    const componentApi = useComponentApi();
+    const componentApi = useComponentApiProvider();
     const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {

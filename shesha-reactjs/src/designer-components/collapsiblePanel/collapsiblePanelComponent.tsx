@@ -18,7 +18,7 @@ import { isDefined } from '@/utils/nullables';
 import { isNonEmptyArray } from '@/utils/array';
 import { defaultHeaderStyles as getDefaultHeaderStyles, defaultStyles as getDefaultStyles } from './utils';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
-import { useComponentApi } from '@/providers/componentApi/provider';
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { PanelApi } from '@/componentsApi/componentApi';
 
@@ -66,7 +66,7 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
     }, [sourceModel]);
 
     const collapsedRef = useRef<ICollapseRef>(undefined);
-    const componentApi = useComponentApi();
+    const componentApi = useComponentApiProvider();
     useEffect(() => {
       componentApi?.updateApi<PanelApi>({
         id: model.id,

@@ -21,7 +21,7 @@ import { getSettings } from './settingsForm';
 import { useStyles } from './styles';
 import { defaultStyles } from './utils';
 import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '../_common/events';
-import { useComponentApi } from '@/providers/componentApi/provider';
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { CheckboxFieldApi } from '../../componentsApi/componentApi';
 import { isDefined } from '@/utils/nullables';
@@ -43,7 +43,7 @@ const CheckboxComponent: CheckboxComponentDefinition = {
   preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
   Factory: ({ model, apiContext }) => {
-    const componentApi = useComponentApi();
+    const componentApi = useComponentApiProvider();
     const inputRef = useRef<CheckboxRef>(null);
     useEffect(() => {
       componentApi?.updateApi<CheckboxFieldApi>({
