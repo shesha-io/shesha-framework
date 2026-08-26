@@ -86,6 +86,11 @@ export const defaultStyles = (): INestedStyleValue<'tag'> => {
   };
 };
 
+/* The colours seeded into `tag` before the Variant owned them. Migration 15 clears these. */
+export const SEEDED_TAG_BACKGROUND = '#f0f0f0';
+export const SEEDED_TAG_BORDER = { width: '1px', style: 'solid', color: '#d9d9d9' };
+export const SEEDED_TAG_FONT_COLOUR = '#000';
+
 /**
  * The colour-bearing slots are left empty so the Variant decides them — seeded, they are emitted at
  * `&&&&` and beat antd's variant rules. `border` drops `all` for the same reason: `borderLinesStyles`

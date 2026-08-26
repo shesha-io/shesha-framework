@@ -17,7 +17,7 @@ import { Dropdown } from '@/components/dropdown/dropdown';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { migratePrevStyles, migrateStyles } from '../_common-migrations/migrateStyles';
-import { defaultStyles, defaultTagStyles } from './utils';
+import { defaultStyles, defaultTagStyles, SEEDED_TAG_BACKGROUND, SEEDED_TAG_BORDER, SEEDED_TAG_FONT_COLOUR } from './utils';
 import { useStyles } from '@/components/dropdown/styles';
 import { getBooleanPropertyOrUndefined } from '@/utils/object';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
@@ -28,11 +28,6 @@ import { useActualContextExecution } from '@/hooks/formComponentHooks';
 import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '../_common/events';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
-
-/* The colours step 10 seeded into `tag` before the Variant owned them. Migration 15 clears these. */
-const SEEDED_TAG_BACKGROUND = '#f0f0f0';
-const SEEDED_TAG_BORDER = { width: '1px', style: 'solid', color: '#d9d9d9' };
-const SEEDED_TAG_FONT_COLOUR = '#000';
 
 const DropdownComponent: DropdownComponentDefinition = {
   allowInherit: true,
