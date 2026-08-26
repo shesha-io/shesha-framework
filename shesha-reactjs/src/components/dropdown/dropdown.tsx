@@ -291,7 +291,7 @@ export const Dropdown: FC<IDropdownProps> = ({
         placeholder={placeholder}
         size={size}
         popupMatchSelectWidth={false}
-        style={{ width: 'max-content', height: 'max-content' }}
+        {...(style ? { style } : {})}
         labelRender={(props) => {
           const option = options.find((o) => o.value === props.value);
           return option
