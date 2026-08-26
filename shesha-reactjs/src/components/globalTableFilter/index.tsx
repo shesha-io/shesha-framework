@@ -6,18 +6,12 @@ import { useDataTableStore } from '@/providers';
 
 export interface IGlobalTableFilterProps {
   searchProps?: SearchProps | undefined;
-  block?: boolean | undefined;
   style?: React.CSSProperties | undefined;
 }
 
-export const GlobalTableFilter: FC<IGlobalTableFilterProps> = ({ searchProps, block, style }) => {
+export const GlobalTableFilter: FC<IGlobalTableFilterProps> = ({ searchProps, style }) => {
   const { changeQuickSearch, quickSearch, performQuickSearch } = useDataTableStore();
-
-  const srcProps: SearchProps = {
-    allowClear: true,
-    ...searchProps,
-  };
-
+  const srcProps: SearchProps = { allowClear: true, ...searchProps };
   return (
     <GlobalTableFilterBase
       style={style}
@@ -25,7 +19,6 @@ export const GlobalTableFilter: FC<IGlobalTableFilterProps> = ({ searchProps, bl
       changeQuickSearch={changeQuickSearch}
       performQuickSearch={performQuickSearch}
       quickSearch={quickSearch}
-      block={block}
     />
   );
 };

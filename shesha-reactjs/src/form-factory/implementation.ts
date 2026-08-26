@@ -1,4 +1,4 @@
-﻿import { IAlertComponentProps } from "@/designer-components/alert/interfaces";
+import { IAlertComponentProps } from "@/designer-components/alert/interfaces";
 import { IAutocompleteComponentProps } from "@/designer-components/autocomplete/interfaces";
 import { IButtonsProps } from "@/designer-components/button/buttonGroup/buttonsComponent/interfaces";
 import { ICheckboxComponentProps } from "@/designer-components/checkbox/interfaces";
@@ -43,7 +43,7 @@ import { ITextComponentProps } from "@/designer-components/text/models";
 import { ITextAreaComponentProps } from "@/designer-components/textArea/interfaces";
 import { ITextFieldComponentProps } from "@/designer-components/textField/interfaces";
 import { ITimePickerComponentProps } from "@/designer-components/timeField/models";
-import { DEFAULT_FORM_SETTINGS, IConfigurableFormComponent, IContainerComponentProps, InteractionType, IPropertyMetadata, IToolboxComponent } from "@/interfaces";
+import { DEFAULT_FORM_SETTINGS, getEmptyFlatMarkup, IConfigurableFormComponent, IContainerComponentProps, InteractionType, IPropertyMetadata, IToolboxComponent } from "@/interfaces";
 import { AllComponentsConfig, FluentSettings, FormBuilder, FormBuilderFactory, StandardAppearancePanel, StandardAppearancePanelConfig, StandardFormBuilderMethods } from "./interfaces";
 import { nanoid } from "@/utils/uuid";
 import { linkComponentToModelMetadata, upgradeComponent } from "@/providers/form/utils";
@@ -202,7 +202,7 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
 
   /**
    * `_addProperty` converts `visibleJs` into a `visible` code evaluator, but only for the row
-   * component itself � the inputs inside it are plain objects it never walks, so their `visibleJs`
+   * component itself the inputs inside it are plain objects it never walks, so their `visibleJs`
    * was carried into the markup as an inert string and the input always rendered. Convert each one
    * here instead: `getActualModel` resolves the evaluator when it recurses into the `inputs` array,
    * and `SettingInput` already treats `visible === false` as hidden.
@@ -649,10 +649,7 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
       if (componentDefinition.initModel) formComponent = componentDefinition.initModel(formComponent);
 
       if (componentDefinition.migrator) {
-        formComponent = upgradeComponent(formComponent, componentDefinition, DEFAULT_FORM_SETTINGS, {
-          allComponents: {},
-          componentRelations: {},
-        }, true);
+        formComponent = upgradeComponent(formComponent, componentDefinition, DEFAULT_FORM_SETTINGS, getEmptyFlatMarkup(), true);
       }
     } else
       formComponent.version = "latest";

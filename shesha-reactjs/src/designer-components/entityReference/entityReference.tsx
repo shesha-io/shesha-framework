@@ -8,7 +8,7 @@ import {
   migrateReadOnly,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
+
 import { LinkExternalOutlined } from '@/icons/linkExternalOutlined';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
@@ -160,7 +160,7 @@ const EntityReferenceComponent: EntityReferenceComponentDefinition = {
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   getDefaultStyles: () => defaultStyles(),
   migrator: (m) =>
     m

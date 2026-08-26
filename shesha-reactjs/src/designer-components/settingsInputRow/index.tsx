@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/strict-boolean-expressions: "error" */
 import { IConfigurableFormComponent, UnwrapCodeEvaluators } from "@/interfaces";
 import { isDefined } from '@/utils/nullables';
 import { SettingOutlined } from "@ant-design/icons";
@@ -7,7 +8,6 @@ import { useStyles } from '../inputComponent/styles';
 import { SettingInput } from '../settingsInput/settingsInput';
 import { getWidth } from '../settingsInput/utils';
 import { IInputRowProps, ISettingsInputRowProps, SettingsInputRowDefinition } from './interfaces';
-import { evaluateString } from "@/providers/form/utils";
 import { useShaFormInstance } from "@/providers/form/providers/shaFormProvider";
 import { nanoid } from '@/utils/uuid';
 import { ISettingsInputProps } from '../settingsInput/interfaces';
@@ -22,7 +22,11 @@ type IInputRowInputProps = UnwrapCodeEvaluators<ISettingsInputProps> & {
 };
 
 const InputRowInput = (props: IInputRowInputProps): React.JSX.Element => {
-  const isHidden = typeof props.hidden === 'string' ? evaluateString(props.hidden, { data: props.formData }) : props.hidden;
+  const {
+    parentReadOnly = false,
+    hidden = false,
+    readOnly,
+  } = props;
   const width = getWidth(props.type, props.width);
   // eslint-disable-next-line react-hooks/refs
   const id = useRef(nanoid()).current;
@@ -31,35 +35,36 @@ const InputRowInput = (props: IInputRowInputProps): React.JSX.Element => {
     <SettingInput
       {...props}
       id={props.id ?? id}
-      hidden={isHidden as boolean}
-      readOnly={props.parentReadOnly || props.readOnly}
+      hidden={hidden}
+      readOnly={parentReadOnly || readOnly}
       inline={props.inline}
       width={width}
     />
   );
 };
 
-export const InputRow: FC<UnwrappedInputRowProps> = ({ inputs, readOnly, children, inline, hidden }) => {
+export const InputRow: FC<UnwrappedInputRowProps> = ({ inputs, readOnly, children, inline = false, hidden = false }) => {
   const { styles } = useStyles();
   const { formData } = useShaFormInstance();
 
-  const isHidden = typeof hidden === 'string' ? evaluateString(hidden, { data: formData }) : hidden;
-  return isHidden ? null : (
-    <div className={inline ? styles.inlineInputs : styles.rowInputs}>
-      {inputs?.map((props) => {
-        return (
-          <InputRowInput
-            key={props.id ?? props.propertyName}
-            {...props}
-            readOnly={props.readOnly}
-            parentReadOnly={readOnly}
-            formData={formData}
-          />
-        );
-      })}
-      {children}
-    </div>
-  );
+  return hidden
+    ? null
+    : (
+      <div className={inline ? styles.inlineInputs : styles.rowInputs}>
+        {inputs?.map((props) => {
+          return (
+            <InputRowInput
+              key={props.id ?? props.propertyName}
+              {...props}
+              readOnly={props.readOnly}
+              parentReadOnly={readOnly}
+              formData={formData}
+            />
+          );
+        })}
+        {children}
+      </div>
+    );
 };
 
 const SettingsInputRow: SettingsInputRowDefinition = {
@@ -69,10 +74,14 @@ const SettingsInputRow: SettingsInputRowDefinition = {
   name: 'SettingsInputRow',
   icon: <SettingOutlined />,
   Factory: ({ model }) => {
-    return model.hidden ? null : (
-      <InputRow readOnly={model.readOnly} {...model} />
-    );
+    const { hidden = false } = model;
+    return hidden
+      ? null
+      : (
+        <InputRow readOnly={model.readOnly} {...model} />
+      );
   },
+  customContainerNames: ['inputs'],
 };
 
 export default SettingsInputRow;

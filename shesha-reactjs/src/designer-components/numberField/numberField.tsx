@@ -4,7 +4,7 @@ import { ConfigurableFormItem } from '@/components/formDesigner/components/formI
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { DataTypes, NumberFormats } from '@/interfaces/dataTypes';
 import { IComponentValidationRules, IInputStyles, useMetadataOrUndefined } from '@/providers';
-import { executeScriptSync, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { executeScriptSync } from '@/providers/form/utils';
 import { INumberFieldComponentProps, INumberFieldComponentPropsV1, NumberFieldComponentDefinition } from './interfaces';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly, migrateHiddenToVisible, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { numberToFormattedString } from '@/utils/string';
@@ -243,7 +243,6 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
       })
       .add<INumberFieldComponentProps>(7, (prev) => migratePermissionsToVisiblePermissions(prev)),
 
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   linkToModelMetadata: (model, metadata): INumberFieldComponentProps => {
     const numFormat = isNumberFormatting(metadata.formatting) ? metadata.formatting as INumberFormatting : null;
     const decimalFormat = isDecimalFormatting(metadata.formatting) ? metadata.formatting as IDecimalFormatting : null;

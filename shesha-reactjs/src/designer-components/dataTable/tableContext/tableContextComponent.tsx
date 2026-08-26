@@ -1,5 +1,5 @@
 import { DatabaseOutlined } from '@ant-design/icons';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { TableContext } from './tableContext';
 import { TableContextComponentDefinition } from './models';
 import { getSettings } from './settingsForm';
@@ -36,8 +36,9 @@ const TableContextComponent: TableContextComponentDefinition = {
 
     return initialModel;
   },
+  actualModelPropertyFilter: (name) => name !== 'permanentFilter',
   settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   getFieldsToFetch: (propertyName, rawModel) => {
     return rawModel.sourceType === 'Form' ? [propertyName] : [];
   },

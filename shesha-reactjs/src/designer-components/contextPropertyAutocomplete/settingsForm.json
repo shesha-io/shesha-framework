@@ -150,10 +150,7 @@
            "maxLength":"",
            "message":""
         },
-        "quickviewWidth":"",
-        "settingsValidationErrors":[
-           
-        ]
+        "quickviewWidth":""       
      },
      {
         "id":"hGFqD-MutR75EN0GEInYu",
@@ -168,10 +165,7 @@
         "description":"",
         "validate":{
            
-        },
-        "settingsValidationErrors":[
-           
-        ]
+        }
      }
    ]
 }},
@@ -220,9 +214,6 @@
         "validate":{
            
         },
-        "settingsValidationErrors":[
-           
-        ],
         "description":"A script that returns the style of the element as an object. This should conform to CSSProperties",
         "exposedVariables":[
            {
@@ -310,15 +301,13 @@
             "propertyName": "permissions",
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Permissions",
-            "validate": {},
             "version": 1
           }
         ]
       },
       "collapsible": "header",
       "ghost": true,
-      "hideWhenEmpty": true,
-      "settingsValidationErrors": []
+      "hideWhenEmpty": true
     }
   ],
   "formSettings":{

@@ -3,7 +3,7 @@ import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models'
 import { TagOutlined } from '@ant-design/icons';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import AutocompleteTagGroup from '@/components/autocompleteTagGroup';
 import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -41,7 +41,7 @@ const AutocompleteTagGroupComponent: IToolboxComponent<IAutocompleteTagsOutlined
     );
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+
   migrator: (m) => m
     .add<IAutocompleteTagsOutlinedComponentProps>(0, (prev) => {
       return {

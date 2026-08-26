@@ -1,6 +1,6 @@
 import { GroupOutlined } from '@ant-design/icons';
 import { IContainerComponentProps } from '@/interfaces';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { getSettings } from './settingsForm';
 import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { IConfigurableFormComponent } from '@/providers';
@@ -49,7 +49,7 @@ const ContainerComponent: ContainerComponentDefinition = {
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   migrator: (m) => m
     .add<IContainerComponentPropsV0>(0, (prev) => ({
       ...prev,

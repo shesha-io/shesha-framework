@@ -1,12 +1,13 @@
 import { IStyleValue } from "@/providers/form/models";
-import { IEntityPickerComponentProps } from ".";
+import { IEntityPickerComponentProps } from "./interfaces";
 
-export const defaultStyles = (prev: IEntityPickerComponentProps): IStyleValue => {
-  const { size } = prev;
+
+export const defaultStyles = (prev?: IEntityPickerComponentProps): IStyleValue => {
+  const size = prev?.size;
 
   return {
     border: { hideBorder: false, radiusType: 'all', borderType: 'all', border: { all: { width: '1px', style: 'solid', color: '#d9d9d9' } }, radius: { all: 8 } },
-    dimensions: { width: '100%', height: size === 'small' ? '22px' : size === 'large' ? '38px' : 'auto', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
+    dimensions: { width: '100%', height: size === 'small' ? '22px' : size === 'large' ? '38px' : '32px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
     background: {
       type: 'color',
       color: '#fff',
@@ -29,6 +30,17 @@ export const defaultStyles = (prev: IEntityPickerComponentProps): IStyleValue =>
       color: '#000',
       blurRadius: 0,
       spreadRadius: 0,
+    },
+    stylingBoxJson: {
+      _type: 'styleBox',
+      marginBottom: "0",
+      marginLeft: "0",
+      marginRight: "0",
+      marginTop: "0",
+      paddingBottom: "0",
+      paddingLeft: "0",
+      paddingRight: "0",
+      paddingTop: "0",
     },
   };
 };

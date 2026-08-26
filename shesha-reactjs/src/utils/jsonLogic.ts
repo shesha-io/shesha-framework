@@ -335,7 +335,7 @@ export const convertJsonLogicNode = async (
 
     if (!hasInvalidArguments) {
       const argumentsAreValid = ['and', 'or'].indexOf(operatorName) > -1
-        ? Array.isArray(convertedArgs) && convertedArgs.length > 0
+        ? Array.isArray(convertedArgs) && convertedArgs.filter((a) => isDefined(a)).length > 0
         : true;
       if (argumentsAreValid) {
         if (!result)
@@ -415,7 +415,7 @@ export const convertJsonLogicNodeSync = (
 
     if (!hasInvalidArguments) {
       const argumentsAreValid = ['and', 'or'].indexOf(operatorName) > -1
-        ? Array.isArray(convertedArgs) && convertedArgs.length > 0
+        ? Array.isArray(convertedArgs) && convertedArgs.filter((a) => isDefined(a)).length > 0
         : true;
       if (argumentsAreValid) {
         if (!result)

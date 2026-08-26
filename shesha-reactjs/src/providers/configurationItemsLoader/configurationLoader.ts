@@ -444,13 +444,16 @@ export class ConfigurationLoader implements IConfigurationLoader {
     const requests = this.getExistingRequests(type);
     const key = this.getExistingConfigRequestKey(id, topLevelModule);
     requests[key] = promise;
-    promise.catch((e) => {
+    // This handler exists only to evict the failed request from the cache - callers get the
+    // rejection from `promise` itself, which is what's stored and returned. Rethrowing here would
+    // reject the promise derived by `.catch()`, which nothing holds, so it surfaced as an unhandled
+    // rejection on every failed lookup.
+    promise.catch(() => {
       // schedule removal of current request from cache after 10 seconds
       setTimeout(() => {
         if (requests[key] === promise)
           requests[key] = undefined;
       }, 10000);
-      throw e;
     });
   };
 

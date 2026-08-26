@@ -1,7 +1,7 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { IToolboxComponent } from '@/interfaces';
 import { useForm } from '@/providers/form';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import ParentProvider from '@/providers/parentProvider/index';
 import { nanoid } from '@/utils/uuid';
 import { CodeSandboxSquareFilled } from '@ant-design/icons';
@@ -77,7 +77,7 @@ const CardComponent: IToolboxComponent<ICardComponentProps> = {
   }),
   getDefaultStyles: defaultStyles,
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   customContainerNames: ['header', 'content'],
   migrator: (m) => m
     .add<ICardComponentProps>(1, (prev) => ({ ...migrateFormApi.properties(prev) }))

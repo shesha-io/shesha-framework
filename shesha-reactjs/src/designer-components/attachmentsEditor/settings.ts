@@ -345,8 +345,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 parentId: eventsTabId,
                 hidden: false,
                 description: 'Callback that is triggered when the file is changed.',
-                validate: {},
-                settingsValidationErrors: [],
                 wrapInTemplate: true,
                 templateSettings: {
                   functionName: 'onFileListChanged',
@@ -363,8 +361,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 parentId: eventsTabId,
                 hidden: false,
                 description: 'Callback that is triggered when a file is downloaded.',
-                validate: {},
-                settingsValidationErrors: [],
                 wrapInTemplate: true,
                 templateSettings: {
                   functionName: 'onDownload',

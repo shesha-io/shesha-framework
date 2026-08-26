@@ -1,4 +1,4 @@
- 
+
 import jsdoc from "eslint-plugin-jsdoc";
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
 import stylistic from "@stylistic/eslint-plugin";
@@ -10,6 +10,8 @@ import js from "@eslint/js";
 import reactPlugin from "eslint-plugin-react";
 import hooksPlugin from "eslint-plugin-react-hooks";
 import memoryTracePlugin from "./src/eslint-plugins/eslint-plugin-memory-monitor.js";
+import eslintPluginJsonc from 'eslint-plugin-jsonc';
+import * as jsoncParser from "jsonc-eslint-parser";
 
 const hooksPluginRules = {
     'react-hooks/rules-of-hooks': 'error',
@@ -119,7 +121,6 @@ const baseTsConfig = {
     ],
     ignores: [
         "src/apis/*",
-        "**/__tests__/**/*",
     ],
     plugins: {
         "memory-monitor": memoryTracePlugin,
@@ -352,5 +353,15 @@ export default [
             "no-console": "error",
             '@typescript-eslint/no-var-requires': 'off', // Allow require() in JS files
         }
+    },
+    {
+        files: ["src/**/*.json"],
+        plugins: { jsonc: eslintPluginJsonc },
+        languageOptions: {
+            parser: jsoncParser,
+        },
+        rules: {
+            "jsonc/comma-dangle": "error",
+        },
     },
 ];

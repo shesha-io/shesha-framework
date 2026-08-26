@@ -5,7 +5,7 @@ import { migrateCustomFunctions, migratePropertyName } from '@/designer-componen
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { SelectColumnsButton } from './selectColumnsButton';
 import { SlidersOutlined } from '@ant-design/icons';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 
 export type ISelectColumnsButtonComponentProps = IConfigurableFormComponent;
@@ -31,7 +31,7 @@ const SelectColumnsButtonComponent: IToolboxComponent<ISelectColumnsButtonCompon
     .add<ISelectColumnsButtonComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<ISelectColumnsButtonComponentProps>(2, (prev) => ({ ...migrateFormApi.properties(prev) })),
   settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+
   isHidden: true, // note: to be removed, now is used only for backward compatibility
 };
 

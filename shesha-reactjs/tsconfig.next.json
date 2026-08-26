@@ -9,10 +9,5 @@
     "jsx": "preserve",
     "incremental": true,
     "noEmit": true
-  },
-  "include": [
-    "src",
-    "typings",
-    ".next/types/**/*.ts"
-  ]
+  },  
 }

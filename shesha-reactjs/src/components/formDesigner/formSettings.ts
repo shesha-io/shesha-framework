@@ -2,8 +2,8 @@ import { SettingsFormMarkupFactory } from '@/interfaces';
 import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 
-export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
-  const searchableTabsId = nanoid();
+const searchableTabsId = nanoid();
+export const getFormSettingsFormMarkup: SettingsFormMarkupFactory = ({ fbf }) => {
   const dataTabId = nanoid();
   const appearanceTabId = nanoid();
   const securityTabId = nanoid();
@@ -117,6 +117,9 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               prefix: "GET",
                               mode: "url",
                               httpVerb: "get",
+                              validate: {
+                                required: true,
+                              },
                             },
                             {
                               id: nanoid(),
@@ -136,7 +139,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               version: 3,
                               language: "typescript",
                               wrapInTemplate: true,
-                              validate: {},
                               templateSettings: {
                                 useAsyncDeclaration: true,
                                 functionName: "getLoaderEndpoint",
@@ -158,8 +160,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               mode: "multiple",
                               labelAlign: "right",
                               hidden: false,
-                              validate: {},
-                              settingsValidationErrors: [],
                               tooltip: "A list of fields you want to fetch",
                               parentId: dataLoaderTypeId,
                               version: 2,

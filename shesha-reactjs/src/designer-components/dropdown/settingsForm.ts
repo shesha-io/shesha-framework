@@ -59,7 +59,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   tooltip: 'Specifies whether binding should be to the selected item value or the selected item label (e.g. if you want to save this selected item text to a string property).',
                 })
                 .stdVisibleEditableInputs('full')
-                .addSettingsInput({ inputType: 'switch', propertyName: 'validate.required', label: 'Required', size: 'small', layout: 'horizontal', jsSetting: true })
                 .addLabelConfigurator({ propertyName: 'hideLabel', label: 'Label', hideLabel: true })
                 .stdPlaceholderDescriptionInputs()
                 .addSettingsInput({
@@ -109,6 +108,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                     ],
                   }), true)
                 .stdCollapsiblePanel('Validations', (fb) => fb
+                  .addSettingsInput({ inputType: 'switch', propertyName: 'validate.required', label: 'Required', size: 'small', layout: 'horizontal', jsSetting: true })
                   .addSettingsInputRow({
                     inputs: [
                       { type: 'textField', propertyName: 'validate.message', label: 'Message', size: 'small', jsSetting: true },

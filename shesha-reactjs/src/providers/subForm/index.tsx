@@ -772,7 +772,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
             isScope
             name={`SubForm ${componentName || (formId ? configurableItemIdentifierToString(formId) : "")}`}
             formApi={subFormApi}
-            formFlatMarkup={{ allComponents: state.allComponents, componentRelations: state.componentRelations }}
+            formFlatMarkup={{ allComponents: state.allComponents, componentRelations: state.componentRelations, parents: state.parents }}
           >
             {children}
           </ParentProvider>

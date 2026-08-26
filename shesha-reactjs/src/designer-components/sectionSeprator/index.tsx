@@ -1,6 +1,6 @@
 import SectionSeparator from '@/components/sectionSeparator';
 import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { getBooleanPropertyOrUndefined } from '@/utils/object';
 import { LineOutlined } from '@ant-design/icons';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
@@ -52,7 +52,7 @@ const SectionSeparatorComponent: SectionSeparatorComponentDefinition = {
   },
   getDefaultStyles: defaultStyles,
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   initModel: (model) => {
     return {
       ...model,

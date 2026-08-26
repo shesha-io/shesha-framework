@@ -1,4 +1,4 @@
-import { ColProps, FormInstance } from 'antd';
+import { ColProps } from 'antd';
 import type { Rule } from 'antd/lib/form';
 import { FormLayout } from 'antd/lib/form/Form';
 import { FC, RefObject, ReactNode } from 'react';
@@ -15,7 +15,7 @@ import {
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { IHasVersion, Migrator, MigratorFluent } from '@/utils/fluentMigrator/migrator';
 import { IModelMetadata, IPropertyMetadata } from './metadata';
-import { IAjaxResponseBase, IApplicationContext, IErrorInfo, IObjectMetadata, IStyleValue, UnwrapCodeEvaluators } from '..';
+import { IAjaxResponseBase, IApplicationContext, IErrorInfo, IObjectMetadata, IShaFormInstance, IStyleValue, UnwrapCodeEvaluators } from '..';
 import { ISheshaApplicationInstance } from '@/providers/sheshaApplication/application';
 import { AxiosResponse } from 'axios';
 import { FormBuilderFactory } from '@/form-factory/interfaces';
@@ -92,9 +92,7 @@ export interface ComponentFactoryArguments<TModel extends IConfigurableFormCompo
   calculatedModel: TCalculatedModel;
   shaApplication?: ISheshaApplicationInstance;
   apiContext?: IApiContext<TModel>;
-
-  // for backward compatibility
-  form: FormInstance;
+  form: IShaFormInstance;
 }
 
 export type FormFactory<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = never> = FC<ComponentFactoryArguments<TModel, TCalculatedModel>>;

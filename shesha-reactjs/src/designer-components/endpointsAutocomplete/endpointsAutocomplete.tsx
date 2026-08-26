@@ -2,7 +2,7 @@ import { FormMarkup } from '@/providers/form/models';
 import { ApiOutlined } from '@ant-design/icons';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { EndpointsAutocomplete, EndpointsAutocompleteValue } from '@/components/endpointsAutocomplete/endpointsAutocomplete';
 import { EndpointsAutocompleteComponentDefinition, IEndpointsAutocompleteComponentProps } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
@@ -36,7 +36,7 @@ const EndpointsAutocompleteComponent: EndpointsAutocompleteComponentDefinition =
     .add<IEndpointsAutocompleteComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<IEndpointsAutocompleteComponentProps>(2, (prev) => migrateReadOnly(prev))
     .add<IEndpointsAutocompleteComponentProps>(3, (prev) => ({ ...prev, mode: 'url' })),
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+
 };
 
 export default EndpointsAutocompleteComponent;

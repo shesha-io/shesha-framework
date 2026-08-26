@@ -3,7 +3,7 @@ import { CSSProperties, useEffect, useMemo, useRef } from 'react';
 import { useActualContextExecution } from '@/hooks';
 import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { executeScriptSync, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { executeScriptSync } from '@/providers/form/utils';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
@@ -132,7 +132,7 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   validateModel: (model, addModelError) => {
     const dataSourceType = model.dataSourceType ?? 'values';
     if (dataSourceType === 'referenceList' && !isDefined(model.referenceListId))

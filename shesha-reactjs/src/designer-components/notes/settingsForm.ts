@@ -269,7 +269,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   propertyName: 'permissions',
                   label: 'Permissions',
                   parentId: securityTabId,
-                  validate: {},
                   jsSetting: true,
                 })
                 .toJson(),
