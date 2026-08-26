@@ -419,17 +419,20 @@ export const FileUpload: FC<IFileUploadProps> = ({
     const showThumbnailControls = listType === 'thumbnail';
     const showTextControls = listType === 'text';
 
+    /* In thumbnail mode with the name hidden, both children below are suppressed and the wrapper
+       chain (span > Space > .thumbnail-item-name) renders empty — but Space still lays out its gap,
+       so the tile gains a strip of blank space under it. Skip the whole subtree instead of hiding
+       its innermost element. The thumbnail controls are rendered separately above, so nothing else
+       is lost by dropping it. */
+    const showFileNameRow = showTextControls || hideFileName !== true;
+
     return (
       <div>
         {showThumbnailControls && styledfileControls()}
-        <span title={file.name}>
-          <Space>
-            <div className="thumbnail-item-name">
-              {/* Hide File Name is a thumbnail-mode setting: it drops the caption under the tile.
-                  In file-name mode the name *is* the component, so suppressing it would leave an
-                  empty form item showing nothing but the label. The controls stay outside this
-                  condition so they remain reachable either way. */}
-              {(showTextControls || hideFileName !== true) && (
+        {showFileNameRow && (
+          <span title={file.name}>
+            <Space>
+              <div className="thumbnail-item-name">
                 <a
                   style={{ marginRight: '5px' }}
                   onClick={isImageType(file.type ?? "")
@@ -443,11 +446,11 @@ export const FileUpload: FC<IFileUploadProps> = ({
                 >
                   {`${file.name} (${filesize(isDefined(file.size) ? file.size : 0)})`}
                 </a>
-              )}
-              {showTextControls && fileControls(appPrimaryColor)}
-            </div>
-          </Space>
-        </span>
+                {showTextControls && fileControls(appPrimaryColor)}
+              </div>
+            </Space>
+          </span>
+        )}
       </div>
     );
   };

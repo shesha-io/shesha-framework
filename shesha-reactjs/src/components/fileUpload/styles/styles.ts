@@ -92,17 +92,9 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
   // repeating `=== true` at every interpolation.
   const layout = layoutProp === true;
 
-  // The refactored File designer-component owns the appearance itself, via an emotion class built
-  // from the Appearance settings, and passes no computed style here. In that case this hook must not
-  // stamp its own box appearance or its hardcoded 54px tile sizing: those carry `!important` and
-  // would beat the component class, pinning the container (and with it the file name) to the tile
-  // size. When a caller does supply a style the previous behaviour is kept unchanged.
   const styleProvided = isDefined(style) && Object.keys(style).length > 0;
 
-  // The configured component styles (background, border, shadow, dimensions) describe the
-  // thumbnail tile, so they must only be applied in thumbnail mode. In text mode the file is
-  // shown as a plain filename and must not pick up the thumbnail's shadow/border/box styling.
-  const isThumbnail = listType === 'thumbnail';
+  const isThumbnail = listType === 'thumbnail' && isDragger !== true;
   const extraStyles = isThumbnail ? toCssInterpolation(style) : {};
 
   const justifyContentMap: Record<TextAlignType, string> = {
@@ -149,10 +141,14 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
     box-shadow: ${boxShadow};
   `;
 
+  /* The empty/upload tile takes the font family only — never colour, size, weight or alignment,
+     which would make it read as content, and never the box appearance. `style` is the whole computed
+     style, so it is narrowed here rather than interpolated wholesale. */
+  const uploadTileFontCss = isThumbnail ? `font-family: ${fontFamily};` : '';
+
   // Border/radius emitted only when the caller supplied a style; otherwise the component class owns
   // the box appearance (see the note on styleProvided above).
   const ownedBorderStyles = styleProvided ? commonBorderStyles : '';
-  const ownedRadiusCss = styleProvided ? borderRadiusCss : '';
 
   // Text styling falls back to hardcoded defaults (25px Segoe UI, the primary colour) when no style
   // is supplied. On the component-class path that would override the configured Font, so emit
@@ -220,6 +216,11 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
         flex-direction: column;
       }
 
+      /* The empty/upload tile takes the dimensions and the font family only. It is a control to
+         click rather than content to look at, so the configured background, border and shadow are
+         deliberately not emitted here — unlike the filled tile below, which keeps the full box
+         appearance. The computed style is the whole box (background included), so only its font
+         family is taken here rather than interpolating it wholesale. */
       .${prefixCls}-upload-select,
       .${prefixCls}-upload.${prefixCls}-upload-select {
         ${styleProvided ? `
@@ -228,17 +229,17 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
         ` : ''}
         margin: 0 !important;
         box-sizing: border-box !important;
-        ${ownedBorderStyles}
-        ${ownedRadiusCss}
-        ${extraStyles}
+        ${uploadTileFontCss}
       }
 
       >.thumbnail-stub {
         padding: 0 !important;
         box-sizing: border-box !important;
         overflow: hidden !important;
-        /* The designer stub is the tile. When the component class supplies the appearance and
-           dimensions, this hook emits neither, so the class is not outranked here. */
+        /* The designer stub stands in for a *filled* tile — it previews how an attached file will
+           look — so it takes the full configured appearance, unlike .ant-upload-select above. When
+           the component class supplies the appearance and dimensions, this hook emits neither, so
+           the class is not outranked here. */
         ${styleProvided ? `
         background: ${backgroundImage ?? backgroundColor ?? background};
         width: 100% !important;
@@ -406,7 +407,11 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
     css`
       width: 100% !important;
       height: 100% !important;
-      ${borderRadiusCss}
+      /* No radius of its own. The tile (.styled-file-controls) already carries the configured radius
+         and clips with overflow: hidden, so repeating it here rounds a second box *inside* the
+         first: the inner curve does not follow the inner edge of the tile's border, and the
+         mismatch shows as slivers of background at each corner. Clipping is inherited from the
+         tile, so the image still ends up rounded. */
       display: block !important;
       overflow: hidden !important;
 

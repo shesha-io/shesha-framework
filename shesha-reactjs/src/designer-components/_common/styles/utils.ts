@@ -280,26 +280,3 @@ export const fontStyles = (model: IFontValue | undefined, customStyle?: CSSPrope
   return sb.build();
 };
 
-/**
- * Emits the appearance a dropdown popup shares with the input that opens it: background and border.
- *
- * Shared by every component that opens a floating list (a select popup, a picker panel, a suggestion
- * list) so they stay consistent rather than each re-deriving the set.
- *
- * The configured **shadow is deliberately excluded** — popups keep antd's own elevation. On the input
- * a shadow is decorative, but on a panel that overlays the page it is structural, and a configured
- * offset reaches outside the popup's own footprint: `offsetY: -22` paints a band 22px up over the
- * field above it. Elevation is also the one part of a popup users expect to look native, so it is
- * left to the theme. `shadow` is absent from the parameter type on purpose, so a caller cannot pass
- * one and quietly get nothing.
- *
- * Padding is likewise not included: it belongs on the popup root for a list (insetting the whole
- * panel) but on the item for a grid-like panel, so each caller applies it where it fits.
- */
-export const popupAppearanceStyles = (model: {
-  background?: IBackgroundValue | undefined;
-  border?: IBorderValue | undefined;
-}): string => `
-  ${borderStyles(model.border)}
-  ${backgroundStyles(model.background)}
-`;

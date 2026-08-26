@@ -242,6 +242,13 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
       });
     };
 
+    /* Both are device-scoped (see IAttachmentsEditorDeviceStyles). The framework merges the active
+       device's style set onto the root before the Factory runs, so the value on `model` is already
+       the device one — but the root declaration it resolves through is the deprecated pre-migration
+       property. Reading via the device-styles view says which of the two is meant, and keeps the
+       deprecated declaration reserved for migration 20, its only remaining reader. */
+    const { styleDownloadedFiles = false, downloadedIcon } = model as IAttachmentsEditorDeviceStyles;
+
     const hasExtraContent = Boolean(model.customContent);
 
     return (
@@ -312,8 +319,8 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
                 enableStyleOnReadonly={model.enableStyleOnReadonly}
                 ownerId={resolvedOwnerId}
                 downloadedFileStyles={undefined}
-                styleDownloadedFiles={model.styleDownloadedFiles ?? false}
-                downloadedIcon={model.styleDownloadedFiles ?? false ? model.downloadedIcon : undefined}
+                styleDownloadedFiles={styleDownloadedFiles}
+                downloadedIcon={styleDownloadedFiles ? downloadedIcon : undefined}
               />
             </AttachmentsEditorProvider>
           );
@@ -494,11 +501,6 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
   /* Rename-only step: runs for new and old alike, and carries the permissions that used to live on
        the Security tab onto the Visible / Interaction Mode settings. */
     .add<IAttachmentsEditorProps>(19, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev))))
-    /* `styleDownloadedFiles` / `downloadedIcon` became device-scoped, alongside the
-       `downloadedFileStyles` set they gate. Carry any root value onto each device model, or the
-       merge would overwrite it with the seeded default and downloaded files would silently stop
-       being highlighted on forms that had the toggle on. An existing device value wins, so
-       re-running this cannot clobber a per-device choice. */
     .add<IAttachmentsEditorProps>(20, (prev) => {
       const withDownloadedFlags = (device: IAttachmentsEditorDeviceStyles | undefined): IAttachmentsEditorDeviceStyles | undefined =>
         isDefined(device)

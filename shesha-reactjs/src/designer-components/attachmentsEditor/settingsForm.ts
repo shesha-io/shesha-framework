@@ -4,12 +4,10 @@ import { DataTypes, SettingsFormMarkupFactory } from '@/interfaces';
 
 const isThumbnailJs = 'return getSettingValue(data?.listType) === "thumbnail";';
 const isNotThumbnailJs = 'return getSettingValue(data?.listType) !== "thumbnail";';
-const isNotDraggerJs = 'return !getSettingValue(data?.isDragger);';
+const isNotDraggerJs = 'return getSettingValue(data?.isDragger) !== true;';
+const isThumbnailListJs = 'return getSettingValue(data?.listType) === "thumbnail" && !getSettingValue(data?.isDragger);';
 const isEditableJs = 'const r = getSettingValue(data?.readOnly); return r !== true && r !== "readOnly";';
 const showCustomContentFormJs = 'return !!getSettingValue(data?.customContent) && getSettingValue(data?.extraFormSelectionMode) !== "dynamic";';
-/* Device-scoped, so the toggle is read off the active device model rather than the root. Optional
-   element access needs `?.[`, not `?[` — the latter is a syntax error and the expression would
-   throw rather than evaluate to false. */
 const styleDownloadedFilesJs = 'return !!getSettingValue(data?.[`${contexts?.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);';
 
 export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter }) => {
@@ -50,7 +48,10 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
               .stdCollapsiblePanel('Display', (fb) => fb
                 .addSettingsInputRow({
                   inputs: [
-                    { type: 'dropdown', propertyName: 'listType', label: 'List Type', jsSetting: true, dropdownOptions: listTypeOptions },
+                    /* Mutually exclusive with Is Dragger, in both directions: a dragger is a drop
+                       area with a plain text list, so it has no list type to choose. Matches how
+                       main gates these two against each other. */
+                    { type: 'dropdown', propertyName: 'listType', label: 'List Type', jsSetting: true, dropdownOptions: listTypeOptions, visibleJs: isNotDraggerJs },
                     {
                       type: 'switch', propertyName: 'isDragger', label: 'Is Dragger', jsSetting: true,
                       tooltip: 'Whether the uploader should show a drop area instead of a button.',
@@ -159,12 +160,15 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   : { _mode: 'code', _code: "    return contexts.canvasContext?.designerDevice || 'desktop';", _value: '' },
                 components: [
                   ...fbf(styleRouterId)
-                    .addSettingsInputRow({
-                      inputs: [
-                        { type: 'dropdown', propertyName: 'filesLayout', label: 'Files Layout', jsSetting: true, dropdownOptions: filesLayoutOptions, visibleJs: isNotDraggerJs },
-                        { type: 'numberField', propertyName: 'gap', label: 'Gap', jsSetting: true, visibleJs: isNotDraggerJs },
-                      ],
-                    })
+                    .stdCollapsiblePanel('Layout', (f) => f
+                      .addSettingsInputRow({
+                        inputs: [
+                          { type: 'dropdown', propertyName: 'filesLayout', label: 'Files Layout', jsSetting: true, dropdownOptions: filesLayoutOptions },
+                          { type: 'numberField', propertyName: 'gap', label: 'Gap', jsSetting: true },
+                        ],
+                      }),
+                    false, isThumbnailListJs,
+                    )
                     .stdAppearancePanels(['font', 'dimensions', 'border', 'background', 'shadow', 'marginPadding', 'customStyle'], removeStyleRouter)
                     .stdCollapsiblePanel('Thumbnail Style', (f) => f
                       .stdDimensionsPanel('thumbnail.dimensions')
@@ -173,7 +177,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                       .stdShadowPanel('thumbnail.shadow')
                       .stdMarginPaddingPanel('thumbnail.stylingBoxJson')
                       .stdCustomStylePanel('thumbnail.style'),
-                    true, isThumbnailJs,
+                    true, isThumbnailListJs,
                     )
                     .addSettingsInputRow({
                       inputs: [

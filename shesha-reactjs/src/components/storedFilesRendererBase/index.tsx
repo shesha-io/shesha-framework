@@ -286,6 +286,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       isDragger,
       isStub,
       listType,
+      hasFiles,
       ...rest,
     },
   });

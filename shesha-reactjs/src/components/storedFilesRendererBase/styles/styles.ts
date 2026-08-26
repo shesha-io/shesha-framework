@@ -4,13 +4,7 @@ import { CSSProperties } from 'react';
 import { IStyleValue } from '@/providers';
 import { backgroundStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, paddingStyles, shadowStyles } from '@/designer-components/_common/styles/utils';
 interface IModelInterface extends IStyleValue {
-  /** The nested style set for one file box (the thumbnail tile). */
   thumbnail?: IStyleValue | undefined;
-  /**
-   * The nested `thumbnail.style` script already evaluated to CSS. The framework only executes the
-   * root `style` into `styleCss`, so a nested Custom style has to be evaluated by the caller and
-   * handed in — otherwise it is saved but never rendered.
-   */
   thumbnailStyleCss?: CSSProperties | undefined;
   gap?: string;
   layout?: boolean;
@@ -30,7 +24,17 @@ export const useStyles = createStyles((
   const layout = model.layout;
   const font = model.font;
   const textAlign = font?.align;
-  const isThumbnail = model.listType === "thumbnail";
+
+  /* Flex equivalent of the configured text alignment. Several parts of the component are flex
+     containers rather than blocks of text, and `text-align` does nothing on those — their content
+     is placed by `justify-content`, so the alignment has to be translated to reach them. */
+  const justifyContent = textAlign === 'center'
+    ? 'center'
+    : textAlign === 'right'
+      ? 'flex-end'
+      : 'flex-start';
+
+  const isThumbnail = model.listType === "thumbnail" && model.isDragger !== true;
 
   /* The root style set is the list container; the file box has its own nested `thumbnail` set.
      The container's font is the **file name's** typography — the box holds no text of its own. */
@@ -42,10 +46,15 @@ export const useStyles = createStyles((
     { ...model.styleCss, color: undefined },
   );
 
-  /* The upload control takes **family and size only** — plus the thumbnail dimensions, so the tile
-     matches the files it sits beside. Colour, weight and alignment are excluded: it is a control,
-     so its colour is the theme link colour and its weight is antd's. Taking those would make it
-     read as content rather than as something to click. */
+  /* The same font without its alignment, for the dragger stub. The stub is a centred block — an icon
+     above two lines of prompt text, all sitting in the middle of the drop area — so its text is
+     centred by construction rather than by the configured Align. Letting the alignment through would
+     shunt the prompt to one edge while the icon above it stayed put. */
+  const fontStylesNoAlign = fontStyles(
+    { ...font, align: undefined },
+    { ...model.styleCss, textAlign: undefined },
+  );
+
   const uploadControlFont = fontStyles(
     { type: font?.type, size: font?.size },
     { fontFamily: model.styleCss?.fontFamily, fontSize: model.styleCss?.fontSize },
@@ -90,7 +99,7 @@ export const useStyles = createStyles((
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    justify-content: ${textAlign === 'center' ? 'center' : textAlign === 'right' ? 'flex-end' : 'flex-start'} !important;
+    justify-content: ${justifyContent} !important;
     flex: 1 !important;
     margin: 2px 0px;
     position: relative;
@@ -102,7 +111,7 @@ export const useStyles = createStyles((
     min-width: 0;
     ${fontStyle}
 
-    > .ant-typography {
+    > .${prefixCls}-typography {
       ${fontStyle}
     }
   `);
@@ -112,17 +121,17 @@ export const useStyles = createStyles((
   const downloadedFile = cx("sha-downloaded-file", css`
     position: relative;
 
-    .ant-upload-list-item-container {
+    .${prefixCls}-upload-list-item-container {
       opacity: 0.8;
       position: relative;
     }
 
     .sha-item-file-name,
-    .sha-item-file-name > .ant-typography {
+    .sha-item-file-name > .${prefixCls}-typography {
       color: ${downloadedColor};
     }
 
-    .ant-upload-list-item-action .anticon-download {
+    .${prefixCls}-upload-list-item-action .anticon-download {
       color: ${downloadedColor};
     }
 
@@ -167,20 +176,20 @@ export const useStyles = createStyles((
           background-color: transparent;
         }
 
-      .ant-upload-wrapper {
+      .${prefixCls}-upload-wrapper {
         flex: 1 !important;
-        .ant-upload-list-picture-card {
+        .${prefixCls}-upload-list-picture-card {
          min-height: 0px !important;
         }
       }
 
-      .ant-upload:not(.ant-upload-disabled) {
+      .${prefixCls}-upload:not(.${prefixCls}-upload-disabled) {
         .icon {
           color: ${token.colorPrimary} !important;
         };
       }
 
-      .ant-upload-list-item {
+      .${prefixCls}-upload-list-item {
         display: flex;
         padding: 0 !important;
         border: unset !important;
@@ -199,7 +208,7 @@ export const useStyles = createStyles((
         justify-content: center !important;
         align-items: center !important;
 
-        > div, .ant-image {
+        > .${prefixCls}-upload-list-item , .${prefixCls}-image, .anticon {
          height: 100%;
          width: 100%;
          display: flex;
@@ -214,24 +223,21 @@ export const useStyles = createStyles((
           display: flex !important;
           justify-content: center !important;
         }
-        .ant-image .anticon {
+
+        .${prefixCls}-image {
           display: block !important;
         }
       }
 
-      /* antd renders its own file-name row; this component renders the name itself (so it can carry
-         the actions popover and the downloaded marker), so antd's is hidden wherever ours is shown.
-         In a tiled layout the name sits below the tile, and with Hide File Name set there is no
-         name at all. */
-      .ant-upload-list-item-name {
+      .${prefixCls}-upload-list-item-name {
         ${layout === true || model.hideFileName === true
           ? 'display: none !important; height: 0 !important; margin: 0 !important; padding: 0 !important;'
           : ''}
       }
 
-      .ant-upload-list-text {
+      .${prefixCls}-upload-list-text {
         overflow: hidden;
-        >.ant-upload-list-item-container {
+        >.${prefixCls}-upload-list-item-container {
           > div {
             >.file-name-wrapper {
               >.item-file-name {
@@ -256,8 +262,8 @@ export const useStyles = createStyles((
         border: unset;
         align-items: center;
 
-        .ant-btn,
-        .ant-btn * {
+        .${prefixCls}-btn,
+        .${prefixCls}-btn * {
           ${uploadControlFont}
         }
 
@@ -265,7 +271,7 @@ export const useStyles = createStyles((
           font-size: inherit;
         }
 
-        .ant-upload {
+        .${prefixCls}-upload {
           width: 100%; 
         }
 
@@ -279,18 +285,28 @@ export const useStyles = createStyles((
       }
 
       .${prefixCls}-upload-drag {
+          border: ${model.hasFiles ? 'none' : ''};
+
+        /* The trigger fills the drop area's width, but its content stays centred with the icon and
+           prompt beneath it — a dragger is a centred block, so the configured Align deliberately
+           does not reach it. */
+        .${prefixCls}-btn {
+          width: 100% !important;
+          justify-content: ${model.hasFiles ? justifyContent : ''}
+        }
+
         .${prefixCls}-upload-btn {
           padding: unset !important;
           width: 100% !important;
 
-          .ant-upload-drag-icon {
+          .${prefixCls}-upload-drag-icon {
            margin: 0 !important;
           }
         }
 
         .item-file-name {
           width: max-content !important;
-          .ant-typography {
+          .${prefixCls}-typography {
             width: max-content !important;
           }
         }
@@ -300,25 +316,40 @@ export const useStyles = createStyles((
          font and colour on each of these elements directly, so a rule on the wrapper alone is
          overridden rather than inherited and has to be restated here. */
       .sha-item-file-name,
-      .sha-item-file-name > .ant-typography,
-      .ant-upload-list-item-name,
-      .ant-upload-text,
-      .ant-upload-hint,
+      .sha-item-file-name > .${prefixCls}-typography,
+      .${prefixCls}-upload-list-item-name,
       .thumbnail-item-name {
         ${fontStyle}
       }
 
+      /* The dragger stub's prompt lines: the configured font, but always centred — see
+         fontStylesNoAlign. */
+      .${prefixCls}-upload-text,
+      .${prefixCls}-upload-hint {
+        ${fontStylesNoAlign}
+        text-align: center;
+      }
+
       /* Buttons take the font but keep their own colour — the delete icon stays red, and the upload
          trigger stays the theme link colour, which is what marks them as controls. */
-      .ant-btn,
-      .ant-btn * {
+      .${prefixCls}-btn,
+      .${prefixCls}-btn * {
         ${fontStylesNoColor}
       }
+
+      ${isThumbnail ? '' : `
+      .${prefixCls}-upload-select .${prefixCls}-btn {
+        justify-content: ${justifyContent};
+        /* A shrink-to-fit button has no free space, so justify-content would compute correctly and
+           change nothing visible. The trigger sits on its own row, so it can fill it. */
+        width: 100%;
+      }
+      `}
 
       /* File-type icons are inline SVGs sized in em units, so they scale with the font size of the
          row they sit in rather than needing an explicit size passed when the icon is built. */
       .sha-item-file-name .anticon,
-      .ant-btn .anticon {
+      .${prefixCls}-btn .anticon {
         font-size: inherit;
       }
       .${storedFilesRendererBtnContainer} {
@@ -340,15 +371,15 @@ export const useStyles = createStyles((
         }
       }
 
-      .ant-upload-list-item-uploading {
+      .${prefixCls}-upload-list-item-uploading {
         display: none;
       }
 
-      .ant-upload-list-item-container {
+      .${prefixCls}-upload-list-item-container {
         display: inline-block !important;
-        &.ant-upload-animate-inline-appear,
-        &.ant-upload-animate-inline-appear-active,
-        &.ant-upload-animate-inline {
+        &.${prefixCls}-upload-animate-inline-appear,
+        &.${prefixCls}-upload-animate-inline-appear-active,
+        &.${prefixCls}-upload-animate-inline {
           display: none !important;
           animation: none !important;
           transition: none !important;
@@ -357,8 +388,8 @@ export const useStyles = createStyles((
         width: ${isThumbnail ? thumbnail?.dimensions?.width ?? '54' : ''} !important;
       }
 
-      .ant-upload-list-item-action {
-        > .ant-btn-icon {
+      .${prefixCls}-upload-list-item-action {
+        > .${prefixCls}-btn-icon {
           > .anticon-delete {
             color: ${token.colorError} !important;
           }
@@ -382,9 +413,9 @@ export const useStyles = createStyles((
   `);
 
   const noItemAnimation = `
-    &.ant-upload-animate-inline-appear,
-    &.ant-upload-animate-inline-appear-active,
-    &.ant-upload-animate-inline {
+    &.${prefixCls}-upload-animate-inline-appear,
+    &.${prefixCls}-upload-animate-inline-appear-active,
+    &.${prefixCls}-upload-animate-inline {
       display: none !important;
       animation: none !important;
       transition: none !important;
@@ -404,7 +435,7 @@ export const useStyles = createStyles((
       align-items: stretch !important;
     }
 
-    .ant-upload-list-item-container {
+    .${prefixCls}-upload-list-item-container {
       display: inline-block !important;
       ${noItemAnimation}
     }
@@ -421,12 +452,12 @@ export const useStyles = createStyles((
 
     .sha-stored-files-renderer-btn-container {
       justify-content: flex-start;
-      .ant-btn {
+      .${prefixCls}-btn {
         padding: 0;
       }
     }
 
-    .ant-upload-list-item-container {
+    .${prefixCls}-upload-list-item-container {
       display: inline-block !important;
       ${noItemAnimation}
     }
@@ -444,7 +475,7 @@ export const useStyles = createStyles((
       overflow-x: hidden !important;
     }
 
-    .ant-upload-list-item-container {
+    .${prefixCls}-upload-list-item-container {
       display: inline-block !important;
       ${noItemAnimation}
     }
@@ -459,16 +490,6 @@ export const useStyles = createStyles((
     downloadedIcon,
     actionsPopover,
     shaThumbnail,
-    // shaStoredFilesRendererVertical,
-    // shaStoredFilesRendererGrid,
-    // storedFilesRendererBtnContainer,
-    // storedFilesRendererNoFiles,
-    // downloadedFile,
-    // downloadedIcon,
-    // antUploadDragIcon,
-    // antUploadText,
-    // antUploadHint,
-    // thumbnailReadOnly,
     shaItemFileName,
   };
 });

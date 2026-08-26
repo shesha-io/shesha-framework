@@ -13,7 +13,9 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
 
   // The thumbnail tile is the only box this component draws, so the box-style panels are shown only
   // for that display type (matching releases/0.45).
-  const THUMBNAIL_ONLY_JS = 'return getSettingValue(data?.listType) === "thumbnail";';
+  /* A dragger renders a drop area with a plain text list and has no tile, whatever listType says —
+     so the tile's box panels must not be offered for one either. */
+  const THUMBNAIL_ONLY_JS = 'return getSettingValue(data?.listType) === "thumbnail" && getSettingValue(data?.isDragger) !== true;';
   const FILE_NAME_ONLY_JS = 'return getSettingValue(data?.listType) !== "thumbnail";';
 
   const listTypeOptions = [
