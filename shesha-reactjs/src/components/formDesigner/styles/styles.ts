@@ -132,6 +132,21 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   const designerPage = "sha-designer-page";
 
   const formDesigner = cx(formDesignerClassName, css`
+        /* Hand the designer a definite height so the canvas pane below can bound itself and scroll
+           internally. Without this the whole chain from here down to the canvas is auto-sized, and
+           a canvas zoomed past the point where it outgrows its pane inflates every ancestor instead
+           - surfacing as a scrollbar on the Config Studio editor area, i.e. the whole page moving
+           rather than the canvas.
+
+           A percentage against an auto-height parent stays auto, so this only takes effect where an
+           ancestor is already definite (the Config Studio editor pane). The standalone designer page
+           and the quick-edit modal are unaffected. */
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        /* Flex items floor at min-height:auto, which would let the canvas push this open again. */
+        min-height: 0;
+
         .${shaHelpIcon} {
             cursor: help;
             font-size: 14px;

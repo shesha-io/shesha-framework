@@ -33,6 +33,12 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
   const sidebarContainer = cx("sidebar-container", css`
       width: 100%;
       overflow: hidden;
+      /* Pass a definite height down to the panes. The body element below asks for 100%, which
+         without this resolves against an auto-height parent and collapses to auto - leaving the
+         canvas pane content-sized, so a zoomed canvas grows the page instead of scrolling.
+         Harmless where no ancestor has a definite height (the embedded datatable panels): the
+         percentage simply stays auto, exactly as before. */
+      height: 100%;
 
       .${sidebarContainerMainAreaBody}{
         overflow: auto;

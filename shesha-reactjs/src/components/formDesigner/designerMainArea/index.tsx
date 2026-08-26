@@ -79,6 +79,13 @@ export const DesignerMainArea: FC<{ viewType?: IViewType }> = ({ viewType = 'con
       className={styles.mainArea}
       style={{
         borderTop: PREVIEW_BORDER_WIDTH + ' solid #d3d3d3',
+        // Take the height the designer shell now has, and floor the flex minimum so the canvas
+        // scrolls inside its pane rather than stretching this open. Designer mode only: preview
+        // keeps sizing to its content under the cap below.
+        ...(formMode === 'designer' && {
+          flex: '1 1 auto',
+          minHeight: 0,
+        }),
         ...(formMode !== 'designer' && {
           maxHeight: PREVIEW_VIEWPORT_HEIGHT,
           overflow: 'auto',
