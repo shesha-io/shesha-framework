@@ -31,7 +31,7 @@ import apiCode from "../../componentsApi/componentApi.ts?raw";
 
 /* The colours step 10 seeded into `tag` before the Variant owned them. Migration 15 clears these. */
 const SEEDED_TAG_BACKGROUND = '#f0f0f0';
-const SEEDED_TAG_BORDER = { width: '1px', style: 'solid', color: '#d9d9d9' } as const;
+const SEEDED_TAG_BORDER = { width: '1px', style: 'solid', color: '#d9d9d9' };
 const SEEDED_TAG_FONT_COLOUR = '#000';
 
 const DropdownComponent: DropdownComponentDefinition = {
@@ -171,8 +171,8 @@ const DropdownComponent: DropdownComponentDefinition = {
       const initTagStyle = migrateStyles({}, defaultTagStyles());
       // The per-device style models are typed as the flat `IStyleValue`; the dropdown additionally
       // nests a `tag` set under each of them.
-      const deviceTag = (device: IStyleValue | undefined): IStyleValue | undefined =>
-        (device as INestedStyleValue<'tag'> | undefined)?.tag;
+      const deviceTag = (device: INestedStyleValue<'tag'> | undefined): IStyleValue | undefined =>
+        device?.tag;
 
       // Seeded only where nothing is configured yet — a form that already styled its tags keeps
       // those values rather than being reset to the defaults on every upgrade.
@@ -258,12 +258,9 @@ const DropdownComponent: DropdownComponentDefinition = {
       };
 
       // The per-device models nest their own `tag` set, the same shape step 10 seeded.
-      const clearDeviceTagColours = (device: IStyleValue | undefined): IStyleValue | undefined => {
-        if (!isDefined(device)) return device;
-        const nested = device as INestedStyleValue<'tag'>;
-        return isDefined(nested.tag)
-          ? { ...nested, tag: clearSeededTagColours(nested.tag) } as IStyleValue
-          : device;
+      const clearDeviceTagColours = (device: INestedStyleValue<'tag'> | undefined): INestedStyleValue<'tag'> | undefined => {
+        if (!isDefined(device) || !isDefined(device.tag)) return device;
+        return { ...device, tag: clearSeededTagColours(device.tag) };
       };
 
       return {
