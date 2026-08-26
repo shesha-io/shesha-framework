@@ -2,8 +2,7 @@ import { FC } from 'react';
 import { Tooltip } from 'antd';
 import { useCanvas } from '@/providers';
 import CustomDropdown from '@/designer-components/_settings/utils/CustomDropdown';
-import { CANVAS_PRESET_SENTINEL, getDeviceTypeByWidth, parseCanvasWidthPercent, screenSizeOptions } from '@/providers/canvas/utils';
-import { isDefined } from '@/utils/nullables';
+import { CANVAS_PRESET_SENTINEL, getDeviceTypeByWidth, isCanvasWidthPercent, screenSizeOptions } from '@/providers/canvas/utils';
 
 export const DeviceOptions: FC = () => {
   const { setCanvasWidth, setCanvasAutoWidth, designerWidth, autoWidth } = useCanvas();
@@ -18,14 +17,13 @@ export const DeviceOptions: FC = () => {
       optionFilterProp="label"
       style={{ width: '120px' }}
       size="small"
-      customTooltip='Add a custom screen size e.g "1024px". A percentage fits the canvas to the available space; 100% is the maximum, so anything larger is treated as 100%.'
+      customTooltip='Add a custom screen size e.g "1024px", or any percentage to fit the canvas to the available space.'
       popupMatchSelectWidth={false}
       onChange={(val) => {
         // The responsive "Canvas" option - and any percentage width - fills the available space;
-        // the actual width is measured by the designer canvas itself (see SidebarContainer).
-        // A percentage over 100% has no room to expand into, so it is capped at 100%.
-        const widthPercent = parseCanvasWidthPercent(val);
-        if (val === CANVAS_PRESET_SENTINEL || isDefined(widthPercent)) {
+        // the actual width is measured by the designer canvas itself (see SidebarContainer). The
+        // percentage is a yes/no: partial widths are not supported, so "80%" fills the pane too.
+        if (val === CANVAS_PRESET_SENTINEL || isCanvasWidthPercent(val)) {
           setCanvasAutoWidth(true);
           return;
         }

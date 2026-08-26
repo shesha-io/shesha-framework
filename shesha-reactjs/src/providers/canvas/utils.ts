@@ -1,5 +1,10 @@
 import { deepMergeValues } from "@/utils/object";
-import { DeviceTypes, ICanvasStateContext, IViewType } from "./contexts";
+// Type-only: this module's imports reach the providers barrel, which comes back round to
+// `contexts` - a runtime import here would close that cycle.
+import type { DeviceTypes, ICanvasStateContext, IViewType } from "./contexts";
+// Deliberately not re-exported: a re-export here would still be undefined for anything in the cycle
+// that reads it while this module's own imports are running. `./options` is the import site.
+import { CANVAS_VH_VAR, DEFAULT_OPTIONS } from "./options";
 import { DesktopOutlined, MobileOutlined, TabletOutlined } from '@ant-design/icons';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 
@@ -66,58 +71,93 @@ export const dimensionRelativeToCanvas = (
   return trimmed;
 };
 
-export const defaultDesignerWidth = `${(typeof window !== 'undefined' ? window.screen.availWidth : 1024)}px`;
-
 /** Sentinel value for the responsive Canvas preset in the dropdown */
 export const CANVAS_PRESET_SENTINEL = '__CANVAS_RESPONSIVE__' as const;
-
-/**
- * Upper bound for a percentage canvas width. 100% is the whole pane the canvas sits in; asking for
- * more has nothing to expand into, so anything greater is capped here rather than pushed past the
- * pane edge.
- */
-export const MAX_CANVAS_WIDTH_PERCENT = 100;
 
 const PERCENT_WIDTH_REGEX = /^\s*(\d+(?:\.\d+)?)\s*%\s*$/;
 
 /**
- * Reads a percentage width entered as a custom resolution (e.g. "80%") and clamps it to
- * [0, `MAX_CANVAS_WIDTH_PERCENT`]. A value above 100% - or one that is not a usable number -
- * falls back to 100%, i.e. the full available width.
+ * Whether a custom resolution was entered as a percentage ("80%") rather than a device width
+ * ("1024px").
  *
- * Returns `undefined` when the value is not a usable percentage - a device preset such as "1024px",
- * but equally a malformed entry such as "-10%" or "abc%". Those are left to the caller, which
- * ignores anything it cannot read as a width rather than guessing at one: a typo should not quietly
- * resize the canvas. Only a well-formed percentage returns a number, so callers can tell that apart
- * from "a percentage that clamped to 100".
+ * Any percentage switches the canvas into the responsive "Canvas" mode, which fills the pane
+ * between the Builder Components and Properties panels. The number itself is not applied as a
+ * partial width, so "80%" and "100%" behave identically - read a percentage as "fit the canvas to
+ * the space available".
  *
- * Note: every percentage currently puts the canvas into the responsive "Canvas" mode, which fills
- * the pane - the clamped fraction is not (yet) applied as a partial width. Read the percentage as
- * "fit the canvas to the space available, up to 100%".
+ * Only a well-formed, positive percentage counts. A malformed entry ("abc%", "-10%") is not a
+ * percentage as far as this is concerned; it is left to the caller, which ignores anything it
+ * cannot read as a width rather than guessing at one - a typo should not quietly resize the canvas.
  */
-export const parseCanvasWidthPercent = (value: string): number | undefined => {
+export const isCanvasWidthPercent = (value: string): boolean => {
   const match = PERCENT_WIDTH_REGEX.exec(value);
-  if (!match) return undefined;
+  if (!match) return false;
 
   const percent = parseFloat(match[1] ?? '');
-  return Number.isFinite(percent) && percent > 0 && percent < MAX_CANVAS_WIDTH_PERCENT
-    ? percent
-    : MAX_CANVAS_WIDTH_PERCENT;
+  return Number.isFinite(percent) && percent > 0;
 };
 
 /**
- * Width the canvas must be laid out at, in its own (pre-zoom) coordinate space, so that after the
- * CSS `zoom` is applied it renders exactly `availableWidth` wide - i.e. it fills the area between
- * the Builder Components and Properties panels with no horizontal scrollbar.
+ * Size the canvas must be laid out at, in its own (pre-zoom) coordinate space, so that after the
+ * CSS `zoom` is applied it renders exactly `availableSize` on screen.
  *
- * Because `zoom` scales layout, dividing by the zoom factor means zooming out widens the layout
- * (components get more room and re-wrap) while each component keeps the rendered scale the user
- * picked, instead of the canvas overflowing its pane.
+ * Because `zoom` scales layout, dividing by the zoom factor means zooming out widens/heightens the
+ * layout (components get more room and re-wrap) while each component keeps the rendered scale the
+ * user picked, instead of the canvas overflowing its pane.
  */
-export const getCanvasLayoutWidth = (availableWidth: number, zoom: number): string => {
+const getCanvasLayoutSize = (availableSize: number, zoom: number): number => {
   const zoomFactor = (zoom > 0 ? zoom : DEFAULT_OPTIONS.defaultZoom) / 100;
   // Floor so sub-pixel rounding can never push the canvas past the available space
-  return `${Math.max(0, Math.floor(availableWidth / zoomFactor))}px`;
+  return Math.max(0, Math.floor(availableSize / zoomFactor));
+};
+
+/**
+ * Width the canvas is laid out at so that, once zoomed, it fills the area between the Builder
+ * Components and Properties panels with no horizontal scrollbar.
+ */
+export const getCanvasLayoutWidth = (availableWidth: number, zoom: number): string =>
+  `${getCanvasLayoutSize(availableWidth, zoom)}px`;
+
+const VH_VALUE_REGEX = /^\s*(\d+(?:\.\d+)?)\s*vh\s*$/i;
+
+/**
+ * Rewrites a `vh` dimension so it is measured against the designer canvas instead of the browser
+ * window: `100vh` becomes `calc(100 * var(--sha-canvas-vh, 1vh))`. Anything that is not a bare `vh`
+ * value is returned untouched.
+ *
+ * `vh` is the one dimension that escapes the canvas. CSS `zoom` resolves percentages against the
+ * zoom-adjusted containing block, but viewport units are left alone - `100vh` is the *browser
+ * window* height whatever the zoom, so it renders `zoom x window height` tall and spills out of a
+ * pane that is shorter than the window to begin with. That surplus is the stray vertical scrollbar
+ * on the canvas.
+ *
+ * Done through a custom property rather than by substituting a measured number so that the value is
+ * a static rewrite: it needs no canvas state, works the same from a `createStyles` hook as from a
+ * plain style object, and a zoom or panel drag re-renders nothing - only the one variable on the
+ * canvas element changes, and every `vh` beneath it follows.
+ */
+export const canvasRelativeVh = (value: string | number): string | number => {
+  if (typeof value !== 'string') return value;
+
+  const match = VH_VALUE_REGEX.exec(value);
+  return match ? `calc(${match[1]} * var(${CANVAS_VH_VAR}, 1vh))` : value;
+};
+
+/**
+ * The length of one `vh` on the canvas, in the canvas's own (pre-zoom) coordinate space, for the
+ * `CANVAS_VH_VAR` custom property. Two corrections over a plain `availableHeight / 100`:
+ *
+ *  - divide by the zoom factor, so `100vh` renders `availableHeight` tall at any zoom;
+ *  - subtract the canvas's own vertical padding, because that padding is inside the height the
+ *    canvas is laid out to (`box-sizing: border-box`). A child sized to the full pane height would
+ *    otherwise push the padding past the pane edge - a small scrollbar instead of a large one.
+ *
+ * `getCanvasLayoutSize` has already floored, so this divides a whole number of pixels and `100vh`
+ * multiplies back to exactly that - no rounding drift to push the canvas past its pane.
+ */
+export const getCanvasVhUnit = (availableHeight: number, zoom: number, verticalPadding: number): string => {
+  const viewportHeight = Math.max(0, getCanvasLayoutSize(availableHeight, zoom) - verticalPadding);
+  return `${viewportHeight / 100}px`;
 };
 
 export interface IAutoZoomParams {
@@ -127,26 +167,6 @@ export interface IAutoZoomParams {
   isSidebarCollapsed?: boolean;
   configTreePanelSize?: number;
   viewType?: IViewType;
-};
-
-/**
- * Predefined zoom levels (percentages) that the +/- buttons step through, in 25% increments.
- * Direct numeric entry in the zoom input is free-form within [minZoom, maxZoom]
- * and is not restricted to these levels.
- */
-export const ZOOM_LEVELS = [25, 50, 75, 100, 125, 150, 175, 200] as const;
-
-export const DEFAULT_OPTIONS = {
-  minZoom: 10,
-  maxZoom: 400,
-  defaultZoom: 75,
-  sizes: [25, 50, 25],
-  configTreePanelWidth: (val: number = 20): number => typeof window !== 'undefined' ? (val / 100) * window.innerWidth : 200,
-  gutter: 4,
-  designerWidth: defaultDesignerWidth,
-  zoomStep: 1,
-  zoomLevels: ZOOM_LEVELS,
-  modalMargins: 32,
 };
 
 /**

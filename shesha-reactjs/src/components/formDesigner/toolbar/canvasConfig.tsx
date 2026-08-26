@@ -4,7 +4,8 @@ import { Button, InputNumber, Space, Tooltip } from "antd";
 import { ExpandOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { useCanvas } from "@/providers";
 import { DeviceOptions } from "./mobileDropdown";
-import { clampZoom, DEFAULT_OPTIONS } from "@/providers/canvas/utils";
+import { clampZoom } from "@/providers/canvas/utils";
+import { DEFAULT_OPTIONS } from "@/providers/canvas/options";
 import { useDebouncedCallback } from "use-debounce";
 
 const ZOOM_LEVELS = DEFAULT_OPTIONS.zoomLevels;

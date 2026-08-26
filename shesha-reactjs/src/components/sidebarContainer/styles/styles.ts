@@ -1,6 +1,14 @@
 import { createStyles, sheshaStyles } from '@/styles';
 import { LAYOUT_CONSTANTS } from '../../../shesha-constants';
 
+/**
+ * Padding inside the designer canvas, in canvas (pre-zoom) pixels. Exported because the canvas uses
+ * `box-sizing: border-box`, so this padding eats into the height a component sized in `vh` may
+ * occupy - see `getCanvasVhUnit`. Keep the two in step by reading this rather than re-stating the
+ * number.
+ */
+export const CANVAS_PADDING = sheshaStyles.paddingLG;
+
 export const useStyles = createStyles(({ css, cx, prefixCls }) => {
   const LEFT_SIDEBAR_WIDTH = "550px";
   const { SIDEBAR_BTN_HEIGHT, TOOLBAR_HEIGHT, HEADER_HEIGHT } = LAYOUT_CONSTANTS;
@@ -199,7 +207,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
              rather than add to it - otherwise the canvas ends up wider than the pane it was sized
              to fill. */
           box-sizing: border-box;
-          padding: ${sheshaStyles.paddingLG}px;
+          padding: ${CANVAS_PADDING}px;
           transform-origin: top left;
           box-shadow: 1px 1px 5px 5px #00000080;
         }

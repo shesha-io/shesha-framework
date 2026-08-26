@@ -3,7 +3,7 @@ import { EyeOutlined, EyeInvisibleOutlined, ColumnWidthOutlined, BorderlessTable
 import { IDimensionsValue } from "./interfaces";
 import { addPx, hasNumber } from "@/utils/style";
 import { IDropdownOption } from "@/designer-components/settingsInput/interfaces";
-import { dimensionRelativeToCanvas } from "@/providers/canvas/utils";
+import { canvasRelativeVh, dimensionRelativeToCanvas } from "@/providers/canvas/utils";
 
 const getWidthDimension = (main: string | number, canvasWidth?: string, context?: object): string | number | undefined => {
   // If canvasWidth is provided and main contains vw, convert to calc
@@ -11,20 +11,21 @@ const getWidthDimension = (main: string | number, canvasWidth?: string, context?
     return dimensionRelativeToCanvas(main, canvasWidth, 'vw');
   }
 
+  // A width can be given in vh too, and it is measured against the canvas like any other vh
+  const value = canvasRelativeVh(main);
+
   // For simple numeric values or values without vw, use addPx
-  if (typeof main === 'string' && /^calc\(/i.test(main.trim())) return main;
-  return !hasNumber(main) ? main : addPx(main, context);
+  if (typeof value === 'string' && /^calc\(/i.test(value.trim())) return value;
+  return !hasNumber(value) ? value : addPx(value, context);
 };
 
-const getHeightDimension = (main: string | number, canvasHeight?: string, context?: object): string | number | undefined => {
-  // If canvasHeight is provided and main contains vh, convert to calc
-  if (canvasHeight && typeof main === 'string' && /vh/i.test(main)) {
-    return dimensionRelativeToCanvas(main, canvasHeight, 'vh');
-  }
+const getHeightDimension = (main: string | number, context?: object): string | number | undefined => {
+  // vh is measured against the designer canvas rather than the browser window
+  const value = canvasRelativeVh(main);
 
   // For simple numeric values or values without vh, use addPx
-  if (typeof main === 'string' && /^calc\(/i.test(main.trim())) return main;
-  return !hasNumber(main) ? main : addPx(main, context);
+  if (typeof value === 'string' && /^calc\(/i.test(value.trim())) return value;
+  return !hasNumber(value) ? value : addPx(value, context);
 };
 
 /**
@@ -113,10 +114,11 @@ export const getDesignerCalculatedDimension = (
   return computeDimension(main, firstMargin, secondMargin, '100%', '100%', context);
 };
 
+// No canvas height parameter: `vh` is rewritten to read the canvas's own custom property, so it
+// needs no measurement passed in. See `canvasRelativeVh`.
 export const getDimensionsStyle = (
   dimensions: IDimensionsValue | undefined,
   canvasWidth?: string,
-  canvasHeight?: string,
   context?: object,
 ): CSSProperties => {
   const { width, minWidth, maxWidth, height, minHeight, maxHeight } = dimensions || {};
@@ -126,19 +128,19 @@ export const getDimensionsStyle = (
       ? getWidthDimension(width, canvasWidth, context)
       : undefined,
     height: height
-      ? getHeightDimension(height, canvasHeight, context)
+      ? getHeightDimension(height, context)
       : undefined,
     minWidth: minWidth
       ? getWidthDimension(minWidth, canvasWidth, context)
       : undefined,
     minHeight: minHeight
-      ? getHeightDimension(minHeight, canvasHeight, context)
+      ? getHeightDimension(minHeight, context)
       : undefined,
     maxWidth: maxWidth
       ? getWidthDimension(maxWidth, canvasWidth, context)
       : undefined,
     maxHeight: maxHeight
-      ? getHeightDimension(maxHeight, canvasHeight, context) : undefined,
+      ? getHeightDimension(maxHeight, context) : undefined,
   };
 };
 

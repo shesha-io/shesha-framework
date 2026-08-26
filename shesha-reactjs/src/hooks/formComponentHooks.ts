@@ -300,7 +300,7 @@ export const useFormComponentStyles = <TModel extends IStyleValue & Pick<IConfig
   const fontStyles = useMemo(() => getFontStyle(font), [font]);
   const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
   const stylingBoxAsCSS = useMemo(() => pickStyleFromModel(stylingBoxParsed as StyleBoxValue), [stylingBoxParsed]);
-  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, designerWidth, undefined), [dimensions, designerWidth]);
+  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, designerWidth), [dimensions, designerWidth]);
   const overflowStyles = useMemo(() => isDefined(overflow) ? getOverflowStyle(overflow, false) : {}, [overflow]);
 
   const appearanceStyle = useDeepCompareMemo(() => removeUndefinedProps(

@@ -1,5 +1,7 @@
 import { createNamedContext } from '@/utils/react';
-import { DEFAULT_OPTIONS, defaultDesignerWidth } from './utils';
+// From `./options` rather than `./utils`: `utils` pulls in the providers barrel, which leads back
+// here, so importing it would leave these undefined while this module body runs.
+import { DEFAULT_OPTIONS, defaultDesignerWidth } from './options';
 
 export type DeviceTypes = 'desktop' | 'mobile' | 'tablet' | 'custom';
 export type IViewType = 'configStudio' | 'page' | 'modal';
