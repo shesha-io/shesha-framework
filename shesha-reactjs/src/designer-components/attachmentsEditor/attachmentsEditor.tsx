@@ -36,7 +36,7 @@ import { useStyles } from './styles';
 import { useActualContextExecution } from '@/hooks';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
-import { FileListApi } from '../../componentsApi/componentApi';
+import { FileListApi, StoredFileApiModel } from '../../componentsApi/componentApi';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
 
@@ -249,13 +249,37 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
             getter: () => model.allowedFileTypes,
             setter: (value: string[] | undefined) => apiContext?.updateApiModel({ allowedFileTypes: value }),
           },
+          /* Override the framework's generic `value` property, which every isInput component gets at
+             level 1. Its setter writes to `propertyName` — for this component the GHOST_PAYLOAD_KEY
+             placeholder that `removeGhostKeys` strips before save — so assigning would appear to
+             work and then be discarded. The files belong to the storage provider, so the setter is
+             explicitly replaced with one that warns rather than omitted: omitting it would fall back
+             to the level-1 setter (see createOrUpdateApiProperty) and change nothing. */
+          {
+            name: 'value',
+            getter: () => {
+              const files = (data as Record<string, unknown> | undefined)?.[`${GHOST_PAYLOAD_KEY}_${model.id}`] as StoredFileModel[] | undefined;
+              /* The public model is narrower than the internal one (which carries upload-time fields
+                 like `uid`, `status` and `temporary`), so map rather than cast. */
+              return files?.map((file): StoredFileApiModel => ({
+                id: file.id ?? file.uid,
+                name: file.name,
+                size: file.size ?? 0,
+                type: file.type ?? '',
+                url: file.url ?? undefined,
+              }));
+            },
+            setter: () => console.warn(
+              `'${model.componentName ?? 'File list'}': value is read-only. Files are managed by the storage provider — add or remove them through the component.`,
+            ),
+          },
         ],
         // The list has no focusable control of its own — files are added through the antd Upload
         // trigger — so no `focus` is registered rather than one that would do nothing.
         api: {},
       });
     }, [
-      apiContext, componentApi, enabled, model.allowAdd, model.allowDelete, model.allowRename,
+      apiContext, componentApi, data, enabled, model.allowAdd, model.allowDelete, model.allowRename,
       model.allowReplace, model.allowedFileTypes, model.componentName, model.id,
     ]);
     useEffectOnce(() => () => componentApi?.removeApi(model.id));

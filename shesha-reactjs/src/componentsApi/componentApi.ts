@@ -297,7 +297,15 @@ export interface CommonComponentApi extends BaseComponentApi {
   readonly style: IComponentStyle;
 }
 
-export interface InputComponentApi<T = unknown> extends CommonComponentApi {
+/**
+ * Everything an input exposes **except** its value: focus, validation and the required flag.
+ *
+ * Split out so a component whose value cannot be assigned can inherit the rest without also
+ * inheriting a writable `value`. Redeclaring `value` as `readonly` on a subinterface is not enough
+ * on its own — `readonly` is not part of assignability, so widening the object back to
+ * `InputComponentApi` restores the write.
+ */
+export interface InputComponentApiBase extends CommonComponentApi {
   /** If 'true', the component is required (for now is working only for binding to the form data) */
   required: boolean;
 
@@ -310,7 +318,9 @@ export interface InputComponentApi<T = unknown> extends CommonComponentApi {
   getErrors(): Promise<string[]>;
   /** Reset to the default value (for now is working only for binding to the form data) */
   reset(): void;
+}
 
+export interface InputComponentApi<T = unknown> extends InputComponentApiBase {
   /** Component value. Readable and writable */
   value: T;
 }
@@ -385,9 +395,12 @@ export interface FileUploadApi extends InputComponentApi<File | string | null | 
  * the stored collection nor anything that is persisted. Files are added, replaced and removed by the
  * user through the component itself, or through the storage provider's own API.
  */
-export interface FileListApi extends InputComponentApi<StoredFileApiModel[] | undefined> {
-  /** The files currently attached to the owner. Read-only — see the note on this interface. */
-  readonly value: StoredFileApiModel[] | undefined;
+export interface FileListApi extends InputComponentApiBase {
+  /**
+   * The files currently attached to the owner. Read-only, and so is the array: the collection is the
+   * storage provider's, so replacing it or mutating it in place changes nothing that is persisted.
+   */
+  readonly value: readonly StoredFileApiModel[] | undefined;
   /** Whether the user can currently add files. Combines the Allow Add setting with the interaction mode. */
   readonly allowAdd: boolean;
   /** Whether the user can currently delete files. Combines the Allow Remove setting with the interaction mode. */
