@@ -11,6 +11,7 @@ import AttributeDecorator from '../../attributeDecorator';
 import ErrorIconPopover from '../../componentErrors/errorIconPopover';
 import { isValidGuid } from '../components/utils';
 import { useShaComponentStyles } from '../styles/shaComponentStyles';
+import { isNonEmptyArray } from '@/utils/array';
 
 type CustomHtmlAttributes = {
   "data-sha-c-id"?: string | undefined;
@@ -39,7 +40,7 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
   const control = useMemo(() => {
     return (
       <toolboxComponent.Factory
-        form={shaForm.antdForm}
+        form={shaForm}
         model={componentModel}
         calculatedModel={calculatedModel}
         shaApplication={shaApplication}
@@ -47,14 +48,14 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
         key={componentModel.id}
       />
     );
-  }, [toolboxComponent, shaForm.antdForm, componentModel, calculatedModel, shaApplication, apiContext]);
+  }, [toolboxComponent, shaForm, componentModel, calculatedModel, shaApplication, apiContext]);
 
   // Run validation in both designer and runtime modes
   // Collect errors from:
   // 1. Toolbox validateModel function
   // 2. Child components registered via useComponentValidation hook
   const validationResult = useMemo((): IModelValidation | undefined => {
-    const errors: Array<{ propertyName?: string; error: string }> = [];
+    const errors: Array<{ propertyName?: string | undefined; error: string }> = [];
     let validationType: ISheshaErrorTypes | undefined;
 
     if (componentModel.background?.type === 'storedFile' && isDefined(componentModel.background.storedFile?.id) && !isValidGuid(componentModel.background.storedFile.id)) {
@@ -68,7 +69,7 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
 
     // Collect errors from child components registered via hook
     const childValidation = validationErrors.get(componentModel.id);
-    if (isDefined(childValidation) && childValidation.hasErrors && childValidation.errors) {
+    if (isDefined(childValidation) && childValidation.hasErrors && isNonEmptyArray(childValidation.errors)) {
       errors.push(...childValidation.errors);
       // Use the child's validationType if present (prioritize 'error' > 'warning' > 'info')
       if (childValidation.validationType) {

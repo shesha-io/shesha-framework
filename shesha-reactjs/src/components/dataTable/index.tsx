@@ -5,6 +5,7 @@ import * as React from 'react';
 import { Column, ColumnInstance, Row, SortingRule, TableProps } from 'react-table';
 import { usePrevious } from 'react-use';
 import {
+  getEmptyFlatMarkup,
   IFlatComponentsStructure,
   ROOT_COMPONENT_KEY,
   useConfigurableActionDispatcher,
@@ -594,10 +595,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     allowEdit: boolean,
     componentAccessor: (col: ITableDataColumn) => IFieldComponentProps | undefined,
   ): IFlatComponentsStructure => {
-    const result: IFlatComponentsStructure = {
-      allComponents: {},
-      componentRelations: {},
-    };
+    const result: IFlatComponentsStructure = getEmptyFlatMarkup();
     // don't calculate components settings when it's not required
     if (!allowEdit) return result;
 

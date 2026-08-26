@@ -10,7 +10,6 @@ import Show from "@/components/show";
 import { Tooltip } from "antd";
 import { EyeInvisibleOutlined, FunctionOutlined } from "@ant-design/icons";
 import DragWrapper from "../configurableFormComponent/dragWrapper";
-import ValidationIcon from "../configurableFormComponent/validationIcon";
 import { useFormDesigner, useFormDesignerSelectedComponentId, useFormDesignerSettingsPanelElement } from "@/providers/formDesigner";
 import KnownFormComponent from "./knownFormComponent";
 import FormComponentErrorWrapper from "./formComponentErrorWrapper";
@@ -22,7 +21,7 @@ import { useShaComponentStyles } from "../styles/shaComponentStyles";
 import { useFormDesignerComponentGetter } from "@/providers/form/hooks";
 import { createPortal } from "react-dom";
 import { ComponentProperties } from "../componentPropertiesPanel/componentProperties";
-
+import { useComponentValidationResults } from "@/providers/validator/hooks";
 export interface IDesignerFormComponentProps {
   componentModel: UnwrapCodeEvaluators<IComponentModelProps>;
   sourceComponentModel: IComponentModelProps;
@@ -41,6 +40,7 @@ const DesignerFormComponentInner: FC<IDesignerFormComponentProps> = ({
   const { readOnly } = useFormDesigner();
   const settingsPanelElement = useFormDesignerSettingsPanelElement();
   const getToolboxComponent = useFormDesignerComponentGetter();
+  const validationResults = useComponentValidationResults(componentModel.id);
   // Memoize component lookup to prevent unnecessary re-renders
   const component = useMemo(() => getToolboxComponent(componentModel.type), [getToolboxComponent, componentModel.type]);
   const selectedComponentId = useFormDesignerSelectedComponentId();
@@ -75,7 +75,11 @@ const DesignerFormComponentInner: FC<IDesignerFormComponentProps> = ({
       componentId={componentModel.id}
       readOnly={readOnly}
       className={classNames(shaComponentStyles.shaComponent, shaComponentStyles.componentDragHandle,
-        { 'selected': isSelected, 'has-config-errors': isNonEmptyArray(componentModel.settingsValidationErrors) })}
+        {
+          [styles.selectedComponent]: isSelected,
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+          [styles.hasConfigErrors]: false && isNonEmptyArray(validationResults),
+        })}
     >
       <span className={styles.shaComponentIndicator}>
         <Show when={hiddenFx || componentEditModeFx}>
@@ -98,8 +102,6 @@ const DesignerFormComponentInner: FC<IDesignerFormComponentProps> = ({
           <Tooltip title="This component is always in Edit/Action mode"><Icon icon="editIcon" /></Tooltip>
         </Show>
       </span>
-
-      {isNonEmptyArray(componentModel.settingsValidationErrors) && <ValidationIcon validationErrors={componentModel.settingsValidationErrors} />}
 
       <KnownFormComponent componentModel={componentModel} toolboxComponent={toolboxComponent} apiContext={apiContext} />
 

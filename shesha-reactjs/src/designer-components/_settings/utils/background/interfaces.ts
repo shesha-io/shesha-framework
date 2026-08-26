@@ -6,6 +6,8 @@ type BackgroundImageFile = {
   url: string;
 };
 
+export type GradientDirections = 'to top' | 'to top left' | 'to top right' | 'to right' | 'to bottom right' | 'to bottom' | 'to bottom left' | 'to left' | 'radial' | 'conic';
+
 /**
  * A gradient's colour stops, in render order.
  *
@@ -15,7 +17,7 @@ type BackgroundImageFile = {
  * rather than dependent on object key ordering.
  */
 export interface IGradientValue {
-  direction: string;
+  direction?: GradientDirections | undefined;
   colors?: string[] | undefined;
 }
 

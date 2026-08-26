@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { SwitcherOutlined } from '@ant-design/icons';
 import { Switch } from 'antd';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers';
 import { ISwitchComponentProps, SwitchComponentDefinition } from './interfaces';
@@ -92,7 +92,7 @@ const SwitchComponent: SwitchComponentDefinition = {
     ...defaultStyles(),
     handleStyles: defaultHandleStyles(),
   }),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   migrator: (m) =>
     m
       .add<ISwitchComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))

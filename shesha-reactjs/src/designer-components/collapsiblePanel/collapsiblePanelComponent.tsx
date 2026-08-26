@@ -3,7 +3,7 @@ import { CollapsiblePanel, ICollapseRef } from '@/components/panel';
 import { shaHeaderComponentsContainer } from '@/components/panel/styles/styles';
 import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { evaluateString } from '@/providers/form/utils';
 import { GroupOutlined } from '@ant-design/icons';
 import { nanoid } from '@/utils/uuid';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
@@ -124,7 +124,7 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   migrator: (m) =>
     m
       .add<ICollapsiblePanelComponentPropsV0>(0, (prev) => {

@@ -14,7 +14,7 @@ import { evaluateString } from '@/providers/form/utils';
 
 export type UnwrapFunc = (model: unknown, propertyName: string, value: unknown, allData: object) => UnwrapCodeEvaluators<unknown> | unknown | undefined;
 
-const getSettingValue = <TValue = unknown>(
+export const getSettingValue = <TValue = unknown>(
   propertyName: string,
   value: TValue,
   allData: object,

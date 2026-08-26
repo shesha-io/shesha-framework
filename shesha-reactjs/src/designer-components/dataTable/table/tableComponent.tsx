@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/strict-boolean-expressions: "error" */
 import React, { useMemo } from 'react';
 import { getSettings } from './tableSettings';
 import { ColumnsItemProps, IConfigurableColumnsProps, IDataColumnsProps, isActionColumnProps } from '@/providers/datatableColumnsConfigurator/models';
@@ -17,7 +18,7 @@ import { SheshaActionOwners } from '@/providers/configurableActionsDispatcher/mo
 import { TableOutlined } from '@ant-design/icons';
 import { TableWrapper } from './tableWrapper';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
-import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
+
 import { isPropertySettings } from '@/designer-components/_settings/utils/utils';
 import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
 import { StandaloneTable } from './standaloneTable';
@@ -97,7 +98,7 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
       const errors: Array<{ propertyName: string; error: string }> = [];
 
       // Parse fetch errors from the store
-      if (fetchTableDataError) {
+      if (isDefined(fetchTableDataError)) {
         errors.push(...parseFetchError(fetchTableDataError));
       }
 
@@ -130,7 +131,7 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps }> = ({ mode
     [store, store?.fetchTableDataError, columnsMismatch],
   );
 
-  if (model.hidden) return null;
+  if (model.hidden === true) return null;
 
   // Show TableWrapper when inside DataContext (even with no columns, to allow auto-configuration)
   // Show StandaloneTable only when outside DataContext
@@ -187,7 +188,7 @@ const TableComponent: TableComponentDefinition = {
     };
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   validateModel: (model, addModelError) => {
     // CRITICAL: Validate that table has columns configured
     const hasColumns = isNonEmptyArray(model.items);
@@ -200,7 +201,7 @@ const TableComponent: TableComponentDefinition = {
   migrator: (m) =>
     m
       .add<ITableComponentProps>(0, (prev) => {
-        const items = 'items' in prev && prev.items && Array.isArray(prev.items) ? prev.items as IConfigurableColumnsProps[] : [];
+        const items = 'items' in prev && isDefined(prev.items) && Array.isArray(prev.items) ? prev.items as IConfigurableColumnsProps[] : [];
         const prevTyped = prev as ITableComponentProps;
         return {
           ...prevTyped,

@@ -15,9 +15,7 @@ import { isEntityMetadata, isEntityReferenceArrayPropertyMetadata, isEntityRefer
 import { useMetadataDispatcher } from '@/providers';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { IInputStyles } from '@/providers/form/models';
-import {
-  executeExpression, validateConfigurableComponentSettings,
-} from '@/providers/form/utils';
+import { executeExpression } from '@/providers/form/utils';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 import { isNonEmptyArray } from '@/utils/array';
 import { getNestedStringOrUndefined } from '@/utils/dotnotation';
@@ -199,7 +197,7 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   getDefaultStyles: () => defaultStyles(),
   previewConfiguration: {
     type: 'autocomplete',

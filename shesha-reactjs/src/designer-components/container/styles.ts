@@ -26,15 +26,16 @@ export const useStyles = createStyles(({ css, cx }, model: IContainerComponentPr
         ${borderStyles(model.border)}
         ${backgroundStyles(model.background)}
         ${shadowStyles(model.shadow)}
-        ${paddingStyles(model.stylingBoxJson)}
         ${marginStyles(model.stylingBoxJson)}
 
         ${isDefined(model.alignSelf) ? `align-self: ${model.alignSelf};` : ''}
         ${isDefined(model.justifySelf) ? `justify-self: ${model.justifySelf};` : ''}
 
         > .sha-components-container-inner {
+          ${paddingStyles(model.stylingBoxJson)}
           height: 100%;
           width: 100%;
+          box-sizing: border-box;
           
           ${overflowStyles as CSSObject}
           

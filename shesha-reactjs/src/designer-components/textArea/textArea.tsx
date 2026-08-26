@@ -4,7 +4,7 @@ import { Input } from 'antd';
 import { TextAreaProps, TextAreaRef } from 'antd/lib/input/TextArea';
 import { FocusEventHandler, ReactNode, useEffect, useRef } from 'react';
 import * as React from 'react';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { ITextAreaComponentProps, TextAreaComponentDefinition } from './interfaces';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
@@ -194,7 +194,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
     return textAreaModel;
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   getDefaultStyles: () => defaultStyles(),
   migrator: (m) =>
     m

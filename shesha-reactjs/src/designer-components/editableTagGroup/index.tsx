@@ -3,7 +3,7 @@ import { HomeOutlined } from '@ant-design/icons';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
 import { EditableTagGroup } from '@/components/editableTagGroup';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { EditableTagGroupComponentDefinition, IEditableTagGroupComponentProps } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
@@ -33,7 +33,7 @@ const EditableTagGroupComponent: EditableTagGroupComponentDefinition = {
     .add<IEditableTagGroupComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<IEditableTagGroupComponentProps>(2, (prev) => migrateReadOnly(prev))
     .add<IEditableTagGroupComponentProps>(3, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) })),
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+
 };
 
 export default EditableTagGroupComponent;

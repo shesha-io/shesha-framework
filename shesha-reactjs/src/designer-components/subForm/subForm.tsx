@@ -9,14 +9,15 @@ import { IPersistedFormProps } from '@/providers/form/models';
 import { ComponentsContainerProvider } from '@/providers/form/nesting/containerContext';
 import { ComponentsContainerSubForm } from './componentsContainerSubForm';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
-import { Button, Result } from 'antd';
-import Link from 'antd/es/typography/Link';
+import { Button, Result, Typography } from 'antd';
 import { useValidator } from '@/providers/validateProvider';
 import AttributeDecorator from '@/components/attributeDecorator';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { ValidateErrorEntity } from '@/interfaces';
 import { isNonEmptyArray } from '@/utils/array';
 import { useStyles } from './styles';
+
+const { Link } = Typography;
 
 interface ISubFormProps {
   style?: CSSProperties | undefined;
@@ -44,16 +45,16 @@ const SubForm: FC<ISubFormProps> = ({ readOnly, formSelectionMode }) => {
   const form = useForm();
 
   const validator = useValidator(false);
-  if (validator && id && isDefined(allComponents))
+  if (validator && !isNullOrWhiteSpace(id) && isDefined(allComponents))
     validator.registerValidator({
       id,
       validate: () => {
-        if (!context) {
+        if (isNullOrWhiteSpace(context)) {
           const properties = [];
           for (const comp in allComponents)
             if (Object.hasOwn(allComponents, comp)) {
               const component = allComponents[comp];
-              if (isConfigurableFormComponent(component) && component.propertyName && !component.context)
+              if (isConfigurableFormComponent(component) && !isNullOrWhiteSpace(component.propertyName) && isNullOrWhiteSpace(component.context))
                 properties.push([...propertyName.split('.'), ...component.propertyName.split('.')]);
             }
 
@@ -125,6 +126,12 @@ const SubForm: FC<ISubFormProps> = ({ readOnly, formSelectionMode }) => {
               <div className={styles.shaSubFormPlaceholder}>
                 <FormOutlined />
                 <span>Sub Form — the form is resolved at runtime from the entity type of the bound value.</span>
+              </div>
+            )}
+            {form.formMode === 'designer' && !showDynamicPlaceholder && !isLoading && !showFormError && !isNonEmptyArray(components) && (
+              <div className={styles.shaSubFormPlaceholder}>
+                <FormOutlined />
+                <span>Please, configure subform components</span>
               </div>
             )}
             <div>

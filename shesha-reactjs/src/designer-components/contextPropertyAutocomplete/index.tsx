@@ -4,7 +4,7 @@ import { Button, Input } from 'antd';
 import { DataContextSelector } from '@/designer-components/dataContextSelector';
 import { FileSearchOutlined } from '@ant-design/icons';
 import { FormMarkup } from '@/providers/form/models';
-import { getStyle, linkComponentToModelMetadata, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { getStyle, linkComponentToModelMetadata } from '@/providers/form/utils';
 import { IConfigurableFormComponent, MetadataProvider, useFormDesignerComponents, useMetadataDispatcher, useShaFormInstanceOrUndefined } from '@/providers';
 import { MetadataType } from '@/providers/metadata/contexts';
 import { PropertyAutocomplete } from '@/components/propertyAutocomplete/propertyAutocomplete';
@@ -270,7 +270,7 @@ const ContextPropertyAutocompleteComponent: ContextPropertyAutocompleteComponent
     ;
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+
   migrator: (m) => m
     .add<IContextPropertyAutocompleteComponentProps>(0, (prev) => {
       const showFillPropsButton = (prev as { showFillPropsButton?: boolean | undefined })['showFillPropsButton'];

@@ -1,4 +1,4 @@
-import { FC, JSX, useState } from 'react';
+import { FC, useState } from 'react';
 import { AutoComplete, Button, Checkbox, Radio, Select, Space, Table, Tooltip, Typography } from 'antd';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import { BodyType, IFormDataField, IRequestBody, RawBodySubType } from './models';
@@ -179,7 +179,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, expressionContext }
     updateFormData(rows.filter((_, i) => i !== index));
   };
 
-  const renderFormDataTable = (): JSX.Element => {
+  const renderFormDataTable = (): React.JSX.Element => {
     const rows = parseFormData();
 
     const columns = [
@@ -265,7 +265,7 @@ export const BodyTab: FC<IBodyTabProps> = ({ body, onChange, expressionContext }
     );
   };
 
-  const renderBodyContent = (): JSX.Element | null => {
+  const renderBodyContent = (): React.JSX.Element | null => {
     switch (body.type) {
       case 'none':
         return <Text type="secondary">This request does not have a body.</Text>;

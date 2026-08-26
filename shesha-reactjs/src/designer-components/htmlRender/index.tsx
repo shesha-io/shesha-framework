@@ -1,5 +1,5 @@
 import { IToolboxComponent } from '@/interfaces';
-import { executeScriptSync, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { executeScriptSync } from '@/providers/form/utils';
 import { HighlightOutlined } from '@ant-design/icons';
 import parse from 'html-react-parser';
 import DOMPurify from 'dompurify';
@@ -13,6 +13,7 @@ import { migratePermissionsToVisiblePermissions } from '../_common-migrations/mi
 import { migrateHiddenToVisible } from '../_common-migrations';
 import { useEvents } from '@/components/formDesigner/components/eventsAndApiValueProcessor';
 import { getComponentEvents } from '../_common/events';
+import { Empty } from 'antd';
 
 interface IHtmlComponentCalulatedModel {
   getContent: (value: string | undefined) => string;
@@ -38,7 +39,7 @@ const HtmlComponent: IToolboxComponent<IHtmlComponentProps, IHtmlComponentCalula
             const content = model.sanitize === false ? html : DOMPurify.sanitize(html);
             return (
               <div {...getComponentEvents<void, IHtmlComponentProps>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent })}>
-                {parse(content)}
+                {isNullOrWhiteSpace(content) ? <Empty description="Please, provide some content for this HTML render" /> : parse(content)}
               </div>
             );
           }}
@@ -47,7 +48,7 @@ const HtmlComponent: IToolboxComponent<IHtmlComponentProps, IHtmlComponentCalula
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   initModel: (model) => ({
     ...model,
     contentType: model.contentType ?? 'jsx',

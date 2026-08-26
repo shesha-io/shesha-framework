@@ -42,7 +42,7 @@ export const PackageContent: FC<IPackageContentProps> = ({ packageState, onChang
         propertyName="items"
         metadata={metadata}
       >
-        <GlobalTableFilter block style={{ margin: '8px 0' }} searchProps={{ size: 'middle', autoFocus: true }} />
+        <GlobalTableFilter style={{ margin: '8px 0' }} searchProps={{ size: 'middle', autoFocus: true }} />
         <div style={{ display: 'flex', justifyContent: 'right', alignItems: 'center', padding: '8px 0' }}>
           <TablePager />
         </div>

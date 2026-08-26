@@ -369,6 +369,7 @@ export interface BaseLabelValueEditorProps extends ISettingsInputBase<ILabelValu
   valueTitle?: string | undefined;
   valueName?: string | undefined;
   mode?: 'dialog' | 'inline' | undefined;
+  valueEditor?: 'input' | 'expression' | undefined;
 }
 export interface ILabelValueEditorSettingsInputProps extends BaseLabelValueEditorProps {
   type: 'labelValueEditor';

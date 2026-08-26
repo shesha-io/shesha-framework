@@ -2,7 +2,7 @@ import { ConfigurableFormItem } from '@/components/formDesigner/components/formI
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { IInputStyles } from '@/providers';
-import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import ParentProvider from '@/providers/parentProvider/index';
 import { LinkOutlined } from '@ant-design/icons';
 import { ReactNode } from 'react';
@@ -24,14 +24,9 @@ const LinkComponent: LinkComponentDefinition = {
   preserveDimensionsInDesigner: true,
   icon: <LinkOutlined />,
   getWrapperStyle: () => ({ style: { dimensions: { width: 'auto' } } }),
-  calculateModel: (model, allData) => ({
-    isDesignerMode: allData.form?.formMode === 'designer',
-    href: evaluateString(model.href, allData.data ?? {}),
-  }),
-  Factory: ({ model, calculatedModel }) => {
+  Factory: ({ model, form }) => {
     const { styles } = useStyles(model);
-
-    const { content = 'Link', target, direction, id, hasChildren } = model;
+    const { content = 'Link', target, href, direction, id, hasChildren } = model;
 
     if (model.hidden === true) return null;
 
@@ -41,7 +36,7 @@ const LinkComponent: LinkComponentDefinition = {
           if (hasChildren !== true) {
             return (
               <div className={styles.shaLinkWrapper} style={model.styleCss}>
-                <a href={calculatedModel.href} target={target} className={styles.shaLink}>
+                <a href={href} target={target} className={styles.shaLink}>
                   {content}
                 </a>
               </div>
@@ -63,11 +58,11 @@ const LinkComponent: LinkComponentDefinition = {
               />
             </ParentProvider>
           );
-          if (calculatedModel.isDesignerMode === true) {
+          if (form.formMode === 'designer') {
             return containerHolder();
           }
           return (
-            <a href={calculatedModel.href} target={target} className={styles.shaLink}>
+            <a href={href} target={target} className={styles.shaLink}>
               {containerHolder()}
             </a>
           );
@@ -77,7 +72,7 @@ const LinkComponent: LinkComponentDefinition = {
   },
   getDefaultStyles: defaultStyles,
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   initModel: (model: ILinkComponentProps) => {
     const customProps: ILinkComponentProps = {
       ...model,

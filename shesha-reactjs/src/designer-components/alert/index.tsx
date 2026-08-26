@@ -2,7 +2,7 @@ import { CSSProperties, ReactNode, useEffect, useRef } from 'react';
 import * as React from 'react';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { getSettings } from './settingsForm';
 import { ShaIcon } from '@/components/shaIcon';
 import { AlertComponentDefinition, AlertType, IAlertComponentProps } from './interfaces';
@@ -164,7 +164,7 @@ const AlertComponent: AlertComponentDefinition = {
       }));
     }),
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   previewConfiguration: {
     type: 'alert',
     componentName: 'sha-alert',

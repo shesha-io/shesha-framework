@@ -1,6 +1,6 @@
 import { ArrowsAltOutlined } from '@ant-design/icons';
 import { useGlobalState, useFormData, useForm } from '@/providers';
-import { evaluateString, validateConfigurableComponentSettings } from '@/formDesignerUtils';
+import { evaluateString } from '@/formDesignerUtils';
 import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces/formDesigner';
 import { getStyle } from '@/providers/form/utils';
 import StatusTag, { DEFAULT_STATUS_TAG_MAPPINGS, IStatusMappings, IStatusTagProps as ITagProps } from '@/components/statusTag';
@@ -76,7 +76,7 @@ const StatusTagComponent: IToolboxComponent<IStatusTagProps> = {
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   migrator: (m) => m
     .add<IStatusTagProps>(0, (prev) => {
       const prevTyped = prev as Partial<IStatusTagProps>;

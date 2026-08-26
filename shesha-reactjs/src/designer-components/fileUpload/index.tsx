@@ -5,10 +5,7 @@ import { ConfigurableFormItem } from '@/components/formDesigner/components/formI
 import { DataTypes } from '@/interfaces';
 import { FileUploadProvider, IInputStyles, useFormData, useGlobalState } from '@/providers';
 import { useForm } from '@/providers/form';
-import {
-  evaluateString,
-  validateConfigurableComponentSettings,
-} from '@/providers/form/utils';
+import { evaluateString } from '@/providers/form/utils';
 import {
   migrateCustomFunctions,
   migrateHiddenToVisible,
@@ -189,15 +186,7 @@ const FileUploadComponent: FileUploadComponentDefinition = {
       })
       .add<IFileUploadProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
-  previewConfiguration: {
-    type: 'fileUpload',
-    id: 'fileUpload',
-    propertyName: `fileUploadAppearance`,
-    label: `File Label`,
-    listType: 'thumbnail',
-    version: 'latest',
-  },
+
 };
 
 export default FileUploadComponent;

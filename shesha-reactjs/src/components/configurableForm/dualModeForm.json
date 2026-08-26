@@ -17,9 +17,7 @@
           "label": "First Name",
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
-          "hidden": false,
-          "validate": {},
-          "settingsValidationErrors": []
+          "hidden": false
         },
         {
           "textType": "text",
@@ -29,9 +27,7 @@
           "label": "Last Name",
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
-          "hidden": false,
-          "validate": {},
-          "settingsValidationErrors": []
+          "hidden": false
         },
         {
           "textType": "text",
@@ -41,9 +37,7 @@
           "label": "Friend's name",
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
-          "hidden": false,
-          "validate": {},
-          "settingsValidationErrors": []
+          "hidden": false
         },
         {
           "id": "w6vyINZcXhbRzmBpfpRkn",
@@ -56,9 +50,7 @@
           "mode": "multiple",
           "dataSourceType": "referenceList",
           "referenceListNamespace": "BursMan",
-          "referenceListName": "ApplicationStatus",
-          "validate": {},
-          "settingsValidationErrors": []
+          "referenceListName": "ApplicationStatus"
         },
         {
           "id": "c9MAhE2PK8ghEquP9AoVT",
@@ -70,7 +62,6 @@
           "hidden": false,
           "dataSourceType": "entitiesList",
           "useRawValues": false,
-          "validate": {},
           "queryParams": [
             {
               "id": "wTHUImfr_r5YOCivtuiAY",
@@ -78,7 +69,6 @@
               "value": "{data.applicationStatus.itemValue}"
             }
           ],
-          "settingsValidationErrors": [],
           "entityTypeShortAlias": "Shesha.Core.Area"
         },
         {
@@ -92,9 +82,7 @@
           "dataSourceType": "entitiesList",
           "useRawValues": false,
           "mode": "multiple",
-          "entityTypeShortAlias": "Shesha.Core.Area",
-          "validate": {},
-          "settingsValidationErrors": []
+          "entityTypeShortAlias": "Shesha.Core.Area"
         },
         {
           "id": "ku9UKoAqyx4sXP3HIiJ21",
@@ -106,9 +94,7 @@
           "hidden": false,
           "dataSourceType": "referenceList",
           "useRawValues": false,
-          "validate": {},
           "mode": "multiple",
-          "settingsValidationErrors": [],
           "referenceListNamespace": "Shesha.Core",
           "referenceListName": "Gender"
         },
@@ -119,9 +105,7 @@
           "label": "Age",
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
-          "hidden": false,
-          "validate": {},
-          "settingsValidationErrors": []
+          "hidden": false
         },
         {
           "id": "q5zfGlYi7cQgtxC0F_oqC",
@@ -141,9 +125,7 @@
           "weekFormat": "YYYY-wo",
           "showNow": false,
           "showToday": false,
-          "disabledDateMode": "none",
-          "validate": {},
-          "settingsValidationErrors": []
+          "disabledDateMode": "none"
         },
         {
           "id": "Eoj0lIPWcn71zNsY-vE03",
@@ -164,8 +146,6 @@
           "showToday": false,
           "disabledDateMode": "functionTemplate",
           "disabledDateFunc": "return current && current < moment().endOf('day');",
-          "validate": {},
-          "settingsValidationErrors": [],
           "disabledDateTemplate": "return current && current < moment().endOf('day');",
           "customEnabled": "return data?.applicationStatus && data?.applicationStatus?.itemValue === 1;",
           "disabled": false
@@ -178,9 +158,7 @@
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
           "hidden": false,
-          "disabled": false,
-          "validate": {},
-          "settingsValidationErrors": []
+          "disabled": false
         },
         {
           "id": "DrdlKN1Gymz_an6v5mFgx",
@@ -192,9 +170,7 @@
           "hidden": false,
           "autoSize": false,
           "showCount": false,
-          "allowClear": false,
-          "validate": {},
-          "settingsValidationErrors": []
+          "allowClear": false
         },
         {
           "id": "gNhvOsPC-Qb4Y_H7gAs03",
@@ -202,8 +178,7 @@
           "propertyName": "subscriptions",
           "label": "Subscriptions",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
-          "hidden": false,
-          "settingsValidationErrors": []
+          "hidden": false
         },
         {
           "id": "8_smkyp9BYDuMhJ1TWkRV",
@@ -213,8 +188,7 @@
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
           "hidden": false,
-          "disabled": false,
-          "settingsValidationErrors": []
+          "disabled": false
         },
         {
           "id": "-7BWZjeWioYkZbvH24ao1",
@@ -223,11 +197,9 @@
           "label": "Alerts",
           "labelAlign": "right",
           "parentId": "rqEyWa_qG99Qo53kIjCKb",
-          "hidden": false,
-          "settingsValidationErrors": []
+          "hidden": false
         }
-      ],
-      "settingsValidationErrors": []
+      ]
     }
   ],
   "formSettings": {

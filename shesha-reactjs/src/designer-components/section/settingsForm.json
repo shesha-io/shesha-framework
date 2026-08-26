@@ -65,15 +65,13 @@
             "propertyName": "permissions",
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Permissions",
-            "validate": {},
             "version": 1
           }
         ]
       },
       "collapsible": "header",
       "ghost": true,
-      "hideWhenEmpty": true,
-      "settingsValidationErrors": []
+      "hideWhenEmpty": true
     }
   ],
   "formSettings": {

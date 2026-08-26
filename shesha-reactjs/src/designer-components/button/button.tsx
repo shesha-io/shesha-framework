@@ -2,7 +2,7 @@ import ConfigurableButton from './configurableButton';
 import { useEffect, useRef } from 'react';
 import { BorderOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { IButtonComponentProps } from './interfaces';
 import { IButtonGroupItemBaseV0, migrateV0toV1 } from './migrations/migrate-v1';
 import { IToolboxComponent } from '@/interfaces';
@@ -61,7 +61,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
   },
   getDefaultStyles: () => defaultStyles({} as IButtonComponentProps),
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   initModel: (model) => {
     const buttonModel: IButtonComponentProps = {
       ...model,

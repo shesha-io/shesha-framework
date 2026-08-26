@@ -1,6 +1,6 @@
 import { IFontValue } from "@/designer-components/_settings/utils/font/interfaces";
 import { IReferenceListIdentifier } from "@/interfaces";
-import { IButtonGroupItem, IButtonItem, IConfigurableFormComponent } from "@/providers";
+import { IButtonGroupItem, IButtonItem, IConfigurableFormComponent, IStyleValue } from "@/providers";
 import { RefListGroupItemProps as ConfiguredRefListItem, isIRefListItemGroup as isConfiguredRefListGroup } from "@/components/refListSelectorDisplay/provider/models";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 
@@ -17,16 +17,19 @@ export interface IRefListItemGroup extends IRefListGroupItemBase {
   childItems?: RefListGroupItemProps[];
 }
 
-export interface IChevronProps extends IConfigurableFormComponent {
+export interface IChevronStyleProps extends IStyleValue {
+  activeColor?: string | undefined;
+  showIcons?: boolean | undefined;
+  colorSource?: 'primary' | 'custom' | 'reflist' | undefined;
+}
+
+export interface IChevronProps extends IConfigurableFormComponent<IChevronStyleProps>, IChevronStyleProps {
   items?: IChevronButton[] | undefined;
   description?: string | undefined;
   image?: string | undefined;
   imageStyle?: boolean | undefined;
   imageSize?: number | undefined;
   referenceList?: IReferenceListIdentifier | undefined;
-  activeColor?: string | undefined;
-  showIcons?: boolean | undefined;
-  colorSource?: 'primary' | 'custom' | 'reflist' | undefined;
   width?: number | undefined;
   height?: number | undefined;
   font?: IFontValue | undefined;

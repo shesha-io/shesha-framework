@@ -4,7 +4,7 @@ import { ConfigurableThemeContent } from '@/generic-pages/settings/dynamic-theme
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { FormMarkup, IToolboxComponent } from '@/interfaces';
 import { useShaFormDataUpdate, useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { useSheshaApplication } from '@/providers/sheshaApplication';
 import { IConfigurableTheme, useTheme } from '@/providers/theme';
 import { EditOutlined } from '@ant-design/icons';
@@ -86,7 +86,7 @@ const ThemeEditorComponent: IToolboxComponent = {
     );
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+
 };
 
 export default ThemeEditorComponent;
