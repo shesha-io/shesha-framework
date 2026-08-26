@@ -164,7 +164,10 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
           },
           {
             key: 'appearance', title: 'Appearance', id: appearanceTabId,
-            components: fbf(appearanceTabId).stdAppearancePanels(['font', 'dimensions', 'border', 'background', 'shadow', 'marginPadding', 'customStyle'], removeStyleRouter).toJson(),
+            /* An entity reference is inline link text, not a boxed control, so it exposes no Border,
+               Background or Shadow panel: the runtime does not render them, and a panel that collects
+               a value nothing applies is a dead setting. */
+            components: fbf(appearanceTabId).stdAppearancePanels(['font', 'dimensions', 'marginPadding', 'customStyle'], removeStyleRouter).toJson(),
           },
         ],
       })

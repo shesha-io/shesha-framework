@@ -407,6 +407,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
           formArguments={{ id: entityId }}
           disabled={props.disabled}
           style={props.style}
+          className={props.className}
           popupClassName={props.popupClassName}
           displayType={props.displayType}
           iconName={props.iconName}

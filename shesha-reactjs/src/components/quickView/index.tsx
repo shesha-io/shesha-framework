@@ -56,6 +56,8 @@ export interface IQuickViewProps extends PropsWithChildren {
 
   disabled?: boolean | undefined;
   style?: CSSProperties | undefined;
+  /** Emotion class for the trigger, carrying the caller's Appearance settings. */
+  className?: string | undefined;
   /**
    * Emotion class for the popover panel. The popover is portalled to the body, so it cannot be
    * reached by a descendant selector from the trigger and needs its own class.
@@ -82,6 +84,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   dataProperties = [],
   disabled,
   style,
+  className,
   popupClassName,
   displayType,
   iconName,
@@ -97,7 +100,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
   const { backendUrl, httpHeaders } = useSheshaApplication();
   const { getFormAsync } = useConfigurationItemsLoader();
   const { notification } = App.useApp();
-  const { styles } = useStyles();
+  const { styles, cx } = useStyles();
   const httpClient = useHttpClient();
 
   // Sync formTitle with displayName prop
@@ -213,12 +216,12 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
 
   const render = (): ReactNode => {
     if (children) {
-      return <div className={styles.innerEntityReferenceButtonBoxStyle}>{children}</div>;
+      return <div className={cx(styles.innerEntityReferenceButtonBoxStyle, className)}>{children}</div>;
     }
 
     if (displayType === 'icon') {
       return (
-        <Button type="link" className={styles.innerEntityReferenceButtonBoxStyle} style={style}>
+        <Button type="link" className={cx(styles.innerEntityReferenceButtonBoxStyle, className)} style={style}>
           {iconName && <ShaIcon iconName={iconName} />}
         </Button>
       );
@@ -226,7 +229,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
 
     if (displayType === 'textTitle') {
       return (
-        <Button type="link" className={styles.innerEntityReferenceButtonBoxStyle} style={style}>
+        <Button type="link" className={cx(styles.innerEntityReferenceButtonBoxStyle, className)} style={style}>
           {textTitle ? (
             <span className={styles.innerEntityReferenceSpanBoxStyle}>{textTitle}</span>
           ) : (
@@ -249,7 +252,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
     };
 
     return (
-      <Button type="link" className={styles.innerEntityReferenceButtonBoxStyle} style={style}>
+      <Button type="link" className={cx(styles.innerEntityReferenceButtonBoxStyle, className)} style={style}>
         {loadingState === 'loading' ? (
           <>
             {loadingBox(styles)}
@@ -261,7 +264,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
 
   if (disabled)
     return (
-      <Button disabled type="link" className={styles.innerEntityReferenceButtonBoxStyle} style={style}>
+      <Button disabled type="link" className={cx(styles.innerEntityReferenceButtonBoxStyle, className)} style={style}>
         <span className={styles.innerEntityReferenceSpanBoxStyle}>{formTitle || emptyText}</span>
       </Button>
     );
@@ -300,7 +303,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
 export const GenericQuickView: FC<IQuickViewProps> = (props) => {
   const { getEntityFormIdAsync } = useConfigurationItemsLoader();
   const [formConfig, setFormConfig] = useState <FormIdentifier | null | undefined> (undefined);
-  const { styles } = useStyles();
+  const { styles, cx } = useStyles();
 
   // Deep-compare deps: `entityType` and `formIdentifier` are objects that get a fresh
   // reference on every designer re-render (e.g. when unrelated Appearance properties change),
@@ -326,7 +329,7 @@ export const GenericQuickView: FC<IQuickViewProps> = (props) => {
   // Don't render anything if we can render the actual QuickView
   if (formConfig === undefined) {
     return (
-      <Button type="link" className={styles.innerEntityReferenceButtonBoxStyle} style={props.style}>
+      <Button type="link" className={cx(styles.innerEntityReferenceButtonBoxStyle, props.className)} style={props.style}>
         {loadingBox(styles)}
       </Button>
     );
@@ -337,7 +340,7 @@ export const GenericQuickView: FC<IQuickViewProps> = (props) => {
       <Popover content="Quickview not configured properly" title="Quickview not configured properly">
         <Button
           type="link"
-          className={styles.innerEntityReferenceButtonBoxStyle}
+          className={cx(styles.innerEntityReferenceButtonBoxStyle, props.className)}
           style={props.style}
           aria-label="Quickview configuration error"
         >
