@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/strict-boolean-expressions: "error" */
 import { IFormLifecycleSettings, IFormSettings } from "@/interfaces";
 import { IKeyValue } from "@/interfaces/keyValue";
 import { GqlLoaderSettings } from "@/providers/form/loaders/interfaces";
@@ -21,14 +22,14 @@ const getPrepareSubmitData = (preparedValues: string | undefined): string | null
 const getBeforeDataLoad = (onInitialized: string | undefined): string => {
   let result = `    form.setFieldsValue({...form.formArguments});`;
   const normalizedJs = onInitialized?.trim();
-  if (normalizedJs)
+  if (!isNullOrWhiteSpace(normalizedJs))
     result += `    ${normalizedJs}`;
   return result;
 };
 
 const getAfterDataLoad = (onDataLoaded: string | undefined, initialValues?: IKeyValue[] | undefined): string | null => {
   if (!initialValues || initialValues.length === 0)
-    return onDataLoaded || null;
+    return onDataLoaded ?? null;
 
   // Convert to JSON
   const initialData = {};
@@ -49,7 +50,7 @@ const getAfterDataLoad = (onDataLoaded: string | undefined, initialValues?: IKey
 
   // If there is only one value (__shaFormData), just return initial onDataLoaded code
   if (initialCount === 1)
-    return onDataLoaded || null;
+    return onDataLoaded ?? null;
 
   const initialObjString = JSON.stringify(initialData, null, 4)
     .replaceAll("\"#", "").replaceAll("#\"", "").replaceAll("#\\\"", "\"")
@@ -63,7 +64,7 @@ const getAfterDataLoad = (onDataLoaded: string | undefined, initialValues?: IKey
   result += '// ----------------------------------------------------\r\n\r\n';
 
   const normalizedJs = onDataLoaded?.trim();
-  if (normalizedJs)
+  if (!isNullOrWhiteSpace(normalizedJs))
     result += `    ${normalizedJs}`;
 
   return result;
@@ -115,7 +116,7 @@ export const migrateFormLifecycle = (settings: IFormSettings): IFormSettings => 
     */
   const normalizeUrl = (value: string | undefined): string | undefined => {
     const result = value?.trim();
-    return result ? result : undefined;
+    return !isNullOrWhiteSpace(result) ? result : undefined;
   };
   const urls = {
     update: normalizeUrl(putUrl),
@@ -125,13 +126,13 @@ export const migrateFormLifecycle = (settings: IFormSettings): IFormSettings => 
   const gqlLoaderSettings: GqlLoaderSettings = {
     // url: getUrl,
     fieldsToFetch,
-    endpointType: isNullOrWhiteSpace(getUrl) ? 'static' : 'default',
+    endpointType: !isNullOrWhiteSpace(getUrl) ? 'static' : 'default',
     staticEndpoint: !isNullOrWhiteSpace(getUrl) ? { httpVerb: 'get', url: getUrl } : undefined,
   };
 
   const getDynamicSubmitEndpoint = (createUrl: string | undefined, updateUrl: string | undefined): string => {
-    const createUrlExpression = createUrl ? `{ httpVerb: 'POST', url: "${createUrl}" }` : 'form.defaultEndpoints.create';
-    const updateUrlExpression = updateUrl ? `{ httpVerb: 'PUT', url: "${updateUrl}" }` : 'form.defaultEndpoints.update';
+    const createUrlExpression = !isNullOrWhiteSpace(createUrl) ? `{ httpVerb: 'POST', url: "${createUrl}" }` : 'form.defaultEndpoints.create';
+    const updateUrlExpression = !isNullOrWhiteSpace(updateUrl) ? `{ httpVerb: 'PUT', url: "${updateUrl}" }` : 'form.defaultEndpoints.update';
 
     return `    return data?.id ? ${updateUrlExpression} : ${createUrlExpression}`;
   };
@@ -153,7 +154,7 @@ export const migrateFormLifecycle = (settings: IFormSettings): IFormSettings => 
     },
 
     onBeforeDataLoad: getBeforeDataLoad(onInitialized),
-    onAfterDataLoad: onAfterDataLoad || (getAfterDataLoad(onDataLoaded, initialValues) ?? undefined),
+    onAfterDataLoad: onAfterDataLoad ?? (getAfterDataLoad(onDataLoaded, initialValues) ?? undefined),
 
     onValuesUpdate: onUpdate,
 
