@@ -4,10 +4,7 @@ import { ConfigurableFormItem } from '@/components/formDesigner/components/formI
 import { DataTypes } from '@/interfaces';
 import { FileUploadProvider, useFormData, useGlobalState } from '@/providers';
 import { useForm } from '@/providers/form';
-import {
-  evaluateString,
-  validateConfigurableComponentSettings,
-} from '@/providers/form/utils';
+import { evaluateString } from '@/providers/form/utils';
 import {
   migrateCustomFunctions,
   migratePropertyName,
@@ -124,7 +121,7 @@ const FileUploadComponent: FileUploadComponentDefinition = {
       .add<IFileUploadProps>(5, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
       .add<IFileUploadProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
 };
 
 export default FileUploadComponent;

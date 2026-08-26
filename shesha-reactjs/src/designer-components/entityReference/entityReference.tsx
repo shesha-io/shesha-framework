@@ -7,7 +7,7 @@ import {
   migrateReadOnly,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
+
 import { LinkExternalOutlined } from '@/icons/linkExternalOutlined';
 import { IToolboxComponent } from '@/interfaces';
 import { isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
@@ -111,7 +111,7 @@ const EntityReferenceComponent: IToolboxComponent<IEntityReferenceControlProps> 
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   migrator: (m) =>
     m
       .add<IEntityReferenceControlProps>(0, (prev) => {

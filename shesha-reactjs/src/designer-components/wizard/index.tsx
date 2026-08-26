@@ -14,7 +14,7 @@ import {
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeComponents } from '../_common-migrations/removeComponents';
 import { getSettings } from './settingsForm';
-import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
+
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
 import { isDefined } from '@/utils/nullables';
@@ -118,7 +118,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
           : [],
       })),
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
 
   getContainers: (model) => {
     const containers: IFormComponentContainer[] = [];

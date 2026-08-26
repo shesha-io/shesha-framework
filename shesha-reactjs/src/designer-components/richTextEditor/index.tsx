@@ -1,26 +1,21 @@
-import RichTextEditor from '@/components/richTextEditor';
-import settingsFormJson from './settingsForm.json';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import { EditOutlined } from '@ant-design/icons';
-import { FormMarkup } from '@/providers/form/models';
-import { getStyle } from '@/providers/form/utils';
+import RichTextEditor from '@/components/richTextEditor';
 import { IJoditEditorProps } from '@/components/richTextEditor/joditEditor';
-import { IRichTextEditorProps } from './interfaces';
-import { IToolboxComponent } from '@/interfaces/formDesigner';
 import {
   migrateCustomFunctions,
   migratePropertyName,
   migrateReadOnly,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { useDeepCompareMemoKeepReference } from '@/hooks';
+import { IToolboxComponent } from '@/interfaces/formDesigner';
 import { useForm, useFormData } from '@/providers';
-import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
+import { getStyle } from '@/providers/form/utils';
+import { EditOutlined } from '@ant-design/icons';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { getSettings } from './formSettings';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { getSettings } from './formSettings';
+import { IRichTextEditorProps } from './interfaces';
 import { defaultStyles } from './utils';
-
-const settingsForm = settingsFormJson as FormMarkup;
 
 type PartialRichTextEditorConfig = Partial<IJoditEditorProps['config']>;
 
@@ -89,7 +84,7 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+
   initModel: (model) => ({
     ...model,
     showCharsCounter: true,

@@ -3,7 +3,7 @@ import { FormMarkup } from '@/providers/form/models';
 import { FileSearchOutlined } from '@ant-design/icons';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
-import { useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { useAvailableConstantsData } from '@/providers/form/utils';
 import { IConfigurableItemAutocompleteComponentProps } from './interfaces';
 import { useAsyncDeepCompareMemo } from '@/hooks/useAsyncMemo';
 import { evaluateDynamicFilters } from '@/utils/datatable';
@@ -101,7 +101,7 @@ export const ConfigurableItemAutocompleteComponent: IToolboxComponent<IConfigura
   },
   actualModelPropertyFilter: (name) => name !== 'filter',
   settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+
   migrator: (m) => m
     .add<IConfigurableItemAutocompleteComponentProps>(0, (prev) => ({
       ...prev,

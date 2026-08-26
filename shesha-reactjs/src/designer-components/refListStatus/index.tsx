@@ -3,7 +3,7 @@ import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { RefListStatus } from '@/components/refListStatus/index';
 import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateReadOnly, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
+
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles, useForm } from '@/providers';
@@ -201,7 +201,7 @@ const RefListStatusComponent: RefListStatusComponentDefinition = {
     .add<IRefListStatusComponentProps>(7, (prev) => migrateReadOnly(prev))
     .add<IRefListStatusComponentProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   linkToModelMetadata: (model, metadata): IRefListStatusComponentProps => {
     return {
       ...model,

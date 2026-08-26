@@ -8,7 +8,7 @@ import { useStyles } from '../tableContext/styles';
 import { useComponentValidation } from '@/providers/validationErrors';
 import { validationError } from '../utils';
 import { useDataTableStoreOrUndefined } from '@/providers/dataTable/hooks';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { isNonEmptyArray } from '@/utils/array';
 import { IStoredFilter } from '@/interfaces';
 import { isDefined } from '@/utils/nullables';
@@ -73,7 +73,7 @@ const TableViewSelectorComponent: TableViewSelectorComponentDefinition = {
     .add<ITableViewSelectorComponentProps>(7, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev))),
 
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
 };
 
 export default TableViewSelectorComponent;

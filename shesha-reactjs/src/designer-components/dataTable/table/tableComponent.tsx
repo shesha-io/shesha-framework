@@ -18,7 +18,7 @@ import { SheshaActionOwners } from '@/providers/configurableActionsDispatcher/mo
 import { TableOutlined } from '@ant-design/icons';
 import { TableWrapper } from './tableWrapper';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
-import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
+
 import { isPropertySettings } from '@/designer-components/_settings/utils/utils';
 import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
 import { StandaloneTable } from './standaloneTable';
@@ -188,7 +188,7 @@ const TableComponent: TableComponentDefinition = {
     };
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   validateModel: (model, addModelError) => {
     // CRITICAL: Validate that table has columns configured
     const hasColumns = isNonEmptyArray(model.items);

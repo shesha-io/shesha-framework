@@ -1,6 +1,6 @@
 import { legacyColor2Hex } from '@/designer-components/_common-migrations/migrateColor';
 import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
-import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
+
 import { LineHeightOutlined } from '@ant-design/icons';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
@@ -36,7 +36,7 @@ const TextComponent: TextComponentDefinition = {
   },
   getDefaultStyles: () => defaultStyles(),
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   initModel: (model) => ({
     ...model,
     copyable: false,

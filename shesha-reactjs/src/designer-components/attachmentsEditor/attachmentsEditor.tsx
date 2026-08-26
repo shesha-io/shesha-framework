@@ -8,7 +8,6 @@ import {
   evaluateString,
   executeScriptSync,
   useAvailableConstantsData,
-  validateConfigurableComponentSettings,
 } from '@/providers/form/utils';
 import { AttachmentsEditorProvider } from '@/providers/storedFiles';
 import { getSettings } from './settings';
@@ -299,7 +298,7 @@ const AttachmentsEditor: IToolboxComponent<IAttachmentsEditorProps> = {
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   linkToModelMetadata: (model, metadata) => ({
     ...model,
     filesCategory: metadata.path,

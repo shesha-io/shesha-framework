@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { IInputStyles, UnwrapCodeEvaluators } from '@/providers';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { ITextFieldComponentProps, TextFieldComponentDefinition, TextType } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly, migrateHiddenToVisible, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -201,7 +201,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
     return fieldContent;
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   initModel: (model) => ({ ...model, textType: 'text' }),
   getDefaultStyles: () => defaultStyles(),
   migrator: (m) => m
