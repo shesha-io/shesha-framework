@@ -356,14 +356,25 @@ export interface AutocompleteApi extends InputComponentApi<unknown> {
 };
 
 /**
+ * How an entity reference is opened.
+ * - `"NavigateLink"`: navigates to the target form
+ * - `"Quickview"`: opens a read-only popover
+ * - `"Dialog"`: opens a modal
+ *
+ * Declared here rather than imported so this file stays self-contained: it is shipped verbatim
+ * into the JS editors, where a path alias would not resolve.
+ */
+export type EntityReferenceTypes = "Dialog" | "NavigateLink" | "Quickview";
+
+/**
  * Entity reference. The value is the referenced entity's id — either stored directly as a string,
  * or normalised out of an `{ id, _className, _displayName }` object bound from the form data.
  */
 export interface EntityReferenceApi extends InputComponentApi<string | undefined> {
   /** Id of the entity the component currently points at, or `undefined` when nothing is selected. Read-only. */
   readonly entityId: string | undefined;
-  /** How the reference is opened: `Quickview`, `NavigateLink` or `Dialog`. Read-only. */
-  readonly entityReferenceType: string | undefined;
+  /** How the reference is opened. Read-only. */
+  readonly entityReferenceType: EntityReferenceTypes | undefined;
 };
 
 /** Checkbox group. Multi-select only, so the value is always the list of selected item values. */
