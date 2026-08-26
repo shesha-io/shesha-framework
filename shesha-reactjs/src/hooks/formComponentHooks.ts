@@ -207,6 +207,30 @@ export function useActualContextExecution<T = unknown>(code: string | undefined,
   return actualDataRef.current;
 }
 
+export function useActualContextExecutionNoRefresh<T = unknown>(code: string | undefined, additionalData: object | undefined, defaultValue: T): T {
+  const fullContext = useAvailableConstantsContextsNoRefresh();
+  const accessors = wrapConstantsData({ fullContext });
+
+  const contextProxyRef = useTouchableProxy<IApplicationContext>(accessors, additionalData);
+
+  const prevCode = useRef<string>(undefined);
+  const actualDataRef = useRef<T>(defaultValue);
+
+  if (contextProxyRef.changed || !isEqual(prevCode.current, code)) {
+    const result = !isNullOrWhiteSpace(code)
+      ? executeScriptSync(code, contextProxyRef) as T
+      : defaultValue;
+
+    // Only update if result is not undefined, otherwise keep previous value or use default
+    actualDataRef.current = result !== undefined ? result : (actualDataRef.current ?? defaultValue);
+  }
+
+  prevCode.current = code;
+
+  return actualDataRef.current;
+}
+
+
 export function useActualContextExecutionExecutor<T = unknown, TAdditionalData extends object = object>(executor: (context: IApplicationContext & TAdditionalData) => T, additionalData?: TAdditionalData): T | undefined {
   const fullContext = useAvailableConstantsContextsNoRefresh();
   const accessors = wrapConstantsData({ fullContext });

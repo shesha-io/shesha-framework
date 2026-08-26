@@ -1,7 +1,7 @@
 import { isSubFormComponent, ISubFormComponentProps } from '@/designer-components/subForm';
 import { useCalculatedModel } from '@/hooks/formComponentHooks';
 import { IApiContext, IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
-import { UnwrapCodeEvaluators, useForm, useShaFormInstance, useSheshaApplication } from '@/providers';
+import { UnwrapCodeEvaluators, useShaFormInstance, useSheshaApplication, useSubFormOrUndefined } from '@/providers';
 import { isFormFullName } from '@/providers/form/utils';
 import { useValidationErrorsStateOrDefault } from '@/providers/validationErrors';
 import { IModelValidation, ISheshaErrorTypes } from '@/utils/errors';
@@ -33,7 +33,7 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
   const { styles: shaComponentStyles } = useShaComponentStyles({ componentModel, toolboxComponent, isDesigner: false });
   const shaApplication = useSheshaApplication();
   const shaForm = useShaFormInstance();
-  const { formMode } = useForm();
+  const isSubForm = isDefined(useSubFormOrUndefined());
   const { errors: validationErrors } = useValidationErrorsStateOrDefault(); // Get errors map to trigger re-renders when errors change
   const calculatedModel = useCalculatedModel(componentModel, toolboxComponent.useCalculateModel, toolboxComponent.calculateModel);
 
@@ -95,14 +95,14 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
     return undefined;
   }, [toolboxComponent, componentModel, validationErrors]);
 
-  const wrappedControl = formMode === 'designer'
+  const wrappedControl = shaForm.formMode === 'designer' && !isSubForm
     ? control
     : <div className={shaComponentStyles.shaComponent}>{control}</div>;
 
   // Wrap component with error icon if there are validation errors
   // Show error icons only in designer mode
   // Use the validationType from the validation result (error/warning/info) or default to 'warning'
-  const wrappedErrorControl = isDefined(validationResult) && validationResult.hasErrors && formMode === 'designer' ? (
+  const wrappedErrorControl = isDefined(validationResult) && validationResult.hasErrors && shaForm.formMode === 'designer' ? (
     <ErrorIconPopover
       mode="validation"
       validationResult={validationResult}

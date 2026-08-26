@@ -1,6 +1,6 @@
-import { FC, PropsWithChildren, useMemo } from "react";
+import { FC, PropsWithChildren, useEffect, useMemo } from "react";
 import { useDeepCompareEffect } from "@/hooks/useDeepCompareEffect";
-import { useDatasetInstance, useDatasetState } from "./hooks";
+import { useDatasetInstance, useDatasetState, useDatasetSubscription } from "./hooks";
 import { DataTableActionsContext, DataTableStateContext, IDataTableStateContext } from "./contexts";
 import { useConfigurableAction } from "../configurableActionsDispatcher";
 import { IDataTableProviderBaseProps } from "./provider.props";
@@ -13,8 +13,17 @@ import { isDefined } from "@/utils/nullables";
 import { isEqual } from "lodash";
 import { ContextOnChangeData } from "../dataContextProvider/contexts";
 import { IDatasetInstance } from "./models";
+import { useComponentApiProvider } from "../componentApi/provider";
 
 const TempDataSetBridge: FC<PropsWithChildren> = ({ children }) => {
+  // fire api refresh on any Dataset change
+  const componentApiProvider = useComponentApiProvider();
+  const dummy = useDatasetSubscription('data');
+  useEffect(() => {
+    componentApiProvider?.refreshApi();
+  }, [componentApiProvider, dummy]);
+
+
   const state = useDatasetState();
   return (
     <DataTableStateContext.Provider value={state}>

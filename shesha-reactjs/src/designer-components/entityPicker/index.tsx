@@ -28,7 +28,7 @@ import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nu
 import { isEntityReferenceId } from '@/utils';
 import { getIdOrUndefined } from '@/utils/entity';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
-import { useComponentApi } from '@/providers/componentApi/provider';
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents, StandardEventHandlerWithoutChange } from '../_common/events';
 
@@ -64,7 +64,7 @@ const EntityPickerComponent: EntityPickerComponentDefinition = {
   Factory: ({ model }) => {
     const { getMetadata } = useMetadataDispatcher();
 
-    const componentApi = useComponentApi();
+    const componentApi = useComponentApiProvider();
     const pickerRef = useRef<EntityPickerRef>(null);
     useEffect(() => {
       componentApi?.updateApi<EntityPickerApi>({

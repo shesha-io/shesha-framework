@@ -17,7 +17,7 @@ import { defaultStyles } from './util';
 import { getStringPropertyOrUndefined } from '@/utils/object';
 import { getFullSizeWrapperDesignerStyle } from '@/components/formDesigner/utils/stylingUtils';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
-import { useComponentApi } from '@/providers/componentApi/provider';
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { useEvents } from '@/components/formDesigner/components/eventsAndApiValueProcessor';
 
@@ -38,7 +38,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
     const { style, ...restProps } = model;
 
     const inputRef = useRef<HTMLAnchorElement | HTMLButtonElement>(null);
-    const componentApi = useComponentApi();
+    const componentApi = useComponentApiProvider();
     useEffect(() => {
       componentApi?.updateApi<ButtonApi>({
         id: model.id,

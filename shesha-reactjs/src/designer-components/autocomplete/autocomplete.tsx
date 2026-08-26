@@ -13,7 +13,7 @@ import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { JsonLogicFilter } from '@/interfaces/jsonLogic';
 import { isEntityMetadata, isEntityReferenceArrayPropertyMetadata, isEntityReferencePropertyMetadata, isHasFilter } from '@/interfaces/metadata';
 import { useMetadataDispatcher } from '@/providers';
-import { useComponentApi } from '@/providers/componentApi/provider';
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { IInputStyles } from '@/providers/form/models';
 import { executeExpression } from '@/providers/form/utils';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
@@ -51,7 +51,7 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
   Factory: ({ model }) => {
     const { getMetadata } = useMetadataDispatcher();
 
-    const componentApi = useComponentApi();
+    const componentApi = useComponentApiProvider();
     const selectRef = useRef<AutocompleteSelectRef>(null);
     useEffect(() => {
       componentApi?.updateApi<AutocompleteApi>({

@@ -7,7 +7,7 @@ import { migrateVisibility } from '@/designer-components/_common-migrations/migr
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles, useForm } from '@/providers';
-import { useComponentApi } from '@/providers/componentApi/provider';
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { useReferenceListItem } from '@/providers/referenceListDispatcher';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { isDefined } from '@/utils/nullables';
@@ -80,7 +80,7 @@ const RefListStatusComponent: RefListStatusComponentDefinition = {
     const [itemText, setItemText] = useState<string | undefined>(undefined);
     const onItemTextChange = useCallback((value: string | null | undefined) => setItemText(value ?? undefined), []);
 
-    const componentApi = useComponentApi();
+    const componentApi = useComponentApiProvider();
 
     useEffect(() => {
       componentApi?.updateApi<RefListStatusApi>({

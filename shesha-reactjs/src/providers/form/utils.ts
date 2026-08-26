@@ -96,6 +96,7 @@ import { getComponentDefinitions } from './defaults/toolboxComponents';
 import RawAsyncValidator, { InternalRuleItem, RuleItem, Rules, ValidateError, Values } from '@rc-component/async-validator';
 import { Rule as FormRule } from 'antd/es/form';
 import { isNonEmptyArray } from '@/utils/array';
+import { useComponentApiUpdate } from '../componentApi/provider';
 
 export {
   executeExpression, executeScript,
@@ -251,6 +252,7 @@ export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
   const metadataDispatcher = useMetadataDispatcher();
 
   useShaFormDataUpdate();
+  useComponentApiUpdate();
 
   const parent = useParentOrUndefined();
   const form = useShaFormInstanceOrUndefined();
