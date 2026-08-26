@@ -5,7 +5,7 @@ import { addPx } from '@/utils/style';
 import { IStyleValue } from '@/providers';
 import { backgroundStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, paddingStyles, shadowStyles } from '@/designer-components/_common/styles/utils';
 interface IModelInterface extends IStyleValue {
-  thumbnail?: IStyleValue | undefined;
+  thumbnailStyle?: IStyleValue | undefined;
   thumbnailStyleCss?: CSSProperties | undefined;
   gap?: string;
   layout?: boolean;
@@ -37,7 +37,7 @@ export const useStyles = createStyles((
 
   const isThumbnail = model.listType === "thumbnail" && model.isDragger !== true;
 
-  /* The root style set is the list container; the file box has its own nested `thumbnail` set.
+  /* The root style set is the list container; the file box has its own nested `thumbnailStyle` set.
      The container's font is the **file name's** typography — the box holds no text of its own. */
   const fontStyle = fontStyles(font, model.styleCss);
 
@@ -72,7 +72,7 @@ export const useStyles = createStyles((
 
   /* The file box: the thumbnail tile in thumbnail mode, and the designer stub that stands in for
      one. Emitted from the nested set so it can never pick up the container's appearance. */
-  const thumbnail = model.thumbnail;
+  const thumbnail = model.thumbnailStyle;
   const thumbnailStyles = `
   ${borderStyles(thumbnail?.border)}
   ${backgroundStyles(thumbnail?.background)}

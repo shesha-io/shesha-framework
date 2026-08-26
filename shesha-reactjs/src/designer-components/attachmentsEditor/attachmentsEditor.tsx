@@ -207,7 +207,7 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
     /* The framework evaluates only the root `model.style` into `model.styleCss`; the two nested
        Custom style scripts are not executed for us, so a nested panel would otherwise save a value
        that never renders. */
-    const thumbnailStyleCss = useActualContextExecution<CSSProperties>(model.thumbnail?.style, undefined, {});
+    const thumbnailStyleCss = useActualContextExecution<CSSProperties>(model.thumbnailStyle?.style, undefined, {});
     const downloadedFileStyleCss = useActualContextExecution<CSSProperties>(model.downloadedFileStyles?.style, undefined, {});
 
     const { styles } = useStyles({ ...model, thumbnailStyleCss, downloadedFileStyleCss });
@@ -363,7 +363,7 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
                   allowReplace={enabled && model.allowReplace}
                   allowRename={enabled && model.allowRename}
                   allowViewHistory={model.allowViewHistory}
-                  thumbnail={model.thumbnail}
+                  thumbnailStyle={model.thumbnailStyle}
                   thumbnailStyleCss={thumbnailStyleCss}
                   /* The four popups are portalled to the body, so no descendant selector from the
                      field can reach them — each needs its class handed over explicitly. */
@@ -546,7 +546,7 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
     .add<IAttachmentsEditorProps>(18, (prev) => {
       const withThumbnail = (device: IAttachmentsEditorDeviceStyles | undefined): IAttachmentsEditorDeviceStyles | undefined =>
         isDefined(device)
-          ? { ...device, thumbnail: { ...thumbnailDefaultStyles(), ...device.thumbnail } }
+          ? { ...device, thumbnailStyle: { ...thumbnailDefaultStyles(), ...device.thumbnailStyle } }
           : device;
 
       return {

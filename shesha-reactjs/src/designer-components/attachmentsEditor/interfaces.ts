@@ -14,14 +14,14 @@ export type ListType = 'text' | 'thumbnail';
  *
  * The root style groups describe the **list container** — the scrolling box the files sit in — which
  * is what the Appearance tab edits by default. The individual file box has its own nested set under
- * `thumbnail`. (Before v17 this was the other way round: the root held the file box and the
+ * `thumbnailStyle`. (Before v17 this was the other way round: the root held the file box and the
  * container was the nested set. Migration 17 swaps them.)
  */
 export interface IAttachmentsEditorDeviceStyles extends IStyleValue {
   filesLayout?: LayoutType | undefined;
   gap?: string | number | SizeType | undefined;
   /** Style set for one file — the thumbnail box in thumbnail mode, the row in text mode. */
-  thumbnail?: IStyleValue | undefined;
+  thumbnailStyle?: IStyleValue | undefined;
   /** Style set applied to files the current user has already downloaded. */
   downloadedFileStyles?: IStyleValue | undefined;
   /**
@@ -67,8 +67,8 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent<IAtt
   thumbnailHeight?: string | undefined;
   borderRadius?: number | undefined;
   hideFileName?: boolean | undefined;
-  /** Style set for one file — see {@link IAttachmentsEditorDeviceStyles.thumbnail}. */
-  thumbnail?: IStyleValue | undefined;
+  /** Style set for one file — see {@link IAttachmentsEditorDeviceStyles.thumbnailStyle}. */
+  thumbnailStyle?: IStyleValue | undefined;
   /** @deprecated the container is the root style set now. Kept so migration 17 can read it. */
   container?: IStyleValue | undefined;
   downloadedFileStyles?: IStyleValue | undefined;

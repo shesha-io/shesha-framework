@@ -171,12 +171,12 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                     )
                     .stdAppearancePanels(['font', 'dimensions', 'border', 'background', 'shadow', 'marginPadding', 'customStyle'], removeStyleRouter)
                     .stdCollapsiblePanel('Thumbnail Style', (f) => f
-                      .stdDimensionsPanel('thumbnail.dimensions')
-                      .stdBorderPanel(removeStyleRouter !== true, 'thumbnail.border')
-                      .stdBackgroundPanel(removeStyleRouter !== true, 'thumbnail.background')
-                      .stdShadowPanel('thumbnail.shadow')
-                      .stdMarginPaddingPanel('thumbnail.stylingBoxJson')
-                      .stdCustomStylePanel('thumbnail.style'),
+                      .stdDimensionsPanel('thumbnailStyle.dimensions')
+                      .stdBorderPanel(removeStyleRouter !== true, 'thumbnailStyle.border')
+                      .stdBackgroundPanel(removeStyleRouter !== true, 'thumbnailStyle.background')
+                      .stdShadowPanel('thumbnailStyle.shadow')
+                      .stdMarginPaddingPanel('thumbnailStyle.stylingBoxJson')
+                      .stdCustomStylePanel('thumbnailStyle.style'),
                     true, isThumbnailListJs,
                     )
                     .addSettingsInputRow({

@@ -123,9 +123,9 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   container?: IStyleValue | undefined;
   allStyles?: IFormComponentStyles | undefined;
   enableStyleOnReadonly?: boolean | undefined;
-  thumbnail?: IStyleValue | undefined;
+  thumbnailStyle?: IStyleValue | undefined;
   /**
-   * The nested `thumbnail.style` script already evaluated to CSS. Evaluated by the owning component
+   * The nested `thumbnailStyle.style` script already evaluated to CSS. Evaluated by the owning component
    * because the framework only executes the root `style`, and because this renderer is also used
    * outside a form context where the evaluation hooks are unavailable.
    */
@@ -265,7 +265,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     borderStyles: thumbnailBorder,
     backgroundStyles: thumbnailBackground,
     shadowStyles: thumbnailShadow,
-  } = useFormComponentStyles({ ...model.thumbnail });
+  } = useFormComponentStyles({ ...model.thumbnailStyle });
 
   /* Thumbnail box appearance as inline CSS, for the designer stub tile — it renders outside the
      antd upload list, so it is not reached by the list's own class rules. The evaluated Custom
@@ -393,8 +393,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
               /* Prefer the Thumbnail style set: `allStyles` is the legacy `useFormComponentStyles`
                  output, which refactored callers no longer supply, and the root dimensions now
                  describe the scrolling container rather than the image box. */
-              width: resolveThumbnailSize(model.thumbnailWidth ?? `${model.thumbnail?.dimensions?.width ?? ''}`),
-              height: resolveThumbnailSize(model.thumbnailHeight ?? `${model.thumbnail?.dimensions?.height ?? ''}`),
+              width: resolveThumbnailSize(model.thumbnailWidth ?? `${model.thumbnailStyle?.dimensions?.width ?? ''}`),
+              height: resolveThumbnailSize(model.thumbnailHeight ?? `${model.thumbnailStyle?.dimensions?.height ?? ''}`),
               fitOption: 1, // 1: FitToHeight
               ...(isDefined(cacheBuster) && cacheBuster > 0 ? { v: cacheBuster } : {}),
             });
@@ -473,7 +473,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       // Call all revoke functions to clean up blob URLs
       revokeCallbacks.forEach((revoke) => revoke());
     };
-  }, [fileList, httpClient, model.thumbnailWidth, model.thumbnailHeight, model.thumbnail?.dimensions?.width, model.thumbnail?.dimensions?.height, listType]);
+  }, [fileList, httpClient, model.thumbnailWidth, model.thumbnailHeight, model.thumbnailStyle?.dimensions?.width, model.thumbnailStyle?.dimensions?.height, listType]);
 
   // Clean up uploaded blob URLs on component unmount to prevent memory leaks
   useEffect(() => {

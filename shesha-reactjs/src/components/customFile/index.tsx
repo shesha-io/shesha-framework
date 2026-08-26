@@ -35,8 +35,8 @@ export interface ICustomFileProps extends IInputStyles {
   hideFileName?: boolean | undefined;
   container?: IStyleValue | undefined;
   /** Style set for the thumbnail image box. Read directly for sizes CSS cannot supply. */
-  thumbnail?: IStyleValue | undefined;
-  /** The nested `thumbnail.style` script already evaluated to CSS. */
+  thumbnailStyle?: IStyleValue | undefined;
+  /** The nested `thumbnailStyle.style` script already evaluated to CSS. */
   thumbnailStyleCss?: CSSProperties | undefined;
   primaryColor?: string | undefined;
   enableStyleOnReadonly?: boolean | undefined;
@@ -85,7 +85,7 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
       extraFormId={props.extraFormId}
       extraFormType={props.extraFormType}
 
-      thumbnail={props.thumbnail}
+      thumbnailStyle={props.thumbnailStyle}
       thumbnailStyleCss={props.thumbnailStyleCss}
       downloadedFileStyles={props.downloadedFileStyles}
       styleDownloadedFiles={props.styleDownloadedFiles}

@@ -9,9 +9,9 @@ import { IAttachmentsEditorDeviceStyles, IAttachmentsEditorProps } from '../inte
  *
  * `font` is deliberately absent. It described the **file name**, not the thumbnail box, and the
  * file name keeps taking its typography from the root Font panel — so the old root font stays at
- * the root instead of moving into `thumbnail` with the box properties. (This mirrors 0.45, where
+ * the root instead of moving into `thumbnailStyle` with the box properties. (This mirrors 0.45, where
  * the Font panel is the one Appearance panel not gated on thumbnail mode.) Moving it would silently
- * drop the configured file-name font, because nothing reads `thumbnail.font`.
+ * drop the configured file-name font, because nothing reads `thumbnailStyle.font`.
  */
 const STYLE_GROUPS = [
   'dimensions', 'border', 'background', 'shadow',
@@ -21,7 +21,7 @@ const STYLE_GROUPS = [
 /**
  * The deprecated `stylingBox` (a JSON *string*, superseded by the parsed `stylingBoxJson`) is not
  * carried into the nested set: `checkbox` on a checkbox group holds only `stylingBoxJson`, and
- * moving the legacy key across produced a `thumbnail.stylingBox` that no code reads and whose value
+ * moving the legacy key across produced a `thumbnailStyle.stylingBox` that no code reads and whose value
  * did not even match its declared string type.
  */
 const LEGACY_STYLING_BOX = 'stylingBox';
@@ -53,7 +53,7 @@ const withoutStyleGroups = <T extends object>(source: T): T => {
  * Swap one device model from the old shape to the new one:
  *
  * - old: root = the file box, `container` = the scrolling box
- * - new: root = the scrolling box, `thumbnail` = the file box
+ * - new: root = the scrolling box, `thumbnailStyle` = the file box
  *
  * Idempotent. A model already in the new shape has no `container`, so there is nothing to lift and
  * the model is returned unchanged rather than swapped a second time.
@@ -78,8 +78,8 @@ const swapDeviceStyles = (
      would hand the file box's spacing to the new scrolling container: migration 19 converts a root
      `stylingBox` into `stylingBoxJson` when the root has no JSON value yet, baking it in.
 
-     It is dropped rather than moved to `thumbnail`, because migration 19 only ever looks at the
-     device root — a `thumbnail.stylingBox` would be converted by nobody and read by nobody. The
+     It is dropped rather than moved to `thumbnailStyle`, because migration 19 only ever looks at the
+     device root — a `thumbnailStyle.stylingBox` would be converted by nobody and read by nobody. The
      real spacing is not lost: `stylingBoxJson` is the live value and travels with the style groups
      above, and this string is only the superseded form of the same setting. */
   delete (rest as Record<string, unknown>)[LEGACY_STYLING_BOX];
@@ -90,13 +90,13 @@ const swapDeviceStyles = (
     ...rest,
     // The container's groups become the root ones.
     ...pickStyleGroups(container),
-    // Preserve an existing `thumbnail` if one is somehow already present rather than clobbering it.
-    thumbnail: isDefined(device.thumbnail) ? device.thumbnail : thumbnail,
+    // Preserve an existing `thumbnailStyle` if one is somehow already present rather than clobbering it.
+    thumbnailStyle: isDefined(device.thumbnailStyle) ? device.thumbnailStyle : thumbnail,
   };
 };
 
 /**
- * Move the container style set to the root and the old root (file box) set into `thumbnail`, across
+ * Move the container style set to the root and the old root (file box) set into `thumbnailStyle`, across
  * the root model and all three device models.
  *
  * Every value is carried across unchanged, so a saved form renders exactly as it did before.

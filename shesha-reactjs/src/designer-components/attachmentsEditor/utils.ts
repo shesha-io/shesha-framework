@@ -15,7 +15,7 @@ const emptyStyleBox = (): IStyleValue['stylingBoxJson'] => ({
 });
 
 /**
- * Default Appearance styles: the list container's own values, plus the nested `thumbnail` set
+ * Default Appearance styles: the list container's own values, plus the nested `thumbnailStyle` set
  * describing one file box. Same shape as the checkbox group's wrapper + `checkbox` pair.
  */
 export const defaultStyles = (): IAttachmentsEditorDeviceStyles => {
@@ -23,7 +23,7 @@ export const defaultStyles = (): IAttachmentsEditorDeviceStyles => {
     filesLayout: 'horizontal',
     gap: 8,
     ...containerDefaultStyles(),
-    thumbnail: thumbnailDefaultStyles(),
+    thumbnailStyle: thumbnailDefaultStyles(),
     styleDownloadedFiles: false,
     downloadedIcon: 'CheckCircleOutlined',
     downloadedFileStyles: downloadedFileDefaultStyles(),
