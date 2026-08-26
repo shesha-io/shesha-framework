@@ -1,10 +1,7 @@
 import { CSSProperties } from 'react';
 import { createStyles } from '@/styles';
 import { IAttachmentsEditorProps } from './interfaces';
-import {
-  backgroundStyles,
-  fontStyles,
-} from '../_common/styles/utils';
+import { fontStyles } from '../_common/styles/utils';
 import { isNotNullOrWhiteSpace } from '@/utils/nullables';
 
 /**
@@ -24,52 +21,31 @@ export const useStyles = createStyles((
   /* Popups are portalled to the body, so no descendant selector from the classes above can reach
      them: each needs its own class passed through the popup-specific prop.
 
-     A popup takes **background, text colour and font family only**.
+     A popup takes **font family only**.
 
-     Size, weight and alignment are deliberately excluded. A popup is a floating panel whose layout
-     antd sizes from its own type scale — the action row, the history list and the confirm dialog
-     all rely on it — so a field configured at 15px/700 would resize and re-align the panel's rows
-     rather than just recolouring them. Colour and family are what make the popup read as belonging
-     to the field that opened it; the rest is the panel's own business.
+     Colour is deliberately excluded along with size, weight and alignment. A popup is a floating
+     panel whose layout antd sizes from its own type scale — the action row, the history list and the
+     confirm dialog all rely on it — so a field configured at 15px/700 would resize and re-align the
+     panel's rows rather than just recolouring them; and its text, secondary and danger colours carry
+     meaning that a single configured colour would flatten. The family is what makes the popup read
+     as belonging to the field that opened it; the rest is the panel's own business.
 
-     Border, dimensions and shadow are excluded for the same reason: the panel is sized by its
-     content, the field width would clip it, and a configured shadow offset would throw a band of
-     colour across whatever the popup covers.
+     Background, border, dimensions and shadow are excluded too: the panel is a surface antd paints
+     and elevates itself, the field width would clip it, and a configured shadow offset would throw
+     a band of colour across whatever the popup covers.
 
      antd 6 renders the panel as `-popover-container` (it is what carries the background, radius and
      elevation) with `-popover-title` and `-popover-content` inside it — not the `-popover-inner` /
      `-popover-inner-content` of antd 5. */
+  /* Narrowed to the family alone. `fontStyles` emits every property it is given, so passing the
+     whole Font model would leak colour, size, weight and alignment into the panel — the very
+     properties the note above says are excluded. */
   const popupFontStyles = fontStyles(
-    { color: model.font?.color, type: model.font?.type },
-    { color: model.styleCss?.color, fontFamily: model.styleCss?.fontFamily },
-  );
-
-  /* Family only — for links and buttons, whose colour is their own (primary, danger, …). */
-  const popupButtonFontStyles = fontStyles(
-    { type: model.font?.type },
+    { type: model.font?.type, color: undefined, size: undefined, weight: undefined, align: undefined },
     { fontFamily: model.styleCss?.fontFamily },
   );
 
-  /* A popup is a floating surface, so it needs an opaque background. The container's own set is
-     deliberately transparent (it is a scrolling box, not a painted panel), which would leave the
-     popup on antd's white; fall back to the theme's elevated surface colour so it stays legible on
-     a dark theme instead of hardcoding white. */
-  const popupBackground = isNotNullOrWhiteSpace(model.background?.color)
-    ? backgroundStyles(model.background)
-    : `background: ${token.colorBgElevated};`;
-  const popupArrowColor = isNotNullOrWhiteSpace(model.background?.color)
-    ? model.background.color
-    : token.colorBgElevated;
-
   const popupBase = `
-    /* The arrow is painted from a CSS variable rather than a background on the element, so it is
-       recoloured by setting that variable — a background rule on the arrow does nothing. */
-    &&& { --${prefixCls}-tooltip-arrow-background-color: ${popupArrowColor}; }
-
-    &&& .${prefixCls}-popover-container {
-      ${popupBackground}
-    }
-
     /* antd sets the colour and family on the title and content elements themselves, so they are
        restated here rather than left to inherit from the panel. */
     &&& .${prefixCls}-popover-title,
@@ -94,7 +70,7 @@ export const useStyles = createStyles((
     }
 
     &&& .${prefixCls}-popover-content .${prefixCls}-btn-link {
-      ${popupButtonFontStyles}
+      ${popupFontStyles}
       color: ${token.colorPrimary};
 
       &:hover {
@@ -115,7 +91,7 @@ export const useStyles = createStyles((
 
     /* The Yes/No buttons keep antd's own colours so the primary/default distinction survives. */
     &&& .${prefixCls}-popconfirm-buttons .${prefixCls}-btn {
-      ${popupButtonFontStyles}
+      ${popupFontStyles}
     }
   `);
 

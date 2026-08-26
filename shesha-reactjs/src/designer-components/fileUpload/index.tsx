@@ -129,6 +129,11 @@ const FileUploadComponent: FileUploadComponentDefinition = {
                   thumbnailWidth={model.thumbnailWidth}
                   thumbnailHeight={model.thumbnailHeight}
                   disabled={disabled}
+                  /* The three floating surfaces are portalled to the body, so no descendant selector
+                     from the field reaches them — each needs its class handed over explicitly. */
+                  popupClassName={styles.popup}
+                  modalClassName={styles.modal}
+                  imagePreviewClassName={styles.imagePreview}
                 />
               </div>
             </FileUploadProvider>
