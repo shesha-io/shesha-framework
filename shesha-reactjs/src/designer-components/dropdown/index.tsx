@@ -233,7 +233,9 @@ const DropdownComponent: DropdownComponentDefinition = {
     })
     /* Step 10 seeded tag colours that beat antd's Variant rules, and saved forms still carry them.
        Only values still equal to those seeds are cleared — a restyled tag keeps what the user set. */
-    .add<IDropdownComponentProps>(15, (prev) => {
+    .add<IDropdownComponentProps>(15, (prev, context) => {
+      if (context.isNew === true) return prev;
+
       const clearSeededTagColours = (style: IStyleValue | undefined): IStyleValue | undefined => {
         if (!isDefined(style)) return style;
 

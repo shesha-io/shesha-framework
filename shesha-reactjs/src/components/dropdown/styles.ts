@@ -83,6 +83,14 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IDr
         ${isDefined(model.dimensions?.height) ? '' : 'height: 100%;'}
       }
 
+      /* A single-select tag hugs its content, on the axes Dimensions leaves unset. Scoped by antd's
+         own single-select class so the mode does not have to be recomputed here. */
+      ${model.displayStyle === 'tags' ? `
+      &&&.${prefixCls}-select-single {
+        ${isDefined(model.dimensions?.width) ? '' : 'width: max-content;'}
+        ${isDefined(model.dimensions?.height) ? '' : 'height: max-content;'}
+      }` : ''}
+
       /* The visible box is the selector element, not the root. A rule scoped to select-content
          matches nothing: that is a semantic classNames slot, emitted only when a caller passes
          classNames.content, which this component never does. */

@@ -1,7 +1,7 @@
 import { Empty, Select, SelectProps, Spin } from 'antd';
 import { ValidationErrors } from '@/components/validationErrors';
 import { useReferenceList } from '@/providers/referenceListDispatcher';
-import { CSSProperties, useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import * as React from 'react';
 import { ReferenceListItemDto } from '@/apis/referenceList';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
@@ -162,20 +162,13 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
     value: wrapValue(value, options),
   };
 
-  /* A single-select tag hugs its content, but only on axes Dimensions leaves unset: `useStyles`
-     emits those as CSS, and an inline value would beat them and collapse a 100%-wide dropdown. */
-  const tagFitStyle: CSSProperties = {
-    ...(isDefined(styleValue?.dimensions?.width) ? {} : { width: 'max-content' }),
-    ...(isDefined(styleValue?.dimensions?.height) ? {} : { height: 'max-content' }),
-  };
-
   if (mode !== 'multiple' && mode !== 'tags' && displayStyle === 'tags') {
     return (
       <Select<CustomLabeledValue<TValue> | CustomLabeledValue<TValue>[]>
         ref={selectRef}
         {...commonSelectProps}
         popupMatchSelectWidth={false}
-        style={{ ...tagFitStyle, ...style }}
+        {...(style ? { style } : {})}
         placeholder={placeholder}
         labelRender={(props) => {
           const option = options.find((o) => o.value === props.value);

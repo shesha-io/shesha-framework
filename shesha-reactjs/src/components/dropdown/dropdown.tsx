@@ -1,4 +1,4 @@
-import { CSSProperties, FC, ReactNode, useCallback, useEffect, useLayoutEffect, useRef } from 'react';
+import { FC, ReactNode, useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { executeExpression } from '@/providers/form/utils';
 import { IDropdownProps, ILabelValue } from './model';
@@ -275,13 +275,6 @@ export const Dropdown: FC<IDropdownProps> = ({
     );
   }
 
-  /* A single-select tag hugs its content, but only on axes Dimensions leaves unset: `useStyles`
-     emits those as CSS, and an inline value would beat them and collapse a 100%-wide dropdown. */
-  const tagFitStyle: CSSProperties = {
-    ...(isDefined(styleValue?.dimensions?.width) ? {} : { width: 'max-content' }),
-    ...(isDefined(styleValue?.dimensions?.height) ? {} : { height: 'max-content' }),
-  };
-
   if (mode !== 'multiple' && mode !== 'tags' && displayStyle === 'tags') {
     return (
       <Select
@@ -298,7 +291,7 @@ export const Dropdown: FC<IDropdownProps> = ({
         placeholder={placeholder}
         size={size}
         popupMatchSelectWidth={false}
-        style={{ ...tagFitStyle, ...style }}
+        {...(style ? { style } : {})}
         labelRender={(props) => {
           const option = options.find((o) => o.value === props.value);
           return option
