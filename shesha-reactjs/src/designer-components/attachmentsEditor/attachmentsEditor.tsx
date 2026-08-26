@@ -262,16 +262,20 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
           {
             name: 'value',
             getter: () => {
-              const files = (data as Record<string, unknown> | undefined)?.[`${GHOST_PAYLOAD_KEY}_${model.id}`] as StoredFileModel[] | undefined;
+              const files: unknown = (data as Record<string, unknown> | undefined)?.[`${GHOST_PAYLOAD_KEY}_${model.id}`];
+              if (!Array.isArray(files)) return undefined;
+
               /* The public model is narrower than the internal one (which carries upload-time fields
                  like `uid`, `status` and `temporary`), so map rather than cast. */
-              return files?.map((file): StoredFileApiModel => ({
-                id: file.id ?? file.uid,
-                name: file.name,
-                size: file.size ?? 0,
-                type: file.type ?? '',
-                url: file.url ?? undefined,
-              }));
+              return files
+                .filter((file): file is StoredFileModel => isDefined(file) && typeof file === 'object')
+                .map((file): StoredFileApiModel => ({
+                  id: file.id ?? file.uid,
+                  name: file.name,
+                  size: file.size ?? 0,
+                  type: file.type ?? '',
+                  url: file.url ?? undefined,
+                }));
             },
             setter: () => console.warn(
               `'${model.componentName ?? 'File list'}': value is read-only. Files are managed by the storage provider — add or remove them through the component.`,
