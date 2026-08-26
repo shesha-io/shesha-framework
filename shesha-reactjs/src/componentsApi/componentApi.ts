@@ -377,11 +377,17 @@ export interface FileUploadApi extends InputComponentApi<File | string | null | 
 };
 
 /**
- * File list. The value is the collection of files currently attached to the component's owner. The
- * files are managed by the storage provider, so the list is read through this API and mutated by the
- * user through the component itself; assigning the value replaces the attached collection.
+ * File list. The value is the collection of files currently attached to the component's owner.
+ *
+ * **Read-only.** The files belong to the storage provider, keyed by owner — they are not part of the
+ * form payload. The component binds to a ghost property that `removeGhostKeys` strips before save,
+ * and `AttachmentsEditorProvider` takes no `value` prop, so an assignment here would update neither
+ * the stored collection nor anything that is persisted. Files are added, replaced and removed by the
+ * user through the component itself, or through the storage provider's own API.
  */
 export interface FileListApi extends InputComponentApi<StoredFileApiModel[] | undefined> {
+  /** The files currently attached to the owner. Read-only — see the note on this interface. */
+  readonly value: StoredFileApiModel[] | undefined;
   /** Whether the user can currently add files. Combines the Allow Add setting with the interaction mode. */
   readonly allowAdd: boolean;
   /** Whether the user can currently delete files. Combines the Allow Remove setting with the interaction mode. */

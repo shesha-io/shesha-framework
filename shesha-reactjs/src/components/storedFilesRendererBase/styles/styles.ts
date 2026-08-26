@@ -338,6 +338,7 @@ export const useStyles = createStyles((
       .${prefixCls}-btn,
       .${prefixCls}-btn * {
         ${fontStylesNoColor}
+        justify-content: ${justifyContent}
       }
 
       ${isThumbnail ? '' : `
