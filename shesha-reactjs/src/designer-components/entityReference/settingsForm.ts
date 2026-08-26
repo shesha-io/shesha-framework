@@ -149,8 +149,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                 false, 'return data?.handleSuccess === true;')
                 .addSettingsInput({ inputType: 'switch', propertyName: 'handleFail', label: 'Handle Fail', layout: 'horizontal', jsSetting: true })
                 .stdCollapsiblePanel('On Fail Handler', (f) => f
-                  .addConfigurableActionConfigurator({ propertyName: 'onFail', label: 'On Fail', jsSetting: false }),
-                false, 'return data?.handleFail === true;'),
+                .addConfigurableActionConfigurator({ propertyName: 'onFail', label: 'On Fail', jsSetting: true }),                false, 'return data?.handleFail === true;'),
               false, 'return data?.entityReferenceType === "Dialog";')
 
               .stdCollapsiblePanel('Validations', (fb) => fb

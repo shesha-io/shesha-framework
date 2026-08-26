@@ -337,7 +337,11 @@ export const GenericQuickView: FC<IQuickViewProps> = (props) => {
 
   if (formConfig === null) {
     return (
-      <Popover content="Quickview not configured properly" title="Quickview not configured properly">
+      <Popover
+        {...(isDefined(props.popupClassName) ? { rootClassName: props.popupClassName } : {})}
+        content="Quickview not configured properly"
+        title="Quickview not configured properly"
+      >
         <Button
           type="link"
           className={cx(styles.innerEntityReferenceButtonBoxStyle, props.className)}
