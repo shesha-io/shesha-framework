@@ -25,7 +25,7 @@ import { GHOST_PAYLOAD_KEY } from '@/utils/form';
 import { containerDefaultStyles, defaultStyles, downloadedFileDefaultStyles, thumbnailDefaultStyles } from './utils';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 import { AdvancedFormats } from '@/interfaces/dataTypes';
-import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '../_common/events';
+import { FILE_EVENTS_WITHOUT_CHANGE, getComponentEvents } from '../_common/events';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getIdOrUndefined } from '@/utils/entity';
 import CustomFile from '@/components/customFile';
@@ -322,7 +322,7 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
           /* onChange is bound above instead: it also has to update the component's value, which
              getComponentEvents does not do. */
           const listEvents = getComponentEvents<StoredFileModel[]>(
-            model, ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, ctx, value ?? undefined, DataTypes.array,
+            model, FILE_EVENTS_WITHOUT_CHANGE, ctx, value ?? undefined, DataTypes.array,
           );
           return (
             <AttachmentsEditorProvider

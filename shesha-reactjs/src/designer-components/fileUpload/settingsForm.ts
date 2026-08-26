@@ -1,7 +1,7 @@
 import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
 import { DataTypes, SettingsFormMarkupFactory } from '@/interfaces';
-import { ALL_INPUT_EVENTS_WITHOUT_DOUBLE_CLICK } from '../_common/events';
+import { FILE_EVENTS } from '../_common/events';
 
 export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter }) => {
   const searchableTabsId = nanoid();
@@ -74,7 +74,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
           },
           {
             key: 'events', title: 'Events', id: eventsTabId,
-            components: fbf(eventsTabId).stdEventHandlers([...ALL_INPUT_EVENTS_WITHOUT_DOUBLE_CLICK], DataTypes.file).toJson(),
+            components: fbf(eventsTabId).stdEventHandlers([...FILE_EVENTS], DataTypes.file).toJson(),
           },
           {
             key: 'appearance', title: 'Appearance', id: appearanceTabId,

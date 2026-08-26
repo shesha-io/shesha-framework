@@ -29,7 +29,7 @@ import { FileUploadValue } from '@/providers/storedFile/models';
 import { useComponentApi } from '@/providers/componentApi/provider';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { FileUploadApi } from '../../componentsApi/componentApi';
-import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '../_common/events';
+import { FILE_EVENTS_WITHOUT_CHANGE, getComponentEvents } from '../_common/events';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
 
@@ -115,7 +115,7 @@ const FileUploadComponent: FileUploadComponentDefinition = {
               <div
                 className={styles.fileUpload}
                 {...(isDefined(model.styleCss) ? { style: model.styleCss } : {})}
-                {...getComponentEvents<FileUploadValue>(model, ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, ctx, value, DataTypes.file)}
+                {...getComponentEvents<FileUploadValue>(model, FILE_EVENTS_WITHOUT_CHANGE, ctx, value, DataTypes.file)}
               >
                 <FileUpload
                   isStub={formMode === 'designer'}
