@@ -124,6 +124,12 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   allStyles?: IFormComponentStyles | undefined;
   enableStyleOnReadonly?: boolean | undefined;
   thumbnail?: IStyleValue | undefined;
+  /**
+   * The nested `thumbnail.style` script already evaluated to CSS. Evaluated by the owning component
+   * because the framework only executes the root `style`, and because this renderer is also used
+   * outside a form context where the evaluation hooks are unavailable.
+   */
+  thumbnailStyleCss?: CSSProperties | undefined;
   downloadedFileStyles?: CSSProperties | undefined;
   styleDownloadedFiles?: boolean | undefined;
   downloadedIcon?: IconType | undefined;
@@ -169,6 +175,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   gap,
   hideFileName = false,
   downloadedFileStyles,
+  thumbnailStyleCss,
   styleDownloadedFiles = false,
   downloadedIcon = 'CheckCircleOutlined',
   classNames: componentClassNames = EMPTY_CLASS_NAMES,
@@ -261,14 +268,16 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   } = useFormComponentStyles({ ...model.thumbnail });
 
   /* Thumbnail box appearance as inline CSS, for the designer stub tile — it renders outside the
-     antd upload list, so it is not reached by the list's own class rules. */
-  const thumbnailBox: CSSProperties = { ...thumbnailDimensions, ...thumbnailBorder, ...thumbnailBackground, ...thumbnailShadow };
+     antd upload list, so it is not reached by the list's own class rules. The evaluated Custom
+     style goes last, so it wins over the panels exactly as it does in the class-based path. */
+  const thumbnailBox: CSSProperties = { ...thumbnailDimensions, ...thumbnailBorder, ...thumbnailBackground, ...thumbnailShadow, ...thumbnailStyleCss };
 
   const { styles } = useStyles({
     ...rest,
     downloadedFileStyles: downloadedFileStyles ?? {},
     model: {
       gap: addPx(gap, allData) ?? '0px',
+      thumbnailStyleCss,
       /* `layout` here means "tiled" — the files are laid out as boxes rather than as a list of
          names. It drives the rules that only make sense for a tile: hiding antd's own name row,
          and pinning the downloaded badge to the corner of the box. */
@@ -728,7 +737,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       // For thumbnail and other types, wrap entire content
       const content = (
         <div
-          className={classNames(isDownloaded && styleDownloadedFiles ? styles.downloadedFile : '')}
+          className={classNames(isDownloaded && styleDownloadedFiles ? styles.downloadedFile : '', styles.shaThumbnail)}
           onClick={handleItemClick}
         >
           {originNode}
@@ -872,8 +881,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       : (
         <div className={classNames(
           styles.shaStoredFilesRenderer,
-          /* The layout variant only applies to a tiled list: in text mode the files are always a
-             single column, so the row/grid rules would have nothing to lay out. */
           listTypeAndLayout !== 'text'
             ? layout === 'horizontal' ? styles.shaStoredFilesRendererHorizontal
               : layout === 'vertical' ? styles.shaStoredFilesRendererVertical

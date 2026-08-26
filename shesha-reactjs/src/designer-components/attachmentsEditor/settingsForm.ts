@@ -7,13 +7,17 @@ const isNotThumbnailJs = 'return getSettingValue(data?.listType) !== "thumbnail"
 const isNotDraggerJs = 'return !getSettingValue(data?.isDragger);';
 const isEditableJs = 'const r = getSettingValue(data?.readOnly); return r !== true && r !== "readOnly";';
 const showCustomContentFormJs = 'return !!getSettingValue(data?.customContent) && getSettingValue(data?.extraFormSelectionMode) !== "dynamic";';
-const styleDownloadedFilesJs = 'return !!getSettingValue(data?.styleDownloadedFiles);';
+/* Device-scoped, so the toggle is read off the active device model rather than the root. Optional
+   element access needs `?.[`, not `?[` — the latter is a syntax error and the expression would
+   throw rather than evaluate to false. */
+const styleDownloadedFilesJs = 'return !!getSettingValue(data?.[`${contexts?.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);';
 
 export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const eventsTabId = nanoid();
   const appearanceTabId = nanoid();
+  const styleRouterId = nanoid();
 
   const listTypeOptions = [
     { label: 'File name', value: 'text' },
@@ -144,48 +148,51 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
           {
             key: 'appearance', title: 'Appearance', id: appearanceTabId,
             components: fbf(appearanceTabId)
-              .addSettingsInputRow({
-                inputs: [
-                  { type: 'dropdown', propertyName: 'filesLayout', label: 'Files Layout', jsSetting: true, dropdownOptions: filesLayoutOptions, visibleJs: isNotDraggerJs },
-                  { type: 'numberField', propertyName: 'gap', label: 'Gap', jsSetting: true, visibleJs: isNotDraggerJs },
+              .addPropertyRouter({
+                id: styleRouterId,
+                propertyName: 'propertyRouter1',
+                componentName: 'propertyRouter',
+                label: 'Property router1',
+                labelAlign: 'right',
+                propertyRouteName: removeStyleRouter === true
+                  ? ''
+                  : { _mode: 'code', _code: "    return contexts.canvasContext?.designerDevice || 'desktop';", _value: '' },
+                components: [
+                  ...fbf(styleRouterId)
+                    .addSettingsInputRow({
+                      inputs: [
+                        { type: 'dropdown', propertyName: 'filesLayout', label: 'Files Layout', jsSetting: true, dropdownOptions: filesLayoutOptions, visibleJs: isNotDraggerJs },
+                        { type: 'numberField', propertyName: 'gap', label: 'Gap', jsSetting: true, visibleJs: isNotDraggerJs },
+                      ],
+                    })
+                    .stdAppearancePanels(['font', 'dimensions', 'border', 'background', 'shadow', 'marginPadding', 'customStyle'], removeStyleRouter)
+                    .stdCollapsiblePanel('Thumbnail Style', (f) => f
+                      .stdDimensionsPanel('thumbnail.dimensions')
+                      .stdBorderPanel(removeStyleRouter !== true, 'thumbnail.border')
+                      .stdBackgroundPanel(removeStyleRouter !== true, 'thumbnail.background')
+                      .stdShadowPanel('thumbnail.shadow')
+                      .stdMarginPaddingPanel('thumbnail.stylingBoxJson')
+                      .stdCustomStylePanel('thumbnail.style'),
+                    true, isThumbnailJs,
+                    )
+                    .addSettingsInputRow({
+                      inputs: [
+                        { type: 'switch', propertyName: 'styleDownloadedFiles', label: 'Style Downloaded Files', jsSetting: true },
+                      ],
+                    })
+                    .stdCollapsiblePanel('Downloaded Files', (f) => f
+                      .addSettingsInputRow({
+                        visibleJs: styleDownloadedFilesJs,
+                        inputs: [
+                          { type: 'iconPicker', propertyName: 'downloadedIcon', label: 'Downloaded Icon', jsSetting: true },
+                        ],
+                      })
+                      .stdFontPanel('downloadedFileStyles.font')
+                      .stdCustomStylePanel('downloadedFileStyles.style'),
+                    false, styleDownloadedFilesJs)
+                    .toJson(),
                 ],
               })
-              // The root style set is the list container — the scrolling box the files sit in — so the
-              // standard panels bind to it unprefixed. The thumbnail and downloaded-file sets below
-              // are nested and bind through their own property prefixes.
-              .stdAppearancePanels(['font', 'dimensions', 'marginPadding', 'customStyle'], removeStyleRouter)
-              /* The Thumbnail set styles the image box only, so it is hidden unless the list is
-                 actually showing thumbnails — matching 0.45, which gates Dimensions, Border,
-                 Background, Shadow and Custom style on the same condition.
-
-                 It carries no Font panel on purpose: the file name is a separate element that takes
-                 its typography from the root Font panel above, which is why 0.45 leaves that one
-                 panel ungated. */
-              .stdCollapsiblePanel('Thumbnail', (fb) => fb
-                .stdDimensionsPanel('thumbnail.dimensions')
-                .stdBorderPanel(removeStyleRouter !== true, 'thumbnail.border')
-                .stdBackgroundPanel(removeStyleRouter !== true, 'thumbnail.background')
-                .stdShadowPanel('thumbnail.shadow')
-                .stdMarginPaddingPanel('thumbnail.stylingBoxJson')
-                // Must name the nested property: a bare `stdCustomStylePanel()` defaults to 'style'
-                // and would bind this editor to the same property as the root one.
-                .stdCustomStylePanel('thumbnail.style'),
-              false, isThumbnailJs)
-              .stdCollapsiblePanel('Downloaded Files', (fb) => fb
-                .addSettingsInputRow({
-                  inputs: [
-                    { type: 'switch', propertyName: 'styleDownloadedFiles', label: 'Style Downloaded Files', jsSetting: true },
-                  ],
-                })
-                .addSettingsInputRow({
-                  visibleJs: styleDownloadedFilesJs,
-                  inputs: [
-                    { type: 'iconPicker', propertyName: 'downloadedIcon', label: 'Downloaded Icon', jsSetting: true },
-                  ],
-                })
-                .stdFontPanel('downloadedFileStyles.font')
-                .stdCustomStylePanel('downloadedFileStyles.style'),
-              false, styleDownloadedFilesJs)
               .toJson(),
           },
         ],

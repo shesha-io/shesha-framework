@@ -25,6 +25,13 @@ export interface IAttachmentsEditorDeviceStyles extends IStyleValue {
   /** Style set applied to files the current user has already downloaded. */
   downloadedFileStyles?: IStyleValue | undefined;
   /**
+   * Whether the downloaded-file styling is applied at all. Device-scoped alongside the style set it
+   * gates, so a layout can highlight downloaded files on desktop but leave them plain on mobile.
+   */
+  styleDownloadedFiles?: boolean | undefined;
+  /** Badge shown on a downloaded file. Device-scoped for the same reason as the toggle above. */
+  downloadedIcon?: IconType | undefined;
+  /**
    * Pre-v18 style set for the scrolling container. Retained so the migration can read it off old
    * saved models; nothing renders from it any more.
    *
@@ -65,7 +72,9 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent<IAtt
   /** @deprecated the container is the root style set now. Kept so migration 18 can read it. */
   container?: IStyleValue | undefined;
   downloadedFileStyles?: IStyleValue | undefined;
+  /** @deprecated device-scoped now. Kept so migration 20 can read it off old saved models. */
   styleDownloadedFiles?: boolean | undefined;
+  /** @deprecated device-scoped now. Kept so migration 20 can read it off old saved models. */
   downloadedIcon?: IconType | undefined;
 }
 

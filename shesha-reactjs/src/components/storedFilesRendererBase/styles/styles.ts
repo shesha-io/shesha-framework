@@ -2,10 +2,16 @@ import { ListType } from '@/designer-components/attachmentsEditor/attachmentsEdi
 import { createStyles } from '@/styles';
 import { CSSProperties } from 'react';
 import { IStyleValue } from '@/providers';
-import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, paddingStyles, shadowStyles } from '@/designer-components/_common/styles/utils';
+import { backgroundStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, paddingStyles, shadowStyles } from '@/designer-components/_common/styles/utils';
 interface IModelInterface extends IStyleValue {
   /** The nested style set for one file box (the thumbnail tile). */
   thumbnail?: IStyleValue | undefined;
+  /**
+   * The nested `thumbnail.style` script already evaluated to CSS. The framework only executes the
+   * root `style` into `styleCss`, so a nested Custom style has to be evaluated by the caller and
+   * handed in — otherwise it is saved but never rendered.
+   */
+  thumbnailStyleCss?: CSSProperties | undefined;
   gap?: string;
   layout?: boolean;
   hideFileName?: boolean;
@@ -24,6 +30,7 @@ export const useStyles = createStyles((
   const layout = model.layout;
   const font = model.font;
   const textAlign = font?.align;
+  const isThumbnail = model.listType === "thumbnail";
 
   /* The root style set is the list container; the file box has its own nested `thumbnail` set.
      The container's font is the **file name's** typography — the box holds no text of its own. */
@@ -50,6 +57,7 @@ export const useStyles = createStyles((
   ${backgroundStyles(model.background)}
   ${borderStyles(model.border)}
   ${shadowStyles(model.shadow)}
+  ${cssPropertiesToString(model.styleCss)}
 `;
 
   /* The file box: the thumbnail tile in thumbnail mode, and the designer stub that stands in for
@@ -61,12 +69,20 @@ export const useStyles = createStyles((
   ${shadowStyles(thumbnail?.shadow)}
   ${dimensionsStyles(thumbnail?.dimensions)}
   ${paddingStyles(thumbnail?.stylingBoxJson)}
+  ${cssPropertiesToString(model.thumbnailStyleCss)}
 `;
+
+  const thumbnailDimensions = `
+    ${dimensionsStyles(thumbnail?.dimensions)}
+    width: ${thumbnail?.dimensions?.width ?? 54} !important;
+    height: ${thumbnail?.dimensions?.height ?? 54} !important;
+  `;
 
   /* Downloaded files are marked by the colour of the name and the badge, not a second box. */
   const downloadedColor = downloadedFileStyles?.color ?? token.colorSuccess;
 
   const storedFilesRendererBtnContainer = "sha-stored-files-renderer-btn-container";
+  const shaThumbnail = "sha-thumbnail";
 
   const shaItemFileName = cx("sha-item-file-name", css`
     display: flex;
@@ -132,8 +148,6 @@ export const useStyles = createStyles((
     z-index: 1;
   `);
 
-  /* The hover popover carrying the per-file action buttons. antd 6 renders the panel as
-     `-popover-container`; the `-popover-inner` of antd 5 does not exist in this version. */
   const actionsPopover = cx("sha-actions-popover", css`
     .${prefixCls}-popover-container {
       padding: 4px;
@@ -143,6 +157,7 @@ export const useStyles = createStyles((
   const shaStoredFilesRenderer = cx("sha-stored-files-renderer", css`
       ${containerStyles}
       display: flex;
+      gap: ${model.gap ?? '8px'} !important;
       flex-direction: column;
       overflow: auto;
       scrollbar-width: thin;
@@ -176,17 +191,15 @@ export const useStyles = createStyles((
         }
       }
 
-      .ant-upload-list-item-thumbnail {
+      .${shaThumbnail} {
         ${thumbnailStyles}
-        /* Draw the configured border inside the fixed thumbnail box so the image (below) doesn't
-           overpaint it — without border-box the image sized to the full width/height covers the border. */
         box-sizing: border-box !important;
         overflow: hidden !important;
         display: flex !important;
         justify-content: center !important;
         align-items: center !important;
 
-        > div {
+        > div, .ant-image {
          height: 100%;
          width: 100%;
          display: flex;
@@ -195,8 +208,6 @@ export const useStyles = createStyles((
         }
 
         img {
-          /* Fill the bordered container's content box (not the full outer size) so the border stays
-             visible around the image. */
           width: 100% !important;
           height: 100% !important;
           object-fit: cover !important;
@@ -237,10 +248,9 @@ export const useStyles = createStyles((
         }
       }
 
-      /* The empty upload tile. It takes the thumbnail dimensions so it lines up with the file tiles,
-         but none of their border/background/shadow: it keeps its own placeholder look. */
       .${prefixCls}-upload-select {
-        ${dimensionsStyles(thumbnail?.dimensions)}
+        ${isThumbnail ? thumbnailDimensions : ''}
+        flex: 0 0 auto;
         ${uploadControlFont}
         box-sizing: border-box;
         border: unset;
@@ -256,6 +266,7 @@ export const useStyles = createStyles((
         }
 
         .ant-upload {
+          width: 100%; 
         }
 
         &.${prefixCls}-upload-btn {
@@ -263,10 +274,6 @@ export const useStyles = createStyles((
 
           .${prefixCls}-upload-drag-icon {
             margin: unset !important;
-          }
-
-          .ant-upload-select {
-            align-content: center;
           }
         }
       }
@@ -347,6 +354,7 @@ export const useStyles = createStyles((
           transition: none !important;
         }
         height: auto !important;
+        width: ${isThumbnail ? thumbnail?.dimensions?.width ?? '54' : ''} !important;
       }
 
       .ant-upload-list-item-action {
@@ -373,450 +381,6 @@ export const useStyles = createStyles((
 
   `);
 
-  //   const fileNameWrapper = cx("file-name-wrapper", css`
-  //     display: ${model.hideFileName ? 'none' : 'flex'};
-  //     gap: 8px;
-  //     cursor: pointer;
-  //     &:hover {
-  //       background-color: ${colorBgTextHover} !important;
-  //       border-radius: ${borderRadius} !important;
-  //     }
-  //     > .item-file-name {
-  //       &:hover {
-  //         background-color: transparent !important;
-  //         padding: 0;
-  //       }
-  //     }
-  //   `);
-
-  //   const downloadedFile = cx("downloaded-file", css`
-  //     position: relative;
-
-  //     .ant-upload-list-item-container {
-  //       opacity: 0.8;
-  //       position: relative;
-  //     }
-
-  //     >.ant-upload-list-item > .ant-upload-list-item-thumbnail {
-  //       ${rest as CSSObject}
-  //       opacity: 0.8;
-  //       border: 2px solid ${downloadedFileStyles.color ?? token.colorSuccess};
-  //       ${{ ...(downloadedFileStyles as CSSObject) }};
-  //     }
-
-  //     .item-file-name {
-  //       ${downloadedFileStyles.textAlign === 'center' ? 'justify-content: center' : downloadedFileStyles.textAlign === 'right' ? 'justify-content: flex-end' : 'justify-content: flex-start'} !important;
-  //       .ant-typography {
-  //         display: ${model.hideFileName ? 'none' : 'block'};
-  //         color: ${downloadedFileStyles.color ?? color} !important;
-  //         font-size: ${downloadedFileStyles.fontSize ?? fontSize} !important;
-  //         font-weight: ${downloadedFileStyles.fontWeight ?? fontWeight} !important;
-  //         font-family: ${downloadedFileStyles.fontFamily ?? fontFamily} !important;
-  //         text-align: ${downloadedFileStyles.textAlign ?? textAlign} !important;
-  //         margin: 2px 0px;
-  //         position: relative;
-  //         white-space: nowrap;
-  //         overflow: hidden;
-  //         text-overflow: ellipsis;
-  //         cursor: pointer;
-  //       }
-  //     }
-
-  //     .ant-upload-list-item-action {
-  //       .anticon-download {
-  //         color: ${downloadedFileStyles.color ?? token.colorSuccess} !important;
-  //       }
-  //     }
-
-  //     /* Hide download status icon on hover */
-  //     &:hover .downloaded-icon {
-  //       display: none;
-  //     }
-  //   `);
-
-  //   /* Geometry only. The badge's colour comes from the owning component's Downloaded Files style
-  //      set, applied through its own class — declaring a colour here as well would leave the two
-  //      fighting over precedence. */
-  //   const downloadedIcon = cx("downloaded-icon", css`
-  //     position: ${layout ? 'absolute' : 'relative'};
-  //     top: 4px;
-  //     right: 4px;
-  //     border-radius: 50%;
-  //     width: 20px;
-  //     height: 20px;
-  //     display: flex;
-  //     align-items: center;
-  //     justify-content: center;
-  //     font-size: 12px;
-  //     z-index: 1;
-  //     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  //     /* Fallbacks for callers that supply no style set of their own (storedFilesRenderer). */
-  //     background: ${downloadedFileStyles.color ?? token.colorSuccess};
-  //     color: white;
-  //   `);
-
-  //   const thumbnailWidth = layout ? (width ?? '54px') : '100%';
-  //   const thumbnailHeight = layout ? (height ?? '54px') : '100%';
-  //   const marginGap = gap ?? '8px';
-
-  //   const antUploadDragIcon = cx(`${prefixCls}-upload-drag-icon`, css`
-  //      .${prefixCls}-upload-drag-icon {
-  //           width: 32px;
-  //         }
-  //     `);
-  //   const antUploadText = cx(`${prefixCls}-upload-text`, css`
-  //     font-size: 16px !important;
-  //     `);
-  //   const antUploadHint = cx(`${prefixCls}-upload-hint`, css`
-
-  //     `);
-
-
-  //   const shaStoredFilesRenderer = cx("sha-stored-files-renderer", css`
-  //     height: ${containerHeight ?? 'auto'} !important;
-  //     width: ${containerWidth ?? '100%'} !important;
-  //     max-height: ${containerMaxHeight ?? 'auto'} !important;
-  //     max-width: ${containerMaxWidth ?? '100%'} !important;
-  //     min-height: ${containerMinHeight ?? 'auto'} !important;
-  //     min-width: ${containerMinWidth ?? '100%'} !important;
-  //     display: flex;
-  //     flex-direction: column;
-  //     ${restContainerStyles as CSSObject}
-  //     overflow: auto;
-  //     scrollbar-width: thin;
-  //     scrollbar-gutter: stable;
-  //       &::-webkit-scrollbar {
-  //         width: 8px;
-  //         background-color: transparent;
-  //       }
-
-  //     .ant-upload-wrapper {
-  //       flex: 1 !important;
-  //       .ant-upload-list-picture-card {
-  //        min-height: 0px !important;
-  //       }
-  //     }
-
-  //     .ant-upload:not(.ant-upload-disabled) {
-  //       .icon {
-  //         color: ${token.colorPrimary} !important;
-  //       };
-  //     }
-
-  //     .ant-upload-list-item {
-  //       display: flex;
-  //       padding: 0 !important;
-  //       border: unset !important;
-  //       width: ${layout ? width : '100%'};
-  //       /* With the file name hidden there is no name row, so the item must collapse to exactly the
-  //          thumbnail height instead of reserving antd's default name-row space below it. */
-  //       ${model.hideFileName === true ? `height: ${thumbnailHeight} !important;` : ''}
-  //       :before {
-  //         ${rest as CSSObject}
-  //         display: none;
-  //       }
-  //     }
-
-  //     .ant-upload-list-item-thumbnail {
-  //       ${rest as CSSObject}
-  //       /* Draw the configured border inside the fixed thumbnail box so the image (below) doesn't
-  //          overpaint it — without border-box the image sized to the full width/height covers the border. */
-  //       box-sizing: border-box !important;
-  //       background: ${background ?? backgroundImage ?? (backgroundColor ?? 'transparent')} !important;
-  //       background-size: ${backgroundSize ?? 'cover'} !important;
-  //       background-position: ${backgroundPosition ?? 'center'} !important;
-  //       background-repeat: ${backgroundRepeat ?? 'no-repeat'} !important;
-  //       box-shadow: ${boxShadow};
-  //       border-radius: ${borderRadius} !important;
-  //       height: ${thumbnailHeight} !important;
-  //       overflow: hidden !important;
-  //       display: flex !important;
-  //       justify-content: center !important;
-  //       align-items: center !important;
-
-  //       > div {
-  //        height: 100%;
-  //        width: 100%;
-  //        display: flex;
-  //        justify-content: center;
-  //        align-items: center;
-  //       }
-
-  //       img {
-  //         /* Fill the bordered container's content box (not the full outer size) so the border stays
-  //            visible around the image. */
-  //         width: 100% !important;
-  //         height: 100% !important;
-  //         border-radius: ${borderRadius} !important;
-  //         object-fit: cover !important;
-  //         display: flex !important;
-  //         justify-content: center !important;
-  //       }
-  //       .ant-image .anticon {
-  //         border-radius: ${borderRadius} !important;
-  //         display: block !important;
-  //       }
-  //     }
-
-  //     .ant-upload-list-item-name {
-  //       ${layout || model.hideFileName ? 'display: none !important; height: 0 !important; margin: 0 !important; padding: 0 !important;' : ''};
-  //     }
-
-  //     .ant-upload-list-text {
-  //       overflow: hidden;
-  //       ${!hasFiles ? 'display: none;' : ''}
-  //       >.ant-upload-list-item-container {
-  //         > div {
-  //           >.file-name-wrapper {
-  //             >.item-file-name {
-  //               width: 100%;
-  //               gap: 8px;
-  //             }
-  //           }
-  //           > .downloaded-icon {
-  //             position: relative;
-  //             top: unset;
-  //             right: unset;
-  //           }
-  //         }
-  //       }
-  //     }
-
-  //     .${prefixCls}-upload-select {
-  //       ${rest as CSSObject}
-  //       border: unset;
-  //       width: ${layout ? thumbnailWidth : '100%'} !important;
-  //       height: ${layout ? thumbnailHeight : '100%'} !important;
-  //       align-items: center;
-
-  //       .ant-upload {
-  //         width: ${layout ? thumbnailWidth : '100%'} !important;
-  //         height: ${layout ? thumbnailHeight : '100%'} !important;
-  //       }
-
-  //       &.${prefixCls}-upload-btn {
-  //           padding: unset;
-
-  //         .${prefixCls}-upload-drag-icon {
-  //           margin: unset !important;
-  //         }
-
-  //         .${storedFilesRendererNoFiles} {
-  //           margin-bottom: 6px;
-  //         }
-
-  //         .ant-upload-select {
-  //           align-content: center;
-  //         }
-  //       }
-  //     }
-
-  //     .${prefixCls}-upload-drag {
-  //       ${hasFiles ? 'border: unset !important;' : ''}
-  //       .${prefixCls}-upload-btn {
-  //         padding: unset !important;
-  //         width: 100% !important;
-
-  //         .ant-upload-drag-icon {
-  //          margin: 0 !important;
-  //         }
-  //       }
-
-  //       .item-file-name {
-  //         width: max-content !important;
-  //         .ant-typography {
-  //           width: max-content !important;
-  //         }
-  //       }
-  //     }
-
-  //     .ant-btn {
-  //       * {
-  //         /* Fallbacks only. These carried \`!important\` and so could not be overridden by the owning
-  //            component, which pinned every button to 14px/Segoe UI regardless of the configured font. */
-  //         font-size: ${fontSize ?? '14px'};
-  //         font-weight: ${fontWeight ?? '400'};
-  //         font-family: ${fontFamily ?? 'Segoe UI'};
-  //       }
-  //     }
-  //     .${storedFilesRendererBtnContainer} {
-  //       display: flex;
-  //       margin-top: 4px;
-  //       justify-content: flex-end;
-  //       width: 100%;
-  //       max-width: ${containerMaxWidth};
-  //       min-width: ${containerMinWidth};
-  //     }
-
-  //     .${prefixCls}-upload-list {
-  //       ${layout ? `gap: ${marginGap} !important` : 'unset'};
-  //       padding: 2px;
-  //       overflow-y: auto;
-  //       display: flex;
-  //       flex-direction: column;
-  //       scrollbar-width: thin;
-  //       &::-webkit-scrollbar {
-  //         width: 8px;
-  //         background-color: transparent;
-  //       }
-  //     }
-
-  //     .ant-upload-list-item-uploading {
-  //       display: none;
-  //     }
-
-  //     .ant-upload-list-item-container {
-  //       display: inline-block !important;
-  //       &.ant-upload-animate-inline-appear,
-  //       &.ant-upload-animate-inline-appear-active,
-  //       &.ant-upload-animate-inline {
-  //         display: none !important;
-  //         animation: none !important;
-  //         transition: none !important;
-  //       }
-  //       width: ${layout ? (width ?? '54px') + ' !important' : ''};
-  //       height: auto !important;
-  //     }
-
-  //     .ant-upload-list-item-action {
-  //       > .ant-btn-icon {
-  //         > .anticon-delete {
-  //           color: ${token.colorError} !important;
-  //         }
-  //       }
-  //     }
-
-  //     .thumbnail-stub {
-  //       ${rest as CSSObject}
-  //       display: flex;
-  //       flex-direction: column;
-  //       align-items: center;
-  //       justify-content: center;
-  //       width: max-content;
-  //     }
-
-  // `);
-
-  //   const shaStoredFilesRendererHorizontal = cx("sha-stored-files-renderer-horizontal", css`
-  //       height: max-content;
-  //     .${prefixCls}-upload-list {
-  //       display: flex !important;
-  //       flex-wrap: nowrap !important;
-  //       flex-direction: row !important;
-  //       flex-shrink: 0 !important;
-  //       overflow-x: auto;
-  //       overflow-y: clip !important;
-  //       align-items: stretch !important;
-  //     }
-
-  //     .ant-upload-list-item-container {
-  //       display: inline-block !important;
-  //       border-radius: ${borderRadius} !important;
-  //       &.ant-upload-animate-inline-appear,
-  //       &.ant-upload-animate-inline-appear-active,
-  //       &.ant-upload-animate-inline {
-  //         display: none !important;
-  //         animation: none !important;
-  //         transition: none !important;
-  //       }
-  //     }
-  // `);
-
-  //   const shaStoredFilesRendererVertical = cx("sha-stored-files-renderer-vertical", css`
-  //     max-width: max-content !important;
-  //     width: max-content !important;
-  //     min-width: max-content !important;
-  //     .${prefixCls}-upload-list {
-  //       display: flex !important;
-  //       flex-direction: column !important;
-  //       flex-wrap: nowrap !important;
-  //       padding: 2px !important;
-  //       width: 100% !important;
-  //     }
-
-  //     .stored-files-renderer-btn-container {
-  //       justify-content: flex-start;
-  //       .ant-btn {
-  //         padding: 0;
-  //       }
-  //     }
-
-  //     .ant-upload-list-item-container {
-  //       display: inline-block !important;
-  //       border-radius: ${borderRadius} !important;
-  //       &.ant-upload-animate-inline-appear,
-  //       &.ant-upload-animate-inline-appear-active,
-  //       &.ant-upload-animate-inline {
-  //         display: none !important;
-  //         animation: none !important;
-  //         transition: none !important;
-  //       }
-  //     }
-  // `);
-
-  //   const shaStoredFilesRendererGrid = cx("sha-stored-files-renderer-grid", css`
-  //     .${prefixCls}-upload-list {
-  //       display: flex !important;
-  //       flex-direction: row !important;
-  //       flex-wrap: wrap !important;
-  //       align-items: stretch !important;
-  //       align-content: flex-start !important;
-  //       padding: 2px;
-  //       overflow-y: auto !important;
-  //       overflow-x: hidden !important;
-  //       .${prefixCls}-upload-list-item {
-  //         width: 100% !important;
-  //         height: 100% !important;
-  //         border-radius: ${borderRadius} !important;
-  //       }
-  //     }
-
-  //     .ant-upload-list-item-container {
-  //       display: inline-block !important;
-  //       border-radius: ${borderRadius} !important;
-  //       &.ant-upload-animate-inline-appear,
-  //       &.ant-upload-animate-inline-appear-active,
-  //       &.ant-upload-animate-inline {
-  //         display: none !important;
-  //         animation: none !important;
-  //         transition: none !important;
-  //       }
-  //     }
-  // `);
-
-  //   const thumbnailReadOnly = cx("ant-upload-list-item thumbnail-readonly", css`
-  //       text-align: center;
-  //       align-items: center;
-  //       justify-content: center;
-  //       background-color: #00000005 !important;
-  //       border: 1px dashed #d9d9d9 !important;
-  //       border-radius: 8px !important;
-  //   `);
-
-  //   const hiddenElement = cx("hidden-element", css`
-  //     display: none !important;
-  //   `);
-
-  //   const actionsPopover = cx("actions-popover", css`
-  //     /* antd 6 renders the panel as \`-popover-container\`; the \`-popover-inner\` this rule used to
-  //        target does not exist in this version, so the compact padding was silently not applied. */
-  //     .${prefixCls}-popover-container {
-  //       padding: 4px;
-  //       ${background}
-  //       ${backgroundImage}
-  //     }
-  //   `);
-
-  //   const uploadButton = cx("upload-button", css`
-  //     width: 100%;
-  //     padding: 0px !important;
-  //     background: transparent;
-  //     // justify-content: ${textAlign === 'center' || model.listType === 'thumbnail' ? 'center' : textAlign === 'right' ? 'flex-end' : 'flex-start'};
-  //   `);
-
-  /* Layout variants: how the files flow. Gap comes from the model so the Appearance tab's Gap
-     input drives the spacing between tiles. The animation resets keep antd from fading each item
-     in on every re-render, which reads as flicker while files load. */
   const noItemAnimation = `
     &.ant-upload-animate-inline-appear,
     &.ant-upload-animate-inline-appear-active,
@@ -838,7 +402,6 @@ export const useStyles = createStyles((
       overflow-x: auto;
       overflow-y: clip !important;
       align-items: stretch !important;
-      gap: ${model.gap ?? '8px'};
     }
 
     .ant-upload-list-item-container {
@@ -854,7 +417,6 @@ export const useStyles = createStyles((
       flex-wrap: nowrap !important;
       padding: 2px !important;
       width: 100% !important;
-      gap: ${model.gap ?? '8px'};
     }
 
     .sha-stored-files-renderer-btn-container {
@@ -880,7 +442,6 @@ export const useStyles = createStyles((
       padding: 2px;
       overflow-y: auto !important;
       overflow-x: hidden !important;
-      gap: ${model.gap ?? '8px'};
     }
 
     .ant-upload-list-item-container {
@@ -897,7 +458,7 @@ export const useStyles = createStyles((
     downloadedFile,
     downloadedIcon,
     actionsPopover,
-    // shaStoredFilesRendererHorizontal,
+    shaThumbnail,
     // shaStoredFilesRendererVertical,
     // shaStoredFilesRendererGrid,
     // storedFilesRendererBtnContainer,
@@ -909,9 +470,5 @@ export const useStyles = createStyles((
     // antUploadHint,
     // thumbnailReadOnly,
     shaItemFileName,
-    // fileNameWrapper,
-    // hiddenElement,
-    // actionsPopover,
-    // uploadButton,
   };
 });

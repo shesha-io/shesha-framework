@@ -24,6 +24,8 @@ export const defaultStyles = (): IAttachmentsEditorDeviceStyles => {
     gap: 8,
     ...containerDefaultStyles(),
     thumbnail: thumbnailDefaultStyles(),
+    styleDownloadedFiles: false,
+    downloadedIcon: 'CheckCircleOutlined',
     downloadedFileStyles: downloadedFileDefaultStyles(),
   };
 };

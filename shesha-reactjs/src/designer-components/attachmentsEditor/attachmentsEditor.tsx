@@ -265,7 +265,6 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
             // Only execute custom script if this is a user action (download)
             if (isUserAction && isNotNullOrWhiteSpace(model.onDownload)) executeScript(model.onDownload, fileList);
           };
-
           return (
             <AttachmentsEditorProvider
               name={model.componentName}
@@ -300,31 +299,21 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
                 allowReplace={enabled && model.allowReplace}
                 allowRename={enabled && model.allowRename}
                 allowViewHistory={model.allowViewHistory}
-                /* The container is the root style set now, and it is applied through
-                   `classNames.container` below rather than as a style model.
-
-                   The thumbnail set is passed as a model rather than only as a class because the
-                   renderer reads it directly for things CSS cannot supply: the thumbnail request
-                   dimensions it fetches images at, the icon size, and the designer stub box. */
                 thumbnail={model.thumbnail}
-                enableStyleOnReadonly={model.enableStyleOnReadonly}
-                ownerId={resolvedOwnerId}
-                /* The downloaded-file appearance is emitted as a class now, so the renderer's legacy
-                   CSSProperties prop is cleared: leaving the model's style set to arrive through the
-                   spread above would hand it an object shaped like a style model, not CSS. */
-                downloadedFileStyles={undefined}
-                styleDownloadedFiles={model.styleDownloadedFiles ?? false}
-                downloadedIcon={model.styleDownloadedFiles ?? false ? model.downloadedIcon : undefined}
-                /* Only the popups are styled from here. The wrapper, the file boxes and the
-                   downloaded markers are all emitted by the renderer from the style model it
-                   already receives — passing classes for those as well would mean two sources
-                   painting the same elements. */
+                thumbnailStyleCss={thumbnailStyleCss}
+                /* The four popups are portalled to the body, so no descendant selector from the
+                   field can reach them — each needs its class handed over explicitly. */
                 classNames={{
                   actionsPopover: styles.actionsPopover,
                   historyPopover: styles.historyPopover,
                   confirmPopover: styles.confirmPopover,
                   previewMask: styles.previewMask,
                 }}
+                enableStyleOnReadonly={model.enableStyleOnReadonly}
+                ownerId={resolvedOwnerId}
+                downloadedFileStyles={undefined}
+                styleDownloadedFiles={model.styleDownloadedFiles ?? false}
+                downloadedIcon={model.styleDownloadedFiles ?? false ? model.downloadedIcon : undefined}
               />
             </AttachmentsEditorProvider>
           );
@@ -504,7 +493,29 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
     })
   /* Rename-only step: runs for new and old alike, and carries the permissions that used to live on
        the Security tab onto the Visible / Interaction Mode settings. */
-    .add<IAttachmentsEditorProps>(19, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
+    .add<IAttachmentsEditorProps>(19, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev))))
+    /* `styleDownloadedFiles` / `downloadedIcon` became device-scoped, alongside the
+       `downloadedFileStyles` set they gate. Carry any root value onto each device model, or the
+       merge would overwrite it with the seeded default and downloaded files would silently stop
+       being highlighted on forms that had the toggle on. An existing device value wins, so
+       re-running this cannot clobber a per-device choice. */
+    .add<IAttachmentsEditorProps>(20, (prev) => {
+      const withDownloadedFlags = (device: IAttachmentsEditorDeviceStyles | undefined): IAttachmentsEditorDeviceStyles | undefined =>
+        isDefined(device)
+          ? {
+            ...device,
+            styleDownloadedFiles: device.styleDownloadedFiles ?? prev.styleDownloadedFiles ?? false,
+            downloadedIcon: device.downloadedIcon ?? prev.downloadedIcon ?? 'CheckCircleOutlined',
+          }
+          : device;
+
+      return {
+        ...prev,
+        desktop: withDownloadedFlags(prev.desktop),
+        tablet: withDownloadedFlags(prev.tablet),
+        mobile: withDownloadedFlags(prev.mobile),
+      };
+    }),
 };
 
 export default AttachmentsEditor;
