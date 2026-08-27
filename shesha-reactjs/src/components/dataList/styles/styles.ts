@@ -41,13 +41,27 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
     
         .${shaDatalistComponentItemCheckbox} {
             display: flex;
-            align-items: baseline;
+            /* Centre the selection control on its item, not on a baseline. Baseline alignment tied
+               the control to the first text baseline *inside* the rendered child form, so its
+               position depended entirely on whatever that form happened to start with - measured
+               anywhere from 4px to past the bottom of the item across three forms. */
+            align-items: center;
             padding: unset;
             margin: unset;
             padding-left: 5px;
             margin-left: unset;
             cursor: unset;
-    
+
+            /* antd's own 'align-self: center' on the box would otherwise override the line above,
+               and it centres over the flex line rather than the item. Restating it here keeps the
+               two shapes (control as a sibling of the item, and antd's own wrapper) consistent.
+               The row gap lives on the row wrapper, so the line is exactly the item's border box
+               and centring lands on the card itself. */
+            > .${prefixCls}-checkbox,
+            > .${prefixCls}-radio {
+                align-self: center;
+            }
+
             &.selected {
                 background-color: ${token.colorPrimaryBgHover};
                 padding-bottom: 8px;
