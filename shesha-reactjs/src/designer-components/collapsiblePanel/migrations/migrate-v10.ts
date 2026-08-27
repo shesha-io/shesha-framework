@@ -123,7 +123,7 @@ export const migrateV9toV10 = (prev: ICollapsiblePanelComponentProps, context: S
         width: 'max-content',
         height: '100%',
       },
-      level: 1,
+      level: 0,
     } satisfies ITextComponentPropsV0;
 
     const extraArea = {
