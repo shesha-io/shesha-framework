@@ -5,6 +5,7 @@ import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { Alert, Skeleton } from 'antd';
 import { CSSProperties, FC, useEffect } from 'react';
 import { ShaIcon } from '../shaIcon';
+import { RefListStatusPlaceholder } from './placeholder';
 import { useStyles } from './styles/styles';
 import RefTag from './tag';
 import { DescriptionTooltip } from './tooltip';
@@ -30,6 +31,8 @@ export interface IRefListStatusProps {
   disabled?: boolean | undefined;
   /** Emotion class carrying the configured appearance; applied to the tag container. */
   className?: string | undefined;
+  /** Names the component on the designer canvas, where there is no value to show instead. */
+  propertyName?: string | undefined;
   /** Reports the resolved item text so a caller can expose it (e.g. through the component API). */
   onItemTextChange?: ((itemText: string | null | undefined) => void) | undefined;
 }
@@ -46,6 +49,7 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
     readOnly = false,
     disabled = false,
     className,
+    propertyName,
     onItemTextChange,
   } = props;
   const { width, height, minHeight, minWidth, maxHeight, maxWidth } = style;
@@ -87,16 +91,15 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
     if (isDesigner) {
       return (
         <div className={cx(styles.shaStatusTagContainer, className)}>
-          <RefTag
-            {...(solidBackground === true ? { color: solidColor, variant: 'solid' as const } : {})}
-            icon={null}
-            style={solidBackground === true
-              ? { ...rest, color: SOLID_TEXT_COLOR }
-              : { ...style, ...PLAIN_TEXT_STYLE }}
-            className={cx(styles.shaStatusTag, disabled ? styles.shaStatusTagDisabled : undefined)}
-          >
-            {showReflistName ? 'Reference List Item' : 'N/A'}
-          </RefTag>
+          <RefListStatusPlaceholder
+            referenceListId={referenceListId}
+            propertyName={propertyName}
+            showIcon={showIcon === true}
+            showReflistName={showReflistName}
+            solidBackground={solidBackground === true}
+            style={style}
+            tagClassName={cx(styles.shaStatusTag, disabled ? styles.shaStatusTagDisabled : undefined)}
+          />
         </div>
       );
     }

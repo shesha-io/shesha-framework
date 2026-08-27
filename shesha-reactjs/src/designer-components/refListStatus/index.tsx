@@ -85,6 +85,7 @@ const RefListStatusComponent: RefListStatusComponentDefinition = {
               <RefListStatus
                 value={value ?? undefined}
                 referenceListId={referenceListId}
+                propertyName={model.propertyName}
                 showIcon={model.showIcon}
                 showReflistName={showReflistName}
                 solidBackground={solidBackground}

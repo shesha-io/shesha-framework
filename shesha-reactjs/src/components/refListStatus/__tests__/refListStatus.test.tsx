@@ -4,9 +4,10 @@ import * as React from 'react';
 import { IReferenceListItem } from '@/interfaces/referenceList';
 
 /**
- * Covers the ways the appearance switches used to be inert: the tag vanished altogether once both
- * Show Icon and Show Reference List Item Name were off, and Show Solid Background did nothing for
- * an item with no colour configured.
+ * Covers the three ways the appearance switches used to be inert:
+ *  - Show Icon did nothing on the designer canvas, which always took the placeholder branch;
+ *  - the tag vanished altogether once both Show Icon and Show Reference List Item Name were off;
+ *  - Show Solid Background did nothing for an item with no colour configured.
  */
 
 const item: IReferenceListItem = {
@@ -21,9 +22,11 @@ const item: IReferenceListItem = {
 };
 
 let currentItem: IReferenceListItem = item;
+let currentList: IReferenceListItem[] = [item];
 
 vi.mock('@/providers/referenceListDispatcher', () => ({
   useReferenceListItem: () => ({ data: currentItem, loading: false, error: undefined }),
+  useReferenceList: () => ({ data: { name: 'Gender', items: currentList }, loading: false, error: undefined }),
 }));
 
 vi.mock('@/providers', () => ({
@@ -41,8 +44,15 @@ const renderStatus = (props: Partial<React.ComponentProps<typeof RefListStatus>>
 
 const tagOf = (container: HTMLElement): HTMLElement | null => container.querySelector('.ant-tag');
 
+/** The designer branch is the one with no value to resolve, so `useReferenceListItem` returns nothing. */
+const renderDesigner = (props: Partial<React.ComponentProps<typeof RefListStatus>>): HTMLElement => {
+  currentItem = undefined as unknown as IReferenceListItem;
+  return renderStatus({ ...props, isDesigner: true });
+};
+
 beforeEach(() => {
   currentItem = item;
+  currentList = [item];
 });
 
 describe('RefListStatus', () => {
@@ -53,6 +63,39 @@ describe('RefListStatus', () => {
 
     it('renders no icon when off', () => {
       expect(tagOf(renderStatus({ showIcon: false, showReflistName: true }))?.querySelector('.anticon')).toBeNull();
+    });
+
+    it('is honoured by the designer placeholder, which has no item to read an icon from', () => {
+      expect(tagOf(renderDesigner({ showIcon: true }))?.querySelector('.anticon')).not.toBeNull();
+      expect(tagOf(renderDesigner({ showIcon: false }))?.querySelector('.anticon')).toBeNull();
+    });
+
+    it('uses a generic tag icon on the canvas, never one lifted from another item', () => {
+      currentList = [{ ...item, icon: 'SmileOutlined' }];
+      const tag = tagOf(renderDesigner({ showIcon: true }));
+
+      expect(tag?.querySelector('.anticon-tag')).not.toBeNull();
+      expect(tag?.querySelector('.anticon-smile')).toBeNull();
+    });
+  });
+
+  describe('with neither the name nor an icon shown', () => {
+    it('still renders the tag', () => {
+      expect(tagOf(renderStatus({ showIcon: false, showReflistName: false }))).not.toBeNull();
+    });
+
+    it('names the tag for screen readers, since it carries no text', () => {
+      expect(tagOf(renderStatus({ showIcon: false, showReflistName: false }))?.getAttribute('aria-label')).toBe('Male');
+    });
+  });
+
+  describe('the designer placeholder text', () => {
+    it('names the component by its property name', () => {
+      expect(tagOf(renderDesigner({ showReflistName: true, propertyName: 'gender' }))?.textContent).toBe('gender');
+    });
+
+    it('falls back to a stand-in when the component is unbound', () => {
+      expect(tagOf(renderDesigner({ showReflistName: true }))?.textContent).toBe('N/A');
     });
   });
 
@@ -105,6 +148,13 @@ describe('RefListStatus', () => {
       expect(tag?.style.background).toBe('transparent');
       expect(tag?.style.borderStyle).toBe('none');
       expect(tag?.style.padding).toBe('0px');
+    });
+
+    it('strips the chrome from the designer placeholder too when off', () => {
+      const tag = tagOf(renderDesigner({ solidBackground: false, showReflistName: true }));
+
+      expect(tag?.style.background).toBe('transparent');
+      expect(tag?.style.borderStyle).toBe('none');
     });
   });
 });
