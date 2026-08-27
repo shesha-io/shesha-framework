@@ -30,6 +30,7 @@ import { DataSortingEditorWrapper } from "./dataSortingEditor";
 import { QueryBuilderWrapper } from "./queryBuilder";
 import { FiltersListWrapper } from "./filtersListWrapper";
 import { EditModeSelectorWrapper } from "./editModeSelector";
+import { RefListDisplaySelectorWrapper } from "./refListDisplaySelector";
 import { ConfigurableActionConfiguratorWrapper } from "./configurableActionConfigurator";
 import { RefListItemSelectorSettingsModalWrapper } from "./refListItemSelectorSettingsModal";
 import { PasswordWrapper } from "./password";
@@ -90,6 +91,7 @@ export const editorRegistry: EditorDictionary = {
   queryBuilder: QueryBuilderWrapper,
   filtersList: FiltersListWrapper,
   editModeSelector: EditModeSelectorWrapper,
+  refListDisplaySelector: RefListDisplaySelectorWrapper,
   threeStateSwitch: ThreeStateSwitchWrapper,
   configurableActionConfigurator: ConfigurableActionConfiguratorWrapper,
   RefListItemSelectorSettingsModal: RefListItemSelectorSettingsModalWrapper,
