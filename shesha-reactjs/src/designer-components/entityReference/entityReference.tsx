@@ -65,11 +65,16 @@ const EntityReferenceWrapper: React.FC<{
 
   /* Publish the id to the component API after the render commits, never during it: a render can be
      discarded in concurrent mode, and writing the ref inline would leave `entityId` reporting a
-     value the UI never actually showed. `normalizedValue` is `string | null`, so coerce to keep the
-     API's `string | undefined` contract. */
+     value the UI never actually showed.
+
+     Coerce to keep the API's `string | undefined` contract: `normalizedValue` is `string | null`
+     for "no value", and an id bound from the form data can arrive as a number even though
+     `EntityReferenceValue` does not admit one — its `[key: string]: unknown` index signature stops
+     `typeof value === 'number'` narrowing to `never`, so a numeric id passes the compiler and would
+     otherwise reach the API as a number. */
   useEffect(() => {
     if (isDefined(entityIdRef))
-      entityIdRef.current = normalizedValue ?? undefined;
+      entityIdRef.current = isDefined(normalizedValue) ? String(normalizedValue) : undefined;
   }, [entityIdRef, normalizedValue]);
 
   useEffect(() => {
