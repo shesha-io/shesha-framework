@@ -12,7 +12,7 @@ export default function CommonLayout({
   const { LayoutComponent } = useLayoutSelection(LAYOUT_MODE);
 
   return (
-    <LayoutComponent noPadding>
+    <LayoutComponent>
       {children}
     </LayoutComponent>
   );
