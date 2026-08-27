@@ -1,287 +1,75 @@
-import { SettingsFormMarkupFactory } from "@/interfaces";
-import { nanoid } from "@/utils/uuid";
+import { FormLayout } from 'antd/lib/form/Form';
+import { nanoid } from '@/utils/uuid';
+import { SettingsFormMarkupFactory } from '@/interfaces';
 
-export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
-  const dataTabId = nanoid();
   const eventsTabId = nanoid();
   const appearanceTabId = nanoid();
-  const securityTabId = nanoid();
-  const validationTabId = nanoid();
 
   return {
-    components: fbf()
+    components: fbf('root')
       .addSearchableTabs({
-        id: searchableTabsId,
-        propertyName: 'settingsTabs',
-        parentId: 'root',
-        label: 'Settings',
-        hideLabel: true,
-        labelAlign: 'right',
-        size: 'small',
+        id: searchableTabsId, propertyName: 'settingsTabs', label: 'Settings', hideLabel: true, labelAlign: 'right', size: 'small',
         tabs: [
           {
-            key: 'common',
-            title: 'Common',
-            id: commonTabId,
-            components: [
-              ...fbf()
+            key: 'common', title: 'Common', id: commonTabId,
+            components: fbf(commonTabId)
+              .addSettingsInput({ inputType: 'textField', propertyName: 'componentName', label: 'Component Name', validate: { required: true }, jsSetting: false })
+              .stdVisibleEditableInputs('full')
+              .stdCollapsiblePanel('Owner', (fb) => fb
+                .addSettingsInput({ inputType: 'entityTypeAutocomplete', propertyName: 'ownerType', label: 'Owner Type', labelAlign: 'right', jsSetting: true, validate: { required: true } })
+                .addSettingsInput({ inputType: 'textField', propertyName: 'ownerId', label: 'Owner ID', jsSetting: true, validate: { required: true } })
+                .addSettingsInput({ inputType: 'textField', propertyName: 'category', label: 'Notes Category', tooltip: 'This is used to group notes into categories', jsSetting: true }))
+              .stdCollapsiblePanel('Behaviour', (fb) => fb
                 .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
                   inputs: [
-                    {
-                      type: 'textField',
-                      id: nanoid(),
-                      propertyName: 'componentName',
-                      label: 'Component Name',
-                      jsSetting: false,
-                      validate: {
-                        required: true,
-                      },
-                    },
-                    {
-                      id: nanoid(),
-                      propertyName: 'category',
-                      label: 'Notes Category',
-                      type: 'textField',
-                      tooltip: 'This is used to group notes into categories',
-                      jsSetting: true,
-                    },
+                    { type: 'switch', propertyName: 'allowEdit', label: 'Allow Edit', jsSetting: true, tooltip: 'Allows existing notes to be edited' },
+                    { type: 'switch', propertyName: 'allowDelete', label: 'Allow Delete', jsSetting: true, tooltip: 'Allows existing notes to be deleted' },
                   ],
                 })
                 .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
                   inputs: [
-                    {
-                      type: 'switch',
-                      id: nanoid(),
-                      propertyName: 'showCharCount',
-                      label: 'Show Chars Count',
-                      jsSetting: true,
-                    },
+                    { type: 'switch', propertyName: 'autoSize', label: 'Auto Size', jsSetting: true, tooltip: 'Grows the editor as the note is typed' },
+                    { type: 'switch', propertyName: 'showCharCount', label: 'Show Chars Count', jsSetting: true },
                   ],
-                })
+                }))
+              .stdCollapsiblePanel('Validations', (fb) => fb
                 .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
                   inputs: [
-                    {
-                      type: 'switch',
-                      id: nanoid(),
-                      propertyName: 'autoSize',
-                      label: 'Auto Size',
-                      jsSetting: true,
-                    },
+                    { type: 'numberField', propertyName: 'minLength', label: 'Min Length', min: 0, size: 'small', jsSetting: true, tooltip: 'Shortest note that can be posted, leave empty for no limit' },
+                    { type: 'numberField', propertyName: 'maxLength', label: 'Max Length', min: 0, size: 'small', jsSetting: true, tooltip: 'Longest note that can be posted, leave empty for no limit' },
                   ],
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  inputs: [
-                    {
-                      id: nanoid(),
-                      type: 'editModeSelector',
-                      propertyName: 'editMode',
-                      label: 'Edit Mode',
-                      parentId: commonTabId,
-                      jsSetting: true,
-                    },
-                    {
-                      type: 'switch',
-                      id: nanoid(),
-                      propertyName: 'hidden',
-                      label: 'Hide',
-                      jsSetting: true,
-                    },
-                  ],
-                }).addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  inputs: [
-                    {
-                      type: 'switch',
-                      id: nanoid(),
-                      propertyName: 'allowEdit',
-                      label: 'Allow Edit',
-                      jsSetting: true,
-                    },
-                    {
-                      type: 'switch',
-                      id: nanoid(),
-                      propertyName: 'allowDelete',
-                      label: 'Allow Delete',
-                      jsSetting: true,
-                    },
-                  ],
-                })
-                .toJson(),
-            ],
+                }))
+              .toJson(),
           },
           {
-            key: 'data',
-            title: 'Data',
-            id: dataTabId,
-            components: [
-              ...fbf()
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: dataTabId,
-                  inputs: [
-                    {
-                      id: nanoid(),
-                      propertyName: 'ownerType',
-                      type: 'entityTypeAutocomplete',
-                      parentId: nanoid(),
-                      label: 'Owner Type',
-                      labelAlign: 'right',
-                      jsSetting: true,
-                      validate: {
-                        required: true,
-                      },
-                    },
-                  ],
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: dataTabId,
-                  inputs: [
-                    {
-                      type: 'textField',
-                      id: nanoid(),
-                      propertyName: 'ownerId',
-                      label: 'Owner ID',
-                      jsSetting: true,
-                      validate: {
-                        required: true,
-                      },
-                    },
-                  ],
-                })
-                .toJson(),
-            ],
+            key: 'events', title: 'Events', id: eventsTabId,
+            components: fbf(eventsTabId)
+              .stdEventHandler('onCreateAction', 'On Create', 'Triggered after successfully creating a new note (access notes using createdNotes array)', 'return metadataBuilder.object("constants")\r\n.addAllStandard()\r\n.addArray("createdNotes", "Notes that were created")\r\n.build();')
+              .stdEventHandler('onUpdateAction', 'On Update', 'Triggered after successfully updating a note (access the note using the note object)', 'return metadataBuilder.object("constants")\r\n.addAllStandard()\r\n.addObject("note", "The note that was updated", undefined)\r\n.build();')
+              .stdEventHandler('onDeleteAction', 'On Delete', 'Triggered after successfully deleting a note (access the note using the note object)', 'return metadataBuilder.object("constants")\r\n.addAllStandard()\r\n.addObject("note", "The note that was deleted", undefined)\r\n.build();')
+              .stdEventHandlers(['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'])
+              .toJson(),
           },
           {
-            key: 'events',
-            title: 'Events',
-            id: eventsTabId,
-            components: [
-              ...fbf()
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'codeEditor',
-                  propertyName: 'onCreateAction',
-                  label: 'On Create',
-                  labelAlign: 'right',
-                  parentId: eventsTabId,
-                  tooltip: 'Triggered after successfully creating a new note (access notes using createdNotes array)',
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'codeEditor',
-                  propertyName: 'onUpdateAction',
-                  label: 'On Update',
-                  labelAlign: 'right',
-                  parentId: eventsTabId,
-                  tooltip: 'Triggered after successfully updating a note',
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'codeEditor',
-                  propertyName: 'onDeleteAction',
-                  label: 'On Delete',
-                  labelAlign: 'right',
-                  parentId: eventsTabId,
-                  tooltip: 'Triggered after successfully deleting a note',
-                })
-                .toJson(),
-            ],
-          },
-          {
-            key: 'validation',
-            title: 'Validation',
-            id: validationTabId,
-            components: [
-              ...fbf()
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: validationTabId,
-                  inputs: [
-                    {
-                      type: 'numberField',
-                      id: nanoid(),
-                      propertyName: 'minLength',
-                      label: 'Min Length',
-                      min: 0,
-                      jsSetting: true,
-                    },
-                    {
-                      type: 'numberField',
-                      id: nanoid(),
-                      propertyName: 'maxLength',
-                      label: 'Max Length',
-                      min: 0,
-                      jsSetting: true,
-                    },
-                  ],
-                })
-                .toJson(),
-            ],
-          },
-          {
-            key: 'appearance',
-            title: 'Appearance',
-            id: appearanceTabId,
-            components: [
-              ...fbf()
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: appearanceTabId,
-                  inputs: [
-                    {
-                      type: 'dropdown',
-                      id: nanoid(),
-                      propertyName: 'savePlacement',
-                      label: 'Buttons Layout',
-                      tooltip: 'This is used to place the save button (Left, Right).',
-                      jsSetting: true,
-                      dropdownOptions: [
-                        { value: 'left', label: 'Left' },
-                        { value: 'right', label: 'Right' },
-                      ],
-                    },
-                  ],
-                })
-                .toJson(),
-            ],
-          },
-          {
-            key: 'security',
-            title: 'Security',
-            id: securityTabId,
-            components: [
-              ...fbf()
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'permissions',
-                  propertyName: 'permissions',
-                  label: 'Permissions',
-                  parentId: securityTabId,
-                  jsSetting: true,
-                })
-                .toJson(),
-            ],
+            key: 'appearance', title: 'Appearance', id: appearanceTabId,
+            components: fbf(appearanceTabId)
+              .addSettingsInput({
+                inputType: 'dropdown', propertyName: 'savePlacement', label: 'Buttons Layout', jsSetting: true,
+                tooltip: 'This is used to place the save button (Left, Right).',
+                dropdownOptions: [
+                  { value: 'left', label: 'Left' },
+                  { value: 'right', label: 'Right' },
+                ],
+              })
+              .stdAppearancePanels(['font', 'dimensions', 'border', 'background', 'shadow', 'marginPadding', 'customStyle'], removeStyleRouter)
+              .toJson(),
           },
         ],
       })
       .toJson(),
-    formSettings: {
-      layout: 'vertical',
-      colon: false,
-      labelCol: { span: 24 },
-      wrapperCol: { span: 24 },
-    },
+    formSettings: { colon: false, layout: 'vertical' as FormLayout, labelCol: { span: 24 }, wrapperCol: { span: 24 } },
   };
 };
