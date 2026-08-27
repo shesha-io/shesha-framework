@@ -6,6 +6,7 @@ using Abp.Dependency;
 using Abp.Localization;
 using Abp.Threading;
 using Microsoft.AspNetCore.Mvc;
+using Shesha.Configuration.Security;
 using Shesha.DynamicEntities.Cache;
 using Shesha.Extensions;
 using Shesha.Permissions;
@@ -21,18 +22,21 @@ namespace Shesha.Authorization
         private readonly IAuthorizationConfiguration _authConfiguration;
         private readonly IObjectPermissionChecker _objectPermissionChecker;
         private readonly IEntityConfigCache _entityConfigCache;
+        private readonly ISecuritySettings _securitySettings;
 
         public EntityCrudAuthorizationHelper(
             IFeatureChecker featureChecker,
             IAuthorizationConfiguration authConfiguration,
             IObjectPermissionChecker objectPermissionChecker,
             IEntityConfigCache entityConfigCache,
-            ILocalizationManager localizationManager
+            ILocalizationManager localizationManager,
+            ISecuritySettings securitySettings
             ): base(featureChecker, authConfiguration)
         {
             _entityConfigCache = entityConfigCache;
             _authConfiguration = authConfiguration;
             _objectPermissionChecker = objectPermissionChecker;
+            _securitySettings = securitySettings;
         }
 
         public override async Task AuthorizeAsync(MethodInfo methodInfo, Type? type)
@@ -59,8 +63,20 @@ namespace Shesha.Authorization
 
             if (config == null) return;
 
+            var securitySettings = await _securitySettings.SecuritySettings.GetValueOrNullAsync();
+
             // ToDo: add RequireAll flag
-            await _objectPermissionChecker.AuthorizeAsync(false, config.FullClassName, method, ShaPermissionedObjectsTypes.EntityAction, AbpSession.UserId.HasValue);
+            // the `DefaultEndpointAccess` setting is passed as fallback for the `Inherited` access,
+            // entity CRUD endpoints must respect it just like the web api endpoints do
+            await _objectPermissionChecker.AuthorizeAsync(
+                false,
+                config.FullClassName,
+                method,
+                ShaPermissionedObjectsTypes.EntityAction,
+                AbpSession.UserId.HasValue,
+                securitySettings?.DefaultEndpointAccess ?? Domain.Enums.RefListPermissionedAccess.AnyAuthenticated,
+                securitySettings?.DefaultEndpointPermissions
+            );
         }
     }
 }
