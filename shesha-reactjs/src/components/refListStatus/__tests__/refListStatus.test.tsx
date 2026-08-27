@@ -21,7 +21,7 @@ const item: IReferenceListItem = {
   shortAlias: null,
 };
 
-let currentItem: IReferenceListItem = item;
+let currentItem: IReferenceListItem | undefined = item;
 let currentList: IReferenceListItem[] = [item];
 
 vi.mock('@/providers/referenceListDispatcher', () => ({
@@ -46,7 +46,7 @@ const tagOf = (container: HTMLElement): HTMLElement | null => container.querySel
 
 /** The designer branch is the one with no value to resolve, so `useReferenceListItem` returns nothing. */
 const renderDesigner = (props: Partial<React.ComponentProps<typeof RefListStatus>>): HTMLElement => {
-  currentItem = undefined as unknown as IReferenceListItem;
+  currentItem = undefined;
   return renderStatus({ ...props, isDesigner: true });
 };
 
@@ -96,6 +96,27 @@ describe('RefListStatus', () => {
 
     it('falls back to a stand-in when the component is unbound', () => {
       expect(tagOf(renderDesigner({ showReflistName: true }))?.textContent).toBe('N/A');
+    });
+  });
+
+  describe('a display driven by JS', () => {
+    // The canvas has no data to evaluate the expression against, and it could resolve differently
+    // per row, so one neutral shape stands for all of them.
+    it('previews one fixed shape on the canvas', () => {
+      const tag = tagOf(renderDesigner({ displayIsDynamic: true, propertyName: 'gender' }));
+
+      expect(tag?.textContent).toBe('Reference List Item');
+      expect(tag?.querySelector('.anticon-tag')).not.toBeNull();
+      expect(tag?.style.backgroundColor).toBe('rgb(140, 140, 140)');
+      expect(tag?.style.color).toBe('rgb(255, 255, 255)');
+    });
+
+    it('ignores the solid background switch and the list colour, which it does not govern', () => {
+      currentList = [{ ...item, color: '#ff0000' }];
+      const tag = tagOf(renderDesigner({ displayIsDynamic: true, solidBackground: false }));
+
+      expect(tag?.className).toContain('ant-tag-solid');
+      expect(tag?.style.backgroundColor).toBe('rgb(140, 140, 140)');
     });
   });
 

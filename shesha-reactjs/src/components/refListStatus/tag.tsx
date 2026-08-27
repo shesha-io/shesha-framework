@@ -15,7 +15,7 @@ const EMPTY_TAG_MIN_WIDTH = 24;
  * accessible name for the case where the tag renders as a bare colour swatch, with no text for a
  * screen reader to announce.
  */
-interface ITagProps extends Pick<React.AriaAttributes, 'aria-label'> {
+export interface ITagProps extends Pick<React.AriaAttributes, 'aria-label'> {
   color?: string;
   /** antd tag variant. `solid` paints the background in `color` instead of a lightened tint. */
   variant?: 'filled' | 'solid' | 'outlined';

@@ -1,4 +1,5 @@
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
+import { resolveRefListDisplay } from '@/components/refListDisplaySelector/models';
 import { RefListStatus } from '@/components/refListStatus/index';
 import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateReadOnly, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -7,6 +8,8 @@ import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles, useForm } from '@/providers';
 import { useComponentApiProvider } from '@/providers/componentApi/provider';
+import { useComponentModel } from '@/providers/form/providers/formMarkupProvider';
+import { isPropertySettings } from '../_settings/utils/utils';
 import { isDefined } from '@/utils/nullables';
 import { FileSearchOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
@@ -17,6 +20,7 @@ import { migratePermissionsToVisiblePermissions } from '../_common-migrations/mi
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { ALL_INPUT_EVENTS_WITHOUT_CHANGE, getComponentEvents } from '../_common/events';
 import { IRefListStatusComponentProps, IRefListStatusComponentPropsV1, RefListStatusComponentDefinition } from './interfaces';
+import { migrateItemDisplay } from './migrations/migrateItemDisplay';
 import { IRefListStatusPropsV0 } from './migrations/models';
 import { getSettings } from './settings';
 import { useStyles } from './styles';
@@ -35,7 +39,15 @@ const RefListStatusComponent: RefListStatusComponentDefinition = {
   icon: <FileSearchOutlined />,
   Factory: ({ model, apiContext }) => {
     const { formMode } = useForm();
-    const { solidBackground = true, referenceListId, showReflistName = true } = model;
+    const { solidBackground = true, referenceListId } = model;
+
+    const { showName, showIcon } = resolveRefListDisplay(model.itemDisplay);
+
+    /* The raw markup still carries the unevaluated setting, which is the only way to tell a JS
+       display apart from a chosen mode: by the time the model reaches here the evaluators have all
+       been resolved. The canvas needs to know because it has no data to resolve them against. */
+    const rawModel: Partial<IRefListStatusComponentProps> = useComponentModel(model.id);
+    const displayIsDynamic = isPropertySettings(rawModel.itemDisplay) && rawModel.itemDisplay._mode === 'code';
 
     const [itemText, setItemText] = useState<string | undefined>(undefined);
     const onItemTextChange = useCallback((value: string | null | undefined) => setItemText(value ?? undefined), []);
@@ -86,10 +98,11 @@ const RefListStatusComponent: RefListStatusComponentDefinition = {
                 value={value ?? undefined}
                 referenceListId={referenceListId}
                 propertyName={model.propertyName}
-                showIcon={model.showIcon}
-                showReflistName={showReflistName}
+                showIcon={showIcon}
+                showReflistName={showName}
                 solidBackground={solidBackground}
                 isDesigner={formMode === 'designer'}
+                displayIsDynamic={displayIsDynamic}
                 readOnly={model.readOnly === true}
                 disabled={model.disabled === true}
                 onItemTextChange={onItemTextChange}
@@ -153,8 +166,18 @@ const RefListStatusComponent: RefListStatusComponentDefinition = {
     .add<IRefListStatusComponentPropsV1>(6, (prev, context) => context.isNew === true
       ? prev
       : { ...migratePrevStyles(prev, defaultStyles()) })
-    .add<IRefListStatusComponentProps>(7, (prev) => migrateReadOnly(prev))
-    .add<IRefListStatusComponentProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
+    .add<IRefListStatusComponentPropsV1>(7, (prev) => migrateReadOnly(prev))
+    .add<IRefListStatusComponentPropsV1>(8, (prev, context) => {
+      const migrated = migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev));
+      // stylingBox is a style migration, so it is for existing components only.
+      return context.isNew === true ? migrated : migrateStylingBoxToJson(migrated);
+    })
+    .add<IRefListStatusComponentProps>(9, (prev, context) => {
+      if (context.isNew === true) return prev;
+
+      const { showReflistName, showIcon, ...rest } = prev;
+      return { ...rest, ...migrateItemDisplay(showReflistName, showIcon) };
+    }),
   settingsFormMarkup: getSettings,
 
   linkToModelMetadata: (model, metadata): IRefListStatusComponentProps => {
@@ -176,7 +199,7 @@ const RefListStatusComponent: RefListStatusComponentDefinition = {
     propertyName: 'refListStatusAppearance',
     label: 'Reference List Status Label',
     version: 'latest',
-    showReflistName: true,
+    itemDisplay: 'name',
     solidBackground: true,
   },
 };

@@ -9,7 +9,7 @@ import { RefListStatusPlaceholder } from './placeholder';
 import { useStyles } from './styles/styles';
 import RefTag from './tag';
 import { DescriptionTooltip } from './tooltip';
-import { DEFAULT_SOLID_COLOR, PLAIN_TEXT_STYLE, resolveColor, SOLID_TEXT_COLOR } from './utils';
+import { DEFAULT_SOLID_COLOR, PLAIN_TEXT_STYLE, resolveColor, solidTagProps, SOLID_TEXT_COLOR } from './utils';
 import { CSSObject } from 'antd-style';
 
 export interface IRefListStatusProps {
@@ -33,6 +33,12 @@ export interface IRefListStatusProps {
   className?: string | undefined;
   /** Names the component on the designer canvas, where there is no value to show instead. */
   propertyName?: string | undefined;
+  /**
+   * Whether the display setting is a JS expression rather than a chosen mode. The designer canvas
+   * has no data to evaluate one against, so it previews a fixed representative tag instead of
+   * guessing which of the modes the expression will pick.
+   */
+  displayIsDynamic?: boolean | undefined;
   /** Reports the resolved item text so a caller can expose it (e.g. through the component API). */
   onItemTextChange?: ((itemText: string | null | undefined) => void) | undefined;
 }
@@ -50,6 +56,7 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
     disabled = false,
     className,
     propertyName,
+    displayIsDynamic = false,
     onItemTextChange,
   } = props;
   const { width, height, minHeight, minWidth, maxHeight, maxWidth } = style;
@@ -94,6 +101,7 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
           <RefListStatusPlaceholder
             referenceListId={referenceListId}
             propertyName={propertyName}
+            displayIsDynamic={displayIsDynamic}
             showIcon={showIcon === true}
             showReflistName={showReflistName}
             solidBackground={solidBackground === true}
@@ -113,7 +121,7 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
     <div className={cx(styles.shaStatusTagContainer, className)}>
       <DescriptionTooltip showReflistName={showReflistName} currentStatus={itemData}>
         <RefTag
-          {...(solidBackground === true ? { color: solidColor, variant: 'solid' as const } : {})}
+          {...(solidBackground === true ? solidTagProps(solidColor) : {})}
           icon={canShowIcon && !isNullOrWhiteSpace(itemData.icon) ? <ShaIcon iconName={itemData.icon} /> : null}
           /* With the name hidden the tag carries no text of its own, so name it explicitly - the
              description tooltip only reaches pointer users. */

@@ -1,5 +1,6 @@
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { CSSProperties } from 'react';
+import { ITagProps } from './tag';
 
 /**
  * Strips the tag chrome so the value reads as plain text, which is what the component looks like
@@ -37,3 +38,9 @@ export const SOLID_TEXT_COLOR = '#fff';
 export const resolveColor = (...candidates: (string | null | undefined)[]): string | undefined => {
   return candidates.find((candidate) => !isNullOrWhiteSpace(candidate)) ?? undefined;
 };
+
+/**
+ * The tag props that paint a solid badge. A declared return type gives `variant` its literal type,
+ * which a conditionally spread object literal would otherwise widen to `string`.
+ */
+export const solidTagProps = (color: string): Pick<ITagProps, 'color' | 'variant'> => ({ color, variant: 'solid' });
