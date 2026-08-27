@@ -100,9 +100,11 @@ const DropdownComponent: DropdownComponentDefinition = {
     );
   },
   migrator: (m) => m
-    .add<IDropdownComponentProps>(0, (prev) => ({
+    .add<IDropdownComponentProps>(0, (prev, ctx) => ({
       ...prev,
-      dataSourceType: "dataSourceType" in prev && typeof (prev.dataSourceType) === "string" && ['simple', 'listItem', 'custom'].includes(prev.dataSourceType) ? prev.dataSourceType as DataSourceType : 'values',
+      dataSourceType: "dataSourceType" in prev && typeof (prev.dataSourceType) === "string" && ['simple', 'listItem', 'custom'].includes(prev.dataSourceType)
+        ? prev.dataSourceType as DataSourceType
+        : ctx.isNew === true ? (prev as IDropdownComponentProps).dataSourceType as DataSourceType : 'values',
       useRawValues: getBooleanPropertyOrUndefined(prev, "useRawValues") ?? false,
     }))
     .add<IDropdownComponentProps>(1, (prev) => {
