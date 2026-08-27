@@ -6,6 +6,7 @@ import {
   migrateHiddenToVisible,
   migratePropertyName,
   migrateReadOnly,
+  migrateStylingBoxToJson,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 
@@ -13,7 +14,7 @@ import { LinkExternalOutlined } from '@/icons/linkExternalOutlined';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { isEntityReferencePropertyMetadata } from '@/interfaces/metadata';
 import * as React from 'react';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { migrateNavigateAction } from '../_common-migrations/migrate-navigate-action';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
@@ -24,13 +25,10 @@ import { EntityReferenceComponentDefinition, IEntityReferenceControlProps } from
 import { getSettings } from './settingsForm';
 import { useStyles } from './styles';
 import { defaultStyles } from './utils';
-import { useComponentApi } from '@/providers/componentApi/provider';
-import { useEffectOnce } from '@/hooks/useEffectOnce';
+import { useComponentApi } from '@/providers/componentApi/hooks';
 import { EntityReferenceApi } from '@/componentsApi/componentApi';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getIdOrUndefined } from '@/utils/entity';
-
-import apiCode from "../../componentsApi/componentApi.ts?raw";
 
 export type { IActionParameters, IEntityReferenceControlProps } from './interfaces';
 
@@ -113,23 +111,15 @@ const EntityReferenceComponent: EntityReferenceComponentDefinition = {
   preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.entityReference,
   Factory: ({ model }) => {
-    const componentApi = useComponentApi();
     const containerRef = useRef<HTMLSpanElement>(null);
 
-    useEffect(() => {
-      componentApi?.updateApi<EntityReferenceApi>({
-        id: model.id,
-        componentName: model.componentName ?? "",
-        level: 3,
-        typeDefinition: { typeName: 'EntityReferenceApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
-        properties: [
-          { name: 'entityReferenceType', getter: () => model.entityReferenceType },
-        ],
-        // `focus` needs a ref to the rendered node, so it is implemented here rather than inherited.
-        api: { focus: () => containerRef.current?.querySelector<HTMLElement>('a, button')?.focus() },
-      });
-    }, [componentApi, model.componentName, model.id, model.entityReferenceType]);
-    useEffectOnce(() => () => componentApi?.removeApi(model.id));
+    useComponentApi<EntityReferenceApi>({ model, typeName: 'EntityReferenceApi',
+      properties: [
+        { name: 'entityReferenceType', getter: () => model.entityReferenceType },
+      ],
+      // `focus` needs a ref to the rendered node, so it is implemented here rather than inherited.
+      api: { focus: () => containerRef.current?.querySelector<HTMLElement>('a, button')?.focus() },
+    }, [model.entityReferenceType]);
 
     const { styles } = useStyles(model);
 
@@ -230,9 +220,12 @@ const EntityReferenceComponent: EntityReferenceComponentDefinition = {
       .add<IEntityReferenceControlProps>(12, (prev, context) => context.isNew === true
         ? prev
         : { ...migratePrevStyles(prev, defaultStyles()) })
-      /* Rename-only step, last and unguarded: Hidden -> Visible and permissions -> visiblePermissions,
-         which now hang off the Visible and Interaction Mode settings. */
-      .add<IEntityReferenceControlProps>(13, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev))),
+      /* Rename-only step, last and unguarded: Hidden -> Visible, permissions -> visiblePermissions,
+         and the deprecated `stylingBox` JSON string -> the parsed `stylingBoxJson` the runtime reads.
+         The freeze step above goes through the shared `migrateStyles`, which still writes the legacy
+         `stylingBox`; without this conversion the margin/padding it bakes would never reach
+         `marginStyles`/`paddingStyles`, which read `stylingBoxJson`. */
+      .add<IEntityReferenceControlProps>(13, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
   linkToModelMetadata: (model, propMetadata): IEntityReferenceControlProps => {
     return {
       ...model,
