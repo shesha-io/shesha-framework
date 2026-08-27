@@ -138,7 +138,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
       ${firstSet(borderBottomColor, borderColor)};
     border-top: ${firstSet(borderTopWidth, borderWidth)} ${firstSet(borderTopStyle, borderStyle)} ${firstSet(borderTopColor, borderColor)};
     ${borderRadiusCss}
-    box-shadow: ${boxShadow};
+    ${isDefined(boxShadow) ? `box-shadow: ${boxShadow};` : ''}
   `;
 
   /* The empty/upload tile takes the font family only — never colour, size, weight or alignment,
@@ -186,12 +186,12 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
          overlaps sibling fields. */
       display: block;
       ${styleProvided ? `
-      height: ${layout ? (height ?? '54px') : '100%'} !important;
-      width: ${layout ? (width ?? '54px') : '100%'} !important;
-      max-height: ${layout ? (maxHeight ?? 'auto') : '100%'} !important;
-      min-height: ${layout ? (minHeight ?? 'auto') : '100%'} !important;
-      max-width: ${layout ? (maxWidth ?? 'auto') : '100%'} !important;
-      min-width: ${layout ? (minWidth ?? 'auto') : '100%'} !important;
+      height: ${layout ? firstSet(height, '54px') : '100%'} !important;
+      width: ${layout ? firstSet(width, '54px') : '100%'} !important;
+      max-height: ${layout ? firstSet(maxHeight, 'auto') : '100%'} !important;
+      min-height: ${layout ? firstSet(minHeight, 'auto') : '100%'} !important;
+      max-width: ${layout ? firstSet(maxWidth, 'auto') : '100%'} !important;
+      min-width: ${layout ? firstSet(minWidth, 'auto') : '100%'} !important;
       ` : `
       /* The component class sizes the tile. The container wraps the tile *and* the single-line file
          name below it, so it takes the tile width (which is what the name ellipsises against) while
@@ -245,7 +245,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
            the component class supplies the appearance and dimensions, this hook emits neither, so
            the class is not outranked here. */
         ${styleProvided ? `
-        background: ${backgroundImage ?? backgroundColor ?? background};
+        background: ${firstSet(backgroundImage, backgroundColor, background)};
         width: 100% !important;
         height: 100% !important;
         ` : ''}
@@ -470,7 +470,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
          component class supplies them, this hook emits nothing here so the class is not outranked by
          these !important declarations. */
       ${styleProvided ? `
-      background: ${backgroundImage ?? backgroundColor ?? background};
+      background: ${firstSet(backgroundImage, backgroundColor, background)};
       width: var(--thumbnail-width, ${firstSet(width, '54px')}) !important;
       height: var(--thumbnail-height, ${firstSet(height, '54px')}) !important;
       ` : ''}

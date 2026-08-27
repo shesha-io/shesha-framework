@@ -2,7 +2,7 @@ import { INestedStyleValue, IStyleValue } from "@/providers/form/models";
 import { IAttachmentsEditorDeviceStyles } from "./interfaces";
 
 /** Margin/padding slot shared by every default style set below. */
-const emptyStyleBox = (): IStyleValue['stylingBoxJson'] => ({
+export const emptyStyleBox = (): IStyleValue['stylingBoxJson'] => ({
   _type: 'styleBox',
   paddingTop: 0,
   paddingRight: 0,
