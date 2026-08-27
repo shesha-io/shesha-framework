@@ -10,7 +10,7 @@ const entityFilterVisibleJs = "return getSettingValue(data?.dataSourceType) === 
 const customValueFormatVisibleJs = "return getSettingValue(data?.valueFormat) === 'custom';";
 const simpleValueFormatVisibleJs = "return getSettingValue(data?.valueFormat) === 'simple';";
 const keyPropNameVisibleJs = "return getSettingValue(data?.valueFormat) !== 'entityReference';";
-const quickviewVisibleJs = "return getSettingValue(data?.quickviewEnabled) === true && getSettingValue(data?.dataSourceType) !== 'url';";
+const quickviewVisibleJs = "return getSettingValue(data?.quickviewEnabled) === true;";
 
 /* Value Format offers Entity reference only for an entities list; a URL source has no entity to
    reference. An already-saved `entityReference` is corrected by the Data Source Type handler
@@ -112,7 +112,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   .addSettingsInput({
                     inputType: 'labelValueEditor', propertyName: 'queryParams', label: 'Query Param',
                     labelName: 'param', labelTitle: 'Param', valueName: 'value', valueTitle: 'Value',
-                    mode: 'dialog', jsSetting: true, version: 2, visibleJs: urlVisibleJs, valueEditor: 'expression',
+                    mode: 'dialog', jsSetting: true, version: 2, visibleJs: urlVisibleJs,
                   })
                   .addSettingsInput({ inputType: 'entityTypeAutocomplete', propertyName: 'entityType', label: 'Entity Type', labelAlign: 'right', jsSetting: true, visibleJs: entitiesListVisibleJs, onChangeSetting: onEntityTypeChange })
                   .addSettingsInput({
@@ -196,7 +196,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                     visibleJs: simpleValueFormatVisibleJs,
                   }))
                 .stdCollapsiblePanel('Quickview', (fb) => fb
-                  .addSettingsInput({ inputType: 'switch', propertyName: 'quickviewEnabled', label: 'Use Quickview', size: 'small', layout: 'horizontal', jsSetting: true, visibleJs: entitiesListVisibleJs })
+                  .addSettingsInput({ inputType: 'switch', propertyName: 'quickviewEnabled', label: 'Use Quickview', size: 'small', layout: 'horizontal', jsSetting: true })
                   .addSettingsInput({ inputType: 'formAutocomplete', propertyName: 'quickviewFormPath', label: 'Form Path', size: 'small', validate: { required: false }, visibleJs: quickviewVisibleJs })
                   .addSettingsInput({ inputType: 'endpointsAutocomplete', propertyName: 'quickviewGetEntityUrl', label: 'Get Entity URL', size: 'small', version: 5, visibleJs: quickviewVisibleJs })
                   .addSettingsInput({
@@ -210,7 +210,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                     inputType: 'textField', propertyName: 'quickviewWidth', label: 'Width', size: 'small', icon: 'widthIcon', version: 5,
                     tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
                     visibleJs: quickviewVisibleJs,
-                  }))
+                  }), false, entitiesListVisibleJs)
                 .stdCollapsiblePanel('Validations', (fb) => fb
                   .addSettingsInput({ inputType: 'switch', propertyName: 'validate.required', label: 'Required', size: 'small', layout: 'horizontal', jsSetting: true })
                   .addSettingsInputRow({
