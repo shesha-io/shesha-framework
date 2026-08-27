@@ -67,7 +67,7 @@ const RefListStatusComponent: RefListStatusComponentDefinition = {
     }, [apiContext, componentApi, itemText, model.componentName, model.id]);
     useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
-    const { styles } = useStyles(model);
+    const { styles, cx } = useStyles(model);
 
     if (!isDefined(referenceListId)) {
       return formMode === 'designer'
@@ -91,7 +91,7 @@ const RefListStatusComponent: RefListStatusComponentDefinition = {
           // blocks pointer interaction; the two are independent settings of Interaction Mode.
           return (
             <div
-              className={styles.refListStatus}
+              className={cx(styles.refListStatus, formMode === 'designer' ? styles.designerFootprint : undefined)}
               {...getComponentEvents<number>(model, ALL_INPUT_EVENTS_WITHOUT_CHANGE, ctx, value, DataTypes.number)}
             >
               <RefListStatus
