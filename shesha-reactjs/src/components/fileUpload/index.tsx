@@ -10,7 +10,7 @@ import { App, Button, Space, Upload, UploadFile } from 'antd';
 import { Image } from 'antd/lib';
 import { UploadProps } from 'antd/lib/upload/Upload';
 import filesize from 'filesize';
-import { CSSProperties, FC, ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import { FC, ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import * as React from 'react';
 import { ListType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { getFileIcon, isImageType } from '@/icons/fileIcons';
@@ -40,7 +40,6 @@ export interface IFileUploadProps {
   thumbnailHeight?: string | undefined;
   borderRadius?: number | undefined;
   hideFileName?: boolean | undefined;
-  styles?: CSSProperties | undefined;
   type?: string | undefined;
   /**
    * Greys the uploader out and takes it out of the tab order, while still showing the attached file.
@@ -70,7 +69,6 @@ export const FileUpload: FC<IFileUploadProps> = ({
   thumbnailWidth,
   thumbnailHeight,
   hideFileName = false,
-  styles: stylesProp,
   disabled = false,
   popupClassName,
   modalClassName,
@@ -85,7 +83,6 @@ export const FileUpload: FC<IFileUploadProps> = ({
   const uploadFileModel = useMemo<UploadFile | undefined>(() => fileInfo ? storedFileModel2UploadFile(fileInfo) : undefined, [fileInfo]);
 
   const { styles } = useStyles({
-    style: stylesProp,
     model: {
       layout: listType === 'thumbnail' && !isDragger,
       isDragger,
@@ -462,7 +459,6 @@ export const FileUpload: FC<IFileUploadProps> = ({
     multiple: false,
     fileList: isDefined(uploadFileModel) && fileInfo?.status !== 'error' ? [uploadFileModel] : [],
     maxCount: 1,
-    // ...(!isDragger && listType !== 'thumbnail' && isDefined(stylesProp) ? { style: stylesProp } : {}),
     customRequest: onCustomRequest,
     beforeUpload: (file) => {
       if (!isFileTypeAllowed(file.name, allowedFileTypes)) {

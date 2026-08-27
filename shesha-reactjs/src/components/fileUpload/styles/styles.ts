@@ -12,6 +12,24 @@ interface ModelProps {
 }
 
 interface FileUploadStylesParams {
+  /**
+   * TODO (next version): retire this parameter and the CSSProperties-driven styling it feeds.
+   *
+   * This is the legacy path: the caller computed a complete `CSSProperties` object and this hook
+   * destructured ~30 individual box/text properties out of it. The component standard replaces that
+   * with customizable properties — the caller now composes an emotion class from the Appearance
+   * model (border/background/shadow/font/dimensions) and lets unset properties cascade, rather than
+   * stamping a full style object onto the element.
+   *
+   * `FileUpload` no longer passes anything here, so `style` is always `undefined` and every value
+   * derived from it falls back to its default. `styleProvided` is therefore always false, which is
+   * what keeps the legacy border/radius/text block from competing with the component class.
+   *
+   * Deliberately NOT wired to the designer's `model.styleCss`: that would flip `styleProvided` true
+   * and re-activate this block on top of the configured Appearance panels. The Custom style already
+   * reaches the component two ways — as an inline style on the wrapper (box half) and merged into
+   * `fontStyles` in the component class (text half).
+   */
   style?: CSSProperties | undefined;
   model: ModelProps;
 }
