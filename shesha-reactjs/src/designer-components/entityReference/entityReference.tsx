@@ -113,8 +113,17 @@ const EntityReferenceComponent: EntityReferenceComponentDefinition = {
   Factory: ({ model }) => {
     const containerRef = useRef<HTMLSpanElement>(null);
 
+    /* The bound value only exists inside `ConfigurableFormItem`'s render prop, below, while the API
+       is registered out here. Keep the latest id in a ref that the render prop writes, so the
+       `entityId` getter reads the current value without the registration having to re-run on every
+       change — the same live-ref approach `EventsAndApiValueProcessor` uses for its own `value`.
+       (`useLiveRef` is not usable here: it derives `.current` from its argument, which this scope
+       does not have.) */
+    const entityIdRef = useRef<string | undefined>(undefined);
+
     useComponentApi<EntityReferenceApi>({ model, typeName: 'EntityReferenceApi',
       properties: [
+        { name: 'entityId', getter: () => entityIdRef.current },
         { name: 'entityReferenceType', getter: () => model.entityReferenceType },
       ],
       // `focus` needs a ref to the rendered node, so it is implemented here rather than inherited.
@@ -126,6 +135,10 @@ const EntityReferenceComponent: EntityReferenceComponentDefinition = {
     return (
       <ConfigurableFormItem<EntityReferenceValue> model={model}>
         {(value, onChange, _, ctx) => {
+          /* Contract is `string | undefined`; the shared normalizer returns `null` for "no value",
+             so coerce at this boundary rather than changing the normalizer the rendering path uses. */
+          entityIdRef.current = normalizeEntityReferenceValue(value) ?? undefined;
+
           return (
             <span
               ref={containerRef}
