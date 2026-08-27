@@ -3,11 +3,11 @@ import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { RefListStatus } from '@/components/refListStatus/index';
 import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateReadOnly, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
+
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles, useForm } from '@/providers';
-import { useComponentApi } from '@/providers/componentApi/provider';
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { useReferenceListItem } from '@/providers/referenceListDispatcher';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { isDefined } from '@/utils/nullables';
@@ -80,7 +80,7 @@ const RefListStatusComponent: RefListStatusComponentDefinition = {
     const [itemText, setItemText] = useState<string | undefined>(undefined);
     const onItemTextChange = useCallback((value: string | null | undefined) => setItemText(value ?? undefined), []);
 
-    const componentApi = useComponentApi();
+    const componentApi = useComponentApiProvider();
 
     useEffect(() => {
       componentApi?.updateApi<RefListStatusApi>({
@@ -201,7 +201,7 @@ const RefListStatusComponent: RefListStatusComponentDefinition = {
     .add<IRefListStatusComponentProps>(7, (prev) => migrateReadOnly(prev))
     .add<IRefListStatusComponentProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   linkToModelMetadata: (model, metadata): IRefListStatusComponentProps => {
     return {
       ...model,

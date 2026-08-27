@@ -1,54 +1,63 @@
 import { CSSProperties } from 'react';
-import { IFormComponentStyles } from '@/providers';
-import { defaultStyles } from '@/designer-components/attachmentsEditor/utils';
+import { isDefined } from '@/utils/nullables';
+import { thumbnailDefaultStyles } from '@/designer-components/attachmentsEditor/utils';
+
+/** The thumbnail box appearance, already resolved to CSS by `useFormComponentStyles`. */
+export interface IThumbnailBoxStyles {
+  dimensionsStyles?: CSSProperties | undefined;
+  borderStyles?: CSSProperties | undefined;
+  backgroundStyles?: CSSProperties | undefined;
+  shadowStyles?: CSSProperties | undefined;
+}
 
 export interface IFileUploadStyleOptions {
   enableStyleOnReadonly?: boolean | undefined;
   isReadOnly?: boolean | undefined;
   listType?: 'text' | 'thumbnail' | undefined;
-  allStyles?: IFormComponentStyles | undefined;
+  /** Resolved styles for the Thumbnail set — the file box appearance. */
+  thumbnail?: IThumbnailBoxStyles | undefined;
 }
 
 /**
- * Calculate the final styles for file upload components based on read-only state and list type.
- * Shared between FileUpload designer component and StoredFilesRendererBase.
+ * Final CSS for the file box (the thumbnail tile, or the row in text mode).
+ *
+ * Shared between the FileUpload designer component and StoredFilesRendererBase. It works from the
+ * Thumbnail style set rather than the legacy `allStyles`, which refactored components no longer
+ * produce — reading `allStyles` here left the box unstyled for every refactored caller.
  */
 export const calculateFileUploadStyles = (options: IFileUploadStyleOptions): CSSProperties => {
   const {
     enableStyleOnReadonly = true,
     isReadOnly = false,
     listType = 'text',
-    allStyles,
+    thumbnail,
   } = options;
 
-  const isReadonlyOrDisabled = isReadOnly;
-  const isReadonlyWithoutStyle = !enableStyleOnReadonly && isReadonlyOrDisabled;
+  const dimensions = thumbnail?.dimensionsStyles ?? {};
+  const box: CSSProperties = {
+    ...dimensions,
+    ...(thumbnail?.borderStyles ?? {}),
+    ...(thumbnail?.backgroundStyles ?? {}),
+    ...(thumbnail?.shadowStyles ?? {}),
+  };
 
-  if (isReadonlyWithoutStyle) {
-    const isThumbnail = listType === 'thumbnail';
-
-    // In thumbnail mode, the configured background/border/shadow describe the thumbnail tile
-    // and must render identically in read-only and edit mode, so keep the appearance styles
-    // even when styling-on-readonly is disabled (only the interactive upload controls are hidden).
-    if (isThumbnail) {
-      return {
-        ...(allStyles?.dimensionsStyles ?? {}),
-        ...(allStyles?.fontStyles ?? {}),
-        ...(allStyles?.borderStyles ?? {}),
-        ...(allStyles?.backgroundStyles ?? {}),
-        ...(allStyles?.shadowStyles ?? {}),
-      };
-    }
-
-    // In text mode, fall back to the plain default border
-    const defaultBorder = defaultStyles().border?.border?.all ?? {};
-    return {
-      ...(allStyles?.dimensionsStyles ?? {}),
-      ...(allStyles?.fontStyles ?? {}),
-      border: `${defaultBorder.width} ${defaultBorder.style} ${defaultBorder.color}`,
-    };
+  // In thumbnail mode the configured box appearance must render identically in read-only and edit
+  // mode — only the interactive upload controls are hidden — so it survives this branch too.
+  if (!enableStyleOnReadonly && isReadOnly && listType !== 'thumbnail') {
+    // Text mode falls back to the plain default border. This is the *thumbnail* default: the root
+    // style set describes the scrolling container, whose default border is deliberately none.
+    const defaultBorder = thumbnailDefaultStyles().border?.border?.all;
+    /* Every part of the shorthand is optional, and a missing one would produce the literal
+       "undefined undefined undefined" rather than a border. Emit it only when all three are set,
+       and otherwise leave the border alone. */
+    const hasAllParts = isDefined(defaultBorder) &&
+      isDefined(defaultBorder.width) &&
+      isDefined(defaultBorder.style) &&
+      isDefined(defaultBorder.color);
+    return hasAllParts
+      ? { ...dimensions, border: `${defaultBorder.width} ${defaultBorder.style} ${defaultBorder.color}` }
+      : { ...dimensions };
   }
 
-  // When styles are enabled on read-only, use the full style
-  return allStyles?.fullStyle ?? {};
+  return box;
 };

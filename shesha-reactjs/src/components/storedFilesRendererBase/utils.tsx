@@ -15,6 +15,11 @@ import { HttpClientApi } from '@/publicJsApis/apis/httpClient';
 export interface IFileVersionsButtonProps {
   fileId: string;
   onDownload: (versionNo: number, fileName: string) => void;
+  /**
+   * Class applied to the history popover. antd portals the popover to the body, so it cannot be
+   * reached by a descendant selector from the list and has to be given its class here.
+   */
+  popoverClassName?: string | undefined;
 }
 
 export interface IExtraContentProps {
@@ -121,7 +126,7 @@ export const fetchStoredFile = async (
   return { url: objectUrl, revoke };
 };
 
-export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDownload }) => {
+export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDownload, popoverClassName }) => {
   const {
     loading,
     refetch: fetchHistory,
@@ -166,7 +171,13 @@ export const FileVersionsButton: FC<IFileVersionsButtonProps> = ({ fileId, onDow
   );
 
   return (
-    <Popover content={content} title="History" trigger="hover" onOpenChange={handleVisibleChange}>
+    <Popover
+      content={content}
+      title="History"
+      trigger="hover"
+      onOpenChange={handleVisibleChange}
+      {...(isNotNullOrWhiteSpace(popoverClassName) ? { classNames: { root: popoverClassName } } : {})}
+    >
       <Button size="small" icon={<HistoryOutlined />} title="View history" />
     </Popover>
   );

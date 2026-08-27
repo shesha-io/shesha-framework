@@ -3,7 +3,7 @@ import { migrateCustomFunctions, migratePropertyName } from '@/designer-componen
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { IToolboxComponent } from '@/interfaces';
 import { IInputStyles } from '@/providers';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { removeUndefinedProps } from '@/utils/object';
 import { SwapOutlined } from '@ant-design/icons';
 import { CSSProperties } from 'react';
@@ -107,7 +107,7 @@ const DrawerComponent: IToolboxComponent<IDrawerProps> = {
     };
     return customProps;
   },
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
 };
 
 export default DrawerComponent;

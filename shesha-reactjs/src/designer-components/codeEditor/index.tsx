@@ -2,7 +2,7 @@ import { FormMarkup } from '@/providers/form/models';
 import { CodeSandboxOutlined } from '@ant-design/icons';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { CodeEditor } from './codeEditor';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { CodeEditorComponentDefinition, ICodeEditorComponentProps, ICodeEditorProps } from './interfaces';
@@ -67,7 +67,7 @@ const CodeEditorComponent: CodeEditorComponentDefinition = {
     return textAreaModel;
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+
 };
 
 export default CodeEditorComponent;

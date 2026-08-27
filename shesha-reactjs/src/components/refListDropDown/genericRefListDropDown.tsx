@@ -168,7 +168,7 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
         ref={selectRef}
         {...commonSelectProps}
         popupMatchSelectWidth={false}
-        style={{ width: 'max-content', height: 'max-content' }}
+        {...(style ? { style } : {})}
         placeholder={placeholder}
         labelRender={(props) => {
           const option = options.find((o) => o.value === props.value);

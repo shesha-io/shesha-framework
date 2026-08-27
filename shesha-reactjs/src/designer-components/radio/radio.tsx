@@ -7,7 +7,7 @@ import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers/form/models';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
-import { executeScriptSync, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { executeScriptSync } from '@/providers/form/utils';
 import {
   migrateCustomFunctions,
   migrateHiddenToVisible,
@@ -27,7 +27,7 @@ import { getStringEnumOrDefault } from '@/utils/object';
 import { getNumberOrUndefined } from '@/utils/string';
 import { defaultStyles } from './utils';
 import { useStyles } from './styles';
-import { useComponentApi } from '@/providers/componentApi/provider';
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { RadioApi } from '@/componentsApi/componentApi';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { getComponentEvents } from '../_common/events';
@@ -61,7 +61,7 @@ const RadioComponent: RadioComponentDefinition = {
 
     const options = useRadioOptions({ ...model, dataSourceUrl: calculatedModel.dataSourceUrl });
 
-    const componentApi = useComponentApi();
+    const componentApi = useComponentApiProvider();
     const groupRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
       componentApi?.updateApi<RadioApi>({
@@ -131,7 +131,7 @@ const RadioComponent: RadioComponentDefinition = {
   },
 
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   validateModel: (model, addModelError) => {
     const dataSourceType = model.dataSourceType ?? 'values';
     if (dataSourceType === 'referenceList' && !isDefined(model.referenceListId))

@@ -5,7 +5,7 @@ import { ConfigurableActionConfiguratorComponentDefinition, IConfigurableActionC
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { ThunderboltOutlined } from '@ant-design/icons';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 const ConfigurableActionConfiguratorComponent: ConfigurableActionConfiguratorComponentDefinition = {
@@ -28,7 +28,7 @@ const ConfigurableActionConfiguratorComponent: ConfigurableActionConfiguratorCom
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   migrator: (m) => m
     .add<IConfigurableActionConfiguratorComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IConfigurableActionConfiguratorComponentProps>(1, (prev) => migrateVisibility(prev)),

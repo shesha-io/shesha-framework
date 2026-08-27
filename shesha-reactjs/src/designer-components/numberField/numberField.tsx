@@ -1,10 +1,10 @@
 import { NumberOutlined } from '@ant-design/icons';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { DataTypes, NumberFormats } from '@/interfaces/dataTypes';
 import { IComponentValidationRules, IInputStyles, useMetadataOrUndefined } from '@/providers';
-import { executeScriptSync, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { executeScriptSync } from '@/providers/form/utils';
 import { INumberFieldComponentProps, INumberFieldComponentPropsV1, NumberFieldComponentDefinition } from './interfaces';
 import { migratePropertyName, migrateCustomFunctions, migrateReadOnly, migrateHiddenToVisible, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { numberToFormattedString } from '@/utils/string';
@@ -20,14 +20,11 @@ import { useStyles } from './styles';
 import { InputNumber, InputNumberProps } from 'antd';
 import { ShaIcon } from '@/components/shaIcon';
 import { isPropertySettings } from '../_settings/utils/utils';
-import { useComponentApi } from '@/providers/componentApi/provider';
 import { NumberFieldApi } from '../../componentsApi/componentApi';
-import { useEffectOnce } from '@/hooks/useEffectOnce';
-
-import apiCode from "../../componentsApi/componentApi.ts?raw";
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '../_common/events';
+import { useComponentApi } from '@/providers/componentApi/hooks';
 
 const suffixStyle = { color: 'rgba(0,0,0,.45)' };
 
@@ -57,23 +54,15 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
   },
   Factory: ({ model, calculatedModel, apiContext }) => {
     const [, forceRefresh] = useState({});
-
-    const componentApi = useComponentApi();
     const inputRef = useRef<InputNumberRef>(null);
-    useEffect(() => {
-      componentApi?.updateApi<NumberFieldApi>({
-        id: model.id,
-        componentName: model.componentName ?? "",
-        level: 3,
-        typeDefinition: { typeName: 'NumberFieldApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
-        properties: [
-          { name: 'min', getter: () => model.validate?.minValue, setter: (value) => apiContext?.updateApiModel({ validate: { minValue: value } }) },
-          { name: 'max', getter: () => model.validate?.maxValue, setter: (value) => apiContext?.updateApiModel({ validate: { maxValue: value } }) },
-        ],
-        api: { focus: () => inputRef.current?.focus() },
-      });
-    }, [apiContext, componentApi, model.componentName, model.id, model.validate?.minValue, model.validate?.maxValue]);
-    useEffectOnce(() => () => componentApi?.removeApi(model.id));
+
+    useComponentApi<NumberFieldApi>({ model, typeName: 'NumberFieldApi',
+      properties: [
+        { name: 'min', getter: () => model.validate?.minValue, setter: (value) => apiContext?.updateApiModel({ validate: { minValue: value } }) },
+        { name: 'max', getter: () => model.validate?.maxValue, setter: (value) => apiContext?.updateApiModel({ validate: { maxValue: value } }) },
+      ],
+      api: { focus: () => inputRef.current?.focus() },
+    }, [model.validate?.minValue, model.validate?.maxValue]);
 
     const { styles } = useStyles(model);
 
@@ -243,7 +232,6 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
       })
       .add<INumberFieldComponentProps>(7, (prev) => migratePermissionsToVisiblePermissions(prev)),
 
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
   linkToModelMetadata: (model, metadata): INumberFieldComponentProps => {
     const numFormat = isNumberFormatting(metadata.formatting) ? metadata.formatting as INumberFormatting : null;
     const decimalFormat = isDecimalFormatting(metadata.formatting) ? metadata.formatting as IDecimalFormatting : null;

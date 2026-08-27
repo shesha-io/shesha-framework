@@ -10,7 +10,8 @@
         "vitest",
         "run",
         "${file}",
-        "--reporter=verbose"
+        "--reporter=verbose",
+        "--test-timeout=0"
       ],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"

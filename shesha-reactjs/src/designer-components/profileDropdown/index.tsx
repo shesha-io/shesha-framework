@@ -8,7 +8,7 @@ import {
   isGroup,
   isItem,
 } from '@/providers/buttonGroupConfigurator/models';
-import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { getStyle } from '@/providers/form/utils';
 import { DownOutlined, LoginOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Dropdown, Popover } from 'antd';
 import { CSSProperties, useMemo, useState } from 'react';
@@ -214,7 +214,7 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
       }
     ))
     .add<IProfileDropdown>(2, (prev) => ({ ...prev, items: migrateButtonGroupDynamicItems(prev.items) })),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
 };
 
 export default ProfileDropdown;

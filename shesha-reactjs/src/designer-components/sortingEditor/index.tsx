@@ -3,7 +3,7 @@ import { IToolboxComponent } from '@/interfaces';
 import { GroupOutlined } from '@ant-design/icons';
 import { ConfigurableFormItem } from '@/components/index';
 import settingsFormJson from './settingsForm.json';
-import { validateConfigurableComponentSettings, evaluateString } from '@/providers/form/utils';
+import { evaluateString } from '@/providers/form/utils';
 import { SortingEditor } from '@/components/dataTable/sortingConfigurator/index';
 import { ConditionalMetadataProvider } from '@/providers/index';
 import { migrateReadOnly } from '../_common-migrations/migrateSettings';
@@ -40,7 +40,7 @@ export const SortingEditorComponent: IToolboxComponent<ISortingEditorComponentPr
     );
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+
   migrator: (m) => m
     .add<ISortingEditorComponentProps>(0, (prev) => ({ ...prev, modelType: '' }))
     .add<ISortingEditorComponentProps>(1, (prev) => migrateReadOnly(prev)),

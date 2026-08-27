@@ -39,6 +39,10 @@ export interface IComponentApi {
   createOrUpdateApiProperty: CreateApiPropertyFunc;
   refreshComponents: () => void;
   registerNestedApi: (api: IComponentApi) => void;
+  unregisterNestedApi: (api: IComponentApi) => void;
+  refreshApi: (id?: string[] | undefined) => void;
+  updateParent: (api: IComponentApi | undefined) => void;
+  dispose: () => void;
 }
 
 export type useComponentApiFunc = () => IComponentApi | undefined;

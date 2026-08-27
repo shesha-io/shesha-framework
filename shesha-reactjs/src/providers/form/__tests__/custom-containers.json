@@ -106,7 +106,7 @@
                                         "position": "center",
                                         "gradient": {
                                             "direction": "to right",
-                                            "colors": {}
+                                            "colors": []
                                         },
                                         "url": ""
                                     },
@@ -183,7 +183,7 @@
                                         "position": "center",
                                         "gradient": {
                                             "direction": "to right",
-                                            "colors": {}
+                                            "colors": []
                                         },
                                         "url": ""
                                     },
@@ -260,7 +260,7 @@
                                         "position": "center",
                                         "gradient": {
                                             "direction": "to right",
-                                            "colors": {}
+                                            "colors": []
                                         },
                                         "url": ""
                                     },
@@ -347,7 +347,7 @@
                     "position": "center",
                     "gradient": {
                         "direction": "to right",
-                        "colors": {}
+                        "colors": []
                     },
                     "url": ""
                 },
@@ -404,7 +404,7 @@
                     "position": "center",
                     "gradient": {
                         "direction": "to right",
-                        "colors": {}
+                        "colors": []
                     },
                     "url": ""
                 },
@@ -461,7 +461,7 @@
                     "position": "center",
                     "gradient": {
                         "direction": "to right",
-                        "colors": {}
+                        "colors": []
                     },
                     "url": ""
                 },

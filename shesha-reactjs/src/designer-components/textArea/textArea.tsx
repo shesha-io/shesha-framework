@@ -4,7 +4,7 @@ import { Input } from 'antd';
 import { TextAreaProps, TextAreaRef } from 'antd/lib/input/TextArea';
 import { FocusEventHandler, ReactNode, useEffect, useRef } from 'react';
 import * as React from 'react';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { ITextAreaComponentProps, TextAreaComponentDefinition } from './interfaces';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
@@ -25,7 +25,7 @@ import { defaultStyles } from './utils';
 import { useStyles } from './styles';
 import { getOverflowStyle } from '../_settings/utils/overflow/util';
 import { ALL_INPUT_EVENTS_WITHOUT_CHANGE, getComponentEvents } from '../_common/events';
-import { useComponentApi } from '@/providers/componentApi/provider';
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { TextAreaApi } from '@/componentsApi/componentApi';
 import { isDefined } from '@/utils/nullables';
 
@@ -65,7 +65,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string && dataFormat === StringFormats.multiline,
   Factory: ({ model }) => {
-    const componentApi = useComponentApi();
+    const componentApi = useComponentApiProvider();
     const inputRef = useRef<TextAreaRef>(null);
     useEffect(() => {
       const apiId = model.id;
@@ -194,7 +194,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
     return textAreaModel;
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   getDefaultStyles: () => defaultStyles(),
   migrator: (m) =>
     m

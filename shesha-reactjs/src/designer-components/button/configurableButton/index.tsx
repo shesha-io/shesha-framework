@@ -12,12 +12,14 @@ import { useStyles } from './style';
 import { DataContextTopLevels } from '@/providers/dataContextManager';
 import { isNavigationActionConfiguration, useShaRouting } from '@/providers/shaRouting';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { useDebouncedCallback } from 'use-debounce';
 
 export interface IConfigurableButtonProps extends Omit<IButtonItem, 'itemSubType'> {
   styleCss?: CSSProperties | undefined;
   ref?: React.Ref<HTMLAnchorElement | HTMLButtonElement> | undefined;
   className?: string | undefined;
   additionalDomProperties?: Record<string, unknown> | undefined;
+  onClick?: React.MouseEventHandler<HTMLElement> | undefined;
 }
 
 export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
@@ -27,8 +29,9 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
   const dynamicContext = useActionDynamicContext(actionConfiguration);
   const evaluationContext = useAvailableConstantsData({ topContextId: DataContextTopLevels.Full }, { ...dynamicContext, dynamicItem });
 
+  const [clickDisabled, setClickDisabled] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [isModal, setModal] = useState(false);
+  const debouncedLoading = useDebouncedCallback(setLoading, 100);
 
   const navigationUrl = useAsyncMemo(async () => {
     if (!isNavigationActionConfiguration(actionConfiguration) || !actionConfiguration.actionArguments)
@@ -43,9 +46,10 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
   const { styles } = useStyles({ model: props, isSameUrl, isGhostType });
 
   const { buttonLoading, buttonDisabled } = {
-    buttonLoading: loading && !isModal,
-    buttonDisabled: props.disabled === true || (loading && isModal),
+    buttonLoading: loading,
+    buttonDisabled: props.disabled === true || clickDisabled,
   };
+
 
   const onButtonClick = (event: React.MouseEvent<HTMLElement, MouseEvent>): void => {
     event.preventDefault();
@@ -55,22 +59,29 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
       return;
     }
 
+    if (props.onClick) {
+      props.onClick(event);
+      return;
+    }
+
     try {
       if (actionConfiguration) {
-        if (['Show Dialog', 'Show Confirmation Dialog'].includes(actionConfiguration.actionName)) {
-          setModal(true);
-        }
-        setLoading(true);
+        // Show loading indicator only if action is not related to Modal Dialog
+        if (!['Show Dialog', 'Show Confirmation Dialog'].includes(actionConfiguration.actionName))
+          debouncedLoading(true);
+        setClickDisabled(true);
         void executeAction({
           actionConfiguration: { ...actionConfiguration },
           argumentsEvaluationContext: evaluationContext,
         })
           .finally(() => {
-            setLoading(false);
+            setClickDisabled(false);
+            debouncedLoading(false);
           });
-      } else console.error('Action is not configured');
+      } else console.warn('Action is not configured');
     } catch (error) {
-      setLoading(false);
+      setClickDisabled(false);
+      debouncedLoading(false);
       console.error('Validation failed:', error);
     }
   };

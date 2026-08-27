@@ -7,7 +7,7 @@ import { IEntityReferenceDto, IStoredFilter } from '@/interfaces';
 import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles, useMetadataDispatcher } from '@/providers';
 import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
-import { executeExpression, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { executeExpression } from '@/providers/form/utils';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateReadOnly, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
@@ -28,7 +28,7 @@ import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nu
 import { isEntityReferenceId } from '@/utils';
 import { getIdOrUndefined } from '@/utils/entity';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
-import { useComponentApi } from '@/providers/componentApi/provider';
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents, StandardEventHandlerWithoutChange } from '../_common/events';
 
@@ -64,7 +64,7 @@ const EntityPickerComponent: EntityPickerComponentDefinition = {
   Factory: ({ model }) => {
     const { getMetadata } = useMetadataDispatcher();
 
-    const componentApi = useComponentApi();
+    const componentApi = useComponentApiProvider();
     const pickerRef = useRef<EntityPickerRef>(null);
     useEffect(() => {
       componentApi?.updateApi<EntityPickerApi>({
@@ -274,7 +274,7 @@ const EntityPickerComponent: EntityPickerComponentDefinition = {
     })
     .add<IEntityPickerComponentProps>(14, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   getDefaultStyles: () => defaultStyles(),
   previewConfiguration: {
     type: 'entityPicker',
