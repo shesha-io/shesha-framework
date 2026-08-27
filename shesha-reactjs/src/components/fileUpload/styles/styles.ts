@@ -1,4 +1,8 @@
 import { createStyles } from '@/styles';
+import { addPx } from '@/utils/style';
+import { CSSProperties } from 'react';
+import { CSSInterpolation } from '@emotion/serialize';
+import { isDefined } from '@/utils/nullables';
 
 interface ModelProps {
   layout?: boolean | undefined;
@@ -8,8 +12,21 @@ interface ModelProps {
 }
 
 interface FileUploadStylesParams {
+  style?: CSSProperties | undefined;
   model: ModelProps;
 }
+
+type TextAlignType = 'left' | 'right' | 'center' | 'justify';
+
+/**
+ * Converts React CSSProperties to Emotion CSSInterpolation.
+ * Spreading CSSProperties into a new object is safe at runtime and produces
+ * a shape compatible with Emotion's CSSObject. The type assertion is necessary
+ * because CSSInterpolation is a union type that doesn't directly accept the spread.
+ */
+const toCssInterpolation = (style: CSSProperties | undefined): CSSInterpolation => {
+  return (style ? { ...style } : {}) as CSSInterpolation;
+};
 
 export type FileUploadStylesResponse = {
   shaStoredFilesRenderer?: string;
@@ -24,22 +41,71 @@ export type FileUploadStylesResponse = {
   styledFileControls?: string;
 };
 
-export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesResponse>(({ token, css, cx, prefixCls }, { model }) => {
-  /* The component class (designer-components/fileUpload/styles.ts) owns the configurable
-     appearance — border, background, shadow, font and dimensions all come from the Appearance
-     model there. What is left here is the structural CSS that makes antd's uploader usable, plus
-     the few hardcoded fallbacks below that are not configurable. */
-  const BORDER_RADIUS = '8px';
-  const FONT_FAMILY = 'Segoe UI';
-  const FONT_SIZE = '25px';
-  const DRAGGER_MIN_HEIGHT = '120px';
+export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesResponse>(({ token, css, cx, prefixCls }, { style, model }) => {
+  const {
+    background = 'transparent',
+    backgroundImage,
+    borderRadius = '8px',
+    borderTopLeftRadius,
+    borderTopRightRadius,
+    borderBottomLeftRadius,
+    borderBottomRightRadius,
+    borderWidth = '0',
+    borderTopWidth,
+    width,
+    minWidth,
+    maxWidth,
+    borderBottomWidth,
+    borderLeftWidth,
+    borderLeftColor,
+    borderLeftStyle,
+    borderRightColor,
+    borderRightStyle,
+    borderColor = '#d9d9d9',
+    borderTopStyle,
+    borderTopColor,
+    boxShadow,
+    borderBottomColor,
+    borderBottomStyle,
+    borderRightWidth,
+    backgroundColor,
+    borderStyle = 'solid',
+    color,
+    fontFamily = 'Segoe UI',
+    fontSize = '25px',
+    fontWeight = '400',
+    height,
+    maxHeight,
+    minHeight,
+    textAlign = 'left',
+  } = style || {};
 
   const { layout: layoutProp, isDragger, hideFileName, listType } = model;
+  /**
+   * First of the candidates that is actually set. CSS values treat an empty string as "not set", so
+   * `??` is not enough here — but a bare `||` chain is an implicit truthiness test on a nullable
+   * string, which is exactly what strict-boolean-expressions flags. This states the intent once.
+   */
+  const firstSet = (...values: (string | number | undefined)[]): string =>
+    values.find((value) => isDefined(value) && String(value).trim() !== '')?.toString() ?? '';
   // Normalised once so the many CSS conditionals below are strict-boolean checks rather than
   // repeating `=== true` at every interpolation.
   const layout = layoutProp === true;
 
+  const styleProvided = isDefined(style) && Object.keys(style).length > 0;
+
   const isThumbnail = listType === 'thumbnail' && isDragger !== true;
+  const extraStyles = isThumbnail ? toCssInterpolation(style) : {};
+
+  const justifyContentMap: Record<TextAlignType, string> = {
+    left: 'flex-start',
+    right: 'flex-end',
+    center: 'center',
+    justify: 'space-between',
+  };
+
+  const textAlignValue = (typeof textAlign === 'string' ? textAlign : 'left') as TextAlignType;
+  const justifyContentValue = justifyContentMap[textAlignValue] || textAlignValue;
 
   const antUploadDragIcon = `${prefixCls}-upload-drag-icon`;
   const antUploadText = `${prefixCls}-upload-text`;
@@ -48,36 +114,92 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
   const storedFilesRendererBtnContainer = 'stored-files-renderer-btn-container';
   const storedFilesRendererNoFiles = 'stored-files-renderer-no-files';
 
-  /* antd's own radius vars are overridden so the uploader corners match the rest of the field.
-     Not configurable here: the component class applies the Appearance border radius on top. */
+  const normalizeRadius = (value: unknown): string => {
+    const scalar = typeof value === 'string' || typeof value === 'number'
+      ? value
+      : typeof borderRadius === 'string' || typeof borderRadius === 'number'
+        ? borderRadius
+        : undefined;
+    return addPx(scalar) ?? '0';
+  };
   const borderRadiusCss = `
-    border-top-left-radius: ${BORDER_RADIUS} !important;
-    border-top-right-radius: ${BORDER_RADIUS} !important;
-    border-bottom-right-radius: ${BORDER_RADIUS} !important;
-    border-bottom-left-radius: ${BORDER_RADIUS} !important;
+    border-top-left-radius: ${normalizeRadius(borderTopLeftRadius)} !important;
+    border-top-right-radius: ${normalizeRadius(borderTopRightRadius)} !important;
+    border-bottom-right-radius: ${normalizeRadius(borderBottomRightRadius)} !important;
+    border-bottom-left-radius: ${normalizeRadius(borderBottomLeftRadius)} !important;
+  `;
+
+  const commonBorderStyles = `
+    border: ${borderWidth} ${borderStyle} ${borderColor};
+    border-right: ${firstSet(borderRightWidth, borderWidth)} ${firstSet(borderRightStyle, borderStyle)}
+      ${firstSet(borderRightColor, borderColor)};
+    border-left: ${firstSet(borderLeftWidth, borderWidth)} ${firstSet(borderLeftStyle, borderStyle)} ${firstSet(borderLeftColor, borderColor)};
+    border-bottom: ${firstSet(borderBottomWidth, borderWidth)} ${firstSet(borderBottomStyle, borderStyle)}
+      ${firstSet(borderBottomColor, borderColor)};
+    border-top: ${firstSet(borderTopWidth, borderWidth)} ${firstSet(borderTopStyle, borderStyle)} ${firstSet(borderTopColor, borderColor)};
+    ${borderRadiusCss}
+    ${isDefined(boxShadow) ? `box-shadow: ${boxShadow};` : ''}
   `;
 
   /* The empty/upload tile takes the font family only — never colour, size, weight or alignment,
-     which would make it read as content, and never the box appearance. */
-  const uploadTileFontCss = isThumbnail ? `font-family: ${FONT_FAMILY};` : '';
+     which would make it read as content, and never the box appearance. `style` is the whole computed
+     style, so it is narrowed here rather than interpolated wholesale. */
+  const uploadTileFontCss = isThumbnail ? `font-family: ${fontFamily};` : '';
 
+  // Border/radius emitted only when the caller supplied a style; otherwise the component class owns
+  // the box appearance (see the note on styleProvided above).
+  const ownedBorderStyles = styleProvided ? commonBorderStyles : '';
+
+  // Text styling falls back to hardcoded defaults (25px Segoe UI, the primary colour) when no style
+  // is supplied. On the component-class path that would override the configured Font, so emit
+  // nothing and let the class own the text as well as the box.
+  const commonTextStyles = styleProvided
+    ? `
+    color: ${firstSet(color, token.colorPrimary)};
+    font-family: ${fontFamily};
+    font-size: ${fontSize};
+    font-weight: ${fontWeight};
+    text-align: ${textAlign};
+  `
+    : '';
   const shaStoredFilesRenderer = cx(
     'sha-stored-files-renderer',
     css`
-      /* Fallback tile size. The component class sets the configured dimensions on the tile itself;
-         these vars only matter when nothing is configured. */
-      --thumbnail-width: ${layout ? '54px' : '100%'};
-      --thumbnail-height: ${layout ? '54px' : '100%'};
+      /* firstSet, not nullish-coalescing: these come from caller-supplied CSSProperties, where a
+         dimension can be an empty string. Nullish-coalescing would pass that through, and a custom
+         property that is set but empty does NOT activate the var() fallback at the use site — it
+         just yields an invalid declaration. firstSet treats empty as unset, as CSS does. */
+      --thumbnail-width: ${layout ? firstSet(width, height, '54px') : '100%'};
+      --thumbnail-height: ${layout ? firstSet(height, width, '54px') : '100%'};
+      ${styleProvided ? `
+      --ant-border-radius-xs: ${borderRadius} !important;
+      --ant-border-radius-sm: ${borderRadius} !important;
+      --ant-border-radius-lg: ${borderRadius} !important;
+      ` : ''}
+      ${styleProvided ? `
+      --ant-button-content-font-size: ${fontSize} !important;
+      --ant-button-font-weight: ${fontWeight} !important;
+      --ant-font-family: ${fontFamily} !important;
+      ` : ''}
       /* Container must be a block box: it wraps block-level upload content (e.g. the Dragger),
          and as an inline <span> width/height:100% are ignored, so the content overflows and
          overlaps sibling fields. */
       display: block;
+      ${styleProvided ? `
+      height: ${layout ? firstSet(height, '54px') : '100%'} !important;
+      width: ${layout ? firstSet(width, '54px') : '100%'} !important;
+      max-height: ${layout ? firstSet(maxHeight, 'auto') : '100%'} !important;
+      min-height: ${layout ? firstSet(minHeight, 'auto') : '100%'} !important;
+      max-width: ${layout ? firstSet(maxWidth, 'auto') : '100%'} !important;
+      min-width: ${layout ? firstSet(minWidth, 'auto') : '100%'} !important;
+      ` : `
       /* The component class sizes the tile. The container wraps the tile *and* the single-line file
          name below it, so it takes the tile width (which is what the name ellipsises against) while
          its height grows to fit the extra name line. Pinning the height here instead would make the
          tile shrink when the name is shown. */
       height: auto;
       width: ${layout ? 'fit-content' : '100%'};
+      `}
       ${isThumbnail ? `
         display: flex;
         flex-direction: column;
@@ -93,7 +215,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
       }
 
       .ant-upload-list-item-container > div {
-        width: 100%; height: auto;
+        ${styleProvided ? 'width: 100%; height: 100%;' : 'width: 100%; height: auto;'}
         display: flex;
         flex-direction: column;
       }
@@ -105,6 +227,10 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
          family is taken here rather than interpolating it wholesale. */
       .${prefixCls}-upload-select,
       .${prefixCls}-upload.${prefixCls}-upload-select {
+        ${styleProvided ? `
+        width: var(--thumbnail-width) !important;
+        height: var(--thumbnail-height) !important;
+        ` : ''}
         margin: 0 !important;
         box-sizing: border-box !important;
         ${uploadTileFontCss}
@@ -118,8 +244,16 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
            look — so it takes the full configured appearance, unlike .ant-upload-select above. When
            the component class supplies the appearance and dimensions, this hook emits neither, so
            the class is not outranked here. */
+        ${styleProvided ? `
+        background: ${firstSet(backgroundImage, backgroundColor, background)};
+        width: 100% !important;
+        height: 100% !important;
+        ` : ''}
         display: flex !important;
         align-items: center !important;
+        ${extraStyles}
+        ${ownedBorderStyles}
+        ${commonTextStyles}
       }
 
       .${prefixCls}-upload-select .${prefixCls}-upload {
@@ -137,21 +271,33 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
 
       .ant-upload:not(.ant-upload-disabled) {
         .icon {
-          color: ${token.colorPrimary} !important;
+          color: ${firstSet(color, token.colorPrimary)} !important;
         }
       }
 
       .ant-upload-list-item {
         --ant-line-width: 0px !important;
         --ant-padding-xs: 0px !important;
-        --font-size: ${FONT_SIZE} !important;
-        --ant-font-size: ${FONT_SIZE} !important;
+        --font-size: ${fontSize} !important;
+        --ant-font-size: ${fontSize} !important;
         display: flex;
+        ${isThumbnail && styleProvided ? `
+
+        :before {
+          top: 0;
+          width: 100% !important;
+          ${borderRadiusCss}
+          border: ${borderWidth} ${borderStyle} ${borderColor} !important;
+          height: 100% !important;
+        }
+        ` : ''}
       }
 
       .ant-upload-list-item-thumbnail {
+        ${extraStyles}
         box-sizing: border-box !important;
         padding: 0 !important;
+        ${ownedBorderStyles}
       }
 
       /* The file name is a single line under the tile, ellipsised at the tile width. It takes only
@@ -159,6 +305,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
          the name — and it is laid out identically whether or not it is shown, so hiding it never
          changes the tile size. */
       .thumbnail-item-name {
+        ${commonTextStyles}
         ${isThumbnail ? (hideFileName === true ? 'display: none !important;' : `
         display: block;
         width: 100%;
@@ -171,6 +318,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
         `) : ''}
 
         a {
+          ${commonTextStyles}
           ${isThumbnail ? `
           display: inline-block;
           max-width: 100%;
@@ -179,14 +327,15 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
           white-space: nowrap;
           ` : ''}
         }
-        /* This took its colour from the caller-supplied style. With that path gone the declaration
-           was always empty and therefore ignored by the browser, so these icons inherited their
-           colour. Kept as an explicit inherit rather than pinned to a token, to preserve that. */
         .ant-space {
           .anticon {
-            color: inherit;
+            color: ${color} !important;
           }
         }
+      }
+
+      .ant-upload-list-text {
+        ${commonTextStyles}
       }
 
       .ant-upload-drag:hover:not(.ant-upload-disabled) {
@@ -194,7 +343,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
       }
 
       .${prefixCls}-upload {
-        ${isDragger === true ? `min-height: ${DRAGGER_MIN_HEIGHT} !important;` : ''}
+        ${isDragger === true ? `min-height: ${minHeight ?? '120px'} !important;` : ''}
         ${borderRadiusCss}
         align-items: center;
 
@@ -216,11 +365,13 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
       ` : ''}
 
       .ant-btn {
-        color: ${token.colorPrimary} !important;
-        justify-content: ${layout ? 'center' : 'flex-start'} !important;
+        color: ${firstSet(color, token.colorPrimary)} !important;
+        ${commonTextStyles}
+        justify-content: ${layout ? 'center' : justifyContentValue} !important;
         align-items: center;
         padding: 0;
         * {
+          ${commonTextStyles}
         }
         width: 100% !important;
         height: 100% !important;
@@ -310,9 +461,19 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
   const styledFileControls = cx(
     'styled-file-controls',
     css`
+      ${ownedBorderStyles}
+      ${commonTextStyles}
       padding: 0 !important;
       box-sizing: border-box !important;
       overflow: hidden !important;
+      /* This is the thumbnail tile: it takes the configured background/border/dimensions. When the
+         component class supplies them, this hook emits nothing here so the class is not outranked by
+         these !important declarations. */
+      ${styleProvided ? `
+      background: ${firstSet(backgroundImage, backgroundColor, background)};
+      width: var(--thumbnail-width, ${firstSet(width, '54px')}) !important;
+      height: var(--thumbnail-height, ${firstSet(height, '54px')}) !important;
+      ` : ''}
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
@@ -333,6 +494,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
           object-fit: cover !important;
         }
       }
+      ${extraStyles}
     `,
   );
 
