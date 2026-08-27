@@ -232,7 +232,7 @@ const MainLayout = withAuth(DefaultLayout);
  */
 export const getLayout = (page: ReactElement): React.JSX.Element => {
   return (
-    <MainLayout noPadding>
+    <MainLayout>
       <>{page}</>
     </MainLayout>
   );
