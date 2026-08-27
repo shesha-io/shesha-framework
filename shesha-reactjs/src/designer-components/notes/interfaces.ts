@@ -1,9 +1,6 @@
 import { ComponentDefinition } from '@/interfaces';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
-import { IBackgroundValue } from '../_settings/utils/background/interfaces';
-import { IBorderValue } from '../_settings/utils/border/interfaces';
-import { IShadowValue } from '../_settings/utils/shadow/interfaces';
 
 /** The shape the component had before the standards refactor — the migrator's input type. */
 export interface INotesComponentPropsV1 extends IConfigurableFormComponent, IInputStyles {
@@ -39,9 +36,6 @@ export interface INotesComponentProps extends IConfigurableFormComponent, IInput
   onCreateAction?: string | undefined;
   onUpdateAction?: string | undefined;
   onDeleteAction?: string | undefined;
-  border?: IBorderValue | undefined;
-  background?: IBackgroundValue | undefined;
-  shadow?: IShadowValue | undefined;
 }
 
 export type NotesComponentDefinition = ComponentDefinition<'notes', INotesComponentProps>;

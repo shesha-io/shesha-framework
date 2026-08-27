@@ -64,7 +64,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   { value: 'right', label: 'Right' },
                 ],
               })
-              .stdAppearancePanels(['font', 'dimensions', 'border', 'background', 'shadow', 'marginPadding', 'customStyle'], removeStyleRouter)
+              .stdAppearancePanels(['font', 'dimensions', 'marginPadding'], removeStyleRouter)
               .toJson(),
           },
         ],

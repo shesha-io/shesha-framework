@@ -1,4 +1,4 @@
-import { CSSProperties, FC } from 'react';
+import { FC } from 'react';
 import classNames from 'classnames';
 import { useNotesEditorActions, useNotesEditorState } from '@/providers';
 import NotesRendererBase from '@/components/notesRendererBase';
@@ -32,7 +32,6 @@ export interface INotesRendererProps extends EventsObject {
   maxLength?: number | undefined;
 
   className?: string | undefined;
-  style?: CSSProperties | undefined;
 }
 
 export const NotesRenderer: FC<INotesRendererProps> = ({
@@ -48,7 +47,6 @@ export const NotesRenderer: FC<INotesRendererProps> = ({
   maxLength,
 
   className,
-  style,
   ...events
 }) => {
   const { deleteNoteAsync, createNoteAsync, updateNoteAsync } = useNotesEditorActions();
@@ -68,7 +66,7 @@ export const NotesRenderer: FC<INotesRendererProps> = ({
     : isDesignTime ? DESIGNER_HINT : UNSAVED_OWNER_HINT;
 
   return (
-    <div className={classNames(styles.shaNotesRenderer, className)} style={style} {...events}>
+    <div className={classNames(styles.shaNotesRenderer, className)} {...events}>
       <NotesRendererBase
         createNoteAsync={createNoteAsync}
         updateNoteAsync={updateNoteAsync}

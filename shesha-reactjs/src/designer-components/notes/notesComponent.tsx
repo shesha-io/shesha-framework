@@ -29,7 +29,7 @@ import { useEvents } from '@/components/formDesigner/components/eventsAndApiValu
 import { getComponentEvents } from '../_common/events';
 import { useComponentApi } from '@/providers/componentApi/hooks';
 import { NotesApi } from '@/componentsApi/componentApi';
-import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
+import { isNotNullOrWhiteSpace } from '@/utils/nullables';
 import { INotesComponentProps, INotesComponentPropsV1, NotesComponentDefinition } from './interfaces';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
@@ -139,7 +139,6 @@ const NotesComponent: NotesComponentDefinition = {
         <NotesApiRegistrar model={model} ownerId={ownerId} />
         <NotesRenderer
           className={styles.notes}
-          {...(isDefined(model.styleCss) ? { style: model.styleCss } : {})}
           {...events}
 
           allowCreate={!isReadOnly}
