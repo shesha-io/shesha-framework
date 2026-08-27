@@ -359,12 +359,12 @@ export const FileUpload: FC<IFileUploadProps> = ({
               <FileVersionsPopup fileId={fileInfo.id} popupClassName={popupClassName} />
             </a>
           )}
-          {allowReplace && !disabled && (
+          {allowReplace && (
             <a onClick={onReplaceClick} style={{ color: color }}>
               <SyncOutlined title="Replace" />
             </a>
           )}
-          {allowDelete && !disabled && (
+          {allowDelete && (
             <a onClick={(e) => onDeleteClick(e)} style={{ color: color }}>
               <DeleteOutlined title="Remove" />
             </a>
