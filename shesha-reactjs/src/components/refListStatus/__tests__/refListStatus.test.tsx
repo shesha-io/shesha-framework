@@ -111,6 +111,15 @@ describe('RefListStatus', () => {
       expect(tag?.style.color).toBe('rgb(255, 255, 255)');
     });
 
+    it('drops a caller background, the badge colour being fixed here', () => {
+      const tag = tagOf(renderDesigner({
+        displayIsDynamic: true,
+        style: { background: 'lime', backgroundColor: 'lime' },
+      }));
+
+      expect(tag?.style.backgroundColor).toBe('rgb(140, 140, 140)');
+    });
+
     it('ignores the solid background switch and the list colour, which it does not govern', () => {
       currentList = [{ ...item, color: '#ff0000' }];
       const tag = tagOf(renderDesigner({ displayIsDynamic: true, solidBackground: false }));
@@ -159,6 +168,30 @@ describe('RefListStatus', () => {
       }));
 
       expect(tag?.style.color).toBe('rgb(255, 255, 255)');
+    });
+
+    // A solid badge paints its own background, so a caller's background declarations must not
+    // survive into the inline style - a `background` shorthand would reset the badge colour.
+    it('drops a caller background so the item colour wins', () => {
+      currentItem = { ...item, color: '#ff0000' };
+      const tag = tagOf(renderStatus({
+        solidBackground: true,
+        showReflistName: true,
+        style: { background: 'lime', backgroundColor: 'lime', backgroundImage: 'url(x.png)' },
+      }));
+
+      expect(tag?.style.backgroundColor).toBe('rgb(255, 0, 0)');
+      expect(tag?.style.backgroundImage).toBe('');
+    });
+
+    it('drops a caller background in the solid designer placeholder', () => {
+      const tag = tagOf(renderDesigner({
+        solidBackground: true,
+        showReflistName: true,
+        style: { background: 'lime', backgroundColor: 'lime' },
+      }));
+
+      expect(tag?.style.backgroundColor).toBe('rgb(140, 140, 140)');
     });
 
     it('reads as plain text when off, with no tag chrome', () => {

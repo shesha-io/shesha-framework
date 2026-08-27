@@ -40,6 +40,14 @@ export const resolveColor = (...candidates: (string | null | undefined)[]): stri
 };
 
 /**
+ * Drops a caller's background declarations, shorthand included - the shorthand would otherwise reset
+ * the background-color a solid badge paints itself with.
+ */
+export const withoutBackground = (
+  { background, backgroundColor, backgroundImage, ...rest }: CSSProperties,
+): CSSProperties => rest;
+
+/**
  * The tag props that paint a solid badge. A declared return type gives `variant` its literal type,
  * which a conditionally spread object literal would otherwise widen to `string`.
  */

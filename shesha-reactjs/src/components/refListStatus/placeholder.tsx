@@ -4,7 +4,7 @@ import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { CSSProperties, FC } from 'react';
 import { ShaIcon } from '../shaIcon';
 import RefTag from './tag';
-import { DEFAULT_SOLID_COLOR, PLAIN_TEXT_STYLE, resolveColor, solidTagProps, SOLID_TEXT_COLOR } from './utils';
+import { DEFAULT_SOLID_COLOR, PLAIN_TEXT_STYLE, resolveColor, solidTagProps, SOLID_TEXT_COLOR, withoutBackground } from './utils';
 
 /** Stand-in text for a component with nothing to name it - an unbound status, in practice. */
 const PLACEHOLDER_TEXT = 'N/A';
@@ -66,7 +66,7 @@ export const RefListStatusPlaceholder: FC<IRefListStatusPlaceholderProps> = ({
       <RefTag
         {...solidTagProps(DEFAULT_SOLID_COLOR)}
         icon={<ShaIcon iconName={PLACEHOLDER_ICON} />}
-        style={{ ...style, color: SOLID_TEXT_COLOR }}
+        style={{ ...withoutBackground(style), color: SOLID_TEXT_COLOR }}
         className={tagClassName}
       >
         {DYNAMIC_TEXT}
@@ -78,7 +78,9 @@ export const RefListStatusPlaceholder: FC<IRefListStatusPlaceholderProps> = ({
     <RefTag
       {...(solidBackground ? solidTagProps(resolveColor(listColor) ?? DEFAULT_SOLID_COLOR) : {})}
       icon={showIcon ? <ShaIcon iconName={PLACEHOLDER_ICON} /> : null}
-      style={solidBackground ? { ...style, color: SOLID_TEXT_COLOR } : { ...style, ...PLAIN_TEXT_STYLE }}
+      style={solidBackground
+        ? { ...withoutBackground(style), color: SOLID_TEXT_COLOR }
+        : { ...style, ...PLAIN_TEXT_STYLE }}
       className={tagClassName}
     >
       {/* The text is dropped only when an icon is there to stand for the component. With neither,

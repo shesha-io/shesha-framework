@@ -9,7 +9,7 @@ import { RefListStatusPlaceholder } from './placeholder';
 import { useStyles } from './styles/styles';
 import RefTag from './tag';
 import { DescriptionTooltip } from './tooltip';
-import { DEFAULT_SOLID_COLOR, PLAIN_TEXT_STYLE, resolveColor, solidTagProps, SOLID_TEXT_COLOR } from './utils';
+import { DEFAULT_SOLID_COLOR, PLAIN_TEXT_STYLE, resolveColor, solidTagProps, SOLID_TEXT_COLOR, withoutBackground } from './utils';
 import { CSSObject } from 'antd-style';
 
 export interface IRefListStatusProps {
@@ -130,7 +130,7 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
              dropped from the inline style and the text is forced white - the icon follows through
              `currentColor`. With the badge off there is no chrome at all, just the text. */
           style={solidBackground === true
-            ? { ...rest, color: SOLID_TEXT_COLOR }
+            ? { ...withoutBackground(rest), color: SOLID_TEXT_COLOR }
             : { ...style, ...PLAIN_TEXT_STYLE }}
           className={cx(styles.shaStatusTag, disabled ? styles.shaStatusTagDisabled : undefined)}
         >
