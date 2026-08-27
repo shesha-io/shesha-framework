@@ -56,16 +56,6 @@ export const useStyles = createStyles(({ css, token }) => {
       border-bottom: 1px solid ${token.colorBorder};
       margin-bottom: 0;
 
-      &.has-heading {
-        margin-bottom: ${token.marginMD}px;
-      }
-
-      &.fixed-heading {
-        position: sticky;
-        top: 0;
-        z-index: 99;
-      }
-
       h1, h2, h3, h4, h5, h6 {
         margin: 0;
         flex: 1;
@@ -77,14 +67,6 @@ export const useStyles = createStyles(({ css, token }) => {
       padding: ${token.paddingLG}px;
       background: ${token.colorBgLayout};
       min-height: 0;
-
-      &.has-heading {
-        padding-top: 0;
-      }
-
-      &.fixed-heading {
-        padding-top: ${token.paddingLG}px;
-      }
     `,
 
     layoutBackgroundNoPadding: css`
