@@ -8,6 +8,7 @@ import { ShaIcon } from '../shaIcon';
 import { useStyles } from './styles/styles';
 import RefTag from './tag';
 import { DescriptionTooltip } from './tooltip';
+import { DEFAULT_SOLID_COLOR, PLAIN_TEXT_STYLE, resolveColor, SOLID_TEXT_COLOR } from './utils';
 import { CSSObject } from 'antd-style';
 
 export interface IRefListStatusProps {
@@ -74,15 +75,24 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
 
   const canShowIcon = showIcon && itemData?.icon;
 
+  /**
+   * A solid badge pulls its colour from the reference list item, the way the chevron does when its
+   * colour source is set to the reference list. Items with no colour fall back to grey rather than
+   * to nothing at all, which is what left Show Solid Background inert for colourless lists.
+   */
+  const solidColor = resolveColor(itemData?.color) ?? DEFAULT_SOLID_COLOR;
+
   // In designer mode, show a placeholder when there's no value or data
   if (typeof itemData?.itemValue === 'undefined' && !listItem.loading) {
     if (isDesigner) {
       return (
         <div className={cx(styles.shaStatusTagContainer, className)}>
           <RefTag
-            color="#d9d9d9"
+            {...(solidBackground === true ? { color: solidColor, variant: 'solid' as const } : {})}
             icon={null}
-            style={style}
+            style={solidBackground === true
+              ? { ...rest, color: SOLID_TEXT_COLOR }
+              : { ...style, ...PLAIN_TEXT_STYLE }}
             className={cx(styles.shaStatusTag, disabled ? styles.shaStatusTagDisabled : undefined)}
           >
             {showReflistName ? 'Reference List Item' : 'N/A'}
@@ -100,11 +110,17 @@ export const RefListStatus: FC<IRefListStatusProps> = (props) => {
     <div className={cx(styles.shaStatusTagContainer, className)}>
       <DescriptionTooltip showReflistName={showReflistName} currentStatus={itemData}>
         <RefTag
-          {...(solidBackground && !isNullOrWhiteSpace(itemData.color)
-            ? { color: itemData.color, variant: 'solid' as const }
-            : {})}
+          {...(solidBackground === true ? { color: solidColor, variant: 'solid' as const } : {})}
           icon={canShowIcon && !isNullOrWhiteSpace(itemData.icon) ? <ShaIcon iconName={itemData.icon} /> : null}
-          style={!solidBackground || !itemData.color ? style : { ...rest }}
+          /* With the name hidden the tag carries no text of its own, so name it explicitly - the
+             description tooltip only reaches pointer users. */
+          aria-label={showReflistName ? undefined : itemData.item ?? undefined}
+          /* A solid badge paints its own background, so the caller's background declarations are
+             dropped from the inline style and the text is forced white - the icon follows through
+             `currentColor`. With the badge off there is no chrome at all, just the text. */
+          style={solidBackground === true
+            ? { ...rest, color: SOLID_TEXT_COLOR }
+            : { ...style, ...PLAIN_TEXT_STYLE }}
           className={cx(styles.shaStatusTag, disabled ? styles.shaStatusTagDisabled : undefined)}
         >
           {showReflistName && itemData.item}
