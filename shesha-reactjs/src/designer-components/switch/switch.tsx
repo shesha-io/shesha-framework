@@ -21,7 +21,7 @@ import { getSettings } from './settingsForm';
 import { useStyles } from './styles';
 import { defaultHandleStyles, defaultStyles } from './utils';
 import { getComponentEvents } from '../_common/events';
-import { useComponentApi } from '@/providers/componentApi/provider';
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { SwitchFieldApi } from '../../componentsApi/componentApi';
 import { isDefined } from '@/utils/nullables';
@@ -46,7 +46,7 @@ const SwitchComponent: SwitchComponentDefinition = {
   // ahead of it in the toolbox, so declaring it here would silently make Switch the
   // default editor for every boolean property.
   Factory: ({ model, apiContext }) => {
-    const componentApi = useComponentApi();
+    const componentApi = useComponentApiProvider();
     const inputRef = useRef<HTMLButtonElement>(null);
     useEffect(() => {
       componentApi?.updateApi<SwitchFieldApi>({

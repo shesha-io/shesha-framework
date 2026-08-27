@@ -56,7 +56,7 @@ import { IGlobalState } from '../globalState/contexts';
 import { MessageInstance } from 'antd/es/message/interface';
 import { useDataContextManagerActionsOrUndefined } from '../dataContextManager/hooks';
 import { throwError } from '@/utils/errors';
-import { useComponentApi } from '../componentApi/provider';
+import { useComponentApiProvider } from '../componentApi/provider';
 import { SubFormApi } from '@/componentsApi/componentApi';
 import { useEffectOnce } from 'react-use';
 
@@ -157,7 +157,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     context,
   } = props;
 
-  const componentApi = useComponentApi();
+  const componentApi = useComponentApiProvider();
   const parent = useParentOrUndefined();
   const httpClient = useHttpClient();
 

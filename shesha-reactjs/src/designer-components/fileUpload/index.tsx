@@ -26,7 +26,7 @@ import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nu
 import { getIdOrUndefined } from '@/utils/entity';
 import { getFirstNonEmptyStringPropertyOrUndefined, getStringPropertyOrUndefined } from '@/utils/object';
 import { FileUploadValue } from '@/providers/storedFile/models';
-import { useComponentApi } from '@/providers/componentApi/provider';
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { FileUploadApi } from '../../componentsApi/componentApi';
 import { FILE_EVENTS_WITHOUT_CHANGE, getComponentEvents } from '../_common/events';
@@ -65,7 +65,7 @@ const FileUploadComponent: FileUploadComponentDefinition = {
     const allowReplace = enabled && model.allowReplace === true;
     const allowDelete = enabled && model.allowDelete === true;
 
-    const componentApi = useComponentApi();
+    const componentApi = useComponentApiProvider();
     useEffect(() => {
       componentApi?.updateApi<FileUploadApi>({
         id: model.id,

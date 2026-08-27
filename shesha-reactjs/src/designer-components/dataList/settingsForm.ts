@@ -6,46 +6,11 @@ import { SettingsFormMarkupFactory } from '@/interfaces';
 
 export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const commonTabId = nanoid();
-  const dataTabId = nanoid();
   const appearanceTabId = nanoid();
   const eventsTabId = nanoid();
-  const securityTabId = nanoid();
   const styleRouterId = nanoid();
   const containerStylePnlId = nanoid();
   const containerDimensionsStylePnlId = nanoid();
-
-  const ROW_SAVE_EXPOSED_VARIABLES = [
-    {
-      id: nanoid(),
-      name: 'data',
-      description: 'Current row data',
-      type: 'object',
-    },
-    {
-      id: nanoid(),
-      name: 'formData',
-      description: 'Form values',
-      type: 'object',
-    },
-    {
-      id: nanoid(),
-      name: 'globalState',
-      description: 'The global state of the application',
-      type: 'object',
-    },
-    {
-      id: nanoid(),
-      name: 'http',
-      description: 'axios instance used to make http requests',
-      type: 'object',
-    },
-    {
-      id: nanoid(),
-      name: 'moment',
-      description: 'The moment.js object',
-      type: 'object',
-    },
-  ].map((item) => JSON.stringify(item));
 
   return {
     components: fbf()
@@ -63,38 +28,14 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
             title: 'Common',
             id: commonTabId,
             components: [...fbf()
-              .addSettingsInput({
-                id: nanoid(),
-                inputType: 'textField',
-                propertyName: "componentName",
-                parentId: commonTabId,
-                label: "Component Name",
-                validate: {
-                  required: true,
-                },
-                jsSetting: false,
-              })
-              .addSettingsInput({
-                id: nanoid(),
-                inputType: 'switch',
-                propertyName: "hidden",
-                parentId: commonTabId,
-                label: "Hide",
-                jsSetting: true,
-              })
-              .toJson(),
-            ],
-          },
-          {
-            key: 'data',
-            title: 'Data',
-            id: dataTabId,
-            components: [...fbf()
+              .addSettingsInput({ id: nanoid(), inputType: 'textField', propertyName: "componentName", parentId: commonTabId, label: "Component Name", validate: { required: true } })
+              .addSettingsInput({ inputType: 'switch', propertyName: 'visible', label: 'Visible', jsSetting: true, layout: 'horizontal', permissionSettings: true, id: nanoid(), parentId: commonTabId })
+              .addSectionSeparator({ label: 'List Settings', containerStylingBoxJson: { _type: 'styleBox', marginTop: '8px', marginBottom: '16px' } })
               .addSettingsInput({
                 id: nanoid(),
                 inputType: 'dropdown',
                 propertyName: "formSelectionMode",
-                parentId: dataTabId,
+                parentId: commonTabId,
                 label: "Form Selection Mode",
                 jsSetting: false,
                 dropdownOptions: [
@@ -105,7 +46,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
               })
               .addSettingsInputRow({
                 id: nanoid(),
-                parentId: dataTabId,
+                parentId: commonTabId,
                 hidden: {
                   _code: 'return getSettingValue(data?.formSelectionMode) !== "view";',
                   _mode: 'code',
@@ -116,7 +57,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     id: nanoid(),
                     propertyName: 'formType',
                     label: 'Form Type',
-                    parentId: dataTabId,
+                    parentId: commonTabId,
                     type: 'formTypeAutocomplete',
                     jsSetting: true,
                   },
@@ -124,7 +65,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
               })
               .addSettingsInputRow({
                 id: nanoid(),
-                parentId: dataTabId,
+                parentId: commonTabId,
                 hidden: {
                   _code: 'return getSettingValue(data?.formSelectionMode) !== "name";',
                   _mode: 'code',
@@ -146,7 +87,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
               })
               .addSettingsInputRow({
                 id: nanoid(),
-                parentId: dataTabId,
+                parentId: commonTabId,
                 hidden: {
                   _code: 'return getSettingValue(data?.formSelectionMode) !== "expression";',
                   _mode: 'code',
@@ -182,7 +123,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 id: nanoid(),
                 inputType: 'dropdown',
                 propertyName: "selectionMode",
-                parentId: dataTabId,
+                parentId: commonTabId,
                 label: "Selection Mode",
                 jsSetting: true,
                 dropdownOptions: [
@@ -196,7 +137,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 propertyName: 'canAddInline',
                 label: 'Can Add Inline',
                 inputType: 'dropdown',
-                parentId: dataTabId,
+                parentId: commonTabId,
                 jsSetting: true,
                 dropdownOptions: [
                   { value: 'yes', label: 'Yes' },
@@ -206,7 +147,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
               })
               .addSettingsInputRow({
                 id: nanoid(),
-                parentId: dataTabId,
+                parentId: commonTabId,
                 hidden: {
                   _code: 'return getSettingValue(data?.canAddInline) === "no" || getSettingValue(data?.formSelectionMode) === "view";',
                   _mode: 'code',
@@ -229,7 +170,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
               })
               .addSettingsInputRow({
                 id: nanoid(),
-                parentId: dataTabId,
+                parentId: commonTabId,
                 hidden: {
                   _code: 'return getSettingValue(data?.canAddInline) === "no" || getSettingValue(data?.formSelectionMode) !== "view";',
                   _mode: 'code',
@@ -281,7 +222,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     propertyName: 'modalWidth',
                     customTooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
                     label: 'Dialog Width',
-                    parentId: dataTabId,
+                    parentId: commonTabId,
                     type: 'customDropdown',
                     allowClear: true,
                     jsSetting: true,
@@ -309,7 +250,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 propertyName: 'canEditInline',
                 label: 'Can Edit Inline',
                 inputType: 'dropdown',
-                parentId: dataTabId,
+                parentId: commonTabId,
                 jsSetting: true,
                 dropdownOptions: [
                   { value: 'yes', label: 'Yes' },
@@ -319,7 +260,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
               })
               .addSettingsInputRow({
                 id: nanoid(),
-                parentId: dataTabId,
+                parentId: commonTabId,
                 hidden: {
                   _code: 'return getSettingValue(data?.canEditInline) === "no";',
                   _mode: 'code',
@@ -330,14 +271,14 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     id: nanoid(),
                     type: 'switch',
                     propertyName: "showEditIcons",
-                    parentId: dataTabId,
+                    parentId: commonTabId,
                     label: "Show Edit Icon",
                     jsSetting: true,
                   },
                 ],
               })
               .addSettingsInputRow({
-                parentId: dataTabId,
+                parentId: commonTabId,
                 id: nanoid(),
                 hidden: { _code: 'return getSettingValue(data?.canEditInline) === "no";', _mode: 'code', _value: false },
                 inputs: [
@@ -364,7 +305,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 ],
               })
               .addSettingsInputRow({
-                parentId: dataTabId,
+                parentId: commonTabId,
                 id: nanoid(),
                 hidden: { _code: 'return getSettingValue(data?.canEditInline) === "no";', _mode: 'code', _value: false },
                 inputs: [
@@ -373,7 +314,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     propertyName: 'customUpdateUrl',
                     label: 'Custom Update URL',
                     type: 'endpointsAutocomplete',
-                    parentId: dataTabId,
+                    parentId: commonTabId,
                     jsSetting: true,
                   },
                 ],
@@ -383,7 +324,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 propertyName: 'canDeleteInline',
                 label: 'Can Delete Inline',
                 inputType: 'dropdown',
-                parentId: dataTabId,
+                parentId: commonTabId,
                 jsSetting: true,
                 dropdownOptions: [
                   { value: 'yes', label: 'Yes' },
@@ -400,7 +341,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     propertyName: 'customDeleteUrl',
                     label: 'Custom Delete URL',
                     type: 'endpointsAutocomplete',
-                    parentId: dataTabId,
+                    parentId: commonTabId,
                     jsSetting: true,
                   },
                 ],
@@ -454,7 +395,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   tooltip: 'Custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations). This handler should return an object or a Promise<object>.',
                   hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no" && getSettingValue(data?.canEditInline) === "no";', _mode: 'code', _value: false },
                   description: 'Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations).',
-                  exposedVariables: ROW_SAVE_EXPOSED_VARIABLES,
                   hideLabel: false,
                 })
                 .addConfigurableActionConfigurator({
@@ -1238,26 +1178,11 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
               .toJson(),
             ],
           },
-          {
-            key: 'security',
-            title: 'Security',
-            id: securityTabId,
-            components: [...fbf()
-              .addSettingsInput({
-                id: nanoid(),
-                inputType: 'permissions',
-                propertyName: 'permissions',
-                label: "Permissions",
-                tooltip: "Enter a list of permissions that should be associated with this component",
-                jsSetting: true,
-              })
-              .toJson(),
-            ],
-          },
         ],
       })
       .toJson(),
     formSettings: {
+      isSettingsForm: true,
       colon: false,
       layout: 'vertical' as FormLayout,
       labelCol: { span: 24 },

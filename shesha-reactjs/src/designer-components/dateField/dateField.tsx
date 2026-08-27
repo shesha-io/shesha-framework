@@ -13,7 +13,7 @@ import { DatePickerWrapper } from './datePickerWrapper';
 import { DateFieldDefinition, DateFieldValueType, DateSelectionType, IDateFieldProps, IDateFieldPropsV1, NoUndefinedRangeValueType } from './interfaces';
 import { getSettings } from './settingsForm';
 import { defaultStyles, getNumericBindingFormatWarning } from './utils';
-import { useComponentApi } from '@/providers/componentApi/provider';
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { useMetadataOrUndefined } from '@/providers';
 import { useComponentValidation } from '@/providers/validationErrors';
 import { asPropertiesArray } from '@/interfaces/metadata';
@@ -46,7 +46,7 @@ const DateField: DateFieldDefinition = {
   preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.date || dataType === DataTypes.dateTime,
   Factory: ({ model }) => {
-    const componentApi = useComponentApi();
+    const componentApi = useComponentApiProvider();
     const inputRef = useRef<HTMLDivElement>(null);
     const { properties: metaProperties } = useMetadataOrUndefined()?.metadata ?? {};
 

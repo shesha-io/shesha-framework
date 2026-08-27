@@ -555,3 +555,6 @@ export interface TabsApi extends CommonComponentApi {
   /** List of tabs */
   readonly tabs: TabsApiTab[];
 };
+
+
+export type DataContextApi = BaseComponentApi;

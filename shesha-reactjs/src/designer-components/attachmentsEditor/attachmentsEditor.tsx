@@ -35,7 +35,7 @@ import { AttachmentsEditorComponentDefinition, IAttachmentsEditorDeviceStyles, I
 import { swapContainerAndThumbnailStyles } from './migrations/migrate-style-sets';
 import { useStyles } from './styles';
 import { useActualContextExecution } from '@/hooks';
-import { useComponentApi } from '@/providers/componentApi/provider';
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { FileListApi, StoredFileApiModel } from '../../componentsApi/componentApi';
 
@@ -236,7 +236,7 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
       [styleDownloadedFiles, model.downloadedFileStyles?.font, downloadedFileStyleCss],
     );
 
-    const componentApi = useComponentApi();
+    const componentApi = useComponentApiProvider();
     useEffect(() => {
       componentApi?.updateApi<FileListApi>({
         id: model.id,
