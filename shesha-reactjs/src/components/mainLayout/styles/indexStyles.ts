@@ -114,11 +114,6 @@ export const GlobalSheshaStyles = createGlobalStyle`
     padding: 18px 0;
   }
 
-  .${(p) => p.theme.prefixCls}-dropdown-menu {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji',
-    'Segoe UI Emoji';
-  }
-  
   body {
     margin: 0;
     div {
