@@ -54,12 +54,41 @@ export const reducer = createReducer(CANVAS_CONTEXT_INITIAL_STATE, (builder) => 
     .addCase(setAvailableCanvasWidthAction, (state, { payload }) => {
       // The measured width is only meaningful for the responsive "Canvas" preset. Ignoring it
       // otherwise keeps a stale measurement from overwriting a pinned device width.
-      if (!state.autoWidth || state.designerWidth === payload)
+      if (!state.autoWidth)
+        return state;
+
+      // A payload the canvas cannot be laid out at is not a measurement. Ignoring it beats pinning
+      // the canvas to an unusable width, which would also take `calculateAutoZoom` to NaN.
+      const measured = parseInt(payload, 10);
+      if (!Number.isFinite(measured) || measured <= 0)
+        return state;
+
+      // The measurement is the width the canvas is laid out at, so it picks the device the same way
+      // a preset width does. Without this, switching from a device preset to "Canvas" leaves
+      // `designerDevice`/`activeDevice` pinned to the preset - a 1900px canvas still rendering every
+      // component from its `mobile` settings block.
+      //
+      // Two notes on deriving it here:
+      //
+      //  - The measurement is the pane width and does not move with zoom, so neither does the
+      //    device: zoom magnifies the canvas rather than reflowing it. (It used to be pane width
+      //    divided by zoom, which meant zooming in past ~190% silently flipped a desktop canvas to
+      //    mobile settings. See `getCanvasLayoutSize`.)
+      //  - A `designerDevice` set from outside (a form script through `contextOnChangeData`, or
+      //    `setDesignerDevice` on the public canvas API) does not survive the next measurement in
+      //    this mode. In "Canvas" the device is a function of the pane, so there is nothing for an
+      //    override to mean; pin a device preset instead.
+      const designerDevice = getDeviceTypeByWidth(measured);
+      const activeDevice = getSmallerDevice(designerDevice, state.physicalDevice ?? "desktop");
+
+      if (state.designerWidth === payload && state.designerDevice === designerDevice && state.activeDevice === activeDevice)
         return state;
 
       return {
         ...state,
         designerWidth: payload,
+        designerDevice,
+        activeDevice,
       };
     })
     .addCase(setScreenWidthAction, (state, { payload }) => {

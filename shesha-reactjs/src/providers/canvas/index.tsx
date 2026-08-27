@@ -19,7 +19,42 @@ import { DataTypes } from '@/interfaces/dataTypes';
 import { SheshaCommonContexts } from '../dataContextManager/models';
 import { ContextOnChangeData } from '../dataContextProvider/contexts';
 import { useLocalStorage } from '@/hooks';
-import { clampZoom } from './utils';
+import { clampZoom, getDeviceTypeByWidth } from './utils';
+
+interface IRestoredCanvasState {
+  designerWidth: string;
+  zoom: number;
+  autoWidth: boolean;
+}
+
+/**
+ * Builds the reducer's initial state from what was restored out of local storage, deriving the
+ * device from the restored width.
+ *
+ * The width is persisted but the device is not, so spreading the defaults alone restores a pinned
+ * 375px canvas with `designerDevice: 'desktop'` - a phone-width canvas rendering every component
+ * from its desktop settings block, on nothing more than a page reload. The device is a function of
+ * the width (the same one `setCanvasWidthAction` applies), so derive it rather than persisting a
+ * second copy that can disagree with the width it describes.
+ *
+ * `activeDevice` starts as the canvas device alone because `physicalDevice` is not known until the
+ * mount effect below measures the window; that effect clamps it a tick later.
+ */
+export const getInitialState = ({ designerWidth, zoom, autoWidth }: IRestoredCanvasState): ICanvasStateContext => {
+  const restoredWidth = parseInt(designerWidth, 10);
+  const designerDevice = Number.isFinite(restoredWidth) && restoredWidth > 0
+    ? getDeviceTypeByWidth(restoredWidth)
+    : CANVAS_CONTEXT_INITIAL_STATE.designerDevice ?? 'desktop';
+
+  return {
+    ...CANVAS_CONTEXT_INITIAL_STATE,
+    designerWidth,
+    zoom: clampZoom(zoom),
+    autoWidth,
+    designerDevice,
+    activeDevice: designerDevice,
+  };
+};
 
 const CanvasProvider: FC<PropsWithChildren> = ({
   children,
@@ -52,12 +87,11 @@ const CanvasProvider: FC<PropsWithChildren> = ({
   const [storedDesigneZoom, setStoredDesigneZoom] = useLocalStorage('shesha:designerZoom:v2', CANVAS_CONTEXT_INITIAL_STATE.zoom);
   const [storedAutoWidth, setStoredAutoWidth] = useLocalStorage('shesha:designerAutoWidth', CANVAS_CONTEXT_INITIAL_STATE.autoWidth);
 
-  const [state, dispatch] = useReducer(reducer, {
-    ...CANVAS_CONTEXT_INITIAL_STATE,
-    designerWidth: storedDesignerWidth,
-    zoom: clampZoom(storedDesigneZoom),
-    autoWidth: storedAutoWidth,
-  });
+  const [state, dispatch] = useReducer(
+    reducer,
+    { designerWidth: storedDesignerWidth, zoom: storedDesigneZoom, autoWidth: storedAutoWidth },
+    getInitialState,
+  );
 
   useEffect(() => {
     // In "Canvas" mode designerWidth is a measurement of the pane, not a user choice. Persisting it
