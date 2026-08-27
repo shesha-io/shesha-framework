@@ -112,7 +112,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   .addSettingsInput({
                     inputType: 'labelValueEditor', propertyName: 'queryParams', label: 'Query Param',
                     labelName: 'param', labelTitle: 'Param', valueName: 'value', valueTitle: 'Value',
-                    mode: 'dialog', jsSetting: true, version: 2, visibleJs: urlVisibleJs, valueEditor: 'expression',
+                    mode: 'dialog', jsSetting: true, version: 2, visibleJs: urlVisibleJs,
                   })
                   .addSettingsInput({ inputType: 'entityTypeAutocomplete', propertyName: 'entityType', label: 'Entity Type', labelAlign: 'right', jsSetting: true, visibleJs: entitiesListVisibleJs, onChangeSetting: onEntityTypeChange })
                   .addSettingsInput({
