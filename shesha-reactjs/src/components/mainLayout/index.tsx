@@ -1,10 +1,18 @@
+/* eslint @typescript-eslint/strict-boolean-expressions: "error" */
 "use client";
-import classNames from 'classnames';
 import ConfigurableSidebarMenu from '@/components/configurableSidebarMenu';
-import LayoutHeader from './header';
+import { IHtmlHeadProps } from '@/components/htmlHead';
 import LayoutHeading from '@/components/layoutHeading';
 import NodeOrFuncRenderer, { ReactNodeOrFunc } from '@/components/nodeOrFuncRenderer';
-
+import { withAuth } from '@/hocs';
+import { useLocalStorage } from '@/hooks';
+import { FormFullName, useTheme } from '@/providers';
+import { SIDEBAR_MENU_NAME } from '@/shesha-constants';
+import { isDefined, isNullOrWhiteSpace } from '@/utils';
+import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
+import { Layout } from 'antd';
+import classNames from 'classnames';
+import * as React from 'react';
 import {
   CSSProperties,
   FC,
@@ -15,19 +23,10 @@ import {
   useEffect,
   useMemo,
 } from 'react';
-
-import * as React from 'react';
-import { IHtmlHeadProps } from '@/components/htmlHead';
-import { Layout } from 'antd';
-import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
-import { MenuTheme } from 'antd/lib/menu/MenuContext';
-import { SIDEBAR_COLLAPSE } from './constant';
-import { SIDEBAR_MENU_NAME } from '@/shesha-constants';
-import { useLocalStorage } from '@/hooks';
-import { FormFullName, useTheme } from '@/providers';
-import { withAuth } from '@/hocs';
-import { useStyles } from './styles/styles';
 import { ConfigurableForm } from '../configurableForm';
+import { SIDEBAR_COLLAPSE } from './constant';
+import LayoutHeader from './header';
+import { useStyles } from './styles/styles';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -47,25 +46,9 @@ export interface IMainLayoutProps extends IHtmlHeadProps {
   footerStyle?: CSSProperties;
   footerFormId?: FormFullName;
   heading?: ReactNodeOrFunc;
-  /**
-   * @deprecated - if passed it will still be used, but the one from the ThemeProvider is the one being used
-   */
-  theme?: MenuTheme;
-  fixHeading?: boolean;
   showHeading?: boolean;
+  /** @deprecated */
   noPadding?: boolean;
-  /**
-   * @deprecated
-   * Use headerControls instead
-   */
-  customComponent?: ReactNode;
-
-  /**
-   * @deprecated
-   * Use headerControls instead
-   */
-  reference?: string;
-
   /**
    * Used to display the statuses of the entity as well as the reference numbers
    */
@@ -76,9 +59,6 @@ export interface IMainLayoutProps extends IHtmlHeadProps {
 const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
   const {
     title,
-    // description,
-    // ogImage,
-    // url,
     breadcrumb,
     children,
     style,
@@ -87,10 +67,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
     footerFormId,
     footerStyle,
     heading,
-    fixHeading = false,
     showHeading = true,
-    reference,
-    noPadding = false,
     headerControls,
     headerFormId,
   } = props;
@@ -102,7 +79,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
   const [collapsed, setCollapsed] = useLocalStorage(SIDEBAR_COLLAPSE, true);
 
   useEffect(() => {
-    if (!!title) document.title = title;
+    if (!isNullOrWhiteSpace(title)) document.title = title;
   }, [title]);
 
   // Update CSS custom property for dynamic header height
@@ -172,27 +149,18 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
     return Boolean(heading);
   }, [heading]);
 
-  const isFixedHeading = useMemo(() => {
-    return fixHeading && ((Boolean(title) && showHeading) || Boolean(heading));
-  }, [heading, title, showHeading, fixHeading]);
-
   const onCollapse = (value: boolean): void => {
     setCollapsed(value);
   };
 
   const renderPageControls = (): ReactNode => {
-    if (!headerControls && !reference) return null;
-
-    return (
-      <span style={{ minWidth: 'fit-content', margin: '0', marginRight: '1%' }}>
-        <NodeOrFuncRenderer>{headerControls || reference}</NodeOrFuncRenderer>
-      </span>
-    );
-  };
-
-  const headingClass = {
-    'has-heading': hasHeading || (Boolean(title) && showHeading),
-    'fixed-heading': isFixedHeading,
+    return isDefined(headerControls)
+      ? (
+        <span style={{ minWidth: 'fit-content', margin: '0', marginRight: '1%' }}>
+          <NodeOrFuncRenderer>{headerControls}</NodeOrFuncRenderer>
+        </span>
+      )
+      : undefined;
   };
 
   // If there's a title but there's no heading, render a Simple heading component
@@ -201,7 +169,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
       return typeof heading === 'function' ? heading() : heading;
     }
 
-    if (title && showHeading) {
+    if (!isNullOrWhiteSpace(title) && showHeading) {
       return <LayoutHeading title={title} />;
     }
 
@@ -222,7 +190,6 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
           theme={sideMenuTheme}
           name={SIDEBAR_MENU_NAME}
           isApplicationSpecific={true}
-          // defaultSettings={sidebarDefaults}
         />
       </Sider>
 
@@ -233,14 +200,12 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
         <Content className={classNames(styles.content, { collapsed })} style={contentStyle}>
           <NodeOrFuncRenderer>
             <NodeOrFuncRenderer>{breadcrumb}</NodeOrFuncRenderer>
-            <div className={classNames(styles.shaLayoutHeading, headingClass)}>
+            <div>
               {renderPageTitle()} {renderPageControls()}
             </div>
 
             <div
-              className={classNames(styles.shaSiteLayoutBackground, headingClass, {
-                [styles.shaSiteLayoutBackgroundNoPadding]: noPadding,
-              })}
+              className={classNames(styles.mainArea, styles.shaSiteLayoutBackground)}
               style={{ ...layoutBackgroundStyle, background: themeFromStorage.layoutBackground }}
             >
               {children}

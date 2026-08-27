@@ -63,7 +63,6 @@ const DefaultHorizontalLayout: FC<PropsWithChildren<IHorizontalLayoutProps>> = (
 
 
   const headingClass = {
-    'has-heading': hasHeading || (Boolean(title) && showHeading),
     'fixed-heading': isFixedHeading,
   };
 

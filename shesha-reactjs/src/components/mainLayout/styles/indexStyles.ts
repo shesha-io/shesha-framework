@@ -3,7 +3,6 @@ import { createGlobalStyle } from 'antd-style';
 
 const shaBorder = '1px solid #d3d3d3'; // @sha-border
 const shaPageHeadingHeight = '45px';
-const layoutHeaderHeight = '55px';
 
 export const GlobalSheshaStyles = createGlobalStyle`
   .sha-header-configuration {
@@ -13,12 +12,6 @@ export const GlobalSheshaStyles = createGlobalStyle`
 
       min-height: ${shaPageHeadingHeight};
       background: white;
-
-      &.fixed-heading {
-        position: sticky;
-        z-index: 1;
-        top: ${layoutHeaderHeight};
-      }
     }
   }
 
