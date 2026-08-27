@@ -34,3 +34,8 @@ export { type DocumentDefinition, type IDocumentInstance } from './configuration
 export { DocumentInstance } from './configuration-studio/cs/documentInstance';
 export { DocumentDefinitionRegistration } from './configuration-studio/document-definitions/documentDefinitionRegistration';
 export { useConfigurationStudio } from './configuration-studio/cs/contexts';
+export {
+  getGenericDefinition,
+  getUnknownDocumentDefinition,
+  type DummyEditorProps,
+} from './configuration-studio/document-definitions/configurable-editor/genericDefinition';
