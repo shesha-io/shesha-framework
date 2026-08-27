@@ -1,4 +1,5 @@
 import { EntityReference, EntityReferenceValue } from '@/components/entityReference';
+import { useEffect } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { ShaIconTypes } from '@/components/iconPicker';
 import {
@@ -52,7 +53,9 @@ const EntityReferenceWrapper: React.FC<{
   popupClassName?: string | undefined;
   modalClassName?: string | undefined;
   style?: React.CSSProperties | undefined;
-}> = ({ model, value, onChange, className, popupClassName, modalClassName, style }) => {
+  /** Receives the normalized id, so the component API reports only committed UI state. */
+  entityIdRef?: React.RefObject<string | undefined> | undefined;
+}> = ({ model, value, onChange, className, popupClassName, modalClassName, style, entityIdRef }) => {
   // Normalize value for display: if it's an object, extract the id
   const normalizedValue = React.useMemo(() => normalizeEntityReferenceValue(value), [value]);
 
@@ -60,7 +63,16 @@ const EntityReferenceWrapper: React.FC<{
   // This effect runs when value changes from non-object to object, or when object structure changes
   const previousValueRef = React.useRef<EntityReferenceValue>(value);
 
-  React.useEffect(() => {
+  /* Publish the id to the component API after the render commits, never during it: a render can be
+     discarded in concurrent mode, and writing the ref inline would leave `entityId` reporting a
+     value the UI never actually showed. `normalizedValue` is `string | null`, so coerce to keep the
+     API's `string | undefined` contract. */
+  useEffect(() => {
+    if (isDefined(entityIdRef))
+      entityIdRef.current = normalizedValue ?? undefined;
+  }, [entityIdRef, normalizedValue]);
+
+  useEffect(() => {
     // Normalize the form value if it's an object: extract and store just the ID
     if (onChange && isDefined(value) && typeof value === 'object' && 'id' in value) {
       const idValue = value.id;
@@ -114,11 +126,9 @@ const EntityReferenceComponent: EntityReferenceComponentDefinition = {
     const containerRef = useRef<HTMLSpanElement>(null);
 
     /* The bound value only exists inside `ConfigurableFormItem`'s render prop, below, while the API
-       is registered out here. Keep the latest id in a ref that the render prop writes, so the
-       `entityId` getter reads the current value without the registration having to re-run on every
-       change — the same live-ref approach `EventsAndApiValueProcessor` uses for its own `value`.
-       (`useLiveRef` is not usable here: it derives `.current` from its argument, which this scope
-       does not have.) */
+       is registered out here. Hand this ref down to `EntityReferenceWrapper`, which commits the
+       normalized id from an effect, so the `entityId` getter reads the current committed value
+       without the registration having to re-run on every change. */
     const entityIdRef = useRef<string | undefined>(undefined);
 
     useComponentApi<EntityReferenceApi>({ model, typeName: 'EntityReferenceApi',
@@ -135,10 +145,6 @@ const EntityReferenceComponent: EntityReferenceComponentDefinition = {
     return (
       <ConfigurableFormItem<EntityReferenceValue> model={model}>
         {(value, onChange, _, ctx) => {
-          /* Contract is `string | undefined`; the shared normalizer returns `null` for "no value",
-             so coerce at this boundary rather than changing the normalizer the rendering path uses. */
-          entityIdRef.current = normalizeEntityReferenceValue(value) ?? undefined;
-
           return (
             <span
               ref={containerRef}
@@ -151,6 +157,7 @@ const EntityReferenceComponent: EntityReferenceComponentDefinition = {
                   ctx?.handleEvent(undefined, { value: newValue }, model.onChangeCustom);
                   onChange(newValue);
                 }}
+                entityIdRef={entityIdRef}
                 className={styles.entityReference}
                 popupClassName={styles.entityReferencePopup}
                 modalClassName={styles.entityReferenceModal}
