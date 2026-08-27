@@ -901,7 +901,7 @@ export const DataList: FC<IDataListProps> = ({
   };
 
   return (
-    <>
+    <div className={classNames(styles.shaDatalistComponent, { horizontal: orientation === 'horizontal' })}>
       {createModalOpen && isDefined(persistedCreateFormProps) && (
         <DataListItemCreateModal<ITableRowData>
           formInfo={formDtop2PersistedFormProps(persistedCreateFormProps)}
@@ -963,6 +963,6 @@ export const DataList: FC<IDataListProps> = ({
           </div>
         </ShaSpin>
       </FormInfo>
-    </>
+    </div>
   );
 };
