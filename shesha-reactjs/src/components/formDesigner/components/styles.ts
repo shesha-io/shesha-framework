@@ -23,16 +23,18 @@ export const useStyles = createStyles(({ css, cx, token }, model: IConfigurableF
             width: 100%;
 
             > .ant-form-item-label {
-                align-content: center;
                 min-height: fit-content;
                 ${model.autoAlignLabel !== false
                   ? `
+                  align-content: center;
+
                   /* A validation message grows the control column. With height: 100% the label
                       grows with it and its text drifts out of line with the input. Pinning the
                       label to the input's own height keeps it aligned to the input alone, so the
                       message never moves it. Falls back to 100% when no height is configured. */
                   height: ${isExactDimensionValue(height) ? height : 'stretch' /* ToDo: AS - review this */};
-                  ` : ''};
+                  `
+                  : ''};
             }
         }
 

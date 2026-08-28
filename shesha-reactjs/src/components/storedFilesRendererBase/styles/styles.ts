@@ -369,6 +369,16 @@ export const useStyles = createStyles((
         }
       }
 
+      /* The rows sit directly beneath the trigger, so they share its edge. The 2px above is there
+         to keep a row's hover and focus ring off the scrolling container's sides; only the inline
+         half is dropped, which is the half that would step the file names in from the prompt. It
+         has to follow the shorthand it narrows — same specificity, so source order decides. */
+      ${isThumbnail ? '' : `
+      .${prefixCls}-upload-list {
+        padding-inline: 0;
+      }
+      `}
+
       .${prefixCls}-upload-list-item-uploading {
         display: none;
       }
