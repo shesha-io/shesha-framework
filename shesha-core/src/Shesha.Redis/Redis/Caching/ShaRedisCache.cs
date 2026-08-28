@@ -100,7 +100,22 @@ namespace Shesha.Redis.Caching
                 await _invalidationBus.PublishAsync(Name, key);
         }
 
-        /// <summary>Stores a freshly read or written value in L1.</summary>
+        /// <summary>
+        /// Stores a freshly read or written value in L1.
+        ///
+        /// The value is cached AS IS, deserialized, so every subsequent hit returns the same
+        /// object instance until the entry is invalidated. That is deliberate and is the whole
+        /// benefit: the cost being removed here is the JSON deserialization on every read, so
+        /// caching a serialized payload or copying on read would reinstate it.
+        ///
+        /// It also matches ABP's in-memory cache (<c>AbpMemoryCache</c>), which has always handed
+        /// out shared references; the previous Redis behaviour of returning a fresh copy per read
+        /// was the outlier.
+        ///
+        /// Callers must therefore treat values obtained from the cache as read-only. Anything that
+        /// genuinely needs an isolated instance should copy it itself, or run with
+        /// <see cref="ShaRedisCacheOptions.L1Enabled"/> set to false.
+        /// </summary>
         protected virtual void PopulateL1(RedisKey normalizedKey, object? value)
         {
             _l1?.Set(normalizedKey.ToString(), value);
