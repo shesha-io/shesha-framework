@@ -1,9 +1,8 @@
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { IToolboxComponent } from '@/interfaces';
 import { FormMarkup } from '@/providers/form/models';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { SmallDashOutlined } from '@ant-design/icons';
-import React from 'react';
 import { ILogViewerProps } from './interfaces';
 import { LogViewerRenderer } from './logViewerRenderer';
 import settingsFormJson from './settingsForm.json';
@@ -30,7 +29,7 @@ const LogViewer: IToolboxComponent<ILogViewerProps> = {
     };
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+
 };
 
 export default LogViewer;

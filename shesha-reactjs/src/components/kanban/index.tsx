@@ -1,6 +1,6 @@
 import { useRefListItemGroupConfigurator } from '@/components/refListSelectorDisplay/provider';
 import { App, Flex, Form, Modal } from 'antd';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import KanbanPlaceholder from './components/kanbanPlaceholder';
 import KanbanColumn, { KanbanUrls } from './components/renderColumn';
 import { IKanbanProps, isKanbanColumn, isRefListCellValue } from './model';
@@ -48,7 +48,12 @@ const KanbanReactComponent: FCUnwrapped<IKanbanProps> = (props) => {
   // on the model is merged onto these items by the provider.
   const columns = useMemo(() => refListItems.filter(isKanbanColumn), [refListItems]);
 
-  const styling = jsonSafeParse<StyleBoxValue>(props.columnStyles?.stylingBox || '{}');
+  const stylingBox = props.columnStyles?.stylingBox;
+  const styling: StyleBoxValue | undefined = isDefined(stylingBox)
+    ? typeof (stylingBox) === "string" && !isNullOrWhiteSpace(stylingBox)
+      ? jsonSafeParse<StyleBoxValue>(stylingBox)
+      : stylingBox
+    : undefined;
   const stylingBoxAsCSS = pickStyleFromModel(styling);
 
   const getGroupingValue = useCallback(

@@ -1,7 +1,7 @@
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { ConditionalMetadataProvider, useShaFormInstance } from '@/providers';
 import { useFormDesigner, useFormDesignerFormMode, useFormDesignerReadOnly, useFormDesignerSettings, useFormDesignerSettingsPanelElement } from '@/providers/formDesigner';
-import React, { FC, useMemo, useEffect, useCallback } from 'react';
+import { FC, useMemo, useEffect, useCallback } from 'react';
 import { ComponentPropertiesPanel } from '../componentPropertiesPanel';
 import { ComponentPropertiesTitle } from '../componentPropertiesTitle';
 import { useStyles } from '../styles/styles';

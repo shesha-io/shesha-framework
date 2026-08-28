@@ -25,15 +25,23 @@ const useDataset = (): IDatasetInstance => {
   return useDataTableActions() as IDatasetInstance; // TODO: remove cast when refactoring is done
 };
 
-export const useDatasetSubscription = (eventType: DatasetEvents): object => {
-  const instance = useDataset();
-
+/**
+ * Subscribe to the events of the specified dataset instance. Is used when the instance is not available
+ * through the context yet (e.g. by the component that registers the data table context)
+ */
+export const useDatasetInstanceSubscription = (instance: IDatasetInstance, eventType: DatasetEvents): object => {
   const [dummy, forceUpdate] = useState({});
   useEffect(() => {
     return instance.subscribe(eventType, () => forceUpdate({}));
   }, [instance, eventType]);
 
   return dummy;
+};
+
+export const useDatasetSubscription = (eventType: DatasetEvents): object => {
+  const instance = useDataset();
+
+  return useDatasetInstanceSubscription(instance, eventType);
 };
 
 const useDataTableStateOrUndefined = (): IDataTableStateContext | undefined => useContext(DataTableStateContext);

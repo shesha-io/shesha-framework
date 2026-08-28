@@ -1,22 +1,26 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import DataTableProvider, { IHasFormDataSourceConfig } from '@/providers/dataTable';
-import React, { ReactElement, useMemo } from 'react';
+import { memo, ReactElement, useMemo } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import { evaluateString } from '@/providers/form/utils';
 import { evaluateYesNo } from '@/utils/form';
-import { FCUnwrapped, useForm, useFormData, useNestedPropertyMetadatAccessor } from '@/providers';
+import { FCUnwrapped, FormMode, useNestedPropertyMetadatAccessor } from '@/providers';
 import { useFormEvaluatedFilter } from '@/providers/dataTable/filters/evaluateFilter';
 import { ITableContextComponentProps } from './models';
 import { IModelValidation } from '@/utils/errors';
-import { useActualContextExecution } from '@/hooks';
+import { useActualContextExecution, useDeepCompareMemo } from '@/hooks';
 import { useStyles } from './styles';
 import { ShaForm } from '@/providers/form';
 import { useParent } from '@/providers/parentProvider';
 import TableContextEmptyState from './tableContextEmptyState';
 import { getEntityTypeName, isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 import { ITableRowData } from '@/providers/dataTable/interfaces';
+import { isNullOrWhiteSpace } from '@/utils';
 
-type ITableContextInnerProps = ITableContextComponentProps;
+interface ITableContextInnerProps extends Omit<ITableContextComponentProps, 'disableRefresh'> {
+  formMode: FormMode;
+  disableRefresh: boolean;
+  permanentFilter: string | undefined;
+};
 
 /**
  * Helper to check if component has configuration errors (for internal DataTableProvider logic)
@@ -30,8 +34,8 @@ const getInternalValidationStatus = (
 ): IModelValidation | undefined => {
   const hasConfigError = !sourceType ||
     (sourceType === 'Entity' && isEntityTypeIdEmpty(entityType)) ||
-    (sourceType === 'Url' && !endpoint) ||
-    (sourceType === 'Form' && !propertyName);
+    (sourceType === 'Url' && isNullOrWhiteSpace(endpoint)) ||
+    (sourceType === 'Form' && isNullOrWhiteSpace(propertyName));
 
   if (hasConfigError) {
     return {
@@ -47,12 +51,10 @@ const getInternalValidationStatus = (
 
 export const TableContextInner: FCUnwrapped<ITableContextInnerProps> = (props) => {
   const { sourceType, entityType, endpoint, customReorderEndpoint, id, propertyName, componentName, allowReordering, components, onBeforeRowReorder, onAfterRowReorder } = props;
-  const { formMode } = useForm();
-  const { data } = useFormData();
   const { styles } = useStyles();
   const parent = useParent();
 
-  const isDesignerMode = formMode === 'designer';
+  const isDesignerMode = props.formMode === 'designer';
 
   // Use real-time child component tracking in designer mode, fallback to static components prop in runtime
   const childComponentIds = ShaForm.useChildComponentIds(id.replace(`${parent.subFormIdPrefix}.`, ''));
@@ -60,12 +62,6 @@ export const TableContextInner: FCUnwrapped<ITableContextInnerProps> = (props) =
   const hasChildComponents = isDesignerMode
     ? childComponentIds.length > 0
     : (components && components.length > 0) || childComponentIds.length > 0;
-  const disableRefresh: boolean = useActualContextExecution(props.disableRefresh, undefined, false);
-
-  const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(entityType);
-  const permanentFilter = useFormEvaluatedFilter({ filter: props.permanentFilter, metadataAccessor: propertyMetadataAccessor });
-
-  const getDataPath = evaluateString(endpoint, { data });
 
   // Get internal validation status for DataTableProvider (used for internal logic only)
   // Error display is handled by FormComponent wrapper via validateModel
@@ -84,7 +80,7 @@ export const TableContextInner: FCUnwrapped<ITableContextInnerProps> = (props) =
     // Render wrapper div with computed styleClass; inner children differ based on empty state
     return (
       <div className={styleClass}>
-        {isDesignerMode && (hasValidationErrors || !hasChildComponents) ? (
+        {isDesignerMode && (hasValidationErrors === true || !hasChildComponents) ? (
           <TableContextEmptyState
             containerId={id}
             componentId={id}
@@ -94,7 +90,7 @@ export const TableContextInner: FCUnwrapped<ITableContextInnerProps> = (props) =
           <DataTableProvider
             userConfigId={props.id}
             entityType={entityType}
-            getDataPath={getDataPath}
+            getDataPath={endpoint}
             propertyName={propertyName ?? ""}
             actionOwnerId={id}
             actionOwnerName={componentName}
@@ -108,9 +104,9 @@ export const TableContextInner: FCUnwrapped<ITableContextInnerProps> = (props) =
             strictSortBy={props.strictSortBy}
             strictSortOrder={props.strictSortOrder}
             standardSorting={props.standardSorting}
-            allowReordering={allowReordering ? evaluateYesNo(allowReordering, formMode) : false}
-            permanentFilter={permanentFilter}
-            disableRefresh={disableRefresh}
+            allowReordering={allowReordering ? evaluateYesNo(allowReordering, props.formMode) : false}
+            permanentFilter={props.permanentFilter}
+            disableRefresh={props.disableRefresh}
             customReorderEndpoint={customReorderEndpoint}
             onBeforeRowReorder={onBeforeRowReorder}
             onAfterRowReorder={onAfterRowReorder}
@@ -129,7 +125,7 @@ export const TableContextInner: FCUnwrapped<ITableContextInnerProps> = (props) =
     );
   };
 
-  if (props.hidden) {
+  if (props.hidden === true) {
     return null;
   }
 
@@ -144,10 +140,19 @@ export const TableContextInner: FCUnwrapped<ITableContextInnerProps> = (props) =
   return componentContent;
 };
 
-export const TableContext: FCUnwrapped<ITableContextComponentProps> = (props) => {
+const MemoTableContextInner = memo(TableContextInner);
+
+export const TableContext: FCUnwrapped<ITableContextComponentProps & { formMode: FormMode }> = (props) => {
   const uniqueKey = useMemo(() => {
     return `${props.sourceType}_${props.propertyName}_${getEntityTypeName(props.entityType) ?? 'empty'}`; // is used just for re-rendering
   }, [props.sourceType, props.propertyName, props.entityType]);
 
-  return <TableContextInner key={uniqueKey} {...props} />;
+  const disableRefresh: boolean = useActualContextExecution(props.disableRefresh, undefined, false);
+
+  const propertyMetadataAccessor = useNestedPropertyMetadatAccessor(props.entityType);
+  const permanentFilter = useFormEvaluatedFilter({ filter: props.permanentFilter, metadataAccessor: propertyMetadataAccessor });
+  const memoFilter = useDeepCompareMemo(() => permanentFilter, [permanentFilter]);
+
+
+  return <MemoTableContextInner key={uniqueKey} {...props} disableRefresh={disableRefresh} permanentFilter={memoFilter} />;
 };

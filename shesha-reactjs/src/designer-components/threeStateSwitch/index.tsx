@@ -1,5 +1,4 @@
 import { CodeOutlined } from '@ant-design/icons';
-import React from 'react';
 import { FormMarkup } from '@/providers/form/models';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';

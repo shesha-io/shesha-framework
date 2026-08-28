@@ -1,5 +1,5 @@
 import { DataTypes } from '@/interfaces';
-import React, { FC, PropsWithChildren, useContext, useEffect, useMemo, useState } from 'react';
+import { FC, PropsWithChildren, useContext, useEffect, useMemo, useState } from 'react';
 import { IObjectMetadata } from '@/interfaces/metadata';
 import {
   IAttachmentsEditorActions,

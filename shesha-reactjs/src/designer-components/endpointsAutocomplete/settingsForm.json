@@ -143,7 +143,6 @@
       "label": "Hide border",
       "parentId": "root",
       "hidden": false,
-      "validate": {},
       "version": 3
     },
     {
@@ -169,8 +168,7 @@
           "label": "Endpoint (verb and url)",
           "value": "endpoint"
         }
-      ],
-      "validate": {}
+      ]
     },
     {
       "textType": "text",
@@ -188,8 +186,7 @@
       },
       "isDynamic": false,
       "version": 4,
-      "description": "Is used to filter the autocomplete by http verb",
-      "validate": {}
+      "description": "Is used to filter the autocomplete by http verb"
     },
     {
       "id": "uNoaYrXfRqe2UA6mia4ViP8WeJhJM4",
@@ -210,8 +207,7 @@
       "labelTitle": "Label",
       "labelName": "label",
       "valueTitle": "Value",
-      "valueName": "value",
-      "validate": {}
+      "valueName": "value"
     },
     {
       "id": "990f54ee-b754-479d-8e45-559efbd70c10",
@@ -232,8 +228,6 @@
       "parentId": "root",
       "hidden": false,
       "description": "Enter custom event handler on changing of event.",
-      "validate": {},
-      "settingsValidationErrors": [],
       "exposedVariables": [
         {
           "name": "data",
@@ -294,8 +288,6 @@
       "parentId": "root",
       "hidden": false,
       "description": "Enter custom event handler on focus of event.",
-      "validate": {},
-      "settingsValidationErrors": [],
       "exposedVariables": [
         {
           "name": "data",
@@ -355,8 +347,6 @@
       "parentId": "root",
       "hidden": false,
       "description": "Enter custom event handler on blur of event.",
-      "validate": {},
-      "settingsValidationErrors": [],
       "exposedVariables": [
         {
           "name": "data",
@@ -431,7 +421,6 @@
       "propertyName": "validate.minLength",
       "parentId": "root",
       "label": "Min Length",
-      "validate": {},
       "version": 3
     },
     {
@@ -440,7 +429,6 @@
       "propertyName": "validate.maxLength",
       "parentId": "root",
       "label": "Max Length",
-      "validate": {},
       "version": 3
     },
     {
@@ -449,7 +437,6 @@
       "propertyName": "validate.message",
       "parentId": "root",
       "label": "Message",
-      "validate": {},
       "version": 4,
       "textType": "text"
     },
@@ -459,11 +446,9 @@
       "propertyName": "validate.validator",
       "parentId": "root",
       "label": "Validator",
-      "validate": {},
       "labelAlign": "right",
       "hidden": false,
       "description": "Enter custom validator logic for form.item rules. Returns a Promise",
-      "settingsValidationErrors": [],
       "exposedVariables": [
         {
           "name": "rules",
@@ -505,8 +490,6 @@
       "propertyName": "style",
       "label": "Style",
       "parentId": "root",
-      "validate": {},
-      "settingsValidationErrors": [],
       "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
       "exposedVariables": [
         {
@@ -571,15 +554,13 @@
             "propertyName": "permissions",
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Permissions",
-            "validate": {},
             "version": 1
           }
         ]
       },
       "collapsible": "header",
       "ghost": true,
-      "hideWhenEmpty": true,
-      "settingsValidationErrors": []
+      "hideWhenEmpty": true
     }
   ],
   "formSettings": {

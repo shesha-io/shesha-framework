@@ -1,5 +1,6 @@
 import { DrawerProps, Menu, MenuProps } from "antd";
-import React, { FC } from "react";
+import { FC } from "react";
+import * as React from "react";
 import { ShaMenuDrawerStyledWrapper } from "./styledDrawer";
 import { ILayoutColor } from "../menu/model";
 import { ScopedMenuStyles } from "../menu/styles";

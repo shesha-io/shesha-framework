@@ -2,7 +2,7 @@ import { useConfigurationStudioEnvironment } from '@/configuration-studio/cs-env
 import { CIDocument, IDocumentInstance, isCIDocument, isCustomDocument, TreeNodeType } from '@/configuration-studio/models';
 import { getCustomIcon, getIcon } from '@/configuration-studio/tree-utils';
 import { isNullOrWhiteSpace } from '@/utils';
-import React, { FC, MouseEventHandler } from 'react';
+import { FC, MouseEventHandler } from 'react';
 
 export interface ITabLabelProps {
   doc: IDocumentInstance;

@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
 import { Button } from 'antd';
 import { SettingOutlined } from '@ant-design/icons';
 import { RequestConfigModal, IRequestConfig } from '@/components/requestConfigModal';

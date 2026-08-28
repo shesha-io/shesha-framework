@@ -16,7 +16,8 @@ import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 import { ModalFooterButtons } from '@/providers/dynamicModal/models';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { App, Button, Spin } from 'antd';
-import React, { CSSProperties, FC, useCallback, useEffect, useMemo, useState } from 'react';
+import { CSSProperties, FC, useCallback, useEffect, useMemo, useState } from 'react';
+import * as React from 'react';
 import { ShaIconTypes } from '../iconPicker';
 import { addPx, capPercentageWidth } from '@/utils/style';
 import { useStyles } from './styles/styles';
@@ -87,6 +88,21 @@ export interface IEntityReferenceProps {
   handleFail: boolean;
   onFail?: IConfigurableActionConfiguration | undefined;
   style?: CSSProperties | undefined;
+  /**
+   * Read-only mode. Distinct from `disabled`: read-only shows the resolved display text as plain,
+   * selectable text with no navigation at all, while `disabled` keeps the link shape but greys it
+   * out and takes it out of the tab order.
+   */
+  readOnly?: boolean | undefined;
+  /** Emotion class carrying the caller's Appearance settings. */
+  className?: string | undefined;
+  /**
+   * Emotion class for the Quickview popover. Separate from `className` because the popover is
+   * portalled to the body, so no descendant selector from the trigger can reach it.
+   */
+  popupClassName?: string | undefined;
+  /** Emotion class for the Dialog modal, portalled to the body for the same reason. */
+  modalClassName?: string | undefined;
   displayType?: 'textTitle' | 'icon' | 'displayProperty' | undefined;
   iconName?: ShaIconTypes | undefined;
   textTitle?: string | undefined;
@@ -150,7 +166,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   });
   const formType = props.formType ?? (props.entityReferenceType === 'Quickview' ? 'quickview' : 'details');
 
-  const { styles } = useStyles();
+  const { styles, cx } = useStyles();
 
   // Deep-compare deps: `entityType` is an object that gets a fresh reference on every
   // designer re-render (e.g. when unrelated Appearance/Quickview-width properties change),
@@ -275,10 +291,13 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
         buttons: props.buttons,
         footerButtons: props.footerButtons,
         additionalProperties:
-          isNonEmptyArray(props.additionalProperties) && props.additionalProperties.some((p) => p.key === 'id')
-            ? props.additionalProperties
+          isNonEmptyArray(props.additionalProperties)
+            ? props.additionalProperties.some((p) => p.key === 'id')
+              ? props.additionalProperties
+              : [{ key: 'id', value: '{{entityReference.id}}' }, ...props.additionalProperties]
             : [{ key: 'id', value: '{{entityReference.id}}' }],
         modalWidth: addPx(props.modalWidth, executionContext),
+        wrapClassName: props.modalClassName,
         skipFetchData: props.skipFetchData ?? false,
         submitHttpVerb: props.submitHttpVerb ?? 'PUT',
       },
@@ -308,6 +327,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     props.footerButtons,
     props.additionalProperties,
     props.modalWidth,
+    props.modalClassName,
     props.skipFetchData,
     props.submitHttpVerb,
   ]);
@@ -326,7 +346,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     // Show loading state for all modes when data is not yet fetched
     if (!fetched)
       return (
-        <Button type="link" className={styles.innerEntityReferenceButtonBoxStyle} style={props.style}>
+        <Button type="link" className={cx(styles.innerEntityReferenceButtonBoxStyle, props.className)} style={props.style}>
           <span className={styles.innerEntityReferenceSpanBoxStyle} title={typeof displayText === 'string' ? displayText : undefined}>
             <Spin size="small" className={styles.spin} />
             <span className={styles.inlineBlock}>Loading...</span>
@@ -334,9 +354,25 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
         </Button>
       );
 
-    if (props.disabled && props.entityReferenceType !== 'Quickview')
+    /* Read-only: show the resolved display text as plain, selectable text. No link, no quickview
+       and no dialog — everything that would let the user navigate away from a field they are only
+       meant to read is suppressed, in this mode and in the disabled one below. */
+    if (props.readOnly === true)
       return (
-        <ShaLink disabled={true} linkToForm={formIdentifier} params={{ id: entityId }} style={props.style}>
+        <span
+          className={cx(styles.innerEntityReferenceButtonBoxStyle, props.className)}
+          style={props.style}
+          title={props.displayType === 'textTitle' ? props.textTitle : (typeof displayText === 'string' ? displayText : undefined)}
+        >
+          <span className={styles.innerEntityReferenceSpanBoxStyle}>
+            {displayTextByType}
+          </span>
+        </span>
+      );
+
+    if (props.disabled === true && props.entityReferenceType !== 'Quickview')
+      return (
+        <ShaLink disabled={true} className={props.className} linkToForm={formIdentifier} params={{ id: entityId }} style={props.style}>
           <span className={styles.innerEntityReferenceSpanBoxStyle} title={props.displayType === 'textTitle' ? props.textTitle : (typeof displayText === 'string' ? displayText : undefined)}>
             {displayTextByType}
           </span>
@@ -345,7 +381,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
 
     if (props.entityReferenceType === 'NavigateLink')
       return (
-        <ShaLink linkToForm={formIdentifier} params={{ id: entityId }} style={props.style}>
+        <ShaLink className={props.className} linkToForm={formIdentifier} params={{ id: entityId }} style={props.style}>
           <span className={styles.innerEntityReferenceSpanBoxStyle} title={props.displayType === 'textTitle' ? props.textTitle : (typeof displayText === 'string' ? displayText : undefined)}>
             {displayTextByType}
           </span>
@@ -371,6 +407,8 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
           formArguments={{ id: entityId }}
           disabled={props.disabled}
           style={props.style}
+          className={props.className}
+          popupClassName={props.popupClassName}
           displayType={props.displayType}
           iconName={props.iconName}
           textTitle={props.textTitle}
@@ -379,15 +417,15 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     }
 
     return (
-      <Button type="link" onClick={dialogExecute} className={styles.innerEntityReferenceButtonBoxStyle} style={props.style}>
+      <Button type="link" onClick={dialogExecute} className={cx(styles.innerEntityReferenceButtonBoxStyle, props.className)} style={props.style}>
         <span className={styles.innerEntityReferenceSpanBoxStyle} title={props.displayType === 'textTitle' ? props.textTitle : (typeof displayText === 'string' ? displayText : undefined)}>{displayTextByType}</span>
       </Button>
     );
-  }, [fetched, styles, props, displayText, formIdentifier, entityId, displayTextByType, dialogExecute, properties, entityType, formType, executionContext]);
+  }, [fetched, styles, cx, props, displayText, formIdentifier, entityId, displayTextByType, dialogExecute, properties, entityType, formType, executionContext]);
 
   if (props.formSelectionMode === 'name' && !props.formIdentifier)
     return (
-      <Button type="link" disabled className={styles.innerEntityReferenceButtonBoxStyle} style={emptyStateStyle}>
+      <Button type="link" disabled className={cx(styles.innerEntityReferenceButtonBoxStyle, props.className)} style={emptyStateStyle}>
         <span className={styles.innerEntityReferenceSpanBoxStyle} title="Form identifier is not configured">Form identifier is not configured</span>
       </Button>
     );
@@ -395,7 +433,7 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
   // Handle empty/null/undefined values - works for both string and object formats
   if (!props.value || !entityId)
     return (
-      <Button type="link" disabled className={styles.innerEntityReferenceButtonBoxStyle} style={emptyStateStyle}>
+      <Button type="link" disabled className={cx(styles.innerEntityReferenceButtonBoxStyle, props.className)} style={emptyStateStyle}>
         <span className={styles.innerEntityReferenceSpanBoxStyle} title={typeof displayText === 'string' ? displayText : undefined}>{displayText as string}</span>
       </Button>
     );

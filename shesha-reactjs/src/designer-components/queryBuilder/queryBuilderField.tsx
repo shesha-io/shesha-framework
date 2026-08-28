@@ -1,7 +1,7 @@
 import { CaretRightOutlined } from '@ant-design/icons';
 import { JsonLogicResult } from '@react-awesome-query-builder/antd';
 import { Button, Collapse, Modal, Space } from 'antd';
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
 import { useMedia } from 'react-use';
 import { CodeEditor } from '@/components/codeEditor/codeEditor';
 import { IQueryBuilderFieldProps } from './models';

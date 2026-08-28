@@ -1,5 +1,4 @@
 import { TableOutlined } from '@ant-design/icons';
-import React from 'react';
 import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
 import { migrateV0toV1 } from './migrations/migrate-v1';
 import { migrateV1toV2 } from './migrations/migrate-v2';

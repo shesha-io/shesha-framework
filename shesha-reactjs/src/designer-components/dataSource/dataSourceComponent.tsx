@@ -1,4 +1,3 @@
-import React from 'react';
 import { DataSource } from './dataSource';
 import { DataSourceSettingsForm } from './dataSourceSettings';
 import { IDataSourceComponentProps } from './models';

@@ -7,8 +7,7 @@
     "parentId": "root",
     "hidden": false,
     "isDynamic": false,
-    "description": "",
-    "settingsValidationErrors": []
+    "description": ""
   },
   {
     "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
@@ -41,8 +40,6 @@
     "propertyName": "onSelectAction",
     "label": "On select action",
     "hidden": false,
-    "validate": {},
-    "settingsValidationErrors": [],
     "parentId": "root",
     "version": 1
   },

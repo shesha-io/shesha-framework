@@ -51,7 +51,7 @@ export const executeResponseTransformation = async (script: string, context: obj
     // (and `response`) via `with(context)`; references to anything not in the context fall through
     // to the real global scope (JSON, Math, etc.). Inlined rather than imported so this module stays
     // dependency-free and unit-testable (the test runner doesn't resolve the `@/` alias).
-    // eslint-disable-next-line no-new-func
+
     const fn = new AsyncFunction('context', `with(context) {\n${script}\n}`) as (ctx: object) => Promise<unknown>;
     output = await fn(context);
   } catch (err) {

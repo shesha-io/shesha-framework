@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import { ConfigProvider } from 'antd';
-import React from 'react';
+import * as React from 'react';
 
 const { ConfigContext } = ConfigProvider;
 

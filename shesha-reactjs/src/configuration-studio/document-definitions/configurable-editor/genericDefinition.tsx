@@ -5,7 +5,7 @@ import { ShaFormProvider } from "@/providers/form/providers/shaFormProvider";
 import { useShaForm } from "@/providers/form/store/shaFormInstance";
 import ParentProvider from "@/providers/parentProvider";
 import { Form, Result } from "antd";
-import React, { ReactNode, useEffect } from "react";
+import { ReactNode, useEffect } from "react";
 import { ConfigurableEditor } from ".";
 import { GenericToolbar } from "./toolbar";
 import { useConfigurationStudio } from "@/configuration-studio/cs/contexts";

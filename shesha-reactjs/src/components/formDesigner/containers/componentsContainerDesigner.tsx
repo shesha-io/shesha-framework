@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { ConfigurableFormComponent } from '../configurableFormComponent';
-import React, { FC, PropsWithChildren, ReactNode, useMemo } from 'react';
+import { FC, PropsWithChildren, ReactNode, useMemo } from 'react';
 import { IComponentsContainerProps } from './componentsContainer';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { TOOLBOX_COMPONENT_DROPPABLE_KEY, TOOLBOX_DATA_ITEM_DROPPABLE_KEY } from '@/providers/form/models';
@@ -127,7 +127,7 @@ export const ComponentsContainerDesigner: FC<PropsWithChildren<IComponentsContai
       )}
     >
       <>
-        {childIds.length === 0 && showHintWhenEmpty && <div className={styles.shaDropHint}>Drag and Drop form component</div>}
+        {childIds.length === 0 && showHintWhenEmpty && <div className={styles.shaDropHintContainer}><div className={styles.shaDropHint}>Drag and Drop form component</div></div>}
         <ReactSortable
           disabled={readOnly}
           onStart={onDragStart}

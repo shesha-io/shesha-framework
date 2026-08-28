@@ -4,7 +4,6 @@ import { SettingsFormMarkupFactory } from '@/interfaces';
 
 export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter }) => {
   // Generate unique IDs for major components
-  const searchableTabsId = nanoid();
   const commonTabId = nanoid();
   const commonStyleRouterId = nanoid();
   const appearanceTabId = nanoid();
@@ -14,63 +13,52 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
 
   return {
     components: fbf()
-      .addSearchableTabs({
-        id: searchableTabsId,
-        propertyName: 'settingsTabs',
-        parentId: 'root',
-        label: 'Settings',
-        hideLabel: true,
-        labelAlign: 'right',
-        size: 'small',
+      .addSearchableTabs({ propertyName: 'settingsTabs', parentId: 'root', label: 'Settings', hideLabel: true, labelAlign: 'right', size: 'small',
         tabs: [
           { key: 'common', title: 'Common', id: commonTabId,
-            components: [
-              ...fbf(commonTabId)
-                .addSettingsInput({ inputType: 'textField', propertyName: 'componentName', label: 'Component Name', validate: { required: true }, jsSetting: false })
-                .stdVisibleEditableInputs('full')
-                .addSettingsInput({ inputType: 'switch', propertyName: 'noDefaultStyling', label: 'No Default Styling', size: 'small', tooltip: 'If checked, the default styles and classes of the container will not be applied.', jsSetting: true })
-                .addPropertyRouter({ id: commonStyleRouterId, componentName: 'propertyRouter1', label: 'Property router1', labelAlign: 'right',
-                  propertyRouteName: removeStyleRouter === true ? '' : { _mode: "code", _code: "    return contexts.canvasContext?.designerDevice || 'desktop';", _value: "" },
-                  components: [
-                    ...fbf(commonStyleRouterId)
-                      .stdLayoutPanel(removeStyleRouter !== true)
-                      .stdDimensionsPanel()
-                      .stdMarginPaddingPanel()
-                      .toJson()],
-                })
-                .toJson(),
-            ],
+            components: fbf(commonTabId)
+              .addSettingsInput({ inputType: 'textField', propertyName: 'componentName', label: 'Component Name', validate: { required: true }, jsSetting: false })
+              .stdVisibleEditableInputs('full')
+              .addSettingsInput({ inputType: 'switch', propertyName: 'noDefaultStyling', label: 'No Default Styling', size: 'small', tooltip: 'If checked, the default styles and classes of the container will not be applied.', jsSetting: true })
+              .addPropertyRouter({ id: commonStyleRouterId, componentName: 'propertyRouter1', label: 'Property router1', labelAlign: 'right',
+                propertyRouteName: removeStyleRouter === true ? '' : { _mode: "code", _code: "    return contexts.canvasContext?.designerDevice || 'desktop';", _value: "" },
+                components: fbf(commonStyleRouterId)
+                  .stdLayoutPanel(removeStyleRouter !== true)
+                  .stdDimensionsPanel()
+                  .stdMarginPaddingPanel()
+                  .toJson(),
+              })
+              .toJson(),
           },
           { key: 'events', title: 'Events', id: eventsTabId, components: [...fbf(eventsTabId).stdEventHandlers(['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave']).toJson()] },
           { key: 'appearance', title: 'Appearance', id: appearanceTabId,
-            components: [...fbf(appearanceTabId)
+            components: fbf(appearanceTabId)
               .addPropertyRouter({ id: styleRouterId, componentName: 'propertyRouter2', label: 'Property router2', labelAlign: 'right',
                 propertyRouteName: removeStyleRouter === true ? '' : { _mode: "code", _code: "    return contexts.canvasContext?.designerDevice || 'desktop';", _value: "" },
-                components: [
-                  ...fbf(styleRouterId)
-                    .stdLayoutPanel(removeStyleRouter !== true)
-                    .stdDimensionsPanel()
-                    .stdBorderPanel(removeStyleRouter !== true)
-                    .stdBackgroundPanel(removeStyleRouter !== true)
-                    .stdShadowPanel()
-                    .stdMarginPaddingPanel()
-                    .addCollapsiblePanel({ label: 'Custom Styles', labelAlign: 'right', ghost: true, collapsible: 'header',
-                      content: {
-                        id: stylePnlCustomId,
-                        components: [...fbf(stylePnlCustomId)
-                          .addSettingsInput({ inputType: 'textField', propertyName: 'className', label: 'Custom CSS Class' })
-                          .addSettingsInput({ inputType: 'codeEditor', propertyName: 'wrapperStyle', label: 'Wrapper Style', description: 'A script that returns the style of the element as an object. This should conform to CSSProperties' })
-                          .addSettingsInput({ inputType: 'codeEditor', propertyName: 'style', label: 'Style', description: 'A script that returns the style of the element as an object. This should conform to CSSProperties' })
-                          .toJson(),
-                        ],
-                      },
-                    })
-                    .toJson()],
-              }).toJson()],
+                components: fbf(styleRouterId)
+                  .stdLayoutPanel(removeStyleRouter !== true)
+                  .stdDimensionsPanel()
+                  .stdBorderPanel(removeStyleRouter !== true)
+                  .stdBackgroundPanel(removeStyleRouter !== true)
+                  .stdShadowPanel()
+                  .stdMarginPaddingPanel()
+                  .addCollapsiblePanel({ label: 'Custom Styles', labelAlign: 'right', ghost: true, collapsible: 'header',
+                    content: {
+                      id: stylePnlCustomId,
+                      components: fbf(stylePnlCustomId)
+                        .addSettingsInput({ inputType: 'textField', propertyName: 'className', label: 'Custom CSS Class' })
+                        .addSettingsInput({ inputType: 'codeEditor', propertyName: 'wrapperStyle', label: 'Wrapper Style', description: 'A script that returns the style of the element as an object. This should conform to CSSProperties' })
+                        .addSettingsInput({ inputType: 'codeEditor', propertyName: 'style', label: 'Style', description: 'A script that returns the style of the element as an object. This should conform to CSSProperties' })
+                        .toJson(),
+                    },
+                  })
+                  .toJson(),
+              }).toJson(),
           },
         ],
       }).toJson(),
     formSettings: {
+      isSettingsForm: true,
       colon: false,
       layout: 'vertical' as FormLayout,
       labelCol: { span: 24 },

@@ -43,19 +43,19 @@ import { ITextComponentProps } from "@/designer-components/text/models";
 import { ITextAreaComponentProps } from "@/designer-components/textArea/interfaces";
 import { ITextFieldComponentProps } from "@/designer-components/textField/interfaces";
 import { ITimePickerComponentProps } from "@/designer-components/timeField/models";
-import { DEFAULT_FORM_SETTINGS, IConfigurableFormComponent, IContainerComponentProps, InteractionType, IPropertyMetadata, IPropertySetting, IToolboxComponent } from "@/interfaces";
+import { DEFAULT_FORM_SETTINGS, getEmptyFlatMarkup, IConfigurableFormComponent, IContainerComponentProps, InteractionType, IPropertyMetadata, IToolboxComponent } from "@/interfaces";
 import { AllComponentsConfig, FluentSettings, FormBuilder, FormBuilderFactory, StandardAppearancePanel, StandardAppearancePanelConfig, StandardFormBuilderMethods } from "./interfaces";
 import { nanoid } from "@/utils/uuid";
 import { linkComponentToModelMetadata, upgradeComponent } from "@/providers/form/utils";
-import { getComponentDefinitions } from "@/providers/form/defaults/toolboxComponents";
 import { fontTypes, fontWeightsOptions, textAlignOptions } from "@/designer-components/_settings/utils/font/utils";
 import { getBorderInputs, getCornerInputs } from "@/designer-components/_settings/utils/border/utils";
-import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from "@/designer-components/_settings/utils/background/utils";
+import { backgroundTypeOptions, gradientDirectionOptions, positionOptions, repeatOptions, sizeOptions } from "@/designer-components/_settings/utils/background/utils";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { isPropertySettings } from "@/designer-components/_settings/utils/utils";
 import { getEventConfig, StandardEventHandler } from "@/designer-components/_common/events";
 import { ALIGN_ITEMS, ALIGN_ITEMS_GRID, ALIGN_SELF, FLEX_DIRECTION, FLEX_WRAP, JUSTIFY_CONTENT, JUSTIFY_ITEMS, JUSTIFY_SELF } from "@/designer-components/container/data";
 import { IContainerCheckerComponentProps } from "@/designer-components/containerChecker/interfaces";
+import { resolveInputVisibility } from "./inputVisibility";
 
 /**
  * Returns `true` when `propertyName`'s trailing segment (the part after the last `.`) is listed in
@@ -200,8 +200,17 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
 
   addSettingsInput = (props: FluentSettings<SettingsInputComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'settingsInput', meta);
 
+  /**
+   * `_addProperty` converts `visibleJs` into a `visible` code evaluator, but only for the row
+   * component itself the inputs inside it are plain objects it never walks, so their `visibleJs`
+   * was carried into the markup as an inert string and the input always rendered. Convert each one
+   * here instead: `getActualModel` resolves the evaluator when it recurses into the `inputs` array,
+   * and `SettingInput` already treats `visible === false` as hidden.
+   */
   addSettingsInputRow = (props: FluentSettings<ISettingsInputRowProps & IConfigurableFormComponent>, meta?: IPropertyMetadata): FormBuilder => {
-    return this._addProperty(props, 'settingsInputRow', meta);
+    const inputs = isDefined(props.inputs) ? resolveInputVisibility(props.inputs) : undefined;
+
+    return this._addProperty(isDefined(inputs) ? { ...props, inputs } : props, 'settingsInputRow', meta);
   };
 
   stdPropertyLabelInputs = (): FormBuilder => {
@@ -248,41 +257,31 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
     return this;
   };
 
-  stdCollapsiblePanel = (label: string, components: (fbf: FormBuilder) => FormBuilder, collapsedByDefault: boolean = false): FormBuilder => {
+  stdCollapsiblePanel = (label: string, components: (fbf: FormBuilder) => FormBuilder, collapsedByDefault: boolean = false, visibleJs?: string | undefined): FormBuilder => {
     const contentId = nanoid();
     const fbf = new FormBuilderImplementation(this.componentDefinitions, contentId) as FormBuilder;
 
     const fixedProps: FluentSettings<ICollapsiblePanelComponentProps> = {
-      label: label,
-      labelAlign: 'right',
-      ghost: true,
-      collapsible: 'header',
-      collapsedByDefault,
-      isDynamic: true,
-      header: {
-        id: nanoid(),
-        components: [],
-      },
-      content: {
-        id: contentId,
-        components: components(fbf).toJson(),
-      },
+      label: label, labelAlign: 'right', ghost: true, collapsible: 'header', collapsedByDefault, isDynamic: true,
+      header: { id: nanoid(), components: [] },
+      content: { id: contentId, components: components(fbf).toJson() },
+      visibleJs,
     };
 
     return this._addProperty(fixedProps, 'collapsiblePanel');
   };
 
-  stdContainer = (components: (fbf: FormBuilder) => FormBuilder, hidden?: boolean | IPropertySetting<boolean> | undefined): FormBuilder => {
+  stdContainer = (components: (fbf: FormBuilder) => FormBuilder, visibleJs?: string | undefined): FormBuilder => {
     const containerId = nanoid();
     const fbf = new FormBuilderImplementation(this.componentDefinitions, containerId) as FormBuilder;
-    const fixedProps: FluentSettings<IContainerComponentProps> = { id: containerId, components: components(fbf).toJson(), hidden };
+    const fixedProps: FluentSettings<IContainerComponentProps> = { id: containerId, components: components(fbf).toJson(), visibleJs };
     return this._addProperty(fixedProps, 'container');
   };
 
-  stdContainerChecker = (components: (fbf: FormBuilder) => FormBuilder, hidden?: boolean | IPropertySetting<boolean> | undefined): FormBuilder => {
+  stdContainerChecker = (components: (fbf: FormBuilder) => FormBuilder, visibleJs?: string | undefined): FormBuilder => {
     const containerId = nanoid();
     const fbf = new FormBuilderImplementation(this.componentDefinitions, containerId) as FormBuilder;
-    const fixedProps: FluentSettings<IContainerCheckerComponentProps> = { id: containerId, components: components(fbf).toJson(), hidden };
+    const fixedProps: FluentSettings<IContainerCheckerComponentProps> = { id: containerId, components: components(fbf).toJson(), visibleJs };
     return this._addProperty(fixedProps, 'containerChecker');
   };
 
@@ -313,26 +312,31 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
     return this;
   };
 
+  stdFontControls = (propertyName: string = 'font', exclude?: string[], panelTitle: string = 'Font', showSeparator: boolean = true): FormBuilder => {
+    if (showSeparator)
+      this.addSectionSeparator({ label: panelTitle, containerStylingBoxJson: { _type: 'styleBox', marginBottom: 8 } });
+    this.addSettingsInputRow({
+      inline: true,
+      propertyName: propertyName,
+      inputs: excludeInputs([
+        { type: 'dropdown', label: 'Family', propertyName: `${propertyName}.type`, hideLabel: true, dropdownOptions: fontTypes },
+        { type: 'numberField', label: 'Size', propertyName: `${propertyName}.size`, hideLabel: true, width: 50 },
+        { type: 'dropdown', label: 'Weight', propertyName: `${propertyName}.weight`, hideLabel: true, dropdownOptions: fontWeightsOptions, width: 48, tooltip: 'Controls text thickness (light, normal, bold, etc.)' },
+        { type: 'colorPicker', label: 'Color', hideLabel: true, propertyName: `${propertyName}.color` },
+        { type: 'dropdown', label: 'Align', propertyName: `${propertyName}.align`, hideLabel: true, width: 48, dropdownOptions: textAlignOptions },
+      ], exclude) });
+    return this;
+  };
+
   stdFontPanel = (propertyName: string = 'font', exclude?: string[], panelTitle: string = 'Font'): FormBuilder => {
-    this.stdCollapsiblePanel(panelTitle, (f) => f
-      .addSettingsInputRow({
-        inline: true,
-        propertyName: propertyName,
-        inputs: excludeInputs([
-          { type: 'dropdown', label: 'Family', propertyName: `${propertyName}.type`, hideLabel: true, dropdownOptions: fontTypes },
-          { type: 'numberField', label: 'Size', propertyName: `${propertyName}.size`, hideLabel: true, width: 50 },
-          { type: 'dropdown', label: 'Weight', propertyName: `${propertyName}.weight`, hideLabel: true, dropdownOptions: fontWeightsOptions, width: 48, tooltip: 'Controls text thickness (light, normal, bold, etc.)' },
-          { type: 'colorPicker', label: 'Color', hideLabel: true, propertyName: `${propertyName}.color` },
-          { type: 'dropdown', label: 'Align', propertyName: `${propertyName}.align`, hideLabel: true, width: 48, dropdownOptions: textAlignOptions },
-        ], exclude),
-      }));
+    this.stdCollapsiblePanel(panelTitle, (f) => f.stdFontControls(propertyName, exclude, panelTitle, false));
     return this;
   };
 
   stdLayoutPanel = (isResponsive?: boolean, propertyName: string = '', panelTitle: string = 'Layout'): FormBuilder => {
-    const getDisplay = ` getSettingValue(${isResponsive === true ? 'data[`${page.canvasContext?.designerDevice || "desktop"}`]' : 'data'}?.display)`;
-    const getFlexDirection = ` getSettingValue(${isResponsive === true ? 'data[`${page.canvasContext?.designerDevice || "desktop"}`]' : 'data'}?.flexDirection)`;
-    const getShowAdvanced = ` getSettingValue(${isResponsive === true ? 'data[`${page.canvasContext?.designerDevice || "desktop"}`]' : 'data'}?.showAdvanced)`;
+    const getDisplay = ` getSettingValue(${isResponsive === true ? 'data[`${page.canvasContext?.designerDevice || "desktop"}`]?' : 'data'}.display)`;
+    const getFlexDirection = ` getSettingValue(${isResponsive === true ? 'data[`${page.canvasContext?.designerDevice || "desktop"}`]?' : 'data'}.flexDirection)`;
+    const getShowAdvanced = ` getSettingValue(${isResponsive === true ? 'data[`${page.canvasContext?.designerDevice || "desktop"}`]?' : 'data'}.showAdvanced)`;
     const propName = isNullOrWhiteSpace(propertyName) ? '' : propertyName + '.';
     this.stdCollapsiblePanel(panelTitle, (f) => {
       f.addSettingsInput({ propertyName: `${propName}display`, label: 'Layout Type', inputType: 'radio',
@@ -420,10 +424,10 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
           f.addSettingsInput({ inputType: 'dropdown', label: 'Justify Self', propertyName: `${propName}justifySelf`, dropdownOptions: JUSTIFY_SELF, tooltip: "The CSS justify-self property sets the way a box is justified inside its alignment container along the appropriate axis." });
           return f;
         },
-        { _code: `return !${getShowAdvanced}`, _mode: 'code', _value: false });
+        `return ${getShowAdvanced}`);
         return f;
       },
-      { _code: `return ${getDisplay} === "block";`, _mode: 'code', _value: false });
+      `return ${getDisplay} !== "block";`);
       return f;
     });
     return this;
@@ -434,7 +438,8 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
       .addSettingsInputRow({
         inline: true,
         inputs: excludeInputs([
-          { type: 'dimensionField', dimensionType: 'width', label: 'Width', width: 85, propertyName: `${propertyName}.width`, icon: 'widthIcon', tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit' },
+          { type: 'dimensionField', dimensionType: 'width', label: 'Width', width: 85, propertyName: `${propertyName}.width`, icon: 'widthIcon',
+            tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit. \nAlso you can use calc value, for example `calc(50% - 10px)` or `50% - 10px`' },
           { type: 'dimensionField', dimensionType: 'minWidth', label: 'Min Width', width: 85, hideLabel: true, propertyName: `${propertyName}.minWidth`, icon: 'minWidthIcon' },
           { type: 'dimensionField', dimensionType: 'maxWidth', label: 'Max Width', width: 85, hideLabel: true, propertyName: `${propertyName}.maxWidth`, icon: 'maxWidthIcon' },
         ], exclude),
@@ -442,7 +447,8 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
       .addSettingsInputRow({
         inline: true,
         inputs: excludeInputs([
-          { type: 'dimensionField', dimensionType: 'height', label: 'Height', width: 85, propertyName: `${propertyName}.height`, icon: 'heightIcon', tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit' },
+          { type: 'dimensionField', dimensionType: 'height', label: 'Height', width: 85, propertyName: `${propertyName}.height`, icon: 'heightIcon',
+            tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit. \nAlso you can use calc value, for example `calc(50% - 10px)` or `50% - 10px`' },
           { type: 'dimensionField', dimensionType: 'minHeight', label: 'Min Height', width: 85, hideLabel: true, propertyName: `${propertyName}.minHeight`, icon: 'minHeightIcon' },
           { type: 'dimensionField', dimensionType: 'maxHeight', label: 'Max Height', width: 85, hideLabel: true, propertyName: `${propertyName}.maxHeight`, icon: 'maxHeightIcon' },
         ], exclude),
@@ -489,7 +495,10 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
       if (keep(`${propertyName}.gradient.colors`))
         f.addSettingsInput({ label: 'Colors', inputType: 'multiColorPicker', propertyName: `${propertyName}.gradient.colors`, jsSetting: false, hideLabel: true,
           visibleJs: `return getSettingValue(${dataPath}?.${propertyName}?.type) === "gradient";`,
-        });
+        })
+          .addSettingsInput({ label: 'Direction', inputType: 'dropdown', propertyName: `${propertyName}.gradient.direction`, dropdownOptions: gradientDirectionOptions, width: 120, jsSetting: false, hideLabel: true,
+            visibleJs: `return getSettingValue(${dataPath}?.${propertyName}?.type) === "gradient";`,
+          });
       if (keep(`${propertyName}.url`))
         f.addSettingsInput({ label: 'URL', inputType: 'textField', propertyName: `${propertyName}.url`, jsSetting: false,
           visibleJs: `return getSettingValue(${dataPath}?.${propertyName}?.type) === "url";`,
@@ -603,7 +612,7 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
     return this.componentDefinitions?.get(type);
   };
 
-  constructor(componentDefinitions?: Map<string, IToolboxComponent>, rootId?: string) {
+  constructor(componentDefinitions: Map<string, IToolboxComponent> | undefined, rootId?: string) {
     this.componentDefinitions = componentDefinitions;
     this.form = [];
     this.rootId = rootId ?? nanoid();
@@ -640,10 +649,7 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
       if (componentDefinition.initModel) formComponent = componentDefinition.initModel(formComponent);
 
       if (componentDefinition.migrator) {
-        formComponent = upgradeComponent(formComponent, componentDefinition, DEFAULT_FORM_SETTINGS, {
-          allComponents: {},
-          componentRelations: {},
-        }, true);
+        formComponent = upgradeComponent(formComponent, componentDefinition, DEFAULT_FORM_SETTINGS, getEmptyFlatMarkup(), true);
       }
     } else
       formComponent.version = "latest";
@@ -671,7 +677,6 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
   }
 };
 
-export const makeFormBuliderFactory: () => FormBuilderFactory = () => {
-  const components = getComponentDefinitions();
+export const makeFormBuliderFactory: (components: Map<string, IToolboxComponent>) => FormBuilderFactory = (components) => {
   return (rootId?: string) => new FormBuilderImplementation(components, rootId);
 };

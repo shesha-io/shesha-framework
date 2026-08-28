@@ -1,4 +1,5 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
+import * as React from 'react';
 
 interface IInputFieldProps {
   value?: string | number | React.ReactNode;

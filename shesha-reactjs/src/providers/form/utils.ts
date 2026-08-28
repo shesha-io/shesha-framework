@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/strict-boolean-expressions: "error" */
 import { updateJsSettingsForComponents } from '@/designer-components/_settings/utils/utils';
 import { normalizeSingleBraceAccessor } from '@/providers/form/utils/mustacheNormalization';
 import {
@@ -9,6 +10,7 @@ import {
 } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import {
+  getEmptyFlatMarkup,
   HttpClientApi,
   IApplicationApi,
   isComponentsContainer,
@@ -39,8 +41,6 @@ import { QueryStringParams } from '@/utils/url';
 import { nanoid } from '@/utils/uuid';
 import { App } from 'antd';
 import { MessageInstance } from 'antd/es/message/interface';
-import { Rule, RuleObject } from 'antd/lib/form';
-import Schema, { Rules, ValidateSource } from 'async-validator';
 import camelcase from 'camelcase';
 import FileSaver from 'file-saver';
 import moment from 'moment';
@@ -75,7 +75,7 @@ import { isHasPropsAccessor, makeObservableProxy, ProxyPropertiesAccessors, Type
 import { useShaFormDataUpdate, useShaFormInstanceOrUndefined } from './providers/shaFormProvider';
 import { IShaFormInstance } from './store/interfaces';
 import { isHasDataGetter } from './touchableProperty';
-import { getActualModel, getActualPropertyValue } from './utils/js-settings';
+import { getActualModel, updateActualPropertyValue } from './utils/js-settings';
 import { findToolboxComponent, getToolboxComponent } from './utils/markup';
 import {
   executeExpression,
@@ -90,6 +90,13 @@ import { IMetadataDispatcher } from '../metadataDispatcher/contexts';
 import { IModalApi } from '../dynamicModal/modalApi';
 import { useModalApiWithFallback } from '../dynamicModal';
 import { ICanvasContextApi } from '@/publicJsApis/apis/canvasContextApi';
+import { makeFormBuliderFactory } from '@/form-factory/implementation';
+import { firstNonEmptyString } from '@/utils/string';
+import { getComponentDefinitions } from './defaults/toolboxComponents';
+import RawAsyncValidator, { InternalRuleItem, RuleItem, Rules, ValidateError, Values } from '@rc-component/async-validator';
+import { Rule as FormRule } from 'antd/es/form';
+import { isNonEmptyArray } from '@/utils/array';
+import { useComponentApiUpdate } from '../componentApi/provider';
 
 export {
   executeExpression, executeScript,
@@ -97,7 +104,7 @@ export {
   executeScriptSync,
   // prop settings
   getActualModel,
-  getActualPropertyValue, getFunctionExecutor, type FunctionExecutor,
+  updateActualPropertyValue as getActualPropertyValue, getFunctionExecutor, type FunctionExecutor,
   type IExpressionExecuterArguments,
   type IExpressionExecuterFailedHandler,
 };
@@ -245,6 +252,7 @@ export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
   const metadataDispatcher = useMetadataDispatcher();
 
   useShaFormDataUpdate();
+  useComponentApiUpdate();
 
   const parent = useParentOrUndefined();
   const form = useShaFormInstanceOrUndefined();
@@ -307,7 +315,7 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
     },
     metadataDispatcher: () => metadataDispatcher,
     contexts: () => {
-      const tcId = topContextId || closestContextId;
+      const tcId = !isNullOrWhiteSpace(topContextId) ? topContextId : closestContextId;
       return isDefined(dcm)
         ? { ...dcm.getDataContextsData(tcId) }
         : undefined;
@@ -341,7 +349,7 @@ const useWrapAvailableConstantsData = (fullContext: AvailableConstantsContext, a
   const accessors = wrapConstantsData({ fullContext, ...args });
 
   const contextProxyRef = useRef<TypedProxy<IApplicationContext>>(undefined);
-  if (!contextProxyRef.current)
+  if (!isDefined(contextProxyRef.current))
     contextProxyRef.current = makeObservableProxy<IApplicationContext>(accessors);
   else
     contextProxyRef.current.refreshAccessors(accessors);
@@ -420,15 +428,21 @@ const getSubContainers = (component: IConfigurableFormComponent, componentRegist
   let subContainers: IComponentsContainer[] = [];
   customContainerNames.forEach((containerName) => {
     const containerValue = unsafeGetValueByPropertyName(component, containerName);
-    const containers = containerValue
+    const containers = isDefined(containerValue)
       ? Array.isArray(containerValue)
-        ? (containerValue as IComponentsContainer[])
-        : [containerValue as IComponentsContainer]
+        ? containerValue.every((c) => isComponentsContainer(c))
+          ? containerValue
+          : containerValue.every((c) => isConfigurableFormComponent(c))
+            ? [{ id: component.id, components: containerValue }]
+            : undefined
+        : isComponentsContainer(containerValue)
+          ? [containerValue]
+          : undefined
       : undefined;
     if (containers) subContainers = [...subContainers, ...containers];
   });
   const standardComponents = unsafeGetValueByPropertyName(component, "components");
-  if (standardComponents)
+  if (isDefined(standardComponents))
     subContainers.push({ id: component.id, components: standardComponents as IConfigurableFormComponent[] });
   return subContainers;
 };
@@ -443,12 +457,12 @@ export const componentsTreeToFlatStructure = (
   toolboxComponents: IToolboxComponents,
   components: IConfigurableFormComponent[],
 ): IFlatComponentsStructure => {
-  const result: IFlatComponentsStructure = {
-    allComponents: {},
-    componentRelations: {},
-  };
+  const result: IFlatComponentsStructure = getEmptyFlatMarkup();
 
   const processComponent = (component: IConfigurableFormComponent, parentId: string): void => {
+    result.parents[component.id] = parentId;
+
+
     // prepare component runtime
     result.allComponents[component.id] = {
       ...component,
@@ -461,17 +475,18 @@ export const componentsTreeToFlatStructure = (
 
     if (component.type) {
       const componentRegistration = toolboxComponents[component.type];
+      if (isDefined(componentRegistration)) {
+        // custom containers
+        const subContainers = getSubContainers(component, componentRegistration);
 
-      // custom containers
-      const subContainers = getSubContainers(component, componentRegistration);
-
-      subContainers.forEach((subContainer) => {
-        if (isDefined(subContainer.components)) {
-          subContainer.components.forEach((c) => {
-            processComponent(c, subContainer.id);
-          });
-        }
-      });
+        subContainers.forEach((subContainer) => {
+          if (isDefined(subContainer.components)) {
+            subContainer.components.forEach((c) => {
+              processComponent(c, subContainer.id);
+            });
+          }
+        });
+      }
 
       // Handle nested custom containers inside array items (e.g., stepFooter inside steps)
       // Generic approach: look for any property that is a container (has id and components)
@@ -480,11 +495,14 @@ export const componentsTreeToFlatStructure = (
           const containerData = unsafeGetValueByPropertyName(component, containerName);
           if (Array.isArray(containerData)) {
             containerData.forEach((item: unknown) => {
-              if (item && typeof item === 'object') {
+              if (isDefined(item) && typeof item === 'object') {
                 // Check all properties of the item for nested containers
                 Object.keys(item).forEach((key) => {
                   const prop = (item as Record<string, unknown>)[key];
                   if (isComponentsContainer(prop)) {
+                    if (!isDefined(result.parents[prop.id]))
+                      result.parents[prop.id] = component.id;
+
                     prop.components.forEach((c) => {
                       processComponent(c, prop.id);
                     });
@@ -505,6 +523,68 @@ export const componentsTreeToFlatStructure = (
   }
 
   return result;
+};
+
+const getParentComponentOrUndefined = (markup: IFlatComponentsStructure, id: string): IConfigurableFormComponent | undefined => {
+  let parentId = markup.parents[id];
+  while (!isNullOrWhiteSpace(parentId)) {
+    const component = markup.allComponents[parentId];
+    if (isConfigurableFormComponent(component)) return component;
+    parentId = markup.parents[parentId];
+  }
+
+  return undefined;
+};
+
+export const getComponentsChain = (markup: IFlatComponentsStructure, id: string): IConfigurableFormComponent[] => {
+  const result: IConfigurableFormComponent[] = [];
+  const component = markup.allComponents[id];
+  if (!isConfigurableFormComponent(component))
+    return result;
+
+  let currentComponent: IConfigurableFormComponent | undefined = component;
+  while (isDefined(currentComponent)) {
+    result.push(currentComponent);
+
+    currentComponent = getParentComponentOrUndefined(markup, currentComponent.id);
+  }
+  return result.reverse();
+};
+
+/**
+ * Check if a component is hidden based on visibility of all its parents and its own visibility
+ * @param markup
+ * @param id
+ */
+export const isComponentHidden = (markup: IFlatComponentsStructure, id: string, allData: object): boolean => {
+  const chain = getComponentsChain(markup, id);
+  const isVisible = chain.every((c) => {
+    const componentWithActualHidden = getActualModel('', c, allData, undefined, (name) => name === "hidden");
+    // const hiddenValue = getSettingValue("hidden", c);
+    return componentWithActualHidden.hidden !== true;
+  });
+  return !isVisible;
+};
+
+export const findComponent = (markup: IFlatComponentsStructure, predicate: (component: IConfigurableFormComponent) => boolean): IConfigurableFormComponent | undefined => {
+  for (const key in markup.allComponents) {
+    if (markup.allComponents.hasOwnProperty(key)) {
+      const component = markup.allComponents[key];
+      if (isConfigurableFormComponent(component) && predicate(component))
+        return component;
+    }
+  }
+  return undefined;
+};
+
+export const foreachComponent = (markup: IFlatComponentsStructure, callback: (component: IConfigurableFormComponent) => void): void => {
+  for (const key in markup.allComponents) {
+    if (markup.allComponents.hasOwnProperty(key)) {
+      const component = markup.allComponents[key];
+      if (isConfigurableFormComponent(component))
+        callback(component);
+    }
+  }
 };
 
 export const upgradeComponent = (
@@ -552,7 +632,9 @@ export const upgradeComponents = (
 export const getClosestComponent = (componentId: string, context: SettingsMigrationContext, componentType: string): IConfigurableFormComponent | null => {
   let component = context.flatStructure.allComponents[componentId];
   do {
-    component = component?.parentId ? context.flatStructure.allComponents[component.parentId] : undefined;
+    component = !isNullOrWhiteSpace(component?.parentId)
+      ? context.flatStructure.allComponents[component.parentId]
+      : undefined;
   } while (component && (isRawComponentsContainer(component) || component.type !== componentType));
 
   return isConfigurableFormComponent(component) && component.type === componentType
@@ -598,7 +680,7 @@ export const componentsFlatStructureToTree = (
       if (isDefined(ownerDefinition) && ownerDefinition.customContainerNames) {
         ownerDefinition.customContainerNames.forEach((sc) => {
           const subContainer = unsafeGetValueByPropertyName(ownerComponent, sc);
-          if (subContainer) {
+          if (isDefined(subContainer)) {
           // container with id
             if (isObjectWithStringId(subContainer))
               staticContainerIds.push(subContainer.id);
@@ -608,7 +690,7 @@ export const componentsFlatStructureToTree = (
                 if (isObjectWithStringId(c))
                   staticContainerIds.push(c.id);
                 // Track nested containers inside array items (generic approach)
-                if (c && typeof c === 'object') {
+                if (isDefined(c) && typeof c === 'object') {
                   Object.keys(c).forEach((key) => {
                     const prop = (c as Record<string, unknown>)[key];
                     if (isComponentsContainer(prop)) {
@@ -760,7 +842,7 @@ export const cloneAndDecorateForMustache = (input: unknown, seen: WeakMap<object
   if (tag !== '[object Object]' && tag !== '[object Array]') return input;
 
   const cached = seen.get(input);
-  if (cached) return cached;
+  if (isDefined(cached)) return cached;
 
   const isArray = Array.isArray(input);
   // Preserve the prototype for class instances so prototype methods/getters remain reachable.
@@ -849,7 +931,7 @@ export const evaluateString = (template: string = '', data: object, skipUnknownT
             ? mathes[0]
             : undefined;
 
-          if (!tag)
+          if (isNullOrWhiteSpace(tag))
             return;
           const parts = tag.split('.');
           const field = parts.pop();
@@ -1000,7 +1082,7 @@ export const evaluateComplexStringWithResult = (
   requireNonEmptyResult: boolean,
 ): IEvaluateComplexStringResult => {
   if (isNullOrWhiteSpace(expression))
-    return expression;
+    return { result: expression, success: true, unevaluatedExpressions: [] };
 
   const matches = new Set([...expression.matchAll(/\{\{(?:(?!}}).)*\}\}/g)].flat());
 
@@ -1037,7 +1119,7 @@ export const isComponentFiltered = (
   component: IConfigurableFormComponent,
   propertyFilter?: (name: string) => boolean,
 ): boolean => {
-  if (propertyFilter && component.propertyName) {
+  if (propertyFilter && !isNullOrWhiteSpace(component.propertyName)) {
     const filteredOut = propertyFilter(component.propertyName);
     if (filteredOut === false) return false;
   }
@@ -1050,7 +1132,7 @@ export const isComponentFiltered = (
  * @param expression field name in dot notation e.g. 'supplier.name' or 'fullName'
  */
 export const getFieldNameFromExpression = (expression: string | undefined | null): string | string[] | undefined => {
-  if (!expression) return undefined;
+  if (isNullOrWhiteSpace(expression)) return undefined;
 
   return expression.includes('.') ? expression.split('.') : expression;
 };
@@ -1073,22 +1155,29 @@ export const hasBoolean = (value: unknown): boolean => {
   return false;
 };
 
-type ValidatorFunc = (rule: RuleObject, value: unknown, callback: (error?: string) => void, data: unknown) => Promise<void>;
+type ValidatorFunc = (rule: InternalRuleItem, value: unknown, callback: (error?: string) => void, data: unknown) => Promise<void>;
+
+export type ValidationError = {
+  errors: ValidateError[];
+  fields: Record<string, ValidateError[]>;
+};
+export const isValidationError = (value: unknown): value is ValidationError => isDefined(value) &&
+  typeof value === 'object' &&
+  'errors' in value && typeof (value.errors) === 'object' && Array.isArray(value.errors) && isNonEmptyArray(value.errors) &&
+  'fields' in value && typeof (value.fields) === 'object';
 
 /**
  * Return valudation rules for the specified form component
  */
-export const getValidationRules = (component: IConfigurableFormComponent, options?: IFormValidationRulesOptions): Rule[] => {
+export const getValidationRules = (component: IConfigurableFormComponent, options?: IFormValidationRulesOptions): RuleItem[] => {
   const { validate } = component;
-  const rules: Rule[] = [];
-
-  // TODO: implement more generic way (e.g. using validation providers)
+  const rules: RuleItem[] = [];
 
   if (validate) {
-    if (validate.required)
+    if (validate.required === true)
       rules.push({
         required: true,
-        message: validate.message || 'This field is required',
+        message: firstNonEmptyString(validate.message, 'This field is required'),
       });
 
     if (validate.minValue !== undefined)
@@ -1103,13 +1192,13 @@ export const getValidationRules = (component: IConfigurableFormComponent, option
         type: 'number',
       });
 
-    if (validate.minLength)
+    if (isDefined(validate.minLength))
       rules.push({
         min: validate.minLength,
         type: 'string',
       });
 
-    if (validate.maxLength)
+    if (isDefined(validate.maxLength))
       rules.push({
         max: validate.maxLength,
         type: 'string',
@@ -1119,7 +1208,7 @@ export const getValidationRules = (component: IConfigurableFormComponent, option
       const validatorFunc = new Function('rule', 'value', 'callback', 'data', validate.validator) as ValidatorFunc;
 
       rules.push({
-        validator: (rule: RuleObject, value: unknown, callback: (error?: string) => void) => {
+        asyncValidator: (rule, value, callback) => {
           const formData = options.getFormData ? options.getFormData() : options.formData;
           return validatorFunc(
             rule,
@@ -1133,6 +1222,11 @@ export const getValidationRules = (component: IConfigurableFormComponent, option
   }
 
   return rules;
+};
+
+export const getAntdFormValidationRules = (component: IConfigurableFormComponent, options?: IFormValidationRulesOptions): FormRule[] => {
+  const rules = getValidationRules(component, options);
+  return rules as FormRule[];
 };
 
 const DICTIONARY_ACCESSOR_REGEX = /(^[\s]*\{(?<key>[\w]+)\.(?<accessor>[^\}]+)\}[\s]*$)/;
@@ -1173,7 +1267,7 @@ const evaluateValueInternal = (value: string, dictionary: IAnyObject, isRoot: bo
     return evaluateValueInternal(accessor, dictionary[key] as IAnyObject, false);
   } else {
     const container = dictionary[key];
-    if (!container) return null;
+    if (!isDefined(container)) return null;
 
     return (container as IAnyObject)[accessor];
   }
@@ -1185,7 +1279,7 @@ export const evaluateValue = (value: string, dictionary: object): unknown => {
 
 export const evaluateValueAsString = (value: string, dictionary: object): string | undefined => {
   const evaluated = evaluateValue(value, dictionary);
-  return evaluated ? evaluated.toString() : undefined;
+  return isDefined(evaluated) ? evaluated.toString() : undefined;
 };
 
 export const getComponentsFromMarkup = (markup: FormMarkup): IConfigurableFormComponent[] => {
@@ -1209,32 +1303,129 @@ export const getComponentsAndSettings = (markup: FormMarkup): FormMarkupWithSett
   };
 };
 
-export const validateForm = (rules: Rules, values: ValidateSource): Promise<void> => {
-  const validator = new Schema(rules);
+type RulesDescriptor = Record<string, RuleItem | RuleItem[] | { type: 'object' | 'array'; fields?: RulesDescriptor }>;
+export const isRuleItem = (rule: unknown): rule is RuleItem => isDefined(rule) && typeof rule === 'object' && "type" in rule && rule.type === 'object';
+export const isRuleItemArray = (rule: unknown): rule is RuleItem[] => isDefined(rule) && Array.isArray(rule) && rule.every(isRuleItem);
+export const isRuleItemOrArray = (rule: unknown): rule is RuleItem | RuleItem[] => isRuleItem(rule) || isRuleItemArray(rule);
 
-  return validator.validate(values);
+
+export const getObjectRule = (rule: RuleItem | RuleItem[]): RuleItem | undefined => {
+  if (Array.isArray(rule)) {
+    return rule.find((rule) => rule.type === 'object');
+  } else {
+    return rule.type === 'object' ? rule : undefined;
+  }
 };
 
-export const getFormValidationRules = (markup: FormMarkup): Rules => {
+export const isRequired = (rule: RuleItem | RuleItem[]): boolean => {
+  if (Array.isArray(rule)) {
+    return rule.some(isRequiredRule);
+  } else {
+    return isRequiredRule(rule);
+  }
+};
+
+type RequiredRule = RuleItem & { required: true };
+const isRequiredRule = (rule: unknown): rule is RequiredRule => isDefined(rule) && typeof rule === 'object' && "required" in rule && rule.required === true;
+export const setRuleAtPath = (rules: RulesDescriptor, path: string, rule: RuleItem | RuleItem[]): void => {
+  const newRules: RuleItem[] = Array.isArray(rule) ? rule : [rule];
+  const segments = path.split('.');
+  let current: RulesDescriptor = rules;
+
+  const isRequired = Array.isArray(rule) ? rule.some(isRequiredRule) : isRequiredRule(rule);
+
+  for (let i = 0; i < segments.length; i++) {
+    const segment = segments[i]!;
+    const isLast = i === segments.length - 1;
+
+    if (isLast) {
+      // ---- Leaf: merge the rule ----
+      const target = current[segment];
+      if (isDefined(target)) {
+        if (Array.isArray(target)) {
+          current[segment] = [...target, ...newRules];
+        } else if (typeof target === 'object') {
+          current[segment] = [target, ...newRules];
+        }
+      } else
+        current[segment] = [...newRules];
+    } else {
+      // ---- Intermediate: ensure an object/array container exists ----
+      if (!current[segment]) {
+        // Create a default object node with a `fields` child
+        const newContainer: RuleItem = { type: 'object', fields: {} };
+        // propogate required flag. async-validator skips empty objects
+        if (isRequired)
+          newContainer.required = true;
+        current[segment] = newContainer;
+      }
+
+      // Ensure the node has a `fields` property to dive deeper
+      const currentSegment = current[segment];
+      if (isRuleItem(currentSegment)) {
+        if (!currentSegment.fields) {
+          // If it's a rule without fields, we convert it to a container
+          // (this keeps the existing type if present, but adds fields)
+          const newFields: RulesDescriptor = {};
+          current[segment] = {
+            ...current[segment],
+            fields: newFields,
+          };
+          current = newFields;
+        } else
+          current = currentSegment.fields;
+      } else if (Array.isArray(currentSegment)) {
+        const objectRule = currentSegment.find((rule) => rule.type === 'object');
+        if (isDefined(objectRule)) {
+          current = (objectRule.fields ??= {});
+        } else {
+          const newFields: RulesDescriptor = {};
+          currentSegment.push({ type: 'object', fields: newFields });
+          current = newFields;
+        }
+      } else
+        // Cannot traverse – invalid structure; abort this path
+        return;
+    }
+  }
+};
+
+export const getFormValidationRules = (markup: FormMarkup, values: Values): Rules => {
   const components = getComponentsFromMarkup(markup);
 
+  const designerComponents: IToolboxComponents = Object.fromEntries(getComponentDefinitions());
+
+  const flatStructure = componentsTreeToFlatStructure(designerComponents, components);
+
   const rules: Rules = {};
-  components.forEach((component) => {
-    if (component.propertyName)
-      rules[component.propertyName] = getValidationRules(component) as [];
-  });
+  for (const key in flatStructure.allComponents) {
+    if (flatStructure.allComponents.hasOwnProperty(key)) {
+      const item = flatStructure.allComponents[key];
+
+      if (isConfigurableFormComponent(item) && !isNullOrWhiteSpace(item.propertyName)) {
+        const itemRules = getValidationRules(item);
+        if (isNonEmptyArray(itemRules)) {
+          // validate only when component is not hidden
+          const hidden = isComponentHidden(flatStructure, item.id, { data: values });
+          if (!hidden) {
+            setRuleAtPath(rules, item.propertyName, itemRules);
+          }
+        }
+      }
+    }
+  }
 
   return rules;
 };
 
-export const validateConfigurableComponentSettings = (markup: FormMarkup | SettingsFormMarkupFactory, values: ValidateSource): Promise<void> => {
-  // TODO: restore validation
-  if (typeof (markup) === 'function')
-    return Promise.resolve();
+export const validateConfigurableComponentSettings = (markupOrFactory: FormMarkup | SettingsFormMarkupFactory, values: Values): Promise<Values> => {
+  // TODO(validation): pass fbf as argument to use full components list
+  const markup = typeof markupOrFactory === 'function'
+    ? markupOrFactory({ fbf: makeFormBuliderFactory(getComponentDefinitions()), removeStyleRouter: true })
+    : markupOrFactory;
 
-  const rules = getFormValidationRules(markup);
-  const validator = new Schema(rules);
-
+  const rules = getFormValidationRules(markup, values);
+  const validator = new RawAsyncValidator(rules);
   return validator.validate(values);
 };
 
@@ -1246,8 +1437,8 @@ export function linkComponentToModelMetadata<TModel extends IConfigurableFormCom
   let mappedModel = model;
 
   // map standard properties
-  if (metadata.label) mappedModel.label = metadata.label;
-  if (metadata.description) mappedModel.description = metadata.description;
+  if (!isNullOrWhiteSpace(metadata.label)) mappedModel.label = metadata.label;
+  if (!isNullOrWhiteSpace(metadata.description)) mappedModel.description = metadata.description;
 
   // map configurable properties
   if (metadata.readonly === true) mappedModel.editMode = 'readOnly';
@@ -1255,12 +1446,12 @@ export function linkComponentToModelMetadata<TModel extends IConfigurableFormCom
   if (!mappedModel.validate)
     mappedModel.validate = {};
 
-  if (metadata.max) mappedModel.validate.maxValue = metadata.max;
-  if (metadata.min) mappedModel.validate.minValue = metadata.min;
-  if (metadata.maxLength) mappedModel.validate.maxLength = metadata.maxLength;
-  if (metadata.minLength) mappedModel.validate.minLength = metadata.minLength;
+  if (isDefined(metadata.max)) mappedModel.validate.maxValue = metadata.max;
+  if (isDefined(metadata.min)) mappedModel.validate.minValue = metadata.min;
+  if (isDefined(metadata.maxLength)) mappedModel.validate.maxLength = metadata.maxLength;
+  if (isDefined(metadata.minLength)) mappedModel.validate.minLength = metadata.minLength;
   if (metadata.required === true) mappedModel.validate.required = true;
-  if (metadata.validationMessage) mappedModel.validate.message = metadata.validationMessage;
+  if (!isNullOrWhiteSpace(metadata.validationMessage)) mappedModel.validate.message = metadata.validationMessage;
 
   // map component-specific properties
   if (component.linkToModelMetadata) mappedModel = component.linkToModelMetadata(mappedModel, metadata);
@@ -1321,7 +1512,7 @@ export const processRecursive = (
 
   containers.forEach((cnt) => {
     const containerName = cnt as keyof IConfigurableFormComponent;
-    const containerComponents = component[containerName]
+    const containerComponents = isDefined(component[containerName])
       ? Array.isArray(component[containerName])
         ? (component[containerName] as IConfigurableFormComponent[])
         : [component[containerName] as IConfigurableFormComponent]
@@ -1407,13 +1598,12 @@ export const createComponentModelForDataProperty = (
     // parentId: containerId,
     visible: true,
     isDynamic: false,
-    validate: {},
   };
   if (toolboxComponent.initModel) componentModel = toolboxComponent.initModel(componentModel);
 
   if (toolboxComponent.migrator && migrator) componentModel = migrator(componentModel, toolboxComponent);
 
-  if (!toolboxComponent.allowInherit)
+  if (toolboxComponent.allowInherit !== true)
     componentModel = linkComponentToModelMetadata(toolboxComponent, componentModel, propertyMetadata);
 
   return componentModel;
@@ -1434,7 +1624,7 @@ export const pickStyleFromModel = (model: StyleBoxValue | undefined, ...args: un
   if (isDefined(model)) {
     propsToCopy.forEach((prop) => {
       const key = prop as keyof StyleBoxValue;
-      if (model[key]) style = { ...style, [key]: `${model[key]}px` };
+      if (isDefined(model[key])) style = { ...style, [key]: `${model[key]}px` };
     });
   }
 
@@ -1450,7 +1640,7 @@ export const getStyle = (
   defaultStyle: object = emptyStyle,
   excludeMargin: boolean = false,
 ): CSSProperties => {
-  if (!style)
+  if (isNullOrWhiteSpace(style))
     return defaultStyle;
 
   const evaluator = new Function('data, globalState', style) as StyleFunction;
@@ -1572,7 +1762,7 @@ export interface EvaluationContext {
   evaluationFilter?: (context: EvaluationContext, data: unknown) => boolean;
 };
 const evaluateRecursive = (data: unknown, evaluationContext: EvaluationContext): unknown => {
-  if (!data)
+  if (!isDefined(data))
     return data;
 
   const { path, contextData, evaluationFilter } = evaluationContext;
@@ -1633,7 +1823,7 @@ export const genericActionArgumentsEvaluator = <TArguments = ActionParametersDic
  */
 export const convertFormMarkupToFlatStructure = (markup: FormRawMarkup, formSettings: IFormSettings | undefined, designerComponents: IToolboxComponents): IFlatComponentsStructure => {
   let components = getComponentsFromMarkup(markup);
-  if (formSettings?.isSettingsForm)
+  if (formSettings?.isSettingsForm === true)
     components = updateJsSettingsForComponents(designerComponents, components);
   const newFlatComponents = componentsTreeToFlatStructure(designerComponents, components);
 

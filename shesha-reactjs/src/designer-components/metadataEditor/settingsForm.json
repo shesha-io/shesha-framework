@@ -95,8 +95,7 @@
       },
       "collapsible": "header",
       "ghost": true,
-      "hideWhenEmpty": true,
-      "settingsValidationErrors": []
+      "hideWhenEmpty": true
     },
     {
       "id": "1HN3kJVk0rT-XYjOfKJOv",
@@ -122,8 +121,6 @@
             "propertyName": "baseProperties",
             "label": "Base properties",
             "parentId": "PsUJNIUY99sSnEs7Fi3C1",
-            "validate": {},
-            "settingsValidationErrors": [],
             "description": "",
             "exposedVariables": [
               {
@@ -143,7 +140,6 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
       "componentName": "",
       "className": ""
     },
@@ -170,15 +166,13 @@
             "propertyName": "permissions",
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Permissions",
-            "validate": {},
             "version": 1
           }
         ]
       },
       "collapsible": "header",
       "ghost": true,
-      "hideWhenEmpty": true,
-      "settingsValidationErrors": []
+      "hideWhenEmpty": true
     }
   ],
   "formSettings": {

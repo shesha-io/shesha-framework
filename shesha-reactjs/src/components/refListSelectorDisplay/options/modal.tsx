@@ -1,5 +1,5 @@
 import { Modal } from 'antd';
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
 import { useDeepCompareEffect } from 'react-use';
 import RefListItemGroupConfigurator from './configurator';
 import RefListItemsContainer from './refListItemsContainer';

@@ -1,4 +1,5 @@
-import React, { CSSProperties, FC, PropsWithChildren, ReactNode, useMemo } from 'react';
+import { CSSProperties, FC, PropsWithChildren, ReactNode, useMemo } from 'react';
+import * as React from 'react';
 import { Button } from 'antd';
 import { FormIdentifier } from '@/interfaces';
 import { useShaRouting } from '@/providers/shaRouting';

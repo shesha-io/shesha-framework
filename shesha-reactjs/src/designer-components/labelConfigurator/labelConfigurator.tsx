@@ -1,4 +1,5 @@
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
+import * as React from 'react';
 import { useStyles } from './styles';
 import { labelAlignOptions } from './utils';
 import { SettingInput } from '../settingsInput/settingsInput';
@@ -20,14 +21,14 @@ const LabelConfiguratorComponent: FC<ILabelProps> = ({ hideLabel: value, readOnl
 
   return (
     <>
-      <div className={!value ? styles.flexWrapper : ''}>
+      <div className={value !== true ? styles.flexWrapper : ''}>
         <SettingInput
           label="Label Align"
           hideLabel
           propertyName="labelAlign"
           readOnly={readOnly}
           type="radio"
-          hidden={value}
+          visible={value !== true}
           buttonGroupOptions={labelAlign ? labelAlign : labelAlignOptions}
           jsSetting={false}
           id={ids[0]}
@@ -35,8 +36,8 @@ const LabelConfiguratorComponent: FC<ILabelProps> = ({ hideLabel: value, readOnl
         <SettingInput
           id={ids[1]}
           label="Show Label"
-          hideLabel={!value}
-          hidden={!value}
+          hideLabel={value !== true}
+          visible={value}
           propertyName="hideLabel"
           readOnly={readOnly}
           jsSetting={false}
@@ -47,11 +48,11 @@ const LabelConfiguratorComponent: FC<ILabelProps> = ({ hideLabel: value, readOnl
           id={ids[2]}
           label="Hide Label"
           tooltip="Hide Label"
-          hideLabel={!value}
+          hideLabel={value !== true}
           propertyName="hideLabel"
           readOnly={readOnly}
           jsSetting={false}
-          hidden={value}
+          visible={value !== true}
           type="button"
           icon="EyeInvisibleOutlined"
         />
@@ -62,9 +63,9 @@ const LabelConfiguratorComponent: FC<ILabelProps> = ({ hideLabel: value, readOnl
         label={label}
         propertyName="label"
         readOnly={readOnly}
-        jsSetting={!value}
+        jsSetting={value !== true}
         placeholder={placeholder}
-        visible={!value}
+        visible={value !== true}
       />
     </>
   );

@@ -1,6 +1,5 @@
 import { IConfigurableColumnsProps, IDataColumnsProps, IRendererColumnProps } from "@/providers/datatableColumnsConfigurator/models";
 import { StatusCell } from "./statusCell";
-import React from "react";
 import { PackageItemDto } from "../itemsImport/models";
 import { DescriptionCell } from "./descriptionCell";
 

@@ -1,4 +1,4 @@
-import React, { useState, FC, ComponentProps } from 'react';
+import { useState, FC, ComponentProps } from 'react';
 import {
   DeleteOutlined,
   FileZipTwoTone,

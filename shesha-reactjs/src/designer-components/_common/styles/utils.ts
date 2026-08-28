@@ -1,4 +1,4 @@
-import { BorderStyle, IBackgroundValue, IBorderValue, IDimensionsValue, IFontValue, IGradientValue, IShadowValue } from "@/designer-components/_settings/utils";
+import { BorderStyle, getGradientColors, IBackgroundValue, IBorderValue, IDimensionsValue, IFontValue, IGradientValue, IShadowValue } from "@/designer-components/_settings/utils";
 import { IConfigurableFormComponent, IStyleValue, StyleBoxValue } from "../../../providers/form/models";
 import { addPx, hasNumber } from "@/utils/style";
 import { StringBuilder } from "@/utils";
@@ -11,47 +11,100 @@ const UNITLESS_PROPERTIES = new Set([
   'boxFlex', 'boxFlexGroup', 'boxOrdinalGroup', 'columnCount', 'columns', 'flex', 'flexGrow', 'flexPositive',
   'flexShrink', 'flexNegative', 'flexOrder', 'gridRow', 'gridColumn', 'fontWeight', 'lineClamp', 'lineHeight',
   'opacity', 'order', 'orphans', 'tabSize', 'widows', 'zIndex', 'zoom',
+  // SVG presentation attributes React accepts on CSSProperties.
+  'fillOpacity', 'floodOpacity', 'stopOpacity', 'strokeDasharray', 'strokeMiterlimit', 'strokeOpacity',
+  'strokeWidth',
+  // Vendor-prefixed forms of the above; React spells these with a capitalised prefix.
+  'WebkitLineClamp', 'WebkitBoxOrdinalGroup', 'WebkitFlexGrow', 'WebkitFlexShrink', 'WebkitOrder',
+  'MozBoxFlex', 'msFlex', 'msFlexPositive', 'msGridRow', 'msGridColumn',
 ]);
 
 /**
- * Serialises a evaluated Custom style object into CSS declarations.
+ * Serialises a React `CSSProperties` object into a CSS declaration string suitable for
+ * interpolation into an emotion template literal.
  *
- * The framework applies a component's own custom style inline (as `styleJson`), but a nested
- * style set has no inline element of its own — its declarations have to be emitted into a
- * scoped rule, which needs them as text.
+ * Emotion's `CSSObject` is not structurally compatible with React's `CSSProperties`, so a custom
+ * style object cannot simply be spread into a `css` block. Keys are kebab-cased, `--custom-props`
+ * are passed through untouched, and `px` is appended only to numeric values of properties that
+ * actually take a length (see `UNITLESS_PROPERTIES`).
  */
 export const cssPropertiesToString = (style: CSSProperties | undefined): string => {
   if (!isDefined(style)) return '';
   const sb = new StringBuilder();
   Object.entries(style).forEach(([key, value]) => {
-    if (value === undefined || value === null || value === '') return;
-    // React accepts camelCase; CSS needs kebab-case. Custom properties (--x) are passed through.
-    const property = key.startsWith('--') ? key : key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
-    const cssValue = typeof value === 'number' && !UNITLESS_PROPERTIES.has(key) ? `${value}px` : `${value}`;
-    sb.append(`${property}: ${cssValue};`);
+    if (!isDefined(value) || value === '') return;
+    // Custom properties are already in their final form and must keep their exact casing.
+    // React writes the Microsoft prefix lowercase (`msFlex`), which plain kebab-casing would
+    // render as `ms-flex`; the vendor declaration needs the leading dash. The other prefixes
+    // (`WebkitBoxShadow`, `MozAppearance`) capitalise, so the generic rule already emits theirs.
+    const name = key.startsWith('--')
+      ? key
+      : (/^ms[A-Z]/.test(key) ? `-${key}` : key).replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
+    const serialised = typeof value === 'number' && !UNITLESS_PROPERTIES.has(key)
+      ? `${value}px`
+      : String(value);
+    sb.append(`${name}: ${serialised};`);
   });
   return sb.build();
 };
 
-const isBackgroundProperty = (key: string): boolean => key === 'background' || key.startsWith('background');
-
 /**
- * Splits an evaluated Custom style into its background declarations and everything else.
+ * Splits a custom style object into its background-related declarations and everything else.
  *
- * Checkbox and radio indicators fill only when checked, so the Background panel is scoped to
- * the checked selector. A custom style has to honour the same convention, otherwise a
- * background set there would paint the box in its unchecked state too.
+ * Some components deliberately scope their Background panel to a state selector (a checkbox or
+ * radio indicator only fills when checked; a dropdown tag only takes the configured colour when
+ * the option carries none). A custom style applied to the unconditional selector would paint the
+ * element in states the panel intentionally leaves alone. Splitting lets the caller route the
+ * background half to the same selector the panel uses and the rest to the base rule.
+ *
+ * Every `background*` longhand travels with the shorthand so a single visual intent is never
+ * split across two states.
  */
 export const splitBackgroundProperties = (style: CSSProperties | undefined): { background: CSSProperties; rest: CSSProperties } => {
+  // Built as plain records because `CSSProperties` has no string index signature, and its keys and
+  // values cannot be correlated when read back as a union — assigning one to the other does not
+  // typecheck. The narrowing happens on return, where the keys are known to have come from a
+  // `CSSProperties` object.
   const background: Record<string, unknown> = {};
   const rest: Record<string, unknown> = {};
-  if (isDefined(style)) {
-    Object.entries(style).forEach(([key, value]) => {
-      if (isBackgroundProperty(key)) background[key] = value;
-      else rest[key] = value;
-    });
-  }
+  if (!isDefined(style)) return { background: {}, rest: {} };
+  Object.entries(style).forEach(([key, value]) => {
+    const target = key.startsWith('background') ? background : rest;
+    target[key] = value;
+  });
   return { background: background as CSSProperties, rest: rest as CSSProperties };
+};
+
+/** Custom-style properties that describe text rather than the box that contains it. */
+const TEXT_STYLE_PROPERTIES = new Set([
+  'color', 'font', 'fontFamily', 'fontSize', 'fontWeight', 'fontStyle', 'fontVariant', 'fontStretch',
+  'lineHeight', 'letterSpacing', 'wordSpacing', 'textAlign', 'textDecoration', 'textTransform',
+  'textShadow', 'textIndent', 'whiteSpace', 'wordBreak', 'textOverflow', 'direction',
+]);
+
+/**
+ * Splits a custom style into the properties that style text and everything else.
+ *
+ * A dropdown popup needs the two halves on different elements. The box half (background, border,
+ * padding, shadow) belongs on the panel, but the text half has to be restated on each option: antd
+ * sets colour and font on the option element itself, so a rule on an ancestor — or an inline style
+ * on the popup root — is overridden rather than inherited, and the user's colour and font size
+ * silently do nothing.
+ *
+ * Dimensions are deliberately in neither half: callers drop them before splitting, since a popup is
+ * sized to its trigger or its content.
+ */
+export const splitTextProperties = (style: CSSProperties | undefined): { text: CSSProperties; box: CSSProperties } => {
+  // Plain records for the same reason as `splitBackgroundProperties` above: `CSSProperties` has no
+  // index signature and its key/value union cannot be correlated when read back.
+  const text: Record<string, unknown> = {};
+  const box: Record<string, unknown> = {};
+  if (!isDefined(style)) return { text: {}, box: {} };
+  Object.entries(style).forEach(([key, value]) => {
+    const target = TEXT_STYLE_PROPERTIES.has(key) ? text : box;
+    target[key] = value;
+  });
+  return { text: text as CSSProperties, box: box as CSSProperties };
 };
 
 export const getStyleValueFromModel = (model: IConfigurableFormComponent): IStyleValue => {
@@ -63,7 +116,7 @@ export const getStyleValueFromModel = (model: IConfigurableFormComponent): IStyl
     dimensions: model.dimensions,
     size: model.size,
     style: model.style,
-    styleJson: model.styleJson,
+    styleCss: model.styleCss,
     /** @deprecated use stylingBoxJson insted */
     stylingBox: model.stylingBox,
     stylingBoxJson: model.stylingBoxJson,
@@ -78,14 +131,13 @@ export const getStyleValueFromModel = (model: IConfigurableFormComponent): IStyl
   };
 };
 
-const borderCss = (b: BorderStyle | undefined): string => `${addPx(b?.width) ?? ''} ${b?.style ?? ''} ${b?.color ?? ''}`;
+export const borderCss = (b: BorderStyle | undefined): string => `${addPx(b?.width) ?? '0px'} ${b?.style ?? 'none'} ${b?.color ?? 'transparent'}`;
 
-const gradientCss = (g: IGradientValue): string => {
+export const gradientCss = (g: IGradientValue): string => {
   const direction = g.direction;
   const isRadial = direction === 'radial';
   const isConic = direction === 'conic';
-  const colors = g.colors || {};
-  const colorsString = Object.values(colors).filter((color) => Boolean(color) && color.trim() !== '').join(', ');
+  const colorsString = getGradientColors(g.colors).join(', ');
   return colorsString
     ? isRadial || isConic
       ? `${direction}-gradient(${colorsString})`
@@ -117,29 +169,39 @@ export const borderRadiusStyles = (model: IBorderValue | undefined, important: b
   return sb.build();
 };
 
-export const borderLinesStyles = (model: IBorderValue | undefined): string => {
+export const borderLinesStyles = (model: IBorderValue | undefined, important: boolean = false): string => {
   if (!model) return '';
   const sb = new StringBuilder();
-  if (model.borderType === 'all' && model.border?.all) sb.append(`border: ${borderCss(model.border.all)};`);
-  if (model.borderType !== 'all' && model.border?.top) sb.append(`border-top: ${borderCss(model.border.top)};`);
-  if (model.borderType !== 'all' && model.border?.right) sb.append(`border-right: ${borderCss(model.border.right)};`);
-  if (model.borderType !== 'all' && model.border?.bottom) sb.append(`border-bottom: ${borderCss(model.border.bottom)};`);
-  if (model.borderType !== 'all' && model.border?.left) sb.append(`border-left: ${borderCss(model.border.left)};`);
+  if (model.borderType === 'all' && model.border?.all) sb.append(`border: ${borderCss(model.border.all)} ${important === true ? '!important' : ''};`);
+  if (model.borderType !== 'all' && model.border?.top) sb.append(`border-top: ${borderCss(model.border.top)} ${important === true ? '!important' : ''};`);
+  if (model.borderType !== 'all' && model.border?.right) sb.append(`border-right: ${borderCss(model.border.right)} ${important === true ? '!important' : ''};`);
+  if (model.borderType !== 'all' && model.border?.bottom) sb.append(`border-bottom: ${borderCss(model.border.bottom)} ${important === true ? '!important' : ''};`);
+  if (model.borderType !== 'all' && model.border?.left) sb.append(`border-left: ${borderCss(model.border.left)} ${important === true ? '!important' : ''};`);
   return sb.build();
 };
 
-export const borderStyles = (model: IBorderValue | undefined): string => {
+export const borderStyles = (model: IBorderValue | undefined, important: boolean = false): string => {
   if (!model) return '';
   const sb = new StringBuilder();
-  sb.append(borderLinesStyles(model));
-  sb.append(borderRadiusStyles(model));
+  sb.append(borderLinesStyles(model, important));
+  sb.append(borderRadiusStyles(model, important));
   return sb.build();
+};
+
+export const backgroundCss = (bg: IBackgroundValue | undefined): string => {
+  if (!isDefined(bg)) return 'transparent';
+  if (bg.type === 'color' && isDefined(bg.color)) return bg.color || 'transparent';
+  if (bg.type === 'gradient' && isDefined(bg.gradient)) return gradientCss(bg.gradient) || 'transparent';
+  if (bg.type === 'image' && isDefined(bg.uploadFile)) return `url(${bg.uploadFile.url || bg.uploadFile})`;
+  if (bg.type === 'url' && isDefined(bg.url)) return `url(${bg.url})`;
+  if (bg.type === 'storedFile' && isDefined(bg.url)) return `url(${bg.url})`;
+  return 'transparent';
 };
 
 export const backgroundStyles = (model: IBackgroundValue | undefined): string => {
   if (!model) return '';
   const sb = new StringBuilder();
-  if (model.type === 'color' && Boolean(model.color)) sb.append(`background-color: ${model.color};`);
+  if (model.type === 'color' && Boolean(model.color)) sb.append(`background: ${model.color};`);
   if (model.type === 'gradient' && model.gradient) sb.append(`background: ${gradientCss(model.gradient)};`);
   if (model.type === 'image' && model.uploadFile) sb.append(`background-image: url(${model.uploadFile.url || model.uploadFile});`);
   if (model.type === 'url' && Boolean(model.url)) sb.append(`background-image: url(${model.url});`);
@@ -194,14 +256,50 @@ export const paddingValue = (model: StyleBoxValue | undefined): string => {
   return sb.join(' ');
 };
 
-
-export const fontStyles = (model: IFontValue | undefined): string => {
-  if (!model) return '';
+export const fontStyles = (model: IFontValue | undefined, customStyle?: CSSProperties | undefined): string => {
+  /* An explicit Custom style wins over the model's own `styleCss`, so a caller that has already
+     narrowed it — stripping `textAlign` for a calendar cell, say — keeps that narrowing. Either way
+     only the text properties are used, so a full Custom style can be handed over as-is. */
+  const custom = splitTextProperties(customStyle).text;
   const sb = new StringBuilder();
-  if (!isNullOrWhiteSpace(model.color)) sb.append(`color: ${model.color};`);
-  if (isDefined(model.size)) sb.append(`font-size: ${addPx(model.size)};`);
-  if (!isNullOrWhiteSpace(model.weight)) sb.append(`font-weight: ${model.weight};`);
-  if (!isNullOrWhiteSpace(model.type)) sb.append(`font-family: ${model.type};`);
-  if (isDefined(model.align)) sb.append(`text-align: ${model.align};`);
+
+  /* Read from the Custom style first, falling back to the Font model. `fontSize` is passed through
+     `addPx` on the model side only: a Custom style is authored as CSS, where a bare number is either
+     already a string with units or a unitless number React itself serialises with `px`. */
+  const color = !isNullOrWhiteSpace(custom.color) ? custom.color : model?.color;
+  const size = isDefined(custom.fontSize) ? custom.fontSize : (isDefined(model?.size) ? model.size : undefined);
+  const weight = isDefined(custom.fontWeight) ? custom.fontWeight : model?.weight;
+  const family = !isNullOrWhiteSpace(custom.fontFamily) ? custom.fontFamily : model?.type;
+  const align = isDefined(custom.textAlign) ? custom.textAlign : model?.align;
+
+  if (!isNullOrWhiteSpace(color)) sb.append(`color: ${color};`);
+  if (isDefined(size)) sb.append(`font-size: ${addPx(size)};`);
+  if (isDefined(weight) && `${weight}` !== '') sb.append(`font-weight: ${weight};`);
+  if (!isNullOrWhiteSpace(family)) sb.append(`font-family: ${family};`);
+  if (isDefined(align)) sb.append(`text-align: ${align};`);
   return sb.build();
 };
+
+/**
+ * Emits the appearance a dropdown popup shares with the input that opens it: background and border.
+ *
+ * Shared by every component that opens a floating list (a select popup, a picker panel, a suggestion
+ * list) so they stay consistent rather than each re-deriving the set.
+ *
+ * The configured **shadow is deliberately excluded** — popups keep antd's own elevation. On the input
+ * a shadow is decorative, but on a panel that overlays the page it is structural, and a configured
+ * offset reaches outside the popup's own footprint: `offsetY: -22` paints a band 22px up over the
+ * field above it. Elevation is also the one part of a popup users expect to look native, so it is
+ * left to the theme. `shadow` is absent from the parameter type on purpose, so a caller cannot pass
+ * one and quietly get nothing.
+ *
+ * Padding is likewise not included: it belongs on the popup root for a list (insetting the whole
+ * panel) but on the item for a grid-like panel, so each caller applies it where it fits.
+ */
+export const popupAppearanceStyles = (model: {
+  background?: IBackgroundValue | undefined;
+  border?: IBorderValue | undefined;
+}): string => `
+  ${borderStyles(model.border)}
+  ${backgroundStyles(model.background)}
+`;

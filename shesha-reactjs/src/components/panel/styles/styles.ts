@@ -3,6 +3,7 @@ import { ICollapsiblePanelProps } from '..';
 import { isDefined, isNullOrWhiteSpace } from '@/utils';
 import { backgroundStyles, borderLinesStyles, borderRadiusStyles, dimensionsStyles, fontStyles, marginStyles, paddingStyles, paddingValue, shadowStyles } from '@/designer-components/_common/styles/utils';
 import { StyleBoxValue } from '@/providers';
+import { getFullSizeComponentDimensions } from '@/components/formDesigner/utils/stylingUtils';
 
 /** Is value defined and greater than 0 */
 const isG0 = (value: string | number | undefined): boolean => isDefined(value) && parseFloat(String(value)) > 0;
@@ -21,7 +22,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: ICo
   const hasBorder = (model.border?.borderType === 'all' && isG0(borderValue?.all?.width)) ||
     (model.border?.borderType === 'custom' && (isG0(borderValue?.top?.width) || isG0(borderValue?.right?.width) || isG0(borderValue?.bottom?.width) || isG0(borderValue?.left?.width)));
 
-  const dimensions = dimensionsStyles(model.dimensions);
+  const dimensions = dimensionsStyles(getFullSizeComponentDimensions(model.dimensions));
   const padding = paddingStyles(model.stylingBoxJson ?? defaultPadding);
 
   const headerDimensions = dimensionsStyles({ ...model.headerStyles?.dimensions, width: undefined, minWidth: undefined, maxWidth: undefined });
@@ -45,18 +46,19 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: ICo
     --primary-color: ${token.colorPrimary};
     --ant-line-width: ${hasBorder ? '0px' : '1px'} !important;
     --ant-collapse-header-bg: transparent !important;
+
     ${dimensions}
     ${marginStyles(model.stylingBoxJson ?? defaultMargin)}
 
     > .ant-collapse-item {
       display: flex;
       flex-direction: column;
-      ${shadowStyles(model.shadow)}
       height: 100%;
       ${collapsedBorderRadius}
     }
 
     > .ant-collapse-item.ant-collapse-item-active {
+      ${shadowStyles(model.shadow)}
       ${borderRadiusStyles(model.border, true)}
     }
    
@@ -156,6 +158,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: ICo
 
   const shaSimpleDesign = cx(css`
     --primary-color: ${token.colorPrimary};
+    ${marginStyles(model.stylingBoxJson ?? defaultMargin)}
 
     > .ant-collapse-item > .ant-collapse-header-text {
       ${fontStyles(model.headerStyles?.font)}

@@ -1,7 +1,7 @@
 import { isConfigItemTreeNode, TreeNode } from '@/configuration-studio/models';
 import { useStyles } from '@/configuration-studio/styles';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import React, { FC } from 'react';
+import { FC } from 'react';
 
 export interface INodeIndicatorProps {
   node: TreeNode;

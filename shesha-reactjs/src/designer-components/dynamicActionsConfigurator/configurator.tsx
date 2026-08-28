@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 import { IDynamicActionsConfiguration } from './models';
 import { ProviderSelector } from './providerSelector';
 import { Form } from 'antd';

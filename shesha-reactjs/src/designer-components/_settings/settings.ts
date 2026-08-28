@@ -50,7 +50,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
             mode: 'dialog',
             version: 3,
-            settingsValidationErrors: [],
             templateSettings: {
               functionName: 'getAvailableConstants',
               useAsyncDeclaration: true,
@@ -73,7 +72,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
               const meta = metadataBuilder.metadata();
               return Promise.resolve(meta);
             },
-            validate: {},
             wrapInTemplate: true,
           })
           .addCodeEditor({
@@ -85,7 +83,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
             parentId: 'pnl54bf6-f76d-4139-a850-c99bf06c8b69',
             mode: 'dialog',
             version: 3,
-            settingsValidationErrors: [],
             templateSettings: {
               functionName: 'getResultType',
               useAsyncDeclaration: true,
@@ -100,7 +97,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
               const meta = metadataBuilder.metadata();
               return Promise.resolve(meta);
             },
-            validate: {},
             wrapInTemplate: true,
           })
           .toJson(),

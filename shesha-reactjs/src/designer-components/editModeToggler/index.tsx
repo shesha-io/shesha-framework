@@ -1,6 +1,5 @@
 import { Space } from 'antd';
-import React from 'react';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { SwapOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';
 import { IToolboxComponent } from '@/interfaces/formDesigner';
@@ -25,7 +24,7 @@ const HeaderAppControl: IToolboxComponent = {
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
 };
 
 export default HeaderAppControl;

@@ -5,9 +5,8 @@ import {
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { StrikethroughOutlined } from '@ant-design/icons';
-import React from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import Box from './components/box';
 import { IStyleBoxComponentProps, StyleBoxDefinition } from './interfaces';
@@ -46,7 +45,7 @@ const StyleBox: StyleBoxDefinition = {
     };
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   migrator: (m) =>
     m
       .add<IStyleBoxComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))

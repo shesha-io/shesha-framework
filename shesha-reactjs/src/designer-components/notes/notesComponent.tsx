@@ -4,8 +4,7 @@ import { FormOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';
 import { NotesRenderer } from '@/components/notesRenderer';
 import { useFormData, useGlobalState } from '@/providers';
-import { evaluateString, executeScript, useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import React from 'react';
+import { evaluateString, executeScript, useAvailableConstantsData } from '@/providers/form/utils';
 import { NotesEditorProvider, OnNoteCreatedFunc, OnNoteDeletedFunc, OnNoteUpdatedFunc } from '@/providers/notes';
 import {
   migrateCustomFunctions,
@@ -109,7 +108,7 @@ const NotesComponent: IToolboxComponent<INotesProps> = {
       </NotesEditorProvider>
     );
   },
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   initModel: (model) => {
     const customModel: INotesProps = {
       ...model,

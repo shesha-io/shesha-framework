@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { IMetadataEditorProps } from './interfaces';
 import { Button, Modal, Space } from 'antd';
 import { Show } from '@/components/show';

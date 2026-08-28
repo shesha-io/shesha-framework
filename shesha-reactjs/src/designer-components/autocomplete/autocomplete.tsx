@@ -1,33 +1,43 @@
+/* The migrator reads deprecated model properties (stylingBox, useRawValues, entityTypeShortAlias)
+   on purpose — upgrading forms saved against those shapes is what it is for. */
+/* eslint-disable @typescript-eslint/no-deprecated */
 import { Autocomplete } from '@/components/autocomplete';
-import { AUTOCOMPLETE_DATA_SOURCE_TYPE, AutocompleteDataSourceType, DisplayValueFunc, FilterSelectedFunc, KayValueFunc, OutcomeValueFunc } from '@/components/autocomplete/models';
+import { AUTOCOMPLETE_DATA_SOURCE_TYPE, AutocompleteDataSourceType, AutocompleteSelectRef, DisplayValueFunc, FilterSelectedFunc, KayValueFunc, OutcomeValueFunc } from '@/components/autocomplete/models';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateReadOnly, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateDynamicExpression } from '@/designer-components/_common-migrations/migrateUseExpression';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
+import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { JsonLogicFilter } from '@/interfaces/jsonLogic';
 import { isEntityMetadata, isEntityReferenceArrayPropertyMetadata, isEntityReferencePropertyMetadata, isHasFilter } from '@/interfaces/metadata';
 import { useMetadataDispatcher } from '@/providers';
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { IInputStyles } from '@/providers/form/models';
-import {
-  executeExpression, validateConfigurableComponentSettings,
-} from '@/providers/form/utils';
+import { executeExpression } from '@/providers/form/utils';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 import { isNonEmptyArray } from '@/utils/array';
 import { getNestedStringOrUndefined } from '@/utils/dotnotation';
 import { isEntityReferenceId } from '@/utils/entity';
-import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getBooleanPropertyOrUndefined, getStringEnumOrDefault, getStringPropertyOrUndefined, getValueByPropertyName, pick } from '@/utils/object';
 import { FileSearchOutlined } from '@ant-design/icons';
-import React, { useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
+import { AutocompleteApi } from '../../componentsApi/componentApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '../_common/events';
 import { AutocompleteComponentDefinition, IAutocompleteComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
+import { useStyles } from './styles';
 import { defaultStyles } from './utils';
 
+import apiCode from "../../componentsApi/componentApi.ts?raw";
+
 const AutocompleteComponent: AutocompleteComponentDefinition = {
+  allowInherit: true,
   type: 'autocomplete',
   isInput: true,
   isOutput: true,
@@ -40,6 +50,24 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
     (dataType === DataTypes.array && isDefined(dataFormat) && [ArrayFormats.entityReference, ArrayFormats.manyToManyEntities].includes(dataFormat)),
   Factory: ({ model }) => {
     const { getMetadata } = useMetadataDispatcher();
+
+    const componentApi = useComponentApiProvider();
+    const selectRef = useRef<AutocompleteSelectRef>(null);
+    useEffect(() => {
+      componentApi?.updateApi<AutocompleteApi>({
+        id: model.id,
+        componentName: model.componentName ?? "",
+        level: 3,
+        typeDefinition: { typeName: 'AutocompleteApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+        properties: [
+          { name: 'multiple', getter: () => model.mode === 'multiple' },
+        ],
+        api: { focus: () => selectRef.current?.focus() },
+      });
+    }, [componentApi, model.componentName, model.id, model.mode]);
+    useEffectOnce(() => () => componentApi?.removeApi(model.id));
+
+    const { styles } = useStyles(model);
 
     const entityMetadata = useAsyncMemo(async () => {
       if (isEntityTypeIdEmpty(model.entityType))
@@ -99,8 +127,6 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
     const {
       filterKeysFunc: filterKeysFuncExpression,
       allowFreeText = false,
-      enableStyleOnReadonly = false,
-      readOnly = false,
     } = model;
 
     const filterKeysFunc: FilterSelectedFunc = useCallback((value) => {
@@ -118,13 +144,6 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
       return result;
     }, [filterKeysFuncExpression, model.valueFormat]);
 
-    const finalStyle = !enableStyleOnReadonly && readOnly
-      ? {
-        ...model.allStyles?.fontStyles,
-        ...model.allStyles?.dimensionsStyles,
-      }
-      : model.allStyles?.fullStyle;
-
     return (
       <ConfigurableFormItem {...{ model }}>
         {(value, onChange, _, ctx) => {
@@ -134,30 +153,42 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
             "entityType",
             "filter",
             "queryParams",
-            "grouping",
+            "fields",
             "sorting",
             "readOnly",
+            "disabled",
+            "placeholder",
+            "disableSearch",
             "keyPropName",
             "displayPropName",
             "mode",
+            "quickviewEnabled",
+            "quickviewFormPath",
+            "quickviewDisplayPropertyName",
+            "quickviewGetEntityUrl",
+            "quickviewWidth",
           ]);
 
           return (
             <Autocomplete
               {...autocompleteProps}
-              filter={model.filter}
+              // The model stores grouping as a list for the editor; the control takes a single item.
               grouping={isNonEmptyArray(model.grouping) ? model.grouping[0] : undefined}
               keyValueFunc={keyValueFunc}
               outcomeValueFunc={outcomeValueFunc}
               displayValueFunc={displayValueFunc}
-              filterKeysFunc={!isNullOrWhiteSpace(filterKeysFuncExpression) ? filterKeysFunc : undefined}
-              style={finalStyle}
+              filterKeysFunc={isNotNullOrWhiteSpace(filterKeysFuncExpression) ? filterKeysFunc : undefined}
+              className={styles.autocomplete}
+              popupClassName={styles.popup}
+              styleValue={model}
               size={model.size ?? 'middle'}
               value={value}
+              selectRef={selectRef}
               onChange={(newValue) => {
                 ctx?.handleEvent(undefined, { value: newValue }, model.onChangeCustom);
                 onChange(newValue);
               }}
+              events={getComponentEvents(model, ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, ctx, value, DataTypes.entityReference)}
               allowFreeText={allowFreeText && model.valueFormat === 'simple'}
             />
           );
@@ -166,7 +197,17 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
+  getDefaultStyles: () => defaultStyles(),
+  previewConfiguration: {
+    type: 'autocomplete',
+    id: 'autocomplete',
+    propertyName: `autocompleteAppearance`,
+    label: `Autocomplete Label`,
+    version: 'latest',
+    dataSourceType: 'entitiesList',
+    mode: 'single',
+  },
   migrator: (m) => m
     .add<IAutocompleteComponentProps>(0, (prev) => ({
       ...prev,
@@ -192,7 +233,11 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
     .add<IAutocompleteComponentProps>(5, (prev) => ({
       ...migrateFormApi.eventsAndProperties(prev),
     }))
-    .add<IAutocompleteComponentProps>(6, (prev) => {
+    // Steps 6 and 8 back-fill styles for forms saved before those settings existed. A newly dropped
+    // component ships empty and inherits from the entity model instead, so both are a no-op on it.
+    .add<IAutocompleteComponentProps>(6, (prev, context) => {
+      if (context.isNew === true) return prev;
+
       const styles: IInputStyles = {
         size: prev.size,
         width: prev.width,
@@ -208,7 +253,11 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
 
       return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
     })
-    .add<IAutocompleteComponentProps>(7, (prev) => {
+    // Derives the current property shape from the legacy `useRawValues`/`entityTypeShortAlias`
+    // settings. A new component has none of those and inherits from the entity model instead.
+    .add<IAutocompleteComponentProps>(7, (prev, context) => {
+      if (context.isNew === true) return prev;
+
       const useRawValues = getBooleanPropertyOrUndefined(prev, 'useRawValues') === true;
       return {
         ...prev,
@@ -225,7 +274,22 @@ const AutocompleteComponent: AutocompleteComponentDefinition = {
         keyPropName: prev.dataSourceType === 'url' && useRawValues ? prev.keyPropName ?? 'value' : prev.keyPropName,
       };
     })
-    .add<IAutocompleteComponentProps>(8, (prev) => ({ ...migratePrevStyles(prev, defaultStyles()) })),
+    .add<IAutocompleteComponentProps>(8, (prev, context) => context.isNew === true
+      ? prev
+      : { ...migratePrevStyles(prev, defaultStyles()) })
+    .add<IAutocompleteComponentProps>(9, (prev) => {
+      /* Forms saved before step 7 stored `mode` as a single-element array (`["single"]`) because the
+         setting used to be a multi-select. The runtime compares it strictly against 'multiple', so a
+         saved `["multiple"]` silently behaves as single-select until it is unwrapped. */
+      const rawMode: unknown = prev.mode;
+      const mode: IAutocompleteComponentProps['mode'] = Array.isArray(rawMode)
+        ? (rawMode as IAutocompleteComponentProps['mode'][])[0]
+        : prev.mode;
+      return migratePermissionsToVisiblePermissions(migrateHiddenToVisible({
+        ...migrateStylingBoxToJson(prev),
+        ...(isDefined(mode) ? { mode } : {}),
+      }));
+    }),
   linkToModelMetadata: (model, propMetadata): IAutocompleteComponentProps => {
     return {
       ...model,

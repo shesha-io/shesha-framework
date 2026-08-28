@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren } from 'react';
+import { FC, PropsWithChildren } from 'react';
 import { useSettingValue } from '@/providers/settings';
 import { ISettingIdentifier } from '@/providers/settings/models';
 import { SheshaSettingNames } from '@/providers/settings/sheshaSettingNames';

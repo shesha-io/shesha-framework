@@ -1,4 +1,3 @@
-import React from 'react';
 import { BasicConfig, SelectFieldSettings, TextWidget } from '@react-awesome-query-builder/antd';
 import { Autocomplete } from '@/components/autocomplete';
 import { CustomFieldSettings } from '@/providers/queryBuilder/models';

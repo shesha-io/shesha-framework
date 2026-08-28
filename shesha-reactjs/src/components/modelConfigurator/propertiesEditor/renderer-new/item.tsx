@@ -2,7 +2,7 @@ import { ComplexProperty, ContainerRenderer } from './complexProperty';
 import { EntityProperty } from './entityProperty';
 import { GenericEntityProperty } from './genericEntityProperty';
 import { JsonProperty } from './jsonProperty';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IModelItem } from '@/interfaces/modelConfigurator';
 import { SimpleProperty } from './simpleProperty';

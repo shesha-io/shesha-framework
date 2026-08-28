@@ -1,5 +1,4 @@
 import { IDateSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React from 'react';
 import { FCUnwrapped } from '@/providers/form/models';
 import { DatePickerWrapper } from '@/designer-components/dateField/datePickerWrapper';
 
@@ -17,7 +16,6 @@ export const DateWrapper: FCUnwrapped<IDateSettingsInputProps> = (props) => {
       hideBorder={false}
       range={false}
       selectionType="date"
-      showNow={false}
       defaultToMidnight={false}
       resolveToUTC={false}
       dateFormat={undefined}

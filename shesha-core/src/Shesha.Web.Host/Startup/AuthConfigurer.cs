@@ -14,8 +14,12 @@ namespace Shesha.Web.Host.Startup
 {
     public static class AuthConfigurer
     {
+        private static IConfiguration? _configuration;
+
         public static void Configure(IServiceCollection services, IConfiguration configuration)
         {
+            _configuration = configuration;
+
             if (bool.TryParse(configuration["Authentication:JwtBearer:IsEnabled"], out var jwtEnabled) && jwtEnabled)
             {
                 services.AddAuthentication(options => {
@@ -74,7 +78,8 @@ namespace Shesha.Web.Host.Startup
             }
 
             // Set auth token from cookie
-            context.Token = SimpleStringCipher.Instance.Decrypt(qsAuthToken, AppConsts.DefaultPassPhrase);
+            var encryptionPassPhrase = _configuration?["Authentication:EncryptionPassPhrase"] ?? AppConsts.DefaultPassPhrase;
+            context.Token = SimpleStringCipher.Instance.Decrypt(qsAuthToken, encryptionPassPhrase);
             return Task.CompletedTask;
         }
     }

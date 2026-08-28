@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { LogViewer } from '@/components/logViewer';
 import { useProcessLogEvents } from '@/providers/processMonitor/hooks';
 

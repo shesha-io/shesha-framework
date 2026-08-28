@@ -3,6 +3,14 @@ export const isDefined = <T>(value: T | null | undefined): value is NonNullable<
   return value !== null && value !== undefined;
 };
 
+export const getDefault = <T>(value: T | null | undefined, defaultValue: T): T => {
+  return isDefined(value)
+    ? typeof value === 'string'
+      ? value.trim() !== '' ? value : defaultValue
+      : value
+    : defaultValue;
+};
+
 /**
  * Checks if the given string is null or white space.
  * @returns True if the string is null or white space, false otherwise.

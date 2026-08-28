@@ -1,4 +1,5 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
+import * as React from 'react';
 import { CloseCircleFilled } from '@ant-design/icons';
 import { IAsyncValidationError } from '@/interfaces';
 import { Popover } from 'antd';

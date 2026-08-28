@@ -132,8 +132,8 @@ export interface IBackgroundValue {
 
   /** Gradient configuration – required when `type = "gradient"`.
    * - `direction`: gradient direction (e.g., `"to right"`, `"45deg"`)
-   * - `colors`: mapping of color stops (e.g., `{ "0%": "#fff", "100%": "#000" }`) */
-  readonly gradient?: { direction: string; colors: Record<string, string> } | undefined;
+   * - `colors`: color stops in render order (e.g., `["#fff", "#000"]`) */
+  readonly gradient?: { direction: string; colors: string[] } | undefined;
 
   /** Solid color string (CSS format) – used when `type = "color"`. */
   readonly color?: string | undefined;
@@ -279,22 +279,33 @@ export interface IComponentStyle extends Record<string, unknown> {
 
 export type InteractionMode = 'editable' | 'readOnly' | 'disabled' | 'inherited' | boolean;
 
-export interface CommonComponentApi {
+export interface BaseComponentApi {
   /** Name of the component (e.g., `"textField"`, `"numberField"`). */
   readonly componentName: string;
   /** Context to which the component is bound (e.g., formContext, pageContext, undefined for form data). */
   readonly context?: string | undefined;
   /** Name of the property this component is bound to. */
   readonly propertyName: string;
-  /** Current style overrides applied to the component. */
-  readonly style: IComponentStyle;
   /** Whether the component is visible in the UI. */
   visible: boolean;
   /** Current interaction mode of the component. */
   interactionMode: InteractionMode | undefined;
 }
 
-export interface InputComponentApi<T = unknown> extends CommonComponentApi {
+export interface CommonComponentApi extends BaseComponentApi {
+  /** Current style overrides applied to the component. */
+  readonly style: IComponentStyle;
+}
+
+/**
+ * Everything an input exposes **except** its value: focus, validation and the required flag.
+ *
+ * Split out so a component whose value cannot be assigned can inherit the rest without also
+ * inheriting a writable `value`. Redeclaring `value` as `readonly` on a subinterface is not enough
+ * on its own — `readonly` is not part of assignability, so widening the object back to
+ * `InputComponentApi` restores the write.
+ */
+export interface InputComponentApiBase extends CommonComponentApi {
   /** If 'true', the component is required (for now is working only for binding to the form data) */
   required: boolean;
 
@@ -307,7 +318,9 @@ export interface InputComponentApi<T = unknown> extends CommonComponentApi {
   getErrors(): Promise<string[]>;
   /** Reset to the default value (for now is working only for binding to the form data) */
   reset(): void;
+}
 
+export interface InputComponentApi<T = unknown> extends InputComponentApiBase {
   /** Component value. Readable and writable */
   value: T;
 }
@@ -340,10 +353,110 @@ export interface RadioApi extends InputComponentApi<number | string | undefined>
 
 export type CheckboxFieldApi = InputComponentApi<boolean | undefined>;
 
+export type DropdownApi = InputComponentApi<number | number[] | string | string[] | (string | number)[] | undefined>;
+
+/**
+ * Autocomplete. The value shape follows the component's Value Format setting: a plain key for
+ * `simple`, an entity reference object for `entityReference`, or whatever the configured Value
+ * Function returns for `custom`. In multiple selection mode it is an array of those.
+ */
+export interface AutocompleteApi extends InputComponentApi<unknown> {
+  /** Whether the component currently allows selecting more than one item. Read-only. */
+  readonly multiple: boolean;
+};
+
+/**
+ * How an entity reference is opened.
+ * - `"NavigateLink"`: navigates to the target form
+ * - `"Quickview"`: opens a read-only popover
+ * - `"Dialog"`: opens a modal
+ *
+ * Declared here rather than imported so this file stays self-contained: it is shipped verbatim
+ * into the JS editors, where a path alias would not resolve.
+ */
+export type EntityReferenceTypes = "Dialog" | "NavigateLink" | "Quickview";
+
+/**
+ * Entity reference. The value is the referenced entity's id — either stored directly as a string,
+ * or normalised out of an `{ id, _className, _displayName }` object bound from the form data.
+ */
+export interface EntityReferenceApi extends InputComponentApi<string | undefined> {
+  /** Id of the entity the component currently points at, or `undefined` when nothing is selected. Read-only. */
+  readonly entityId: string | undefined;
+  /** How the reference is opened. Read-only. */
+  readonly entityReferenceType: EntityReferenceTypes | undefined;
+};
+
 /** Checkbox group. Multi-select only, so the value is always the list of selected item values. */
 export type CheckboxGroupApi = InputComponentApi<string[] | undefined>;
 
 export type SwitchFieldApi = InputComponentApi<boolean | undefined>;
+
+/**
+ * File upload. The value is the stored file the component is bound to: its id once the file has been
+ * persisted, the `File` itself while a synchronous upload is still pending, or `null` when no file is
+ * attached. Setting it to `null` clears the component.
+ */
+export interface FileUploadApi extends InputComponentApi<File | string | null | undefined> {
+  /** Whether the user can currently upload a file. Combines the Allow Upload setting with the interaction mode. */
+  readonly allowUpload: boolean;
+  /** Whether the user can currently replace the attached file. Combines the Allow Replace setting with the interaction mode. */
+  readonly allowReplace: boolean;
+  /** Whether the user can currently delete the attached file. Combines the Allow Delete setting with the interaction mode. */
+  readonly allowDelete: boolean;
+  /** File extensions the component accepts, e.g. `[".png", ".pdf"]`. An empty list accepts any type. */
+  allowedFileTypes: string[] | undefined;
+};
+
+/**
+ * File list. The value is the collection of files currently attached to the component's owner.
+ *
+ * **Read-only.** The files belong to the storage provider, keyed by owner — they are not part of the
+ * form payload. The component binds to a ghost property that `removeGhostKeys` strips before save,
+ * and `AttachmentsEditorProvider` takes no `value` prop, so an assignment here would update neither
+ * the stored collection nor anything that is persisted. Files are added, replaced and removed by the
+ * user through the component itself, or through the storage provider's own API.
+ */
+export interface FileListApi extends InputComponentApiBase {
+  /**
+   * The files currently attached to the owner. Read-only, and so is the array: the collection is the
+   * storage provider's, so replacing it or mutating it in place changes nothing that is persisted.
+   */
+  readonly value: readonly StoredFileApiModel[] | undefined;
+  /** Whether the user can currently add files. Combines the Allow Add setting with the interaction mode. */
+  readonly allowAdd: boolean;
+  /** Whether the user can currently delete files. Combines the Allow Remove setting with the interaction mode. */
+  readonly allowDelete: boolean;
+  /** Whether the user can currently replace a file. Combines the Allow Replace setting with the interaction mode. */
+  readonly allowReplace: boolean;
+  /** Whether the user can currently rename a file. Combines the Allow Rename setting with the interaction mode. */
+  readonly allowRename: boolean;
+  /** File extensions the component accepts, e.g. `[".png", ".pdf"]`. An empty list accepts any type. */
+  allowedFileTypes: string[] | undefined;
+};
+
+/** One file in a File list. Mirrors the stored-file record the back-end returns. */
+export interface StoredFileApiModel {
+  /** Identifier of the persisted file. */
+  readonly id: string;
+  /** File name including its extension. */
+  readonly name: string;
+  /** Size of the file in bytes. */
+  readonly size: number;
+  /** MIME type reported for the file. */
+  readonly type: string;
+  /** Url the file can be downloaded from. */
+  readonly url: string | undefined;
+}
+
+/**
+ * Reference list status. The value is the item value of the reference list item currently displayed,
+ * so writing it switches the component to the matching status.
+ */
+export interface RefListStatusApi extends InputComponentApi<number | undefined> {
+  /** Text shown for the current item, taken from the reference list. Read-only. */
+  readonly itemText: string | undefined;
+};
 
 /**
  * Date field. The value is the serialised date as stored in the form data, so its shape follows the
@@ -353,6 +466,50 @@ export interface DateFieldApi extends InputComponentApi<string | [string | null,
   /** Whether the component is currently picking a range rather than a single date. Read-only. */
   readonly isRange: boolean;
 };
+
+/**
+ * Address field. The value is the formatted address as entered or as selected from the Google
+ * Places suggestions.
+ */
+export type AddressApi = InputComponentApi<string | undefined>;
+
+/** A single entity selected in an entity picker. */
+export interface EntityPickerSelection {
+  /** Id of the selected entity. */
+  readonly id: string;
+  /** Text shown for the entity, taken from the configured Display Property. */
+  readonly displayName: string;
+};
+
+/**
+ * Entity picker. The value follows the component's Value Format: a plain id string with `simple`,
+ * an entity reference object with `entityReference`, or whatever the custom scripts return. When
+ * Selection Type is Multiple the value is the corresponding array instead.
+ */
+export interface EntityPickerApi extends InputComponentApi<string | string[] | EntityReferenceValue | EntityReferenceValue[] | undefined> {
+  /** Entities currently selected, whatever the configured Value Format is. Read-only. */
+  readonly selectedItems: readonly EntityPickerSelection[];
+  /** Open the selection dialog. */
+  showPicker(): void;
+  /** Close the selection dialog. */
+  hidePicker(): void;
+};
+
+/** An entity reference as stored by a component bound with the `entityReference` value format. */
+export interface EntityReferenceValue {
+  /** Id of the entity. */
+  id: string;
+  /** Display text of the entity. */
+  _displayName: string;
+  /** Full class name of the entity type. */
+  _className: string;
+};
+
+/**
+ * Icon picker. The value is the name of the selected Ant Design icon (for example
+ * `"HeartOutlined"`), or `undefined` when no icon is selected.
+ */
+export type IconPickerApi = InputComponentApi<string | undefined>;
 
 export interface PanelApi extends CommonComponentApi {
   /** Whether the panel is expanded */
@@ -369,3 +526,35 @@ export interface ButtonApi extends CommonComponentApi {
   /** Click on button */
   click(): void;
 };
+
+export interface AlertApi extends CommonComponentApi {
+  /** Text of the alert */
+  text?: string;
+  /** Description of the alert */
+  description?: string;
+};
+
+export interface SubFormApi extends BaseComponentApi {
+  /** Get sub form data from the backend */
+  getSubFormData(): void;
+  /** Post sub form data to the backend */
+  postSubFormData(): void;
+  /** Put sub form data to the backend */
+  putSubFormData(): void;
+};
+
+export interface TabsApiTab {
+  visible: boolean;
+  readonly key: string;
+  select(): void;
+}
+
+export interface TabsApi extends CommonComponentApi {
+  /** Current visible tab. The tab index starts from zero */
+  currentTab?: number | undefined;
+  /** List of tabs */
+  readonly tabs: TabsApiTab[];
+};
+
+
+export type DataContextApi = BaseComponentApi;

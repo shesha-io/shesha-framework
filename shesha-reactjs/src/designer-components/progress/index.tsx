@@ -1,5 +1,5 @@
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import React from 'react';
+import * as React from 'react';
 import { getSettings } from './settings';
 import { IConfigurableFormComponent, IFormComponentStyles, IInputStyles } from '@/providers/form/models';
 import { IToolboxComponent } from '@/interfaces';
@@ -7,7 +7,7 @@ import { LineOutlined } from '@ant-design/icons';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { Progress, ProgressProps } from 'antd';
 import { GapPlacement, GapPosition, ProgressType, SuccessProps } from 'antd/lib/progress/progress';
-import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { getStyle } from '@/providers/form/utils';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
@@ -136,7 +136,7 @@ const ProgressComponent: IToolboxComponent<IProgressProps> = {
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   migrator: (m) => m
     .add<IProgressProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IProgressProps>(1, (prev) => ({ ...migrateFormApi.properties(prev) }))

@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useCallback, useMemo, useRef } from 'react';
+import { useState, FC, ReactNode, useCallback, useMemo, useRef } from 'react';
 import { editorRegistry } from './wrappers';
 import { BaseInputProps } from '../settingsInput/interfaces';
 import { useFormItem, useShaFormInstance } from '@/providers';
@@ -22,7 +22,7 @@ export const InputComponent = <TValue = string>(props: InputComponentProps<TValu
   const { onChange, onChangeSetting } = props;
   const Editor = editorRegistry[props.type] as FC<BaseInputProps> | undefined;
   const tempData = useRef<unknown>(null);
-  const [popupOpen, setPopupOpen] = React.useState(false);
+  const [popupOpen, setPopupOpen] = useState(false);
   const { formData, setFormData } = useShaFormInstance();
   const defaultModel = useDefaultModelActionsOrUndefined();
   const { namePrefix } = useFormItem();
@@ -103,7 +103,8 @@ export const InputComponent = <TValue = string>(props: InputComponentProps<TValu
         open={popupOpen}
         autoAdjustOverflow={true}
         placement="topLeft"
-        mouseLeaveDelay={0.5}
+        mouseEnterDelay={0.3}
+        mouseLeaveDelay={0.2}
       >
         <div> {/* div is required to make Popover work for some input components */}
           <Editor key={newProps.id} {...newProps} />

@@ -1,7 +1,7 @@
 /* eslint @typescript-eslint/strict-boolean-expressions: "error" */
 import { firstNonEmptyString } from '@/utils/string';
 import { Spin } from 'antd';
-import React, { FC } from 'react';
+import { FC } from 'react';
 
 export interface ICodeEditorLoadingProgressorProps {
   message?: string;

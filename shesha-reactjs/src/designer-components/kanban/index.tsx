@@ -5,7 +5,7 @@ import { RefListItemGroupConfiguratorProvider } from '@/components/refListSelect
 import { removeUndefinedProps } from '@/utils/object';
 import { FormOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
-import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
+import { CSSProperties, useEffect, useMemo, useState } from 'react';
 import { getBackgroundImageUrl, getBackgroundStyle } from '../_settings/utils/background/utils';
 import { getBorderStyle } from '../_settings/utils/border/utils';
 import { getShadowStyle } from '../_settings/utils/shadow/utils';
@@ -15,7 +15,7 @@ import { defaultColumnStyles, defaultStyles } from './utils';
 import { IToolboxComponent } from '@/interfaces/formDesigner';
 import { useDataTableStoreOrUndefined } from '@/providers/dataTable/hooks';
 import { useSheshaApplication } from '@/providers/sheshaApplication';
-import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { getStyle } from '@/providers/form/utils';
 import { useMetadataOrUndefined } from '@/providers/metadata';
 import { useEnsureFetchColumns } from '../dataTable/table/useEnsureFetchColumns';
 
@@ -131,7 +131,7 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
       };
     }),
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
 };
 
 export default KanbanComponent;

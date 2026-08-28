@@ -1,6 +1,5 @@
 import { IToolboxComponent } from '@/interfaces';
 import { FileSearchOutlined } from '@ant-design/icons';
-import React from 'react';
 import { INotificationAutocompleteComponentProps } from './interfaces';
 import { IConfigurableItemAutocompleteComponentProps } from '../configurableItemAutocomplete/interfaces';
 

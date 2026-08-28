@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import * as React from 'react';
 import { useLayoutSelection } from '@/hooks/useLayoutSelection';
 import { LAYOUT_MODE } from '@/components/mainLayout/constant';
 
@@ -12,7 +12,7 @@ export default function CommonLayout({
   const { LayoutComponent } = useLayoutSelection(LAYOUT_MODE);
 
   return (
-    <LayoutComponent noPadding>
+    <LayoutComponent>
       {children}
     </LayoutComponent>
   );

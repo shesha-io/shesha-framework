@@ -15,14 +15,14 @@ namespace Shesha.Notifications.SMS
     public class SmsChannelSender : INotificationChannelSender
     {
         private readonly ISmsSettings _smsSettings;
-        private readonly ISmsGateway _smsGateway;
+        private readonly ISmsGatewayFactory _smsGatewayFactory;        
 
         public ILogger Logger { get; set; } = NullLogger.Instance;
 
-        public SmsChannelSender(ISmsSettings smsSettings,IRepository<NotificationChannelConfig, Guid> notificationChannelRepository, ISmsGateway smsGateway)
+        public SmsChannelSender(ISmsSettings smsSettings, IRepository<NotificationChannelConfig, Guid> notificationChannelRepository, ISmsGatewayFactory smsGatewayFactory)
         {
             _smsSettings = smsSettings;
-            _smsGateway = smsGateway;
+            _smsGatewayFactory = smsGatewayFactory;
         }
 
         /// <summary>
@@ -60,7 +60,8 @@ namespace Shesha.Notifications.SMS
             if (string.IsNullOrWhiteSpace(mobileNo))
                 return SendStatus.Failed("Recipient mobileNo is empty");
 
-            return await _smsGateway.SendSmsAsync(mobileNo, message.Message);
+            var smsGateway = await _smsGatewayFactory.GetSmsGatewayAsync();
+            return await smsGateway.SendSmsAsync(mobileNo, message.Message);
         }
 
         public Task<SendStatus> BroadcastAsync(NotificationTopic topic, string subject, string message, List<EmailAttachment>? attachments = null)

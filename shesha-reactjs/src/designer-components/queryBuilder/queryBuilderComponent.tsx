@@ -1,11 +1,10 @@
-import React from 'react';
 import settingsFormJson from './settingsForm.json';
 import { FilterOutlined } from '@ant-design/icons';
 import { FormMarkup } from '@/providers/form/models';
 import { IQueryBuilderComponentProps, QueryBuilderComponentDefinition } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { evaluateString } from '@/providers/form/utils';
 import { QueryBuilder } from './queryBuilder';
 
 const settingsForm = settingsFormJson as FormMarkup;
@@ -31,7 +30,7 @@ const QueryBuilderComponent: QueryBuilderComponentDefinition = {
     .add<IQueryBuilderComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IQueryBuilderComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<IQueryBuilderComponentProps>(2, (prev) => migrateReadOnly(prev)),
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+
 };
 
 export default QueryBuilderComponent;

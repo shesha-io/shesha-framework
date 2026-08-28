@@ -1,10 +1,5 @@
-import React, {
-  ChangeEvent,
-  FC,
-  Fragment,
-  useMemo,
-  useState,
-} from 'react';
+import { ChangeEvent, FC, Fragment, useMemo, useState } from 'react';
+import * as React from 'react';
 import {
   Checkbox,
   Dropdown,

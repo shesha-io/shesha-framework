@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren } from 'react';
+import { FC, PropsWithChildren } from 'react';
 import { ApplicationDataProvider } from './applicationContext';
 
 export const ApplicationContextsProvider: FC<PropsWithChildren> = ({ children }) => {

@@ -1,4 +1,4 @@
-import React, { ReactNode, useMemo } from 'react';
+import { ReactNode, useMemo } from 'react';
 import SettingsControl from './settingsControl';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { getSettings } from './settings';

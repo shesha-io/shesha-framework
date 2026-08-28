@@ -1,8 +1,7 @@
 import _ from 'lodash';
 import classNames from 'classnames';
-import React from 'react';
 import { getSettings } from './settingsForm';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { IconType } from '@/components/shaIcon';
 import { IToolboxComponent } from '@/interfaces';
 import { LikeOutlined, StarFilled } from '@ant-design/icons';
@@ -66,7 +65,7 @@ const RateComponent: IToolboxComponent<IRateProps> = {
     ;
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   migrator: (m) => m
     .add<IRateProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IRateProps>(1, (prev) => migrateVisibility(prev))

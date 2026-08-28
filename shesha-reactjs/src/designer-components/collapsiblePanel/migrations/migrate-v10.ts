@@ -2,7 +2,7 @@ import { SettingsMigrationContext } from "@/interfaces";
 import { nanoid } from "@/utils/uuid";
 import { IConfigurableFormComponent } from "@/providers/form/models";
 import { IContainerComponentProps } from "@/designer-components/container/interfaces";
-import { ITextComponentProps } from "@/designer-components/text/models";
+import { ITextComponentPropsV0 } from "@/designer-components/text/models";
 import { ICollapsiblePanelComponentProps } from "../interfaces";
 import { defaultStyles as containerDefaultStyles } from "@/designer-components/container/data";
 import { isNonEmptyArray } from "@/utils/array";
@@ -123,8 +123,8 @@ export const migrateV9toV10 = (prev: ICollapsiblePanelComponentProps, context: S
         width: 'max-content',
         height: '100%',
       },
-      level: 1,
-    } satisfies ITextComponentProps;
+      level: 0,
+    } satisfies ITextComponentPropsV0;
 
     const extraArea = {
       id: extraAreaId,

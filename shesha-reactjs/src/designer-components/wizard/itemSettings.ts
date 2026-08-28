@@ -129,7 +129,6 @@ export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormCompo
                   labelAlign: 'right',
                   hidden: false,
                   jsSetting: true,
-                  settingsValidationErrors: [],
                 },
                 {
                   id: nanoid(),
@@ -138,7 +137,6 @@ export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormCompo
                   label: 'Allow Cancel',
                   labelAlign: 'right',
                   hidden: false,
-                  validate: {},
                   jsSetting: true,
                 }],
             })
@@ -150,7 +148,6 @@ export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormCompo
               labelAlign: 'right',
               parentId: commonTabId,
               hidden: false,
-              validate: {},
               jsSetting: true,
             })
             .addSettingsInput({
@@ -161,7 +158,6 @@ export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormCompo
               labelAlign: 'right',
               parentId: commonTabId,
               hidden: false,
-              validate: {},
               jsSetting: true,
             })
             .addCollapsiblePanel({
@@ -208,9 +204,7 @@ export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormCompo
                         propertyName: 'beforeNextActionConfiguration',
                         label: 'Before Next Action',
                         hidden: false,
-                        validate: {},
                         jsSetting: false,
-                        settingsValidationErrors: [],
                       },
                       {
                         id: nanoid(),
@@ -219,9 +213,7 @@ export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormCompo
                         label: 'After Next Action',
                         hidden: false,
                         customVisibility: '',
-                        validate: {},
                         jsSetting: false,
-                        settingsValidationErrors: [],
                       }],
                   })
                   .toJson()],

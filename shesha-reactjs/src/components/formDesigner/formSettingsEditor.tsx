@@ -1,11 +1,11 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { Modal } from 'antd';
 import { ConfigurableForm } from '@/components/configurableForm';
 import { useFormDesigner, useFormDesignerSettings } from '@/providers/formDesigner';
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { useFormPersister } from '@/providers/formPersisterProvider';
 import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';
-import { getSettings } from './formSettings';
+import { getFormSettingsFormMarkup } from './formSettings';
 import { useFormViaFactory } from '@/form-factory/hooks';
 import { SubmitHandler } from '@/providers/form/store/interfaces';
 import { IFormSettings } from '../..';
@@ -21,7 +21,7 @@ export const FormSettingsEditor: FC<IFormSettingsEditorProps> = ({ isVisible, cl
   const { updateFormSettings } = useFormDesigner();
   const { formProps } = useFormPersister();
   const formRef = useShaFormRef<IFormSettings>();
-  const formSettingsMarkup = useFormViaFactory(getSettings);
+  const formSettingsMarkup = useFormViaFactory(getFormSettingsFormMarkup);
 
   const onSave: SubmitHandler<IFormSettings> = (values) => {
     if (!readOnly) {

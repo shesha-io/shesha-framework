@@ -5,6 +5,7 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   pull-requests: write
@@ -25,13 +26,16 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
+      - name: Test
+        run: npm run test
+
       - name: Build
         id: build
-        run: node --max-old-space-size=16384 node_modules/.bin/eslint --quiet && npx rimraf dist && node --max-old-space-size=16384 node_modules/.bin/rollup -c && node --max-old-space-size=16384 node_modules/.bin/tsc-alias
+        run: npm run build
         

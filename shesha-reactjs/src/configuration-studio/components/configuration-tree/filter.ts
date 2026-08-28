@@ -73,7 +73,12 @@ export const useFilteredTreeNodes = (treeNodes: TreeNode[], quickSearch?: string
               ...(isDefined(folderTitle) ? { title: renderCsTreeNode(node, folderTitle) } : {}),
               children: withPlaceholderIfEmpty(node, nodeChildren),
             });
+          return;
         }
+
+        // Other node types (e.g. the special Home/Settings entries) aren't searchable, but must still pass through unfiltered.
+        if (!hasQuickSearch)
+          result.push(node);
       });
       return result;
     };

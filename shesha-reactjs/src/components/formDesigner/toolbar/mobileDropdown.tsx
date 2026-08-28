@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { Tooltip } from 'antd';
 import { useCanvas } from '@/providers';
 import CustomDropdown from '@/designer-components/_settings/utils/CustomDropdown';

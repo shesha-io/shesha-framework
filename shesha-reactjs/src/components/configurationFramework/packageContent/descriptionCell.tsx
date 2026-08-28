@@ -1,5 +1,6 @@
 import { EyeOutlined } from '@ant-design/icons';
-import React, { FC } from 'react';
+import { FC } from 'react';
+import * as React from 'react';
 import { PackageItemDto } from '../itemsImport/models';
 import { Popover, Typography } from 'antd';
 import { useTheme } from 'antd-style';

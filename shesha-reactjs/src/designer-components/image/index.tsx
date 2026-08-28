@@ -1,30 +1,26 @@
-import { IToolboxComponent } from '@/interfaces';
-import { FormMarkup } from '@/providers/form/models';
-import { FileImageOutlined } from '@ant-design/icons';
+import ConditionalWrap from '@/components/conditionalWrapper';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import settingsFormJson from './settingsForm.json';
-import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import React, { ReactElement, ReactNode } from 'react';
 import {
   migrateCustomFunctions,
   migratePropertyName,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
+import { IToolboxComponent } from '@/interfaces';
 import { FileUploadProvider, IInputStyles } from '@/providers';
-import { ImageField } from './image';
-import ConditionalWrap from '@/components/conditionalWrapper';
-import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
-import { getFirstNonEmptyStringPropertyOrUndefined, removeUndefinedProps } from '@/utils/object';
-import { getSettings } from './settingsForm';
-import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { defaultStyles } from './utils';
-import { useTheme } from 'antd-style';
-import { IImageProps } from './interfaces';
+import { evaluateString } from '@/providers/form/utils';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
-import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
-
-const settingsForm = settingsFormJson as FormMarkup;
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { getFirstNonEmptyStringPropertyOrUndefined, removeUndefinedProps } from '@/utils/object';
+import { FileImageOutlined } from '@ant-design/icons';
+import { useTheme } from 'antd-style';
+import { ReactElement, ReactNode } from 'react';
+import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { ImageField } from './image';
+import { IImageProps } from './interfaces';
+import { getSettings } from './settingsForm';
+import { defaultStyles } from './utils';
 
 type ImageValueType = string | {
   id: string;
@@ -175,7 +171,7 @@ const ImageComponent: IToolboxComponent<IImageProps, ImageComponentCalculatedMod
     })
     .add<IImageProps>(6, (prev) => ({ ...migratePrevStyles(prev, defaultStyles(prev)) })),
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+
 };
 
 export default ImageComponent;
