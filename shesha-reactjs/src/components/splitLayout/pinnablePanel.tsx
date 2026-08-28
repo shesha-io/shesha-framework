@@ -15,9 +15,9 @@ export interface PinnablePanelProps {
   title: string;
   children: React.ReactNode;
   expanded: boolean;
-  onToggle: () => void;
+  onExpandedToggle: () => void;
   pinned: boolean;
-  onPinToggle: () => void;
+  onPinnedToggle: () => void;
   direction?: 'horizontal' | 'vertical';
   className?: string;
   style?: React.CSSProperties;
@@ -29,9 +29,9 @@ export const PinnablePanel = forwardRef<HTMLDivElement, PinnablePanelProps>(
       title,
       children,
       expanded,
-      onToggle,
+      onExpandedToggle,
       pinned,
-      onPinToggle,
+      onPinnedToggle,
       direction = 'horizontal',
       className,
       style,
@@ -47,7 +47,7 @@ export const PinnablePanel = forwardRef<HTMLDivElement, PinnablePanelProps>(
         {/* Collapsed bar – visible when collapsed */}
         <div
           className={cx(styles.collapsedBar, barTextClass, "collapsed-bar")}
-          onClick={onToggle}
+          onClick={onExpandedToggle}
         >
           <MenuUnfoldOutlined />
           <span>{title}</span>
@@ -60,7 +60,7 @@ export const PinnablePanel = forwardRef<HTMLDivElement, PinnablePanelProps>(
               <Button
                 type="text"
                 icon={expanded ? <MenuFoldOutlined /> : <MenuUnfoldOutlined />}
-                onClick={onToggle}
+                onClick={onExpandedToggle}
                 title={expanded ? 'Collapse' : 'Expand'}
               />
               <Text strong>{title}</Text>
@@ -68,7 +68,7 @@ export const PinnablePanel = forwardRef<HTMLDivElement, PinnablePanelProps>(
             <Button
               type="text"
               icon={pinned ? <PushpinFilled /> : <PushpinOutlined />}
-              onClick={onPinToggle}
+              onClick={onPinnedToggle}
               title={pinned ? 'Unpin (auto-collapse)' : 'Pin (keep open)'}
             />
           </div>

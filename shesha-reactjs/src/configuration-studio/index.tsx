@@ -1,72 +1,31 @@
-import { FC, useEffect, useState } from 'react';
+import { SplitLayout } from '@/components/splitLayout';
 import { ConfigurationTree } from '@/configuration-studio/components/configuration-tree';
-import { Divider, Splitter, Layout } from 'antd';
-import { WorkArea } from '@/configuration-studio/components/work-area';
-import { NewButton } from '@/configuration-studio/components/new-button';
 import { ConfigurationItemMenu } from '@/configuration-studio/components/item-menu';
+import { NewButton } from '@/configuration-studio/components/new-button';
+import { WorkArea } from '@/configuration-studio/components/work-area';
 import { ConfigurationStudioProvider } from '@/configuration-studio/cs/contexts';
-
-import { useStyles } from './styles';
-import Image from 'next/image';
-import { UserProfileBlock } from './components/user-profile-dropdown';
 import { withAuth } from '@/hocs/withAuth';
-import { QuickInfoIcons } from './components/quick-info-icons';
-import { ItemToolbarHolder } from './components/item-toolbar-holder';
-import { DocumentDefinitionRegistration } from './document-definitions/documentDefinitionRegistration';
-import { SheshaDocumentDefinitions } from './document-definitions';
-import { useCanvas } from '@/providers';
+import { Divider, Layout } from 'antd';
+import Image from 'next/image';
+import { FC } from 'react';
 import { InitializationErrorsModal } from './components/initializationErrorsModal';
-import { throttle } from 'lodash';
+import { ItemToolbarHolder } from './components/item-toolbar-holder';
+import { QuickInfoIcons } from './components/quick-info-icons';
+import { UserProfileBlock } from './components/user-profile-dropdown';
+import { SheshaDocumentDefinitions } from './document-definitions';
+import { DocumentDefinitionRegistration } from './document-definitions/documentDefinitionRegistration';
+import { useStyles } from './styles';
 import { useLocalStorage } from '@/hooks';
-
-// Width of the collapsed tree panel (just enough to show the expand toggle), matches the builder's collapsed sidebar.
-const COLLAPSED_TREE_SIZE = 35;
 
 const ConfigurationStudio: FC = () => {
   const { styles } = useStyles();
-  const { configTreePanelSize, setConfigTreePanelSize } = useCanvas();
   const [treeCollapsed, setTreeCollapsed] = useLocalStorage('shesha:cs-tree-collapsed', false);
-  // Live size of the tree panel (in px) while expanded. Initialized from the canvas default so the
-  // panel stays controlled throughout the component's lifetime and avoids uncontrolled/controlled switches.
-  const [expandedTreeSize, setExpandedTreeSize] = useState<number>(configTreePanelSize);
-
-  // While collapsed we force the thin strip; otherwise we use the controlled expanded size.
-  const treePanelSize = treeCollapsed ? COLLAPSED_TREE_SIZE : expandedTreeSize;
-
-  // Keep the canvas context in sync with the *effective* tree panel width so the canvas auto-zoom
-  // reserves the right amount of space. When collapsed this is the thin strip (not the last expanded
-  // width), so the canvas reclaims the freed space instead of leaving a gap on the sides — matching
-  // how the form builder's properties/components panels are treated when collapsed.
-  useEffect(() => {
-    setConfigTreePanelSize(treePanelSize);
-  }, [treePanelSize, setConfigTreePanelSize]);
-
-  const handleTreeResize = (sizes: number[]): void => {
-    const treeSize = sizes[0] ?? 0;
-    if (treeSize <= COLLAPSED_TREE_SIZE) {
-      setTreeCollapsed(true);
-    } else {
-      setTreeCollapsed(false);
-      setExpandedTreeSize(treeSize);
-    }
-  };
-
-  const [throttledTreeResize] = useState(() => throttle(handleTreeResize, 100));
-
-  useEffect(() => {
-    return () => {
-      throttledTreeResize.cancel();
-    };
-  }, [throttledTreeResize]);
-
-  const toggleTreeCollapsed = (): void => {
-    setTreeCollapsed(!treeCollapsed);
-  };
+  const [treeTreePinned, setTreeTreePinned] = useLocalStorage('shesha:cs-tree-pinned', true);
+  const defaultTreePanelSize = typeof window !== 'undefined' ? (20 / 100) * window.innerWidth : 350;
 
   return (
     <ConfigurationStudioProvider>
       <DocumentDefinitionRegistration definitions={SheshaDocumentDefinitions} />
-
       <Layout className={styles.configStudio}>
         <Layout.Header className={styles.csHeader}>
           <div className={styles.csHeaderLeft}>
@@ -90,27 +49,23 @@ const ConfigurationStudio: FC = () => {
           </div>
         </Layout.Header>
         <Layout.Content className={styles.csContent}>
-          <Splitter
-            onResize={throttledTreeResize}
-            onResizeEnd={(sizes) => {
-              throttledTreeResize.cancel();
-              handleTreeResize(sizes);
-            }}
+          <SplitLayout
+            orientation="horizontal"
+            position="start"
+            panelTitle="Explorer"
+            panelClassName={styles.csTreeArea}
+            panel={<ConfigurationTree />}
+            panelMin={100}
+            panelMax="50%"
+
+            defaultPanelSize={defaultTreePanelSize}
+            defaultExpanded={!treeCollapsed}
+            onExpandedToggle={(expanded) => setTreeCollapsed(!expanded)}
+            defaultPinned={treeTreePinned}
+            onPinnedToggle={(pinned) => setTreeTreePinned(pinned)}
           >
-            <Splitter.Panel
-              min={treeCollapsed ? COLLAPSED_TREE_SIZE : '5%'}
-              size={treePanelSize}
-              className={styles.csTreeArea}
-            >
-              <ConfigurationTree collapsed={treeCollapsed} onToggleCollapsed={toggleTreeCollapsed} />
-            </Splitter.Panel>
-            <Splitter.Panel
-              min="20%"
-              className={styles.csWorkArea}
-            >
-              <WorkArea />
-            </Splitter.Panel>
-          </Splitter>
+            <WorkArea />
+          </SplitLayout>
         </Layout.Content>
       </Layout>
       <InitializationErrorsModal />
