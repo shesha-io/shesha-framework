@@ -2,6 +2,23 @@ import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
 import { SettingsFormMarkupFactory } from '@/interfaces';
 
+/**
+ * Metadata for the `note` object injected into the On Update and On Delete handlers. Declaring the
+ * properties gives the JS editor IntelliSense and code validation over them; the shape mirrors
+ * `NotesApiNote` in the component API.
+ */
+const noteProperties = [
+  '.addString("id", "Unique identifier of the note")',
+  '.addString("noteText", "Text of the note")',
+  '.addString("category", "Category the note belongs to")',
+  '.addString("creationTime", "When the note was created")',
+].join('');
+
+const noteConstantsExpression = (verb: string): string =>
+  'return metadataBuilder.object("constants")\r\n.addAllStandard()\r\n' +
+  `.addObject("note", "The note that was ${verb}", (n) => n${noteProperties})\r\n` +
+  '.build();';
+
 export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
@@ -48,8 +65,8 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
             key: 'events', title: 'Events', id: eventsTabId,
             components: fbf(eventsTabId)
               .stdEventHandler('onCreateAction', 'On Create', 'Triggered after successfully creating a new note (access notes using createdNotes array)', 'return metadataBuilder.object("constants")\r\n.addAllStandard()\r\n.addArray("createdNotes", "Notes that were created")\r\n.build();')
-              .stdEventHandler('onUpdateAction', 'On Update', 'Triggered after successfully updating a note (access the note using the note object)', 'return metadataBuilder.object("constants")\r\n.addAllStandard()\r\n.addObject("note", "The note that was updated", undefined)\r\n.build();')
-              .stdEventHandler('onDeleteAction', 'On Delete', 'Triggered after successfully deleting a note (access the note using the note object)', 'return metadataBuilder.object("constants")\r\n.addAllStandard()\r\n.addObject("note", "The note that was deleted", undefined)\r\n.build();')
+              .stdEventHandler('onUpdateAction', 'On Update', 'Triggered after successfully updating a note (access the note using the note object)', noteConstantsExpression('updated'))
+              .stdEventHandler('onDeleteAction', 'On Delete', 'Triggered after successfully deleting a note (access the note using the note object)', noteConstantsExpression('deleted'))
               .stdEventHandlers(['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'])
               .toJson(),
           },

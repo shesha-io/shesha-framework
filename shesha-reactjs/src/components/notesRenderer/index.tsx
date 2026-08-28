@@ -34,7 +34,7 @@ export interface INotesRendererProps extends EventsObject {
    */
   readOnly?: boolean | undefined;
 
-  buttonPostion?: 'left' | 'right' | undefined;
+  buttonPosition?: 'left' | 'right' | undefined;
   autoSize?: boolean | undefined;
   showCharCount?: boolean | undefined;
   minLength?: number | undefined;
@@ -51,7 +51,7 @@ export const NotesRenderer: FC<INotesRendererProps> = ({
   readOnly = false,
 
   autoSize,
-  buttonPostion,
+  buttonPosition,
   showCharCount,
   minLength,
   maxLength,
@@ -99,7 +99,7 @@ export const NotesRenderer: FC<INotesRendererProps> = ({
         allowEdit={allowUpdate && isEditable}
         allowDelete={(allowDelete ?? false) && isEditable}
 
-        buttonFloatRight={buttonPostion === 'right'}
+        buttonFloatRight={buttonPosition === 'right'}
         autoSize={autoSize}
         showCharCount={showCharCount}
         minLength={minLength}

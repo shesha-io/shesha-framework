@@ -44,7 +44,7 @@ const NOTES_EVENTS = ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove',
  */
 const NotesApiRegistrar: FC<{ model: INotesComponentProps; ownerId: string }> = ({ model, ownerId }) => {
   const { notes, isFetchingNotes } = useNotesEditorState();
-  const { createNoteAsync, deleteNoteAsync } = useNotesEditorActions();
+  const { createNoteAsync, updateNoteAsync, deleteNoteAsync } = useNotesEditorActions();
 
   useComponentApi<NotesApi>({
     model,
@@ -57,9 +57,10 @@ const NotesApiRegistrar: FC<{ model: INotesComponentProps; ownerId: string }> = 
     ],
     api: {
       createNote: (noteText: string) => createNoteAsync({ noteText }),
+      updateNote: (id: string, noteText: string) => updateNoteAsync({ id, noteText }),
       deleteNote: (id: string) => deleteNoteAsync({ id }),
     },
-  }, [notes, isFetchingNotes, ownerId, model.category, createNoteAsync, deleteNoteAsync]);
+  }, [notes, isFetchingNotes, ownerId, model.category, createNoteAsync, updateNoteAsync, deleteNoteAsync]);
 
   return null;
 };
@@ -127,7 +128,7 @@ const NotesComponent: NotesComponentDefinition = {
     return (
       <NotesEditorProvider
         ownerId={ownerId}
-        ownerType={model.ownerType ?? ''}
+        ownerType={model.ownerType}
         category={model.category}
         onCreatedAction={handleCreateAction}
         onUpdatedAction={handleUpdateAction}
@@ -143,7 +144,7 @@ const NotesComponent: NotesComponentDefinition = {
           readOnly={isReadOnly}
           disabled={isDisabled}
 
-          buttonPostion={model.savePlacement}
+          buttonPosition={model.savePlacement}
           autoSize={model.autoSize}
           showCharCount={model.showCharCount}
           minLength={model.minLength}

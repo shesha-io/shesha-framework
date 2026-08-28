@@ -516,7 +516,7 @@ export interface NotesApiNote {
  */
 export interface NotesApi extends CommonComponentApi {
   /** Notes currently listed by the component, newest first. */
-  readonly notes: NotesApiNote[];
+  readonly notes: ReadonlyArray<NotesApiNote>;
   /** Id of the entity the notes belong to. */
   readonly ownerId: string;
   /** Category used to filter the notes, `undefined` when all notes are shown. */
@@ -525,6 +525,8 @@ export interface NotesApi extends CommonComponentApi {
   readonly isFetchingNotes: boolean;
   /** Post a new note against the current owner. */
   createNote(noteText: string): Promise<void>;
+  /** Replace the text of the note with the given id. */
+  updateNote(id: string, noteText: string): Promise<void>;
   /** Delete the note with the given id. */
   deleteNote(id: string): Promise<void>;
 };

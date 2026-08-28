@@ -27,7 +27,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: INotesComp
       ${paddingStyles(model.stylingBoxJson)}
     }
 
-    &&& ${prefixCls}-card-body {
+    &&& .${prefixCls}-card-body {
       ${paddingStyles(model.stylingBoxJson)}
     }
 
