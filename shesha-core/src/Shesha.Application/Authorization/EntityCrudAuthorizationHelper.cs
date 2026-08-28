@@ -63,11 +63,20 @@ namespace Shesha.Authorization
 
             if (config == null) return;
 
-            var securitySettings = await _securitySettings.SecuritySettings.GetValueAsync();
-            var defaultAccess = securitySettings?.DefaultEndpointAccess;
+            var securitySettings = await _securitySettings.SecuritySettings.GetValueOrNullAsync();
 
             // Note: requireAll is intentionally false — multiple permissions are OR'd (any single permission grants access)
-            await _objectPermissionChecker.AuthorizeAsync(false, config.FullClassName, method, ShaPermissionedObjectsTypes.EntityAction, AbpSession.UserId.HasValue, defaultAccess);
+            // the `DefaultEndpointAccess` setting is passed as fallback for the `Inherited` access,
+            // entity CRUD endpoints must respect it just like the web api endpoints do
+            await _objectPermissionChecker.AuthorizeAsync(
+                false,
+                config.FullClassName,
+                method,
+                ShaPermissionedObjectsTypes.EntityAction,
+                AbpSession.UserId.HasValue,
+                securitySettings?.DefaultEndpointAccess ?? Domain.Enums.RefListPermissionedAccess.AnyAuthenticated,
+                securitySettings?.DefaultEndpointPermissions
+            );
         }
     }
 }
