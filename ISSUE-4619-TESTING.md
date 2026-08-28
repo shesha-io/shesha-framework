@@ -14,7 +14,7 @@ reset to `AnyAuthenticated` by a later refactor, which is what @yuliaGradova hit
 |---|---|
 | `Shesha.Application/Permissions/PermissionedObjectAppService.cs` | `[SheshaAuthorize(RequiresPermissions, "pages:maintenance")]` restored |
 | `Shesha.Application/Permissions/PermissionAppService.cs` | class-level access changed from `AnyAuthenticated` to `RequiresPermissions, "app:Configurator"`; `IsPermissionGranted` keeps its own `AnyAuthenticated` attribute |
-| `Shesha.Framework/Migrations/M20260827120000.cs` | new migration — updates the two `frwk.permissioned_objects` rows that still hold `AnyAuthenticated` to the new access level |
+| `Shesha.Framework/Migrations/M20260827121299.cs` | new migration — updates the two `frwk.permissioned_objects` rows that still hold `AnyAuthenticated` to the new access level |
 | `Shesha.Tests/Security/PermissionServicesAuth_Tests.cs` | regression tests so the attributes cannot be silently dropped again |
 
 The migration is needed because the database configuration wins over the code attribute. Without it

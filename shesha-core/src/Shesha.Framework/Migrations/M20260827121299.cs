@@ -12,8 +12,8 @@ namespace Shesha.Migrations
     /// (`AnyAuthenticated`) have to be updated, otherwise the new code level default is ignored.
     /// Rows that were customized to any other access level are left untouched.
     /// </summary>
-    [Migration(20260827120000)]
-    public class M20260827120000 : OneWayMigration
+    [Migration(20260827121299)]
+    public class M20260827121299 : OneWayMigration
     {
         public override void Up()
         {
