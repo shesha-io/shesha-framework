@@ -8,7 +8,7 @@ import {
   useCallback,
 } from 'react';
 import { reducer } from './reducer';
-import { setCanvasAutoZoomAction, setCanvasWidthAction, setCanvasZoomAction, setConfigTreePanelSizeAction, setDesignerDeviceAction, setManualZoomAction, setScreenWidthAction, setViewTypeAction } from './actions';
+import { setAvailableCanvasWidthAction, setCanvasAutoWidthAction, setCanvasWidthPercentAction, setCanvasAutoZoomAction, setCanvasWidthAction, setCanvasZoomAction, setConfigTreePanelSizeAction, setDesignerDeviceAction, setManualZoomAction, setScreenWidthAction, setViewTypeAction } from './actions';
 import { CANVAS_CONTEXT_INITIAL_STATE, CanvasActionsContext, CanvasStateContext, ICanvasActionsContext, ICanvasStateContext, DeviceTypes, IViewType } from './contexts';
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { canvasContextCode } from '@/publicJsApis/apis';
@@ -19,6 +19,8 @@ import { DataTypes } from '@/interfaces/dataTypes';
 import { SheshaCommonContexts } from '../dataContextManager/models';
 import { ContextOnChangeData } from '../dataContextProvider/contexts';
 import { useLocalStorage } from '@/hooks';
+import { clampZoom } from './utils';
+import { boundCanvasWidthPercent } from './constants';
 
 const CanvasProvider: FC<PropsWithChildren> = ({
   children,
@@ -44,19 +46,45 @@ const CanvasProvider: FC<PropsWithChildren> = ({
   } as IObjectMetadata), []);
 
 
-  const [storedDesignerWidth, setStoredDesignerWidth] = useLocalStorage('shesha:designerWidth', CANVAS_CONTEXT_INITIAL_STATE.designerWidth);
-  const [storedDesigneZoom, setStoredDesigneZoom] = useLocalStorage('shesha:designerZoom', CANVAS_CONTEXT_INITIAL_STATE.zoom);
+  // The zoom/width keys are versioned. The canvas defaults changed (75% manual zoom, responsive
+  // "Canvas" width); without a new key, a zoom persisted by the previous version - including one
+  // the old auto-zoom computed, e.g. 47% - would silently win over the new default.
+  const [storedDesignerWidth, setStoredDesignerWidth] = useLocalStorage('shesha:designerWidth:v2', CANVAS_CONTEXT_INITIAL_STATE.designerWidth);
+  const [storedDesigneZoom, setStoredDesigneZoom] = useLocalStorage('shesha:designerZoom:v2', CANVAS_CONTEXT_INITIAL_STATE.zoom);
+  const [storedAutoWidth, setStoredAutoWidth] = useLocalStorage('shesha:designerAutoWidth', CANVAS_CONTEXT_INITIAL_STATE.autoWidth);
+  // Persisted even while in "Canvas" mode, unlike the width above. "Canvas" is a sizing mode, not
+  // a device: styling only supports desktop/tablet/mobile, so the canvas must always resolve to
+  // one of the three. Restoring it means a form opens with the styles that were last in effect
+  // instead of the initial desktop default until the pane has been measured.
+  // Never undefined: exactOptionalPropertyTypes forbids writing an explicit undefined into the
+  // optional designerDevice, and a canvas with no device has no styles to render anyway.
+  const [storedDesignerDevice, setStoredDesignerDevice] = useLocalStorage<DeviceTypes>('shesha:designerDevice', CANVAS_CONTEXT_INITIAL_STATE.designerDevice ?? 'desktop');
+  const [storedWidthPercent, setStoredWidthPercent] = useLocalStorage('shesha:designerWidthPercent', CANVAS_CONTEXT_INITIAL_STATE.widthPercent);
 
   const [state, dispatch] = useReducer(reducer, {
     ...CANVAS_CONTEXT_INITIAL_STATE,
     designerWidth: storedDesignerWidth,
-    zoom: storedDesigneZoom,
+    zoom: clampZoom(storedDesigneZoom),
+    autoWidth: storedAutoWidth,
+    designerDevice: storedDesignerDevice,
+    // The physical device is not known until the first resize handler runs, so the canvas device
+    // stands alone here; setScreenWidthAction narrows it on mount.
+    activeDevice: storedDesignerDevice,
+    widthPercent: boundCanvasWidthPercent(storedWidthPercent),
   });
 
   useEffect(() => {
-    setStoredDesignerWidth(state.designerWidth);
+    // In "Canvas" mode designerWidth is a measurement of the pane, not a user choice. Persisting it
+    // would restore a stale width on the next load - and lay the canvas out at it for a frame -
+    // before the pane has been measured again.
+    if (!state.autoWidth)
+      setStoredDesignerWidth(state.designerWidth);
     setStoredDesigneZoom(state.zoom);
-  }, [setStoredDesigneZoom, setStoredDesignerWidth, state.designerWidth, state.zoom]);
+    setStoredAutoWidth(state.autoWidth);
+    setStoredDesignerDevice(state.designerDevice ?? 'desktop');
+    setStoredWidthPercent(state.widthPercent);
+  }, [setStoredDesigneZoom, setStoredDesignerWidth, setStoredAutoWidth, setStoredDesignerDevice, setStoredWidthPercent,
+    state.autoWidth, state.designerWidth, state.zoom, state.designerDevice, state.widthPercent]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
@@ -87,6 +115,18 @@ const CanvasProvider: FC<PropsWithChildren> = ({
     dispatch(setCanvasAutoZoomAction(value));
   }, []);
 
+  const setCanvasAutoWidth = useCallback((value?: boolean) => {
+    dispatch(setCanvasAutoWidthAction(value));
+  }, []);
+
+  const setCanvasWidthPercent = useCallback((percent: number) => {
+    dispatch(setCanvasWidthPercentAction(percent));
+  }, []);
+
+  const setAvailableCanvasWidth = useCallback((width: string) => {
+    dispatch(setAvailableCanvasWidthAction(width));
+  }, []);
+
   const setConfigTreePanelSize = useCallback((size: number) => {
     dispatch(setConfigTreePanelSizeAction(size));
   }, []);
@@ -102,10 +142,13 @@ const CanvasProvider: FC<PropsWithChildren> = ({
     setCanvasZoom,
     setManualZoom,
     setCanvasAutoZoom,
+    setCanvasAutoWidth,
+    setCanvasWidthPercent,
+    setAvailableCanvasWidth,
     setConfigTreePanelSize,
     setViewType,
     /* NEW_ACTION_GOES_HERE */
-  }), [setDesignerDevice, setCanvasWidth, setCanvasZoom, setManualZoom, setCanvasAutoZoom, setConfigTreePanelSize, setViewType]);
+  }), [setDesignerDevice, setCanvasWidth, setCanvasZoom, setManualZoom, setCanvasAutoZoom, setCanvasAutoWidth, setCanvasWidthPercent, setAvailableCanvasWidth, setConfigTreePanelSize, setViewType]);
 
   const contextOnChangeData: ContextOnChangeData<ICanvasStateContext> = useCallback((_, changedData) => {
     if (!isDefined(changedData))

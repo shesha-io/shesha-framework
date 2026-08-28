@@ -1,5 +1,11 @@
 import { deepMergeValues } from "@/utils/object";
-import { DeviceTypes, ICanvasStateContext, IViewType } from "./contexts";
+import type { DeviceTypes, IViewType } from "./contexts";
+import { DEFAULT_OPTIONS, MAX_CANVAS_WIDTH_PERCENT } from "./constants";
+
+// Re-exported for the existing `@/providers/canvas/utils` consumers. The value itself lives in the
+// leaf `constants` module because `contexts.ts` reads it while building its initial state, which
+// happens before this module has finished evaluating.
+export { MAX_CANVAS_WIDTH_PERCENT };
 import { DesktopOutlined, MobileOutlined, TabletOutlined } from '@ant-design/icons';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 
@@ -66,10 +72,64 @@ export const dimensionRelativeToCanvas = (
   return trimmed;
 };
 
-export const defaultDesignerWidth = `${(typeof window !== 'undefined' ? window.screen.availWidth : 1024)}px`;
-
 /** Sentinel value for the responsive Canvas preset in the dropdown */
 export const CANVAS_PRESET_SENTINEL = '__CANVAS_RESPONSIVE__' as const;
+
+const PERCENT_WIDTH_REGEX = /^\s*(\d+(?:\.\d+)?)\s*%\s*$/;
+
+/** A percentage canvas width that has been read and bounded. */
+export interface ICanvasWidthPercent {
+  /** The percentage to apply, never above `MAX_CANVAS_WIDTH_PERCENT`. */
+  percent: number;
+  /** True when the entered value was above the maximum and has been overridden. */
+  wasClamped: boolean;
+}
+
+/**
+ * Reads a percentage width entered as a custom resolution (e.g. "80%") and bounds it to
+ * (0, `MAX_CANVAS_WIDTH_PERCENT`]. Anything above the maximum is overridden to it and reported via
+ * `wasClamped`, so the caller can tell the user their value was not applied as they typed it.
+ *
+ * Returns `undefined` for anything that is not a usable percentage width: a device preset such as
+ * "1024px", a malformed entry such as "abc%" or "-10%" (the pattern admits no sign, so a negative
+ * never reaches the range check), and "0%" - well-formed, but not a width the canvas can take. The
+ * caller ignores those rather than guessing: a typo should not quietly resize the canvas.
+ */
+export const parseCanvasWidthPercent = (value: string): ICanvasWidthPercent | undefined => {
+  const match = PERCENT_WIDTH_REGEX.exec(value);
+  if (!match) return undefined;
+
+  const percent = parseFloat(match[1] ?? '');
+  if (!Number.isFinite(percent) || percent <= 0)
+    return undefined;
+
+  return percent > MAX_CANVAS_WIDTH_PERCENT
+    ? { percent: MAX_CANVAS_WIDTH_PERCENT, wasClamped: true }
+    : { percent, wasClamped: false };
+};
+
+/**
+ * Width the canvas must be laid out at, in its own (pre-zoom) coordinate space, so that after the
+ * CSS `zoom` is applied it renders exactly `availableWidth` wide - i.e. it fills the area between
+ * the Builder Components and Properties panels with no horizontal scrollbar.
+ *
+ * Because `zoom` scales layout, dividing by the zoom factor means zooming out widens the layout
+ * (components get more room and re-wrap) while each component keeps the rendered scale the user
+ * picked, instead of the canvas overflowing its pane.
+ *
+ * `widthPercent` takes the canvas to a fraction of that space, for a percentage entered as a custom
+ * resolution. It is bounded to `MAX_CANVAS_WIDTH_PERCENT` here as well as at the point of entry, so
+ * a value arriving by any other route (persisted state, the context API) still cannot exceed the
+ * pane.
+ */
+export const getCanvasLayoutWidth = (availableWidth: number, zoom: number, widthPercent: number = MAX_CANVAS_WIDTH_PERCENT): string => {
+  const zoomFactor = (zoom > 0 ? zoom : DEFAULT_OPTIONS.defaultZoom) / 100;
+  const fraction = Number.isFinite(widthPercent) && widthPercent > 0
+    ? Math.min(widthPercent, MAX_CANVAS_WIDTH_PERCENT) / 100
+    : 1;
+  // Floor so sub-pixel rounding can never push the canvas past the available space
+  return `${Math.max(0, Math.floor((availableWidth * fraction) / zoomFactor))}px`;
+};
 
 export interface IAutoZoomParams {
   currentZoom: number;
@@ -81,24 +141,13 @@ export interface IAutoZoomParams {
 };
 
 /**
- * Predefined zoom levels (percentages) that the +/- buttons step through.
- * Direct numeric entry in the zoom input is free-form within [minZoom, maxZoom]
- * and is not restricted to these levels.
+ * Constrains a zoom percentage to the range the canvas supports. Non-numeric input (e.g. a value
+ * restored from storage that was never a number) falls back to the default zoom.
  */
-export const ZOOM_LEVELS = [25, 50, 75, 80, 100, 125, 150, 200] as const;
-
-export const DEFAULT_OPTIONS = {
-  minZoom: 10,
-  maxZoom: 400,
-  defaultZoom: 80,
-  sizes: [25, 50, 25],
-  configTreePanelWidth: (val: number = 20): number => typeof window !== 'undefined' ? (val / 100) * window.innerWidth : 200,
-  gutter: 4,
-  designerWidth: defaultDesignerWidth,
-  zoomStep: 1,
-  zoomLevels: ZOOM_LEVELS,
-  modalMargins: 32,
-};
+export const clampZoom = (zoom: number): number =>
+  Number.isFinite(zoom)
+    ? Math.max(DEFAULT_OPTIONS.minZoom, Math.min(DEFAULT_OPTIONS.maxZoom, zoom))
+    : DEFAULT_OPTIONS.defaultZoom;
 
 const SIDEBAR_WIDTH = {
   COLLAPSED: 60,
@@ -163,7 +212,8 @@ export const usePinchZoom = (
   currentZoom: number,
   minZoom: number = DEFAULT_OPTIONS.minZoom,
   maxZoom: number = DEFAULT_OPTIONS.maxZoom,
-  isAutoWidth: boolean = false,
+  /** Suppresses manual pinch/ctrl+wheel zoom while the zoom level is driven automatically. */
+  isZoomLocked: boolean = false,
 ): RefObject<HTMLDivElement | null> => {
   const elementRef = useRef<HTMLDivElement>(null);
   const lastDistance = useRef<number>(0);
@@ -180,15 +230,15 @@ export const usePinchZoom = (
   }, []);
 
   const handleTouchStart = useCallback((e: TouchEvent) => {
-    if (isAutoWidth || e.touches.length !== 2) return;
+    if (isZoomLocked || e.touches.length !== 2) return;
 
     e.preventDefault();
     lastDistance.current = getDistance(e.touches);
     initialZoom.current = currentZoom;
-  }, [getDistance, currentZoom, isAutoWidth]);
+  }, [getDistance, currentZoom, isZoomLocked]);
 
   const handleTouchMove = useCallback((e: TouchEvent) => {
-    if (isAutoWidth || e.touches.length !== 2) return;
+    if (isZoomLocked || e.touches.length !== 2) return;
 
     e.preventDefault();
     const currentDistance = getDistance(e.touches);
@@ -198,16 +248,16 @@ export const usePinchZoom = (
       const newZoom = Math.max(minZoom, Math.min(maxZoom, initialZoom.current * scale));
       onZoomChange(Math.round(newZoom));
     }
-  }, [getDistance, onZoomChange, minZoom, maxZoom, isAutoWidth]);
+  }, [getDistance, onZoomChange, minZoom, maxZoom, isZoomLocked]);
 
   const handleWheel = useCallback((e: WheelEvent) => {
-    if (isAutoWidth || !e.ctrlKey) return;
+    if (isZoomLocked || !e.ctrlKey) return;
 
     e.preventDefault();
     const delta = e.deltaY > 0 ? -DEFAULT_OPTIONS.zoomStep : DEFAULT_OPTIONS.zoomStep;
     const newZoom = Math.max(minZoom, Math.min(maxZoom, currentZoom + delta));
     onZoomChange(newZoom);
-  }, [onZoomChange, currentZoom, minZoom, maxZoom, isAutoWidth]);
+  }, [onZoomChange, currentZoom, minZoom, maxZoom, isZoomLocked]);
 
   const handleTouchEnd = useCallback((e: TouchEvent) => {
     if (e.touches.length < 2) {
@@ -241,6 +291,9 @@ export const usePinchZoom = (
 
 export const screenSizeOptions = [
   {
+    label: 'Canvas', value: CANVAS_PRESET_SENTINEL, icon: DesktopOutlined,
+  },
+  {
     label: 'iPhone SE', value: '375px', icon: MobileOutlined,
   },
   {
@@ -273,9 +326,6 @@ export const screenSizeOptions = [
   {
     label: 'Full HD 1920x1080', value: '1920px', icon: DesktopOutlined,
   },
-  {
-    label: 'Canvas', value: CANVAS_PRESET_SENTINEL, icon: DesktopOutlined,
-  },
 ];
 
 export const getDeviceStyle = (data: Record<string, object | undefined> | undefined, device: DeviceTypes | undefined, defaultDevice: DeviceTypes = 'desktop'): object | undefined => {
@@ -284,12 +334,3 @@ export const getDeviceStyle = (data: Record<string, object | undefined> | undefi
   return deepMergeValues(data[defaultDevice] ?? {}, data[device] ?? {});
 };
 
-
-export const applyCanvasSize = (state: ICanvasStateContext, width: number | string, deviceType: DeviceTypes): ICanvasStateContext => {
-  return {
-    ...state,
-    designerWidth: typeof width === 'string' ? width : `${width}px`,
-    designerDevice: deviceType,
-    activeDevice: getSmallerDevice(deviceType, state.physicalDevice ?? "desktop"),
-  };
-};

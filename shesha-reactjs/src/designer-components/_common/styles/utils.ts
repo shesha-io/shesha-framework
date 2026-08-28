@@ -1,6 +1,6 @@
 import { BorderStyle, getGradientColors, IBackgroundValue, IBorderValue, IDimensionsValue, IFontValue, IGradientValue, IShadowValue } from "@/designer-components/_settings/utils";
 import { IConfigurableFormComponent, IStyleValue, StyleBoxValue } from "../../../providers/form/models";
-import { addPx, hasNumber } from "@/utils/style";
+import { addPx, allowForCanvasChromeHeight, hasNumber } from "@/utils/style";
 import { StringBuilder } from "@/utils";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { CSSProperties } from "react";
@@ -218,9 +218,11 @@ export const dimensionsStyles = (model: IDimensionsValue | undefined): string =>
   if (isDefined(model.width)) sb.append(`width: ${dimensionCss(model.width)};`);
   if (isDefined(model.minWidth)) sb.append(`min-width: ${dimensionCss(model.minWidth)};`);
   if (isDefined(model.maxWidth)) sb.append(`max-width: ${dimensionCss(model.maxWidth)};`);
-  if (isDefined(model.height)) sb.append(`height: ${dimensionCss(model.height)};`);
-  if (isDefined(model.minHeight)) sb.append(`min-height: ${dimensionCss(model.minHeight)};`);
-  if (isDefined(model.maxHeight)) sb.append(`max-height: ${dimensionCss(model.maxHeight)};`);
+  // The height axes go through allowForCanvasChromeHeight: this is the path the container
+  // component uses, and a container is the usual place a full-viewport height is set.
+  if (isDefined(model.height)) sb.append(`height: ${dimensionCss(allowForCanvasChromeHeight(model.height))};`);
+  if (isDefined(model.minHeight)) sb.append(`min-height: ${dimensionCss(allowForCanvasChromeHeight(model.minHeight))};`);
+  if (isDefined(model.maxHeight)) sb.append(`max-height: ${dimensionCss(allowForCanvasChromeHeight(model.maxHeight))};`);
   if (isDefined(model.gridRow) && model.gridRow > 0) sb.append(`grid-row: span ${model.gridRow};`);
   if (isDefined(model.gridColumn) && model.gridColumn > 0) sb.append(`grid-column: span ${model.gridColumn};`);
   return sb.build();
