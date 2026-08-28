@@ -16,6 +16,7 @@ import { ActionRefType } from '@/components/dataList/models';
 import { ITableRowData } from '@/providers/dataTable/interfaces';
 import { useMetadataOrUndefined } from '@/providers/metadata';
 import { useEnsureFetchColumns } from '@/designer-components/dataTable/table/useEnsureFetchColumns';
+import { MAX_NUMBER_OF_FETCH_COLS, SUPPORTED_FETCH_DATA_TYPES } from '@/designer-components/dataTable/table/utils';
 
 const DataListControl: FCUnwrapped<IDataListWithDataSourceProps, "dataSourceInstance"> = (props) => {
   const {
@@ -61,7 +62,12 @@ const DataListControl: FCUnwrapped<IDataListWithDataSourceProps, "dataSourceInst
     setMultiSelectedRow,
   } = dataSource;
   const metadata = useMetadataOrUndefined()?.metadata;
-  useEnsureFetchColumns(props.id, dataSource, metadata);
+  // a DataList binds an item form, not grid columns, so it needs the wider fetch set
+  const fetchColumnsOptions = useMemo(
+    () => ({ supportedDataTypes: SUPPORTED_FETCH_DATA_TYPES, maxColumns: MAX_NUMBER_OF_FETCH_COLS }),
+    [],
+  );
+  useEnsureFetchColumns(props.id, dataSource, metadata, undefined, fetchColumnsOptions);
   const appContext = useAvailableConstantsData();
   const { formMode } = useForm();
   const isDesignMode = formMode === 'designer';

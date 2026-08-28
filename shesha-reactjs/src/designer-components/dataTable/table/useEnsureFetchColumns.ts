@@ -5,7 +5,7 @@ import { IModelMetadata } from '@/interfaces/metadata';
 import { IConfigurableColumnsProps, IDataColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { isNonEmptyArray } from '@/utils/array';
-import { calculateDefaultColumns } from './utils';
+import { ICalculateDefaultColumnsOptions, calculateDefaultColumns } from './utils';
 
 type DataTableStore = IDataTableStateContext & IDataTableActionsContext;
 
@@ -29,12 +29,15 @@ const asDataColumn = (propertyName: string, sortOrder: number): IDataColumnsProp
  *
  * `requiredProperties` are appended even when the default set excludes them (e.g. a Kanban grouping
  * on a reference-list property, which the default column calculation filters out).
+ *
+ * `options` widens the default set itself - see `SUPPORTED_FETCH_DATA_TYPES`.
  */
 export const useEnsureFetchColumns = (
   ownerId: string,
   store: DataTableStore | undefined,
   metadata: IModelMetadata | null | undefined,
   requiredProperties: (string | undefined)[] = [],
+  options?: ICalculateDefaultColumnsOptions,
 ): void => {
   const doneRef = useRef(false);
   const storeRef = useRef(store);
@@ -42,7 +45,14 @@ export const useEnsureFetchColumns = (
     storeRef.current = store;
   }, [store]);
 
+  // `options` is a fresh object per render, so the effect keys off `optionsKey` and reads it via ref
+  const optionsRef = useRef(options);
+  useEffect(() => {
+    optionsRef.current = options;
+  }, [options]);
+
   const requiredKey = requiredProperties.filter((p) => !isNullOrWhiteSpace(p)).join(',');
+  const optionsKey = `${options?.supportedDataTypes?.join('|') ?? ''}#${options?.maxColumns ?? ''}`;
 
   useEffect(() => {
     const currentStore = storeRef.current;
@@ -58,7 +68,7 @@ export const useEnsureFetchColumns = (
     doneRef.current = true;
     let cancelled = false;
     let settled = false;
-    calculateDefaultColumns(metadata)
+    calculateDefaultColumns(metadata, optionsRef.current)
       .then((columns) => {
         settled = true;
         if (cancelled)
@@ -91,5 +101,5 @@ export const useEnsureFetchColumns = (
       if (!settled)
         doneRef.current = false;
     };
-  }, [metadata, ownerId, requiredKey]);
+  }, [metadata, ownerId, requiredKey, optionsKey]);
 };
