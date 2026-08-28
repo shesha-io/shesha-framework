@@ -623,7 +623,7 @@ export class DatasetInstance implements IDatasetInstance {
 
     // re-registering an identical set is a no-op: a remounted consumer (e.g. `useEnsureFetchColumns`
     // after a fetch error) would otherwise re-init and refetch in a loop
-    if (this.#columnsRegistered && isEqual(this.columns, columns)) {
+    if (this.#columnsRegistered && isEqual(this.state.configurableColumns, columns)) {
       this.log("Register columns skipped: columns are unchanged");
       return;
     }

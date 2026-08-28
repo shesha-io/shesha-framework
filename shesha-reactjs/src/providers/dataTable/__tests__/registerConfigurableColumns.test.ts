@@ -104,6 +104,37 @@ describe('registerConfigurableColumns', () => {
     expect(instance.state.configurableColumns).toHaveLength(2);
   });
 
+  it('retries a registration whose prepareColumns failed instead of skipping it', async () => {
+    const repository = makeRepository();
+    const instance = makeInstance(repository);
+    await instance.init(initArgs);
+
+    vi.mocked(repository.prepareColumns).mockRejectedValueOnce(new Error('transient network error'));
+    await expect(instance.registerConfigurableColumns('owner-1', [column('name')])).rejects.toThrow('transient network error');
+    expect(instance.state.configurableColumns).toEqual([]);
+    const fetches = vi.mocked(repository.fetch).mock.calls.length;
+
+    // the failed attempt must not make an identical retry a no-op
+    await instance.registerConfigurableColumns('owner-1', [column('name')]);
+
+    expect(instance.state.configurableColumns).toEqual([column('name')]);
+    expect(vi.mocked(repository.fetch).mock.calls.length).toBe(fetches + 1);
+  });
+
+  it('processes a first registration of an empty set (table with no configured columns)', async () => {
+    const repository = makeRepository();
+    const instance = makeInstance(repository);
+    await instance.init(initArgs);
+    const fetches = vi.mocked(repository.fetch).mock.calls.length;
+
+    await instance.registerConfigurableColumns('owner-1', []);
+    expect(vi.mocked(repository.fetch).mock.calls.length).toBe(fetches + 1);
+
+    // but an identical empty re-registration is still deduplicated
+    await instance.registerConfigurableColumns('owner-1', []);
+    expect(vi.mocked(repository.fetch).mock.calls.length).toBe(fetches + 1);
+  });
+
   it('picks up columns registered before init and fetches once (DataContext DataList first load)', async () => {
     const repository = makeRepository();
     const instance = makeInstance(repository);
