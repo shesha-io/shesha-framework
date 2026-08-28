@@ -4,6 +4,7 @@ import { CSSProperties } from 'react';
 import { addPx } from '@/utils/style';
 import { IStyleValue } from '@/providers';
 import { backgroundStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, paddingStyles, shadowStyles } from '@/designer-components/_common/styles/utils';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 interface IModelInterface extends IStyleValue {
   thumbnailStyle?: IStyleValue | undefined;
   thumbnailStyleCss?: CSSProperties | undefined;
@@ -60,6 +61,18 @@ export const useStyles = createStyles((
     { type: font?.type, size: font?.size },
     { fontFamily: model.styleCss?.fontFamily, fontSize: model.styleCss?.fontSize },
   );
+
+  /* The prompt is text before it is a control, so the configured Font colour reaches it — the
+     dragger's prompt has always taken it, and the File component colours its trigger the same way.
+     Note that the container's default Font colour is #000 rather than the File component's empty
+     one, so the prompt reads black until a colour is chosen; the theme's link colour is the
+     fallback for a component whose colour is genuinely unset, not the usual case. Custom style wins
+     over the Font panel, the same precedence every other style set here uses. */
+  const uploadControlColor = !isNullOrWhiteSpace(model.styleCss?.color)
+    ? model.styleCss.color
+    : !isNullOrWhiteSpace(font?.color)
+      ? font.color
+      : token.colorLink;
 
   const containerStyles = `
   ${dimensionsStyles(model.dimensions)}
@@ -341,6 +354,17 @@ export const useStyles = createStyles((
       > .${prefixCls}-btn,
       .${prefixCls}-upload-select .${prefixCls}-btn {
         padding-inline: 0;
+      }
+
+      /* Text and icon together, and !important because antd colours the link button from its own
+         class. The per-file action icons are reached by neither selector, so the delete stays red.
+         The rule above deliberately withholds colour from every button; this hands it back to the
+         trigger alone. */
+      > .${prefixCls}-btn,
+      > .${prefixCls}-btn *,
+      .${prefixCls}-upload-select .${prefixCls}-btn,
+      .${prefixCls}-upload-select .${prefixCls}-btn * {
+        color: ${uploadControlColor} !important;
       }
       `}
 
