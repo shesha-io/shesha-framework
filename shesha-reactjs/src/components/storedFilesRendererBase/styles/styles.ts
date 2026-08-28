@@ -445,6 +445,20 @@ export const useStyles = createStyles((
 
   `);
 
+  /* Tiles are laid out by the upload list, so that is where the configured Gap belongs — the
+     container's own gap only ever separated the trigger from the Download Zip row. */
+  const tileSpacing = `
+    .${prefixCls}-upload-list {
+      gap: ${model.gap ?? '8px'};
+    }
+
+    /* Cleared so Gap is the only spacing; antd's item margin would otherwise add to it on the
+       vertical axis and leave a grid's rows further apart than its columns. */
+    .${prefixCls}-upload-list-item {
+      margin-top: 0 !important;
+    }
+  `;
+
   const noItemAnimation = `
     &.${prefixCls}-upload-animate-inline-appear,
     &.${prefixCls}-upload-animate-inline-appear-active,
@@ -472,6 +486,8 @@ export const useStyles = createStyles((
       display: inline-block !important;
       ${noItemAnimation}
     }
+
+    ${tileSpacing}
   `);
 
   const shaStoredFilesRendererVertical = cx("sha-stored-files-renderer-vertical", css`
@@ -494,6 +510,8 @@ export const useStyles = createStyles((
       display: inline-block !important;
       ${noItemAnimation}
     }
+
+    ${tileSpacing}
   `);
 
   const shaStoredFilesRendererGrid = cx("sha-stored-files-renderer-grid", css`
@@ -512,6 +530,8 @@ export const useStyles = createStyles((
       display: inline-block !important;
       ${noItemAnimation}
     }
+
+    ${tileSpacing}
   `);
 
   return {
