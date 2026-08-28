@@ -1,7 +1,7 @@
 import { CodeOutlined } from '@ant-design/icons';
 import { Input, InputRef, Tooltip } from 'antd';
 import { InputProps } from 'antd/lib/input';
-import { useEffect, useMemo, useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { IInputStyles, UnwrapCodeEvaluators } from '@/providers';
@@ -18,13 +18,10 @@ import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { getSettings } from './settingsForm';
 import { applyGroupFormatting, buildFormatValidatorString, defaultStyles, buildPasswordValidatorString, parseGroupLengths, stripSeparator, TEXT_TYPE_FORMATS, totalGroupLength, usePasswordComplexitySettings, validatePasswordValue } from './utils';
-import { useComponentApiProvider } from '@/providers/componentApi/provider';
-import { TextFieldApi } from '@/componentsApi/componentApi';
-import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '../_common/events';
 
-import apiCode from "../../componentsApi/componentApi.ts?raw";
+import { useComponentApi } from '@/providers/componentApi/hooks';
 
 const DATA_FORMAT_TO_TEXT_TYPE: Partial<Record<string, TextType>> = {
   [StringFormats.password]: 'password',
@@ -34,6 +31,7 @@ const DATA_FORMAT_TO_TEXT_TYPE: Partial<Record<string, TextType>> = {
 };
 
 const TextFieldComponent: TextFieldComponentDefinition = {
+  styleGroup: 'inputs',
   allowInherit: true,
   type: 'textField',
   isInput: true,
@@ -51,18 +49,8 @@ const TextFieldComponent: TextFieldComponentDefinition = {
       dataFormat === StringFormats.url ||
       dataFormat === StringFormats.password),
   Factory: ({ model }) => {
-    const componentApi = useComponentApiProvider();
     const inputRef = useRef<InputRef>(null);
-    useEffect(() => {
-      componentApi?.updateApi<TextFieldApi>({
-        id: model.id,
-        componentName: model.componentName ?? "",
-        level: 3,
-        typeDefinition: { typeName: 'TextFieldApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
-        api: { focus: () => inputRef.current?.focus() },
-      });
-    }, [componentApi, model.componentName, model.id]);
-    useEffectOnce(() => () => componentApi?.removeApi(model.id));
+    useComponentApi({ model, typeName: 'TextFieldApi', api: { focus: () => inputRef.current?.focus() } });
 
     const { styles } = useStyles(model);
     const InputComponentType = useMemo(() => model.textType === 'password' ? Input.Password : Input, [model.textType]);

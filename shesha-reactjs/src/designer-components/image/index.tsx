@@ -49,7 +49,7 @@ const ImageComponent: IToolboxComponent<IImageProps, ImageComponentCalculatedMod
   calculateModel: (model, allData) => ({
     ownerId: model.ownerId ? evaluateString(model.ownerId, allData) : undefined,
     dataId: allData.data ? (allData.data as { Id: string }).Id : undefined, // TODO: review and remove
-    formModelType: allData.form?.formSettings?.modelType,
+    formModelType: allData.form?.modelType,
   }),
   Factory: ({ model, calculatedModel }) => {
     const theme = useTheme();

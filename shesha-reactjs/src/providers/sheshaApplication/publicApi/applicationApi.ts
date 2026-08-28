@@ -22,6 +22,8 @@ export interface IApplicationApi {
   settings: SettingsApi;
   entities: EntitiesApi;
   navigator: INavigatorApi;
+  readonly state: IDataContextFull;
+  /** @deprecated use state instead */
   readonly context: IDataContextFull;
 
   addPlugin: (plugin: IApplicationPlugin) => void;
@@ -43,6 +45,11 @@ export class ApplicationApi implements IApplicationApi {
 
   private contextDescriptor: IDataContextDescriptor | undefined;
 
+  public get state(): IDataContextFull {
+    return this.contextDescriptor?.getFull() ?? { };
+  };
+
+  /** @deprecated use state instead */
   public get context(): IDataContextFull {
     return this.contextDescriptor?.getFull() ?? { };
   };

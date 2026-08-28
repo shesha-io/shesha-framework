@@ -37,15 +37,22 @@ export const useFormDataRegistration = (): MetadataBuilderAction => {
   * Model of the ${formId.module}/${formId.name} form
   */`;
           const modelDefinition = response && !isNullOrWhiteSpace(response.filePath)
-            ? `import { ${response.typeName} } from '${TypesImporter.cleanupFileNameForImport(response.filePath)}';
+            ? `
+  import { ${response.typeName} } from '${TypesImporter.cleanupFileNameForImport(response.filePath)}';
+  import { IDelayedUpdateGroup } from '../../../apis/form.ts';
   
   ${commentBlock}
   export interface FormModel extends ${response.typeName} {
     [key: string]: any;
+    addDelayedUpdate?: ((data: Values) => IDelayedUpdateGroup[]) | undefined;
   }`
-            : `${commentBlock}
+            : `
+  import { IDelayedUpdateGroup } from '../../../apis/form.ts';
+
+  ${commentBlock}
   export interface FormModel {
     [key: string]: any;
+    addDelayedUpdate?: ((data: Values) => IDelayedUpdateGroup[]) | undefined;
   }`;
           return typeDefinitionBuilder.makeFormType(formId, modelDefinition);
         });
