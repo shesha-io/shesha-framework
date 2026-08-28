@@ -216,7 +216,7 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
 					Authorization = new[] { new HangfireAuthorizationFilter() }
 				});
 			app.UseMiddleware<GraphQLMiddleware>();
-			if (_hostEnvironment.IsDevelopment())
+			if (!_hostEnvironment.IsProduction())
 			{
 				app.UseGraphQLPlayground(); //to explorer API navigate https://*DOMAIN*/ui/playground
 			}
