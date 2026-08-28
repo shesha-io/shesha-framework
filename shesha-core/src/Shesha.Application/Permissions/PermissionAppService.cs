@@ -16,7 +16,11 @@ using System.Threading.Tasks;
 
 namespace Shesha.Permissions
 {
-    [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.AnyAuthenticated)]
+    /// <summary>
+    /// Manages permission definitions. Restricted to application configurators: the permission list
+    /// (including write operations) must not be readable or editable by ordinary users.
+    /// </summary>
+    [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.RequiresPermissions, ShaPermissionNames.Application_Configurator)]
     public class PermissionAppService : SheshaAppServiceBase
     {
         private readonly IRepository<Module, Guid> _moduleRepository;
