@@ -19,6 +19,9 @@ namespace Shesha.Redis.Caching
     public class ShaRedisCacheL1Store
     {
         private readonly ConcurrentDictionary<string, Entry> _entries = new();
+
+        /// <summary>Serializes writes so the capacity check and the insert cannot interleave.</summary>
+        private readonly object _writeLock = new();
         private readonly TimeSpan _ttl;
         private readonly int _maxEntries;
 
@@ -68,10 +71,26 @@ namespace Shesha.Redis.Caching
 
         public void Set(string normalizedKey, object? value)
         {
-            if (_entries.Count >= _maxEntries && !_entries.ContainsKey(normalizedKey))
-                PurgeForOverflow();
+            var entry = new Entry(value, DateTime.UtcNow.Add(_ttl));
 
-            _entries[normalizedKey] = new Entry(value, DateTime.UtcNow.Add(_ttl));
+            // The capacity check, the purge and the insert have to happen as one step. Each is
+            // individually safe on a ConcurrentDictionary, but the sequence is not: concurrent
+            // writers with distinct keys could all observe Count < max and all insert, pushing the
+            // store past the ceiling it exists to enforce -- or all observe Count >= max, each run
+            // a full purge, and have one Clear discard what another had just written.
+            //
+            // Only writes are serialized. Reads stay lock-free and they dominate, and a Set is
+            // already downstream of a Redis round-trip and a deserialization, so an uncontended
+            // lock here is not measurable.
+            lock (_writeLock)
+            {
+                // A key that is already present is replaced in place and cannot grow the store,
+                // so it never triggers the overflow path.
+                if (_entries.Count >= _maxEntries && !_entries.ContainsKey(normalizedKey))
+                    PurgeForOverflow();
+
+                _entries[normalizedKey] = entry;
+            }
         }
 
         public void Remove(string normalizedKey)
