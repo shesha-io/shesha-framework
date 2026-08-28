@@ -3,6 +3,7 @@ import { IConfigurableFormComponent } from '@/providers';
 import { createStyles } from '@/styles';
 import { addPx } from '@/utils/style';
 import { isExactDimensionValue } from '../utils/stylingUtils';
+import { isDefined } from '@/utils';
 
 export const useStyles = createStyles(({ css, cx, token }, model: IConfigurableFormComponent & { autoAlignLabel?: boolean | undefined }) => {
   const settingsFormItem = cx(css`
@@ -12,7 +13,7 @@ export const useStyles = createStyles(({ css, cx, token }, model: IConfigurableF
   const height = addPx(model.dimensions?.height);
 
   const formItem = cx('sha-form-item', css`
-        ${marginStyles(model.stylingBoxJson)}
+        ${marginStyles({ ...model.stylingBoxJson, paddingBottom: isDefined(model.stylingBoxJson?.paddingBottom) ? model.stylingBoxJson.paddingBottom : 0, _type: 'styleBox' })}
 
         .ant-row {
             width: 100%;

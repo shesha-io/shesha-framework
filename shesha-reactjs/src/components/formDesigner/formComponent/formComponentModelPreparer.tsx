@@ -14,7 +14,7 @@ import { deepMergeSkipUndefinedFunc, deepMergeValues } from "@/utils/object";
 import { isDefined } from "@/utils";
 import { getStyleBoxValue } from "@/designer-components/styleBox/utils";
 import { useActualContextData, useActualContextExecution, useBackgroundStoredFile } from "@/hooks/formComponentHooks";
-import { useComponentApi } from "@/providers/componentApi/provider";
+import { useComponentApiProvider } from "@/providers/componentApi/provider";
 import { updateApi, updateApiModel } from "./formComponentApi";
 import { useEffectOnce } from "@/hooks/useEffectOnce";
 import { FormComponentAllStylesPreparer } from "./formComponentAllStylesPreparer";
@@ -38,7 +38,7 @@ export const FormComponentModelPreparer: FC<FormComponentPrepareModelProps> = ({
   const { activeDevice } = useCanvas();
   const { theme } = useTheme();
 
-  const componentApi = useComponentApi();
+  const componentApi = useComponentApiProvider();
   const [apiModel, setApiModel] = useState<Partial<IConfigurableFormComponent>>({});
   const [apiStyles, setApiStyles] = useState<Partial<IStyleValue>>({});
 

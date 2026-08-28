@@ -2,7 +2,7 @@ import { HeartOutlined } from '@ant-design/icons';
 import { useEffect, useRef } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { IconPickerWrapper } from './iconPickerWrapper';
 import { IconPickerComponentDefinition, IIconPickerComponentProps, IIconPickerComponentPropsV1 } from './interfaces';
 import {
@@ -20,7 +20,7 @@ import { migratePermissionsToVisiblePermissions } from '../_common-migrations/mi
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { useStyles } from '@/components/iconPicker/styles/styles';
-import { useComponentApi } from '@/providers/componentApi/provider';
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { IconPickerApi } from '../../componentsApi/componentApi';
 import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '../_common/events';
@@ -37,7 +37,7 @@ const IconPickerComponent: IconPickerComponentDefinition = {
   canBeJsSetting: true,
   preserveDimensionsInDesigner: true,
   Factory: ({ model }) => {
-    const componentApi = useComponentApi();
+    const componentApi = useComponentApiProvider();
     const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -84,7 +84,7 @@ const IconPickerComponent: IconPickerComponentDefinition = {
   },
   settingsFormMarkup: getSettings,
   getDefaultStyles: () => defaultStyles(),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   migrator: (m) =>
     m
       .add<IIconPickerComponentPropsV1>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
@@ -94,9 +94,9 @@ const IconPickerComponent: IconPickerComponentDefinition = {
       .add<IIconPickerComponentPropsV1>(4, (prev, context) => context.isNew === true
         ? prev
         : { ...migratePrevStyles(prev, defaultStyles()) })
-      .add<IIconPickerComponentPropsV1>(5, (prev) => {
-        prev.hideLabel = true;
-        return prev;
+      .add<IIconPickerComponentPropsV1>(5, (prev, context) => {
+        const defaultHideLabel = context.isNew === true ? false : true;
+        return { ...prev, hideLabel: prev.hideLabel ?? defaultHideLabel };
       })
       .add<IIconPickerComponentPropsV1>(6, (prev) => migrateReadOnly(prev))
       .add<IIconPickerComponentProps>(7, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),

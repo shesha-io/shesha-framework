@@ -156,8 +156,8 @@ export const ALIGN_SELF = [
 
 export const defaultStyles = (prev?: IContainerComponentPropsV0): IStyleValue & ICommonContainerProps => {
   const {
-    width = 'auto',
-    height = 'auto',
+    width = '100%',
+    height = 'fit-content',
     maxHeight = 'auto',
     maxWidth = 'auto',
     minHeight = '32px',

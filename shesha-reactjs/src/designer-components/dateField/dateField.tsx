@@ -3,7 +3,7 @@ import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, mi
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers/form/models';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { CalendarOutlined } from '@ant-design/icons';
 import { useEffect, useRef } from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
@@ -13,7 +13,7 @@ import { DatePickerWrapper } from './datePickerWrapper';
 import { DateFieldDefinition, DateFieldValueType, DateSelectionType, IDateFieldProps, IDateFieldPropsV1, NoUndefinedRangeValueType } from './interfaces';
 import { getSettings } from './settingsForm';
 import { defaultStyles, getNumericBindingFormatWarning } from './utils';
-import { useComponentApi } from '@/providers/componentApi/provider';
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { useMetadataOrUndefined } from '@/providers';
 import { useComponentValidation } from '@/providers/validationErrors';
 import { asPropertiesArray } from '@/interfaces/metadata';
@@ -46,7 +46,7 @@ const DateField: DateFieldDefinition = {
   preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.date || dataType === DataTypes.dateTime,
   Factory: ({ model }) => {
-    const componentApi = useComponentApi();
+    const componentApi = useComponentApiProvider();
     const inputRef = useRef<HTMLDivElement>(null);
     const { properties: metaProperties } = useMetadataOrUndefined()?.metadata ?? {};
 
@@ -105,7 +105,7 @@ const DateField: DateFieldDefinition = {
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   initModel: (model) => ({
     ...model,
   }),

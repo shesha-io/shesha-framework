@@ -273,6 +273,13 @@ stages:
         verbose: false
         customCommand: 'install'
     - task: Npm@1
+      displayName: Npm Test
+      inputs:
+        command: custom
+        workingDir: shesha-reactjs
+        verbose: true
+        customCommand: run test
+    - task: Npm@1
       displayName: Npm Build
       inputs:
         command: custom

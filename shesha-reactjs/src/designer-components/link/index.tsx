@@ -2,7 +2,7 @@ import { ConfigurableFormItem } from '@/components/formDesigner/components/formI
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { IInputStyles } from '@/providers';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import ParentProvider from '@/providers/parentProvider/index';
 import { LinkOutlined } from '@ant-design/icons';
 import { ReactNode } from 'react';
@@ -72,7 +72,7 @@ const LinkComponent: LinkComponentDefinition = {
   },
   getDefaultStyles: defaultStyles,
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   initModel: (model: ILinkComponentProps) => {
     const customProps: ILinkComponentProps = {
       ...model,

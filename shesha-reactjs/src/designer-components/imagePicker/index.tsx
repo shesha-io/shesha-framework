@@ -6,7 +6,7 @@ import type { UploadProps } from 'antd';
 import { useStyles } from './style';
 import { IToolboxComponent } from '@/interfaces';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import { toBase64, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { toBase64 } from '@/providers/form/utils';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
 import { IFileUploadProps } from '../fileUpload/interfaces';
 import { getSettings } from './settings';
@@ -110,7 +110,7 @@ const ImagePickerComponent: IToolboxComponent<IFileUploadProps> = {
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
 };
 
 export default ImagePickerComponent;

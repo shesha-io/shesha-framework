@@ -43,7 +43,7 @@ npm run build
 npm test
 
 # Run single test file
-npm test -- --testPathPattern="path/to/test"
+npx vitest run path/to/test
 
 # Watch mode for development
 npm run start
@@ -120,8 +120,9 @@ Replaces GlobalState to prevent unnecessary re-renders:
 - Tests run against SQL Server/PostgreSQL in containers
 
 ### Frontend Tests
-- Framework: Jest with React Testing Library
-- Config: `jest.config.js`
+- Framework: Vitest with React Testing Library (jest-dom matchers via `@testing-library/jest-dom/vitest`)
+- Config: `vitest.config.mjs`, setup in `vitest-setup.ts`
+- `globals: true`, so `describe`/`it`/`expect`/`vi` are used without importing them (typed via the `vitest/globals` entry in `tsconfig.json`)
 - Test files: `*.test.ts` or `*.spec.tsx` in `src/`
 
 ## Key Patterns

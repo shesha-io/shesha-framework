@@ -20,7 +20,7 @@ import { isNonEmptyArray } from '@/utils/array';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getFullSizeWrapperDesignerStyle } from '@/components/formDesigner/utils/stylingUtils';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
-import { useComponentApi } from '@/providers/componentApi/provider';
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { TabsApiTab, TabsApi } from '@/componentsApi/componentApi';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { unwrapModel } from '@/hooks/formComponentHooks';
@@ -52,7 +52,7 @@ const TabsComponent: TabsComponentDefinition = {
         ? model.defaultActiveKey
         : isNonEmptyArray(model.tabs) ? model.tabs[0].key : undefined; // ToDo: review checking visibility of Tabs (it is dificult for now because some visibility calculated lster on the render stage)
     });
-    const componentApi = useComponentApi();
+    const componentApi = useComponentApiProvider();
     useDeepCompareEffect(() => {
       componentApi?.updateApi<TabsApi>({
         id: model.id,

@@ -1,5 +1,5 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { GroupOutlined } from '@ant-design/icons';
 import { IContainerCheckerComponentProps, ContainerCheckerComponentDefinition } from './interfaces';
 import { getSettings } from './settingsForm';
@@ -38,7 +38,7 @@ const ContainerCheckerComponent: ContainerCheckerComponentDefinition = {
     return <ComponentsContainer containerId={model.id} dynamicComponents={model.isDynamic === true ? model.components : []} />;
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
 };
 
 export const isContainerCheckerComponent = (component: IConfigurableFormComponent): component is IContainerCheckerComponentProps => component.type === ContainerCheckerComponent.type;

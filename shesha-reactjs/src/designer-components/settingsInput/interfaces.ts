@@ -24,6 +24,7 @@ import { IColumnProps } from '../columns/interfaces';
 import { DateFieldValueType } from '../dateField/interfaces';
 import { IDynamicActionsConfiguration } from '../dynamicActionsConfigurator/models';
 import { KeyInfomationBarItemProps } from '../keyInformationBar/interfaces';
+import { RefListDisplayValue } from '@/components/refListDisplaySelector/models';
 import { IRefListItemFormModel } from '@/components/refListSelectorDisplay/provider/models';
 import { ISizableColumnProps } from '../sizableColumns/interfaces';
 
@@ -432,6 +433,11 @@ export interface IEditModeSelectorSettingsInputProps extends ISettingsInputBase<
   interactionType?: InteractionType | undefined;
 }
 
+// Reference List Display Selector
+export interface IRefListDisplaySelectorSettingsInputProps extends ISettingsInputBase<RefListDisplayValue> {
+  type: 'refListDisplaySelector';
+}
+
 // Three State Switch
 export interface IThreeStateSwitchSettingsInputProps extends ISettingsInputBase<boolean> {
   type: 'threeStateSwitch';
@@ -523,6 +529,7 @@ export type BaseInputProps =
   IQueryBuilderSettingsInputProps |
   IFiltersListSettingsInputProps |
   IEditModeSelectorSettingsInputProps |
+  IRefListDisplaySelectorSettingsInputProps |
   IPermissionsSettingsInputProps |
   IConfigurableActionConfiguratorSettingsInputProps |
   IRefListItemSelectorSettingsModalProps |

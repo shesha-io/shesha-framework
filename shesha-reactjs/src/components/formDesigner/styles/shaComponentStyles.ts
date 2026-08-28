@@ -5,6 +5,7 @@ import { designerClassNames } from "./styles";
 import { IToolboxComponent } from "@/interfaces";
 import { useMemo } from "react";
 import { deepMergeValues } from "@/utils/object";
+import { DEFAULT_DESIGNER_PADDING } from "../utils/stylingUtils";
 
 const getShaComponentStyles = createStyles(({ css, cx, token }, wrapperStyle: IStyleValue) => {
   const wrapperMargin = marginStyles(wrapperStyle.stylingBoxJson);
@@ -31,6 +32,14 @@ const getShaComponentStyles = createStyles(({ css, cx, token }, wrapperStyle: IS
     ${wrapperStyle.dimensions?.width === 'stretch' ? 'flex: 1;' : ''}
 
     ${wrapperMargin}
+
+    >.ant-form-item {
+      margin-bottom: 0;
+      
+      .ant-form-item-label {
+        padding-bottom: 3px;
+      }
+    }
   `);
 
   const componentDragHandle = cx(designerClassNames.componentDragHandle, css`
@@ -62,7 +71,8 @@ export const useShaComponentStyles = (
 ): ReturnStyles<{ shaComponent: string; componentDragHandle: string }> => {
   const defaultWrapperStyle: IStyleValue = useMemo(() => ({
     dimensions: { gridRow: componentModel.dimensions?.gridRow, gridColumn: componentModel.dimensions?.gridColumn },
-  }), [componentModel]);
+    ...(toolboxComponent.isInput || toolboxComponent.isOutput === true ? {} : { stylingBoxJson: DEFAULT_DESIGNER_PADDING.stylingBoxJson }),
+  }), [componentModel.dimensions?.gridColumn, componentModel.dimensions?.gridRow, toolboxComponent.isInput, toolboxComponent.isOutput]);
 
   const wrapperStyle = useMemo(() => {
     const wrapperStyles = toolboxComponent.getWrapperStyle?.(componentModel);
