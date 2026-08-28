@@ -17,6 +17,8 @@ import { ITableRowData } from '@/providers/dataTable/interfaces';
 import { useMetadataOrUndefined } from '@/providers/metadata';
 import { useEnsureFetchColumns } from '@/designer-components/dataTable/table/useEnsureFetchColumns';
 import { MAX_NUMBER_OF_FETCH_COLS, SUPPORTED_FETCH_DATA_TYPES } from '@/designer-components/dataTable/table/utils';
+import { asPropertiesArray } from '@/interfaces/metadata';
+import { toCamelCase } from '@/utils/string';
 
 const DataListControl: FCUnwrapped<IDataListWithDataSourceProps, "dataSourceInstance"> = (props) => {
   const {
@@ -68,6 +70,12 @@ const DataListControl: FCUnwrapped<IDataListWithDataSourceProps, "dataSourceInst
     [],
   );
   useEnsureFetchColumns(props.id, dataSource, metadata, undefined, fetchColumnsOptions);
+  const groupingMetadata = useMemo(() => {
+    const properties = asPropertiesArray(metadata?.properties, []);
+    return (grouping ?? [])
+      .map((g) => properties.find((p) => toCamelCase(p.path) === g.propertyName))
+      .filter(isDefined);
+  }, [grouping, metadata]);
   const appContext = useAvailableConstantsData();
   const { formMode } = useForm();
   const isDesignMode = formMode === 'designer';
@@ -341,7 +349,7 @@ const DataListControl: FCUnwrapped<IDataListWithDataSourceProps, "dataSourceInst
       records={data}
       showEditIcons={showEditIcons}
       grouping={grouping}
-      groupingMetadata={groupingColumns.map((item) => item.metadata).filter(isDefined)}
+      groupingMetadata={groupingMetadata}
       isFetchingTableData={isFetchingTableData}
       selectedIds={selectedIds}
       changeSelectedIds={changeSelectedIds}
