@@ -860,6 +860,11 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     },
   };
 
+  /* The two optional parts of the designer stub, hoisted so the box that holds them is only
+     rendered when at least one of them is. */
+  const showStubFileName = listType !== 'text' && !hideFileName;
+  const showStubExtraContent = hasExtraContent === true && isDefined(extraFormId);
+
   const renderUploadContent = (): React.ReactNode => {
     return (
       disabled !== true && (
@@ -906,19 +911,25 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                   >
                     {listType === 'text' && '(press to upload)'}
                   </Button>
-                  <div style={(listType === 'thumbnail') ? { width, minWidth, maxWidth } : {}}>
-                    {listType !== 'text' && !hideFileName && (
-                      <div className={styles.shaItemFileName}>
-                        file name
-                      </div>
-                    )}
-                    {hasExtraContent === true && isDefined(extraFormId) && (
-                      <ExtraContent
-                        file={PLACEHOLDER_FILE}
-                        formId={extraFormId}
-                      />
-                    )}
-                  </div>
+                  {/* Only rendered when it actually holds something. The renderer is a gapped flex
+                      column, so an empty box below the trigger is not free: the gap still applies to
+                      it and pads the control column, pushing the trigger above the centre the label
+                      is aligned to. */}
+                  {(showStubFileName || showStubExtraContent) && (
+                    <div style={(listType === 'thumbnail') ? { width, minWidth, maxWidth } : {}}>
+                      {showStubFileName && (
+                        <div className={styles.shaItemFileName}>
+                          file name
+                        </div>
+                      )}
+                      {showStubExtraContent && (
+                        <ExtraContent
+                          file={PLACEHOLDER_FILE}
+                          formId={extraFormId}
+                        />
+                      )}
+                    </div>
+                  )}
                 </>
               )
             )

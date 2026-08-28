@@ -331,6 +331,17 @@ export const useStyles = createStyles((
         justify-content: ${justifyContent};
         width: 100%;
       }
+
+      /* The upload trigger is the component's leading edge, so its text has to sit flush with the
+         container the way the File component's does. antd gives every button 15px of inline padding,
+         which pushes the prompt in from that edge and out of line with the fields around it. Only
+         the inline padding goes — the block padding is what gives the trigger an input's height.
+         Scoped to the trigger itself (a bare child in the designer stub, wrapped by antd at runtime)
+         so the per-file action icons keep their own hit area. */
+      > .${prefixCls}-btn,
+      .${prefixCls}-upload-select .${prefixCls}-btn {
+        padding-inline: 0;
+      }
       `}
 
       /* File-type icons are inline SVGs sized in em units, so they scale with the font size of the
