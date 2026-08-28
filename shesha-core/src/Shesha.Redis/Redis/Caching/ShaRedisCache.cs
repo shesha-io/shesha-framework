@@ -156,8 +156,13 @@ namespace Shesha.Redis.Caching
                 PopulateL1(normalizedKey, value);
                 return true;
             }
-            catch (Exception ex) when (ex is JsonException || ex is SerializationException || ex is FileNotFoundException)
+            catch (Exception ex) when (ex is JsonException || ex is SerializationException
+                                       || ex is FileNotFoundException || ex is TypeLoadException)
             {
+                // FileNotFoundException covers a cached type whose assembly is gone;
+                // TypeLoadException covers one whose assembly still loads but the type was renamed
+                // or moved. Either way the entry can never be deserialized again, so evict it
+                // rather than let it fail every request until it expires.
                 Logger.Warn($"Failed to deserialize value for key: {key}, removed from cache", ex);
                 SafeDeleteKey(normalizedKey);
                 InvalidateL1(normalizedKey);
@@ -592,11 +597,13 @@ namespace Shesha.Redis.Caching
                 PopulateL1(key, deserialized);
                 return new ConditionalValue<object>(true, deserialized);
             }
-            catch (Exception ex) when (ex is JsonException || ex is SerializationException || ex is FileNotFoundException)
+            catch (Exception ex) when (ex is JsonException || ex is SerializationException
+                                       || ex is FileNotFoundException || ex is TypeLoadException)
             {
                 SafeDeleteKey(key);
                 InvalidateL1(key);
 
+                // See TryGetValue: TypeLoadException means the cached type no longer exists.
                 Logger.Warn($"Failed to deserialize value for key: {key} - skipped", ex);
                 return new ConditionalValue<object>(false, null!);
             }

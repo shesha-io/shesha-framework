@@ -236,4 +236,39 @@ namespace Shesha.Tests.Caching
             store.OverflowPurges.ShouldBe(0);
         }
     }
+
+    /// <summary>
+    /// The exception contract of the serializer's type resolution.
+    ///
+    /// ShaRedisCache catches TypeLoadException specifically so a cached entry whose type no longer
+    /// exists is evicted instead of failing every request until it expires. That catch filter is
+    /// only correct while resolution keeps throwing this exact type, so it is pinned here.
+    /// </summary>
+    public class DefaultRedisCacheSerializer_Tests
+    {
+        private class Probe : DefaultRedisCacheSerializer
+        {
+            public static Type Resolve(string typeName) => ResolveType(typeName);
+        }
+
+        [Fact]
+        public void An_unresolvable_type_name_throws_TypeLoadException()
+        {
+            Should.Throw<TypeLoadException>(() =>
+                Probe.Resolve("Shesha.Does.Not.Exist, Shesha.Framework"));
+        }
+
+        [Fact]
+        public void A_resolvable_type_name_round_trips_and_is_memoized()
+        {
+            var expected = typeof(ShaRedisCacheL1Store);
+
+            var first = Probe.Resolve(expected.AssemblyQualifiedName!);
+            var second = Probe.Resolve(expected.AssemblyQualifiedName!);
+
+            first.ShouldBe(expected);
+            second.ShouldBeSameAs(first);
+        }
+    }
+
 }
