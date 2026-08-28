@@ -819,8 +819,9 @@ export const DataList: FC<IDataListProps> = ({
     if (canAddInline)
       setCreateModalOpen(true);
   };
-  if (actionRef?.current)
-    actionRef.current.addNewItem = onCreateClick;
+
+  if (actionRef)
+    actionRef.current = { ...actionRef.current, addNewItem: onCreateClick };
 
   type MomentType = typeof moment;
   type NewListItemInitExecuter = (form: IFormApi | undefined, contexts: IDataContextsData | object, globalState: IAnyObject | undefined, http: HttpClientApi, moment: MomentType) => ITableRowData;

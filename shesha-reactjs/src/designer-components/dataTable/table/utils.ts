@@ -1,7 +1,8 @@
 import { nanoid } from '@/utils/uuid';
 import { ColumnsItemProps, IConfigurableColumnsProps, IDataColumnsProps, isColumnGroupProps, isDataColumn } from '@/providers/datatableColumnsConfigurator/models';
 import { IExpressionExecuterArguments, executeScriptSync } from '@/providers/form/utils';
-import { IModelMetadata, IPropertyMetadata, isPropertiesArray, isPropertiesLoader } from '@/interfaces/metadata';
+import { IModelMetadata, IPropertyMetadata, isEntityMetadata, isPropertiesArray, isPropertiesLoader } from '@/interfaces/metadata';
+import { DataTypes } from '@/interfaces/dataTypes';
 import { camelcaseDotNotation, toCamelCase, humanizeString } from '@/utils/string';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { IConfigurableFormComponent } from '@/interfaces/formDesigner';
@@ -198,6 +199,22 @@ export const SUPPORTED_COLUMN_DATA_TYPES = [
 ];
 
 /**
+ * Data types worth fetching for consumers that bind an item form rather than grid columns (DataList,
+ * Kanban). `array` and `object` stay out: collections of entities break `ProjectionHelper` on the
+ * back-end (issue #4961), and nested objects need dot-notation paths.
+ */
+export const SUPPORTED_FETCH_DATA_TYPES = [
+  ...SUPPORTED_COLUMN_DATA_TYPES,
+  DataTypes.guid,
+  DataTypes.time,
+  DataTypes.referenceListItem,
+  DataTypes.entityReference,
+];
+
+/** Item forms bind more fields than a grid shows, so the 20-column cap is too low. */
+export const MAX_NUMBER_OF_FETCH_COLS = 100;
+
+/**
  * Filters metadata properties to exclude auditing and framework-related properties
  * @param properties - Array of property metadata
  * @returns Filtered array of properties suitable for table columns
@@ -217,9 +234,12 @@ export const filterPropertiesForTable = (properties: IPropertyMetadata[]): IProp
  * @param properties - Array of property metadata
  * @returns Properties with supported data types for table display
  */
-export const filterPropertiesBySupportedTypes = (properties: IPropertyMetadata[]): IPropertyMetadata[] => {
+export const filterPropertiesBySupportedTypes = (
+  properties: IPropertyMetadata[],
+  supportedDataTypes: string[] = SUPPORTED_COLUMN_DATA_TYPES,
+): IPropertyMetadata[] => {
   return properties.filter((property: IPropertyMetadata) => {
-    return property.dataType && SUPPORTED_COLUMN_DATA_TYPES.includes(property.dataType);
+    return property.dataType && supportedDataTypes.includes(property.dataType);
   });
 };
 
@@ -248,18 +268,27 @@ export const propertyToDataColumn = (property: IPropertyMetadata, index: number)
   };
 };
 
+export interface ICalculateDefaultColumnsOptions {
+  supportedDataTypes?: string[] | undefined;
+  maxColumns?: number | undefined;
+}
+
 /**
  * Calculates default columns for a DataTable
  *
  * Processing order:
  * 1. Filter out 'id' and framework-related properties (auditing columns like isDeleted, creationTime, etc. are included)
- * 2. Filter by supported data types (string, number, boolean, date, date-time)
- * 3. Apply maxNumber limit (20) to the resulting valid columns
+ * 2. Filter by supported data types (string, number, boolean, date, date-time by default)
+ * 3. Apply maxNumber limit (20 by default) to the resulting valid columns
  *
  * @param metadata - Model metadata containing properties
- * @returns Promise resolving to array of DataTable column configurations (max 20 valid columns)
+ * @param options - Overrides for the type filter and the column limit
+ * @returns Promise resolving to array of DataTable column configurations
  */
-export const calculateDefaultColumns = async (metadata: IModelMetadata | undefined): Promise<IDataColumnsProps[]> => {
+export const calculateDefaultColumns = async (
+  metadata: IModelMetadata | undefined,
+  options?: ICalculateDefaultColumnsOptions,
+): Promise<IDataColumnsProps[]> => {
   if (!metadata || !metadata.properties) {
     console.warn('❌ No metadata available for column registration');
     return [];
@@ -289,12 +318,21 @@ export const calculateDefaultColumns = async (metadata: IModelMetadata | undefin
   const filteredProperties = filterPropertiesForTable(properties);
 
   // Get properties suitable for table columns (filter by supported types)
-  const supportedProperties = filterPropertiesBySupportedTypes(filteredProperties);
+  const supportedProperties = filterPropertiesBySupportedTypes(filteredProperties, options?.supportedDataTypes);
 
   // Apply maxNumber limit to the list of supported properties
-  const tableColumns = supportedProperties.length > MAX_NUMBER_OF_DEFAULT_COLS
-    ? supportedProperties.slice(0, MAX_NUMBER_OF_DEFAULT_COLS)
+  const maxColumns = options?.maxColumns ?? MAX_NUMBER_OF_DEFAULT_COLS;
+  const tableColumns = supportedProperties.length > maxColumns
+    ? supportedProperties.slice(0, maxColumns)
     : supportedProperties;
+
+  if (tableColumns.length < supportedProperties.length) {
+    const dropped = supportedProperties.slice(maxColumns).map((p) => p.path).join(', ');
+    const modelName = isEntityMetadata(metadata) ? metadata.entityType : 'model';
+    console.warn(
+      `Limit of ${maxColumns} columns reached for '${modelName}'; the following properties are not included: ${dropped}`,
+    );
+  }
 
   const columnItems: IDataColumnsProps[] = tableColumns.map(propertyToDataColumn);
 
