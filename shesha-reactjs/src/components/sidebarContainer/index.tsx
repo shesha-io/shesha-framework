@@ -16,7 +16,8 @@ import { SidebarPanel } from './sidebarPanel';
 import { useStyles } from './styles/styles';
 import { SizableColumns } from '../sizableColumns';
 import { getPanelSizes } from './utilis';
-import { calculateAutoZoom, DEFAULT_OPTIONS, defaultDesignerWidth, getCanvasLayoutWidth, usePinchZoom } from '@/providers/canvas/utils';
+import { calculateAutoZoom, getCanvasLayoutWidth, usePinchZoom } from '@/providers/canvas/utils';
+import { DEFAULT_OPTIONS, defaultDesignerWidth } from '@/providers/canvas/constants';
 import { IViewType } from '@/providers/canvas/contexts';
 import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 import { useCanvas } from '@/providers/canvas';
@@ -63,7 +64,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const storeKey = isNullOrWhiteSpace(storeName) ? 'sidebarContainer.transient' : storeName;
   const [isOpenLeftStore, setIsOpenLeftStore] = useLocalStorage(`${storeKey}.isOpenLeft`, false);
   const [isOpenRightStore, setIsOpenRightStore] = useLocalStorage(`${storeKey}.isOpenRight`, false);
-  const { zoom, setCanvasZoom, setViewType, setAvailableCanvasWidth, designerWidth, autoZoom, autoWidth, configTreePanelSize } = useCanvas();
+  const { zoom, setCanvasZoom, setViewType, setAvailableCanvasWidth, designerWidth, autoZoom, autoWidth, widthPercent, configTreePanelSize } = useCanvas();
   const [isSidebarCollapsed] = useLocalStorage(SIDEBAR_COLLAPSE, false);
   // Content-box width of the area between the sidebars, measured rather than derived from the
   // window, so panel drags, collapses and the vertical scrollbar are all accounted for.
@@ -172,7 +173,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   // applied it renders exactly as wide as its pane: no horizontal scrollbar, components re-wrap
   // to the space they have, and each one keeps the scale the user selected.
   const canvasWidth = isZoomableCanvas && autoWidth && availableWidth > 0
-    ? getCanvasLayoutWidth(availableWidth, zoom)
+    ? getCanvasLayoutWidth(availableWidth, zoom, widthPercent)
     : designerWidth;
 
   // Publish it so vw-based component sizing and anything else reading the canvas width agree with

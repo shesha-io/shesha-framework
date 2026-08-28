@@ -1,18 +1,23 @@
 import { IDimensionFieldSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
 import { useMemo, useState } from 'react';
 import { FCUnwrapped } from '@/providers/form/models';
-import { AutoComplete } from 'antd';
+import { App, AutoComplete } from 'antd';
 import Icon from '@/components/icon/Icon';
 import { useStyles } from '../styles';
 import { isDefined, isNullOrWhiteSpace } from '@/utils';
 import { DIMENSION_VALUES, GRID_DIMENSION_VALUES } from '@/utils/style';
+import { MAX_DIMENSION_PERCENT, boundWidthPercent, exceedsWidthPercent } from '@/designer-components/_settings/utils/dimensions/utils';
 
 const convertOprtions = (options: string[]): { value: string }[] => options.map((item) => ({ value: item }));
+
+/** Dimensions measured across the container, for which a percentage over 100% overflows it. */
+const WIDTH_DIMENSIONS = ['width', 'minWidth', 'maxWidth'];
 
 export const DimensionFieldWrapper: FCUnwrapped<IDimensionFieldSettingsInputProps> = (props) => {
   const { value, onChange, readOnly = false, width = '100%', tooltip, icon, label, size, dimensionType } = props;
 
   const { styles } = useStyles();
+  const { message } = App.useApp();
 
   const allOptions = useMemo (() => {
     return ['gridRowHeight', 'gridColumnWidth'].includes(dimensionType) ? GRID_DIMENSION_VALUES : DIMENSION_VALUES;
@@ -35,6 +40,21 @@ export const DimensionFieldWrapper: FCUnwrapped<IDimensionFieldSettingsInputProp
     setOptions(convertOprtions(filtered));
   };
 
+  /**
+   * Overrides a percentage wider than the container and says so.
+   *
+   * Applied when the value is committed rather than on every keystroke: bounding as the user types
+   * would rewrite "150" to "100" before they had finished typing, and they could never reach a value
+   * whose prefix is over the bound.
+   */
+  const commit = (data: string | undefined): void => {
+    if (!WIDTH_DIMENSIONS.includes(dimensionType) || !exceedsWidthPercent(data)) return;
+
+    const bounded = boundWidthPercent(data as string);
+    message.warning(`${String(data).trim()} is wider than the space the component sits in. Applied ${MAX_DIMENSION_PERCENT}% instead, which is the maximum.`);
+    onChange?.(bounded as string);
+  };
+
   const handleChange = (data: string): void => {
     onChange?.(data);
   };
@@ -43,11 +63,17 @@ export const DimensionFieldWrapper: FCUnwrapped<IDimensionFieldSettingsInputProp
     onChange?.(data);
     setOpen(false);
     handleSearch('');
+    commit(data);
   };
 
   const handleOnClick = (): void => {
     handleSearch('');
     setOpen(true);
+  };
+
+  const handleBlur = (): void => {
+    setOpen(false);
+    commit(value);
   };
 
   return (
@@ -63,7 +89,7 @@ export const DimensionFieldWrapper: FCUnwrapped<IDimensionFieldSettingsInputProp
       onSelect={handleSelect}
       onChange={handleChange}
       onFocus={handleOnClick}
-      onBlur={() => setOpen(false)}
+      onBlur={handleBlur}
       onClick={handleOnClick}
       value={value ?? ''}
       allowClear

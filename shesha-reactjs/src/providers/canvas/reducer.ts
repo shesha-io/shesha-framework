@@ -5,12 +5,38 @@ import { setCanvasZoomAction,
   setDesignerDeviceAction,
   setCanvasAutoZoomAction,
   setCanvasAutoWidthAction,
+  setCanvasWidthPercentAction,
   setAvailableCanvasWidthAction,
   setManualZoomAction,
   setConfigTreePanelSizeAction,
   setViewTypeAction } from './actions';
-import { CANVAS_CONTEXT_INITIAL_STATE } from './contexts';
+import { CANVAS_CONTEXT_INITIAL_STATE, ICanvasStateContext } from './contexts';
 import { clampZoom, getDeviceTypeByWidth, getSmallerDevice } from './utils';
+import { MAX_CANVAS_WIDTH_PERCENT, boundCanvasWidthPercent } from './constants';
+
+/**
+ * Resolves the device a canvas width implies, and applies it.
+ *
+ * The "Canvas" preset is a sizing mode, not a device: styling only supports desktop, tablet and
+ * mobile, so while Canvas is active the canvas must still resolve to one of those three and
+ * render that device's styles. Without this the device stays whatever a preset last pinned - so
+ * picking iPhone SE and then Canvas leaves a ~1125px canvas rendering mobile styles.
+ *
+ * Resolved from the layout width rather than the rendered one: that is the width components
+ * actually lay out against, and it is the same quantity a device preset sets directly.
+ */
+const resolveDeviceForWidth = (state: ICanvasStateContext, width: string): ICanvasStateContext => {
+  const parsed = parseFloat(width);
+  if (!Number.isFinite(parsed) || parsed <= 0)
+    return state;
+
+  const device = getDeviceTypeByWidth(parsed);
+  return {
+    ...state,
+    designerDevice: device,
+    activeDevice: getSmallerDevice(device, state.physicalDevice ?? "desktop"),
+  };
+};
 
 export const reducer = createReducer(CANVAS_CONTEXT_INITIAL_STATE, (builder) => {
   builder
@@ -37,12 +63,14 @@ export const reducer = createReducer(CANVAS_CONTEXT_INITIAL_STATE, (builder) => 
         activeDevice: getSmallerDevice(deviceType, state.physicalDevice ?? "desktop"),
         // Picking an explicit device/resolution preset pins the canvas to that width
         autoWidth: false,
+        // ...which makes any percentage in force meaningless, so it goes back to the maximum.
+        widthPercent: MAX_CANVAS_WIDTH_PERCENT,
       };
     })
     .addCase(setCanvasAutoWidthAction, (state, { payload }) => {
       const autoWidth = payload !== undefined ? payload : !state.autoWidth;
 
-      return {
+      const next: ICanvasStateContext = {
         ...state,
         autoWidth,
         // Auto zoom has nothing to fit once the canvas sizes itself to its pane, and the toolbar
@@ -50,17 +78,48 @@ export const reducer = createReducer(CANVAS_CONTEXT_INITIAL_STATE, (builder) => 
         // canvas with zoom neither computed automatically nor adjustable by pinch/ctrl+wheel.
         autoZoom: autoWidth ? false : state.autoZoom,
       };
+
+      // Resolved here as well as on the measurement below: if the pane happens to be exactly as
+      // wide as the width last pinned by a preset, the measurement is a no-op and would never
+      // correct the device on its own.
+      return autoWidth ? resolveDeviceForWidth(next, next.designerWidth) : next;
+    })
+    .addCase(setCanvasWidthPercentAction, (state, { payload }) => {
+      // Bounded again here rather than trusted from the caller: this action is reachable from the
+      // canvas context API as well as from the toolbar, and no route may exceed the pane.
+      const next: ICanvasStateContext = {
+        ...state,
+        widthPercent: boundCanvasWidthPercent(payload),
+        // A percentage is a fraction of the space available, so the canvas has to be measuring it.
+        autoWidth: true,
+        // Same invariant as the plain "Canvas" preset - see setCanvasAutoWidthAction.
+        autoZoom: false,
+      };
+
+      // Resolved now rather than left to the measurement that follows. The percentage changes the
+      // layout width, and if the result happens to equal the current width that measurement is a
+      // no-op - which would leave the device as whatever a preset last pinned.
+      return resolveDeviceForWidth(next, next.designerWidth);
     })
     .addCase(setAvailableCanvasWidthAction, (state, { payload }) => {
       // The measured width is only meaningful for the responsive "Canvas" preset. Ignoring it
       // otherwise keeps a stale measurement from overwriting a pinned device width.
-      if (!state.autoWidth || state.designerWidth === payload)
+      if (!state.autoWidth)
         return state;
 
-      return {
-        ...state,
-        designerWidth: payload,
-      };
+      // The measured width is the canvas width in this mode, so the device follows it - and it is
+      // resolved even when the width itself has not moved. A width restored from storage can
+      // already equal the freshly measured one while the device is still the initial default, and
+      // returning early on the width alone would leave that device stale for the whole session.
+      const measured = state.designerWidth === payload ? state : { ...state, designerWidth: payload };
+      const resolved = resolveDeviceForWidth(measured, payload);
+
+      // Still a no-op when nothing actually changed, so a repeated measurement costs no re-render.
+      return measured === state &&
+        resolved.designerDevice === state.designerDevice &&
+        resolved.activeDevice === state.activeDevice
+        ? state
+        : resolved;
     })
     .addCase(setScreenWidthAction, (state, { payload }) => {
       const device = getDeviceTypeByWidth(payload);

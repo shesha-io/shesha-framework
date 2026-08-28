@@ -1,5 +1,11 @@
 import { deepMergeValues } from "@/utils/object";
-import { DeviceTypes, ICanvasStateContext, IViewType } from "./contexts";
+import type { DeviceTypes, IViewType } from "./contexts";
+import { DEFAULT_OPTIONS, MAX_CANVAS_WIDTH_PERCENT } from "./constants";
+
+// Re-exported for the existing `@/providers/canvas/utils` consumers. The value itself lives in the
+// leaf `constants` module because `contexts.ts` reads it while building its initial state, which
+// happens before this module has finished evaluating.
+export { MAX_CANVAS_WIDTH_PERCENT };
 import { DesktopOutlined, MobileOutlined, TabletOutlined } from '@ant-design/icons';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 
@@ -66,43 +72,40 @@ export const dimensionRelativeToCanvas = (
   return trimmed;
 };
 
-export const defaultDesignerWidth = `${(typeof window !== 'undefined' ? window.screen.availWidth : 1024)}px`;
-
 /** Sentinel value for the responsive Canvas preset in the dropdown */
 export const CANVAS_PRESET_SENTINEL = '__CANVAS_RESPONSIVE__' as const;
 
-/**
- * Upper bound for a percentage canvas width. 100% is the whole pane the canvas sits in; asking for
- * more has nothing to expand into, so anything greater is capped here rather than pushed past the
- * pane edge.
- */
-export const MAX_CANVAS_WIDTH_PERCENT = 100;
-
 const PERCENT_WIDTH_REGEX = /^\s*(\d+(?:\.\d+)?)\s*%\s*$/;
 
+/** A percentage canvas width that has been read and bounded. */
+export interface ICanvasWidthPercent {
+  /** The percentage to apply, never above `MAX_CANVAS_WIDTH_PERCENT`. */
+  percent: number;
+  /** True when the entered value was above the maximum and has been overridden. */
+  wasClamped: boolean;
+}
+
 /**
- * Reads a percentage width entered as a custom resolution (e.g. "80%") and clamps it to
- * [0, `MAX_CANVAS_WIDTH_PERCENT`]. A value above 100% - or one that is not a usable number -
- * falls back to 100%, i.e. the full available width.
+ * Reads a percentage width entered as a custom resolution (e.g. "80%") and bounds it to
+ * (0, `MAX_CANVAS_WIDTH_PERCENT`]. Anything above the maximum is overridden to it and reported via
+ * `wasClamped`, so the caller can tell the user their value was not applied as they typed it.
  *
- * Returns `undefined` when the value is not a usable percentage - a device preset such as "1024px",
- * but equally a malformed entry such as "-10%" or "abc%". Those are left to the caller, which
- * ignores anything it cannot read as a width rather than guessing at one: a typo should not quietly
- * resize the canvas. Only a well-formed percentage returns a number, so callers can tell that apart
- * from "a percentage that clamped to 100".
- *
- * Note: every percentage currently puts the canvas into the responsive "Canvas" mode, which fills
- * the pane - the clamped fraction is not (yet) applied as a partial width. Read the percentage as
- * "fit the canvas to the space available, up to 100%".
+ * Returns `undefined` for anything that is not a usable percentage width: a device preset such as
+ * "1024px", a malformed entry such as "abc%" or "-10%" (the pattern admits no sign, so a negative
+ * never reaches the range check), and "0%" - well-formed, but not a width the canvas can take. The
+ * caller ignores those rather than guessing: a typo should not quietly resize the canvas.
  */
-export const parseCanvasWidthPercent = (value: string): number | undefined => {
+export const parseCanvasWidthPercent = (value: string): ICanvasWidthPercent | undefined => {
   const match = PERCENT_WIDTH_REGEX.exec(value);
   if (!match) return undefined;
 
   const percent = parseFloat(match[1] ?? '');
-  return Number.isFinite(percent) && percent > 0 && percent < MAX_CANVAS_WIDTH_PERCENT
-    ? percent
-    : MAX_CANVAS_WIDTH_PERCENT;
+  if (!Number.isFinite(percent) || percent <= 0)
+    return undefined;
+
+  return percent > MAX_CANVAS_WIDTH_PERCENT
+    ? { percent: MAX_CANVAS_WIDTH_PERCENT, wasClamped: true }
+    : { percent, wasClamped: false };
 };
 
 /**
@@ -113,11 +116,19 @@ export const parseCanvasWidthPercent = (value: string): number | undefined => {
  * Because `zoom` scales layout, dividing by the zoom factor means zooming out widens the layout
  * (components get more room and re-wrap) while each component keeps the rendered scale the user
  * picked, instead of the canvas overflowing its pane.
+ *
+ * `widthPercent` takes the canvas to a fraction of that space, for a percentage entered as a custom
+ * resolution. It is bounded to `MAX_CANVAS_WIDTH_PERCENT` here as well as at the point of entry, so
+ * a value arriving by any other route (persisted state, the context API) still cannot exceed the
+ * pane.
  */
-export const getCanvasLayoutWidth = (availableWidth: number, zoom: number): string => {
+export const getCanvasLayoutWidth = (availableWidth: number, zoom: number, widthPercent: number = MAX_CANVAS_WIDTH_PERCENT): string => {
   const zoomFactor = (zoom > 0 ? zoom : DEFAULT_OPTIONS.defaultZoom) / 100;
+  const fraction = Number.isFinite(widthPercent) && widthPercent > 0
+    ? Math.min(widthPercent, MAX_CANVAS_WIDTH_PERCENT) / 100
+    : 1;
   // Floor so sub-pixel rounding can never push the canvas past the available space
-  return `${Math.max(0, Math.floor(availableWidth / zoomFactor))}px`;
+  return `${Math.max(0, Math.floor((availableWidth * fraction) / zoomFactor))}px`;
 };
 
 export interface IAutoZoomParams {
@@ -127,26 +138,6 @@ export interface IAutoZoomParams {
   isSidebarCollapsed?: boolean;
   configTreePanelSize?: number;
   viewType?: IViewType;
-};
-
-/**
- * Predefined zoom levels (percentages) that the +/- buttons step through, in 25% increments.
- * Direct numeric entry in the zoom input is free-form within [minZoom, maxZoom]
- * and is not restricted to these levels.
- */
-export const ZOOM_LEVELS = [25, 50, 75, 100, 125, 150, 175, 200] as const;
-
-export const DEFAULT_OPTIONS = {
-  minZoom: 10,
-  maxZoom: 400,
-  defaultZoom: 75,
-  sizes: [25, 50, 25],
-  configTreePanelWidth: (val: number = 20): number => typeof window !== 'undefined' ? (val / 100) * window.innerWidth : 200,
-  gutter: 4,
-  designerWidth: defaultDesignerWidth,
-  zoomStep: 1,
-  zoomLevels: ZOOM_LEVELS,
-  modalMargins: 32,
 };
 
 /**
@@ -343,12 +334,3 @@ export const getDeviceStyle = (data: Record<string, object | undefined> | undefi
   return deepMergeValues(data[defaultDevice] ?? {}, data[device] ?? {});
 };
 
-
-export const applyCanvasSize = (state: ICanvasStateContext, width: number | string, deviceType: DeviceTypes): ICanvasStateContext => {
-  return {
-    ...state,
-    designerWidth: typeof width === 'string' ? width : `${width}px`,
-    designerDevice: deviceType,
-    activeDevice: getSmallerDevice(deviceType, state.physicalDevice ?? "desktop"),
-  };
-};

@@ -3,6 +3,36 @@ import { isDefined, isNotNullOrWhiteSpace } from "@/utils/nullables";
 import { executeScriptSync } from '@/providers/form/utils';
 import { IPropertySetting } from '..';
 
+/** A full-viewport component height, and the allowance taken off it on the designer canvas. */
+export const FULL_VIEWPORT_HEIGHT_VH = 100;
+export const VIEWPORT_HEIGHT_ALLOWANCE_VH = 20;
+
+const FULL_VIEWPORT_HEIGHT_REGEX = /^\s*(\d+(?:\.\d+)?)\s*vh\s*$/i;
+
+/**
+ * Takes a fixed allowance off a full-viewport height.
+ *
+ * `vh` resolves against the browser viewport, which is taller than the designer canvas by the
+ * chrome above and below it - header, toolbar, document tabs, and the canvas padding and margin.
+ * A component set to `100vh` is therefore always taller than the canvas it is being designed in,
+ * and overshoots the bottom of the device screen it is meant to sit inside. Subtracting a flat
+ * 20vh keeps it within the canvas.
+ *
+ * Only an exact `100vh` is adjusted - the value that means "as tall as the screen". Any other vh
+ * value is a deliberate size and is returned untouched, as is any other unit.
+ */
+export const allowForCanvasChromeHeight = (value: string | number): string | number => {
+  if (typeof value !== 'string') return value;
+
+  const match = FULL_VIEWPORT_HEIGHT_REGEX.exec(value);
+  if (!match) return value;
+
+  const vh = parseFloat(match[1] ?? '');
+  return vh === FULL_VIEWPORT_HEIGHT_VH
+    ? `${FULL_VIEWPORT_HEIGHT_VH - VIEWPORT_HEIGHT_ALLOWANCE_VH}vh`
+    : value;
+};
+
 export const DIMENSION_UNITS = ['px', '%', 'vw', 'vh', 'em', 'rem', 'auto', 'calc', 'none', 'fr', 'in', 'cm', 'mm', 'pt', 'pc'] as const;
 export type DimensionUnits = typeof DIMENSION_UNITS[number];
 export interface DimensionValue {
