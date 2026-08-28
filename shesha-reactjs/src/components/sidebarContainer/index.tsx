@@ -13,7 +13,7 @@ import classNames from 'classnames';
 
 import { ISidebarProps, SidebarPanelPosition } from './models';
 import { SidebarPanel } from './sidebarPanel';
-import { useStyles } from './styles/styles';
+import { CANVAS_PADDING, useStyles } from './styles/styles';
 import { SizableColumns } from '../sizableColumns';
 import { getPanelSizes } from './utilis';
 import { calculateAutoZoom, getCanvasLayoutWidth, usePinchZoom } from '@/providers/canvas/utils';
@@ -94,7 +94,11 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
     zoom,
     DEFAULT_OPTIONS.minZoom,
     DEFAULT_OPTIONS.maxZoom,
-    autoZoom,
+    // Only auto zoom drives the zoom level for us; in "Canvas" mode nothing does, so pinch and
+    // ctrl+wheel stay available. The reducer already keeps the two flags from being set together,
+    // but spelling the condition out here matches the auto-zoom effect below and keeps this call
+    // site correct on its own terms rather than by way of an invariant enforced elsewhere.
+    autoZoom && !autoWidth,
   );
 
   // Set the view type on mount
@@ -243,6 +247,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
             style={isZoomableCanvas ? {
               width: canvasWidth,
               zoom: `${zoom}%`,
+              ...canvasVhStyle,
             } : {}}
           >
             {children}
@@ -255,8 +260,11 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
         <div
           id="canvas-popup-container"
           className={styles.canvasPopupContainer}
+          // Same zoom and the same `vh` basis as the canvas, so a popup rendered out here is sized
+          // the way it would have been inside it.
           style={{
             zoom: `${zoom}%`,
+            ...canvasVhStyle,
           }}
         />
       )}

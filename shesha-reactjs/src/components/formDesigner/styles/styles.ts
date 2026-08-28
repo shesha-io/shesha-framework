@@ -1,6 +1,6 @@
 import { getFormDesignerBackgroundSvg } from '@/components/sidebarContainer/styles/svg/dropHint';
+import { CANVAS_VH_VAR } from '@/providers/canvas/options';
 import { createStyles, sheshaStyles } from '@/styles';
-import { LAYOUT_CONSTANTS } from '../../../shesha-constants';
 
 export const designerClassNames = {
   componentDragHandle: "sha-component-drag-handle",
@@ -481,8 +481,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               margin-bottom: 0;
             }
 
+            /* Outlines rather than borders: these are designer affordances, and a border would add
+               2px to the component's height - enough to push a component sized to fill the canvas
+               past its edge, and enough that merely selecting a component nudged the layout. */
             &.${designerClassNames.selectedComponent} {
-              border: ${token.colorPrimary} 1px solid;
+              outline: ${token.colorPrimary} 1px solid;
+              outline-offset: -1px;
               border-radius: 4px;
               background-color: ${token.colorPrimaryBg}80;
             }
@@ -490,9 +494,10 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             &.${hasConfigErrors} {
               background-color: ${token.colorErrorBg};
               &:not(.${designerClassNames.selectedComponent}){
-                border: ${token.colorErrorBg} 1px solid;
+                outline: ${token.colorErrorBg} 1px solid;
+                outline-offset: -1px;
                 border-radius: 4px;
-              }             
+              }
 
               .${shaComponentIndicator} {
                 display: none;

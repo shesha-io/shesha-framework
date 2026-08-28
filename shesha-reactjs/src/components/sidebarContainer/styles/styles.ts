@@ -1,6 +1,14 @@
 import { createStyles, sheshaStyles } from '@/styles';
 import { LAYOUT_CONSTANTS } from '../../../shesha-constants';
 
+/**
+ * Padding inside the designer canvas, in canvas (pre-zoom) pixels. Exported because the canvas uses
+ * `box-sizing: border-box`, so this padding eats into the height a component sized in `vh` may
+ * occupy - see `getCanvasVhUnit`. Keep the two in step by reading this rather than re-stating the
+ * number.
+ */
+export const CANVAS_PADDING = sheshaStyles.paddingLG;
+
 export const useStyles = createStyles(({ css, cx, prefixCls }) => {
   const LEFT_SIDEBAR_WIDTH = "550px";
   const { SIDEBAR_BTN_HEIGHT, TOOLBAR_HEIGHT, HEADER_HEIGHT } = LAYOUT_CONSTANTS;
@@ -25,6 +33,12 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
   const sidebarContainer = cx("sidebar-container", css`
       width: 100%;
       overflow: hidden;
+      /* Pass a definite height down to the panes. The body element below asks for 100%, which
+         without this resolves against an auto-height parent and collapses to auto - leaving the
+         canvas pane content-sized, so a zoomed canvas grows the page instead of scrolling.
+         Harmless where no ancestor has a definite height (the embedded datatable panels): the
+         percentage simply stays auto, exactly as before. */
+      height: 100%;
 
       .${sidebarContainerMainAreaBody}{
         overflow: auto;

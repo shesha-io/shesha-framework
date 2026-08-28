@@ -9,7 +9,23 @@ import { DEFAULT_DESIGNER_PADDING } from "../utils/stylingUtils";
 
 const getShaComponentStyles = createStyles(({ css, cx, token }, wrapperStyle: IStyleValue) => {
   const wrapperMargin = marginStyles(wrapperStyle.stylingBoxJson);
-  const wrapperPadding = paddingStyles(wrapperStyle.stylingBoxJson);
+
+  // The designer's minimum spacing is kept on the inline axis only. On the block axis it would sit
+  // inside the height a component was sized to fill - a `100vh` component is sized to the canvas
+  // content box exactly (see `canvasRelativeVh`), so any padding here pushes it past the canvas
+  // edge and puts a scrollbar on a canvas that should not need one.
+  //
+  // Narrow by construction: `getDesignerPadding` already yields 0 for a component whose own margins
+  // meet the designer minimum, so this only drops the spacing added to zero-margin components -
+  // which sit flush at runtime anyway, making the designer a truer preview rather than a looser one.
+  const wrapperBox = wrapperStyle.stylingBoxJson === undefined
+    ? undefined
+    : { ...wrapperStyle.stylingBoxJson };
+  if (wrapperBox !== undefined) {
+    delete wrapperBox.paddingTop;
+    delete wrapperBox.paddingBottom;
+  }
+  const wrapperPadding = paddingStyles(wrapperBox);
 
   const shaComponent = cx(designerClassNames.shaComponent, css`
     ${dimensionsStyles({ height: 'auto', width: 'auto', ...wrapperStyle.dimensions })}
@@ -35,12 +51,16 @@ const getShaComponentStyles = createStyles(({ css, cx, token }, wrapperStyle: IS
       cursor: grab !important;
       box-sizing: border-box;
       display: block;
-      border: 1px solid transparent;
+      /* An outline rather than a border: it draws identically but costs no layout, so the designer
+         does not make every component 2px taller than it renders at runtime. Pulled inside the box
+         with a negative offset so it still traces the component edge. */
+      outline: 1px solid transparent;
+      outline-offset: -1px;
       background-color: transparent;
 
       &:hover {
-        border: 1px dashed ${token.colorPrimary};
-      }  
+        outline: 1px dashed ${token.colorPrimary};
+      }
     `);
 
   return { shaComponent, componentDragHandle };

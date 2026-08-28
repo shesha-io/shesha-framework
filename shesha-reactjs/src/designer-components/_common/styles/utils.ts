@@ -3,6 +3,7 @@ import { IConfigurableFormComponent, IStyleValue, StyleBoxValue } from "../../..
 import { addPx, allowForCanvasChromeHeight, hasNumber } from "@/utils/style";
 import { StringBuilder } from "@/utils";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
+import { canvasRelativeVh } from "@/providers/canvas/utils";
 import { CSSProperties } from "react";
 
 /** Properties that are unitless in CSS, so a bare number must not gain a `px` suffix. */
@@ -151,9 +152,12 @@ const dimensionCss = (value: string | number, _canvasValue?: string): string | n
     return dimensionRelativeToCanvas(value, canvasValue, 'vw');
   }*/
 
+  // vh is measured against the designer canvas rather than the browser window
+  const dimension = canvasRelativeVh(value);
+
   // For simple numeric values or values without vw, use addPx
-  if (typeof value === 'string' && /^calc\(/i.test(value.trim())) return value;
-  return !hasNumber(value) ? value : addPx(value) ?? 0;
+  if (typeof dimension === 'string' && /^calc\(/i.test(dimension.trim())) return dimension;
+  return !hasNumber(dimension) ? dimension : addPx(dimension) ?? 0;
 };
 
 export const shadowStyles = (model: IShadowValue | undefined, propertyName: string = 'box-shadow', important: boolean = false): string => model

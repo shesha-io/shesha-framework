@@ -53,6 +53,9 @@ const getWidthDimension = (main: string | number, canvasWidth?: string, context?
     return dimensionRelativeToCanvas(bounded, canvasWidth, 'vw');
   }
 
+  // A width can be given in vh too, and it is measured against the canvas like any other vh
+  const value = canvasRelativeVh(main);
+
   // For simple numeric values or values without vw, use addPx
   if (typeof bounded === 'string' && /^calc\(/i.test(bounded.trim())) return bounded;
   return !hasNumber(bounded) ? bounded : addPx(bounded, context);
@@ -159,10 +162,11 @@ export const getDesignerCalculatedDimension = (
   return computeDimension(main, firstMargin, secondMargin, '100%', '100%', context);
 };
 
+// No canvas height parameter: `vh` is rewritten to read the canvas's own custom property, so it
+// needs no measurement passed in. See `canvasRelativeVh`.
 export const getDimensionsStyle = (
   dimensions: IDimensionsValue | undefined,
   canvasWidth?: string,
-  canvasHeight?: string,
   context?: object,
 ): CSSProperties => {
   const { width, minWidth, maxWidth, height, minHeight, maxHeight } = dimensions || {};
@@ -172,19 +176,19 @@ export const getDimensionsStyle = (
       ? getWidthDimension(width, canvasWidth, context)
       : undefined,
     height: height
-      ? getHeightDimension(height, canvasHeight, context)
+      ? getHeightDimension(height, context)
       : undefined,
     minWidth: minWidth
       ? getWidthDimension(minWidth, canvasWidth, context)
       : undefined,
     minHeight: minHeight
-      ? getHeightDimension(minHeight, canvasHeight, context)
+      ? getHeightDimension(minHeight, context)
       : undefined,
     maxWidth: maxWidth
       ? getWidthDimension(maxWidth, canvasWidth, context)
       : undefined,
     maxHeight: maxHeight
-      ? getHeightDimension(maxHeight, canvasHeight, context) : undefined,
+      ? getHeightDimension(maxHeight, context) : undefined,
   };
 };
 
