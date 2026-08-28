@@ -310,7 +310,9 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
       >
         {(value, onChange, _, ctx) => {
           const onFileListChanged: OnFileListChanged = (fileList, isUserAction = false): void => {
-            onChange(fileList);
+            /* Empty reaches the field as undefined: the Required rule carries no `type`, so an
+               empty array counts as present and Required would pass with no files at all. */
+            onChange(fileList.length > 0 ? fileList : undefined);
             // Only execute custom script if this is a user action (upload/delete)
             if (isUserAction && isNotNullOrWhiteSpace(model.onChangeCustom)) {
               ctx?.handleEvent(undefined, { value: fileList }, model.onChangeCustom);

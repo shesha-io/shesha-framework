@@ -70,6 +70,10 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
     } catch (error) {
       console.error('AttachmentsEditorInstance.notifySubscribers failed', error);
     }
+
+    /* The loaded list has to reach the form value too, or Required sees nothing on a record whose
+       files are already stored. Not a user action, so the component's onChange script stays quiet. */
+    this.#onChange?.(this.#fileList, false);
   };
 
   init = (fileListReference: FileListReference): void => {
