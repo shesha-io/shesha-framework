@@ -47,6 +47,18 @@ import apiCode from "../../componentsApi/componentApi.ts?raw";
 
 type EntityPickerValueType = string | string[] | IEntityReferenceDto | IEntityReferenceDto[];
 
+/**
+ * Resolves a configured dialog width. The settings form stores the width directly, but older
+ * configurations stored the literal `'custom'` alongside a separate numeric width and unit.
+ */
+const resolveDialogWidth = (
+  modalWidth: IEntityPickerComponentProps['modalWidth'],
+  customWidth: number | undefined,
+  widthUnits: string | undefined,
+): number | string | undefined => modalWidth === 'custom' && isDefined(customWidth)
+  ? `${customWidth}${widthUnits}`
+  : modalWidth;
+
 export type { IEntityPickerComponentProps };
 
 const EntityPickerComponent: EntityPickerComponentDefinition = {
@@ -92,7 +104,7 @@ const EntityPickerComponent: EntityPickerComponentDefinition = {
       return await getMetadata({ dataType: DataTypes.entityReference, modelType: model.entityType }) as IEntityMetadata;
     }, [model.entityType]);
 
-    const { filters, modalWidth, customWidth, widthUnits } = model;
+    const { filters } = model;
 
     const displayEntityKey = isNotNullOrWhiteSpace(model.displayEntityKey) ? model.displayEntityKey : '_displayName';
 
@@ -157,7 +169,10 @@ const EntityPickerComponent: EntityPickerComponentDefinition = {
       return <ValidationErrors error="The provided StoredFileId is invalid" />;
     }
 
-    const width = modalWidth === 'custom' && isDefined(customWidth) ? `${customWidth}${widthUnits}` : modalWidth;
+    // The picker dialog and the "add new record" dialog are sized independently. Both still honour
+    // the legacy `custom` width + units pair, which older configurations may carry.
+    const width = resolveDialogWidth(model.modalWidth, model.customWidth, model.widthUnits);
+    const addNewWidth = resolveDialogWidth(model.addNewModalWidth, model.addNewCustomWidth, model.addNewWidthUnits);
 
     return (
       <ConfigurableFormItem<EntityPickerValueType> model={model}>
@@ -184,7 +199,7 @@ const EntityPickerComponent: EntityPickerComponentDefinition = {
                   modalFormId: model.modalFormId,
                   modalTitle: model.modalTitle,
                   showModalFooter: model.showModalFooter,
-                  modalWidth: width,
+                  modalWidth: addNewWidth,
                   buttons: model.buttons,
                   footerButtons: model.footerButtons,
                 }
@@ -272,7 +287,21 @@ const EntityPickerComponent: EntityPickerComponentDefinition = {
 
       return { ...prev, desktop: { ...prev.desktop, ...styles }, tablet: { ...prev.tablet, ...styles }, mobile: { ...prev.mobile, ...styles } };
     })
-    .add<IEntityPickerComponentProps>(14, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
+    .add<IEntityPickerComponentProps>(14, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev))))
+    // `modalWidth` used to size both the picker dialog and the "add new record" dialog. Now that
+    // they are configured separately, seed the new record dialog from the old shared value so
+    // existing configurations keep rendering both dialogs at the width they do today.
+    .add<IEntityPickerComponentProps>(15, (prev, context) => {
+      if (context.isNew === true) return prev;
+      if (!isDefined(prev.modalWidth)) return prev;
+
+      return {
+        ...prev,
+        addNewModalWidth: prev.addNewModalWidth ?? prev.modalWidth,
+        addNewCustomWidth: prev.addNewCustomWidth ?? prev.customWidth,
+        addNewWidthUnits: prev.addNewWidthUnits ?? prev.widthUnits,
+      };
+    }),
   settingsFormMarkup: getSettings,
 
   getDefaultStyles: () => defaultStyles(),
