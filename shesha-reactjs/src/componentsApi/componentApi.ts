@@ -520,6 +520,39 @@ export interface PanelApi extends CommonComponentApi {
   collapse(): void;
 };
 
+/** A single note listed by the notes component. */
+export interface NotesApiNote {
+  /** Unique identifier of the note. */
+  readonly id: string;
+  /** Text of the note. */
+  readonly noteText: string;
+  /** Category the note belongs to, `null` when it is uncategorised. */
+  readonly category: string | null;
+  /** When the note was created. */
+  readonly creationTime: string;
+}
+
+/**
+ * Notes editor. It is not bound to a form value — the notes live against the owner entity — so it
+ * exposes the notes it is showing and the owner it is showing them for, rather than a `value`.
+ */
+export interface NotesApi extends CommonComponentApi {
+  /** Notes currently listed by the component, newest first. */
+  readonly notes: ReadonlyArray<NotesApiNote>;
+  /** Id of the entity the notes belong to. */
+  readonly ownerId: string;
+  /** Category used to filter the notes, `undefined` when all notes are shown. */
+  readonly category: string | undefined;
+  /** Whether notes are being loaded from the backend. */
+  readonly isFetchingNotes: boolean;
+  /** Post a new note against the current owner. */
+  createNote(noteText: string): Promise<void>;
+  /** Replace the text of the note with the given id. */
+  updateNote(id: string, noteText: string): Promise<void>;
+  /** Delete the note with the given id. */
+  deleteNote(id: string): Promise<void>;
+};
+
 export interface ButtonApi extends CommonComponentApi {
   /** Focus on component */
   focus(): void;
