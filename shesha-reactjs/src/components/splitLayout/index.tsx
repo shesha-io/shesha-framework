@@ -1,14 +1,23 @@
-import { isDefined } from '@/utils';
+import { isDefined, isNullOrWhiteSpace } from '@/utils';
 import { Splitter } from 'antd';
 import { FC, PropsWithChildren, ReactNode, useEffect, useRef, useState } from 'react';
 import { PinnablePanel } from './pinnablePanel';
 import { useSplitterStyles } from './splitter-styles';
 
 export interface SplitLayoutProps {
-  defaultSize?: number;
+  defaultPanelSize?: number;
   orientation?: 'horizontal' | 'vertical';
   position?: 'start' | 'end';
-  panel?: ReactNode | undefined;
+  panel: ReactNode;
+  panelClassName?: string;
+  panelTitle: string;
+  panelMin?: number | string;
+  panelMax?: number | string;
+
+  defaultPinned?: boolean;
+  onPinnedToggle?: (pinned: boolean) => void;
+  defaultExpanded?: boolean;
+  onExpandedToggle?: (expanded: boolean) => void;
 }
 
 export const SplitLayout: FC<PropsWithChildren<SplitLayoutProps>> = (props) => {
@@ -17,14 +26,32 @@ export const SplitLayout: FC<PropsWithChildren<SplitLayoutProps>> = (props) => {
     position = 'start',
     orientation = 'horizontal',
     panel,
-    defaultSize = 300,
+    panelClassName,
+    panelTitle,
+    panelMin,
+    panelMax,
+    defaultPanelSize = 300,
+    defaultPinned = true,
+    defaultExpanded = true,
   } = props;
   const { styles } = useSplitterStyles();
-  const [panelSize, setPanelSize] = useState<number | undefined>(defaultSize);
+  const [panelSize, setPanelSize] = useState<number | undefined>(defaultPanelSize);
   const panelIndex = position === 'start' ? 0 : 1;
 
-  const [panelPinned, setPanelPinned] = useState<boolean>(true);
-  const [panelExpanded, setPanelExpanded] = useState<boolean>(true);
+  const [panelPinned, setPanelPinned] = useState<boolean>(defaultPinned);
+  const handlePanelPinnedToggle = (): void => {
+    setPanelPinned(!panelPinned);
+    if (props.onPinnedToggle) {
+      props.onPinnedToggle(!panelPinned);
+    }
+  };
+  const [panelExpanded, setPanelExpanded] = useState<boolean>(defaultExpanded);
+  const handlePanelExpandedToggle = (): void => {
+    setPanelExpanded(!panelExpanded);
+    if (props.onExpandedToggle) {
+      props.onExpandedToggle(!panelExpanded);
+    }
+  };
   const sizeProps = panelExpanded
     ? isDefined(panelSize) ? { size: panelSize } : {}
     : { size: 40 };
@@ -54,18 +81,19 @@ export const SplitLayout: FC<PropsWithChildren<SplitLayoutProps>> = (props) => {
   const panelWrapper = (
     <Splitter.Panel
       collapsible={false}
-      min={200}
-      max={600}
+      {...(isDefined(panelMax) ? { max: panelMax } : {})}
+      {...(isDefined(panelMin) ? { min: panelMin } : {})}
+      {...(!isNullOrWhiteSpace(panelClassName) ? { className: panelClassName } : { })}
       {...sizeProps}
       resizable={panelExpanded}
     >
       <PinnablePanel
         ref={panelRef}
-        title="Object Explorer"
+        title={panelTitle}
         expanded={panelExpanded}
-        onToggle={() => setPanelExpanded(!panelExpanded)}
+        onExpandedToggle={handlePanelExpandedToggle}
         pinned={panelPinned}
-        onPinToggle={() => setPanelPinned(!panelPinned)}
+        onPinnedToggle={handlePanelPinnedToggle}
         direction={orientation}
       >
         {panel}
