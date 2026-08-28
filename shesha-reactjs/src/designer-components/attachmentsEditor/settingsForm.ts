@@ -3,10 +3,15 @@ import { nanoid } from '@/utils/uuid';
 import { DataTypes, SettingsFormMarkupFactory } from '@/interfaces';
 import { FILE_EVENTS } from '../_common/events';
 
-const isThumbnailJs = 'return getSettingValue(data?.listType) === "thumbnail";';
-const isNotThumbnailJs = 'return getSettingValue(data?.listType) !== "thumbnail";';
+/* Every Display Style but File name renders a tile. Listed rather than tested as "not text" so an
+   unset value reads as file-name instead of silently enabling every thumbnail-only setting. */
+const THUMBNAIL_STYLES = '["thumbnailSmall","thumbnailMedium","thumbnailLarge","thumbnailCustom"]';
+const isThumbnailJs = `return ${THUMBNAIL_STYLES}.includes(getSettingValue(data?.displayStyle));`;
+const isNotThumbnailJs = `return !${THUMBNAIL_STYLES}.includes(getSettingValue(data?.displayStyle));`;
 const isNotDraggerJs = 'return getSettingValue(data?.isDragger) !== true;';
-const isThumbnailListJs = 'return getSettingValue(data?.listType) === "thumbnail" && !getSettingValue(data?.isDragger);';
+const isThumbnailListJs = `return ${THUMBNAIL_STYLES}.includes(getSettingValue(data?.displayStyle)) && !getSettingValue(data?.isDragger);`;
+/* The presets set the tile size themselves, so the dimensions are offered only where they decide it. */
+const isCustomThumbnailJs = 'return getSettingValue(data?.displayStyle) === "thumbnailCustom" && !getSettingValue(data?.isDragger);';
 const isEditableJs = 'const r = getSettingValue(data?.readOnly); return r !== true && r !== "readOnly";';
 const showCustomContentFormJs = 'return !!getSettingValue(data?.customContent) && getSettingValue(data?.extraFormSelectionMode) !== "dynamic";';
 const styleDownloadedFilesJs = 'return !!getSettingValue(data?.[`${contexts?.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);';
@@ -18,9 +23,12 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
   const appearanceTabId = nanoid();
   const styleRouterId = nanoid();
 
-  const listTypeOptions = [
+  const displayStyleOptions = [
     { label: 'File name', value: 'text' },
-    { label: 'Thumbnail', value: 'thumbnail' },
+    { label: 'Small Thumbnail', value: 'thumbnailSmall' },
+    { label: 'Med Thumbnail', value: 'thumbnailMedium' },
+    { label: 'Large Thumbnail', value: 'thumbnailLarge' },
+    { label: 'Custom Thumbnail', value: 'thumbnailCustom' },
   ];
 
   const filesLayoutOptions = [
@@ -52,7 +60,11 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                     /* Mutually exclusive with Is Dragger, in both directions: a dragger is a drop
                        area with a plain text list, so it has no list type to choose. Matches how
                        main gates these two against each other. */
-                    { type: 'dropdown', propertyName: 'listType', label: 'List Type', jsSetting: true, dropdownOptions: listTypeOptions, visibleJs: isNotDraggerJs },
+                    {
+                      type: 'dropdown', propertyName: 'displayStyle', label: 'Display Style', jsSetting: true,
+                      dropdownOptions: displayStyleOptions, visibleJs: isNotDraggerJs,
+                      tooltip: 'How each file is presented: as its name, or as a tile at a preset size. Custom Thumbnail takes its size from the Thumbnail Style dimensions.',
+                    },
                     {
                       type: 'switch', propertyName: 'isDragger', label: 'Is Dragger', jsSetting: true,
                       tooltip: 'Whether the uploader should show a drop area instead of a button.',
@@ -171,7 +183,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                     )
                     .stdAppearancePanels(['font', 'dimensions', 'border', 'background', 'shadow', 'marginPadding', 'customStyle'], removeStyleRouter)
                     .stdCollapsiblePanel('Thumbnail Style', (f) => f
-                      .stdDimensionsPanel('thumbnailStyle.dimensions')
+                      .stdContainer((fb) => fb.stdDimensionsPanel('thumbnailStyle.dimensions'), isCustomThumbnailJs)
                       .stdBorderPanel(removeStyleRouter !== true, 'thumbnailStyle.border')
                       .stdBackgroundPanel(removeStyleRouter !== true, 'thumbnailStyle.background')
                       .stdShadowPanel('thumbnailStyle.shadow')
