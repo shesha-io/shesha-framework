@@ -121,9 +121,6 @@ const NotesComponent: NotesComponentDefinition = {
       });
     };
 
-    /* Read only renders the notes as a pure viewer - the editor is hidden entirely. Disabled keeps
-       the editor on screen but inert, which is what the greyed-out state means for a control the
-       user can see but not use. The two are separate booleans, so both are read explicitly. */
     const isReadOnly = model.readOnly === true;
     const isDisabled = model.disabled === true;
 
@@ -141,9 +138,9 @@ const NotesComponent: NotesComponentDefinition = {
           className={styles.notes}
           {...events}
 
-          allowCreate={!isReadOnly}
           allowUpdate={model.allowEdit}
           allowDelete={model.allowDelete}
+          readOnly={isReadOnly}
           disabled={isDisabled}
 
           buttonPostion={model.savePlacement}
@@ -155,10 +152,6 @@ const NotesComponent: NotesComponentDefinition = {
       </NotesEditorProvider>
     );
   },
-
-  /* Only the properties the component cannot work without are seeded here. `ownerType` is left
-     undefined on purpose: `linkToModelMetadata` is merged under the model, so any value set here -
-     including an empty string - would shadow the entity type inherited from the metadata. */
   initModel: (model) => ({
     ...model,
     ownerId: '{data.id}',
@@ -197,9 +190,6 @@ const NotesComponent: NotesComponentDefinition = {
         ...prev,
         allowEdit: prev.allowEdit ?? false,
       }))
-      /* Freezes the appearance of components already on saved forms by baking the real defaults into
-         all three device models, so they keep rendering as they do today when the code-level
-         defaults change. A newly dropped component skips it and inherits instead. */
       .add<INotesComponentPropsV1>(5, (prev, context) => context.isNew === true
         ? prev
         : { ...migratePrevStyles(prev, defaultStyles()) })

@@ -20,10 +20,19 @@ export interface INotesRendererProps extends EventsObject {
   allowUpdate?: boolean | undefined;
   allowDelete?: boolean | undefined;
   /**
-   * Makes the whole editor inert: the text area is greyed out and notes can't be created, edited or
-   * deleted. Distinct from `allowCreate={false}`, which hides the editor rather than disabling it.
+   * Makes the whole editor inert: the text area is greyed out and the Save, edit and delete actions
+   * are suppressed. The notes stay listed, so the user can read but not change them.
    */
   disabled?: boolean | undefined;
+  /**
+   * Renders the notes as a pure viewer: the editor is not shown at all and no note can be edited or
+   * deleted. Unlike `disabled`, nothing is greyed out - there is simply nothing to interact with.
+   *
+   * Takes precedence over `allowCreate`/`allowUpdate`/`allowDelete`: a mode that forbids changes
+   * must win over a permission that allows them, or the actions stay reachable in a state that is
+   * not supposed to permit them.
+   */
+  readOnly?: boolean | undefined;
 
   buttonPostion?: 'left' | 'right' | undefined;
   autoSize?: boolean | undefined;
@@ -39,6 +48,7 @@ export const NotesRenderer: FC<INotesRendererProps> = ({
   allowUpdate = true,
   allowDelete,
   disabled = false,
+  readOnly = false,
 
   autoSize,
   buttonPostion,
@@ -65,6 +75,10 @@ export const NotesRenderer: FC<INotesRendererProps> = ({
     ? DISABLED_HINT
     : isDesignTime ? DESIGNER_HINT : UNSAVED_OWNER_HINT;
 
+  // a non-editable mode overrides the allow* permissions rather than combining with them, so
+  // enabling Allow Edit / Allow Delete cannot bring the actions back in read-only or disabled state
+  const isEditable = !readOnly && !isDisabled;
+
   return (
     <div className={classNames(styles.shaNotesRenderer, className)} {...events}>
       <NotesRendererBase
@@ -81,9 +95,9 @@ export const NotesRenderer: FC<INotesRendererProps> = ({
         inputDisabled={disabled || (!canPostNotes && !isDesignTime)}
         disabledHint={disabledHint}
 
-        allowCreate={allowCreate}
-        allowEdit={allowUpdate}
-        allowDelete={allowDelete}
+        allowCreate={allowCreate && !readOnly}
+        allowEdit={allowUpdate && isEditable}
+        allowDelete={(allowDelete ?? false) && isEditable}
 
         buttonFloatRight={buttonPostion === 'right'}
         autoSize={autoSize}
