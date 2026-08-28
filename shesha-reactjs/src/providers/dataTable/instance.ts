@@ -202,6 +202,7 @@ export class DatasetInstance implements IDatasetInstance {
       return {
         ...state,
         columns: cols,
+        configurableColumns: columns,
         // user config
         currentPage: userConfig?.currentPage ?? 1,
         selectedPageSize: userConfig?.pageSize ?? state.selectedPageSize,
@@ -619,6 +620,14 @@ export class DatasetInstance implements IDatasetInstance {
 
   registerConfigurableColumns = async (_ownerId: string, columns: IConfigurableColumnsProps[]): Promise<void> => {
     this.log("Register columns...");
+
+    // re-registering an identical set is a no-op: a remounted consumer (e.g. `useEnsureFetchColumns`
+    // after a fetch error) would otherwise re-init and refetch in a loop
+    if (this.#columnsRegistered && isEqual(this.state.configurableColumns, columns)) {
+      this.log("Register columns skipped: columns are unchanged");
+      return;
+    }
+
     this.columns = columns;
     this.#columnsRegistered = true;
 
