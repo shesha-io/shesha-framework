@@ -1,11 +1,8 @@
-import React, { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { DataList } from '@/components/dataList';
-import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import classNames from 'classnames';
 import { IDataListWithDataSourceProps } from './model';
 import { FCUnwrapped, useConfigurableAction, useConfigurableActionDispatcher, useForm } from '@/providers';
 import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from '@/providers/dataTable/repository/backendRepository';
-import { useStyles } from '@/components/dataList/styles/styles';
 import { executeScript, useAvailableConstantsData } from '@/providers/form/utils';
 import { useDeepCompareMemo } from '@/hooks';
 import { YesNoInherit } from '@/interfaces';
@@ -65,7 +62,6 @@ const DataListControl: FCUnwrapped<IDataListWithDataSourceProps, "dataSourceInst
   } = dataSource;
   const metadata = useMetadataOrUndefined()?.metadata;
   useEnsureFetchColumns(props.id, dataSource, metadata);
-  const { styles } = useStyles();
   const appContext = useAvailableConstantsData();
   const { formMode } = useForm();
   const isDesignMode = formMode === 'designer';
@@ -74,7 +70,7 @@ const DataListControl: FCUnwrapped<IDataListWithDataSourceProps, "dataSourceInst
   const repository = getRepository();
 
   // Check if form configuration is invalid (for placeholder display in designer mode)
-  const hasInvalidFormConfig = React.useMemo(() => {
+  const hasInvalidFormConfig = useMemo(() => {
     if (!isDesignMode) return false;
 
     if (props.formSelectionMode === "name") {
@@ -317,52 +313,42 @@ const DataListControl: FCUnwrapped<IDataListWithDataSourceProps, "dataSourceInst
     return <EmptyState noDataText="Configuration Error" noDataSecondaryText="Wrap Orientation is not supported when Grouping is enabled." />;
   }
 
-
   return (
-    <ConfigurableFormItem
-      model={{ ...props, hideLabel: true }}
-      className={classNames(
-        styles.shaDatalistComponent,
-        { horizontal: props.orientation === 'horizontal' && appContext.form?.formMode !== 'designer' }, //
-      )}
-      wrapperCol={{ md: 24 }}
-    >
-      <DataList
-        {...props}
-        onRowDeleteSuccessAction={props.onRowDeleteSuccessAction}
-        style={allStyles?.fullStyle as string}
-        createFormId={props.createFormId ?? props.formId}
-        createFormType={props.createFormType ?? props.formType}
-        canAddInline={canAction(canAddInline)}
-        canEditInline={canAction(canEditInline)}
-        canDeleteInline={canAction(canDeleteInline)}
-        noDataIcon={noDataIcon}
-        noDataSecondaryText={noDataSecondaryText}
-        noDataText={noDataText}
-        entityType={modelType ?? undefined}
-        onSelectRow={setSelectedRow}
-        onClearSelectedRow={clearSelectedRow}
-        onMultiSelectRows={setMultiSelectedRow}
-        selectedRow={selectedRow}
-        selectedRows={selectedRows}
-        records={data}
-        showEditIcons={showEditIcons}
-        grouping={grouping}
-        groupingMetadata={groupingColumns.map((item) => item.metadata).filter(isDefined)}
-        isFetchingTableData={isFetchingTableData}
-        selectedIds={selectedIds}
-        changeSelectedIds={changeSelectedIds}
-        createAction={creater}
-        updateAction={updater}
-        deleteAction={deleter}
-        actionRef={dataListRef}
-        modalWidth={width ?? '60%'}
-        onListItemClick={handleListItemClick}
-        onListItemHover={handleListItemHover}
-        onListItemSelect={handleListItemSelect}
-        onSelectionChange={handleSelectionChange}
-      />
-    </ConfigurableFormItem>
+    <DataList
+      {...props}
+      onRowDeleteSuccessAction={props.onRowDeleteSuccessAction}
+      style={allStyles?.fullStyle as string}
+      createFormId={props.createFormId ?? props.formId}
+      createFormType={props.createFormType ?? props.formType}
+      canAddInline={canAction(canAddInline)}
+      canEditInline={canAction(canEditInline)}
+      canDeleteInline={canAction(canDeleteInline)}
+      noDataIcon={noDataIcon}
+      noDataSecondaryText={noDataSecondaryText}
+      noDataText={noDataText}
+      entityType={modelType ?? undefined}
+      onSelectRow={setSelectedRow}
+      onClearSelectedRow={clearSelectedRow}
+      onMultiSelectRows={setMultiSelectedRow}
+      selectedRow={selectedRow}
+      selectedRows={selectedRows}
+      records={data}
+      showEditIcons={showEditIcons}
+      grouping={grouping}
+      groupingMetadata={groupingColumns.map((item) => item.metadata).filter(isDefined)}
+      isFetchingTableData={isFetchingTableData}
+      selectedIds={selectedIds}
+      changeSelectedIds={changeSelectedIds}
+      createAction={creater}
+      updateAction={updater}
+      deleteAction={deleter}
+      actionRef={dataListRef}
+      modalWidth={width ?? '60%'}
+      onListItemClick={handleListItemClick}
+      onListItemHover={handleListItemHover}
+      onListItemSelect={handleListItemSelect}
+      onSelectionChange={handleSelectionChange}
+    />
   );
 };
 

@@ -1,6 +1,6 @@
 import { IConfigurableFormComponent } from '@/interfaces';
 import { isDefined } from '@/utils/nullables';
-import React, { FC } from 'react';
+import { memo, FC } from 'react';
 import { UnknownFormComponent } from './unknownFormComponent';
 import KnownFormComponent from './knownFormComponent';
 import FormComponentErrorWrapper from './formComponentErrorWrapper';
@@ -24,5 +24,5 @@ const FormComponent: FC<IFormComponentProps> = ({ componentModel }) => {
   );
 };
 
-const FormComponentMemo = React.memo(FormComponent);
+const FormComponentMemo = memo(FormComponent);
 export default FormComponentMemo;

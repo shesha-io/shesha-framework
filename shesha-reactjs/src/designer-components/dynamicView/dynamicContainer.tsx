@@ -1,4 +1,5 @@
-import React, { FC, PropsWithChildren } from 'react';
+import { FC, PropsWithChildren } from 'react';
+import * as React from 'react';
 import { IConfigurableFormComponent } from '@/interfaces';
 import DynamicComponent from './dynamicComponent';
 

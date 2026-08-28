@@ -27,6 +27,8 @@ namespace Shesha.Sms
             Logger = NullLogger.Instance;
         }
 
+        public static readonly NullSmsGateway Instance = new NullSmsGateway();
+
         public Task<SendStatus> SendSmsAsync(string mobileNumber, string body)
         {
             Logger.InfoFormat("SMS stub. Sending SMS to {0}: {1}", mobileNumber, body);

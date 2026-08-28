@@ -3,13 +3,14 @@ import LayoutMenu from "@/components/menu";
 import { ILayoutColor } from "@/components/menu/model";
 import { IConfigurableFormComponent, IToolboxComponent } from "@/interfaces/formDesigner";
 import { IConfigurableComponentContext } from '@/providers/configurableComponent/contexts';
-import { getStyle, validateConfigurableComponentSettings } from "@/providers/form/utils";
+import { getStyle } from "@/providers/form/utils";
 import { useFormData } from "@/providers/formContext";
 import { IConfigurableMainMenu, useMainMenu } from "@/providers/mainMenu";
 import { filterObjFromKeys } from "@/utils";
 import { EditOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { ItemType } from "antd/es/menu/interface";
-import React, { CSSProperties, useMemo } from 'react';
+import { CSSProperties, useMemo } from 'react';
+import * as React from 'react';
 import { migratePrevStyles } from "../_common-migrations/migrateStyles";
 import Editor from "./modal";
 import { getSettings } from "./settings";
@@ -174,7 +175,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   migrator: (m) => m
     .add<IMenuListProps>(0, (prev) => ({
       ...migratePrevStyles(prev, defaultStyles()),

@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useCallback, useContext, useEffect, useReducer } from 'react';
+import { FC, PropsWithChildren, useCallback, useContext, useEffect, useReducer } from 'react';
 import { setItemsAction, setLoadedMenuAction } from './actions';
 import { IConfigurableMainMenu, IMainMenuActionsContext, IMainMenuStateContext, MAIN_MENU_CONTEXT_INITIAL_STATE, MainMenuActionsContext, MainMenuStateContext } from './contexts';
 import { reducer } from './reducer';
@@ -66,7 +66,7 @@ const MainMenuProvider: FC<PropsWithChildren<MainMenuProviderProps>> = ({ childr
 
   const getActualItemsModel = useCallback((items: ISidebarMenuItem[]): ISidebarMenuItem[] => {
     const actualItems = items.map((item) => {
-      var actualItem = getActualModel(item, allData);
+      var actualItem = getActualModel('', item, allData);
       if (isSidebarGroup(actualItem) && actualItem.childItems && actualItem.childItems.length > 0) {
         actualItem.childItems = getActualItemsModel(actualItem.childItems);
       }

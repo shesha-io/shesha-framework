@@ -1,5 +1,14 @@
 import { IStyleValue } from "@/providers/form/models";
+import { emptyStyleBox } from "../attachmentsEditor/utils";
 
+/**
+ * Code-level defaults for the component. These are the render-time fallback for every style slot the
+ * model leaves unset, the defaults baked in by the style-freeze migration, and the baseline the theme
+ * editor shows as inherited — so every group the Appearance tab exposes is represented here.
+ *
+ * The dimensions describe the thumbnail tile; in file-name mode the uploader sizes itself to its
+ * content and these are not applied (see `styles.ts`).
+ */
 export const defaultStyles = (): IStyleValue => {
   return {
     font: {
@@ -7,6 +16,7 @@ export const defaultStyles = (): IStyleValue => {
       align: 'left',
       size: 14,
       weight: '400',
+      color: '',
     },
     border: {
       hideBorder: false,
@@ -29,7 +39,7 @@ export const defaultStyles = (): IStyleValue => {
       repeat: 'no-repeat',
       size: 'cover',
       position: 'center',
-      gradient: { direction: 'to right', colors: {} },
+      gradient: { direction: 'to right', colors: [] },
       url: '',
     },
     shadow: {
@@ -39,24 +49,6 @@ export const defaultStyles = (): IStyleValue => {
       blurRadius: 0,
       spreadRadius: 0,
     },
+    stylingBoxJson: emptyStyleBox(),
   };
-};
-
-export const containerDefaultStyles = (): IStyleValue => {
-  return {
-    font: {
-      color: '',
-      type: 'Segoe UI',
-      align: 'left',
-      size: 14,
-      weight: '400',
-    },
-    dimensions: {
-      width: 'auto',
-      height: 'auto',
-      minHeight: '0px',
-      maxHeight: 'auto',
-      minWidth: '0px',
-      maxWidth: 'auto',
-    } };
 };

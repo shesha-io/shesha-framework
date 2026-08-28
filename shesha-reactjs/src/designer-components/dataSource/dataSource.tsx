@@ -1,6 +1,6 @@
 import DataTableProvider from '@/providers/dataTable';
 import FormItem from 'antd/lib/form/FormItem';
-import React, { FC, useEffect } from 'react';
+import { FC, useEffect } from 'react';
 import { Alert } from 'antd';
 import { evaluateDynamicFilters } from '@/utils/datatable';
 import { IDataSourceComponentProps } from './models';

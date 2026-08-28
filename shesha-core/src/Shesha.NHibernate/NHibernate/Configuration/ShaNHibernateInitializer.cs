@@ -3,6 +3,8 @@ using Abp.Reflection;
 using Castle.Core.Logging;
 
 using NHibernate;
+using NHibernate.Dialect;
+using NHibernate.Driver;
 using Shesha.Attributes;
 using Shesha.Domain;
 using Shesha.DynamicEntities.TypeFinder;
@@ -58,11 +60,22 @@ namespace Shesha.NHibernate.Configuration
             .SetProperty("hbm2ddl.keywords", "auto-quote")
                 .CurrentSessionContext<UnitOfWorkSessionContext>();
 
-            if (_configuration.CustomDriver != null)
-                nhConfig.Properties[NhEnvironment.ConnectionDriver] = _configuration.CustomDriver.AssemblyQualifiedName;
+            var customDriverType = _configuration.CustomDriver != null 
+                ? _configuration.CustomDriver.GetType() 
+                : _configuration.DatabaseType == DbmsType.SQLServer
+                    ? typeof(MicrosoftDataSqlClientDriver)
+                    : null;
+            if (customDriverType != null)
+                nhConfig.Properties[NhEnvironment.ConnectionDriver] = customDriverType.AssemblyQualifiedName;
 
-            if (_configuration.CustomDialect != null)
-                nhConfig.Properties[NhEnvironment.Dialect] = _configuration.CustomDialect.AssemblyQualifiedName;
+            var customDialectType = _configuration.CustomDialect != null
+                ? _configuration.CustomDialect
+                : _configuration.DatabaseType == DbmsType.SQLServer
+                    ? typeof(MsSql2012Dialect)
+                    : null;
+
+            if (customDialectType != null)
+                nhConfig.Properties[NhEnvironment.Dialect] = customDialectType.AssemblyQualifiedName;
 
             nhConfig.LinqQueryProvider<SheshaLinqQueryProvider>();
 

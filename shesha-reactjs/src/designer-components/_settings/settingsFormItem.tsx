@@ -6,11 +6,8 @@ import { isChangeEvent } from '@/utils/events';
 import { isDefined } from '@/utils/nullables';
 import { getBooleanPropertyOrUndefined } from '@/utils/object';
 import { Form, FormItemProps } from 'antd';
-import React, {
-  cloneElement,
-  FC, ReactNode,
-  useEffect,
-} from 'react';
+import { cloneElement, FC, ReactNode, useEffect } from 'react';
+import * as React from 'react';
 import { IPropertySetting } from '../..';
 import { useSettingsPanel } from './settingsCollapsiblePanel';
 import SettingsControl, { SettingsControlChildrenType } from './settingsControl';

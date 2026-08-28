@@ -1,7 +1,7 @@
 import Checkbox from 'antd/lib/checkbox/Checkbox';
 import Search from 'antd/lib/input/Search';
 import { nanoid } from '@/utils/uuid';
-import React, { ChangeEvent, FC, useState } from 'react';
+import { ChangeEvent, FC, useState } from 'react';
 import { useDataTableStore } from '@/providers';
 import { getSafelyTrimmedString } from '@/utils';
 import { useStyles } from './styles/styles';

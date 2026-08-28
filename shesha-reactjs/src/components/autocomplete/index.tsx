@@ -1,5 +1,6 @@
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
+import * as React from 'react';
 import { AutocompleteDataSourceType, IAutocompleteProps, ISelectOption } from './models';
 import { EntityAutocomplete } from './entityAutocomplete';
 import { UrlAutocomplete } from './urlAutocomplete';
@@ -37,13 +38,33 @@ const Autocomplete = <TValue = unknown>(props: IAutocompleteProps<TValue>): Reac
         filterKeysFunc={props.filterKeysFunc}
 
         displayPropName={props.displayPropName}
+        keyPropName={props.keyPropName}
         onChange={props.onChange}
         value={props.value}
         mode={props.mode}
         readOnly={props.readOnly}
+        disabled={props.disabled}
         outcomeValueFunc={props.outcomeValueFunc}
+        keyValueFunc={props.keyValueFunc}
+        displayValueFunc={props.displayValueFunc}
         allowClear={props.allowClear}
         allowFreeText={props.allowFreeText}
+
+        quickviewEnabled={props.quickviewEnabled}
+        quickviewFormPath={props.quickviewFormPath}
+        quickviewDisplayPropertyName={props.quickviewDisplayPropertyName}
+        quickviewGetEntityUrl={props.quickviewGetEntityUrl}
+        quickviewWidth={props.quickviewWidth}
+
+        placeholder={props.placeholder}
+        size={props.size}
+        className={props.className}
+        popupClassName={props.popupClassName}
+        selectRef={props.selectRef}
+        events={props.events}
+        styleValue={props.styleValue}
+        enableStyleOnReadonly={props.enableStyleOnReadonly}
+        disableSearch={props.disableSearch}
       />
     )
     : (
@@ -60,9 +81,23 @@ const Autocomplete = <TValue = unknown>(props: IAutocompleteProps<TValue>): Reac
         value={props.value}
         mode={props.mode}
         readOnly={props.readOnly}
+        disabled={props.disabled}
         outcomeValueFunc={props.outcomeValueFunc}
+        keyValueFunc={props.keyValueFunc}
+        displayValueFunc={props.displayValueFunc}
         allowClear={props.allowClear}
         allowFreeText={props.allowFreeText}
+
+        placeholder={props.placeholder}
+        size={props.size}
+        style={props.style}
+        className={props.className}
+        popupClassName={props.popupClassName}
+        selectRef={props.selectRef}
+        events={props.events}
+        styleValue={props.styleValue}
+        enableStyleOnReadonly={props.enableStyleOnReadonly}
+        disableSearch={props.disableSearch}
       />
     );
 };

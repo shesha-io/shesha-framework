@@ -169,6 +169,7 @@ export const showDialogArgumentsFormFactory: SettingsFormMarkupFactory = ({ fbf 
       })
       .toJson(),
     formSettings: {
+      isSettingsForm: true,
       colon: false,
       layout: 'vertical' as FormLayout,
       labelCol: {

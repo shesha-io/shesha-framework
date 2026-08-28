@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   defaultStyles,
   IPasswordComponentProps,
@@ -8,7 +7,7 @@ import { IToolboxComponent } from '@/interfaces';
 import { LockOutlined } from '@ant-design/icons';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly } from '@/designer-components/_common-migrations/migrateSettings';
 import { IInputStyles } from '@/providers';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { getSettings } from './settingsForm';
@@ -120,7 +119,7 @@ const PasswordComboComponent: IToolboxComponent<IPasswordComponentProps> = {
     dataType === DataTypes.string && dataFormat === StringFormats.password,
   Factory: () => null,
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   migrator: (m) => m
     .add<IPasswordComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IPasswordComponentProps>(1, (prev) => migrateReadOnly(prev))

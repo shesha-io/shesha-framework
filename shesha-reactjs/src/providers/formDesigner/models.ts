@@ -107,8 +107,6 @@ export type FormDesignerActions = {
   updateChildComponents: (payload: IUpdateChildComponentsPayload) => void;
   addDataProperty: (payload: IAddDataPropertyPayload) => void;
 
-  setValidationErrors: (payload: IFormValidationErrors) => void;
-
   startDraggingNewItem: () => void;
   endDraggingNewItem: () => void;
   startDragging: () => void;
@@ -137,6 +135,7 @@ export const FORM_INITIAL_STATE: FormDesignerFormState = {
   formFlatMarkup: {
     allComponents: {},
     componentRelations: { [ROOT_COMPONENT_KEY]: [] },
+    parents: {},
   },
 };
 

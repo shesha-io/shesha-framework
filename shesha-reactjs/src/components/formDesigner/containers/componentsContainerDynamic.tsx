@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { IComponentsContainerProps } from './componentsContainer';
 import { ConfigurableFormComponent } from '../configurableFormComponent';
 import { useStyles } from '../styles/styles';

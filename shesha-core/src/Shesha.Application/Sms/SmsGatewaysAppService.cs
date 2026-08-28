@@ -1,46 +1,45 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Abp.Application.Services;
-using Abp.Reflection;
-using Castle.Core.Internal;
+﻿using Abp.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Shesha.Attributes;
-using Shesha.Reflection;
+using Shesha.Notifications.Dto;
 using Shesha.Sms.Dtos;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Shesha.Sms
 {
-    [Route("api/Sms/Gateways")]
     public class SmsGatewaysAppService: ApplicationService
     {
-        private readonly ITypeFinder _typeFinder;
+        private readonly ISmsGatewayFactory _smsGatewayFactory;
 
-        public SmsGatewaysAppService(ITypeFinder typeFinder)
+        public SmsGatewaysAppService(ISmsGatewayFactory smsGatewayFactory)
         {
-            _typeFinder = typeFinder;
+            _smsGatewayFactory = smsGatewayFactory;
         }
 
-        [HttpGet, Route("")]
+        [HttpGet]
+        [Route("api/Sms/Gateways")]
         public List<SmsGatewayDto> GetAll()
         {
-            var items = _typeFinder.Find(t => typeof(ISmsGateway).IsAssignableFrom(t))
-                .Select(t => new
-                {
-                    Type = t,
-                    ClassAttribute = t.GetAttribute<ClassUidAttribute>()
+            return _smsGatewayFactory.GetSmsGatewayTypes()
+                .Select(t => new SmsGatewayDto { 
+                    Uid = t.Uid,
+                    Alias = t.Alias,
+                    Name = t.Name,
+                    Description = t.Description
                 })
-                .Where(i => i.ClassAttribute != null)
-                .OrderBy(i => i.Type.Name)
-                .Select(t => new SmsGatewayDto
-                {
-                    Uid = t.ClassAttribute.Uid,
-                    Alias = SmsUtils.GetGatewayAlias(t.Type),
-                    Name = ReflectionHelper.GetDisplayName(t.Type),
-                    Description = ReflectionHelper.GetDescription(t.Type)
-                })
+                .OrderBy(i => i.Name)
                 .ToList();
-            
-            return items;
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("api/Sms/Test")]
+        public async Task<SendStatus> TestSmsAsync(string mobileNumber, string body)
+        {
+            var gateway = await _smsGatewayFactory.GetSmsGatewayAsync();
+            return await gateway.SendSmsAsync(mobileNumber, body);
         }
     }
 }

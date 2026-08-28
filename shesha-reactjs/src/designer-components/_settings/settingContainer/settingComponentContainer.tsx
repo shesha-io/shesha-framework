@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useMemo } from 'react';
+import { memo, FC, PropsWithChildren, useMemo } from 'react';
 import { useIsDrawingForm } from '@/providers/form';
 import { IComponentsContainerProps } from '@/components/formDesigner/containers/componentsContainer';
 import { SettingsContainerLive } from './settingContainerLive';
@@ -23,4 +23,4 @@ export const SettingComponentContainerInner: FC<ISettingContainerProps> = (props
   ;
 };
 
-export const SettingComponentContainer = React.memo(SettingComponentContainerInner);
+export const SettingComponentContainer = memo(SettingComponentContainerInner);

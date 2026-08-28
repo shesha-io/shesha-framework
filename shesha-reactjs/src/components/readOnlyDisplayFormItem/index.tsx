@@ -1,5 +1,7 @@
 import { ValueRenderer } from '@/components/valueRenderer/index';
-import React, { FC, useMemo } from 'react';
+import { CSSProperties, FC, useMemo } from 'react';
+import { splitTextProperties } from '@/designer-components/_common/styles/utils';
+import * as React from 'react';
 import { getMoment } from '@/utils/date';
 import { ISelectOption } from '@/components/autocomplete';
 import QuickView, { GenericQuickView } from '@/components/quickView';
@@ -25,17 +27,35 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = <TValu
     quickviewDisplayPropertyName = "",
     quickviewGetEntityUrl,
     quickviewWidth,
-    style,
+    style: rawStyle,
     tagStyle,
     showIcon,
-    solidColor,
+    tagVariant,
     showItemName,
     styleValue,
     enableFullStyle,
+    className,
   } = props;
 
+  /* Read-only shows a value, not an editable control, so only the text half of the Custom style
+     applies — a background, border or shadow would draw a box around something the user cannot
+     interact with. The box half is already gated behind `enableFullStyle` in the class; the inline
+     style has to be filtered the same way or it reinstates what that gate excludes, since inline
+     beats the class on this element.
+
+     Dimensions are kept: `readOnlyDisplayFormItem` reads width/minWidth/maxWidth off this object for
+     its container, and dropping them would collapse the field's configured size. */
+  const style = useMemo<CSSProperties | undefined>(() => {
+    if (!isDefined(rawStyle)) return undefined;
+    const { text } = splitTextProperties(rawStyle);
+    const { width, minWidth, maxWidth, height, minHeight, maxHeight } = rawStyle;
+    return Boolean(enableFullStyle)
+      ? rawStyle
+      : { ...text, width, minWidth, maxWidth, height, minHeight, maxHeight };
+  }, [rawStyle, enableFullStyle]);
+
   // ToDo: remove `textAlign` after migrate all components to the new styles
-  const { styles } = useStyles({ styleValue, enableFullStyle, textAlign: styleValue?.font?.align || style?.textAlign || 'left' });
+  const { styles } = useStyles(styleValue);
 
   const renderValue = useMemo(() => {
     if (isDefined(render)) {
@@ -57,7 +77,8 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = <TValu
             : typeof (value) === "string"
               ? value
               : undefined;
-          const className = getClassNameOrUndefined(value) ?? getClassNameOrUndefined(innerData);
+
+          const entityClassName = getClassNameOrUndefined(value) ?? getClassNameOrUndefined(innerData);
           const displayName = findMap([value, innerData], (p) => typeof (p) === "object"
             ? getFirstNonEmptyStringPropertyOrUndefined(value, ["label", "_displayName"])
             : undefined,
@@ -77,7 +98,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = <TValu
               : (
                 <GenericQuickView
                   entityId={entityId}
-                  entityType={className}
+                  entityType={entityClassName}
                   formIdentifier={quickviewFormPath}
                   displayName={displayName}
                   displayProperty={quickviewDisplayPropertyName}
@@ -88,18 +109,27 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = <TValu
             if (dropdownDisplayMode === 'tags') {
               const rawValue = typeof (value) === "string" || typeof (value) === "number" ? value : undefined;
               const objValue = typeof (value) === "object" ? value as unknown as ISelectOption : undefined;
+              /* The tag Appearance rules are scoped to `.ant-tag` inside the component class, so the
+                 tag needs that class on an ancestor — exactly as the multiple-value branch does. A
+                 bare ReflistTag here left single-value read-only tags unstyled. */
               return (
-                <ReflistTag
-                  value={rawValue}
-                  color={objValue?.color}
-                  icon={objValue?.icon}
-                  showIcon={showIcon}
-                  tagStyle={tagStyle}
-                  description={objValue?.description}
-                  solidColor={solidColor}
-                  showItemName={showItemName}
-                  label={displayName}
-                />
+                <div
+                  className={isNullOrWhiteSpace(className) ? styles.wrapper : `${styles.wrapper} ${className}`}
+                  data-tag-wrapper="true"
+                  style={{ ...style, display: 'flex', flexWrap: 'wrap', alignItems: 'center', boxSizing: 'border-box' }}
+                >
+                  <ReflistTag
+                    value={rawValue}
+                    color={objValue?.color}
+                    icon={objValue?.icon}
+                    showIcon={showIcon}
+                    tagStyle={tagStyle}
+                    description={objValue?.description}
+                    variant={tagVariant}
+                    showItemName={showItemName}
+                    label={displayName}
+                  />
+                </div>
               );
             } else
               return <InputField className={styles.inputField} style={style} value={displayName ?? (typeof value === 'object' ? null : value as string)} />;
@@ -118,7 +148,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = <TValu
             ? <InputField className={styles.inputField} style={style} value={values.join(', ')} />
             : (
               <div
-                className={styles.wrapper}
+                className={isNullOrWhiteSpace(className) ? styles.wrapper : `${styles.wrapper} ${className}`}
                 data-tag-wrapper="true"
                 style={{
                   ...style,
@@ -138,7 +168,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = <TValu
                       description={description}
                       showIcon={showIcon}
                       tagStyle={tagStyle}
-                      solidColor={solidColor}
+                      variant={tagVariant}
                       showItemName={showItemName}
                       label={label}
                     />
@@ -168,6 +198,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = <TValu
     }
   }, [value,
     type,
+    className,
     dateFormat,
     timeFormat,
     dropdownDisplayMode,
@@ -179,7 +210,7 @@ export const ReadOnlyDisplayFormItem: FC<IReadOnlyDisplayFormItemProps> = <TValu
     quickviewWidth,
     showIcon,
     showItemName,
-    solidColor,
+    tagVariant,
     tagStyle,
     style,
     styles.wrapper,

@@ -8,7 +8,6 @@ import { buildUrl } from '@/utils';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { useShaFormInstanceOrUndefined } from '@/providers';
 import { AutocompleteWithRepository } from './autocompleteWithRepository';
-import React from 'react';
 import { useUrlRepository } from '@/providers/dataTable/repository/urlRepository';
 
 export type UrlAutocompleteProps<TValue = unknown> = Omit<IAutocompleteProps<TValue>, 'dataSourceType'>;
@@ -84,6 +83,7 @@ export const UrlAutocomplete = <TValue = unknown>(props: UrlAutocompleteProps<TV
       onChange={props.onChange}
       mode={props.mode}
       readOnly={props.readOnly}
+      disabled={props.disabled}
       allowFreeText={props.allowFreeText}
       allowClear={props.allowClear}
 
@@ -100,6 +100,13 @@ export const UrlAutocomplete = <TValue = unknown>(props: UrlAutocompleteProps<TV
 
       placeholder={props.placeholder}
       size={props.size}
+      className={props.className}
+      popupClassName={props.popupClassName}
+      selectRef={props.selectRef}
+      events={props.events}
+      styleValue={props.styleValue}
+      enableStyleOnReadonly={props.enableStyleOnReadonly}
+      disableSearch={props.disableSearch}
     />
   );
 };

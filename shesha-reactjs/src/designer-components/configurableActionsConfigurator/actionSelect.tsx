@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useMemo } from 'react';
+import { FC, ReactNode, useMemo } from 'react';
 import { TreeSelect } from 'antd';
 import { IConfigurableActionGroupDictionary } from '@/providers/configurableActionsDispatcher/models';
 import HelpTextPopover from '@/components/helpTextPopover';

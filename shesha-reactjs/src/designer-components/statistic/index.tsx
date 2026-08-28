@@ -4,12 +4,10 @@ import ShaStatistic from '@/components/statistic';
 import { IToolboxComponent } from '@/interfaces';
 import { IInputStyles } from '@/providers';
 import { IConfigurableFormComponent } from '@/providers/form/models';
-import {
-  getStyle, validateConfigurableComponentSettings,
-} from '@/providers/form/utils';
+import { getStyle } from '@/providers/form/utils';
 import { removeUndefinedProps } from '@/utils/object';
 import { BarChartOutlined } from '@ant-design/icons';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { IFontValue } from '../_settings/utils/font/interfaces';
@@ -98,7 +96,7 @@ const StatisticComponent: IToolboxComponent<IStatisticComponentProps> = {
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   migrator: (m) =>
     m
       .add<IStatisticComponentProps>(1, (prev) => ({ ...migrateFormApi.properties(prev) }))

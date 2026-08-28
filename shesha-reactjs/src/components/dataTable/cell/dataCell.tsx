@@ -3,7 +3,8 @@ import DateCell from './default/dateCell';
 import DateTimeCell from './default/dateTimeCell';
 import EntityCell from './default/entityCell';
 import NumberCell from './default/numberCell';
-import React, { FC, ReactNode, useMemo } from 'react';
+import { FC, ReactNode, useMemo } from 'react';
+import * as React from 'react';
 import StringCell from './default/stringCell';
 import TimeCell from './default/timeCell';
 import { CustomErrorBoundary } from '@/components/customErrorBoundary';
@@ -138,7 +139,7 @@ const ComponentWrapper: FC<IComponentWrapperProps> = React.memo((props) => {
         customComponent.settings,
         component,
         DEFAULT_FORM_SETTINGS,
-        { allComponents: { component: customComponent.settings }, componentRelations: {} },
+        { allComponents: { component: customComponent.settings }, componentRelations: {}, parents: {} },
       )
       : undefined;
   }, [customComponent.settings, component]);

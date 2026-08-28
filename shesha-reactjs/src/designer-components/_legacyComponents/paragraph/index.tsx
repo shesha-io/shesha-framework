@@ -1,8 +1,7 @@
 import { FileTextOutlined } from '@ant-design/icons';
-import React from 'react';
 import { IToolboxComponent } from '@/interfaces/formDesigner';
 import { ITextComponentProps } from '@/designer-components/text/models';
-import TypographyComponent from '@/designer-components/text/typography';
+import TextComponent from '@/designer-components/text';
 
 const ParagraphComponent: IToolboxComponent<ITextComponentProps> = {
   type: 'paragraph',
@@ -10,9 +9,7 @@ const ParagraphComponent: IToolboxComponent<ITextComponentProps> = {
   name: 'Paragraph',
   icon: <FileTextOutlined />,
   tooltip: "Deprecated! Please use 'Text (Full)'",
-  Factory: ({ model }) => {
-    return <TypographyComponent {...model} />;
-  },
+  Factory: TextComponent.Factory,
 };
 
 export default ParagraphComponent;

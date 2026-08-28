@@ -1,13 +1,6 @@
 import camelcase from 'camelcase';
-import React, {
-  CSSProperties,
-  FC,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { CSSProperties, FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import * as React from 'react';
 import { BulbOutlined, BulbTwoTone } from '@ant-design/icons';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { getIconByPropertyMetadata } from '@/utils/metadata';

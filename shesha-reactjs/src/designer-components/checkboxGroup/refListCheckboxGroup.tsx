@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import MultiCheckbox from './multiCheckbox';
 import { ICheckboxGroupProps } from './interfaces';
 

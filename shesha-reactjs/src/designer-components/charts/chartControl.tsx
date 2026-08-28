@@ -3,7 +3,8 @@ import { asPropertiesArray, IPropertyMetadata, IRefListPropertyMetadata, isRefLi
 import { useReferenceListDispatcher } from '@/providers/referenceListDispatcher';
 import { toCamelCase } from '@/utils/string';
 import { Alert, Button } from 'antd';
-import React, { useState, useCallback, useRef, useMemo, useEffect } from 'react';
+import { useState, useCallback, useRef, useMemo, useEffect } from 'react';
+import * as React from 'react';
 import { useChartDataActionsContext, useChartDataStateContext } from '../../providers/chartData';
 import { useProcessedChartData } from './hooks/hooks';
 import { IChartData, IChartsProps } from './model';

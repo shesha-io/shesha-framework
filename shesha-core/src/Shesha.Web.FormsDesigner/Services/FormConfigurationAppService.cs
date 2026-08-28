@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Application.Services.Dto;
 using Shesha.Attributes;
+using Shesha.Authorization;
 using Shesha.ConfigurationItems.Cache;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
@@ -28,6 +29,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Web.FormsDesigner.Services
 {
+    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, "app:Configurator")]
     public class FormConfigurationAppService : SheshaCrudServiceBase<FormConfiguration, FormConfigurationDto, Guid, FilteredPagedAndSortedResultRequestDto, CreateFormConfigurationRequest, UpdateFormConfigurationDto, GetFormByIdInput>
     {
         private readonly IRepository<ConfigurationItemFolder, Guid> _folderRepository;
@@ -67,6 +69,7 @@ namespace Shesha.Web.FormsDesigner.Services
         /// Gets all permissioned shesha forms with anonymous access
         /// </summary>
         /// <returns></returns>
+        [AllowAnonymous]
         public Task<List<PermissionedObjectDto>> GetAnonymousFormsAsync()
         {
             return _permissionedObjectManager.GetObjectsByAccessAsync(ShaPermissionedObjectsTypes.Form, RefListPermissionedAccess.AllowAnonymous);

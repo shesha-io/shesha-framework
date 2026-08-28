@@ -1,7 +1,5 @@
 import { ConfigurationItemsImport, IImportInterface } from '@/components/configurationFramework/itemsImport';
-import React, {
-  FC, useState,
-} from 'react';
+import { FC, useState } from 'react';
 import { Button, App } from 'antd';
 import { ICommonModalProps } from '../../dynamicModal/models';
 import { ImportOutlined } from '@ant-design/icons';

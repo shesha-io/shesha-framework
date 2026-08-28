@@ -1,4 +1,5 @@
-import React, { ComponentType, FC, Fragment, useEffect } from 'react';
+import { ComponentType, FC, Fragment, useEffect } from 'react';
+import * as React from 'react';
 import { useAuth, useShaRouting } from '@/providers';
 import { useLoginUrl } from '@/hooks/useLoginUrl';
 import SheshaLoader from '@/components/sheshaLoader';

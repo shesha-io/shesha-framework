@@ -1,5 +1,5 @@
 import { CheckCircleTwoTone, CloseCircleTwoTone } from '@ant-design/icons';
-import React, { FC } from 'react';
+import { FC } from 'react';
 
 interface IProps {
   valid?: boolean | undefined;

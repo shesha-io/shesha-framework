@@ -1,4 +1,5 @@
-import React, { FC, PropsWithChildren, useMemo, useState } from 'react';
+import { FC, PropsWithChildren, useMemo, useState } from 'react';
+import * as React from 'react';
 import { ShaForm } from '@/providers/form';
 import { Tooltip } from 'antd';
 import { useFormDesigner, useFormDesignerSelectedComponentId, useFormDesignerIsDebug } from '@/providers/formDesigner';
@@ -61,11 +62,11 @@ export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => 
   };
 
   return (
-    <div className={props.className} onClick={onClick} onMouseOver={onMouseOver} onMouseOut={onMouseOut}>
-      <Tooltip title={tooltip} placement="right" open={isOpen}>
+    <Tooltip title={tooltip} placement="right" open={isOpen}>
+      <div className={props.className} onClick={onClick} onMouseOver={onMouseOver} onMouseOut={onMouseOut}>
         {props.children}
-      </Tooltip>
-    </div>
+      </div>
+    </Tooltip>
   );
 };
 

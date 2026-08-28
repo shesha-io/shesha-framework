@@ -1,7 +1,7 @@
 import { Space, Select } from 'antd';
 import { ListEditor, PropertyAutocomplete } from '@/components/index';
 import { ColumnSorting, GroupingItem as SortingItem } from '@/providers/dataTable/interfaces';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { getNanoId } from '@/utils/uuid';
 import { ListItem } from '@/components/listEditor/models';
 

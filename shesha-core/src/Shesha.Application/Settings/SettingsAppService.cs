@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Shesha.Authorization;
 using Shesha.ConfigurationItems;
+using Shesha.Domain.Enums;
 using Shesha.Settings.Dto;
 using System.Collections.Generic;
 using System.Linq;
@@ -94,13 +96,14 @@ namespace Shesha.Settings
         /// <param name="input"></param>
         /// <returns></returns>
         [HttpPost]
+        [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, "pages:maintenance")]
         public async Task UpdateValueAsync(UpdateSettingValueInput input)
         {
             await _settingProvider.SetAsync(input.Module, input.Name, input.Value, GetContext(input.AppKey));
         }
 
         [HttpGet]
-        [AllowAnonymous]
+        [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, "pages:maintenance")]
         public Task<List<SettingConfigurationDto>> GetConfigurationsAsync()
         {
             var settings = _settingDefinitionManager.GetAll();

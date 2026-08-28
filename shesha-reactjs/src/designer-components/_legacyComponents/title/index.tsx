@@ -1,10 +1,10 @@
 import { LineHeightOutlined } from '@ant-design/icons';
-import React from 'react';
 import { IToolboxComponent } from '@/interfaces/formDesigner';
 import { ITextComponentProps } from '@/designer-components/text/models';
 import { migratePropertyName, migrateCustomFunctions } from '@/designer-components/_common-migrations/migrateSettings';
 import { getStringPropertyOrUndefined } from '@/utils/object';
 
+/** @deprecated */
 const TitleComponent: IToolboxComponent<ITextComponentProps> = {
   type: 'title',
   isInput: false,
@@ -19,7 +19,6 @@ const TitleComponent: IToolboxComponent<ITextComponentProps> = {
       const props = {
         ...prev,
         content: getStringPropertyOrUndefined(prev, 'content') ?? '',
-        contentDisplay: 'content',
 
         type: 'text',
         textType: 'title',

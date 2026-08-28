@@ -1,7 +1,6 @@
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import camelcase from 'camelcase';
 import { ReactNode, isValidElement } from 'react';
-import { ReactElement } from 'react-markdown/lib/react-markdown';
 
 /* tslint:disable:no-empty-character-class */
 
@@ -253,8 +252,8 @@ export const reactNodeToString = (node: ReactNode): string => {
   if (typeof node === 'number') return String(node);
   if (Array.isArray(node)) return node.map(reactNodeToString).join('');
   if (isValidElement(node)) {
-    const { props } = node as ReactElement;
-    if (typeof props === 'object' && 'children' in props && typeof props.children === 'object')
+    const { props } = node;
+    if (isDefined(props) && typeof props === 'object' && 'children' in props && typeof props.children === 'object')
       return reactNodeToString(props.children as ReactNode);
   }
 

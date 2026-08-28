@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { Result, Button } from 'antd';
 import { useShaRouting } from '@/providers/shaRouting';
 

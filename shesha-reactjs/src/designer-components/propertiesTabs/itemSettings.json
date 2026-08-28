@@ -41,8 +41,7 @@
       "label": "Animated",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": false,
-      "validate": {}
+      "hidden": false
     },
     {
       "id": "4595a895-5078-4986-934b-c5013bf315ad",
@@ -51,8 +50,7 @@
       "label": "Icon",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": false,
-      "settingsValidationErrors": []
+      "hidden": false
     },
     {
       "id": "81da0da4-00db-4d6b-9f16-b364a6f9d9e1",
@@ -61,8 +59,7 @@
       "label": "Force Render",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": false,
-      "validate": {}
+      "hidden": false
     },
     {
       "id": "d1e06550-826c-4db9-9b9f-ce05e565f64f",
@@ -71,8 +68,7 @@
       "label": "Hidden",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": false,
-      "validate": {}
+      "hidden": false
     },
     {
       "id": "24a8be15-98eb-40f7-99ea-ebb602693e9c",
@@ -115,8 +111,7 @@
       "label": "Destroy Inactive Tab Pane",
       "labelAlign": "right",
       "parentId": "root",
-      "hidden": false,
-      "validate": {}
+      "hidden": false
     },
     {
       "id": "d2f01684-31e5-41a3-b32a-c23abc20e700",
@@ -124,8 +119,6 @@
       "propertyName": "style",
       "label": "Style",
       "parentId": "root",
-      "validate": {},
-      "settingsValidationErrors": [],
       "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
       "exposedVariables": [
         {
@@ -141,7 +134,6 @@
       "propertyName": "permissions",
       "parentId": "SsWPpiJfTbgl4iHlFA_or",
       "label": "Permissions",
-      "validate": {},
       "version": 1
     }
   ],

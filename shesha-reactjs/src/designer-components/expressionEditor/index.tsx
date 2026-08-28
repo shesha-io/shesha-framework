@@ -1,7 +1,7 @@
-import React from 'react';
+import { useMemo } from 'react';
 import { FunctionOutlined } from '@ant-design/icons';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { DataTypes } from '@/interfaces/dataTypes';
 import {
   ExpressionEditor, buildExpressionContextFromPaths,
@@ -47,7 +47,7 @@ const ExpressionEditorComponent: ExpressionEditorComponentDefinition = {
     });
     const formMetadata = useMetadataOrUndefined()?.metadata;
 
-    const dataPathContext = React.useMemo(() => {
+    const dataPathContext = useMemo(() => {
       const properties = asPropertiesArray(formMetadata?.properties, []);
       const paths = properties.map((property) => property.path).filter(Boolean);
       return buildExpressionContextFromPaths(paths, { additionalRoots: [] });
@@ -59,7 +59,7 @@ const ExpressionEditorComponent: ExpressionEditorComponentDefinition = {
       {},
     );
 
-    const context = React.useMemo(
+    const context = useMemo(
       () => mergeExpressionContexts(
         dataPathContext,
         constantsContext ?? {},
@@ -115,7 +115,7 @@ const ExpressionEditorComponent: ExpressionEditorComponentDefinition = {
     .add<IExpressionEditorComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<IExpressionEditorComponentProps>(2, (prev) => migrateReadOnly(prev)),
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
 };
 
 export default ExpressionEditorComponent;

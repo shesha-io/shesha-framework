@@ -65,7 +65,7 @@ namespace Shesha.Authorization
 
             var securitySettings = await _securitySettings.SecuritySettings.GetValueOrNullAsync();
 
-            // ToDo: add RequireAll flag
+            // Note: requireAll is intentionally false — multiple permissions are OR'd (any single permission grants access)
             // the `DefaultEndpointAccess` setting is passed as fallback for the `Inherited` access,
             // entity CRUD endpoints must respect it just like the web api endpoints do
             await _objectPermissionChecker.AuthorizeAsync(

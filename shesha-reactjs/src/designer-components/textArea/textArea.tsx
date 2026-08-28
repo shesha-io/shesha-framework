@@ -2,8 +2,9 @@ import { IInputStyles } from '@/providers/form/models';
 import { FontColorsOutlined } from '@ant-design/icons';
 import { Input } from 'antd';
 import { TextAreaProps, TextAreaRef } from 'antd/lib/input/TextArea';
-import React, { FocusEventHandler, ReactNode, useEffect, useRef } from 'react';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { FocusEventHandler, ReactNode, useEffect, useRef } from 'react';
+import * as React from 'react';
+
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { ITextAreaComponentProps, TextAreaComponentDefinition } from './interfaces';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
@@ -13,6 +14,7 @@ import {
   migrateCustomFunctions,
   migrateReadOnly,
   migrateHiddenToVisible,
+  migrateStylingBoxToJson,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
@@ -23,7 +25,7 @@ import { defaultStyles } from './utils';
 import { useStyles } from './styles';
 import { getOverflowStyle } from '../_settings/utils/overflow/util';
 import { ALL_INPUT_EVENTS_WITHOUT_CHANGE, getComponentEvents } from '../_common/events';
-import { useComponentApi } from '@/providers/componentApi/provider';
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { TextAreaApi } from '@/componentsApi/componentApi';
 import { isDefined } from '@/utils/nullables';
 
@@ -63,7 +65,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.string && dataFormat === StringFormats.multiline,
   Factory: ({ model }) => {
-    const componentApi = useComponentApi();
+    const componentApi = useComponentApiProvider();
     const inputRef = useRef<TextAreaRef>(null);
     useEffect(() => {
       const apiId = model.id;
@@ -97,7 +99,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
       size: model.size,
       style: {
         ...getOverflowStyle(true, false),
-        ...(isDefined(model.styleJson) ? model.styleJson : {}),
+        ...(isDefined(model.styleCss) ? model.styleCss : {}),
       },
       spellCheck: model.spellCheck ?? false,
     };
@@ -154,7 +156,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
                   value={value}
                   type="textArea"
                   enableFullStyle={model.enableStyleOnReadonly}
-                  style={{ padding: 8, ...getOverflowStyle(true, false), ...model.styleJson }}
+                  style={{ padding: 8, ...getOverflowStyle(true, false), ...model.styleCss }}
                   styleValue={model}
                 />
               ) : (
@@ -192,7 +194,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
     return textAreaModel;
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   getDefaultStyles: () => defaultStyles(),
   migrator: (m) =>
     m
@@ -222,7 +224,7 @@ const TextAreaComponent: TextAreaComponentDefinition = {
       .add<ITextAreaComponentProps>(5, (prev, context) => context.isNew === true
         ? prev
         : { ...migratePrevStyles(prev, defaultStyles()) })
-      .add<ITextAreaComponentProps>(6, (prev) => migrateHiddenToVisible(prev))
+      .add<ITextAreaComponentProps>(6, (prev) => migrateHiddenToVisible(migrateStylingBoxToJson(prev)))
       .add<ITextAreaComponentProps>(7, (prev) => migratePermissionsToVisiblePermissions(prev)),
   linkToModelMetadata: (model, _): ITextAreaComponentProps => {
     return {

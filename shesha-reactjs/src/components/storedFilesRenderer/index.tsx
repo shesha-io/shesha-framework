@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { StoredFilesRendererBase } from '@/components/storedFilesRendererBase';
 import { useAttachmentsEditorActions, useAttachmentsEditorState } from '@/providers/storedFiles';
 import { ButtonProps } from 'antd';

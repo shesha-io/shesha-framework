@@ -11,7 +11,7 @@ import {
   Title,
   Tooltip,
 } from 'chart.js';
-import React from 'react';
+import * as React from 'react';
 import { Bar } from 'react-chartjs-2';
 import { useChartDataStateContext } from '../../../../providers/chartData';
 import { useGeneratedTitle, useIsSmallScreen } from '../../hooks/hooks';

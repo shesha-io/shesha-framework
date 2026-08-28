@@ -1,11 +1,10 @@
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import React from 'react';
 import { FormatPainterOutlined } from '@ant-design/icons';
 import { ColorPickerComponentDefinition, IColorPickerComponentProps } from './interfaces';
 import { getSettings } from './settingsForm';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { ColorPicker } from '@/components/colorPicker';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { ColorValueType } from 'antd/es/color-picker/interface';
@@ -44,7 +43,7 @@ const ColorPickerComponent: ColorPickerComponentDefinition = {
     .add<IColorPickerComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<IColorPickerComponentProps>(2, (prev) => ({ ...prev, allowClear: false, showText: false }))
     .add<IColorPickerComponentProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) })),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
 };
 
 export default ColorPickerComponent;

@@ -6,9 +6,9 @@ using Abp.Dependency;
 using Abp.Modules;
 using Abp.Net.Mail;
 using Abp.Net.Mail.Smtp;
-using Abp.Reflection;
 using Abp.Reflection.Extensions;
 using Abp.Runtime.Session;
+using Abp.Threading;
 using Castle.MicroKernel.Registration;
 using Shesha.Authorization;
 using Shesha.ConfigurationItems;
@@ -25,14 +25,12 @@ using Shesha.Notifications.Distribution.NotificationChannels;
 using Shesha.Notifications.Distribution.NotificationTypes;
 using Shesha.Notifications.SMS;
 using Shesha.Otp.Configuration;
-using Shesha.Reflection;
 using Shesha.Session;
 using Shesha.Settings.Ioc;
 using Shesha.Sms;
 using Shesha.Sms.Configuration;
 using Shesha.Startup;
 using Shesha.UserManagements.Configurations;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -83,9 +81,9 @@ namespace Shesha
 
             });
 
-                #region SMS Gateways
+            #region SMS Gateways
 
-                IocManager.RegisterSettingAccessor<ISmsSettings>(s => {
+            IocManager.RegisterSettingAccessor<ISmsSettings>(s => {
                 s.SmsSettings.WithDefaultValue(new SmsSettings
                 {
                     SmsGateway = NullSmsGateway.Uid
@@ -97,22 +95,11 @@ namespace Shesha
             IocManager.IocContainer.Register(
                 Component.For<ISmsGateway>().UsingFactoryMethod(f =>
                 {
-                    var settings = f.Resolve<ISmsSettings>();
-                    var smsSettings = settings.SmsSettings.GetValueOrNull();
-                    if (smsSettings == null)
-                        return new NullSmsGateway();
-
-                    var gatewayUid = smsSettings.SmsGateway;
-
-                    var gatewayType = !string.IsNullOrWhiteSpace(gatewayUid)
-                        ? f.Resolve<ITypeFinder>().Find(t => typeof(ISmsGateway).IsAssignableFrom(t) && t.GetClassUid() == gatewayUid).FirstOrDefault()
-                        : null;
-
-                    var gateway = gatewayType != null
-                        ? f.Resolve(gatewayType) as ISmsGateway
-                        : null;
-
-                    return gateway ?? new NullSmsGateway();
+                    // NOTE: ISmsGateway is registered for backward compatibility but it shound't be resolved using IoC.
+                    // Use <see cref="ISmsGatewayFactory"/> to get instance of <see cref="ISmsGateway"/>
+                    var factory = f.Resolve<ISmsGatewayFactory>();
+                    var gateway = AsyncHelper.RunSync(() => factory.GetSmsGatewayAsync());
+                    return gateway;
                 }, managedExternally: true).LifestyleTransient()
             );
 

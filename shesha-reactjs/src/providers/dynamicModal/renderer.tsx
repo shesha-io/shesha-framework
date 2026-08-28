@@ -1,4 +1,12 @@
-import React, { DependencyList, FC, PropsWithChildren, ReactElement, useContext, useEffect, useRef } from 'react';
+import {
+  DependencyList,
+  FC,
+  PropsWithChildren,
+  ReactElement,
+  useContext,
+  useEffect,
+  useRef,
+} from 'react';
 import { DynamicModal } from '@/components/dynamicModal';
 import { DynamicModalInstanceContext, DynamicModalRendererContext } from './contexts';
 import { useDynamicModals } from '.';

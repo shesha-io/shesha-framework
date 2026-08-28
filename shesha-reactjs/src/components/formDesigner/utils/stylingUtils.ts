@@ -1,20 +1,112 @@
 import { CSSProperties } from 'react';
 import { DEFAULT_MARGINS } from './designerConstants';
-import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { addPx, DIMENSION_VALUES } from '@/utils/style';
 import { getCalculatedDimension } from '@/designer-components/_settings/utils/dimensions/utils';
+import { IStyleValue, IWrapperStyle, StyleBoxValue } from '@/interfaces';
 import { IDimensionsValue } from '@/designer-components/_settings/utils';
-import { IStyleValue } from '@/interfaces';
 
 export const DEFAULT_DESIGNER_PADDING: IStyleValue = { stylingBoxJson: { _type: 'styleBox', paddingLeft: 5, paddingRight: 3, paddingTop: 5, paddingBottom: 3 } };
 
-export const getDesignerDimensions = (dimension: IDimensionsValue, designerStyle: IStyleValue): IDimensionsValue => ({
-  height: DIMENSION_VALUES.includes(String(dimension.height))
-    ? dimension.height
-    : `calc(${addPx(dimension.height)} + ${addPx(designerStyle.stylingBoxJson?.paddingTop ?? 0) ?? '0px'} + ${addPx(designerStyle.stylingBoxJson?.paddingBottom ?? 0) ?? '0px'})`,
-  width: DIMENSION_VALUES.includes(String(dimension.width))
-    ? dimension.width
-    : `calc(${addPx(dimension.width)} + ${addPx(designerStyle.stylingBoxJson?.paddingLeft ?? 0) ?? '0px'} + ${addPx(designerStyle.stylingBoxJson?.paddingRight ?? 0) ?? '0px'})`,
+/** Check if the value is not an exact dimension value (contains calc or % or auto/stretch/fit-content etc) */
+export const isExactDimensionValue = (value: string | number | undefined): boolean =>
+  isDefined(value) && !(typeof value === 'string' && (value.includes('calc') || value.includes('%') || DIMENSION_VALUES.includes(value)));
+
+/** Check if the value is a percentage */
+export const isPercentDimensionValue = (value: string | number | undefined): boolean =>
+  typeof value === 'string' && value.includes('%');
+
+const getFullSizeComponentDimensionsValue = (value: string | number | undefined): string | number | undefined =>
+  isPercentDimensionValue(value)
+    ? 'stretch'// use `stretch` because wrapper will use configured percentage
+    : value;
+
+/**
+ * Gets full size component dimensions
+ *
+ * Calculates three states:
+ * 1. If the dimensions are percentage, return `100%` because wrapper will use configured percentage
+ * 2. If the dimensions are exact, return them as they are
+ * 3. If the dimensions are calc, auto/stretch/fit-content etc, return them as they are
+ *
+ * @param dimensions dimensions of the component
+ * @returns dimensions of the wrapper for component
+ */
+export const getFullSizeComponentDimensions = (dimensions: IDimensionsValue | undefined): IDimensionsValue => ({
+  height: getFullSizeComponentDimensionsValue(dimensions?.height),
+  minHeight: getFullSizeComponentDimensionsValue(dimensions?.minHeight),
+  maxHeight: getFullSizeComponentDimensionsValue(dimensions?.maxHeight),
+  width: getFullSizeComponentDimensionsValue(dimensions?.width),
+  minWidth: getFullSizeComponentDimensionsValue(dimensions?.minWidth),
+  maxWidth: getFullSizeComponentDimensionsValue(dimensions?.maxWidth),
+});
+
+const getFullSizeWrapperDimensionsValue = (value: string | number | undefined): string | number | undefined =>
+  isPercentDimensionValue(value) || !isExactDimensionValue(value)
+    ? value // use dimesions for wrapper, component will use 100% or non-exact value (auto/stretch/fit-content etc)
+    : 'fit-content'; // fit to the content because the component will configured exactly
+
+/**
+ * Gets full size component wrapper dimensions
+ *
+ * Calculates three states:
+ * 1. If the dimensions are percentage, return them as they are
+ * 2. If the dimensions are exact, return `fit-content` because the component will configured exactly
+ * 3. If the dimensions are calc, auto/stretch/fit-content etc, return them as they are
+ *
+ * @param dimensions dimensions of the component
+ * @returns dimensions of the wrapper for component
+ */
+export const getFullSizeWrapperDimensions = (dimensions: IDimensionsValue | undefined): IDimensionsValue => ({
+  height: getFullSizeWrapperDimensionsValue(dimensions?.height),
+  minHeight: getFullSizeWrapperDimensionsValue(dimensions?.minHeight),
+  maxHeight: getFullSizeWrapperDimensionsValue(dimensions?.maxHeight),
+  width: getFullSizeWrapperDimensionsValue(dimensions?.width),
+  minWidth: getFullSizeWrapperDimensionsValue(dimensions?.minWidth),
+  maxWidth: getFullSizeWrapperDimensionsValue(dimensions?.maxWidth),
+});
+
+export const getFullSizeWrapperStyle = (model: IStyleValue): IStyleValue => ({
+  dimensions: getFullSizeWrapperDimensions(model.dimensions),
+  // stylingBoxJson: getMarginStyle(model.stylingBoxJson),
+});
+
+/** Calculates the padding value for the designer, taking into account the margin of the component.
+ * if the component's margin value is greater than the padding value for the designer, then padding is not applied.
+ * This allows to keep the margins the same as in the "live" forms.
+ * If the component's margin is less than the designer's padding,
+ * then the padding - margin difference is applied so that the component always has a minimum padding in designer mode. */
+export const getDesignerPadding = (value: string | number | undefined, designerValue: string | number | undefined): string | number | undefined => {
+  const stringValue = isDefined(value) ? String(value) : undefined;
+  const designerStringValue = isDefined(designerValue) ? String(designerValue) : undefined;
+  if (isNullOrWhiteSpace(stringValue) || isNullOrWhiteSpace(designerStringValue)) return designerValue;
+  const margin = parseFloat(stringValue);
+  const designerPadding = parseFloat(designerStringValue);
+
+  return margin > designerPadding ? undefined : designerPadding - margin;
+};
+
+export const getFullSizeWrapperDesignerStyle = (model: IStyleValue): IWrapperStyle => ({
+  style: getFullSizeWrapperStyle(model),
+  designerStyle: {
+    ...DEFAULT_DESIGNER_PADDING,
+    // use default designer margin if component margin is not set or component margin is less than designer margin
+    stylingBoxJson: {
+      _type: 'styleBox',
+      paddingBottom: getDesignerPadding(model.stylingBoxJson?.marginBottom, DEFAULT_DESIGNER_PADDING.stylingBoxJson?.paddingBottom),
+      paddingLeft: getDesignerPadding(model.stylingBoxJson?.marginLeft, DEFAULT_DESIGNER_PADDING.stylingBoxJson?.paddingLeft),
+      paddingRight: getDesignerPadding(model.stylingBoxJson?.marginRight, DEFAULT_DESIGNER_PADDING.stylingBoxJson?.paddingRight),
+      paddingTop: getDesignerPadding(model.stylingBoxJson?.marginTop, DEFAULT_DESIGNER_PADDING.stylingBoxJson?.paddingTop),
+    },
+  },
+});
+
+export const getMarginStyle = (model: StyleBoxValue | undefined): StyleBoxValue => ({
+  _type: 'styleBox',
+  marginBottom: model?.marginBottom,
+  marginLeft: model?.marginLeft,
+  marginRight: model?.marginRight,
+  marginTop: model?.marginTop,
 });
 
 /** Margin values extracted from various style sources */

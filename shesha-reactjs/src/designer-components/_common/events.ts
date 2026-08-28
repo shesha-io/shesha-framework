@@ -43,6 +43,26 @@ export const ALL_INPUT_EVENTS_WITHOUT_DOUBLE_CLICK: readonly StandardEventHandle
 export const ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK: readonly StandardEventHandlerWithoutChange[] =
   ALL_INPUT_EVENTS_WITHOUT_CHANGE.filter((event): event is StandardEventHandlerWithoutChange => event !== 'onDoubleClick');
 
+/**
+ * `ALL_INPUT_EVENTS_WITHOUT_DOUBLE_CLICK` minus the keyboard events — for components with no text
+ * entry of their own, where a key handler would have no keystrokes to report. The file components
+ * are the current users: files are chosen through a file dialog or dropped on the component, so
+ * nothing is typed into them.
+ *
+ * Pair with `FILE_EVENTS_WITHOUT_CHANGE` at runtime so the two lists stay in step (see the note on
+ * `ALL_INPUT_EVENTS`).
+ */
+export const FILE_EVENTS: readonly StandardEventHandler[] =
+  ALL_INPUT_EVENTS_WITHOUT_DOUBLE_CLICK.filter(
+    (event): event is StandardEventHandler => event !== 'onKeyDown' && event !== 'onKeyUp',
+  );
+
+/** `FILE_EVENTS` minus `onChange` — the runtime set for those components. */
+export const FILE_EVENTS_WITHOUT_CHANGE: readonly StandardEventHandlerWithoutChange[] =
+  ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK.filter(
+    (event): event is StandardEventHandlerWithoutChange => event !== 'onKeyDown' && event !== 'onKeyUp',
+  );
+
 interface EventConfig {
   event: StandardEventHandler;
   propertyName: CustomEventHandler;
@@ -51,76 +71,78 @@ interface EventConfig {
   availableConstantsExpression?: string | undefined;
 };
 
+const AVAILABLE_CONSTANTS_EXPRESSION_EVENT_TEMPLATE = `return metadataBuilder.object(\"constants\")\r\n.addAllStandard()\r\n.addObject(\"event\", \"Event callback\", undefined)\r\n @value@.build();`;
+
 const eventConfigs: EventConfig[] = [
   {
     event: 'onChange',
     propertyName: 'onChangeCustom',
     label: 'On Change',
     tooltip: 'Enter the data change event handling code',
-    availableConstantsExpression: "return metadataBuilder.object(\"constants\")\r\n.addAllStandard()\r\n.addObject(\"event\", \"Event callback when user input\", undefined)\r\n @value@.build();",
+    availableConstantsExpression: AVAILABLE_CONSTANTS_EXPRESSION_EVENT_TEMPLATE,
   },
   {
     event: 'onFocus',
     propertyName: 'onFocusCustom',
     label: 'On Focus',
     tooltip: 'Enter the event handling code when the component gets focus',
-    availableConstantsExpression: "return metadataBuilder.object(\"constants\")\r\n .addAllStandard()\r\n @value@ .addObject(\"event\", \"Event callback when user input\", undefined)\r\n .build();",
+    availableConstantsExpression: AVAILABLE_CONSTANTS_EXPRESSION_EVENT_TEMPLATE,
   },
   {
     event: 'onBlur',
     propertyName: 'onBlurCustom',
     label: 'On Blur',
     tooltip: 'Enter the event handling code when the component removes focus',
-    availableConstantsExpression: "return metadataBuilder.object(\"constants\")\r\n .addAllStandard()\r\n @value@ .addObject(\"event\", \"Event callback when user input\", undefined)\r\n .build();",
+    availableConstantsExpression: AVAILABLE_CONSTANTS_EXPRESSION_EVENT_TEMPLATE,
   },
   {
     event: 'onClick',
     propertyName: 'onClickCustom',
     label: 'On Click',
     tooltip: 'Enter the event handling code on click on the component',
-    availableConstantsExpression: "return metadataBuilder.object(\"constants\")\r\n .addAllStandard()\r\n @value@ .addObject(\"event\", \"Event callback when user input\", undefined)\r\n .build();",
+    availableConstantsExpression: AVAILABLE_CONSTANTS_EXPRESSION_EVENT_TEMPLATE,
   },
   {
     event: 'onDoubleClick',
     propertyName: 'onDoubleClickCustom',
     label: 'On Double Click',
     tooltip: 'Enter the event handling code on double click on the component',
-    availableConstantsExpression: "return metadataBuilder.object(\"constants\")\r\n .addAllStandard()\r\n @value@ .addObject(\"event\", \"Event callback when user input\", undefined)\r\n .build();",
+    availableConstantsExpression: AVAILABLE_CONSTANTS_EXPRESSION_EVENT_TEMPLATE,
   },
   {
     event: 'onMouseEnter',
     propertyName: 'onMouseEnterCustom',
     label: 'On Mouse Enter',
     tooltip: 'Enter the event handling code on mouse enter',
-    availableConstantsExpression: "return metadataBuilder.object(\"constants\")\r\n .addAllStandard()\r\n @value@ .addObject(\"event\", \"Event callback when user input\", undefined)\r\n .build();",
+    availableConstantsExpression: AVAILABLE_CONSTANTS_EXPRESSION_EVENT_TEMPLATE,
   },
   {
     event: 'onMouseMove',
     propertyName: 'onMouseMoveCustom',
     label: 'On Mouse Move',
     tooltip: 'Enter the event handling code on mouse move',
-    availableConstantsExpression: "return metadataBuilder.object(\"constants\")\r\n .addAllStandard()\r\n @value@ .addObject(\"event\", \"Event callback when user input\", undefined)\r\n .build();",
+    availableConstantsExpression: AVAILABLE_CONSTANTS_EXPRESSION_EVENT_TEMPLATE,
   },
   {
     event: 'onMouseLeave',
     propertyName: 'onMouseLeaveCustom',
     label: 'On Mouse Leave',
     tooltip: 'Enter the event handling code on mouse leave',
-    availableConstantsExpression: "return metadataBuilder.object(\"constants\")\r\n .addAllStandard()\r\n @value@ .addObject(\"event\", \"Event callback when user input\", undefined)\r\n .build();",
+    availableConstantsExpression: AVAILABLE_CONSTANTS_EXPRESSION_EVENT_TEMPLATE,
   },
   {
     event: 'onKeyDown',
     propertyName: 'onKeyDownCustom',
     label: 'On Key Down',
     tooltip: 'Enter the event handling code on key down',
-    availableConstantsExpression: "return metadataBuilder.object(\"constants\")\r\n .addAllStandard()\r\n @value@ .addObject(\"event\", \"Event callback when user input\", undefined)\r\n .build();",
+    availableConstantsExpression: AVAILABLE_CONSTANTS_EXPRESSION_EVENT_TEMPLATE,
   },
   {
     event: 'onKeyUp',
     propertyName: 'onKeyUpCustom',
     label: 'On Key Up',
     tooltip: 'Enter the event handling code on key up',
-    availableConstantsExpression: "return metadataBuilder.object(\"constants\")\r\n .addAllStandard()\r\n @value@ .addObject(\"event\", \"Event callback when user input\", undefined)\r\n .build();",
+    availableConstantsExpression: AVAILABLE_CONSTANTS_EXPRESSION_EVENT_TEMPLATE,
   },
 ];
 
@@ -134,7 +156,8 @@ export const getEventConfig = (event: StandardEventHandler, valueType?: string |
   return eventConfig;
 };
 
-type EventsObject = { [k in StandardEventHandlerWithoutChange]?: (event: SyntheticEvent<Element, Event> | RadioChangeEvent | undefined) => void };
+/** The exact handler set `getComponentEvents` produces: the standard events minus `onChange`. */
+export type EventsObject = { [k in StandardEventHandlerWithoutChange]?: (event: SyntheticEvent<Element, Event> | RadioChangeEvent | undefined) => void };
 
 export const getComponentEvents = <TValue, TModel = IConfigurableFormComponent>(
   model: TModel,

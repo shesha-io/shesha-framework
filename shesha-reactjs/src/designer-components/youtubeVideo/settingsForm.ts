@@ -571,7 +571,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   labelAlign: 'right',
                   parentId: eventsTabId,
                   description: 'Action to execute when the video starts playing',
-                  validate: {},
                 })
                 .addConfigurableActionConfigurator({
                   id: nanoid(),
@@ -580,7 +579,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   labelAlign: 'right',
                   parentId: eventsTabId,
                   description: 'Action to execute when the video is paused',
-                  validate: {},
                 })
                 .addConfigurableActionConfigurator({
                   id: nanoid(),
@@ -589,7 +587,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   labelAlign: 'right',
                   parentId: eventsTabId,
                   description: 'Action to execute when the video finishes playing',
-                  validate: {},
                 })
                 .addConfigurableActionConfigurator({
                   id: nanoid(),
@@ -598,7 +595,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   labelAlign: 'right',
                   parentId: eventsTabId,
                   description: 'Action to execute when the video player is ready',
-                  validate: {},
                 })
                 .toJson(),
             ],

@@ -1,8 +1,60 @@
-import { IStyleValue } from "@/providers/form/models";
+import { IBackgroundValue, IShadowValue } from "@/designer-components/_settings/utils";
+import { INestedStyleValue, IStyleValue, StyleBoxValue } from "@/providers/form/models";
 
-export const defaultStyles = (): IStyleValue => {
+/**
+ * The complete background shape, as `card` and `drawer` define it.
+ *
+ * Every slot has to be present for the Appearance tab to offer inheritance on the compound
+ * background inputs: the inheritance popover only renders for properties the default model actually
+ * contains, so a bare `{ type, color }` leaves size/position/repeat/gradient/image with nothing to
+ * inherit from and no inheritance state shown at all.
+ */
+const BACKGROUND_DEFAULTS = (color: string): IBackgroundValue => ({
+  type: 'color',
+  color,
+  repeat: 'no-repeat',
+  size: 'cover',
+  position: 'center',
+  gradient: { direction: 'to right', colors: [] },
+  url: '',
+});
+
+/**
+ * A no-op shadow. `styles.ts` reads `shadow`/`tag.shadow`, so the slot has to be present for the
+ * Shadow panel to offer inheritance — an absent slot renders nothing *and* shows no inheritance
+ * state. The zeroed values emit a shadow that is not visible, leaving appearance unchanged.
+ */
+const SHADOW_DEFAULTS = (): IShadowValue => ({
+  offsetX: 0,
+  offsetY: 0,
+  blurRadius: 0,
+  spreadRadius: 0,
+  color: '#000',
+});
+
+/** Zeroed margin/padding, present for the same inheritance reason as `SHADOW_DEFAULTS`. */
+const STYLING_BOX_DEFAULTS = (): StyleBoxValue => ({
+  _type: 'styleBox',
+  marginTop: "0",
+  marginRight: "0",
+  marginBottom: "0",
+  marginLeft: "0",
+  paddingTop: "0",
+  paddingRight: "0",
+  paddingBottom: "0",
+  paddingLeft: "0",
+});
+
+/**
+ * Appearance defaults for an unconfigured dropdown.
+ *
+ * Includes the nested `tag` set: the migration that used to seed tag styles is guarded by
+ * `isNew`, so a freshly dropped component gets its tag appearance from here instead.
+ */
+export const defaultStyles = (): INestedStyleValue<'tag'> => {
   return {
-    background: { type: 'color', color: '#fff' },
+    tag: defaultTagStyles(),
+    background: BACKGROUND_DEFAULTS('#fff'),
     font: {
       weight: '400',
       size: 14,
@@ -29,27 +81,31 @@ export const defaultStyles = (): IStyleValue => {
       minWidth: '0px',
       maxWidth: 'auto',
     },
+    shadow: SHADOW_DEFAULTS(),
+    stylingBoxJson: STYLING_BOX_DEFAULTS(),
   };
 };
 
+/* The colours seeded into `tag` before the Variant owned them. Migration 15 clears these. */
+export const SEEDED_TAG_BACKGROUND = '#f0f0f0';
+export const SEEDED_TAG_BORDER = { width: '1px', style: 'solid', color: '#d9d9d9' };
+export const SEEDED_TAG_FONT_COLOUR = '#000';
+
+/**
+ * The colour-bearing slots are left empty so the Variant decides them — seeded, they are emitted at
+ * `&&&&` and beat antd's variant rules. `border` drops `all` for the same reason: `borderLinesStyles`
+ * emits a border for any present `all`, so even an empty one erases the Variant's border.
+ */
 export const defaultTagStyles = (): IStyleValue => {
   return {
-    background: { type: 'color', color: '#f0f0f0' },
+    background: BACKGROUND_DEFAULTS(''),
     font: {
       weight: '400',
       size: 14,
-      color: '#000',
       type: 'Segoe UI',
       align: 'center',
     },
     border: {
-      border: {
-        all: {
-          width: '1px',
-          style: 'solid',
-          color: '#d9d9d9',
-        },
-      },
       radius: { all: 4 },
       borderType: 'all',
       radiusType: 'all',
@@ -62,7 +118,10 @@ export const defaultTagStyles = (): IStyleValue => {
       minWidth: '0px',
       maxWidth: 'auto',
     },
-
+    shadow: SHADOW_DEFAULTS(),
+    // Only the left margin differs from the shared defaults: it separates a tag from the one
+    // before it. Spreading keeps the two in step as default slots are added.
+    stylingBoxJson: { ...STYLING_BOX_DEFAULTS(), marginLeft: "8" },
   };
 };
 

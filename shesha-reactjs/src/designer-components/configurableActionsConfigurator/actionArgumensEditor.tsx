@@ -9,7 +9,7 @@ import {
 import { getActualActionArguments } from '@/providers/configurableActionsDispatcher';
 import { ActionParametersDictionary, FormMarkup } from '@/providers/form/models';
 import { Collapse } from 'antd';
-import React, { ReactNode, useMemo } from 'react';
+import { ReactNode, useMemo } from 'react';
 import { useStyles } from '../_settings/styles/styles';
 import GenericArgumentsEditor from './genericArgumentsEditor';
 import { isDefined } from '@/utils/nullables';
@@ -96,7 +96,7 @@ export const ActionArgumentsEditor = <TArguments extends ActionParametersDiction
       : null;
   // Disable eslint verification to avoid unnecessary re-creation of the argument editor.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [action, readOnly]);
+  }, [action, readOnly, fbf]);
 
   if (!isDefined(argumentsEditor)) return null;
 

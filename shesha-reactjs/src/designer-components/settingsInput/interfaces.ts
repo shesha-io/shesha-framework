@@ -24,6 +24,7 @@ import { IColumnProps } from '../columns/interfaces';
 import { DateFieldValueType } from '../dateField/interfaces';
 import { IDynamicActionsConfiguration } from '../dynamicActionsConfigurator/models';
 import { KeyInfomationBarItemProps } from '../keyInformationBar/interfaces';
+import { RefListDisplayValue } from '@/components/refListDisplaySelector/models';
 import { IRefListItemFormModel } from '@/components/refListSelectorDisplay/provider/models';
 import { ISizableColumnProps } from '../sizableColumns/interfaces';
 
@@ -47,7 +48,7 @@ export interface IHasModelType {
 
 // Base interface without type-specific properties
 export interface ISettingsInputBase<TValue = unknown> extends IComponentLabelProps,
-  Omit<IConfigurableFormComponent, 'id' | 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName' | 'hidden'> {
+  Omit<IConfigurableFormComponent, 'id' | 'label' | 'layout' | 'readOnly' | 'style' | 'propertyName' | 'hidden' | 'visible'> {
   id?: string | undefined;
   label: string | React.ReactNode;
   propertyName: string;
@@ -66,7 +67,11 @@ export interface ISettingsInputBase<TValue = unknown> extends IComponentLabelPro
 
   /** @deprecated Use `visible` instead (inversion of `hidden`) */
   hidden?: boolean | IPropertySetting<boolean> | undefined;
-  visible?: boolean | undefined;
+  /**
+   * A code evaluator as well as a plain boolean: `addSettingsInputRow` converts a nested input's
+   * `visibleJs` into one, and `getActualModel` resolves it before the input is rendered.
+   */
+  visible?: ValueOrCodeEvaluator<boolean> | undefined;
   visibleJs?: string | undefined;
 
   width?: string | number | undefined;
@@ -188,6 +193,7 @@ export interface ICodeEditorSettingsInputProps extends ISettingsInputBase<string
   resultTypeExpression?: string | GetResultTypeFunc | undefined;
   availableConstantsExpression?: string | undefined;
   availableConstants?: IObjectMetadata | undefined;
+  /** @deprecated use availableConstantsExpression or availableConstants */
   exposedVariables?: string[] | ICodeExposedVariable[] | undefined;
 }
 
@@ -334,7 +340,7 @@ export interface IIconPickerSettingsInputProps extends ISettingsInputBase<string
 }
 
 // Multi Color Picker
-export interface IMultiColorPickerSettingsInputProps extends ISettingsInputBase<{ [key: string]: string | undefined }> {
+export interface IMultiColorPickerSettingsInputProps extends ISettingsInputBase<string[] | Record<string, string | undefined>> {
   type: 'multiColorPicker';
 }
 
@@ -364,6 +370,7 @@ export interface BaseLabelValueEditorProps extends ISettingsInputBase<ILabelValu
   valueTitle?: string | undefined;
   valueName?: string | undefined;
   mode?: 'dialog' | 'inline' | undefined;
+  valueEditor?: 'input' | 'expression' | undefined;
 }
 export interface ILabelValueEditorSettingsInputProps extends BaseLabelValueEditorProps {
   type: 'labelValueEditor';
@@ -424,6 +431,11 @@ export interface IFiltersListSettingsInputProps extends ISettingsInputBase<IStor
 export interface IEditModeSelectorSettingsInputProps extends ISettingsInputBase<EditMode> {
   type: 'editModeSelector';
   interactionType?: InteractionType | undefined;
+}
+
+// Reference List Display Selector
+export interface IRefListDisplaySelectorSettingsInputProps extends ISettingsInputBase<RefListDisplayValue> {
+  type: 'refListDisplaySelector';
 }
 
 // Three State Switch
@@ -517,6 +529,7 @@ export type BaseInputProps =
   IQueryBuilderSettingsInputProps |
   IFiltersListSettingsInputProps |
   IEditModeSelectorSettingsInputProps |
+  IRefListDisplaySelectorSettingsInputProps |
   IPermissionsSettingsInputProps |
   IConfigurableActionConfiguratorSettingsInputProps |
   IRefListItemSelectorSettingsModalProps |

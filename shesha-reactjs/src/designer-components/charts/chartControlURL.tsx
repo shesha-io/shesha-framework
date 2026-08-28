@@ -1,6 +1,7 @@
 import { useGet } from '@/hooks';
 import { Alert, Button } from 'antd';
-import React, { useEffect, useMemo, useState, useRef, useCallback } from 'react';
+import { useEffect, useMemo, useState, useRef, useCallback } from 'react';
+import * as React from 'react';
 import { useChartDataActionsContext, useChartDataStateContext } from '../../providers/chartData';
 import { useChartURLData } from './hooks/hooks';
 import { IChartData, IChartsProps } from './model';

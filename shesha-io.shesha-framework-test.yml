@@ -254,9 +254,9 @@ stages:
           write-host "NODE_OPTIONS is: $env:NODE_OPTIONS"
         workingDirectory: 'shesha-functional-tests/adminportal'
     - task: NodeTool@0
-      displayName: 'Use Node 22.x'
+      displayName: 'Use Node 24.x'
       inputs:
-        versionSpec: 22.x
+        versionSpec: 24.x
       retryCountOnTaskFailure: 5
     - task: Npm@1
       displayName: 'Npm Update Version'
@@ -272,6 +272,13 @@ stages:
         workingDir: shesha-reactjs
         verbose: false
         customCommand: 'install'
+    - task: Npm@1
+      displayName: Npm Test
+      inputs:
+        command: custom
+        workingDir: shesha-reactjs
+        verbose: true
+        customCommand: run test
     - task: Npm@1
       displayName: Npm Build
       inputs:
@@ -366,9 +373,9 @@ stages:
           write-host "NODE_OPTIONS is: $env:NODE_OPTIONS"
         workingDirectory: 'shesha-functional-tests/publicportal'
     - task: NodeTool@0
-      displayName: 'Use Node 22.x'
+      displayName: 'Use Node 24.x'
       inputs:
-        versionSpec: 22.x
+        versionSpec: 24.x
       retryCountOnTaskFailure: 5
     - task: Npm@1
       displayName: 'Npm Update Version'

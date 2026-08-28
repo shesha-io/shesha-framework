@@ -9,7 +9,7 @@ import {
 import { IFullAuditedEntity } from '@/publicJsApis/apis/entities';
 import { isDefined } from '@/utils/nullables';
 import { ItemType } from 'antd/es/menu/interface';
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 
 type ItemVisibilityFunc = (item: ButtonGroupItemProps) => boolean;
 

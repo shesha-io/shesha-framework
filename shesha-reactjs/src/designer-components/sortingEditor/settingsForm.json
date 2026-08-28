@@ -95,16 +95,13 @@
             "hidden": false,
 
             "isDynamic": false,
-            "version": 0,
-            "validate": {},
-            "settingsValidationErrors": []
+            "version": 0
           }
         ]
       },
       "collapsible": "header",
       "ghost": true,
-      "hideWhenEmpty": true,
-      "settingsValidationErrors": []
+      "hideWhenEmpty": true
     },
     {
       "id": "6eBJvoll3xtLJxdvOAlnB",
@@ -140,15 +137,13 @@
             "version": 1,
             "validate": {
               "required": true
-            },
-            "settingsValidationErrors": []
+            }
           }
         ]
       },
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
       "componentName": "pnlData"
     },
     {
@@ -176,11 +171,9 @@
             "propertyName": "validate.validator",
             "parentId": "r2HAIJKgas4nV1wE1g4uG",
             "label": "Validator",
-            "validate": {},
             "labelAlign": "right",
             "hidden": false,
             "description": "Enter custom validator logic for form.item rules. Returns a Promise",
-            "settingsValidationErrors": [],
             "exposedVariables": [
               {
                 "name": "rules",
@@ -210,7 +203,6 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
       "components": [
         {
           "id": "r2HAIJKgas4nV1wE1g4uG",
@@ -221,11 +213,9 @@
               "propertyName": "validate.validator",
               "parentId": "r2HAIJKgas4nV1wE1g4uG",
               "label": "Validator",
-              "validate": {},
               "labelAlign": "right",
               "hidden": false,
               "description": "Enter custom validator logic for form.item rules. Returns a Promise",
-              "settingsValidationErrors": [],
               "exposedVariables": [
                 {
                   "name": "rules",

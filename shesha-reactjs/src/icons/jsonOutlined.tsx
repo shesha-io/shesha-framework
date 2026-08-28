@@ -1,5 +1,6 @@
 import Icon, { CustomIconComponentProps } from '@ant-design/icons/lib/components/Icon';
-import React, { FC } from 'react';
+import { FC } from 'react';
+import * as React from 'react';
 
 /* eslint-disable max-len */
 const JsonOutlinedSvg = (): React.JSX.Element => (

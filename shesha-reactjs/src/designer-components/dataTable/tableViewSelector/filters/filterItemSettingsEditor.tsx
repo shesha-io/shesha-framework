@@ -3,7 +3,7 @@ import QueryBuilderExpressionViewer, { JsonValue } from '@/designer-components/q
 import { QueryBuilderPlainRenderer } from '@/designer-components/queryBuilder/queryBuilderFieldPlain';
 import { QueryBuilderProvider, useMetadataOrUndefined } from '@/providers';
 import { Tabs } from 'antd';
-import React, { FC, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 import { BaseFilterProperties, FilterItemProperties } from './filterItemProperties';
 import { IStoredFilter } from '@/interfaces';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';

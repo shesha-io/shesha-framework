@@ -1,5 +1,4 @@
 import { IColumnsListSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React from 'react';
 import { FCUnwrapped } from '@/providers/form/models';
 import ColumnsList from '../../columns/columnsList';
 

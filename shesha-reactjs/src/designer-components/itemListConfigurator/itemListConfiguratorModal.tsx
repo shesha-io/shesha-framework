@@ -1,7 +1,8 @@
 import { ListItemWithId } from '@/components/listEditor/models';
 import { deepCopyViaJson } from '@/utils/object';
 import { Button, Modal } from 'antd';
-import React, { useState } from 'react';
+import { useState } from 'react';
+import * as React from 'react';
 import { ItemListConfigurator } from './itemListConfigurator';
 import { useMedia } from 'react-use';
 import { DefaultItemRenderer, ItemSettingsMarkupFactory } from './interfaces';

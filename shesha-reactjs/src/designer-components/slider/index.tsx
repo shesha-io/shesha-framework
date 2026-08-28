@@ -1,8 +1,7 @@
 import { Slider } from 'antd';
-import React from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { useFormData } from '@/providers';
-import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { getStyle } from '@/providers/form/utils';
 import { SlidersFilled } from '@ant-design/icons';
 import { ISliderComponentProps, ISliderComponentPropsV0, SliderComponentDefinition } from './interfaces';
 import { getSettings } from './settingsForm';
@@ -52,7 +51,7 @@ const SliderComponent: SliderComponentDefinition = {
   },
   settingsFormMarkup: getSettings,
   linkToModelMetadata: (model, propMetadata) => ({ ...model, min: propMetadata.min ?? undefined, max: propMetadata.max ?? undefined }),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   migrator: (m) =>
     m.add<ISliderComponentPropsV0>(0, (prev) => ({ ...prev }))
       .add<ISliderComponentProps>(1, (prev) => ({

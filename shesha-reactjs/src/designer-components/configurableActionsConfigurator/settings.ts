@@ -41,8 +41,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
       hidden: false,
       description:
       'Enter custom visibility code.  You must return true to show the component. The global variable data is provided, and allows you to access the data of any form component, by using its API key.',
-      validate: {},
-      settingsValidationErrors: [],
     })
     .addPermissionAutocomplete({
       id: '4d81ae9d-d222-4fc1-85b2-4dc3ee6a3721',
@@ -51,7 +49,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
       labelAlign: 'right',
       parentId: 'root',
       hidden: false,
-      validate: {},
       jsSetting: true,
     })
     .toJson();

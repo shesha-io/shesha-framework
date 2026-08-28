@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { Button, ButtonProps } from 'antd';
 import { EyeOutlined } from '@ant-design/icons';
 import { useFormActions } from '@/providers';

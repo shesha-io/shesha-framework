@@ -1,5 +1,5 @@
 import { Button, Modal, Space } from 'antd';
-import React, { FC, Fragment, useState } from 'react';
+import { FC, Fragment, useState } from 'react';
 import { ISizableColumnProps } from './interfaces';
 import { ColumnsEditor } from './columnsEditor';
 

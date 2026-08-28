@@ -1,806 +1,120 @@
-import { fontTypes, fontWeightsOptions, textAlignOptions } from '../_settings/utils/font/utils';
-import { getBorderInputs, getCornerInputs } from '../_settings/utils/border/utils';
-
-import { positionOptions, repeatOptions, sizeOptions } from '../_settings/utils/background/utils';
-import { FormLayout } from 'antd/es/form/Form';
+import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
-import { SettingsFormMarkupFactory } from '@/interfaces';
+import { DataTypes, SettingsFormMarkupFactory } from '@/interfaces';
+import { FILE_EVENTS } from '../_common/events';
 
-export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
+export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
+  const eventsTabId = nanoid();
   const appearanceTabId = nanoid();
-  const securityTabId = nanoid();
+
   const styleRouterId = nanoid();
-  const dataTabId = nanoid();
-  const validationTabId = nanoid();
 
-  return {
-    components: fbf()
-      .addSearchableTabs({
-        id: searchableTabsId,
-        propertyName: 'settingsTabs',
-        parentId: 'root',
-        label: 'Settings',
-        hideLabel: true,
-        labelAlign: 'right',
-        size: 'small',
+  // The thumbnail tile is the only box this component draws, so the box-style panels are shown only
+  // for that display type (matching releases/0.45).
+  /* A dragger renders a drop area with a plain text list and has no tile, whatever listType says —
+     so the tile's box panels must not be offered for one either. */
+  const THUMBNAIL_ONLY_JS = 'return getSettingValue(data?.listType) === "thumbnail" && getSettingValue(data?.isDragger) !== true;';
+  /* Align applies only to a plain file-name list: a thumbnail tile centres its content, and so does a
+     dragger's drop area. The two Font variants must between them cover every combination, or a model
+     saved with both thumbnail and dragger set (reachable through jsSetting, and possible in older
+     saved forms) would show no Font panel at all — so the no-Align variant is the fallback rather
+     than a second positive condition. */
+  const FILE_NAME_WITH_ALIGN_JS = 'return getSettingValue(data?.listType) !== "thumbnail" && getSettingValue(data?.isDragger) !== true;';
+  const NO_ALIGN_JS = 'return getSettingValue(data?.listType) === "thumbnail" || getSettingValue(data?.isDragger) === true;';
+
+  const listTypeOptions = [
+    { value: 'text', label: 'File name' },
+    { value: 'thumbnail', label: 'Thumbnail' },
+  ];
+
+  const json = {
+    components: fbf('root')
+      .addSearchableTabs({ id: searchableTabsId, propertyName: 'settingsTabs', label: 'Settings', hideLabel: true, labelAlign: 'right', size: 'small',
         tabs: [
-          {
-            key: '1',
-            title: 'Common',
-            id: commonTabId,
-            components: [
-              ...fbf()
-                .addContextPropertyAutocomplete({
-                  id: nanoid(),
-                  propertyName: 'propertyName',
-                  label: 'Property name',
-                  validate: { required: true },
-                  styledLabel: true,
-                  jsSetting: true,
-                })
-                .addLabelConfigurator({
-                  id: nanoid(),
-                  propertyName: 'hideLabel',
-                  hideLabel: true,
-                  label: 'Label',
-                  hideLabelPropName: 'hideLabel',
-                })
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: 'description',
-                  label: 'Tooltip',
-                  inputType: 'textArea',
-                  jsSetting: true,
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  inputs: [
-                    {
-                      id: nanoid(),
-                      propertyName: 'listType',
-                      label: 'List Type',
-                      type: 'dropdown',
-                      dropdownOptions: [
-                        { label: 'File name', value: 'text' },
-                        { label: 'Thumbnail', value: 'thumbnail' },
-                      ],
-                      hidden: {
-                        _code: 'return getSettingValue(data?.isDragger);',
-                        _mode: 'code',
-                        _value: false,
-                      },
-                      jsSetting: true,
-                    },
-                    {
-                      id: nanoid(),
-                      propertyName: 'isDragger',
-                      label: 'Is Dragger',
-                      type: 'switch',
-                      description: 'Where the uploader should show a dragger instead of a button',
-                      hidden: {
-                        _code: 'return getSettingValue(data?.listType) === "thumbnail";',
-                        _mode: 'code',
-                        _value: false,
-                      },
-                      jsSetting: true,
-                    },
-                  ],
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  inputs: [
-                    {
-                      id: nanoid(),
-                      propertyName: 'editMode',
-                      label: 'Edit Mode',
-                      type: 'editModeSelector',
-                      jsSetting: true,
-                    },
-                    {
-                      id: nanoid(),
-                      propertyName: 'hideFileName',
-                      label: 'Hide File Name',
-                      type: 'switch',
-                      jsSetting: true,
-                      hidden: {
-                        _code: 'return getSettingValue(data?.listType) !== "thumbnail";',
-                        _mode: 'code',
-                        _value: false,
-                      },
-                    },
-                  ],
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  inputs: [
-                    {
-                      id: nanoid(),
-                      propertyName: 'hidden',
-                      label: 'Hide',
-                      type: 'switch',
-                      jsSetting: true,
-                    },
-                    {
-                      id: nanoid(),
-                      propertyName: 'allowUpload',
-                      label: 'Allow Upload',
-                      type: 'switch',
-                      jsSetting: true,
-                    },
-                  ],
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  inputs: [
-                    {
-                      id: nanoid(),
-                      propertyName: 'allowReplace',
-                      label: 'Allow Replace',
-                      type: 'switch',
-                      jsSetting: true,
-                    },
-                    {
-                      id: nanoid(),
-                      propertyName: 'allowDelete',
-                      label: 'Allow Delete',
-                      type: 'switch',
-                      jsSetting: true,
-                    },
-                  ],
-                })
-                .toJson(),
-            ],
+          { key: 'common', title: 'Common', id: commonTabId, components: fbf(commonTabId)
+            .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true }, jsSetting: true })
+            .addLabelConfigurator({ propertyName: 'hideLabel', label: 'Label', hideLabel: true })
+            .stdPlaceholderDescriptionInputs()
+            .stdVisibleEditableInputs('full')
+            .stdCollapsiblePanel('Display', (fb) => fb
+              .addSettingsInputRow({ inputs: [
+                { type: 'dropdown', propertyName: 'listType', label: 'List Type', size: 'small', jsSetting: true, dropdownOptions: listTypeOptions,
+                  tooltip: 'How the selected file is presented: as a file name or as a thumbnail tile',
+                  visibleJs: 'return getSettingValue(data?.isDragger) !== true;' },
+                { type: 'switch', propertyName: 'isDragger', label: 'Is Dragger', size: 'small', jsSetting: true, layout: 'horizontal',
+                  tooltip: 'Whether the uploader should show a drop area instead of a button',
+                  visibleJs: 'return getSettingValue(data?.listType) !== "thumbnail";' },
+              ] })
+              .addSettingsInputRow({ inputs: [
+                { type: 'switch', propertyName: 'hideFileName', label: 'Hide File Name', size: 'small', jsSetting: true, layout: 'horizontal' },
+              ], visibleJs: 'return getSettingValue(data?.listType) === "thumbnail";' }))
+            .stdCollapsiblePanel('Files', (fb) => fb
+              .addSettingsInputRow({ inputs: [
+                { type: 'switch', propertyName: 'allowUpload', label: 'Allow Upload', size: 'small', jsSetting: true, layout: 'horizontal' },
+                { type: 'switch', propertyName: 'allowReplace', label: 'Allow Replace', size: 'small', jsSetting: true, layout: 'horizontal' },
+              ] })
+              .addSettingsInputRow({ inputs: [
+                { type: 'switch', propertyName: 'allowDelete', label: 'Allow Delete', size: 'small', jsSetting: true, layout: 'horizontal' },
+                { type: 'switch', propertyName: 'useSync', label: 'Synchronous Upload', size: 'small', jsSetting: true, layout: 'horizontal',
+                  tooltip: 'Upload the file with the form submission rather than immediately on selection' },
+              ] })
+              .addSettingsInput({ inputType: 'editableTagGroupProps', propertyName: 'allowedFileTypes', label: 'Allowed File Types', size: 'small',
+                tooltip: 'File types that can be accepted. The file type should include the leading dot, for example: .png' })
+              .addSettingsInputRow({ inputs: [
+                { type: 'textField', propertyName: 'ownerId', label: 'Owner ID', size: 'small', jsSetting: true,
+                  tooltip: 'Id of the entity the file is attached to. Defaults to the form data entity when empty' },
+                { type: 'entityTypeAutocomplete', propertyName: 'ownerType', label: 'Owner Type', size: 'small', jsSetting: true,
+                  tooltip: 'Type of the entity the file is attached to. Defaults to the form model type when empty' },
+              ] }))
+            .stdCollapsiblePanel('Validations', (fb) => fb
+              .addSettingsInput({ inputType: 'switch', propertyName: 'validate.required', label: 'Required', size: 'small', layout: 'horizontal', jsSetting: true }))
+            .toJson(),
           },
           {
-            key: '2',
-            title: 'Data',
-            id: dataTabId,
-            components: [
-              ...fbf()
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: dataTabId,
-                  inputs: [
-                    {
-                      id: nanoid(),
-                      propertyName: 'ownerId',
-                      label: 'Owner ID',
-                      type: 'textField',
-                      jsSetting: true,
-                    },
-                    {
-                      id: nanoid(),
-                      propertyName: 'ownerType',
-                      label: 'Owner Type',
-                      type: 'entityTypeAutocomplete',
-                      jsSetting: true,
-                    },
-                  ],
-                })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: dataTabId,
-                  inputs: [
-                    {
-                      id: nanoid(),
-                      propertyName: 'useSync',
-                      label: 'Synchronous Upload',
-                      type: 'switch',
-                      jsSetting: true,
-                    },
-                    {
-                      id: nanoid(),
-                      propertyName: 'allowedFileTypes',
-                      label: 'Allowed File Types',
-                      type: 'editableTagGroupProps',
-                      description: 'File types that can be accepted.',
-                      tooltip: "The file typeName should consist a dot before the name, for example: .png",
-
-                    },
-                  ],
-                })
-                .toJson(),
-            ],
+            key: 'events', title: 'Events', id: eventsTabId,
+            components: fbf(eventsTabId).stdEventHandlers([...FILE_EVENTS], DataTypes.file).toJson(),
           },
           {
-            key: '3',
-            title: 'Validation',
-            id: validationTabId,
-            components: [
-              ...fbf()
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: 'validate.required',
-                  label: 'Required',
-                  inputType: 'switch',
-                  jsSetting: true,
-                })
-                .toJson(),
-            ],
-          },
-          {
-            key: '4',
-            title: 'Appearance',
-            id: appearanceTabId,
-            components: [
-              ...fbf()
-                .addPropertyRouter({
-                  id: styleRouterId,
-                  propertyName: 'propertyRouter1',
-                  componentName: 'propertyRouter',
-                  label: 'Property router1',
-                  labelAlign: 'right',
-                  parentId: appearanceTabId,
-                  hidden: false,
-                  propertyRouteName: {
-                    _mode: 'code',
-                    _code: "    return contexts.canvasContext?.designerDevice || 'desktop';",
-                    _value: '',
-                  },
-                  components: [
-                    ...fbf()
-                      .addSettingsInput({
-                        id: nanoid(),
-                        parentId: styleRouterId,
-                        propertyName: 'enableStyleOnReadonly',
-                        label: 'Enable Style On Readonly',
-                        tooltip: 'Removes all visual styling except typography when the component becomes read-only',
-                        inputType: 'switch',
-                        jsSetting: true,
-                      })
-                      .addCollapsiblePanel({
-                        id: nanoid(),
-                        propertyName: 'pnlFontStyle',
-                        label: 'Font',
-                        labelAlign: 'right',
-                        parentId: styleRouterId,
-                        ghost: true,
-                        collapsible: 'header',
-                        content: {
-                          id: 'fontStylePnl',
-                          components: [
-                            ...fbf()
-                              .addSettingsInputRow({
-                                id: nanoid(),
-                                parentId: 'fontStylePnl',
-                                inline: true,
-                                propertyName: 'font',
-                                inputs: [
-                                  {
-                                    type: 'dropdown',
-                                    id: nanoid(),
-                                    label: 'Family',
-                                    propertyName: 'font.type',
-                                    hideLabel: true,
-                                    dropdownOptions: fontTypes,
-                                  },
-                                  {
-                                    type: 'numberField',
-                                    id: nanoid(),
-                                    label: 'Size',
-                                    propertyName: 'font.size',
-                                    hideLabel: true,
-                                    width: 50,
-                                  },
-                                  {
-                                    type: 'dropdown',
-                                    id: nanoid(),
-                                    label: 'Weight',
-                                    propertyName: 'font.weight',
-                                    hideLabel: true,
-                                    tooltip: 'Controls text thickness (light, normal, bold, etc.)',
-                                    dropdownOptions: fontWeightsOptions,
-                                    width: 100,
-                                  },
-                                  {
-                                    type: 'colorPicker',
-                                    id: nanoid(),
-                                    label: 'Color',
-                                    hideLabel: true,
-                                    propertyName: 'font.color',
-                                  },
-                                  {
-                                    type: 'dropdown',
-                                    id: nanoid(),
-                                    label: 'Align',
-                                    propertyName: 'font.align',
-                                    hideLabel: true,
-                                    width: 60,
-                                    hidden: {
-                                      _code: 'return  getSettingValue(data.listType) === "thumbnail";',
-                                      _mode: 'code',
-                                      _value: false,
-                                    },
-                                    dropdownOptions: textAlignOptions,
-                                  },
-                                ],
-                              })
-                              .toJson(),
-                          ],
-                        },
-                      })
-                      .addCollapsiblePanel({
-                        id: nanoid(),
-                        propertyName: 'pnlDimensions',
-                        label: 'Dimensions',
-                        parentId: 'styleRouter',
-                        labelAlign: 'right',
-                        ghost: true,
-                        collapsible: 'header',
-                        hidden: {
-                          _code: 'return  getSettingValue(data.listType) !== "thumbnail";',
-                          _mode: 'code',
-                          _value: false,
-                        },
-                        content: {
-                          id: nanoid(),
-                          components: [
-                            ...fbf()
-                              .addSettingsInputRow({
-                                id: nanoid(),
-                                parentId: styleRouterId,
-                                inline: true,
-                                inputs: [
-                                  {
-                                    type: 'textField',
-                                    id: nanoid(),
-                                    label: 'Width',
-                                    width: 85,
-                                    propertyName: 'dimensions.width',
-                                    icon: 'widthIcon',
-                                    tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
-                                  },
-                                  {
-                                    type: 'textField',
-                                    id: nanoid(),
-                                    label: 'Min Width',
-                                    width: 85,
-                                    hideLabel: true,
-                                    propertyName: 'dimensions.minWidth',
-                                    icon: 'minWidthIcon',
-                                  },
-                                  {
-                                    type: 'textField',
-                                    id: nanoid(),
-                                    label: 'Max Width',
-                                    width: 85,
-                                    hideLabel: true,
-                                    propertyName: 'dimensions.maxWidth',
-                                    icon: 'maxWidthIcon',
-                                  },
-                                ],
-                              })
-                              .addSettingsInputRow({
-                                id: nanoid(),
-                                parentId: styleRouterId,
-                                inline: true,
-                                inputs: [
-                                  {
-                                    type: 'textField',
-                                    id: nanoid(),
-                                    label: 'Height',
-                                    width: 85,
-                                    propertyName: 'dimensions.height',
-                                    icon: 'heightIcon',
-                                    tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
-                                  },
-                                  {
-                                    type: 'textField',
-                                    id: nanoid(),
-                                    label: 'Min Height',
-                                    width: 85,
-                                    hideLabel: true,
-                                    propertyName: 'dimensions.minHeight',
-                                    icon: 'minHeightIcon',
-                                  },
-                                  {
-                                    type: 'textField',
-                                    id: nanoid(),
-                                    label: 'Max Height',
-                                    width: 85,
-                                    hideLabel: true,
-                                    propertyName: 'dimensions.maxHeight',
-                                    icon: 'maxHeightIcon',
-                                  },
-                                ],
-                              })
-                              .toJson(),
-                          ],
-                        },
-                      })
-                      .addCollapsiblePanel({
-                        id: nanoid(),
-                        propertyName: 'pnlBorderStyle',
-                        label: 'Border',
-                        labelAlign: 'right',
-                        ghost: true,
-                        parentId: 'styleRouter',
-                        collapsible: 'header',
-                        hidden: {
-                          _code: 'return  getSettingValue(data.listType) !== "thumbnail";',
-                          _mode: 'code',
-                          _value: false,
-                        },
-                        content: {
-                          id: 'borderStylePnl',
-                          components: [
-                            ...fbf()
-                              .addSettingsInputRow({
-                                id: nanoid(),
-                                parentId: styleRouterId,
-                                hidden: {
-                                  _code:
-                                    'return  !getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.border?.hideBorder);',
-                                  _mode: 'code',
-                                  _value: false,
-                                },
-                                inputs: [
-                                  {
-                                    type: 'button',
-                                    id: nanoid(),
-                                    label: 'Border',
-                                    hideLabel: true,
-                                    propertyName: 'border.hideBorder',
-                                    icon: 'EyeOutlined',
-                                    iconAlt: 'EyeInvisibleOutlined',
-                                  },
-                                ],
-                              })
-                              .addContainer({
-                                id: nanoid(),
-                                parentId: 'borderStylePnl',
-                                components: getBorderInputs(fbf),
-                              })
-                              .addContainer({
-                                id: nanoid(),
-                                parentId: 'borderStylePnl',
-                                components: getCornerInputs(fbf),
-                              })
-                              .toJson(),
-                          ],
-                        },
-                      })
-                      .addCollapsiblePanel({
-                        id: nanoid(),
-                        propertyName: 'pnlBackgroundStyle',
-                        label: 'Background',
-                        labelAlign: 'right',
-                        ghost: true,
-                        parentId: 'styleRouter',
-                        collapsible: 'header',
-                        hidden: {
-                          _code: 'return  getSettingValue(data.listType) !== "thumbnail";',
-                          _mode: 'code',
-                          _value: false,
-                        },
-                        content: {
-                          id: 'backgroundStylePnl',
-                          components: [
-                            ...fbf()
-                              .addSettingsInput({
-                                id: nanoid(),
-                                parentId: styleRouterId,
-                                label: 'Type',
-                                jsSetting: false,
-                                propertyName: 'background.type',
-                                inputType: 'radio',
-                                tooltip: 'Select a type of background',
-                                buttonGroupOptions: [
-                                  {
-                                    value: 'color',
-                                    icon: 'FormatPainterOutlined',
-                                    title: 'Color',
-                                  },
-                                  {
-                                    value: 'gradient',
-                                    icon: 'BgColorsOutlined',
-                                    title: 'Gradient',
-                                  },
-                                  {
-                                    value: 'image',
-                                    icon: 'PictureOutlined',
-                                    title: 'Image',
-                                  },
-                                  {
-                                    value: 'url',
-                                    icon: 'LinkOutlined',
-                                    title: 'URL',
-                                  },
-                                  {
-                                    value: 'storedFile',
-                                    icon: 'DatabaseOutlined',
-                                    title: 'Stored File',
-                                  },
-                                ],
-                              })
-                              .addSettingsInputRow({
-                                id: nanoid(),
-                                parentId: styleRouterId,
-                                inputs: [
-                                  {
-                                    type: 'colorPicker',
-                                    id: 'backgroundStyleRow-color-picker',
-                                    label: 'Color',
-                                    propertyName: 'background.color',
-                                    hideLabel: true,
-                                    jsSetting: false,
-                                  },
-                                ],
-                                hidden: {
-                                  _code:
-                                    'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "color";',
-                                  _mode: 'code',
-                                  _value: false,
-                                },
-                              })
-                              .addSettingsInputRow({
-                                id: nanoid(),
-                                parentId: styleRouterId,
-                                inputs: [
-                                  {
-                                    type: 'multiColorPicker',
-                                    id: nanoid(),
-                                    propertyName: 'background.gradient.colors',
-                                    label: 'Colors',
-                                    jsSetting: false,
-                                  },
-                                ],
-                                hidden: {
-                                  _code:
-                                    'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "gradient";',
-                                  _mode: 'code',
-                                  _value: false,
-                                },
-                                hideLabel: true,
-                              })
-                              .addSettingsInputRow({
-                                id: nanoid(),
-                                parentId: styleRouterId,
-                                inputs: [
-                                  {
-                                    type: 'textField',
-                                    id: nanoid(),
-                                    propertyName: 'background.url',
-                                    jsSetting: false,
-                                    label: 'URL',
-                                  },
-                                ],
-                                hidden: {
-                                  _code:
-                                    'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "url";',
-                                  _mode: 'code',
-                                  _value: false,
-                                },
-                              })
-                              .addSettingsInputRow({
-                                id: nanoid(),
-                                parentId: styleRouterId,
-                                inputs: [
-                                  {
-                                    type: 'imageUploader',
-                                    id: nanoid(),
-                                    propertyName: 'background.uploadFile',
-                                    label: 'Image',
-                                    jsSetting: false,
-                                  },
-                                ],
-                                hidden: {
-                                  _code:
-                                    'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "image";',
-                                  _mode: 'code',
-                                  _value: false,
-                                },
-                              })
-                              .addSettingsInputRow({
-                                id: nanoid(),
-                                parentId: styleRouterId,
-                                hidden: {
-                                  _code:
-                                    'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) !== "storedFile";',
-                                  _mode: 'code',
-                                  _value: false,
-                                },
-                                inputs: [
-                                  {
-                                    type: 'textField',
-                                    id: nanoid(),
-                                    jsSetting: false,
-                                    propertyName: 'background.storedFile.id',
-                                    label: 'File ID',
-                                  },
-                                ],
-                              })
-                              .addSettingsInputRow({
-                                id: nanoid(),
-                                parentId: 'backgroundStylePnl',
-                                inline: true,
-                                hidden: {
-                                  _code:
-                                    'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";',
-                                  _mode: 'code',
-                                  _value: false,
-                                },
-                                inputs: [
-                                  {
-                                    type: 'customDropdown',
-                                    id: nanoid(),
-                                    label: 'Size',
-                                    hideLabel: true,
-                                    propertyName: 'background.size',
-                                    customTooltip:
-                                      'Size of the background image, two space separated values with units e.g "100% 100px"',
-                                    dropdownOptions: sizeOptions,
-                                  },
-                                  {
-                                    type: 'customDropdown',
-                                    id: nanoid(),
-                                    label: 'Position',
-                                    hideLabel: true,
-                                    customTooltip:
-                                      'Position of the background image, two space separated values with units e.g "5em 100px"',
-                                    propertyName: 'background.position',
-                                    dropdownOptions: positionOptions,
-                                  },
-                                ],
-                              })
-                              .addSettingsInputRow({
-                                id: nanoid(),
-                                parentId: styleRouterId,
-                                inputs: [
-                                  {
-                                    type: 'radio',
-                                    id: nanoid(),
-                                    label: 'Repeat',
-                                    hideLabel: true,
-                                    propertyName: 'background.repeat',
-                                    buttonGroupOptions: repeatOptions,
-                                  },
-                                ],
-                                hidden: {
-                                  _code:
-                                    'return  getSettingValue(data[`${contexts.canvasContext?.designerDevice || "desktop"}`]?.background?.type) === "color";',
-                                  _mode: 'code',
-                                  _value: false,
-                                },
-                              })
-                              .toJson(),
-                          ],
-                        },
-                      })
-                      .addCollapsiblePanel({
-                        id: nanoid(),
-                        propertyName: 'pnlShadowStyle',
-                        label: 'Shadow',
-                        labelAlign: 'right',
-                        ghost: true,
-                        parentId: styleRouterId,
-                        collapsible: 'header',
-                        hidden: {
-                          _code: 'return  getSettingValue(data.listType) !== "thumbnail";',
-                          _mode: 'code',
-                          _value: false,
-                        },
-                        content: {
-                          id: nanoid(),
-                          components: [
-                            ...fbf()
-                              .addSettingsInputRow({
-                                id: nanoid(),
-                                parentId: styleRouterId,
-                                inline: true,
-                                inputs: [
-                                  {
-                                    type: 'numberField',
-                                    id: nanoid(),
-                                    label: 'Offset X',
-                                    hideLabel: true,
-                                    width: 80,
-                                    icon: 'offsetHorizontalIcon',
-                                    propertyName: 'shadow.offsetX',
-                                  },
-                                  {
-                                    type: 'numberField',
-                                    id: nanoid(),
-                                    label: 'Offset Y',
-                                    hideLabel: true,
-                                    width: 80,
-                                    icon: 'offsetVerticalIcon',
-                                    propertyName: 'shadow.offsetY',
-                                  },
-                                  {
-                                    type: 'numberField',
-                                    id: nanoid(),
-                                    label: 'Blur',
-                                    hideLabel: true,
-                                    width: 80,
-                                    icon: 'blurIcon',
-                                    propertyName: 'shadow.blurRadius',
-                                  },
-                                  {
-                                    type: 'numberField',
-                                    id: nanoid(),
-                                    label: 'Spread',
-                                    hideLabel: true,
-                                    width: 80,
-                                    icon: 'spreadIcon',
-                                    propertyName: 'shadow.spreadRadius',
-                                  },
-                                  {
-                                    type: 'colorPicker',
-                                    id: 'shadowStyleRow-color-picker',
-                                    label: 'Color',
-                                    hideLabel: true,
-                                    propertyName: 'shadow.color',
-                                  },
-                                ],
-                              })
-                              .toJson(),
-                          ],
-                        },
-                      })
-                      .addCollapsiblePanel({
-                        id: nanoid(),
-                        propertyName: 'customStyle',
-                        label: 'Custom Styles',
-                        labelAlign: 'right',
-                        ghost: true,
-                        parentId: styleRouterId,
-                        collapsible: 'header',
-                        content: {
-                          id: nanoid(),
-                          components: [
-                            ...fbf()
-                              .addSettingsInput({
-                                id: nanoid(),
-                                inputType: 'codeEditor',
-                                propertyName: 'style',
-                                hideLabel: false,
-                                label: 'Style',
-                                description:
-                                  'A script that returns the style of the element as an object. This should conform to CSSProperties',
-                              })
-                              .toJson(),
-                          ],
-                        },
-                      })
-                      .toJson(),
-                  ],
-                })
-                .toJson(),
-            ],
-          },
-          {
-            key: '5',
-            title: 'Security',
-            id: securityTabId,
-            components: [
-              ...fbf()
-                .addSettingsInput({
-                  id: nanoid(),
-                  inputType: 'permissions',
-                  propertyName: 'permissions',
-                  label: 'Permissions',
-                  jsSetting: true,
-                  size: 'small',
-                  parentId: securityTabId,
-                })
-                .toJson(),
-            ],
+            key: 'appearance', title: 'Appearance', id: appearanceTabId,
+            components: fbf(appearanceTabId)
+              .addPropertyRouter({
+                id: styleRouterId, propertyName: 'propertyRouter1', componentName: 'propertyRouter', label: 'Property router1', labelAlign: 'right',
+                propertyRouteName: removeStyleRouter === true
+                  ? ''
+                  : { _mode: 'code', _code: "    return contexts.canvasContext?.designerDevice || 'desktop';", _value: '' },
+                components: [
+                  ...fbf(styleRouterId)
+                    // Font applies in every display type, but Align does not: in thumbnail mode the
+                    // content is forced to centre, so the input would collect a value that never
+                    // renders. Two variants of the panel, one with Align and one without, keep it
+                    // visible only where it does something (matching releases/0.45).
+                    .stdContainer((fb) => fb.stdFontPanel('font'), FILE_NAME_WITH_ALIGN_JS)
+                    .stdContainer((fb) => fb.stdFontPanel('font', ['font.align']), NO_ALIGN_JS)
+                    // The box styles describe the thumbnail tile, which only exists in thumbnail
+                    // mode. In file-name mode the component is a plain file name and an upload
+                    // button with no box to style, so these panels are hidden rather than left to
+                    // collect values that never render.
+                    .stdContainer((fb) => fb
+                      .stdDimensionsPanel('dimensions')
+                      .stdBorderPanel(removeStyleRouter !== true, 'border')
+                      .stdBackgroundPanel(removeStyleRouter !== true, 'background')
+                      .stdShadowPanel('shadow'),
+                    THUMBNAIL_ONLY_JS)
+                    // Spacing and the Custom style apply to the component as a whole, so they stay.
+                    .stdMarginPaddingPanel('stylingBoxJson')
+                    .stdCustomStylePanel('style')
+                    .toJson(),
+                ],
+              })
+              .toJson(),
           },
         ],
       })
       .toJson(),
-    formSettings: {
-      colon: false,
-      layout: 'vertical' as FormLayout,
-      labelCol: { span: 24 },
-      wrapperCol: { span: 24 },
-    },
+    formSettings: { colon: false, layout: 'vertical' as FormLayout, labelCol: { span: 24 }, wrapperCol: { span: 24 } },
   };
+
+  return json;
 };

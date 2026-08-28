@@ -1,6 +1,7 @@
 import { DownOutlined } from '@ant-design/icons';
 import { Button, Dropdown, Empty, Space, theme } from 'antd';
-import React, { FC, useMemo } from 'react';
+import { FC, useMemo } from 'react';
+import * as React from 'react';
 import { buildCreateNewMenu, MenuItemType } from '@/configuration-studio/menu-utils';
 import { useConfigurationStudio } from '@/configuration-studio/cs/contexts';
 import { useCsSubscription } from '@/configuration-studio/cs/hooks';

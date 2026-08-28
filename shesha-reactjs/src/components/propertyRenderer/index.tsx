@@ -1,7 +1,7 @@
 import { IPropertyMetadata } from '@/interfaces';
 import { useNestedPropertyMetadatAccessor } from '@/providers';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
-import React, { ReactNode, useMemo } from 'react';
+import { ReactNode, useMemo } from 'react';
 import { ValueRenderer } from '../valueRenderer';
 
 export type IPropertyRendererProps<T = unknown> = {

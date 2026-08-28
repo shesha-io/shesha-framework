@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren } from 'react';
+import { FC, PropsWithChildren } from 'react';
 import { DocumentInstanceContext } from './contexts';
 import { IDocumentInstance } from '../models';
 

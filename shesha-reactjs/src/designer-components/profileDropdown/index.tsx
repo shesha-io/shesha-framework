@@ -8,10 +8,10 @@ import {
   isGroup,
   isItem,
 } from '@/providers/buttonGroupConfigurator/models';
-import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { getStyle } from '@/providers/form/utils';
 import { DownOutlined, LoginOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Dropdown, Popover } from 'antd';
-import React, { CSSProperties, useMemo, useState } from 'react';
+import { CSSProperties, useMemo, useState } from 'react';
 import { getSettings } from './settingsForm';
 import { useStyles } from './styles';
 import { getMenuItem } from './utils';
@@ -54,7 +54,7 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
   isInput: false,
   canBeJsSetting: false,
   icon: <UserOutlined />,
-  getWrapperStyle: (model) => ({ style: { dimensions: { width: model?.dimensions?.width } } }),
+  getWrapperStyle: (model) => ({ style: { dimensions: { width: model.dimensions?.width } } }),
   Factory: ({ model }) => {
     const [numResolved, setNumResolved] = useState(0);
 
@@ -214,7 +214,7 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
       }
     ))
     .add<IProfileDropdown>(2, (prev) => ({ ...prev, items: migrateButtonGroupDynamicItems(prev.items) })),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
 };
 
 export default ProfileDropdown;

@@ -1,8 +1,7 @@
 import { LineOutlined } from '@ant-design/icons';
 import { Divider, DividerProps } from 'antd';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
-import React from 'react';
-import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
+
 import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces/formDesigner';
 import { FormMarkup } from '@/providers/form/models';
 import settingsFormJson from './settingsForm.json';
@@ -39,7 +38,7 @@ export const DividerComponent: IToolboxComponent<IDividerProps> = {
     );
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+
   migrator: (m) => m
     .add<IDividerProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IDividerProps>(3, (prev) => ({ ...migrateFormApi.properties(prev) })),

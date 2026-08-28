@@ -25,7 +25,11 @@ export type CheckboxGroupCommonProps = IInputStyles & INestedStyleValue<'checkbo
    */
   referenceListName?: string | undefined;
   referenceListId?: IReferenceListIdentifier | undefined;
-  dataSourceType: DataSourceType;
+  dataSourceType?: DataSourceType | undefined;
+  /** Endpoint backing the `url` data source. */
+  dataSourceUrl?: string | undefined;
+  /** Script mapping the `url` response to `{ label, value }` pairs. */
+  reducerFunc?: string | undefined;
   direction?: DirectionType | undefined;
   style?: CSSProperties | undefined;
   styleJson?: CSSProperties | undefined;

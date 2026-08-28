@@ -1,6 +1,6 @@
 import { CloseOutlined, EditOutlined, SaveOutlined } from '@ant-design/icons';
 import { Button, App } from 'antd';
-import React, { ReactNode, FC } from 'react';
+import { Fragment, ReactNode, FC } from 'react';
 
 import { useSettingsEditor } from './provider';
 
@@ -79,7 +79,7 @@ export const SettingsEditorToolbar: FC = () => {
     : (
       <div className="sha-components-container horizontal sha-index-toolbar">
         <div className="sha-components-container-inner">
-          {visibleItems.map((item, index) => <React.Fragment key={index}>{item.content()}</React.Fragment>)}
+          {visibleItems.map((item, index) => <Fragment key={index}>{item.content()}</Fragment>)}
         </div>
       </div>
     );

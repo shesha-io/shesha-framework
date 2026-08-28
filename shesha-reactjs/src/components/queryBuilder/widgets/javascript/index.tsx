@@ -1,4 +1,3 @@
-import React from 'react';
 import { TextFieldSettings, TextWidget } from '@react-awesome-query-builder/antd';
 import { JavaScriptEditor } from './javaScriptEditor';
 

@@ -1,8 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { SwitcherOutlined } from '@ant-design/icons';
 import { Switch } from 'antd';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers';
 import { ISwitchComponentProps, SwitchComponentDefinition } from './interfaces';
@@ -11,6 +11,7 @@ import {
   migrateCustomFunctions,
   migrateReadOnly,
   migrateHiddenToVisible,
+  migrateStylingBoxToJson,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
@@ -20,7 +21,7 @@ import { getSettings } from './settingsForm';
 import { useStyles } from './styles';
 import { defaultHandleStyles, defaultStyles } from './utils';
 import { getComponentEvents } from '../_common/events';
-import { useComponentApi } from '@/providers/componentApi/provider';
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { SwitchFieldApi } from '../../componentsApi/componentApi';
 import { isDefined } from '@/utils/nullables';
@@ -45,7 +46,7 @@ const SwitchComponent: SwitchComponentDefinition = {
   // ahead of it in the toolbox, so declaring it here would silently make Switch the
   // default editor for every boolean property.
   Factory: ({ model, apiContext }) => {
-    const componentApi = useComponentApi();
+    const componentApi = useComponentApiProvider();
     const inputRef = useRef<HTMLButtonElement>(null);
     useEffect(() => {
       componentApi?.updateApi<SwitchFieldApi>({
@@ -69,7 +70,7 @@ const SwitchComponent: SwitchComponentDefinition = {
               className={styles.switchStyles}
               disabled={model.disabled === true || model.readOnly === true}
               checked={value ?? false}
-              {...(isDefined(model.styleJson) ? { style: model.styleJson } : {})}
+              {...(isDefined(model.styleCss) ? { style: model.styleCss } : {})}
               onChange={(checked, event) => {
                 ctx?.handleEvent(event, { value: checked }, model.onChangeCustom);
                 onChange(checked);
@@ -91,7 +92,7 @@ const SwitchComponent: SwitchComponentDefinition = {
     ...defaultStyles(),
     handleStyles: defaultHandleStyles(),
   }),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   migrator: (m) =>
     m
       .add<ISwitchComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
@@ -113,7 +114,7 @@ const SwitchComponent: SwitchComponentDefinition = {
         // Seed the handle style set alongside the track styles, so upgraded forms get a
         // styled handle rather than an unstyled one.
         : { ...migratePrevStyles(prev, defaultStyles(prev)), handleStyles: prev.handleStyles ?? defaultHandleStyles() })
-      .add<ISwitchComponentProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev))),
+      .add<ISwitchComponentProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
   previewConfiguration: {
     type: 'switch',
     id: 'switch',

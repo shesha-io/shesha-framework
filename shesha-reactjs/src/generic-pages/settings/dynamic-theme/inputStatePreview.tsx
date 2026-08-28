@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { useTheme } from '@/providers';
 import { Form, FormItemProps, Input, Space } from 'antd';
 

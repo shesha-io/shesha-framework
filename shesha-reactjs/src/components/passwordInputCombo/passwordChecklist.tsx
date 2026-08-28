@@ -1,8 +1,6 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { getPasswordValidations } from './utils';
 import { ValidationIcon } from './validationIcon';
-import { toWords } from 'number-to-words';
-
 interface IProps {
   readonly password: string;
   readonly passwordLength?: number;
@@ -21,7 +19,7 @@ export const PasswordChecklist: FC<IProps> = ({ password, passwordLength = 4 }) 
       <p><ValidationIcon valid={hasNumericChar} /> contain at least 1 numeric character</p>
       <p><ValidationIcon valid={hasSpecialChar} /> contain at least one special character</p>
       <p>
-        <ValidationIcon valid={hasEightChars} /> be {toWords(passwordLength)} characters or longer
+        <ValidationIcon valid={hasEightChars} /> be {passwordLength} characters or longer
       </p>
     </div>
   );
