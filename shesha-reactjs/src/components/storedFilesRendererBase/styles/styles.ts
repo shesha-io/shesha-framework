@@ -499,5 +499,6 @@ export const useStyles = createStyles((
     actionsPopover,
     shaThumbnail,
     shaItemFileName,
+    storedFilesRendererBtnContainer,
   };
 });

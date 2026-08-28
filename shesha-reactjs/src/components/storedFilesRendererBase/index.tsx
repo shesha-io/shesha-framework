@@ -1001,7 +1001,10 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           )}
 
           {downloadZip && hasFiles && isDefined(downloadZipFile) && (
-            <div>
+            /* The action belongs in the container's bottom-right corner, not stacked under the
+               list like another row. The class it needs is styled from inside the renderer's own
+               rule, so it has to be worn to be reached. */
+            <div className={styles.storedFilesRendererBtnContainer}>
               <Button size="small" type="link" icon onClick={() => downloadZipFile()} loading={isDownloadingFileListZip}>
                 {!isDownloadingFileListZip && <FileZipOutlined />} Download Zip
               </Button>
