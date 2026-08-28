@@ -1,6 +1,6 @@
 import { getFormDesignerBackgroundSvg } from '@/components/sidebarContainer/styles/svg/dropHint';
+import { CANVAS_VH_VAR } from '@/providers/canvas/options';
 import { createStyles, sheshaStyles } from '@/styles';
-import { LAYOUT_CONSTANTS } from '../../../shesha-constants';
 
 export const designerClassNames = {
   componentDragHandle: "sha-component-drag-handle",
@@ -56,8 +56,6 @@ export const useStyles = (): typeof useStylesResponse => {
 };
 
 export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }) => {
-  const { SIDEBAR_BTN_HEIGHT, TOOLBAR_HEIGHT, HEADER_HEIGHT } = LAYOUT_CONSTANTS;
-
   const {
     shaHelpIcon,
     shaDragging,
@@ -376,7 +374,13 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
 
         .${designerWorkArea}{
             background-color: white;
-            height: calc(100vh - ${HEADER_HEIGHT} - ${TOOLBAR_HEIGHT} - ${SIDEBAR_BTN_HEIGHT});
+            /* One canvas tall, not one window tall. CSS zoom scales the canvas box but not vh, so
+               a window-relative height overflows the canvas by more the further it is zoomed in:
+               measured at 150% in an 855px window, this asked for 704px inside a 479px canvas -
+               328px of scrollbar on the canvas pane. CANVAS_VH_VAR is the canvas's own vh, already
+               net of its padding, so 100 of them is exactly the space there is. The 1vh fallback
+               leaves this an ordinary 100vh wherever no canvas publishes the variable. */
+            height: calc(100 * var(${CANVAS_VH_VAR}, 1vh));
             .${shaComponentsContainer} {
 
                 .${shaDropHintContainer} {
