@@ -20,6 +20,10 @@ namespace Shesha.Redis
         private const string SheshaRedisSection = "SheshaRedis";
         private const string ConnectionStringKey = "ConnectionString";
         private const string DatabaseIdKey = "DatabaseId";
+        private const string L1EnabledKey = "L1Enabled";
+        private const string L1ExpirationSecondsKey = "L1ExpirationSeconds";
+        private const string L1MaxEntriesPerCacheKey = "L1MaxEntriesPerCache";
+        private const string L1InvalidationBroadcastEnabledKey = "L1InvalidationBroadcastEnabled";
 
         /// <summary>
         /// Configures caching to use Redis as cache server if it's configured on appsettings. 
@@ -31,6 +35,12 @@ namespace Shesha.Redis
         ///	Example of configuration using environment variables:
         ///	SheshaRedis__ConnectionString=localhost:6379
         ///	SheshaRedis__DatabaseId=1
+        ///
+        /// The in-process L1 cache is on by default and configurable through the same section:
+        ///	SheshaRedis__L1Enabled=false
+        ///	SheshaRedis__L1ExpirationSeconds=30
+        ///	SheshaRedis__L1MaxEntriesPerCache=10000
+        ///	SheshaRedis__L1InvalidationBroadcastEnabled=true
         /// </summary>
         /// <param name="cachingConfiguration">The caching configuration.</param>
         public static void UseSheshaRedisIfConfigured(this ICachingConfiguration cachingConfiguration)
@@ -64,6 +74,17 @@ namespace Shesha.Redis
                 options.ConnectionString = sheshaOptions.ConnectionString ?? "";
                 options.DatabaseId = sheshaOptions.DatabaseId ?? 0;
 
+                // L1 settings are optional; leaving them unset keeps the defaults on
+                // ShaRedisCacheOptions rather than zeroing them.
+                if (sheshaOptions.L1Enabled.HasValue)
+                    options.L1Enabled = sheshaOptions.L1Enabled.Value;
+                if (sheshaOptions.L1ExpirationSeconds.HasValue)
+                    options.L1ExpirationSeconds = sheshaOptions.L1ExpirationSeconds.Value;
+                if (sheshaOptions.L1MaxEntriesPerCache.HasValue)
+                    options.L1MaxEntriesPerCache = sheshaOptions.L1MaxEntriesPerCache.Value;
+                if (sheshaOptions.L1InvalidationBroadcastEnabled.HasValue)
+                    options.L1InvalidationBroadcastEnabled = sheshaOptions.L1InvalidationBroadcastEnabled.Value;
+
                 optionsAction.Invoke(options);
                 
                 if (string.IsNullOrWhiteSpace(options.ConnectionString))
@@ -89,7 +110,11 @@ namespace Shesha.Redis
             return new RedisOptions
             {
                 ConnectionString = sheshaRedisSection.GetValue<string>(ConnectionStringKey),
-                DatabaseId = sheshaRedisSection.GetValue<int?>(DatabaseIdKey)
+                DatabaseId = sheshaRedisSection.GetValue<int?>(DatabaseIdKey),
+                L1Enabled = sheshaRedisSection.GetValue<bool?>(L1EnabledKey),
+                L1ExpirationSeconds = sheshaRedisSection.GetValue<int?>(L1ExpirationSecondsKey),
+                L1MaxEntriesPerCache = sheshaRedisSection.GetValue<int?>(L1MaxEntriesPerCacheKey),
+                L1InvalidationBroadcastEnabled = sheshaRedisSection.GetValue<bool?>(L1InvalidationBroadcastEnabledKey),
             };
         }
 
@@ -97,6 +122,10 @@ namespace Shesha.Redis
         {
             public string? ConnectionString { get; set; }
             public int? DatabaseId { get; set; }
+            public bool? L1Enabled { get; set; }
+            public int? L1ExpirationSeconds { get; set; }
+            public int? L1MaxEntriesPerCache { get; set; }
+            public bool? L1InvalidationBroadcastEnabled { get; set; }
         }
     }
 }

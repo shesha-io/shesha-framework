@@ -20,6 +20,15 @@ namespace Shesha.Redis.Caching
         private readonly IDatabase _database;
         private readonly IRedisCacheSerializer _serializer;
 
+        /// <summary>
+        /// In-process cache in front of Redis. Null when disabled via
+        /// <see cref="ShaRedisCacheOptions.L1Enabled"/>, in which case every read goes to Redis as
+        /// before.
+        /// </summary>
+        private readonly ShaRedisCacheL1Store? _l1;
+
+        private readonly IShaCacheInvalidationBus? _invalidationBus;
+
         protected IShaRedisCacheKeyNormalizer KeyNormalizer { get; }
         protected IMultiTenancyConfig MultiTenancyConfig { get; }
 
@@ -31,13 +40,70 @@ namespace Shesha.Redis.Caching
             IShaRedisCacheDatabaseProvider redisCacheDatabaseProvider,
             IRedisCacheSerializer redisCacheSerializer,
             IShaRedisCacheKeyNormalizer keyNormalizer,
-            IMultiTenancyConfig multiTenancyConfig)
+            IMultiTenancyConfig multiTenancyConfig,
+            ShaRedisCacheOptions options,
+            IShaCacheInvalidationBus invalidationBus,
+            IShaCacheStatistics statistics)
             : base(name)
         {
             _database = redisCacheDatabaseProvider.GetDatabase();
             _serializer = redisCacheSerializer;
             KeyNormalizer = keyNormalizer;
             MultiTenancyConfig = multiTenancyConfig;
+
+            if (options.L1Enabled)
+            {
+                _l1 = new ShaRedisCacheL1Store(
+                    name,
+                    TimeSpan.FromSeconds(Math.Max(1, options.L1ExpirationSeconds)),
+                    options.L1MaxEntriesPerCache);
+
+                statistics.Register(_l1);
+
+                _invalidationBus = invalidationBus;
+
+                // Another instance changed a key: drop our copy so the next read reloads it.
+                _invalidationBus.Subscribe(name, key =>
+                {
+                    if (key == IShaCacheInvalidationBus.ClearAllKeys)
+                        _l1.Clear();
+                    else
+                        _l1.Remove(key);
+                });
+            }
+        }
+
+        /// <summary>
+        /// Invalidates a key locally and tells the other instances to do the same.
+        /// Local first: the bus ignores our own broadcast, so the local drop must already have
+        /// happened by the time we publish.
+        /// </summary>
+        protected virtual void InvalidateL1(RedisKey normalizedKey)
+        {
+            if (_l1 == null)
+                return;
+
+            var key = normalizedKey.ToString();
+            _l1.Remove(key);
+            _invalidationBus?.Publish(Name, key);
+        }
+
+        /// <inheritdoc cref="InvalidateL1(RedisKey)"/>
+        protected virtual async Task InvalidateL1Async(RedisKey normalizedKey)
+        {
+            if (_l1 == null)
+                return;
+
+            var key = normalizedKey.ToString();
+            _l1.Remove(key);
+            if (_invalidationBus != null)
+                await _invalidationBus.PublishAsync(Name, key);
+        }
+
+        /// <summary>Stores a freshly read or written value in L1.</summary>
+        protected virtual void PopulateL1(RedisKey normalizedKey, object? value)
+        {
+            _l1?.Set(normalizedKey.ToString(), value);
         }
 
         protected virtual RedisKey NormalizeKey(string key)
@@ -54,6 +120,15 @@ namespace Shesha.Redis.Caching
         public override bool TryGetValue(string key, [NotNullWhen(true)] out object? value) // TODO: review nullability of value
         {
             var normalizedKey = NormalizeKey(key);
+
+            // L1 first: a hit skips both the network round-trip and the JSON deserialization that
+            // dominated the profile.
+            if (_l1 != null && _l1.TryGet(normalizedKey.ToString(), out var cached) && cached != null)
+            {
+                value = cached;
+                return true;
+            }
+
             var redisValue = _database.StringGet(normalizedKey);
             if (!redisValue.HasValue) { 
                 value = null;
@@ -63,12 +138,14 @@ namespace Shesha.Redis.Caching
             try
             {
                 value = Deserialize(redisValue);
+                PopulateL1(normalizedKey, value);
                 return true;
             }
             catch (Exception ex) when (ex is JsonException || ex is SerializationException || ex is FileNotFoundException)
             {
                 Logger.Warn($"Failed to deserialize value for key: {key}, removed from cache", ex);
-                SafeDeleteKey(normalizedKey);                
+                SafeDeleteKey(normalizedKey);
+                InvalidateL1(normalizedKey);
                 value = null;
                 return false;
             }            
@@ -76,23 +153,29 @@ namespace Shesha.Redis.Caching
 
         public override ConditionalValue<object>[] TryGetValues(string[] keys)
         {
-            var redisKeys = keys.Select(NormalizeKey);
-            var redisValues = _database.StringGet(redisKeys.ToArray());
-            return redisValues.Select((value, idx) => CreateConditionalValue(keys[idx], value)).ToArray();
+            var redisKeys = keys.Select(NormalizeKey).ToArray();
+            var redisValues = _database.StringGet(redisKeys);
+            return redisValues.Select((value, idx) => CreateConditionalValue(redisKeys[idx], value)).ToArray();
         }
 
         public override async Task<ConditionalValue<object>> TryGetValueAsync(string key)
         {
             var normalizedKey = NormalizeKey(key);
+
+            // This is the hot path the Azure profile pointed at: the per-request permission
+            // lookup. An L1 hit avoids both the round-trip and the deserialization.
+            if (_l1 != null && _l1.TryGet(normalizedKey.ToString(), out var cached) && cached != null)
+                return new ConditionalValue<object>(true, cached);
+
             var redisValue = await _database.StringGetAsync(normalizedKey);
             return CreateConditionalValue(normalizedKey, redisValue);
         }
 
         public override async Task<ConditionalValue<object>[]> TryGetValuesAsync(string[] keys)
         {
-            var redisKeys = keys.Select(NormalizeKey);
-            var redisValues = await _database.StringGetAsync(redisKeys.ToArray());
-            return redisValues.Select((value, idx) => CreateConditionalValue(keys[idx], value)).ToArray();
+            var redisKeys = keys.Select(NormalizeKey).ToArray();
+            var redisValues = await _database.StringGetAsync(redisKeys);
+            return redisValues.Select((value, idx) => CreateConditionalValue(redisKeys[idx], value)).ToArray();
         }
 
         public override void Set(string key, object value, TimeSpan? slidingExpireTime = null, DateTimeOffset? absoluteExpireTime = null)
@@ -104,6 +187,11 @@ namespace Shesha.Redis.Caching
 
             var redisKey = NormalizeKey(key);
             var redisValue = Serialize(value, GetSerializableType(value));
+
+            // Write-through: refresh our own copy and tell the other instances to drop theirs.
+            PopulateL1(redisKey, value);
+            _invalidationBus?.Publish(Name, redisKey.ToString());
+
             if (absoluteExpireTime.HasValue)
             {
                 if (!_database.StringSet(redisKey, redisValue))
@@ -162,6 +250,12 @@ namespace Shesha.Redis.Caching
 
             var redisKey = NormalizeKey(key);
             var redisValue = Serialize(value, GetSerializableType(value));
+
+            // Write-through: refresh our own copy and tell the other instances to drop theirs.
+            PopulateL1(redisKey, value);
+            if (_invalidationBus != null)
+                await _invalidationBus.PublishAsync(Name, redisKey.ToString());
+
             if (absoluteExpireTime.HasValue)
             {
                 if (!await _database.StringSetAsync(redisKey, redisValue))
@@ -221,6 +315,8 @@ namespace Shesha.Redis.Caching
             var redisPairs = pairs.Select(p => {
                 var redisKey = NormalizeKey(p.Key);
                 var redisValue = Serialize(p.Value, GetSerializableType(p.Value));
+                PopulateL1(redisKey, p.Value);
+                _invalidationBus?.Publish(Name, redisKey.ToString());
                 return new KeyValuePair<RedisKey, RedisValue>(redisKey, redisValue);
             }).ToList();
 
@@ -296,8 +392,15 @@ namespace Shesha.Redis.Caching
             var redisPairs = pairs.Select(p => {
                 var redisKey = NormalizeKey(p.Key);
                 var redisValue = Serialize(p.Value, GetSerializableType(p.Value));
+                PopulateL1(redisKey, p.Value);
                 return new KeyValuePair<RedisKey, RedisValue>(redisKey, redisValue);
-            });
+            }).ToList();
+
+            if (_invalidationBus != null)
+            {
+                foreach (var pair in redisPairs)
+                    await _invalidationBus.PublishAsync(Name, pair.Key.ToString());
+            }
 
             if (!await _database.StringSetAsync(redisPairs.ToArray()))
             {
@@ -363,29 +466,53 @@ namespace Shesha.Redis.Caching
 
         public override void Remove(string key)
         {
-            _database.KeyDelete(NormalizeKey(key));
+            var redisKey = NormalizeKey(key);
+            _database.KeyDelete(redisKey);
+            InvalidateL1(redisKey);
         }
 
         public override async Task RemoveAsync(string key)
         {
-            await _database.KeyDeleteAsync(NormalizeKey(key));
+            var redisKey = NormalizeKey(key);
+            await _database.KeyDeleteAsync(redisKey);
+            await InvalidateL1Async(redisKey);
         }
 
         public override void Remove(string[] keys)
         {
-            var redisKeys = keys.Select(NormalizeKey);
-            _database.KeyDelete(redisKeys.ToArray());
+            var redisKeys = keys.Select(NormalizeKey).ToArray();
+            _database.KeyDelete(redisKeys);
+
+            foreach (var redisKey in redisKeys)
+                InvalidateL1(redisKey);
         }
 
         public override async Task RemoveAsync(string[] keys)
         {
-            var redisKeys = keys.Select(NormalizeKey);
-            await _database.KeyDeleteAsync(redisKeys.ToArray());
+            var redisKeys = keys.Select(NormalizeKey).ToArray();
+            await _database.KeyDeleteAsync(redisKeys);
+
+            foreach (var redisKey in redisKeys)
+                await InvalidateL1Async(redisKey);
         }
 
         public override void Clear()
         {
             ClearRedisCacheInternal();
+            ClearL1();
+        }
+
+        /// <summary>
+        /// Drops every local entry and tells the other instances to do the same. A clear that only
+        /// emptied Redis would leave stale copies alive in every other process until they expired.
+        /// </summary>
+        protected virtual void ClearL1()
+        {
+            if (_l1 == null)
+                return;
+
+            _l1.Clear();
+            _invalidationBus?.Publish(Name, IShaCacheInvalidationBus.ClearAllKeys);
         }
 
         protected virtual void ClearRedisCacheInternal()
@@ -415,11 +542,13 @@ namespace Shesha.Redis.Caching
             try
             {
                 var deserialized = Deserialize(redisValue);
+                PopulateL1(key, deserialized);
                 return new ConditionalValue<object>(true, deserialized);
             }
             catch (Exception ex) when (ex is JsonException || ex is SerializationException || ex is FileNotFoundException)
             {
                 SafeDeleteKey(key);
+                InvalidateL1(key);
 
                 Logger.Warn($"Failed to deserialize value for key: {key} - skipped", ex);
                 return new ConditionalValue<object>(false, null!);

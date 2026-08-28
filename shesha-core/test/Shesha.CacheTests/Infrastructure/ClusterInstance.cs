@@ -119,6 +119,43 @@ namespace Shesha.CacheTests.Infrastructure
                 ["key"] = key,
             });
 
+        /// <summary>
+        /// Total nodes in the permissioned-object tree for a type prefix.
+        ///
+        /// Used to detect mutation of shared L1 instances: GetObjectWithChild appends to
+        /// dto.Children on cached objects, so a growing count across repeated reads means the
+        /// shared instance is being corrupted.
+        /// </summary>
+        public async Task<int> GetPermissionedObjectTreeAsync(string type)
+        {
+            var tree = await _client.GetRawNodeAsync(
+                "api/services/app/PermissionedObject/GetAllTree",
+                new Dictionary<string, string?> { ["type"] = type });
+
+            return CountNodes(tree);
+        }
+
+        private static int CountNodes(JsonNode? node)
+        {
+            switch (node)
+            {
+                case JsonArray array:
+                    return array.Sum(CountNodes);
+                case JsonObject obj:
+                    return 1 + CountNodes(obj["children"]);
+                default:
+                    return 0;
+            }
+        }
+
+        /// <summary>L1 hit/miss counters for this instance.</summary>
+        public Task<CacheStatsResult> GetCacheStatsAsync() =>
+            _client.GetAsync<CacheStatsResult>("api/cache-diagnostics/cache-stats");
+
+        /// <summary>Zeroes this instance's L1 counters so a measurement can be isolated.</summary>
+        public Task ResetCacheStatsAsync() =>
+            _client.PostAsync("api/cache-diagnostics/reset-stats", null);
+
         public void Dispose() => _client.Dispose();
     }
 }

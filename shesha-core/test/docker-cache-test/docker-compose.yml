@@ -125,10 +125,7 @@ services:
       INSTANCE_ID: api-1
       App__ServerRootAddress: http://localhost:22021
     volumes:
-      # Shared publish output (rebuild = publish.ps1 + `docker compose restart`).
-      - ./publish:/app
-      # Isolated App_Data per instance: log4net writes App_Data/Logs relative to
-      # /app, and three containers sharing one bind mount would interleave writes.
+      # Isolated App_Data per instance so the three containers do not interleave log writes.
       - api1-appdata:/app/App_Data
 
   # Instances 2 and 3 skip migration/bootstrapping entirely. The framework already guards
@@ -153,10 +150,7 @@ services:
       api-1:
         condition: service_started
     volumes:
-      # Shared publish output (rebuild = publish.ps1 + `docker compose restart`).
-      - ./publish:/app
-      # Isolated App_Data per instance: log4net writes App_Data/Logs relative to
-      # /app, and three containers sharing one bind mount would interleave writes.
+      # Isolated App_Data per instance so the three containers do not interleave log writes.
       - api2-appdata:/app/App_Data
 
   api-3:
@@ -178,10 +172,7 @@ services:
       api-1:
         condition: service_started
     volumes:
-      # Shared publish output (rebuild = publish.ps1 + `docker compose restart`).
-      - ./publish:/app
-      # Isolated App_Data per instance: log4net writes App_Data/Logs relative to
-      # /app, and three containers sharing one bind mount would interleave writes.
+      # Isolated App_Data per instance so the three containers do not interleave log writes.
       - api3-appdata:/app/App_Data
 
   # Load balancer — throughput test only. Not used by the coherence tests.

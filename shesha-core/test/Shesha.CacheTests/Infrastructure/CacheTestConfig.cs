@@ -51,6 +51,13 @@ namespace Shesha.CacheTests.Infrastructure
 
         public ApiTarget TestApiTarget { get; set; } = new();
 
+        /// <summary>
+        /// Permissioned-object type used by the L1 shared-instance test. Must be a type whose
+        /// GetAllTree response is genuinely nested -- a flat or empty result would make that test
+        /// pass without exercising anything.
+        /// </summary>
+        public string TestTreeType { get; set; } = "Shesha.WebApi";
+
         public static CacheTestConfig Load()
         {
             var configuration = new ConfigurationBuilder()

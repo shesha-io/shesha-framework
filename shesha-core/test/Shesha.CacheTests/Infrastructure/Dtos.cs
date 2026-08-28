@@ -75,11 +75,46 @@ namespace Shesha.CacheTests.Infrastructure
         public string? BuildSha { get; set; }
         public bool RedisConfigured { get; set; }
 
+        /// <summary>Whether the in-process L1 cache is active on this instance.</summary>
+        public bool L1Enabled { get; set; }
+
+        /// <summary>L1 entry lifetime; the backstop if a pub/sub invalidation is ever missed.</summary>
+        public int L1ExpirationSeconds { get; set; }
+
+        /// <summary>Whether this instance is subscribed to the invalidation channel.</summary>
+        public bool InvalidationBusConnected { get; set; }
+
         /// <summary>
         /// Identity used to prove two base URLs are not the same process. Containers all report
         /// PID 1, so the host name has to be part of it.
         /// </summary>
         public string ProcessIdentity => $"{MachineName}:{ProcessId}";
+    }
+
+    /// <summary>Response of the test host's /api/cache-diagnostics/cache-stats endpoint.</summary>
+    public sealed class CacheStatsResult
+    {
+        public bool Available { get; set; }
+        public List<CacheStatsEntry> Caches { get; set; } = new();
+
+        public CacheStatsEntry? For(string cacheName) =>
+            Caches.FirstOrDefault(c => c.CacheName == cacheName);
+    }
+
+    public sealed class CacheStatsEntry
+    {
+        public string? CacheName { get; set; }
+        public long Hits { get; set; }
+        public long Misses { get; set; }
+        public long Invalidations { get; set; }
+        public long OverflowPurges { get; set; }
+        public int Entries { get; set; }
+        public double HitRate { get; set; }
+
+        public long Reads => Hits + Misses;
+
+        public override string ToString() =>
+            $"{CacheName}: hits={Hits} misses={Misses} invalidations={Invalidations} entries={Entries}";
     }
 
     /// <summary>Response of the test host's /api/cache-diagnostics/peek endpoint.</summary>

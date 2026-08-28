@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Abp.Configuration.Startup;
 using Abp.Dependency;
@@ -60,6 +62,9 @@ namespace Shesha.CacheTests.Host.Controllers
                 UptimeSeconds = (int)(DateTime.UtcNow - ProcessStartedUtc).TotalSeconds,
                 BuildSha = ReadBuildSha(),
                 RedisConfigured = _iocResolver.IsRegistered<IShaRedisCacheDatabaseProvider>(),
+                L1Enabled = TryGetOptions()?.L1Enabled ?? false,
+                L1ExpirationSeconds = TryGetOptions()?.L1ExpirationSeconds ?? 0,
+                InvalidationBusConnected = TryGetBusConnected(),
             });
         }
 
@@ -106,13 +111,68 @@ namespace Shesha.CacheTests.Host.Controllers
         }
 
         /// <summary>
-        /// Resets L1 hit/miss counters. No-op until the L1 cache exists — kept so the test
-        /// suite can call it unconditionally across both baseline and post-change runs.
+        /// L1 hit/miss counters per named cache.
+        ///
+        /// This is what turns "the cache seems faster" into evidence: the suite resets the
+        /// counters, issues repeat reads, and asserts the hits actually landed in L1 rather than
+        /// going to Redis.
         /// </summary>
-        [HttpPost("reset-stats")]
-        public Task<IActionResult> ResetStatsAsync()
+        [HttpGet("cache-stats")]
+        public IActionResult GetCacheStats()
         {
-            return Task.FromResult<IActionResult>(Ok(new { reset = false, reason = "L1 cache not implemented yet" }));
+            if (!_iocResolver.IsRegistered<IShaCacheStatistics>())
+                return Ok(new CacheStatsResult { Available = false });
+
+            using var scope = _iocResolver.ResolveAsDisposable<IShaCacheStatistics>();
+            var snapshot = scope.Object.GetSnapshot();
+
+            return Ok(new CacheStatsResult
+            {
+                Available = true,
+                Caches = snapshot.Values
+                    .OrderByDescending(x => x.Hits + x.Misses)
+                    .Select(x => new CacheStatsEntry
+                    {
+                        CacheName = x.CacheName,
+                        Hits = x.Hits,
+                        Misses = x.Misses,
+                        Invalidations = x.Invalidations,
+                        OverflowPurges = x.OverflowPurges,
+                        Entries = x.Entries,
+                        HitRate = x.HitRate,
+                    })
+                    .ToList(),
+            });
+        }
+
+        /// <summary>Zeroes the L1 counters so a measurement can be isolated.</summary>
+        [HttpPost("reset-stats")]
+        public IActionResult ResetStats()
+        {
+            if (!_iocResolver.IsRegistered<IShaCacheStatistics>())
+                return Ok(new { reset = false, reason = "cache statistics not available" });
+
+            using var scope = _iocResolver.ResolveAsDisposable<IShaCacheStatistics>();
+            scope.Object.Reset();
+            return Ok(new { reset = true });
+        }
+
+        private ShaRedisCacheOptions? TryGetOptions()
+        {
+            if (!_iocResolver.IsRegistered<ShaRedisCacheOptions>())
+                return null;
+
+            using var scope = _iocResolver.ResolveAsDisposable<ShaRedisCacheOptions>();
+            return scope.Object;
+        }
+
+        private bool TryGetBusConnected()
+        {
+            if (!_iocResolver.IsRegistered<IShaCacheInvalidationBus>())
+                return false;
+
+            using var scope = _iocResolver.ResolveAsDisposable<IShaCacheInvalidationBus>();
+            return scope.Object.IsConnected;
         }
 
         private string? ReadBuildSha()
@@ -151,6 +211,26 @@ namespace Shesha.CacheTests.Host.Controllers
             public int UptimeSeconds { get; set; }
             public string? BuildSha { get; set; }
             public bool RedisConfigured { get; set; }
+            public bool L1Enabled { get; set; }
+            public int L1ExpirationSeconds { get; set; }
+            public bool InvalidationBusConnected { get; set; }
+        }
+
+        public class CacheStatsResult
+        {
+            public bool Available { get; set; }
+            public List<CacheStatsEntry> Caches { get; set; } = new();
+        }
+
+        public class CacheStatsEntry
+        {
+            public string? CacheName { get; set; }
+            public long Hits { get; set; }
+            public long Misses { get; set; }
+            public long Invalidations { get; set; }
+            public long OverflowPurges { get; set; }
+            public int Entries { get; set; }
+            public double HitRate { get; set; }
         }
 
         public class PeekResult

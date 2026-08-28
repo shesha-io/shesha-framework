@@ -56,10 +56,16 @@ namespace Shesha.CacheTests.Infrastructure
         /// <summary>Returns the raw JSON payload, so unmodelled fields survive a round-trip.</summary>
         public async Task<JsonObject> GetRawAsync(string path, IDictionary<string, string?>? query = null)
         {
-            using var response = await _http.GetAsync(BuildPath(path, query));
-            var envelope = await ReadRawEnvelopeAsync(response, $"GET {path}");
-            return envelope as JsonObject
+            var node = await GetRawNodeAsync(path, query);
+            return node as JsonObject
                    ?? throw new InvalidOperationException($"GET {path} did not return a JSON object.");
+        }
+
+        /// <summary>As <see cref="GetRawAsync"/>, but for endpoints whose result is an array.</summary>
+        public async Task<JsonNode?> GetRawNodeAsync(string path, IDictionary<string, string?>? query = null)
+        {
+            using var response = await _http.GetAsync(BuildPath(path, query));
+            return await ReadRawEnvelopeAsync(response, $"GET {path}");
         }
 
         public async Task<T> PostAsync<T>(string path, object? body, IDictionary<string, string?>? query = null)

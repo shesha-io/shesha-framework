@@ -9,8 +9,8 @@
     is serving, and they run with skipMigrations/skipBootstrappers set.
 
 .EXAMPLE
-    ./up.ps1                 # start (builds the image if missing)
-    ./up.ps1 -Rebuild        # force image rebuild
+    ./up.ps1                 # publish output is baked into the image on every start
+    ./up.ps1 -Rebuild        # accepted for compatibility; the image is always rebuilt
     ./up.ps1 -Loadtest       # also start nginx on :22020 for the throughput test
 #>
 [CmdletBinding()]
@@ -91,8 +91,10 @@ try {
         throw "Docker does not appear to be running. Start Docker Desktop and retry."
     }
 
-    $buildArgs = @()
-    if ($Rebuild) { $buildArgs += '--build' }
+    # Always build: the app is COPYed into the image (the bind mount was dropped because Docker
+    # Desktop served stale content), so skipping the build would run whatever was baked last time.
+    # The COPY is the final layer, so this is quick when nothing changed.
+    $buildArgs = @('--build')
 
     # --- database ----------------------------------------------------------------------
     # sql-init imports the bacpac and exits; compose blocks the api services on its success.

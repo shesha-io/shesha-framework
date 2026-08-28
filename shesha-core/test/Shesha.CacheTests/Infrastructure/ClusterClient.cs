@@ -123,6 +123,10 @@ namespace Shesha.CacheTests.Infrastructure
             };
         }
 
+        /// <summary>Zeroes L1 counters on every instance before a measurement.</summary>
+        public Task ResetAllCacheStatsAsync() =>
+            Task.WhenAll(Instances.Select(i => i.ResetCacheStatsAsync()));
+
         /// <summary>
         /// Verifies the configured URLs really are separate processes. Without this the whole
         /// suite could pass while silently testing one instance three times.
