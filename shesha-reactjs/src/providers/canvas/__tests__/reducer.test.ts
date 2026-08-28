@@ -32,7 +32,7 @@ const canvasMode = (overrides: Partial<ICanvasStateContext> = {}): ICanvasStateC
  * width is the pane itself. Built through the real helper so these tests break if the two ever stop
  * being different values - which is the whole reason the device is read off the second one.
  */
-const measured = (paneWidth: number, zoom = 100) => setAvailableCanvasWidthAction({
+const measured = (paneWidth: number, zoom = 100): ReturnType<typeof setAvailableCanvasWidthAction> => setAvailableCanvasWidthAction({
   width: getCanvasLayoutWidth(paneWidth, zoom),
   paneWidth,
 });
