@@ -89,11 +89,11 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                 }))
               .stdCollapsiblePanel('Data', (fb) => fb
                 .addSettingsInput({ inputType: 'propertyAutocomplete', propertyName: 'ownerName', label: 'Owner', autoFillProps: false })
-                .addSettingsInput({ inputType: 'entityTypeAutocomplete', propertyName: 'ownerType', label: 'Owner Type', jsSetting: true })
+                .addSettingsInput({ inputType: 'entityTypeAutocomplete', propertyName: 'ownerType', label: 'Parent Entity Type', jsSetting: true })
                 .addSettingsInputRow({
                   inputs: [
-                    { type: 'textField', propertyName: 'ownerId', label: 'Owner ID', jsSetting: true },
-                    { type: 'textField', propertyName: 'filesCategory', label: 'Files Category', jsSetting: true },
+                    { type: 'textField', propertyName: 'ownerId', label: 'Parent Record ID', jsSetting: true },
+                    { type: 'textField', propertyName: 'filesCategory', label: 'File Group', jsSetting: true },
                   ],
                 })
                 .addSettingsInput({
