@@ -3,7 +3,7 @@ import { createStyles } from '@/styles';
 import { CSSProperties } from 'react';
 import { addPx } from '@/utils/style';
 import { IStyleValue } from '@/providers';
-import { backgroundStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, paddingStyles, shadowStyles } from '@/designer-components/_common/styles/utils';
+import { backgroundStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, marginStyles, paddingStyles, shadowStyles } from '@/designer-components/_common/styles/utils';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 interface IModelInterface extends IStyleValue {
   thumbnailStyle?: IStyleValue | undefined;
@@ -418,7 +418,9 @@ export const useStyles = createStyles((
           transition: none !important;
         }
         height: auto !important;
-        ${isThumbnail ? `width: ${addPx(thumbnail?.dimensions?.width) ?? '54px'} !important;` : ''}
+        /* The thumbnail set's Margin lands here rather than on the box itself: this is the element
+           the list lays out, and the box is pinned to its width, so a margin there would overflow. */
+        ${isThumbnail ? `width: ${addPx(thumbnail?.dimensions?.width) ?? '54px'} !important; ${marginStyles(thumbnail?.stylingBoxJson)}` : ''}
       }
 
       .${prefixCls}-upload-list-item-action {
@@ -448,8 +450,10 @@ export const useStyles = createStyles((
   /* Tiles are laid out by the upload list, so that is where the configured Gap belongs — the
      container's own gap only ever separated the trigger from the Download Zip row. */
   const tileSpacing = `
+    /* !important because antd doubles the class — .ant-upload-list.ant-upload-list-picture-card —
+       to set its own picture-card gap, which outranks a single-class rule. */
     .${prefixCls}-upload-list {
-      gap: ${model.gap ?? '8px'};
+      gap: ${model.gap ?? '8px'} !important;
     }
 
     /* Cleared so Gap is the only spacing; antd's item margin would otherwise add to it on the
