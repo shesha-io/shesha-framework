@@ -62,12 +62,8 @@ export const useStyles = createStyles((
     { fontFamily: model.styleCss?.fontFamily, fontSize: model.styleCss?.fontSize },
   );
 
-  /* The prompt is text before it is a control, so the configured Font colour reaches it — the
-     dragger's prompt has always taken it, and the File component colours its trigger the same way.
-     Note that the container's default Font colour is #000 rather than the File component's empty
-     one, so the prompt reads black until a colour is chosen; the theme's link colour is the
-     fallback for a component whose colour is genuinely unset, not the usual case. Custom style wins
-     over the Font panel, the same precedence every other style set here uses. */
+  /* The prompt takes the configured Font colour, as the dragger's prompt and the File component's
+     trigger do. Custom style wins; the link colour is the fallback when none is set. */
   const uploadControlColor = !isNullOrWhiteSpace(model.styleCss?.color)
     ? model.styleCss.color
     : !isNullOrWhiteSpace(font?.color)
@@ -345,21 +341,15 @@ export const useStyles = createStyles((
         width: 100%;
       }
 
-      /* The upload trigger is the component's leading edge, so its text has to sit flush with the
-         container the way the File component's does. antd gives every button 15px of inline padding,
-         which pushes the prompt in from that edge and out of line with the fields around it. Only
-         the inline padding goes — the block padding is what gives the trigger an input's height.
-         Scoped to the trigger itself (a bare child in the designer stub, wrapped by antd at runtime)
-         so the per-file action icons keep their own hit area. */
+      /* antd's 15px of button padding steps the prompt in from the container's edge. Only the
+         inline half goes — the block half is what gives the trigger an input's height. */
       > .${prefixCls}-btn,
       .${prefixCls}-upload-select .${prefixCls}-btn {
         padding-inline: 0;
       }
 
-      /* Text and icon together, and !important because antd colours the link button from its own
-         class. The per-file action icons are reached by neither selector, so the delete stays red.
-         The rule above deliberately withholds colour from every button; this hands it back to the
-         trigger alone. */
+      /* Text and icon; !important because antd colours the link button from its own class. Neither
+         selector reaches the per-file action icons, so the delete stays red. */
       > .${prefixCls}-btn,
       > .${prefixCls}-btn *,
       .${prefixCls}-upload-select .${prefixCls}-btn,
@@ -393,10 +383,8 @@ export const useStyles = createStyles((
         }
       }
 
-      /* The rows sit directly beneath the trigger, so they share its edge. The 2px above is there
-         to keep a row's hover and focus ring off the scrolling container's sides; only the inline
-         half is dropped, which is the half that would step the file names in from the prompt. It
-         has to follow the shorthand it narrows — same specificity, so source order decides. */
+      /* Rows share the trigger's edge; the block half stays for hover and focus rings. Must follow
+         the shorthand it narrows — same specificity, so source order decides. */
       ${isThumbnail ? '' : `
       .${prefixCls}-upload-list {
         padding-inline: 0;

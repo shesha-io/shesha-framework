@@ -26,6 +26,8 @@ export const useStyles = createStyles(({ css, cx, token }, model: IConfigurableF
                 min-height: fit-content;
                 ${model.autoAlignLabel !== false
                   ? `
+                  /* Both halves of auto-alignment. An opted-out control stacks, so its label
+                     belongs beside the first row rather than centred on the whole column. */
                   align-content: center;
 
                   /* A validation message grows the control column. With height: 100% the label

@@ -860,8 +860,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     },
   };
 
-  /* The two optional parts of the designer stub, hoisted so the box that holds them is only
-     rendered when at least one of them is. */
+  /* Hoisted so the box holding them is rendered only when at least one is present. */
   const showStubFileName = listType !== 'text' && !hideFileName;
   const showStubExtraContent = hasExtraContent === true && isDefined(extraFormId);
 
@@ -911,10 +910,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                   >
                     {listType === 'text' && '(press to upload)'}
                   </Button>
-                  {/* Only rendered when it actually holds something. The renderer is a gapped flex
-                      column, so an empty box below the trigger is not free: the gap still applies to
-                      it and pads the control column, pushing the trigger above the centre the label
-                      is aligned to. */}
+                  {/* The renderer is a gapped flex column, so an empty box here would still take a
+                      gap and pad the control column out of line with the label. */}
                   {(showStubFileName || showStubExtraContent) && (
                     <div style={(listType === 'thumbnail') ? { width, minWidth, maxWidth } : {}}>
                       {showStubFileName && (
@@ -1001,9 +998,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           )}
 
           {downloadZip && hasFiles && isDefined(downloadZipFile) && (
-            /* The action belongs in the container's bottom-right corner, not stacked under the
-               list like another row. The class it needs is styled from inside the renderer's own
-               rule, so it has to be worn to be reached. */
+            /* Right-aligns the action in the container's corner. The rule is nested in the
+               renderer's own css, so it reaches only an element wearing the class. */
             <div className={styles.storedFilesRendererBtnContainer}>
               <Button size="small" type="link" icon onClick={() => downloadZipFile()} loading={isDownloadingFileListZip}>
                 {!isDownloadingFileListZip && <FileZipOutlined />} Download Zip
