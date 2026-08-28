@@ -72,6 +72,9 @@ export class DatasetInstance implements IDatasetInstance {
 
   /** true when a fetch was skipped because some data fetch dependencies were not ready (e.g. dynamic filters are not evaluated yet) */
   private fetchSkippedDueToDependencies: boolean = false;
+
+  /** id of the most recently started fetch, so a superseded response can be discarded (see `fetchData`) */
+  private lastFetchId: number = 0;
   //#endregion
 
   #storage: IAsyncStorage;
@@ -257,12 +260,23 @@ export class DatasetInstance implements IDatasetInstance {
     }
     this.fetchSkippedDueToDependencies = false;
 
+    // Loading a list can trigger several overlapping fetches (filters arriving, columns registering), each
+    // with a different payload. Responses can land in any order, so ignore any that a newer fetch superseded
+    // - otherwise rows come from one response and totalRows from another.
+    const fetchId = ++this.lastFetchId;
+    const isSuperseded = (): boolean => fetchId !== this.lastFetchId;
+
     this.updateState((state) => ({ ...state, isFetchingTableData: true, fetchTableDataError: undefined }));
     try {
       await this.saveUserConfigAsync();
 
       const payload = this.getFetchListDataPayload();
       const data = await this.repository.fetch(payload);
+
+      if (isSuperseded()) {
+        this.log("fetchData discarded: superseded by a newer fetch");
+        return;
+      }
 
       // TODO: if current page is not available after change of the page size - reset page number to 1
 
@@ -282,6 +296,8 @@ export class DatasetInstance implements IDatasetInstance {
         selectedRow: selectedRow,
       }));
     } catch (error) {
+      if (isSuperseded())
+        return;
       this.updateState((state) => ({ ...state, isFetchingTableData: false, fetchTableDataError: extractErrorInfo(error) }));
     }
   };
