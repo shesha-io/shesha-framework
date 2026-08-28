@@ -1,4 +1,4 @@
-import { dimensionsStyles, fontStyles } from '@/designer-components/_common/styles/utils';
+import { dimensionsStyles, fontStyles, paddingStyles } from '@/designer-components/_common/styles/utils';
 import { IStyleValue } from '@/providers';
 import { createStyles, sheshaStyles, getTextHoverEffects } from '@/styles';
 
@@ -67,13 +67,12 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, styleValue
 
   const inputField = css`
     padding: 4px 11px;
+    ${paddingStyles(styleValue?.stylingBoxJson)}
     margin: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     ${dimensionsStyles(styleValue?.dimensions)}
     ${fontStyles(styleValue?.font, styleValue?.styleCss)}
-    }
-
   `;
 
   const wrapper = css`
