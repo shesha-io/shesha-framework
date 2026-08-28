@@ -136,8 +136,8 @@ const CanvasProvider: FC<PropsWithChildren> = ({
     dispatch(setCanvasAutoWidthAction(value));
   }, []);
 
-  const setAvailableCanvasWidth = useCallback((width: string) => {
-    dispatch(setAvailableCanvasWidthAction(width));
+  const setAvailableCanvasWidth = useCallback((width: string, paneWidth?: number) => {
+    dispatch(setAvailableCanvasWidthAction({ width, paneWidth }));
   }, []);
 
   const setConfigTreePanelSize = useCallback((size: number) => {

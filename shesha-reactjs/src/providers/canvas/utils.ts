@@ -98,29 +98,25 @@ export const isCanvasWidthPercent = (value: string): boolean => {
 };
 
 /**
- * Size the canvas is laid out at, in its own (pre-zoom) coordinate space.
+ * Size the canvas must be laid out at, in its own (pre-zoom) coordinate space, so that after the
+ * CSS `zoom` is applied it renders exactly `availableSize` on screen.
  *
- * Deliberately independent of zoom. Zoom is a magnifier, not a layout control: the canvas is laid
- * out at the size of the pane and CSS `zoom` scales that up or down proportionally, so 150% shows
- * the same layout half again as large (scrolling to reach the parts now off-pane) rather than
- * reflowing it into a narrower one.
- *
- * An earlier version divided by the zoom factor so the canvas always filled the pane exactly. That
- * made zooming in *shrink* the layout - at 400% a 1115px pane became a 278px canvas, narrow enough
- * to trip the mobile breakpoint and render every component from its `mobile` settings block.
- *
- * Floored so sub-pixel rounding can never push the canvas past the available space at 100%.
+ * Because `zoom` scales layout, dividing by the zoom factor means zooming out widens/heightens the
+ * layout (components get more room and re-wrap) while each component keeps the rendered scale the
+ * user picked, instead of the canvas overflowing its pane.
  */
-const getCanvasLayoutSize = (availableSize: number): number =>
-  Math.max(0, Math.floor(availableSize));
+const getCanvasLayoutSize = (availableSize: number, zoom: number): number => {
+  const zoomFactor = (zoom > 0 ? zoom : DEFAULT_OPTIONS.defaultZoom) / 100;
+  // Floor so sub-pixel rounding can never push the canvas past the available space
+  return Math.max(0, Math.floor(availableSize / zoomFactor));
+};
 
 /**
- * Width the canvas is laid out at: the width of the area between the Builder Components and
- * Properties panels. At 100% zoom it fills that area exactly; above it the canvas scrolls, below it
- * the canvas is centred in the spare space.
+ * Width the canvas is laid out at so that, once zoomed, it fills the area between the Builder
+ * Components and Properties panels with no horizontal scrollbar.
  */
-export const getCanvasLayoutWidth = (availableWidth: number): string =>
-  `${getCanvasLayoutSize(availableWidth)}px`;
+export const getCanvasLayoutWidth = (availableWidth: number, zoom: number): string =>
+  `${getCanvasLayoutSize(availableWidth, zoom)}px`;
 
 const VH_VALUE_REGEX = /^\s*(\d+(?:\.\d+)?)\s*vh\s*$/i;
 
@@ -149,19 +145,18 @@ export const canvasRelativeVh = (value: string | number): string | number => {
 
 /**
  * The length of one `vh` on the canvas, in the canvas's own (pre-zoom) coordinate space, for the
- * `CANVAS_VH_VAR` custom property.
+ * `CANVAS_VH_VAR` custom property. Two corrections over a plain `availableHeight / 100`:
  *
- * Like the width, this is independent of zoom - `100vh` is one canvas tall, and magnifies with
- * everything else rather than reflowing. The one correction over a plain `availableHeight / 100` is
- * subtracting the canvas's own vertical padding, because that padding is inside the height the
- * canvas is laid out to (`box-sizing: border-box`). A child sized to the full pane height would
- * otherwise push the padding past the pane edge - a small scrollbar instead of none.
+ *  - divide by the zoom factor, so `100vh` renders `availableHeight` tall at any zoom;
+ *  - subtract the canvas's own vertical padding, because that padding is inside the height the
+ *    canvas is laid out to (`box-sizing: border-box`). A child sized to the full pane height would
+ *    otherwise push the padding past the pane edge - a small scrollbar instead of a large one.
  *
  * `getCanvasLayoutSize` has already floored, so this divides a whole number of pixels and `100vh`
- * multiplies back to exactly that - no rounding drift to push the canvas past its pane at 100%.
+ * multiplies back to exactly that - no rounding drift to push the canvas past its pane.
  */
-export const getCanvasVhUnit = (availableHeight: number, verticalPadding: number): string => {
-  const viewportHeight = Math.max(0, getCanvasLayoutSize(availableHeight) - verticalPadding);
+export const getCanvasVhUnit = (availableHeight: number, zoom: number, verticalPadding: number): string => {
+  const viewportHeight = Math.max(0, getCanvasLayoutSize(availableHeight, zoom) - verticalPadding);
   return `${viewportHeight / 100}px`;
 };
 

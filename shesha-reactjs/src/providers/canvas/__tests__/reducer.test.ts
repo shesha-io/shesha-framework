@@ -9,6 +9,7 @@ import {
 import { CANVAS_CONTEXT_INITIAL_STATE, DeviceTypes, ICanvasStateContext } from '../contexts';
 import { getInitialState } from '../index';
 import { reducer } from '../reducer';
+import { getCanvasLayoutWidth } from '../utils';
 
 const state = (overrides: Partial<ICanvasStateContext> = {}): ICanvasStateContext => ({
   ...CANVAS_CONTEXT_INITIAL_STATE,
@@ -25,6 +26,16 @@ const canvasMode = (overrides: Partial<ICanvasStateContext> = {}): ICanvasStateC
     activeDevice: 'desktop',
     ...overrides,
   });
+
+/**
+ * What SidebarContainer reports: the layout width is the pane divided by the zoom factor, the pane
+ * width is the pane itself. Built through the real helper so these tests break if the two ever stop
+ * being different values - which is the whole reason the device is read off the second one.
+ */
+const measured = (paneWidth: number, zoom = 100) => setAvailableCanvasWidthAction({
+  width: getCanvasLayoutWidth(paneWidth, zoom),
+  paneWidth,
+});
 
 describe('getInitialState - device restored from storage', () => {
   const restored = (designerWidth: string, autoWidth = false): ICanvasStateContext =>
@@ -98,15 +109,37 @@ describe('canvas reducer - device selection', () => {
       expect(s.activeDevice).toBe('mobile');
 
       // 3. The measurement arrives from SidebarContainer's ResizeObserver
-      s = reducer(s, setAvailableCanvasWidthAction('1900px'));
+      s = reducer(s, measured(1900));
       expect(s.designerWidth).toBe('1900px');
       expect(s.designerDevice).toBe('desktop');
       expect(s.activeDevice).toBe('desktop');
     });
 
+    // The reason the pane width is carried separately. The canvas is laid out at pane/zoom, so in a
+    // 1115px pane the layout width is 557px at 200% and 278px at 400% - both under the mobile
+    // breakpoint. Reading the device off the layout width would mean zooming in to inspect a
+    // desktop form silently switched every component to its mobile settings block.
+    it.each([75, 100, 125, 155, 200, 300, 400])('keeps a 1115px pane on desktop at %i%% zoom', (zoom) => {
+      const s = reducer(canvasMode({ designerWidth: 'stale' }), measured(1115, zoom));
+
+      expect(s.designerDevice).toBe('desktop');
+      expect(s.activeDevice).toBe('desktop');
+      // The layout width still tracks the zoom - it is only the device that does not.
+      expect(s.designerWidth).toBe(getCanvasLayoutWidth(1115, zoom));
+    });
+
+    // Same pane, same zoom, device read off the layout width instead: the bug the split prevents.
+    it('would have flipped to mobile without the pane width', () => {
+      const layoutWidth = getCanvasLayoutWidth(1115, 200);
+      expect(layoutWidth).toBe('557px');
+
+      const s = reducer(canvasMode(), setAvailableCanvasWidthAction({ width: layoutWidth }));
+      expect(s.designerDevice).toBe('mobile');
+    });
+
     it('is ignored while a device preset is pinned', () => {
       const pinned = reducer(state(), setCanvasWidthAction({ width: 375, deviceType: 'mobile' }));
-      const after = reducer(pinned, setAvailableCanvasWidthAction('1900px'));
+      const after = reducer(pinned, measured(1900));
 
       // Identity, not just equality: a stale measurement must not re-render the canvas either.
       expect(after).toBe(pinned);
@@ -116,7 +149,7 @@ describe('canvas reducer - device selection', () => {
 
     it('is a no-op when the width and both devices already match', () => {
       const before = canvasMode();
-      expect(reducer(before, setAvailableCanvasWidthAction('1900px'))).toBe(before);
+      expect(reducer(before, measured(1900))).toBe(before);
     });
 
     // The old guard returned early on `designerWidth === payload` alone, so a device that had gone
@@ -126,7 +159,7 @@ describe('canvas reducer - device selection', () => {
       expect(drifted.designerWidth).toBe('1900px');
       expect(drifted.designerDevice).toBe('mobile');
 
-      const fixed = reducer(drifted, setAvailableCanvasWidthAction('1900px'));
+      const fixed = reducer(drifted, measured(1900));
       expect(fixed.designerDevice).toBe('desktop');
       expect(fixed.activeDevice).toBe('desktop');
     });
@@ -135,7 +168,7 @@ describe('canvas reducer - device selection', () => {
       // A wide canvas in a narrow browser window: the canvas is desktop, but the screen is not.
       const s = reducer(
         canvasMode({ physicalDevice: 'mobile', designerDevice: 'mobile', activeDevice: 'mobile', designerWidth: '375px' }),
-        setAvailableCanvasWidthAction('1900px'),
+        measured(1900),
       );
 
       expect(s.designerDevice).toBe('desktop');
@@ -143,23 +176,32 @@ describe('canvas reducer - device selection', () => {
     });
 
     // Boundaries of getDeviceTypeByWidth: > 724 desktop, > 599 tablet, else mobile.
-    it.each<[string, DeviceTypes]>([
-      ['1px', 'mobile'],
-      ['375px', 'mobile'],
-      ['599px', 'mobile'],
-      ['600px', 'tablet'],
-      ['724px', 'tablet'],
-      ['725px', 'desktop'],
-      ['1900px', 'desktop'],
-    ])('maps a measured %s canvas to %s', (payload, expected) => {
-      const s = reducer(canvasMode({ designerWidth: 'stale' }), setAvailableCanvasWidthAction(payload));
+    it.each<[number, DeviceTypes]>([
+      [1, 'mobile'],
+      [375, 'mobile'],
+      [599, 'mobile'],
+      [600, 'tablet'],
+      [724, 'tablet'],
+      [725, 'desktop'],
+      [1900, 'desktop'],
+    ])('maps a %ipx pane to %s', (paneWidth, expected) => {
+      const s = reducer(canvasMode({ designerWidth: 'stale' }), measured(paneWidth));
       expect(s.designerDevice).toBe(expected);
-      expect(s.designerWidth).toBe(payload);
+      expect(s.designerWidth).toBe(`${paneWidth}px`);
     });
 
-    it.each(['not-a-width', '', '0px', '-10px'])('ignores the unusable measurement %j', (payload) => {
+    it.each([0, -10, Number.NaN])('ignores the unusable pane width %j', (paneWidth) => {
       const before = canvasMode({ designerDevice: 'tablet', activeDevice: 'tablet' });
-      const after = reducer(before, setAvailableCanvasWidthAction(payload));
+      const after = reducer(before, setAvailableCanvasWidthAction({ width: '1000px', paneWidth }));
+
+      expect(after).toBe(before);
+      expect(after.designerWidth).toBe('1900px');
+      expect(after.designerDevice).toBe('tablet');
+    });
+
+    it.each(['not-a-width', '', '0px', '-10px'])('ignores the unusable width %j when no pane width is given', (width) => {
+      const before = canvasMode({ designerDevice: 'tablet', activeDevice: 'tablet' });
+      const after = reducer(before, setAvailableCanvasWidthAction({ width }));
 
       expect(after).toBe(before);
       expect(after.designerWidth).toBe('1900px');
@@ -184,7 +226,7 @@ describe('canvas reducer - device selection', () => {
       expect(s.activeDevice).toBe('mobile');
 
       s = reducer(s, setCanvasAutoWidthAction(true));
-      s = reducer(s, setAvailableCanvasWidthAction('1900px'));
+      s = reducer(s, measured(1900));
       expect(s.activeDevice).toBe('desktop');
 
       s = reducer(s, setCanvasWidthAction({ width: 768, deviceType: 'tablet' }));

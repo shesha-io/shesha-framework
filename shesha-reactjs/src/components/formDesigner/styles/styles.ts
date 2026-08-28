@@ -1,5 +1,4 @@
 import { getFormDesignerBackgroundSvg } from '@/components/sidebarContainer/styles/svg/dropHint';
-import { CANVAS_VH_VAR } from '@/providers/canvas/options';
 import { createStyles, sheshaStyles } from '@/styles';
 import { LAYOUT_CONSTANTS } from '../../../shesha-constants';
 
@@ -403,11 +402,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             > div {
              height: 100%;
                 > div:not(.sha-drop-hint):not(.sha-drop-hint-container) {
-                    /* Measured against the canvas, not the browser window: a raw 100vh is the
-                       window height whatever the zoom, so above about 87 percent it outgrows the
-                       canvas and leaves a permanent vertical scrollbar. The fallback keeps this an
-                       ordinary 100vh outside a designer canvas, where the variable is unset. */
-                    min-height: calc(100 * var(${CANVAS_VH_VAR}, 1vh));
+                    /* Fill the canvas, not the browser window. The work area above is
+                       calc(100vh - header - toolbar - sidebar-btn), so a 100vh minimum here is
+                       always taller than the box it sits in by exactly those three chunks - a
+                       vertical scrollbar on the canvas pane at every zoom level, on every form,
+                       empty or not. A percentage resolves against that definite height instead. */
+                    min-height: 100%;
                     height: 100%;
                 }
 

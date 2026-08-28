@@ -30,8 +30,14 @@ export interface ICanvasActionsContext {
   setCanvasZoom: (zoom: number) => void;
   setCanvasAutoZoom: (value?: boolean) => void;
   setCanvasAutoWidth: (value?: boolean) => void;
-  /** Reports the width currently available to the canvas. Ignored unless `autoWidth` is on. */
-  setAvailableCanvasWidth: (width: string) => void;
+  /**
+   * Reports the width currently available to the canvas. Ignored unless `autoWidth` is on.
+   *
+   * `paneWidth` is the unzoomed width of the pane, and is what picks the device - pass it whenever
+   * `width` has been divided by the zoom factor. Omitting it falls back to reading the device off
+   * `width`, which is only correct where the two are the same value.
+   */
+  setAvailableCanvasWidth: (width: string, paneWidth?: number) => void;
   setConfigTreePanelSize: (size: number) => void;
   setViewType: (viewType: IViewType) => void;
   /* NEW_ACTION_ACTION_DECLARATION_GOES_HERE */

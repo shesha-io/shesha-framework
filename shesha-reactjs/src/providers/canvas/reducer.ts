@@ -52,41 +52,45 @@ export const reducer = createReducer(CANVAS_CONTEXT_INITIAL_STATE, (builder) => 
       };
     })
     .addCase(setAvailableCanvasWidthAction, (state, { payload }) => {
+      const { width, paneWidth } = payload;
+
       // The measured width is only meaningful for the responsive "Canvas" preset. Ignoring it
       // otherwise keeps a stale measurement from overwriting a pinned device width.
       if (!state.autoWidth)
         return state;
 
-      // A payload the canvas cannot be laid out at is not a measurement. Ignoring it beats pinning
-      // the canvas to an unusable width, which would also take `calculateAutoZoom` to NaN.
-      const measured = parseInt(payload, 10);
+      // The device comes off the pane, never off `width`. In "Canvas" mode `width` is the pane
+      // divided by the zoom factor, so reading the device from it would make zoom change the
+      // device: in a 1115px pane, 155% lays the canvas out at 719px and 200% at 557px, tripping the
+      // tablet and mobile breakpoints. Zooming in to inspect a desktop form would silently switch
+      // every component to its mobile settings block. The pane does not move with zoom, so neither
+      // does the device.
+      const measured = paneWidth ?? parseInt(width, 10);
+
+      // A value the canvas cannot be laid out at is not a measurement, and `getDeviceTypeByWidth`
+      // reads NaN as 'mobile' - so bail rather than let a bad measurement pin every component in
+      // the form to its mobile settings.
       if (!Number.isFinite(measured) || measured <= 0)
         return state;
 
-      // The measurement is the width the canvas is laid out at, so it picks the device the same way
-      // a preset width does. Without this, switching from a device preset to "Canvas" leaves
-      // `designerDevice`/`activeDevice` pinned to the preset - a 1900px canvas still rendering every
-      // component from its `mobile` settings block.
+      // Without this the device is left wherever the last preset put it: switching from a device
+      // preset to "Canvas" keeps `designerDevice`/`activeDevice` pinned to the preset, so a 1900px
+      // canvas still renders every component from its `mobile` settings block - `activeDevice` is
+      // what `getDeviceModel` selects that block with.
       //
-      // Two notes on deriving it here:
-      //
-      //  - The measurement is the pane width and does not move with zoom, so neither does the
-      //    device: zoom magnifies the canvas rather than reflowing it. (It used to be pane width
-      //    divided by zoom, which meant zooming in past ~190% silently flipped a desktop canvas to
-      //    mobile settings. See `getCanvasLayoutSize`.)
-      //  - A `designerDevice` set from outside (a form script through `contextOnChangeData`, or
-      //    `setDesignerDevice` on the public canvas API) does not survive the next measurement in
-      //    this mode. In "Canvas" the device is a function of the pane, so there is nothing for an
-      //    override to mean; pin a device preset instead.
+      // One consequence: a `designerDevice` set from outside (a form script through
+      // `contextOnChangeData`, or `setDesignerDevice` on the public canvas API) does not survive
+      // the next measurement in this mode. In "Canvas" the device is a function of the pane, so
+      // there is nothing for an override to mean; pin a device preset instead.
       const designerDevice = getDeviceTypeByWidth(measured);
       const activeDevice = getSmallerDevice(designerDevice, state.physicalDevice ?? "desktop");
 
-      if (state.designerWidth === payload && state.designerDevice === designerDevice && state.activeDevice === activeDevice)
+      if (state.designerWidth === width && state.designerDevice === designerDevice && state.activeDevice === activeDevice)
         return state;
 
       return {
         ...state,
-        designerWidth: payload,
+        designerWidth: width,
         designerDevice,
         activeDevice,
       };
