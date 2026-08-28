@@ -1,5 +1,6 @@
 import { CSSProperties, FC } from 'react';
 import { IconType, StoredFilesRendererBase } from '@/components/';
+import { IStoredFilesClassNames } from '@/components/storedFilesRendererBase';
 import { IInputStyles, IStyleValue, useAttachmentsEditorActions, useAttachmentsEditorState } from '@/providers';
 import { LayoutType, ListType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { FormIdentifier } from '@/providers/form/models';
@@ -33,11 +34,21 @@ export interface ICustomFileProps extends IInputStyles {
   borderRadius?: number | undefined;
   hideFileName?: boolean | undefined;
   container?: IStyleValue | undefined;
+  /** Style set for the thumbnail image box. Read directly for sizes CSS cannot supply. */
+  thumbnailStyle?: IStyleValue | undefined;
+  /** The nested `thumbnailStyle.style` script already evaluated to CSS. */
+  thumbnailStyleCss?: CSSProperties | undefined;
   primaryColor?: string | undefined;
   enableStyleOnReadonly?: boolean | undefined;
   downloadedFileStyles?: CSSProperties | undefined;
   styleDownloadedFiles?: boolean | undefined;
   downloadedIcon?: IconType | undefined;
+  /**
+   * Class names for the parts of the list that the component styles from its Appearance tab.
+   * The popup ones matter most: antd portals popovers to the body, so no descendant selector from
+   * the list's own class can reach them and each has to be handed its class explicitly.
+   */
+  classNames?: IStoredFilesClassNames | undefined;
 }
 
 export const CustomFile: FC<ICustomFileProps> = (props) => {
@@ -74,9 +85,12 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
       extraFormId={props.extraFormId}
       extraFormType={props.extraFormType}
 
+      thumbnailStyle={props.thumbnailStyle}
+      thumbnailStyleCss={props.thumbnailStyleCss}
       downloadedFileStyles={props.downloadedFileStyles}
       styleDownloadedFiles={props.styleDownloadedFiles}
       downloadedIcon={props.downloadedIcon}
+      classNames={props.classNames}
 
       fileList={files}
       uploadFile={uploadFile}

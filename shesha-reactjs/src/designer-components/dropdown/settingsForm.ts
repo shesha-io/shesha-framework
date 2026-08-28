@@ -151,6 +151,9 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                         .stdMarginPaddingPanel('tag.stylingBoxJson')
                         .stdCustomStylePanel('tag.style'),
                       true,
+                      /* Plain text hands antd the raw label, so nothing in this panel reaches the
+                         DOM — hidden rather than left inert, like Show Item Name / Show Icon. */
+                      tagsVisibleJs,
                       )
                       .toJson()],
                 })

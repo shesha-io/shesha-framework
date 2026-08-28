@@ -1,6 +1,7 @@
 import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
 import { DataTypes, SettingsFormMarkupFactory } from '@/interfaces';
+import { ISettingsInputBase } from '../settingsInput/interfaces';
 import { ALL_INPUT_EVENTS_WITHOUT_DOUBLE_CLICK } from '../_common/events';
 
 const urlVisibleJs = "return getSettingValue(data?.dataSourceType) === 'url';";
@@ -9,10 +10,12 @@ const entityFilterVisibleJs = "return getSettingValue(data?.dataSourceType) === 
 const customValueFormatVisibleJs = "return getSettingValue(data?.valueFormat) === 'custom';";
 const simpleValueFormatVisibleJs = "return getSettingValue(data?.valueFormat) === 'simple';";
 const keyPropNameVisibleJs = "return getSettingValue(data?.valueFormat) !== 'entityReference';";
-const quickviewVisibleJs = "return getSettingValue(data?.quickviewEnabled) === true && getSettingValue(data?.dataSourceType) !== 'url';";
+const quickviewVisibleJs = "return getSettingValue(data?.quickviewEnabled) === true;";
 
 /* Value Format offers Entity reference only for an entities list; a URL source has no entity to
-   reference. Kept as code so switching the data source also corrects an already-saved value. */
+   reference. An already-saved `entityReference` is corrected by the Data Source Type handler
+   below, not from here: these expressions are re-evaluated on every render, so writing to the
+   form from one re-renders the panel and re-runs the expression, looping forever. */
 const valueFormatOptionsJs = `
 if (getSettingValue(data?.dataSourceType) === 'entitiesList') {
     return [
@@ -20,9 +23,6 @@ if (getSettingValue(data?.dataSourceType) === 'entitiesList') {
         { "label": "Entity reference", "value": "entityReference", "id": "2" },
         { "label": "Custom", "value": "custom", "id": "3" }
     ];
-}
-if (getSettingValue(data?.valueFormat) === 'entityReference') {
-    setTimeout(() => form.setFieldValue('valueFormat', 'simple'), 0);
 }
 return [
     { "label": "Simple ID", "value": "simple", "id": "1" },
@@ -38,8 +38,6 @@ if (getSettingValue(data?.dataSourceType) === 'entitiesList') {
 }
 const url = getSettingValue(data?.dataSourceUrl);
 if (!url) {
-    // Defer setState to avoid updating during render
-    setTimeout(() => form.setFieldValue('displayPropName', undefined), 0);
     return undefined;
 }
 const dynamicMatch = url.match(/^\\/api\\/dynamic\\/([^\\/]+)\\/([^\\/]+)\\//i);
@@ -50,6 +48,28 @@ if (dynamicMatch) {
 return getSettingValue(data?.entityType);`;
 
 const entityTypeModelType = { _code: 'return getSettingValue(data?.entityType);', _mode: 'code' as const };
+
+type ChangeSettingHandler = NonNullable<ISettingsInputBase['onChangeSetting']>;
+type ChangeSettingData = Parameters<ChangeSettingHandler>[1];
+
+const hasEntityReferenceFormat = (data: ChangeSettingData): boolean =>
+  typeof data === 'object' && data !== null && 'valueFormat' in data && data.valueFormat === 'entityReference';
+
+/* The display property is derived from the entity type (entities list) or from the source URL, so it
+   is stale as soon as either changes. Entity reference is only offered for an entities list, so a
+   saved one is downgraded when the source stops being a list. These corrections live here rather
+   than in the expressions above because those are re-evaluated on every render: writing to the form
+   from one re-renders the panel and re-runs the expression, looping forever. */
+const onDataSourceTypeChange: ChangeSettingHandler = (value, data, setFormData) => {
+  const downgradeValueFormat = value !== 'entitiesList' && hasEntityReferenceFormat(data);
+  setFormData({
+    values: { displayPropName: undefined, ...(downgradeValueFormat ? { valueFormat: 'simple' } : {}) },
+    mergeValues: true,
+  });
+};
+
+const onEntityTypeChange: ChangeSettingHandler = (_value, _data, setFormData) =>
+  setFormData({ values: { displayPropName: undefined }, mergeValues: true });
 
 export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter }) => {
   const searchableTabsId = nanoid();
@@ -87,14 +107,14 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                 .addSettingsInput({ inputType: 'dropdown', propertyName: 'mode', label: 'Selection Mode', size: 'small', jsSetting: true, dropdownOptions: modeOptions })
                 .addSettingsInput({ inputType: 'switch', propertyName: 'disableSearch', label: 'Disable Search', size: 'small', layout: 'horizontal', jsSetting: true })
                 .stdCollapsiblePanel('Data', (fb) => fb
-                  .addSettingsInput({ inputType: 'dropdown', propertyName: 'dataSourceType', label: 'Data Source Type', size: 'small', jsSetting: true, dropdownOptions: dataSourceTypeOptions })
+                  .addSettingsInput({ inputType: 'dropdown', propertyName: 'dataSourceType', label: 'Data Source Type', size: 'small', jsSetting: true, dropdownOptions: dataSourceTypeOptions, onChangeSetting: onDataSourceTypeChange })
                   .addSettingsInput({ inputType: 'endpointsAutocomplete', propertyName: 'dataSourceUrl', label: 'Data Source URL', size: 'small', jsSetting: true, mode: 'url', httpVerb: 'get', isDynamic: false, visibleJs: urlVisibleJs })
                   .addSettingsInput({
                     inputType: 'labelValueEditor', propertyName: 'queryParams', label: 'Query Param',
                     labelName: 'param', labelTitle: 'Param', valueName: 'value', valueTitle: 'Value',
-                    mode: 'dialog', jsSetting: true, version: 2, visibleJs: urlVisibleJs, valueEditor: 'expression',
+                    mode: 'dialog', jsSetting: true, version: 2, visibleJs: urlVisibleJs,
                   })
-                  .addSettingsInput({ inputType: 'entityTypeAutocomplete', propertyName: 'entityType', label: 'Entity Type', labelAlign: 'right', jsSetting: true, visibleJs: entitiesListVisibleJs })
+                  .addSettingsInput({ inputType: 'entityTypeAutocomplete', propertyName: 'entityType', label: 'Entity Type', labelAlign: 'right', jsSetting: true, visibleJs: entitiesListVisibleJs, onChangeSetting: onEntityTypeChange })
                   .addSettingsInput({
                     inputType: 'queryBuilder', propertyName: 'filter', label: 'Entity Filter', isDynamic: true, validate: {},
                     modelType: entityTypeModelType,
@@ -176,7 +196,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                     visibleJs: simpleValueFormatVisibleJs,
                   }))
                 .stdCollapsiblePanel('Quickview', (fb) => fb
-                  .addSettingsInput({ inputType: 'switch', propertyName: 'quickviewEnabled', label: 'Use Quickview', size: 'small', layout: 'horizontal', jsSetting: true, visibleJs: entitiesListVisibleJs })
+                  .addSettingsInput({ inputType: 'switch', propertyName: 'quickviewEnabled', label: 'Use Quickview', size: 'small', layout: 'horizontal', jsSetting: true })
                   .addSettingsInput({ inputType: 'formAutocomplete', propertyName: 'quickviewFormPath', label: 'Form Path', size: 'small', validate: { required: false }, visibleJs: quickviewVisibleJs })
                   .addSettingsInput({ inputType: 'endpointsAutocomplete', propertyName: 'quickviewGetEntityUrl', label: 'Get Entity URL', size: 'small', version: 5, visibleJs: quickviewVisibleJs })
                   .addSettingsInput({
@@ -190,7 +210,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                     inputType: 'textField', propertyName: 'quickviewWidth', label: 'Width', size: 'small', icon: 'widthIcon', version: 5,
                     tooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
                     visibleJs: quickviewVisibleJs,
-                  }))
+                  }), false, entitiesListVisibleJs)
                 .stdCollapsiblePanel('Validations', (fb) => fb
                   .addSettingsInput({ inputType: 'switch', propertyName: 'validate.required', label: 'Required', size: 'small', layout: 'horizontal', jsSetting: true })
                   .addSettingsInputRow({

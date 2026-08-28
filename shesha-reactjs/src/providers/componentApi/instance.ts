@@ -1,5 +1,6 @@
 import { toCamelCase } from "@/utils/string";
 import { IComponentApi, IComponentApiDescription, ComponentApiProperty } from "./model";
+import { isDefined } from "@/utils";
 
 export class ComponentApiInstance implements IComponentApi {
   private parent?: IComponentApi | undefined;
@@ -10,22 +11,54 @@ export class ComponentApiInstance implements IComponentApi {
 
   private _components: Record<string, Record<string, unknown>> = {};
 
+  private onApiChange: (() => void) | undefined;
+
+
   public get components(): Record<string, Record<string, unknown>> {
     return this._components;
   }
 
   id: string;
 
-  constructor(id: string, parent?: IComponentApi) {
+  constructor(id: string, parent?: IComponentApi, onApiChange?: () => void) {
     this.id = id;
     this.parent = parent;
     this.nestedApis = new Map<string, IComponentApi>();
     this.componentApis = new Map<string, IComponentApiDescription>();
+    this.onApiChange = onApiChange;
     if (this.parent) this.parent.registerNestedApi(this);
+  }
+
+  updateParent(api: IComponentApi | undefined): void {
+    this.parent = api;
+    this.parent?.registerNestedApi(this);
+  }
+
+  dispose(): void {
+    // remove self from parent
+    this.parent?.unregisterNestedApi(this);
+    // re-route nested APIs to new parent
+    this.nestedApis.forEach((api) => api.updateParent(this.parent));
+  }
+
+  /** refresh all APIs, trigger re-render all components */
+  refreshApi(ids?: string[] | undefined): void {
+    // skip refreshing own API to avoid recurively refresh
+    if (ids?.includes(this.id) ?? false) return;
+    this.onApiChange?.();
+    if (!isDefined(ids))
+      ids = [];
+    ids.push(this.id);
+    this.parent?.refreshApi(ids);
+    this.nestedApis.forEach((api) => api.refreshApi(ids));
   }
 
   registerNestedApi(api: IComponentApi): void {
     this.nestedApis.set(api.id, api);
+  }
+
+  unregisterNestedApi(api: IComponentApi): void {
+    this.nestedApis.delete(api.id);
   }
 
   getComponents(): IComponentApiDescription[] {

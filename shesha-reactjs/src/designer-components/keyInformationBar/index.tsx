@@ -1,7 +1,7 @@
 import KeyInformationBar from '@/components/keyInformationBar';
 import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import ParentProvider from '@/providers/parentProvider/index';
 import { nanoid } from '@/utils/uuid';
 import { BorderLeftOutlined } from '@ant-design/icons';
@@ -76,7 +76,7 @@ const KeyInformationBarComponent: KeyInformationBarComponentDefinition = {
     return tabsModel;
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   customContainerNames: ['columns'],
   previewConfiguration: {
     version: 'latest',

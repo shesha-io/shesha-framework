@@ -3,7 +3,7 @@ import { DynamicActionsConfigurator } from './configurator';
 import { IDynamicActionsConfiguratorComponentProps } from './interfaces';
 import { IToolboxComponent } from '@/interfaces';
 import { ThunderboltOutlined } from '@ant-design/icons';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { IDynamicActionsConfiguration } from './models';
 
@@ -25,5 +25,5 @@ export const DynamicActionsConfiguratorComponent: IToolboxComponent<IDynamicActi
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
 };

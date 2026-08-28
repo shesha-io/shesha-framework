@@ -74,7 +74,9 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
   const componentDef = useMemo((): IToolboxComponent | undefined => {
     if (isNullOrWhiteSpace(componentType)) return undefined;
     const componentDefinitions = getComponentDefinitions();
-    return componentDefinitions.get(componentType);
+    const component = componentDefinitions.get(componentType);
+
+    return component;
   }, [componentType]);
 
   const defaultStyles = useMemo(() => {

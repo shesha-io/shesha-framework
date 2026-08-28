@@ -43,6 +43,26 @@ export const ALL_INPUT_EVENTS_WITHOUT_DOUBLE_CLICK: readonly StandardEventHandle
 export const ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK: readonly StandardEventHandlerWithoutChange[] =
   ALL_INPUT_EVENTS_WITHOUT_CHANGE.filter((event): event is StandardEventHandlerWithoutChange => event !== 'onDoubleClick');
 
+/**
+ * `ALL_INPUT_EVENTS_WITHOUT_DOUBLE_CLICK` minus the keyboard events — for components with no text
+ * entry of their own, where a key handler would have no keystrokes to report. The file components
+ * are the current users: files are chosen through a file dialog or dropped on the component, so
+ * nothing is typed into them.
+ *
+ * Pair with `FILE_EVENTS_WITHOUT_CHANGE` at runtime so the two lists stay in step (see the note on
+ * `ALL_INPUT_EVENTS`).
+ */
+export const FILE_EVENTS: readonly StandardEventHandler[] =
+  ALL_INPUT_EVENTS_WITHOUT_DOUBLE_CLICK.filter(
+    (event): event is StandardEventHandler => event !== 'onKeyDown' && event !== 'onKeyUp',
+  );
+
+/** `FILE_EVENTS` minus `onChange` — the runtime set for those components. */
+export const FILE_EVENTS_WITHOUT_CHANGE: readonly StandardEventHandlerWithoutChange[] =
+  ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK.filter(
+    (event): event is StandardEventHandlerWithoutChange => event !== 'onKeyDown' && event !== 'onKeyUp',
+  );
+
 interface EventConfig {
   event: StandardEventHandler;
   propertyName: CustomEventHandler;

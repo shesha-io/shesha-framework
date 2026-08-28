@@ -4,7 +4,7 @@ import PhoneInput, { PhoneNumber as IAntdPhoneNumber } from 'antd-phone-input';
 import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { executeScriptSync } from '@/providers/form/utils/scripts';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly, migrateHiddenToVisible } from '@/designer-components/_common-migrations/migrateSettings';
@@ -241,7 +241,7 @@ const PhoneNumberComponent: PhoneNumberComponentDefinition = {
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   getExtraValidationRules: (model) => [
     {
       validator: (_rule, value: PhoneNumberValue) => {

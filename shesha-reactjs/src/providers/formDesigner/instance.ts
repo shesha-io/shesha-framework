@@ -32,6 +32,7 @@ import {
   IValidationResultsPayload,
   IFormDesignerInstance,
   IUpdateChildComponentsPayload,
+  VALIDATABLE_ITEM_TYPES,
 } from "./contexts";
 import { BaseHistoryItem, FormDesignerSubscription, FormDesignerSubscriptionType, IComponentSettingsEditorsCache } from "./models";
 import { IUndoRedoManager, UndoRedoManager } from "./undoRedoManager";
@@ -524,30 +525,36 @@ export class FormDesignerInstance implements IFormDesignerInstance {
   };
 
   validateComponentAsync = async <TModel extends IConfigurableFormComponent = IConfigurableFormComponent>(component: TModel): Promise<void> => {
-    const toolboxComponent = this.getToolboxComponent(component.type);
-
+    const toolboxComponent = this.getToolboxComponentOrUndefined(component.type);
     const validationErrors: IAsyncValidationError[] = [];
-    if (isDefined(toolboxComponent.validateModel)) {
-      toolboxComponent.validateModel(component, (propertyName, error) => {
-        validationErrors.push({ field: propertyName, message: error });
-      });
-    }
+    if (isDefined(toolboxComponent)) {
+      if (isDefined(toolboxComponent.validateModel)) {
+        toolboxComponent.validateModel(component, (propertyName, error) => {
+          validationErrors.push({ field: propertyName, message: error });
+        });
+      }
 
-    if (isDefined(toolboxComponent.validateSettings)) {
-      try {
-        await toolboxComponent.validateSettings(component);
-      } catch (error: unknown) {
-        if (isValidationError(error)) {
-          error.errors.forEach((fieldError) => {
-            validationErrors.push({ field: fieldError.field ?? "", message: fieldError.message ?? "Unknown error" });
-          });
-        } else {
-          console.error('Unknown error ocurred while validating settings', error);
+      if (isDefined(toolboxComponent.validateSettings)) {
+        try {
+          await toolboxComponent.validateSettings(component);
+        } catch (error: unknown) {
+          if (isValidationError(error)) {
+            error.errors.forEach((fieldError) => {
+              validationErrors.push({ field: fieldError.field ?? "", message: fieldError.message ?? "Unknown error" });
+            });
+          } else {
+            console.error('Unknown error ocurred while validating settings', error);
+          }
         }
       }
-    }
+    } else
+      validationErrors.push({
+        message: "Unknown component type",
+        field: "",
+      });
 
-    this.updateValidationResults({ type: "component", componentId: component.id, validationErrors: validationErrors });
+
+    this.updateValidationResults({ type: VALIDATABLE_ITEM_TYPES.COMPONENT, componentId: component.id, validationErrors: validationErrors });
   };
 
   validateAllComponentsAsync = async (): Promise<void> => {
@@ -583,7 +590,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
         console.error('Unknown error ocurred while validating settings', error);
       }
     }
-    this.updateValidationResults({ type: "form-settings", validationErrors: validationErrors });
+    this.updateValidationResults({ type: VALIDATABLE_ITEM_TYPES.FORM_SETTINGS, validationErrors: validationErrors });
   };
 
   validateFormAsync = async (): Promise<void> => {

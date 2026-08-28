@@ -3,7 +3,7 @@ import { migrateFormApi } from '@/designer-components/_common-migrations/migrate
 import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { migratePrevStyles } from '@/designer-components/_common-migrations/migrateStyles';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { ControlOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
@@ -33,7 +33,7 @@ const PagerComponent: PagerComponentDefinition = {
     .add<IPagerComponentProps>(5, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
 
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
 };
 
 export default PagerComponent;

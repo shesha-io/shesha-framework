@@ -4,94 +4,11 @@ import { fontTypes, fontWeightsOptions, textAlignOptions } from '../../_settings
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../../_settings/utils/background/utils';
 import { SettingsFormMarkupFactory } from "@/interfaces";
 
-const NEW_ROW_EXPOSED_VARIABLES = [
-  {
-    id: nanoid(),
-    name: 'formData',
-    description: 'Form values',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'globalState',
-    description: 'The global state of the application',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'http',
-    description: 'axios instance used to make http requests',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'moment',
-    description: 'The moment.js object',
-    type: 'object',
-  },
-].map((item) => JSON.stringify(item));
-
-const ROW_SAVE_EXPOSED_VARIABLES = [
-  {
-    id: nanoid(),
-    name: 'data',
-    description: 'Current row data',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'formData',
-    description: 'Form values',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'globalState',
-    description: 'The global state of the application',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'http',
-    description: 'axios instance used to make http requests',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'moment',
-    description: 'The moment.js object',
-    type: 'object',
-  },
-].map((item) => JSON.stringify(item));
-
-const ENABLE_CRUD_EXPOSED_VARIABLES = [
-  {
-    id: nanoid(),
-    name: 'formData',
-    description: 'Form values',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'globalState',
-    description: 'The global state of the application',
-    type: 'object',
-  },
-  {
-    id: nanoid(),
-    name: 'moment',
-    description: 'The moment.js object',
-    type: 'object',
-  },
-].map((item) => JSON.stringify(item));
-
 export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
   const commonTabId = nanoid();
-  const crudTabId = nanoid();
   const eventsTabId = nanoid();
   const appearanceTabId = nanoid();
-  const securityTabId = nanoid();
   const styleRouterId = nanoid();
 
   return {
@@ -119,37 +36,8 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   validate: { required: true },
                   jsSetting: false,
                 })
-                .addSettingsInputRow({
-                  id: nanoid(),
-                  parentId: commonTabId,
-                  inputs: [
-                    {
-                      type: 'editModeSelector',
-                      id: nanoid(),
-                      propertyName: 'editMode',
-                      label: 'Edit Mode',
-                      size: 'small',
-                      jsSetting: true,
-                    },
-                    {
-                      type: 'switch',
-                      id: nanoid(),
-                      propertyName: 'hidden',
-                      label: 'Hide',
-                      jsSetting: true,
-                      layout: 'horizontal',
-                    },
-                  ],
-                })
-                .toJson(),
-            ],
-          },
-          {
-            key: 'data',
-            title: 'Data',
-            id: crudTabId,
-            components: [
-              ...fbf()
+                .stdVisibleEditableInputs('full')
+                .addSectionSeparator({ label: 'Table Settings', containerStylingBoxJson: { _type: 'styleBox', marginTop: '8px', marginBottom: '16px' } })
                 .addSettingsInputRow({
                   id: nanoid(),
                   inputs: [
@@ -206,7 +94,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   label: 'Can Edit Inline',
                   inputType: 'dropdown',
                   jsSetting: true,
-                  parentId: crudTabId,
+                  parentId: commonTabId,
                   dropdownOptions: [
                     { value: 'yes', label: 'Yes' },
                     { value: 'no', label: 'No' },
@@ -223,9 +111,8 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       propertyName: 'canEditInlineExpression',
                       label: 'Can Edit Inline Expression',
                       type: 'codeEditor',
-                      parentId: crudTabId,
+                      parentId: commonTabId,
                       description: 'Return true to enable inline editing and false to disable.',
-                      exposedVariables: ENABLE_CRUD_EXPOSED_VARIABLES,
                     },
                   ],
                 })
@@ -238,7 +125,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       propertyName: 'inlineEditMode',
                       label: 'Row Edit Mode',
                       type: 'dropdown',
-                      parentId: crudTabId,
+                      parentId: commonTabId,
                       dropdownOptions: [
                         { value: 'one-by-one', label: 'One by one' },
                         { value: 'all-at-once', label: 'All at once' },
@@ -255,7 +142,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       propertyName: 'inlineSaveMode',
                       label: 'Save Mode',
                       type: 'dropdown',
-                      parentId: crudTabId,
+                      parentId: commonTabId,
                       dropdownOptions: [
                         { value: 'auto', label: 'Auto' },
                         { value: 'manual', label: 'Manual' },
@@ -273,7 +160,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       propertyName: 'customUpdateUrl',
                       label: 'Custom Update URL',
                       type: 'endpointsAutocomplete',
-                      parentId: crudTabId,
+                      parentId: commonTabId,
                     },
                   ],
                 })
@@ -287,7 +174,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       label: 'Can Add Inline',
                       type: 'dropdown',
                       jsSetting: true,
-                      parentId: crudTabId,
+                      parentId: commonTabId,
                       dropdownOptions: [
                         { value: 'yes', label: 'Yes' },
                         { value: 'no', label: 'No' },
@@ -306,9 +193,8 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       propertyName: 'canAddInlineExpression',
                       label: 'Can Add Inline Expression',
                       type: 'codeEditor',
-                      parentId: crudTabId,
+                      parentId: commonTabId,
                       description: 'Return true to enable inline creation of new rows and false to disable.',
-                      exposedVariables: ENABLE_CRUD_EXPOSED_VARIABLES,
                     },
                   ],
                 })
@@ -321,7 +207,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       propertyName: 'newRowCapturePosition',
                       label: 'New Row Capture Position',
                       type: 'dropdown',
-                      parentId: crudTabId,
+                      parentId: commonTabId,
                       dropdownOptions: [
                         { value: 'top', label: 'Top' },
                         { value: 'bottom', label: 'Bottom' },
@@ -339,7 +225,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       propertyName: 'newRowInsertPosition',
                       label: 'New Row Insert Position',
                       type: 'dropdown',
-                      parentId: crudTabId,
+                      parentId: commonTabId,
                       dropdownOptions: [
                         { value: 'top', label: 'Top' },
                         { value: 'bottom', label: 'Bottom' },
@@ -356,7 +242,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       propertyName: 'customCreateUrl',
                       label: 'Custom Create URL',
                       type: 'endpointsAutocomplete',
-                      parentId: crudTabId,
+                      parentId: commonTabId,
                     },
                   ],
                 })
@@ -370,10 +256,9 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       propertyName: 'onNewRowInitialize',
                       label: 'New Row Init',
                       type: 'codeEditor',
-                      parentId: crudTabId,
+                      parentId: commonTabId,
                       tooltip: 'Allows configurators to specify logic to initialise the object bound to a new row.',
                       description: 'Specify logic to initialise the object bound to a new row. This handler should return an object or a Promise<object>.',
-                      exposedVariables: NEW_ROW_EXPOSED_VARIABLES,
                     },
                   ],
                 })
@@ -388,7 +273,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       type: 'codeEditor',
                       tooltip: 'Custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations). This handler should return an object or a Promise<object>.',
                       description: 'Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations).',
-                      exposedVariables: ROW_SAVE_EXPOSED_VARIABLES,
                       templateSettings: {
                         useAsyncDeclaration: true,
                         functionName: 'onRowSave',
@@ -401,7 +285,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   propertyName: 'canDeleteInline',
                   label: 'Can Delete Inline',
                   inputType: 'dropdown',
-                  parentId: crudTabId,
+                  parentId: commonTabId,
                   jsSetting: true,
                   dropdownOptions: [
                     { value: 'yes', label: 'Yes' },
@@ -420,9 +304,8 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       propertyName: 'canDeleteInlineExpression',
                       label: 'Can Delete Inline Expression',
                       type: 'codeEditor',
-                      parentId: crudTabId,
+                      parentId: commonTabId,
                       description: 'Return true to enable inline deletion and false to disable.',
-                      exposedVariables: ENABLE_CRUD_EXPOSED_VARIABLES,
                     },
                   ],
                 })
@@ -436,7 +319,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       propertyName: 'customDeleteUrl',
                       label: 'Custom Delete URL',
                       type: 'endpointsAutocomplete',
-                      parentId: crudTabId,
+                      parentId: commonTabId,
                     },
                   ],
                 })
@@ -1325,28 +1208,11 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 .toJson(),
             ],
           },
-          {
-            key: 'security',
-            title: 'Security',
-            id: securityTabId,
-            components: [
-              ...fbf()
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: 'permissions',
-                  label: 'Permissions',
-                  inputType: 'permissions',
-                  parentId: securityTabId,
-                  jsSetting: true,
-                  tooltip: 'Enter a list of permissions that should be associated with this component',
-                })
-                .toJson(),
-            ],
-          },
         ],
       })
       .toJson(),
     formSettings: {
+      isSettingsForm: true,
       colon: false,
       layout: 'vertical' as FormLayout,
       labelCol: { span: 24 },

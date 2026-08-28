@@ -1,6 +1,6 @@
 import { GroupOutlined } from '@ant-design/icons';
 import { IContainerComponentProps } from '@/interfaces';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { getSettings } from './settingsForm';
 import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { IConfigurableFormComponent } from '@/providers';
@@ -15,11 +15,11 @@ import { useStyles } from './styles';
 import { ContainerComponentDefinition, DISPLAY_TYPES, DisplayType, FLEX_WRAPS, FlexWrap, ICommonContainerPropsV0, IContainerComponentPropsV0, IMAGE_SOURCE_TYPES, ImageSourceType, JUSTIFY_CONTENTS, JustifyContent } from './interfaces';
 import { CONTAINER_DIRECTIONS, ContainerDirection } from '@/components/formDesigner/common/interfaces';
 import { isDefined } from '@/utils/nullables';
-import { useActualContextExecution } from '@/hooks';
 import { getComponentEvents } from '../_common/events';
 import { useEvents } from '@/components/formDesigner/components/eventsAndApiValueProcessor';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { getFullSizeWrapperDesignerStyle } from '@/components/formDesigner/utils/stylingUtils';
+import { useActualContextExecutionNoRefresh } from '@/hooks/formComponentHooks';
 
 const ContainerComponent: ContainerComponentDefinition = {
   allowInherit: true,
@@ -32,7 +32,8 @@ const ContainerComponent: ContainerComponentDefinition = {
   getWrapperStyle: (model) => getFullSizeWrapperDesignerStyle(model),
   Factory: ({ model }) => {
     const { styles, cx } = useStyles(model);
-    const wrappedStyleJson = useActualContextExecution(model.wrapperStyle, undefined, {});
+    // use ...NoRefresh to prevent unnecessary re-renders
+    const wrappedStyleJson = useActualContextExecutionNoRefresh(model.wrapperStyle, undefined, {});
     const handleEvent = useEvents<void>(model.componentName);
 
     return model.hidden === true ? null : (
@@ -49,7 +50,7 @@ const ContainerComponent: ContainerComponentDefinition = {
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   migrator: (m) => m
     .add<IContainerComponentPropsV0>(0, (prev) => ({
       ...prev,

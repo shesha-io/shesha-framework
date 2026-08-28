@@ -54,9 +54,10 @@ export interface IComponentUpdatePayload<TModel extends IConfigurableFormCompone
 export const VALIDATABLE_ITEM_TYPES = {
   COMPONENT: "component",
   FORM_SETTINGS: "form-settings",
-};
+} as const;
+export type ValidatableItemType = typeof VALIDATABLE_ITEM_TYPES[keyof typeof VALIDATABLE_ITEM_TYPES];
 
-export type IValidationResultsPayload = ({ type: 'component'; componentId: string } | { type: 'form-settings' }) & {
+export type IValidationResultsPayload = ({ type: typeof VALIDATABLE_ITEM_TYPES.COMPONENT; componentId: string } | { type: typeof VALIDATABLE_ITEM_TYPES.FORM_SETTINGS }) & {
   validationErrors: IAsyncValidationError[];
 };
 

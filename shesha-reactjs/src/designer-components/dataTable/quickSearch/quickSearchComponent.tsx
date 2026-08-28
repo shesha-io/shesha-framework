@@ -2,7 +2,7 @@ import { GlobalTableFilter } from '@/components/globalTableFilter';
 import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { SearchOutlined } from '@ant-design/icons';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { getSettings } from './tabbedSettingsForm';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
 import Search from 'antd/lib/input/Search';
@@ -48,7 +48,7 @@ const QuickSearchComponent: QuickSearchComponentDefinition = {
     .add<IQuickSearchComponentProps>(3, (prev, ctx) => ctx.isNew === true ? prev : { ...migratePrevStyles(prev, { size: 'small' }) })
     .add<IQuickSearchComponentProps>(4, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
 };
 
 export default QuickSearchComponent;

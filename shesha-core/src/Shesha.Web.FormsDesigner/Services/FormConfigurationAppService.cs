@@ -29,7 +29,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Web.FormsDesigner.Services
 {
-    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, "app:Configurator")]
+    [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, ShaPermissionNames.Application_Configurator)]
     public class FormConfigurationAppService : SheshaCrudServiceBase<FormConfiguration, FormConfigurationDto, Guid, FilteredPagedAndSortedResultRequestDto, CreateFormConfigurationRequest, UpdateFormConfigurationDto, GetFormByIdInput>
     {
         private readonly IRepository<ConfigurationItemFolder, Guid> _folderRepository;

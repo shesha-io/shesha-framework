@@ -1,10 +1,10 @@
 /* eslint @typescript-eslint/strict-boolean-expressions: "error" */
-import { Button, Dropdown, Input, MenuProps, Spin, Tooltip, Tree, TreeProps } from 'antd';
+import { Dropdown, Input, MenuProps, Spin, Tree, TreeProps } from 'antd';
 import { FC, useMemo, useRef, useState, useEffect } from 'react';
 import * as React from 'react';
 import { MoveNodePayload } from '../../apis';
 import { isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, isNodeWithChildren, isTreeNode, TreeNode, TreeNodeType } from '../../models';
-import { CaretDownOutlined, CaretRightOutlined, RightOutlined } from '@ant-design/icons';
+import { CaretDownOutlined, CaretRightOutlined } from '@ant-design/icons';
 import { ValidationErrors } from '@/components/validationErrors';
 import { useCsTree, useCsTreeDnd } from '../../cs/hooks';
 import { useConfigurationStudio } from '../../cs/contexts';
@@ -18,10 +18,6 @@ import { useConfigurationStudioEnvironment } from '@/configuration-studio/cs-env
 
 export interface IConfigurationTreeProps {
   debugDnd?: boolean;
-  /** Whether the tree panel is collapsed to a thin strip. */
-  collapsed?: boolean;
-  /** Toggles the collapsed state of the tree panel. */
-  onToggleCollapsed?: () => void;
 }
 type OnSelectHandler = TreeProps<TreeNode>['onSelect'];
 type OnClickHandler = TreeProps<TreeNode>['onClick'];
@@ -69,7 +65,7 @@ type DndState = {
   allowed: boolean;
 };
 
-export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = false, collapsed = false, onToggleCollapsed }) => {
+export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = false }) => {
   const cs = useConfigurationStudio();
   const { getDocumentDefinition } = useConfigurationStudioEnvironment();
   const { treeNodes, loadTreeAsync, treeLoadingState, expandedKeys, selectedKeys, selectedNodes, onNodeExpand, quickSearch, setQuickSearch, getTreeNodeById } = useCsTree();
@@ -340,77 +336,60 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
       classNames={{ root: styles.csNavPanelSpinner }}
     >
       {treeLoadingState.status === 'ready' && isDefined(treeNodes) && (
-        <div className={`${styles.csNavPanelContent}${collapsed ? ' collapsed' : ''}`}>
-          <div className={styles.csNavPanelTitle}>
-            {!collapsed && <span className={styles.csNavPanelTitleText}>Explorer</span>}
-            {isDefined(onToggleCollapsed) && (
-              <Tooltip title={collapsed ? 'Expand' : 'Collapse'} placement="right">
-                <Button
-                  className={styles.csNavPanelToggle}
-                  onClick={onToggleCollapsed}
-                  type="text"
-                  icon={<RightOutlined rotate={collapsed ? 0 : 180} />}
-                />
-              </Tooltip>
+        <div className={styles.csNavPanelContent}>
+          <div className={styles.csNavPanelHeader}>
+            <Input.Search
+              placeholder="Search"
+              value={quickSearch}
+              onChange={onSearchChange}
+              allowClear
+            />
+          </div>
+          <div className={styles.csNavPanelTree} onKeyDownCapture={handleTreeKeyDownCapture}>
+            <Dropdown
+              menu={{ items: nodeContextMenuItems }}
+              trigger={["contextMenu"]}
+              getPopupContainer={() => document.body}
+            >
+              <Tree<TreeNode>
+                showLine
+                showIcon
+                multiple
+                virtual={false}
+                switcherIcon={(node) => node.expanded === true ? <CaretDownOutlined /> : <CaretRightOutlined />}
+
+                treeData={filteredTreeNodes}
+                blockNode /* required for correct dragging*/
+
+                draggable={isNodeDraggable}
+                allowDrop={allowNodeDropWrapper}
+                onDrop={handleNodeDrop}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
+                onRightClick={handleNodeRightClick}
+                expandedKeys={expandedKeys ?? []}
+
+                onSelect={handleSelect}
+                onClick={handleClick}
+                selectedKeys={selectedKeys ?? []}
+                onExpand={onNodeExpand}
+                {...(shiftFocusKey !== null ? { activeKey: shiftFocusKey } : {})}
+                tabIndex={0}
+              />
+            </Dropdown>
+            {debugDnd && (
+              <div>
+                {dndState && (
+                  <DndPreview
+                    dragNode={dndState.dragNode}
+                    dropNode={dndState.dropNode}
+                    dropPosition={dndState.dropPosition}
+                    allowed={dndState.allowed}
+                  />
+                )}
+              </div>
             )}
           </div>
-          {!collapsed && (
-            <div className={styles.csNavPanelHeader}>
-              <Input.Search
-                placeholder="Search"
-                value={quickSearch}
-                onChange={onSearchChange}
-                allowClear
-              />
-            </div>
-          )}
-          {!collapsed && (
-            <div className={styles.csNavPanelTree} onKeyDownCapture={handleTreeKeyDownCapture}>
-              <Dropdown
-                menu={{ items: nodeContextMenuItems }}
-                trigger={["contextMenu"]}
-                getPopupContainer={() => document.body}
-              >
-                <Tree<TreeNode>
-                  showLine
-                  showIcon
-                  multiple
-                  virtual={false}
-                  switcherIcon={(node) => node.expanded === true ? <CaretDownOutlined /> : <CaretRightOutlined />}
-
-                  treeData={filteredTreeNodes}
-                  blockNode /* required for correct dragging*/
-
-                  draggable={isNodeDraggable}
-                  allowDrop={allowNodeDropWrapper}
-                  onDrop={handleNodeDrop}
-                  onDragStart={handleDragStart}
-                  onDragEnd={handleDragEnd}
-                  onRightClick={handleNodeRightClick}
-                  expandedKeys={expandedKeys ?? []}
-
-                  onSelect={handleSelect}
-                  onClick={handleClick}
-                  selectedKeys={selectedKeys ?? []}
-                  onExpand={onNodeExpand}
-                  {...(shiftFocusKey !== null ? { activeKey: shiftFocusKey } : {})}
-                  tabIndex={0}
-                />
-              </Dropdown>
-              {debugDnd && (
-                <div>
-                  {dndState && (
-                    <DndPreview
-                      dragNode={dndState.dragNode}
-                      dropNode={dndState.dropNode}
-                      dropPosition={dndState.dropPosition}
-                      allowed={dndState.allowed}
-                    />
-                  )}
-                </div>
-              )}
-            </div>
-          )}
         </div>
       )}
       {treeLoadingState.status === 'failed' && (

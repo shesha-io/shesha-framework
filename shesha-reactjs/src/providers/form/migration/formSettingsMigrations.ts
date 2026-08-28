@@ -9,6 +9,7 @@ import { IToolboxComponents } from "@/interfaces";
 import { IFormMigrationContext } from "@/designer-components/_common-migrations/models";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { getStringPropertyOrUndefined } from "@/utils/object";
+import { migrateEmptyStaticLoaderEndpoint } from "@/designer-components/_common-migrations/migrateEmptyStaticLoaderEndpoint";
 
 
 const formSettingsMigrations = (migrator: Migrator<IFormSettings, IFormSettings, IFormMigrationContext>): MigratorFluent<IFormSettings, IFormSettings, IFormMigrationContext> =>
@@ -31,6 +32,7 @@ const formSettingsMigrations = (migrator: Migrator<IFormSettings, IFormSettings,
       labelCol: isDefined(prev.labelCol) ? prev.labelCol : { span: 6 },
       wrapperCol: isDefined(prev.wrapperCol) ? prev.wrapperCol : { span: 18 },
     }))
+    .add(9, (prev) => migrateEmptyStaticLoaderEndpoint(prev))
   ;
 
 export const migrateFormSettings = (form: IFormDto, designerComponents: IToolboxComponents): Omit<IFormDto, 'settings'> & { settings: IFormSettings } => {

@@ -5,17 +5,12 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
   const csHeaderLeft = "sha-cs-header-left";
   const csHeaderCenter = "sha-cs-header-center";
   const csHeaderRight = "sha-cs-header-right";
-
   const csContent = "sha-cs-content";
-
   const csLogo = "sha-cs-logo";
   const csTreeArea = "sha-cs-tree-area";
   const csWorkArea = "sha-cs-work-area";
   const csNavPanelSpinner = "sha-cs-tree-spinner";
   const csNavPanelContent = "sha-cs-nav-content";
-  const csNavPanelTitle = 'sha-cs-nav-content-title';
-  const csNavPanelTitleText = 'sha-cs-nav-content-title-text';
-  const csNavPanelToggle = 'sha-cs-nav-content-toggle';
   const csNavPanelHeader = 'sha-cs-nav-content-hd';
   const csNavPanelTree = 'sha-cs-nav-content-tree';
   const csQuickInfoIcons = 'sha-cs-quick-info-icons';
@@ -73,53 +68,13 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
                 display: flex;
                 flex-direction: column;
                 height: 100%;
-                padding-right: ${sheshaStyles.paddingMD}px;
-                .${csNavPanelTitle}{
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    height: 35px;
-                    flex-grow: 0;
-                    padding: 0 ${sheshaStyles.paddingLG}px;
-                    font-weight: 500;
-                    font-size: 14px;
-                    border-bottom: 1px solid ${token.colorBorderSecondary};
-                    .${csNavPanelTitleText}{
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                        white-space: nowrap;
-                    }
-                    .${csNavPanelToggle}{
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        height: 24px;
-                        width: 24px;
-                        margin-left: auto;
-                        cursor: pointer;
-                        border-radius: ${token.borderRadius}px;
-                        color: ${token.colorTextSecondary};
-                    }
-                }
-                &.collapsed{
-                    padding-right: 0;
-                    .${csNavPanelTitle}{
-                        padding: 0;
-                        justify-content: center;
-                    }
-                    .${csNavPanelToggle}{
-                        margin-left: 0;
-                    }
-                }
                 .${csNavPanelHeader}{
                     margin-bottom: 8px;
                     flex-grow: 0;
-                    padding: ${sheshaStyles.paddingLG}px ${sheshaStyles.paddingLG}px 0;
                 }
                 .${csNavPanelTree}{
                     flex-grow: 1;
                     overflow: auto;
-                    padding: 0 ${sheshaStyles.paddingLG}px ${sheshaStyles.paddingLG}px;
                     ${sheshaStyles.thinScrollbars}
                     >.${prefixCls}-tree{
                         height:100%;
@@ -214,9 +169,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
     csWorkArea,
     csNavPanelSpinner,
     csNavPanelContent,
-    csNavPanelTitle,
-    csNavPanelTitleText,
-    csNavPanelToggle,
     csNavPanelHeader,
     csNavPanelTree,
     csQuickInfoIcons,

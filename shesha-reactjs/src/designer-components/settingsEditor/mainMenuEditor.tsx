@@ -13,7 +13,7 @@ import { useMedia } from 'react-use';
 import { SidebarConfigurator } from '@/components/configurableSidebarMenu/configurator';
 import { useForm } from '@/providers/form';
 import { useSheshaApplication } from '@/providers/sheshaApplication';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { isDefined } from '@/utils/nullables';
 import { ISidebarMenuItem } from '@/interfaces/sidebar';
 
@@ -139,7 +139,7 @@ const MainMenuEditorComponent: IToolboxComponent<IMainMenuEditorComponentProps> 
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
 };
 
 export default MainMenuEditorComponent;

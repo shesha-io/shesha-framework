@@ -96,6 +96,7 @@ import { getComponentDefinitions } from './defaults/toolboxComponents';
 import RawAsyncValidator, { InternalRuleItem, RuleItem, Rules, ValidateError, Values } from '@rc-component/async-validator';
 import { Rule as FormRule } from 'antd/es/form';
 import { isNonEmptyArray } from '@/utils/array';
+import { useComponentApiUpdate } from '../componentApi/provider';
 
 export {
   executeExpression, executeScript,
@@ -251,6 +252,7 @@ export const useAvailableConstantsContexts = (): AvailableConstantsContext => {
   const metadataDispatcher = useMetadataDispatcher();
 
   useShaFormDataUpdate();
+  useComponentApiUpdate();
 
   const parent = useParentOrUndefined();
   const form = useShaFormInstanceOrUndefined();
@@ -476,19 +478,12 @@ export const componentsTreeToFlatStructure = (
       if (isDefined(componentRegistration)) {
         // custom containers
         const subContainers = getSubContainers(component, componentRegistration);
-        const containers = isDefined(componentRegistration.getContainers)
-          ? componentRegistration.getContainers(component)
-          : undefined;
 
         subContainers.forEach((subContainer) => {
           if (isDefined(subContainer.components)) {
             subContainer.components.forEach((c) => {
               processComponent(c, subContainer.id);
             });
-          }
-          //
-          if (isDefined(containers) && subContainer.id) {
-            //
           }
         });
       }
@@ -537,13 +532,8 @@ const getParentComponentOrUndefined = (markup: IFlatComponentsStructure, id: str
     if (isConfigurableFormComponent(component)) return component;
     parentId = markup.parents[parentId];
   }
-  const parent = isDefined(parentId)
-    ? markup.allComponents[parentId]
-    : undefined;
 
-  return isConfigurableFormComponent(parent)
-    ? parent
-    : undefined;
+  return undefined;
 };
 
 export const getComponentsChain = (markup: IFlatComponentsStructure, id: string): IConfigurableFormComponent[] => {
@@ -1172,6 +1162,7 @@ export type ValidationError = {
   fields: Record<string, ValidateError[]>;
 };
 export const isValidationError = (value: unknown): value is ValidationError => isDefined(value) &&
+  typeof value === 'object' &&
   'errors' in value && typeof (value.errors) === 'object' && Array.isArray(value.errors) && isNonEmptyArray(value.errors) &&
   'fields' in value && typeof (value.fields) === 'object';
 
@@ -1312,6 +1303,93 @@ export const getComponentsAndSettings = (markup: FormMarkup): FormMarkupWithSett
   };
 };
 
+type RulesDescriptor = Record<string, RuleItem | RuleItem[] | { type: 'object' | 'array'; fields?: RulesDescriptor }>;
+export const isRuleItem = (rule: unknown): rule is RuleItem => isDefined(rule) && typeof rule === 'object' && "type" in rule && rule.type === 'object';
+export const isRuleItemArray = (rule: unknown): rule is RuleItem[] => isDefined(rule) && Array.isArray(rule) && rule.every(isRuleItem);
+export const isRuleItemOrArray = (rule: unknown): rule is RuleItem | RuleItem[] => isRuleItem(rule) || isRuleItemArray(rule);
+
+
+export const getObjectRule = (rule: RuleItem | RuleItem[]): RuleItem | undefined => {
+  if (Array.isArray(rule)) {
+    return rule.find((rule) => rule.type === 'object');
+  } else {
+    return rule.type === 'object' ? rule : undefined;
+  }
+};
+
+export const isRequired = (rule: RuleItem | RuleItem[]): boolean => {
+  if (Array.isArray(rule)) {
+    return rule.some(isRequiredRule);
+  } else {
+    return isRequiredRule(rule);
+  }
+};
+
+type RequiredRule = RuleItem & { required: true };
+const isRequiredRule = (rule: unknown): rule is RequiredRule => isDefined(rule) && typeof rule === 'object' && "required" in rule && rule.required === true;
+export const setRuleAtPath = (rules: RulesDescriptor, path: string, rule: RuleItem | RuleItem[]): void => {
+  const newRules: RuleItem[] = Array.isArray(rule) ? rule : [rule];
+  const segments = path.split('.');
+  let current: RulesDescriptor = rules;
+
+  const isRequired = Array.isArray(rule) ? rule.some(isRequiredRule) : isRequiredRule(rule);
+
+  for (let i = 0; i < segments.length; i++) {
+    const segment = segments[i]!;
+    const isLast = i === segments.length - 1;
+
+    if (isLast) {
+      // ---- Leaf: merge the rule ----
+      const target = current[segment];
+      if (isDefined(target)) {
+        if (Array.isArray(target)) {
+          current[segment] = [...target, ...newRules];
+        } else if (typeof target === 'object') {
+          current[segment] = [target, ...newRules];
+        }
+      } else
+        current[segment] = [...newRules];
+    } else {
+      // ---- Intermediate: ensure an object/array container exists ----
+      if (!current[segment]) {
+        // Create a default object node with a `fields` child
+        const newContainer: RuleItem = { type: 'object', fields: {} };
+        // propogate required flag. async-validator skips empty objects
+        if (isRequired)
+          newContainer.required = true;
+        current[segment] = newContainer;
+      }
+
+      // Ensure the node has a `fields` property to dive deeper
+      const currentSegment = current[segment];
+      if (isRuleItem(currentSegment)) {
+        if (!currentSegment.fields) {
+          // If it's a rule without fields, we convert it to a container
+          // (this keeps the existing type if present, but adds fields)
+          const newFields: RulesDescriptor = {};
+          current[segment] = {
+            ...current[segment],
+            fields: newFields,
+          };
+          current = newFields;
+        } else
+          current = currentSegment.fields;
+      } else if (Array.isArray(currentSegment)) {
+        const objectRule = currentSegment.find((rule) => rule.type === 'object');
+        if (isDefined(objectRule)) {
+          current = (objectRule.fields ??= {});
+        } else {
+          const newFields: RulesDescriptor = {};
+          currentSegment.push({ type: 'object', fields: newFields });
+          current = newFields;
+        }
+      } else
+        // Cannot traverse – invalid structure; abort this path
+        return;
+    }
+  }
+};
+
 export const getFormValidationRules = (markup: FormMarkup, values: Values): Rules => {
   const components = getComponentsFromMarkup(markup);
 
@@ -1329,8 +1407,9 @@ export const getFormValidationRules = (markup: FormMarkup, values: Values): Rule
         if (isNonEmptyArray(itemRules)) {
           // validate only when component is not hidden
           const hidden = isComponentHidden(flatStructure, item.id, { data: values });
-          if (!hidden)
-            rules[item.propertyName] = itemRules;
+          if (!hidden) {
+            setRuleAtPath(rules, item.propertyName, itemRules);
+          }
         }
       }
     }

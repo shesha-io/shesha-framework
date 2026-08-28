@@ -5,7 +5,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { DataTypes, StringFormats } from '@/interfaces/dataTypes';
 import { IInputStyles, UnwrapCodeEvaluators } from '@/providers';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { ITextFieldComponentProps, TextFieldComponentDefinition, TextType } from './interfaces';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly, migrateHiddenToVisible, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
@@ -18,7 +18,7 @@ import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { getSettings } from './settingsForm';
 import { applyGroupFormatting, buildFormatValidatorString, defaultStyles, buildPasswordValidatorString, parseGroupLengths, stripSeparator, TEXT_TYPE_FORMATS, totalGroupLength, usePasswordComplexitySettings, validatePasswordValue } from './utils';
-import { useComponentApi } from '@/providers/componentApi/provider';
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { TextFieldApi } from '@/componentsApi/componentApi';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
@@ -51,7 +51,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
       dataFormat === StringFormats.url ||
       dataFormat === StringFormats.password),
   Factory: ({ model }) => {
-    const componentApi = useComponentApi();
+    const componentApi = useComponentApiProvider();
     const inputRef = useRef<InputRef>(null);
     useEffect(() => {
       componentApi?.updateApi<TextFieldApi>({
@@ -81,9 +81,11 @@ const TextFieldComponent: TextFieldComponentDefinition = {
     const passwordComplexity = usePasswordComplexitySettings();
     const formatConfig = isDefined(model.textType) ? TEXT_TYPE_FORMATS[model.textType] : undefined;
 
+    // Auto-format is only configurable for the 'text' type, so ignore any leftover
+    // formatting settings when the type has been switched to email/url/phone/password.
     const formatGroupLengths = useMemo(
-      () => model.enableFormatting === true ? parseGroupLengths(model.formatGroups) : [],
-      [model.enableFormatting, model.formatGroups],
+      () => model.textType === 'text' && model.enableFormatting === true ? parseGroupLengths(model.formatGroups) : [],
+      [model.textType, model.enableFormatting, model.formatGroups],
     );
     const formatSeparator = model.formatSeparator ?? '-';
 
@@ -199,7 +201,7 @@ const TextFieldComponent: TextFieldComponentDefinition = {
     return fieldContent;
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   initModel: (model) => ({ ...model, textType: 'text' }),
   getDefaultStyles: () => defaultStyles(),
   migrator: (m) => m

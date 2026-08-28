@@ -46,7 +46,7 @@ import { extractErrorInfo, throwError } from "@/utils/errors";
 import { GetShaFormDataAccessor } from "@/providers/dataContextProvider/contexts/shaDataAccessProxy";
 import { IComponentApi } from "@/providers/componentApi/model";
 import { IDataContextDescriptor, SheshaCommonContexts } from "@/providers/dataContextManager/models";
-import { useComponentApi } from "@/providers/componentApi/provider";
+import { useComponentApiProvider } from "@/providers/componentApi/provider";
 import { useDataContextManagerActions } from "@/providers/dataContextManager/hooks";
 
 interface ShaFormInstanceArguments<Values extends object = object> {
@@ -863,7 +863,7 @@ const useShaForm = <Values extends object = object>(args: UseShaFormArgs<Values>
   const [antdFormInstance] = Form.useForm(antdForm);
   const fullContext = useAvailableConstantsContextsNoRefresh();
   const metadataDispatcher = useMetadataDispatcher();
-  const componentApi = useComponentApi();
+  const componentApi = useComponentApiProvider();
   const formContext = useDataContextManagerActions().getNearestDataContext(SheshaCommonContexts.FormContext, 'form');
 
   const [formInstance] = useState<IShaFormInstance<Values>>(() => {
