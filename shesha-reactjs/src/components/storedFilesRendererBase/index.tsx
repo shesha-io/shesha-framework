@@ -713,8 +713,10 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       if (listType === 'text' || isDragger) {
         return (
           <div
-
-            className={classNames(isDownloaded && styleDownloadedFiles ? styles.downloadedFile : '')}
+            className={classNames(
+              styles.shaFileNameWrapper,
+              isDownloaded && styleDownloadedFiles ? styles.downloadedFile : '',
+            )}
             onClick={handleItemClick}
           >
             <div className={styles.shaItemFileName}>

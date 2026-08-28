@@ -128,6 +128,19 @@ export const useStyles = createStyles((
     }
   `);
 
+  /* itemRender replaces antd's list item, and its hover background goes with it, so the row
+     highlight is restored here on the wrapper that stands in for it. */
+  const shaFileNameWrapper = cx("sha-file-name-wrapper", css`
+    display: flex;
+    gap: 8px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: ${token.controlItemBgHover};
+      border-radius: ${token.borderRadiusSM}px;
+    }
+  `);
+
   /* Files the current user has already downloaded. The marker is the colour of the name and the
      badge — never a second box around the file, which would fight the thumbnail set. */
   const downloadedFile = cx("sha-downloaded-file", css`
@@ -511,6 +524,7 @@ export const useStyles = createStyles((
     actionsPopover,
     shaThumbnail,
     shaItemFileName,
+    shaFileNameWrapper,
     storedFilesRendererBtnContainer,
   };
 });
