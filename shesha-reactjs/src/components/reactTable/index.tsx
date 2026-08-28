@@ -1,4 +1,17 @@
-import React, { useEffect, useMemo, useState, useRef, ChangeEvent, CSSProperties, ReactElement, ReactNode, useCallback, RefObject } from 'react';
+import {
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+  ChangeEvent,
+  CSSProperties,
+  ReactElement,
+  ReactNode,
+  useCallback,
+  RefObject,
+} from 'react';
+
+import * as React from 'react';
 import classNames from 'classnames';
 import {
   useResizeColumns,

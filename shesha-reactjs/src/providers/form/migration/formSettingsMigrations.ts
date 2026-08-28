@@ -9,6 +9,7 @@ import { IToolboxComponents } from "@/interfaces";
 import { IFormMigrationContext } from "@/designer-components/_common-migrations/models";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { getStringPropertyOrUndefined } from "@/utils/object";
+import { migrateEmptyStaticLoaderEndpoint } from "@/designer-components/_common-migrations/migrateEmptyStaticLoaderEndpoint";
 
 
 const formSettingsMigrations = (migrator: Migrator<IFormSettings, IFormSettings, IFormMigrationContext>): MigratorFluent<IFormSettings, IFormSettings, IFormMigrationContext> =>
@@ -31,6 +32,7 @@ const formSettingsMigrations = (migrator: Migrator<IFormSettings, IFormSettings,
       labelCol: isDefined(prev.labelCol) ? prev.labelCol : { span: 6 },
       wrapperCol: isDefined(prev.wrapperCol) ? prev.wrapperCol : { span: 18 },
     }))
+    .add(9, (prev) => migrateEmptyStaticLoaderEndpoint(prev))
   ;
 
 export const migrateFormSettings = (form: IFormDto, designerComponents: IToolboxComponents): Omit<IFormDto, 'settings'> & { settings: IFormSettings } => {
@@ -38,7 +40,7 @@ export const migrateFormSettings = (form: IFormDto, designerComponents: IToolbox
   const fluent = formSettingsMigrations(migrator);
 
   const version = form.settings?.version ?? -1;
-  const settings = { ...DEFAULT_FORM_SETTINGS, ...form.settings, version: version } satisfies IFormSettings;
+  const settings = { ...(form.settings ?? DEFAULT_FORM_SETTINGS), version: version } satisfies IFormSettings;
 
   const upToDateSettings = fluent.migrator.upgrade(settings, { form, designerComponents });
   return { ...form, settings: upToDateSettings };

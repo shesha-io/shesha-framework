@@ -1,6 +1,7 @@
 /* eslint @typescript-eslint/strict-boolean-expressions: "error" */
 import { Button, Dropdown, Input, MenuProps, Spin, Tooltip, Tree, TreeProps } from 'antd';
-import React, { FC, useMemo, useRef, useState } from 'react';
+import { FC, useMemo, useRef, useState, useEffect } from 'react';
+import * as React from 'react';
 import { MoveNodePayload } from '../../apis';
 import { isConfigItemTreeNode, isFolderTreeNode, isModuleTreeNode, isNodeWithChildren, isTreeNode, TreeNode, TreeNodeType } from '../../models';
 import { CaretDownOutlined, CaretRightOutlined, RightOutlined } from '@ant-design/icons';
@@ -72,7 +73,7 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
   const cs = useConfigurationStudio();
   const { getDocumentDefinition } = useConfigurationStudioEnvironment();
   const { treeNodes, loadTreeAsync, treeLoadingState, expandedKeys, selectedKeys, selectedNodes, onNodeExpand, quickSearch, setQuickSearch, getTreeNodeById } = useCsTree();
-  const { setIsDragging } = useCsTreeDnd();
+  const { isDragging, setIsDragging } = useCsTreeDnd();
   // Anchor for shift+click/shift+arrow range selection: the last node clicked without shift.
   const lastClickedKeyRef = useRef<React.Key | null>(null);
   // End of the shift-selection range; also drives Tree's controlled `activeKey` (null = uncontrolled).
@@ -83,7 +84,64 @@ export const ConfigurationTree: FC<IConfigurationTreeProps> = ({ debugDnd = fals
 
   const filteredTreeNodes = useFilteredTreeNodes(treeNodes, quickSearch);
 
-  // Flat DFS walk of currently visible nodes (excludes the placeholder) — used for shift+click range and shift+arrow.
+  // Auto-expand a collapsed folder hovered during a drag, bypassing antd Tree's own gated drag events.
+  useEffect(() => {
+    if (!isDragging)
+      return undefined;
+
+    let hoveredNodeId: string | null = null;
+    let expandTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    const clearPending = (): void => {
+      hoveredNodeId = null;
+      if (expandTimeout !== null) {
+        clearTimeout(expandTimeout);
+        expandTimeout = null;
+      }
+    };
+
+    const handleNativeDragOver = (event: DragEvent): void => {
+      const target = event.target instanceof Element ? event.target : null;
+      const nodeId = target?.closest<HTMLElement>('[data-node-id]')?.dataset['nodeId'] ?? null;
+
+      if (nodeId === hoveredNodeId)
+        return;
+
+      clearPending();
+      if (nodeId === null)
+        return;
+
+      const node = getTreeNodeById(nodeId);
+      if (!isDefined(node) || !isNodeWithChildren(node) || (expandedKeys ?? []).includes(node.key))
+        return;
+
+      hoveredNodeId = nodeId;
+      expandTimeout = setTimeout(() => {
+        expandTimeout = null;
+        cs.onTreeNodeExpand([...(expandedKeys ?? []), node.key]);
+      }, 500);
+    };
+
+    // A null relatedTarget means the cursor left the whole page, not just moved between rows.
+    const handleDocumentDragLeave = (event: DragEvent): void => {
+      if (!(event.relatedTarget instanceof Element))
+        clearPending();
+    };
+    const handleWindowBlur = (): void => {
+      clearPending();
+    };
+
+    document.addEventListener('dragover', handleNativeDragOver, true);
+    document.addEventListener('dragleave', handleDocumentDragLeave, true);
+    window.addEventListener('blur', handleWindowBlur);
+    return () => {
+      document.removeEventListener('dragover', handleNativeDragOver, true);
+      document.removeEventListener('dragleave', handleDocumentDragLeave, true);
+      window.removeEventListener('blur', handleWindowBlur);
+      clearPending();
+    };
+  }, [isDragging, expandedKeys, getTreeNodeById, cs]);
+
   const flatVisibleNodes = useMemo<TreeNode[]>(() => {
     const result: TreeNode[] = [];
     const walk = (nodes: TreeNode[]): void => {

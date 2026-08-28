@@ -1,13 +1,7 @@
 import classNames from 'classnames';
 import NodeOrFuncRenderer, { ReactNodeOrFunc } from '@/components/nodeOrFuncRenderer';
-import React, {
-  CSSProperties,
-  FC,
-  PropsWithChildren,
-  ReactElement,
-  useEffect,
-  useMemo,
-} from 'react';
+import { CSSProperties, FC, PropsWithChildren, ReactElement, useEffect, useMemo } from 'react';
+import * as React from 'react';
 import { IHtmlHeadProps } from '@/components/htmlHead';
 import { Layout } from 'antd';
 import { FormFullName, useTheme } from '@/providers';
@@ -69,7 +63,6 @@ const DefaultHorizontalLayout: FC<PropsWithChildren<IHorizontalLayoutProps>> = (
 
 
   const headingClass = {
-    'has-heading': hasHeading || (Boolean(title) && showHeading),
     'fixed-heading': isFixedHeading,
   };
 

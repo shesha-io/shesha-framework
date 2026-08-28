@@ -174,7 +174,6 @@
             "mode": [
               "single"
             ],
-            "validate": {},
             "dataSourceUrl": "/api/services/app/Metadata/TypeAutocomplete"
           },
           {
@@ -191,8 +190,7 @@
             "modelType": {
               "_mode": "code",
               "_code": "    return data?.entityType;"
-            },
-            "validate": {}
+            }
           },
           {
             "id": "8LMq9sAg-89Ze4Yud-DzFyFVV2UX6s",
@@ -215,7 +213,6 @@
             "mode": [
               "single"
             ],
-            "validate": {},
             "values": [
               {
                 "label": "single",
@@ -275,7 +272,6 @@
             "propertyName": "validate.message",
             "parentId": "18MmybHmLSDY_HImige7H3RSrNdM43",
             "label": "Message",
-            "validate": {},
             "version": 5,
             "textType": "text",
             "desktop": {},
@@ -288,11 +284,9 @@
             "propertyName": "validate.validator",
             "parentId": "18MmybHmLSDY_HImige7H3RSrNdM43",
             "label": "Validator",
-            "validate": {},
             "labelAlign": "right",
             "hidden": false,
             "description": "Enter custom validator logic for form.item rules. Returns a Promise",
-            "settingsValidationErrors": [],
             "exposedVariables": [
               {
                 "name": "rules",
@@ -356,8 +350,6 @@
             "propertyName": "style",
             "label": "Style",
             "parentId": "2RKOAmXCRYs2-ag44GsdSu9J0JSabV",
-            "validate": {},
-            "settingsValidationErrors": [],
             "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
             "exposedVariables": [
               {
@@ -437,7 +429,6 @@
             "propertyName": "permissions",
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Permissions",
-            "validate": {},
             "version": 1
           }
         ]
@@ -445,7 +436,6 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
       "customHeader": {
         "id": "iANp8_zwAG7f1NpRsxr1i-Tf8YfHay",
         "components": []

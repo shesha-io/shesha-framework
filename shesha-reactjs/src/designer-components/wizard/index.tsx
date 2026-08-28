@@ -1,4 +1,3 @@
-import React from 'react';
 import { DoubleRightOutlined } from '@ant-design/icons';
 import { IConfigurableFormComponent, IFormComponentContainer } from '@/providers/form/models';
 import { IToolboxComponent } from '@/interfaces';
@@ -15,7 +14,7 @@ import {
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { removeComponents } from '../_common-migrations/removeComponents';
 import { getSettings } from './settingsForm';
-import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
+
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { defaultStyles } from './utils';
 import { isDefined } from '@/utils/nullables';
@@ -28,7 +27,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
   name: 'Wizard',
   icon: <DoubleRightOutlined />,
   Factory: ({ model, form }) => {
-    return <Tabs {...model} form={form} />;
+    return <Tabs {...model} form={form.antdForm} />;
   },
   initModel: (model) => ({
     ...model,
@@ -119,7 +118,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
           : [],
       })),
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
 
   getContainers: (model) => {
     const containers: IFormComponentContainer[] = [];
@@ -129,7 +128,7 @@ const TabsComponent: IToolboxComponent<Omit<IWizardComponentProps, 'size'>> = {
 
     // Add step footer containers
     const footerContainers = model.steps
-      .filter((s) => s.hasCustomFooter)
+      .filter((s) => s.hasCustomFooter === true)
       .map((s) => ({
         id: s.stepFooter?.id ?? `${s.id}_footer`,
         parentId: model.id,

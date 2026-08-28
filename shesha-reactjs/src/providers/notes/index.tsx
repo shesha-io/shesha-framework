@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
+import { FC, PropsWithChildren, useContext, useEffect, useReducer } from 'react';
 import {
   INotesEditorActions,
   INotesEditorInstance,

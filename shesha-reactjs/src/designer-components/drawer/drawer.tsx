@@ -1,6 +1,6 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import ParentProvider from '@/providers/parentProvider/index';
-import React, { CSSProperties, FC, Fragment, ReactNode, useState } from 'react';
+import { CSSProperties, FC, Fragment, ReactNode, useState } from 'react';
 import { Alert, Button, Drawer, Space } from 'antd';
 import { executeScriptSync, useAvailableConstantsData } from '@/providers/form/utils';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';

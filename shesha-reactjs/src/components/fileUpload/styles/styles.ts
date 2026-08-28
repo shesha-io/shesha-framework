@@ -2,6 +2,7 @@ import { createStyles } from '@/styles';
 import { addPx } from '@/utils/style';
 import { CSSProperties } from 'react';
 import { CSSInterpolation } from '@emotion/serialize';
+import { isDefined } from '@/utils/nullables';
 
 interface ModelProps {
   layout?: boolean | undefined;
@@ -79,12 +80,21 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
     textAlign = 'left',
   } = style || {};
 
-  const { layout, isDragger, hideFileName, listType } = model;
+  const { layout: layoutProp, isDragger, hideFileName, listType } = model;
+  /**
+   * First of the candidates that is actually set. CSS values treat an empty string as "not set", so
+   * `??` is not enough here — but a bare `||` chain is an implicit truthiness test on a nullable
+   * string, which is exactly what strict-boolean-expressions flags. This states the intent once.
+   */
+  const firstSet = (...values: (string | number | undefined)[]): string =>
+    values.find((value) => isDefined(value) && String(value).trim() !== '')?.toString() ?? '';
+  // Normalised once so the many CSS conditionals below are strict-boolean checks rather than
+  // repeating `=== true` at every interpolation.
+  const layout = layoutProp === true;
 
-  // The configured component styles (background, border, shadow, dimensions) describe the
-  // thumbnail tile, so they must only be applied in thumbnail mode. In text mode the file is
-  // shown as a plain filename and must not pick up the thumbnail's shadow/border/box styling.
-  const isThumbnail = listType === 'thumbnail';
+  const styleProvided = isDefined(style) && Object.keys(style).length > 0;
+
+  const isThumbnail = listType === 'thumbnail' && isDragger !== true;
   const extraStyles = isThumbnail ? toCssInterpolation(style) : {};
 
   const justifyContentMap: Record<TextAlignType, string> = {
@@ -121,44 +131,75 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
 
   const commonBorderStyles = `
     border: ${borderWidth} ${borderStyle} ${borderColor};
-    border-right: ${borderRightWidth || borderWidth} ${borderRightStyle || borderStyle}
-      ${borderRightColor || borderColor};
-    border-left: ${borderLeftWidth || borderWidth} ${borderLeftStyle || borderStyle} ${borderLeftColor || borderColor};
-    border-bottom: ${borderBottomWidth || borderWidth} ${borderBottomStyle || borderStyle}
-      ${borderBottomColor || borderColor};
-    border-top: ${borderTopWidth || borderWidth} ${borderTopStyle || borderStyle} ${borderTopColor || borderColor};
+    border-right: ${firstSet(borderRightWidth, borderWidth)} ${firstSet(borderRightStyle, borderStyle)}
+      ${firstSet(borderRightColor, borderColor)};
+    border-left: ${firstSet(borderLeftWidth, borderWidth)} ${firstSet(borderLeftStyle, borderStyle)} ${firstSet(borderLeftColor, borderColor)};
+    border-bottom: ${firstSet(borderBottomWidth, borderWidth)} ${firstSet(borderBottomStyle, borderStyle)}
+      ${firstSet(borderBottomColor, borderColor)};
+    border-top: ${firstSet(borderTopWidth, borderWidth)} ${firstSet(borderTopStyle, borderStyle)} ${firstSet(borderTopColor, borderColor)};
     ${borderRadiusCss}
-    box-shadow: ${boxShadow};
+    ${isDefined(boxShadow) ? `box-shadow: ${boxShadow};` : ''}
   `;
 
-  const commonTextStyles = `
-    color: ${color || token.colorPrimary};
+  /* The empty/upload tile takes the font family only — never colour, size, weight or alignment,
+     which would make it read as content, and never the box appearance. `style` is the whole computed
+     style, so it is narrowed here rather than interpolated wholesale. */
+  const uploadTileFontCss = isThumbnail ? `font-family: ${fontFamily};` : '';
+
+  // Border/radius emitted only when the caller supplied a style; otherwise the component class owns
+  // the box appearance (see the note on styleProvided above).
+  const ownedBorderStyles = styleProvided ? commonBorderStyles : '';
+
+  // Text styling falls back to hardcoded defaults (25px Segoe UI, the primary colour) when no style
+  // is supplied. On the component-class path that would override the configured Font, so emit
+  // nothing and let the class own the text as well as the box.
+  const commonTextStyles = styleProvided
+    ? `
+    color: ${firstSet(color, token.colorPrimary)};
     font-family: ${fontFamily};
     font-size: ${fontSize};
     font-weight: ${fontWeight};
     text-align: ${textAlign};
-  `;
+  `
+    : '';
   const shaStoredFilesRenderer = cx(
     'sha-stored-files-renderer',
     css`
-      --thumbnail-width: ${layout ? (width ?? height ?? '54px') : '100%'};
-      --thumbnail-height: ${layout ? (height ?? width ?? '54px') : '100%'};
+      /* firstSet, not nullish-coalescing: these come from caller-supplied CSSProperties, where a
+         dimension can be an empty string. Nullish-coalescing would pass that through, and a custom
+         property that is set but empty does NOT activate the var() fallback at the use site — it
+         just yields an invalid declaration. firstSet treats empty as unset, as CSS does. */
+      --thumbnail-width: ${layout ? firstSet(width, height, '54px') : '100%'};
+      --thumbnail-height: ${layout ? firstSet(height, width, '54px') : '100%'};
+      ${styleProvided ? `
       --ant-border-radius-xs: ${borderRadius} !important;
       --ant-border-radius-sm: ${borderRadius} !important;
       --ant-border-radius-lg: ${borderRadius} !important;
+      ` : ''}
+      ${styleProvided ? `
       --ant-button-content-font-size: ${fontSize} !important;
       --ant-button-font-weight: ${fontWeight} !important;
       --ant-font-family: ${fontFamily} !important;
+      ` : ''}
       /* Container must be a block box: it wraps block-level upload content (e.g. the Dragger),
          and as an inline <span> width/height:100% are ignored, so the content overflows and
          overlaps sibling fields. */
       display: block;
-      height: ${layout ? (height ?? '54px') : '100%'} !important;
-      width: ${layout ? (width ?? '54px') : '100%'} !important;
-      max-height: ${layout ? (maxHeight ?? 'auto') : '100%'} !important;
-      min-height: ${layout ? (minHeight ?? 'auto') : '100%'} !important;
-      max-width: ${layout ? (maxWidth ?? 'auto') : '100%'} !important;
-      min-width: ${layout ? (minWidth ?? 'auto') : '100%'} !important;
+      ${styleProvided ? `
+      height: ${layout ? firstSet(height, '54px') : '100%'} !important;
+      width: ${layout ? firstSet(width, '54px') : '100%'} !important;
+      max-height: ${layout ? firstSet(maxHeight, 'auto') : '100%'} !important;
+      min-height: ${layout ? firstSet(minHeight, 'auto') : '100%'} !important;
+      max-width: ${layout ? firstSet(maxWidth, 'auto') : '100%'} !important;
+      min-width: ${layout ? firstSet(minWidth, 'auto') : '100%'} !important;
+      ` : `
+      /* The component class sizes the tile. The container wraps the tile *and* the single-line file
+         name below it, so it takes the tile width (which is what the name ellipsises against) while
+         its height grows to fit the extra name line. Pinning the height here instead would make the
+         tile shrink when the name is shown. */
+      height: auto;
+      width: ${layout ? 'fit-content' : '100%'};
+      `}
       ${isThumbnail ? `
         display: flex;
         flex-direction: column;
@@ -174,34 +215,44 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
       }
 
       .ant-upload-list-item-container > div {
-        width: 100%;
-        height: 100%;
+        ${styleProvided ? 'width: 100%; height: 100%;' : 'width: 100%; height: auto;'}
         display: flex;
         flex-direction: column;
       }
 
+      /* The empty/upload tile takes the dimensions and the font family only. It is a control to
+         click rather than content to look at, so the configured background, border and shadow are
+         deliberately not emitted here — unlike the filled tile below, which keeps the full box
+         appearance. The computed style is the whole box (background included), so only its font
+         family is taken here rather than interpolating it wholesale. */
       .${prefixCls}-upload-select,
       .${prefixCls}-upload.${prefixCls}-upload-select {
+        ${styleProvided ? `
         width: var(--thumbnail-width) !important;
         height: var(--thumbnail-height) !important;
+        ` : ''}
         margin: 0 !important;
         box-sizing: border-box !important;
-        ${commonBorderStyles}
-        ${borderRadiusCss}
-        ${extraStyles}
+        ${uploadTileFontCss}
       }
 
       >.thumbnail-stub {
         padding: 0 !important;
         box-sizing: border-box !important;
         overflow: hidden !important;
-        background: ${backgroundImage ?? backgroundColor ?? background};
-          width: 100% !important;
-          height: 100% !important;
+        /* The designer stub stands in for a *filled* tile — it previews how an attached file will
+           look — so it takes the full configured appearance, unlike .ant-upload-select above. When
+           the component class supplies the appearance and dimensions, this hook emits neither, so
+           the class is not outranked here. */
+        ${styleProvided ? `
+        background: ${firstSet(backgroundImage, backgroundColor, background)};
+        width: 100% !important;
+        height: 100% !important;
+        ` : ''}
         display: flex !important;
         align-items: center !important;
         ${extraStyles}
-        ${commonBorderStyles}
+        ${ownedBorderStyles}
         ${commonTextStyles}
       }
 
@@ -220,7 +271,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
 
       .ant-upload:not(.ant-upload-disabled) {
         .icon {
-          color: ${color || token.colorPrimary} !important;
+          color: ${firstSet(color, token.colorPrimary)} !important;
         }
       }
 
@@ -230,7 +281,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
         --font-size: ${fontSize} !important;
         --ant-font-size: ${fontSize} !important;
         display: flex;
-        ${isThumbnail ? `
+        ${isThumbnail && styleProvided ? `
 
         :before {
           top: 0;
@@ -246,14 +297,19 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
         ${extraStyles}
         box-sizing: border-box !important;
         padding: 0 !important;
-        ${commonBorderStyles}
+        ${ownedBorderStyles}
       }
 
+      /* The file name is a single line under the tile, ellipsised at the tile width. It takes only
+         text styling — the configured border/background/shadow/dimensions belong to the tile, not to
+         the name — and it is laid out identically whether or not it is shown, so hiding it never
+         changes the tile size. */
       .thumbnail-item-name {
         ${commonTextStyles}
-        ${isThumbnail ? (hideFileName ? 'display: none !important;' : `
+        ${isThumbnail ? (hideFileName === true ? 'display: none !important;' : `
         display: block;
         width: 100%;
+        max-width: 100%;
         height: 32px;
         line-height: 32px;
         overflow: hidden;
@@ -287,7 +343,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
       }
 
       .${prefixCls}-upload {
-        ${isDragger ? `min-height: ${minHeight ?? '120px'} !important;` : ''}
+        ${isDragger === true ? `min-height: ${minHeight ?? '120px'} !important;` : ''}
         ${borderRadiusCss}
         align-items: center;
 
@@ -309,7 +365,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
       ` : ''}
 
       .ant-btn {
-        color: ${color || token.colorPrimary} !important;
+        color: ${firstSet(color, token.colorPrimary)} !important;
         ${commonTextStyles}
         justify-content: ${layout ? 'center' : justifyContentValue} !important;
         align-items: center;
@@ -355,7 +411,11 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
     css`
       width: 100% !important;
       height: 100% !important;
-      ${borderRadiusCss}
+      /* No radius of its own. The tile (.styled-file-controls) already carries the configured radius
+         and clips with overflow: hidden, so repeating it here rounds a second box *inside* the
+         first: the inner curve does not follow the inner edge of the tile's border, and the
+         mismatch shows as slivers of background at each corner. Clipping is inherited from the
+         tile, so the image still ends up rounded. */
       display: block !important;
       overflow: hidden !important;
 
@@ -401,14 +461,19 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
   const styledFileControls = cx(
     'styled-file-controls',
     css`
-      ${commonBorderStyles}
+      ${ownedBorderStyles}
       ${commonTextStyles}
       padding: 0 !important;
       box-sizing: border-box !important;
       overflow: hidden !important;
-      background: ${backgroundImage ?? backgroundColor ?? background};
-      width: var(--thumbnail-width, ${width || '54px'}) !important;
-      height: var(--thumbnail-height, ${height || '54px'}) !important;
+      /* This is the thumbnail tile: it takes the configured background/border/dimensions. When the
+         component class supplies them, this hook emits nothing here so the class is not outranked by
+         these !important declarations. */
+      ${styleProvided ? `
+      background: ${firstSet(backgroundImage, backgroundColor, background)};
+      width: var(--thumbnail-width, ${firstSet(width, '54px')}) !important;
+      height: var(--thumbnail-height, ${firstSet(height, '54px')}) !important;
+      ` : ''}
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;

@@ -1,6 +1,6 @@
 import { DataTable } from '@/components/dataTable';
 import { useDataTableStore } from '@/providers';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { PACKAGE_ITEMS_COLUMNS } from './models';
 import { useEffectOnce } from 'react-use';
 

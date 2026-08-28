@@ -1,7 +1,7 @@
 import { getComponentModel } from '@/providers/layersProvider/utils';
 import { useLayerGroupConfigurator } from '@/providers/layersProvider';
 import { Empty, Form } from 'antd';
-import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
+import { FC, ReactNode, useEffect, useRef, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { ConfigurableFormInstance } from '@/providers/form/contexts';
 import { FormMarkup } from '@/providers/form/models';

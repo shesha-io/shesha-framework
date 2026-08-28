@@ -1,5 +1,7 @@
 /* eslint @typescript-eslint/strict-boolean-expressions: "error" */
-import React, { FC, PropsWithChildren, useCallback, useMemo, useRef, useState } from "react";
+import { FC, PropsWithChildren, useCallback, useMemo, useRef, useState } from "react";
+
+import * as React from "react";
 import { Monaco } from '@monaco-editor/react';
 import { IDisposable, IPosition, IRange, Uri, UriComponents, editor, languages } from 'monaco-editor';
 import { DataTypes } from "@/interfaces";

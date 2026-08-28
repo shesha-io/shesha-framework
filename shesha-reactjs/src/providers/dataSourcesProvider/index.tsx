@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren, useCallback, useContext, useEffect, useRef } from 'react';
+import { FC, PropsWithChildren, useCallback, useContext, useEffect, useRef } from 'react';
 import {
   DataSourcesProviderActionsContext,
   IDataSourcesProviderActionsContext,

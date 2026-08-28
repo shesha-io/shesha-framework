@@ -1,6 +1,7 @@
 import { MenuProps, Tooltip } from 'antd';
 import classNames from 'classnames';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
+import * as React from 'react';
 import { ShaIcon, IconType } from '@/components/shaIcon';
 import { ISidebarMenuItem, isSidebarButton, isSidebarGroup, SidebarItemType } from '@/interfaces/sidebar';
 import { IConfigurableActionConfiguration, isNavigationActionConfiguration } from '@/providers/index';

@@ -1,9 +1,10 @@
-import React from 'react';
+import * as React from 'react';
 import { DatabaseOutlined } from '@ant-design/icons';
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { useFormDesignerSelectedComponentId } from '@/providers/formDesigner';
 import { useTheme } from '@/providers/theme';
 import { useStyles } from './styles';
+import { isNullOrWhiteSpace } from '@/utils';
 
 export interface ITableContextEmptyStateProps {
   containerId: string;
@@ -30,7 +31,7 @@ export const TableContextEmptyState: React.FC<ITableContextEmptyStateProps> = ({
   const titleColor = isSelected ? primaryColor : '#8c8c8c';
 
   return (
-    <div style={style} className={`${styles.emptyStateContainer} ${className || ''}`}>
+    <div style={style} className={`${styles.emptyStateContainer} ${isNullOrWhiteSpace(className) ? '' : className}`}>
       {/* Visual overlay showing the empty state message */}
       <div className={styles.emptyStateOverlay}>
         <DatabaseOutlined
@@ -42,13 +43,13 @@ export const TableContextEmptyState: React.FC<ITableContextEmptyStateProps> = ({
             Data Context Component
           </div>
           <div className={styles.emptyStateSubtitle}>
-            {readOnly ? <span>Fix configuration to be able to <b>Add</b> or <b>View</b> child components</span> : 'Drag & Drop a Form Component'}
+            {readOnly === true ? <span>Fix configuration to be able to <b>Add</b> or <b>View</b> child components</span> : 'Drag & Drop a Form Component'}
           </div>
         </div>
       </div>
 
       {/* ComponentsContainer that handles the actual dropping */}
-      {readOnly ? null : (
+      {readOnly === true ? null : (
         <ComponentsContainer
           containerId={containerId}
           itemsLimit={-1}

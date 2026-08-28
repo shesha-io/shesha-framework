@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 import { Collapse, Empty, Tooltip } from 'antd';
 import { useLocalStorage } from '@/hooks';
 import { IDataSource } from '@/providers/formDesigner/models';

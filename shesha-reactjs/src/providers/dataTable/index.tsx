@@ -1,7 +1,4 @@
-import React, {
-  FC,
-  PropsWithChildren,
-} from 'react';
+import { FC, PropsWithChildren } from 'react';
 import { MetadataProvider } from '@/providers/metadata';
 import { BackendDataSourceTable } from './repository/backendRepository';
 import { FormDataSourceTable } from './repository/inMemoryRepository';

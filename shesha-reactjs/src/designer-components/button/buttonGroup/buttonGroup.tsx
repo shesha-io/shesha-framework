@@ -1,200 +1,56 @@
-import React, { CSSProperties, FC } from 'react';
-import { ShaIcon, IconType } from '@/components/shaIcon/index';
-import {
-  Alert,
-  Button,
-  Divider,
-  Dropdown,
-  Menu,
-  Space,
-} from 'antd';
-import { ButtonType } from 'antd/es/button/buttonHelpers';
-import {
-  ButtonGroupItemProps,
-  IButtonGroup,
-  IButtonGroupItem,
-  isGroup,
-  isItem,
-} from '@/providers/buttonGroupConfigurator/models';
-import { ConfigurableButton } from '../configurableButton';
-import { DynamicActionsEvaluator } from '@/providers/dynamicActions/evaluator/index';
-import {
-  IApplicationContext,
-  standardActualModelPropertyFilter,
-  useAvailableConstantsData,
-} from '@/providers/form/utils';
-import { getButtonGroupMenuItem } from './utils';
-import { IButtonGroupProps } from './models';
-import { SizeType } from 'antd/lib/config-provider/SizeContext';
-import { useActualContextData, useDeepCompareMemo } from '@/hooks';
+import { FC } from 'react';
+import { Alert, Menu, Space } from 'antd';
+import { ButtonGroupItemProps, IButtonGroup, isGroup, isItem } from '@/providers/buttonGroupConfigurator/models';
+import { useAvailableConstantsData } from '@/providers/form/utils';
+import { IButtonGroupProps, ItemBooleanEvaluator } from './models';
 import { useSheshaApplication } from '@/providers';
-import type { FormInstance, MenuProps } from 'antd';
 import { useStyles } from './styles/styles';
 import classNames from 'classnames';
-import { removeNullUndefined } from '@/providers/utils';
-import { removeUndefinedProps } from '@/utils/object';
 import { getOverflowStyle } from '@/designer-components/_settings/utils/overflow/util';
-import { getGhostStyleOverrides } from '@/utils/style';
-import { addPx } from '@/utils/style';
-import { useFormComponentStyles } from '@/hooks/formComponentHooks';
-
-type MenuItem = Required<MenuProps>['items'][number];
-
-type MenuButton = ButtonGroupItemProps & {
-  childItems?: MenuButton[] | undefined;
-  dividerWidth?: string | undefined;
-  dividerColor?: string | undefined;
-};
-
-const RenderButton: FC<{ props: ButtonGroupItemProps; uuid: string; form?: FormInstance | undefined }> = ({ props, uuid, form }) => {
-  const { size, buttonType } = props;
-  const model = props;
-
-  const { backgroundStyles, fontStyles, borderStyles, shadowStyles, dimensionsStyles, stylingBoxAsCSS, jsStyle } = useFormComponentStyles(model);
-
-  const isPrimaryOrDefault = ['primary', 'default'].includes(buttonType ?? "");
-
-  const additionalStyles: CSSProperties = removeUndefinedProps({
-    ...dimensionsStyles,
-    ...(isPrimaryOrDefault && borderStyles),
-    ...fontStyles,
-    ...(['dashed', 'default'].includes(model.buttonType ?? "") && backgroundStyles),
-    ...((isPrimaryOrDefault || model.buttonType === 'dashed') && shadowStyles),
-    ...stylingBoxAsCSS,
-    ...jsStyle,
-    justifyContent: model.font?.align,
-    zIndex: 0,
-  });
+import { InlineItem } from './inlineItem';
+import { createMenuItem } from './utils';
+import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
+import { isDefined } from '@/utils';
 
 
-  const finalStyles = removeUndefinedProps({
-    ...additionalStyles, '--ant-button-padding-block-lg': '0px',
-  });
-
-  return (
-    <ConfigurableButton
-      key={uuid}
-      {...props}
-      readOnly={model.readOnly}
-      size={size}
-      danger={props.danger}
-      styleJson={removeNullUndefined({ ...finalStyles })}
-      buttonType={buttonType}
-      form={form}
-    />
-  );
-};
-
-const createMenuItem = (
-  props: MenuButton,
-  getIsVisible: VisibilityEvaluator,
-  appContext: IApplicationContext,
-  form: FormInstance | undefined,
-): MenuItem => {
-  const buttonProps = props.itemType === 'item' ? (props as IButtonGroupItem) : null;
-  const isDivider = buttonProps && (buttonProps.itemSubType === 'line' || buttonProps.itemSubType === 'separator');
-
-  const childItems = props.childItems && props.childItems.length > 0
-    ? props.childItems.filter(getIsVisible).map((props) => createMenuItem(props, getIsVisible, appContext, form))
-    : undefined;
-
-  return isDivider
-    ? { type: 'divider', style: { height: addPx(props.dividerWidth, appContext), backgroundColor: props.dividerColor } }
-    : getButtonGroupMenuItem(
-      <RenderButton props={props} uuid={props.id} form={form} />,
-      props.id,
-      props.readOnly,
-      childItems,
-    );
-};
-
-type VisibilityEvaluator = (item: ButtonGroupItemProps) => boolean;
-
-interface InlineItemBaseProps {
-  uuid: string;
-  size: SizeType;
-  getIsVisible: VisibilityEvaluator;
-  appContext: IApplicationContext;
-}
-
-interface InlineItemProps extends InlineItemBaseProps {
-  item: ButtonGroupItemProps;
-  form?: FormInstance | undefined;
-  styles?: CSSProperties | undefined;
-}
-const InlineItem: FC<InlineItemProps> = (props) => {
-  const { item, uuid, getIsVisible, appContext, form } = props;
-
-  if (isGroup(item)) {
-    const menuItems = (item.childItems ?? [])
-      .filter((item) => (getIsVisible(item)))
-      .map((childItem) => (createMenuItem({ ...childItem, buttonType: childItem.buttonType ?? 'link' }, getIsVisible, appContext, form)));
-    // Ghost buttons: only foreground color, no background/border/shadow
-    const isGhostType = item.buttonType === 'ghost';
-    const ghostOverrides = isGhostType ? getGhostStyleOverrides(item.font) : item.styles;
-
-    return (
-      <Dropdown
-        key={uuid}
-        menu={{ items: menuItems }}
-        disabled={item.readOnly === true}
-      >
-        <Button
-          icon={item.icon ? <ShaIcon iconName={item.icon as IconType} /> : undefined}
-          type={isGhostType ? 'default' : (item.buttonType as ButtonType)}
-          ghost={isGhostType}
-          title={item.tooltip}
-          disabled={item.readOnly === true}
-          className={classNames('sha-toolbar-btn sha-toolbar-btn-configurable')}
-          style={ghostOverrides}
-        >
-          {item.label ? item.label : undefined}
-          {item.downIcon ? <ShaIcon iconName={item.downIcon as IconType} /> : undefined}
-        </Button>
-      </Dropdown>
-    );
-  }
-
-  if (isItem(item)) {
-    switch (item.itemSubType) {
-      case 'button':
-        return <RenderButton props={{ ...item }} uuid={item.id} form={form} />;
-      case 'separator':
-      case 'line':
-        return <Divider orientation="vertical" key={uuid} style={{ width: addPx(item.dividerWidth, appContext), backgroundColor: item.dividerColor }} />;
-      default:
-        return null;
-    }
-  }
-
-  return null;
-};
-
-type ItemVisibilityFunc = (item: ButtonGroupItemProps) => boolean;
-
-export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
-  const { styles } = useStyles();
+export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
+  const { styles } = useStyles(props);
   const allData = useAvailableConstantsData();
   const { anyOfPermissionsGranted } = useSheshaApplication();
 
-  const { size = props.size, gap = props.spaceSize ?? 'middle', isInline, form } = props;
+  const componentGetter = useFormDesignerComponentGetter();
+  const buttonComponent = componentGetter('button');
+
+  if (!isDefined(buttonComponent)) return null;
+
+  const { size = props.size, gap = props.spaceSize ?? 'middle', buttonGroupStyle = 'horizontal' } = props;
 
   const isDesignMode = allData.form?.formMode === 'designer';
 
   const isVisibleBase = (item: ButtonGroupItemProps): boolean => {
-    const { permissions, hidden } = item;
-    if (hidden)
+    const { visiblePermissions, visible } = item;
+    if (visible === false)
       return false;
 
-    const granted = anyOfPermissionsGranted(permissions || []);
+    const granted = anyOfPermissionsGranted(visiblePermissions || []);
     return granted;
   };
 
-  const isGroupVisible = (group: IButtonGroup, itemVibilityFunc: ItemVisibilityFunc): boolean => {
+  const isDisabledBase = (item: ButtonGroupItemProps): boolean => {
+    const { editModePermissions, disabled } = item;
+    if (disabled === true)
+      return true;
+
+    const granted = anyOfPermissionsGranted(editModePermissions || []);
+    return !granted;
+  };
+
+
+  const isGroupVisible = (group: IButtonGroup, itemVibilityFunc: ItemBooleanEvaluator): boolean => {
     if (!isVisibleBase(group))
       return false;
 
-    if (group.hideWhenEmpty) {
+    if (group.hideWhenEmpty === true) {
       const firstVisibleItem = (group.childItems ?? []).find((item) => {
         // analyze buttons and groups only
         return ((isItem(item) && item.itemSubType === 'button') || isGroup(item)) && itemVibilityFunc(item);
@@ -210,8 +66,12 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
   const getIsVisible = (item: ButtonGroupItemProps): boolean => {
     if (isDesignMode)
       return true; // show visibility indicator
-
     return (isItem(item) && isVisibleBase(item)) || (isGroup(item) && isGroupVisible(item, getIsVisible));
+  };
+
+  // Return the disabled state of a button. A button is disabled if the user is not permitted or disabled setting is true
+  const getIsDisabled = (item: ButtonGroupItemProps): boolean => {
+    return isDisabledBase(item);
   };
 
   const resolvedItems = props.items;
@@ -219,55 +79,40 @@ export const ButtonGroupInner: FC<IButtonGroupProps> = (props) => {
   const filteredItems = resolvedItems.filter(getIsVisible);
 
   if (resolvedItems.length === 0 && isDesignMode)
-    return (
-      <Alert
-        className="sha-designer-warning"
-        title="Button group is empty. Press 'Customize Button Group' button to add items"
-        type="warning"
-      />
-    );
+    return <Alert className="sha-designer-warning" title="Button group is empty. Press 'Customize Button Group' button to add items" type="warning" />;
 
-
-  if (isInline) {
+  if (buttonGroupStyle === 'horizontal') {
     return (
-      <Space.Compact size={size} style={{ ...props.styles, ...getOverflowStyle(true, false) }} className={styles.shaHideEmpty}>
+      <Space.Compact size={size} style={{ ...props.styleCss, ...getOverflowStyle(true, false) }} className={classNames(styles.shaHideEmpty, styles.shaButtonGroupContainer)}>
         <Space size={gap}>
-          {filteredItems.map((item) =>
-            (<InlineItem styles={item.styles} item={item} uuid={item.id} size={item.size ?? size} getIsVisible={getIsVisible} appContext={allData} key={item.id} form={form} />),
-          )}
+          {filteredItems.map((item) => (
+            <InlineItem
+              styles={item.styleCss}
+              item={item}
+              uuid={item.id}
+              size={item.size ?? size}
+              getIsVisible={getIsVisible}
+              getIsDisabled={getIsDisabled}
+              appContext={allData}
+              key={item.id}
+              buttonComponent={buttonComponent}
+            />
+          ))}
         </Space>
       </Space.Compact>
     );
   } else {
-    const menuItems = filteredItems.map((props) => createMenuItem(props, getIsVisible, allData, form));
+    const menuItems = filteredItems.map((item) => createMenuItem(item, getIsVisible, getIsDisabled, allData, buttonComponent));
 
     return (
-      <div className={styles.shaResponsiveButtonGroupContainer}>
+      <div className={classNames(styles.shaResponsiveButtonGroupContainer)}>
         <Menu
           mode="horizontal"
           items={menuItems}
-          className={classNames(styles.shaResponsiveButtonGroup, styles.a, `space-${gap}`)}
-          style={{ ...props.styles, width: '30px', height: '30px' }}
+          className={classNames(styles.shaResponsiveButtonGroup, styles.shaButtonGroupContainer, styles.a, `space-${gap}`)}
+          style={{ width: '30px', height: '30px', ...props.styleCss }}
         />
       </div>
     );
   }
-};
-
-export const ButtonGroup: FC<IButtonGroupProps> = (props) => {
-  const items = useActualContextData(
-    props.items.map((item) => {
-      const result = { ...item, size: item.size ?? props.size ?? 'middle' };
-      return result;
-    }),
-    { readOnly: props.readOnly, disabled: false },
-    undefined,
-    standardActualModelPropertyFilter,
-  );
-  const memoizedItems = useDeepCompareMemo(() => items, [items]);
-  return (
-    <DynamicActionsEvaluator items={memoizedItems}>
-      {(items) => (<ButtonGroupInner {...props} items={items} />)}
-    </DynamicActionsEvaluator>
-  );
 };

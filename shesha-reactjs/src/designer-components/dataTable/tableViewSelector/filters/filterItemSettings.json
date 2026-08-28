@@ -28,7 +28,6 @@
       "autoSize": false,
       "showCount": false,
       "allowClear": false,
-      "validate": {},
       "version": 2
     },
     {
@@ -37,7 +36,6 @@
       "propertyName": "permissions",
       "parentId": "root",
       "label": "Permissions",
-      "validate": {},
       "version": 1
     }
   ],

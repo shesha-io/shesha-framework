@@ -2,28 +2,25 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug All Tests in File",
+      "name": "Debug Vitest File (npx)",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}/node_modules/.bin/jest",
-      "args": [
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "vitest",
+        "run",
         "${file}",
-        "--passWithNoTests",
-        "--no-coverage",
-        "--watchAll=false",
-        "--verbose"
+        "--reporter=verbose",
+        "--test-timeout=0"
       ],
       "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen",
-      "windows": {
-        "program": "${workspaceFolder}/node_modules/jest/bin/jest"
-      }
+      "internalConsoleOptions": "neverOpen"
     },
     {
       "name": "Debug Rollup Build",
       "type": "node",
       "request": "launch",
-      "program": "${workspaceFolder}\\node_modules\\rollup\\dist\\bin\\rollup",
+      "program": "${workspaceFolder}/node_modules/rollup/dist/bin/rollup",
       "args": [
         "-c",
         "--silent"
@@ -44,7 +41,7 @@
         "--webpack"
       ],
       "runtimeArgs": [
-        "--inspect"        
+        "--inspect"
       ],
       "skipFiles": [
         "<node_internals>/**"

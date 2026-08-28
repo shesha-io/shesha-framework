@@ -8,7 +8,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
       "version": 1,
       "expandIconPosition": "start",
@@ -75,7 +74,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
       "version": 1,
       "expandIconPosition": "start",
@@ -107,7 +105,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-
       "isDynamic": false,
       "version": 1,
       "expandIconPosition": "start",
@@ -154,15 +151,13 @@
             "propertyName": "permissions",
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Permissions",
-            "validate": {},
             "version": 1
           }
         ]
       },
       "collapsible": "header",
       "ghost": true,
-      "hideWhenEmpty": true,
-      "settingsValidationErrors": []
+      "hideWhenEmpty": true
     }
   ],
   "formSettings": {

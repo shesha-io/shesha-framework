@@ -1,11 +1,11 @@
 import { ComponentDefinition } from '@/interfaces';
-import { IConfigurableFormComponent } from '@/providers/form/models';
-import { ListType } from '../attachmentsEditor/attachmentsEditor';
+import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
+import { ListType } from '../attachmentsEditor/interfaces';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';
 
-export interface IFileUploadProps extends IConfigurableFormComponent {
-  ownerId: string;
-  ownerType: string | IEntityTypeIdentifier;
+export interface IFileUploadProps extends IConfigurableFormComponent, IInputStyles {
+  ownerId?: string | undefined;
+  ownerType?: string | IEntityTypeIdentifier | undefined;
   allowUpload?: boolean | undefined;
   allowReplace?: boolean | undefined;
   allowDelete?: boolean | undefined;

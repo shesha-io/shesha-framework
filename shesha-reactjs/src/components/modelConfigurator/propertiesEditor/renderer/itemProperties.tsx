@@ -1,9 +1,4 @@
-import React, {
-  FC,
-  ReactNode,
-  useEffect,
-  useState,
-} from 'react';
+import { FC, ReactNode, useEffect, useState } from 'react';
 import { ConfigurableForm } from '../../..';
 import { Empty } from 'antd';
 import { nanoid } from '@/utils/uuid';

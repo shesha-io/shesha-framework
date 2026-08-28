@@ -1,17 +1,10 @@
-import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, paddingStyles, shadowStyles } from '@/designer-components/_common/styles/utils';
-import { IStyleValue } from '../../../providers/form/models';
+import { dimensionsStyles, fontStyles } from '@/designer-components/_common/styles/utils';
+import { IStyleValue } from '@/providers';
 import { createStyles, sheshaStyles, getTextHoverEffects } from '@/styles';
-import { CSSProperties } from 'react';
 
-interface UseStylesParams {
-  textAlign: CSSProperties['textAlign'] | undefined;
-  styleValue: IStyleValue | undefined;
-  enableFullStyle: boolean | undefined;
-}
 
-export const useStyles = createStyles(({ css, cx, prefixCls, token }, params: UseStylesParams) => {
-  const { textAlign, styleValue, enableFullStyle } = params;
-
+export const useStyles = createStyles(({ css, cx, prefixCls, token }, styleValue?: IStyleValue) => {
+  const textAlign = styleValue?.styleCss?.textAlign ?? styleValue?.font?.align;
   const readOnlyModeToggler = "read-only-mode-toggler";
   const readOnlyDisplayFormItem = cx("read-only-display-form-item", css`
         width: 100%;
@@ -78,14 +71,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }, params: Us
     overflow: hidden;
     text-overflow: ellipsis;
     ${dimensionsStyles(styleValue?.dimensions)}
-    ${fontStyles(styleValue?.font)}
-
-    ${Boolean(enableFullStyle)
-        ? borderStyles(styleValue?.border) +
-        backgroundStyles(styleValue?.background) +
-        shadowStyles(styleValue?.shadow) +
-        paddingStyles(styleValue?.stylingBoxJson)
-        : ''
+    ${fontStyles(styleValue?.font, styleValue?.styleCss)}
     }
 
   `;

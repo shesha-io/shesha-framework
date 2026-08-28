@@ -6,7 +6,8 @@
         "experimentalDecorators": true,
         "forceConsistentCasingInFileNames": true,
         "isolatedModules": true,
-        "jsx": "react",
+        "jsx": "react-jsx",
+        "jsxImportSource": "react",
         "lib": [
             "es6",
             "dom",
@@ -30,6 +31,7 @@
         "strictPropertyInitialization": true,
         "target": "esnext",
         "noEmitOnError": true,
+        "types": ["node", "react", "vitest/globals", "vite/client"],
         "paths": {
             "@/*": [
                 "./src/*"
@@ -65,11 +67,5 @@
         "dist",
         "example",
         "rollup.config.mjs",
-        "**/tests",
-        "**/*.test.js",
-        "**/*.test.ts",
-        "**/*.test.tsx",
-        "**/*.stories.d.ts",
-        "**/__tests__/**"
     ]
 }

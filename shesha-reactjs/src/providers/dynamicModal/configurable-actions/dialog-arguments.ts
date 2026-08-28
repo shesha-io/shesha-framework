@@ -24,6 +24,12 @@ export interface IShowModalActionArguments extends IHasVersion {
    * What http verb to use when submitting the form. Used in conjunction with `showModalFooter`
    */
   submitHttpVerb?: 'POST' | 'PUT';
+  /**
+   * Optional class applied to the modal wrapper, so a caller can style the portalled dialog with
+   * its own appearance. Not exposed on the arguments form — it is set in code by callers that
+   * carry Appearance settings of their own (e.g. entityReference).
+   */
+  wrapClassName?: string | undefined;
 }
 
 export const closeDialogArgumentsForm = closeDialogArgumentsJson as FormMarkup;

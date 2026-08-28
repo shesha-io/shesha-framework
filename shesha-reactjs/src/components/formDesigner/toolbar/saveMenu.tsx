@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { SaveOutlined } from '@ant-design/icons';
 import { componentsFlatStructureToTree } from '@/providers/form/utils';
 import { App, Button } from 'antd';

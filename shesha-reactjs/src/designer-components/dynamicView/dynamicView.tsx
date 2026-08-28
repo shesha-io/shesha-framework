@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 import { IConfigurableFormComponent } from '@/interfaces/formDesigner';
 import { IPropertyMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { ShaForm, useForm } from '@/providers/form';
@@ -16,7 +16,7 @@ export const DynamicView: FC<DynamicViewProps> = (model) => {
   const currentMeta = useMetadataOrUndefined()?.metadata;
 
   const { formSettings } = useForm();
-  const { allComponents, componentRelations } = ShaForm.useMarkup();
+  const { allComponents, componentRelations, parents } = ShaForm.useMarkup();
   const toolboxComponentGroups = useFormDesignerComponentGroups();
 
   const staticComponents = useMemo<IConfigurableFormComponent[]>(() => {
@@ -52,6 +52,7 @@ export const DynamicView: FC<DynamicViewProps> = (model) => {
           return upgradeComponent(fc, tc, formSettings, {
             allComponents: allComponents,
             componentRelations: componentRelations,
+            parents,
           }, true);
         },
       );
@@ -61,9 +62,11 @@ export const DynamicView: FC<DynamicViewProps> = (model) => {
       return component;
     }).filter(isDefined);
     return components;
-  }, [allComponents, componentRelations, formSettings, propsToRender, toolboxComponentGroups]);
+  }, [allComponents, componentRelations, parents, formSettings, propsToRender, toolboxComponentGroups]);
 
-  if (model.hidden) return null;
+  const { hidden = false } = model;
+  if (hidden)
+    return null;
 
   return (
     <DynamicContainer components={dynamicComponents} />

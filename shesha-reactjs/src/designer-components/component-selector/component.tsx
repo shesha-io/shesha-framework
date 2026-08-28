@@ -1,6 +1,5 @@
 import { BorderOutlined } from '@ant-design/icons';
-import { evaluateString, validateConfigurableComponentSettings } from '@/providers/form/utils';
-import React from 'react';
+import { evaluateString } from '@/providers/form/utils';
 import { FormComponentSelector } from '@/components/formComponentSelector';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { IToolboxComponent } from '@/interfaces';
@@ -44,7 +43,7 @@ export const ComponentSelectorComponent: IToolboxComponent<IComponentSelectorCom
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   migrator: (m) => m
     .add<IComponentSelectorComponentProps>(0, (prev) => ({ ...prev, componentType: 'input' }))
     .add<IComponentSelectorComponentProps>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))

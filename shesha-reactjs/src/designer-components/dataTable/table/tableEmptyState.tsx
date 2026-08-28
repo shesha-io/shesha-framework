@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { TableOutlined, SettingOutlined } from '@ant-design/icons';
 import { useFormDesignerSelectedComponentId } from '@/providers/formDesigner';
 import { useTheme } from '@/providers/theme';

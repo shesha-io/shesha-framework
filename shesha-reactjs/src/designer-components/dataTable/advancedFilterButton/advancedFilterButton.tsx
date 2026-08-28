@@ -1,13 +1,11 @@
-import React from 'react';
-import { Badge, Button, Tooltip } from 'antd';
-import { FilterFilled, FilterOutlined } from '@ant-design/icons';
+import { Badge, Tooltip } from 'antd';
 import { FCUnwrapped, useDataTableStore } from '@/providers';
 import { useStyles } from './style';
 import { ButtonType } from 'antd/es/button/buttonHelpers';
-import { getGhostStyleOverrides } from '@/utils/style';
 import { IAdvancedFilterButtonComponentProps } from './types';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
-import { IconType, ShaIcon } from '@/components/shaIcon';
+import ConfigurableButton from '@/designer-components/button/configurableButton';
+import classNames from 'classnames';
 
 const splitByCapitalLetters = (str: string): string[] => {
   return isNullOrWhiteSpace(str)
@@ -35,7 +33,7 @@ export const AdvancedFilterButton: FCUnwrapped<IAdvancedFilterButtonComponentPro
     toggleAdvancedFilter,
     tableFilter,
   } = useDataTableStore();
-  const { styles } = useStyles(props.styles?.fontSize);
+  const { styles } = useStyles(props);
 
   const filterColumns = tableFilter.map((filter) => filter.columnId);
   const hasFilters = filterColumns.length > 0 || isAdvancedFilterVisible;
@@ -43,52 +41,32 @@ export const AdvancedFilterButton: FCUnwrapped<IAdvancedFilterButtonComponentPro
   // Handle custom 'ghost' buttonType by converting to Ant Design's ghost prop pattern
   const isGhostType = props.buttonType === 'ghost';
 
-  // Build base button style without border/shadow to avoid conflicts
-  const baseButtonStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    ...{ color: props.buttonType !== 'primary' && !props.danger ? styles.primaryColor : '' },
-    padding: '3px',
-  };
-
-  // Ghost buttons should never have borders, backgrounds, or shadows - only foreground color
-  // Link buttons also don't have borders
-  // For other types (primary, default, dashed), let the configured styles handle borders/shadows
-  const borderStyle = ['link', 'ghost'].includes(props.buttonType)
-    ? { border: 'none' }
-    : hasFilters
-      ? { border: `1px solid ${styles.primaryColor}` }
-      : {};
-
-  // Ghost buttons: only foreground color, no background/border/shadow
-  const ghostOverrides = isGhostType ? getGhostStyleOverrides({ color: props.color }) : props.styles;
-
-  const buttonStyle = {
-    ...baseButtonStyle,
-    ...borderStyle,
-    ...props.styles,
-    ...ghostOverrides,
-  };
-
   const iconName = getIconName(props.icon, hasFilters);
-  const filterIcon = iconName
-    ? <ShaIcon iconName={iconName as IconType} />
-    : hasFilters
-      ? <FilterFilled />
-      : <FilterOutlined />;
+  const filterIcon = iconName ?? (hasFilters ? 'FilterFilled' : 'FilterOutlined');
+
   const actualButtonType = isGhostType ? 'default' : (props.buttonType as ButtonType);
 
+  const { marginTop, marginRight, marginBottom, marginLeft, ...padding } = props.stylingBoxJson ?? { _type: 'styleBox' };
+
   return (
-    <span>
-      <Badge
-        count={tableFilter.length}
-        color={isAdvancedFilterVisible || props.readOnly ? styles.disabledColor : styles.primaryColor}
-        size="small"
-        title={filterColumns.join('  ')}
-      >
-        <Tooltip title={props.tooltip}>
-          <Button
+    <div className={classNames(styles.buttonContainer, { disabled: props.disabled || isAdvancedFilterVisible })}>
+      <Tooltip title={props.tooltip}>
+        <Badge
+          count={tableFilter.length}
+          color={styles.primaryColor}
+          size="small"
+          title={filterColumns.join('  ')}
+        >
+          <ConfigurableButton
+            {...props}
+            buttonType={actualButtonType}
+            icon={filterIcon}
+            tooltip={filterColumns.join('  ')}
+            onClick={() => toggleAdvancedFilter(!isAdvancedFilterVisible)}
+            disabled={props.disabled || isAdvancedFilterVisible}
+            stylingBoxJson={padding}
+          />
+          {/* <Button
             type={actualButtonType}
             ghost={isGhostType}
             title={filterColumns.join('  ')}
@@ -104,8 +82,9 @@ export const AdvancedFilterButton: FCUnwrapped<IAdvancedFilterButtonComponentPro
           >
             {props.label}
           </Button>
-        </Tooltip>
-      </Badge>
-    </span>
+          */}
+        </Badge>
+      </Tooltip>
+    </div>
   );
 };

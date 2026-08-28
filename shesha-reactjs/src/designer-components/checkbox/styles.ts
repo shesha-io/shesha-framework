@@ -53,10 +53,10 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: ICheckboxC
         &:after {
           top: 50% !important;
           inset-inline-start: 50% !important;
-          transform: translate(-50%, -50%) rotate(45deg) scale(0) !important;
+          transform: translate(-50%, -60%) rotate(45deg) scale(0) !important;
         }
         &.${prefixCls}-checkbox-checked:after {
-          transform: translate(-50%, -50%) rotate(45deg) scale(1) !important;
+          transform: translate(-50%, -60%) rotate(45deg) scale(1) !important;
         }
       }
 

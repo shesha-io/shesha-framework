@@ -1,5 +1,5 @@
 import { ITextFieldSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import Icon from '@/components/icon/Icon';
 import { useStyles } from '../styles';
 import { Input } from 'antd';

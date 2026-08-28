@@ -5,7 +5,8 @@ import { DataTypes, EntityFormats, ObjectFormats } from '@/interfaces/dataTypes'
 import { IModelMetadata, IPropertyMetadata, isEntityMetadata, isPropertiesArray } from '@/interfaces/metadata';
 import { camelcaseDotNotation, toCamelCase } from '@/utils/string';
 
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
+import * as React from 'react';
 import { ProductOutlined } from '@ant-design/icons';
 
 export const getIconTypeByDataType = (dataType: string): IconType | null => {

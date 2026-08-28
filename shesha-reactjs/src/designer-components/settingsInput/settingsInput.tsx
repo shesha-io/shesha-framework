@@ -1,4 +1,5 @@
-import React, { ComponentType, useMemo } from 'react';
+import { ComponentType, useMemo } from 'react';
+import * as React from 'react';
 import FormItem from "../_settings/components/formItem";
 import { BaseInputProps, hasModelType, ISettingsInputProps, isSettingsInputProps } from './interfaces';
 import { useSettingsComponents, FCUnwrapped, useShaFormInstance, ConditionalMetadataProvider, UnwrapCodeEvaluators } from '@/providers';

@@ -1,9 +1,8 @@
 import ComponentsContainer from '@/components/formDesigner/containers/componentsContainer';
 import { FormItemProvider, IConfigurableFormComponent } from '@/providers';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import ParentProvider from '@/providers/parentProvider/index';
 import { GroupOutlined } from '@ant-design/icons';
-import React from 'react';
 import { IPropertyRouterComponentProps, PropertyRouterComponentDefinition } from './interfaces';
 import { getSettings } from './settingsForm';
 
@@ -27,7 +26,7 @@ const PropertyRouterComponent: PropertyRouterComponentDefinition = {
       );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
 };
 
 export const isPropertyRouterComponent = (component: IConfigurableFormComponent): component is IPropertyRouterComponentProps => component.type === PropertyRouterComponent.type;

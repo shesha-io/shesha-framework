@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
 import { Select } from 'antd';
 import { PermissionsTree } from '@/components/permissionsTree';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';

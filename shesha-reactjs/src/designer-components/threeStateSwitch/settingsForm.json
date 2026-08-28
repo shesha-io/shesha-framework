@@ -14,7 +14,6 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
       "header": {
         "id": "FizvoIoyeq1cZMqAgbDLL",
         "components": []
@@ -30,8 +29,7 @@
             "label": "Property name",
             "validate": {
               "required": true
-            },
-            "settingsValidationErrors": []
+            }
           },
           {
             "id": "46d07439-4c18-468c-89e1-60c002ce96c5",
@@ -107,7 +105,6 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
       "header": {
         "id": "FizvoIozeq2cZMqAgbDLL",
         "components": []
@@ -149,15 +146,13 @@
             "propertyName": "permissions",
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Permissions",
-            "validate": {},
             "version": 1
           }
         ]
       },
       "collapsible": "header",
       "ghost": true,
-      "hideWhenEmpty": true,
-      "settingsValidationErrors": []
+      "hideWhenEmpty": true
     }
   ],
   "formSettings": {

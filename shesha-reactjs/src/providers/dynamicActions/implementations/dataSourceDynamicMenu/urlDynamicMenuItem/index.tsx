@@ -1,5 +1,5 @@
 import { DynamicActionsProvider, DynamicItemsEvaluationHook, useHttpClient } from '@/providers';
-import React, { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import { FC, PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import { ButtonGroupItemProps, IButtonGroupItem } from '@/providers/buttonGroupConfigurator';
 import { IDataSourceArguments } from '../model';
 import { useUrlTemplates } from '../utils';

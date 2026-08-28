@@ -1,4 +1,4 @@
-import React, { FC, PropsWithChildren } from 'react';
+import { FC, PropsWithChildren } from 'react';
 import { ConditionalMetadataProvider } from '@/providers';
 import { QueryBuilderWrapper } from './queryBuilderWrapper';
 import { IEntityTypeIdentifier } from '@/providers/sheshaApplication/publicApi/entities/models';

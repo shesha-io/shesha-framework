@@ -26,13 +26,15 @@ export type DocumentFlags = {
 };
 
 export type TreeNode = DataNode & {
-  id: string;
-  parentId?: string | undefined;
-  moduleId: string;
-  name: string;
-  label: string;
-  description?: string | undefined;
-  nodeType: TreeNodeType;
+  "id": string;
+  "parentId"?: string | undefined;
+  "moduleId": string;
+  "name": string;
+  "label": string;
+  "description"?: string | undefined;
+  "nodeType": TreeNodeType;
+  // rc-tree spreads data-*/aria-* fields onto the row's DOM element (used for drag-hover auto-expand).
+  'data-node-id'?: string;
 };
 
 export type ConfigItemTreeNode = TreeNode & {

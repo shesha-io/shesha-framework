@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { Button, Tooltip } from 'antd';
 import { QuestionCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { usePropertiesEditor } from '../provider';

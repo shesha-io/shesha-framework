@@ -1,4 +1,0 @@
-{
-  "entry": ["src/index.tsx"],
-  "ignorePatterns": ["**/*.stories.tsx", "**/__tests__/**"]
-}

@@ -1,5 +1,6 @@
 import moment, { Moment } from 'moment';
 import { IPropertyMetadata } from '@/interfaces/metadata';
+import { DataTypes } from '@/interfaces/dataTypes';
 import { getDataProperty } from '@/utils/metadata';
 import { DateBindingFormat, DateSelectionType, DisabledDateTemplate, IDateFieldProps } from './interfaces';
 import { range } from 'lodash';
@@ -75,6 +76,43 @@ function legacyDisabledDate(props: IDateFieldProps, current: Moment, data: objec
 
 export const getBindingFormat = (props: IDateFieldProps): DateBindingFormat =>
   props.bindingFormat ?? (props.resolveToUTC === true ? 'utc' : 'isoLocal');
+
+const BINDING_FORMAT_LABELS: Record<DateBindingFormat, string> = {
+  utc: 'UTC',
+  isoLocal: 'ISO Local',
+  isoOffset: 'ISO with offset',
+  dateOnly: 'Date only',
+  ticks: 'Ticks',
+  unix: 'Unix',
+};
+
+const NUMERIC_BINDING_FORMATS: DateBindingFormat[] = ['ticks', 'unix'];
+
+/**
+ * Warns when the value would be posted as a number to a property that can only accept a date.
+ * Ticks and Unix stay available because they are the right choice for a numeric property (a `long`
+ * holding an epoch value, say) — this only fires where the metadata says the target is a date, the
+ * one combination that is guaranteed to be rejected by the backend.
+ *
+ * Returns `undefined` when the configuration is fine, or when there is no metadata to judge it by.
+ */
+export const getNumericBindingFormatWarning = (
+  props: IDateFieldProps,
+  properties: IPropertyMetadata[],
+): string | undefined => {
+  const bindingFormat = getBindingFormat(props);
+  if (!NUMERIC_BINDING_FORMATS.includes(bindingFormat)) return undefined;
+
+  const { propertyName } = props;
+  if (isNullOrWhiteSpace(propertyName)) return undefined;
+
+  const dataType = getDataProperty(properties, propertyName, 'dataType');
+  if (dataType !== DataTypes.date && dataType !== DataTypes.dateTime) return undefined;
+
+  return `Binding Format "${BINDING_FORMAT_LABELS[bindingFormat]}" stores the value as a number, ` +
+    `but "${propertyName}" is a ${dataType} property and will reject it when the form is saved. ` +
+    `Choose UTC, ISO Local, ISO with offset or Date only, or bind this field to a numeric property.`;
+};
 
 export const serializeValue = (value: Moment, props: IDateFieldProps): string => {
   switch (getBindingFormat(props)) {
@@ -194,7 +232,7 @@ export const defaultStyles = (): IStyleValue => {
       repeat: 'no-repeat',
       size: 'cover',
       position: 'center',
-      gradient: { direction: 'to right', colors: {} },
+      gradient: { direction: 'to right', colors: [] },
       url: '',
     },
     font: { weight: '400', size: 14, color: '#000', type: 'Segoe UI', align: 'left' },

@@ -13,7 +13,7 @@ import {
   Skeleton,
 } from 'antd';
 import { ResultStatusType } from 'antd/lib/result';
-import React, { FC, PropsWithChildren, useEffect } from 'react';
+import { FC, PropsWithChildren, useEffect } from 'react';
 
 export interface IFormProviderWrapperProps {
   formId: FormIdentifier;

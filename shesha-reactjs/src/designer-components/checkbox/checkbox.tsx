@@ -1,8 +1,8 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { CheckSquareOutlined } from '@ant-design/icons';
 import { Checkbox, CheckboxRef } from 'antd';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles } from '@/providers';
 import { CheckboxComponentDefinition, ICheckboxComponentProps } from './interfaces';
@@ -11,6 +11,7 @@ import {
   migrateCustomFunctions,
   migrateReadOnly,
   migrateHiddenToVisible,
+  migrateStylingBoxToJson,
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
@@ -20,7 +21,7 @@ import { getSettings } from './settingsForm';
 import { useStyles } from './styles';
 import { defaultStyles } from './utils';
 import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '../_common/events';
-import { useComponentApi } from '@/providers/componentApi/provider';
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { CheckboxFieldApi } from '../../componentsApi/componentApi';
 import { isDefined } from '@/utils/nullables';
@@ -42,7 +43,7 @@ const CheckboxComponent: CheckboxComponentDefinition = {
   preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType }) => dataType === DataTypes.boolean,
   Factory: ({ model, apiContext }) => {
-    const componentApi = useComponentApi();
+    const componentApi = useComponentApiProvider();
     const inputRef = useRef<CheckboxRef>(null);
     useEffect(() => {
       componentApi?.updateApi<CheckboxFieldApi>({
@@ -66,7 +67,7 @@ const CheckboxComponent: CheckboxComponentDefinition = {
               className={styles.checkbox}
               disabled={model.disabled === true || model.readOnly === true}
               checked={value ?? false}
-              {...(isDefined(model.styleJson) ? { style: model.styleJson } : {})}
+              {...(isDefined(model.styleCss) ? { style: model.styleCss } : {})}
               onChange={(event) => {
                 ctx?.handleEvent(event, { value: event.target.checked }, model.onChangeCustom);
                 onChange(event.target.checked);
@@ -80,7 +81,7 @@ const CheckboxComponent: CheckboxComponentDefinition = {
   },
   settingsFormMarkup: getSettings,
   getDefaultStyles: () => defaultStyles(),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   migrator: (m) =>
     m
       .add<ICheckboxComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
@@ -99,7 +100,7 @@ const CheckboxComponent: CheckboxComponentDefinition = {
       .add<ICheckboxComponentProps>(5, (prev, context) => context.isNew === true
         ? prev
         : migratePrevStyles(prev, defaultStyles(prev)))
-      .add<ICheckboxComponentProps>(6, (prev) => migrateHiddenToVisible(prev))
+      .add<ICheckboxComponentProps>(6, (prev) => migrateHiddenToVisible(migrateStylingBoxToJson(prev)))
       .add<ICheckboxComponentProps>(7, (prev) => migratePermissionsToVisiblePermissions(prev)),
   previewConfiguration: {
     type: 'checkbox',

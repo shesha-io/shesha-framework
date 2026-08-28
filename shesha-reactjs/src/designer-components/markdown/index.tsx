@@ -1,11 +1,11 @@
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
-import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
+
 import { IToolboxComponent } from '@/interfaces';
 import { IInputStyles } from '@/providers/form/models';
 import { removeUndefinedProps } from '@/utils/object';
 import { EditOutlined } from '@ant-design/icons';
-import React, { CSSProperties } from 'react';
+import { CSSProperties } from 'react';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { IMarkdownProps } from './interfaces';
@@ -46,7 +46,7 @@ const MarkdownComponent: IToolboxComponent<IMarkdownProps> = {
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   initModel: (model) => ({
     ...model,
     content: (!isNullOrWhiteSpace(model.content)

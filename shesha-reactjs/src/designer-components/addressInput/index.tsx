@@ -1,5 +1,4 @@
 import { EnvironmentOutlined } from '@ant-design/icons';
-import React from 'react';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { IToolboxComponent } from '@/interfaces';
 import {
@@ -9,7 +8,7 @@ import {
 } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '@/designer-components/_common-migrations/migrateFormApi1';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import AddressInputControl from './control';
 import { IAddressInputComponentProps } from './interfaces';
@@ -65,9 +64,6 @@ const AddressInputComponent: IToolboxComponent<IAddressInputComponentProps> = {
   }),
 
   settingsFormMarkup: getSettings,
-
-  validateSettings: (model) =>
-    validateConfigurableComponentSettings(getSettings, model),
 
   migrator: (m) =>
     m

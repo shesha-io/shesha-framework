@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { ICommonContainerProps } from '@/designer-components/container/interfaces';
 import { IComponentsContainerBaseProps } from '@/interfaces';
 import { removeUndefinedProperties } from '@/utils/array';

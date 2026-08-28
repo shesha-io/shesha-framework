@@ -71,6 +71,7 @@ export const EntityAutocomplete = <TValue = unknown>(props: EntityAutocompletePr
       onChange={props.onChange}
       mode={props.mode}
       readOnly={props.readOnly}
+      disabled={props.disabled}
 
       permanentFilter={permanentFilter}
       grouping={props.grouping}
@@ -92,6 +93,13 @@ export const EntityAutocomplete = <TValue = unknown>(props: EntityAutocompletePr
 
       placeholder={props.placeholder}
       size={props.size}
+      style={props.style}
+      className={props.className}
+      popupClassName={props.popupClassName}
+      selectRef={props.selectRef}
+      events={props.events}
+      styleValue={props.styleValue}
+      disableSearch={props.disableSearch}
     />
   );
 };

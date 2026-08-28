@@ -1,6 +1,6 @@
 import { ConfigurableForm } from '@/components/configurableForm';
 import permissionSettingsMarkup from '../permissionSettings.json';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { Form } from 'antd';
 import { isEqual } from 'lodash';
 import { PermissionDto } from '@/apis/permission';

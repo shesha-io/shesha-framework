@@ -14,7 +14,6 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
       "header": {
         "id": "FizvoIoyeq1cZMqAgbDLL",
         "components": []
@@ -118,9 +117,7 @@
                 "label": "Inline",
                 "value": "inline"
               }
-            ],
-            "validate": {},
-            "settingsValidationErrors": []
+            ]
           }
         ]
       }
@@ -139,7 +136,6 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
       "header": {
         "id": "1izvoIoyeq1cZMqAgbDLL",
         "components": []
@@ -200,7 +196,6 @@
       "collapsible": "header",
       "ghost": true,
       "hideWhenEmpty": true,
-      "settingsValidationErrors": [],
       "header": {
         "id": "2izvoIoyeq1cZMqAgbDLL",
         "components": []
@@ -242,15 +237,13 @@
             "propertyName": "permissions",
             "parentId": "SsWPpiJfTbgl4iHlFA_or",
             "label": "Permissions",
-            "validate": {},
             "version": 1
           }
         ]
       },
       "collapsible": "header",
       "ghost": true,
-      "hideWhenEmpty": true,
-      "settingsValidationErrors": []
+      "hideWhenEmpty": true
     }
   ],
   "formSettings": {

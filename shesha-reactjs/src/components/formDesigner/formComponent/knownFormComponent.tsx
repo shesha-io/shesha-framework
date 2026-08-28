@@ -1,16 +1,17 @@
 import { isSubFormComponent, ISubFormComponentProps } from '@/designer-components/subForm';
 import { useCalculatedModel } from '@/hooks/formComponentHooks';
 import { IApiContext, IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
-import { UnwrapCodeEvaluators, useForm, useShaFormInstance, useSheshaApplication } from '@/providers';
+import { UnwrapCodeEvaluators, useShaFormInstance, useSheshaApplication, useSubFormOrUndefined } from '@/providers';
 import { isFormFullName } from '@/providers/form/utils';
 import { useValidationErrorsStateOrDefault } from '@/providers/validationErrors';
 import { IModelValidation, ISheshaErrorTypes } from '@/utils/errors';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
-import React, { FC, useMemo } from 'react';
+import { memo, FC, useMemo } from 'react';
 import AttributeDecorator from '../../attributeDecorator';
 import ErrorIconPopover from '../../componentErrors/errorIconPopover';
 import { isValidGuid } from '../components/utils';
 import { useShaComponentStyles } from '../styles/shaComponentStyles';
+import { isNonEmptyArray } from '@/utils/array';
 
 type CustomHtmlAttributes = {
   "data-sha-c-id"?: string | undefined;
@@ -32,14 +33,14 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
   const { styles: shaComponentStyles } = useShaComponentStyles({ componentModel, toolboxComponent, isDesigner: false });
   const shaApplication = useSheshaApplication();
   const shaForm = useShaFormInstance();
-  const { formMode } = useForm();
+  const isSubForm = isDefined(useSubFormOrUndefined());
   const { errors: validationErrors } = useValidationErrorsStateOrDefault(); // Get errors map to trigger re-renders when errors change
   const calculatedModel = useCalculatedModel(componentModel, toolboxComponent.useCalculateModel, toolboxComponent.calculateModel);
 
   const control = useMemo(() => {
     return (
       <toolboxComponent.Factory
-        form={shaForm.antdForm}
+        form={shaForm}
         model={componentModel}
         calculatedModel={calculatedModel}
         shaApplication={shaApplication}
@@ -47,14 +48,14 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
         key={componentModel.id}
       />
     );
-  }, [toolboxComponent, shaForm.antdForm, componentModel, calculatedModel, shaApplication, apiContext]);
+  }, [toolboxComponent, shaForm, componentModel, calculatedModel, shaApplication, apiContext]);
 
   // Run validation in both designer and runtime modes
   // Collect errors from:
   // 1. Toolbox validateModel function
   // 2. Child components registered via useComponentValidation hook
   const validationResult = useMemo((): IModelValidation | undefined => {
-    const errors: Array<{ propertyName?: string; error: string }> = [];
+    const errors: Array<{ propertyName?: string | undefined; error: string }> = [];
     let validationType: ISheshaErrorTypes | undefined;
 
     if (componentModel.background?.type === 'storedFile' && isDefined(componentModel.background.storedFile?.id) && !isValidGuid(componentModel.background.storedFile.id)) {
@@ -68,7 +69,7 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
 
     // Collect errors from child components registered via hook
     const childValidation = validationErrors.get(componentModel.id);
-    if (isDefined(childValidation) && childValidation.hasErrors && childValidation.errors) {
+    if (isDefined(childValidation) && childValidation.hasErrors && isNonEmptyArray(childValidation.errors)) {
       errors.push(...childValidation.errors);
       // Use the child's validationType if present (prioritize 'error' > 'warning' > 'info')
       if (childValidation.validationType) {
@@ -94,14 +95,14 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
     return undefined;
   }, [toolboxComponent, componentModel, validationErrors]);
 
-  const wrappedControl = formMode === 'designer'
+  const wrappedControl = shaForm.formMode === 'designer' && !isSubForm
     ? control
     : <div className={shaComponentStyles.shaComponent}>{control}</div>;
 
   // Wrap component with error icon if there are validation errors
   // Show error icons only in designer mode
   // Use the validationType from the validation result (error/warning/info) or default to 'warning'
-  const wrappedErrorControl = isDefined(validationResult) && validationResult.hasErrors && formMode === 'designer' ? (
+  const wrappedErrorControl = isDefined(validationResult) && validationResult.hasErrors && shaForm.formMode === 'designer' ? (
     <ErrorIconPopover
       mode="validation"
       validationResult={validationResult}
@@ -136,5 +137,5 @@ const KnownFormComponent: FC<KnownFormComponentProps> = ({ componentModel, toolb
   return <AttributeDecorator attributes={attributes as Record<string, string>}>{wrappedErrorControl}</AttributeDecorator>;
 };
 
-const KnownFormComponentMemo = React.memo(KnownFormComponent);
+const KnownFormComponentMemo = memo(KnownFormComponent);
 export default KnownFormComponentMemo;

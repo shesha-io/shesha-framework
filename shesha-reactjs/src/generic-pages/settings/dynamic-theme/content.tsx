@@ -1,5 +1,5 @@
 import { Col, Radio } from 'antd';
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
 import { CollapsiblePanel } from '@/components/panel';
 import ThemeParameters from './parameters';
 import { useStyles } from './styles/styles';

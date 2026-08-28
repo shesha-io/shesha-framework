@@ -74,7 +74,6 @@
           "autoSize": false,
           "showCount": false,
           "allowClear": false,
-          "validate": {},
           "version": 1
         },
         {
@@ -85,7 +84,6 @@
           "labelAlign": "right",
           "parentId": "345c2181-fb9f-48ed-9631-864ac357807b",
           "hidden": false,
-          "settingsValidationErrors": [],
           "version": 1
         },
         {
@@ -99,7 +97,6 @@
           "hidden": false,
           "isDynamic": false,
           "version": 1,
-          "settingsValidationErrors": [],
           "allowedActions": ["shesha.common"]
         }
       ],
@@ -114,7 +111,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "settingsValidationErrors": [],
       "version": 3
     },    
     {
@@ -125,7 +121,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "validate": {},
       "version": 1
     }
   ],

@@ -1,4 +1,5 @@
-import React, { Context, PropsWithChildren, useReducer, useState } from 'react';
+import { Context, PropsWithChildren, useReducer, useState } from 'react';
+import * as React from 'react';
 import { ValueMutator } from './interfaces';
 import { IListEditorActionsContext, IListEditorStateContext, ListItemFactory } from './models';
 

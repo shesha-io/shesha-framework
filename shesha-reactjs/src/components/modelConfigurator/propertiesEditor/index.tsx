@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { Form } from 'antd';
 import { IModelItem } from '@/interfaces/modelConfigurator';
 import { PropertiesEditorProvider } from './provider';

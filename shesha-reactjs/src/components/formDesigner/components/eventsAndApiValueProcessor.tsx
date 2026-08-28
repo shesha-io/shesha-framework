@@ -1,6 +1,6 @@
 import { ReactNode, useCallback, useEffect, useState } from "react";
 import { HandleEvent, IConfigurableFormItemChildFunc } from "./model";
-import { useComponentApi } from "@/providers/componentApi/provider";
+import { useComponentApiProvider } from "@/providers/componentApi/provider";
 import { InputComponentApi } from "@/componentsApi/componentApi";
 import { useEffectOnce } from "@/hooks/useEffectOnce";
 import { IComponentApiInputRef } from "@/providers/componentApi/model";
@@ -38,7 +38,7 @@ export const useEvents = <TValue = unknown>(componentName: string = 'undefined')
  */
 export const EventsAndApiValueProcessor = <TValue = unknown>({ value, onChange, children, componentId, componentName, propertyName }: IEventsAndApiValueProcessorProps<TValue>): ReactNode => {
   const handleEvent = useEvents<TValue>(componentName);
-  const componentApi = useComponentApi();
+  const componentApi = useComponentApiProvider();
 
   const apiRef = useLiveRef<IComponentApiInputRef<TValue>>({ value, onChange });
 

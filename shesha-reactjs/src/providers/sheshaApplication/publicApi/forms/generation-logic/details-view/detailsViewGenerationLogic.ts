@@ -162,8 +162,6 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
               hidden: false,
               componentName: `text${count}`,
               content: prop.label || '',
-              contentDisplay: 'content',
-              textType: "span",
               color: 'default',
               desktop: { ...customDefaults },
               tablet: { ...customDefaults },

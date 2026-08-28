@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import { ReactNode } from "react";
 import { ListEditorSectionRenderingArgs } from "@/components/listEditor";
 import { Button } from "antd";
 import { useStyles } from '@/designer-components/_common/styles/listConfiguratorStyles';

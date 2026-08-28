@@ -1,4 +1,5 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
+import * as React from 'react';
 import Search from 'antd/lib/input/Search';
 import { SearchProps } from 'antd/lib/input';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
@@ -10,7 +11,6 @@ export interface IGlobalTableFilterBaseProps {
   performQuickSearch?: ((val: string) => void) | undefined;
   quickSearch: string | undefined;
   size?: SizeType | undefined;
-  block?: boolean | undefined;
   style?: React.CSSProperties | undefined;
 }
 
@@ -19,10 +19,9 @@ export const GlobalTableFilterBase: FC<IGlobalTableFilterBaseProps> = ({
   changeQuickSearch,
   performQuickSearch,
   quickSearch,
-  block = false,
   style,
 }) => {
-  const { styles } = useStyles({ block });
+  const { styles } = useStyles();
   const srcProps: SearchProps = {
     allowClear: true,
     ...searchProps,
@@ -31,10 +30,7 @@ export const GlobalTableFilterBase: FC<IGlobalTableFilterBaseProps> = ({
 
   const onSearch = (
     value: string,
-    event?:
-      | React.MouseEvent<HTMLElement, MouseEvent> |
-      React.ChangeEvent<HTMLInputElement> |
-      React.KeyboardEvent<HTMLInputElement>,
+    event?: | React.MouseEvent<HTMLElement, MouseEvent> | React.ChangeEvent<HTMLInputElement> | React.KeyboardEvent<HTMLInputElement>,
   ): void => {
     event?.stopPropagation();
     event?.preventDefault();

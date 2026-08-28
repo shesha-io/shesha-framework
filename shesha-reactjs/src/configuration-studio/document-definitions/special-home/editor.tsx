@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { Result, Typography } from 'antd';
 
 const { Paragraph } = Typography;

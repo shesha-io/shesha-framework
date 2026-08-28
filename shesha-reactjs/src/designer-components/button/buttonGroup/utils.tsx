@@ -1,20 +1,41 @@
-import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
+import { ButtonGroupItemProps, IButtonGroupItem, isGroup, isItem } from '@/providers/buttonGroupConfigurator/models';
 import { IStyleValue } from '@/providers/form/models';
-import { getStringPropertyOrUndefined } from '@/utils/object';
-import { MenuProps } from 'antd';
-import React from 'react';
+import { deepMergeValues, getStringPropertyOrUndefined } from '@/utils/object';
+import * as React from 'react';
+import { MenuButton, MenuItem, ItemBooleanEvaluator } from './models';
+import { IApplicationContext } from '@/providers/form/utils';
+import { addPx } from '@/utils/style';
+import { RenderButton } from './renderButton';
+import { nanoid } from '@/utils/uuid';
+import { isDefined, isNullOrWhiteSpace } from '@/utils';
+import { IToolboxComponent } from '@/interfaces';
 
-type MenuItem = Required<MenuProps>['items'][number];
+export const createMenuItem = (
+  props: MenuButton,
+  getIsVisible: ItemBooleanEvaluator,
+  getIsDisabled: ItemBooleanEvaluator,
+  appContext: IApplicationContext,
+  buttonComponent: IToolboxComponent,
+): MenuItem => {
+  const isDivider = isItem(props) && (props.itemSubType === 'line' || props.itemSubType === 'separator');
 
-/**
- * Removes CSS units from a value and returns the numeric value
- * @param value - CSS value with units (e.g. '10px', '1.5rem', '50%')
- * @returns The numeric value without units
- */
-export const removeCssUnit = (value: string | number): number => {
-  if (typeof value === 'number') return value;
-  return parseFloat(value);
+  const childItems = props.childItems && props.childItems.length > 0
+    ? props.childItems.filter(getIsVisible).map((props) => createMenuItem(props, getIsVisible, getIsDisabled, appContext, buttonComponent))
+    : undefined;
+
+  // for backward compatibility
+  const defaultStyledItem = isGroup(props) ? deepMergeValues(defaultGroupStyles(), props) : props;
+
+  return isDivider === true
+    ? { key: props.id, type: 'divider', style: { height: addPx(props.dividerWidth, appContext), backgroundColor: props.dividerColor } }
+    : getButtonGroupMenuItem(
+      <RenderButton props={defaultStyledItem} buttonComponent={buttonComponent} />,
+      props.id,
+      getIsDisabled(props),
+      childItems,
+    );
 };
+
 
 export function getButtonGroupMenuItem(
   label: React.ReactNode,
@@ -30,6 +51,25 @@ export function getButtonGroupMenuItem(
     disabled,
   } as MenuItem;
 };
+
+export const getDefaultItems = (): IButtonGroupItem[] => ([
+  {
+    id: nanoid(), itemType: 'item', sortOrder: 0, name: 'button1', label: 'Button 1', itemSubType: 'button', buttonType: 'primary', editMode: 'inherited',
+    background: { type: 'color', repeat: 'no-repeat', size: 'cover', position: 'center', gradient: { direction: 'to right', colors: [] } },
+    font: { weight: '400', size: 14, align: 'center', type: 'Segoe UI' },
+    dimensions: { width: 'auto', height: '32px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
+    border: { radiusType: 'all', borderType: 'all', hideBorder: false, border: { all: { width: '1px', style: 'solid' } }, radius: { all: 8 } },
+    shadow: { spreadRadius: 0, blurRadius: 0, color: '#000', offsetX: 0, offsetY: 0 },
+  },
+  {
+    id: nanoid(), itemType: 'item', sortOrder: 1, name: 'button2', label: 'Button 2', itemSubType: 'button', buttonType: 'default', editMode: 'inherited',
+    background: { type: 'color', repeat: 'no-repeat', size: 'cover', position: 'center', gradient: { direction: 'to right', colors: [] } },
+    font: { weight: '400', size: 14, align: 'center', type: 'Segoe UI' },
+    dimensions: { width: 'auto', height: '32px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
+    border: { radiusType: 'all', borderType: 'all', hideBorder: false, border: { all: { width: '1px', style: 'solid' } }, radius: { all: 8 } },
+    shadow: { spreadRadius: 0, blurRadius: 0, color: '#000', offsetX: 0, offsetY: 0 },
+  },
+]);
 
 export const defaultStyles = (prev: ButtonGroupItemProps): IStyleValue => {
   return {
@@ -53,12 +93,12 @@ export const defaultStyles = (prev: ButtonGroupItemProps): IStyleValue => {
           color: prev.borderColor ?? '#d9d9d9',
         },
       },
-      radius: { all: prev.borderRadius ?? prev.size === 'small' ? 4 : 8 },
+      radius: { all: isDefined(prev.borderRadius) ? prev.borderRadius : prev.size === 'small' ? 4 : 8 },
     },
     shadow: { spreadRadius: 0, blurRadius: 0, color: '#000', offsetX: 0, offsetY: 0 },
     dimensions: {
-      width: prev.block ? '100%' : 'auto',
-      height: prev.height ?? prev.size === 'small' ? '24px' : prev.size === 'middle' ? '32px' : '40px',
+      width: prev.block === true ? '100%' : 'auto',
+      height: !isNullOrWhiteSpace(prev.height) ? prev.height : prev.size === 'small' ? '24px' : prev.size === 'large' ? '40px' : '32px',
       minHeight: '0px',
       maxHeight: 'auto',
       minWidth: '0px',
@@ -68,8 +108,19 @@ export const defaultStyles = (prev: ButtonGroupItemProps): IStyleValue => {
   };
 };
 
-export const defaultContainerStyles = (): IStyleValue => {
+export const defaultGroupStyles = (): IStyleValue => {
   return {
+    background: { type: 'color' },
+    font: { weight: '400', size: 14, type: 'Segoe UI', align: 'center' },
+    border: { borderType: 'all', radiusType: 'all', border: { all: { width: '1px', style: 'solid', color: '#d9d9d9' } }, radius: { all: 8 } },
+    shadow: { spreadRadius: 0, blurRadius: 0, color: '#000', offsetX: 0, offsetY: 0 },
+    dimensions: { width: 'auto', height: '32px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
+  };
+};
+
+export const defaultContainerStyles = (): IStyleValue & { buttonGroupStyle: 'horizontal' | 'menu' } => {
+  return {
+    buttonGroupStyle: 'horizontal',
     background: { type: 'color' },
     border: {
       border: { all: { width: '1px', style: 'none', color: '#d9d9d9' } },

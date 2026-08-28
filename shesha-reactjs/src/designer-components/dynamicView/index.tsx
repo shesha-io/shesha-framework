@@ -1,8 +1,7 @@
-import React from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { AppstoreOutlined } from '@ant-design/icons';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import DynamicView from './dynamicView';
 import { getSettings } from './settings';
 
@@ -20,7 +19,7 @@ const DynamicViewComponent: IToolboxComponent<DynamicViewComponentProps> = {
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
 };
 
 export default DynamicViewComponent;

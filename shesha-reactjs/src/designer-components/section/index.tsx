@@ -1,9 +1,9 @@
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 import { IToolboxComponent } from '@/interfaces';
 import { FormMarkup, IConfigurableFormComponent } from '@/providers/form/models';
 import { BorderLeftOutlined } from '@ant-design/icons';
 import settingsFormJson from './settingsForm.json';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import _ from 'lodash';
 import { useForm, useFormData } from '@/providers';
 import { Alert } from 'antd';
@@ -41,7 +41,7 @@ const SectionComponent: IToolboxComponent<ISectionProps> = {
     return null;
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+
   migrator: (m) => m
     .add<ISectionProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev))),
 };

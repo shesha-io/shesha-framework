@@ -1,142 +1,46 @@
 import { buttonTypes } from '@/designer-components/button/util';
-import { FormMarkupFactory } from '@/interfaces/configurableAction';
+import { SettingsFormMarkupFactory } from '@/interfaces';
+import { nanoid } from '@/utils/uuid';
 import { FormLayout } from 'antd/lib/form/Form';
 
-export const getGroupSettings: FormMarkupFactory = ({ fbf }) => {
+export const getGroupSettings: SettingsFormMarkupFactory = ({ fbf }) => {
+  const commonTabId = nanoid();
+  const appearanceTabId = nanoid();
+
   return {
     components: fbf()
-      .addSearchableTabs({
-        id: 'W_m7doMyCpCYwAYDfRh6I',
-        propertyName: 'settingsTabs',
-        parentId: 'root',
-        label: 'Settings',
-        hideLabel: true,
-        labelAlign: 'right',
-        size: 'small',
+      .addSearchableTabs({ propertyName: 'settingsTabs', label: 'Settings', hideLabel: true, labelAlign: 'right', size: 'small',
         tabs: [
-          {
-            key: '1',
-            title: 'Common',
-            id: 's4gmBg31azZC0UjZjpfTm',
-            components: [...fbf()
-              .addSettingsInput({
-                id: 'f061d971-8b38-4b82-b192-563259afc159',
-                parentId: 's4gmBg31azZC0UjZjpfTm',
-                inputType: 'textField',
-                propertyName: 'name',
-                label: 'Group Name',
-                jsSetting: false,
-                validate: {
-                  required: true,
-                },
-              })
+          { key: 'common', title: 'Common', id: commonTabId,
+            components: [...fbf(commonTabId)
+              .addSettingsInput({ inputType: 'textField', propertyName: 'name', label: 'Group Name', jsSetting: false, validate: { required: true } })
               .addSettingsInputRow({
-                id: 'label-tooltip-s4gmBg31azZC0UjZjpfTm',
-                parentId: 's4gmBg31azZC0UjZjpfTm',
                 inputs: [
-                  {
-                    id: "A-qcRVk-qlnGDLtFvK-2X",
-                    type: "textField",
-                    propertyName: "label",
-                    parentId: "root",
-                    label: "Label",
-                  },
-                  {
-                    id: "rupsZ1fuRwqetjQ0BC5sk",
-                    type: "textArea",
-                    propertyName: "tooltip",
-                    label: "Group Tooltip",
-                    labelAlign: "right",
-                    parentId: "root",
-                    hidden: false,
-                    allowClear: false,
-                  },
+                  { type: "textField", propertyName: "label", label: "Label" },
+                  { type: "textArea", propertyName: "tooltip", label: "Group Tooltip", labelAlign: "right" },
                 ],
               })
               .addSettingsInputRow({
-                id: 'icon-drop-icon-s4gmBg31azZC0UjZjpfTm',
-                parentId: 's4gmBg31azZC0UjZjpfTm',
                 inputs: [
-                  {
-                    id: "XZ_7OvzMkfC3GEzzrduwu",
-                    type: "iconPicker",
-                    propertyName: "icon",
-                    label: "Icon",
-                    labelAlign: "right",
-                    parentId: "root",
-                    hidden: false,
-                    settingsValidationErrors: [],
-                  },
-                  {
-                    id: "YA_9x3zMkfC3GEzzrduwu",
-                    type: "iconPicker",
-                    propertyName: "downIcon",
-                    label: "Down Icon",
-                    labelAlign: "right",
-                    parentId: "root",
-                    hidden: false,
-                    settingsValidationErrors: [],
-                  },
+                  { type: "iconPicker", propertyName: "icon", label: "Icon", labelAlign: "right" },
+                  { type: "iconPicker", propertyName: "downIcon", label: "Down Icon", labelAlign: "right" },
                 ],
               })
-              .addSettingsInput({
-                id: "LKVj_90JMwALpmLN_6iZn",
-                inputType: "dropdown",
-                propertyName: "buttonType",
-                label: "Button Type",
-                labelAlign: "right",
-                parentId: "root",
-                hidden: false,
-                validate: {},
-                dropdownOptions: buttonTypes,
-                jsSetting: false,
-              })
-              .addSettingsInputRow({
-                id: '12d700d6-ed4d-49d5-9cfd-fe8f0060f3b6',
-                parentId: 's4gmBg31azZC0UjZjpfTm',
-                inputs: [
-                  {
-                    type: 'editModeSelector',
-                    id: 'editMode-s4gmBg31azZC0UjZjpfTm',
-                    propertyName: 'editMode',
-                    label: 'Edit Mode',
-                    size: 'small',
-                    jsSetting: true,
-                  },
-                  {
-                    type: 'switch',
-                    id: 'hidden-s4gmBg31azZC0UjZjpfTm',
-                    propertyName: 'hidden',
-                    label: 'Hide',
-                    jsSetting: true,
-                    layout: 'horizontal',
-                  },
-                ],
-              })
-              .addSettingsInput({
-                id: 'hide-when-empty-s4gmBg31azZC0UjZjpfTm',
-                inputType: 'switch',
-                label: 'Hide When Empty',
-                propertyName: 'hideWhenEmpty',
-                jsSetting: true,
-              })
+              .addSettingsInput({ inputType: "dropdown", propertyName: "buttonType", label: "Button Type", labelAlign: "right", dropdownOptions: buttonTypes, jsSetting: false })
+              .stdVisibleEditableInputs('disabling')
+              .addSettingsInput({ inputType: 'switch', label: 'Hide When Empty', propertyName: 'hideWhenEmpty', jsSetting: true })
               .toJson(),
             ],
           },
-          {
-            key: '2',
-            title: 'Security',
-            id: '6Vw9iiDw9d0MD_Rh5cbIn',
-            components: [...fbf()
-              .addSettingsInput({
-                id: '1adea529-1f0c-4def-bd41-ee166a5dfcd7',
-                inputType: 'permissions',
-                propertyName: 'permissions',
-                label: 'Permissions',
-                size: 'small',
-                parentId: '6Vw9iiDw9d0MD_Rh5cbIn',
-                jsSetting: true,
-              })
+          { key: 'appearance', title: 'Appearance', id: appearanceTabId,
+            components: [...fbf(appearanceTabId)
+              .stdFontPanel()
+              .stdDimensionsPanel()
+              .stdBorderPanel(false)
+              .stdBackgroundPanel(false)
+              .stdShadowPanel()
+              .stdMarginPaddingPanel()
+              .addSettingsInput({ inputType: 'codeEditor', propertyName: 'style', label: 'Custom Style', description: 'A script that returns the style of the element as an object. This should conform to CSSProperties' })
               .toJson(),
             ],
           },
@@ -147,6 +51,7 @@ export const getGroupSettings: FormMarkupFactory = ({ fbf }) => {
       layout: 'vertical' as FormLayout,
       labelCol: { span: 24 },
       wrapperCol: { span: 24 },
+      isSettingsForm: true,
     },
   };
 };

@@ -2,8 +2,8 @@
 import { ITableFilter } from '@/providers/dataTable/interfaces';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { Button, Tag } from 'antd';
-import React, { FC, useEffect, useRef } from 'react';
-import { useStyles } from '../advancedFilterButton/style';
+import { FC, useEffect, useRef } from 'react';
+import { useStyles } from './style';
 
 export interface IFilterListProps {
   filters: ITableFilter[];

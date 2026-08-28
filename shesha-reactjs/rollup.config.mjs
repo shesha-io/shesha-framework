@@ -45,15 +45,12 @@ export default {
     'moment',
     'nanoid',
     'next',
-    'next-nprogress-bar',
     'os',
     'react',
-    'react-beautiful-dnd',
     'react-dom',
     'react-markdown',
     'react-sortablejs',
     'react-syntax-highlighter',
-    'redux-undo',
     'sortablejs',
     'stream',
     'tty',
@@ -78,7 +75,6 @@ export default {
     }),
     terser(),
     postCss({
-      plugins: [],
       extensions: ['.css'],
       use: [
         'sass',

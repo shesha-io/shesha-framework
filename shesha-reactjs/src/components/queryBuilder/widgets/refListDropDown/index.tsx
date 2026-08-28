@@ -1,6 +1,5 @@
 import { BasicConfig, NumberWidget, SelectFieldSettings } from '@react-awesome-query-builder/antd';
 import { CustomFieldSettings } from '@/providers/queryBuilder/models';
-import React from 'react';
 import { RefListSimpleDropdown } from './simpleDropdown';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 

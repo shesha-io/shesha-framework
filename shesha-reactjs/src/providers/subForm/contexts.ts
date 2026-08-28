@@ -51,6 +51,7 @@ export const SUB_FORM_CONTEXT_INITIAL_STATE: ISubFormStateContext = {
   components: [],
   allComponents: {},
   componentRelations: {},
+  parents: {},
   formSettings: undefined,
   loading: {},
   errors: {},
