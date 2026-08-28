@@ -188,13 +188,12 @@ namespace Shesha.Redis.Caching
             var redisKey = NormalizeKey(key);
             var redisValue = Serialize(value, GetSerializableType(value));
 
-            // Write-through: refresh our own copy and tell the other instances to drop theirs.
-            PopulateL1(redisKey, value);
-            _invalidationBus?.Publish(Name, redisKey.ToString());
+            bool stored;
 
             if (absoluteExpireTime.HasValue)
             {
-                if (!_database.StringSet(redisKey, redisValue))
+                stored = _database.StringSet(redisKey, redisValue);
+                if (!stored)
                 {
                     Logger.ErrorFormat("Unable to set key:{0} value:{1} in Redis", redisKey, redisValue);
                 }
@@ -205,14 +204,16 @@ namespace Shesha.Redis.Caching
             }
             else if (slidingExpireTime.HasValue)
             {
-                if (!_database.StringSet(redisKey, redisValue, slidingExpireTime.Value))
+                stored = _database.StringSet(redisKey, redisValue, slidingExpireTime.Value);
+                if (!stored)
                 {
                     Logger.ErrorFormat("Unable to set key:{0} value:{1} to expire after {2:c} in Redis", redisKey, redisValue, slidingExpireTime.Value);
                 }
             }
             else if (DefaultAbsoluteExpireTimeFactory != null)
             {
-                if (!_database.StringSet(redisKey, redisValue))
+                stored = _database.StringSet(redisKey, redisValue);
+                if (!stored)
                 {
                     Logger.ErrorFormat("Unable to set key:{0} value:{1} in Redis", redisKey, redisValue);
                 }
@@ -223,7 +224,8 @@ namespace Shesha.Redis.Caching
             }
             else if (DefaultAbsoluteExpireTime.HasValue)
             {
-                if (!_database.StringSet(redisKey, redisValue))
+                stored = _database.StringSet(redisKey, redisValue);
+                if (!stored)
                 {
                     Logger.ErrorFormat("Unable to set key:{0} value:{1} in Redis", redisKey, redisValue);
                 }
@@ -234,10 +236,22 @@ namespace Shesha.Redis.Caching
             }
             else
             {
-                if (!_database.StringSet(redisKey, redisValue, DefaultSlidingExpireTime))
+                stored = _database.StringSet(redisKey, redisValue, DefaultSlidingExpireTime);
+                if (!stored)
                 {
                     Logger.ErrorFormat("Unable to set key:{0} value:{1} to expire after {2:c} in Redis", redisKey, redisValue, DefaultSlidingExpireTime);
                 }
+            }
+
+            // Only once Redis has accepted the value. Refreshing L1 or broadcasting beforehand
+            // would leave this node serving a value Redis never stored, and would let the other
+            // nodes drop their entry and repopulate it from the pre-write value.
+            // A failed KeyExpire is not a failed write -- the value is in Redis, just without
+            // the expiry -- so L1 keys off the StringSet result only.
+            if (stored)
+            {
+                PopulateL1(redisKey, value);
+                _invalidationBus?.Publish(Name, redisKey.ToString());
             }
         }
 
@@ -251,14 +265,12 @@ namespace Shesha.Redis.Caching
             var redisKey = NormalizeKey(key);
             var redisValue = Serialize(value, GetSerializableType(value));
 
-            // Write-through: refresh our own copy and tell the other instances to drop theirs.
-            PopulateL1(redisKey, value);
-            if (_invalidationBus != null)
-                await _invalidationBus.PublishAsync(Name, redisKey.ToString());
+            bool stored;
 
             if (absoluteExpireTime.HasValue)
             {
-                if (!await _database.StringSetAsync(redisKey, redisValue))
+                stored = await _database.StringSetAsync(redisKey, redisValue);
+                if (!stored)
                 {
                     Logger.ErrorFormat("Unable to set key:{0} value:{1} asynchronously in Redis", redisKey, redisValue);
                 }
@@ -269,14 +281,16 @@ namespace Shesha.Redis.Caching
             }
             else if (slidingExpireTime.HasValue)
             {
-                if (!await _database.StringSetAsync(redisKey, redisValue, slidingExpireTime.Value))
+                stored = await _database.StringSetAsync(redisKey, redisValue, slidingExpireTime.Value);
+                if (!stored)
                 {
                     Logger.ErrorFormat("Unable to set key:{0} value:{1} to expire after {2:c} asynchronously in Redis", redisKey, redisValue, slidingExpireTime.Value);
                 }
             }
             else if (DefaultAbsoluteExpireTimeFactory != null)
             {
-                if (!await _database.StringSetAsync(redisKey, redisValue))
+                stored = await _database.StringSetAsync(redisKey, redisValue);
+                if (!stored)
                 {
                     Logger.ErrorFormat("Unable to set key:{0} value:{1} asynchronously in Redis", redisKey, redisValue);
                 }
@@ -287,7 +301,8 @@ namespace Shesha.Redis.Caching
             }
             else if (DefaultAbsoluteExpireTime.HasValue)
             {
-                if (!await _database.StringSetAsync(redisKey, redisValue))
+                stored = await _database.StringSetAsync(redisKey, redisValue);
+                if (!stored)
                 {
                     Logger.ErrorFormat("Unable to set key:{0} value:{1} asynchronously in Redis", redisKey, redisValue);
                 }
@@ -298,10 +313,19 @@ namespace Shesha.Redis.Caching
             }
             else
             {
-                if (!await _database.StringSetAsync(redisKey, redisValue, DefaultSlidingExpireTime))
+                stored = await _database.StringSetAsync(redisKey, redisValue, DefaultSlidingExpireTime);
+                if (!stored)
                 {
                     Logger.ErrorFormat("Unable to set key:{0} value:{1} to expire after {2:c} asynchronously in Redis", redisKey, redisValue, DefaultSlidingExpireTime);
                 }
+            }
+
+            // See Set: L1 and the broadcast happen only once Redis has accepted the value.
+            if (stored)
+            {
+                PopulateL1(redisKey, value);
+                if (_invalidationBus != null)
+                    await _invalidationBus.PublishAsync(Name, redisKey.ToString());
             }
         }
 
@@ -315,8 +339,6 @@ namespace Shesha.Redis.Caching
             var redisPairs = pairs.Select(p => {
                 var redisKey = NormalizeKey(p.Key);
                 var redisValue = Serialize(p.Value, GetSerializableType(p.Value));
-                PopulateL1(redisKey, p.Value);
-                _invalidationBus?.Publish(Name, redisKey.ToString());
                 return new KeyValuePair<RedisKey, RedisValue>(redisKey, redisValue);
             }).ToList();
 
@@ -328,6 +350,14 @@ namespace Shesha.Redis.Caching
                 }
 
                 return;
+            }
+
+            // Only once Redis has accepted the batch. redisPairs is built from pairs in order, so
+            // the indexes line up; PopulateL1 needs the original value, not the serialized form.
+            for (var i = 0; i < redisPairs.Count; i++)
+            {
+                PopulateL1(redisPairs[i].Key, pairs[i].Value);
+                _invalidationBus?.Publish(Name, redisPairs[i].Key.ToString());
             }
 
             if (absoluteExpireTime.HasValue)
@@ -392,15 +422,8 @@ namespace Shesha.Redis.Caching
             var redisPairs = pairs.Select(p => {
                 var redisKey = NormalizeKey(p.Key);
                 var redisValue = Serialize(p.Value, GetSerializableType(p.Value));
-                PopulateL1(redisKey, p.Value);
                 return new KeyValuePair<RedisKey, RedisValue>(redisKey, redisValue);
             }).ToList();
-
-            if (_invalidationBus != null)
-            {
-                foreach (var pair in redisPairs)
-                    await _invalidationBus.PublishAsync(Name, pair.Key.ToString());
-            }
 
             if (!await _database.StringSetAsync(redisPairs.ToArray()))
             {
@@ -411,6 +434,15 @@ namespace Shesha.Redis.Caching
             }
             else
             {
+                // Only once Redis has accepted the batch. redisPairs is built from pairs in order,
+                // so the indexes line up; PopulateL1 needs the original value.
+                for (var i = 0; i < redisPairs.Count; i++)
+                {
+                    PopulateL1(redisPairs[i].Key, pairs[i].Value);
+                    if (_invalidationBus != null)
+                        await _invalidationBus.PublishAsync(Name, redisPairs[i].Key.ToString());
+                }
+
                 if (absoluteExpireTime.HasValue)
                 {
                     foreach (var pair in redisPairs)
