@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 import { INotesComponentProps } from './interfaces';
-import { dimensionsStyles, fontStyles, marginStyles, paddingStyles } from '../_common/styles/utils';
+import { dimensionsStyles, fontStyles, paddingStyles } from '../_common/styles/utils';
 
 export const useStyles = createStyles(({ css, cx, prefixCls }, model: INotesComponentProps) => {
   const font = fontStyles(model.font);
