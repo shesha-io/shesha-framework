@@ -30,6 +30,7 @@ import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
 
 const DropdownComponent: DropdownComponentDefinition = {
+  styleGroup: 'inputs',
   allowInherit: true,
   type: 'dropdown',
   isInput: true,

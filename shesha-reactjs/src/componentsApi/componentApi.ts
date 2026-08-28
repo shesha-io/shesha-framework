@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 /**
  * Allowed border line styles.
  * - `"dashed"`: dashed line
@@ -7,6 +9,19 @@
  */
 export type IBorderType = "dashed" | "dotted" | "none" | "solid";
 
+export interface IBorderLineValue {
+  /** Border thickness */
+  readonly width?: string | number | undefined;
+  /** Border color (CSS color string) */
+  readonly color?: string | undefined;
+  /** Allowed border line styles.
+   * - `"dashed"`: dashed line
+   * - `"dotted"`: dotted line
+   * - `"none"`: no border
+   * - `"solid"`: solid line*/
+  readonly style?: IBorderType | undefined;
+}
+
 /**
  * Configuration for borders and border radius of a component.
  * All properties are read‑only – modify them through the parent `border` property.
@@ -15,100 +30,34 @@ export interface IBorderValue {
   /** Border radius settings for rounding corners. */
   readonly radius?: {
     /** Same radius for all four corners. */
-    readonly all?: string | number;
+    readonly all?: string | number | undefined;
     /** Radius for the top‑left corner. */
-    readonly topLeft?: string | number;
+    readonly topLeft?: string | number | undefined;
     /** Radius for the top‑right corner. */
-    readonly topRight?: string | number;
+    readonly topRight?: string | number | undefined;
     /** Radius for the bottom‑left corner. */
-    readonly bottomLeft?: string | number;
+    readonly bottomLeft?: string | number | undefined;
     /** Radius for the bottom‑right corner. */
-    readonly bottomRight?: string | number;
-  };
+    readonly bottomRight?: string | number | undefined;
+  } | undefined;
   /** Border line settings for each side and an optional middle border. */
   readonly border?: {
     /** Same border settings for all four sides. */
-    readonly all?: {
-      /** Border thickness */
-      readonly width?: string | number;
-      /** Border color (CSS color string) */
-      readonly color?: string;
-      /** Allowed border line styles.
-       * - `"dashed"`: dashed line
-       * - `"dotted"`: dotted line
-       * - `"none"`: no border
-       * - `"solid"`: solid line*/
-      readonly style?: IBorderType;
-    };
+    readonly all?: IBorderLineValue | undefined;
     /** Border settings specifically for the top side. */
-    readonly top?: {
-      /** Border thickness */
-      readonly width?: string | number;
-      /** Border color (CSS color string) */
-      readonly color?: string;
-      /** Allowed border line styles.
-       * - `"dashed"`: dashed line
-       * - `"dotted"`: dotted line
-       * - `"none"`: no border
-       * - `"solid"`: solid line*/
-      readonly style?: IBorderType;
-    };
+    readonly top?: IBorderLineValue | undefined;
     /** Border settings specifically for the right side. */
-    readonly right?: {
-      /** Border thickness */
-      readonly width?: string | number;
-      /** Border color (CSS color string) */
-      readonly color?: string;
-      /** Allowed border line styles.
-       * - `"dashed"`: dashed line
-       * - `"dotted"`: dotted line
-       * - `"none"`: no border
-       * - `"solid"`: solid line*/
-      readonly style?: IBorderType;
-    };
+    readonly right?: IBorderLineValue | undefined;
     /** Border settings specifically for the bottom side. */
-    readonly bottom?: {
-      /** Border thickness */
-      readonly width?: string | number;
-      /** Border color (CSS color string) */
-      readonly color?: string;
-      /** Allowed border line styles.
-       * - `"dashed"`: dashed line
-       * - `"dotted"`: dotted line
-       * - `"none"`: no border
-       * - `"solid"`: solid line*/
-      readonly style?: IBorderType;
-    };
+    readonly bottom?: IBorderLineValue | undefined;
     /** Border settings specifically for the left side. */
-    readonly left?: {
-      /** Border thickness */
-      readonly width?: string | number;
-      /** Border color (CSS color string) */
-      readonly color?: string;
-      /** Allowed border line styles.
-       * - `"dashed"`: dashed line
-       * - `"dotted"`: dotted line
-       * - `"none"`: no border
-       * - `"solid"`: solid line*/
-      readonly style?: IBorderType;
-    };
+    readonly left?: IBorderLineValue | undefined;
     /** Border settings for an additional middle border (e.g., between cells). */
-    readonly middle?: {
-      /** Border thickness */
-      readonly width?: string | number;
-      /** Border color (CSS color string) */
-      readonly color?: string;
-      /** Allowed border line styles.
-       * - `"dashed"`: dashed line
-       * - `"dotted"`: dotted line
-       * - `"none"`: no border
-       * - `"solid"`: solid line*/
-      readonly style?: IBorderType;
-    };
-  };
+    readonly middle?: IBorderLineValue | undefined;
+  } | undefined;
   readonly radiusType?: 'all' | 'custom' | undefined;
   readonly borderType?: 'all' | 'custom' | undefined;
-  readonly hideBorder?: boolean;
+  readonly hideBorder?: boolean | undefined;
 }
 
 /** Background fill or image configuration for a component. All properties are read‑only – modify them through the parent `background` property. */
@@ -119,7 +68,7 @@ export interface IBackgroundValue {
    * - `"image"`: internal image resource
    * - `"storedFile"`: reference to a stored file
    * - `"gradient"`: CSS gradient */
-  readonly type?: 'color' | 'url' | 'image' | 'storedFile' | 'gradient';
+  readonly type?: 'color' | 'url' | 'image' | 'storedFile' | 'gradient' | undefined;
 
   /** Background image sizing. Standard CSS `background-size` values are accepted. */
   readonly size?: 'cover' | 'contain' | 'auto' | string | undefined;
@@ -133,7 +82,7 @@ export interface IBackgroundValue {
   /** Gradient configuration – required when `type = "gradient"`.
    * - `direction`: gradient direction (e.g., `"to right"`, `"45deg"`)
    * - `colors`: color stops in render order (e.g., `["#fff", "#000"]`) */
-  readonly gradient?: { direction: string; colors: string[] } | undefined;
+  readonly gradient?: { direction?: string | undefined; colors?: string[] | undefined } | undefined;
 
   /** Solid color string (CSS format) – used when `type = "color"`. */
   readonly color?: string | undefined;
@@ -153,37 +102,37 @@ export interface IFontValue {
    * To change it, use the `font` property, for example: `components.textField.font = {size: 14}`
    *
    * To restore original value use `components.textField.font = {size: undefined}` */
-  readonly size?: number;
+  readonly size?: number | undefined;
   /** **Font family**. Read-only.
    *
    * To change it, use the `font` property, for example: `components.textField.font = {family: 'Arial'}`
    *
    * To restore original value use `components.textField.font = {family: undefined}` */
-  readonly type?: string;
+  readonly type?: string | undefined;
   /** **Font weight**. Read-only.
    *
    * To change it, use the `font` property, for example: `components.textField.font = {weight: '400'}`
    *
    * To restore original value use `components.textField.font = {weight: undefined}` */
-  readonly weight?: string;
+  readonly weight?: string | undefined;
   /** **Font color**. Read-only.
    *
    * To change it, use the `font` property, for example: `components.textField.font = {color: '#000'}`
    *
    * To restore original value use `components.textField.font = {color: undefined}` */
-  readonly color?: string;
+  readonly color?: string | undefined;
   /** **Font align**. Read-only.
    *
    * To change it, use the `font` property, for example: `components.textField.font = {align: 'left'}`
    *
    * To restore original value use `components.textField.font = {align: undefined}` */
-  readonly align?: TextAlignSetting;
+  readonly align?: TextAlignSetting | undefined;
   /** **Font transform**.
    *
    * Read-only. To change it, use the `font` property, for example: `components.textField.font = {transform: 'uppercase'}`
    *
    * To restore original value use `components.textField.font = {transform: undefined}` */
-  readonly transform?: string;
+  readonly transform?: string | undefined;
 }
 
 export interface IShadowValue {
@@ -194,18 +143,23 @@ export interface IShadowValue {
   readonly color?: string | undefined;
 }
 
-export interface IStyleBoxValue {
-  readonly marginTop?: number | undefined;
-  readonly marginRight?: number | undefined;
-  readonly marginBottom?: number | undefined;
-  readonly marginLeft?: number | undefined;
-  readonly paddingTop?: number | undefined;
-  readonly paddingRight?: number | undefined;
-  readonly paddingBottom?: number | undefined;
-  readonly paddingLeft?: number | undefined;
+export interface PaddingValues {
+  readonly paddingTop?: string | number | undefined;
+  readonly paddingRight?: string | number | undefined;
+  readonly paddingBottom?: string | number | undefined;
+  readonly paddingLeft?: string | number | undefined;
 }
 
-export interface IComponentStyle extends Record<string, unknown> {
+export interface MarginValues {
+  readonly marginTop?: string | number | undefined;
+  readonly marginRight?: string | number | undefined;
+  readonly marginBottom?: string | number | undefined;
+  readonly marginLeft?: string | number | undefined;
+}
+
+export interface IStyleBoxValue extends MarginValues, PaddingValues {}
+
+export interface FontStyles {
   /** **Font style**
    *
    * If you want to customize font styles for a component, use this property and specify values in the object's properties, for example:
@@ -218,8 +172,10 @@ export interface IComponentStyle extends Record<string, unknown> {
    *
    * Nested fields are read-only
    */
-  font: IFontValue;
+  font?: IFontValue | undefined;
+}
 
+export interface BackgroundStyles {
   /** **Background style**
    *
    * If you want to customize background styles for a component, use this property and specify values in the object's properties, for example:
@@ -232,8 +188,10 @@ export interface IComponentStyle extends Record<string, unknown> {
    *
    * Nested fields are read-only
    */
-  background: IBackgroundValue;
+  background?: IBackgroundValue | undefined;
+}
 
+export interface BorderStyles {
   /** **Border style**
    *
    * If you want to customize border styles for a component, use this property and specify values in the object's properties, for example:
@@ -246,8 +204,10 @@ export interface IComponentStyle extends Record<string, unknown> {
    *
    * Nested fields are read-only
    */
-  border: IBorderValue;
+  border?: IBorderValue | undefined;
+}
 
+export interface IShadowStyles {
   /** **Shadow style**
    *
    * If you want to customize shadow styles for a component, use this property and specify values in the object's properties, for example:
@@ -260,11 +220,13 @@ export interface IComponentStyle extends Record<string, unknown> {
    *
    * Nested fields are read-only
    */
-  shadow: IShadowValue;
+  shadow?: IShadowValue | undefined;
+}
 
-  /** **Margin and padding style**
+export interface MarginStyles {
+  /** **Margin style**
    *
-   * If you want to customize margin and padding styles for a component, use this property and specify values in the object's properties, for example:
+   * If you want to customize margin styles for a component, use this property and specify values in the object's properties, for example:
    *
    * `components.textField.styleBox = {marginLeft: 5};`. The specified properties will be used, the rest will not be changed.
    *
@@ -274,8 +236,62 @@ export interface IComponentStyle extends Record<string, unknown> {
    *
    * Nested fields are read-only
    */
-  styleBox: IStyleBoxValue;
+  styleBox?: MarginValues | undefined;
 }
+
+export interface PaddingStyles {
+  /** **Padding style**
+   *
+   * If you want to customize padding styles for a component, use this property and specify values in the object's properties, for example:
+   *
+   * `components.textField.styleBox = {paddingLeft: 5};`. The specified properties will be used, the rest will not be changed.
+   *
+   * If you want to use the original values, specify `undefined` for the properties, for example:
+   *
+   * `components.textField.styleBox = {paddingLeft: undefined};`
+   *
+   * Nested fields are read-only
+   */
+  styleBox?: PaddingValues | undefined;
+}
+
+export interface StyleBoxStyles {
+  /** **Margin and Padding style**
+   *
+   * If you want to customize padding styles for a component, use this property and specify values in the object's properties, for example:
+   *
+   * `components.textField.styleBox = {paddingLeft: 5};`. The specified properties will be used, the rest will not be changed.
+   *
+   * If you want to use the original values, specify `undefined` for the properties, for example:
+   *
+   * `components.textField.styleBox = {paddingLeft: undefined};`
+   *
+   * Nested fields are read-only
+   */
+  styleBox?: (PaddingValues & MarginValues) | undefined;
+}
+
+
+export interface IComponentStyle extends FontStyles, BackgroundStyles, BorderStyles, IShadowStyles, StyleBoxStyles {
+}
+
+export interface InputStyles {
+  /** Styles for the input element of the component */
+  readonly editor: Omit<IComponentStyle, 'styleBox'> & PaddingStyles;
+  /** Styles for the wrapper element of the component */
+  readonly wrapper: MarginStyles;
+}
+
+export interface InputComponentStyles {
+  /** Current styles overrides applied to the component. */
+  readonly styles: InputStyles;
+}
+
+export interface AnyComponentStyles {
+  /** Current styles overrides applied to the component. */
+  readonly styles: any;
+};
+
 
 export type InteractionMode = 'editable' | 'readOnly' | 'disabled' | 'inherited' | boolean;
 
@@ -293,8 +309,8 @@ export interface BaseComponentApi {
 }
 
 export interface CommonComponentApi extends BaseComponentApi {
-  /** Current style overrides applied to the component. */
-  readonly style: IComponentStyle;
+  /** Current styles overrides applied to the component. */
+  readonly styles: IComponentStyle;
 }
 
 /**
@@ -305,7 +321,7 @@ export interface CommonComponentApi extends BaseComponentApi {
  * on its own — `readonly` is not part of assignability, so widening the object back to
  * `InputComponentApi` restores the write.
  */
-export interface InputComponentApiBase extends CommonComponentApi {
+export interface InputComponentApiBase extends BaseComponentApi {
   /** If 'true', the component is required (for now is working only for binding to the form data) */
   required: boolean;
 
@@ -327,11 +343,11 @@ export interface InputComponentApi<T = unknown> extends InputComponentApiBase {
 
 // Components API
 
-export type TextFieldApi = InputComponentApi<string | undefined>;
+export type TextFieldApi = InputComponentApi<string | undefined> & InputComponentStyles;
 
-export type TextAreaApi = InputComponentApi<string | undefined>;
+export type TextAreaApi = InputComponentApi<string | undefined> & InputComponentStyles;
 
-export interface NumberFieldApi extends InputComponentApi<number | undefined> {
+export interface NumberFieldApi extends InputComponentApi<number | undefined>, InputComponentStyles {
   /** Minimum value */
   min?: number;
   /** Maximum value */
@@ -574,7 +590,7 @@ export interface SubFormApi extends BaseComponentApi {
   postSubFormData(): void;
   /** Put sub form data to the backend */
   putSubFormData(): void;
-};
+}
 
 export interface TabsApiTab {
   visible: boolean;
@@ -587,7 +603,7 @@ export interface TabsApi extends CommonComponentApi {
   currentTab?: number | undefined;
   /** List of tabs */
   readonly tabs: TabsApiTab[];
-};
+}
 
 
 export type DataContextApi = BaseComponentApi;

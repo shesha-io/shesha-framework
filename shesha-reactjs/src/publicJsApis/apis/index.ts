@@ -4,7 +4,7 @@ import metadataBuilderSourceCodeRaw from './metadataBuilder.ts?raw';
 import userApiSourceCodeRaw from './userApi.ts?raw';
 import httpClientSourceCodeRaw from './httpClient.ts?raw';
 import entitiesCodeRaw from './entities.ts?raw';
-import webStorageCodeRaw from './webStorageApi.ts?raw';
+import storageCodeRaw from './storageApi.ts?raw';
 import canvasContextCodeRaw from './canvasContextApi.ts?raw';
 import dataTableContextCodeRaw from './dataTableContextApi.ts?raw';
 import wizardApiCodeRaw from './wizardApi.ts?raw';
@@ -30,7 +30,7 @@ const metadataBuilderSourceCode = metadataBuilderSourceCodeRaw as string;
 const userApiSourceCode = userApiSourceCodeRaw as string;
 const httpClientSourceCode = httpClientSourceCodeRaw as string;
 const entitiesCode = entitiesCodeRaw as string;
-const webStorageCode = webStorageCodeRaw as string;
+const storageCode = storageCodeRaw as string;
 const canvasContextCode = canvasContextCodeRaw as string;
 const dataTableContextCode = dataTableContextCodeRaw as string;
 const wizardApiCode = wizardApiCodeRaw as string;
@@ -48,7 +48,7 @@ export {
   userApiSourceCode,
   httpClientSourceCode,
   entitiesCode,
-  webStorageCode,
+  storageCode,
   canvasContextCode,
   dataTableContextCode,
   wizardApiCode,
