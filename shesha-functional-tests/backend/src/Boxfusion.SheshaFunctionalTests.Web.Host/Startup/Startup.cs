@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Shesha;
@@ -216,7 +217,10 @@ namespace Boxfusion.SheshaFunctionalTests.Web.Host.Startup
 					Authorization = new[] { new HangfireAuthorizationFilter() }
 				});
 			app.UseMiddleware<GraphQLMiddleware>();
-			app.UseGraphQLPlayground(); //to explorer API navigate https://*DOMAIN*/ui/playground
+			if (!_hostEnvironment.IsProduction())
+			{
+				app.UseGraphQLPlayground(); //to explorer API navigate https://*DOMAIN*/ui/playground
+			}
 		}
 
 		private void AddApiVersioning(IServiceCollection services)
