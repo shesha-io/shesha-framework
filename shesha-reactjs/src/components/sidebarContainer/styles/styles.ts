@@ -240,6 +240,9 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
 
           .${designerCanvas} {
             min-height: auto;
+            /* The wrapper centres the canvas in this state, so the bottom margin has nothing to keep
+               it clear of - it just pushes the canvas above centre and reads as a band underneath. */
+            margin-bottom: 0;
           }
         }
       }
