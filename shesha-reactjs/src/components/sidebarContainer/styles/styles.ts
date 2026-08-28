@@ -199,21 +199,43 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
         }
 
         .${designerCanvas} {
-          margin: 0 auto;
+          /* Breathing room under the canvas so it is not flush against the bottom of its pane once
+             scrolled to the end. A margin rather than padding: padding would sit inside the canvas,
+             i.e. inside the device screen being designed. */
+          margin: 0 auto ${sheshaStyles.paddingLG * 2}px;
           /* The canvas deliberately does not scroll itself. A vertical scrollbar inside a pane that
              already scrolls leaves the canvas cut off short of the pane - and because CSS zoom
              scales the resolved height, the further the canvas is zoomed out the shorter that box
              gets. Growing with the content and letting the wrapper scroll keeps one scrollbar in
              one place at any zoom, while min-height keeps the canvas filling the pane when the
              form is short. */
-          min-height: 100%;
-          overflow: visible;
+          /* Short of the full pane by exactly the bottom margin below, so canvas + margin fills
+             the pane and no more. A plain 100% here left the margin overflowing the pane by 24px at
+             every form length, which showed up as a scrollbar that was always present. */
+          min-height: calc(100% - ${sheshaStyles.paddingLG * 2}px);
+          /* The element carries the sidebar-container-main-area-body class as well, whose
+             height: 100% would otherwise pin the canvas to the pane and stop it growing with its
+             content. The min-height above still makes it fill the pane when the form is short. */
+          height: auto;
+          /* The canvas is the device screen: nothing inside it may be painted past its edge, on
+             either axis. A component sized in viewport units resolves against the browser
+             viewport rather than the canvas, so on a small device preset a "100vh" container
+             overshoots the canvas bottom and is drawn outside the screen it is meant to sit in.
+             Clipping keeps the render inside the selected device.
+
+             "clip" rather than "hidden" or "auto" so the canvas never becomes a scroll
+             container: the single scrollbar stays on the wrapper, as the comment above requires.
+             A form that is long because it has many components still grows the canvas box and
+             scrolls on the wrapper - only content that overshoots the box itself is cut.
+             Popups are portalled into #canvas-popup-container outside the canvas, so they are
+             unaffected. */
+          overflow: clip;
           /* Breathing room so components are not flush against the canvas edge. Explicit
              border-box: the canvas width is a measured pixel value, so padding must eat into it
              rather than add to it - otherwise the canvas ends up wider than the pane it was sized
              to fill. */
           box-sizing: border-box;
-          padding: ${CANVAS_PADDING}px;
+          padding: ${sheshaStyles.paddingLG}px;
           transform-origin: top left;
           box-shadow: 1px 1px 5px 5px #00000080;
         }

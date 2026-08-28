@@ -8,7 +8,6 @@ import {
   useCallback,
   useRef,
   useLayoutEffect,
-  CSSProperties,
 } from 'react';
 import classNames from 'classnames';
 
@@ -17,8 +16,8 @@ import { SidebarPanel } from './sidebarPanel';
 import { CANVAS_PADDING, useStyles } from './styles/styles';
 import { SizableColumns } from '../sizableColumns';
 import { getPanelSizes } from './utilis';
-import { calculateAutoZoom, getCanvasLayoutWidth, getCanvasVhUnit, usePinchZoom } from '@/providers/canvas/utils';
-import { CANVAS_VH_VAR, DEFAULT_OPTIONS, defaultDesignerWidth } from '@/providers/canvas/options';
+import { calculateAutoZoom, getCanvasLayoutWidth, usePinchZoom } from '@/providers/canvas/utils';
+import { DEFAULT_OPTIONS, defaultDesignerWidth } from '@/providers/canvas/constants';
 import { IViewType } from '@/providers/canvas/contexts';
 import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
 import { useCanvas } from '@/providers/canvas';
@@ -28,9 +27,6 @@ import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 // useLayoutEffect warns when it runs on the server, where there is nothing to measure anyway.
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
-
-/** Canvas padding on both the top and bottom edges, in canvas (pre-zoom) pixels. */
-const CANVAS_VERTICAL_PADDING = CANVAS_PADDING * 2;
 
 export interface ISidebarContainerProps extends PropsWithChildren {
   leftSidebarProps?: ISidebarProps | undefined;
@@ -68,13 +64,12 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const storeKey = isNullOrWhiteSpace(storeName) ? 'sidebarContainer.transient' : storeName;
   const [isOpenLeftStore, setIsOpenLeftStore] = useLocalStorage(`${storeKey}.isOpenLeft`, false);
   const [isOpenRightStore, setIsOpenRightStore] = useLocalStorage(`${storeKey}.isOpenRight`, false);
-  const { zoom, setCanvasZoom, setViewType, setAvailableCanvasWidth, designerWidth, autoZoom, autoWidth, configTreePanelSize } = useCanvas();
+  const { zoom, setCanvasZoom, setViewType, setAvailableCanvasWidth, designerWidth, autoZoom, autoWidth, widthPercent, configTreePanelSize } = useCanvas();
   const [isSidebarCollapsed] = useLocalStorage(SIDEBAR_COLLAPSE, false);
-  // Content-box size of the area between the sidebars, measured rather than derived from the
-  // window, so panel drags, collapses and the scrollbars are all accounted for.
+  // Content-box width of the area between the sidebars, measured rather than derived from the
+  // window, so panel drags, collapses and the vertical scrollbar are all accounted for.
   const mainAreaRef = useRef<HTMLDivElement>(null);
-  const [availableSize, setAvailableSize] = useState({ width: 0, height: 0 });
-  const { width: availableWidth, height: availableHeight } = availableSize;
+  const [availableWidth, setAvailableWidth] = useState(0);
 
   const isOpenLeft = isNullOrWhiteSpace(storeName) ? isOpenLeftLocal : isOpenLeftStore;
   const isOpenRight = isNullOrWhiteSpace(storeName) ? isOpenRightLocal : isOpenRightStore;
@@ -155,8 +150,8 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const isDesigner = formMode === 'designer';
   const isZoomableCanvas = isDesigner && canZoom;
 
-  // Track the space available to the canvas. The content-box excludes the scrollbars, so the canvas
-  // never has to give up a scrollbar on one axis to make room for one on the other.
+  // Track the width available to the canvas. The content-box excludes the vertical scrollbar, so
+  // the canvas never has to give up a horizontal scrollbar to make room for it.
   //
   // Deliberately a layout effect: until the pane is measured, `canvasWidth` falls back to
   // `designerWidth`, which in "Canvas" mode is whatever width was last pinned by a device preset.
@@ -169,14 +164,11 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
     const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const width = entry.contentBoxSize[0]?.inlineSize ?? entry.contentRect.width;
-        const height = entry.contentBoxSize[0]?.blockSize ?? entry.contentRect.height;
-        setAvailableSize((prev) => (Math.abs(prev.width - width) < 1 && Math.abs(prev.height - height) < 1
-          ? prev
-          : { width, height }));
+        setAvailableWidth((prev) => (Math.abs(prev - width) < 1 ? prev : width));
       }
     });
     observer.observe(mainArea);
-    setAvailableSize({ width: mainArea.clientWidth, height: mainArea.clientHeight });
+    setAvailableWidth(mainArea.clientWidth);
 
     return () => observer.disconnect();
   }, [isZoomableCanvas]);
@@ -185,30 +177,15 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   // applied it renders exactly as wide as its pane: no horizontal scrollbar, components re-wrap
   // to the space they have, and each one keeps the scale the user selected.
   const canvasWidth = isZoomableCanvas && autoWidth && availableWidth > 0
-    ? getCanvasLayoutWidth(availableWidth, zoom)
+    ? getCanvasLayoutWidth(availableWidth, zoom, widthPercent)
     : designerWidth;
 
   // Publish it so vw-based component sizing and anything else reading the canvas width agree with
   // what is on screen. Guarded in the reducer so it is a no-op outside "Canvas" mode.
-  //
-  // The pane width goes with it because `canvasWidth` has been divided by the zoom factor, and it
-  // is the pane - not the zoomed layout width - that picks the device. See the reducer.
   useEffect(() => {
     if (isZoomableCanvas && autoWidth && availableWidth > 0)
-      setAvailableCanvasWidth(canvasWidth, availableWidth);
+      setAvailableCanvasWidth(canvasWidth);
   }, [isZoomableCanvas, autoWidth, availableWidth, canvasWidth, setAvailableCanvasWidth]);
-
-  // How long one `vh` is on this canvas, published as a custom property that component dimensions
-  // read (see `canvasRelativeVh`), so a component sized in `vh` fits the canvas rather than the
-  // browser window. Unlike the width this applies to every resolution: a device preset pins how
-  // wide the canvas is, but never how tall - the pane is all the height there has ever been.
-  //
-  // It rides on the element rather than through the canvas context so that a zoom or a panel drag
-  // re-renders nothing below this component: only the variable changes, and every `vh` beneath it
-  // follows. Set nowhere but here, so `vh` keeps its usual meaning everywhere outside the canvas.
-  const canvasVhStyle = useMemo<CSSProperties>(() => (isZoomableCanvas && availableHeight > 0
-    ? { [CANVAS_VH_VAR]: getCanvasVhUnit(availableHeight, zoom, CANVAS_VERTICAL_PADDING) } as CSSProperties
-    : {}), [isZoomableCanvas, availableHeight, zoom]);
 
   const renderSidebar = (side: SidebarPanelPosition): ReactNode => {
     const sidebarProps = side === 'left' ? leftSidebarProps : rightSidebarProps;

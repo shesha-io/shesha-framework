@@ -5,7 +5,7 @@ import { ExpandOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { useCanvas } from "@/providers";
 import { DeviceOptions } from "./mobileDropdown";
 import { clampZoom } from "@/providers/canvas/utils";
-import { DEFAULT_OPTIONS } from "@/providers/canvas/options";
+import { DEFAULT_OPTIONS } from "@/providers/canvas/constants";
 import { useDebouncedCallback } from "use-debounce";
 
 const ZOOM_LEVELS = DEFAULT_OPTIONS.zoomLevels;

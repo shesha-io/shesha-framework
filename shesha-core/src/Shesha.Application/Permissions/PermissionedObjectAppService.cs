@@ -1,6 +1,5 @@
 ﻿using Abp.Application.Services.Dto;
 using Abp.Domain.Repositories;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using Shesha.Authorization;
 using Shesha.Domain;
 using Shesha.Domain.Enums;
@@ -10,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Shesha.Permissions
 {
-    [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.RequiresPermissions, "pages:maintenance")]
+    [SheshaAuthorize(Domain.Enums.RefListPermissionedAccess.RequiresPermissions, ShaPermissionNames.Pages_Maintenance)]
     public class PermissionedObjectAppService : SheshaCrudServiceBase<PermissionedObject, PermissionedObjectDto, Guid>, IPermissionedObjectAppService
     {
         private readonly IPermissionedObjectManager _permissionedObjectManager;
