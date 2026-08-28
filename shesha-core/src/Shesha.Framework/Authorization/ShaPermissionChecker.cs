@@ -66,7 +66,10 @@ namespace Shesha.Authorization
                     return false;
             }
 
-            customPermissionsItem ??= new CustomUserPermissionCacheItem(userId);
+            // Copy before recording the result: the cache returns a shared reference, so adding
+            // to the collections of the cached instance would publish an answer to every other
+            // caller before the Set below commits it -- and would land even if that Set failed.
+            customPermissionsItem = customPermissionsItem?.Copy() ?? new CustomUserPermissionCacheItem(userId);
             var isGranted = IsGrantedCustom(userId, permissionName);
             if (isGranted)
                 customPermissionsItem.GrantedPermissions.Add(permissionName);
@@ -97,7 +100,10 @@ namespace Shesha.Authorization
                     return false;
             }
 
-            customPermissionsItem ??= new CustomUserPermissionCacheItem(userId);
+            // Copy before recording the result: the cache returns a shared reference, so adding
+            // to the collections of the cached instance would publish an answer to every other
+            // caller before the Set below commits it -- and would land even if that Set failed.
+            customPermissionsItem = customPermissionsItem?.Copy() ?? new CustomUserPermissionCacheItem(userId);
             var isGranted = await IsGrantedCustomAsync(userId, permissionName);
             if (isGranted)
                 customPermissionsItem.GrantedPermissions.Add(permissionName);
@@ -258,7 +264,10 @@ namespace Shesha.Authorization
                     return false;
             }
 
-            customPermissionsItem ??= new CustomUserPermissionCacheItem(userId);
+            // Copy before recording the result: the cache returns a shared reference, so adding
+            // to the collections of the cached instance would publish an answer to every other
+            // caller before the Set below commits it -- and would land even if that Set failed.
+            customPermissionsItem = customPermissionsItem?.Copy() ?? new CustomUserPermissionCacheItem(userId);
             var isGranted = await IsGrantedCustomAsync(userId, permissionName, permissionedEntity);
             if (isGranted)
                 customPermissionsItem.GrantedPermissions.Add(permissionName);
@@ -294,7 +303,10 @@ namespace Shesha.Authorization
                     return false;
             }
 
-            customPermissionsItem ??= new CustomUserPermissionCacheItem(userId);
+            // Copy before recording the result: the cache returns a shared reference, so adding
+            // to the collections of the cached instance would publish an answer to every other
+            // caller before the Set below commits it -- and would land even if that Set failed.
+            customPermissionsItem = customPermissionsItem?.Copy() ?? new CustomUserPermissionCacheItem(userId);
             var isGranted = IsGrantedCustom(userId, permissionName, permissionedEntity);
             if (isGranted)
                 customPermissionsItem.GrantedPermissions.Add(permissionName);
