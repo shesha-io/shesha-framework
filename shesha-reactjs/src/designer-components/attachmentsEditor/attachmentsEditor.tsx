@@ -27,6 +27,7 @@ import { AdvancedFormats } from '@/interfaces/dataTypes';
 import { FILE_EVENTS_WITHOUT_CHANGE, getComponentEvents } from '../_common/events';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getIdOrUndefined } from '@/utils/entity';
+import { addPx } from '@/utils/style';
 import CustomFile from '@/components/customFile';
 import { FileAction, OnFileAction, OnFileDownloaded, OnFileListChanged } from '@/providers/storedFiles/models';
 import { StoredFileModel } from '@/utils/storedFile/models';
@@ -234,19 +235,24 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
     const { styleDownloadedFiles = false, downloadedIcon } = model as IAttachmentsEditorDeviceStyles;
 
 
-    /* The renderer marks a downloaded file by colour, and reads that colour off a plain
-       CSSProperties object. Compose it from the Font panel with the evaluated Custom style last, so
-       Custom wins — the same precedence the other style sets use. Only emitted when the feature is
-       on; otherwise the renderer falls back to its own default. */
+    /* The whole Font panel, not just its colour: this object is all the renderer gets, so anything
+       dropped here can never reach the file. Custom style last, so it wins — the same precedence the
+       other style sets use. Only emitted when the feature is on; otherwise the renderer falls back
+       to its own default. */
     const downloadedFileCss = useMemo<CSSProperties | undefined>(
-      () => styleDownloadedFiles
-        ? {
-          ...(isNotNullOrWhiteSpace(model.downloadedFileStyles?.font?.color)
-            ? { color: model.downloadedFileStyles.font.color }
-            : {}),
+      () => {
+        if (!styleDownloadedFiles) return undefined;
+
+        const font = model.downloadedFileStyles?.font;
+        return {
+          ...(isNotNullOrWhiteSpace(font?.color) ? { color: font.color } : {}),
+          ...(isDefined(font?.size) ? { fontSize: addPx(font.size) } : {}),
+          ...(isNotNullOrWhiteSpace(font?.weight) ? { fontWeight: font.weight as CSSProperties['fontWeight'] } : {}),
+          ...(isNotNullOrWhiteSpace(font?.type) ? { fontFamily: font.type } : {}),
+          ...(isDefined(font?.align) ? { textAlign: font.align } : {}),
           ...downloadedFileStyleCss,
-        }
-        : undefined,
+        };
+      },
       [styleDownloadedFiles, model.downloadedFileStyles?.font, downloadedFileStyleCss],
     );
 

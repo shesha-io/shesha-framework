@@ -3,7 +3,7 @@ import { createStyles } from '@/styles';
 import { CSSProperties } from 'react';
 import { addPx } from '@/utils/style';
 import { IStyleValue } from '@/providers';
-import { backgroundStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, marginStyles, paddingStyles, shadowStyles } from '@/designer-components/_common/styles/utils';
+import { backgroundStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, marginStyles, paddingStyles, shadowStyles, splitTextProperties } from '@/designer-components/_common/styles/utils';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 interface IModelInterface extends IStyleValue {
   thumbnailStyle?: IStyleValue | undefined;
@@ -99,8 +99,14 @@ export const useStyles = createStyles((
     height: ${addPx(thumbnail?.dimensions?.height) ?? '54px'} !important;
   `;
 
-  /* Downloaded files are marked by the colour of the name and the badge, not a second box. */
+  /* Downloaded files are marked by the colour of the name and the badge, not a second box. The
+     colour is read out on its own because the badge is painted with it; the rest of the set styles
+     the file itself. */
   const downloadedColor = downloadedFileStyles?.color ?? token.colorSuccess;
+
+  /* Split the way every other set here is: text properties reach the name, which antd styles
+     directly and which therefore inherits nothing, and the rest reach the row around it. */
+  const { text: downloadedText, box: downloadedBox } = splitTextProperties(downloadedFileStyles);
 
   const storedFilesRendererBtnContainer = "sha-stored-files-renderer-btn-container";
   const shaThumbnail = "sha-thumbnail";
@@ -146,15 +152,19 @@ export const useStyles = createStyles((
   const downloadedFile = cx("sha-downloaded-file", css`
     position: relative;
     display: flex;
+    ${cssPropertiesToString(downloadedBox)}
 
     .${prefixCls}-upload-list-item-container {
       opacity: 0.8;
       position: relative;
     }
 
+    /* Colour first so the configured set can override it, and so an unconfigured colour still
+       falls back to the theme's success green. */
     .sha-item-file-name,
     .sha-item-file-name > .${prefixCls}-typography {
       color: ${downloadedColor};
+      ${cssPropertiesToString(downloadedText)}
     }
 
     .${prefixCls}-upload-list-item-action .anticon-download {
