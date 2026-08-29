@@ -15,7 +15,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
   const commonTabId = nanoid();
   const eventsTabId = nanoid();
   const appearanceTabId = nanoid();
-  const commonStyleRouterId = nanoid();
 
   const dataSourceTypeOptions = [
     { value: 'referenceList', label: 'Reference list' },
@@ -110,40 +109,25 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
           },
           {
             key: 'appearance', title: 'Appearance', id: appearanceTabId,
+            /* One flat style set, scoped onto the tag by `styles.ts` — the same shape the checkbox
+               uses for its box. There is deliberately no second, nested set and no container
+               styles: the component *is* the tag, so a wrapper set would give the user two places
+               to configure one visible thing, and a container border or background would draw an
+               empty-looking box around the status.
+
+               Variant sits above the panels because it selects how the tag is filled rather than
+               setting a style property, and it changes what the colour inputs below can affect. */
             components: [
               ...fbf(appearanceTabId)
-                .addPropertyRouter({
-                  id: commonStyleRouterId, propertyName: 'propertyRouter1', componentName: 'propertyRouter', label: 'Property router1', labelAlign: 'right',
-                  propertyRouteName: removeStyleRouter === true ? '' : { _mode: 'code', _code: "    return contexts.canvasContext?.designerDevice || 'desktop';", _value: '' },
-                  components: [
-                    ...fbf(commonStyleRouterId)
-                      .stdFontPanel('font', ['align'])
-                      .stdDimensionsPanel('dimensions')
-                      .stdBorderPanel(removeStyleRouter !== true, 'border')
-                      .stdBackgroundPanel(removeStyleRouter !== true, 'background')
-                      .stdShadowPanel('shadow')
-                      .stdMarginPaddingPanel('stylingBoxJson')
-                      .stdCustomStylePanel('style')
-                      /* The tag is the component, so its own styles are always relevant — unlike
-                         the dropdown, which hides this panel when it renders plain text. */
-                      .stdCollapsiblePanel('Tag Style', (f) => f
-                        .addSettingsInput({
-                          inputType: 'dropdown', propertyName: 'tagVariant', label: 'Variant', size: 'small', jsSetting: true,
-                          dropdownOptions: tagVariantOptions,
-                          tooltip: 'How each tag is filled when the status carries its own colour. Solid fills the tag, Outlined draws a coloured border, Filled applies a soft tint.',
-                        })
-                        .stdFontPanel('tag.font')
-                        .stdDimensionsPanel('tag.dimensions')
-                        .stdBorderPanel(removeStyleRouter !== true, 'tag.border', 'radius')
-                        .stdBackgroundPanel(removeStyleRouter !== true, 'tag.background')
-                        .stdShadowPanel('tag.shadow')
-                        .stdMarginPaddingPanel('tag.stylingBoxJson')
-                        /* Must name the nested property: a bare `stdCustomStylePanel()` defaults to
-                           'style' and would silently bind to the same property as the root panel. */
-                        .stdCustomStylePanel('tag.style'))
-                      .toJson(),
-                  ],
+                .addSettingsInput({
+                  inputType: 'dropdown', propertyName: 'tagVariant', label: 'Variant', size: 'small', jsSetting: true,
+                  dropdownOptions: tagVariantOptions,
+                  tooltip: 'How each tag is filled when the status carries its own colour. Solid fills the tag, Outlined draws a coloured border, Filled applies a soft tint.',
                 })
+                .stdAppearancePanels(
+                  ['font', 'dimensions', 'border', 'background', 'shadow', 'marginPadding', 'customStyle'],
+                  removeStyleRouter,
+                )
                 .toJson(),
             ],
           },

@@ -23,10 +23,13 @@ type StatusTagRuntimeProps = 'className' | 'popupClassName' | 'events' | 'select
  * - `bindingFormat`, `valueFormat`, `incomeCustomJs`/`outcomeCustomJs` — a status tag always
  *   resolves the item value in order to find its colour, so there is nothing to choose.
  * - `displayStyle` — a status tag is always rendered as a tag; "Plain text" would make it a label.
+ * - `tag`, `tagStyle` — the drop-down's *second*, nested style set for the tags inside its box. The
+ *   status tag has one style set and it already describes the tag, so a nested one would be a second
+ *   place to configure the same visible thing.
  */
 type RemovedDropdownProps =
   'placeholder' | 'allowClear' | 'onChange' | 'bindingFormat' | 'valueFormat' |
-  'incomeCustomJs' | 'outcomeCustomJs' | 'displayStyle';
+  'incomeCustomJs' | 'outcomeCustomJs' | 'displayStyle' | 'tag' | 'tagStyle';
 
 export interface IStatusTagComponentProps
   extends Omit<IDropdownProps, 'style' | 'readOnly' | 'value' | RemovedDropdownProps | StatusTagRuntimeProps>,

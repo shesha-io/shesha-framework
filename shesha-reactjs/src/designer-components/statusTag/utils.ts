@@ -1,5 +1,5 @@
 import { IBackgroundValue, IShadowValue } from '@/designer-components/_settings/utils';
-import { INestedStyleValue, IStyleValue, StyleBoxValue } from '@/providers/form/models';
+import { IStyleValue, StyleBoxValue } from '@/providers/form/models';
 import { ILabelValue } from '@/components/dropdown/model';
 import { IStatusMappings } from '@/components/statusTag';
 import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
@@ -51,48 +51,18 @@ const STYLING_BOX_DEFAULTS = (): StyleBoxValue => ({
 /**
  * Appearance defaults for an unconfigured status tag.
  *
- * The container is deliberately transparent and border-less. A status tag is the tag itself — the
- * drop-down's box exists to frame an editable control, and drawing it here would put a second,
- * empty-looking box around the status. The slots are still present (rather than omitted) so the
- * Appearance inputs have something to inherit from.
- */
-export const defaultStyles = (): INestedStyleValue<'tag'> => {
-  return {
-    tag: defaultTagStyles(),
-    background: BACKGROUND_DEFAULTS(''),
-    font: {
-      weight: '400',
-      size: 14,
-      color: '#000',
-      type: 'Segoe UI',
-    },
-    border: {
-      radius: { all: 0 },
-      borderType: 'all',
-      radiusType: 'all',
-    },
-    dimensions: {
-      width: 'auto',
-      height: 'auto',
-      minHeight: '0px',
-      maxHeight: 'auto',
-      minWidth: '0px',
-      maxWidth: 'auto',
-    },
-    shadow: SHADOW_DEFAULTS(),
-    stylingBoxJson: STYLING_BOX_DEFAULTS(),
-  };
-};
-
-/**
- * Appearance defaults for the tag itself.
+ * A single, flat style set — there is deliberately no nested second set and no container styles.
+ * The component *is* the tag, so every Appearance input describes the tag itself; a wrapper set
+ * would give the user two places to configure one visible thing, and a container border or
+ * background would draw an empty-looking box around the status. `styles.ts` scopes these flat
+ * properties onto the tag element, the same way the checkbox scopes its set onto the box.
  *
  * The colour-bearing slots are left empty so the Variant decides them: seeded, they are emitted at
  * `&&&&` and beat antd's variant rules, which is what the dropdown's migration 15 had to undo.
  * `border` omits `all` for the same reason — `borderLinesStyles` emits a border for any present
  * `all`, so even an empty one erases the Variant's border.
  */
-export const defaultTagStyles = (): IStyleValue => {
+export const defaultStyles = (): IStyleValue => {
   return {
     background: BACKGROUND_DEFAULTS(''),
     font: {

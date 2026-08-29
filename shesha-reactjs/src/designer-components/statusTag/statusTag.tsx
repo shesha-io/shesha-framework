@@ -2,10 +2,10 @@
    stylingBox) on purpose — upgrading forms saved against those shapes is what it is for. */
 /* eslint-disable @typescript-eslint/no-deprecated */
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import { CSSProperties, useEffect } from 'react';
+import { useEffect } from 'react';
 import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { TagOutlined } from '@ant-design/icons';
-import { IInputStyles, INestedStyleValue, IStyleValue } from '@/providers/form/models';
+import { IInputStyles } from '@/providers/form/models';
 
 import { IStatusTagComponentProps, IStatusTagComponentPropsV0, StatusTagComponentDefinition } from './model';
 import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
@@ -13,14 +13,13 @@ import { migratePermissionsToVisiblePermissions } from '../_common-migrations/mi
 import { Dropdown } from '@/components/dropdown/dropdown';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settings';
-import { migratePrevStyles, migrateStyles } from '../_common-migrations/migrateStyles';
-import { defaultStyles, defaultTagStyles, mappingsToValues } from './utils';
-import { useStyles } from '@/components/dropdown/styles';
+import { migratePrevStyles } from '../_common-migrations/migrateStyles';
+import { defaultStyles, mappingsToValues } from './utils';
+import { useStyles } from './styles';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { StatusTagApi } from '../../componentsApi/componentApi';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
-import { useActualContextExecution } from '@/hooks/formComponentHooks';
 import { getComponentEvents } from '../_common/events';
 import { STATUS_TAG_EVENTS_WITHOUT_CHANGE } from './events';
 
@@ -55,22 +54,21 @@ const StatusTagComponent: StatusTagComponentDefinition = {
     }, [componentApi, model.componentName, model.id]);
     useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
-    /* The framework only executes the root `style` expression (into `styleCss`); a nested
-       `tag.style` script is not evaluated for us, so it would be a setting that saves but never
-       renders. Evaluate it here and hand the result to the style builder. */
-    const tagStyleJson = useActualContextExecution<CSSProperties>(model.tag?.style, undefined, {});
-
     /* `displayStyle: 'tags'` is fixed rather than configurable: a status tag is a tag by
-       definition. The dropdown's styles and read-only renderer both branch on it, so it has to be
-       part of the model handed to them, not just to the runtime component. */
-    const tagModel = { ...model, displayStyle: 'tags' as const, tagStyleJson };
+       definition. The read-only renderer branches on it, so it has to be part of the model handed
+       down, not just a prop on the element. */
+    const tagModel = { ...model, displayStyle: 'tags' as const };
 
-    const { styles } = useStyles(tagModel);
+    /* The single style set, scoped onto the tag by the class rather than applied to the wrapper —
+       `model.styleCss` (the evaluated Custom style) is folded in here for the same reason: passed
+       as an inline `style` it would land on the container, and a class rule on the tag would beat
+       it anyway. */
+    const { styles } = useStyles({ ...tagModel, customStyle: model.styleCss });
 
-    /* `model.style` is the raw custom-style *expression* (a string); the select's `style` prop takes
-       a CSSProperties object. Drop it from the spread so only the evaluated `styleCss` can land
-       there. */
-    const { style: _styleExpression, ...modelWithoutStyle } = tagModel;
+    /* `model.style` is the raw custom-style *expression* (a string), and `styleCss` its evaluated
+       form. Both are dropped from the spread: the style set belongs on the tag, which the class
+       above handles, so neither may reach the wrapper as an inline style. */
+    const { style: _styleExpression, styleCss: _styleCss, ...modelWithoutStyle } = tagModel;
 
     return (
       <ConfigurableFormItem<number | number[] | string | string[] | (number | string)[]> model={model}>
@@ -78,19 +76,18 @@ const StatusTagComponent: StatusTagComponentDefinition = {
           return (
             <Dropdown
               {...modelWithoutStyle}
-              className={styles.dropdown}
-              // Custom style is passed through as-is; everything else is emitted as CSS by
-              // `useStyles` so unset properties keep cascading from the theme.
-              {...(isDefined(model.styleCss) ? { style: model.styleCss } : {})}
+              className={styles.statusTag}
               value={value ?? undefined}
               size={model.size}
               /* Always read-only: this is the whole point of the component. It also means the
                  select is never rendered — `Dropdown` takes its read-only branch, which draws the
-                 value through `ReadOnlyDisplayFormItem` as tags. That branch renders outside the
-                 select, where the emotion class does not reach, so the style model is handed over
-                 as a value for it. */
+                 value through `ReadOnlyDisplayFormItem` as tags.
+
+                 `styleValue` is deliberately not passed. It is how that renderer styles its
+                 *container*, and this component has no container styles — the whole set is scoped
+                 onto the tag by `className`, which reaches it because the read-only branch renders
+                 inside this element. */
               readOnly
-              styleValue={model}
               events={getComponentEvents<number | number[] | string | string[] | (number | string)[]>(
                 model, STATUS_TAG_EVENTS_WITHOUT_CHANGE, ctx, value, DataTypes.array,
               )}
@@ -166,31 +163,10 @@ const StatusTagComponent: StatusTagComponentDefinition = {
     .add<IStatusTagComponentProps>(5, (prev, context) => context.isNew === true
       ? prev
       : { ...migratePrevStyles(prev, defaultStyles()) })
-    /* Seeds the nested `tag` set under each device model. It has to go under the device models
-       rather than at the root: the renderer computes styles as defaults -> desktop -> active
-       device and spreads the result over the model, so a root-level `tag` is discarded at render. */
-    .add<IStatusTagComponentProps>(6, (prev, context) => {
-      if (context.isNew === true) return prev;
-
-      const initTagStyle = migrateStyles({}, defaultTagStyles());
-      // The per-device style models are typed as the flat `IStyleValue`; this component
-      // additionally nests a `tag` set under each of them.
-      const deviceTag = (device: INestedStyleValue<'tag'> | undefined): IStyleValue | undefined => device?.tag;
-
-      // Seeded only where nothing is configured yet — a form that already styled its tags keeps
-      // those values rather than being reset to the defaults on every upgrade.
-      return {
-        ...prev,
-        tag: prev.tag ?? { ...initTagStyle },
-        desktop: { ...prev.desktop, tag: deviceTag(prev.desktop) ?? { ...initTagStyle } },
-        tablet: { ...prev.tablet, tag: deviceTag(prev.tablet) ?? { ...initTagStyle } },
-        mobile: { ...prev.mobile, tag: deviceTag(prev.mobile) ?? { ...initTagStyle } },
-      };
-    })
     /* Hidden -> Visible and permissions -> Visible permissions, in the single chained step the
        standard calls for. `migrateReadOnly` is deliberately absent: the component has no
        Interaction Mode, so there is no editMode for a legacy readOnly flag to migrate into. */
-    .add<IStatusTagComponentProps>(7, (prev) =>
+    .add<IStatusTagComponentProps>(6, (prev) =>
       migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
   settingsFormMarkup: getSettings,
 
