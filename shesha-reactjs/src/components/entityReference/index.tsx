@@ -29,7 +29,7 @@ import { ShaIcon } from '../shaIcon';
 import ShaLink from '../shaLink';
 import ValidationErrors from '../validationErrors';
 import { getFirstNonEmptyStringPropertyOrUndefined } from '@/utils/object';
-import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { extractErrorInfo } from '@/utils/errors';
 import { isNonEmptyArray } from '@/utils/array';
 
@@ -219,7 +219,13 @@ export const EntityReference: FC<IEntityReferenceProps> = (props) => {
     // Handles both binding scenarios:
     // 1. value as GUID string: "guid-string"
     // 2. value as object: {id: "guid-string", _className: "EntityName", _displayName: "Display Name"}
-    const needsFetch = entityId && (
+    /* `Entities/Get` resolves the row by entity type, so it cannot be called without one: with the
+       type missing the request carries no `name`/`entityType` at all and the backend fails its own
+       null guard, surfacing as "An internal error occurred during your request! Value must not be
+       null". A custom Get Entity URL addresses the entity itself, so it needs no type. */
+    const canResolveEntity = isNotNullOrWhiteSpace(props.getEntityUrl) || !isEntityTypeIdEmpty(entityType);
+
+    const needsFetch = entityId && canResolveEntity && (
       !props.value || // No value at all
       typeof props.value === 'string' || // Value is a GUID string (needs fetch for display name)
       (typeof props.value === 'object' && !props.value._displayName && !isNullOrWhiteSpace(props.displayProperty) && !isDefined(props.value[props.displayProperty])) // Object exists but missing display properties
