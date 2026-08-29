@@ -177,18 +177,18 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
           {
             key: 'events', title: 'Events', id: eventsTabId,
             components: fbf(eventsTabId)
-              /* FILE_EVENTS_WITHOUT_CHANGE, matching what the runtime binds: the standard input set
-                 minus onDoubleClick and the keyboard events, and now minus onChange too, which the
-                 four per-action handlers below replace. The pointer and focus events are bound to
-                 the wrapper the component renders into, so they fire for the list as a whole rather
-                 than for an individual file. */
-              .stdEventHandlers([...FILE_EVENTS_WITHOUT_CHANGE], DataTypes.array, undefined, 'File List ')
-              /* One per user action, unlike On Change above, which fires for all four and cannot say
-                 which happened or to which file. */
+              /* The four actions first: they are what the component is for, and what a reader looks
+                 for. The generic pointer and focus events follow. */
               .addSettingsInput(fileActionHandler('onUpload', 'On Upload', 'a file is uploaded'))
               .addSettingsInput(fileActionHandler('onDownload', 'On Download', 'a file is downloaded, including as part of a zip'))
               .addSettingsInput(fileActionHandler('onReplace', 'On Replace', 'a file is replaced with a new version'))
               .addSettingsInput(fileActionHandler('onDelete', 'On Delete', 'a file is deleted'))
+              /* FILE_EVENTS_WITHOUT_CHANGE, matching what the runtime binds: the standard input set
+                 minus onDoubleClick and the keyboard events, and minus onChange, which the four
+                 handlers above replace. They are bound to the wrapper the component renders into, so
+                 they fire for the list as a whole rather than for an individual file — which is what
+                 the tooltips say, so the labels carry no prefix of their own. */
+              .stdEventHandlers([...FILE_EVENTS_WITHOUT_CHANGE], DataTypes.array)
               .toJson(),
           },
           {
