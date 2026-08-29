@@ -386,17 +386,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   hideLabel: false,
                   description: 'Custom Action configuration executed when saving list items (validation, calculations, etc.)',
                 })
-                .addSettingsInput({
-                  id: nanoid(),
-                  propertyName: 'onRowSave',
-                  label: 'On Row Save',
-                  inputType: 'codeEditor',
-                  parentId: eventsTabId,
-                  tooltip: 'Custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations). This handler should return an object or a Promise<object>.',
-                  hidden: { _code: 'return getSettingValue(data?.canAddInline) === "no" && getSettingValue(data?.canEditInline) === "no";', _mode: 'code', _value: false },
-                  description: 'Allows custom business logic to be executed on saving of new/updated row (e.g. custom validation / calculations).',
-                  hideLabel: false,
-                })
                 .addConfigurableActionConfigurator({
                   id: nanoid(),
                   propertyName: 'onRowDeleteSuccessAction',
