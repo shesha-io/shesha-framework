@@ -93,6 +93,11 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
       return;
 
     this.#fileListReference = fileListReference;
+    /* Before the branch, not inside it: an owner that resolves to nothing — or the designer, which
+       never fetches — starts no request to supersede the one in flight, and its response would
+       otherwise still land and show the previous owner's files. */
+    this.invalidatePendingFetch();
+
     // Skip API calls in designer/config mode to prevent errors from incomplete data
     if (!this.#isDesignerMode && isOwnerReferenceValid(this.#fileListReference))
       void this.fetchFilesList();
@@ -114,6 +119,14 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
      try blocks: a throw from one would be caught as an operation failure, marking a file that
      uploaded fine as errored and reporting a failure that did not happen. Guarded the way
      notifySubscribers already is in fetchFilesList. */
+  /* A fetch already in flight describes a state that no longer holds once the list is written
+     locally, or once it is a different owner's list. Bumping the token is what the check in
+     fetchFilesList tests against, so the response is dropped instead of overwriting the newer
+     truth — resurrecting a deleted file, or discarding one just uploaded. */
+  private invalidatePendingFetch = (): void => {
+    this.#fetchGeneration++;
+  };
+
   private notifyFileAction = (action: FileAction, file?: StoredFileModel | undefined): void => {
     try {
       this.#onFileAction?.(action, this.#fileList, file);
@@ -185,6 +198,7 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
         temporary: false,
         userHasDownloaded: false,
       };
+      this.invalidatePendingFetch();
       this.addFileToList(newFile);
 
       const responseFile = await this.#fileHelper.uploadFileAsAttachmentAsync(uploadArgs);
@@ -224,6 +238,7 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
         fileId: persistedId,
       };
 
+      this.invalidatePendingFetch();
       this.updateFileByIdOrUid(fileId, (file) => ({ ...file, status: 'uploading' }));
 
       const uploadedFile = await this.#fileHelper.replaceFileAsync(replaceArgs);
@@ -254,6 +269,7 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
       // Use the persisted id for the API call if available, otherwise use the provided id
       const persistedId = file.id || fileId;
 
+      this.invalidatePendingFetch();
       this.updateFileByIdOrUid(fileId, (file) => ({ ...file, status: 'removed' }));
 
       await this.#fileHelper.deleteFileByIdAsync(persistedId);
