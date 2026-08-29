@@ -16,7 +16,7 @@ export type { OnNoteCreatedFunc, OnNoteUpdatedFunc, OnNoteDeletedFunc };
 
 export type NotesProviderProps = {
   ownerId: string;
-  ownerType: string | IEntityTypeIdentifier;
+  ownerType?: string | IEntityTypeIdentifier | undefined;
   category?: string | undefined;
 
   onCreatedAction?: OnNoteCreatedFunc | undefined;
@@ -45,7 +45,7 @@ const NotesEditorProvider: FC<PropsWithChildren<NotesProviderProps>> = ({
   }, [instance, onCreatedAction, onUpdatedAction, onDeletedAction]);
 
   useEffect(() => {
-    instance.init({ ownerId, ownerType, category });
+    instance.init({ ownerId, ownerType: ownerType ?? '', category });
   }, [instance, ownerId, ownerType, category]);
 
   return (

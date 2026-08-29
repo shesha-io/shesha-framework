@@ -172,7 +172,7 @@ const ContextPropertyAutocompleteComponent: ContextPropertyAutocompleteComponent
       contextName: initialValues.context,
       style: isNotNullOrWhiteSpace(model.style) ? getStyle(model.style, allData.data, allData.globalState) : emptyObj,
       dropdownStyle: isNotNullOrWhiteSpace(model.dropdownStyle) ? getStyle(model.dropdownStyle, allData.data, allData.globalState) : emptyObj,
-      modelType: allData.form?.formSettings?.modelType,
+      modelType: allData.form?.modelType,
       clearFieldsValue: allData.form?.clearFieldsValue,
       getFieldsValue: allData.form?.formInstance?.getFieldsValue,
       setFieldsValue: allData.form?.setFieldsValue,

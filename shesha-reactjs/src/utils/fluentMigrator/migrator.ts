@@ -76,7 +76,7 @@ implements IMigrationRegistrationsOwner<TDst, TContext> {
   upgrade = (currentModel: IHasVersion, context: TContext): TDst => {
     if (currentModel.version !== 'latest') {
       const versionNumber = currentModel.version as number;
-      const unappliedMigrations = this.migrations.filter((m) => m.version > versionNumber).sort((m) => m.version);
+      const unappliedMigrations = this.migrations.filter((m) => m.version > versionNumber).sort((a, b) => (a.version - b.version));
 
       let current = { ...currentModel };
       unappliedMigrations.forEach((migration) => {

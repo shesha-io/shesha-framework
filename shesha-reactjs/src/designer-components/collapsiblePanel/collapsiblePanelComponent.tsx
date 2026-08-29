@@ -3,7 +3,6 @@ import { CollapsiblePanel, ICollapseRef } from '@/components/panel';
 import { shaHeaderComponentsContainer } from '@/components/panel/styles/styles';
 import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { evaluateString } from '@/providers/form/utils';
 import { GroupOutlined } from '@ant-design/icons';
 import { nanoid } from '@/utils/uuid';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
@@ -37,12 +36,7 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
   name: 'Panel',
   icon: <GroupOutlined />,
   getWrapperStyle: (model) => getFullSizeWrapperDesignerStyle(model),
-  useCalculateModel(model, allData) {
-    const evaluatedLabel = typeof model.label === 'string' ? evaluateString(model.label, { data: allData.data }) : model.label;
-    const calcModel = useMemo(() => ({ evaluatedLabel }), [evaluatedLabel]);
-    return calcModel;
-  },
-  Factory: ({ model: sourceModel, calculatedModel }) => {
+  Factory: ({ model: sourceModel }) => {
     const {
       expandIconPosition,
       collapsedByDefault,
@@ -97,7 +91,7 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
               className={shaHeaderComponentsContainer}
               additionalDomProperties={getComponentEvents<void>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent }, undefined, undefined, 'headerEvents')}
             />
-          ) : calculatedModel.evaluatedLabel}
+          ) : model.label}
           {...(!isIconHidden && expandIconPosition ? { expandIconPlacement: expandIconPosition } : {})}
           showArrow={collapsible !== 'disabled' && !isIconHidden}
           collapsedByDefault={collapsedByDefault}

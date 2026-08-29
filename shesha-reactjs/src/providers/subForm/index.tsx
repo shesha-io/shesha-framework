@@ -723,14 +723,20 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     setValidationErrors: function (payload: string | IErrorInfo | IAjaxResponseBase | AxiosResponse<IAjaxResponseBase> | Error): void {
       parentFormApi.setValidationErrors(payload);
     },
-    formSettings: parentFormApi.formSettings,
-    formMode: parentFormApi.formMode,
+    formSettings: parentFormApi.settings,
+    formMode: parentFormApi.mode,
     data: isDefined(parentFormApi.data) && !isNullOrWhiteSpace(props.propertyName)
       ? (parentFormApi.data as Record<string, unknown>)[props.propertyName] as object
       : {},
     defaultApiEndpoints: parentFormApi.defaultApiEndpoints,
     context: {},
     components: {},
+    clear: function (): void {
+      onChangeInternal({}); // ToDo: AS - need to review
+    },
+    settings: parentFormApi.settings,
+    mode: parentFormApi.mode,
+    state: {},
   };
 
   return (

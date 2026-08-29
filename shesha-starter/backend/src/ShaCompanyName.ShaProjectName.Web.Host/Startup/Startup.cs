@@ -41,6 +41,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
 {
@@ -143,6 +144,22 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
 
 		public void Configure(IApplicationBuilder app, IBackgroundJobClient backgroundJobs)
 		{
+			// Security headers. Registered first and applied in `OnStarting` so that the values
+			// are written on every response and cannot be overwritten by later middleware.
+			app.Use(async (context, next) =>
+			{
+				context.Response.OnStarting(() =>
+				{
+					context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+					context.Response.Headers["X-Frame-Options"] = "DENY";
+					context.Response.Headers["X-XSS-Protection"] = "0";
+					context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
+					context.Response.Headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()";
+					return Task.CompletedTask;
+				});
+				await next();
+			});
+
 			app.UseSheshaElmah();
 
 			// note: already registered in the ABP
@@ -154,17 +171,6 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
 			{
 				options.UseAbpRequestLocalization = false;
 			}); // Initializes ABP framework.​
-			// Security headers
-			app.Use(async (context, next) =>
-			{
-				context.Response.Headers["X-Content-Type-Options"] = "nosniff";
-				context.Response.Headers["X-Frame-Options"] = "DENY";
-				context.Response.Headers["X-XSS-Protection"] = "0";
-				context.Response.Headers["Referrer-Policy"] = "strict-origin-when-cross-origin";
-				context.Response.Headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()";
-				await next();
-			});
-
 				//app.UseCors(_defaultCorsPolicyName); // Enable CORS!
 				// global cors policy
 			var corsOrigins = _appConfiguration["App:CorsOrigins"]?
@@ -216,7 +222,7 @@ namespace ShaCompanyName.ShaProjectName.Web.Host.Startup
 					Authorization = new[] { new HangfireAuthorizationFilter() }
 				});
 			app.UseMiddleware<GraphQLMiddleware>();
-			if (_hostEnvironment.IsDevelopment())
+			if (!_hostEnvironment.IsProduction())
 			{
 				app.UseGraphQLPlayground(); //to explorer API navigate https://*DOMAIN*/ui/playground
 			}

@@ -123,6 +123,7 @@ export const useStyles = createStyles((
      badge — never a second box around the file, which would fight the thumbnail set. */
   const downloadedFile = cx("sha-downloaded-file", css`
     position: relative;
+    display: flex;
 
     .${prefixCls}-upload-list-item-container {
       opacity: 0.8;
@@ -236,25 +237,6 @@ export const useStyles = createStyles((
         ${layout === true || model.hideFileName === true
           ? 'display: none !important; height: 0 !important; margin: 0 !important; padding: 0 !important;'
           : ''}
-      }
-
-      .${prefixCls}-upload-list-text {
-        overflow: hidden;
-        >.${prefixCls}-upload-list-item-container {
-          > div {
-            >.file-name-wrapper {
-              >.item-file-name {
-                width: 100%;
-                gap: 8px;
-              }
-            }
-            > .downloaded-icon {
-              position: relative;
-              top: unset;
-              right: unset;
-            }
-          }
-        }
       }
 
       .${prefixCls}-upload-select {
@@ -390,7 +372,7 @@ export const useStyles = createStyles((
           transition: none !important;
         }
         height: auto !important;
-        width: ${isThumbnail ? thumbnail?.dimensions?.width ?? '54' : ''} !important;
+        ${isThumbnail ? `width: ${addPx(thumbnail?.dimensions?.width) ?? '54px'} !important;` : ''}
       }
 
       .${prefixCls}-upload-list-item-action {

@@ -1,6 +1,6 @@
 import { FC, PropsWithChildren, useEffect, useMemo } from "react";
 import { useDeepCompareEffect } from "@/hooks/useDeepCompareEffect";
-import { useDatasetInstance, useDatasetState, useDatasetSubscription } from "./hooks";
+import { useDatasetInstance, useDatasetInstanceSubscription, useDatasetState, useDatasetSubscription } from "./hooks";
 import { DataTableActionsContext, DataTableStateContext, IDataTableStateContext } from "./contexts";
 import { useConfigurableAction } from "../configurableActionsDispatcher";
 import { IDataTableProviderBaseProps } from "./provider.props";
@@ -48,6 +48,12 @@ const DataTableProviderWithRepositoryWithContext: FC<PropsWithChildren<DataTable
     actionOwnerName = "",
     instance,
   } = props;
+
+  // The data context below publishes `instance.state` to scripts (`contexts.<name>.selectedRow` etc.).
+  // `updateState` replaces the state object instead of mutating it, so without this subscription the
+  // component never re-renders on dataset changes and the context keeps exposing the state captured
+  // on mount - row selection, fetched data and paging never reach the scripts.
+  useDatasetInstanceSubscription(instance, 'data');
 
   useConfigurableAction(
     {

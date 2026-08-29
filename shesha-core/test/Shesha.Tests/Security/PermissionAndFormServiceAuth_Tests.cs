@@ -96,6 +96,10 @@ namespace Shesha.Tests.Security
         [Theory]
         [InlineData("UpdateMarkupAsync")]
         [InlineData("ImportJsonAsync")]
+        [InlineData("CreateAsync")]
+        [InlineData("UpdateAsync")]
+        [InlineData("DeleteAsync")]
+        [InlineData("GetJsonAsync")]
         public void FormConfigurationAppService_write_methods_should_not_be_AllowAnonymous(string methodName)
         {
             var method = typeof(FormConfigurationAppService)

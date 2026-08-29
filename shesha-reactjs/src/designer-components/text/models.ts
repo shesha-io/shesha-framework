@@ -67,7 +67,7 @@ export interface ITypographyProps {
 
 export interface ITextComponentPropsV0 extends IConfigurableFormComponent {
   textType?: 'span' | 'paragraph' | 'title' | undefined;
-  content: string;
+  content: string | undefined;
   contentType?: ContentType | undefined;
   contentDisplay: ContentDisplay | undefined;
   color?: string | undefined;
@@ -94,7 +94,7 @@ export interface ITextComponentPropsV0 extends IConfigurableFormComponent {
 }
 
 export interface ITextComponentProps extends IConfigurableFormComponent {
-  content: string;
+  content: string | undefined;
   contentType?: ContentType | undefined;
   color?: string | undefined;
   backgroundColor?: string | undefined;

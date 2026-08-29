@@ -1,7 +1,6 @@
-import { ICanvasContextApi } from "./canvasContextApi";
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface PageApi {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  readonly context: Record<string, any>;
-  readonly canvas: ICanvasContextApi | undefined;
+  /** page additional state (data) */
+  readonly state: Record<string, any>;
+  readonly location: Location | undefined;
 }

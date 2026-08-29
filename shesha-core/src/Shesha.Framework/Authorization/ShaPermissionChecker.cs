@@ -118,25 +118,45 @@ namespace Shesha.Authorization
         public async Task<bool> IsGrantedCustomAsync(long userId, string permissionName)
         {
             var customCheckers = IocManager.ResolveAll<ICustomPermissionChecker>();
-            foreach (var customChecker in customCheckers)
+            try
             {
-                if (await customChecker.IsGrantedAsync(userId, permissionName))
-                    return true;
-            }
+                foreach (var customChecker in customCheckers)
+                {
+                    if (await customChecker.IsGrantedAsync(userId, permissionName))
+                        return true;
+                }
 
-            return false;
+                return false;
+            }
+            finally
+            {
+                // ResolveAll tracks each checker (and its repo / UserManager graph) in Windsor's release
+                // policy; release them or they leak on every permission check.
+                foreach (var customChecker in customCheckers)
+                    IocManager.Release(customChecker);
+            }
         }
 
         public async Task<bool> IsGrantedCustomAsync(long userId, string permissionName, EntityReferenceDto<string> permissionedEntity)
         {
             var customCheckers = IocManager.ResolveAll<ICustomPermissionChecker>();
-            foreach (var customChecker in customCheckers)
+            try
             {
-                if (await customChecker.IsGrantedAsync(userId, permissionName, permissionedEntity))
-                    return true;
-            }
+                foreach (var customChecker in customCheckers)
+                {
+                    if (await customChecker.IsGrantedAsync(userId, permissionName, permissionedEntity))
+                        return true;
+                }
 
-            return false;
+                return false;
+            }
+            finally
+            {
+                // ResolveAll tracks each checker (and its repo / UserManager graph) in Windsor's release
+                // policy; release them or they leak on every permission check.
+                foreach (var customChecker in customCheckers)
+                    IocManager.Release(customChecker);
+            }
         }
 
         /// <summary>
@@ -148,25 +168,45 @@ namespace Shesha.Authorization
         public bool IsGrantedCustom(long userId, string permissionName)
         {
             var customCheckers = IocManager.ResolveAll<ICustomPermissionChecker>();
-            foreach (var customChecker in customCheckers)
+            try
             {
-                if (customChecker.IsGranted(userId, permissionName))
-                    return true;
-            }
+                foreach (var customChecker in customCheckers)
+                {
+                    if (customChecker.IsGranted(userId, permissionName))
+                        return true;
+                }
 
-            return false;
+                return false;
+            }
+            finally
+            {
+                // ResolveAll tracks each checker (and its repo / UserManager graph) in Windsor's release
+                // policy; release them or they leak on every permission check.
+                foreach (var customChecker in customCheckers)
+                    IocManager.Release(customChecker);
+            }
         }
 
         public bool IsGrantedCustom(long userId, string permissionName, EntityReferenceDto<string> permissionedEntity)
         {
             var customCheckers = IocManager.ResolveAll<ICustomPermissionChecker>();
-            foreach (var customChecker in customCheckers)
+            try
             {
-                if (customChecker.IsGranted(userId, permissionName, permissionedEntity))
-                    return true;
-            }
+                foreach (var customChecker in customCheckers)
+                {
+                    if (customChecker.IsGranted(userId, permissionName, permissionedEntity))
+                        return true;
+                }
 
-            return false;
+                return false;
+            }
+            finally
+            {
+                // ResolveAll tracks each checker (and its repo / UserManager graph) in Windsor's release
+                // policy; release them or they leak on every permission check.
+                foreach (var customChecker in customCheckers)
+                    IocManager.Release(customChecker);
+            }
         }
 
         /// <summary>

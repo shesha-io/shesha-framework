@@ -137,7 +137,62 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: IFileUploa
     }
   `);
 
+  /* The three floating surfaces this component opens — the version-history popover, the delete
+     confirmation modal and the full-screen image preview — are portalled to the body, so no
+     descendant selector from the field can reach them: each takes its class through its own prop.
+
+     They take **font family only**, matching the file list's popups. Colour is left to antd so the
+     panel keeps its own text/secondary/danger distinctions — a single configured colour flattens
+     them. Size, weight and alignment are excluded because a panel is sized by antd's own type scale
+     rather than by the field, and background/border/shadow because a floating surface's elevation is
+     the theme's to own. `fontStyles` emits every property it is handed, so the Font model is
+     narrowed here rather than passed whole. */
+  const popupFontStyles = fontStyles(
+    { type: model.font?.type, color: undefined, size: undefined, weight: undefined, align: undefined },
+    { fontFamily: model.styleCss?.fontFamily },
+  );
+
+  /* Version-history popover. antd sets the font on the title, the content and each row, so the
+     configured font is restated on all of them rather than left to inherit from the panel. */
+  const popup = cx('sha-file-upload-history-popover', css`
+    &&& .${prefixCls}-popover-title,
+    &&& .${prefixCls}-popover-content,
+    &&& .${prefixCls}-popover-content li,
+    &&& .${prefixCls}-popover-content .${prefixCls}-typography {
+      ${popupFontStyles}
+    }
+
+    &&& .${prefixCls}-popover-content .${prefixCls}-btn-link {
+      ${popupFontStyles}
+    }
+  `);
+
+  /* Delete confirmation modal. */
+  const modal = cx('sha-file-upload-confirm-modal', css`
+    &&& .${prefixCls}-modal-title,
+    &&& .${prefixCls}-modal-confirm-title,
+    &&& .${prefixCls}-modal-confirm-content {
+      ${popupFontStyles}
+    }
+
+    /* The Yes/Cancel buttons keep antd's own colours so the primary/default distinction survives. */
+    &&& .${prefixCls}-modal-confirm-btns .${prefixCls}-btn {
+      ${popupFontStyles}
+    }
+  `);
+
+  /* Full-screen image preview. It covers the viewport rather than sitting next to the field, so it
+     takes none of the field's appearance — only the operations bar follows the configured family. */
+  const imagePreview = cx('sha-file-upload-preview', css`
+    &&& .${prefixCls}-image-preview-operations {
+      ${popupFontStyles}
+    }
+  `);
+
   return {
     fileUpload,
+    popup,
+    modal,
+    imagePreview,
   };
 });

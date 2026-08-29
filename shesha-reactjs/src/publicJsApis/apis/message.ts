@@ -9,4 +9,5 @@ export type MessageApi = {
   success: TypeOpen;
   warning: TypeOpen;
   error: TypeOpen;
+  loading: TypeOpen;
 };

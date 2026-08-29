@@ -120,8 +120,8 @@ export const FormComponentModelPreparer: FC<FormComponentPrepareModelProps> = ({
 
   useEffect(() => {
     if (isDefined(componentApi))
-      updateApi({ model: actualModel, apiModel: actualApiModel, componentApi, shaForm, isInput, setApiModel, setApiStyles });
-  }, [componentApi, actualModel, actualApiModel, isInput, shaForm]);
+      updateApi({ model: actualModel, apiModel: actualApiModel, componentApi, shaForm, toolboxComponent, setApiModel, setApiStyles });
+  }, [componentApi, actualModel, actualApiModel, toolboxComponent, shaForm]);
   useEffectOnce(() => () => componentApi?.removeApi(actualModel.id));
 
   const apiContext: IApiContext<IConfigurableFormComponent> = useMemo(() => ({ updateApiModel: (model) => updateApiModel(setApiModel, model) }), []);

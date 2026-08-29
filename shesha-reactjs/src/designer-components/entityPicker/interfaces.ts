@@ -25,6 +25,9 @@ export interface IEntityPickerComponentProps extends IConfigurableFormComponent,
   modalWidth?: number | string | 'custom' | undefined;
   customWidth?: number | undefined;
   widthUnits?: string | undefined;
+  addNewModalWidth?: number | string | 'custom' | undefined;
+  addNewCustomWidth?: number | undefined;
+  addNewWidthUnits?: string | undefined;
   buttons?: ButtonGroupItemProps[] | undefined;
   footerButtons?: ModalFooterButtons | undefined;
   dividerWidth?: string | undefined;

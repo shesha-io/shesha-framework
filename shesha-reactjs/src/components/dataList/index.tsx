@@ -819,8 +819,9 @@ export const DataList: FC<IDataListProps> = ({
     if (canAddInline)
       setCreateModalOpen(true);
   };
-  if (actionRef?.current)
-    actionRef.current.addNewItem = onCreateClick;
+
+  if (actionRef)
+    actionRef.current = { ...actionRef.current, addNewItem: onCreateClick };
 
   type MomentType = typeof moment;
   type NewListItemInitExecuter = (form: IFormApi | undefined, contexts: IDataContextsData | object, globalState: IAnyObject | undefined, http: HttpClientApi, moment: MomentType) => ITableRowData;
@@ -901,7 +902,7 @@ export const DataList: FC<IDataListProps> = ({
   };
 
   return (
-    <>
+    <div className={classNames(styles.shaDatalistComponent, { horizontal: orientation === 'horizontal' })}>
       {createModalOpen && isDefined(persistedCreateFormProps) && (
         <DataListItemCreateModal<ITableRowData>
           formInfo={formDtop2PersistedFormProps(persistedCreateFormProps)}
@@ -963,6 +964,6 @@ export const DataList: FC<IDataListProps> = ({
           </div>
         </ShaSpin>
       </FormInfo>
-    </>
+    </div>
   );
 };

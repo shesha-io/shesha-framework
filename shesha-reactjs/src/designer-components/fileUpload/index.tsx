@@ -129,6 +129,12 @@ const FileUploadComponent: FileUploadComponentDefinition = {
                   thumbnailWidth={model.thumbnailWidth}
                   thumbnailHeight={model.thumbnailHeight}
                   disabled={disabled}
+                  styles={model.styleCss}
+                  /* The three floating surfaces are portalled to the body, so no descendant selector
+                     from the field reaches them — each needs its class handed over explicitly. */
+                  popupClassName={styles.popup}
+                  modalClassName={styles.modal}
+                  imagePreviewClassName={styles.imagePreview}
                 />
               </div>
             </FileUploadProvider>
@@ -182,11 +188,15 @@ const FileUploadComponent: FileUploadComponentDefinition = {
       .add<IFileUploadProps>(7, (prev, context) => {
         if (context.isNew === true) return prev;
 
+        /* Only carry across the legacy root fields that are actually set. Spreading the object
+           wholesale would overwrite an existing `desktop` value with `undefined` for every root
+           field that is absent — which is the normal case for a model whose styles already moved to
+           the device sets — wiping the very values this step is meant to preserve. */
         const styles: IInputStyles = {
-          size: prev.size,
-          hideBorder: prev.hideBorder,
-          stylingBox: prev.stylingBox,
-          style: prev.style,
+          ...(isDefined(prev.size) ? { size: prev.size } : {}),
+          ...(isDefined(prev.hideBorder) ? { hideBorder: prev.hideBorder } : {}),
+          ...(isDefined(prev.stylingBox) ? { stylingBox: prev.stylingBox } : {}),
+          ...(isDefined(prev.style) ? { style: prev.style } : {}),
         };
 
         return { ...migratePrevStyles({ ...prev, desktop: { ...(prev.desktop ?? {}), ...styles } }, defaultStyles()) };

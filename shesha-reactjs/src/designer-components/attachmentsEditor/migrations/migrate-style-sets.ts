@@ -68,7 +68,6 @@ const swapDeviceStyles = (
 
   // The file box styles are whatever the root currently holds.
   const thumbnail = pickStyleGroups(device);
-  delete (thumbnail as Record<string, unknown>)[LEGACY_STYLING_BOX];
 
   // Everything that is neither a style group nor one of the two sets being rearranged.
   const rest = withoutStyleGroups(device);
