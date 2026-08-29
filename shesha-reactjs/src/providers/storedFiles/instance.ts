@@ -122,6 +122,18 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
        otherwise still land and show the previous owner's files. */
     this.invalidatePendingFetch();
 
+    /* What is on screen describes the owner we are leaving. Kept until the new fetch resolves it
+       would outlive a fetch that fails, or one that never starts, leaving one record's files — or a
+       stale error — under another. The value goes with it, so Required cannot be satisfied by files
+       that belong to a different record. Guarded so a first init, with nothing to clear, stays
+       silent rather than announcing a change on every mount. */
+    if (this.#fileList.length > 0 || this.#fetchFilesError) {
+      this.#fileList = [];
+      this.#fetchFilesError = false;
+      this.notifySubscribers(['fileList']);
+      this.#onChange?.(this.#fileList, false);
+    }
+
     // Skip API calls in designer/config mode to prevent errors from incomplete data
     if (!this.#isDesignerMode && isOwnerReferenceValid(this.#fileListReference))
       void this.fetchFilesList();
