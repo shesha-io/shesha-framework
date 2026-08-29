@@ -10,7 +10,7 @@ import { nanoid } from "@/utils/uuid";
 import { SubscribeFunc, SubscriptionManager } from "@/utils/subscriptions/subscriptionManager";
 import { AttachmentsEditorEvents, IAttachmentsEditorInstance } from "./contexts";
 import { fileListReferenceEqual, getFileExtension, storedFileDtoToModel } from "@/utils/storedFile/utils";
-import { OnFileDownloaded, OnFileListChanged } from "./models";
+import { OnFileAction, OnFileDownloaded, OnFileListChanged } from "./models";
 import { isOwnerReferenceValid } from "@/utils/entity";
 import { isFile } from "@/utils/fileValidation";
 import { RefObject } from "react";
@@ -36,6 +36,8 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
   #onChange: OnFileListChanged | undefined;
 
   #onFileDownloaded: OnFileDownloaded | undefined;
+
+  #onFileAction: OnFileAction | undefined;
 
   #subscriptionManager: SubscriptionManager<AttachmentsEditorEvents, IAttachmentsEditorInstance>;
 
@@ -93,6 +95,10 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
 
   setOnFileDownloaded = (onFileDownloaded: OnFileDownloaded | undefined): void => {
     this.#onFileDownloaded = onFileDownloaded;
+  };
+
+  setOnFileAction = (onFileAction: OnFileAction | undefined): void => {
+    this.#onFileAction = onFileAction;
   };
 
   private updateFileList = (updater: (files: StoredFileModel[]) => StoredFileModel[]): void => {
@@ -170,6 +176,7 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
         });
 
       this.#onChange?.(this.#fileList, true);
+      this.#onFileAction?.('upload', this.#fileList, this.findFileById(fileUid));
     } catch (error) {
       console.error(error);
 
@@ -203,6 +210,7 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
       this.updateFileByIdOrUid(fileId, () => storedFileDtoToModel(uploadedFile));
 
       this.#onChange?.(this.#fileList, true);
+      this.#onFileAction?.('replace', this.#fileList, this.findFileById(fileId));
 
       this.#message.success(`File "${uploadedFile.name}" replaced successfully`);
     } catch (error) {
@@ -236,6 +244,7 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
         this.#delayedUpdateClientRef.current.removeItem(STORED_FILES_DELAYED_UPDATE, persistedId);
 
       this.#onChange?.(this.#fileList, true);
+      this.#onFileAction?.('delete', this.#fileList, file);
     } catch (error) {
       console.error(error);
 
@@ -256,6 +265,7 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
 
     this.updateFileList((files) => files.map((f) => ({ ...f, userHasDownloaded: true })));
     this.#onFileDownloaded?.(this.#fileList, true);
+    this.#onFileAction?.('download', this.#fileList);
   };
 
   downloadFile = async (args: DownloadFileArgs): Promise<void> => {
@@ -275,5 +285,6 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
     await this.#fileHelper.downloadFileAsync(downloadArgs);
     this.updateFileByIdOrUid(args.fileId, (file) => ({ ...file, userHasDownloaded: true }));
     this.#onFileDownloaded?.(this.#fileList, true);
+    this.#onFileAction?.('download', this.#fileList, this.findFileById(args.fileId));
   };
 }

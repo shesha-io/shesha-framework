@@ -1,7 +1,7 @@
 import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
 import { DataTypes, SettingsFormMarkupFactory } from '@/interfaces';
-import { FILE_EVENTS } from '../_common/events';
+import { FILE_EVENTS_WITHOUT_CHANGE } from '../_common/events';
 
 /* Every Display Style but File name renders a tile. Listed rather than tested as "not text" so an
    unset value reads as file-name instead of silently enabling every thumbnail-only setting. */
@@ -15,6 +15,30 @@ const isCustomThumbnailJs = 'return getSettingValue(data?.displayStyle) === "thu
 const isEditableJs = 'const r = getSettingValue(data?.readOnly); return r !== true && r !== "readOnly";';
 const showCustomContentFormJs = 'return !!getSettingValue(data?.customContent) && getSettingValue(data?.extraFormSelectionMode) !== "dynamic";';
 const styleDownloadedFilesJs = 'return !!getSettingValue(data?.[`${contexts?.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);';
+
+/**
+ * One of the four per-action handlers on the Events tab. `value` is the list as it stands after the
+ * action, which is what On Download has always passed; `file` is the one it happened to, and is
+ * undefined only for a zip download, which has no single subject.
+ */
+interface IFileActionHandler {
+  inputType: 'codeEditor';
+  propertyName: string;
+  label: string;
+  labelAlign: 'right';
+  tooltip: string;
+  wrapInTemplate: boolean;
+  templateSettings: { functionName: string; useAsyncDeclaration: boolean };
+  availableConstantsExpression: string;
+}
+
+const fileActionHandler = (propertyName: string, label: string, when: string): IFileActionHandler => ({
+  inputType: 'codeEditor', propertyName, label, labelAlign: 'right',
+  tooltip: `Callback that is triggered when ${when}.`,
+  wrapInTemplate: true,
+  templateSettings: { functionName: propertyName, useAsyncDeclaration: true },
+  availableConstantsExpression: 'return metadataBuilder.object("constants").addAllStandard().addString("value", "Files in the list after the action").addObject("file", "The file the action happened to", undefined).addObject("event", "Event callback when user input", undefined).build();',
+});
 
 export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter }) => {
   const searchableTabsId = nanoid();
@@ -145,17 +169,18 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
           {
             key: 'events', title: 'Events', id: eventsTabId,
             components: fbf(eventsTabId)
-              /* See FILE_EVENTS: the standard input set minus onDoubleClick and the keyboard events.
-                 The pointer and focus events are bound to the wrapper the component renders into, so
-                 they fire for the list as a whole rather than for an individual file. */
-              .stdEventHandlers([...FILE_EVENTS], DataTypes.array, undefined, 'File List ')
-              .addSettingsInput({
-                inputType: 'codeEditor', propertyName: 'onDownload', label: 'On Download', labelAlign: 'right',
-                tooltip: 'Callback that is triggered when a file is downloaded.',
-                wrapInTemplate: true,
-                templateSettings: { functionName: 'onDownload', useAsyncDeclaration: true },
-                availableConstantsExpression: 'return metadataBuilder.object("constants").addAllStandard().addString("value", "Component current value").addObject("event", "Event callback when user input", undefined).build();',
-              })
+              /* FILE_EVENTS_WITHOUT_CHANGE, matching what the runtime binds: the standard input set
+                 minus onDoubleClick and the keyboard events, and now minus onChange too, which the
+                 four per-action handlers below replace. The pointer and focus events are bound to
+                 the wrapper the component renders into, so they fire for the list as a whole rather
+                 than for an individual file. */
+              .stdEventHandlers([...FILE_EVENTS_WITHOUT_CHANGE], DataTypes.array, undefined, 'File List ')
+              /* One per user action, unlike On Change above, which fires for all four and cannot say
+                 which happened or to which file. */
+              .addSettingsInput(fileActionHandler('onUpload', 'On Upload', 'a file is uploaded'))
+              .addSettingsInput(fileActionHandler('onDownload', 'On Download', 'a file is downloaded, including as part of a zip'))
+              .addSettingsInput(fileActionHandler('onReplace', 'On Replace', 'a file is replaced with a new version'))
+              .addSettingsInput(fileActionHandler('onDelete', 'On Delete', 'a file is deleted'))
               .toJson(),
           },
           {

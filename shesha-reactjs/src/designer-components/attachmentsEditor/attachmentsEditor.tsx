@@ -5,7 +5,6 @@ import { DataTypes } from '@/interfaces';
 import { IInputStyles, IStyleValue, useForm, useFormData } from '@/providers';
 import {
   evaluateString,
-  executeScriptSync,
   useAvailableConstantsData,
 } from '@/providers/form/utils';
 import { AttachmentsEditorProvider } from '@/providers/storedFiles';
@@ -29,7 +28,7 @@ import { FILE_EVENTS_WITHOUT_CHANGE, getComponentEvents } from '../_common/event
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getIdOrUndefined } from '@/utils/entity';
 import CustomFile from '@/components/customFile';
-import { OnFileDownloaded, OnFileListChanged } from '@/providers/storedFiles/models';
+import { FileAction, OnFileAction, OnFileDownloaded, OnFileListChanged } from '@/providers/storedFiles/models';
 import { StoredFileModel } from '@/utils/storedFile/models';
 import { AttachmentsEditorComponentDefinition, IAttachmentsEditorDeviceStyles, IAttachmentsEditorProps, displayStyleFromListType, displayStyleToListType, presetThumbnailSize } from './interfaces';
 import { swapContainerAndThumbnailStyles } from './migrations/migrate-style-sets';
@@ -307,13 +306,6 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
     ]);
     useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
-    const executeScript = (script: string, value: unknown): void => {
-      executeScriptSync(script, {
-        value,
-        ...executionContext,
-      });
-    };
-
     const hasExtraContent = Boolean(model.customContent);
 
     return (
@@ -324,20 +316,36 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
         autoAlignLabel={false}
       >
         {(value, onChange, _, ctx) => {
-          const onFileListChanged: OnFileListChanged = (fileList, isUserAction = false): void => {
+          /* Value sync only. What used to be File List On Change is now the three handlers below,
+             which fire for exactly the actions it fired for and can say which file it was. This
+             still has to run: it is what lets a stored file satisfy the Required rule. */
+          const onFileListChanged: OnFileListChanged = (fileList): void => {
             /* Empty reaches the field as undefined: the Required rule carries no `type`, so an
                empty array counts as present and Required would pass with no files at all. */
             onChange(fileList.length > 0 ? fileList : undefined);
-            // Only execute custom script if this is a user action (upload/delete)
-            if (isUserAction && isNotNullOrWhiteSpace(model.onChangeCustom)) {
-              ctx?.handleEvent(undefined, { value: fileList }, model.onChangeCustom);
-            }
           };
 
-          const onDownload: OnFileDownloaded = (fileList, isUserAction = false): void => {
+          /* Value sync only. The On Download script moved to the action handler below, which fires
+             in exactly the same two cases — a single download and a zip — and can also say which
+             file it was. */
+          const onDownload: OnFileDownloaded = (fileList): void => {
             onChange(fileList);
-            // Only execute custom script if this is a user action (download)
-            if (isUserAction && isNotNullOrWhiteSpace(model.onDownload)) executeScript(model.onDownload, fileList);
+          };
+
+          /* One handler per user action. `value` stays the whole list, as On Download has always
+             passed, and `file` is the one the action happened to — the point of these over On
+             Change, which cannot say what happened or to what. */
+          const actionScripts: Record<FileAction, string | undefined> = {
+            upload: model.onUpload,
+            download: model.onDownload,
+            replace: model.onReplace,
+            delete: model.onDelete,
+          };
+
+          const onFileAction: OnFileAction = (action, fileList, file): void => {
+            const script = actionScripts[action];
+            if (isNotNullOrWhiteSpace(script))
+              ctx?.handleEvent(undefined, { value: fileList, file }, script, action);
           };
 
           /* onChange is bound above instead: it also has to update the component's value, which
@@ -359,6 +367,7 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
               // used for requered field validation
               onChange={onFileListChanged}
               onDownload={onDownload}
+              onFileAction={onFileAction}
               value={value ?? undefined}
             >
               <div style={DISPLAY_CONTENTS} {...listEvents}>
@@ -608,7 +617,23 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
           prev.desktop?.thumbnailStyle?.dimensions?.width ?? prev.thumbnailStyle?.dimensions?.width,
           prev.desktop?.thumbnailStyle?.dimensions?.height ?? prev.thumbnailStyle?.dimensions?.height,
         ),
-      }),
+      })
+    /* File List On Change is gone, replaced by a handler per action. It fired for upload, replace
+       and delete — never for a download, which went through its own callback — so the script is
+       carried onto exactly those three.*/
+    .add<IAttachmentsEditorProps>(22, (prev, context) => {
+      if (context.isNew === true) return prev;
+
+      const onChangeCustom = prev.onChangeCustom;
+      return isNullOrWhiteSpace(onChangeCustom)
+        ? prev
+        : {
+          ...prev,
+          onUpload: isNullOrWhiteSpace(prev.onUpload) ? onChangeCustom : prev.onUpload,
+          onReplace: isNullOrWhiteSpace(prev.onReplace) ? onChangeCustom : prev.onReplace,
+          onDelete: isNullOrWhiteSpace(prev.onDelete) ? onChangeCustom : prev.onDelete,
+        };
+    }),
 };
 
 export default AttachmentsEditor;

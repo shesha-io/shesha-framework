@@ -104,7 +104,11 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent<IAtt
   isDragger?: boolean | undefined;
   maxHeight?: string | undefined;
   onFileChanged?: string | undefined;
+  /** Events tab handlers, one per user action. `onDownload` fires for a zip download too. */
   onDownload?: string | undefined;
+  onUpload?: string | undefined;
+  onReplace?: string | undefined;
+  onDelete?: string | undefined;
   downloadZip?: boolean | undefined;
   filesLayout?: LayoutType | undefined;
   gap?: string | number | SizeType | undefined;
