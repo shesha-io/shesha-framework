@@ -10,7 +10,8 @@ import { nanoid } from "@/utils/uuid";
 import { SubscribeFunc, SubscriptionManager } from "@/utils/subscriptions/subscriptionManager";
 import { AttachmentsEditorEvents, IAttachmentsEditorInstance } from "./contexts";
 import { fileListReferenceEqual, getFileExtension, storedFileDtoToModel } from "@/utils/storedFile/utils";
-import { OnFileDownloaded, OnFileListChanged } from "./models";
+import { StoredFileDto } from "@/utils/storedFile/api-models";
+import { FileAction, OnFileAction, OnFileDownloaded, OnFileListChanged } from "./models";
 import { isOwnerReferenceValid } from "@/utils/entity";
 import { isFile } from "@/utils/fileValidation";
 import { RefObject } from "react";
@@ -37,6 +38,13 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
 
   #onFileDownloaded: OnFileDownloaded | undefined;
 
+  #onFileAction: OnFileAction | undefined;
+
+  /** Bumped per fetch so an earlier response that lands late can be told apart and dropped. */
+  #fetchGeneration = 0;
+
+  #fetchFilesError = false;
+
   #subscriptionManager: SubscriptionManager<AttachmentsEditorEvents, IAttachmentsEditorInstance>;
 
   #isDesignerMode: boolean;
@@ -59,17 +67,48 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
     return this.#fileList;
   };
 
+  get fetchFilesError(): boolean {
+    return this.#fetchFilesError;
+  };
+
   private fetchFilesList = async (): Promise<void> => {
     if (!isDefined(this.#fileListReference))
       throw new Error('File list reference is not defined');
 
-    const files = await this.#fileHelper.fetchFilesListAsync(this.#fileListReference);
+    /* A change of owner starts a fetch while an earlier one may still be in flight, and responses
+       can land out of order. Only the newest may write: a stale one would otherwise show the
+       previous record's files, and hand them to the field the Required rule reads. */
+    const generation = ++this.#fetchGeneration;
+
+    let files: StoredFileDto[];
+    try {
+      files = await this.#fileHelper.fetchFilesListAsync(this.#fileListReference);
+    } catch (error) {
+      console.error('AttachmentsEditorInstance.fetchFilesList failed', error);
+      /* Report only if this is still the fetch anyone is waiting on — a superseded one failing says
+         nothing about the current owner. Left unreported, the failure was silent: init launches
+         this with `void`, so it became an unhandled rejection and the list simply stayed empty,
+         indistinguishable from a record with no files. */
+      if (generation === this.#fetchGeneration) {
+        this.#fetchFilesError = true;
+        this.notifySubscribers(['fileList']);
+      }
+      return;
+    }
+
+    if (generation !== this.#fetchGeneration) return;
+
+    this.#fetchFilesError = false;
     this.#fileList = files.map((file) => storedFileDtoToModel(file));
     try {
       this.notifySubscribers(['fileList']);
     } catch (error) {
       console.error('AttachmentsEditorInstance.notifySubscribers failed', error);
     }
+
+    /* The loaded list has to reach the form value too, or Required sees nothing on a record whose
+       files are already stored. Not a user action, so the component's onChange script stays quiet. */
+    this.#onChange?.(this.#fileList, false);
   };
 
   init = (fileListReference: FileListReference): void => {
@@ -78,6 +117,23 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
       return;
 
     this.#fileListReference = fileListReference;
+    /* Before the branch, not inside it: an owner that resolves to nothing — or the designer, which
+       never fetches — starts no request to supersede the one in flight, and its response would
+       otherwise still land and show the previous owner's files. */
+    this.invalidatePendingFetch();
+
+    /* What is on screen describes the owner we are leaving. Kept until the new fetch resolves it
+       would outlive a fetch that fails, or one that never starts, leaving one record's files — or a
+       stale error — under another. The value goes with it, so Required cannot be satisfied by files
+       that belong to a different record. Guarded so a first init, with nothing to clear, stays
+       silent rather than announcing a change on every mount. */
+    if (this.#fileList.length > 0 || this.#fetchFilesError) {
+      this.#fileList = [];
+      this.#fetchFilesError = false;
+      this.notifySubscribers(['fileList']);
+      this.#onChange?.(this.#fileList, false);
+    }
+
     // Skip API calls in designer/config mode to prevent errors from incomplete data
     if (!this.#isDesignerMode && isOwnerReferenceValid(this.#fileListReference))
       void this.fetchFilesList();
@@ -89,6 +145,30 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
 
   setOnFileDownloaded = (onFileDownloaded: OnFileDownloaded | undefined): void => {
     this.#onFileDownloaded = onFileDownloaded;
+  };
+
+  setOnFileAction = (onFileAction: OnFileAction | undefined): void => {
+    this.#onFileAction = onFileAction;
+  };
+
+  /* Its own boundary, because the handler is consumer code and the calls sit inside the operations'
+     try blocks: a throw from one would be caught as an operation failure, marking a file that
+     uploaded fine as errored and reporting a failure that did not happen. Guarded the way
+     notifySubscribers already is in fetchFilesList. */
+  /* A fetch already in flight describes a state that no longer holds once the list is written
+     locally, or once it is a different owner's list. Bumping the token is what the check in
+     fetchFilesList tests against, so the response is dropped instead of overwriting the newer
+     truth — resurrecting a deleted file, or discarding one just uploaded. */
+  private invalidatePendingFetch = (): void => {
+    this.#fetchGeneration++;
+  };
+
+  private notifyFileAction = (action: FileAction, file?: StoredFileModel | undefined): void => {
+    try {
+      this.#onFileAction?.(action, this.#fileList, file);
+    } catch (error) {
+      console.error('AttachmentsEditorInstance.onFileAction failed', error);
+    }
   };
 
   private updateFileList = (updater: (files: StoredFileModel[]) => StoredFileModel[]): void => {
@@ -154,6 +234,7 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
         temporary: false,
         userHasDownloaded: false,
       };
+      this.invalidatePendingFetch();
       this.addFileToList(newFile);
 
       const responseFile = await this.#fileHelper.uploadFileAsAttachmentAsync(uploadArgs);
@@ -166,6 +247,7 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
         });
 
       this.#onChange?.(this.#fileList, true);
+      this.notifyFileAction('upload', this.findFileById(fileUid));
     } catch (error) {
       console.error(error);
 
@@ -192,6 +274,7 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
         fileId: persistedId,
       };
 
+      this.invalidatePendingFetch();
       this.updateFileByIdOrUid(fileId, (file) => ({ ...file, status: 'uploading' }));
 
       const uploadedFile = await this.#fileHelper.replaceFileAsync(replaceArgs);
@@ -199,6 +282,7 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
       this.updateFileByIdOrUid(fileId, () => storedFileDtoToModel(uploadedFile));
 
       this.#onChange?.(this.#fileList, true);
+      this.notifyFileAction('replace', this.findFileById(fileId));
 
       this.#message.success(`File "${uploadedFile.name}" replaced successfully`);
     } catch (error) {
@@ -221,6 +305,7 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
       // Use the persisted id for the API call if available, otherwise use the provided id
       const persistedId = file.id || fileId;
 
+      this.invalidatePendingFetch();
       this.updateFileByIdOrUid(fileId, (file) => ({ ...file, status: 'removed' }));
 
       await this.#fileHelper.deleteFileByIdAsync(persistedId);
@@ -232,6 +317,7 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
         this.#delayedUpdateClientRef.current.removeItem(STORED_FILES_DELAYED_UPDATE, persistedId);
 
       this.#onChange?.(this.#fileList, true);
+      this.notifyFileAction('delete', file);
     } catch (error) {
       console.error(error);
 
@@ -252,6 +338,7 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
 
     this.updateFileList((files) => files.map((f) => ({ ...f, userHasDownloaded: true })));
     this.#onFileDownloaded?.(this.#fileList, true);
+    this.notifyFileAction('download');
   };
 
   downloadFile = async (args: DownloadFileArgs): Promise<void> => {
@@ -271,5 +358,6 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
     await this.#fileHelper.downloadFileAsync(downloadArgs);
     this.updateFileByIdOrUid(args.fileId, (file) => ({ ...file, userHasDownloaded: true }));
     this.#onFileDownloaded?.(this.#fileList, true);
+    this.notifyFileAction('download', this.findFileById(args.fileId));
   };
 }
