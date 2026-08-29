@@ -9,6 +9,7 @@ const THUMBNAIL_STYLES = '["thumbnailSmall","thumbnailMedium","thumbnailLarge","
 const isThumbnailJs = `return ${THUMBNAIL_STYLES}.includes(getSettingValue(data?.displayStyle));`;
 const isNotThumbnailJs = `return !${THUMBNAIL_STYLES}.includes(getSettingValue(data?.displayStyle));`;
 const isNotDraggerJs = 'return getSettingValue(data?.isDragger) !== true;';
+const isDraggerJs = 'return getSettingValue(data?.isDragger) === true;';
 const isThumbnailListJs = `return ${THUMBNAIL_STYLES}.includes(getSettingValue(data?.displayStyle)) && !getSettingValue(data?.isDragger);`;
 /* The presets set the tile size themselves, so the dimensions are offered only where they decide it. */
 const isCustomThumbnailJs = 'return getSettingValue(data?.displayStyle) === "thumbnailCustom" && !getSettingValue(data?.isDragger);';
@@ -106,9 +107,18 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   ],
                 })
                 .addSettingsInputRow({
+                  visibleJs: isDraggerJs,
                   inputs: [
                     {
-                      type: 'textField', propertyName: 'emptyText', label: 'Empty Text', jsSetting: true,
+                      type: 'textArea', propertyName: 'dropzoneText', label: 'Dropzone Text', jsSetting: true,
+                      tooltip: 'Replaces the prompt in the drop area. Left empty, it keeps the stock wording and its hint; set, it stands alone, and its line breaks are shown.',
+                    },
+                  ],
+                })
+                .addSettingsInputRow({
+                  inputs: [
+                    {
+                      type: 'textArea', propertyName: 'emptyText', label: 'Empty Text', jsSetting: true,
                       tooltip: 'Shown when there are no files and none can be added — a read-only or disabled list. Left empty, such a list renders nothing at all.',
                     },
                   ],

@@ -120,6 +120,8 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   thumbnailHeight?: string | undefined;
   borderRadius?: number | undefined;
   hideFileName?: boolean | undefined;
+  /** Replaces the drop area's stock prompt, and its hint, when the list is a dragger. */
+  dropzoneText?: string | undefined;
   /** Shown in place of the list when there is nothing to show and nothing can be added. */
   emptyText?: string | undefined;
   container?: IStyleValue | undefined;
@@ -176,6 +178,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   listType,
   gap,
   hideFileName = false,
+  dropzoneText,
   emptyText,
   downloadedFileStyles,
   thumbnailStyleCss,
@@ -913,7 +916,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         >
           {isStub
             ? (isDragger
-              ? <Dragger style={{ padding: 0 }} disabled><DraggerStub /></Dragger>
+              ? <Dragger style={{ padding: 0 }} disabled><DraggerStub text={dropzoneText} /></Dragger>
               : (
                 <>
                   <Button
@@ -958,7 +961,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                   ? (
                     <Dragger {...props} openFileDialogOnClick={true}>
                       {fileList.length === 0 ? (
-                        <DraggerStub />) : (
+                        <DraggerStub text={dropzoneText} />) : (
                         <div style={{ pointerEvents: 'none' }}>
                           <Button
                             type="link"

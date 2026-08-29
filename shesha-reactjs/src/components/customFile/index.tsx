@@ -33,6 +33,8 @@ export interface ICustomFileProps extends IInputStyles {
   thumbnailHeight?: string | undefined;
   borderRadius?: number | undefined;
   hideFileName?: boolean | undefined;
+  /** Replaces the drop area's stock prompt, and its hint, when the list is a dragger. */
+  dropzoneText?: string | undefined;
   /** Shown in place of the list when there is nothing to show and nothing can be added. */
   emptyText?: string | undefined;
   container?: IStyleValue | undefined;
@@ -82,6 +84,7 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
       layout={props.filesLayout ?? "vertical"}
       listType={props.listType ?? "text"}
 
+      dropzoneText={props.dropzoneText}
       emptyText={props.emptyText}
 
       hasExtraContent={props.hasExtraContent}

@@ -127,6 +127,8 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent<IAtt
   thumbnailHeight?: string | undefined;
   borderRadius?: number | undefined;
   hideFileName?: boolean | undefined;
+  /** Replaces the drop area's stock prompt, and its hint, when the list is a dragger. */
+  dropzoneText?: string | undefined;
   /** Shown in place of the list when there is nothing to show and nothing can be added. */
   emptyText?: string | undefined;
   /** Style set for one file — see {@link IAttachmentsEditorDeviceStyles.thumbnailStyle}. */
