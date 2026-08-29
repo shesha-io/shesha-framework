@@ -7,6 +7,6 @@ export interface ILoginForm {
 }
 
 export const isLoginFormData = (data: unknown): data is ILoginForm => {
-  return isDefined(data) && typeof data === 'object' && 'username' in data && 'password' in data;
+  return isDefined(data) && typeof data === 'object' && 'userNameOrEmailAddress' in data && 'password' in data;
 };
 
