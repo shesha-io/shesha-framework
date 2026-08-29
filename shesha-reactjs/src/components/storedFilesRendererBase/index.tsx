@@ -120,6 +120,8 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   thumbnailHeight?: string | undefined;
   borderRadius?: number | undefined;
   hideFileName?: boolean | undefined;
+  /** Shown in place of the list when there is nothing to show and nothing can be added. */
+  emptyText?: string | undefined;
   container?: IStyleValue | undefined;
   allStyles?: IFormComponentStyles | undefined;
   enableStyleOnReadonly?: boolean | undefined;
@@ -174,6 +176,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   listType,
   gap,
   hideFileName = false,
+  emptyText,
   downloadedFileStyles,
   thumbnailStyleCss,
   styleDownloadedFiles = false,
@@ -887,7 +890,17 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   };
 
   return (
-    fileList.length === 0 && disabled === true ? null
+    /* Nothing to show and nothing can be added — a read-only or disabled list. Configured text
+       stands in for the list, inside the container so it takes the same appearance; without it the
+       component renders nothing at all, as it always has. */
+    fileList.length === 0 && disabled === true
+      ? (isNullOrWhiteSpace(emptyText)
+        ? null
+        : (
+          <div className={classNames(styles.shaStoredFilesRenderer, styles.shaEmptyText)}>
+            {emptyText}
+          </div>
+        ))
       : (
         <div className={classNames(
           styles.shaStoredFilesRenderer,

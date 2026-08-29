@@ -101,6 +101,14 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   inputs: [
                     { type: 'switch', propertyName: 'hideFileName', label: 'Hide File Name', jsSetting: true },
                   ],
+                })
+                .addSettingsInputRow({
+                  inputs: [
+                    {
+                      type: 'textField', propertyName: 'emptyText', label: 'Empty Text', jsSetting: true,
+                      tooltip: 'Shown when there are no files and none can be added — a read-only or disabled list. Left empty, such a list renders nothing at all.',
+                    },
+                  ],
                 }))
               .stdCollapsiblePanel('Behaviour', (fb) => fb
                 .addSettingsInputRow({

@@ -134,6 +134,13 @@ export const useStyles = createStyles((
     }
   `);
 
+  /* Stands in for the list, so it takes the file name's typography — which is what the root Font
+     panel describes — rather than whatever the page happens to set. */
+  const shaEmptyText = cx("sha-empty-text", css`
+    ${fontStyle}
+    justify-content: ${justifyContent};
+  `);
+
   /* itemRender replaces antd's list item, and its hover background goes with it, so the row
      highlight is restored here on the wrapper that stands in for it. */
   const shaFileNameWrapper = cx("sha-file-name-wrapper", css`
@@ -558,6 +565,7 @@ export const useStyles = createStyles((
     actionsPopover,
     shaThumbnail,
     shaItemFileName,
+    shaEmptyText,
     shaFileNameWrapper,
     storedFilesRendererBtnContainer,
   };

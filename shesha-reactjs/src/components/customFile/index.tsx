@@ -33,6 +33,8 @@ export interface ICustomFileProps extends IInputStyles {
   thumbnailHeight?: string | undefined;
   borderRadius?: number | undefined;
   hideFileName?: boolean | undefined;
+  /** Shown in place of the list when there is nothing to show and nothing can be added. */
+  emptyText?: string | undefined;
   container?: IStyleValue | undefined;
   /** Style set for the thumbnail image box. Read directly for sizes CSS cannot supply. */
   thumbnailStyle?: IStyleValue | undefined;
@@ -79,6 +81,8 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
       maxHeight={props.maxHeight}
       layout={props.filesLayout ?? "vertical"}
       listType={props.listType ?? "text"}
+
+      emptyText={props.emptyText}
 
       hasExtraContent={props.hasExtraContent}
       extraFormSelectionMode={props.extraFormSelectionMode}

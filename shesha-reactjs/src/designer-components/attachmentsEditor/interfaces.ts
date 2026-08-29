@@ -124,6 +124,8 @@ export interface IAttachmentsEditorProps extends IConfigurableFormComponent<IAtt
   thumbnailHeight?: string | undefined;
   borderRadius?: number | undefined;
   hideFileName?: boolean | undefined;
+  /** Shown in place of the list when there is nothing to show and nothing can be added. */
+  emptyText?: string | undefined;
   /** Style set for one file — see {@link IAttachmentsEditorDeviceStyles.thumbnailStyle}. */
   thumbnailStyle?: IStyleValue | undefined;
   /** @deprecated the container is the root style set now. Kept so migration 17 can read it. */
