@@ -11,8 +11,6 @@ export interface ICanvasStateContext {
   designerDevice?: DeviceTypes;
   physicalDevice?: DeviceTypes;
   activeDevice?: DeviceTypes;
-  configTreePanelSize: number;
-  viewType?: IViewType;
 }
 
 export interface ICanvasWidthProps {
@@ -24,8 +22,6 @@ export interface ICanvasActionsContext {
   setCanvasWidth: (width: number | string, deviceType: DeviceTypes) => void;
   setCanvasZoom: (zoom: number) => void;
   setCanvasAutoZoom: (value?: boolean) => void;
-  setConfigTreePanelSize: (size: number) => void;
-  setViewType: (viewType: IViewType) => void;
   /* NEW_ACTION_ACTION_DECLARATION_GOES_HERE */
 }
 
@@ -34,8 +30,6 @@ export const CANVAS_CONTEXT_INITIAL_STATE: ICanvasStateContext = {
   autoZoom: false,
   designerDevice: 'desktop',
   designerWidth: defaultDesignerWidth,
-  configTreePanelSize: typeof window !== 'undefined' ? (20 / 100) * window.innerWidth : 200,
-  viewType: 'configStudio',
 };
 
 export const CanvasStateContext = createNamedContext<ICanvasStateContext | undefined>(undefined, "CanvasConfigStateContext");

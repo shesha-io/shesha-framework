@@ -19,7 +19,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
   const csWorkAreaEmpty = 'sha-cs-work-area-empty';
 
   const headerHeight = 60;
-  const tabCardHeight = 40;
 
   const configStudio = cx("sha-config-studio", css`
 
@@ -51,6 +50,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
             }            
         }
         .${csContent}{
+            height: calc(100vh - ${headerHeight}px);
             background-color: ${token.colorBgContainer};
         }
         .${csTreeArea}{
@@ -139,14 +139,16 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
                     >.ant-tabs-content{
                         height: 100%;
                         overflow: hidden;
+                        >.ant-tabs-tabpane {
+                            height: 100%;
+                        }
                     }
                 }
             }
         }
         .${csDocEditor}{
             padding: 0;
-            overflow: auto;
-            height: calc(100vh - ${headerHeight}px - ${tabCardHeight}px);
+            height: 100%;
         }
         .${csWorkAreaEmpty}{
             height: 100%;
