@@ -31,7 +31,7 @@ import { addPx } from '@/utils/style';
 import CustomFile from '@/components/customFile';
 import { FileAction, OnFileAction, OnFileDownloaded, OnFileListChanged } from '@/providers/storedFiles/models';
 import { StoredFileModel } from '@/utils/storedFile/models';
-import { AttachmentsEditorComponentDefinition, IAttachmentsEditorDeviceStyles, IAttachmentsEditorProps, displayStyleFromListType, displayStyleToListType, presetThumbnailSize } from './interfaces';
+import { AttachmentsEditorComponentDefinition, IAttachmentsEditorDeviceStyles, IAttachmentsEditorProps, ThumbnailSize, displayStyleFromListType, displayStyleToListType, presetThumbnailSize } from './interfaces';
 import { swapContainerAndThumbnailStyles } from './migrations/migrate-style-sets';
 import { useStyles } from './styles';
 import { useActualContextExecution } from '@/hooks';
@@ -213,8 +213,9 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
     /* Display Style is the single control: it says whether a file reads as a name or a tile, and how
        big that tile is. A preset overrides the Thumbnail dimensions, which the settings form hides
        unless Custom is chosen, so the two can never disagree on screen. */
+    // One size: `model` is already merged down to the active device.
     const displayStyle = model.displayStyle ?? displayStyleFromListType(
-      model.listType, model.thumbnailStyle?.dimensions?.width, model.thumbnailStyle?.dimensions?.height,
+      model.listType, [model.thumbnailStyle?.dimensions],
     );
     const listType = displayStyleToListType(displayStyle);
     const presetSize = presetThumbnailSize(displayStyle);
@@ -614,16 +615,29 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
     /* Display Style replaces List Type. A thumbnail keeps the size it already stores — Medium where
        that is the 54px default, Custom otherwise — so nothing on a saved form changes size. A new
        component has nothing to read and takes its default from step 0 instead. */
-    .add<IAttachmentsEditorProps>(21, (prev, context) => context.isNew === true
-      ? prev
-      : {
-        ...prev,
-        displayStyle: prev.displayStyle ?? displayStyleFromListType(
-          prev.listType,
+    .add<IAttachmentsEditorProps>(21, (prev, context) => {
+      if (context.isNew === true) return prev;
+
+      /* Per property and per device, mirroring how the device styles merge at render: a device
+         inherits each dimension from desktop, and desktop from the root. Tablet or mobile sized
+         differently has to mean Custom — a preset applies to every device at once, so calling this
+         Medium would flatten the others to 54px. */
+      const dimensionsFor = (device: IAttachmentsEditorDeviceStyles | undefined): ThumbnailSize => ({
+        width: device?.thumbnailStyle?.dimensions?.width ??
           prev.desktop?.thumbnailStyle?.dimensions?.width ?? prev.thumbnailStyle?.dimensions?.width,
+        height: device?.thumbnailStyle?.dimensions?.height ??
           prev.desktop?.thumbnailStyle?.dimensions?.height ?? prev.thumbnailStyle?.dimensions?.height,
-        ),
-      })
+      });
+
+      return {
+        ...prev,
+        displayStyle: prev.displayStyle ?? displayStyleFromListType(prev.listType, [
+          dimensionsFor(prev.desktop),
+          dimensionsFor(prev.tablet),
+          dimensionsFor(prev.mobile),
+        ]),
+      };
+    })
     /* File List On Change is gone, replaced by a handler per action. It fired for upload, replace
        and delete — never for a download, which went through its own callback — so the script is
        carried onto exactly those three.*/

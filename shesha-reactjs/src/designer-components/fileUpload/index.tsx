@@ -22,7 +22,7 @@ import { useStyles } from './styles';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { FileUploadComponentDefinition, IFileUploadProps } from './interfaces';
-import { displayStyleFromListType, displayStyleToListType, presetThumbnailSize } from '../attachmentsEditor/interfaces';
+import { ThumbnailSize, displayStyleFromListType, displayStyleToListType, presetThumbnailSize } from '../attachmentsEditor/interfaces';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getIdOrUndefined } from '@/utils/entity';
 import { getFirstNonEmptyStringPropertyOrUndefined, getStringPropertyOrUndefined } from '@/utils/object';
@@ -57,9 +57,8 @@ const FileUploadComponent: FileUploadComponentDefinition = {
     /* Display Style is the single control: whether the file reads as a name or a tile, and how big
        that tile is. A preset overrides the configured dimensions, which the settings form hides
        unless Custom is chosen, so the two can never disagree on screen. */
-    const displayStyle = model.displayStyle ?? displayStyleFromListType(
-      model.listType, model.dimensions?.width, model.dimensions?.height,
-    );
+    // One size: `model` is already merged down to the active device.
+    const displayStyle = model.displayStyle ?? displayStyleFromListType(model.listType, [model.dimensions]);
     const listType = displayStyleToListType(displayStyle);
     const presetSize = presetThumbnailSize(displayStyle);
     const sizedModel = useMemo<IFileUploadProps>(
@@ -228,16 +227,27 @@ const FileUploadComponent: FileUploadComponentDefinition = {
       /* Display Style replaces List Type. A thumbnail keeps the size it already stores — Medium
          where that is the 54px default, Custom otherwise — so nothing saved changes size. A new
          component has nothing to read and takes its default from initModel instead. */
-      .add<IFileUploadProps>(9, (prev, context) => context.isNew === true
-        ? prev
-        : {
+      .add<IFileUploadProps>(9, (prev, context) => {
+        if (context.isNew === true) return prev;
+
+        /* Per property and per device, mirroring how the device styles merge at render: a device
+           inherits each dimension from desktop, and desktop from the root. Tablet or mobile sized
+           differently has to mean Custom — a preset applies to every device at once, so calling
+           this Medium would flatten the others to 54px. */
+        const dimensionsFor = (device: IInputStyles | undefined): ThumbnailSize => ({
+          width: device?.dimensions?.width ?? prev.desktop?.dimensions?.width ?? prev.dimensions?.width,
+          height: device?.dimensions?.height ?? prev.desktop?.dimensions?.height ?? prev.dimensions?.height,
+        });
+
+        return {
           ...prev,
-          displayStyle: prev.displayStyle ?? displayStyleFromListType(
-            prev.listType,
-            prev.desktop?.dimensions?.width ?? prev.dimensions?.width,
-            prev.desktop?.dimensions?.height ?? prev.dimensions?.height,
-          ),
-        }),
+          displayStyle: prev.displayStyle ?? displayStyleFromListType(prev.listType, [
+            dimensionsFor(prev.desktop),
+            dimensionsFor(prev.tablet),
+            dimensionsFor(prev.mobile),
+          ]),
+        };
+      }),
   settingsFormMarkup: getSettings,
 
 };

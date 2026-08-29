@@ -40,10 +40,11 @@ export const displayStyleToListType = (displayStyle: DisplayStyle | undefined): 
  * whatever size it stores — Medium when that is the 54px default, Custom otherwise, so no existing
  * component changes size.
  */
+export type ThumbnailSize = { width?: string | number | undefined; height?: string | number | undefined };
+
 export const displayStyleFromListType = (
   listType: ListType | undefined,
-  width: string | number | undefined,
-  height: string | number | undefined,
+  sizes: ReadonlyArray<ThumbnailSize | undefined>,
 ): DisplayStyle => {
   if (listType !== 'thumbnail') return 'text';
 
@@ -51,7 +52,9 @@ export const displayStyleFromListType = (
   const isMedium = (value: string | number | undefined): boolean =>
     !isDefined(value) || `${value}`.trim() === medium || `${value}`.trim() === `${THUMBNAIL_PRESET_SIZES.thumbnailMedium}`;
 
-  return isMedium(width) && isMedium(height) ? 'thumbnailMedium' : 'thumbnailCustom';
+  return sizes.every((size) => isMedium(size?.width) && isMedium(size?.height))
+    ? 'thumbnailMedium'
+    : 'thumbnailCustom';
 };
 
 /**
