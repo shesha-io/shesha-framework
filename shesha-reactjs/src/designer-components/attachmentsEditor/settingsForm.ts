@@ -37,7 +37,10 @@ const fileActionHandler = (propertyName: string, label: string, when: string): I
   tooltip: `Callback that is triggered when ${when}.`,
   wrapInTemplate: true,
   templateSettings: { functionName: propertyName, useAsyncDeclaration: true },
-  availableConstantsExpression: 'return metadataBuilder.object("constants").addAllStandard().addString("value", "Files in the list after the action").addObject("file", "The file the action happened to", undefined).addObject("event", "Event callback when user input", undefined).build();',
+  /* No `event`, unlike the pointer and focus handlers: these fire after the API call that did the
+     work has resolved, and a zip download has no originating element at all, so there is nothing to
+     hand over and advertising one would only offer scripts an always-undefined constant. */
+  availableConstantsExpression: 'return metadataBuilder.object("constants").addAllStandard().addString("value", "Files in the list after the action").addObject("file", "The file the action happened to", undefined).build();',
 });
 
 export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter }) => {

@@ -349,6 +349,8 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
             delete: model.onDelete,
           };
 
+          /* No event to pass: these fire once the API call has resolved, so there is no source
+             event to carry — which is why the handlers do not advertise one. */
           const onFileAction: OnFileAction = (action, fileList, file): void => {
             const script = actionScripts[action];
             if (isNotNullOrWhiteSpace(script))
