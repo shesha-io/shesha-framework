@@ -39,6 +39,9 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
 
   #onFileAction: OnFileAction | undefined;
 
+  /** Bumped per fetch so an earlier response that lands late can be told apart and dropped. */
+  #fetchGeneration = 0;
+
   #subscriptionManager: SubscriptionManager<AttachmentsEditorEvents, IAttachmentsEditorInstance>;
 
   #isDesignerMode: boolean;
@@ -65,7 +68,13 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
     if (!isDefined(this.#fileListReference))
       throw new Error('File list reference is not defined');
 
+    /* A change of owner starts a fetch while an earlier one may still be in flight, and responses
+       can land out of order. Only the newest may write: a stale one would otherwise show the
+       previous record's files, and hand them to the field the Required rule reads. */
+    const generation = ++this.#fetchGeneration;
     const files = await this.#fileHelper.fetchFilesListAsync(this.#fileListReference);
+    if (generation !== this.#fetchGeneration) return;
+
     this.#fileList = files.map((file) => storedFileDtoToModel(file));
     try {
       this.notifySubscribers(['fileList']);
