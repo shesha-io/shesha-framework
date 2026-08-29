@@ -1,7 +1,7 @@
 import { CSSProperties, FC } from 'react';
 import { IconType, StoredFilesRendererBase } from '@/components/';
 import { IStoredFilesClassNames } from '@/components/storedFilesRendererBase';
-import { IInputStyles, IStyleValue, useAttachmentsEditorActions, useAttachmentsEditorState } from '@/providers';
+import { IInputStyles, IStyleValue, useAttachmentsEditorActions, useAttachmentsEditorFetchError, useAttachmentsEditorState } from '@/providers';
 import { LayoutType, ListType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { FormIdentifier } from '@/providers/form/models';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
@@ -64,6 +64,7 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
     downloadFile,
   } = useAttachmentsEditorActions();
   const files = useAttachmentsEditorState();
+  const fetchFilesError = useAttachmentsEditorFetchError();
 
   return (
     <StoredFilesRendererBase
@@ -100,6 +101,7 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
       classNames={props.classNames}
 
       fileList={files}
+      fetchFilesError={fetchFilesError}
       uploadFile={uploadFile}
       replaceFile={replaceFile}
       deleteFile={deleteFile}

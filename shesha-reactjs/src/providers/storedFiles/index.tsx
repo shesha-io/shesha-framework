@@ -109,4 +109,11 @@ const useAttachmentsEditorState = (): StoredFileModel[] => {
   return instance.fileList;
 };
 
-export { AttachmentsEditorProvider, useAttachmentsEditorActions, useAttachmentsEditorState };
+/** Subscribed the same way: the instance reports a failed fetch on the `fileList` event. */
+const useAttachmentsEditorFetchError = (): boolean => {
+  const instance = useAttachmentsEditor();
+  useAttachmentsEditorSubscription('fileList');
+  return instance.fetchFilesError;
+};
+
+export { AttachmentsEditorProvider, useAttachmentsEditorActions, useAttachmentsEditorFetchError, useAttachmentsEditorState };

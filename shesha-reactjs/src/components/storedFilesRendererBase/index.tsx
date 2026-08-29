@@ -892,18 +892,23 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     );
   };
 
+  const fetchFilesAlert = fetchFilesError === true
+    ? <Alert title="Error" description="Sorry, an error occurred while trying to fetch file list." type="error" />
+    : null;
+
   return (
-    /* Nothing to show and nothing can be added — a read-only or disabled list. Configured text
-       stands in for the list, inside the container so it takes the same appearance; without it the
-       component renders nothing at all, as it always has. */
+    /* Nothing to show and nothing can be added — a read-only or disabled list. A failed fetch is
+       reported here too: the list is empty because it could not be read, and Empty Text would say
+       there are no files, which is a different thing and not true. Without either, the component
+       renders nothing at all, as it always has. */
     fileList.length === 0 && disabled === true
-      ? (isNullOrWhiteSpace(emptyText)
-        ? null
-        : (
+      ? (isDefined(fetchFilesAlert) || !isNullOrWhiteSpace(emptyText)
+        ? (
           <div className={classNames(styles.shaStoredFilesRenderer, styles.shaEmptyText)}>
-            {emptyText}
+            {fetchFilesAlert ?? emptyText}
           </div>
-        ))
+        )
+        : null)
       : (
         <div className={classNames(
           styles.shaStoredFilesRenderer,
@@ -1007,9 +1012,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             />
           )}
 
-          {fetchFilesError === true && (
-            <Alert title="Error" description="Sorry, an error occurred while trying to fetch file list." type="error" />
-          )}
+          {fetchFilesAlert}
 
           {downloadZipFileError === true && (
             <Alert title="Error" description="Sorry, an error occurred while trying to download zip file." type="error" />

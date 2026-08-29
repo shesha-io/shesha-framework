@@ -10,6 +10,7 @@ import { nanoid } from "@/utils/uuid";
 import { SubscribeFunc, SubscriptionManager } from "@/utils/subscriptions/subscriptionManager";
 import { AttachmentsEditorEvents, IAttachmentsEditorInstance } from "./contexts";
 import { fileListReferenceEqual, getFileExtension, storedFileDtoToModel } from "@/utils/storedFile/utils";
+import { StoredFileDto } from "@/utils/storedFile/api-models";
 import { FileAction, OnFileAction, OnFileDownloaded, OnFileListChanged } from "./models";
 import { isOwnerReferenceValid } from "@/utils/entity";
 import { isFile } from "@/utils/fileValidation";
@@ -42,6 +43,8 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
   /** Bumped per fetch so an earlier response that lands late can be told apart and dropped. */
   #fetchGeneration = 0;
 
+  #fetchFilesError = false;
+
   #subscriptionManager: SubscriptionManager<AttachmentsEditorEvents, IAttachmentsEditorInstance>;
 
   #isDesignerMode: boolean;
@@ -64,6 +67,10 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
     return this.#fileList;
   };
 
+  get fetchFilesError(): boolean {
+    return this.#fetchFilesError;
+  };
+
   private fetchFilesList = async (): Promise<void> => {
     if (!isDefined(this.#fileListReference))
       throw new Error('File list reference is not defined');
@@ -72,9 +79,26 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
        can land out of order. Only the newest may write: a stale one would otherwise show the
        previous record's files, and hand them to the field the Required rule reads. */
     const generation = ++this.#fetchGeneration;
-    const files = await this.#fileHelper.fetchFilesListAsync(this.#fileListReference);
+
+    let files: StoredFileDto[];
+    try {
+      files = await this.#fileHelper.fetchFilesListAsync(this.#fileListReference);
+    } catch (error) {
+      console.error('AttachmentsEditorInstance.fetchFilesList failed', error);
+      /* Report only if this is still the fetch anyone is waiting on — a superseded one failing says
+         nothing about the current owner. Left unreported, the failure was silent: init launches
+         this with `void`, so it became an unhandled rejection and the list simply stayed empty,
+         indistinguishable from a record with no files. */
+      if (generation === this.#fetchGeneration) {
+        this.#fetchFilesError = true;
+        this.notifySubscribers(['fileList']);
+      }
+      return;
+    }
+
     if (generation !== this.#fetchGeneration) return;
 
+    this.#fetchFilesError = false;
     this.#fileList = files.map((file) => storedFileDtoToModel(file));
     try {
       this.notifySubscribers(['fileList']);

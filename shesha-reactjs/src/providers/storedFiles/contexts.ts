@@ -22,6 +22,8 @@ export interface IAttachmentsEditorActions {
 
 export interface IAttachmentsEditorState {
   readonly fileList: StoredFileModel[];
+  /** Whether the last fetch that mattered failed, so the list can say so instead of reading empty. */
+  readonly fetchFilesError: boolean;
 }
 
 export type IAttachmentsEditorInstance = IAttachmentsEditorActions & IAttachmentsEditorState;
