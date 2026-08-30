@@ -639,13 +639,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               text-overflow: ellipsis;
               cursor: auto;
 
+              /* content must stay inside the cell: overflow/z-index escapes here paint over
+                 neighbouring cells and swallow their clicks (e.g. the row drag handle) */
               & .ant-form-item-control-input {
-                overflow: visible;
-                position: relative;
-                z-index: 999;
                 width: 100% !important;
               }
-              
+
               /* Override vertical alignment for form controls in table cells */
               & .ant-select,
               & .ant-input,
@@ -657,10 +656,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
 
           .${shaCellParentFW} {
               min-width: 100%;
+              overflow: hidden;
               & .ant-form-item-control-input {
-                overflow: visible;
-                position: relative;
-                z-index: 999;
                 width: 100% !important;
               }
               
