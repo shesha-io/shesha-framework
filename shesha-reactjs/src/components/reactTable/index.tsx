@@ -38,6 +38,7 @@ import { getColumnAnchored } from '@/utils/datatable';
 import NewTableRowEditor from './newTableRowEditor';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { IConfigurableActionConfiguration, useConfigurableActionDispatcher, useDataTableStore, useShaFormInstanceOrUndefined } from '@/providers';
+import { isNonEmptyActionConfiguration } from '@/interfaces/configurableAction';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { useStyles, useMainStyles } from './styles/styles';
 import { IAnchoredColumnProps, ISelectionProps, ITableRowData } from '@/providers/dataTable/interfaces';
@@ -76,8 +77,6 @@ export const ReactTable = <TData extends ITableRowData = ITableRowData>({
   onSort,
   onRowClickAction,
   onRowHoverAction,
-  onRowSelectAction: _onRowSelectAction,
-  onSelectionChangeAction: _onSelectionChangeAction,
   scrollBodyHorizontally = false,
   height = 250,
   allowReordering = false,
@@ -218,7 +217,7 @@ export const ReactTable = <TData extends ITableRowData = ITableRowData>({
     rowIndex: number,
     overrideSelectedRow?: { index: number; row: TData; id: string },
   ): void => {
-    if (!actionConfig) return;
+    if (!isNonEmptyActionConfiguration(actionConfig)) return;
 
     // Create context with the clicked row data
     // If overrideSelectedRow is provided, use it as selectedRow in the context
@@ -256,24 +255,8 @@ export const ReactTable = <TData extends ITableRowData = ITableRowData>({
       }
 
       onMultiRowSelect(selectedRows);
-
-      if (Array.isArray(rows)) {
-        rows.forEach((row) => {
-          const rowIndex = allRows.findIndex((r) => r === row.original);
-          if (isSelected) {
-            dispatchRowEvent(_onRowSelectAction, row.original, rowIndex);
-          }
-          dispatchRowEvent(_onSelectionChangeAction, row.original, rowIndex);
-        });
-      } else {
-        const rowIndex = allRows.findIndex((r) => r === rows.original);
-        if (isSelected) {
-          dispatchRowEvent(_onRowSelectAction, rows.original, rowIndex);
-        }
-        dispatchRowEvent(_onSelectionChangeAction, rows.original, rowIndex);
-      }
     }
-  }, [_onRowSelectAction, _onSelectionChangeAction, allRows, dispatchRowEvent, onMultiRowSelect]);
+  }, [onMultiRowSelect]);
 
   const preparedColumns = useMemo<Column<TData>[]>(() => {
     const localColumns = [...allColumns];
@@ -535,14 +518,6 @@ export const ReactTable = <TData extends ITableRowData = ITableRowData>({
           };
           onMultiRowSelect(selectedRow);
         }
-
-        // Dispatch row select action when transitioning to selected state
-        if (willBeSelected) {
-          dispatchRowEvent(_onRowSelectAction, row.original, rowIndex);
-        }
-
-        // Dispatch selection change action on any selection change
-        dispatchRowEvent(_onSelectionChangeAction, row.original, rowIndex);
       }
 
       // Call the onSelectRow callback
