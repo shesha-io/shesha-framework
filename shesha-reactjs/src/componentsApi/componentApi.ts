@@ -372,16 +372,10 @@ export type CheckboxFieldApi = InputComponentApi<boolean | undefined>;
 export type DropdownApi = InputComponentApi<number | number[] | string | string[] | (string | number)[] | undefined>;
 
 /**
- * Status tag. A specialised drop-down that displays the bound status rather than capturing it, so
- * its value is read-only and there is no `focus` — the component renders a tag, which is not
- * focusable.
+ * Status tag. A specialised drop-down that renders its selection as a tag rather than as plain
+ * text, so the value behaves exactly as the drop-down's does.
  */
-export interface StatusTagApi extends Omit<InputComponentApiBase, 'focus'> {
-  /** The bound status value. Read-only: the component displays a status, it does not set one. */
-  readonly value: number | number[] | string | string[] | (string | number)[] | undefined;
-  /** Text shown on the tag for the current value, or the list of them in multi-select. Read-only. */
-  readonly itemText: string | string[] | undefined;
-};
+export type StatusTagApi = InputComponentApi<number | number[] | string | string[] | (string | number)[] | undefined>;
 
 /**
  * Autocomplete. The value shape follows the component's Value Format setting: a plain key for

@@ -1,5 +1,5 @@
 import { createStyles } from '@/styles';
-import { backgroundStyles, borderRadiusStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, marginStyles, paddingStyles, shadowStyles, splitBackgroundProperties } from '@/designer-components/_common/styles/utils';
+import { backgroundStyles, borderRadiusStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, justifyContentFor, paddingStyles, popupAppearanceStyles, shadowStyles, splitBackgroundProperties } from '@/designer-components/_common/styles/utils';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { addPx } from '@/utils/style';
 import { CSSProperties } from 'react';
@@ -38,6 +38,7 @@ export const useStyles = createStyles((
   model: IStatusTagComponentProps & { customStyle?: CSSProperties | undefined },
 ) => {
   const textAlign = model.font?.align;
+  const fontWithoutAlignAndColor = { ...model.font, align: undefined };
 
   /* The Custom style's background half is routed to the colour selector below rather than the base
      rule, so it respects the same per-status-colour exclusion the Background panel does. */
@@ -84,14 +85,59 @@ export const useStyles = createStyles((
       ? `color: ${model.customStyle.color};`
       : '';
 
+  /* "Auto" must make the tag grow to fit its own content. `dimensionsStyles` would emit
+     `height: auto` literally, which on a flex tag collapses it to the line box instead of sizing to
+     the label plus its padding — so each auto axis is swapped for `max-content` and only explicit
+     values are passed through. Min/max and the grid spans are unaffected, so they still come from
+     the shared builder. */
+  const isAuto = (value: string | number | undefined): boolean =>
+    !isDefined(value) || value === '' || value === 'auto';
+  const { width, height, ...otherDimensions } = model.dimensions ?? {};
+  const tagDimensions = `
+    ${dimensionsStyles(otherDimensions)}
+    ${isAuto(width) ? 'width: max-content;' : `width: ${addPx(width)};`}
+    ${isAuto(height) ? 'height: max-content;' : `height: ${addPx(height)};`}
+  `;
+
   const statusTag = cx('sha-status-tag', css`
-      /* The wrapper is layout only — it positions the tag and is otherwise invisible. Margin lives
-         here rather than on the tag so it separates the component from its neighbours, which is
-         what margin means for a component that renders a single tag. */
-      ${marginStyles(model.stylingBoxJson)}
-      display: inline-flex;
-      align-items: center;
-      ${isDefined(textAlign) ? `justify-content: ${textAlign};` : ''}
+
+    padding-inline: 0px;
+    padding-right: 11px;
+      /* Auto height/width: the select hugs the tag it contains rather than taking the fixed antd
+         control height, so "auto" in Dimensions means the tag decides the size. An explicit value
+         is applied to the tag itself, below. */
+      &&& {
+        ${isDefined(model.dimensions?.width) && model.dimensions.width !== 'auto' ? '' : 'width: max-content;'}
+        ${isDefined(model.dimensions?.height) && model.dimensions.height !== 'auto' ? '' : 'height: max-content;'}
+      }
+
+      /* The visible box is the selector element, not the root. Cleared so the select frames
+         nothing — the tag is the only thing that should read as a box. */
+      &.${prefixCls}-select .${prefixCls}-select-selector {
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        padding: 0;
+        height: auto;
+        ${isDefined(textAlign) ? `justify-content: ${justifyContentFor(textAlign)};` : ''}
+      }
+
+      /* In multi-select antd wraps each tag in a selection item carrying its own shaded background,
+         border and padding — which reads as a light box around the tag and its close icon. The tag
+         is the only thing that should be visible, so the wrapper is stripped back to a plain
+         container. Its margin is left alone: that is the gap between selections. */
+      &&& .${prefixCls}-select-selection-item {
+        background: transparent;
+        border: none;
+        padding: 0;
+        height: auto;
+      }
+
+      /* The close affordance lives in that wrapper and takes its own muted colour from antd.
+         Inherited instead, so it matches the tag text it belongs to. */
+      &&& .${prefixCls}-select-selection-item-remove {
+        color: inherit;
+      }
 
       &&& .${prefixCls}-tag {
         /* Some antd ancestors zero --ant-line-width, and custom properties inherit — so without
@@ -100,14 +146,14 @@ export const useStyles = createStyles((
         display: inline-flex;
         align-items: center;
         overflow: hidden;
-        cursor: default;
         margin: 0;
         ${borderRadiusStyles(model.border)}
         ${shadowStyles(model.shadow)}
-        ${dimensionsStyles(model.dimensions)}
+        ${tagDimensions}
         ${paddingStyles(model.stylingBoxJson)}
         ${fontWithoutColour}
         ${cssPropertiesToString(customStyle.rest)}
+        ${isDefined(textAlign) ? `justify-content: ${justifyContentFor(textAlign)};` : ''}
 
         /* Restated or the tag box resizes without its text following. Colour is left off so the
            label keeps inheriting whichever colour won on the tag itself. */
@@ -136,5 +182,41 @@ export const useStyles = createStyles((
       }` : ''}
     `);
 
-  return { statusTag };
+  /* The option list is portalled to the body, out of reach of the class above, so it needs its own.
+     The single style set describes the *tag*, so almost none of it belongs here: a tag height or
+     border on the popup panel would size and outline the whole list. Only background and border
+     come through `popupAppearanceStyles`, which deliberately omits shadow so the panel keeps the
+     elevation the theme gives it, plus the font so the options match the tag text. */
+  const popup = cx('sha-status-tag-popup', css`
+      &&& {
+        ${popupAppearanceStyles({ background: model.background, border: model.border })}
+      }
+
+      /* antd paints the option list on an inner wrapper, which would cover the configured
+         background of the popup root. */
+      &&& .${prefixCls}-select-dropdown,
+      &&& .rc-virtual-list-holder,
+      &&& .${prefixCls}-select-item-empty {
+        background: transparent;
+      }
+
+      /* Font is restated on the options because antd sets it on the option element itself, where a
+         rule on the root would be overridden rather than inherited. Kept at a single class so the
+         options and the tag agree, exactly as the dropdown does. */
+      .${prefixCls}-select-item,
+      .${prefixCls}-select-item-option-active,
+      .${prefixCls}-select-item-option-selected {
+        ${fontStyles(fontWithoutAlignAndColor, model.styleCss)}
+      }
+
+      /* The Custom style at ampersand-tripled, where it must beat antd even though the rule above
+         deliberately does not. Emits nothing when no Custom style is set. */
+      &&& .${prefixCls}-select-item,
+      &&& .${prefixCls}-select-item-option-active,
+      &&& .${prefixCls}-select-item-option-selected {
+        ${fontStyles(fontWithoutAlignAndColor, model.styleCss)}
+      }
+    `);
+
+  return { statusTag, popup };
 });

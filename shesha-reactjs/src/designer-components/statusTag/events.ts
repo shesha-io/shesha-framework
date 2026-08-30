@@ -3,10 +3,11 @@ import { StandardEventHandler, StandardEventHandlerWithoutChange } from '../_com
 /**
  * The events a status tag exposes: On Click and On Hover.
  *
- * The component displays a status rather than capturing one, so the editing events have nothing to
- * fire on — there is no value change (`onChange`), and nothing focusable to enter or leave
- * (`onFocus`/`onBlur`), nor any keystrokes to report. Advertising them would give the user handlers
- * that could be configured but would never run.
+ * The spec strikes out On Change, On Focus, On Blur and On Key Press relative to the drop-down.
+ * The component is a status *display* first — it is read at a glance far more often than it is
+ * changed — so the drop-down's editing events would be configuration surface for something that
+ * is rarely the point, and On Key Press has nothing to report because there is no text entry.
+ * Trimming them is the "simplify the configuration experience" the spec asks for.
  *
  * "On Hover" is `onMouseEnter`/`onMouseLeave`: the pair is what a hover actually consists of, and
  * both are already labelled as such by the shared event metadata.

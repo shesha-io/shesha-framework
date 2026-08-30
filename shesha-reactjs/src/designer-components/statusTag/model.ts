@@ -1,6 +1,7 @@
 import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
-import { IDropdownProps } from '@/components/dropdown/model';
+import { IDropdownProps, TagVariant } from '@/components/dropdown/model';
 import { ComponentDefinition } from '@/interfaces';
+import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { IStatusMappings } from '@/components/statusTag';
 
 /**
@@ -51,6 +52,17 @@ export interface IStatusTagComponentPropsV0 extends IConfigurableFormComponent, 
   override?: string | undefined;
   value?: number | string | undefined;
   color?: string | undefined;
+  /**
+   * Properties of the new model that the mappings migration has to read before writing.
+   *
+   * `referenceListId` decides whether that step may claim the data source, and the other three are
+   * only defaulted where the form has not set them — so all four have to be readable off the shape
+   * the step receives, even though they belong to the model it produces.
+   */
+  referenceListId?: IReferenceListIdentifier | undefined;
+  showItemName?: boolean | undefined;
+  showIcon?: boolean | undefined;
+  tagVariant?: TagVariant | undefined;
 }
 
 /** The parsed form of the legacy `mappings` JSON, used when converting it to `values`. */

@@ -43,9 +43,9 @@ const STYLING_BOX_DEFAULTS = (): StyleBoxValue => ({
   marginBottom: '0',
   marginLeft: '0',
   paddingTop: '0',
-  paddingRight: '0',
+  paddingRight: '8',
   paddingBottom: '0',
-  paddingLeft: '0',
+  paddingLeft: '8',
 });
 
 /**
@@ -64,7 +64,9 @@ const STYLING_BOX_DEFAULTS = (): StyleBoxValue => ({
  */
 export const defaultStyles = (): IStyleValue => {
   return {
-    background: BACKGROUND_DEFAULTS(''),
+    // Empty, not a grey: a seeded colour is emitted at `&&&&` and paints every tag that has no
+    // colour of its own, overriding whatever the Variant would have drawn.
+    background: BACKGROUND_DEFAULTS('#d9d9d9'),
     font: {
       weight: '400',
       size: 14,

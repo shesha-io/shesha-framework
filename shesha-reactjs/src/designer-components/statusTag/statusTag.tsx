@@ -2,7 +2,7 @@
    stylingBox) on purpose — upgrading forms saved against those shapes is what it is for. */
 /* eslint-disable @typescript-eslint/no-deprecated */
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { TagOutlined } from '@ant-design/icons';
 import { IInputStyles } from '@/providers/form/models';
@@ -11,6 +11,7 @@ import { IStatusTagComponentProps, IStatusTagComponentPropsV0, StatusTagComponen
 import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { Dropdown } from '@/components/dropdown/dropdown';
+import { DropdownSelectRef } from '@/components/dropdown/model';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settings';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
@@ -29,8 +30,6 @@ const StatusTagComponent: StatusTagComponentDefinition = {
   allowInherit: true,
   type: 'statusTag',
   name: 'Status Tag',
-  /* A status tag binds to a property and reads it, but never writes one — it renders the status
-     rather than capturing it. */
   isInput: true,
   isOutput: true,
   canBeJsSetting: true,
@@ -41,22 +40,30 @@ const StatusTagComponent: StatusTagComponentDefinition = {
     dataType === DataTypes.referenceListItem || (dataType === DataTypes.array && dataFormat === ArrayFormats.multivalueReferenceList),
   Factory: ({ model }) => {
     const componentApi = useComponentApiProvider();
+    const selectRef = useRef<DropdownSelectRef>(null);
     useEffect(() => {
       componentApi?.updateApi<StatusTagApi>({
         id: model.id,
         componentName: model.componentName ?? "",
         level: 3,
         typeDefinition: { typeName: 'StatusTagApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
-        /* No component-specific properties and no `focus`: the tag is not focusable, and `value`
-           comes from the shared value processor. */
+        /* Nothing component-specific: `value` and the rest come from the shared interfaces, and
+           `focus` needs a ref so it is implemented here rather than inherited. */
         properties: [],
+        api: { focus: () => selectRef.current?.focus() },
       });
     }, [componentApi, model.componentName, model.id]);
     useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
-    /* `displayStyle: 'tags'` is fixed rather than configurable: a status tag is a tag by
-       definition. The read-only renderer branches on it, so it has to be part of the model handed
-       down, not just a prop on the element. */
+    /* The whole component is the drop-down in its tags display mode: `displayStyle: 'tags'` makes
+       the selection render through `ReflistTag` (via `labelRender` for single-select and
+       `tagRender` for multi-select) instead of as plain text, so only the tag or tags are shown.
+       `variant: 'borderless'` is already what `Dropdown` passes to antd, so the select contributes
+       no box of its own and the tag is all that remains visible.
+
+       It is fixed rather than configurable — a status tag is a tag by definition — and has to be
+       part of the model handed down, because both `Dropdown` and its reference-list path branch on
+       it rather than reading a prop. */
     const tagModel = { ...model, displayStyle: 'tags' as const };
 
     /* The single style set, scoped onto the tag by the class rather than applied to the wrapper —
@@ -71,23 +78,20 @@ const StatusTagComponent: StatusTagComponentDefinition = {
     const { style: _styleExpression, styleCss: _styleCss, ...modelWithoutStyle } = tagModel;
 
     return (
-      <ConfigurableFormItem<number | number[] | string | string[] | (number | string)[]> model={model}>
-        {(value, _onChange, _propertyName, ctx) => {
+      <ConfigurableFormItem<number | number[] | string | string[] | (number | string)[]> model={{ ...model, hideLabel: true }}>
+        {(value, onChange, _propertyName, ctx) => {
           return (
             <Dropdown
               {...modelWithoutStyle}
               className={styles.statusTag}
+              popupClassName={styles.popup}
+              selectRef={selectRef}
               value={value ?? undefined}
               size={model.size}
-              /* Always read-only: this is the whole point of the component. It also means the
-                 select is never rendered — `Dropdown` takes its read-only branch, which draws the
-                 value through `ReadOnlyDisplayFormItem` as tags.
-
-                 `styleValue` is deliberately not passed. It is how that renderer styles its
-                 *container*, and this component has no container styles — the whole set is scoped
-                 onto the tag by `className`, which reaches it because the read-only branch renders
-                 inside this element. */
-              readOnly
+              /* Read-only rendering happens outside the select, where the emotion class does not
+                 reach, so the style model is handed over as a value for that path. */
+              styleValue={model}
+              onChange={(newValue) => onChange(newValue ?? null)}
               events={getComponentEvents<number | number[] | string | string[] | (number | string)[]>(
                 model, STATUS_TAG_EVENTS_WITHOUT_CHANGE, ctx, value, DataTypes.array,
               )}
@@ -111,10 +115,11 @@ const StatusTagComponent: StatusTagComponentDefinition = {
     })
     .add<IStatusTagComponentPropsV0>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IStatusTagComponentPropsV0>(2, (prev) => ({ ...migrateFormApi.properties(prev) }))
-    /* Step 3 turns the old mapping table into the drop-down data source.
-       The old component matched a value against a JSON table it carried in `mappings`; the new one
-       resolves it through a reference list or an inline `values` list. The table converts directly
-       to `values`, so a saved form keeps rendering the same statuses in the same colours. */
+    /* Step 3 turns the old Default Mappings table into the Values data source.
+       The old component matched a value against a JSON table it carried in `mappings`, taking the
+       label and colour from the matched row; `values` holds those same three fields per row, so the
+       table converts across directly and a migrated form keeps rendering the same statuses in the
+       same colours. */
     .add<IStatusTagComponentProps>(3, (prev, context) => {
       /* Reads the legacy shape and returns the new one — this is the step that converts between
          them, so `prev` is typed as V0 while the migration is declared against the new model. */
@@ -129,15 +134,19 @@ const StatusTagComponent: StatusTagComponentDefinition = {
 
       const migrated: IStatusTagComponentProps = {
         ...rest,
-        /* Values, not a reference list: the legacy component had no reference list to point at, so
-           inline values are the only source that can hold the migrated table. */
-        dataSourceType: 'values',
-        // Omitted rather than set to undefined when the form carried no usable mapping table.
-        ...(isDefined(values) ? { values } : {}),
-        showItemName: true,
-        showIcon: true,
-        tagVariant: 'solid',
+        /* Whatever the form already had, so a reference list keeps its source; only the branch
+           below may change it. `values` is the fallback for a form that has neither. */
+        dataSourceType: prevV0.referenceListId ? 'referenceList' : 'values',
+        showItemName: prevV0.showItemName ?? true,
+        showIcon: prevV0.showIcon ?? true,
+        tagVariant: prevV0.tagVariant ?? 'solid',
       };
+
+      /* Written whenever the table converted, including for a form that also has a reference list:
+         the converted rows are kept so switching the Data source to Values shows what the mappings
+         used to be, rather than an empty editor. The source itself is decided above. */
+      if (isDefined(values))
+        migrated.values = values;
 
       return migrated;
     })
