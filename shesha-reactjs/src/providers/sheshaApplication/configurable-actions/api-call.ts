@@ -103,7 +103,8 @@ const getApiCallArgumentsForm: FormMarkupFactory = ({ fbf }) => {
         type: 'endpointsAutocomplete',
         propertyName: 'url',
         label: 'URL',
-        description: 'Relative or absolute URL of the API endpoint. Relative ones will be send to the current back-end. Absolute URLs (must start with http:// or https://) can be used for external applications — a bare domain without the scheme is treated as relative and will still be sent to this app’s own back-end.',
+        description: 'Relative or absolute URL of the API endpoint. Relative ones will be send to the current back-end. Absolute URLs (must start with http:// or https://) can be used for '
+          + 'external applications — a bare domain without the scheme is treated as relative and will still be sent to this app’s own back-end.',
         httpVerb: "{data.verb}",
       },
     ],
