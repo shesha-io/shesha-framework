@@ -77,13 +77,13 @@ const hasScheme = (url: string): boolean => Boolean(url.match(/^(http|https|ftp)
 
 // Heuristic warning only: a bare host (e.g. "some-api.example.com/path", no "http(s)://") reads as
 // "external" to a person but has no scheme, so it will be treated as a relative path and sent to this
-// app's own backend instead. Deliberately conservative — skips relative-path convention ("/..."),
-// mustache expressions ("{{...}}"), and anything without a dot in the host-like segment — so it never
-// fires on a legitimate relative API path.
+// app's own backend instead. Deliberately conservative — skips relative-path conventions ("/...",
+// "./...", "../..."), mustache expressions ("{{...}}"), and anything without a dot in the host-like
+// segment — so it never fires on a legitimate relative API path.
 const looksLikeSchemelessExternalUrl = (url: string | null): boolean => {
   if (isNullOrWhiteSpace(url) || hasScheme(url))
     return false;
-  if (url.startsWith('/') || url.startsWith('{'))
+  if (url.startsWith('/') || url.startsWith('{') || url.startsWith('./') || url.startsWith('../'))
     return false;
   const hostPart = url.split(/[/?#]/, 1)[0] ?? '';
   return /\./.test(hostPart) && !/\s/.test(hostPart);
