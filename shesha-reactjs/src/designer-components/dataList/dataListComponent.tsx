@@ -24,6 +24,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   isInput: true,
   name: 'DataList',
   icon: <UnorderedListOutlined />,
+  initModel: (model) => ({ ...model, visible: model.visible ?? true }),
   Factory: ({ model }) => {
     const ds = useDataSources();
     const dts = useDataTableStoreOrUndefined();
