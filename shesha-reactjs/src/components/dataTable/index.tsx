@@ -477,7 +477,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
           columnItem.minWidth && columnItem.maxWidth && columnItem.minWidth === columnItem.maxWidth
             ? columnItem.minWidth
             : undefined;
-        const width = strictWidth ?? columnItem.width;
+        // fall back to the configured minWidth so it acts as the initial width instead of losing to the 150px default
+        const width = strictWidth ?? columnItem.width ?? columnItem.minWidth;
 
         const cellStyleAccessor = getCellStyleAccessor(columnItem);
         const cellRenderer = getCellRenderer<ITableRowData>(columnItem, columnItem.metadata, shaForm);
