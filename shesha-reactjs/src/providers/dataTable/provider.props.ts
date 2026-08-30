@@ -40,6 +40,11 @@ export interface IDataTableProviderBaseProps {
   permanentFilter?: FilterExpression | undefined;
 
   /**
+   * False while the permanent filter is still evaluating; data fetching is held until it becomes true
+   */
+  permanentFilterReady?: boolean | undefined;
+
+  /**
    * Disable refresh data expression
    * Return 'true' if datatableContext is not ready to refresh data (filter data is not ready, etc...)
    */
