@@ -85,7 +85,7 @@ const looksLikeSchemelessExternalUrl = (url: string | null): boolean => {
     return false;
   if (url.startsWith('/') || url.startsWith('{'))
     return false;
-  const hostPart = url.split(/[/?#]/, 1)[0];
+  const hostPart = url.split(/[/?#]/, 1)[0] ?? '';
   return /\./.test(hostPart) && !/\s/.test(hostPart);
 };
 
