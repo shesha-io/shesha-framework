@@ -73,7 +73,7 @@ export const VerbSelector: FC<VerbSelectorProps> = ({ verbs, value, onChange, si
 
 // Mirrors the scheme check the "API Call" action uses (isGlobalUrl in configurable-actions/api-call.ts)
 // to decide whether a URL is routed to this app's own backend or sent as-is to an external host.
-const hasScheme = (url: string): boolean => Boolean(url.match(/^(http|https|ftp):\/\//i));
+const hasScheme = (url: string): boolean => Boolean(url.match(/^(http|https):\/\//i));
 
 // Heuristic warning only: a bare host (e.g. "some-api.example.com/path", no "http(s)://") reads as
 // "external" to a person but has no scheme, so it will be treated as a relative path and sent to this

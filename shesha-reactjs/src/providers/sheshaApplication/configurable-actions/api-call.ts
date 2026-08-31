@@ -150,7 +150,7 @@ const applyResponseTransformation = async (
 };
 
 const isGlobalUrl = (url: string): boolean => {
-  return !isNullOrWhiteSpace(url) && Boolean(url.match(/^(http|ftp|https):\/\//gi));
+  return !isNullOrWhiteSpace(url) && Boolean(url.match(/^(http|https):\/\//gi));
 };
 
 const hasHeader = (headers: Record<string, string>, name: string): boolean =>
