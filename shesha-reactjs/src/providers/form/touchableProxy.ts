@@ -1,8 +1,13 @@
+import { isEqualWith } from "lodash";
 import { unproxyValue } from "@/utils/object";
 import { ProxyPropertiesAccessors, IProxyWithRefresh, ValueAccessor } from "./observableProxy";
 import { CreateTouchableProperty, IPropertyTouched } from "./touchableProperty";
 import { isDefined } from "@/utils/nullables";
 import { IAnyObject } from "@/interfaces";
+
+/** functions are environment plumbing (accessors, handlers) — recreated per render, never a data change */
+const touchedValuesCustomizer = (a: unknown, b: unknown): boolean | undefined =>
+  typeof a === 'function' && typeof b === 'function' ? true : undefined;
 
 export class TouchableProxy<T> implements IProxyWithRefresh<T>, IPropertyTouched {
   private _touchedProps: Map<string, unknown>;
@@ -58,34 +63,22 @@ export class TouchableProxy<T> implements IProxyWithRefresh<T>, IPropertyTouched
     let changed = false;
 
     this._touchedProps.forEach((value, key) => {
-      // TODO: Alex, please review this loop, it uses different returns and as a result may have side effects
       if (changed)
         return;
       const props = key.split('.');
-      let prop = props.shift() ?? "";
-      let data = unproxyValue(this.getPropertyValue(prop));
-      if (data === null || data === undefined) {
-        changed = true;
-        return;
-      }
+      let data: unknown = unproxyValue(this.getPropertyValue(props.shift() ?? ""));
       while (props.length > 0) {
         if (data === null || data === undefined) {
-          changed = true;
-          return;
+          data = undefined;
+          break;
         }
-        prop = props.shift() ?? "";
-        const propValue = (data as IAnyObject)[prop];
-        if (propValue === undefined && props.length > 0) {
-          changed = true;
-          return;
-        }
-        data = propValue;
+        data = (data as IAnyObject)[props.shift() ?? ""];
       }
+      data = unproxyValue(data);
 
-      if (typeof data === 'object' && (value === null || typeof value !== 'object'))
-        changed = true;
-
-      if (data !== value)
+      // objects (rows, form data) are routinely recreated with identical content, so compare by
+      // value: identity comparison forced a full re-evaluation of every consumer on each render
+      if (!isEqualWith(data, unproxyValue(value), touchedValuesCustomizer))
         changed = true;
     });
 
