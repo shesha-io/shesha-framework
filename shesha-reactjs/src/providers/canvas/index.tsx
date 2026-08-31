@@ -8,8 +8,8 @@ import {
   useCallback,
 } from 'react';
 import { reducer } from './reducer';
-import { setAvailableCanvasWidthAction, setCanvasAutoWidthAction, setCanvasWidthPercentAction, setCanvasAutoZoomAction, setCanvasWidthAction, setCanvasZoomAction, setConfigTreePanelSizeAction, setDesignerDeviceAction, setManualZoomAction, setScreenWidthAction, setViewTypeAction } from './actions';
-import { CANVAS_CONTEXT_INITIAL_STATE, CanvasActionsContext, CanvasStateContext, ICanvasActionsContext, ICanvasStateContext, DeviceTypes, IViewType } from './contexts';
+import { setAvailableCanvasWidthAction, setCanvasAutoWidthAction, setCanvasWidthPercentAction, setCanvasAutoZoomAction, setCanvasWidthAction, setCanvasZoomAction, setDesignerDeviceAction, setManualZoomAction, setScreenWidthAction } from './actions';
+import { CANVAS_CONTEXT_INITIAL_STATE, CanvasActionsContext, CanvasStateContext, ICanvasActionsContext, ICanvasStateContext, DeviceTypes } from './contexts';
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { canvasContextCode } from '@/publicJsApis/apis';
 import { isDefined } from '@/utils/nullables';
@@ -127,28 +127,19 @@ const CanvasProvider: FC<PropsWithChildren> = ({
     dispatch(setAvailableCanvasWidthAction(width));
   }, []);
 
-  const setConfigTreePanelSize = useCallback((size: number) => {
-    dispatch(setConfigTreePanelSizeAction(size));
-  }, []);
-
-  const setViewType = useCallback((viewType: IViewType) => {
-    dispatch(setViewTypeAction(viewType));
-  }, []);
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
   const actions = useMemo<ICanvasActionsContext>(() => ({
     setDesignerDevice,
-    setCanvasWidth: setCanvasWidth,
+    setCanvasWidth,
     setCanvasZoom,
     setManualZoom,
     setCanvasAutoZoom,
     setCanvasAutoWidth,
     setCanvasWidthPercent,
     setAvailableCanvasWidth,
-    setConfigTreePanelSize,
-    setViewType,
     /* NEW_ACTION_GOES_HERE */
-  }), [setDesignerDevice, setCanvasWidth, setCanvasZoom, setManualZoom, setCanvasAutoZoom, setCanvasAutoWidth, setCanvasWidthPercent, setAvailableCanvasWidth, setConfigTreePanelSize, setViewType]);
+  }), [setDesignerDevice, setCanvasWidth, setCanvasZoom, setManualZoom, setCanvasAutoZoom, setCanvasAutoWidth, setCanvasWidthPercent, setAvailableCanvasWidth]);
 
   const contextOnChangeData: ContextOnChangeData<ICanvasStateContext> = useCallback((_, changedData) => {
     if (!isDefined(changedData))

@@ -3,7 +3,7 @@ import DataContextBinder from "../dataContextBinder";
 import { SheshaCommonContexts } from "../../dataContextManager/models";
 import { DataTypes, IObjectMetadata, TypeDefinition } from "@/interfaces";
 import { WebStorageProxy } from "./webStorageProxy";
-import { webStorageCode } from '@/publicJsApis/apis';
+import { storageCode } from '@/publicJsApis/apis';
 import { splitDotNotation } from "@/utils/dotnotation";
 import { useDataContextManagerActions } from "@/providers/dataContextManager/hooks";
 import { useDeepCompareMemo } from "@/hooks";
@@ -11,7 +11,7 @@ import { useDeepCompareMemo } from "@/hooks";
 
 export const WebStorageContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const contextMetadata = useMemo<Promise<IObjectMetadata>>(() => Promise.resolve({
-    typeDefinitionLoader: () => Promise.resolve({ typeName: 'IWebStorage', files: [{ content: webStorageCode as string, fileName: 'apis/webStorage.ts' }] } satisfies TypeDefinition),
+    typeDefinitionLoader: () => Promise.resolve({ typeName: 'Storage', files: [{ content: storageCode as string, fileName: 'apis/storage.ts' }] } satisfies TypeDefinition),
     properties: [{ path: 'local', dataType: DataTypes.object }, { path: 'session', dataType: DataTypes.object }],
     dataType: DataTypes.object,
   } as IObjectMetadata), []);

@@ -199,7 +199,7 @@ export const WorkArea: FC = () => {
   );
 
   return (
-    <>
+    <div className={styles.csWorkArea}>
       <Tabs
         className={styles.csDocTabs}
         hideAdd
@@ -233,6 +233,6 @@ export const WorkArea: FC = () => {
           />
         </Dropdown>
       )}
-    </>
+    </div>
   );
 };

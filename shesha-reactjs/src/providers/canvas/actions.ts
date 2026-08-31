@@ -1,5 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
-import { ICanvasWidthProps, DeviceTypes, IViewType } from './contexts';
+import { ICanvasWidthProps, DeviceTypes } from './contexts';
 
 export enum CanvasConfigActionEnums {
   SetCanvasWidth = 'SET_FORM_WIDTH',
@@ -11,8 +11,6 @@ export enum CanvasConfigActionEnums {
   SetAvailableCanvasWidth = 'SET_AVAILABLE_CANVAS_WIDTH',
   SetCanvasWidthPercent = 'SET_CANVAS_WIDTH_PERCENT',
   SetManualZoom = 'SET_MANUAL_ZOOM',
-  SetConfigTreePanelSize = 'SET_CONFIG_TREE_PANEL_SIZE',
-  SetViewType = 'SET_VIEW_TYPE',
 }
 
 export const setCanvasZoomAction = createAction<number>(CanvasConfigActionEnums.SetCanvasZoom);
@@ -36,7 +34,3 @@ export const setAvailableCanvasWidthAction = createAction<string>(CanvasConfigAc
 
 // Sets an explicit zoom value and switches the canvas into manual mode (disables auto-zoom).
 export const setManualZoomAction = createAction<number>(CanvasConfigActionEnums.SetManualZoom);
-
-export const setConfigTreePanelSizeAction = createAction<number>(CanvasConfigActionEnums.SetConfigTreePanelSize);
-
-export const setViewTypeAction = createAction<IViewType>(CanvasConfigActionEnums.SetViewType);

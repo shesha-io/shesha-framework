@@ -156,10 +156,10 @@ export const ALIGN_SELF = [
 
 export const defaultStyles = (prev?: IContainerComponentPropsV0): IStyleValue & ICommonContainerProps => {
   const {
-    width = '100%',
-    height = 'fit-content',
-    maxHeight = 'auto',
-    maxWidth = 'auto',
+    width = 'auto',
+    height = 'auto',
+    maxHeight = 'none',
+    maxWidth = 'none',
     minHeight = '32px',
     minWidth = '0px',
     borderColor = '#d9d9d9',

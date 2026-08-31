@@ -1,13 +1,13 @@
 import { deepMergeValues } from "@/utils/object";
-import type { DeviceTypes, IViewType } from "./contexts";
-import { DEFAULT_OPTIONS, MAX_CANVAS_WIDTH_PERCENT } from "./constants";
-
-// Re-exported for the existing `@/providers/canvas/utils` consumers. The value itself lives in the
-// leaf `constants` module because `contexts.ts` reads it while building its initial state, which
-// happens before this module has finished evaluating.
-export { MAX_CANVAS_WIDTH_PERCENT };
+import type { DeviceTypes } from "./contexts";
+import { DEFAULT_OPTIONS, MAX_CANVAS_WIDTH_PERCENT, defaultDesignerWidth } from "./constants";
 import { DesktopOutlined, MobileOutlined, TabletOutlined } from '@ant-design/icons';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
+
+// Re-exported for the existing `@/providers/canvas/utils` consumers, ZoomableCanvas among them.
+// The values themselves live in the leaf `constants` module because `contexts.ts` reads them while
+// building its initial state, which happens before this module has finished evaluating.
+export { DEFAULT_OPTIONS, MAX_CANVAS_WIDTH_PERCENT, defaultDesignerWidth };
 
 export const getDeviceTypeByWidth = (width: number): DeviceTypes => {
   return width > 724
@@ -134,10 +134,7 @@ export const getCanvasLayoutWidth = (availableWidth: number, zoom: number, width
 export interface IAutoZoomParams {
   currentZoom: number;
   designerWidth?: string;
-  sizes?: number[];
-  isSidebarCollapsed?: boolean;
-  configTreePanelSize?: number;
-  viewType?: IViewType;
+  containerWidth: number;
 };
 
 /**
@@ -149,49 +146,16 @@ export const clampZoom = (zoom: number): number =>
     ? Math.max(DEFAULT_OPTIONS.minZoom, Math.min(DEFAULT_OPTIONS.maxZoom, zoom))
     : DEFAULT_OPTIONS.defaultZoom;
 
-const SIDEBAR_WIDTH = {
-  COLLAPSED: 60,
-  EXPANDED: 250,
-  MINIMAL: 32,
-  MODAL_MARGINS: 20,
-} as const;
-
-const valueToPercent = (value: number): number => value / 100;
-
 export function calculateAutoZoom(params: IAutoZoomParams): number {
+  if (typeof window === 'undefined')
+    return 100;
+
   const {
     designerWidth = DEFAULT_OPTIONS.designerWidth,
-    sizes = DEFAULT_OPTIONS.sizes,
-    configTreePanelSize = DEFAULT_OPTIONS.configTreePanelWidth(),
-    viewType = 'configStudio',
-    isSidebarCollapsed = false,
+    containerWidth,
   } = params;
-  // Determine the main area index based on the sizes array length
-  // 1 element: sizes[0] is main area (allowFullCollapse)
-  // 2 elements: sizes[0] is main area (no left panel)
-  // 3 elements: sizes[1] is main area (standard case)
-  const mainAreaIndex = sizes.length <= 2 ? 0 : 1;
-  const availableWidthPercent = sizes[mainAreaIndex] ?? 50;
 
-  if (typeof window === 'undefined') {
-    return 100;
-  }
-
-  const guttersAndScrollersSize = 14;
   const windowWidth = window.innerWidth;
-
-  // Determine the offset based on view type
-  let offset: number;
-  if (viewType === 'configStudio') {
-    offset = configTreePanelSize;
-  } else if (viewType === 'page') {
-    offset = isSidebarCollapsed ? SIDEBAR_WIDTH.COLLAPSED : SIDEBAR_WIDTH.EXPANDED;
-  } else {
-    offset = DEFAULT_OPTIONS.modalMargins;
-  }
-
-  const viewportWidth = Math.max(0, windowWidth - offset - guttersAndScrollersSize);
-  const availableWidth = valueToPercent(availableWidthPercent) * viewportWidth;
 
   let canvasWidth: number;
   if (designerWidth.includes('px')) {
@@ -203,7 +167,7 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
     canvasWidth = parseFloat(designerWidth);
   }
 
-  const optimalZoom = (availableWidth / canvasWidth) * 100;
+  const optimalZoom = (containerWidth / canvasWidth) * 100;
   return Math.max(DEFAULT_OPTIONS.minZoom, Math.min(DEFAULT_OPTIONS.maxZoom, Math.floor(optimalZoom)));
 }
 

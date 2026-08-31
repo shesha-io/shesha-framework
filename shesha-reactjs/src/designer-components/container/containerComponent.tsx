@@ -22,6 +22,7 @@ import { getFullSizeWrapperDesignerStyle } from '@/components/formDesigner/utils
 import { useActualContextExecutionNoRefresh } from '@/hooks/formComponentHooks';
 
 const ContainerComponent: ContainerComponentDefinition = {
+  styleGroup: 'containers',
   allowInherit: true,
   type: 'container',
   isInput: false,

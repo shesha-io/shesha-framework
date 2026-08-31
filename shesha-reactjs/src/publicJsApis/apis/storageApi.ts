@@ -1,4 +1,4 @@
-export interface WebStorageApi {
+export interface StorageApi {
   getItem(key: string): string | null;
   setItem(key: string, value: string): void;
   removeItem(key: string): void;
@@ -8,7 +8,7 @@ export interface WebStorageApi {
   [key: string]: unknown;
 }
 
-export interface WebStorage {
-  local: WebStorageApi;
-  session: WebStorageApi;
+export interface Storage {
+  local: StorageApi;
+  session: StorageApi;
 }

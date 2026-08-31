@@ -39,6 +39,7 @@ const TableContextComponent: TableContextComponentDefinition = {
       sortMode: 'standard' as const,
       strictSortOrder: 'asc' as const,
       allowReordering: 'no' as const,
+      visible: model.visible ?? true,
     } : model;
 
     return initialModel;

@@ -111,7 +111,11 @@ export type ToolboxComponentAsTemplate = {
   build?: never;
 };
 
+export type StyleGroups = 'common' | 'inputs' | 'containers' | 'buttons';
+
 export type IToolboxComponentBase = {
+  styleGroup?: StyleGroups;
+
   // ToDo: AS - remove after all components are migrated to inheritance
   /**
    * If true, indicates that the component properties can be inherited

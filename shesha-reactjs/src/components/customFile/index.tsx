@@ -1,7 +1,7 @@
 import { CSSProperties, FC } from 'react';
 import { IconType, StoredFilesRendererBase } from '@/components/';
 import { IStoredFilesClassNames } from '@/components/storedFilesRendererBase';
-import { IInputStyles, IStyleValue, useAttachmentsEditorActions, useAttachmentsEditorState } from '@/providers';
+import { IInputStyles, IStyleValue, useAttachmentsEditorActions, useAttachmentsEditorFetchError, useAttachmentsEditorState } from '@/providers';
 import { LayoutType, ListType } from '@/designer-components/attachmentsEditor/attachmentsEditor';
 import { FormIdentifier } from '@/providers/form/models';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
@@ -33,6 +33,10 @@ export interface ICustomFileProps extends IInputStyles {
   thumbnailHeight?: string | undefined;
   borderRadius?: number | undefined;
   hideFileName?: boolean | undefined;
+  /** Replaces the drop area's stock prompt, and its hint, when the list is a dragger. */
+  dropzoneText?: string | undefined;
+  /** Shown in place of the list when there is nothing to show and nothing can be added. */
+  emptyText?: string | undefined;
   container?: IStyleValue | undefined;
   /** Style set for the thumbnail image box. Read directly for sizes CSS cannot supply. */
   thumbnailStyle?: IStyleValue | undefined;
@@ -60,6 +64,7 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
     downloadFile,
   } = useAttachmentsEditorActions();
   const files = useAttachmentsEditorState();
+  const fetchFilesError = useAttachmentsEditorFetchError();
 
   return (
     <StoredFilesRendererBase
@@ -80,6 +85,9 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
       layout={props.filesLayout ?? "vertical"}
       listType={props.listType ?? "text"}
 
+      dropzoneText={props.dropzoneText}
+      emptyText={props.emptyText}
+
       hasExtraContent={props.hasExtraContent}
       extraFormSelectionMode={props.extraFormSelectionMode}
       extraFormId={props.extraFormId}
@@ -93,6 +101,7 @@ export const CustomFile: FC<ICustomFileProps> = (props) => {
       classNames={props.classNames}
 
       fileList={files}
+      fetchFilesError={fetchFilesError}
       uploadFile={uploadFile}
       replaceFile={replaceFile}
       deleteFile={deleteFile}

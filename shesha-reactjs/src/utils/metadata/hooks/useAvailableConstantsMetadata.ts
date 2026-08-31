@@ -8,21 +8,24 @@ import { StandardConstantInclusionArgs } from "@/publicJsApis/apis/metadataBuild
 import { useMetadataBuilderFactory } from "./useMetadataBuilderFactory";
 
 const ALL_STANDARD_CONSTANTS = [
-  SheshaConstants.globalState,
-  SheshaConstants.setGlobalState,
-  SheshaConstants.selectedRow,
-  SheshaConstants.contexts,
-  SheshaConstants.pageContext,
+  SheshaConstants.user,
+  SheshaConstants.actions,
+  SheshaConstants.utils,
   SheshaConstants.page,
-  SheshaConstants.http,
-  SheshaConstants.message,
-  SheshaConstants.modal,
-  SheshaConstants.moment,
-  SheshaConstants.fileSaver,
   SheshaConstants.form,
   SheshaConstants.formData,
   SheshaConstants.components,
   SheshaConstants.webStorage,
+  /* SheshaConstants.http,
+  SheshaConstants.message,
+  SheshaConstants.modal,
+  SheshaConstants.moment,
+  SheshaConstants.fileSaver,
+  SheshaConstants.globalState,
+  SheshaConstants.setGlobalState,
+  SheshaConstants.selectedRow,
+  SheshaConstants.contexts,
+  SheshaConstants.pageContext,*/
 ];
 
 export interface AvailableConstantsArgs {
@@ -48,7 +51,7 @@ export const useAvailableConstantsMetadata = ({ addGlobalConstants, makeComponen
 
     const meta = objectBuilder.build();
 
-    if (addGlobalConstants && isPropertiesArray(meta.properties)) {
+    if (addGlobalConstants === true && isPropertiesArray(meta.properties)) {
       meta.properties.push(...globalProps);
     }
 

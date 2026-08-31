@@ -14,7 +14,7 @@ import { useAttachmentsEditorInstance } from './hooks';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { throwError } from '@/utils/errors';
 import { StoredFileModel } from '../../utils/storedFile/models';
-import { OnFileDownloaded, OnFileListChanged } from './models';
+import { OnFileAction, OnFileDownloaded, OnFileListChanged } from './models';
 
 export interface IStoredFilesProviderProps {
   name?: string | undefined;
@@ -27,6 +27,8 @@ export interface IStoredFilesProviderProps {
   value?: StoredFileModel[] | undefined;
   onChange?: OnFileListChanged | undefined;
   onDownload?: OnFileDownloaded | undefined;
+  /** Fired once per user action, for the Events tab's On Upload / Download / Replace / Delete. */
+  onFileAction?: OnFileAction | undefined;
 }
 
 const AttachmentsEditorProvider: FC<PropsWithChildren<IStoredFilesProviderProps>> = ({
@@ -39,6 +41,7 @@ const AttachmentsEditorProvider: FC<PropsWithChildren<IStoredFilesProviderProps>
   // used for requered field validation
   onChange,
   onDownload,
+  onFileAction,
   // value = [],
 }) => {
   const instance = useAttachmentsEditorInstance();
@@ -48,6 +51,7 @@ const AttachmentsEditorProvider: FC<PropsWithChildren<IStoredFilesProviderProps>
 
   instance.setOnFileListChanged(onChange);
   instance.setOnFileDownloaded(onDownload);
+  instance.setOnFileAction(onFileAction);
 
   const contextMetadata = useMemo<Promise<IObjectMetadata>>(() => Promise.resolve({
     typeDefinitionLoader: () => {
@@ -105,4 +109,11 @@ const useAttachmentsEditorState = (): StoredFileModel[] => {
   return instance.fileList;
 };
 
-export { AttachmentsEditorProvider, useAttachmentsEditorActions, useAttachmentsEditorState };
+/** Subscribed the same way: the instance reports a failed fetch on the `fileList` event. */
+const useAttachmentsEditorFetchError = (): boolean => {
+  const instance = useAttachmentsEditor();
+  useAttachmentsEditorSubscription('fileList');
+  return instance.fetchFilesError;
+};
+
+export { AttachmentsEditorProvider, useAttachmentsEditorActions, useAttachmentsEditorFetchError, useAttachmentsEditorState };

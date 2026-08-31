@@ -64,13 +64,7 @@ const ConfigurationStudio: FC = () => {
             defaultPinned={treeTreePinned}
             onPinnedToggle={(pinned) => setTreeTreePinned(pinned)}
           >
-            {/* Carries sha-cs-work-area, which caps the work area at the viewport less the header and
-                scrolls its own overflow. Without the class that rule matches nothing, the document
-                tabs size to their content instead of the pane, and the excess escapes to the page
-                as a whole-window scrollbar. The nested .sha-cs-doc-tabs height also depends on it. */}
-            <div className={styles.csWorkArea}>
-              <WorkArea />
-            </div>
+            <WorkArea />
           </SplitLayout>
         </Layout.Content>
       </Layout>

@@ -37,7 +37,7 @@ export const FormDocumentDefinition: DocumentDefinition = {
 
     return (
       <div className={styles.formDesigner}>
-        <DesignerMainArea viewType="configStudio" />
+        <DesignerMainArea />
       </div>
     );
   },

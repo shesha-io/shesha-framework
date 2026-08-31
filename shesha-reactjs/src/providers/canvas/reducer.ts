@@ -8,8 +8,7 @@ import { setCanvasZoomAction,
   setCanvasWidthPercentAction,
   setAvailableCanvasWidthAction,
   setManualZoomAction,
-  setConfigTreePanelSizeAction,
-  setViewTypeAction } from './actions';
+} from './actions';
 import { CANVAS_CONTEXT_INITIAL_STATE, ICanvasStateContext } from './contexts';
 import { clampZoom, getDeviceTypeByWidth, getSmallerDevice } from './utils';
 import { MAX_CANVAS_WIDTH_PERCENT, boundCanvasWidthPercent } from './constants';
@@ -141,7 +140,7 @@ export const reducer = createReducer(CANVAS_CONTEXT_INITIAL_STATE, (builder) => 
       // Auto zoom fits a fixed-width canvas into its pane; in "Canvas" mode the canvas already
       // fills the pane, so there is nothing to fit. The toolbar button is disabled there, but the
       // invariant belongs in the state rather than in a `disabled` prop: with both flags set,
-      // SidebarContainer skips the auto-zoom calculation while usePinchZoom stays locked, leaving
+      // ZoomableCanvas skips the auto-zoom calculation while usePinchZoom stays locked, leaving
       // the zoom neither computed automatically nor adjustable by the user.
       if (state.autoWidth)
         return state.autoZoom ? { ...state, autoZoom: false } : state;
@@ -149,18 +148,6 @@ export const reducer = createReducer(CANVAS_CONTEXT_INITIAL_STATE, (builder) => 
       return {
         ...state,
         autoZoom: payload !== undefined ? payload : !state.autoZoom,
-      };
-    })
-    .addCase(setConfigTreePanelSizeAction, (state, { payload }) => {
-      return {
-        ...state,
-        configTreePanelSize: payload,
-      };
-    })
-    .addCase(setViewTypeAction, (state, { payload }) => {
-      return {
-        ...state,
-        viewType: payload,
       };
     });
 });
