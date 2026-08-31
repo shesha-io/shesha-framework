@@ -10,6 +10,7 @@ import './styles.css';
 import type { ExpressionContext, ExpressionContextValue } from './contextMetadata';
 import { arrayHasAtLeastNDefined } from '@/utils/array';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { toCamelCase } from '@/utils/string';
 
 export type { ExpressionContext, ExpressionContextValue };
 
@@ -104,9 +105,12 @@ export const buildExpressionContextFromPaths = (
   paths.forEach((pathValue) => {
     if (!pathValue) return;
 
+    // Metadata paths reflect backend (PascalCase) property names, but the runtime data
+    // object is JSON-camelCased (see Startup's UseCamelCasing) - convert each segment
+    // independently so suggestions match what's actually accessible at evaluation time.
     const segments = pathValue
       .split('.')
-      .map((segment) => segment.trim())
+      .map((segment) => toCamelCase(segment.trim()))
       .filter(Boolean);
 
     if (segments.length === 0) return;
