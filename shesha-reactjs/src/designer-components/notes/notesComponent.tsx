@@ -125,6 +125,8 @@ const NotesComponent: NotesComponentDefinition = {
     const isReadOnly = model.readOnly === true;
     const isDisabled = model.disabled === true;
 
+    if (model.hidden === true) return null;
+
     return (
       <NotesEditorProvider
         ownerId={ownerId}
