@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/strict-boolean-expressions: "error" */
 import { MenuProps, Tooltip } from 'antd';
 import classNames from 'classnames';
 import { ReactNode } from 'react';
@@ -7,6 +8,7 @@ import { ISidebarMenuItem, isSidebarButton, isSidebarGroup, SidebarItemType } fr
 import { IConfigurableActionConfiguration, isNavigationActionConfiguration } from '@/providers/index';
 import Link from 'next/link';
 import { QuestionCircleOutlined } from '@ant-design/icons';
+import { isDefined, isNullOrWhiteSpace } from '@/utils';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -47,20 +49,20 @@ function getItem({ label, key, icon, children, isParent, itemType, onClick, navi
               {label}
             </Link>
           )
-          : <Link href="" className={className} onClick={clickHandler}>{label}</Link>)
+          : <span className={className} onClick={clickHandler}>{label}</span>)
         : <span className={className}>{label}</span>;
 
       // Extract text content for the overflow tooltip
       const textContent = typeof label === 'string' ? label : undefined;
 
       // Wrap content in tooltip for text overflow (CSS handles the ellipsis)
-      const contentWithOverflowTooltip = textContent ? (
+      const contentWithOverflowTooltip = !isNullOrWhiteSpace(textContent) ? (
         <Tooltip title={textContent} placement="top" mouseEnterDelay={0.5}>
           {baseContent}
         </Tooltip>
       ) : baseContent;
 
-      if (!tooltip) return contentWithOverflowTooltip;
+      if (!isDefined(tooltip)) return contentWithOverflowTooltip;
 
       const tooltipText = typeof tooltip === 'string' ? tooltip : undefined;
       return (
@@ -95,7 +97,7 @@ export interface IProps {
 export const sidebarMenuItemToMenuItem = ({ item, onButtonClick, onItemEvaluation, getFormUrl, getUrl }: IProps): MenuItem => {
   const { id, title, icon, itemType } = item;
 
-  if (item.hidden) return null;
+  if (item.hidden === true) return null;
 
   const children = isSidebarGroup(item)
     ? item.childItems?.map((item) => sidebarMenuItemToMenuItem({ item, onButtonClick, onItemEvaluation, getFormUrl, getUrl }))
