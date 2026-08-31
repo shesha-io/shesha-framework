@@ -26,7 +26,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 inputType: 'textField',
                 size: 'small',
                 layout: 'horizontal',
-                jsSetting: true,
                 validate: { required: true },
                 parentId: 's4gmBg31azZC0UjZjpfTm',
               })
