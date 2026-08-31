@@ -154,7 +154,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   ],
                 })
                 .addSettingsInput({
-                  inputType: 'editableTagGroupProps', propertyName: 'allowedFileTypes', label: 'Allowed File Types', jsSetting: true,
+                  inputType: 'editableTagGroupProps', propertyName: 'allowedFileTypes', label: 'Accepted File Types', jsSetting: true,
                   tooltip: 'File types that can be accepted. The file type should include the leading dot, for example .png',
                 }))
               .stdCollapsiblePanel('Custom', (fb) => fb

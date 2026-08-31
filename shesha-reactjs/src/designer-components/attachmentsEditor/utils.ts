@@ -37,12 +37,16 @@ export const defaultStyles = (): IAttachmentsEditorDeviceStyles => {
  * Its font is the **file name's** typography, which is why the Font panel is the one Appearance
  * panel not hidden outside thumbnail mode. Border and background are deliberately neutral: the
  * container is a scrolling box rather than a painted panel, so it draws nothing until configured.
+ *
+ * The font carries no colour on purpose. The file name inherits the theme's text colour, and the
+ * upload prompt — which reads the same Font colour, so a configured one reaches it — is left free to
+ * fall back to the link colour. A colour here would be a colour on both, painting the prompt as body
+ * text; setting one deliberately still does exactly that.
  */
 export const containerDefaultStyles = (): IStyleValue => {
   return {
     font: {
       type: 'Segoe UI',
-      color: '#000',
       align: 'left',
       size: 14,
       weight: '400',
