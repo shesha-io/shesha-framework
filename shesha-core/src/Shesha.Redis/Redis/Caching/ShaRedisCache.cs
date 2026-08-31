@@ -415,14 +415,6 @@ namespace Shesha.Redis.Caching
                 return;
             }
 
-            // Only once Redis has accepted the batch. redisPairs is built from pairs in order, so
-            // the indexes line up; PopulateL1 needs the original value, not the serialized form.
-            for (var i = 0; i < redisPairs.Count; i++)
-            {
-                PopulateL1(redisPairs[i].Key, pairs[i].Value, RequestedLifetime(pairs[i].Key, slidingExpireTime, absoluteExpireTime));
-                _invalidationBus?.Publish(Name, redisPairs[i].Key.ToString());
-            }
-
             if (absoluteExpireTime.HasValue)
             {
                 foreach (var pair in redisPairs)
@@ -473,6 +465,20 @@ namespace Shesha.Redis.Caching
                     }
                 }
             }
+            // Runs last, after both the write and the expiry loops.
+            //
+            // Publishing while the keys still carry no TTL would make the other instances drop
+            // their entry, re-read, see a key with no expiry, and cache it for the full L1 TTL --
+            // reinstating the overshoot for short-lived values on every node except this one.
+            //
+            // redisPairs is built from pairs in order, so the indexes line up; PopulateL1 needs
+            // the original value, not the serialized form.
+            for (var i = 0; i < redisPairs.Count; i++)
+            {
+                PopulateL1(redisPairs[i].Key, pairs[i].Value, RequestedLifetime(pairs[i].Key, slidingExpireTime, absoluteExpireTime));
+                _invalidationBus?.Publish(Name, redisPairs[i].Key.ToString());
+            }
+
         }
 
         public override async Task SetAsync(KeyValuePair<string, object>[] pairs, TimeSpan? slidingExpireTime = null, DateTimeOffset? absoluteExpireTime = null)
@@ -497,14 +503,6 @@ namespace Shesha.Redis.Caching
             }
             else
             {
-                // Only once Redis has accepted the batch. redisPairs is built from pairs in order,
-                // so the indexes line up; PopulateL1 needs the original value.
-                for (var i = 0; i < redisPairs.Count; i++)
-                {
-                    PopulateL1(redisPairs[i].Key, pairs[i].Value, RequestedLifetime(pairs[i].Key, slidingExpireTime, absoluteExpireTime));
-                    if (_invalidationBus != null)
-                        await _invalidationBus.PublishAsync(Name, redisPairs[i].Key.ToString());
-                }
 
                 if (absoluteExpireTime.HasValue)
                 {
@@ -556,6 +554,21 @@ namespace Shesha.Redis.Caching
                         }
                     }
                 }
+                // Runs last, after both the write and the expiry loops.
+                //
+                // Publishing while the keys still carry no TTL would make the other instances drop
+                // their entry, re-read, see a key with no expiry, and cache it for the full L1 TTL --
+                // reinstating the overshoot for short-lived values on every node except this one.
+                //
+                // redisPairs is built from pairs in order, so the indexes line up; PopulateL1 needs
+                // the original value, not the serialized form.
+                for (var i = 0; i < redisPairs.Count; i++)
+                {
+                    PopulateL1(redisPairs[i].Key, pairs[i].Value, RequestedLifetime(pairs[i].Key, slidingExpireTime, absoluteExpireTime));
+                    if (_invalidationBus != null)
+                        await _invalidationBus.PublishAsync(Name, redisPairs[i].Key.ToString());
+                }
+
             }
         }
 
