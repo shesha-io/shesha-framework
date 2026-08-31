@@ -11,24 +11,18 @@ describe('boundWidth', () => {
     expect(boundWidth('100.5%')).toBe('100%');
   });
 
-  it('overrides a vw width over the canvas, which vw resolves against', () => {
-    expect(boundWidth('200vw')).toBe('100vw');
-    expect(boundWidth('101VW')).toBe('100vw');
-    expect(boundWidth(' 150 vw ')).toBe('100vw');
-  });
-
   it('leaves a width within the container alone', () => {
     expect(boundWidth('100%')).toBe('100%');
     expect(boundWidth('50%')).toBe('50%');
     expect(boundWidth('33.5%')).toBe('33.5%');
     expect(boundWidth('0%')).toBe('0%');
-    expect(boundWidth('100vw')).toBe('100vw');
-    expect(boundWidth('50vw')).toBe('50vw');
   });
 
   it('leaves values it cannot judge without the canvas width or a font size untouched', () => {
-    // An absolute length needs the canvas to compare against - see boundWidthToCanvas. A keyword,
-    // a calc() and a font-relative unit cannot be judged here at all.
+    // vw is viewport-relative until getWidthDimension rewrites it against the canvas, and an
+    // absolute length needs the canvas to compare against - both are boundWidthToCanvas's job. A
+    // keyword, a calc() and a font-relative unit cannot be judged at all.
+    expect(boundWidth('200vw')).toBe('200vw');
     expect(boundWidth('2000px')).toBe('2000px');
     expect(boundWidth('max-content')).toBe('max-content');
     expect(boundWidth('auto')).toBe('auto');
@@ -55,9 +49,17 @@ describe('boundWidthToCanvas', () => {
     expect(boundWidthToCanvas('5in', '1024px')).toBe('5in');
   });
 
-  it('still applies the relative bounds', () => {
-    expect(boundWidthToCanvas('200%', '1157px')).toBe('100%');
+  it('bounds vw, which getWidthDimension rewrites as a fraction of the canvas', () => {
     expect(boundWidthToCanvas('200vw', '1157px')).toBe('100vw');
+    expect(boundWidthToCanvas('101VW', '1157px')).toBe('100vw');
+    expect(boundWidthToCanvas('50vw', '1157px')).toBe('50vw');
+    // Without a canvas nothing rewrites vw, so a deliberate wide scroller is left alone.
+    expect(boundWidthToCanvas('200vw', undefined)).toBe('200vw');
+  });
+
+  it('still applies the percentage bound', () => {
+    expect(boundWidthToCanvas('200%', '1157px')).toBe('100%');
+    expect(boundWidthToCanvas('200%', undefined)).toBe('100%');
   });
 
   it('cannot judge an absolute width without a usable canvas width, so leaves it alone', () => {
@@ -72,7 +74,8 @@ describe('boundWidthToCanvas', () => {
 describe('exceedsWidth', () => {
   it('reports only the values that would be overridden', () => {
     expect(exceedsWidth('200%')).toBe(true);
-    expect(exceedsWidth('200vw')).toBe(true);
+    expect(exceedsWidth('200vw', '1157px')).toBe(true);
+    expect(exceedsWidth('200vw')).toBe(false);
     expect(exceedsWidth('100%')).toBe(false);
     expect(exceedsWidth('50%')).toBe(false);
     expect(exceedsWidth(undefined)).toBe(false);

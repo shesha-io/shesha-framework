@@ -10,8 +10,10 @@ describe('dimensionsStyles - the CSS-string path used by the container component
     expect(css).toContain('max-width: 100%;');
   });
 
-  it('bounds a vw width over the canvas', () => {
-    expect(dimensionsStyles({ width: '200vw' })).toContain('width: 100vw;');
+  it('leaves vw alone - it is viewport-relative until something rewrites it against a canvas', () => {
+    // Clamping to 100vw here would neither fit a canvas narrower than the viewport nor respect a
+    // deliberate wide scroller on a rendered page, where there is no canvas at all.
+    expect(dimensionsStyles({ width: '200vw' })).toContain('width: 200vw;');
   });
 
   it('leaves a width within the container as it was', () => {

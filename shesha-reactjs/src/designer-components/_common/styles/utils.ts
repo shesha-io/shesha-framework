@@ -216,8 +216,9 @@ export const backgroundStyles = (model: IBackgroundValue | undefined): string =>
 export const dimensionsStyles = (model: IDimensionsValue | undefined): string => {
   if (!model) return '';
   const sb = new StringBuilder();
-  // The width axes go through boundWidth, as they do in getDimensionsStyle. No canvas width is
-  // available on this path, so only the relative units (%, vw) can be judged here.
+  // The width axes go through boundWidth, as they do in getDimensionsStyle. No canvas width reaches
+  // this path, so only a percentage can be judged - vw stays viewport-relative here and an absolute
+  // length has nothing to be compared against.
   if (isDefined(model.width)) sb.append(`width: ${dimensionCss(boundWidth(model.width))};`);
   if (isDefined(model.minWidth)) sb.append(`min-width: ${dimensionCss(boundWidth(model.minWidth))};`);
   if (isDefined(model.maxWidth)) sb.append(`max-width: ${dimensionCss(boundWidth(model.maxWidth))};`);

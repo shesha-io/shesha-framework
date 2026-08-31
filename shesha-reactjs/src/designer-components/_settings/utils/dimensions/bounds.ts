@@ -28,9 +28,9 @@ const toPx = (value: number, unit: string): number | undefined => {
  * container is the device screen, and the canvas clips rather than scrolls, so the excess is not
  * merely off to one side - it is unreachable.
  *
- * Handles the units that are relative by definition: a percentage of the container, and `vw`, which
- * `getWidthDimension` resolves against the canvas so that 100vw is the canvas. Absolute lengths need
- * the canvas width to judge - see `boundWidthToCanvas`.
+ * Handles a percentage only, which CSS resolves against the containing block wherever this runs.
+ * `vw` resolves against the browser viewport, so it is not container-relative until something
+ * converts it - see `boundWidthToCanvas`. Absolute lengths need the canvas width to judge.
  *
  * Anything else is returned exactly as entered: a keyword such as `max-content`, a `calc()`, or a
  * font-relative unit (`em`, `rem`, `ch`), which cannot be judged without the resolved font size.
@@ -39,28 +39,32 @@ export const boundWidth = (value: string | number): string | number => {
   if (typeof value !== 'string') return value;
 
   const percent = PERCENT_WIDTH_REGEX.exec(value);
-  if (percent) {
-    const parsed = parseFloat(percent[1] ?? '');
-    return Number.isFinite(parsed) && parsed > MAX_DIMENSION_PERCENT ? `${MAX_DIMENSION_PERCENT}%` : value;
-  }
+  if (!percent) return value;
 
-  const vw = VW_WIDTH_REGEX.exec(value);
-  if (vw) {
-    const parsed = parseFloat(vw[1] ?? '');
-    return Number.isFinite(parsed) && parsed > MAX_DIMENSION_PERCENT ? `${MAX_DIMENSION_PERCENT}vw` : value;
-  }
-
-  return value;
+  const parsed = parseFloat(percent[1] ?? '');
+  return Number.isFinite(parsed) && parsed > MAX_DIMENSION_PERCENT ? `${MAX_DIMENSION_PERCENT}%` : value;
 };
 
 /**
- * `boundWidth`, plus absolute lengths bounded against the canvas width itself. Only applied where
- * the canvas width is known and is a plain length, which is what the canvas provider always
- * reports; without it an absolute width cannot be judged at all.
+ * `boundWidth`, plus the units that only become container-relative once the canvas width is known:
+ *
+ * - `vw`, because `getWidthDimension` rewrites it as a fraction of the canvas, so 100vw is the
+ *   canvas. Bounded here rather than in `boundWidth` because on a rendered page nothing rewrites
+ *   it - it is viewport-relative, a deliberate `200vw` scroller is valid, and clamping it would
+ *   both fail to fit any canvas and override the configured width.
+ * - absolute lengths, compared against the canvas in px.
+ *
+ * The canvas width must be a plain length, which is what the canvas provider always reports.
  */
 export const boundWidthToCanvas = (value: string | number, canvasWidth: string | undefined): string | number => {
   const bounded = boundWidth(value);
   if (typeof bounded !== 'string' || !isDefined(canvasWidth)) return bounded;
+
+  const vw = VW_WIDTH_REGEX.exec(bounded);
+  if (vw) {
+    const parsed = parseFloat(vw[1] ?? '');
+    return Number.isFinite(parsed) && parsed > MAX_DIMENSION_PERCENT ? `${MAX_DIMENSION_PERCENT}vw` : bounded;
+  }
 
   const canvasMatch = ABSOLUTE_WIDTH_REGEX.exec(canvasWidth);
   if (!canvasMatch) return bounded;
