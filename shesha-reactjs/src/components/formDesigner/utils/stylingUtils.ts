@@ -34,11 +34,11 @@ const getFullSizeComponentDimensionsValue = (value: string | number | undefined)
  */
 export const getFullSizeComponentDimensions = (dimensions: IDimensionsValue | undefined): IDimensionsValue => ({
   height: getFullSizeComponentDimensionsValue(dimensions?.height),
-  minHeight: getFullSizeComponentDimensionsValue(dimensions?.minHeight),
-  maxHeight: getFullSizeComponentDimensionsValue(dimensions?.maxHeight),
+  minHeight: dimensions?.minHeight,
+  maxHeight: dimensions?.maxHeight,
   width: getFullSizeComponentDimensionsValue(dimensions?.width),
-  minWidth: getFullSizeComponentDimensionsValue(dimensions?.minWidth),
-  maxWidth: getFullSizeComponentDimensionsValue(dimensions?.maxWidth),
+  minWidth: dimensions?.minWidth,
+  maxWidth: dimensions?.maxWidth,
 });
 
 const getFullSizeWrapperDimensionsValue = (value: string | number | undefined): string | number | undefined =>
@@ -59,11 +59,11 @@ const getFullSizeWrapperDimensionsValue = (value: string | number | undefined): 
  */
 export const getFullSizeWrapperDimensions = (dimensions: IDimensionsValue | undefined): IDimensionsValue => ({
   height: getFullSizeWrapperDimensionsValue(dimensions?.height),
-  minHeight: getFullSizeWrapperDimensionsValue(dimensions?.minHeight),
-  maxHeight: getFullSizeWrapperDimensionsValue(dimensions?.maxHeight),
+  minHeight: dimensions?.minHeight,
+  maxHeight: dimensions?.maxHeight,
   width: getFullSizeWrapperDimensionsValue(dimensions?.width),
-  minWidth: getFullSizeWrapperDimensionsValue(dimensions?.minWidth),
-  maxWidth: getFullSizeWrapperDimensionsValue(dimensions?.maxWidth),
+  minWidth: dimensions?.minWidth,
+  maxWidth: dimensions?.maxWidth,
 });
 
 export const getFullSizeWrapperStyle = (model: IStyleValue): IStyleValue => ({

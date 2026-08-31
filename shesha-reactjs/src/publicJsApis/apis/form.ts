@@ -2,6 +2,11 @@
 import { IEntityEndpoints } from "../entities/interfaces";
 import { Components } from "./components";
 
+export interface IEntityTypeIdentifier {
+  module: string | null;
+  name: string;
+}
+
 export interface IValidationErrorInfo {
   message?: string | null;
   members?: string | string[] | null;
@@ -48,7 +53,17 @@ export type FormUid = string;
 export type FormIdentifier = FormFullName | FormUid;
 
 export interface IFormSettings {
-  modelType?: string;
+  modelType?: string | IEntityTypeIdentifier | undefined;
+
+  postUrl?: string | undefined;
+  putUrl?: string | undefined;
+  deleteUrl?: string | undefined;
+  getUrl?: string | undefined;
+
+  fieldsToFetch?: string[] | undefined;
+
+  /** if true then need to update components structure for using Setting component */
+  isSettingsForm?: boolean | undefined;
 };
 
 export interface FormInstance {
@@ -57,7 +72,7 @@ export interface FormInstance {
 
 export interface IDelayedUpdateItem {
   id: string;
-  data: Record<PropertyKey, unknown>;
+  data: any;
 }
 
 export interface IDelayedUpdateGroup {
@@ -65,66 +80,45 @@ export interface IDelayedUpdateGroup {
   items: IDelayedUpdateItem[];
 }
 
-/**
- * Form instance API
- */
-export interface FormApi<Values = any> {
+export type FormData<Values extends object = object> = Values;
+
+/** Form instance API */
+export interface FormApi<Values extends object = object> {
+  /** Clear fields value */
+  clear(): void;
+  /** Submit form */
+  submit(): void;
+  /** Get form data. Need for getting actual form data (using in scripts) */
+  getFormData(): Values;
+  /** Set validation errors. Need for display validation errors in the ValidationErrors component */
+  setValidationErrors(payload: string | IErrorInfo | IAjaxResponseBase | AxiosResponse<IAjaxResponseBase> | Error): void;
   /**
-   * Add deferred update data to 'data' object
+   * Add deferred update data to `data` object
    * @param data model data object for updating
    * @returns The deferred update data
    */
-  addDelayedUpdateData(data: Values): IDelayedUpdateGroup[];
-  /**
-   * Set field value
-   * @param name field name
-   * @param value field value
-   */
-  setFieldValue(name: string, value: any): void;
-  /**
-   * Set fields value
-   * @param values
-   */
-  setFieldsValue(values: Values): void;
-  /**
-   * Clear fields value
-   */
-  clearFieldsValue(): void;
-  /**
-   * Submit form
-   */
-  submit(): void;
-
-  /**
-   * Set form data
-   * @deprecated The method should not be used
-   * @param payload data payload
-   */
-  setFormData(payload: ISetFormDataPayload): void;
-
-  /** Get form data. Need for getting actual form data (using in scripts) */
-  getFormData(): Values;
-
-  /** Set validation errors. Need for display validation errors in the ValidationErrors component */
-  setValidationErrors(payload: string | IErrorInfo | IAjaxResponseBase | AxiosResponse<IAjaxResponseBase> | Error): void;
+  addDelayedUpdateData: (data: Values) => IDelayedUpdateGroup[];
 
   /** antd form instance */
   readonly formInstance?: FormInstance;
   /** Configurable form settings */
-  readonly formSettings: IFormSettings;
+  readonly settings: IFormSettings | undefined;
   /** Form mode */
-  formMode: FormMode;
+  mode: FormMode;
   /** Form data */
-  readonly data: Values;
-
+  readonly data: FormData<Values>;
   /** Form arguments passed by caller */
-  readonly formArguments?: any;
-
+  readonly arguments?: any;
   /** Default API endpoints (create, read, update, delete). Note: available only when model type is entity */
   readonly defaultApiEndpoints: IEntityEndpoints;
-
-  readonly context: Record<string, any>;
-
+  /** Additional form state (data) */
+  readonly state: Record<string, any>;
   /** Form components API */
   readonly components: Components;
+  /** Model type used for form */
+  readonly modelType?: string | IEntityTypeIdentifier | undefined;
+  /** Initial form values */
+  readonly initialValues?: Partial<Values> | undefined;
+  /** Parent form values */
+  readonly parentFormValues?: object | undefined;
 };

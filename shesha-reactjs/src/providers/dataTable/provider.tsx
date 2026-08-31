@@ -172,6 +172,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     actionOwnerName = "",
     dataFetchingMode,
     permanentFilter,
+    permanentFilterReady = true,
     needToRegisterContext = true,
     initialPageSize,
     grouping,
@@ -181,6 +182,9 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   const instance = useDatasetInstance(repository);
   useDeepCompareEffect(() => {
+    // hold fetching while the permanent filter is still evaluating, otherwise the first fetch
+    // goes out unfiltered and flashes unrelated records
+    instance.registerDataFetchDependency('permanentFilter', { state: permanentFilterReady ? 'ready' : 'waiting' });
     void instance.init({
       metadata: undefined,
       userConfigId: userConfigId,
@@ -202,6 +206,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     userConfigId,
     sortMode,
     permanentFilter,
+    permanentFilterReady,
     dataFetchingMode,
     initialPageSize,
     standardSorting,

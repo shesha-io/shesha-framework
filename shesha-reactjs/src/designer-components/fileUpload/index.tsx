@@ -1,5 +1,5 @@
 import { FileAddOutlined } from '@ant-design/icons';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { FileUpload } from '@/components/fileUpload';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { DataTypes } from '@/interfaces';
@@ -22,6 +22,7 @@ import { useStyles } from './styles';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { FileUploadComponentDefinition, IFileUploadProps } from './interfaces';
+import { ThumbnailSize, displayStyleFromListType, displayStyleToListType, presetThumbnailSize } from '../attachmentsEditor/interfaces';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getIdOrUndefined } from '@/utils/entity';
 import { getFirstNonEmptyStringPropertyOrUndefined, getStringPropertyOrUndefined } from '@/utils/object';
@@ -53,7 +54,27 @@ const FileUploadComponent: FileUploadComponentDefinition = {
     const executionContext = useAvailableConstantsData();
     const ownerId = evaluateString(model.ownerId, executionContext);
 
-    const { styles } = useStyles(model);
+    /* Display Style is the single control: whether the file reads as a name or a tile, and how big
+       that tile is. A preset overrides the configured dimensions, which the settings form hides
+       unless Custom is chosen, so the two can never disagree on screen. */
+    // One size: `model` is already merged down to the active device.
+    const displayStyle = model.displayStyle ?? displayStyleFromListType(model.listType, [model.dimensions]);
+    const listType = displayStyleToListType(displayStyle);
+    const presetSize = presetThumbnailSize(displayStyle);
+    const sizedModel = useMemo<IFileUploadProps>(
+      () => ({
+        ...model,
+        /* The derived value, not the stored one: the styles switch on listType, and a model whose
+           two properties disagree would otherwise style a tile as a file name or the reverse. */
+        listType,
+        ...(isDefined(presetSize)
+          ? { dimensions: { ...model.dimensions, width: `${presetSize}px`, height: `${presetSize}px` } }
+          : {}),
+      }),
+      [model, listType, presetSize],
+    );
+
+    const { styles } = useStyles(sizedModel);
 
     // Read-only presents the attached file without the controls that would change it; disabled
     // greys the whole uploader out. The two are independent booleans, so both are honoured here.
@@ -124,11 +145,17 @@ const FileUploadComponent: FileUploadComponentDefinition = {
                   allowReplace={allowReplace}
                   allowedFileTypes={model.allowedFileTypes}
                   isDragger={model.isDragger}
-                  listType={model.listType}
+                  listType={listType}
                   hideFileName={model.hideFileName}
                   thumbnailWidth={model.thumbnailWidth}
                   thumbnailHeight={model.thumbnailHeight}
                   disabled={disabled}
+                  styles={model.styleCss}
+                  /* The three floating surfaces are portalled to the body, so no descendant selector
+                     from the field reaches them — each needs its class handed over explicitly. */
+                  popupClassName={styles.popup}
+                  modalClassName={styles.modal}
+                  imagePreviewClassName={styles.imagePreview}
                 />
               </div>
             </FileUploadProvider>
@@ -145,6 +172,7 @@ const FileUploadComponent: FileUploadComponentDefinition = {
     allowUpload: true,
     allowReplace: true,
     allowDelete: true,
+    displayStyle: 'text',
   }),
   getDefaultStyles: () => defaultStyles(),
   migrator: (m) =>
@@ -182,16 +210,44 @@ const FileUploadComponent: FileUploadComponentDefinition = {
       .add<IFileUploadProps>(7, (prev, context) => {
         if (context.isNew === true) return prev;
 
+        /* Only carry across the legacy root fields that are actually set. Spreading the object
+           wholesale would overwrite an existing `desktop` value with `undefined` for every root
+           field that is absent — which is the normal case for a model whose styles already moved to
+           the device sets — wiping the very values this step is meant to preserve. */
         const styles: IInputStyles = {
-          size: prev.size,
-          hideBorder: prev.hideBorder,
-          stylingBox: prev.stylingBox,
-          style: prev.style,
+          ...(isDefined(prev.size) ? { size: prev.size } : {}),
+          ...(isDefined(prev.hideBorder) ? { hideBorder: prev.hideBorder } : {}),
+          ...(isDefined(prev.stylingBox) ? { stylingBox: prev.stylingBox } : {}),
+          ...(isDefined(prev.style) ? { style: prev.style } : {}),
         };
 
         return { ...migratePrevStyles({ ...prev, desktop: { ...(prev.desktop ?? {}), ...styles } }, defaultStyles()) };
       })
-      .add<IFileUploadProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
+      .add<IFileUploadProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev))))
+      /* Display Style replaces List Type. A thumbnail keeps the size it already stores — Medium
+         where that is the 54px default, Custom otherwise — so nothing saved changes size. A new
+         component has nothing to read and takes its default from initModel instead. */
+      .add<IFileUploadProps>(9, (prev, context) => {
+        if (context.isNew === true) return prev;
+
+        /* Per property and per device, mirroring how the device styles merge at render: a device
+           inherits each dimension from desktop, and desktop from the root. Tablet or mobile sized
+           differently has to mean Custom — a preset applies to every device at once, so calling
+           this Medium would flatten the others to 54px. */
+        const dimensionsFor = (device: IInputStyles | undefined): ThumbnailSize => ({
+          width: device?.dimensions?.width ?? prev.desktop?.dimensions?.width ?? prev.dimensions?.width,
+          height: device?.dimensions?.height ?? prev.desktop?.dimensions?.height ?? prev.dimensions?.height,
+        });
+
+        return {
+          ...prev,
+          displayStyle: prev.displayStyle ?? displayStyleFromListType(prev.listType, [
+            dimensionsFor(prev.desktop),
+            dimensionsFor(prev.tablet),
+            dimensionsFor(prev.mobile),
+          ]),
+        };
+      }),
   settingsFormMarkup: getSettings,
 
 };

@@ -1,7 +1,7 @@
 import { useAuthOrUndefined, useSheshaApplication } from '@/providers';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { SheshaActionOwners } from '../../configurableActionsDispatcher/models';
-import { ILoginForm } from '@/interfaces/loginForm';
+import { isLoginFormData } from '@/interfaces/loginForm';
 
 export const useExecuteSignIn = (): void => {
   const { backendUrl, httpHeaders } = useSheshaApplication();
@@ -23,8 +23,10 @@ export const useExecuteSignIn = (): void => {
         if (formInstance)
           await formInstance.validateFields();
 
-        const data = actionContext.form?.data as ILoginForm;
-        return auth.loginUserAsync(data);
+        if (isLoginFormData(actionContext.form?.data))
+          return auth.loginUserAsync(actionContext.form.data);
+
+        throw new Error("Login data is not valid");
       },
     },
     [backendUrl, httpHeaders],

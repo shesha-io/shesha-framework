@@ -15,18 +15,27 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
   // for that display type (matching releases/0.45).
   /* A dragger renders a drop area with a plain text list and has no tile, whatever listType says —
      so the tile's box panels must not be offered for one either. */
-  const THUMBNAIL_ONLY_JS = 'return getSettingValue(data?.listType) === "thumbnail" && getSettingValue(data?.isDragger) !== true;';
+  /* Every Display Style but File name draws a tile. Listed rather than tested as "not text" so an
+     unset value reads as file-name instead of silently enabling every tile-only panel. */
+  const THUMBNAIL_STYLES = '["thumbnailSmall","thumbnailMedium","thumbnailLarge","thumbnailCustom"]';
+  const IS_THUMBNAIL_JS = `${THUMBNAIL_STYLES}.includes(getSettingValue(data?.displayStyle))`;
+  const THUMBNAIL_ONLY_JS = `return ${IS_THUMBNAIL_JS} && getSettingValue(data?.isDragger) !== true;`;
+  /* The presets set the tile size themselves, so the dimensions are offered only where they decide it. */
+  const CUSTOM_THUMBNAIL_ONLY_JS = 'return getSettingValue(data?.displayStyle) === "thumbnailCustom" && getSettingValue(data?.isDragger) !== true;';
   /* Align applies only to a plain file-name list: a thumbnail tile centres its content, and so does a
      dragger's drop area. The two Font variants must between them cover every combination, or a model
      saved with both thumbnail and dragger set (reachable through jsSetting, and possible in older
      saved forms) would show no Font panel at all — so the no-Align variant is the fallback rather
      than a second positive condition. */
-  const FILE_NAME_WITH_ALIGN_JS = 'return getSettingValue(data?.listType) !== "thumbnail" && getSettingValue(data?.isDragger) !== true;';
-  const NO_ALIGN_JS = 'return getSettingValue(data?.listType) === "thumbnail" || getSettingValue(data?.isDragger) === true;';
+  const FILE_NAME_WITH_ALIGN_JS = `return !${IS_THUMBNAIL_JS} && getSettingValue(data?.isDragger) !== true;`;
+  const NO_ALIGN_JS = `return ${IS_THUMBNAIL_JS} || getSettingValue(data?.isDragger) === true;`;
 
-  const listTypeOptions = [
+  const displayStyleOptions = [
     { value: 'text', label: 'File name' },
-    { value: 'thumbnail', label: 'Thumbnail' },
+    { value: 'thumbnailSmall', label: 'Small Thumbnail' },
+    { value: 'thumbnailMedium', label: 'Med Thumbnail' },
+    { value: 'thumbnailLarge', label: 'Large Thumbnail' },
+    { value: 'thumbnailCustom', label: 'Custom Thumbnail' },
   ];
 
   const json = {
@@ -40,16 +49,16 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
             .stdVisibleEditableInputs('full')
             .stdCollapsiblePanel('Display', (fb) => fb
               .addSettingsInputRow({ inputs: [
-                { type: 'dropdown', propertyName: 'listType', label: 'List Type', size: 'small', jsSetting: true, dropdownOptions: listTypeOptions,
-                  tooltip: 'How the selected file is presented: as a file name or as a thumbnail tile',
+                { type: 'dropdown', propertyName: 'displayStyle', label: 'Display Style', size: 'small', jsSetting: true, dropdownOptions: displayStyleOptions,
+                  tooltip: 'How the selected file is presented: as its name, or as a tile at a preset size. Custom Thumbnail takes its size from the Dimensions panel.',
                   visibleJs: 'return getSettingValue(data?.isDragger) !== true;' },
                 { type: 'switch', propertyName: 'isDragger', label: 'Is Dragger', size: 'small', jsSetting: true, layout: 'horizontal',
                   tooltip: 'Whether the uploader should show a drop area instead of a button',
-                  visibleJs: 'return getSettingValue(data?.listType) !== "thumbnail";' },
+                  visibleJs: `return !${IS_THUMBNAIL_JS};` },
               ] })
               .addSettingsInputRow({ inputs: [
                 { type: 'switch', propertyName: 'hideFileName', label: 'Hide File Name', size: 'small', jsSetting: true, layout: 'horizontal' },
-              ], visibleJs: 'return getSettingValue(data?.listType) === "thumbnail";' }))
+              ], visibleJs: `return ${IS_THUMBNAIL_JS};` }))
             .stdCollapsiblePanel('Files', (fb) => fb
               .addSettingsInputRow({ inputs: [
                 { type: 'switch', propertyName: 'allowUpload', label: 'Allow Upload', size: 'small', jsSetting: true, layout: 'horizontal' },
@@ -96,8 +105,8 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                     // mode. In file-name mode the component is a plain file name and an upload
                     // button with no box to style, so these panels are hidden rather than left to
                     // collect values that never render.
+                    .stdContainer((fb) => fb.stdDimensionsPanel('dimensions'), CUSTOM_THUMBNAIL_ONLY_JS)
                     .stdContainer((fb) => fb
-                      .stdDimensionsPanel('dimensions')
                       .stdBorderPanel(removeStyleRouter !== true, 'border')
                       .stdBackgroundPanel(removeStyleRouter !== true, 'background')
                       .stdShadowPanel('shadow'),

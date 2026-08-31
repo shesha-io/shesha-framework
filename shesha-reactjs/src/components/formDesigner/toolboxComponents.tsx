@@ -113,16 +113,18 @@ export const ToolboxComponents: FC = () => {
   return (
     <div className={styles.shaToolboxComponents}>
       <SearchBox value={searchText} onChange={setSearchText} placeholder="Search components" />
-      {filteredGroups.length > 0 && (
-        <Collapse
-          activeKey={openedKeys}
-          onChange={onCollapseChange}
-          accordion
-          items={componentGroups}
-        >
-        </Collapse>
-      )}
-      {filteredGroups.length === 0 && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Components not found" />}
+      <div className={styles.shaToolboxComponentsList}>
+        {filteredGroups.length > 0 && (
+          <Collapse
+            activeKey={openedKeys}
+            onChange={onCollapseChange}
+            accordion
+            items={componentGroups}
+          >
+          </Collapse>
+        )}
+        {filteredGroups.length === 0 && <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Components not found" />}
+      </div>
     </div>
   );
 };

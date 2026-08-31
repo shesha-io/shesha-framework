@@ -41,6 +41,9 @@ export interface IRadioProps extends Partial<IRadioOptionsSource> {
   onClick?: React.MouseEventHandler<HTMLDivElement> | undefined;
   onMouseEnter?: React.MouseEventHandler<HTMLDivElement> | undefined;
   onMouseLeave?: React.MouseEventHandler<HTMLDivElement> | undefined;
+  onMouseMove?: React.MouseEventHandler<HTMLDivElement> | undefined;
+  onKeyDown?: React.KeyboardEventHandler<HTMLDivElement> | undefined;
+  onKeyUp?: React.KeyboardEventHandler<HTMLDivElement> | undefined;
   style?: CSSProperties | undefined;
   className?: string | undefined;
   disabled?: boolean | undefined;

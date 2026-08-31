@@ -6,8 +6,6 @@ using Abp.Events.Bus;
 using Abp.Events.Bus.Exceptions;
 using Abp.Web.Models;
 using Castle.Core.Logging;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
@@ -37,22 +35,23 @@ namespace Shesha.Authorization
 
         public virtual async Task OnAuthorizationAsync(AuthorizationFilterContext context)
         {
-            var endpoint = context.HttpContext?.GetEndpoint();
-            // Allow Anonymous skips all authorization
-            if (endpoint?.Metadata.GetMetadata<IAllowAnonymous>() != null)
-            {
-                return;
-            }
-
             if (!context.ActionDescriptor.IsControllerAction())
             {
                 return;
             }
 
             //TODO: Avoid using try/catch, use conditional checking
+            // Resolution happens inside the try so that a failure to construct a helper (or anything in its
+            // dependency graph) is handled the same way as a failure during AuthorizeAsync, rather than
+            // escaping the filter unhandled.
+            ISheshaAuthorizationHelper[]? authorizationHelpers = null;
             try
             {
-                var authorizationHelpers = _iocManager.ResolveAll<ISheshaAuthorizationHelper>();
+                // ResolveAll registers every resolved helper (and its whole dependency graph: UserManager,
+                // RoleManager, stores, repositories, unit-of-work managers, loggers) with Windsor's release
+                // policy. It must be paired with Release, otherwise the graph leaks on every authorized request.
+                authorizationHelpers = _iocManager.ResolveAll<ISheshaAuthorizationHelper>();
+
                 foreach (var authorization in authorizationHelpers)
                 {
                     await authorization.AuthorizeAsync(
@@ -99,6 +98,18 @@ namespace Shesha.Authorization
                 {
                     //TODO: How to return Error page?
                     context.Result = new StatusCodeResult((int)System.Net.HttpStatusCode.InternalServerError);
+                }
+            }
+            finally
+            {
+                // Release the ResolveAll'd helpers and their dependency graph (fixes the per-request leak).
+                // Null when ResolveAll itself threw, in which case there is nothing to release.
+                if (authorizationHelpers != null)
+                {
+                    foreach (var authorization in authorizationHelpers)
+                    {
+                        _iocManager.Release(authorization);
+                    }
                 }
             }
         }

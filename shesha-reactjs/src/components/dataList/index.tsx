@@ -242,7 +242,7 @@ export const DataList: FC<IDataListProps> = ({
 
       if (isCurrentlySelected) {
         // Deselecting - don't trigger onListItemSelect
-        if (onClearSelectedRow) onClearSelectedRow();
+        onClearSelectedRow();
 
         // Trigger onSelectionChange event for deselection
         if (onSelectionChange) {
@@ -728,35 +728,33 @@ export const DataList: FC<IDataListProps> = ({
         border: '1px solid #d3d3d3',
         borderRadius: '8px',
       }),
-      ...(orientation !== 'wrap' && {
-        marginTop: gap !== undefined ? (typeof gap === 'number' ? `${gap}px` : gap) : '0px',
-      }),
     };
+
+    // the gap margin sits on the wrapper, outside the selection highlight - on the inner
+    // item it becomes a band of highlighted background above the card when selected
+    const gapMargin = orientation !== 'wrap'
+      ? { marginTop: gap !== undefined ? (typeof gap === 'number' ? `${gap}px` : gap) : '0px' }
+      : undefined;
 
     const wrapperStyle: CSSProperties =
       orientation === 'horizontal'
-        ? { flex: '0 0 auto', width: itemWidth, overflow: 'visible' }
+        ? { flex: '0 0 auto', width: itemWidth, overflow: 'visible', ...gapMargin }
         : orientation === 'wrap'
           ? { flex: `0 0 ${itemWidth}`, width: itemWidth, overflow: 'visible' }
-          : { flex: '0 0 100%', overflow: 'visible' };
+          : { flex: '0 0 100%', overflow: 'visible', ...gapMargin };
 
     return (
       <div key={`row-${index}`} style={wrapperStyle}>
         <ConditionalWrap
           condition={isSelectable}
-          // The selection control is a *sibling* of the row content, not its parent. Wrapping the
-          // content in antd's <label> made every click inside the row a label activation, which could
-          // only be suppressed with preventDefault - and that cancelled the default action of nested
-          // controls too, so checkboxes/radios/switches inside a row stopped toggling. Keeping them
-          // as siblings means there is nothing to suppress.
           wrap={(children) => (
             <div className={classNames(styles.shaDatalistComponentItemCheckbox, { selected })}>
               {selectionMode === 'single'
                 ? (
+
+                  // TODO: Remove radio and revert to datalist item click selection. (JB)
                   <Radio
                     checked={selected}
-                    // Radio raises onChange only when it becomes checked, so clicking the already
-                    // selected row would never deselect it. onClick fires either way.
                     onClick={() => {
                       onSelectRowLocal(index, item);
                     }}
@@ -819,8 +817,9 @@ export const DataList: FC<IDataListProps> = ({
     if (canAddInline)
       setCreateModalOpen(true);
   };
-  if (actionRef?.current)
-    actionRef.current.addNewItem = onCreateClick;
+
+  if (actionRef)
+    actionRef.current = { ...actionRef.current, addNewItem: onCreateClick };
 
   type MomentType = typeof moment;
   type NewListItemInitExecuter = (form: IFormApi | undefined, contexts: IDataContextsData | object, globalState: IAnyObject | undefined, http: HttpClientApi, moment: MomentType) => ITableRowData;

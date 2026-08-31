@@ -101,6 +101,7 @@ export interface IEntityMetadataFetcher {
   getByClassName: (className: string) => Promise<IEntityMetadata | null>;
   getByEntityType: (entityType: string | IEntityTypeIdentifier) => Promise<IEntityMetadata | null>;
   isEntity: (modelType: string | IEntityTypeIdentifier) => Promise<boolean>;
+  getModuleNameByAccessorAsync: (accessor: string) => Promise<string | undefined>;
 }
 
 export interface IGetFormPayload {

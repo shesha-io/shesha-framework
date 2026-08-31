@@ -2,9 +2,12 @@ import { TypeDefinition } from '@/interfaces/metadata';
 import { messageApiDefinition } from "@/providers/sourceFileManager/api-utils/message";
 import { modalApiDefinition } from "@/providers/sourceFileManager/api-utils/modal";
 import { MetadataBuilderAction } from '@/utils/metadata/metadataBuilder';
-import { metadataSourceCode, metadataBuilderSourceCode, httpClientSourceCode, CODE, fileSaverCode, globalStateCode, queryStringCode, pageCode, formCode, webStorageCode, canvasContextCode } from '@/publicJsApis/apis';
+import { metadataSourceCode, metadataBuilderSourceCode, httpClientSourceCode, CODE, fileSaverCode, globalStateCode, queryStringCode, pageCode, formCode, storageCode } from '@/publicJsApis/apis';
 
 export const SheshaConstants = {
+  user: "shesha:user",
+  actions: "shesha:actions",
+  utils: "shesha:utils",
   http: "shesha:http",
   message: "shesha:message",
   modal: "shesha:modal",
@@ -135,20 +138,17 @@ export const registerPageAction: MetadataBuilderAction = (builder, name = "page"
   builder.addCustom(name, "Api of current page", () => {
     const definition: TypeDefinition = {
       typeName: 'PageApi',
-      files: [
-        { content: pageCode, fileName: 'apis/page.ts' },
-        { content: canvasContextCode, fileName: 'apis/canvasContextApi.ts' },
-      ],
+      files: [{ content: pageCode, fileName: 'apis/page.ts' }],
     };
     return Promise.resolve(definition);
   });
 };
 
-export const registerWebStorageAction: MetadataBuilderAction = (builder, name = "webStorage") => {
-  builder.addCustom(name, "Api of Web Storage", () => {
+export const registerWebStorageAction: MetadataBuilderAction = (builder, name = "storage") => {
+  builder.addCustom(name, "Api of Storage data", () => {
     const definition: TypeDefinition = {
-      typeName: 'WebStorage',
-      files: [{ content: webStorageCode, fileName: 'apis/webStorageApi.ts' }],
+      typeName: 'Storage',
+      files: [{ content: storageCode, fileName: 'apis/storageApi.ts' }],
     };
     return Promise.resolve(definition);
   });

@@ -7,8 +7,6 @@ import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/uti
 import { isNullOrWhiteSpace } from '@/utils';
 import { migratePermissionsToVisiblePermissions } from '@/designer-components/_common-migrations/migratePermissionsToVisiblePermissions';
 import { migrateHiddenToVisible } from '@/designer-components/_common-migrations';
-import { DataContextApi } from '@/componentsApi/componentApi';
-import { useComponentApi } from '@/providers/componentApi/hooks';
 
 /**
  * Data Context component (dataContext)
@@ -23,7 +21,7 @@ const TableContextComponent: TableContextComponentDefinition = {
   name: 'Data Context',
   icon: <DatabaseOutlined />,
   Factory: ({ model, form }) => {
-    useComponentApi<DataContextApi>({ model, typeName: 'DataContextApi' });
+    // useComponentApi<DataContextApi>({ model, typeName: 'DataContextApi' }); // ToDo: AS - check if DataContext should have its own api
     return model.hidden === true ? null : <TableContext {...model} formMode={form.formMode} />;
   },
   initModel: (model) => {
@@ -39,6 +37,7 @@ const TableContextComponent: TableContextComponentDefinition = {
       sortMode: 'standard' as const,
       strictSortOrder: 'asc' as const,
       allowReordering: 'no' as const,
+      visible: model.visible ?? true,
     } : model;
 
     return initialModel;

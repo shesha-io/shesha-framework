@@ -1,15 +1,48 @@
 import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
 import { DataTypes, SettingsFormMarkupFactory } from '@/interfaces';
-import { FILE_EVENTS } from '../_common/events';
+import { FILE_EVENTS_WITHOUT_CHANGE } from '../_common/events';
 
-const isThumbnailJs = 'return getSettingValue(data?.listType) === "thumbnail";';
-const isNotThumbnailJs = 'return getSettingValue(data?.listType) !== "thumbnail";';
+/* Every Display Style but File name renders a tile. Listed rather than tested as "not text" so an
+   unset value reads as file-name instead of silently enabling every thumbnail-only setting. */
+const THUMBNAIL_STYLES = '["thumbnailSmall","thumbnailMedium","thumbnailLarge","thumbnailCustom"]';
+const isThumbnailJs = `return ${THUMBNAIL_STYLES}.includes(getSettingValue(data?.displayStyle));`;
+const isNotThumbnailJs = `return !${THUMBNAIL_STYLES}.includes(getSettingValue(data?.displayStyle));`;
 const isNotDraggerJs = 'return getSettingValue(data?.isDragger) !== true;';
-const isThumbnailListJs = 'return getSettingValue(data?.listType) === "thumbnail" && !getSettingValue(data?.isDragger);';
+const isDraggerJs = 'return getSettingValue(data?.isDragger) === true;';
+const isThumbnailListJs = `return ${THUMBNAIL_STYLES}.includes(getSettingValue(data?.displayStyle)) && !getSettingValue(data?.isDragger);`;
+/* The presets set the tile size themselves, so the dimensions are offered only where they decide it. */
+const isCustomThumbnailJs = 'return getSettingValue(data?.displayStyle) === "thumbnailCustom" && !getSettingValue(data?.isDragger);';
 const isEditableJs = 'const r = getSettingValue(data?.readOnly); return r !== true && r !== "readOnly";';
 const showCustomContentFormJs = 'return !!getSettingValue(data?.customContent) && getSettingValue(data?.extraFormSelectionMode) !== "dynamic";';
 const styleDownloadedFilesJs = 'return !!getSettingValue(data?.[`${contexts?.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);';
+
+/**
+ * One of the four per-action handlers on the Events tab. `value` is the list as it stands after the
+ * action, which is what On Download has always passed; `file` is the one it happened to, and is
+ * undefined only for a zip download, which has no single subject.
+ */
+interface IFileActionHandler {
+  inputType: 'codeEditor';
+  propertyName: string;
+  label: string;
+  labelAlign: 'right';
+  tooltip: string;
+  wrapInTemplate: boolean;
+  templateSettings: { functionName: string; useAsyncDeclaration: boolean };
+  availableConstantsExpression: string;
+}
+
+const fileActionHandler = (propertyName: string, label: string, when: string): IFileActionHandler => ({
+  inputType: 'codeEditor', propertyName, label, labelAlign: 'right',
+  tooltip: `Callback that is triggered when ${when}.`,
+  wrapInTemplate: true,
+  templateSettings: { functionName: propertyName, useAsyncDeclaration: true },
+  /* No `event`, unlike the pointer and focus handlers: these fire after the API call that did the
+     work has resolved, and a zip download has no originating element at all, so there is nothing to
+     hand over and advertising one would only offer scripts an always-undefined constant. */
+  availableConstantsExpression: 'return metadataBuilder.object("constants").addAllStandard().addArray("value", "Files in the list after the action").addObject("file", "The file the action happened to", undefined).build();',
+});
 
 export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter }) => {
   const searchableTabsId = nanoid();
@@ -18,9 +51,12 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
   const appearanceTabId = nanoid();
   const styleRouterId = nanoid();
 
-  const listTypeOptions = [
+  const displayStyleOptions = [
     { label: 'File name', value: 'text' },
-    { label: 'Thumbnail', value: 'thumbnail' },
+    { label: 'Small Thumbnail', value: 'thumbnailSmall' },
+    { label: 'Med Thumbnail', value: 'thumbnailMedium' },
+    { label: 'Large Thumbnail', value: 'thumbnailLarge' },
+    { label: 'Custom Thumbnail', value: 'thumbnailCustom' },
   ];
 
   const filesLayoutOptions = [
@@ -52,7 +88,11 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                     /* Mutually exclusive with Is Dragger, in both directions: a dragger is a drop
                        area with a plain text list, so it has no list type to choose. Matches how
                        main gates these two against each other. */
-                    { type: 'dropdown', propertyName: 'listType', label: 'List Type', jsSetting: true, dropdownOptions: listTypeOptions, visibleJs: isNotDraggerJs },
+                    {
+                      type: 'dropdown', propertyName: 'displayStyle', label: 'Display Style', jsSetting: true,
+                      dropdownOptions: displayStyleOptions, visibleJs: isNotDraggerJs,
+                      tooltip: 'How each file is presented: as its name, or as a tile at a preset size. Custom Thumbnail takes its size from the Thumbnail Style dimensions.',
+                    },
                     {
                       type: 'switch', propertyName: 'isDragger', label: 'Is Dragger', jsSetting: true,
                       tooltip: 'Whether the uploader should show a drop area instead of a button.',
@@ -64,6 +104,23 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   visibleJs: isThumbnailJs,
                   inputs: [
                     { type: 'switch', propertyName: 'hideFileName', label: 'Hide File Name', jsSetting: true },
+                  ],
+                })
+                .addSettingsInputRow({
+                  visibleJs: isDraggerJs,
+                  inputs: [
+                    {
+                      type: 'textArea', propertyName: 'dropzoneText', label: 'Dropzone Text', jsSetting: true,
+                      tooltip: 'Replaces the prompt in the drop area. Left empty, it keeps the stock wording and its hint; set, it stands alone, and its line breaks are shown.',
+                    },
+                  ],
+                })
+                .addSettingsInputRow({
+                  inputs: [
+                    {
+                      type: 'textArea', propertyName: 'emptyText', label: 'Empty Text', jsSetting: true,
+                      tooltip: 'Shown when there are no files and none can be added — a read-only or disabled list. Left empty, such a list renders nothing at all.',
+                    },
                   ],
                 }))
               .stdCollapsiblePanel('Behaviour', (fb) => fb
@@ -89,11 +146,11 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                 }))
               .stdCollapsiblePanel('Data', (fb) => fb
                 .addSettingsInput({ inputType: 'propertyAutocomplete', propertyName: 'ownerName', label: 'Owner', autoFillProps: false })
-                .addSettingsInput({ inputType: 'entityTypeAutocomplete', propertyName: 'ownerType', label: 'Owner Type', jsSetting: true })
+                .addSettingsInput({ inputType: 'entityTypeAutocomplete', propertyName: 'ownerType', label: 'Parent Entity Type', jsSetting: true })
                 .addSettingsInputRow({
                   inputs: [
-                    { type: 'textField', propertyName: 'ownerId', label: 'Owner ID', jsSetting: true },
-                    { type: 'textField', propertyName: 'filesCategory', label: 'Files Category', jsSetting: true },
+                    { type: 'textField', propertyName: 'ownerId', label: 'Parent Record ID', jsSetting: true },
+                    { type: 'textField', propertyName: 'filesCategory', label: 'File Group', jsSetting: true },
                   ],
                 })
                 .addSettingsInput({
@@ -133,17 +190,18 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
           {
             key: 'events', title: 'Events', id: eventsTabId,
             components: fbf(eventsTabId)
-              /* See FILE_EVENTS: the standard input set minus onDoubleClick and the keyboard events.
-                 The pointer and focus events are bound to the wrapper the component renders into, so
-                 they fire for the list as a whole rather than for an individual file. */
-              .stdEventHandlers([...FILE_EVENTS], DataTypes.array, undefined, 'File List ')
-              .addSettingsInput({
-                inputType: 'codeEditor', propertyName: 'onDownload', label: 'On Download', labelAlign: 'right',
-                tooltip: 'Callback that is triggered when a file is downloaded.',
-                wrapInTemplate: true,
-                templateSettings: { functionName: 'onDownload', useAsyncDeclaration: true },
-                availableConstantsExpression: 'return metadataBuilder.object("constants").addAllStandard().addString("value", "Component current value").addObject("event", "Event callback when user input", undefined).build();',
-              })
+              /* The four actions first: they are what the component is for, and what a reader looks
+                 for. The generic pointer and focus events follow. */
+              .addSettingsInput(fileActionHandler('onUpload', 'On Upload', 'a file is uploaded'))
+              .addSettingsInput(fileActionHandler('onDownload', 'On Download', 'a file is downloaded, including as part of a zip'))
+              .addSettingsInput(fileActionHandler('onReplace', 'On Replace', 'a file is replaced with a new version'))
+              .addSettingsInput(fileActionHandler('onDelete', 'On Delete', 'a file is deleted'))
+              /* FILE_EVENTS_WITHOUT_CHANGE, matching what the runtime binds: the standard input set
+                 minus onDoubleClick and the keyboard events, and minus onChange, which the four
+                 handlers above replace. They are bound to the wrapper the component renders into, so
+                 they fire for the list as a whole rather than for an individual file — which is what
+                 the tooltips say, so the labels carry no prefix of their own. */
+              .stdEventHandlers([...FILE_EVENTS_WITHOUT_CHANGE], DataTypes.array)
               .toJson(),
           },
           {
@@ -171,7 +229,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                     )
                     .stdAppearancePanels(['font', 'dimensions', 'border', 'background', 'shadow', 'marginPadding', 'customStyle'], removeStyleRouter)
                     .stdCollapsiblePanel('Thumbnail Style', (f) => f
-                      .stdDimensionsPanel('thumbnailStyle.dimensions')
+                      .stdContainer((fb) => fb.stdDimensionsPanel('thumbnailStyle.dimensions'), isCustomThumbnailJs)
                       .stdBorderPanel(removeStyleRouter !== true, 'thumbnailStyle.border')
                       .stdBackgroundPanel(removeStyleRouter !== true, 'thumbnailStyle.background')
                       .stdShadowPanel('thumbnailStyle.shadow')

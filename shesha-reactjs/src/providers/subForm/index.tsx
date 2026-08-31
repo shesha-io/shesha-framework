@@ -21,7 +21,7 @@ import { ISubFormProviderProps } from './interfaces';
 import { StandardEntityActions } from '@/interfaces/metadata';
 import { ISubFormActionsContext, ISubFormStateContext, SUB_FORM_CONTEXT_INITIAL_STATE, SubFormActionsContext, SubFormContext } from './contexts';
 import { subFormReducer } from './reducer';
-import { ConditionalMetadataProvider, IConfigurableFormComponent, isConfigurableFormComponent, useHttpClient } from '@/providers';
+import { ConditionalMetadataProvider, IConfigurableFormComponent, isConfigurableFormComponent, useHttpClient, useMetadataOrUndefined } from '@/providers';
 import { useConfigurableAction } from '@/providers/configurableActionsDispatcher';
 import { useConfigurationItemsLoader } from '@/providers/configurationItemsLoader';
 import { useDebouncedCallback } from 'use-debounce';
@@ -133,6 +133,161 @@ type OnUpdated = (
   message: MessageInstance,
 ) => void;
 
+interface ISubForWithMetadataProviderProps extends ISubFormProviderProps {
+  state: ISubFormStateContext<object>;
+  parentFormApi: IFormApi;
+  formLoadingState: IFormLoadingState;
+  fetchData: (forceFetchData: boolean) => void;
+  postData: () => void;
+  putData: () => void;
+}
+
+const SubFormWithMetadataProvider: FC<PropsWithChildren<ISubForWithMetadataProviderProps>> = (props) => {
+  const {
+    state,
+    parentFormApi,
+    onChange,
+    children,
+    value,
+    formId,
+    componentName,
+    propertyName,
+    labelCol,
+    wrapperCol,
+    defaultValue,
+    formLoadingState,
+    context,
+    postData,
+    putData,
+    fetchData,
+  } = props;
+
+  const metadata = useMetadataOrUndefined();
+
+  const ctxManager = useDataContextManagerActionsOrUndefined();
+  const contextId = !isNullOrWhiteSpace(context) ? (ctxManager?.getDataContext(context)?.uid ?? context) : undefined;
+
+  const getChildComponents = (componentId: string): IConfigurableFormComponent[] => {
+    const childIds = state.componentRelations[componentId];
+
+    if (!childIds) return [];
+    const components: IConfigurableFormComponent[] = [];
+    childIds.forEach((childId) => {
+      if (isConfigurableFormComponent(state.allComponents[childId]))
+        components.push(state.allComponents[childId]);
+    });
+    return components;
+  };
+
+
+  const getColSpan = (span: number | ColProps | undefined): ColProps | undefined => {
+    if (!isDefined(span)) return undefined;
+    return typeof span === 'number' ? { span } : span;
+  };
+
+  const getSubFormData = (): object => {
+    const data = parentFormApi.getFormData?.();
+    return !isNullOrWhiteSpace(props.propertyName) && isDefined(data)
+      ? (data as Record<string, unknown>)[props.propertyName] as object
+      : data ?? {};
+  };
+
+  const subFormApi: IFormApi = {
+    addDelayedUpdateData: (data: object) => {
+      return parentFormApi.addDelayedUpdateData(data);
+    },
+    setFieldValue: (name, value) => {
+      onChange?.(deepMergeValues(getSubFormData(), setValueByPropertyName({}, name, value)));
+    },
+    setFieldsValue: (values) => {
+      onChange?.(deepMergeValues(getSubFormData(), values));
+    },
+    clearFieldsValue: () => {
+      onChange?.({});
+    },
+    submit: function (): void {
+      parentFormApi.submit();
+    },
+    setFormData: function (payload: ISetFormDataPayload): void {
+      if (payload.mergeValues) {
+        onChange?.(deepMergeValues(value ?? {}, payload.values));
+      } else {
+        onChange?.(payload.values);
+      }
+    },
+    getFormData: function (): object {
+      return getSubFormData();
+    },
+    setValidationErrors: function (payload: string | IErrorInfo | IAjaxResponseBase | AxiosResponse<IAjaxResponseBase> | Error): void {
+      parentFormApi.setValidationErrors(payload);
+    },
+    formSettings: state.formSettings,
+    modelType: state.formSettings?.modelType,
+    shaForm: parentFormApi.shaForm,
+    formInstance: parentFormApi.formInstance,
+    formMode: parentFormApi.mode,
+    data: isDefined(parentFormApi.data) && !isNullOrWhiteSpace(props.propertyName)
+      ? (parentFormApi.data as Record<string, unknown>)[props.propertyName] as object
+      : {},
+    defaultApiEndpoints: parentFormApi.defaultApiEndpoints,
+    context: {},
+    components: {},
+    clear: function (): void {
+      onChange?.({}); // ToDo: AS - need to review
+    },
+    settings: state.formSettings,
+    mode: parentFormApi.mode,
+    state: {},
+  };
+
+  return (
+    <SubFormContext.Provider
+      value={{
+        ...state,
+        initialValues: value,
+        errors: {
+          ...state.errors,
+          getForm: formLoadingState.error,
+        },
+        loading: {
+          ...state.loading,
+          getForm: formLoadingState.isLoading,
+        },
+        components: state.components,
+        formSettings: {
+          ...(state.formSettings ?? DEFAULT_FORM_SETTINGS),
+          labelCol: getColSpan(labelCol) ?? getColSpan(state.formSettings?.labelCol) ?? DEFAULT_FORM_SETTINGS.labelCol,
+          wrapperCol: getColSpan(wrapperCol) ?? getColSpan(state.formSettings?.wrapperCol) ?? DEFAULT_FORM_SETTINGS.wrapperCol, // Override with the incoming one
+        },
+        propertyName,
+        value: value || defaultValue,
+        context: contextId,
+        modelMetadata: metadata?.metadata ?? undefined,
+      }}
+    >
+      <SubFormActionsContext.Provider
+        value={{
+          getData: () => fetchData(false),
+          postData,
+          putData,
+          getChildComponents,
+        }}
+      >
+        <ParentProvider
+          model={props}
+          context={contextId}
+          isScope
+          name={`SubForm ${componentName || (formId ? configurableItemIdentifierToString(formId) : "")}`}
+          formApi={subFormApi}
+          formFlatMarkup={{ allComponents: state.allComponents, componentRelations: state.componentRelations, parents: state.parents }}
+        >
+          {children}
+        </ParentProvider>
+      </SubFormActionsContext.Provider>
+    </SubFormContext.Provider>
+  );
+};
+
 const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) => {
   const {
     formSelectionMode,
@@ -147,22 +302,14 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     dataSource,
     markup,
     properties,
-    propertyName,
-    labelCol,
-    wrapperCol,
     queryParams,
     onChange,
-    defaultValue,
     entityType,
-    context,
   } = props;
 
   const componentApi = useComponentApiProvider();
   const parent = useParentOrUndefined();
   const httpClient = useHttpClient();
-
-  const ctxManager = useDataContextManagerActionsOrUndefined();
-  const contextId = context ? (ctxManager?.getDataContext(context)?.uid ?? context) : undefined;
 
   const [state, dispatch] = useReducer(subFormReducer, SUB_FORM_CONTEXT_INITIAL_STATE);
   const { message, notification } = App.useApp();
@@ -185,12 +332,12 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
   var parentFormApi = parent?.formApi ?? form.shaForm.getPublicFormApi();
 
-  const onChangeInternal = (newValue: object): void => {
+  const onChangeInternal = <TValue extends object = object>(newValue: TValue | null): void => {
     if (onChange)
       onChange(newValue);
     else
       // onChange is empty only if propertyName is not set and need to set value directly to the form data
-      parentFormApi.setFieldsValue(newValue);
+      parentFormApi.setFieldsValue(newValue ?? {});
   };
 
   const onClearInternal = (): void => {
@@ -610,18 +757,6 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   }, [formConfig.formId, markup, resolutionToken]);
   //#endregion
 
-  const getChildComponents = (componentId: string): IConfigurableFormComponent[] => {
-    const childIds = state.componentRelations[componentId];
-
-    if (!childIds) return [];
-    const components: IConfigurableFormComponent[] = [];
-    childIds.forEach((childId) => {
-      if (isConfigurableFormComponent(state.allComponents[childId]))
-        components.push(state.allComponents[childId]);
-    });
-    return components;
-  };
-
   const actionDependencies = [id];
   const actionsOwnerName = componentName ?? `subForm-${id}`;
   useConfigurableAction(
@@ -681,104 +816,21 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
   //#endregion
 
-  const getColSpan = (span: number | ColProps | undefined): ColProps | undefined => {
-    if (!isDefined(span)) return undefined;
-
-    return typeof span === 'number' ? { span } : span;
-  };
-
-  const getSubFormData = (): object => {
-    const data = parentFormApi.getFormData?.();
-    return !isNullOrWhiteSpace(props.propertyName) && isDefined(data)
-      ? (data as Record<string, unknown>)[props.propertyName] as object
-      : data ?? {};
-  };
-
-  const subFormApi: IFormApi = {
-    addDelayedUpdateData: (data: object) => {
-      return parentFormApi.addDelayedUpdateData(data);
-    },
-    setFieldValue: (name, value) => {
-      onChangeInternal(deepMergeValues(getSubFormData(), setValueByPropertyName({}, name, value)));
-    },
-    setFieldsValue: (values) => {
-      onChangeInternal(deepMergeValues(getSubFormData(), values));
-    },
-    clearFieldsValue: () => {
-      onChangeInternal({});
-    },
-    submit: function (): void {
-      parentFormApi.submit();
-    },
-    setFormData: function (payload: ISetFormDataPayload): void {
-      if (payload.mergeValues) {
-        onChangeInternal(deepMergeValues(value ?? {}, payload.values));
-      } else {
-        onChangeInternal(payload.values);
-      }
-    },
-    getFormData: function (): object {
-      return getSubFormData();
-    },
-    setValidationErrors: function (payload: string | IErrorInfo | IAjaxResponseBase | AxiosResponse<IAjaxResponseBase> | Error): void {
-      parentFormApi.setValidationErrors(payload);
-    },
-    formSettings: parentFormApi.formSettings,
-    formMode: parentFormApi.formMode,
-    data: isDefined(parentFormApi.data) && !isNullOrWhiteSpace(props.propertyName)
-      ? (parentFormApi.data as Record<string, unknown>)[props.propertyName] as object
-      : {},
-    defaultApiEndpoints: parentFormApi.defaultApiEndpoints,
-    context: {},
-    components: {},
-  };
-
   return (
-    <SubFormContext.Provider
-      value={{
-        ...state,
-        initialValues: value,
-        errors: {
-          ...state.errors,
-          getForm: formLoadingState.error,
-        },
-        loading: {
-          ...state.loading,
-          getForm: formLoadingState.isLoading,
-        },
-        components: state.components,
-        formSettings: {
-          ...(state.formSettings ?? DEFAULT_FORM_SETTINGS),
-          labelCol: getColSpan(labelCol) ?? getColSpan(state.formSettings?.labelCol) ?? DEFAULT_FORM_SETTINGS.labelCol,
-          wrapperCol: getColSpan(wrapperCol) ?? getColSpan(state.formSettings?.wrapperCol) ?? DEFAULT_FORM_SETTINGS.wrapperCol, // Override with the incoming one
-        },
-        propertyName,
-        value: value || defaultValue,
-        context: contextId,
-      }}
-    >
-      <SubFormActionsContext.Provider
-        value={{
-          getData: () => debouncedFetchData(false),
-          postData,
-          putData,
-          getChildComponents,
-        }}
+    <ConditionalMetadataProvider modelType={state.formSettings?.modelType}>
+      <SubFormWithMetadataProvider
+        {...props}
+        onChange={onChangeInternal}
+        state={state}
+        parentFormApi={parentFormApi}
+        fetchData={debouncedFetchData}
+        postData={postData}
+        putData={putData}
+        formLoadingState={formLoadingState}
       >
-        <ConditionalMetadataProvider modelType={state.formSettings?.modelType}>
-          <ParentProvider
-            model={props}
-            context={contextId}
-            isScope
-            name={`SubForm ${componentName || (formId ? configurableItemIdentifierToString(formId) : "")}`}
-            formApi={subFormApi}
-            formFlatMarkup={{ allComponents: state.allComponents, componentRelations: state.componentRelations, parents: state.parents }}
-          >
-            {children}
-          </ParentProvider>
-        </ConditionalMetadataProvider>
-      </SubFormActionsContext.Provider>
-    </SubFormContext.Provider>
+        {children}
+      </SubFormWithMetadataProvider>
+    </ConditionalMetadataProvider>
   );
 };
 

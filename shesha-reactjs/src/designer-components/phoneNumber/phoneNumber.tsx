@@ -3,10 +3,13 @@ import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import PhoneInput, { PhoneNumber as IAntdPhoneNumber } from 'antd-phone-input';
 import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItemContext } from '@/components/formDesigner/components/model';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { executeScriptSync } from '@/providers/form/utils/scripts';
+import { DataTypes } from '@/interfaces/dataTypes';
+import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '@/designer-components/_common/events';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly, migrateHiddenToVisible } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
@@ -20,10 +23,15 @@ import { defaultStyles, getPhoneValidationError, normalizeCountryCode, parseCoun
 
 type PhoneNumberValue = string | IPhoneNumberValue | null | undefined;
 
-const PhoneNumberControl: FC<IPhoneNumberComponentProps & { value?: PhoneNumberValue; onChange?: (value: PhoneNumberValue) => void }> = (props) => {
+const PhoneNumberControl: FC<IPhoneNumberComponentProps & {
+  value?: PhoneNumberValue;
+  onChange?: (value: PhoneNumberValue) => void;
+  ctx?: ConfigurableFormItemContext<PhoneNumberValue> | undefined;
+}> = (props) => {
   const {
     value,
     onChange,
+    ctx,
     readOnly,
     country,
     defaultCountry,
@@ -65,6 +73,52 @@ const PhoneNumberControl: FC<IPhoneNumberComponentProps & { value?: PhoneNumberV
     () => (normalizeCountryCode(country) || normalizeCountryCode(defaultCountry) || 'ZA').toLowerCase(),
     [country, defaultCountry],
   );
+
+  const phoneInputValue = useMemo<IAntdPhoneNumber | string | undefined>(() => {
+    if (value === null || value === undefined || value === '') return undefined;
+
+    let phoneNumberString: string | undefined;
+    if (typeof value === 'string') {
+      phoneNumberString = value;
+    } else if (typeof value === 'object' && 'number' in value) {
+      phoneNumberString = value.number;
+    }
+
+    if (!phoneNumberString || !phoneNumberString.trim()) return undefined;
+
+    let parsed = parsePhoneNumberFromString(phoneNumberString);
+    if (!parsed && defaultCountry) {
+      parsed = parsePhoneNumberFromString(phoneNumberString, normalizeCountryCode(defaultCountry));
+    }
+
+    if (!parsed) return phoneNumberString;
+
+    const nationalNumber = parsed.nationalNumber.toString() || '';
+    const isoCode = parsed.country?.toLowerCase() || defaultCountry?.toLowerCase();
+    const { areaCode, phoneNumber: phoneNum } = splitPhoneNumber(nationalNumber, parsed.country);
+
+    const result: IAntdPhoneNumber = { areaCode, phoneNumber: phoneNum };
+    if (parsed.countryCallingCode) result.countryCode = Number(parsed.countryCallingCode);
+    if (isoCode) result.isoCode = isoCode;
+    return result;
+  }, [value, defaultCountry]);
+
+  // antd-phone-input only reads its `country` prop once, to seed internal state on mount - it never
+  // re-applies it afterward (the effect that does so is guarded by an "already initiated" ref). So
+  // changing "Default Country" (or a JS-bound `country`) here has no visible effect until the
+  // component actually remounts, e.g. a save + refresh. Force that remount ourselves via `clearKey`
+  // whenever the active country changes, but only while the field is empty (no meaningfully parsed
+  // value - `phoneInputValue` already normalizes a whitespace-only string or an empty-`number`
+  // object to `undefined`) - a populated field's displayed flag is driven by the parsed value
+  // instead, and remounting mid-edit would interrupt whoever is actively typing a number.
+  const prevActiveCountryRef = useRef(activeCountry);
+  useEffect(() => {
+    const hasValue = phoneInputValue !== undefined;
+    if (!hasValue && prevActiveCountryRef.current !== activeCountry) {
+      setClearKey((prev) => prev + 1);
+    }
+    prevActiveCountryRef.current = activeCountry;
+  }, [activeCountry, phoneInputValue]);
 
   const parsedOnlyCountries = useMemo(() => parseCountryCodes(onlyCountries), [onlyCountries]);
   const parsedExcludeCountries = useMemo(() => parseCountryCodes(excludeCountries), [excludeCountries]);
@@ -155,35 +209,6 @@ const PhoneNumberControl: FC<IPhoneNumberComponentProps & { value?: PhoneNumberV
     }
   };
 
-  const phoneInputValue = useMemo<IAntdPhoneNumber | string | undefined>(() => {
-    if (value === null || value === undefined || value === '') return undefined;
-
-    let phoneNumberString: string | undefined;
-    if (typeof value === 'string') {
-      phoneNumberString = value;
-    } else if (typeof value === 'object' && 'number' in value) {
-      phoneNumberString = value.number;
-    }
-
-    if (!phoneNumberString || !phoneNumberString.trim()) return undefined;
-
-    let parsed = parsePhoneNumberFromString(phoneNumberString);
-    if (!parsed && defaultCountry) {
-      parsed = parsePhoneNumberFromString(phoneNumberString, normalizeCountryCode(defaultCountry));
-    }
-
-    if (!parsed) return phoneNumberString;
-
-    const nationalNumber = parsed.nationalNumber.toString() || '';
-    const isoCode = parsed.country?.toLowerCase() || defaultCountry?.toLowerCase();
-    const { areaCode, phoneNumber: phoneNum } = splitPhoneNumber(nationalNumber, parsed.country);
-
-    const result: IAntdPhoneNumber = { areaCode, phoneNumber: phoneNum };
-    if (parsed.countryCallingCode) result.countryCode = Number(parsed.countryCallingCode);
-    if (isoCode) result.isoCode = isoCode;
-    return result;
-  }, [value, defaultCountry]);
-
   const displayValue = typeof value === 'string' ? value : value?.number;
 
   if (readOnly) {
@@ -204,6 +229,7 @@ const PhoneNumberControl: FC<IPhoneNumberComponentProps & { value?: PhoneNumberV
         placeholder={placeholder}
         size={size}
         allowClear={allowClear}
+        {...getComponentEvents<PhoneNumberValue>(model, ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, ctx, value, DataTypes.any)}
         onChange={onChangeInternal}
         onBlur={onBlurInternal}
         onFocus={onFocusInternal}
@@ -236,7 +262,7 @@ const PhoneNumberComponent: PhoneNumberComponentDefinition = {
 
     return (
       <ConfigurableFormItem<PhoneNumberValue> model={model} initialValue={model.initialValue}>
-        {(value, onChange) => <PhoneNumberControl {...model} value={value} onChange={onChange} />}
+        {(value, onChange, _, ctx) => <PhoneNumberControl {...model} value={value} onChange={onChange} ctx={ctx} />}
       </ConfigurableFormItem>
     );
   },

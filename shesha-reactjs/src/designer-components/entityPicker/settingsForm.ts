@@ -95,6 +95,13 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   modelType: modelTypeFromEntityType,
                   parentComponentType: 'entityPicker',
                 })
+                .addSettingsInput({
+                  inputType: 'customDropdown', propertyName: 'modalWidth', label: 'Dialog Width', allowClear: true, jsSetting: true,
+                  tooltip: 'Width of the dialog used to select an entity.',
+                  customTooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
+                  customDropdownMode: 'single',
+                  dropdownOptions: modalWidthOptions,
+                })
                 .addSettingsInput({ inputType: 'switch', propertyName: 'allowNewRecord', label: 'Allow New Record', size: 'small', layout: 'horizontal', jsSetting: true })
                 .stdCollapsiblePanel('Dialog Settings', (fb) => fb
                   .addSettingsInputRow({
@@ -113,7 +120,8 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                     ],
                   })
                   .addSettingsInput({
-                    inputType: 'customDropdown', propertyName: 'modalWidth', label: 'Dialog Width', allowClear: true, jsSetting: true,
+                    inputType: 'customDropdown', propertyName: 'addNewModalWidth', label: 'New Record Dialog Width', allowClear: true, jsSetting: true,
+                    tooltip: 'Width of the dialog used to create a new record. Independent of the picker `Dialog Width`.',
                     customTooltip: 'You can use any unit (%, px, em, etc). px by default if without unit',
                     customDropdownMode: 'single',
                     dropdownOptions: modalWidthOptions,

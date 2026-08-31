@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import { Button, Space, Typography } from 'antd';
+import { Button, Divider, Space, Typography } from 'antd';
 import {
   PushpinOutlined,
   PushpinFilled,
@@ -8,6 +8,7 @@ import {
 } from '@ant-design/icons';
 import { cx } from 'antd-style';
 import { usePinnablePanelStyles } from './pinnable-panel-styles';
+import { isDefined } from '@/utils';
 
 const { Text } = Typography;
 
@@ -15,12 +16,14 @@ export interface PinnablePanelProps {
   title: string;
   children: React.ReactNode;
   expanded: boolean;
-  onToggle: () => void;
+  onExpandedToggle: () => void;
   pinned: boolean;
-  onPinToggle: () => void;
+  onPinnedToggle: () => void;
   direction?: 'horizontal' | 'vertical';
   className?: string;
   style?: React.CSSProperties;
+  extra?: React.ReactNode;
+  position?: 'start' | 'end';
 }
 
 export const PinnablePanel = forwardRef<HTMLDivElement, PinnablePanelProps>(
@@ -29,12 +32,14 @@ export const PinnablePanel = forwardRef<HTMLDivElement, PinnablePanelProps>(
       title,
       children,
       expanded,
-      onToggle,
+      onExpandedToggle,
       pinned,
-      onPinToggle,
+      onPinnedToggle,
       direction = 'horizontal',
       className,
       style,
+      extra,
+      position = 'start',
     },
     ref,
   ) => {
@@ -47,9 +52,9 @@ export const PinnablePanel = forwardRef<HTMLDivElement, PinnablePanelProps>(
         {/* Collapsed bar – visible when collapsed */}
         <div
           className={cx(styles.collapsedBar, barTextClass, "collapsed-bar")}
-          onClick={onToggle}
+          onClick={onExpandedToggle}
         >
-          <MenuUnfoldOutlined />
+          {position === 'start' ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
           <span>{title}</span>
         </div>
 
@@ -59,18 +64,22 @@ export const PinnablePanel = forwardRef<HTMLDivElement, PinnablePanelProps>(
             <Space>
               <Button
                 type="text"
-                icon={expanded ? <MenuFoldOutlined /> : <MenuUnfoldOutlined />}
-                onClick={onToggle}
+                icon={(expanded && position === 'start') || (!expanded && position === 'end') ? <MenuFoldOutlined /> : <MenuUnfoldOutlined />}
+                onClick={onExpandedToggle}
                 title={expanded ? 'Collapse' : 'Expand'}
               />
               <Text strong>{title}</Text>
             </Space>
-            <Button
-              type="text"
-              icon={pinned ? <PushpinFilled /> : <PushpinOutlined />}
-              onClick={onPinToggle}
-              title={pinned ? 'Unpin (auto-collapse)' : 'Pin (keep open)'}
-            />
+            <div>
+              {isDefined(extra) && <>{extra}<Divider orientation="vertical" /></>}
+              <Button
+                type="text"
+                icon={pinned ? <PushpinFilled /> : <PushpinOutlined />}
+                onClick={onPinnedToggle}
+                title={pinned ? 'Unpin (auto-collapse)' : 'Pin (keep open)'}
+                size="small"
+              />
+            </div>
           </div>
           <div className={styles.content}>{children}</div>
         </div>

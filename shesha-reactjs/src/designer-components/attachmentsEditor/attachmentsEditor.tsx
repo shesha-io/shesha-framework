@@ -5,7 +5,6 @@ import { DataTypes } from '@/interfaces';
 import { IInputStyles, IStyleValue, useForm, useFormData } from '@/providers';
 import {
   evaluateString,
-  executeScriptSync,
   useAvailableConstantsData,
 } from '@/providers/form/utils';
 import { AttachmentsEditorProvider } from '@/providers/storedFiles';
@@ -28,10 +27,11 @@ import { AdvancedFormats } from '@/interfaces/dataTypes';
 import { FILE_EVENTS_WITHOUT_CHANGE, getComponentEvents } from '../_common/events';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getIdOrUndefined } from '@/utils/entity';
+import { addPx } from '@/utils/style';
 import CustomFile from '@/components/customFile';
-import { OnFileDownloaded, OnFileListChanged } from '@/providers/storedFiles/models';
+import { FileAction, OnFileAction, OnFileDownloaded, OnFileListChanged } from '@/providers/storedFiles/models';
 import { StoredFileModel } from '@/utils/storedFile/models';
-import { AttachmentsEditorComponentDefinition, IAttachmentsEditorDeviceStyles, IAttachmentsEditorProps } from './interfaces';
+import { AttachmentsEditorComponentDefinition, IAttachmentsEditorDeviceStyles, IAttachmentsEditorProps, ThumbnailSize, displayStyleFromListType, displayStyleToListType, presetThumbnailSize } from './interfaces';
 import { swapContainerAndThumbnailStyles } from './migrations/migrate-style-sets';
 import { useStyles } from './styles';
 import { useActualContextExecution } from '@/hooks';
@@ -210,7 +210,23 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
     const thumbnailStyleCss = useActualContextExecution<CSSProperties>(model.thumbnailStyle?.style, undefined, {});
     const downloadedFileStyleCss = useActualContextExecution<CSSProperties>(model.downloadedFileStyles?.style, undefined, {});
 
-    const { styles } = useStyles({ ...model, thumbnailStyleCss, downloadedFileStyleCss });
+    /* Display Style is the single control: it says whether a file reads as a name or a tile, and how
+       big that tile is. A preset overrides the Thumbnail dimensions, which the settings form hides
+       unless Custom is chosen, so the two can never disagree on screen. */
+    // One size: `model` is already merged down to the active device.
+    const displayStyle = model.displayStyle ?? displayStyleFromListType(
+      model.listType, [model.thumbnailStyle?.dimensions],
+    );
+    const listType = displayStyleToListType(displayStyle);
+    const presetSize = presetThumbnailSize(displayStyle);
+    const thumbnailStyle = useMemo<IStyleValue | undefined>(
+      () => isDefined(presetSize)
+        ? { ...model.thumbnailStyle, dimensions: { ...model.thumbnailStyle?.dimensions, width: `${presetSize}px`, height: `${presetSize}px` } }
+        : model.thumbnailStyle,
+      [model.thumbnailStyle, presetSize],
+    );
+
+    const { styles } = useStyles({ ...model, listType, thumbnailStyle, thumbnailStyleCss, downloadedFileStyleCss });
 
     /* Both are device-scoped (see IAttachmentsEditorDeviceStyles). The framework merges the active
        device's style set onto the root before the Factory runs, so the value on `model` is already
@@ -220,19 +236,24 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
     const { styleDownloadedFiles = false, downloadedIcon } = model as IAttachmentsEditorDeviceStyles;
 
 
-    /* The renderer marks a downloaded file by colour, and reads that colour off a plain
-       CSSProperties object. Compose it from the Font panel with the evaluated Custom style last, so
-       Custom wins — the same precedence the other style sets use. Only emitted when the feature is
-       on; otherwise the renderer falls back to its own default. */
+    /* The whole Font panel, not just its colour: this object is all the renderer gets, so anything
+       dropped here can never reach the file. Custom style last, so it wins — the same precedence the
+       other style sets use. Only emitted when the feature is on; otherwise the renderer falls back
+       to its own default. */
     const downloadedFileCss = useMemo<CSSProperties | undefined>(
-      () => styleDownloadedFiles
-        ? {
-          ...(isNotNullOrWhiteSpace(model.downloadedFileStyles?.font?.color)
-            ? { color: model.downloadedFileStyles.font.color }
-            : {}),
+      () => {
+        if (!styleDownloadedFiles) return undefined;
+
+        const font = model.downloadedFileStyles?.font;
+        return {
+          ...(isNotNullOrWhiteSpace(font?.color) ? { color: font.color } : {}),
+          ...(isDefined(font?.size) ? { fontSize: addPx(font.size) } : {}),
+          ...(isNotNullOrWhiteSpace(font?.weight) ? { fontWeight: font.weight as CSSProperties['fontWeight'] } : {}),
+          ...(isNotNullOrWhiteSpace(font?.type) ? { fontFamily: font.type } : {}),
+          ...(isDefined(font?.align) ? { textAlign: font.align } : {}),
           ...downloadedFileStyleCss,
-        }
-        : undefined,
+        };
+      },
       [styleDownloadedFiles, model.downloadedFileStyles?.font, downloadedFileStyleCss],
     );
 
@@ -292,13 +313,6 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
     ]);
     useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
-    const executeScript = (script: string, value: unknown): void => {
-      executeScriptSync(script, {
-        value,
-        ...executionContext,
-      });
-    };
-
     const hasExtraContent = Boolean(model.customContent);
 
     return (
@@ -309,18 +323,38 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
         autoAlignLabel={false}
       >
         {(value, onChange, _, ctx) => {
-          const onFileListChanged: OnFileListChanged = (fileList, isUserAction = false): void => {
-            onChange(fileList);
-            // Only execute custom script if this is a user action (upload/delete)
-            if (isUserAction && isNotNullOrWhiteSpace(model.onChangeCustom)) {
-              ctx?.handleEvent(undefined, { value: fileList }, model.onChangeCustom);
-            }
+          /* Value sync only. What used to be File List On Change is now the three handlers below,
+             which fire for exactly the actions it fired for and can say which file it was. This
+             still has to run: it is what lets a stored file satisfy the Required rule. */
+          const onFileListChanged: OnFileListChanged = (fileList): void => {
+            /* Empty reaches the field as undefined: the Required rule carries no `type`, so an
+               empty array counts as present and Required would pass with no files at all. */
+            onChange(fileList.length > 0 ? fileList : undefined);
           };
 
-          const onDownload: OnFileDownloaded = (fileList, isUserAction = false): void => {
+          /* Value sync only. The On Download script moved to the action handler below, which fires
+             in exactly the same two cases — a single download and a zip — and can also say which
+             file it was. */
+          const onDownload: OnFileDownloaded = (fileList): void => {
             onChange(fileList);
-            // Only execute custom script if this is a user action (download)
-            if (isUserAction && isNotNullOrWhiteSpace(model.onDownload)) executeScript(model.onDownload, fileList);
+          };
+
+          /* One handler per user action. `value` stays the whole list, as On Download has always
+             passed, and `file` is the one the action happened to — the point of these over On
+             Change, which cannot say what happened or to what. */
+          const actionScripts: Record<FileAction, string | undefined> = {
+            upload: model.onUpload,
+            download: model.onDownload,
+            replace: model.onReplace,
+            delete: model.onDelete,
+          };
+
+          /* No event to pass: these fire once the API call has resolved, so there is no source
+             event to carry — which is why the handlers do not advertise one. */
+          const onFileAction: OnFileAction = (action, fileList, file): void => {
+            const script = actionScripts[action];
+            if (isNotNullOrWhiteSpace(script))
+              ctx?.handleEvent(undefined, { value: fileList, file }, script, action);
           };
 
           /* onChange is bound above instead: it also has to update the component's value, which
@@ -342,6 +376,7 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
               // used for requered field validation
               onChange={onFileListChanged}
               onDownload={onDownload}
+              onFileAction={onFileAction}
               value={value ?? undefined}
             >
               <div style={DISPLAY_CONTENTS} {...listEvents}>
@@ -357,13 +392,14 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
                   isDynamic={model.isDynamic}
                   extraFormId={model.extraFormId}
                   {...model}
+                  listType={listType}
                   disabled={isDisabled}
                   allowAdd={enabled && model.allowAdd}
                   allowDelete={enabled && model.allowDelete}
                   allowReplace={enabled && model.allowReplace}
                   allowRename={enabled && model.allowRename}
                   allowViewHistory={model.allowViewHistory}
-                  thumbnailStyle={model.thumbnailStyle}
+                  thumbnailStyle={thumbnailStyle}
                   thumbnailStyleCss={thumbnailStyleCss}
                   /* The four popups are portalled to the body, so no descendant selector from the
                      field can reach them — each needs its class handed over explicitly. */
@@ -402,6 +438,7 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
     label: 'File List Label',
     version: 'latest',
     listType: 'thumbnail',
+    displayStyle: 'thumbnailMedium',
     allowAdd: true,
     allowDelete: true,
     allowReplace: true,
@@ -425,6 +462,7 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
         ownerType: '',
         ownerName: '',
         listType: 'text',
+        displayStyle: 'text',
         filesLayout: 'horizontal',
         hideFileName: true,
         editMode: 'inherited',
@@ -575,6 +613,48 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
         tablet: withDownloadedFlags(prev.tablet),
         mobile: withDownloadedFlags(prev.mobile),
       };
+    })
+    /* Display Style replaces List Type. A thumbnail keeps the size it already stores — Medium where
+       that is the 54px default, Custom otherwise — so nothing on a saved form changes size. A new
+       component has nothing to read and takes its default from step 0 instead. */
+    .add<IAttachmentsEditorProps>(21, (prev, context) => {
+      if (context.isNew === true) return prev;
+
+      /* Per property and per device, mirroring how the device styles merge at render: a device
+         inherits each dimension from desktop, and desktop from the root. Tablet or mobile sized
+         differently has to mean Custom — a preset applies to every device at once, so calling this
+         Medium would flatten the others to 54px. */
+      const dimensionsFor = (device: IAttachmentsEditorDeviceStyles | undefined): ThumbnailSize => ({
+        width: device?.thumbnailStyle?.dimensions?.width ??
+          prev.desktop?.thumbnailStyle?.dimensions?.width ?? prev.thumbnailStyle?.dimensions?.width,
+        height: device?.thumbnailStyle?.dimensions?.height ??
+          prev.desktop?.thumbnailStyle?.dimensions?.height ?? prev.thumbnailStyle?.dimensions?.height,
+      });
+
+      return {
+        ...prev,
+        displayStyle: prev.displayStyle ?? displayStyleFromListType(prev.listType, [
+          dimensionsFor(prev.desktop),
+          dimensionsFor(prev.tablet),
+          dimensionsFor(prev.mobile),
+        ]),
+      };
+    })
+    /* File List On Change is gone, replaced by a handler per action. It fired for upload, replace
+       and delete — never for a download, which went through its own callback — so the script is
+       carried onto exactly those three.*/
+    .add<IAttachmentsEditorProps>(22, (prev, context) => {
+      if (context.isNew === true) return prev;
+
+      const onChangeCustom = prev.onChangeCustom;
+      return isNullOrWhiteSpace(onChangeCustom)
+        ? prev
+        : {
+          ...prev,
+          onUpload: isNullOrWhiteSpace(prev.onUpload) ? onChangeCustom : prev.onUpload,
+          onReplace: isNullOrWhiteSpace(prev.onReplace) ? onChangeCustom : prev.onReplace,
+          onDelete: isNullOrWhiteSpace(prev.onDelete) ? onChangeCustom : prev.onDelete,
+        };
     }),
 };
 

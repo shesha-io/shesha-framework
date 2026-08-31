@@ -52,6 +52,7 @@ export const fontTypes = [
   { value: 'Trebuchet MS', label: 'Trebuchet MS' },
   { value: 'Arial Black', label: 'Arial black' },
   { value: 'Impact', label: 'Impact' },
+  { value: 'Inter Variable', label: 'Inter' },
   { value: '-apple-system', label: 'San francisco' },
   { value: 'BlinkMacSystemFont', label: 'Blinkmac system font' },
   { value: 'SF Mono', label: 'San francisco mono' },

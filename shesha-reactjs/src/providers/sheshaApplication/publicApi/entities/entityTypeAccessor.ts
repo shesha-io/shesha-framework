@@ -1,6 +1,7 @@
 import { IApiEndpoint } from "@/interfaces";
 import { EntitiesManager } from "./manager";
 import { IEntity, IEntityTypeIdentifier } from "./models";
+import { isNullOrWhiteSpace } from "@/utils";
 
 export interface IEntityEndpoints extends Record<string, IApiEndpoint> {
   create?: IApiEndpoint;
@@ -23,32 +24,48 @@ export interface IEntityTypeAccessor<TId, TEntity extends IEntity<TId>> {
  * Entities accessor. It allows to manipulate entities.
  */
 export class EntityTypeAccessor<TId = string, TEntity extends IEntity<TId> = IEntity<TId>> implements IEntityTypeAccessor<TId, TEntity> {
-  readonly _entityTypeId: IEntityTypeIdentifier;
+  // readonly _entityTypeId: IEntityTypeIdentifier;
+  readonly moduleAccessor: string;
+
+  readonly name: string;
 
   readonly _manager: EntitiesManager;
 
   constructor(manager: EntitiesManager, moduleAccessor: string, name: string) {
     this._manager = manager;
-    this._entityTypeId = { module: moduleAccessor, name };
+    this.moduleAccessor = moduleAccessor;
+    this.name = name;
   }
 
-  getApiEndpointsAsync = (): Promise<IEntityEndpoints> => {
-    return this._manager.getApiEndpointsAsync(this._entityTypeId);
+  private getEntityTypeIdAsync = async (): Promise<IEntityTypeIdentifier> => {
+    const moduleName = await this._manager._metadataFetcher.getModuleNameByAccessorAsync(this.moduleAccessor);
+    if (isNullOrWhiteSpace(moduleName))
+      throw new Error(`Failed to get module name by accessor '${this.moduleAccessor}'`);
+    return { module: moduleName, name: this.name };
   };
 
-  createAsync = (value: TEntity): Promise<TEntity> => {
-    return this._manager.createEntityAsync<TId, TEntity>(this._entityTypeId, value);
+  getApiEndpointsAsync = async (): Promise<IEntityEndpoints> => {
+    const entityTypeId = await this.getEntityTypeIdAsync();
+    return this._manager.getApiEndpointsAsync(entityTypeId);
   };
 
-  getAsync = (id: TId): Promise<TEntity> => {
-    return this._manager.getEntityAsync<TId, TEntity>(this._entityTypeId, id);
+  createAsync = async (value: TEntity): Promise<TEntity> => {
+    const entityTypeId = await this.getEntityTypeIdAsync();
+    return this._manager.createEntityAsync<TId, TEntity>(entityTypeId, value);
   };
 
-  updateAsync = (value: TEntity): Promise<TEntity> => {
-    return this._manager.updateEntityAsync<TId, TEntity>(this._entityTypeId, value);
+  getAsync = async (id: TId): Promise<TEntity> => {
+    const entityTypeId = await this.getEntityTypeIdAsync();
+    return this._manager.getEntityAsync<TId, TEntity>(entityTypeId, id);
   };
 
-  deleteAsync = (id: TId): Promise<void> => {
-    return this._manager.deleteEntityAsync<TId>(this._entityTypeId, id);
+  updateAsync = async (value: TEntity): Promise<TEntity> => {
+    const entityTypeId = await this.getEntityTypeIdAsync();
+    return this._manager.updateEntityAsync<TId, TEntity>(entityTypeId, value);
+  };
+
+  deleteAsync = async (id: TId): Promise<void> => {
+    const entityTypeId = await this.getEntityTypeIdAsync();
+    return this._manager.deleteEntityAsync<TId>(entityTypeId, id);
   };
 }

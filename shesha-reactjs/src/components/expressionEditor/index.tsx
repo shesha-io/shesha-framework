@@ -10,6 +10,7 @@ import './styles.css';
 import type { ExpressionContext, ExpressionContextValue } from './contextMetadata';
 import { arrayHasAtLeastNDefined } from '@/utils/array';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { toCamelCase } from '@/utils/string';
 
 export type { ExpressionContext, ExpressionContextValue };
 
@@ -104,9 +105,12 @@ export const buildExpressionContextFromPaths = (
   paths.forEach((pathValue) => {
     if (!pathValue) return;
 
+    // Metadata paths reflect backend (PascalCase) property names, but the runtime data
+    // object is JSON-camelCased (see Startup's UseCamelCasing) - convert each segment
+    // independently so suggestions match what's actually accessible at evaluation time.
     const segments = pathValue
       .split('.')
-      .map((segment) => segment.trim())
+      .map((segment) => toCamelCase(segment.trim()))
       .filter(Boolean);
 
     if (segments.length === 0) return;
@@ -538,6 +542,23 @@ const joinClassNames = (...classNames: Array<string | undefined | null | false>)
 
 const toPreviewText = (value: string): string => value.replace(/\s+/g, ' ').trim();
 const FLOATING_EDITOR_VIEWPORT_PADDING = 12;
+const BASE_OVERLAY_Z_INDEX = 1200;
+
+// Reads the real computed z-index of every DOM ancestor and goes above the highest one, since the portalled overlay doesn't inherit antd's context-relative modal stacking.
+const getSafeOverlayZIndex = (element: HTMLElement | null): number => {
+  let maxZIndex = BASE_OVERLAY_Z_INDEX;
+  let node: HTMLElement | null = element;
+
+  while (node) {
+    const zIndexValue = Number(window.getComputedStyle(node).zIndex);
+    if (!Number.isNaN(zIndexValue) && zIndexValue > maxZIndex) {
+      maxZIndex = zIndexValue;
+    }
+    node = node.parentElement;
+  }
+
+  return maxZIndex + 10;
+};
 
 export const ExpressionEditor: FC<ExpressionEditorProps> = ({
   value,
@@ -611,6 +632,10 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
     if (!anchor) return;
 
     const rect = anchor.getBoundingClientRect();
+    // Anchor to the expanded editor's actual bottom edge, not the collapsed preview button's.
+    const editorRect = inlinePortalRef.current?.getBoundingClientRect();
+    const bottomEdge = editorRect ? editorRect.bottom : rect.bottom;
+
     const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
     const availableWidth = Math.max(220, viewportWidth - (FLOATING_EDITOR_VIEWPORT_PADDING * 2));
     const preferredWidth = Math.max(rect.width + 2, 280);
@@ -620,9 +645,10 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
     const nextLeft = Math.min(Math.max(rect.left - 1, minLeft), maxLeft);
 
     setInlineDropdownStyle({
-      top: rect.bottom - 1,
+      top: bottomEdge - 1,
       left: nextLeft,
       width: nextWidth,
+      zIndex: getSafeOverlayZIndex(anchor),
     });
   }, []);
 
@@ -637,6 +663,7 @@ export const ExpressionEditor: FC<ExpressionEditorProps> = ({
       top: rect.top,
       left: rect.left,
       width: rect.width,
+      zIndex: getSafeOverlayZIndex(anchor),
     });
   }, []);
 

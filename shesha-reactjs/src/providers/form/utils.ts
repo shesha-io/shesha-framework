@@ -89,7 +89,6 @@ import {
 import { IMetadataDispatcher } from '../metadataDispatcher/contexts';
 import { IModalApi } from '../dynamicModal/modalApi';
 import { useModalApiWithFallback } from '../dynamicModal';
-import { ICanvasContextApi } from '@/publicJsApis/apis/canvasContextApi';
 import { makeFormBuliderFactory } from '@/form-factory/implementation';
 import { firstNonEmptyString } from '@/utils/string';
 import { getComponentDefinitions } from './defaults/toolboxComponents';
@@ -97,6 +96,9 @@ import RawAsyncValidator, { InternalRuleItem, RuleItem, Rules, ValidateError, Va
 import { Rule as FormRule } from 'antd/es/form';
 import { isNonEmptyArray } from '@/utils/array';
 import { useComponentApiUpdate } from '../componentApi/provider';
+import { IUtilsApi } from '@/publicJsApis/apis/utils';
+import { IActionsApi } from '@/publicJsApis/apis/actions';
+import { ICurrentUserApi } from '@/publicJsApis/apis/user';
 
 export {
   executeExpression, executeScript,
@@ -112,12 +114,16 @@ export {
 type MomentType = typeof moment;
 
 export interface IPageApi {
-  readonly context: IDataContextFull | undefined;
-  readonly canvas: ICanvasContextApi | undefined;
+  readonly state: IDataContextFull | undefined;
+  location: Location | undefined;
 }
 
 /** Interface to get all avalilable data */
 export interface IApplicationContext<Value extends object = object> {
+  readonly utils: IUtilsApi;
+  readonly actions: IActionsApi;
+  readonly user: ICurrentUserApi;
+
   contextManager?: IDataContextManagerFullInstance;
   metadataDispatcher?: IMetadataDispatcher;
 
@@ -128,7 +134,7 @@ export interface IApplicationContext<Value extends object = object> {
   /** Form Api */
   readonly form?: IFormApi<Value> | undefined;
 
-  readonly webStorage?: IDataContextFull;
+  readonly storage?: IDataContextFull;
 
   /** Form data */
   data?: Value | undefined;
@@ -303,15 +309,31 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
   const shaFormApi = (shaForm?.getPublicFormApi() ?? closestShaForm) as IFormApi<TValues> | undefined;
 
   const pageContext = dcm?.getPageContext()?.getFull();
-  const canvasContext = dcm?.getNearestDataContext(SheshaCommonContexts.CanvasContext, 'appLayer')?.getFull();
   const webStorageContext = dcm?.getNearestDataContext(SheshaCommonContexts.WebStorageContext, 'storage')?.getFull();
+  const application = dcm?.getDataContext(SheshaCommonContexts.ApplicationContext);
+  const applicationData = application?.getData() as IApplicationApi | undefined;
 
   const accessors: ProxyPropertiesAccessors<IApplicationContext<TValues>> = {
+    user: () => applicationData?.user ?? { isLoggedIn: false },
+    actions: () => ({
+      callApi: httpClient,
+      showMessage: message,
+      showDialog: modal.showForm,
+      showConfirmation: modal.confirm,
+      navigateToUrl: applicationData?.navigator.navigateToUrl,
+      navigateToForm: applicationData?.navigator.navigateToForm,
+    }),
+    utils: () => ({
+      evaluateString,
+      saveAs: (d, f) => FileSaver(d, f),
+      moment,
+      modal,
+      getFormUrl: applicationData?.navigator.getFormUrl,
+      prepareUrl: applicationData?.navigator.prepareUrl,
+    }),
     application: () => {
       // get application context
-      const application = dcm?.getDataContext(SheshaCommonContexts.ApplicationContext);
-      const applicationData = application?.getData();
-      return applicationData as IApplicationApi;
+      return applicationData;
     },
     metadataDispatcher: () => metadataDispatcher,
     contexts: () => {
@@ -322,10 +344,10 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
     },
     page: () => {
       // get page context
-      return { context: pageContext, canvas: canvasContext } as IPageApi;
+      return { state: pageContext, location: typeof window !== 'undefined' ? window.location : undefined } as IPageApi;
     },
     pageContext: () => pageContext,
-    webStorage: () => webStorageContext,
+    storage: () => webStorageContext,
     selectedRow: () => selectedRow,
     globalState: () => globalState,
     setGlobalState: () => setGlobalState,
@@ -1173,8 +1195,14 @@ export const getValidationRules = (component: IConfigurableFormComponent, option
   const { validate } = component;
   const rules: RuleItem[] = [];
 
+  // A read-only or disabled field can never receive user input, so a `required` rule on it can
+  // never be satisfied by the user - it would just block submission unconditionally. Skip it for
+  // those interaction modes; the other rules (min/max/pattern/custom validator) still apply since
+  // they only matter if/when the field does hold a value (e.g. one set programmatically).
+  const canBeRequired = component.readOnly !== true && component.disabled !== true;
+
   if (validate) {
-    if (validate.required === true)
+    if (validate.required === true && canBeRequired)
       rules.push({
         required: true,
         message: firstNonEmptyString(validate.message, 'This field is required'),

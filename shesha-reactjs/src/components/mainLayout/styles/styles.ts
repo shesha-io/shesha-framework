@@ -198,6 +198,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
   const mainArea = cx(css`
     position: relative;
     height: 100%;
+    overflow: auto;
   `);
 
   const headerWrapper = cx(css`

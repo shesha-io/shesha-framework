@@ -3,7 +3,8 @@ import { createStyles } from '@/styles';
 import { CSSProperties } from 'react';
 import { addPx } from '@/utils/style';
 import { IStyleValue } from '@/providers';
-import { backgroundStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, paddingStyles, shadowStyles } from '@/designer-components/_common/styles/utils';
+import { backgroundStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, marginStyles, paddingStyles, shadowStyles, splitTextProperties } from '@/designer-components/_common/styles/utils';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 interface IModelInterface extends IStyleValue {
   thumbnailStyle?: IStyleValue | undefined;
   thumbnailStyleCss?: CSSProperties | undefined;
@@ -61,6 +62,14 @@ export const useStyles = createStyles((
     { fontFamily: model.styleCss?.fontFamily, fontSize: model.styleCss?.fontSize },
   );
 
+  /* The prompt takes the configured Font colour, as the dragger's prompt and the File component's
+     trigger do. Custom style wins; the link colour is the fallback when none is set. */
+  const uploadControlColor = !isNullOrWhiteSpace(model.styleCss?.color)
+    ? model.styleCss.color
+    : !isNullOrWhiteSpace(font?.color)
+      ? font.color
+      : token.colorLink;
+
   const containerStyles = `
   ${dimensionsStyles(model.dimensions)}
   ${paddingStyles(model.stylingBoxJson)}
@@ -90,8 +99,14 @@ export const useStyles = createStyles((
     height: ${addPx(thumbnail?.dimensions?.height) ?? '54px'} !important;
   `;
 
-  /* Downloaded files are marked by the colour of the name and the badge, not a second box. */
+  /* Downloaded files are marked by the colour of the name and the badge, not a second box. The
+     colour is read out on its own because the badge is painted with it; the rest of the set styles
+     the file itself. */
   const downloadedColor = downloadedFileStyles?.color ?? token.colorSuccess;
+
+  /* Split the way every other set here is: text properties reach the name, which antd styles
+     directly and which therefore inherits nothing, and the rest reach the row around it. */
+  const { text: downloadedText, box: downloadedBox } = splitTextProperties(downloadedFileStyles);
 
   const storedFilesRendererBtnContainer = "sha-stored-files-renderer-btn-container";
   const shaThumbnail = "sha-thumbnail";
@@ -119,19 +134,44 @@ export const useStyles = createStyles((
     }
   `);
 
+  /* Stands in for the list, so it takes the file name's typography — which is what the root Font
+     panel describes — rather than whatever the page happens to set. */
+  const shaEmptyText = cx("sha-empty-text", css`
+    ${fontStyle}
+    justify-content: ${justifyContent};
+  `);
+
+  /* itemRender replaces antd's list item, and its hover background goes with it, so the row
+     highlight is restored here on the wrapper that stands in for it. */
+  const shaFileNameWrapper = cx("sha-file-name-wrapper", css`
+    display: flex;
+    gap: 8px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: ${token.controlItemBgHover};
+      border-radius: ${token.borderRadiusSM}px;
+    }
+  `);
+
   /* Files the current user has already downloaded. The marker is the colour of the name and the
      badge — never a second box around the file, which would fight the thumbnail set. */
   const downloadedFile = cx("sha-downloaded-file", css`
     position: relative;
+    display: flex;
+    ${cssPropertiesToString(downloadedBox)}
 
     .${prefixCls}-upload-list-item-container {
       opacity: 0.8;
       position: relative;
     }
 
+    /* Colour first so the configured set can override it, and so an unconfigured colour still
+       falls back to the theme's success green. */
     .sha-item-file-name,
     .sha-item-file-name > .${prefixCls}-typography {
       color: ${downloadedColor};
+      ${cssPropertiesToString(downloadedText)}
     }
 
     .${prefixCls}-upload-list-item-action .anticon-download {
@@ -238,25 +278,6 @@ export const useStyles = createStyles((
           : ''}
       }
 
-      .${prefixCls}-upload-list-text {
-        overflow: hidden;
-        >.${prefixCls}-upload-list-item-container {
-          > div {
-            >.file-name-wrapper {
-              >.item-file-name {
-                width: 100%;
-                gap: 8px;
-              }
-            }
-            > .downloaded-icon {
-              position: relative;
-              top: unset;
-              right: unset;
-            }
-          }
-        }
-      }
-
       .${prefixCls}-upload-select {
         width: 100%;
         ${isThumbnail ? thumbnailDimensions : ''}
@@ -349,6 +370,22 @@ export const useStyles = createStyles((
         justify-content: ${justifyContent};
         width: 100%;
       }
+
+      /* antd's 15px of button padding steps the prompt in from the container's edge. Only the
+         inline half goes — the block half is what gives the trigger an input's height. */
+      > .${prefixCls}-btn,
+      .${prefixCls}-upload-select .${prefixCls}-btn {
+        padding-inline: 0;
+      }
+
+      /* Text and icon; !important because antd colours the link button from its own class. Neither
+         selector reaches the per-file action icons, so the delete stays red. */
+      > .${prefixCls}-btn,
+      > .${prefixCls}-btn *,
+      .${prefixCls}-upload-select .${prefixCls}-btn,
+      .${prefixCls}-upload-select .${prefixCls}-btn * {
+        color: ${uploadControlColor} !important;
+      }
       `}
 
       /* File-type icons are inline SVGs sized in em units, so they scale with the font size of the
@@ -376,6 +413,14 @@ export const useStyles = createStyles((
         }
       }
 
+      /* Rows share the trigger's edge; the block half stays for hover and focus rings. Must follow
+         the shorthand it narrows — same specificity, so source order decides. */
+      ${isThumbnail ? '' : `
+      .${prefixCls}-upload-list {
+        padding-inline: 0;
+      }
+      `}
+
       .${prefixCls}-upload-list-item-uploading {
         display: none;
       }
@@ -390,7 +435,9 @@ export const useStyles = createStyles((
           transition: none !important;
         }
         height: auto !important;
-        width: ${isThumbnail ? thumbnail?.dimensions?.width ?? '54' : ''} !important;
+        /* The thumbnail set's Margin lands here rather than on the box itself: this is the element
+           the list lays out, and the box is pinned to its width, so a margin there would overflow. */
+        ${isThumbnail ? `width: ${addPx(thumbnail?.dimensions?.width) ?? '54px'} !important; ${marginStyles(thumbnail?.stylingBoxJson)}` : ''}
       }
 
       .${prefixCls}-upload-list-item-action {
@@ -416,6 +463,22 @@ export const useStyles = createStyles((
       }
 
   `);
+
+  /* Tiles are laid out by the upload list, so that is where the configured Gap belongs — the
+     container's own gap only ever separated the trigger from the Download Zip row. */
+  const tileSpacing = `
+    /* !important because antd doubles the class — .ant-upload-list.ant-upload-list-picture-card —
+       to set its own picture-card gap, which outranks a single-class rule. */
+    .${prefixCls}-upload-list {
+      gap: ${model.gap ?? '8px'} !important;
+    }
+
+    /* Cleared so Gap is the only spacing; antd's item margin would otherwise add to it on the
+       vertical axis and leave a grid's rows further apart than its columns. */
+    .${prefixCls}-upload-list-item {
+      margin-top: 0 !important;
+    }
+  `;
 
   const noItemAnimation = `
     &.${prefixCls}-upload-animate-inline-appear,
@@ -444,6 +507,8 @@ export const useStyles = createStyles((
       display: inline-block !important;
       ${noItemAnimation}
     }
+
+    ${tileSpacing}
   `);
 
   const shaStoredFilesRendererVertical = cx("sha-stored-files-renderer-vertical", css`
@@ -466,6 +531,8 @@ export const useStyles = createStyles((
       display: inline-block !important;
       ${noItemAnimation}
     }
+
+    ${tileSpacing}
   `);
 
   const shaStoredFilesRendererGrid = cx("sha-stored-files-renderer-grid", css`
@@ -484,6 +551,8 @@ export const useStyles = createStyles((
       display: inline-block !important;
       ${noItemAnimation}
     }
+
+    ${tileSpacing}
   `);
 
   return {
@@ -496,5 +565,8 @@ export const useStyles = createStyles((
     actionsPopover,
     shaThumbnail,
     shaItemFileName,
+    shaEmptyText,
+    shaFileNameWrapper,
+    storedFilesRendererBtnContainer,
   };
 });
