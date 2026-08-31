@@ -50,12 +50,10 @@ const EntityReferenceWrapper: React.FC<{
   value: EntityReferenceValue | undefined;
   onChange?: ((value: EntityReferenceValue | null) => void) | undefined;
   className?: string | undefined;
-  popupClassName?: string | undefined;
-  modalClassName?: string | undefined;
   style?: React.CSSProperties | undefined;
   /** Receives the normalized id, so the component API reports only committed UI state. */
   entityIdRef?: React.RefObject<string | undefined> | undefined;
-}> = ({ model, value, onChange, className, popupClassName, modalClassName, style, entityIdRef }) => {
+}> = ({ model, value, onChange, className, style, entityIdRef }) => {
   // Normalize value for display: if it's an object, extract the id
   const normalizedValue = React.useMemo(() => normalizeEntityReferenceValue(value), [value]);
 
@@ -110,8 +108,6 @@ const EntityReferenceWrapper: React.FC<{
       readOnly={model.readOnly === true}
       disabled={model.disabled === true}
       className={className}
-      popupClassName={popupClassName}
-      modalClassName={modalClassName}
       style={style}
     />
   );
@@ -164,8 +160,6 @@ const EntityReferenceComponent: EntityReferenceComponentDefinition = {
                 }}
                 entityIdRef={entityIdRef}
                 className={styles.entityReference}
-                popupClassName={styles.entityReferencePopup}
-                modalClassName={styles.entityReferenceModal}
                 {...(isDefined(model.styleCss) ? { style: model.styleCss } : {})}
               />
             </span>

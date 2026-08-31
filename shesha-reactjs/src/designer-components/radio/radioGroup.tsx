@@ -43,6 +43,22 @@ const RadioGroup = (model: IRadioProps & { ref?: React.Ref<HTMLDivElement> }): R
   const options = model.options ?? resolvedOptions;
   const isDisabled = model.disabled === true || model.readOnly === true;
 
+  /* antd's Radio.Group renders its div with `pickAttrs(props, { aria: true, data: true })` and
+     then forwards only onMouseEnter/onMouseLeave/onFocus/onBlur explicitly. Every other handler
+     — onClick, onMouseMove, onKeyDown, onKeyUp — is dropped before it reaches the DOM, so passing
+     them to Radio.Group produces settings the user can configure but which never fire.
+
+     They are attached to a wrapper element instead, where they still see the same interactions
+     through bubbling. The wrapper is `display: contents` so it takes part in neither layout nor
+     styling: the configured Appearance stays on Radio.Group, which keeps `className`. */
+  const bubbledEvents = {
+    ...(model.onClick ? { onClick: model.onClick } : {}),
+    ...(model.onMouseMove ? { onMouseMove: model.onMouseMove } : {}),
+    ...(model.onKeyDown ? { onKeyDown: model.onKeyDown } : {}),
+    ...(model.onKeyUp ? { onKeyUp: model.onKeyUp } : {}),
+  };
+  const hasBubbledEvents = Object.keys(bubbledEvents).length > 0;
+
   const renderCheckGroup = (): ReactElement => (
     <Radio.Group
       ref={ref}
@@ -52,7 +68,6 @@ const RadioGroup = (model: IRadioProps & { ref?: React.Ref<HTMLDivElement> }): R
       {...(model.onBlur ? { onBlur: model.onBlur } : {})}
       {...(model.onFocus ? { onFocus: model.onFocus } : {})}
       {...(model.onChange ? { onChange: model.onChange } : {})}
-      {...(model.onClick ? { onClick: model.onClick } : {})}
       {...(model.onMouseEnter ? { onMouseEnter: model.onMouseEnter } : {})}
       {...(model.onMouseLeave ? { onMouseLeave: model.onMouseLeave } : {})}
       {...(model.style ? { style: model.style } : {})}
@@ -70,7 +85,11 @@ const RadioGroup = (model: IRadioProps & { ref?: React.Ref<HTMLDivElement> }): R
     </Radio.Group>
   );
 
-  return renderCheckGroup();
+  // No wrapper unless one of the unsupported handlers is configured, so the rendered DOM is
+  // unchanged for every existing form.
+  return hasBubbledEvents
+    ? <div style={{ display: 'contents' }} {...bubbledEvents}>{renderCheckGroup()}</div>
+    : renderCheckGroup();
 };
 
 export default RadioGroup;
