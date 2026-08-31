@@ -74,6 +74,22 @@ const PhoneNumberControl: FC<IPhoneNumberComponentProps & {
     [country, defaultCountry],
   );
 
+  // antd-phone-input only reads its `country` prop once, to seed internal state on mount - it never
+  // re-applies it afterward (the effect that does so is guarded by an "already initiated" ref). So
+  // changing "Default Country" (or a JS-bound `country`) here has no visible effect until the
+  // component actually remounts, e.g. a save + refresh. Force that remount ourselves via `clearKey`
+  // whenever the active country changes, but only while the field is empty - a populated field's
+  // displayed flag is driven by the parsed value instead, and remounting mid-edit would interrupt
+  // whoever is actively typing a number.
+  const prevActiveCountryRef = useRef(activeCountry);
+  useEffect(() => {
+    const hasValue = Boolean(value) && value !== '';
+    if (!hasValue && prevActiveCountryRef.current !== activeCountry) {
+      setClearKey((prev) => prev + 1);
+    }
+    prevActiveCountryRef.current = activeCountry;
+  }, [activeCountry, value]);
+
   const parsedOnlyCountries = useMemo(() => parseCountryCodes(onlyCountries), [onlyCountries]);
   const parsedExcludeCountries = useMemo(() => parseCountryCodes(excludeCountries), [excludeCountries]);
   const parsedPreferredCountries = useMemo(() => parseCountryCodes(preferredCountries), [preferredCountries]);
