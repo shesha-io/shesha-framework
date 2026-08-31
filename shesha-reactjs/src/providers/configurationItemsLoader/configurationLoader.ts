@@ -48,6 +48,7 @@ export interface IConfigurationLoader {
   clearFormCache: (payload: IClearFormCachePayload) => void;
   getComponentAsync: (payload: IGetComponentPayload) => PromisedValue<IComponentSettings>;
   updateComponentAsync: (payload: IUpdateComponentPayload) => Promise<void>;
+  getModuleNameByAccessorAsync: (accessor: string) => Promise<string | undefined>;
 };
 
 export interface ConfigurationLoaderConstructorArgs {
@@ -89,7 +90,7 @@ type ConfigurationRawIdLookup = {
 type ModuleInfo = {
   name: string;
   description: string | null;
-  alias: string | null;
+  accessor: string | null;
   isEditable: boolean;
 };
 type GetModulesResponse = {
@@ -110,6 +111,8 @@ export class ConfigurationLoader implements IConfigurationLoader {
   #requests: Map<string, IConfigurationRequests> = new Map<string, IConfigurationRequests>();
 
   #modules: Map<string, ModuleInfo> | undefined;
+
+  #moduleAccessors: Map<string, string> | undefined;
 
   constructor(args: ConfigurationLoaderConstructorArgs) {
     this.#applicationKey = args.applicationKey;
@@ -158,6 +161,22 @@ export class ConfigurationLoader implements IConfigurationLoader {
       this.#modules = new Map(modulesResponse.modules.map((m) => [m.name, m]));
     }
     return this.#modules;
+  };
+
+  getModuleAccessorsMapAsync = async (): Promise<Map<string, string>> => {
+    if (!isDefined(this.#moduleAccessors)) {
+      const modules = await this.getModulesAsync();
+      const map = this.#moduleAccessors = new Map();
+      modules.forEach((value) => {
+        map.set(value.accessor, value.name);
+      });
+    }
+    return this.#moduleAccessors;
+  };
+
+  getModuleNameByAccessorAsync = async (accessor: string): Promise<string | undefined> => {
+    const map = await this.getModuleAccessorsMapAsync();
+    return map.get(accessor);
   };
 
   isModuleEditableAsync = async (moduleName: string): Promise<boolean> => {

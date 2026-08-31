@@ -1,6 +1,6 @@
 import { ISetFormDataPayload } from "./contexts";
 import { FormInstance } from "antd";
-import { FormMode, IAjaxResponseBase, IErrorInfo } from "@/interfaces";
+import { FormMode, IAjaxResponseBase, IErrorInfo, IModelMetadata } from "@/interfaces";
 import { IEntityEndpoints } from "../sheshaApplication/publicApi/entities/entityTypeAccessor";
 import { IShaFormInstance } from "./store/interfaces";
 import { IDelayedUpdateGroup } from "../delayedUpdateProvider/models";
@@ -22,8 +22,6 @@ export interface IFormSettings {
   /** if true then need to update components structure for using Setting component */
   isSettingsForm?: boolean | undefined;
 };
-
-type PublicFormSettings = Pick<IFormSettings, 'modelType'>;
 
 /**
  * Form instance API
@@ -47,7 +45,7 @@ export interface IFormApi<Values extends object = object> {
   readonly formInstance?: FormInstance<Values> | undefined;
   readonly shaForm?: IShaFormInstance<Values> | undefined;
   /** Configurable form settings */
-  readonly settings: PublicFormSettings | undefined;
+  readonly settings: IFormSettings | undefined;
   /** Form data */
   readonly data: FormData<Values>;
   /** Default API endpoints (create, read, update, delete) */
@@ -56,6 +54,7 @@ export interface IFormApi<Values extends object = object> {
   mode: FormMode;
   /** Model type used for form */
   readonly modelType?: string | IEntityTypeIdentifier | undefined;
+  readonly modelMetadata?: IModelMetadata | undefined;
   /** Form arguments passed by caller */
   readonly arguments?: object | undefined;
   readonly initialValues?: Partial<Values> | undefined;
@@ -65,7 +64,7 @@ export interface IFormApi<Values extends object = object> {
   readonly components: Record<string, Record<string, unknown>>;
 
   /** Configurable form settings @deprecated Use settings instead */
-  readonly formSettings: PublicFormSettings | undefined;
+  readonly formSettings: IFormSettings | undefined;
   /** Form mode @deprecated Use mode instead */
   formMode: FormMode;
   /** Form arguments passed by caller @deprecated Use arguments instead */

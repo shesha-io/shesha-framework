@@ -22,7 +22,7 @@ import { getClassNameOrUndefined } from '@/utils/entity';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { toCamelCase } from '@/utils/string';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Collapse, Divider, Typography } from 'antd';
+import { Button, Checkbox, Collapse, Divider, Radio, Typography } from 'antd';
 import classNames from 'classnames';
 import { isEqual } from 'lodash';
 import moment from 'moment';
@@ -728,46 +728,46 @@ export const DataList: FC<IDataListProps> = ({
         border: '1px solid #d3d3d3',
         borderRadius: '8px',
       }),
-      // The gap belongs to the row, not to the item inside it. The item shares a flex row with the
-      // selection control, so a margin on the item alone makes the flex line taller than the card
-      // and the control centres against the gap as well as the item, drifting off the card. With
-      // the gap here the line is exactly the item, so the control centres on the card. Spacing is
-      // unchanged either way - neighbouring rows are spaced by the row wrapper.
-      ...(orientation !== 'wrap' && { marginTop: '0px' }),
     };
 
-    const rowGap: CSSProperties = orientation !== 'wrap'
+    // the gap margin sits on the wrapper, outside the selection highlight - on the inner
+    // item it becomes a band of highlighted background above the card when selected
+    const gapMargin = orientation !== 'wrap'
       ? { marginTop: gap !== undefined ? (typeof gap === 'number' ? `${gap}px` : gap) : '0px' }
-      : {};
+      : undefined;
 
     const wrapperStyle: CSSProperties =
       orientation === 'horizontal'
-        ? { flex: '0 0 auto', width: itemWidth, overflow: 'visible', ...rowGap }
+        ? { flex: '0 0 auto', width: itemWidth, overflow: 'visible', ...gapMargin }
         : orientation === 'wrap'
           ? { flex: `0 0 ${itemWidth}`, width: itemWidth, overflow: 'visible' }
-          : { flex: '0 0 100%', overflow: 'visible', ...rowGap };
+          : { flex: '0 0 100%', overflow: 'visible', ...gapMargin };
 
     return (
       <div key={`row-${index}`} style={wrapperStyle}>
         <ConditionalWrap
           condition={isSelectable}
-          // The selection control is a *sibling* of the row content, not its parent. Wrapping the
-          // content in antd's <label> made every click inside the row a label activation, which could
-          // only be suppressed with preventDefault - and that cancelled the default action of nested
-          // controls too, so checkboxes/radios/switches inside a row stopped toggling. Keeping them
-          // as siblings means there is nothing to suppress.
           wrap={(children) => (
             <div className={classNames(styles.shaDatalistComponentItemCheckbox, { selected })}>
-              {/* A checkbox in both modes, by design decision - a radio beside a tall card read as
-                  visually off. Single mode still permits only one selection: onSelectRowLocal
-                  replaces the current row rather than adding to it. onChange is enough here because
-                  a checkbox raises it when unticking too, which is what a radio would not do. */}
-              <Checkbox
-                checked={selected}
-                onChange={() => {
-                  onSelectRowLocal(index, item);
-                }}
-              />
+              {selectionMode === 'single'
+                ? (
+
+                  // TODO: Remove radio and revert to datalist item click selection. (JB)
+                  <Radio
+                    checked={selected}
+                    onClick={() => {
+                      onSelectRowLocal(index, item);
+                    }}
+                  />
+                )
+                : (
+                  <Checkbox
+                    checked={selected}
+                    onChange={() => {
+                      onSelectRowLocal(index, item);
+                    }}
+                  />
+                )}
               {children}
             </div>
           )}
