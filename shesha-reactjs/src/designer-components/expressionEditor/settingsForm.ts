@@ -33,7 +33,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                     label: 'Property Name',
                     size: 'small',
                     validate: { required: true },
-                    jsSetting: true,
                   },
                 ],
               })

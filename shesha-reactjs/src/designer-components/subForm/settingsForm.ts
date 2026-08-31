@@ -16,7 +16,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
         tabs: [
           { key: 'common', title: 'Common', id: commonTabId,
             components: fbf(commonTabId)
-              .addContextPropertyAutocomplete({ propertyName: "propertyName", label: "Property Name", size: "small", validate: { required: true }, styledLabel: true, jsSetting: true })
+              .addContextPropertyAutocomplete({ propertyName: "propertyName", label: "Property Name", size: "small", validate: { required: true }, styledLabel: true })
               .addLabelConfigurator({ propertyName: 'hideLabel', label: 'Label', hideLabel: true })
               .stdVisibleEditableInputs('full')
               .addSettingsInput({ inputType: "dropdown", propertyName: "formSelectionMode", label: "Form Selection Mode", tooltip: "Determines how form data is selected and processed",

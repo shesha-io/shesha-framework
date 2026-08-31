@@ -214,7 +214,7 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
   };
 
   stdPropertyLabelInputs = (): FormBuilder => {
-    this.addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true }, jsSetting: true });
+    this.addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true } });
     this.addLabelConfigurator({ propertyName: 'hideLabel', label: 'Label', hideLabel: true });
     return this;
   };
