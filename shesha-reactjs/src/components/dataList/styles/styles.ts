@@ -55,12 +55,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
             &.selected {
                 background-color: ${token.colorPrimaryBgHover};
             }
-
-            /* the padding forms the band between stacked selected items; in single mode there is
-               nothing to stack, so skip it and keep selection from shifting the layout */
-            &.selected:not(.single) {
-                padding-bottom: 8px;
-            }
     
             span {
                 &:last-child {
@@ -83,10 +77,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
             }
         }
 
-        .${shaDatalistComponentBody} > div:first-child > .${shaDatalistComponentItemCheckbox}.selected:not(.single) {
-            padding-top: 8px;
-        }
-    
         .${shaDatalistComponentExtraSpace} {
             display: flex;
             align-content: space-between;
