@@ -126,7 +126,7 @@ const LabelValueList: FC<ILabelValueListProps> = ({
   >
     {({ item, itemOnChange, readOnly }) => {
       return (
-        <Row>
+        <Row gutter={4}>
           <Col span={12}>
             <InputPropertyEditor<ILabelValueItem> item={item} itemOnChange={itemOnChange} propertyName={labelName} readOnly={readOnly} placeholder={labelTitle} />
           </Col>
