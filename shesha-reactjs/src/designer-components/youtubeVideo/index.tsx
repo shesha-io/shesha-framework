@@ -5,7 +5,7 @@ import * as React from 'react';
 import { Typography } from 'antd';
 import { IToolboxComponent } from '@/interfaces';
 import { YoutubeOutlined } from '@ant-design/icons';
-import { useAvailableConstantsData, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { useAvailableConstantsData } from '@/providers/form/utils';
 import { useConfigurableActionDispatcher } from '@/providers';
 import { IConfigurableActionConfiguration, isNonEmptyActionConfiguration } from '@/interfaces/configurableAction';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
@@ -448,7 +448,7 @@ const YoutubeVideoComponent: IToolboxComponent<IYoutubeVideoComponentProps, IYou
     .add<IYoutubeVideoComponentProps>(1, (prev) => migrateVisibility(prev))
     .add<IYoutubeVideoComponentProps>(2, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) })),
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
 };
 
 export default YoutubeVideoComponent;

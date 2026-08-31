@@ -63,9 +63,11 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IEn
       border: none;
       box-shadow: none;
       margin: 0;
+      
+      ${paddingStyles(model.stylingBoxJson)}
+      align-items: center;
 
       .${prefixCls}-select-selector {
-        ${paddingStyles(model.stylingBoxJson)}
         ${textStyles}
         height: 100%;
         background: transparent;

@@ -1,16 +1,12 @@
 import { createStyles } from 'antd-style';
 
-interface IStyleProps {
-  block: boolean;
-}
-
-export const useStyles = createStyles(({ css, cx, responsive, token }, props: IStyleProps) => {
+export const useStyles = createStyles(({ css, cx, responsive, token }) => {
   const shaGlobalTableFilter = cx(
     'sha-global-table-filter',
     css`
       display: flex;
       align-items: center;
-      width: ${props.block ? '100%' : '350px'};
+      width: 100%;
 
       .ant-input-group-wrapper {
         .ant-input-wrapper {

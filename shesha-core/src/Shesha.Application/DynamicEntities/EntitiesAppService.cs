@@ -11,6 +11,7 @@ using Shesha.Application.Services.Dto;
 using Shesha.Authorization;
 using Shesha.Configuration.Runtime;
 using Shesha.Configuration.Runtime.Exceptions;
+using Shesha.Configuration.Security;
 using Shesha.Domain.Enums;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Excel;
@@ -35,6 +36,7 @@ namespace Shesha.DynamicEntities
         private readonly IExcelUtility _excelUtility;
         private readonly IObjectPermissionChecker _objectPermissionChecker;
         private readonly ISpecificationsFinder _specificationsFinder;
+        private readonly ISecuritySettings _securitySettings;
 
         public IObjectMapper AutoMapper { get; set; }
 
@@ -42,19 +44,32 @@ namespace Shesha.DynamicEntities
             IEntityTypeConfigurationStore entityConfigStore,
             IExcelUtility excelUtility,
             IObjectPermissionChecker objectPermissionChecker,
-            ISpecificationsFinder specificationsFinder
+            ISpecificationsFinder specificationsFinder,
+            ISecuritySettings securitySettings
             )
         {
             _entityConfigStore = entityConfigStore;
             _excelUtility = excelUtility;
             _objectPermissionChecker = objectPermissionChecker;
             _specificationsFinder = specificationsFinder;
+            _securitySettings = securitySettings;
         }
 
         protected async Task CheckPermissionAsync(EntityTypeConfiguration entityConfig, string method)
         {
             var crudMethod = PermissionedObjectManager.GetCrudMethod(method, method);
-            await _objectPermissionChecker.AuthorizeAsync(false, entityConfig.EntityType.GetRequiredFullName(), crudMethod.NotNull(), ShaPermissionedObjectsTypes.EntityAction, AbpSession.UserId != null);
+            var securitySettings = await _securitySettings.SecuritySettings.GetValueOrNullAsync();
+
+            // the `DefaultEndpointAccess` setting is passed as fallback for the `Inherited` access
+            await _objectPermissionChecker.AuthorizeAsync(
+                false,
+                entityConfig.EntityType.GetRequiredFullName(),
+                crudMethod.NotNull(),
+                ShaPermissionedObjectsTypes.EntityAction,
+                AbpSession.UserId != null,
+                securitySettings?.DefaultEndpointAccess ?? RefListPermissionedAccess.AnyAuthenticated,
+                securitySettings?.DefaultEndpointPermissions
+            );
         }
 
         private EntityTypeConfiguration GetConfig(EntityTypeIdInput entityTypeId)

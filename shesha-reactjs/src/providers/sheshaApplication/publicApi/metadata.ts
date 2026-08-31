@@ -1,15 +1,12 @@
 import { useMemo, useState } from 'react';
 import { IModelMetadata } from '@/interfaces/metadata';
 import { getSettingsApiProperties } from '../publicApi/settings/metadata';
-import { getUserApiProperties } from '../publicApi/currentUser/metadata';
 import { useHttpClient } from './http/hooks';
 import { SheshaCommonContexts } from '@/providers/dataContextManager/models';
 import { useMetadataBuilderFactory } from '@/utils/metadata/hooks';
 import { getEntitiesApiProperties } from './entities/metadata';
 import { ApplicationPluginRegistration } from '../context/applicationContext';
-import { getUtilsApiProperties } from './utils/metadata';
 import { getFormsApiProperties } from './forms/metadata';
-import { getNavigatorApiProperties } from './navigator/metadata';
 import { IObjectMetadataBuilder } from '@/utils/metadata/metadataBuilder';
 import { useDataContextManagerOrUndefined } from '@/providers/dataContextManager/hooks';
 import { getContextWithProperties as addContextWthProperties } from '@/utils/metadata/hooks/useContextsRegistration';
@@ -36,15 +33,12 @@ export const useApplicationContextMetadata = (props: UseApplicationContextMetada
     const metadataBuilder = metadataBuilderFactory();
     const apiBuilder = metadataBuilder.object(SheshaCommonContexts.ApplicationContext) as IObjectMetadataBuilder;
     apiBuilder
-      .addObject("user", "Current User", getUserApiProperties)
       .addObject("settings", "Settings", (m) => getSettingsApiProperties(m, httpClient))
       .addObject("entities", "Entities", (m) => getEntitiesApiProperties(m, httpClient))
       .addObject("forms", "Forms", (m) => getFormsApiProperties(m))
-      .addObject("utils", "Utils", (m) => getUtilsApiProperties(m))
-      .addObject("navigator", "Navigator", (m) => getNavigatorApiProperties(m))
     ;
     if (appContext)
-      addContextWthProperties(apiBuilder, { ...appContext, name: 'context' });
+      addContextWthProperties(apiBuilder, { ...appContext, name: 'state' });
 
     props.plugins.forEach((plugin) => {
       plugin.buildMetadata(apiBuilder, metadataBuilder);

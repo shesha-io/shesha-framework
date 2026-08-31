@@ -86,24 +86,26 @@ export const defaultStyles = (): INestedStyleValue<'tag'> => {
   };
 };
 
+/* The colours seeded into `tag` before the Variant owned them. Migration 15 clears these. */
+export const SEEDED_TAG_BACKGROUND = '#f0f0f0';
+export const SEEDED_TAG_BORDER = { width: '1px', style: 'solid', color: '#d9d9d9' };
+export const SEEDED_TAG_FONT_COLOUR = '#000';
+
+/**
+ * The colour-bearing slots are left empty so the Variant decides them — seeded, they are emitted at
+ * `&&&&` and beat antd's variant rules. `border` drops `all` for the same reason: `borderLinesStyles`
+ * emits a border for any present `all`, so even an empty one erases the Variant's border.
+ */
 export const defaultTagStyles = (): IStyleValue => {
   return {
-    background: BACKGROUND_DEFAULTS('#f0f0f0'),
+    background: BACKGROUND_DEFAULTS(''),
     font: {
       weight: '400',
       size: 14,
-      color: '#000',
       type: 'Segoe UI',
       align: 'center',
     },
     border: {
-      border: {
-        all: {
-          width: '1px',
-          style: 'solid',
-          color: '#d9d9d9',
-        },
-      },
       radius: { all: 4 },
       borderType: 'all',
       radiusType: 'all',

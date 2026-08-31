@@ -1,6 +1,6 @@
-import { FC, PropsWithChildren, useMemo } from "react";
+import { FC, PropsWithChildren, useEffect, useMemo } from "react";
 import { useDeepCompareEffect } from "@/hooks/useDeepCompareEffect";
-import { useDatasetInstance, useDatasetState } from "./hooks";
+import { useDatasetInstance, useDatasetInstanceSubscription, useDatasetState, useDatasetSubscription } from "./hooks";
 import { DataTableActionsContext, DataTableStateContext, IDataTableStateContext } from "./contexts";
 import { useConfigurableAction } from "../configurableActionsDispatcher";
 import { IDataTableProviderBaseProps } from "./provider.props";
@@ -13,8 +13,17 @@ import { isDefined } from "@/utils/nullables";
 import { isEqual } from "lodash";
 import { ContextOnChangeData } from "../dataContextProvider/contexts";
 import { IDatasetInstance } from "./models";
+import { useComponentApiProvider } from "../componentApi/provider";
 
 const TempDataSetBridge: FC<PropsWithChildren> = ({ children }) => {
+  // fire api refresh on any Dataset change
+  const componentApiProvider = useComponentApiProvider();
+  const dummy = useDatasetSubscription('data');
+  useEffect(() => {
+    componentApiProvider?.refreshApi();
+  }, [componentApiProvider, dummy]);
+
+
   const state = useDatasetState();
   return (
     <DataTableStateContext.Provider value={state}>
@@ -39,6 +48,12 @@ const DataTableProviderWithRepositoryWithContext: FC<PropsWithChildren<DataTable
     actionOwnerName = "",
     instance,
   } = props;
+
+  // The data context below publishes `instance.state` to scripts (`contexts.<name>.selectedRow` etc.).
+  // `updateState` replaces the state object instead of mutating it, so without this subscription the
+  // component never re-renders on dataset changes and the context keeps exposing the state captured
+  // on mount - row selection, fetched data and paging never reach the scripts.
+  useDatasetInstanceSubscription(instance, 'data');
 
   useConfigurableAction(
     {
@@ -157,6 +172,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     actionOwnerName = "",
     dataFetchingMode,
     permanentFilter,
+    permanentFilterReady = true,
     needToRegisterContext = true,
     initialPageSize,
     grouping,
@@ -166,6 +182,9 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
 
   const instance = useDatasetInstance(repository);
   useDeepCompareEffect(() => {
+    // hold fetching while the permanent filter is still evaluating, otherwise the first fetch
+    // goes out unfiltered and flashes unrelated records
+    instance.registerDataFetchDependency('permanentFilter', { state: permanentFilterReady ? 'ready' : 'waiting' });
     void instance.init({
       metadata: undefined,
       userConfigId: userConfigId,
@@ -187,6 +206,7 @@ export const DataTableProviderWithRepository: FC<PropsWithChildren<IDataTablePro
     userConfigId,
     sortMode,
     permanentFilter,
+    permanentFilterReady,
     dataFetchingMode,
     initialPageSize,
     standardSorting,

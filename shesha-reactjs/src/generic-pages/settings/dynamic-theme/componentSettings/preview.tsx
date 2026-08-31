@@ -4,6 +4,7 @@ import { FC, useMemo } from "react";
 import { useStyles } from "../styles/styles";
 import { Card } from "antd";
 import { IToolboxComponent } from "../../../../interfaces/formDesigner";
+import { getPreviewComponentModel } from "./previewModel";
 
 export interface IComponentDefaultsPreviewProps {
   componentDefinition: IToolboxComponent;
@@ -13,20 +14,12 @@ export interface IComponentDefaultsPreviewProps {
 export const ComponentDefaultsPreview: FC<IComponentDefaultsPreviewProps> = ({ componentDefinition, theme }) => {
   const { styles } = useStyles();
 
-  const componentType = componentDefinition.type;
   const componentTitle = componentDefinition.name;
 
-  const componentModel = useMemo((): IConfigurableFormComponent => {
-    return componentDefinition.previewConfiguration ?? {
-      type: componentType,
-      id: componentType,
-      propertyName: `${componentType}Appearance`,
-      label: `${componentTitle} Label`,
-      parentId: 'root',
-      hidden: false,
-      version: 'latest',
-    } as IConfigurableFormComponent;
-  }, [componentDefinition, componentTitle, componentType]);
+  const componentModel = useMemo(
+    (): IConfigurableFormComponent => getPreviewComponentModel(componentDefinition),
+    [componentDefinition],
+  );
 
   const markup = useMemo((): FormMarkup => ({
     components: [componentModel],

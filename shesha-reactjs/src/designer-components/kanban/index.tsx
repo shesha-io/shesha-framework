@@ -15,7 +15,7 @@ import { defaultColumnStyles, defaultStyles } from './utils';
 import { IToolboxComponent } from '@/interfaces/formDesigner';
 import { useDataTableStoreOrUndefined } from '@/providers/dataTable/hooks';
 import { useSheshaApplication } from '@/providers/sheshaApplication';
-import { getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { getStyle } from '@/providers/form/utils';
 import { useMetadataOrUndefined } from '@/providers/metadata';
 import { useEnsureFetchColumns } from '../dataTable/table/useEnsureFetchColumns';
 
@@ -131,7 +131,7 @@ const KanbanComponent: IToolboxComponent<IKanbanProps> = {
       };
     }),
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
 };
 
 export default KanbanComponent;

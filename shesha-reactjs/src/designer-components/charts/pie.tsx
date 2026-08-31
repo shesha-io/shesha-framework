@@ -1,5 +1,5 @@
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
+
 import { IToolboxComponent } from '@/interfaces';
 import { PieChartOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
@@ -99,7 +99,7 @@ const PieChartComponent: IToolboxComponent<IChartProps> = {
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   migrator: (m) => m
     .add<IChartProps>(0, (prev) => ({
       chartType: 'pie',

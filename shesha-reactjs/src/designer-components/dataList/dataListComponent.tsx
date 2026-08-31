@@ -1,7 +1,7 @@
 import { UnorderedListOutlined } from "@ant-design/icons";
 import { IToolboxComponent } from "@/interfaces";
 import { useDataSources } from '@/providers/dataSourcesProvider';
-import { migrateCustomFunctions, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
+import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { IDataListComponentProps } from './model';
 import DataListControl from './dataListControl';
@@ -12,35 +12,75 @@ import { getSettings } from './settingsForm';
 import { defaultStyles } from './utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { isConfigurableActionConfiguration } from '@/interfaces/configurableAction';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { useComponentApi } from "@/providers/componentApi/hooks";
+import { DataListApi } from "@/componentsApi/dataListApi";
+
+import apiCode from "../../componentsApi/dataListApi.ts?raw";
+import { migratePermissionsToVisiblePermissions } from "../_common-migrations/migratePermissionsToVisiblePermissions";
 
 const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
   type: 'datalist',
   isInput: true,
   name: 'DataList',
   icon: <UnorderedListOutlined />,
+  initModel: (model) => ({ ...model, visible: model.visible ?? true }),
   Factory: ({ model }) => {
     const ds = useDataSources();
     const dts = useDataTableStoreOrUndefined();
 
-    const dataSource = model.dataSource
-      ? ds.getDataSource(model.dataSource)?.dataSource
-      : dts;
-
-    // Check if there's a real data source available
-    // In designer mode, if no data source is configured and none is available from context, show error
-    if (model.hidden) return null;
+    const store = isNullOrWhiteSpace(model.dataSource) ? dts : ds.getDataSource(model.dataSource)?.dataSource;
 
     // TODO: review validation
-    if (!isDefined(dataSource))
+    // Check if there's a real data source available
+    // In designer mode, if no data source is configured and none is available from context, show error
+    if (!isDefined(store))
       throw new Error('No data source is available for this list');
 
-    return (
-      <DataListControl
-        {...model}
-        dataSourceInstance={dataSource}
-      />
-    );
+    const {
+      refreshTable: refreshList,
+      exportToExcel,
+      changeQuickSearch,
+      performQuickSearch,
+      toggleAdvancedFilter,
+      setRowData: setItemData,
+      onGroup: group,
+      onSort: sort,
+      changeSelectedIds,
+      clearSelectedRow: clearSelectedItem,
+      setCurrentPage,
+      changePageSize,
+    } = store;
+
+    useComponentApi<DataListApi>({ model, typeName: 'DataListApi',
+      typeDefinition: { typeName: 'DataListApi', files: [{ content: apiCode, fileName: 'apis/dataListApi.ts' }] },
+      api: { refreshList, exportToExcel, changeQuickSearch, performQuickSearch, toggleAdvancedFilter, setItemData, group, sort, changeSelectedIds, clearSelectedItem, setCurrentPage, changePageSize },
+      properties: [
+        { name: 'listData', getter: () => store.tableData },
+        { name: 'selectedPageSize', getter: () => store.selectedPageSize },
+        { name: 'currentPage', getter: () => store.currentPage },
+        { name: 'totalPages', getter: () => store.totalPages },
+        { name: 'totalItems', getter: () => store.totalRows },
+        { name: 'totalItemsBeforeFilter', getter: () => store.totalRowsBeforeFilter },
+        { name: 'quickSearch', getter: () => store.quickSearch },
+        { name: 'userSorting', getter: () => store.userSorting },
+        { name: 'grouping', getter: () => store.grouping },
+        { name: 'listFilter', getter: () => store.tableFilter },
+        { name: 'selectedStoredFilterIds', getter: () => store.selectedStoredFilterIds },
+        { name: 'selectedItem', getter: () =>
+          isDefined(store.selectedRow)
+            ? { id: store.selectedRow.id, index: store.selectedRow.index, item: store.selectedRow.row }
+            : undefined,
+        },
+        { name: 'selectedIds', getter: () => store.selectedIds },
+        { name: 'isFetchingListData', getter: () => store.isFetchingTableData },
+        { name: 'selectedItems', getter: () => store.selectedRows },
+      ],
+    }, [store]);
+
+    if (model.hidden === true) return null;
+
+    return <DataListControl {...model} dataSourceInstance={store} />;
   },
   migrator: (m) => m
     .add<IDataListComponentProps>(0, (prev) => ({
@@ -90,7 +130,7 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
         },
       };
     }).add<IDataListComponentProps>(10, (prev) => {
-      const cardSpacing = prev.cardSpacing || '0px';
+      const cardSpacing = isNullOrWhiteSpace(prev.cardSpacing) ? '0px' : prev.cardSpacing;
       const parsedGap = parseInt(cardSpacing.replace('px', ''), 10);
       const gap = isNaN(parsedGap) ? 0 : parsedGap;
 
@@ -112,11 +152,12 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
         },
       };
     })
-    .add<IDataListComponentProps>(11, (prev) => ({ ...prev, showEditIcons: true })),
+    .add<IDataListComponentProps>(11, (prev) => ({ ...prev, showEditIcons: true }))
+    .add<IDataListComponentProps>(12, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev))),
   settingsFormMarkup: getSettings,
   validateModel: (model, addModelError) => {
     if (model.formSelectionMode === "name") {
-      if (!model.formId) {
+      if (!isDefined(model.formId)) {
         addModelError('formId', 'This Data List has no form selected.\nSelecting a Form tells the Data List what data structure it should use when rendering items.');
       } else if (typeof model.formId === 'string' && model.formId.trim() === '') {
         addModelError('formId', 'This Data List has an invalid form selected (empty form name).\nPlease select a valid form.');
@@ -125,11 +166,11 @@ const DataListComponent: IToolboxComponent<IDataListComponentProps> = {
       }
     }
 
-    if (model.formSelectionMode === "view" && (!model.formType || model.formType.trim() === '')) {
+    if (model.formSelectionMode === "view" && (isNullOrWhiteSpace(model.formType))) {
       addModelError('formType', 'This Data List has no form type specified.\nSelecting a Form Type tells the Data List what data structure it should use when rendering items.');
     }
 
-    if (model.formSelectionMode === "expression" && (!model.formIdExpression || model.formIdExpression.trim() === '')) {
+    if (model.formSelectionMode === "expression" && (isNullOrWhiteSpace(model.formIdExpression))) {
       addModelError('formIdExpression', 'This Data List has no form identifier expression configured.\nConfiguring an expression tells the Data List how to dynamically determine which form to use.');
     }
   },

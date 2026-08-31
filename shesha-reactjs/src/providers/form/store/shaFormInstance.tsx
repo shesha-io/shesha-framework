@@ -46,8 +46,9 @@ import { extractErrorInfo, throwError } from "@/utils/errors";
 import { GetShaFormDataAccessor } from "@/providers/dataContextProvider/contexts/shaDataAccessProxy";
 import { IComponentApi } from "@/providers/componentApi/model";
 import { IDataContextDescriptor, SheshaCommonContexts } from "@/providers/dataContextManager/models";
-import { useComponentApi } from "@/providers/componentApi/provider";
+import { useComponentApiProvider } from "@/providers/componentApi/provider";
 import { useDataContextManagerActions } from "@/providers/dataContextManager/hooks";
+import { IEntityTypeIdentifier } from "@/providers/sheshaApplication/publicApi/entities/models";
 
 interface ShaFormInstanceArguments<Values extends object = object> {
   forceRootUpdate: ForceUpdateTrigger;
@@ -60,6 +61,11 @@ interface ShaFormInstanceArguments<Values extends object = object> {
   componentApi: IComponentApi | undefined;
   dataSource: IShaFormDataSource<Values> | undefined;
 }
+
+export type FormData<Values extends object = object> = Values & {
+  // addDelayedUpdate?: ((data: Values) => IDelayedUpdateGroup[]) | undefined;
+};
+
 
 class PublicFormApi<Values extends object = object> implements IFormApi<Values> {
   #form: IShaFormInstance<Values>;
@@ -92,9 +98,12 @@ class PublicFormApi<Values extends object = object> implements IFormApi<Values> 
     this.#form.setFormData({ values, mergeValues: true });
   };
 
-  clearFieldsValue = (): void => {
+  clear = (): void => {
     this.#form.setFormData({ values: {} as Values, mergeValues: false });
   };
+
+  /** @deprecated use clear instead */
+  clearFieldsValue = (): void => this.clear();
 
   submit = (): void => {
     this.#form.antdForm.submit();
@@ -120,15 +129,29 @@ class PublicFormApi<Values extends object = object> implements IFormApi<Values> 
     return this.#form;
   }
 
-  get formSettings(): IFormSettings | undefined {
+  get settings(): IFormSettings | undefined {
     return this.#form.settings;
   };
 
-  get formMode(): FormMode {
+  /** @deprecated use settings instead */
+  get formSettings(): IFormSettings | undefined {
+    return this.settings;
+  };
+
+  get modelType(): string | IEntityTypeIdentifier | undefined {
+    return this.#form.settings?.modelType;
+  }
+
+  get mode(): FormMode {
     return this.#form.formMode;
   };
 
-  get data(): Values | undefined {
+  /** @deprecated use mode instead */
+  get formMode(): FormMode {
+    return this.mode;
+  };
+
+  get data(): FormData<Values> {
     return this.#data;
   };
 
@@ -136,8 +159,13 @@ class PublicFormApi<Values extends object = object> implements IFormApi<Values> 
     return this.#form.defaultApiEndpoints;
   };
 
-  get formArguments(): object | undefined {
+  get arguments(): object | undefined {
     return this.#form.formArguments;
+  }
+
+  /** @deprecated use arguments instead */
+  get formArguments(): object | undefined {
+    return this.arguments;
   }
 
   get parentFormValues(): object | undefined {
@@ -148,6 +176,11 @@ class PublicFormApi<Values extends object = object> implements IFormApi<Values> 
     return this.#form.initialValues as Values;
   }
 
+  get state(): Record<string, unknown> | undefined {
+    return (this.#context?.getData() ?? {}) as Record<string, unknown>;
+  }
+
+  /** @deprecated use state instead */
   get context(): Record<string, unknown> | undefined {
     return this.#context?.getData() as Record<string, unknown>;
   }
@@ -863,7 +896,7 @@ const useShaForm = <Values extends object = object>(args: UseShaFormArgs<Values>
   const [antdFormInstance] = Form.useForm(antdForm);
   const fullContext = useAvailableConstantsContextsNoRefresh();
   const metadataDispatcher = useMetadataDispatcher();
-  const componentApi = useComponentApi();
+  const componentApi = useComponentApiProvider();
   const formContext = useDataContextManagerActions().getNearestDataContext(SheshaCommonContexts.FormContext, 'form');
 
   const [formInstance] = useState<IShaFormInstance<Values>>(() => {

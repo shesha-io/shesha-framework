@@ -158,8 +158,8 @@ export const defaultStyles = (prev?: IContainerComponentPropsV0): IStyleValue & 
   const {
     width = 'auto',
     height = 'auto',
-    maxHeight = 'auto',
-    maxWidth = 'auto',
+    maxHeight = 'none',
+    maxWidth = 'none',
     minHeight = '32px',
     minWidth = '0px',
     borderColor = '#d9d9d9',

@@ -196,7 +196,6 @@
                 "hidden": false,
                 "actionType": "custom",
                 "buttonType": "link",
-                "settingsValidationErrors": [],
                 "icon": "SlidersOutlined",
                 "customAction": "toggleColumnsSelector"
               },
@@ -210,7 +209,6 @@
                 "hidden": false,
                 "actionType": "custom",
                 "buttonType": "link",
-                "settingsValidationErrors": [],
                 "icon": "FilterOutlined",
                 "customAction": "toggleAdvancedFilter"
               },
@@ -224,7 +222,6 @@
                 "hidden": false,
                 "actionType": "custom",
                 "buttonType": "link",
-                "settingsValidationErrors": [],
                 "customAction": "refresh",
                 "icon": "RedoOutlined"
               }
@@ -280,7 +277,6 @@
         "allowDelete": false
       }
     ],
-    "description": "",
-    "settingsValidationErrors": []
+    "description": ""
   }
 ]

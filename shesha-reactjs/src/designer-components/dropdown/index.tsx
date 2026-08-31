@@ -7,7 +7,7 @@ import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { DownSquareOutlined } from '@ant-design/icons';
 import { IInputStyles, INestedStyleValue, IStyleValue } from '@/providers/form/models';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { DataSourceType, DropdownComponentDefinition, IDropdownComponentProps, IDropdownComponentPropsV1 } from './model';
 import { DropdownSelectRef } from '@/components/dropdown/model';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly, migrateHiddenToVisible, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
@@ -17,11 +17,11 @@ import { Dropdown } from '@/components/dropdown/dropdown';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settingsForm';
 import { migratePrevStyles, migrateStyles } from '../_common-migrations/migrateStyles';
-import { defaultStyles, defaultTagStyles } from './utils';
+import { defaultStyles, defaultTagStyles, SEEDED_TAG_BACKGROUND, SEEDED_TAG_BORDER, SEEDED_TAG_FONT_COLOUR } from './utils';
 import { useStyles } from '@/components/dropdown/styles';
 import { getBooleanPropertyOrUndefined } from '@/utils/object';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
-import { useComponentApi } from '@/providers/componentApi/provider';
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { DropdownApi } from '../../componentsApi/componentApi';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { useActualContextExecution } from '@/hooks/formComponentHooks';
@@ -30,6 +30,7 @@ import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
 
 const DropdownComponent: DropdownComponentDefinition = {
+  styleGroup: 'inputs',
   allowInherit: true,
   type: 'dropdown',
   isInput: true,
@@ -41,7 +42,7 @@ const DropdownComponent: DropdownComponentDefinition = {
   preserveDimensionsInDesigner: true,
   dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.referenceListItem || (dataType === DataTypes.array && dataFormat === ArrayFormats.multivalueReferenceList),
   Factory: ({ model }) => {
-    const componentApi = useComponentApi();
+    const componentApi = useComponentApiProvider();
     const selectRef = useRef<DropdownSelectRef>(null);
     useEffect(() => {
       componentApi?.updateApi<DropdownApi>({
@@ -100,9 +101,11 @@ const DropdownComponent: DropdownComponentDefinition = {
     );
   },
   migrator: (m) => m
-    .add<IDropdownComponentProps>(0, (prev) => ({
+    .add<IDropdownComponentProps>(0, (prev, ctx) => ({
       ...prev,
-      dataSourceType: "dataSourceType" in prev && typeof (prev.dataSourceType) === "string" && ['simple', 'listItem', 'custom'].includes(prev.dataSourceType) ? prev.dataSourceType as DataSourceType : 'values',
+      dataSourceType: "dataSourceType" in prev && typeof (prev.dataSourceType) === "string" && ['simple', 'listItem', 'custom'].includes(prev.dataSourceType)
+        ? prev.dataSourceType as DataSourceType
+        : ctx.isNew === true ? (prev as IDropdownComponentProps).dataSourceType as DataSourceType : 'values',
       useRawValues: getBooleanPropertyOrUndefined(prev, "useRawValues") ?? false,
     }))
     .add<IDropdownComponentProps>(1, (prev) => {
@@ -166,8 +169,8 @@ const DropdownComponent: DropdownComponentDefinition = {
       const initTagStyle = migrateStyles({}, defaultTagStyles());
       // The per-device style models are typed as the flat `IStyleValue`; the dropdown additionally
       // nests a `tag` set under each of them.
-      const deviceTag = (device: IStyleValue | undefined): IStyleValue | undefined =>
-        (device as INestedStyleValue<'tag'> | undefined)?.tag;
+      const deviceTag = (device: INestedStyleValue<'tag'> | undefined): IStyleValue | undefined =>
+        device?.tag;
 
       // Seeded only where nothing is configured yet — a form that already styled its tags keeps
       // those values rather than being reset to the defaults on every upgrade.
@@ -225,9 +228,51 @@ const DropdownComponent: DropdownComponentDefinition = {
       model.tagVariant = prev.tagVariant ?? (prev.solidColor === false ? 'outlined' : 'solid');
 
       return model;
+    })
+    /* Step 10 seeded tag colours that beat antd's Variant rules, and saved forms still carry them.
+       Only values still equal to those seeds are cleared — a restyled tag keeps what the user set. */
+    .add<IDropdownComponentProps>(15, (prev, context) => {
+      if (context.isNew === true) return prev;
+
+      const clearSeededTagColours = (style: IStyleValue | undefined): IStyleValue | undefined => {
+        if (!isDefined(style)) return style;
+
+        const result: IStyleValue = { ...style };
+
+        if (result.background?.type === 'color' && result.background.color === SEEDED_TAG_BACKGROUND)
+          result.background = { ...result.background, color: '' };
+
+        const sides = result.border?.border;
+        const line = sides?.all;
+        if (isDefined(sides) && isDefined(line) && line.width === SEEDED_TAG_BORDER.width && line.style === SEEDED_TAG_BORDER.style && line.color === SEEDED_TAG_BORDER.color) {
+          const { all: _cleared, ...otherSides } = sides;
+          result.border = { ...result.border, border: otherSides };
+        }
+
+        if (result.font?.color === SEEDED_TAG_FONT_COLOUR) {
+          const { color: _cleared, ...otherFont } = result.font;
+          result.font = otherFont;
+        }
+
+        return result;
+      };
+
+      // The per-device models nest their own `tag` set, the same shape step 10 seeded.
+      const clearDeviceTagColours = (device: INestedStyleValue<'tag'> | undefined): INestedStyleValue<'tag'> | undefined => {
+        if (!isDefined(device) || !isDefined(device.tag)) return device;
+        return { ...device, tag: clearSeededTagColours(device.tag) };
+      };
+
+      return {
+        ...prev,
+        tag: clearSeededTagColours(prev.tag),
+        desktop: clearDeviceTagColours(prev.desktop),
+        tablet: clearDeviceTagColours(prev.tablet),
+        mobile: clearDeviceTagColours(prev.mobile),
+      };
     }),
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   getDefaultStyles: () => defaultStyles(),
   previewConfiguration: {
     type: 'dropdown',

@@ -72,6 +72,9 @@ export class DatasetInstance implements IDatasetInstance {
 
   /** true when a fetch was skipped because some data fetch dependencies were not ready (e.g. dynamic filters are not evaluated yet) */
   private fetchSkippedDueToDependencies: boolean = false;
+
+  /** id of the most recently started fetch, so a superseded response can be discarded (see `fetchData`) */
+  private lastFetchId: number = 0;
   //#endregion
 
   #storage: IAsyncStorage;
@@ -199,6 +202,7 @@ export class DatasetInstance implements IDatasetInstance {
       return {
         ...state,
         columns: cols,
+        configurableColumns: columns,
         // user config
         currentPage: userConfig?.currentPage ?? 1,
         selectedPageSize: userConfig?.pageSize ?? state.selectedPageSize,
@@ -257,12 +261,23 @@ export class DatasetInstance implements IDatasetInstance {
     }
     this.fetchSkippedDueToDependencies = false;
 
+    // Loading a list can trigger several overlapping fetches (filters arriving, columns registering), each
+    // with a different payload. Responses can land in any order, so ignore any that a newer fetch superseded
+    // - otherwise rows come from one response and totalRows from another.
+    const fetchId = ++this.lastFetchId;
+    const isSuperseded = (): boolean => fetchId !== this.lastFetchId;
+
     this.updateState((state) => ({ ...state, isFetchingTableData: true, fetchTableDataError: undefined }));
     try {
       await this.saveUserConfigAsync();
 
       const payload = this.getFetchListDataPayload();
       const data = await this.repository.fetch(payload);
+
+      if (isSuperseded()) {
+        this.log("fetchData discarded: superseded by a newer fetch");
+        return;
+      }
 
       // TODO: if current page is not available after change of the page size - reset page number to 1
 
@@ -282,6 +297,8 @@ export class DatasetInstance implements IDatasetInstance {
         selectedRow: selectedRow,
       }));
     } catch (error) {
+      if (isSuperseded())
+        return;
       this.updateState((state) => ({ ...state, isFetchingTableData: false, fetchTableDataError: extractErrorInfo(error) }));
     }
   };
@@ -603,6 +620,14 @@ export class DatasetInstance implements IDatasetInstance {
 
   registerConfigurableColumns = async (_ownerId: string, columns: IConfigurableColumnsProps[]): Promise<void> => {
     this.log("Register columns...");
+
+    // re-registering an identical set is a no-op: a remounted consumer (e.g. `useEnsureFetchColumns`
+    // after a fetch error) would otherwise re-init and refetch in a loop
+    if (this.#columnsRegistered && isEqual(this.state.configurableColumns, columns)) {
+      this.log("Register columns skipped: columns are unchanged");
+      return;
+    }
+
     this.columns = columns;
     this.#columnsRegistered = true;
 

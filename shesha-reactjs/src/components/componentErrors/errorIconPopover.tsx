@@ -1,11 +1,12 @@
-import { FC, PropsWithChildren } from 'react';
-import * as React from 'react';
+/* eslint @typescript-eslint/strict-boolean-expressions: "error" */
+import React, { FC, PropsWithChildren } from 'react';
 import { InfoCircleFilled } from '@ant-design/icons';
 import { Popover } from 'antd';
 import { IModelValidation, ISheshaErrorTypes } from '@/utils/errors';
 import { useStyles } from './styles/errorIconPopoverStyles';
 import componentDocs from './component-docs.json';
 import { isNonEmptyArray } from '@/utils/array';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 
 interface IErrorIconPopoverBaseProps extends PropsWithChildren {
   type?: ISheshaErrorTypes;
@@ -89,7 +90,7 @@ export const ErrorIconPopover: FC<IErrorIconPopoverProps> = (props) => {
     const effectiveType = validationResult.validationType ?? type ?? 'warning';
 
     const componentType = validationResult.componentType;
-    const docUrl = componentType && componentType in componentDocs
+    const docUrl = !isNullOrWhiteSpace(componentType) && componentType in componentDocs
       ? componentDocs[componentType as keyof typeof componentDocs]
       : undefined;
 
@@ -103,7 +104,7 @@ export const ErrorIconPopover: FC<IErrorIconPopoverProps> = (props) => {
               const errorParts = error.error.split('\n');
               return (
                 <p key={index} style={{ margin: 0, marginBottom: index < errors.length - 1 ? '4px' : 0 }}>
-                  {error.propertyName && <strong>{error.propertyName}: </strong>}
+                  {!isNullOrWhiteSpace(error.propertyName) && <strong>{error.propertyName}: </strong>}
                   {errorParts.map((part, partIndex) => (
                     <React.Fragment key={partIndex}>
                       {partIndex > 0 && <br />}
@@ -113,7 +114,7 @@ export const ErrorIconPopover: FC<IErrorIconPopoverProps> = (props) => {
                 </p>
               );
             })}
-            {docUrl && (
+            {!isNullOrWhiteSpace(docUrl) && (
               <>
                 <br />
                 <a href={docUrl} target="_blank" rel="noopener noreferrer">See component documentation</a><br />for setup and usage.
@@ -128,7 +129,7 @@ export const ErrorIconPopover: FC<IErrorIconPopoverProps> = (props) => {
       return (
         <>
           <p style={{ margin: 0, fontWeight: 600 }}>Component Error</p>
-          {docUrl && (
+          {!isNullOrWhiteSpace(docUrl) && (
             <>
               <br />
               <a href={docUrl} target="_blank" rel="noopener noreferrer">See component documentation</a><br />for setup and usage.

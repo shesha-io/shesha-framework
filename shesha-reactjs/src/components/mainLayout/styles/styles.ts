@@ -4,7 +4,6 @@ import { createStyles } from 'antd-style';
 export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }) => {
   // variables
   const layoutTriggerHeight = sheshaStyles.layoutHeaderHeight; // @layout-trigger-height
-  const shaPageHeadingHeight = '45px'; // @sha-page-heading-height
   const shaPageToolbarHeight = '33px'; // @sha-page-toolbar-height
   const backgroundColor = '#f0f2f5'; // @background-color
   const shaBorder = '1px solid #d3d3d3';
@@ -22,11 +21,6 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
     &.collapsed {
       margin-left: ${shaSiderCollapsedWidth};
     }  
-  `;
-
-  const flexCenterAligned = css`
-    display: flex;
-    align-items: center;
   `;
 
   const flexCenterAlignedSpaceBetween = css`
@@ -140,6 +134,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
   const content = cx(css`
     ${marginLeftTransition}
     margin-top: var(--sha-header-height, ${sheshaStyles.layoutHeaderHeight});
+    height: calc(100vh - var(--sha-header-height));
     background: ${backgroundColor};
     position: relative;
     
@@ -200,27 +195,11 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
     }
   `;
 
-  const shaLayoutHeading = cx(
-    '',
-    css`
-    &.has-heading {
-      ${flexCenterAligned}
-
-      min-height: ${shaPageHeadingHeight};
-      max-height: ${shaPageHeadingHeight};
-      border-bottom: 0.5px solid lightgrey;
-      background: white;
-
-      &.fixed-heading {
-        position: sticky;
-        z-index: 1;
-        top: ${sheshaStyles.layoutHeaderHeight};
-      }
-    }
-    `,
-  );
-
-  const shaSiteLayoutBackgroundNoPadding = cx(css``);
+  const mainArea = cx(css`
+    position: relative;
+    height: 100%;
+    overflow: auto;
+  `);
 
   const headerWrapper = cx(css`
     width: 100%;
@@ -228,7 +207,6 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
 
   const shaSiteLayoutBackground = css`
     background: ${backgroundColor};
-    padding: 2px 4px;
 
     .sha-site-layout-toolbar {
       ${flexCenterAlignedSpaceBetween}
@@ -244,14 +222,6 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
         background: white;
       }
     }
-
-    &.fixed-heading {
-      // margin-top: @sha-page-heading-height;
-    }
-
-    &.${shaSiteLayoutBackgroundNoPadding} {
-      padding: 1px 2px;
-    }  
   `;
 
   return {
@@ -263,9 +233,8 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
     sider,
     content,
     mainSider,
-    shaLayoutHeading,
+    mainArea,
     shaSiteLayoutBackground,
-    shaSiteLayoutBackgroundNoPadding,
     customComponents,
     headerWrapper,
   };

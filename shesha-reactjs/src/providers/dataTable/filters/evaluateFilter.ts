@@ -22,7 +22,13 @@ export interface UseFormEvaluatedFilterArgs {
   filter?: FilterExpression | undefined;
   metadataAccessor?: NestedPropertyMetadatAccessor | undefined;
 };
-export const useFormEvaluatedFilter = (args: UseFormEvaluatedFilterArgs, additionalData?: object): string | undefined => {
+export interface EvaluatedFilter {
+  filter: string | undefined;
+  /** false while the filter is still evaluating or contains unresolved required expressions (e.g. `{{data.id}}` before the form data has loaded) */
+  ready: boolean;
+}
+
+export const useFormEvaluatedFilterWithReadiness = (args: UseFormEvaluatedFilterArgs, additionalData?: object): EvaluatedFilter => {
   const fullContext = useAvailableConstantsContexts();
   const accessors = wrapConstantsData({ fullContext });
 
@@ -35,8 +41,8 @@ export const useFormEvaluatedFilter = (args: UseFormEvaluatedFilterArgs, additio
   var keys = Object.keys({ ...contextProxyRef }) as Array<keyof typeof contextProxyRef>;
   var mappings = keys.map<IMatchData>((key) => ({ match: key, data: contextProxyRef[key] }));
 
-  const evaluatedFilters = useAsyncMemo(async () => {
-    if (!isDefined(args.filter)) return '';
+  const evaluatedFilters = useAsyncMemo<EvaluatedFilter>(async () => {
+    if (!isDefined(args.filter)) return { filter: '', ready: true };
 
     const response = await evaluateDynamicFilters(
       [{ expression: args.filter } as IStoredFilter],
@@ -44,8 +50,14 @@ export const useFormEvaluatedFilter = (args: UseFormEvaluatedFilterArgs, additio
       args.metadataAccessor,
     );
 
-    return JSON.stringify(response[0]?.expression) || '';
+    const result = response[0];
+    const ready = !isDefined(result) || result.hasDynamicExpression !== true || result.allFieldsEvaluatedSuccessfully === true;
+    return { filter: JSON.stringify(result?.expression) || '', ready };
   }, useDeepCompareMemoize([args.filter, prevChanged.current]));
 
-  return evaluatedFilters;
+  return evaluatedFilters ?? { filter: undefined, ready: !isDefined(args.filter) };
+};
+
+export const useFormEvaluatedFilter = (args: UseFormEvaluatedFilterArgs, additionalData?: object): string | undefined => {
+  return useFormEvaluatedFilterWithReadiness(args, additionalData).filter;
 };

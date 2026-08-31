@@ -89,8 +89,7 @@
       "propertyName": "hideBorder",
       "label": "Hide border",
       "parentId": "root",
-      "hidden": false,
-      "validate": {}
+      "hidden": false
     },
     {
       "id": "6b9bb7f7-eadb-450e-bea4-4c1d691a4091",
@@ -121,8 +120,7 @@
         "maxLength": "",
         "message": ""
       },
-      "quickviewWidth": "",
-      "settingsValidationErrors": []
+      "quickviewWidth": ""
     },
     {
       "id": "hGFqD-MutR75EN0GEInYu",
@@ -134,9 +132,7 @@
       "hidden": false,
 
       "isDynamic": false,
-      "description": "",
-      "validate": {},
-      "settingsValidationErrors": []
+      "description": ""
     },
     {
       "id": "1115d12f-6ea0-4b11-a1a1-6088c7160fd9",
@@ -186,8 +182,6 @@
       "propertyName": "style",
       "label": "Style",
       "parentId": "root",
-      "validate": {},
-      "settingsValidationErrors": [],
       "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
       "exposedVariables": [
         {

@@ -16,8 +16,8 @@ import { defaultStyles, getAddressValue } from './utils';
 import { useStyles } from './styles';
 import { isIAddressAndCoords } from '@/components/googlePlacesAutocomplete';
 import { DataTypes } from '@/interfaces/dataTypes';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
-import { useComponentApi } from '@/providers/componentApi/provider';
+
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { AddressApi } from '@/componentsApi/componentApi';
 import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '../_common/events';
 import { isDefined } from '@/utils/nullables';
@@ -35,7 +35,7 @@ const AddressCompoment: AddressComponentDefinition = {
   icon: <HomeOutlined />,
   preserveDimensionsInDesigner: true,
   Factory: ({ model }) => {
-    const componentApi = useComponentApi();
+    const componentApi = useComponentApiProvider();
     const inputRef = useRef<InputRef>(null);
     useEffect(() => {
       componentApi?.updateApi<AddressApi>({
@@ -105,7 +105,7 @@ const AddressCompoment: AddressComponentDefinition = {
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   getDefaultStyles: () => defaultStyles(),
   migrator: (m) => m
     .add<IAddressCompomentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))

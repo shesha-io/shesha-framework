@@ -2,7 +2,7 @@ import { createStyles } from '@/styles';
 import { backgroundStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
 import { IRefListStatusComponentProps } from './interfaces';
 
-export const useStyles = createStyles(({ css, cx }, model: IRefListStatusComponentProps) => {
+export const useStyles = createStyles(({ css, cx, token }, model: IRefListStatusComponentProps) => {
   const refListStatus = cx('sha-ref-list-status', css`
     display: flex;
     align-items: center;
@@ -34,7 +34,19 @@ export const useStyles = createStyles(({ css, cx }, model: IRefListStatusCompone
     }
   `);
 
+  /**
+   * Traces the tag on the canvas, which the plain-text state otherwise gives no clue about. An
+   * outline takes no space, and inset keeps it off the designer's own hover border on the ancestor.
+   */
+  const designerFootprint = cx('sha-ref-list-status-footprint', css`
+    .ant-tag {
+      outline: 1px dashed ${token.colorBorder};
+      outline-offset: -1px;
+    }
+  `);
+
   return {
     refListStatus,
+    designerFootprint,
   };
 });

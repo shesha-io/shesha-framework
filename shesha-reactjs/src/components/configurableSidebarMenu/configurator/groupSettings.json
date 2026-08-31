@@ -28,7 +28,6 @@
       "autoSize": false,
       "showCount": false,
       "allowClear": false,
-      "validate": {},
       "version": 1
     },
     {
@@ -39,7 +38,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "settingsValidationErrors": [],
       "version": 1
     },
     {
@@ -50,7 +48,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "settingsValidationErrors": [],
       "version": 3
     },
     {
@@ -61,7 +58,6 @@
       "labelAlign": "right",
       "parentId": "root",
       "hidden": false,
-      "validate": {},
       "version": 1
     }
   ],

@@ -80,7 +80,14 @@ export interface IDataListBaseProps extends IStyleValue {
 
 interface IDataListActions {
   onSelectRow?: ((index: number, row: ITableRowData) => void) | undefined;
-  onClearSelectedRow?: (() => void) | undefined;
+  /**
+   * Clears `selectedRow`. Required, not optional: in single-selection mode `selectedRow` is
+   * controlled by the caller and is the only source of the rendered checked state, so without this
+   * callback clicking a selected row has no way to deselect it and the checkbox stays ticked.
+   * Mandatory for the same reason `onMultiSelectRows`/`changeSelectedIds` are - the component
+   * cannot write its own selection state back.
+   */
+  onClearSelectedRow: () => void;
   onMultiSelectRows: (rows: RowSelection<ITableRowData>[] | RowSelection<ITableRowData>) => void;
 
   onSelectedIdsChanged?: ((selectedRowIds: string[]) => void) | undefined;

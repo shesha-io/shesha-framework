@@ -2,7 +2,7 @@ import ConfigurableButton from './configurableButton';
 import { useEffect, useRef } from 'react';
 import { BorderOutlined } from '@ant-design/icons';
 import { getSettings } from './settingsForm';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { IButtonComponentProps } from './interfaces';
 import { IButtonGroupItemBaseV0, migrateV0toV1 } from './migrations/migrate-v1';
 import { IToolboxComponent } from '@/interfaces';
@@ -17,7 +17,7 @@ import { defaultStyles } from './util';
 import { getStringPropertyOrUndefined } from '@/utils/object';
 import { getFullSizeWrapperDesignerStyle } from '@/components/formDesigner/utils/stylingUtils';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
-import { useComponentApi } from '@/providers/componentApi/provider';
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { useEvents } from '@/components/formDesigner/components/eventsAndApiValueProcessor';
 
@@ -38,7 +38,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
     const { style, ...restProps } = model;
 
     const inputRef = useRef<HTMLAnchorElement | HTMLButtonElement>(null);
-    const componentApi = useComponentApi();
+    const componentApi = useComponentApiProvider();
     useEffect(() => {
       componentApi?.updateApi<ButtonApi>({
         id: model.id,
@@ -61,7 +61,7 @@ const ButtonComponent: IToolboxComponent<IButtonComponentProps> = {
   },
   getDefaultStyles: () => defaultStyles({} as IButtonComponentProps),
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   initModel: (model) => {
     const buttonModel: IButtonComponentProps = {
       ...model,

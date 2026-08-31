@@ -24,13 +24,20 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                 .addSettingsInputRow({
                   inputs: [
                     { type: 'referenceListAutocomplete', propertyName: 'referenceListId', label: 'Reference List', validate: { required: true }, jsSetting: true },
-                    { type: 'switch', propertyName: 'showReflistName', label: 'Show Reference List Item Name', size: 'small', jsSetting: true, tooltip: 'When checked the DisplayName/RefList Name will be shown.' },
+                    {
+                      type: 'refListDisplaySelector', propertyName: 'itemDisplay', label: 'Display', size: 'small', jsSetting: true,
+                      tooltip: 'Whether to show the reference list item name, its icon, or both. At least one of the two is always shown.' +
+                        ' In JS mode, return an object of the form { showName: true, showIcon: false }.',
+                    },
                   ],
                 })
                 .addSettingsInputRow({
                   inputs: [
-                    { type: 'switch', propertyName: 'showIcon', label: 'Show Icon', size: 'small', jsSetting: true, tooltip: 'When checked the icon will display on the left side of the DisplayName' },
-                    { type: 'switch', propertyName: 'solidBackground', label: 'Show Solid Background', size: 'small', jsSetting: true, tooltip: 'When checked the component will show a coloured badge and display within it in white font the icon and/or the selected reference list item label.' },
+                    {
+                      type: 'switch', propertyName: 'solidBackground', label: 'Show Solid Background', size: 'small', jsSetting: true,
+                      tooltip: 'When checked the component shows a coloured badge, taking its colour from the reference list item, and' +
+                        ' displays the icon and/or name within it in white. When unchecked it reads as plain text.',
+                    },
                   ],
                 }))
               .stdCollapsiblePanel('Validations', (fb) => fb

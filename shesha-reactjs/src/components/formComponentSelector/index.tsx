@@ -1,6 +1,6 @@
 import { Button, Space, Select } from 'antd';
 import { DefaultOptionType } from 'antd/lib/select';
-import { DEFAULT_FORM_SETTINGS, IConfigurableFormComponent, IEditorAdapter, IToolboxComponent, IToolboxComponentBase, IToolboxComponents } from '@/interfaces';
+import { DEFAULT_FORM_SETTINGS, getEmptyFlatMarkup, IConfigurableFormComponent, IEditorAdapter, IToolboxComponent, IToolboxComponentBase, IToolboxComponents } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { nanoid } from '@/utils/uuid';
 import { useFormDesignerComponents } from '@/providers/form/hooks';
@@ -98,10 +98,7 @@ export const FormComponentSelector: FC<IFormComponentSelectorProps> = (props) =>
     };
     if (toolboxComponent.initModel) componentModel = toolboxComponent.initModel(componentModel);
     if (toolboxComponent.migrator) {
-      componentModel = upgradeComponent(componentModel, toolboxComponent, DEFAULT_FORM_SETTINGS, {
-        allComponents: {},
-        componentRelations: {},
-      });
+      componentModel = upgradeComponent(componentModel, toolboxComponent, DEFAULT_FORM_SETTINGS, getEmptyFlatMarkup());
     }
     if (toolboxComponent.linkToModelMetadata && propertyMeta) {
       componentModel = toolboxComponent.linkToModelMetadata(componentModel, propertyMeta);

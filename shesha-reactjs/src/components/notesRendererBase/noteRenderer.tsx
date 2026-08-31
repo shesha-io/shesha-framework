@@ -72,9 +72,11 @@ export const NoteRenderer: FC<NoteRendererProps> = ({ note, allowEdit, allowDele
 
   const userId = auth.loginInfo?.personId;
 
+  const isEditingAllowed = isEditing && allowEdit;
+
   return (
     <div className={styles.commentItemBody}>
-      {allowDelete && !isEditing && note.author?.id === userId && (
+      {allowDelete && !isEditingAllowed && note.author?.id === userId && (
         <Popconfirm
           title="Delete Note"
           description="Are you sure you want to delete this note?"
@@ -86,13 +88,13 @@ export const NoteRenderer: FC<NoteRendererProps> = ({ note, allowEdit, allowDele
           <DeleteOutlined className={styles.deleteIcon} />
         </Popconfirm>
       )}
-      {allowEdit && !isEditing && note.author?.id === userId && (
+      {allowEdit && !isEditingAllowed && note.author?.id === userId && (
         <EditOutlined
           className={styles.editIcon}
           onClick={() => handleEditClick()}
         />
       )}
-      {isEditing ? (
+      {isEditingAllowed ? (
         <div className={styles.editControls}>
           <Input.TextArea
             value={editedText}

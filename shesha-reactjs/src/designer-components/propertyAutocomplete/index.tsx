@@ -1,6 +1,6 @@
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import settingsFormJson from './settingsForm.json';
-import { evaluateString, getStyle, validateConfigurableComponentSettings } from '@/providers/form/utils';
+import { evaluateString, getStyle } from '@/providers/form/utils';
 import { FileSearchOutlined } from '@ant-design/icons';
 import { FormMarkup } from '@/providers/form/models';
 import { IPropertyAutocompleteComponentProps, PropertyAutocompleteComponentDefinition } from './interfaces';
@@ -48,7 +48,7 @@ export const PropertyAutocompleteComponent: PropertyAutocompleteComponentDefinit
     );
   },
   settingsFormMarkup: settingsForm,
-  validateSettings: (model) => validateConfigurableComponentSettings(settingsForm, model),
+
   migrator: (m) => m
     .add<IPropertyAutocompleteComponentProps>(0, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IPropertyAutocompleteComponentProps>(1, (prev) => migrateReadOnly(prev))

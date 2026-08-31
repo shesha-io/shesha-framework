@@ -144,7 +144,6 @@
                                     "propertyName": "name"
                                 }
                             ],
-                            "settingsValidationErrors": [],
                             "version": 10,
                             "mode": "single",
                             "useRawValues": true,
@@ -585,7 +584,6 @@
                             "validate": {
                                 "required": true
                             },
-                            "settingsValidationErrors": [],
                             "maxLength": null,
                             "version": 6,
                             "editMode": {
@@ -1548,7 +1546,6 @@
                                 }
                             },
                             "description": null,
-                            "validate": {},
                             "border": {
                                 "radiusType": "all"
                             }
@@ -1575,7 +1572,6 @@
                             "labelAlign": "right",
                             "parentId": "1vUF3pPcFNkvvKn6q3O59",
                             "hidden": false,
-                            "settingsValidationErrors": [],
                             "version": 0
                         }
                     ],
@@ -1606,8 +1602,6 @@
                             "hidden": false,
                             "isDynamic": false,
                             "description": "",
-                            "validate": {},
-                            "settingsValidationErrors": [],
                             "version": 4,
                             "desktop": {},
                             "tablet": {},
@@ -1639,7 +1633,6 @@
                                             "parentId": "hcBv9ySji5XEWPJNLjNOz",
                                             "hidden": false,
                                             "isDynamic": false,
-                                            "settingsValidationErrors": [],
                                             "version": 0
                                         }
                                     ],
@@ -1663,7 +1656,6 @@
                                             "parentId": "479TB2pkRysWCIxabiw-j",
                                             "hidden": false,
                                             "isDynamic": false,
-                                            "settingsValidationErrors": [],
                                             "version": 0
                                         }
                                     ],
@@ -1688,7 +1680,6 @@
                                             "parentId": "puDwy9ITCklFSVGyvrsEW",
                                             "hidden": false,
                                             "isDynamic": false,
-                                            "settingsValidationErrors": [],
                                             "version": 0
                                         }
                                     ],
@@ -1713,7 +1704,6 @@
                                             "parentId": "fjUPjNWgHmBwuFVaSMF6z",
                                             "hidden": false,
                                             "isDynamic": false,
-                                            "settingsValidationErrors": [],
                                             "version": 0
                                         }
                                     ],
@@ -1736,7 +1726,6 @@
                                             "parentId": "FrhlkvrUWn9FRyk6LQ-OH",
                                             "hidden": false,
                                             "isDynamic": false,
-                                            "settingsValidationErrors": [],
                                             "version": 0
                                         }
                                     ],
@@ -1748,7 +1737,6 @@
                             ],
                             "defaultActiveKey": "permission",
                             "tabType": "line",
-                            "settingsValidationErrors": [],
                             "hidden": {
                                 "_code": "return  !getSettingValue(data.generateAppService);",
                                 "_mode": "code",
@@ -2097,7 +2085,6 @@
                             "parentId": "1132kk2zE7XZCt3PB8ae1",
                             "hidden": false,
                             "isDynamic": false,
-                            "settingsValidationErrors": [],
                             "version": 0
                         }
                     ],
@@ -2109,7 +2096,6 @@
             ],
             "defaultActiveKey": "general",
             "tabType": "line",
-            "settingsValidationErrors": [],
             "version": 4,
             "desktop": {
                 "border": {

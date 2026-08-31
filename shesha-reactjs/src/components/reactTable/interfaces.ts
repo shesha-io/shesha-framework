@@ -287,16 +287,6 @@ export interface IReactTableProps<TData extends ITableRowData = ITableRowData> e
   onRowHoverAction?: IConfigurableActionConfiguration | undefined;
 
   /**
-   * Configurable action for row select event (fires only when row is selected, not deselected)
-   */
-  onRowSelectAction?: IConfigurableActionConfiguration | undefined;
-
-  /**
-   * Configurable action for selection change event (fires on both select and deselect)
-   */
-  onSelectionChangeAction?: IConfigurableActionConfiguration | undefined;
-
-  /**
    * Selected row index
    */
   selectedRowIndex?: number | undefined;

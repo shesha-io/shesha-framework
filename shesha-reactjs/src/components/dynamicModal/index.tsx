@@ -24,7 +24,7 @@ const renderContent = (content: ReactNode): ReactNode => {
 };
 
 export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props) => {
-  const { id, title, isVisible, width, isSubmitted = false, onCancel, onOk, content, footer, onClose, showCloseIcon } = props;
+  const { id, title, isVisible, width, isSubmitted = false, onCancel, onOk, content, footer, onClose, showCloseIcon, wrapClassName } = props;
 
   const { removeModal } = useDynamicModals();
   const isSmall = useMedia('(max-width: 480px)');
@@ -50,6 +50,7 @@ export const DynamicModalWithContent: FC<IDynamicModalWithContentProps> = (props
       destroyOnHidden
       width={isSmall ? '90%' : width ?? '80vw'}
       centered
+      {...(isDefined(wrapClassName) ? { wrapClassName } : {})}
       classNames={{ body: styles.dynamicModalBody }}
       mask={{ closable: false }}
       closable={showCloseIcon ?? true}
@@ -80,6 +81,7 @@ export const DynamicModalWithForm = <Values extends object = object>(props: IDyn
     footerButtons = 'default',
     wrapper,
     showCloseIcon = true,
+    wrapClassName,
   } = props;
 
   const [form] = Form.useForm();
@@ -154,6 +156,7 @@ export const DynamicModalWithForm = <Values extends object = object>(props: IDyn
       onCancel={handleCancel}
       footer={showDefaultSubmitButtons ? undefined : null}
       showCloseIcon={showCloseIcon}
+      wrapClassName={wrapClassName}
       content={(
         <ConfigurableForm<Values> {...formProps}>
           {isDefined(wrapper) ? wrapper({ children: content }) : content}

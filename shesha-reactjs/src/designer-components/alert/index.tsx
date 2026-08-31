@@ -2,7 +2,7 @@ import { CSSProperties, ReactNode, useEffect, useRef } from 'react';
 import * as React from 'react';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { getSettings } from './settingsForm';
 import { ShaIcon } from '@/components/shaIcon';
 import { AlertComponentDefinition, AlertType, IAlertComponentProps } from './interfaces';
@@ -16,7 +16,7 @@ import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { getStringPropertyOrUndefined } from '@/utils/object';
 import { useStyles } from './styles';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
-import { useComponentApi } from '@/providers/componentApi/provider';
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { useEffectOnce } from 'react-use';
 import { AlertApi } from '@/componentsApi/componentApi';
 
@@ -65,7 +65,7 @@ const AlertComponent: AlertComponentDefinition = {
     const { alertType, showIcon, closable, icon } = model;
     let { formMode } = calculatedModel;
 
-    const componentApi = useComponentApi();
+    const componentApi = useComponentApiProvider();
     const inputRef = useRef(null);
     useEffect(() => {
       componentApi?.updateApi<AlertApi>({
@@ -164,7 +164,7 @@ const AlertComponent: AlertComponentDefinition = {
       }));
     }),
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   previewConfiguration: {
     type: 'alert',
     componentName: 'sha-alert',

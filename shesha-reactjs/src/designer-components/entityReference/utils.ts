@@ -1,22 +1,44 @@
 import { IStyleValue } from "@/providers/form/models";
 
+/**
+ * Default appearance of an unconfigured Entity Reference.
+ *
+ * This is the render-time fallback for every slot the model leaves unset, the defaults argument of
+ * the style-freeze migration, and the baseline the theme editor shows — so it covers exactly the
+ * style groups the Appearance tab exposes, and no more.
+ *
+ * The component renders as inline link text rather than a boxed input, so there is deliberately no
+ * border, background or shadow here: those panels are not on the Appearance tab and nothing in the
+ * runtime renders them. What is left is the container geometry (dimensions, styling box) and the
+ * text (font).
+ */
 export const defaultStyles = (): IStyleValue => {
   return {
-    background: { type: 'color', color: 'transparent' },
-    font: { weight: '400', size: 14, type: 'Segoe UI' },
-    border: {
-      border: {
-        all: { width: '1px', style: 'none', color: '#d9d9d9' },
-        top: { width: '1px', style: 'solid', color: '#d9d9d9' },
-        bottom: { width: '1px', style: 'solid', color: '#d9d9d9' },
-        left: { width: '1px', style: 'solid', color: '#d9d9d9' },
-        right: { width: '1px', style: 'solid', color: '#d9d9d9' },
-      },
-      radius: { all: 8, topLeft: 8, topRight: 8, bottomLeft: 8, bottomRight: 8 },
-      borderType: 'all',
-      radiusType: 'all',
+    font: {
+      weight: '400',
+      size: 14,
+      color: '#1677ff',
+      type: 'Segoe UI',
+      align: 'left',
     },
-    dimensions: { width: 'auto', height: '32px', minHeight: '0px', maxHeight: 'auto', minWidth: '0px', maxWidth: 'auto' },
-    stylingBox: '{"paddingLeft":"0","paddingBottom":"0","paddingTop":"0","paddingRight":"0"}',
+    dimensions: {
+      width: 'auto',
+      height: 'auto',
+      minHeight: '0px',
+      maxHeight: 'auto',
+      minWidth: '0px',
+      maxWidth: 'auto',
+    },
+    stylingBoxJson: {
+      _type: 'styleBox',
+      marginBottom: "0",
+      marginLeft: "0",
+      marginRight: "0",
+      marginTop: "0",
+      paddingBottom: "0",
+      paddingLeft: "0",
+      paddingRight: "0",
+      paddingTop: "0",
+    },
   };
 };

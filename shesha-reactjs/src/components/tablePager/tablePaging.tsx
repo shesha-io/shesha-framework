@@ -2,8 +2,9 @@ import { CSSProperties, FC } from 'react';
 import { Pagination, Select } from 'antd';
 import { useMedia } from 'react-use';
 import { useStyles } from './style';
+import { IStyleValue } from '@/providers';
 
-export interface ITablePagerBaseProps {
+export interface ITablePagerBaseProps extends Pick<IStyleValue, 'font' | 'stylingBoxJson'> {
   /** Whether this component */
   disabled?: boolean | undefined;
 
@@ -33,20 +34,22 @@ export interface ITablePagerBaseProps {
   style?: CSSProperties | undefined;
 }
 
-export const TablePaging: FC<ITablePagerBaseProps> = ({
-  disabled = false,
-  pageSizeOptions,
-  currentPage,
-  totalRows,
-  selectedPageSize,
-  showSizeChanger = true,
-  showTotalItems = true,
-  setCurrentPage,
-  changePageSize,
-  style,
-}) => {
+export const TablePaging: FC<ITablePagerBaseProps> = (props) => {
   const isWider = useMedia('(min-width: 1202px)');
-  const { styles } = useStyles({ style });
+  const { styles } = useStyles({ font: props.font, stylingBoxJson: props.stylingBoxJson });
+
+  const {
+    disabled = false,
+    pageSizeOptions,
+    currentPage,
+    totalRows,
+    selectedPageSize,
+    showSizeChanger = true,
+    showTotalItems = true,
+    setCurrentPage,
+    changePageSize,
+    style,
+  } = props;
 
   const onPageNumberChange = (page: number, pageSize: number): void => {
     setCurrentPage(page);
@@ -86,6 +89,7 @@ export const TablePaging: FC<ITablePagerBaseProps> = ({
       />
       {showSizeChanger && (
         <Select
+          disabled={disabled}
           size="small"
           className={styles.dropdown}
           classNames={{ popup: { root: styles.popup } }}

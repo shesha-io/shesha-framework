@@ -1,15 +1,11 @@
 import { useMemo, useRef } from 'react';
 import { DataList } from '@/components/dataList';
-import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import classNames from 'classnames';
 import { IDataListWithDataSourceProps } from './model';
 import { FCUnwrapped, useConfigurableAction, useConfigurableActionDispatcher, useForm } from '@/providers';
 import { BackendRepositoryType, ICreateOptions, IDeleteOptions, IUpdateOptions } from '@/providers/dataTable/repository/backendRepository';
-import { useStyles } from '@/components/dataList/styles/styles';
 import { executeScript, useAvailableConstantsData } from '@/providers/form/utils';
 import { useDeepCompareMemo } from '@/hooks';
 import { YesNoInherit } from '@/interfaces';
-import EmptyState from '@/components/emptyState';
 import { OnSaveHandler, OnSaveSuccessHandler } from '@/components/dataTable/interfaces';
 import { useComponentValidation } from '@/providers/validationErrors';
 import { parseFetchError } from '@/designer-components/dataTable/utils';
@@ -19,6 +15,9 @@ import { ActionRefType } from '@/components/dataList/models';
 import { ITableRowData } from '@/providers/dataTable/interfaces';
 import { useMetadataOrUndefined } from '@/providers/metadata';
 import { useEnsureFetchColumns } from '@/designer-components/dataTable/table/useEnsureFetchColumns';
+import { MAX_NUMBER_OF_FETCH_COLS, SUPPORTED_FETCH_DATA_TYPES } from '@/designer-components/dataTable/table/utils';
+import { asPropertiesArray } from '@/interfaces/metadata';
+import { toCamelCase } from '@/utils/string';
 
 const DataListControl: FCUnwrapped<IDataListWithDataSourceProps, "dataSourceInstance"> = (props) => {
   const {
@@ -54,7 +53,6 @@ const DataListControl: FCUnwrapped<IDataListWithDataSourceProps, "dataSourceInst
     getRepository,
     modelType,
     grouping,
-    groupingColumns,
     setRowData,
     fetchTableDataError,
     selectedRow,
@@ -64,8 +62,20 @@ const DataListControl: FCUnwrapped<IDataListWithDataSourceProps, "dataSourceInst
     setMultiSelectedRow,
   } = dataSource;
   const metadata = useMetadataOrUndefined()?.metadata;
-  useEnsureFetchColumns(props.id, dataSource, metadata);
-  const { styles } = useStyles();
+  // a DataList binds an item form, not grid columns, so it needs the wider fetch set
+  const fetchColumnsOptions = useMemo(
+    () => ({ supportedDataTypes: SUPPORTED_FETCH_DATA_TYPES, maxColumns: MAX_NUMBER_OF_FETCH_COLS }),
+    [],
+  );
+  useEnsureFetchColumns(props.id, dataSource, metadata, undefined, fetchColumnsOptions);
+  const groupingMetadata = useMemo(() => {
+    const properties = asPropertiesArray(metadata?.properties, []);
+    return (grouping ?? [])
+      .map((g) => properties.find((p) => toCamelCase(p.path) === g.propertyName))
+      .filter(isDefined);
+  }, [grouping, metadata]);
+  // a group owns the full width of the list, so its items can only stack vertically
+  const effectiveOrientation = (grouping?.length ?? 0) > 0 ? 'vertical' : orientation;
   const appContext = useAvailableConstantsData();
   const { formMode } = useForm();
   const isDesignMode = formMode === 'designer';
@@ -195,12 +205,12 @@ const DataListControl: FCUnwrapped<IDataListWithDataSourceProps, "dataSourceInst
         creationTime: new Date().toISOString(),
         lastModificationTime: new Date().toISOString(),
       };
-      return props.orientation === 'vertical'
+      return effectiveOrientation === 'vertical'
         ? [sampleData]
         : [sampleData, { ...sampleData, id: '2', name: 'Sample Item 2' }, { ...sampleData, id: '3', name: 'Sample Item 3' }, { ...sampleData, id: '4', name: 'Sample Item 4' }];
     }
     return tableData;
-  }, [isDesignMode, tableData, props.orientation]);
+  }, [isDesignMode, tableData, effectiveOrientation]);
 
   // http, moment, setFormData
   const performOnRowDeleteSuccessAction: OnSaveSuccessHandler = !onRowDeleteSuccessAction
@@ -313,56 +323,43 @@ const DataListControl: FCUnwrapped<IDataListWithDataSourceProps, "dataSourceInst
 
   const width = props.modalWidth === 'custom' && props.customWidth ? `${props.customWidth}${props.widthUnits}` : props.modalWidth;
 
-  if (groupingColumns.length > 0 && orientation === "wrap") {
-    return <EmptyState noDataText="Configuration Error" noDataSecondaryText="Wrap Orientation is not supported when Grouping is enabled." />;
-  }
-
-
   return (
-    <ConfigurableFormItem
-      model={{ ...props, hideLabel: true }}
-      className={classNames(
-        styles.shaDatalistComponent,
-        { horizontal: props.orientation === 'horizontal' && appContext.form?.formMode !== 'designer' }, //
-      )}
-      wrapperCol={{ md: 24 }}
-    >
-      <DataList
-        {...props}
-        onRowDeleteSuccessAction={props.onRowDeleteSuccessAction}
-        style={allStyles?.fullStyle as string}
-        createFormId={props.createFormId ?? props.formId}
-        createFormType={props.createFormType ?? props.formType}
-        canAddInline={canAction(canAddInline)}
-        canEditInline={canAction(canEditInline)}
-        canDeleteInline={canAction(canDeleteInline)}
-        noDataIcon={noDataIcon}
-        noDataSecondaryText={noDataSecondaryText}
-        noDataText={noDataText}
-        entityType={modelType ?? undefined}
-        onSelectRow={setSelectedRow}
-        onClearSelectedRow={clearSelectedRow}
-        onMultiSelectRows={setMultiSelectedRow}
-        selectedRow={selectedRow}
-        selectedRows={selectedRows}
-        records={data}
-        showEditIcons={showEditIcons}
-        grouping={grouping}
-        groupingMetadata={groupingColumns.map((item) => item.metadata).filter(isDefined)}
-        isFetchingTableData={isFetchingTableData}
-        selectedIds={selectedIds}
-        changeSelectedIds={changeSelectedIds}
-        createAction={creater}
-        updateAction={updater}
-        deleteAction={deleter}
-        actionRef={dataListRef}
-        modalWidth={width ?? '60%'}
-        onListItemClick={handleListItemClick}
-        onListItemHover={handleListItemHover}
-        onListItemSelect={handleListItemSelect}
-        onSelectionChange={handleSelectionChange}
-      />
-    </ConfigurableFormItem>
+    <DataList
+      {...props}
+      orientation={effectiveOrientation}
+      onRowDeleteSuccessAction={props.onRowDeleteSuccessAction}
+      style={allStyles?.fullStyle as string}
+      createFormId={props.createFormId ?? props.formId}
+      createFormType={props.createFormType ?? props.formType}
+      canAddInline={canAction(canAddInline)}
+      canEditInline={canAction(canEditInline)}
+      canDeleteInline={canAction(canDeleteInline)}
+      noDataIcon={noDataIcon}
+      noDataSecondaryText={noDataSecondaryText}
+      noDataText={noDataText}
+      entityType={modelType ?? undefined}
+      onSelectRow={setSelectedRow}
+      onClearSelectedRow={clearSelectedRow}
+      onMultiSelectRows={setMultiSelectedRow}
+      selectedRow={selectedRow}
+      selectedRows={selectedRows}
+      records={data}
+      showEditIcons={showEditIcons}
+      grouping={grouping}
+      groupingMetadata={groupingMetadata}
+      isFetchingTableData={isFetchingTableData}
+      selectedIds={selectedIds}
+      changeSelectedIds={changeSelectedIds}
+      createAction={creater}
+      updateAction={updater}
+      deleteAction={deleter}
+      actionRef={dataListRef}
+      modalWidth={width ?? '60%'}
+      onListItemClick={handleListItemClick}
+      onListItemHover={handleListItemHover}
+      onListItemSelect={handleListItemSelect}
+      onSelectionChange={handleSelectionChange}
+    />
   );
 };
 

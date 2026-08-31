@@ -1,15 +1,5 @@
 import { createStyles } from '@/styles';
 
-/**
- * Largest share of a card's width a label may take, so the value beside it always keeps room.
- *
- * A label sizes to its own text but stops here; anything longer wraps onto a second line *within* that share
- * (the card's form sets `labelWrap`, so it wraps rather than being clipped) while its value stays to the
- * right. At 60% a ~200px card gives the label ~115px — enough for a two-word label at the bold 14px the
- * layout applies — and leaves ~75px for the value.
- */
-const MAX_LABEL_SHARE = '60%';
-
 export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
   const shaDatalistComponentItemCheckbox = "sha-datalist-component-item-checkbox";
   const shaDatalistComponentDivider = "sha-datalist-component-divider";
@@ -41,13 +31,27 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
     
         .${shaDatalistComponentItemCheckbox} {
             display: flex;
-            align-items: baseline;
+            /* Centre the selection control on its item, not on a baseline. Baseline alignment tied
+               the control to the first text baseline *inside* the rendered child form, so its
+               position depended entirely on whatever that form happened to start with - measured
+               anywhere from 4px to past the bottom of the item across three forms. */
+            align-items: center;
             padding: unset;
             margin: unset;
             padding-left: 5px;
             margin-left: unset;
             cursor: unset;
-    
+
+            /* antd's own 'align-self: center' on the box would otherwise override the line above,
+               and it centres over the flex line rather than the item. Restating it here keeps the
+               two shapes (control as a sibling of the item, and antd's own wrapper) consistent.
+               The row gap lives on the row wrapper, so the line is exactly the item's border box
+               and centring lands on the card itself. */
+            > .${prefixCls}-checkbox,
+            > .${prefixCls}-radio {
+                align-self: center;
+            }
+
             &.selected {
                 background-color: ${token.colorPrimaryBgHover};
                 padding-bottom: 8px;
@@ -121,32 +125,13 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
                 }
             }
 
-            /*
-             * Cards in 'wrap'/'horizontal' orientation are only as wide as the configured item width, so a
-             * proportional labelCol ({ span: 6 } by default) collapses to a fraction of the label's width and
-             * antd clips it - .ant-form-item-label is 'overflow: hidden'. Size each label to its own text
-             * instead and give the value the space to its right.
-             *
-             * 'flex-wrap: nowrap' is the important part. .ant-row is 'flex-flow: row wrap', and flex line
-             * breaking compares items' hypothetical sizes *before* shrinking, so the value drops onto its own
-             * line as soon as label + value content exceeds the card - no amount of flex-shrink prevents it.
-             * Keeping the row on one line means both shrink to fit instead, and the value stays beside its
-             * label at every card width.
-             *
-             * Scoped to '-horizontal' items so components configured for a vertical layout keep theirs.
-             */
+            /* keep the value beside its label in a narrow card; the label keeps its labelCol width so labels line up */
             &.wrap,
             &.horizontal {
                 .${prefixCls}-form-item-horizontal > .${prefixCls}-form-item-row {
                     flex-wrap: nowrap;
 
-                    > .${prefixCls}-form-item-label {
-                        flex: 0 1 auto;
-                        max-width: ${MAX_LABEL_SHARE};
-                    }
-
                     > .${prefixCls}-form-item-control {
-                        flex: 1 1 auto;
                         min-width: 0;
                         max-width: 100%;
                     }

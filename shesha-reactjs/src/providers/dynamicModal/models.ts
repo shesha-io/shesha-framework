@@ -27,6 +27,13 @@ export interface IModalBaseProps {
   onCancel?: (() => void) | undefined;
 
   showCloseIcon?: boolean | undefined;
+
+  /**
+   * Optional class applied to the modal wrapper. The modal is portalled to the body, so a caller
+   * that wants it to pick up its own appearance cannot reach it with a descendant selector and
+   * passes a class here instead. Purely additive: callers that omit it are unaffected.
+   */
+  wrapClassName?: string | undefined;
 }
 
 export type ModalFooterButtons = 'default' | 'custom' | 'none';

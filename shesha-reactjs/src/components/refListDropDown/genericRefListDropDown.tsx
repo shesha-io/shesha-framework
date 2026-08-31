@@ -168,7 +168,7 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
         ref={selectRef}
         {...commonSelectProps}
         popupMatchSelectWidth={false}
-        style={{ width: 'max-content', height: 'max-content' }}
+        {...(style ? { style } : {})}
         placeholder={placeholder}
         labelRender={(props) => {
           const option = options.find((o) => o.value === props.value);
@@ -203,6 +203,10 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
       {...(mode ? { mode } : {})}
       placeholder={placeholder}
       {...(displayStyle === 'tags' ? {
+        /* Single-select renders the selection through `labelRender`; multi-select renders each
+           selected item through `tagRender` instead. Supplying only `labelRender` left multi-select
+           on antd's default tag, which shows the remove icon but none of the item's label, icon or
+           colour — the same pair the `values` data source renders, so the two look identical. */
         labelRender: (props) => {
           const option = options.find((o) => o.value === props.value);
           return (
@@ -215,7 +219,27 @@ export const GenericRefListDropDown = <TValue = unknown>(props: IGenericRefListD
               tagStyle={tagStyle}
               variant={tagVariant}
               showItemName={showItemName}
-              label={option?.label}
+              label={option?.label ?? props.label}
+            />
+          );
+        },
+        tagRender: (props) => {
+          const option = options.find((o) => o.value === props.value);
+          return (
+            <ReflistTag
+              value={option?.value}
+              description={option?.description}
+              /* Border and background colour come from the reference list item itself; a colourless
+                 item falls through to the configured tag Appearance. */
+              color={option?.color}
+              icon={option?.icon}
+              showIcon={showIcon}
+              tagStyle={tagStyle}
+              variant={tagVariant}
+              showItemName={showItemName}
+              label={option?.label ?? props.label}
+              closable={props.closable}
+              onClose={props.onClose}
             />
           );
         },

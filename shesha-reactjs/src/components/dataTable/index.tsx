@@ -5,6 +5,7 @@ import * as React from 'react';
 import { Column, ColumnInstance, Row, SortingRule, TableProps } from 'react-table';
 import { usePrevious } from 'react-use';
 import {
+  getEmptyFlatMarkup,
   IFlatComponentsStructure,
   ROOT_COMPONENT_KEY,
   useConfigurableActionDispatcher,
@@ -284,7 +285,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     const currentId = store.selectedRow?.id;
     if (rowId !== currentId) {
       setSelectedRow(index, row);
-      if (handleRowSelect) {
+      // in multiple mode the selectedIds effect owns row-select dispatch
+      if (handleRowSelect && mode !== 'multiple') {
         handleRowSelect(row, index);
       }
     } else {
@@ -362,27 +364,29 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   }, [dblClickHandler, handleRowDoubleClick]);
 
   useEffect(() => {
-    if (handleSelectionChange && previousIds !== undefined) {
-      // Check if the selection actually changed by comparing the arrays
-      const currentIds = selectedIds;
+    if (previousIds === undefined) return;
+    const currentIds = selectedIds;
 
-      // Don't trigger on first selection (when moving from no selection to first selection)
-      if (previousIds.length === 0 && currentIds.length > 0) {
-        return; // Skip first selection - only fire when moving FROM one selection TO another
-      }
+    // Compare sorted arrays for efficient comparison
+    const currentSorted = [...currentIds].sort();
+    const prevSorted = [...previousIds].sort();
 
-      // Compare sorted arrays for efficient comparison
-      const currentSorted = [...currentIds].sort();
-      const prevSorted = [...previousIds].sort();
+    const hasChanged = currentSorted.length !== prevSorted.length ||
+      currentSorted.some((id, index) => id !== prevSorted[index]);
+    if (!hasChanged) return;
 
-      const hasChanged = currentSorted.length !== prevSorted.length ||
-        currentSorted.some((id, index) => id !== prevSorted[index]);
-
-      if (hasChanged) {
-        handleSelectionChange(currentIds);
-      }
+    // row select fires only for rows that transitioned to selected, never on deselect
+    if (handleRowSelect) {
+      const addedIds = currentIds.filter((id) => !previousIds.includes(id));
+      tableData.forEach((row, rowIndex) => {
+        if (typeof row.id === 'string' && addedIds.includes(row.id)) handleRowSelect(row, rowIndex);
+      });
     }
-  }, [selectedIds, handleSelectionChange, previousIds]);
+
+    if (handleSelectionChange) {
+      handleSelectionChange(currentIds);
+    }
+  }, [selectedIds, handleSelectionChange, handleRowSelect, previousIds, tableData]);
 
   const toolboxComponents = useFormDesignerComponents();
   const shaForm = useShaFormInstanceOrUndefined();
@@ -473,7 +477,8 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
           columnItem.minWidth && columnItem.maxWidth && columnItem.minWidth === columnItem.maxWidth
             ? columnItem.minWidth
             : undefined;
-        const width = strictWidth ?? columnItem.width;
+        // fall back to the configured minWidth so it acts as the initial width instead of losing to the 150px default
+        const width = strictWidth ?? columnItem.width ?? columnItem.minWidth;
 
         const cellStyleAccessor = getCellStyleAccessor(columnItem);
         const cellRenderer = getCellRenderer<ITableRowData>(columnItem, columnItem.metadata, shaForm);
@@ -594,10 +599,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
     allowEdit: boolean,
     componentAccessor: (col: ITableDataColumn) => IFieldComponentProps | undefined,
   ): IFlatComponentsStructure => {
-    const result: IFlatComponentsStructure = {
-      allComponents: {},
-      componentRelations: {},
-    };
+    const result: IFlatComponentsStructure = getEmptyFlatMarkup();
     // don't calculate components settings when it's not required
     if (!allowEdit) return result;
 
@@ -935,8 +937,6 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
     onRowClickAction: onRowClick,
     onRowHoverAction: onRowHover,
-    onRowSelectAction: onRowSelect,
-    onSelectionChangeAction: onSelectionChange,
 
     cellTextColor: props.cellTextColor,
     cellBackgroundColor: props.cellBackgroundColor,

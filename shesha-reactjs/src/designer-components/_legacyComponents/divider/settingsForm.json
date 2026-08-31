@@ -97,7 +97,6 @@
                         "autoSize": false,
                         "showCount": false,
                         "allowClear": false,
-                        "validate": {},
                         "description": "A script that returns the style of the element as an object. This should conform to CSSProperties",
                         "exposedVariables": [
                           {
@@ -119,8 +118,6 @@
                         "type": "styleBox",
                         "propertyName": "stylingBox",
                         "parentId": "f47668c1-e424-4d18-850e-6d712e48211d",
-                        "validate": {},
-                        "settingsValidationErrors": [],
                         "jsSetting": false
                       }
                   ]

@@ -1,68 +1,32 @@
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
+import { resolveRefListDisplay } from '@/components/refListDisplaySelector/models';
 import { RefListStatus } from '@/components/refListStatus/index';
 import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateReadOnly, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
-import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
+
 import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { DataTypes } from '@/interfaces/dataTypes';
 import { IInputStyles, useForm } from '@/providers';
-import { useComponentApi } from '@/providers/componentApi/provider';
-import { useReferenceListItem } from '@/providers/referenceListDispatcher';
-import { IReferenceListIdentifier } from '@/interfaces/referenceList';
+import { useComponentApiProvider } from '@/providers/componentApi/provider';
+import { useComponentModel } from '@/providers/form/providers/formMarkupProvider';
+import { isPropertySettings } from '../_settings/utils/utils';
 import { isDefined } from '@/utils/nullables';
 import { FileSearchOutlined } from '@ant-design/icons';
 import { Alert } from 'antd';
-import { FC, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { RefListStatusApi } from '../../componentsApi/componentApi';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import { ALL_INPUT_EVENTS_WITHOUT_CHANGE, getComponentEvents } from '../_common/events';
 import { IRefListStatusComponentProps, IRefListStatusComponentPropsV1, RefListStatusComponentDefinition } from './interfaces';
+import { migrateItemDisplay } from './migrations/migrateItemDisplay';
 import { IRefListStatusPropsV0 } from './migrations/models';
 import { getSettings } from './settings';
 import { useStyles } from './styles';
 import { defaultStyles } from './utils';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
-
-interface IRefListStatusReadOnlyProps {
-  model: IRefListStatusComponentProps;
-  referenceListId: IReferenceListIdentifier;
-  value: number | undefined;
-  onItemTextChange: (itemText: string | null | undefined) => void;
-}
-
-/**
- * Read-only rendering of the status.
- *
- * This resolves the item text itself rather than reusing the `itemText` the editable branch reports
- * through `onItemTextChange`: that callback only fires from `RefListStatus`, which read-only mode
- * never renders, so the text would otherwise stay undefined and the field would render empty.
- *
- * Resolving it through the hook also keeps it in step with `value` — the hook re-reads the list
- * whenever the value changes.
- */
-const RefListStatusReadOnly: FC<IRefListStatusReadOnlyProps> = ({ model, referenceListId, value, onItemTextChange }) => {
-  const item = useReferenceListItem(referenceListId.module, referenceListId.name, value);
-  const itemText = item.data?.item;
-
-  /* Reported so the component API exposes `itemText` in read-only mode too, matching the editable
-     branch. */
-  useEffect(() => {
-    onItemTextChange(itemText);
-  }, [itemText, onItemTextChange]);
-
-  return (
-    <ReadOnlyDisplayFormItem
-      value={itemText}
-      enableFullStyle={model.enableStyleOnReadonly}
-      style={model.styleCss}
-      styleValue={model}
-    />
-  );
-};
 
 const RefListStatusComponent: RefListStatusComponentDefinition = {
   allowInherit: true,
@@ -75,12 +39,20 @@ const RefListStatusComponent: RefListStatusComponentDefinition = {
   icon: <FileSearchOutlined />,
   Factory: ({ model, apiContext }) => {
     const { formMode } = useForm();
-    const { solidBackground = true, referenceListId, showReflistName = true } = model;
+    const { solidBackground = true, referenceListId } = model;
+
+    const { showName, showIcon } = resolveRefListDisplay(model.itemDisplay);
+
+    /* The raw markup still carries the unevaluated setting, which is the only way to tell a JS
+       display apart from a chosen mode: by the time the model reaches here the evaluators have all
+       been resolved. The canvas needs to know because it has no data to resolve them against. */
+    const rawModel: Partial<IRefListStatusComponentProps> = useComponentModel(model.id);
+    const displayIsDynamic = isPropertySettings(rawModel.itemDisplay) && rawModel.itemDisplay._mode === 'code';
 
     const [itemText, setItemText] = useState<string | undefined>(undefined);
     const onItemTextChange = useCallback((value: string | null | undefined) => setItemText(value ?? undefined), []);
 
-    const componentApi = useComponentApi();
+    const componentApi = useComponentApiProvider();
 
     useEffect(() => {
       componentApi?.updateApi<RefListStatusApi>({
@@ -95,7 +67,7 @@ const RefListStatusComponent: RefListStatusComponentDefinition = {
     }, [apiContext, componentApi, itemText, model.componentName, model.id]);
     useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
-    const { styles } = useStyles(model);
+    const { styles, cx } = useStyles(model);
 
     if (!isDefined(referenceListId)) {
       return formMode === 'designer'
@@ -113,34 +85,30 @@ const RefListStatusComponent: RefListStatusComponentDefinition = {
     return (
       <ConfigurableFormItem<number> model={{ ...model }}>
         {(value, _onChange, _propertyName, ctx) => {
-          // Read only renders the value as plain text; disabled keeps the tag but greys it out and
-          // blocks pointer interaction. The two are independent settings of Interaction Mode.
-          return model.readOnly === true
-            ? (
-              <RefListStatusReadOnly
-                model={model}
-                referenceListId={referenceListId}
+          // The tag renders in every interaction mode. Read only is a status tag's natural state -
+          // rendering it as plain text instead threw away the icon, colour and badge, which is the
+          // whole of what the component displays. Disabled keeps the tag but greys it out and
+          // blocks pointer interaction; the two are independent settings of Interaction Mode.
+          return (
+            <div
+              className={cx(styles.refListStatus, formMode === 'designer' ? styles.designerFootprint : undefined)}
+              {...getComponentEvents<number>(model, ALL_INPUT_EVENTS_WITHOUT_CHANGE, ctx, value, DataTypes.number)}
+            >
+              <RefListStatus
                 value={value ?? undefined}
+                referenceListId={referenceListId}
+                propertyName={model.propertyName}
+                showIcon={showIcon}
+                showReflistName={showName}
+                solidBackground={solidBackground}
+                isDesigner={formMode === 'designer'}
+                displayIsDynamic={displayIsDynamic}
+                readOnly={model.readOnly === true}
+                disabled={model.disabled === true}
                 onItemTextChange={onItemTextChange}
               />
-            )
-            : (
-              <div
-                className={styles.refListStatus}
-                {...getComponentEvents<number>(model, ALL_INPUT_EVENTS_WITHOUT_CHANGE, ctx, value, DataTypes.number)}
-              >
-                <RefListStatus
-                  value={value ?? undefined}
-                  referenceListId={referenceListId}
-                  showIcon={model.showIcon}
-                  showReflistName={showReflistName}
-                  solidBackground={solidBackground}
-                  isDesigner={formMode === 'designer'}
-                  disabled={model.disabled === true}
-                  onItemTextChange={onItemTextChange}
-                />
-              </div>
-            );
+            </div>
+          );
         }}
       </ConfigurableFormItem>
     );
@@ -198,10 +166,20 @@ const RefListStatusComponent: RefListStatusComponentDefinition = {
     .add<IRefListStatusComponentPropsV1>(6, (prev, context) => context.isNew === true
       ? prev
       : { ...migratePrevStyles(prev, defaultStyles()) })
-    .add<IRefListStatusComponentProps>(7, (prev) => migrateReadOnly(prev))
-    .add<IRefListStatusComponentProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
+    .add<IRefListStatusComponentPropsV1>(7, (prev) => migrateReadOnly(prev))
+    .add<IRefListStatusComponentPropsV1>(8, (prev, context) => {
+      const migrated = migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev));
+      // stylingBox is a style migration, so it is for existing components only.
+      return context.isNew === true ? migrated : migrateStylingBoxToJson(migrated);
+    })
+    .add<IRefListStatusComponentProps>(9, (prev, context) => {
+      if (context.isNew === true) return prev;
+
+      const { showReflistName, showIcon, ...rest } = prev;
+      return { ...rest, ...migrateItemDisplay(showReflistName, showIcon) };
+    }),
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   linkToModelMetadata: (model, metadata): IRefListStatusComponentProps => {
     return {
       ...model,
@@ -221,7 +199,7 @@ const RefListStatusComponent: RefListStatusComponentDefinition = {
     propertyName: 'refListStatusAppearance',
     label: 'Reference List Status Label',
     version: 'latest',
-    showReflistName: true,
+    itemDisplay: 'name',
     solidBackground: true,
   },
 };

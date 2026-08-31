@@ -1,7 +1,7 @@
 import { createNamedContext } from '@/utils/react';
 import { DownloadFileArgs, FileListReference, ReplaceFilePayload, StoredFileModel } from '../../utils/storedFile/models';
 import { SubscribeFunc } from '@/utils/subscriptions/subscriptionManager';
-import { OnFileDownloaded, OnFileListChanged } from './models';
+import { OnFileAction, OnFileDownloaded, OnFileListChanged } from './models';
 
 export type AttachmentsEditorEvents = 'fileList';
 
@@ -15,12 +15,15 @@ export interface IAttachmentsEditorActions {
   init: (fileListReference: FileListReference) => void;
   setOnFileListChanged: (onChange: OnFileListChanged | undefined) => void;
   setOnFileDownloaded: (onFileDownloaded: OnFileDownloaded | undefined) => void;
+  setOnFileAction: (onFileAction: OnFileAction | undefined) => void;
 
   subscribe: SubscribeFunc<AttachmentsEditorEvents, IAttachmentsEditorActions>;
 }
 
 export interface IAttachmentsEditorState {
   readonly fileList: StoredFileModel[];
+  /** Whether the last fetch that mattered failed, so the list can say so instead of reading empty. */
+  readonly fetchFilesError: boolean;
 }
 
 export type IAttachmentsEditorInstance = IAttachmentsEditorActions & IAttachmentsEditorState;

@@ -5,7 +5,7 @@ import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import { ConfigurableFormItemContext } from '@/components/formDesigner/components/model';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { executeScriptSync } from '@/providers/form/utils/scripts';
 import { DataTypes } from '@/interfaces/dataTypes';
@@ -250,7 +250,7 @@ const PhoneNumberComponent: PhoneNumberComponentDefinition = {
     );
   },
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   getExtraValidationRules: (model) => [
     {
       validator: (_rule, value: PhoneNumberValue) => {

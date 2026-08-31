@@ -1,9 +1,14 @@
 import { DatabaseOutlined } from '@ant-design/icons';
-import { validateConfigurableComponentSettings } from '@/providers/form/utils';
+
 import { TableContext } from './tableContext';
-import { TableContextComponentDefinition } from './models';
+import { ITableContextComponentProps, TableContextComponentDefinition } from './models';
 import { getSettings } from './settingsForm';
 import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/utils';
+import { isNullOrWhiteSpace } from '@/utils';
+import { migratePermissionsToVisiblePermissions } from '@/designer-components/_common-migrations/migratePermissionsToVisiblePermissions';
+import { migrateHiddenToVisible } from '@/designer-components/_common-migrations';
+import { DataContextApi } from '@/componentsApi/componentApi';
+import { useComponentApi } from '@/providers/componentApi/hooks';
 
 /**
  * Data Context component (dataContext)
@@ -11,13 +16,15 @@ import { isEntityTypeIdEmpty } from '@/providers/metadataDispatcher/entities/uti
  * Legacy datatableContext components will be automatically migrated to this type.
  */
 const TableContextComponent: TableContextComponentDefinition = {
+  allowInherit: true,
   type: 'dataContext',
   isInput: true,
   isOutput: true,
   name: 'Data Context',
   icon: <DatabaseOutlined />,
-  Factory: ({ model }) => {
-    return model.hidden ? null : <TableContext {...model} />;
+  Factory: ({ model, form }) => {
+    useComponentApi<DataContextApi>({ model, typeName: 'DataContextApi' });
+    return model.hidden === true ? null : <TableContext {...model} formMode={form.formMode} />;
   },
   initModel: (model) => {
     // Set defaults for new components (when dragging from toolbox)
@@ -32,21 +39,25 @@ const TableContextComponent: TableContextComponentDefinition = {
       sortMode: 'standard' as const,
       strictSortOrder: 'asc' as const,
       allowReordering: 'no' as const,
+      visible: model.visible ?? true,
     } : model;
 
     return initialModel;
   },
+  actualModelPropertyFilter: (name) => name !== 'permanentFilter',
   settingsFormMarkup: (data) => getSettings(data),
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   getFieldsToFetch: (propertyName, rawModel) => {
     return rawModel.sourceType === 'Form' ? [propertyName] : [];
   },
   validateModel: (model, addModelError) => {
     if (!model.sourceType) addModelError('sourceType', 'Select `Source type` on the settings panel');
     if (model.sourceType === 'Entity' && isEntityTypeIdEmpty(model.entityType)) addModelError('entityType', 'Select `Entity Type` on the settings panel');
-    if (model.sourceType === 'Url' && !model.endpoint) addModelError('endpoint', 'Select `Custom Endpoint` on the settings panel');
-    if (model.sourceType === 'Form' && !model.propertyName) addModelError('propertyName', 'Select `propertyName` on the settings panel');
+    if (model.sourceType === 'Url' && isNullOrWhiteSpace(model.endpoint)) addModelError('endpoint', 'Select `Custom Endpoint` on the settings panel');
+    if (model.sourceType === 'Form' && isNullOrWhiteSpace(model.propertyName)) addModelError('propertyName', 'Select `propertyName` on the settings panel');
   },
+  migrator: (m) => m
+    .add<ITableContextComponentProps>(5, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev))),
 };
 
 export default TableContextComponent;

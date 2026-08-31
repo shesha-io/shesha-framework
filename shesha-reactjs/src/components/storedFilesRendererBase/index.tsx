@@ -25,6 +25,7 @@ import Dragger, { DraggerProps } from 'antd/lib/upload/Dragger';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
 import { CSSProperties, FC, useCallback, useEffect, useRef, useState } from 'react';
 import * as React from 'react';
+import classNames from 'classnames';
 import { isValidGuid } from '../formDesigner/components/utils';
 import { useStyles } from './styles/styles';
 import { ButtonGroupItemProps } from '@/providers/buttonGroupConfigurator/models';
@@ -32,10 +33,8 @@ import { ButtonGroup } from '@/designer-components/button/buttonGroup/buttonGrou
 import { FormIdentifier } from '@/providers/form/models';
 import { DataContextProvider } from '@/providers/dataContextProvider';
 import { FileVersionsButton, ExtraContent, PLACEHOLDER_FILE, getListTypeAndLayout, fetchStoredFile, FileNameDisplay, resolveThumbnailSize } from './utils';
-import classNames from 'classnames';
 import { isFileTypeAllowed } from '@/utils/fileValidation';
 import { ShaIcon, IconType } from '@/components/shaIcon';
-import { calculateFileUploadStyles } from '@/utils/fileUploadStyles';
 import { getFileExtension } from '@/utils/storedFile/utils';
 import { DownloadFileArgs, ReplaceFilePayload, StoredFileModel } from '@/utils/storedFile/models';
 import { useHttpClient } from '@/providers/sheshaApplication/publicApi/http/hooks';
@@ -49,6 +48,34 @@ interface IUploaderFileTypes {
   name: string;
   type: string;
 }
+
+/**
+ * Class names supplied by the owning component for the parts it styles from its Appearance tab.
+ *
+ * The popover entries exist because antd portals every popup to the document body: the popup is
+ * outside this component's DOM, so a descendant selector from the list's own class cannot reach it
+ * and the class has to travel through the popup-specific prop instead.
+ */
+export interface IStoredFilesClassNames {
+  /** Scrolling box around the whole list. */
+  container?: string | undefined;
+  /** One file — the thumbnail box in thumbnail mode, the row in text mode. */
+  fileItem?: string | undefined;
+  /** Files the current user has already downloaded. */
+  downloadedFile?: string | undefined;
+  /** Badge marking a downloaded file. */
+  downloadedIcon?: string | undefined;
+  /** Hover popover holding the per-file action buttons. */
+  actionsPopover?: string | undefined;
+  /** Version-history popover. */
+  historyPopover?: string | undefined;
+  /** Delete-confirmation popover. */
+  confirmPopover?: string | undefined;
+  /** Full-screen image preview opened from a thumbnail. */
+  previewMask?: string | undefined;
+}
+
+const EMPTY_CLASS_NAMES: IStoredFilesClassNames = {};
 
 export interface IStoredFilesRendererBaseProps extends IInputStyles {
   fileList?: StoredFileModel[] | undefined;
@@ -93,14 +120,26 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   thumbnailHeight?: string | undefined;
   borderRadius?: number | undefined;
   hideFileName?: boolean | undefined;
+  /** Replaces the drop area's stock prompt, and its hint, when the list is a dragger. */
+  dropzoneText?: string | undefined;
+  /** Shown in place of the list when there is nothing to show and nothing can be added. */
+  emptyText?: string | undefined;
   container?: IStyleValue | undefined;
   allStyles?: IFormComponentStyles | undefined;
   enableStyleOnReadonly?: boolean | undefined;
-  thumbnail?: IStyleValue | undefined;
+  thumbnailStyle?: IStyleValue | undefined;
+  /**
+   * The nested `thumbnailStyle.style` script already evaluated to CSS. Evaluated by the owning component
+   * because the framework only executes the root `style`, and because this renderer is also used
+   * outside a form context where the evaluation hooks are unavailable.
+   */
+  thumbnailStyleCss?: CSSProperties | undefined;
   downloadedFileStyles?: CSSProperties | undefined;
   styleDownloadedFiles?: boolean | undefined;
   downloadedIcon?: IconType | undefined;
   gap?: string | number | SizeType | undefined;
+  /** Class names for the parts styled by the owning component's Appearance tab. */
+  classNames?: IStoredFilesClassNames | undefined;
 }
 
 const EMPTY_FILES: StoredFileModel[] = [];
@@ -139,10 +178,13 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   listType,
   gap,
   hideFileName = false,
-  enableStyleOnReadonly = true,
+  dropzoneText,
+  emptyText,
   downloadedFileStyles,
+  thumbnailStyleCss,
   styleDownloadedFiles = false,
   downloadedIcon = 'CheckCircleOutlined',
+  classNames: componentClassNames = EMPTY_CLASS_NAMES,
   ...rest
 }) => {
   const { message, notification } = App.useApp();
@@ -222,35 +264,40 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   };
   const hasFiles = !!fileList.length;
 
-  const { dimensionsStyles: containerDimensionsStyles, jsStyle: containerJsStyle, stylingBoxAsCSS } = useFormComponentStyles({ ...model.container });
+  /* Thumbnail box appearance as plain CSS, for the parts of this renderer that need values rather
+     than a class: the designer stub tile and antd's own item box. */
+  const {
+    dimensionsStyles: thumbnailDimensions,
+    borderStyles: thumbnailBorder,
+    backgroundStyles: thumbnailBackground,
+    shadowStyles: thumbnailShadow,
+  } = useFormComponentStyles({ ...model.thumbnailStyle });
+
+  /* Thumbnail box appearance as inline CSS, for the designer stub tile — it renders outside the
+     antd upload list, so it is not reached by the list's own class rules. The evaluated Custom
+     style goes last, so it wins over the panels exactly as it does in the class-based path. */
+  const thumbnailBox: CSSProperties = { ...thumbnailDimensions, ...thumbnailBorder, ...thumbnailBackground, ...thumbnailShadow, ...thumbnailStyleCss };
+
   const { styles } = useStyles({
+    ...rest,
     downloadedFileStyles: downloadedFileStyles ?? {},
-    containerStyles: {
-      ...containerDimensionsStyles,
-      width: layout === 'vertical' && listType === 'thumbnail' ? undefined : (addPx(containerDimensionsStyles.width, allData) ?? undefined),
-      height: layout === 'horizontal' && listType === 'thumbnail' ? undefined : (addPx(containerDimensionsStyles.height, allData) ?? undefined),
-      ...containerJsStyle,
-      ...stylingBoxAsCSS,
-    },
-    style: calculateFileUploadStyles({
-      enableStyleOnReadonly,
-      listType,
-      allStyles: model.allStyles,
-    }),
     model: {
       gap: addPx(gap, allData) ?? '0px',
+      thumbnailStyleCss,
+      /* `layout` here means "tiled" — the files are laid out as boxes rather than as a list of
+         names. It drives the rules that only make sense for a tile: hiding antd's own name row,
+         and pinning the downloaded badge to the corner of the box. */
       layout: listType === 'thumbnail' && !isDragger,
       hideFileName: hideFileName && listType === 'thumbnail',
       isDragger,
       isStub,
-      downloadZip,
-      fontStyles: model.allStyles?.fontStyles ?? {},
       listType,
-      hasFiles: fileList.length > 0,
+      hasFiles,
+      ...rest,
     },
   });
 
-  const { width, minWidth, maxWidth } = model.allStyles?.dimensionsStyles ?? {};
+  const { width, minWidth, maxWidth } = thumbnailDimensions;
   const listTypeAndLayout = getListTypeAndLayout(listType, isDragger);
 
   useEffect(() => {
@@ -349,8 +396,11 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             const cacheBuster = thumbnailCacheBusters.current.get(file.id);
             const thumbnailUrl = buildUrl(STORED_FILE_URLS.DOWNLOAD_THUMBNAIL, {
               id: file.id,
-              width: resolveThumbnailSize(model.thumbnailWidth ?? `${model.allStyles?.dimensionsStyles.width ?? ''}`),
-              height: resolveThumbnailSize(model.thumbnailHeight ?? `${model.allStyles?.dimensionsStyles.height ?? ''}`),
+              /* Prefer the Thumbnail style set: `allStyles` is the legacy `useFormComponentStyles`
+                 output, which refactored callers no longer supply, and the root dimensions now
+                 describe the scrolling container rather than the image box. */
+              width: resolveThumbnailSize(model.thumbnailWidth ?? `${model.thumbnailStyle?.dimensions?.width ?? ''}`),
+              height: resolveThumbnailSize(model.thumbnailHeight ?? `${model.thumbnailStyle?.dimensions?.height ?? ''}`),
               fitOption: 1, // 1: FitToHeight
               ...(isDefined(cacheBuster) && cacheBuster > 0 ? { v: cacheBuster } : {}),
             });
@@ -429,7 +479,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       // Call all revoke functions to clean up blob URLs
       revokeCallbacks.forEach((revoke) => revoke());
     };
-  }, [fileList, httpClient, model.thumbnailWidth, model.thumbnailHeight, model.allStyles?.dimensionsStyles.width, model.allStyles?.dimensionsStyles.height, listType]);
+  }, [fileList, httpClient, model.thumbnailWidth, model.thumbnailHeight, model.thumbnailStyle?.dimensions?.width, model.thumbnailStyle?.dimensions?.height, listType]);
 
   // Clean up uploaded blob URLs on component unmount to prevent memory leaks
   useEffect(() => {
@@ -514,7 +564,11 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       }
     }
 
-    return getFileIcon(type ?? "", model.allStyles?.fontStyles.fontSize);
+    /* No explicit size: the icon is an inline SVG sized in `em`, so it inherits the font size of
+       the row it sits in and tracks the configured font automatically. Passing a size here would
+       pin it instead, and would miss a size set through a Custom style. Same as the File
+       component, which also passes none. */
+    return getFileIcon(type ?? "");
   };
 
   // Helper function to get or create cached file context data
@@ -564,6 +618,9 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           )}
           {allowDelete === true && disabled !== true && isNotNullOrWhiteSpace(persistedFileId) && (
             <Popconfirm
+              {...(isNotNullOrWhiteSpace(componentClassNames.confirmPopover)
+                ? { classNames: { root: componentClassNames.confirmPopover } }
+                : {})}
               title="Delete Attachment"
               onConfirm={(e) => {
                 e?.preventDefault();
@@ -573,6 +630,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                   throw error;
                 });
               }}
+              classNames={{ root: styles.actionsPopover }}
               description="Are you sure you want to delete this attachment?"
             >
               <Button
@@ -585,6 +643,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           )}
           {allowViewHistory && fileId && isValidGuid(fileId) && (
             <FileVersionsButton
+              popoverClassName={componentClassNames.historyPopover}
               fileId={fileId}
               onDownload={(versionNo, fileName) => {
                 downloadFile({ fileId, versionNo, fileName }).catch((error) => {
@@ -659,14 +718,20 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     const renderContent = (): React.ReactNode => {
       if (listType === 'text' || isDragger) {
         return (
-          <div className={classNames(isDownloaded && styleDownloadedFiles ? styles.downloadedFile : '', styles.fileNameWrapper)} onClick={handleItemClick}>
-            <div className={styles.fileName}>
+          <div
+            className={classNames(
+              styles.shaFileNameWrapper,
+              isDownloaded && styleDownloadedFiles ? styles.downloadedFile : '',
+            )}
+            onClick={handleItemClick}
+          >
+            <div className={styles.shaItemFileName}>
               <FileNameDisplay
                 file={shaFile}
                 icon={<>{iconRender(antdFile)}</>}
-                className={styles.fileName}
+                className={styles.shaItemFileName}
                 popoverContent={actions}
-                popoverClassName={styles.actionsPopover}
+                popoverClassName={classNames(styles.actionsPopover, componentClassNames.actionsPopover)}
               />
             </div>
             {isDownloaded && styleDownloadedFiles && (
@@ -680,7 +745,10 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
       // For thumbnail and other types, wrap entire content
       const content = (
-        <div className={isDownloaded && styleDownloadedFiles ? styles.downloadedFile : ''} onClick={handleItemClick}>
+        <div
+          className={classNames(isDownloaded && styleDownloadedFiles ? styles.downloadedFile : '', styles.shaThumbnail)}
+          onClick={handleItemClick}
+        >
           {originNode}
           {isDownloaded && styleDownloadedFiles && (
             <div className={styles.downloadedIcon}>
@@ -691,7 +759,14 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       );
 
       return (
-        <Popover content={actions} trigger="hover" placement="top" classNames={{ root: styles.actionsPopover }}>
+        <Popover
+          content={actions}
+          trigger="hover"
+          placement="top"
+          /* Same pair as the text-mode path below: the built-in padding rule plus whatever the
+             Appearance tab configured. The popover is portalled, so it cannot inherit either. */
+          classNames={{ root: classNames(styles.actionsPopover, componentClassNames.actionsPopover) }}
+        >
           {content}
         </Popover>
       );
@@ -701,10 +776,10 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       <div>
         {renderContent()}
         {listType === 'thumbnail' && !isDragger && !hideFileName && (
-          <div className={isDownloaded ? styles.downloadedFile : ''}>
+          <div>
             <FileNameDisplay
               file={shaFile}
-              className={styles.fileName}
+              className={styles.shaItemFileName}
             />
           </div>
         )}
@@ -793,6 +868,10 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     },
   };
 
+  /* Hoisted so the box holding them is rendered only when at least one is present. */
+  const showStubFileName = listType !== 'text' && !hideFileName;
+  const showStubExtraContent = hasExtraContent === true && isDefined(extraFormId);
+
   const renderUploadContent = (): React.ReactNode => {
     return (
       disabled !== true && (
@@ -806,7 +885,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             e.stopPropagation();
             return false;
           }}
-          className={classNames(styles.uploadButton, uploadBtnProps?.className)}
         >
           {isDragger ? "(Click or drag file to upload)" : listType === 'text' && '(press to upload)'}
         </Button>
@@ -814,16 +892,36 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     );
   };
 
+  const fetchFilesAlert = fetchFilesError === true
+    ? <Alert title="Error" description="Sorry, an error occurred while trying to fetch file list." type="error" />
+    : null;
+
   return (
-    fileList.length === 0 && disabled === true ? null
+    /* Nothing to show and nothing can be added — a read-only or disabled list. A failed fetch is
+       reported here too: the list is empty because it could not be read, and Empty Text would say
+       there are no files, which is a different thing and not true. Without either, the component
+       renders nothing at all, as it always has. */
+    fileList.length === 0 && disabled === true
+      ? (isDefined(fetchFilesAlert) || !isNullOrWhiteSpace(emptyText)
+        ? (
+          <div className={classNames(styles.shaStoredFilesRenderer, styles.shaEmptyText)}>
+            {fetchFilesAlert ?? emptyText}
+          </div>
+        )
+        : null)
       : (
-        <div className={`${styles.shaStoredFilesRenderer} ${layout === 'horizontal' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererHorizontal
-          : layout === 'vertical' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererVertical
-            : layout === 'grid' && listTypeAndLayout !== 'text' ? styles.shaStoredFilesRendererGrid : ''}`}
+        <div className={classNames(
+          styles.shaStoredFilesRenderer,
+          listTypeAndLayout !== 'text'
+            ? layout === 'horizontal' ? styles.shaStoredFilesRendererHorizontal
+              : layout === 'vertical' ? styles.shaStoredFilesRendererVertical
+                : styles.shaStoredFilesRendererGrid
+            : '',
+        )}
         >
           {isStub
             ? (isDragger
-              ? <Dragger style={{ padding: 0 }} disabled><DraggerStub styles={styles} /></Dragger>
+              ? <Dragger style={{ padding: 0 }} disabled><DraggerStub text={dropzoneText} /></Dragger>
               : (
                 <>
                   <Button
@@ -831,24 +929,27 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                     icon={<PictureOutlined />}
                     disabled={disabled ?? false}
                     {...uploadBtnProps}
-                    className={classNames(styles.uploadButton, uploadBtnProps?.className)}
-                    style={listType === 'thumbnail' ? { ...model.allStyles?.fullStyle } : { ...model.allStyles?.fontStyles }}
+                    style={listType === 'thumbnail' ? thumbnailBox : {}}
                   >
                     {listType === 'text' && '(press to upload)'}
                   </Button>
-                  <div style={(listType === 'thumbnail') ? { width, minWidth, maxWidth } : {}}>
-                    {listType !== 'text' && !hideFileName && (
-                      <div className={styles.fileName}>
-                        file name
-                      </div>
-                    )}
-                    {hasExtraContent === true && isDefined(extraFormId) && (
-                      <ExtraContent
-                        file={PLACEHOLDER_FILE}
-                        formId={extraFormId}
-                      />
-                    )}
-                  </div>
+                  {/* The renderer is a gapped flex column, so an empty box here would still take a
+                      gap and pad the control column out of line with the label. */}
+                  {(showStubFileName || showStubExtraContent) && (
+                    <div style={(listType === 'thumbnail') ? { width, minWidth, maxWidth } : {}}>
+                      {showStubFileName && (
+                        <div className={styles.shaItemFileName}>
+                          file name
+                        </div>
+                      )}
+                      {showStubExtraContent && (
+                        <ExtraContent
+                          file={PLACEHOLDER_FILE}
+                          formId={extraFormId}
+                        />
+                      )}
+                    </div>
+                  )}
                 </>
               )
             )
@@ -858,7 +959,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                 ? (
                   <Upload
                     {...props}
-                    {...(model.allStyles?.fullStyle ? { style: model.allStyles.fullStyle } : {})}
                     listType={listTypeAndLayout}
                   />
                 )
@@ -866,14 +966,12 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                   ? (
                     <Dragger {...props} openFileDialogOnClick={true}>
                       {fileList.length === 0 ? (
-                        <DraggerStub styles={styles} />
-                      ) : (
+                        <DraggerStub text={dropzoneText} />) : (
                         <div style={{ pointerEvents: 'none' }}>
                           <Button
                             type="link"
                             icon={<UploadOutlined />}
                             disabled={disabled ?? false}
-                            className={styles.uploadButton}
                             style={{ pointerEvents: 'auto', marginBottom: '8px' }}
                           >
                             (Click or drag to upload)
@@ -890,8 +988,12 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                   : <Upload {...props} listType={listTypeAndLayout}>{renderUploadContent()}</Upload>)}
           {previewImage && (
             <Image
-              classNames={{ root: styles.hiddenElement }}
               preview={{
+                /* The preview overlay is portalled to the body, so it takes its class through the
+                   preview config rather than the image's own `classNames`. */
+                ...(isNotNullOrWhiteSpace(componentClassNames.previewMask)
+                  ? { classNames: { root: componentClassNames.previewMask } }
+                  : {}),
                 visible: previewOpen,
                 onVisibleChange: (visible) => setPreviewOpen(visible),
                 afterOpenChange: (visible) => {
@@ -910,15 +1012,15 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             />
           )}
 
-          {fetchFilesError === true && (
-            <Alert title="Error" description="Sorry, an error occurred while trying to fetch file list." type="error" />
-          )}
+          {fetchFilesAlert}
 
           {downloadZipFileError === true && (
             <Alert title="Error" description="Sorry, an error occurred while trying to download zip file." type="error" />
           )}
 
           {downloadZip && hasFiles && isDefined(downloadZipFile) && (
+            /* Right-aligns the action in the container's corner. The rule is nested in the
+               renderer's own css, so it reaches only an element wearing the class. */
             <div className={styles.storedFilesRendererBtnContainer}>
               <Button size="small" type="link" icon onClick={() => downloadZipFile()} loading={isDownloadingFileListZip}>
                 {!isDownloadingFileListZip && <FileZipOutlined />} Download Zip
@@ -930,7 +1032,6 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
           <input
             type="file"
             ref={hiddenUploadInputRef}
-            className={styles.hiddenElement}
             accept={allowedFileTypes.join(',')}
             onChange={handleReplaceFileChange}
           />

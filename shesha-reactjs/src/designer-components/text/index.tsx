@@ -1,6 +1,6 @@
 import { legacyColor2Hex } from '@/designer-components/_common-migrations/migrateColor';
 import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
-import { validateConfigurableComponentSettings } from '@/formDesignerUtils';
+
 import { LineHeightOutlined } from '@ant-design/icons';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
@@ -36,7 +36,7 @@ const TextComponent: TextComponentDefinition = {
   },
   getDefaultStyles: () => defaultStyles(),
   settingsFormMarkup: getSettings,
-  validateSettings: (model) => validateConfigurableComponentSettings(getSettings, model),
+
   initModel: (model) => ({
     ...model,
     copyable: false,
@@ -75,7 +75,7 @@ const TextComponent: TextComponentDefinition = {
           ...prev,
           content: prev.contentDisplay === 'name' && !isNullOrWhiteSpace(prev.propertyName)
             ? isNullOrWhiteSpace(prev.context) ? `{{data.${prev.propertyName}}}` : `{{contexts.${prev.context}.${prev.propertyName}}}`
-            : prev.content,
+            : typeof prev.content === 'string' ? prev.content.replaceAll('{{', '{{data.') : prev.content, // previous versions of the component used only `data` as root context, current version uses extended context (`data`, `application.state`, etc)
         };
         return migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(newModel)));
       }),

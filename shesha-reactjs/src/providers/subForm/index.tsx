@@ -56,7 +56,7 @@ import { IGlobalState } from '../globalState/contexts';
 import { MessageInstance } from 'antd/es/message/interface';
 import { useDataContextManagerActionsOrUndefined } from '../dataContextManager/hooks';
 import { throwError } from '@/utils/errors';
-import { useComponentApi } from '../componentApi/provider';
+import { useComponentApiProvider } from '../componentApi/provider';
 import { SubFormApi } from '@/componentsApi/componentApi';
 import { useEffectOnce } from 'react-use';
 
@@ -157,7 +157,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     context,
   } = props;
 
-  const componentApi = useComponentApi();
+  const componentApi = useComponentApiProvider();
   const parent = useParentOrUndefined();
   const httpClient = useHttpClient();
 
@@ -723,14 +723,20 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     setValidationErrors: function (payload: string | IErrorInfo | IAjaxResponseBase | AxiosResponse<IAjaxResponseBase> | Error): void {
       parentFormApi.setValidationErrors(payload);
     },
-    formSettings: parentFormApi.formSettings,
-    formMode: parentFormApi.formMode,
+    formSettings: parentFormApi.settings,
+    formMode: parentFormApi.mode,
     data: isDefined(parentFormApi.data) && !isNullOrWhiteSpace(props.propertyName)
       ? (parentFormApi.data as Record<string, unknown>)[props.propertyName] as object
       : {},
     defaultApiEndpoints: parentFormApi.defaultApiEndpoints,
     context: {},
     components: {},
+    clear: function (): void {
+      onChangeInternal({}); // ToDo: AS - need to review
+    },
+    settings: parentFormApi.settings,
+    mode: parentFormApi.mode,
+    state: {},
   };
 
   return (
@@ -772,7 +778,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
             isScope
             name={`SubForm ${componentName || (formId ? configurableItemIdentifierToString(formId) : "")}`}
             formApi={subFormApi}
-            formFlatMarkup={{ allComponents: state.allComponents, componentRelations: state.componentRelations }}
+            formFlatMarkup={{ allComponents: state.allComponents, componentRelations: state.componentRelations, parents: state.parents }}
           >
             {children}
           </ParentProvider>

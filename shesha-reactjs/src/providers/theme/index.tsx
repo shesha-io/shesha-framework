@@ -1,5 +1,7 @@
 import { App, ConfigProvider, ThemeConfig } from 'antd';
 import { FC, PropsWithChildren, useCallback, useContext, useMemo, useState } from 'react';
+import './interFont.generated.css';
+import './baseFont.css';
 import { IConfigurableTheme, IThemeActionsContext, IThemeStateContext, THEME_CONTEXT_INITIAL_STATE, UiActionsContext, UiStateContext } from './contexts';
 import { defaultRequiredMark } from './shaRequiredMark';
 import { useSettings, useSheshaApplication } from '..';
@@ -10,6 +12,10 @@ export interface ThemeProviderProps {
   iconPrefixCls?: string;
   themeConfigKey?: string;
 }
+
+// Bundled and self-hosted (not a system font) so the default look is identical on every OS,
+// instead of resolving to whatever native UI font each OS happens to ship.
+const DEFAULT_FONT_FAMILY = "'Inter Variable', sans-serif";
 
 const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
   children,
@@ -63,7 +69,11 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
       cssVar: {
         prefix: 'ant',
       },
-      token: { ...themeDefaults, ...theme },
+      token: {
+        ...themeDefaults,
+        ...theme,
+        fontFamily: DEFAULT_FONT_FAMILY,
+      },
       components: {
         Menu: {
           itemHeight: 'clamp(40px, 40px, 100%)',

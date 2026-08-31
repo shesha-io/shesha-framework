@@ -42,6 +42,19 @@ export interface IFileUploadProps {
   hideFileName?: boolean | undefined;
   styles?: CSSProperties | undefined;
   type?: string | undefined;
+  /**
+   * Greys the uploader out and takes it out of the tab order, while still showing the attached file.
+   * Distinct from read-only (which is expressed by turning the allow* flags off): a disabled
+   * component is visibly inert rather than simply presenting its value.
+   */
+  disabled?: boolean | undefined;
+  /**
+   * Class names for the floating surfaces this component opens. They are portalled to the body, so
+   * the caller cannot reach them with a descendant selector and has to pass a class in.
+   */
+  popupClassName?: string | undefined;
+  modalClassName?: string | undefined;
+  imagePreviewClassName?: string | undefined;
 }
 
 export const FileUpload: FC<IFileUploadProps> = ({
@@ -58,6 +71,10 @@ export const FileUpload: FC<IFileUploadProps> = ({
   thumbnailHeight,
   hideFileName = false,
   styles: stylesProp,
+  disabled = false,
+  popupClassName,
+  modalClassName,
+  imagePreviewClassName,
 }) => {
   const {
     downloadFile,
@@ -272,6 +289,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
   const showDeleteConfirmation = (): void => {
     modal.confirm({
+      ...(isNotNullOrWhiteSpace(modalClassName) ? { className: modalClassName } : {}),
       title: 'Delete Attachment',
       content: 'Are you sure you want to delete this attachment?',
       okText: 'Yes',
@@ -341,15 +359,15 @@ export const FileUpload: FC<IFileUploadProps> = ({
         <Space>
           {!isNullOrWhiteSpace(fileInfo.id) && (
             <a style={{ color: color }}>
-              <FileVersionsPopup fileId={fileInfo.id} />
+              <FileVersionsPopup fileId={fileInfo.id} popupClassName={popupClassName} />
             </a>
           )}
-          {allowReplace && (
+          {allowReplace && !disabled && (
             <a onClick={onReplaceClick} style={{ color: color }}>
               <SyncOutlined title="Replace" />
             </a>
           )}
-          {allowDelete && (
+          {allowDelete && !disabled && (
             <a onClick={(e) => onDeleteClick(e)} style={{ color: color }}>
               <DeleteOutlined title="Remove" />
             </a>
@@ -401,10 +419,17 @@ export const FileUpload: FC<IFileUploadProps> = ({
     const showThumbnailControls = listType === 'thumbnail';
     const showTextControls = listType === 'text';
 
+    /* In thumbnail mode with the name hidden, both children below are suppressed and the wrapper
+       chain (span > Space > .thumbnail-item-name) renders empty — but Space still lays out its gap,
+       so the tile gains a strip of blank space under it. Skip the whole subtree instead of hiding
+       its innermost element. The thumbnail controls are rendered separately above, so nothing else
+       is lost by dropping it. */
+    const showFileNameRow = showTextControls || hideFileName !== true;
+
     return (
       <div>
         {showThumbnailControls && styledfileControls()}
-        {!hideFileName && (
+        {showFileNameRow && (
           <span title={file.name}>
             <Space>
               <div className="thumbnail-item-name">
@@ -414,7 +439,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
                     ? onPreview
                     : () => {
                       // Use file.id if available (from stored file), otherwise use uid
-                      const fileId = file.id || file.uid;
+                      const fileId = isNotNullOrWhiteSpace(file.id) ? file.id : file.uid;
                       if (!isNullOrWhiteSpace(fileId))
                         void downloadFile({ fileId, fileName: file.name });
                     }}
@@ -432,7 +457,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
   const fileProps: UploadProps<unknown> = {
     name: 'file',
-    disabled: !allowUpload,
+    disabled: disabled || !allowUpload,
     accept: allowedFileTypes.join(','),
     multiple: false,
     fileList: isDefined(uploadFileModel) && fileInfo?.status !== 'error' ? [uploadFileModel] : [],
@@ -456,7 +481,7 @@ export const FileUpload: FC<IFileUploadProps> = ({
     itemRender: (_originNode, file) => renderFileItem(file),
   };
 
-  const showUploadButton = allowUpload;
+  const showUploadButton = allowUpload && !disabled;
 
   const uploadButton = (
     allowUpload && (
@@ -520,7 +545,9 @@ export const FileUpload: FC<IFileUploadProps> = ({
 
   return (
     <>
-      <span className={styles.shaStoredFilesRenderer}>{isStub ? renderStub() : renderUploader()}</span>
+      <span className={styles.shaStoredFilesRenderer} {...(disabled ? { 'aria-disabled': true } : {})}>
+        {isStub ? renderStub() : renderUploader()}
+      </span>
       {previewOpen && (
         <Image
           styles={{
@@ -529,6 +556,9 @@ export const FileUpload: FC<IFileUploadProps> = ({
           preview={{
             visible: previewOpen,
             onVisibleChange: (visible) => setPreviewOpen(visible),
+            /* antd 6 deprecates `rootClassName` in favour of the semantic `classNames` API; the
+               portalled preview may never receive the class through the old prop. */
+            ...(isNotNullOrWhiteSpace(imagePreviewClassName) ? { classNames: { root: imagePreviewClassName } } : {}),
             toolbarRender: (original) => (
               <div style={{ display: 'flex', flexDirection: 'row-reverse' }}>
                 {isNotNullOrWhiteSpace(previewImage.uid) && (
