@@ -22,7 +22,7 @@ import { getClassNameOrUndefined } from '@/utils/entity';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { toCamelCase } from '@/utils/string';
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Checkbox, Collapse, Divider, Radio, Typography } from 'antd';
+import { Button, Checkbox, Collapse, Divider, Typography } from 'antd';
 import classNames from 'classnames';
 import { isEqual } from 'lodash';
 import moment from 'moment';
@@ -242,7 +242,7 @@ export const DataList: FC<IDataListProps> = ({
 
       if (isCurrentlySelected) {
         // Deselecting - don't trigger onListItemSelect
-        if (onClearSelectedRow) onClearSelectedRow();
+        onClearSelectedRow();
 
         // Trigger onSelectionChange event for deselection
         if (onSelectionChange) {
@@ -728,17 +728,24 @@ export const DataList: FC<IDataListProps> = ({
         border: '1px solid #d3d3d3',
         borderRadius: '8px',
       }),
-      ...(orientation !== 'wrap' && {
-        marginTop: gap !== undefined ? (typeof gap === 'number' ? `${gap}px` : gap) : '0px',
-      }),
+      // The gap belongs to the row, not to the item inside it. The item shares a flex row with the
+      // selection control, so a margin on the item alone makes the flex line taller than the card
+      // and the control centres against the gap as well as the item, drifting off the card. With
+      // the gap here the line is exactly the item, so the control centres on the card. Spacing is
+      // unchanged either way - neighbouring rows are spaced by the row wrapper.
+      ...(orientation !== 'wrap' && { marginTop: '0px' }),
     };
+
+    const rowGap: CSSProperties = orientation !== 'wrap'
+      ? { marginTop: gap !== undefined ? (typeof gap === 'number' ? `${gap}px` : gap) : '0px' }
+      : {};
 
     const wrapperStyle: CSSProperties =
       orientation === 'horizontal'
-        ? { flex: '0 0 auto', width: itemWidth, overflow: 'visible' }
+        ? { flex: '0 0 auto', width: itemWidth, overflow: 'visible', ...rowGap }
         : orientation === 'wrap'
           ? { flex: `0 0 ${itemWidth}`, width: itemWidth, overflow: 'visible' }
-          : { flex: '0 0 100%', overflow: 'visible' };
+          : { flex: '0 0 100%', overflow: 'visible', ...rowGap };
 
     return (
       <div key={`row-${index}`} style={wrapperStyle}>
@@ -751,25 +758,16 @@ export const DataList: FC<IDataListProps> = ({
           // as siblings means there is nothing to suppress.
           wrap={(children) => (
             <div className={classNames(styles.shaDatalistComponentItemCheckbox, { selected })}>
-              {selectionMode === 'single'
-                ? (
-                  <Radio
-                    checked={selected}
-                    // Radio raises onChange only when it becomes checked, so clicking the already
-                    // selected row would never deselect it. onClick fires either way.
-                    onClick={() => {
-                      onSelectRowLocal(index, item);
-                    }}
-                  />
-                )
-                : (
-                  <Checkbox
-                    checked={selected}
-                    onChange={() => {
-                      onSelectRowLocal(index, item);
-                    }}
-                  />
-                )}
+              {/* A checkbox in both modes, by design decision - a radio beside a tall card read as
+                  visually off. Single mode still permits only one selection: onSelectRowLocal
+                  replaces the current row rather than adding to it. onChange is enough here because
+                  a checkbox raises it when unticking too, which is what a radio would not do. */}
+              <Checkbox
+                checked={selected}
+                onChange={() => {
+                  onSelectRowLocal(index, item);
+                }}
+              />
               {children}
             </div>
           )}

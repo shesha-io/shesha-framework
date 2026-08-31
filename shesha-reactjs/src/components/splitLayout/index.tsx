@@ -13,6 +13,7 @@ export interface SplitLayoutProps {
   panelTitle: string;
   panelMin?: number | string;
   panelMax?: number | string;
+  panelExtra?: ReactNode;
 
   defaultPinned?: boolean;
   onPinnedToggle?: (pinned: boolean) => void;
@@ -28,6 +29,7 @@ export const SplitLayout: FC<PropsWithChildren<SplitLayoutProps>> = (props) => {
     panel,
     panelClassName,
     panelTitle,
+    panelExtra,
     panelMin,
     panelMax,
     defaultPanelSize = 300,
@@ -95,6 +97,8 @@ export const SplitLayout: FC<PropsWithChildren<SplitLayoutProps>> = (props) => {
         pinned={panelPinned}
         onPinnedToggle={handlePanelPinnedToggle}
         direction={orientation}
+        position={position}
+        extra={panelExtra}
       >
         {panel}
       </PinnablePanel>

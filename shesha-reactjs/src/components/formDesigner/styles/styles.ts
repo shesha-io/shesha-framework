@@ -4,7 +4,6 @@ import { LAYOUT_CONSTANTS } from '../../../shesha-constants';
 
 export const designerClassNames = {
   componentDragHandle: "sha-component-drag-handle",
-  componentPropertiesActions: "component-properties-actions",
   designerWorkArea: "sha-designer-work-area",
   hasConfigErrors: "has-config-errors",
   mainArea: "sha-designer-main-area",
@@ -23,6 +22,7 @@ export const designerClassNames = {
   shaDesignerHeaderRight: "sha-designer-header-right",
   shaDesignerToolbar: "sha-designer-toolbar",
   shaToolboxComponents: "sha-toolbox-components",
+  shaToolboxComponentsList: "sha-toolbox-components-list",
   shaDesignerToolbarLeft: "sha-designer-toolbar-left",
   shaDesignerToolbarRight: "sha-designer-toolbar-right",
   shaDesignerToolbarCenter: "sha-designer-toolbar-center",
@@ -38,7 +38,6 @@ export const designerClassNames = {
   shaToolboxPanel: "sha-toolbox-panel",
   shaToolboxPanelItems: "sha-toolbox-panel-items",
   sidebarContainerMainAreaBody: "sidebar-container-main-area-body",
-  sidebarHeaderTitle: "sidebar-header-title",
   siteTreeSearchValue: "site-tree-search-value",
   formName: "form-name",
   formTitle: "form-title",
@@ -65,12 +64,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     sidebarContainerMainAreaBody,
     shaDesignerToolbar,
     shaToolboxComponents,
+    shaToolboxComponentsList,
     shaDesignerToolbarLeft,
     shaDesignerToolbarRight,
     shaDesignerToolbarCenter,
     shaDesignerCanvasConfig,
     shaDesignerToolbox,
-    sidebarHeaderTitle,
     shaDesignerHeader,
     shaComponentGhost,
     shaComponent,
@@ -86,7 +85,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     shaDropHintContainer,
     shaDropHint,
     designerWorkArea,
-    componentPropertiesActions,
     siteTreeSearchValue,
     shaDesignerWarning,
     hasConfigErrors,
@@ -132,6 +130,10 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   const designerPage = "sha-designer-page";
 
   const formDesigner = cx(formDesignerClassName, css`
+        height: 100%;
+        .${designerClassNames.mainArea}{
+            height: 100%;
+        }
         .${shaHelpIcon} {
             cursor: help;
             font-size: 14px;
@@ -164,6 +166,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             overflow-x: hidden; 
             margin-bottom: 1rem;
             ${sheshaStyles.thinScrollbars}
+            .${shaToolboxComponentsList} {
+                flex-grow: 1;
+                overflow: auto;
+                ${sheshaStyles.thinScrollbars}
+            }
         }
         .${shaDesignerToolbar} {
             background: white;
@@ -327,23 +334,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 }
             }
         }
-        .${sidebarHeaderTitle} {
-            .${componentPropertiesActions} {
-                width: 100%;
-        
-                .action-buttons {
-                float: right;
-        
-                .${prefixCls}-btn {
-                    margin-left: 2px;
-                }
-        
-                .${prefixCls}-btn-dangerous {
-                    margin-left: 10px;
-                }
-                }
-            }
-        }
         .${shaDesignerHeader} {
             display: flex;
             justify-content: space-between;
@@ -387,7 +377,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             > div {
              height: 100%;
                 > div:not(.sha-drop-hint):not(.sha-drop-hint-container) {
-                    min-height: 100vh;
                     height: 100%;
                 }
 

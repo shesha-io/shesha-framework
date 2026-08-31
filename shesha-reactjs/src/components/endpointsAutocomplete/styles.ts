@@ -14,9 +14,16 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     color: ${token.colorTextTertiary};
   `);
 
+  const schemeWarning = cx(css`
+    color: ${token.colorWarningText};
+    font-size: ${token.fontSizeSM}px;
+    margin-top: 4px;
+  `);
+
   return {
     verbSelector,
     compactContainer,
     affix,
+    schemeWarning,
   };
 });

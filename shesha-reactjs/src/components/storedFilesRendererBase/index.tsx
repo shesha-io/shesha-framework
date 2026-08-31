@@ -120,6 +120,10 @@ export interface IStoredFilesRendererBaseProps extends IInputStyles {
   thumbnailHeight?: string | undefined;
   borderRadius?: number | undefined;
   hideFileName?: boolean | undefined;
+  /** Replaces the drop area's stock prompt, and its hint, when the list is a dragger. */
+  dropzoneText?: string | undefined;
+  /** Shown in place of the list when there is nothing to show and nothing can be added. */
+  emptyText?: string | undefined;
   container?: IStyleValue | undefined;
   allStyles?: IFormComponentStyles | undefined;
   enableStyleOnReadonly?: boolean | undefined;
@@ -174,6 +178,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   listType,
   gap,
   hideFileName = false,
+  dropzoneText,
+  emptyText,
   downloadedFileStyles,
   thumbnailStyleCss,
   styleDownloadedFiles = false,
@@ -713,8 +719,10 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
       if (listType === 'text' || isDragger) {
         return (
           <div
-
-            className={classNames(isDownloaded && styleDownloadedFiles ? styles.downloadedFile : '')}
+            className={classNames(
+              styles.shaFileNameWrapper,
+              isDownloaded && styleDownloadedFiles ? styles.downloadedFile : '',
+            )}
             onClick={handleItemClick}
           >
             <div className={styles.shaItemFileName}>
@@ -860,6 +868,10 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     },
   };
 
+  /* Hoisted so the box holding them is rendered only when at least one is present. */
+  const showStubFileName = listType !== 'text' && !hideFileName;
+  const showStubExtraContent = hasExtraContent === true && isDefined(extraFormId);
+
   const renderUploadContent = (): React.ReactNode => {
     return (
       disabled !== true && (
@@ -880,8 +892,23 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
     );
   };
 
+  const fetchFilesAlert = fetchFilesError === true
+    ? <Alert title="Error" description="Sorry, an error occurred while trying to fetch file list." type="error" />
+    : null;
+
   return (
-    fileList.length === 0 && disabled === true ? null
+    /* Nothing to show and nothing can be added — a read-only or disabled list. A failed fetch is
+       reported here too: the list is empty because it could not be read, and Empty Text would say
+       there are no files, which is a different thing and not true. Without either, the component
+       renders nothing at all, as it always has. */
+    fileList.length === 0 && disabled === true
+      ? (isDefined(fetchFilesAlert) || !isNullOrWhiteSpace(emptyText)
+        ? (
+          <div className={classNames(styles.shaStoredFilesRenderer, styles.shaEmptyText)}>
+            {fetchFilesAlert ?? emptyText}
+          </div>
+        )
+        : null)
       : (
         <div className={classNames(
           styles.shaStoredFilesRenderer,
@@ -894,7 +921,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         >
           {isStub
             ? (isDragger
-              ? <Dragger style={{ padding: 0 }} disabled><DraggerStub /></Dragger>
+              ? <Dragger style={{ padding: 0 }} disabled><DraggerStub text={dropzoneText} /></Dragger>
               : (
                 <>
                   <Button
@@ -906,19 +933,23 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                   >
                     {listType === 'text' && '(press to upload)'}
                   </Button>
-                  <div style={(listType === 'thumbnail') ? { width, minWidth, maxWidth } : {}}>
-                    {listType !== 'text' && !hideFileName && (
-                      <div className={styles.shaItemFileName}>
-                        file name
-                      </div>
-                    )}
-                    {hasExtraContent === true && isDefined(extraFormId) && (
-                      <ExtraContent
-                        file={PLACEHOLDER_FILE}
-                        formId={extraFormId}
-                      />
-                    )}
-                  </div>
+                  {/* The renderer is a gapped flex column, so an empty box here would still take a
+                      gap and pad the control column out of line with the label. */}
+                  {(showStubFileName || showStubExtraContent) && (
+                    <div style={(listType === 'thumbnail') ? { width, minWidth, maxWidth } : {}}>
+                      {showStubFileName && (
+                        <div className={styles.shaItemFileName}>
+                          file name
+                        </div>
+                      )}
+                      {showStubExtraContent && (
+                        <ExtraContent
+                          file={PLACEHOLDER_FILE}
+                          formId={extraFormId}
+                        />
+                      )}
+                    </div>
+                  )}
                 </>
               )
             )
@@ -935,7 +966,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                   ? (
                     <Dragger {...props} openFileDialogOnClick={true}>
                       {fileList.length === 0 ? (
-                        <DraggerStub />) : (
+                        <DraggerStub text={dropzoneText} />) : (
                         <div style={{ pointerEvents: 'none' }}>
                           <Button
                             type="link"
@@ -981,16 +1012,16 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             />
           )}
 
-          {fetchFilesError === true && (
-            <Alert title="Error" description="Sorry, an error occurred while trying to fetch file list." type="error" />
-          )}
+          {fetchFilesAlert}
 
           {downloadZipFileError === true && (
             <Alert title="Error" description="Sorry, an error occurred while trying to download zip file." type="error" />
           )}
 
           {downloadZip && hasFiles && isDefined(downloadZipFile) && (
-            <div>
+            /* Right-aligns the action in the container's corner. The rule is nested in the
+               renderer's own css, so it reaches only an element wearing the class. */
+            <div className={styles.storedFilesRendererBtnContainer}>
               <Button size="small" type="link" icon onClick={() => downloadZipFile()} loading={isDownloadingFileListZip}>
                 {!isDownloadingFileListZip && <FileZipOutlined />} Download Zip
               </Button>

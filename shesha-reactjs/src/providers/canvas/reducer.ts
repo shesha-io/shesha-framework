@@ -5,8 +5,7 @@ import { setCanvasZoomAction,
   setDesignerDeviceAction,
   setCanvasAutoZoomAction,
   setManualZoomAction,
-  setConfigTreePanelSizeAction,
-  setViewTypeAction } from './actions';
+} from './actions';
 import { CANVAS_CONTEXT_INITIAL_STATE } from './contexts';
 import { DEFAULT_OPTIONS, getDeviceTypeByWidth, getSmallerDevice } from './utils';
 
@@ -58,18 +57,6 @@ export const reducer = createReducer(CANVAS_CONTEXT_INITIAL_STATE, (builder) => 
       return {
         ...state,
         autoZoom: payload !== undefined ? payload : !state.autoZoom,
-      };
-    })
-    .addCase(setConfigTreePanelSizeAction, (state, { payload }) => {
-      return {
-        ...state,
-        configTreePanelSize: payload,
-      };
-    })
-    .addCase(setViewTypeAction, (state, { payload }) => {
-      return {
-        ...state,
-        viewType: payload,
       };
     });
 });
