@@ -6,6 +6,7 @@ using Abp.Reflection.Extensions;
 using Abp.Runtime.Caching;
 using Newtonsoft.Json;
 using StackExchange.Redis;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.Serialization;
@@ -105,14 +106,23 @@ namespace Shesha.Redis.Caching
         /// as the OTP store pass a remaining lifetime that shrinks as the value ages, and that
         /// can easily be shorter than the configured L1 TTL.
         /// </summary>
+        /// <param name="elapsedSinceWrite">
+        /// Time spent between Redis starting the countdown and this call. Sliding expiries are a
+        /// duration Redis began counting at the write, so that has to be discounted or the L1
+        /// entry outlives the Redis key by however long the write took. Absolute expiries need no
+        /// adjustment: they are computed against UtcNow here and so already account for it.
+        /// </param>
         private TimeSpan? RequestedLifetime(
-            string key, TimeSpan? slidingExpireTime, DateTimeOffset? absoluteExpireTime)
+            string key,
+            TimeSpan? slidingExpireTime,
+            DateTimeOffset? absoluteExpireTime,
+            TimeSpan elapsedSinceWrite)
         {
             if (absoluteExpireTime.HasValue)
                 return absoluteExpireTime.Value - DateTimeOffset.UtcNow;
 
             if (slidingExpireTime.HasValue)
-                return slidingExpireTime.Value;
+                return slidingExpireTime.Value - elapsedSinceWrite;
 
             if (DefaultAbsoluteExpireTimeFactory != null)
                 return DefaultAbsoluteExpireTimeFactory(key) - DateTimeOffset.UtcNow;
@@ -120,7 +130,7 @@ namespace Shesha.Redis.Caching
             if (DefaultAbsoluteExpireTime.HasValue)
                 return DefaultAbsoluteExpireTime.Value - DateTimeOffset.UtcNow;
 
-            return DefaultSlidingExpireTime;
+            return DefaultSlidingExpireTime - elapsedSinceWrite;
         }
 
         /// <summary>
@@ -251,6 +261,10 @@ namespace Shesha.Redis.Caching
             var redisKey = NormalizeKey(key);
             var redisValue = Serialize(value, GetSerializableType(value));
 
+            // Monotonic stamp taken before the write: Redis starts its sliding countdown
+            // here, so the elapsed time is discounted when L1 is populated below.
+            var writeStarted = Stopwatch.GetTimestamp();
+
             bool stored;
 
             if (absoluteExpireTime.HasValue)
@@ -313,7 +327,8 @@ namespace Shesha.Redis.Caching
             // the expiry -- so L1 keys off the StringSet result only.
             if (stored)
             {
-                PopulateL1(redisKey, value, RequestedLifetime(key, slidingExpireTime, absoluteExpireTime));
+                PopulateL1(redisKey, value,
+                    RequestedLifetime(key, slidingExpireTime, absoluteExpireTime, Stopwatch.GetElapsedTime(writeStarted)));
                 _invalidationBus?.Publish(Name, redisKey.ToString());
             }
         }
@@ -327,6 +342,10 @@ namespace Shesha.Redis.Caching
 
             var redisKey = NormalizeKey(key);
             var redisValue = Serialize(value, GetSerializableType(value));
+
+            // Monotonic stamp taken before the write: Redis starts its sliding countdown
+            // here, so the elapsed time is discounted when L1 is populated below.
+            var writeStarted = Stopwatch.GetTimestamp();
 
             bool stored;
 
@@ -386,7 +405,8 @@ namespace Shesha.Redis.Caching
             // See Set: L1 and the broadcast happen only once Redis has accepted the value.
             if (stored)
             {
-                PopulateL1(redisKey, value, RequestedLifetime(key, slidingExpireTime, absoluteExpireTime));
+                PopulateL1(redisKey, value,
+                    RequestedLifetime(key, slidingExpireTime, absoluteExpireTime, Stopwatch.GetElapsedTime(writeStarted)));
                 if (_invalidationBus != null)
                     await _invalidationBus.PublishAsync(Name, redisKey.ToString());
             }
@@ -404,6 +424,10 @@ namespace Shesha.Redis.Caching
                 var redisValue = Serialize(p.Value, GetSerializableType(p.Value));
                 return new KeyValuePair<RedisKey, RedisValue>(redisKey, redisValue);
             }).ToList();
+
+            // Monotonic stamp taken before the write: Redis starts its sliding countdown
+            // here, so the elapsed time is discounted when L1 is populated below.
+            var writeStarted = Stopwatch.GetTimestamp();
 
             if (!_database.StringSet(redisPairs.ToArray()))
             {
@@ -475,7 +499,8 @@ namespace Shesha.Redis.Caching
             // the original value, not the serialized form.
             for (var i = 0; i < redisPairs.Count; i++)
             {
-                PopulateL1(redisPairs[i].Key, pairs[i].Value, RequestedLifetime(pairs[i].Key, slidingExpireTime, absoluteExpireTime));
+                PopulateL1(redisPairs[i].Key, pairs[i].Value,
+                    RequestedLifetime(pairs[i].Key, slidingExpireTime, absoluteExpireTime, Stopwatch.GetElapsedTime(writeStarted)));
                 _invalidationBus?.Publish(Name, redisPairs[i].Key.ToString());
             }
 
@@ -493,6 +518,10 @@ namespace Shesha.Redis.Caching
                 var redisValue = Serialize(p.Value, GetSerializableType(p.Value));
                 return new KeyValuePair<RedisKey, RedisValue>(redisKey, redisValue);
             }).ToList();
+
+            // Monotonic stamp taken before the write: Redis starts its sliding countdown
+            // here, so the elapsed time is discounted when L1 is populated below.
+            var writeStarted = Stopwatch.GetTimestamp();
 
             if (!await _database.StringSetAsync(redisPairs.ToArray()))
             {
@@ -564,7 +593,8 @@ namespace Shesha.Redis.Caching
                 // the original value, not the serialized form.
                 for (var i = 0; i < redisPairs.Count; i++)
                 {
-                    PopulateL1(redisPairs[i].Key, pairs[i].Value, RequestedLifetime(pairs[i].Key, slidingExpireTime, absoluteExpireTime));
+                    PopulateL1(redisPairs[i].Key, pairs[i].Value,
+                        RequestedLifetime(pairs[i].Key, slidingExpireTime, absoluteExpireTime, Stopwatch.GetElapsedTime(writeStarted)));
                     if (_invalidationBus != null)
                         await _invalidationBus.PublishAsync(Name, redisPairs[i].Key.ToString());
                 }

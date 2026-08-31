@@ -212,6 +212,21 @@ namespace Shesha.Tests.Caching
             store.Count.ShouldBe(0);
         }
 
+        [Fact]
+        public void A_lifetime_already_consumed_by_the_write_is_not_cached()
+        {
+            // Sliding expiries are a duration Redis starts counting at the write, so the
+            // caller discounts however long the write took before handing the lifetime to L1.
+            // If the write took longer than the value was meant to live, the discounted
+            // lifetime goes negative and nothing should be cached.
+            var store = CreateStore(ttlSeconds: 30);
+
+            store.Set("key", "value", maxLifetime: TimeSpan.FromMilliseconds(-5));
+
+            store.TryGet("key", out _).ShouldBeFalse();
+            store.Count.ShouldBe(0);
+        }
+
         // --- invalidation races ------------------------------------------------------------
 
         [Fact]
