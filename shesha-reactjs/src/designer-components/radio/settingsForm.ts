@@ -45,7 +45,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                     inputs: [{
                       type: 'labelValueEditor', propertyName: 'items', label: 'Items',
                       labelTitle: 'Label', labelName: 'label', valueTitle: 'Value', valueName: 'value',
-                      mode: 'dialog', jsSetting: true,
+                      mode: 'dialog', jsSetting: true, valueEditor: 'expression',
                     }],
                     // An unset data source renders as `values`, so the Items editor stays visible for it.
                     visibleJs: 'return (getSettingValue(data?.dataSourceType) ?? "values") === "values";',
