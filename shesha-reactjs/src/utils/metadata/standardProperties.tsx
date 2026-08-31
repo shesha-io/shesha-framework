@@ -124,6 +124,26 @@ export const registerSelectedRowAction: MetadataBuilderAction = (builder, name =
   });
 };
 
+export const registerActionResponseAction: MetadataBuilderAction = (builder, name = "actionResponse") => {
+  builder.addCustom(name, "Response returned by the previous action (available in On Success Handler scripts)", () => {
+    const definition: TypeDefinition = {
+      typeName: 'unknown',
+      files: [],
+    };
+    return Promise.resolve(definition);
+  });
+};
+
+export const registerActionErrorAction: MetadataBuilderAction = (builder, name = "actionError") => {
+  builder.addCustom(name, "Error thrown by the previous action (available in On Fail Handler scripts)", () => {
+    const definition: TypeDefinition = {
+      typeName: 'unknown',
+      files: [],
+    };
+    return Promise.resolve(definition);
+  });
+};
+
 export const registerPageContextAction: MetadataBuilderAction = (builder, name = "pageContext") => {
   builder.addCustom(name, "Contexts data of current page @deprecated use page.context instead. This item is outdated and will be removed in further versions.", () => {
     const definition: TypeDefinition = {

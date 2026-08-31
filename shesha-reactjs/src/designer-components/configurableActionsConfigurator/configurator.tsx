@@ -5,6 +5,7 @@ import { IConfigurableActionGroupDictionary } from '@/providers/configurableActi
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { arrayHasAtLeastNDefined } from '@/utils/array';
 import { useAvailableStandardConstantsMetadata } from '@/utils/metadata/hooks';
+import { registerActionErrorAction, registerActionResponseAction } from '@/utils/metadata/standardProperties';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { nanoid } from '@/utils/uuid';
 import { Collapse, Form } from 'antd';
@@ -46,7 +47,17 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
   const { getActions, getConfigurableActionOrNull } = useConfigurableActionDispatcher();
   const actions = getActions();
 
-  const availableConstants = useAvailableStandardConstantsMetadata();
+  // actionResponse/actionError are only injected into the execution context of nested
+  // On Success / On Fail handlers (see configurableActionsDispatcher), so only expose them there.
+  const availableConstants = useAvailableStandardConstantsMetadata(
+    undefined,
+    props.level > 0
+      ? (metaBuilder) => {
+        registerActionResponseAction(metaBuilder, 'actionResponse');
+        registerActionErrorAction(metaBuilder, 'actionError');
+      }
+      : undefined,
+  );
 
   const formValues = useMemo<IActionFormModel | null>(() => {
     if (!value)
