@@ -1,9 +1,12 @@
 import { useCanvas } from '@/providers';
-import { FC, PropsWithChildren, useCallback, useEffect, useState } from 'react';
+import { FC, PropsWithChildren, useCallback, useEffect, useLayoutEffect, useState } from 'react';
 import { calculateAutoZoom, DEFAULT_OPTIONS, getCanvasLayoutWidth, usePinchZoom } from '@/providers/canvas/utils';
 import { useStyles } from './styles';
 import classNames from 'classnames';
 import { useElementSizeTracking } from '@/hooks/useElementSize';
+
+// useLayoutEffect warns when it runs on the server, where there is nothing to measure anyway.
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 export interface IZoomableCanvasProps {
   canZoom: boolean;
@@ -56,6 +59,15 @@ export const ZoomableCanvas: FC<PropsWithChildren<IZoomableCanvasProps>> = ({ ch
   }, [autoZoom, autoWidth, canZoom, designerWidth, setCanvasZoom, zoom]);
   const wrapperRef = useElementSizeTracking(onResize);
 
+  // Seed the measurement before the first paint. useElementSizeTracking observes in a plain
+  // effect, so on mount its first callback lands after paint - long enough to show one frame of
+  // the canvas at whatever width a preset last pinned.
+  useIsomorphicLayoutEffect(() => {
+    const width = wrapperRef.current?.clientWidth ?? 0;
+    if (width > 0)
+      setAvailableWidth((prev) => (Math.abs(prev - width) < 1 ? prev : width));
+  }, [wrapperRef, autoWidth, canZoom]);
+
   const isAutoWidth = canZoom && autoWidth && availableWidth > 0;
 
   // In "Canvas" mode the canvas is laid out at availableWidth / zoom, so once the CSS zoom is
@@ -67,7 +79,15 @@ export const ZoomableCanvas: FC<PropsWithChildren<IZoomableCanvasProps>> = ({ ch
 
   // Published so vw-based component sizing and anything else reading the canvas width agree with
   // what is on screen. Guarded in the reducer so it is a no-op outside "Canvas" mode.
-  useEffect(() => {
+  //
+  // Deliberately a layout effect. The canvas device - and so which settings block every component
+  // renders with, via activeDevice in dynamicComponent - is resolved by the reducer from this
+  // width. Switching to "Canvas" off a device preset cannot resolve it at the point of the switch,
+  // because designerWidth is still the width that preset pinned; only this measurement knows the
+  // pane. Publishing after paint would therefore show one frame of a full-width canvas still
+  // rendering the pinned device's settings - e.g. a ~1900px canvas in mobile styling straight
+  // after leaving iPhone SE. Running before paint means that frame is never painted.
+  useIsomorphicLayoutEffect(() => {
     if (isAutoWidth)
       setAvailableCanvasWidth(canvasWidth);
   }, [isAutoWidth, canvasWidth, setAvailableCanvasWidth]);

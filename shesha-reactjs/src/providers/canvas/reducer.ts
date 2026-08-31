@@ -78,9 +78,11 @@ export const reducer = createReducer(CANVAS_CONTEXT_INITIAL_STATE, (builder) => 
         autoZoom: autoWidth ? false : state.autoZoom,
       };
 
-      // Resolved here as well as on the measurement below: if the pane happens to be exactly as
-      // wide as the width last pinned by a preset, the measurement is a no-op and would never
-      // correct the device on its own.
+      // designerWidth here is still whatever the previous mode left behind: a preset's pinned
+      // width, or - if auto width was simply toggled off and on - the last measured width.
+      // Resolving from it corrects the second case. It cannot correct the first, where the width
+      // predates any knowledge of the pane; the measurement that follows owns that, and
+      // ZoomableCanvas publishes it before paint so the stale device is never rendered.
       return autoWidth ? resolveDeviceForWidth(next, next.designerWidth) : next;
     })
     .addCase(setCanvasWidthPercentAction, (state, { payload }) => {

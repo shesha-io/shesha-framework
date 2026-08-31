@@ -19,14 +19,26 @@ describe('canvas reducer - device resolution', () => {
     expect(next.autoWidth).toBe(false);
   });
 
-  it('re-resolves the device when Canvas mode is switched on', () => {
-    // "Canvas" is a sizing mode, not a device: it must not inherit the device a preset pinned.
+  it('does not inherit the pinned device once the pane is measured in Canvas mode', () => {
+    // The realistic sequence, in order: a preset pins width and device; Canvas is switched on while
+    // designerWidth is still that pinned width; only then does the pane measurement arrive.
+    //
+    // The switch itself cannot correct the device - it has nothing to go on but the stale pinned
+    // width - so the measurement owns it. The stale step is asserted rather than skipped over,
+    // because it is exactly the frame a user would see if ZoomableCanvas published the measured
+    // width after paint instead of before it: a full-width canvas still in mobile styling.
     const pinnedToMobile = reducer(state(), setCanvasWidthAction({ width: '375px', deviceType: 'mobile' }));
-    const canvasMode = reducer({ ...pinnedToMobile, designerWidth: '1125px' }, setCanvasAutoWidthAction(true));
+    expect(pinnedToMobile.designerDevice).toBe('mobile');
 
+    const canvasMode = reducer(pinnedToMobile, setCanvasAutoWidthAction(true));
     expect(canvasMode.autoWidth).toBe(true);
-    expect(canvasMode.designerDevice).toBe('desktop');
-    expect(canvasMode.activeDevice).toBe('desktop');
+    expect(canvasMode.designerWidth).toBe('375px');
+    expect(canvasMode.designerDevice).toBe('mobile');
+
+    const measured = reducer(canvasMode, setAvailableCanvasWidthAction('1900px'));
+    expect(measured.designerWidth).toBe('1900px');
+    expect(measured.designerDevice).toBe('desktop');
+    expect(measured.activeDevice).toBe('desktop');
   });
 
   it('follows the measured width while Canvas mode is active', () => {
