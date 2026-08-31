@@ -1,5 +1,5 @@
 import { GetDataError } from '@/hooks';
-import { IConfigurableFormComponent, IFlatComponentsStructure } from '@/interfaces';
+import { IConfigurableFormComponent, IFlatComponentsStructure, IModelMetadata } from '@/interfaces';
 import { IFormSettings, IPersistedFormProps } from '../form/models';
 import { createNamedContext } from '@/utils/react';
 
@@ -37,6 +37,7 @@ export interface ISubFormStateContext<TValue extends object = object> extends IP
   value?: TValue | undefined;
   context?: string | undefined;
   fetchedEntityId?: string | undefined;
+  modelMetadata?: IModelMetadata | undefined;
 }
 
 export interface ISubFormActionsContext {
