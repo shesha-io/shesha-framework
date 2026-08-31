@@ -4,7 +4,7 @@ export const defaultStyles = (): IStyleValue => {
   return {
     background: {
       type: 'color',
-      color: '#ffffff0',
+      color: '#ffffff00',
       repeat: 'no-repeat',
       size: 'cover',
       position: 'center',

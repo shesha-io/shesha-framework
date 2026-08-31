@@ -97,17 +97,17 @@ export const deepMergeValues = <TObject extends object = object, TSource extends
       return srcValue;
     }
 
-    // handle objects
-    if (typeof objValue === "object" && typeof srcValue === "object" && objValue !== null) {
-      // make a copy of merged objects
-      return deepMergeValues(objValue, srcValue, action);
-    }
-
     // handle entity references
     if (isEntityReferenceId(srcValue)) {
       // replace without merging: a reference identifies a *different* entity, so keys from the
       // previous one (id, _displayName) must not survive underneath the new value
       return srcValue;
+    }
+
+    // handle objects
+    if (typeof objValue === "object" && typeof srcValue === "object" && objValue !== null) {
+      // make a copy of merged objects
+      return deepMergeValues(objValue, srcValue, action);
     }
 
     return undefined;
