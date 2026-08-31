@@ -24,7 +24,7 @@ import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nu
 import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { StatusTagApi } from '../../componentsApi/componentApi';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
-import { getComponentEvents } from '../_common/events';
+import { EventsObject, getComponentEvents } from '../_common/events';
 import { STATUS_TAG_EVENTS_WITHOUT_CHANGE } from './events';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
@@ -81,20 +81,27 @@ const StatusTagPlaceholder: FC<{ className: string; label: string; color?: strin
 );
 
 /**
- * Applies the component's Tooltip to whatever it renders.
+ * Wraps whatever the component renders with its Tooltip and its event handlers.
  *
- * The framework normally hands `description` to the Form.Item as its `tooltip`, but antd renders
- * that as an icon beside the *label* — and this component hides its label, so the tooltip would
- * disappear with it. Wrapping the tag restores it, and puts it on the thing the user actually
- * points at rather than on a label that is not there.
+ * Both exist here for the same reason: this component always renders read-only, and neither
+ * survives that path on its own.
  *
- * Returns the children untouched when no Tooltip is configured, so no wrapper element is added for
- * a component that does not need one.
+ * - The framework hands `description` to the Form.Item as its `tooltip`, but antd renders that as
+ *   an icon beside the *label* — which this component hides, so the tooltip would go with it.
+ * - `Dropdown` spreads `events` onto the antd `Select`, and its read-only branch renders no select
+ *   at all, so On Click and On Mouse Move never reached the DOM.
+ *
+ * The wrapping element is always present, so the handlers have something to bind to whether or not
+ * a Tooltip is configured; `display: contents` keeps it out of the layout so it cannot disturb the
+ * tag alignment.
  */
-const WithTooltip: FC<PropsWithChildren<{ title: string | undefined }>> = ({ title, children }) =>
-  isNotNullOrWhiteSpace(title)
-    ? <Tooltip title={title}>{children}</Tooltip>
-    : <>{children}</>;
+const StatusTagWrapper: FC<PropsWithChildren<{ title: string | undefined; events: EventsObject }>> = ({ title, events, children }) => {
+  const content = <span style={{ display: 'contents' }} {...events}>{children}</span>;
+
+  return isNotNullOrWhiteSpace(title)
+    ? <Tooltip title={title}>{content}</Tooltip>
+    : content;
+};
 
 const StatusTagComponent: StatusTagComponentDefinition = {
   allowInherit: true,
@@ -166,6 +173,12 @@ const StatusTagComponent: StatusTagComponentDefinition = {
     return (
       <ConfigurableFormItem<number | number[] | string | string[] | (number | string)[]> model={{ ...model, hideLabel: true }}>
         {(value, _onChange, _propertyName, ctx) => {
+          /* Bound to the wrapper rather than passed to `Dropdown`: its read-only branch renders no
+             select, so anything spread there would never reach the DOM. */
+          const events = getComponentEvents<number | number[] | string | string[] | (number | string)[]>(
+            model, STATUS_TAG_EVENTS_WITHOUT_CHANGE, ctx, value, DataTypes.array,
+          );
+
           /* The legacy manual Value Source pinned a fixed status; it stands in when the bound
              property is empty so a migrated form keeps showing what it used to. */
           const resolved = hasStatusValue(value) ? value : model.value;
@@ -178,12 +191,12 @@ const StatusTagComponent: StatusTagComponentDefinition = {
              plain text and could not produce the dash. */
           if (!hasStatusValue(resolved))
             return (
-              <WithTooltip title={model.description}>
+              <StatusTagWrapper title={model.description} events={events}>
                 <StatusTagPlaceholder
                   className={styles.statusTag}
                   label={isNotNullOrWhiteSpace(model.readOnlyPlaceholder) ? model.readOnlyPlaceholder : EMPTY_STATUS_LABEL}
                 />
-              </WithTooltip>
+              </StatusTagWrapper>
             );
 
           /* With inline values, the catch-all row stands in for a value that matches no row — what
@@ -202,7 +215,7 @@ const StatusTagComponent: StatusTagComponentDefinition = {
           const displayValue = useFallback ? DEFAULT_STATUS_VALUE : resolved;
 
           return (
-            <WithTooltip title={model.description}>
+            <StatusTagWrapper title={model.description} events={events}>
               <Dropdown
                 {...modelWithoutStyle}
                 values={options}
@@ -211,14 +224,11 @@ const StatusTagComponent: StatusTagComponentDefinition = {
                 size={model.size}
                 /* Read-only rendering happens outside the select, where the emotion class does not
                  reach, so the style model is handed over as a value for that path. */
-                styleValue={model}
+                styleValue={{ ...model, dimensions: { width: 'max-content' } }}
                 /* No `onChange`, `selectRef` or `popupClassName`: read-only renders no select, so
                  there is nothing to select into, focus, or pop up. */
-                events={getComponentEvents<number | number[] | string | string[] | (number | string)[]>(
-                  model, STATUS_TAG_EVENTS_WITHOUT_CHANGE, ctx, value, DataTypes.array,
-                )}
               />
-            </WithTooltip>
+            </StatusTagWrapper>
           );
         }}
       </ConfigurableFormItem>

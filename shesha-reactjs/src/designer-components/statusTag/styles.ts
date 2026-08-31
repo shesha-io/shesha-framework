@@ -149,6 +149,11 @@ export const useStyles = createStyles((
       &&& ${tagWrapperSelector} {
         justify-content: flex-start;
         align-items: center;
+        pointer-events: none;
+      }
+
+      &&& .${prefixCls}-tag {
+        pointer-events: auto;
       }
 
       /* In multi-select antd wraps each tag in a selection item carrying its own shaded background,
