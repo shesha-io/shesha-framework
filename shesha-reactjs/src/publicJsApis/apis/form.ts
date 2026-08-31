@@ -54,6 +54,16 @@ export type FormIdentifier = FormFullName | FormUid;
 
 export interface IFormSettings {
   modelType?: string | IEntityTypeIdentifier | undefined;
+
+  postUrl?: string | undefined;
+  putUrl?: string | undefined;
+  deleteUrl?: string | undefined;
+  getUrl?: string | undefined;
+
+  fieldsToFetch?: string[] | undefined;
+
+  /** if true then need to update components structure for using Setting component */
+  isSettingsForm?: boolean | undefined;
 };
 
 export interface FormInstance {
