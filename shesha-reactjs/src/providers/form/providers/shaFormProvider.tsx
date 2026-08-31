@@ -6,13 +6,15 @@ import {
   useEffect,
   useRef,
   useState,
+  useMemo,
 } from "react";
 
 import * as React from "react";
 import { IShaFormInstance } from '../store/interfaces';
 import { DelayedUpdateProvider } from "../../delayedUpdateProvider";
-import { ShaFormDataUpdateContext, ShaFormInstanceContext } from "../providers/contexts";
+import { ShaFormDataUpdateContext, ShaFormErrorsUpdateContext, ShaFormInstanceContext } from "../providers/contexts";
 import { ShaFormSubscriptionType } from "../store/shaFormInstance";
+import { IFormValidationErrors } from "@/interfaces";
 
 export interface IShaFormProviderProps<TValues extends object = object> {
   shaForm: IShaFormInstance<TValues>;
@@ -26,11 +28,15 @@ const ShaFormProvider = <TValues extends object = object>({ children, shaForm }:
     shaForm.updateData = () => setState({});
   }, [shaForm]);
 
+  const errors = useMemo(() => shaForm.validationErrors, [shaForm.validationErrors]);
+
   // TODO V1: replace with generic provider and remove unsafe type cast
   return (
     <ShaFormInstanceContext.Provider value={shaForm as unknown as IShaFormInstance}>
       <ShaFormDataUpdateContext.Provider value={state}>
-        {children}
+        <ShaFormErrorsUpdateContext.Provider value={errors}>
+          {children}
+        </ShaFormErrorsUpdateContext.Provider>
       </ShaFormDataUpdateContext.Provider>
     </ShaFormInstanceContext.Provider>
   );
@@ -51,6 +57,8 @@ const useShaFormRef = <Values extends object = object>(): RefObject<IShaFormInst
 };
 
 const useShaFormDataUpdate = (): object | undefined => useContext(ShaFormDataUpdateContext);
+
+const useShaFormValidationErrors = (): IFormValidationErrors | undefined => useContext(ShaFormErrorsUpdateContext);
 
 const useShaFormInstanceOrUndefined = <Values extends object = object>(): IShaFormInstance<Values> | undefined => {
   return useContext(ShaFormInstanceContext) as IShaFormInstance<Values> | undefined;
@@ -88,6 +96,7 @@ export {
   useShaFormInstance,
   useShaFormInstanceOrUndefined,
   useShaFormDataUpdate,
+  useShaFormValidationErrors,
   useShaFormRef,
   useShaFormSubscription,
   useShaFormDataModified,
