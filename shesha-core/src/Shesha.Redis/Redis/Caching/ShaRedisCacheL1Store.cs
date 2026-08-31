@@ -69,9 +69,25 @@ namespace Shesha.Redis.Caching
             return false;
         }
 
-        public void Set(string normalizedKey, object? value)
+        /// <summary>
+        /// Caches a value. <paramref name="maxLifetime"/> bounds the entry to the time the
+        /// underlying Redis key has left, so L1 can never outlive it -- otherwise a value
+        /// written with a short expiry, or read shortly before it lapses, would keep being
+        /// served locally after Redis had dropped it.
+        /// </summary>
+        public void Set(string normalizedKey, object? value, TimeSpan? maxLifetime = null)
         {
-            var entry = new Entry(value, DateTime.UtcNow.Add(_ttl));
+            var ttl = _ttl;
+            if (maxLifetime.HasValue && maxLifetime.Value < ttl)
+            {
+                // Already lapsed, or about to: caching would serve a value Redis considers gone.
+                if (maxLifetime.Value <= TimeSpan.Zero)
+                    return;
+
+                ttl = maxLifetime.Value;
+            }
+
+            var entry = new Entry(value, DateTime.UtcNow.Add(ttl));
 
             // The capacity check, the purge and the insert have to happen as one step. Each is
             // individually safe on a ConcurrentDictionary, but the sequence is not: concurrent

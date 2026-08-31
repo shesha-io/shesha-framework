@@ -167,6 +167,51 @@ namespace Shesha.Tests.Caching
             store.Invalidations.ShouldBe(5);
         }
 
+        // --- bounded lifetime --------------------------------------------------------------
+
+        [Fact]
+        public void An_entry_never_outlives_the_remaining_redis_ttl()
+        {
+            // A value written with a short expiry -- or read shortly before it lapses -- must
+            // not keep being served locally after Redis has dropped it. CacheOtpStorage writes
+            // one-time pins with a remaining lifetime that shrinks towards zero as they age, so
+            // without this an expired OTP could still validate for the rest of the L1 TTL.
+            var store = CreateStore(ttlSeconds: 30);
+
+            store.Set("short-lived", "value", maxLifetime: TimeSpan.FromMilliseconds(40));
+            store.TryGet("short-lived", out _).ShouldBeTrue("the entry should be cached briefly");
+
+            Thread.Sleep(80);
+
+            store.TryGet("short-lived", out var value).ShouldBeFalse(
+                "the entry outlived the remaining Redis TTL");
+            value.ShouldBeNull();
+        }
+
+        [Fact]
+        public void A_lifetime_longer_than_the_configured_ttl_does_not_extend_it()
+        {
+            // The bound only ever shortens: a long-lived Redis key must not stretch L1 past
+            // its configured TTL.
+            var store = CreateStore(ttlSeconds: 0);
+
+            store.Set("key", "value", maxLifetime: TimeSpan.FromHours(1));
+            Thread.Sleep(50);
+
+            store.TryGet("key", out _).ShouldBeFalse("the configured TTL should still apply");
+        }
+
+        [Fact]
+        public void An_already_lapsed_lifetime_is_not_cached_at_all()
+        {
+            var store = CreateStore(ttlSeconds: 30);
+
+            store.Set("gone", "value", maxLifetime: TimeSpan.Zero);
+
+            store.TryGet("gone", out _).ShouldBeFalse();
+            store.Count.ShouldBe(0);
+        }
+
         // --- statistics --------------------------------------------------------------------
 
         [Fact]

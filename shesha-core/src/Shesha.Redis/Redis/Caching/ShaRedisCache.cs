@@ -101,6 +101,29 @@ namespace Shesha.Redis.Caching
         }
 
         /// <summary>
+        /// The lifetime a write is asking Redis for, so L1 can be bounded by it. Callers such
+        /// as the OTP store pass a remaining lifetime that shrinks as the value ages, and that
+        /// can easily be shorter than the configured L1 TTL.
+        /// </summary>
+        private TimeSpan? RequestedLifetime(
+            string key, TimeSpan? slidingExpireTime, DateTimeOffset? absoluteExpireTime)
+        {
+            if (absoluteExpireTime.HasValue)
+                return absoluteExpireTime.Value - DateTimeOffset.UtcNow;
+
+            if (slidingExpireTime.HasValue)
+                return slidingExpireTime.Value;
+
+            if (DefaultAbsoluteExpireTimeFactory != null)
+                return DefaultAbsoluteExpireTimeFactory(key) - DateTimeOffset.UtcNow;
+
+            if (DefaultAbsoluteExpireTime.HasValue)
+                return DefaultAbsoluteExpireTime.Value - DateTimeOffset.UtcNow;
+
+            return DefaultSlidingExpireTime;
+        }
+
+        /// <summary>
         /// Stores a freshly read or written value in L1.
         ///
         /// The value is cached AS IS, deserialized, so every subsequent hit returns the same
@@ -116,9 +139,14 @@ namespace Shesha.Redis.Caching
         /// genuinely needs an isolated instance should copy it itself, or run with
         /// <see cref="ShaRedisCacheOptions.L1Enabled"/> set to false.
         /// </summary>
-        protected virtual void PopulateL1(RedisKey normalizedKey, object? value)
+        /// <param name="maxLifetime">
+        /// Time the Redis key has left. L1 is bounded by this so it can never serve a value
+        /// after Redis has expired it -- important for short-lived entries such as one-time
+        /// pins, whose expiry shrinks towards zero as they age.
+        /// </param>
+        protected virtual void PopulateL1(RedisKey normalizedKey, object? value, TimeSpan? maxLifetime = null)
         {
-            _l1?.Set(normalizedKey.ToString(), value);
+            _l1?.Set(normalizedKey.ToString(), value, maxLifetime);
         }
 
         protected virtual RedisKey NormalizeKey(string key)
@@ -144,7 +172,10 @@ namespace Shesha.Redis.Caching
                 return true;
             }
 
-            var redisValue = _database.StringGet(normalizedKey);
+            // WithExpiry so L1 can be bounded by whatever the key has left, in the same
+            // round-trip rather than an extra TTL call.
+            var withExpiry = _database.StringGetWithExpiry(normalizedKey);
+            var redisValue = withExpiry.Value;
             if (!redisValue.HasValue) { 
                 value = null;
                 return false;
@@ -153,7 +184,7 @@ namespace Shesha.Redis.Caching
             try
             {
                 value = Deserialize(redisValue);
-                PopulateL1(normalizedKey, value);
+                PopulateL1(normalizedKey, value, withExpiry.Expiry);
                 return true;
             }
             catch (Exception ex) when (ex is JsonException || ex is SerializationException
@@ -175,7 +206,7 @@ namespace Shesha.Redis.Caching
         {
             var redisKeys = keys.Select(NormalizeKey).ToArray();
             var redisValues = _database.StringGet(redisKeys);
-            return redisValues.Select((value, idx) => CreateConditionalValue(redisKeys[idx], value)).ToArray();
+            return redisValues.Select((value, idx) => CreateConditionalValue(redisKeys[idx], value, maxLifetime: null)).ToArray();
         }
 
         public override async Task<ConditionalValue<object>> TryGetValueAsync(string key)
@@ -187,15 +218,15 @@ namespace Shesha.Redis.Caching
             if (_l1 != null && _l1.TryGet(normalizedKey.ToString(), out var cached) && cached != null)
                 return new ConditionalValue<object>(true, cached);
 
-            var redisValue = await _database.StringGetAsync(normalizedKey);
-            return CreateConditionalValue(normalizedKey, redisValue);
+            var withExpiry = await _database.StringGetWithExpiryAsync(normalizedKey);
+            return CreateConditionalValue(normalizedKey, withExpiry.Value, withExpiry.Expiry);
         }
 
         public override async Task<ConditionalValue<object>[]> TryGetValuesAsync(string[] keys)
         {
             var redisKeys = keys.Select(NormalizeKey).ToArray();
             var redisValues = await _database.StringGetAsync(redisKeys);
-            return redisValues.Select((value, idx) => CreateConditionalValue(redisKeys[idx], value)).ToArray();
+            return redisValues.Select((value, idx) => CreateConditionalValue(redisKeys[idx], value, maxLifetime: null)).ToArray();
         }
 
         public override void Set(string key, object value, TimeSpan? slidingExpireTime = null, DateTimeOffset? absoluteExpireTime = null)
@@ -270,7 +301,7 @@ namespace Shesha.Redis.Caching
             // the expiry -- so L1 keys off the StringSet result only.
             if (stored)
             {
-                PopulateL1(redisKey, value);
+                PopulateL1(redisKey, value, RequestedLifetime(key, slidingExpireTime, absoluteExpireTime));
                 _invalidationBus?.Publish(Name, redisKey.ToString());
             }
         }
@@ -343,7 +374,7 @@ namespace Shesha.Redis.Caching
             // See Set: L1 and the broadcast happen only once Redis has accepted the value.
             if (stored)
             {
-                PopulateL1(redisKey, value);
+                PopulateL1(redisKey, value, RequestedLifetime(key, slidingExpireTime, absoluteExpireTime));
                 if (_invalidationBus != null)
                     await _invalidationBus.PublishAsync(Name, redisKey.ToString());
             }
@@ -376,7 +407,7 @@ namespace Shesha.Redis.Caching
             // the indexes line up; PopulateL1 needs the original value, not the serialized form.
             for (var i = 0; i < redisPairs.Count; i++)
             {
-                PopulateL1(redisPairs[i].Key, pairs[i].Value);
+                PopulateL1(redisPairs[i].Key, pairs[i].Value, RequestedLifetime(pairs[i].Key, slidingExpireTime, absoluteExpireTime));
                 _invalidationBus?.Publish(Name, redisPairs[i].Key.ToString());
             }
 
@@ -458,7 +489,7 @@ namespace Shesha.Redis.Caching
                 // so the indexes line up; PopulateL1 needs the original value.
                 for (var i = 0; i < redisPairs.Count; i++)
                 {
-                    PopulateL1(redisPairs[i].Key, pairs[i].Value);
+                    PopulateL1(redisPairs[i].Key, pairs[i].Value, RequestedLifetime(pairs[i].Key, slidingExpireTime, absoluteExpireTime));
                     if (_invalidationBus != null)
                         await _invalidationBus.PublishAsync(Name, redisPairs[i].Key.ToString());
                 }
@@ -586,7 +617,13 @@ namespace Shesha.Redis.Caching
             return type;
         }
 
-        protected ConditionalValue<object> CreateConditionalValue(RedisKey key, RedisValue redisValue)
+        /// <param name="maxLifetime">
+        /// Time the Redis key has left, bounding the L1 entry. Null means "do not populate L1":
+        /// the batch reads use StringGet, which cannot return per-key TTLs, so caching from
+        /// there could outlive a short-lived key.
+        /// </param>
+        protected ConditionalValue<object> CreateConditionalValue(
+            RedisKey key, RedisValue redisValue, TimeSpan? maxLifetime)
         {
             if (!redisValue.HasValue)
                 return new ConditionalValue<object>(false, null!);
@@ -594,7 +631,8 @@ namespace Shesha.Redis.Caching
             try
             {
                 var deserialized = Deserialize(redisValue);
-                PopulateL1(key, deserialized);
+                if (maxLifetime.HasValue)
+                    PopulateL1(key, deserialized, maxLifetime);
                 return new ConditionalValue<object>(true, deserialized);
             }
             catch (Exception ex) when (ex is JsonException || ex is SerializationException
