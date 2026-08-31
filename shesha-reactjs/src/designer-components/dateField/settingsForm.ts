@@ -99,7 +99,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
               ...fbf(commonTabId)
                 .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true } })
                 .addContextPropertyAutocomplete({
-                  propertyName: 'toPropertyName', label: 'To Property Name', styledLabel: true, size: 'small', jsSetting: true,
+                  propertyName: 'toPropertyName', label: 'To Property Name', styledLabel: true, size: 'small',
                   description: 'Property the end of the range binds to. Only used when Range is enabled.',
                   hidden: { _code: 'return !getSettingValue(data?.range);', _mode: 'code', _value: false },
                 })
