@@ -3,10 +3,13 @@ import { FC, useEffect, useMemo, useRef, useState } from 'react';
 import PhoneInput, { PhoneNumber as IAntdPhoneNumber } from 'antd-phone-input';
 import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
+import { ConfigurableFormItemContext } from '@/components/formDesigner/components/model';
 import ReadOnlyDisplayFormItem from '@/components/readOnlyDisplayFormItem';
 import { validateConfigurableComponentSettings } from '@/providers/form/utils';
 import { useAvailableConstantsData } from '@/providers/form/utils';
 import { executeScriptSync } from '@/providers/form/utils/scripts';
+import { DataTypes } from '@/interfaces/dataTypes';
+import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '@/designer-components/_common/events';
 import { migrateCustomFunctions, migratePropertyName, migrateReadOnly, migrateHiddenToVisible } from '@/designer-components/_common-migrations/migrateSettings';
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
@@ -20,10 +23,15 @@ import { defaultStyles, getPhoneValidationError, normalizeCountryCode, parseCoun
 
 type PhoneNumberValue = string | IPhoneNumberValue | null | undefined;
 
-const PhoneNumberControl: FC<IPhoneNumberComponentProps & { value?: PhoneNumberValue; onChange?: (value: PhoneNumberValue) => void }> = (props) => {
+const PhoneNumberControl: FC<IPhoneNumberComponentProps & {
+  value?: PhoneNumberValue;
+  onChange?: (value: PhoneNumberValue) => void;
+  ctx?: ConfigurableFormItemContext<PhoneNumberValue> | undefined;
+}> = (props) => {
   const {
     value,
     onChange,
+    ctx,
     readOnly,
     country,
     defaultCountry,
@@ -204,6 +212,7 @@ const PhoneNumberControl: FC<IPhoneNumberComponentProps & { value?: PhoneNumberV
         placeholder={placeholder}
         size={size}
         allowClear={allowClear}
+        {...getComponentEvents<PhoneNumberValue>(model, ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, ctx, value, DataTypes.any)}
         onChange={onChangeInternal}
         onBlur={onBlurInternal}
         onFocus={onFocusInternal}
@@ -236,7 +245,7 @@ const PhoneNumberComponent: PhoneNumberComponentDefinition = {
 
     return (
       <ConfigurableFormItem<PhoneNumberValue> model={model} initialValue={model.initialValue}>
-        {(value, onChange) => <PhoneNumberControl {...model} value={value} onChange={onChange} />}
+        {(value, onChange, _, ctx) => <PhoneNumberControl {...model} value={value} onChange={onChange} ctx={ctx} />}
       </ConfigurableFormItem>
     );
   },

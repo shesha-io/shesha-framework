@@ -1084,8 +1084,14 @@ export const getValidationRules = (component: IConfigurableFormComponent, option
 
   // TODO: implement more generic way (e.g. using validation providers)
 
+  // A read-only or disabled field can never receive user input, so a `required` rule on it can
+  // never be satisfied by the user - it would just block submission unconditionally. Skip it for
+  // those interaction modes; the other rules (min/max/pattern/custom validator) still apply since
+  // they only matter if/when the field does hold a value (e.g. one set programmatically).
+  const canBeRequired = component.readOnly !== true && component.disabled !== true;
+
   if (validate) {
-    if (validate.required)
+    if (validate.required && canBeRequired)
       rules.push({
         required: true,
         message: validate.message || 'This field is required',
