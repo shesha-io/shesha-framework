@@ -80,7 +80,11 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
             components: fbf(commonTabId)
               .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', jsSetting: true })
               .addLabelConfigurator({ propertyName: 'hideLabel', label: 'Label', hideLabel: true })
-              .stdPlaceholderDescriptionInputs()
+              /* Tooltip only — no Placeholder. The standard pair assumes a text input with empty
+                 space to prompt into; this component's control is an upload trigger and a file list,
+                 which have nowhere to show one, and nothing ever read the property. Same shape the
+                 checkbox group uses for the same reason. */
+              .addSettingsInputRow({ inputs: [{ type: 'textArea', propertyName: 'description', label: 'Tooltip', jsSetting: true }] })
               .stdVisibleEditableInputs('full')
               .stdCollapsiblePanel('Display', (fb) => fb
                 .addSettingsInputRow({
