@@ -50,13 +50,14 @@ const ValidationErrorsComponent: IToolboxComponent<IValidationErrorsComponentPro
     const { styles } = useStyles(model);
     const validationErrors = useShaFormValidationErrors();
     return (
-      <ValidationErrors
-        style={model.styleCss ?? EMPTY_STYLE}
-        error={form.formMode === 'designer' ? 'Validation Errors (visible in the designer only)' : validationErrors}
-        renderMode="alert"
-        className={classNames(styles.shaValidationErrors, model.className)}
-        additionalDomProperties={getComponentEvents<void, IValidationErrorsComponentProps>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent })}
-      />
+      <div {...getComponentEvents<void, IValidationErrorsComponentProps>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent })}>
+        <ValidationErrors
+          style={model.styleCss ?? EMPTY_STYLE}
+          error={form.formMode === 'designer' ? 'Validation Errors (visible in the designer only)' : validationErrors}
+          renderMode="alert"
+          className={classNames(styles.shaValidationErrors, model.className)}
+        />
+      </div>
     );
   },
   /** validationErrors is never hidden and depends on permission */
