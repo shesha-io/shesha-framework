@@ -5,6 +5,8 @@ import { useShaComponentStyles } from '@/components/formDesigner/styles/shaCompo
 import { IToolboxComponent } from '@/interfaces';
 import { isDefined, isNullOrWhiteSpace } from '@/utils';
 import { ShaIcon } from '@/components/shaIcon';
+import { useEvents } from '@/components/formDesigner/components/eventsAndApiValueProcessor';
+import { getComponentEvents } from '@/designer-components/_common/events';
 
 interface IRenderButtonProps {
   props: ButtonGroupItemProps;
@@ -14,6 +16,7 @@ interface IRenderButtonProps {
 export const RenderButton: FC<IRenderButtonProps> = ({ props, buttonComponent: toolboxComponent }) => {
   const componentModel = useMemo(() => ({ ...props, type: 'button' }), [props]);
   const { styles: shaComponentStyles } = useShaComponentStyles({ componentModel, toolboxComponent, isDesigner: false });
+  const handleEvent = useEvents<void>(props.name);
 
   const label = useMemo(() => (
     <>
@@ -24,7 +27,7 @@ export const RenderButton: FC<IRenderButtonProps> = ({ props, buttonComponent: t
 
   return (
     <div className={shaComponentStyles.shaComponent}>
-      <ConfigurableButton key={props.id} {...props} label={label} />
+      <ConfigurableButton key={props.id} {...props} label={label} additionalDomProperties={getComponentEvents<void, ButtonGroupItemProps>(props, ['onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent })} />
     </div>
   );
 };
