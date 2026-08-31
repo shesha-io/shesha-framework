@@ -71,6 +71,24 @@ export const VerbSelector: FC<VerbSelectorProps> = ({ verbs, value, onChange, si
   );
 };
 
+// Mirrors the scheme check the "API Call" action uses (isGlobalUrl in configurable-actions/api-call.ts)
+// to decide whether a URL is routed to this app's own backend or sent as-is to an external host.
+const hasScheme = (url: string): boolean => Boolean(url.match(/^(http|https):\/\//i));
+
+// Heuristic warning only: a bare host (e.g. "some-api.example.com/path", no "http(s)://") reads as
+// "external" to a person but has no scheme, so it will be treated as a relative path and sent to this
+// app's own backend instead. Deliberately conservative — skips relative-path conventions ("/...",
+// "./...", "../..."), mustache expressions ("{{...}}"), and anything without a dot in the host-like
+// segment — so it never fires on a legitimate relative API path.
+const looksLikeSchemelessExternalUrl = (url: string | null): boolean => {
+  if (isNullOrWhiteSpace(url) || hasScheme(url))
+    return false;
+  if (url.startsWith('/') || url.startsWith('{') || url.startsWith('./') || url.startsWith('../'))
+    return false;
+  const hostPart = url.split(/[/?#]/, 1)[0] ?? '';
+  return /\./.test(hostPart) && !/\s/.test(hostPart);
+};
+
 const getUrlFromValue = (value?: EndpointsAutocompleteValue): string | null => {
   if (!value)
     return null;
@@ -150,6 +168,7 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
   };
 
   const url = getUrlFromValue(props.value);
+  const showSchemeWarning = looksLikeSchemelessExternalUrl(url);
 
   const autocomplete = (
     <AutoComplete
@@ -171,19 +190,32 @@ export const EndpointsAutocomplete: FC<IEndpointsAutocompleteProps> = ({ readOnl
     </AutoComplete>
   );
 
+  const schemeWarning = showSchemeWarning ? (
+    <div className={styles.schemeWarning}>
+      This looks like an external host without http:// or https:// — it will be sent as a relative path
+      to this app&apos;s own backend instead. Add the scheme (e.g. https://{url}) to call an external API.
+    </div>
+  ) : null;
+
   return mode === 'endpoint'
     ? (
-      <Space.Compact className={styles.compactContainer}>
-        <VerbSelector
-          verbs={props.availableHttpVerbs ?? []}
-          onChange={onVerbChange}
-          value={props.value && isApiEndpoint(props.value) ? props.value.httpVerb : ""}
-          size={props.size}
-        />
-        {autocomplete}
-      </Space.Compact>
+      <>
+        <Space.Compact className={styles.compactContainer}>
+          <VerbSelector
+            verbs={props.availableHttpVerbs ?? []}
+            onChange={onVerbChange}
+            value={props.value && isApiEndpoint(props.value) ? props.value.httpVerb : ""}
+            size={props.size}
+          />
+          {autocomplete}
+        </Space.Compact>
+        {schemeWarning}
+      </>
     )
     : (
-      <>{autocomplete}</>
+      <>
+        {autocomplete}
+        {schemeWarning}
+      </>
     );
 };

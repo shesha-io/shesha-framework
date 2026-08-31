@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/strict-boolean-expressions: "error" */
 import { FC, useRef, useState } from 'react';
 import { normalizeUrl } from '@/utils/url';
 import { isSidebarButton } from '@/interfaces/sidebar';
@@ -63,9 +64,9 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
           if (initialSelection.current === undefined && isSidebarButton(nestedItem) && isNavigationActionConfiguration(nestedItem.actionConfiguration)) {
             const url = getUrlFromNavigationRequest(nestedItem.actionConfiguration.actionArguments);
 
-            if (url && normalizeUrl(url) === currentUrl) {
+            if (!isNullOrWhiteSpace(url) && normalizeUrl(url) === currentUrl) {
               initialSelection.current = nestedItem.id;
-              if (!selectedKey)
+              if (isNullOrWhiteSpace(selectedKey))
                 setSelectedKey(nestedItem.id);
             }
           }
@@ -86,7 +87,7 @@ const SidebarMenu: FC<ISidebarMenuProps> = ({ theme = 'dark' }) => {
       theme={theme}
       items={menuItems}
       {...(keys ? { defaultOpenKeys: keys } : {})}
-      {...(selectedKey ? { selectedKeys: [selectedKey] } : {})}
+      {...(!isNullOrWhiteSpace(selectedKey) ? { selectedKeys: [selectedKey] } : {})}
     />
   );
 };

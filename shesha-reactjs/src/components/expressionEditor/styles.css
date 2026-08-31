@@ -28,8 +28,13 @@
   display: block;
   width: 100% !important;
   max-width: 100%;
-  min-height: 20px;
-  padding: 0 4px;
+  box-sizing: border-box;
+  /* Matches antd's default Input box model so this aligns with a plain <Input> placed alongside it. */
+  min-height: 32px;
+  padding: 4px 11px;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  background: #fff;
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
@@ -37,6 +42,10 @@
   cursor: text;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   color: #1d2939;
+}
+
+.sha-expression-editor-preview:hover:not(:disabled) {
+  border-color: #4096ff;
 }
 
 .sha-expression-editor-preview-content {
@@ -55,6 +64,8 @@
 .sha-expression-editor-preview:disabled {
   cursor: not-allowed;
   color: #98a2b3;
+  background: #f5f5f5;
+  border-color: #d9d9d9;
 }
 
 .sha-expression-editor-input {

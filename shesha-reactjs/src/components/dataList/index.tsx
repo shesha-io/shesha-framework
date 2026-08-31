@@ -242,7 +242,7 @@ export const DataList: FC<IDataListProps> = ({
 
       if (isCurrentlySelected) {
         // Deselecting - don't trigger onListItemSelect
-        if (onClearSelectedRow) onClearSelectedRow();
+        onClearSelectedRow();
 
         // Trigger onSelectionChange event for deselection
         if (onSelectionChange) {
