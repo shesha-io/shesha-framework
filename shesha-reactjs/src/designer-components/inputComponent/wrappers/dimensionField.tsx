@@ -48,11 +48,19 @@ export const DimensionFieldWrapper: FCUnwrapped<IDimensionFieldSettingsInputProp
    * whose prefix is over the bound.
    */
   const commit = (data: string | undefined): void => {
-    if (!WIDTH_DIMENSIONS.includes(dimensionType) || !exceedsWidthPercent(data)) return;
+    if (!WIDTH_DIMENSIONS.includes(dimensionType)) return;
 
-    const bounded = boundWidthPercent(data as string);
-    message.warning(`${String(data).trim()} is wider than the space the component sits in. Applied ${MAX_DIMENSION_PERCENT}% instead, which is the maximum.`);
-    onChange?.(bounded as string);
+    // exceedsWidthPercent returns a boolean and so does not narrow `data`; guard the type first.
+    if (typeof data !== 'string' || !exceedsWidthPercent(data)) return;
+
+    // boundWidthPercent is typed string | number because it passes non-string values straight
+    // through. A string in always yields a string out, but narrow rather than assert so the
+    // contract is checked here instead of assumed.
+    const bounded = boundWidthPercent(data);
+    if (typeof bounded !== 'string') return;
+
+    message.warning(`${data.trim()} is wider than the space the component sits in. Applied ${MAX_DIMENSION_PERCENT}% instead, which is the maximum.`);
+    onChange?.(bounded);
   };
 
   const handleChange = (data: string): void => {
