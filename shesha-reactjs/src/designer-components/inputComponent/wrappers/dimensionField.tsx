@@ -41,11 +41,8 @@ export const DimensionFieldWrapper: FCUnwrapped<IDimensionFieldSettingsInputProp
   };
 
   /**
-   * Overrides a percentage wider than the container and says so.
-   *
-   * Applied when the value is committed rather than on every keystroke: bounding as the user types
-   * would rewrite "150" to "100" before they had finished typing, and they could never reach a value
-   * whose prefix is over the bound.
+   * Overrides a percentage wider than the container and says so. On commit, not per keystroke -
+   * bounding as the user types would rewrite "150" to "100" mid-entry.
    */
   const commit = (data: string | undefined): void => {
     if (!WIDTH_DIMENSIONS.includes(dimensionType)) return;
@@ -53,9 +50,7 @@ export const DimensionFieldWrapper: FCUnwrapped<IDimensionFieldSettingsInputProp
     // exceedsWidthPercent returns a boolean and so does not narrow `data`; guard the type first.
     if (typeof data !== 'string' || !exceedsWidthPercent(data)) return;
 
-    // boundWidthPercent is typed string | number because it passes non-string values straight
-    // through. A string in always yields a string out, but narrow rather than assert so the
-    // contract is checked here instead of assumed.
+    // boundWidthPercent is string | number, so narrow rather than assert.
     const bounded = boundWidthPercent(data);
     if (typeof bounded !== 'string') return;
 

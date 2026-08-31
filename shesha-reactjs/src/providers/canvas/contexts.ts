@@ -8,11 +8,9 @@ export type IViewType = 'configStudio' | 'page' | 'modal';
 export interface ICanvasStateContext {
   zoom: number;
   autoZoom: boolean;
-  /** "Canvas" preset: the canvas width tracks the space available between the designer panels
-   * instead of being pinned to a device/resolution preset. */
+  /** "Canvas" preset: width tracks the available space instead of a device preset. */
   autoWidth: boolean;
-  /** Fraction of the available space the canvas takes while `autoWidth` is on, as a percentage.
-   * 100 is the whole pane - the plain "Canvas" preset - and is the maximum. */
+  /** Share of the available space taken while `autoWidth` is on. 100 is the maximum. */
   widthPercent: number;
   designerWidth: string;
   designerDevice?: DeviceTypes;
@@ -30,9 +28,9 @@ export interface ICanvasActionsContext {
   setCanvasZoom: (zoom: number) => void;
   setCanvasAutoZoom: (value?: boolean) => void;
   setCanvasAutoWidth: (value?: boolean) => void;
-  /** Sizes the canvas to a percentage of the available space. Above 100 is bounded to 100. */
+  /** Above 100 is bounded to 100. */
   setCanvasWidthPercent: (percent: number) => void;
-  /** Reports the width currently available to the canvas. Ignored unless `autoWidth` is on. */
+  /** Ignored unless `autoWidth` is on. */
   setAvailableCanvasWidth: (width: string) => void;
   /* NEW_ACTION_ACTION_DECLARATION_GOES_HERE */
 }

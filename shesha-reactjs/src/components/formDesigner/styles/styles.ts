@@ -57,14 +57,8 @@ export const useStyles = (): typeof useStylesResponse => {
 export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }) => {
   const { SIDEBAR_BTN_HEIGHT, TOOLBAR_HEIGHT, HEADER_HEIGHT } = LAYOUT_CONSTANTS;
 
-  // Height the canvas can give the form: the viewport, less the chrome above it (header, toolbar,
-  // sidebar buttons - the same allowance the side panels use) and less the canvas's own padding and
-  // bottom margin. Applied as a *minimum*, so the form fills the canvas and can still grow past it.
-  //
-  // Exceeding it is what produced the scrollbar reports: a bare 100vh here is taller than the pane
-  // by the chrome, which the old height pins absorbed by clipping. Once those were released so tall
-  // forms could scroll, the same overshoot grew the canvas past its pane, and then the page.
-  // paddingLG * 4 = the canvas padding (top + bottom) plus its bottom margin, which is paddingLG * 2.
+  // Viewport less the chrome above the canvas and the canvas own padding. A bare 100vh overshoots
+  // the pane by the chrome, which grows the canvas past it and then the page.
   const canvasChrome = sheshaStyles.paddingLG * 4;
   const formAvailableHeight = `calc(100vh - ${HEADER_HEIGHT} - ${TOOLBAR_HEIGHT} - ${SIDEBAR_BTN_HEIGHT} - ${canvasChrome}px)`;
 
@@ -141,9 +135,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   const designerPage = "sha-designer-page";
 
   const formDesigner = cx(formDesignerClassName, css`
-        /* Bounded to the editor that hosts the designer, so the canvas pane is the element that
-           scrolls. Without this the frame grows with the form and the whole designer scrolls -
-           toolbar and tabs included - instead of just the canvas. */
+        /* Bounds the designer so the canvas pane scrolls, not the whole editor. */
         height: 100%;
         .${designerClassNames.mainArea}{
             height: 100%;
@@ -365,9 +357,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
 
         .${designerWorkArea}{
             background-color: white;
-            /* min-height, not height: this fills the canvas when the form is short, but a form with
-               more content than fits has to be able to grow past it - otherwise the overflow is
-               cut by the canvas instead of becoming something the wrapper can scroll. */
+            /* min-height, not height: a long form has to be able to grow past the canvas. */
             min-height: ${formAvailableHeight};
             .${shaComponentsContainer} {
 
@@ -391,12 +381,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 }
             }
 
-            /* Space between components on the canvas. A flex gap, not margins on the
-               components: margin-top/bottom is exactly what the styling box already writes onto
-               .sha-component, so a margin here would override whatever spacing a component was
-               configured with instead of being additional to it. A gap composes with it.
-               Designer-only - this class is applied in designer mode only, so a rendered form keeps
-               precisely the spacing it was configured with. */
+            /* A gap, not margins: margin-top/bottom is what the styling box already writes onto
+               .sha-component, so a margin would override configured spacing instead of adding to it. */
             .${shaComponentsContainer}.vertical > .sha-components-container-inner {
                 display: flex;
                 flex-direction: column;
@@ -409,14 +395,10 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             }
 
             > div {
-                /* Same reason as the work area above - a hard 100% here re-pins what that just
-                   released, because these wrap the component list that actually grows. */
+                /* Same reason as the work area above - these wrap the list that grows. */
                 min-height: 100%;
                 > div:not(.sha-drop-hint):not(.sha-drop-hint-container) {
-                    /* The same allowance as the work area, not a bare 100vh: this list is nested
-                       inside it, so a full-viewport minimum overshoots the canvas by all the chrome
-                       above it. A percentage cannot be used here - the ancestors have a min-height
-                       rather than a definite height, so a percentage would resolve to auto. */
+                    /* Not a percentage: the ancestors have min-height, not a definite height. */
                     min-height: ${formAvailableHeight};
                 }
 
