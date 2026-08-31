@@ -321,7 +321,11 @@ namespace Shesha.Permissions
             var dto = await GetDtoAsync(dbObj);
 
             await SetCacheAsync(dto);
-            return dto;
+
+            // SetCacheAsync just put this instance in the cache, so returning it directly
+            // would hand the caller the cached object -- the same problem the hit path above
+            // avoids. Both paths must isolate.
+            return dto.Copy();
         }
 
         [UnitOfWork]

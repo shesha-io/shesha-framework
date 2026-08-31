@@ -74,6 +74,15 @@ namespace Shesha.Permissions
         /// </summary>
         public PermissionedObjectDto Copy()
         {
+            // Children are copied recursively: a new list holding the same child instances
+            // would still let a caller mutate nodes shared with the cached object.
+            var children = new List<PermissionedObjectDto>();
+            if (Children != null)
+            {
+                foreach (var child in Children)
+                    children.Add(child?.Copy());
+            }
+
             return new PermissionedObjectDto
             {
                 Id = Id,
@@ -92,13 +101,13 @@ namespace Shesha.Permissions
                 ActualAccess = ActualAccess,
                 InheritedAccess = InheritedAccess,
                 Parent = Parent,
-                Children = Children != null ? new List<PermissionedObjectDto>(Children) : new List<PermissionedObjectDto>(),
+                Children = children,
                 Hidden = Hidden,
                 AdditionalParameters = AdditionalParameters != null
                     ? new Dictionary<string, string>(AdditionalParameters)
                     : null,
                 Md5 = Md5,
             };
-        } 
+        }
     }
 }
