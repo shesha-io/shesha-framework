@@ -151,6 +151,19 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IDr
         }
       }
 
+      /* Plain text means plain text. antd paints every multi-select selection into a chip of its
+         own — background, radius and inline padding — which reads as a tag even though Display
+         Style asked for none, so the chip chrome is stripped back to bare text. Scoped by antd's
+         own multi-select class: single-select never paints one. The trailing margin is kept, or
+         adjacent values would run together with nothing separating them. */
+      ${model.displayStyle === 'tags' ? '' : `
+      &&&&.${prefixCls}-select-multiple .${prefixCls}-select-selection-item {
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        padding-inline: 0;
+      }`}
+
       &&&& input {
         ${fontStyles(model.font, model.styleCss)}
       }

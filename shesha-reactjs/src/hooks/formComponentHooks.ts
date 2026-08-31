@@ -23,7 +23,11 @@ import {
 } from "..";
 import { TouchableProxy, makeTouchableProxy } from "@/providers/form/touchableProxy";
 import { useParentOrUndefined } from "@/providers/parentProvider";
-import { isEqual } from "lodash";
+import { isEqual, isEqualWith } from "lodash";
+
+/** value-equality that treats any two functions as equal (matches the previous JSON.stringify semantics, which dropped them) */
+const ignoreFunctionsCustomizer = (a: unknown, b: unknown): boolean | undefined =>
+  typeof a === 'function' && typeof b === 'function' ? true : undefined;
 import { getBorderStyle } from "@/designer-components/_settings/utils/border/utils";
 import { getFontStyle } from "@/designer-components/_settings/utils/font/utils";
 import { getShadowStyle } from "@/designer-components/_settings/utils/shadow/utils";
@@ -123,19 +127,18 @@ export function useActualContextData<T extends object = object>(
   const prevParentReadonly = useRef<IDisabledAndReadOnly>(pDisabledAndReadOnly);
   const prevModel = useRef<T>(undefined);
   const actualModelRef = useRef<UnwrapCodeEvaluators<T> | undefined>(undefined);
-  const prevActualModelRef = useRef<string>('');
 
   let actualModel: UnwrapCodeEvaluators<T> | undefined = undefined;
   const modelChanged = !isEqual(prevModel.current, model);
   if (!isDefined(actualModelRef.current) || contextProxy.changed || modelChanged || !isEqual(prevParentReadonly.current, pDisabledAndReadOnly)) {
     actualModel = unwrapModel(model, context, propertyFilter, executor, pDisabledAndReadOnly, processFilteredProperties);
 
-    // ToDo: AS - review copy and compare for performance and reliability
-    const actualModelJson = JSON.stringify(actualModel);
-    if (prevActualModelRef.current !== actualModelJson) {
+    // keep the previous reference when the result is value-equal — downstream memos rely on it;
+    // compared with a deep-equal (functions ignored) instead of JSON.stringify: serializing every
+    // evaluated model on every evaluation dominated the profile on style-heavy tables
+    if (!isDefined(actualModelRef.current) || !isEqualWith(actualModelRef.current, actualModel, ignoreFunctionsCustomizer)) {
       actualModelRef.current = actualModel;
     }
-    prevActualModelRef.current = actualModelJson;
     prevParentReadonly.current = pDisabledAndReadOnly;
   }
 

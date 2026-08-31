@@ -5,6 +5,7 @@ import { useMedia } from 'react-use';
 import { ButtonGroupSettingsEditor } from './buttonGroupSettingsEditor';
 import { deepCopyViaJson } from '@/utils/object';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
+import DefaultModelProvider from '@/designer-components/_settings/defaultModelProvider/defaultModelProvider';
 
 export interface IToolbarSettingsModal {
   readOnly: boolean;
@@ -67,11 +68,13 @@ export const ButtonGroupConfigurator: FC<IButtonGroupConfiguratorProps> = ({
         okButtonProps={{ hidden: readOnly }}
         destroyOnHidden={true}
       >
-        <ButtonGroupSettingsEditor
-          readOnly={readOnly}
-          value={localValue}
-          onChange={setLocalValue}
-        />
+        <DefaultModelProvider name="Skip default model for Buton Group configurator">
+          <ButtonGroupSettingsEditor
+            readOnly={readOnly}
+            value={localValue}
+            onChange={setLocalValue}
+          />
+        </DefaultModelProvider>
       </Modal>
     </Fragment>
   );

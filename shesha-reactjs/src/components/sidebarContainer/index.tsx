@@ -14,12 +14,7 @@ import { SidebarPanel } from './sidebarPanel';
 import { useStyles } from './styles/styles';
 import { SizableColumns } from '../sizableColumns';
 import { getPanelSizes } from './utilis';
-import { calculateAutoZoom, DEFAULT_OPTIONS, defaultDesignerWidth, usePinchZoom } from '@/providers/canvas/utils';
-import { IViewType } from '@/providers/canvas/contexts';
-import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
-import { useCanvas } from '@/providers/canvas';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { SIDEBAR_COLLAPSE } from '../mainLayout/constant';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 export interface ISidebarContainerProps extends PropsWithChildren {
   leftSidebarProps?: ISidebarProps | undefined;
@@ -27,10 +22,8 @@ export interface ISidebarContainerProps extends PropsWithChildren {
   header?: ReactNode | (() => ReactNode) | undefined;
   sideBarWidth?: number | undefined;
   allowFullCollapse?: boolean | undefined;
-  canZoom?: boolean | undefined;
   configTreePanelSize?: string | number | undefined;
   noPadding?: boolean | undefined;
-  viewType?: IViewType | undefined;
   /** Inline usage: size the sidebar to its content (capped at the viewport) instead
    * of forcing a full-viewport height. Use when this container is embedded as a plain
    * component (e.g. the datatable filter panel) rather than a full-screen editor. */
@@ -45,20 +38,15 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   children,
   allowFullCollapse = false,
   noPadding,
-  canZoom = false,
-  viewType = 'configStudio',
   embedded = false,
   storeName,
 }) => {
-  const { formMode } = useShaFormInstance();
   const { styles } = useStyles();
   const [isOpenLeftLocal, setIsOpenLeftLocal] = useState(false);
   const [isOpenRightLocal, setIsOpenRightLocal] = useState(false);
   const storeKey = isNullOrWhiteSpace(storeName) ? 'sidebarContainer.transient' : storeName;
   const [isOpenLeftStore, setIsOpenLeftStore] = useLocalStorage(`${storeKey}.isOpenLeft`, false);
   const [isOpenRightStore, setIsOpenRightStore] = useLocalStorage(`${storeKey}.isOpenRight`, false);
-  const { zoom, setCanvasZoom, setViewType, designerWidth, autoZoom, configTreePanelSize } = useCanvas();
-  const [isSidebarCollapsed] = useLocalStorage(SIDEBAR_COLLAPSE, false);
 
   const isOpenLeft = isNullOrWhiteSpace(storeName) ? isOpenLeftLocal : isOpenLeftStore;
   const isOpenRight = isNullOrWhiteSpace(storeName) ? isOpenRightLocal : isOpenRightStore;
@@ -67,59 +55,10 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const setIsOpenRight = isNullOrWhiteSpace(storeName) ? setIsOpenRightLocal : setIsOpenRightStore;
 
   const [currentSizes, setCurrentSizes] = useState(() => getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
-  const [windowSize, setWindowSize] = useState({ width: designerWidth });
 
   const handleDragSizesChange = useCallback((sizes: number[]) => {
     setCurrentSizes(sizes);
   }, []);
-
-  const handleZoomChange = useCallback((newZoom: number) => {
-    if (!canZoom) return;
-    setCanvasZoom(newZoom);
-  }, [setCanvasZoom, canZoom]);
-
-  const canvasRef = usePinchZoom(
-    handleZoomChange,
-    zoom,
-    DEFAULT_OPTIONS.minZoom,
-    DEFAULT_OPTIONS.maxZoom,
-    autoZoom,
-  );
-
-  // Set the view type on mount
-  useEffect(() => {
-    setViewType(viewType);
-  }, [viewType, setViewType]);
-
-  // Track window resize
-  useEffect(() => {
-    const handleResize = (): void => {
-      const innerWidth = isDefined(window) ? window.innerWidth : undefined;
-      setWindowSize({ width: (innerWidth ?? parseInt(defaultDesignerWidth, 10)) + 'px' });
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  useEffect(() => {
-    if (canZoom) {
-      if (autoZoom) {
-        const newZoom = calculateAutoZoom({
-          currentZoom: zoom,
-          designerWidth,
-          sizes: currentSizes,
-          configTreePanelSize: configTreePanelSize,
-          viewType: viewType,
-          isSidebarCollapsed: isSidebarCollapsed,
-        });
-        if (newZoom !== zoom) {
-          setCanvasZoom(newZoom);
-        }
-      }
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [canZoom, autoZoom, windowSize.width, designerWidth, currentSizes, configTreePanelSize, setCanvasZoom, viewType, isSidebarCollapsed]);
 
   useEffect(() => {
     setCurrentSizes(getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse).sizes);
@@ -128,8 +67,6 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
   const sizes = useMemo(() => getPanelSizes(isOpenLeft, isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse),
     [isOpenRight, leftSidebarProps, rightSidebarProps, allowFullCollapse, isOpenLeft],
   );
-
-  const isDesigner = formMode === 'designer';
 
   const renderSidebar = (side: SidebarPanelPosition): ReactNode => {
     const sidebarProps = side === 'left' ? leftSidebarProps : rightSidebarProps;
@@ -157,7 +94,7 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
         {...(isDefined(sizes.maxSizes) ? { maxSize: sizes.maxSizes } : {})}
         onDrag={handleDragSizesChange}
         onDragEnd={handleDragSizesChange}
-        gutterSize={DEFAULT_OPTIONS.gutter}
+        // gutterSize={DEFAULT_OPTIONS.gutter}
         gutterAlign="center"
         snapOffset={5}
         dragInterval={12}
@@ -180,32 +117,10 @@ export const SidebarContainer: FC<ISidebarContainerProps> = ({
             { 'allow-full-collapse': allowFullCollapse },
           )}
         >
-          <div
-            ref={canvasRef}
-            className={classNames(
-              styles.sidebarContainerMainAreaBody,
-              { [styles.designerCanvas]: isDesigner && canZoom },
-            )}
-            style={isDesigner && canZoom ? {
-              width: designerWidth,
-              zoom: `${zoom}%`,
-            } : {}}
-          >
-            {children}
-          </div>
+          {children}
         </div>
         {renderSidebar('right')}
       </SizableColumns>
-      {/* Dedicated popup container for canvas components - applies zoom transformation */}
-      {isDesigner && canZoom && (
-        <div
-          id="canvas-popup-container"
-          className={styles.canvasPopupContainer}
-          style={{
-            zoom: `${zoom}%`,
-          }}
-        />
-      )}
     </div>
   );
 };

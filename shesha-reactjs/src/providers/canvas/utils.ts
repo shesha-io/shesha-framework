@@ -1,5 +1,5 @@
 import { deepMergeValues } from "@/utils/object";
-import { DeviceTypes, ICanvasStateContext, IViewType } from "./contexts";
+import { DeviceTypes, ICanvasStateContext } from "./contexts";
 import { DesktopOutlined, MobileOutlined, TabletOutlined } from '@ant-design/icons';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 
@@ -74,10 +74,7 @@ export const CANVAS_PRESET_SENTINEL = '__CANVAS_RESPONSIVE__' as const;
 export interface IAutoZoomParams {
   currentZoom: number;
   designerWidth?: string;
-  sizes?: number[];
-  isSidebarCollapsed?: boolean;
-  configTreePanelSize?: number;
-  viewType?: IViewType;
+  containerWidth: number;
 };
 
 /**
@@ -91,58 +88,21 @@ export const DEFAULT_OPTIONS = {
   minZoom: 10,
   maxZoom: 400,
   defaultZoom: 80,
-  sizes: [25, 50, 25],
-  configTreePanelWidth: (val: number = 20): number => typeof window !== 'undefined' ? (val / 100) * window.innerWidth : 200,
-  gutter: 4,
   designerWidth: defaultDesignerWidth,
   zoomStep: 1,
   zoomLevels: ZOOM_LEVELS,
-  modalMargins: 32,
 };
 
-const SIDEBAR_WIDTH = {
-  COLLAPSED: 60,
-  EXPANDED: 250,
-  MINIMAL: 32,
-  MODAL_MARGINS: 20,
-} as const;
-
-const valueToPercent = (value: number): number => value / 100;
-
 export function calculateAutoZoom(params: IAutoZoomParams): number {
+  if (typeof window === 'undefined')
+    return 100;
+
   const {
     designerWidth = DEFAULT_OPTIONS.designerWidth,
-    sizes = DEFAULT_OPTIONS.sizes,
-    configTreePanelSize = DEFAULT_OPTIONS.configTreePanelWidth(),
-    viewType = 'configStudio',
-    isSidebarCollapsed = false,
+    containerWidth,
   } = params;
-  // Determine the main area index based on the sizes array length
-  // 1 element: sizes[0] is main area (allowFullCollapse)
-  // 2 elements: sizes[0] is main area (no left panel)
-  // 3 elements: sizes[1] is main area (standard case)
-  const mainAreaIndex = sizes.length <= 2 ? 0 : 1;
-  const availableWidthPercent = sizes[mainAreaIndex] ?? 50;
 
-  if (typeof window === 'undefined') {
-    return 100;
-  }
-
-  const guttersAndScrollersSize = 14;
   const windowWidth = window.innerWidth;
-
-  // Determine the offset based on view type
-  let offset: number;
-  if (viewType === 'configStudio') {
-    offset = configTreePanelSize;
-  } else if (viewType === 'page') {
-    offset = isSidebarCollapsed ? SIDEBAR_WIDTH.COLLAPSED : SIDEBAR_WIDTH.EXPANDED;
-  } else {
-    offset = DEFAULT_OPTIONS.modalMargins;
-  }
-
-  const viewportWidth = Math.max(0, windowWidth - offset - guttersAndScrollersSize);
-  const availableWidth = valueToPercent(availableWidthPercent) * viewportWidth;
 
   let canvasWidth: number;
   if (designerWidth.includes('px')) {
@@ -154,7 +114,7 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
     canvasWidth = parseFloat(designerWidth);
   }
 
-  const optimalZoom = (availableWidth / canvasWidth) * 100;
+  const optimalZoom = (containerWidth / canvasWidth) * 100;
   return Math.max(DEFAULT_OPTIONS.minZoom, Math.min(DEFAULT_OPTIONS.maxZoom, Math.floor(optimalZoom)));
 }
 
@@ -164,6 +124,7 @@ export const usePinchZoom = (
   minZoom: number = DEFAULT_OPTIONS.minZoom,
   maxZoom: number = DEFAULT_OPTIONS.maxZoom,
   isAutoWidth: boolean = false,
+  // onResize: (width: number, height: number) => void,
 ): RefObject<HTMLDivElement | null> => {
   const elementRef = useRef<HTMLDivElement>(null);
   const lastDistance = useRef<number>(0);
