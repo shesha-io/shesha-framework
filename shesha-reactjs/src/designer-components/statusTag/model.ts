@@ -36,6 +36,14 @@ export interface IStatusTagComponentProps
   extends Omit<IDropdownProps, 'style' | 'readOnly' | 'value' | RemovedDropdownProps | StatusTagRuntimeProps>,
   IConfigurableFormComponent,
   IInputStyles {
+  /**
+   * A fixed status shown when the bound property has no value.
+   *
+   * Carried over from the legacy Value Source = "manual", which pinned the tag to one status instead
+   * of reading the bound property. There is no settings input for it — it exists so a migrated form
+   * keeps rendering the status it was configured with rather than going blank.
+   */
+  manualValue?: number | string | undefined;
 }
 
 /**

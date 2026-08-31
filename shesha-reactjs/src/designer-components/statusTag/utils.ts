@@ -1,7 +1,7 @@
 import { IBackgroundValue, IShadowValue } from '@/designer-components/_settings/utils';
 import { IStyleValue, StyleBoxValue } from '@/providers/form/models';
 import { ILabelValue } from '@/components/dropdown/model';
-import { IStatusMappings } from '@/components/statusTag';
+import { DEFAULT_STATUS_TAG_MAPPINGS, IStatusMap, IStatusMappings } from '@/components/statusTag';
 import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
 import { jsonSafeParse } from '@/utils/object';
 
@@ -92,31 +92,58 @@ export const defaultStyles = (): IStyleValue => {
 };
 
 /**
+ * The value the catch-all row is stored under.
+ *
+ * `mappings.default` had no code — it was matched by *failing* to match anything else. `values` has
+ * no catch-all concept, so the row needs a value of its own to exist as an option; a sentinel is
+ * used rather than a number so it can never collide with a real reference-list code.
+ */
+export const DEFAULT_STATUS_VALUE = 'default';
+
+/** One `values` row built from a legacy mapping row. */
+const mappingToValue = (row: IStatusMap, value: number | string, index: number): ILabelValue<number | string> => ({
+  id: `legacy-mapping-${index}`,
+  // `override` took precedence over `text` in the old renderer, so it wins here too.
+  label: (isNotNullOrWhiteSpace(row.override) ? row.override : row.text) ?? '',
+  value,
+  ...(isNotNullOrWhiteSpace(row.color) ? { color: row.color } : {}),
+});
+
+/**
  * Converts the legacy `mappings` JSON into the `values` list the Values editor uses.
  *
  * The old component matched a value against a hand-written mapping table and took the text and
  * colour from the matched row; `values` holds the same three fields per row, so the table converts
  * across directly and a migrated form keeps rendering the colours it was configured with.
  *
- * `mappings.default` is deliberately dropped: it was the "NOT RECOGNISED" fallback for a value with
- * no matching row, and `values` has no concept of a catch-all entry — carrying it over would add a
- * selectable option that never corresponded to a real status.
+ * `mappings.default` is carried over as a final row under `DEFAULT_STATUS_VALUE`. It is what the old
+ * component rendered for a value matching no row ("NOT RECOGNISED"), so dropping it would lose the
+ * only feedback a mis-configured or unmatched value ever produced.
  */
 export const mappingsToValues = (mappings: string | undefined): ILabelValue<number | string>[] | undefined => {
   if (!isNotNullOrWhiteSpace(mappings)) return undefined;
 
   const parsed = jsonSafeParse<IStatusMappings>(mappings);
-  const rows = parsed?.mapping;
-  if (!isDefined(rows) || rows.length === 0) return undefined;
+  if (!isDefined(parsed)) return undefined;
 
-  return rows
+  const rows = (parsed.mapping ?? [])
     // A row with no code has nothing to match against, so it could never have been selected.
     .filter((row) => isDefined(row.code))
-    .map((row, index) => ({
-      id: `legacy-mapping-${index}`,
-      // `override` took precedence over `text` in the old renderer, so it wins here too.
-      label: (isNotNullOrWhiteSpace(row.override) ? row.override : row.text) ?? '',
-      value: row.code as number,
-      ...(isNotNullOrWhiteSpace(row.color) ? { color: row.color } : {}),
-    }));
+    .map((row, index) => mappingToValue(row, row.code as number, index));
+
+  const fallback = parsed.default;
+  const values = isDefined(fallback)
+    ? [...rows, mappingToValue(fallback, DEFAULT_STATUS_VALUE, rows.length)]
+    : rows;
+
+  return values.length > 0 ? values : undefined;
 };
+
+/**
+ * The values a status tag ships with, matching what 0.45 seeded into Default Mappings.
+ *
+ * Built from `DEFAULT_STATUS_TAG_MAPPINGS` rather than written out again, so the seeded list and the
+ * legacy conversion cannot drift apart.
+ */
+export const defaultValues = (): ILabelValue<number | string>[] =>
+  mappingsToValues(JSON.stringify(DEFAULT_STATUS_TAG_MAPPINGS)) ?? [];

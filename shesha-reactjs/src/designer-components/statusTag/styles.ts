@@ -1,5 +1,5 @@
 import { createStyles } from '@/styles';
-import { backgroundStyles, borderRadiusStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, justifyContentFor, paddingStyles, popupAppearanceStyles, shadowStyles, splitBackgroundProperties } from '@/designer-components/_common/styles/utils';
+import { backgroundStyles, borderRadiusStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, justifyContentFor, marginStyles, paddingStyles, popupAppearanceStyles, shadowStyles, splitBackgroundProperties } from '@/designer-components/_common/styles/utils';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { addPx } from '@/utils/style';
 import { CSSProperties } from 'react';
@@ -44,9 +44,10 @@ export const useStyles = createStyles((
      rule, so it respects the same per-status-colour exclusion the Background panel does. */
   const customStyle = splitBackgroundProperties(model.customStyle);
 
-  // Built outside the template: the attribute selectors need quotes, which would terminate the
-  // tagged template literal if written inline.
-  //
+  /* Both selectors are built outside the template: their quotes would terminate the tagged
+     template literal if written inline. */
+  const tagWrapperSelector = '[data-tag-wrapper="true"]';
+
   // Excludes only the *colour* classes antd emits for a status that carries one. It cannot be
   // written as a single `[class*='${prefixCls}-tag-']`: antd always adds a variant class
   // (`-solid`/`-filled`/`-outlined`) to every tag, so that broader form matches every tag and the
@@ -100,9 +101,6 @@ export const useStyles = createStyles((
   `;
 
   const statusTag = cx('sha-status-tag', css`
-
-    padding-inline: 0px;
-    padding-right: 11px;
       /* Auto height/width: the select hugs the tag it contains rather than taking the fixed antd
          control height, so "auto" in Dimensions means the tag decides the size. An explicit value
          is applied to the tag itself, below. */
@@ -112,14 +110,45 @@ export const useStyles = createStyles((
       }
 
       /* The visible box is the selector element, not the root. Cleared so the select frames
-         nothing — the tag is the only thing that should read as a box. */
+         nothing — the tag is the only thing that should read as a box.
+
+         Centring the items is what keeps the tag centred in the space the select occupies: with
+         an explicit Dimensions height, or a row taller than the tag, the tag would otherwise sit at
+         the top. Padding is zeroed here so only the configured Margin & Padding positions the tag —
+         any left over from antd would offset it and read as mis-centred.
+
+         Font align is deliberately NOT applied here. The Appearance settings describe the tag, so
+         alignment belongs to the text inside it; setting it on this container instead slid the whole
+         tag along the row, which is a different thing entirely. */
       &.${prefixCls}-select .${prefixCls}-select-selector {
         background: transparent;
         border: none;
         box-shadow: none;
         padding: 0;
-        height: auto;
-        ${isDefined(textAlign) ? `justify-content: ${justifyContentFor(textAlign)};` : ''}
+        height: 100%;
+        display: flex;
+        align-items: center;
+      }
+
+      /* antd centres the selection by absolutely positioning it and offsetting it by half its own
+         height. That relies on a line-height the tag no longer has, so the offset lands slightly
+         off; a plain flex row centres it against the real height instead. */
+      &&& .${prefixCls}-select-selection-wrap,
+      &&& .${prefixCls}-select-selection-overflow {
+        display: flex;
+        align-items: center;
+        height: 100%;
+      }
+
+      /* Read-only is what this component actually renders, and that path wraps the tags in a flex
+         row of its own. Left alone the row stretches its tags to fill the width, so a tag with no
+         explicit Dimensions width would span the whole field rather than hugging its label — and
+         any alignment set here would slide the tag along the row instead of aligning its text.
+         Kept at the start so the tag sits where the field begins and sizes to its own content. */
+      &&&${tagWrapperSelector},
+      &&& ${tagWrapperSelector} {
+        justify-content: flex-start;
+        align-items: center;
       }
 
       /* In multi-select antd wraps each tag in a selection item carrying its own shaded background,
@@ -131,6 +160,11 @@ export const useStyles = createStyles((
         border: none;
         padding: 0;
         height: auto;
+        display: flex;
+        align-items: center;
+        /* antd sets a line-height here to fake vertical centring for text; the tag is a flex box
+           with its own height, so an inherited line-height only skews it. */
+        line-height: normal;
       }
 
       /* The close affordance lives in that wrapper and takes its own muted colour from antd.
@@ -146,19 +180,31 @@ export const useStyles = createStyles((
         display: inline-flex;
         align-items: center;
         overflow: hidden;
-        margin: 0;
+
+        /* The label and any icon are centred within the tag, vertically always and horizontally
+           unless Font align says otherwise. Resetting the line height matters: antd gives the tag
+           a fixed one that no longer matches its configured height, and an inherited value
+           offsets the text within the box — the usual cause of a tag whose text sits high.
+
+           Margin is deliberately NOT zeroed here: it comes from Margin & Padding below, which is
+           what shifts a tag off centre when the user asks for extra space. */
+        line-height: normal;
+        ${isDefined(textAlign) ? `justify-content: ${justifyContentFor(textAlign)};` : 'justify-content: center;'}
+
         ${borderRadiusStyles(model.border)}
         ${shadowStyles(model.shadow)}
         ${tagDimensions}
         ${paddingStyles(model.stylingBoxJson)}
+        ${marginStyles(model.stylingBoxJson)}
         ${fontWithoutColour}
         ${cssPropertiesToString(customStyle.rest)}
-        ${isDefined(textAlign) ? `justify-content: ${justifyContentFor(textAlign)};` : ''}
 
         /* Restated or the tag box resizes without its text following. Colour is left off so the
-           label keeps inheriting whichever colour won on the tag itself. */
+           label keeps inheriting whichever colour won on the tag itself, and the same
+           line-height reset applies so the text is centred rather than sitting on antd's baseline. */
         .anticon,
         span {
+          line-height: normal;
           ${fontWithoutColour}
         }
       }

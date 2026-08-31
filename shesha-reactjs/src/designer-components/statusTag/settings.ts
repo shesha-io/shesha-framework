@@ -50,7 +50,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   ],
                 })
                 .addSettingsInput({
-                  inputType: 'textField', propertyName: 'readOnlyPlaceholder', label: 'Read-only Placeholder', size: 'small', jsSetting: true,
+                  inputType: 'textField', propertyName: 'readOnlyPlaceholder', label: 'Placeholder', size: 'small', jsSetting: true,
                   tooltip: 'Text that gets displayed when the bound property has no value.',
                 })
                 .addSettingsInput({ inputType: 'textArea', propertyName: 'description', label: 'Tooltip', jsSetting: true })

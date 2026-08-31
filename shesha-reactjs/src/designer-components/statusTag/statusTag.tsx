@@ -2,20 +2,20 @@
    stylingBox) on purpose — upgrading forms saved against those shapes is what it is for. */
 /* eslint-disable @typescript-eslint/no-deprecated */
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import { useEffect, useRef } from 'react';
+import { FC, useEffect } from 'react';
 import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { TagOutlined } from '@ant-design/icons';
+import { Tag } from 'antd';
 import { IInputStyles } from '@/providers/form/models';
 
 import { IStatusTagComponentProps, IStatusTagComponentPropsV0, StatusTagComponentDefinition } from './model';
 import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { Dropdown } from '@/components/dropdown/dropdown';
-import { DropdownSelectRef } from '@/components/dropdown/model';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settings';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { defaultStyles, mappingsToValues } from './utils';
+import { DEFAULT_STATUS_VALUE, defaultStyles, defaultValues, mappingsToValues } from './utils';
 import { useStyles } from './styles';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { useComponentApiProvider } from '@/providers/componentApi/provider';
@@ -25,6 +25,20 @@ import { getComponentEvents } from '../_common/events';
 import { STATUS_TAG_EVENTS_WITHOUT_CHANGE } from './events';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
+
+/**
+ * Stand-in shown when the component cannot resolve any status at all — currently only when the Data
+ * source is a reference list and no list has been chosen.
+ *
+ * A black tag, per the spec: it is deliberately not one of the status colours, so it cannot be
+ * mistaken for a real status, and it is visible rather than blank so the mis-configuration shows up
+ * on the form instead of looking like an empty field.
+ */
+const StatusTagPlaceholder: FC<{ className: string; label: string }> = ({ className, label }) => (
+  <div className={className}>
+    <Tag color="#000">{label}</Tag>
+  </div>
+);
 
 const StatusTagComponent: StatusTagComponentDefinition = {
   allowInherit: true,
@@ -40,31 +54,29 @@ const StatusTagComponent: StatusTagComponentDefinition = {
     dataType === DataTypes.referenceListItem || (dataType === DataTypes.array && dataFormat === ArrayFormats.multivalueReferenceList),
   Factory: ({ model }) => {
     const componentApi = useComponentApiProvider();
-    const selectRef = useRef<DropdownSelectRef>(null);
     useEffect(() => {
       componentApi?.updateApi<StatusTagApi>({
         id: model.id,
         componentName: model.componentName ?? "",
         level: 3,
         typeDefinition: { typeName: 'StatusTagApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
-        /* Nothing component-specific: `value` and the rest come from the shared interfaces, and
-           `focus` needs a ref so it is implemented here rather than inherited. */
+        /* Nothing component-specific: `value` and the rest come from the shared interfaces. There
+           is no `focus`: the component renders no focusable control. */
         properties: [],
-        api: { focus: () => selectRef.current?.focus() },
       });
     }, [componentApi, model.componentName, model.id]);
     useEffectOnce(() => () => componentApi?.removeApi(model.id));
 
-    /* The whole component is the drop-down in its tags display mode: `displayStyle: 'tags'` makes
-       the selection render through `ReflistTag` (via `labelRender` for single-select and
-       `tagRender` for multi-select) instead of as plain text, so only the tag or tags are shown.
-       `variant: 'borderless'` is already what `Dropdown` passes to antd, so the select contributes
-       no box of its own and the tag is all that remains visible.
+    /* The component is the drop-down used purely as a display: `displayStyle: 'tags'` renders the
+       value as a tag rather than plain text, and `readOnly` disables the drop-down behaviour
+       entirely — no popup, no selection, no clear button. Both are fixed rather than configurable
+       (a status tag is a tag by definition, and it shows a status rather than capturing one), and
+       both have to be on the model rather than passed as props, because `Dropdown` and its
+       reference-list path branch on the model to choose their read-only rendering.
 
-       It is fixed rather than configurable — a status tag is a tag by definition — and has to be
-       part of the model handed down, because both `Dropdown` and its reference-list path branch on
-       it rather than reading a prop. */
-    const tagModel = { ...model, displayStyle: 'tags' as const };
+       The read-only path still renders through `ReflistTag`, and it is handed the whole option
+       object, so each tag keeps the colour and icon configured for its status. */
+    const tagModel = { ...model, displayStyle: 'tags' as const, readOnly: true };
 
     /* The single style set, scoped onto the tag by the class rather than applied to the wrapper —
        `model.styleCss` (the evaluated Custom style) is folded in here for the same reason: passed
@@ -77,21 +89,48 @@ const StatusTagComponent: StatusTagComponentDefinition = {
        above handles, so neither may reach the wrapper as an inline style. */
     const { style: _styleExpression, styleCss: _styleCss, ...modelWithoutStyle } = tagModel;
 
+    /* A reference list that was never chosen resolves nothing, so every value would render as an
+       empty tag and the form would look merely blank rather than mis-configured. Flagged instead,
+       so the problem is visible on the form and in the designer. */
+    const isMisconfigured = model.dataSourceType === 'referenceList' && !isDefined(model.referenceListId);
+    if (isMisconfigured)
+      return <StatusTagPlaceholder className={styles.statusTag} label="NOT CONFIGURED" />;
+
     return (
       <ConfigurableFormItem<number | number[] | string | string[] | (number | string)[]> model={{ ...model, hideLabel: true }}>
-        {(value, onChange, _propertyName, ctx) => {
+        {(value, _onChange, _propertyName, ctx) => {
+          /* The legacy manual Value Source pinned a fixed status; it stands in when the bound
+             property is empty so a migrated form keeps showing what it used to. */
+          const resolved = isDefined(value) ? value : model.manualValue;
+
+          /* With inline values, the catch-all row stands in whenever the configured values cannot
+             produce a tag — both for a value matching no row (what 0.45 rendered as "NOT
+             RECOGNISED") and for no value at all, so the component shows its fallback status rather
+             than nothing. The select can only display a value that is one of its options, so the
+             fallback is selected explicitly here rather than left to antd, which would otherwise
+             render an unmatched value as its own label.
+
+             Reference-list rows are fetched rather than local, so "no matching row" cannot be told
+             apart from "not loaded yet" — that source is left alone to avoid flashing the fallback
+             during load. */
+          const options = model.values ?? [];
+          const isResolvable = isDefined(resolved) && options.some((option) => option.value === resolved);
+          const useFallback = model.dataSourceType === 'values' &&
+            !isResolvable &&
+            options.some((option) => option.value === DEFAULT_STATUS_VALUE);
+          const displayValue = useFallback ? DEFAULT_STATUS_VALUE : resolved;
+
           return (
             <Dropdown
               {...modelWithoutStyle}
               className={styles.statusTag}
-              popupClassName={styles.popup}
-              selectRef={selectRef}
-              value={value ?? undefined}
+              value={displayValue ?? undefined}
               size={model.size}
               /* Read-only rendering happens outside the select, where the emotion class does not
                  reach, so the style model is handed over as a value for that path. */
               styleValue={model}
-              onChange={(newValue) => onChange(newValue ?? null)}
+              /* No `onChange`, `selectRef` or `popupClassName`: read-only renders no select, so
+                 there is nothing to select into, focus, or pop up. */
               events={getComponentEvents<number | number[] | string | string[] | (number | string)[]>(
                 model, STATUS_TAG_EVENTS_WITHOUT_CHANGE, ctx, value, DataTypes.array,
               )}
@@ -128,7 +167,7 @@ const StatusTagComponent: StatusTagComponentDefinition = {
          a data source, so there is nothing to convert. */
       if (context.isNew === true) return prev as IStatusTagComponentProps;
 
-      const { mappings, valueSource: _removed, override: _override, color: _color, ...rest } = prevV0;
+      const { mappings, valueSource, value: configuredValue, override: _override, color: _color, ...rest } = prevV0;
 
       const values = mappingsToValues(mappings);
 
@@ -147,6 +186,13 @@ const StatusTagComponent: StatusTagComponentDefinition = {
          used to be, rather than an empty editor. The source itself is decided above. */
       if (isDefined(values))
         migrated.values = values;
+
+      /* Value Source 'manual' pinned the tag to a fixed status rather than reading the bound
+         property, and that value is what picked the row out of the mapping table. The setting is
+         gone, but the value is kept so the runtime can still fall back to it when the bound
+         property is empty — otherwise a manual-source form would silently render nothing. */
+      if (valueSource === 'manual' && isDefined(configuredValue))
+        migrated.manualValue = configuredValue;
 
       return migrated;
     })
@@ -204,6 +250,9 @@ const StatusTagComponent: StatusTagComponentDefinition = {
     /* Reference List is the default source per the spec. The list itself is left unset so the
        Reference List input starts empty and the user is prompted to choose one. */
     dataSourceType: 'referenceList',
+    /* Seeded even though Reference List is the default source, so switching to Values shows the
+       same statuses 0.45 put in Default Mappings rather than an empty editor. */
+    values: defaultValues(),
     showItemName: true,
     showIcon: true,
     tagVariant: 'solid',

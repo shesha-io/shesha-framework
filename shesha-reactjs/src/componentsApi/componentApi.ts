@@ -372,10 +372,10 @@ export type CheckboxFieldApi = InputComponentApi<boolean | undefined>;
 export type DropdownApi = InputComponentApi<number | number[] | string | string[] | (string | number)[] | undefined>;
 
 /**
- * Status tag. A specialised drop-down that renders its selection as a tag rather than as plain
- * text, so the value behaves exactly as the drop-down's does.
+ * Status tag. A display-only drop-down: it renders the bound status as a tag and never captures one,
+ * so there is no `focus` — the component has no focusable control.
  */
-export type StatusTagApi = InputComponentApi<number | number[] | string | string[] | (string | number)[] | undefined>;
+export type StatusTagApi = Omit<InputComponentApi<number | number[] | string | string[] | (string | number)[] | undefined>, 'focus'>;
 
 /**
  * Autocomplete. The value shape follows the component's Value Format setting: a plain key for
