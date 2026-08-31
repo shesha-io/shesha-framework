@@ -30,6 +30,14 @@ namespace Shesha.Redis.Caching
         private long _invalidations;
         private long _overflowPurges;
 
+        /// <summary>
+        /// Bumped by every invalidation. A fill captures this before reading Redis and passes
+        /// it back to <see cref="Set"/>, which discards the fill if the value changed in the
+        /// meantime -- otherwise a read that started before a Remove could reinsert the value
+        /// afterwards and undo the invalidation.
+        /// </summary>
+        private long _generation;
+
         public string CacheName { get; }
 
         public ShaRedisCacheL1Store(string cacheName, TimeSpan ttl, int maxEntries)
@@ -44,6 +52,9 @@ namespace Shesha.Redis.Caching
         public long Invalidations => Interlocked.Read(ref _invalidations);
         public long OverflowPurges => Interlocked.Read(ref _overflowPurges);
         public int Count => _entries.Count;
+
+        /// <summary>Current invalidation generation; capture before a fill, pass back to Set.</summary>
+        public long Generation => Interlocked.Read(ref _generation);
 
         /// <summary>
         /// Looks up a value. Expiry is evaluated lazily on read rather than by a timer, so an
@@ -69,13 +80,18 @@ namespace Shesha.Redis.Caching
             return false;
         }
 
-        /// <summary>
-        /// Caches a value. <paramref name="maxLifetime"/> bounds the entry to the time the
-        /// underlying Redis key has left, so L1 can never outlive it -- otherwise a value
-        /// written with a short expiry, or read shortly before it lapses, would keep being
-        /// served locally after Redis had dropped it.
-        /// </summary>
-        public void Set(string normalizedKey, object? value, TimeSpan? maxLifetime = null)
+        /// <summary>Caches a value.</summary>
+        /// <param name="maxLifetime">
+        /// Time the underlying Redis key has left. The entry is bounded by it so L1 can never
+        /// outlive Redis -- a value written with a short expiry, or read shortly before it
+        /// lapses, must not keep being served locally afterwards.
+        /// </param>
+        /// <param name="expectedGeneration">
+        /// Generation captured before the value was fetched. If an invalidation happened since,
+        /// the fill is stale and is dropped. Null means an authoritative write, never discarded.
+        /// </param>
+        public void Set(
+            string normalizedKey, object? value, TimeSpan? maxLifetime = null, long? expectedGeneration = null)
         {
             var ttl = _ttl;
             if (maxLifetime.HasValue && maxLifetime.Value < ttl)
@@ -89,19 +105,26 @@ namespace Shesha.Redis.Caching
 
             var entry = new Entry(value, DateTime.UtcNow.Add(ttl));
 
-            // The capacity check, the purge and the insert have to happen as one step. Each is
-            // individually safe on a ConcurrentDictionary, but the sequence is not: concurrent
-            // writers with distinct keys could all observe Count < max and all insert, pushing the
-            // store past the ceiling it exists to enforce -- or all observe Count >= max, each run
-            // a full purge, and have one Clear discard what another had just written.
+            // Everything below has to happen as one step. On a ConcurrentDictionary each
+            // operation is individually safe but the sequence is not:
+            //
+            //  - concurrent writers with distinct keys could all observe Count < max and all
+            //    insert, pushing the store past the ceiling it exists to enforce
+            //  - a fill that started before a Remove or Clear could reinsert the value
+            //    afterwards, silently undoing the invalidation
             //
             // Only writes are serialized. Reads stay lock-free and they dominate, and a Set is
             // already downstream of a Redis round-trip and a deserialization, so an uncontended
             // lock here is not measurable.
             lock (_writeLock)
             {
-                // A key that is already present is replaced in place and cannot grow the store,
-                // so it never triggers the overflow path.
+                // Remove and Clear take this same lock, so an invalidation cannot slip between
+                // this check and the insert.
+                if (expectedGeneration.HasValue && _generation != expectedGeneration.Value)
+                    return;
+
+                // A key already present is replaced in place and cannot grow the store, so it
+                // never triggers the overflow path.
                 if (_entries.Count >= _maxEntries && !_entries.ContainsKey(normalizedKey))
                     PurgeForOverflow();
 
@@ -109,18 +132,32 @@ namespace Shesha.Redis.Caching
             }
         }
 
+
         public void Remove(string normalizedKey)
         {
-            if (_entries.TryRemove(normalizedKey, out _))
-                Interlocked.Increment(ref _invalidations);
+            lock (_writeLock)
+            {
+                // Advanced with the removal so an in-flight fill captured beforehand is dropped.
+                Interlocked.Increment(ref _generation);
+
+                if (_entries.TryRemove(normalizedKey, out _))
+                    Interlocked.Increment(ref _invalidations);
+            }
         }
 
         public void Clear()
         {
-            var count = _entries.Count;
-            _entries.Clear();
-            if (count > 0)
-                Interlocked.Add(ref _invalidations, count);
+            lock (_writeLock)
+            {
+                // Advanced with the clear so an in-flight fill captured beforehand is dropped
+                // rather than repopulating an entry this call just removed.
+                Interlocked.Increment(ref _generation);
+
+                var count = _entries.Count;
+                _entries.Clear();
+                if (count > 0)
+                    Interlocked.Add(ref _invalidations, count);
+            }
         }
 
         public void ResetStatistics()

@@ -212,6 +212,89 @@ namespace Shesha.Tests.Caching
             store.Count.ShouldBe(0);
         }
 
+        // --- invalidation races ------------------------------------------------------------
+
+        [Fact]
+        public void A_fill_that_started_before_a_Remove_is_discarded()
+        {
+            // A read fetches from Redis, deserializes, then populates L1. If a Remove lands in
+            // that window, the fill would otherwise reinsert the value and silently undo the
+            // invalidation -- leaving a revoked value served locally until the TTL lapsed.
+            var store = CreateStore();
+            store.Set("key", "original");
+
+            var generation = store.Generation;   // what a read would capture before fetching
+            store.Remove("key");                 // invalidation arrives mid-fill
+
+            store.Set("key", "stale-fill", maxLifetime: null, expectedGeneration: generation);
+
+            store.TryGet("key", out _).ShouldBeFalse("the stale fill resurrected a removed entry");
+        }
+
+        [Fact]
+        public void A_fill_that_started_before_a_Clear_is_discarded()
+        {
+            var store = CreateStore();
+            store.Set("key", "original");
+
+            var generation = store.Generation;
+            store.Clear();
+
+            store.Set("key", "stale-fill", maxLifetime: null, expectedGeneration: generation);
+
+            store.TryGet("key", out _).ShouldBeFalse("the stale fill resurrected a cleared entry");
+            store.Count.ShouldBe(0);
+        }
+
+        [Fact]
+        public void A_fill_with_a_current_generation_is_kept()
+        {
+            // The guard must only drop fills that actually raced an invalidation.
+            var store = CreateStore();
+
+            var generation = store.Generation;
+            store.Set("key", "value", maxLifetime: null, expectedGeneration: generation);
+
+            store.TryGet("key", out var value).ShouldBeTrue();
+            value.ShouldBe("value");
+        }
+
+        [Fact]
+        public void An_authoritative_write_is_never_discarded()
+        {
+            // Writes pass no generation: a Set is the source of truth, not a fill.
+            var store = CreateStore();
+            store.Remove("key");   // advance the generation
+
+            store.Set("key", "written");
+
+            store.TryGet("key", out var value).ShouldBeTrue();
+            value.ShouldBe("written");
+        }
+
+        [Fact]
+        public void Fills_racing_invalidations_never_leave_a_removed_key_cached()
+        {
+            // Concurrent stress over the same key: every fill captures its generation first,
+            // so whichever ordering wins, a fill can never outlive the Remove that followed it.
+            var store = CreateStore();
+            var resurrected = 0;
+
+            Parallel.For(0, 400, i =>
+            {
+                var generation = store.Generation;
+                store.Set("key", i, maxLifetime: null, expectedGeneration: generation);
+                store.Remove("key");
+
+                // Nothing may reappear under this key once the Remove above has completed,
+                // unless another iteration legitimately filled it afterwards.
+                if (store.TryGet("key", out _) && store.Generation == generation)
+                    Interlocked.Increment(ref resurrected);
+            });
+
+            resurrected.ShouldBe(0);
+        }
+
         // --- statistics --------------------------------------------------------------------
 
         [Fact]

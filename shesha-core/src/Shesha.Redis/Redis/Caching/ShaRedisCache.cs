@@ -144,9 +144,14 @@ namespace Shesha.Redis.Caching
         /// after Redis has expired it -- important for short-lived entries such as one-time
         /// pins, whose expiry shrinks towards zero as they age.
         /// </param>
-        protected virtual void PopulateL1(RedisKey normalizedKey, object? value, TimeSpan? maxLifetime = null)
+        /// <param name="expectedGeneration">
+        /// L1 generation captured before the value was fetched, so a fill that raced a Remove
+        /// or Clear is discarded instead of undoing the invalidation.
+        /// </param>
+        protected virtual void PopulateL1(
+            RedisKey normalizedKey, object? value, TimeSpan? maxLifetime = null, long? expectedGeneration = null)
         {
-            _l1?.Set(normalizedKey.ToString(), value, maxLifetime);
+            _l1?.Set(normalizedKey.ToString(), value, maxLifetime, expectedGeneration);
         }
 
         protected virtual RedisKey NormalizeKey(string key)
@@ -172,6 +177,10 @@ namespace Shesha.Redis.Caching
                 return true;
             }
 
+            // Captured BEFORE the fetch: if an invalidation lands while we are reading and
+            // deserializing, the fill below is dropped rather than resurrecting the value.
+            var generation = _l1?.Generation;
+
             // WithExpiry so L1 can be bounded by whatever the key has left, in the same
             // round-trip rather than an extra TTL call.
             var withExpiry = _database.StringGetWithExpiry(normalizedKey);
@@ -184,7 +193,7 @@ namespace Shesha.Redis.Caching
             try
             {
                 value = Deserialize(redisValue);
-                PopulateL1(normalizedKey, value, withExpiry.Expiry);
+                PopulateL1(normalizedKey, value, withExpiry.Expiry, generation);
                 return true;
             }
             catch (Exception ex) when (ex is JsonException || ex is SerializationException
@@ -218,8 +227,11 @@ namespace Shesha.Redis.Caching
             if (_l1 != null && _l1.TryGet(normalizedKey.ToString(), out var cached) && cached != null)
                 return new ConditionalValue<object>(true, cached);
 
+            // Captured BEFORE the fetch -- see TryGetValue.
+            var generation = _l1?.Generation;
+
             var withExpiry = await _database.StringGetWithExpiryAsync(normalizedKey);
-            return CreateConditionalValue(normalizedKey, withExpiry.Value, withExpiry.Expiry);
+            return CreateConditionalValue(normalizedKey, withExpiry.Value, withExpiry.Expiry, generation);
         }
 
         public override async Task<ConditionalValue<object>[]> TryGetValuesAsync(string[] keys)
@@ -623,7 +635,7 @@ namespace Shesha.Redis.Caching
         /// there could outlive a short-lived key.
         /// </param>
         protected ConditionalValue<object> CreateConditionalValue(
-            RedisKey key, RedisValue redisValue, TimeSpan? maxLifetime)
+            RedisKey key, RedisValue redisValue, TimeSpan? maxLifetime, long? expectedGeneration = null)
         {
             if (!redisValue.HasValue)
                 return new ConditionalValue<object>(false, null!);
@@ -632,7 +644,7 @@ namespace Shesha.Redis.Caching
             {
                 var deserialized = Deserialize(redisValue);
                 if (maxLifetime.HasValue)
-                    PopulateL1(key, deserialized, maxLifetime);
+                    PopulateL1(key, deserialized, maxLifetime, expectedGeneration);
                 return new ConditionalValue<object>(true, deserialized);
             }
             catch (Exception ex) when (ex is JsonException || ex is SerializationException
