@@ -10,7 +10,7 @@ export const DEFAULT_DESIGNER_PADDING: IStyleValue = { stylingBoxJson: { _type: 
 
 /** Check if the value is not an exact dimension value (contains calc or % or auto/stretch/fit-content etc) */
 export const isExactDimensionValue = (value: string | number | undefined): boolean =>
-  isDefined(value) && !(typeof value === 'string' && (value.includes('calc') || value.includes('%') || DIMENSION_VALUES.includes(value)));
+  isDefined(value) && !(typeof value === 'string' && (value.includes('calc') || value.includes('px') || value.includes('%') || DIMENSION_VALUES.includes(value)));
 
 /** Check if the value is a percentage */
 export const isPercentDimensionValue = (value: string | number | undefined): boolean =>
