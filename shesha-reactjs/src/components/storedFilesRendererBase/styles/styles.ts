@@ -167,9 +167,16 @@ export const useStyles = createStyles((
     }
 
     /* Colour first so the configured set can override it, and so an unconfigured colour still
-       falls back to the theme's success green. */
-    .sha-item-file-name,
-    .sha-item-file-name > .${prefixCls}-typography {
+       falls back to the theme's success green.
+
+       The class is doubled to raise specificity. The root Font is restated on these very selectors
+       further down — it has to be, since antd styles the name directly — at the same specificity and
+       later in the stylesheet, so on a tie it won every property it declares. That is why this set
+       looked colour-only: the root Font declares size, weight, family and align and overrode all
+       four, and only colour got through, because the root Font carries none by default. Ordering the
+       two rules would fix it just as well and break as soon as either moves. */
+    && .sha-item-file-name,
+    && .sha-item-file-name > .${prefixCls}-typography {
       color: ${downloadedColor};
       ${cssPropertiesToString(downloadedText)}
     }
