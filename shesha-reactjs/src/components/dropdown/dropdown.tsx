@@ -148,10 +148,13 @@ export const Dropdown: FC<IDropdownProps> = ({
       ? {
         value: itemValue,
         label: !isNullOrWhiteSpace(item.label) ? item.label : 'unknown',
-        // color: item.color,
-        // icon: item.icon,
+        /* Carried through so the read-only renderer can draw the selection as a coloured tag: it
+           reads these off the labeled value, and without them every tag renders in antd's default
+           colour regardless of what the reference list item configured. */
+        color: item.color,
+        icon: item.icon,
+        description: item.description,
         data: item.data,
-        // description: item.description,
       } satisfies CustomLabeledValue<number | string>
       : undefined;
   }, [incomeValueFunc]);

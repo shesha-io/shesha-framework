@@ -1,7 +1,7 @@
 import { IBackgroundValue, IShadowValue } from '@/designer-components/_settings/utils';
-import { IStyleValue, StyleBoxValue } from '@/providers/form/models';
+import { IPropertySetting, IStyleValue, StyleBoxValue } from '@/providers/form/models';
 import { ILabelValue } from '@/components/dropdown/model';
-import { DEFAULT_STATUS_TAG_MAPPINGS, IStatusMap, IStatusMappings } from '@/components/statusTag';
+import { IStatusMappings } from '@/components/statusTag';
 import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
 import { jsonSafeParse } from '@/utils/object';
 
@@ -66,7 +66,7 @@ export const defaultStyles = (): IStyleValue => {
   return {
     // Empty, not a grey: a seeded colour is emitted at `&&&&` and paints every tag that has no
     // colour of its own, overriding whatever the Variant would have drawn.
-    background: BACKGROUND_DEFAULTS('#d9d9d9'),
+    background: BACKGROUND_DEFAULTS('#000000f'),
     font: {
       weight: '400',
       size: 14,
@@ -100,50 +100,51 @@ export const defaultStyles = (): IStyleValue => {
  */
 export const DEFAULT_STATUS_VALUE = 'default';
 
-/** One `values` row built from a legacy mapping row. */
-const mappingToValue = (row: IStatusMap, value: number | string, index: number): ILabelValue<number | string> => ({
-  id: `legacy-mapping-${index}`,
-  // `override` took precedence over `text` in the old renderer, so it wins here too.
-  label: (isNotNullOrWhiteSpace(row.override) ? row.override : row.text) ?? '',
-  value,
-  ...(isNotNullOrWhiteSpace(row.color) ? { color: row.color } : {}),
-});
-
 /**
- * Converts the legacy `mappings` JSON into the `values` list the Values editor uses.
+ * The legacy Default Mappings JSON, as a Values script.
  *
- * The old component matched a value against a hand-written mapping table and took the text and
- * colour from the matched row; `values` holds the same three fields per row, so the table converts
- * across directly and a migrated form keeps rendering the colours it was configured with.
+ * Default Mappings was a code editor, so what the user wrote is source text, not data. It is moved
+ * across as the body of the Values script rather than parsed into rows: parsing would discard
+ * whatever the author actually wrote — comments, formatting, and the `override`/`text` distinction
+ * the mapping shape carries — and hand them back a list they did not write. As a script it stays
+ * theirs, and the inline editor stays empty.
  *
- * `mappings.default` is carried over as a final row under `DEFAULT_STATUS_VALUE`. It is what the old
- * component rendered for a value matching no row ("NOT RECOGNISED"), so dropping it would lose the
- * only feedback a mis-configured or unmatched value ever produced.
+ * `mapping` is unwrapped to the bare array because that is the list the Values setting expects; a
+ * table with no `mapping` is passed through whole so nothing is silently dropped.
  */
-export const mappingsToValues = (mappings: string | undefined): ILabelValue<number | string>[] | undefined => {
+export const mappingsToValuesSetting = (mappings: string | undefined): IPropertySetting<ILabelValue<number | string>[]> | undefined => {
   if (!isNotNullOrWhiteSpace(mappings)) return undefined;
 
   const parsed = jsonSafeParse<IStatusMappings>(mappings);
-  if (!isDefined(parsed)) return undefined;
+  const rows = parsed?.mapping;
+  const body = isDefined(rows)
+    ? JSON.stringify(rows, null, 2)
+    : mappings.trim();
 
-  const rows = (parsed.mapping ?? [])
-    // A row with no code has nothing to match against, so it could never have been selected.
-    .filter((row) => isDefined(row.code))
-    .map((row, index) => mappingToValue(row, row.code as number, index));
-
-  const fallback = parsed.default;
-  const values = isDefined(fallback)
-    ? [...rows, mappingToValue(fallback, DEFAULT_STATUS_VALUE, rows.length)]
-    : rows;
-
-  return values.length > 0 ? values : undefined;
+  return {
+    _mode: 'code',
+    _code: `return ${body};`,
+    // The inline editor stays empty: the script above is what supplies the options.
+    _value: [],
+  };
 };
 
 /**
- * The values a status tag ships with, matching what 0.45 seeded into Default Mappings.
+ * The Values setting a status tag ships with, as a script rather than rows in the inline editor.
  *
- * Built from `DEFAULT_STATUS_TAG_MAPPINGS` rather than written out again, so the seeded list and the
- * legacy conversion cannot drift apart.
+ * The returned array is the mapping table 0.45 seeded into Default Mappings, in its original shape
+ * (`code`/`text`/`color`/`override`) so it reads the same way it did there. Shipping it as a script
+ * leaves the inline Values editor empty — a new component is not pre-filled with four rows the user
+ * has to clear — while still showing the statuses out of the box.
  */
-export const defaultValues = (): ILabelValue<number | string>[] =>
-  mappingsToValues(JSON.stringify(DEFAULT_STATUS_TAG_MAPPINGS)) ?? [];
+export const defaultValuesSetting = (): IPropertySetting<ILabelValue<number | string>[]> => ({
+  _mode: 'code',
+  _code: `return [
+  { code: 1, text: 'Completed', color: '#87d068' },
+  { code: 2, text: 'In Progress', color: '#4DA6FF', override: 'Still Busy!' },
+  { code: 3, text: 'Overdue', color: '#cd201f' },
+  { code: 4, text: 'Pending', color: '#FF7518' },
+];`,
+  // The inline editor stays empty: the script above is what supplies the options.
+  _value: [],
+});

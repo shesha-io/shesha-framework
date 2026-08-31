@@ -1,5 +1,5 @@
-import { IConfigurableFormComponent, IInputStyles } from '@/providers/form/models';
-import { IDropdownProps, TagVariant } from '@/components/dropdown/model';
+import { IConfigurableFormComponent, IInputStyles, ValueOrCodeEvaluator } from '@/providers/form/models';
+import { IDropdownProps, ILabelValue, TagVariant } from '@/components/dropdown/model';
 import { ComponentDefinition } from '@/interfaces';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { IStatusMappings } from '@/components/statusTag';
@@ -33,7 +33,7 @@ type RemovedDropdownProps =
   'incomeCustomJs' | 'outcomeCustomJs' | 'displayStyle' | 'tag' | 'tagStyle';
 
 export interface IStatusTagComponentProps
-  extends Omit<IDropdownProps, 'style' | 'readOnly' | 'value' | RemovedDropdownProps | StatusTagRuntimeProps>,
+  extends Omit<IDropdownProps, 'style' | 'readOnly' | 'value' | 'values' | RemovedDropdownProps | StatusTagRuntimeProps>,
   IConfigurableFormComponent,
   IInputStyles {
   /**
@@ -43,7 +43,17 @@ export interface IStatusTagComponentProps
    * of reading the bound property. There is no settings input for it — it exists so a migrated form
    * keeps rendering the status it was configured with rather than going blank.
    */
-  manualValue?: number | string | undefined;
+  value?: number | string | undefined;
+
+  /**
+   * The statuses, when the Data source is Values.
+   *
+   * Widened to `ValueOrCodeEvaluator` because this property ships as a JS setting (see
+   * `defaultValuesSetting`): the designer stores either the rows from the inline editor or a
+   * code-mode setting, and the framework evaluates the latter into the rows before the component
+   * reads it. Declaring both shapes is what lets `initModel` seed the script without a cast.
+   */
+  values?: ValueOrCodeEvaluator<ILabelValue<number | string>[]> | undefined;
 }
 
 /**

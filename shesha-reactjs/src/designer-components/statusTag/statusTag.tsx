@@ -2,22 +2,25 @@
    stylingBox) on purpose — upgrading forms saved against those shapes is what it is for. */
 /* eslint-disable @typescript-eslint/no-deprecated */
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
-import { FC, useEffect } from 'react';
+import { FC, PropsWithChildren, useEffect } from 'react';
 import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { TagOutlined } from '@ant-design/icons';
-import { Tag } from 'antd';
+import { Alert, Tag, Tooltip } from 'antd';
 import { IInputStyles } from '@/providers/form/models';
+import { useForm } from '@/providers';
 
 import { IStatusTagComponentProps, IStatusTagComponentPropsV0, StatusTagComponentDefinition } from './model';
+import { IStatusMap } from '@/components/statusTag';
 import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { Dropdown } from '@/components/dropdown/dropdown';
+import { ILabelValue } from '@/components/dropdown/model';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settings';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { DEFAULT_STATUS_VALUE, defaultStyles, defaultValues, mappingsToValues } from './utils';
+import { DEFAULT_STATUS_VALUE, defaultStyles, defaultValuesSetting, mappingsToValuesSetting } from './utils';
 import { useStyles } from './styles';
-import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { StatusTagApi } from '../../componentsApi/componentApi';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
@@ -26,19 +29,72 @@ import { STATUS_TAG_EVENTS_WITHOUT_CHANGE } from './events';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
 
+/** Shown inside the tag when there is no value and no Placeholder has been configured. */
+const EMPTY_STATUS_LABEL = '-';
+
 /**
- * Stand-in shown when the component cannot resolve any status at all — currently only when the Data
- * source is a reference list and no list has been chosen.
+ * Whether a value carries a status to display.
  *
- * A black tag, per the spec: it is deliberately not one of the status colours, so it cannot be
- * mistaken for a real status, and it is visible rather than blank so the mis-configuration shows up
- * on the form instead of looking like an empty field.
+ * Blank counts as absent: a bound property that has never been set commonly arrives as `null` or an
+ * empty string, and an unset multi-select as an empty array. Treating any of those as a value would
+ * stop the configured fallbacks — the migrated manual value, then the Placeholder — from ever
+ * standing in. `0` is a real reference-list code, so only whitespace-blank strings are excluded.
  */
-const StatusTagPlaceholder: FC<{ className: string; label: string }> = ({ className, label }) => (
-  <div className={className}>
-    <Tag color="#000">{label}</Tag>
+function hasStatusValue<T>(value: T | null | undefined): value is T {
+  return isDefined(value) && (Array.isArray(value) ? value.length > 0 : !isNullOrWhiteSpace(String(value)));
+}
+
+/**
+ * The configured statuses, as rows.
+ *
+ * `values` is a JS setting, so the model holds either the rows themselves or the unevaluated
+ * code-mode setting (see `defaultValuesSetting`). The framework normally evaluates the setting
+ * before the component renders, but the model type admits both — so the shape is checked rather
+ * than assumed, and an unevaluated setting yields no rows instead of being read as an array.
+ */
+const statusOptions = (values: IStatusTagComponentProps['values']): ILabelValue<number | string>[] => {
+  if (!Array.isArray(values)) return [];
+
+  /* Rows may arrive in either of two shapes. The Values editor produces `{ value, label }`, but a
+     form migrated from Default Mappings returns that table as-is — `{ code, text, override }` —
+     because the migration carries the user's script across verbatim rather than rewriting it. Both
+     are normalised here so a migrated form renders without the author having to rewrite the script;
+     `override` wins over `text`, exactly as the legacy renderer did. */
+  return values.map((row, index) => {
+    const legacy = row as Partial<ILabelValue<number | string>> & IStatusMap;
+    const value = legacy.value ?? legacy.code;
+    const label = legacy.label ?? (isNotNullOrWhiteSpace(legacy.override) ? legacy.override : legacy.text);
+
+    return {
+      ...legacy,
+      id: legacy.id ?? `status-${index}`,
+      value: value as number | string,
+      label: label ?? '',
+    };
+  });
+};
+
+const StatusTagPlaceholder: FC<{ className: string; label: string; color?: string | undefined }> = ({ className, label, color }) => (
+  <div className={className} data-tag-wrapper="true">
+    <Tag {...(isNotNullOrWhiteSpace(color) ? { color } : {})}>{label}</Tag>
   </div>
 );
+
+/**
+ * Applies the component's Tooltip to whatever it renders.
+ *
+ * The framework normally hands `description` to the Form.Item as its `tooltip`, but antd renders
+ * that as an icon beside the *label* — and this component hides its label, so the tooltip would
+ * disappear with it. Wrapping the tag restores it, and puts it on the thing the user actually
+ * points at rather than on a label that is not there.
+ *
+ * Returns the children untouched when no Tooltip is configured, so no wrapper element is added for
+ * a component that does not need one.
+ */
+const WithTooltip: FC<PropsWithChildren<{ title: string | undefined }>> = ({ title, children }) =>
+  isNotNullOrWhiteSpace(title)
+    ? <Tooltip title={title}>{children}</Tooltip>
+    : <>{children}</>;
 
 const StatusTagComponent: StatusTagComponentDefinition = {
   allowInherit: true,
@@ -53,6 +109,7 @@ const StatusTagComponent: StatusTagComponentDefinition = {
   dataTypeSupported: ({ dataType, dataFormat }) =>
     dataType === DataTypes.referenceListItem || (dataType === DataTypes.array && dataFormat === ArrayFormats.multivalueReferenceList),
   Factory: ({ model }) => {
+    const { formMode } = useForm();
     const componentApi = useComponentApiProvider();
     useEffect(() => {
       componentApi?.updateApi<StatusTagApi>({
@@ -89,52 +146,79 @@ const StatusTagComponent: StatusTagComponentDefinition = {
        above handles, so neither may reach the wrapper as an inline style. */
     const { style: _styleExpression, styleCss: _styleCss, ...modelWithoutStyle } = tagModel;
 
-    /* A reference list that was never chosen resolves nothing, so every value would render as an
-       empty tag and the form would look merely blank rather than mis-configured. Flagged instead,
-       so the problem is visible on the form and in the designer. */
-    const isMisconfigured = model.dataSourceType === 'referenceList' && !isDefined(model.referenceListId);
-    if (isMisconfigured)
-      return <StatusTagPlaceholder className={styles.statusTag} label="NOT CONFIGURED" />;
+    /* A reference list that was never chosen resolves nothing, so there is no status to show.
+       Handled exactly as `refListStatus` does: the configuration problem is surfaced in the
+       designer, where it can be fixed, and renders nothing at runtime rather than putting an error
+       in front of an end user who cannot act on it. */
+    if (model.dataSourceType === 'referenceList' && !isDefined(model.referenceListId)) {
+      return formMode === 'designer'
+        ? (
+          <Alert
+            showIcon
+            title="Status Tag configuration is incomplete"
+            description="Please make sure that you've select a reference list."
+            type="warning"
+          />
+        )
+        : undefined;
+    }
 
     return (
       <ConfigurableFormItem<number | number[] | string | string[] | (number | string)[]> model={{ ...model, hideLabel: true }}>
         {(value, _onChange, _propertyName, ctx) => {
           /* The legacy manual Value Source pinned a fixed status; it stands in when the bound
              property is empty so a migrated form keeps showing what it used to. */
-          const resolved = isDefined(value) ? value : model.manualValue;
+          const resolved = hasStatusValue(value) ? value : model.value;
 
-          /* With inline values, the catch-all row stands in whenever the configured values cannot
-             produce a tag — both for a value matching no row (what 0.45 rendered as "NOT
-             RECOGNISED") and for no value at all, so the component shows its fallback status rather
-             than nothing. The select can only display a value that is one of its options, so the
-             fallback is selected explicitly here rather than left to antd, which would otherwise
-             render an unmatched value as its own label.
+          /* No value at all: the Placeholder stands in, falling back to a dash so the component
+             always renders a tag rather than collapsing to nothing. This is checked before the
+             catch-all row below, which answers a different question — that row is for a value that
+             *is* present but matches nothing, whereas an absent value has no status to fail to
+             recognise. Rendered here rather than left to `Dropdown`, whose read-only placeholder is
+             plain text and could not produce the dash. */
+          if (!hasStatusValue(resolved))
+            return (
+              <WithTooltip title={model.description}>
+                <StatusTagPlaceholder
+                  className={styles.statusTag}
+                  label={isNotNullOrWhiteSpace(model.readOnlyPlaceholder) ? model.readOnlyPlaceholder : EMPTY_STATUS_LABEL}
+                />
+              </WithTooltip>
+            );
+
+          /* With inline values, the catch-all row stands in for a value that matches no row — what
+             0.45 rendered as "NOT RECOGNISED". The select can only display a value that is one of
+             its options, so the fallback is selected explicitly here rather than left to antd,
+             which would otherwise render an unmatched value as its own label.
 
              Reference-list rows are fetched rather than local, so "no matching row" cannot be told
              apart from "not loaded yet" — that source is left alone to avoid flashing the fallback
              during load. */
-          const options = model.values ?? [];
-          const isResolvable = isDefined(resolved) && options.some((option) => option.value === resolved);
+          const options = statusOptions(model.values);
+          const isResolvable = options.some((option) => option.value === resolved);
           const useFallback = model.dataSourceType === 'values' &&
             !isResolvable &&
             options.some((option) => option.value === DEFAULT_STATUS_VALUE);
           const displayValue = useFallback ? DEFAULT_STATUS_VALUE : resolved;
 
           return (
-            <Dropdown
-              {...modelWithoutStyle}
-              className={styles.statusTag}
-              value={displayValue ?? undefined}
-              size={model.size}
-              /* Read-only rendering happens outside the select, where the emotion class does not
+            <WithTooltip title={model.description}>
+              <Dropdown
+                {...modelWithoutStyle}
+                values={options}
+                className={styles.statusTag}
+                value={displayValue}
+                size={model.size}
+                /* Read-only rendering happens outside the select, where the emotion class does not
                  reach, so the style model is handed over as a value for that path. */
-              styleValue={model}
-              /* No `onChange`, `selectRef` or `popupClassName`: read-only renders no select, so
+                styleValue={model}
+                /* No `onChange`, `selectRef` or `popupClassName`: read-only renders no select, so
                  there is nothing to select into, focus, or pop up. */
-              events={getComponentEvents<number | number[] | string | string[] | (number | string)[]>(
-                model, STATUS_TAG_EVENTS_WITHOUT_CHANGE, ctx, value, DataTypes.array,
-              )}
-            />
+                events={getComponentEvents<number | number[] | string | string[] | (number | string)[]>(
+                  model, STATUS_TAG_EVENTS_WITHOUT_CHANGE, ctx, value, DataTypes.array,
+                )}
+              />
+            </WithTooltip>
           );
         }}
       </ConfigurableFormItem>
@@ -144,13 +228,14 @@ const StatusTagComponent: StatusTagComponentDefinition = {
     /* Steps 0-2 are the pre-refactor chain, replayed unchanged so a form saved at any of those
        versions lands on the same shape it did before. */
     .add<IStatusTagComponentPropsV0>(0, (prev) => {
-      // `prev` is the untyped starting shape here, so the legacy properties are read through V0.
-      const prevTyped = prev as IStatusTagComponentPropsV0;
-      return {
-        ...prevTyped,
-        valueSource: prevTyped.valueSource ?? 'manual',
-        color: prevTyped.color ?? '',
+      /* `prev` is the pre-migration shape, so the legacy properties are read by narrowing rather
+         than asserted — a form saved before either existed simply takes the default. */
+      const result: IStatusTagComponentPropsV0 = {
+        ...prev,
+        valueSource: 'valueSource' in prev && prev.valueSource === 'form' ? 'form' : 'manual',
+        color: 'color' in prev && typeof prev.color === 'string' ? prev.color : '',
       };
+      return result;
     })
     .add<IStatusTagComponentPropsV0>(1, (prev) => migratePropertyName(migrateCustomFunctions(prev)))
     .add<IStatusTagComponentPropsV0>(2, (prev) => ({ ...migrateFormApi.properties(prev) }))
@@ -159,17 +244,20 @@ const StatusTagComponent: StatusTagComponentDefinition = {
        label and colour from the matched row; `values` holds those same three fields per row, so the
        table converts across directly and a migrated form keeps rendering the same statuses in the
        same colours. */
-    .add<IStatusTagComponentProps>(3, (prev, context) => {
-      /* Reads the legacy shape and returns the new one — this is the step that converts between
-         them, so `prev` is typed as V0 while the migration is declared against the new model. */
-      const prevV0 = prev as unknown as IStatusTagComponentPropsV0;
-      /* A new component never carries a legacy mapping table, and `initModel` has already given it
-         a data source, so there is nothing to convert. */
-      if (context.isNew === true) return prev as IStatusTagComponentProps;
-
+    .add<IStatusTagComponentProps>(3, (prevV0: IStatusTagComponentPropsV0, context) => {
       const { mappings, valueSource, value: configuredValue, override: _override, color: _color, ...rest } = prevV0;
 
-      const values = mappingsToValues(mappings);
+      if (context.isNew === true) {
+        const fresh: IStatusTagComponentProps = {
+          ...rest,
+          dataSourceType: 'referenceList',
+          // Required on the model, and `initModel` seeds the same value.
+          tagVariant: prevV0.tagVariant ?? 'solid',
+        };
+        return fresh;
+      }
+
+      const values = mappingsToValuesSetting(mappings);
 
       const migrated: IStatusTagComponentProps = {
         ...rest,
@@ -180,10 +268,6 @@ const StatusTagComponent: StatusTagComponentDefinition = {
         showIcon: prevV0.showIcon ?? true,
         tagVariant: prevV0.tagVariant ?? 'solid',
       };
-
-      /* Written whenever the table converted, including for a form that also has a reference list:
-         the converted rows are kept so switching the Data source to Values shows what the mappings
-         used to be, rather than an empty editor. The source itself is decided above. */
       if (isDefined(values))
         migrated.values = values;
 
@@ -192,7 +276,7 @@ const StatusTagComponent: StatusTagComponentDefinition = {
          gone, but the value is kept so the runtime can still fall back to it when the bound
          property is empty — otherwise a manual-source form would silently render nothing. */
       if (valueSource === 'manual' && isDefined(configuredValue))
-        migrated.manualValue = configuredValue;
+        migrated.value = configuredValue;
 
       return migrated;
     })
@@ -250,9 +334,11 @@ const StatusTagComponent: StatusTagComponentDefinition = {
     /* Reference List is the default source per the spec. The list itself is left unset so the
        Reference List input starts empty and the user is prompted to choose one. */
     dataSourceType: 'referenceList',
-    /* Seeded even though Reference List is the default source, so switching to Values shows the
-       same statuses 0.45 put in Default Mappings rather than an empty editor. */
-    values: defaultValues(),
+    /* Values ships as a script rather than as rows in the editor: the inline list starts empty, and
+       the JS setting returns the statuses 0.45 seeded into Default Mappings. Seeding the editor
+       itself would have put four rows in front of every new component that the user then has to
+       clear; a script is visible where it is relevant and easy to replace wholesale. */
+    values: defaultValuesSetting(),
     showItemName: true,
     showIcon: true,
     tagVariant: 'solid',

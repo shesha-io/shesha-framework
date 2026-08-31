@@ -181,6 +181,13 @@ export const useStyles = createStyles((
         align-items: center;
         overflow: hidden;
 
+        /* Status labels are always upper case, as they were before the refactor. Done in CSS rather
+           than by upper-casing the text so it covers every path uniformly — the resolved statuses,
+           which ReflistTag upper-cases itself, and the placeholder and mis-configuration tags this
+           component renders directly, whose labels never pass through it. Nothing configurable
+           conflicts: the Font panel has no text-transform input. */
+        text-transform: uppercase;
+
         /* The label and any icon are centred within the tag, vertically always and horizontally
            unless Font align says otherwise. Resetting the line height matters: antd gives the tag
            a fixed one that no longer matches its configured height, and an inherited value
