@@ -748,7 +748,7 @@ export const DataList: FC<IDataListProps> = ({
         <ConditionalWrap
           condition={isSelectable}
           wrap={(children) => (
-            <div className={classNames(styles.shaDatalistComponentItemCheckbox, { selected, single: selectionMode === 'single' })}>
+            <div className={classNames(styles.shaDatalistComponentItemCheckbox, { selected })}>
               {selectionMode === 'single'
                 ? (
 
