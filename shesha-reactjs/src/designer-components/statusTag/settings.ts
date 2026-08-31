@@ -41,9 +41,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
             components: [
               ...fbf(commonTabId)
                 .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true }, jsSetting: true })
-                /* Visible only. The status tag is a display component, so Interaction Mode has
-                   nothing to switch between — see the note in `statusTag.tsx`. Permissions still
-                   ride on this input, which is where the migrated `permissions` land. */
                 .addSettingsInputRow({
                   inputs: [
                     { type: 'switch', propertyName: 'visible', label: 'Visible', jsSetting: true, layout: 'horizontal', permissionSettings: true },

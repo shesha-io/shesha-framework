@@ -36,7 +36,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   required: true,
                 },
                 styledLabel: true,
-                jsSetting: true,
               })
               .addSettingsInput({
                 id: hiddenId,

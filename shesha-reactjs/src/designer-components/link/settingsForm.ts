@@ -37,7 +37,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
         tabs: [
           { key: 'common', title: 'Common', id: commonTabId,
             components: fbf(commonTabId)
-              .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true }, jsSetting: true })
+              .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true } })
               .addSettingsInputRow({ inputs: [
                 { type: 'switch', propertyName: 'visible', label: 'Visible', jsSetting: true, layout: 'horizontal', permissionSettings: true },
                 { type: 'switch', propertyName: 'hasChildren', label: 'Custom Link', size: 'small', jsSetting: true },
