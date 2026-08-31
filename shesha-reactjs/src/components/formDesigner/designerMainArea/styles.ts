@@ -33,22 +33,17 @@ export const useStyles = createStyles(({ css, cx }) => {
         justify-content: center;
 
         .${designerCanvas} {
-        /* The wrapper centres the canvas in this state, so the bottom margin has nothing to keep it
-           clear of - it just pushes the canvas above centre and reads as a band underneath. */
         min-height: auto;
-        margin-bottom: 0;
         }
     }
     .${designerCanvas} {
-        /* Breathing room under the canvas so it is not flush against the bottom of its pane once
-           scrolled to the end. A margin rather than padding: padding would sit inside the canvas,
-           i.e. inside the device screen being designed. */
-        margin: 0 auto ${sheshaStyles.paddingLG * 2}px;
-        /* Short of the full pane by exactly the bottom margin above, so canvas + margin fills the
-           pane and no more. A plain 100% here left the margin overflowing the pane at every form
-           length, which showed up as a scrollbar that was always present. min-height rather than
-           height so a form with more content than fits can grow past the pane and scroll. */
-        min-height: calc(100% - ${sheshaStyles.paddingLG * 2}px);
+        margin: 0 auto;
+        /* Fills the pane exactly, and no more. A bottom margin here left the canvas ending short of
+           the pane - a band of wrapper visible under its shadowed bottom edge - and adding one back
+           on top of a full 100% overflows the pane by exactly that margin, which shows up as a
+           vertical scrollbar that is always present. min-height rather than height so a form with
+           more content than fits can still grow past the pane and scroll. */
+        min-height: 100%;
         /* The canvas is the device screen: nothing inside it may be painted past its edge, on
            either axis. A component sized in viewport units resolves against the browser viewport
            rather than the canvas, so on a small device preset a "100vh" container overshoots the
