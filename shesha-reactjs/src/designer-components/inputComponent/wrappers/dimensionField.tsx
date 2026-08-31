@@ -6,7 +6,8 @@ import Icon from '@/components/icon/Icon';
 import { useStyles } from '../styles';
 import { isDefined, isNullOrWhiteSpace } from '@/utils';
 import { DIMENSION_VALUES, GRID_DIMENSION_VALUES } from '@/utils/style';
-import { MAX_DIMENSION_PERCENT, boundWidthPercent, exceedsWidthPercent } from '@/designer-components/_settings/utils/dimensions/utils';
+import { boundWidthToCanvas, exceedsWidth } from '@/designer-components/_settings/utils/dimensions/bounds';
+import { useCanvas } from '@/providers/canvas';
 
 const convertOprtions = (options: string[]): { value: string }[] => options.map((item) => ({ value: item }));
 
@@ -18,6 +19,8 @@ export const DimensionFieldWrapper: FCUnwrapped<IDimensionFieldSettingsInputProp
 
   const { styles } = useStyles();
   const { message } = App.useApp();
+  // Lets an absolute width be judged against the canvas, not just a percentage against 100.
+  const { designerWidth } = useCanvas();
 
   const allOptions = useMemo (() => {
     return ['gridRowHeight', 'gridColumnWidth'].includes(dimensionType) ? GRID_DIMENSION_VALUES : DIMENSION_VALUES;
@@ -41,20 +44,20 @@ export const DimensionFieldWrapper: FCUnwrapped<IDimensionFieldSettingsInputProp
   };
 
   /**
-   * Overrides a percentage wider than the container and says so. On commit, not per keystroke -
-   * bounding as the user types would rewrite "150" to "100" mid-entry.
+   * Overrides a width wider than the container and says so. On commit, not per keystroke - bounding
+   * as the user types would rewrite "150" to "100" mid-entry.
    */
   const commit = (data: string | undefined): void => {
     if (!WIDTH_DIMENSIONS.includes(dimensionType)) return;
 
-    // exceedsWidthPercent returns a boolean and so does not narrow `data`; guard the type first.
-    if (typeof data !== 'string' || !exceedsWidthPercent(data)) return;
+    // exceedsWidth returns a boolean and so does not narrow `data`; guard the type first.
+    if (typeof data !== 'string' || !exceedsWidth(data, designerWidth)) return;
 
-    // boundWidthPercent is string | number, so narrow rather than assert.
-    const bounded = boundWidthPercent(data);
+    // boundWidthToCanvas is string | number, so narrow rather than assert.
+    const bounded = boundWidthToCanvas(data, designerWidth);
     if (typeof bounded !== 'string') return;
 
-    message.warning(`${data.trim()} is wider than the space the component sits in. Applied ${MAX_DIMENSION_PERCENT}% instead, which is the maximum.`);
+    message.warning(`${data.trim()} is wider than the space the component sits in. Applied ${bounded} instead, which is the maximum.`);
     onChange?.(bounded);
   };
 

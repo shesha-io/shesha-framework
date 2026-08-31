@@ -1,6 +1,7 @@
 import { BorderStyle, getGradientColors, IBackgroundValue, IBorderValue, IDimensionsValue, IFontValue, IGradientValue, IShadowValue } from "@/designer-components/_settings/utils";
 import { IConfigurableFormComponent, IStyleValue, StyleBoxValue } from "../../../providers/form/models";
 import { addPx, allowForCanvasChromeHeight, hasNumber } from "@/utils/style";
+import { boundWidth } from "@/designer-components/_settings/utils/dimensions/bounds";
 import { StringBuilder } from "@/utils";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { CSSProperties } from "react";
@@ -215,9 +216,11 @@ export const backgroundStyles = (model: IBackgroundValue | undefined): string =>
 export const dimensionsStyles = (model: IDimensionsValue | undefined): string => {
   if (!model) return '';
   const sb = new StringBuilder();
-  if (isDefined(model.width)) sb.append(`width: ${dimensionCss(model.width)};`);
-  if (isDefined(model.minWidth)) sb.append(`min-width: ${dimensionCss(model.minWidth)};`);
-  if (isDefined(model.maxWidth)) sb.append(`max-width: ${dimensionCss(model.maxWidth)};`);
+  // The width axes go through boundWidth, as they do in getDimensionsStyle. No canvas width is
+  // available on this path, so only the relative units (%, vw) can be judged here.
+  if (isDefined(model.width)) sb.append(`width: ${dimensionCss(boundWidth(model.width))};`);
+  if (isDefined(model.minWidth)) sb.append(`min-width: ${dimensionCss(boundWidth(model.minWidth))};`);
+  if (isDefined(model.maxWidth)) sb.append(`max-width: ${dimensionCss(boundWidth(model.maxWidth))};`);
   // The height axes go through allowForCanvasChromeHeight: this is the path the container
   // component uses, and a container is the usual place a full-viewport height is set.
   if (isDefined(model.height)) sb.append(`height: ${dimensionCss(allowForCanvasChromeHeight(model.height))};`);
