@@ -43,7 +43,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
       .addSearchableTabs({ id: searchableTabsId, propertyName: 'settingsTabs', label: 'Settings', hideLabel: true, labelAlign: 'right', size: 'small',
         tabs: [
           { key: 'common', title: 'Common', id: commonTabId, components: fbf(commonTabId)
-            .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true }, jsSetting: true })
+            .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true } })
             .addLabelConfigurator({ propertyName: 'hideLabel', label: 'Label', hideLabel: true })
             .stdPlaceholderDescriptionInputs()
             .stdVisibleEditableInputs('full')

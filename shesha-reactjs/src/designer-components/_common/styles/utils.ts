@@ -131,7 +131,7 @@ export const getStyleValueFromModel = (model: IConfigurableFormComponent): IStyl
   };
 };
 
-export const borderCss = (b: BorderStyle | undefined): string => `${addPx(b?.width) ?? '0px'} ${b?.style ?? 'none'} ${b?.color ?? 'transparent'}`;
+export const borderCss = (b: BorderStyle | undefined): string => `${addPx(b?.width) ?? '0px'} ${b?.style ?? 'none'} ${isNullOrWhiteSpace(b?.color) ? 'transparent' : b.color}`;
 
 export const gradientCss = (g: IGradientValue): string => {
   const direction = g.direction;

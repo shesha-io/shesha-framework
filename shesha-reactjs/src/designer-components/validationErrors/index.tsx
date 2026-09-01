@@ -5,7 +5,7 @@ import { getSettings } from './settingsForm';
 
 import { IStyleValue } from '@/providers';
 import ValidationErrors from '@/components/validationErrors';
-import { useShaFormInstance } from '@/providers/form/providers/shaFormProvider';
+import { useShaFormValidationErrors } from '@/providers/form/providers/shaFormProvider';
 import { defaultStyles } from './utils';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
 import classNames from 'classnames';
@@ -45,18 +45,19 @@ const ValidationErrorsComponent: IToolboxComponent<IValidationErrorsComponentPro
   name: 'Validation Errors',
   icon: <WarningOutlined />,
   getWrapperStyle: (model) => ({ style: { styleCss: {}, dimensions: model.dimensions } }),
-  Factory: ({ model }) => {
+  Factory: ({ model, form }) => {
     const handleEvent = useEvents<void>(model.componentName);
     const { styles } = useStyles(model);
-    const { validationErrors, formMode } = useShaFormInstance();
+    const validationErrors = useShaFormValidationErrors();
     return (
-      <ValidationErrors
-        style={model.styleCss ?? EMPTY_STYLE}
-        error={formMode === 'designer' ? 'Validation Errors (visible in the designer only)' : validationErrors}
-        renderMode="alert"
-        className={classNames(styles.shaValidationErrors, model.className)}
-        additionalDomProperties={getComponentEvents<void, IValidationErrorsComponentProps>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent })}
-      />
+      <div {...getComponentEvents<void, IValidationErrorsComponentProps>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent })}>
+        <ValidationErrors
+          style={model.styleCss ?? EMPTY_STYLE}
+          error={form.formMode === 'designer' ? 'Validation Errors (visible in the designer only)' : validationErrors}
+          renderMode="alert"
+          className={classNames(styles.shaValidationErrors, model.className)}
+        />
+      </div>
     );
   },
   /** validationErrors is never hidden and depends on permission */

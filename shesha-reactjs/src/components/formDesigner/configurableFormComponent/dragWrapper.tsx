@@ -51,19 +51,21 @@ export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => 
       );
   };
 
-  const onMouseOver = (event: React.MouseEvent<HTMLElement>): void => {
+  const onMouseEnter = (event: React.MouseEvent<HTMLElement>): void => {
     event.stopPropagation();
     setIsOpen(true);
   };
 
-  const onMouseOut = (event: React.MouseEvent<HTMLElement>): void => {
+  const onMouseLeave = (event: React.MouseEvent<HTMLElement>): void => {
     event.stopPropagation();
     setIsOpen(false);
   };
 
   return (
-    <Tooltip title={tooltip} placement="right" open={isOpen}>
-      <div className={props.className} onClick={onClick} onMouseOver={onMouseOver} onMouseOut={onMouseOut}>
+    // `pointerEvents: none` keeps the overlay out of hit-testing, otherwise moving the cursor onto the
+    // tooltip triggers mouse leave on the wrapper and the tooltip flickers open/closed under the cursor
+    <Tooltip title={tooltip} placement="right" open={isOpen} styles={{ root: { pointerEvents: 'none' } }}>
+      <div className={props.className} onClick={onClick} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
         {props.children}
       </div>
     </Tooltip>

@@ -29,7 +29,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   styledLabel: true,
                   parentId: commonTabId,
                   validate: { required: true },
-                  jsSetting: true,
                   size: 'small',
                 })
                 .addSettingsInput({

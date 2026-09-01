@@ -54,7 +54,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
 
             &.selected {
                 background-color: ${token.colorPrimaryBgHover};
-                padding-bottom: 8px;
             }
     
             span {
@@ -77,7 +76,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
                 margin-top: 0;
             }
         }
-    
+
         .${shaDatalistComponentExtraSpace} {
             display: flex;
             align-content: space-between;

@@ -23,6 +23,12 @@ namespace Shesha.ConfigurationStudio.Dtos
             /// Alias, is used as an identifier on the front-end. By default camelCased <see cref="Name"/> is used as an identifier
             /// </summary>
             public string Alias { get; set; }
+
+            /// <summary>
+            /// Module accessor
+            /// </summary>
+            public string Accessor { get; set; }
+            
             /// <summary>
             /// Is editable
             /// </summary>

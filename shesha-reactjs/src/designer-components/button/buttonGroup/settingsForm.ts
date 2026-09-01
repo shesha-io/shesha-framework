@@ -15,7 +15,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
         tabs: [
           { key: 'common', title: 'Common', id: commonTabId,
             components: [...fbf(commonTabId)
-              .addSettingsInput({ inputType: 'textField', propertyName: 'componentName', label: 'Component Name', size: 'small', validate: { required: true }, jsSetting: true })
+              .addSettingsInput({ inputType: 'textField', propertyName: 'componentName', label: 'Component Name', size: 'small', validate: { required: true } })
               .stdVisibleEditableInputs('disabling')
               .addSettingsInput({ inputType: 'buttonGroupConfigurator', propertyName: 'items', label: 'Button group', title: 'Configure buttons', buttonText: 'Configure buttons', buttonTextReadOnly: 'View configured buttons' })
               .addPropertyRouter({ id: styleRouter1Id, componentName: 'propertyRouter1', label: 'Property router1', labelAlign: 'right',

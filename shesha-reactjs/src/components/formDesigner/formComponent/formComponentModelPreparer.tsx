@@ -1,4 +1,4 @@
-import { IConfigurableFormComponent, IStyleValue, UnwrapCodeEvaluators, useCanvas, useForm, useShaFormInstance, useSheshaApplication, useTheme } from "@/providers";
+import { IConfigurableFormComponent, IStyleValue, UnwrapCodeEvaluators, useCanvas, useForm, useShaFormInstance, useSheshaApplication, useSubFormOrUndefined, useTheme } from "@/providers";
 import { FC, useEffect, useMemo, useState } from "react";
 import * as React from "react";
 import { useStyles } from "../styles/styles";
@@ -6,7 +6,6 @@ import { useFormDesignerComponentGetter } from "@/providers/form/hooks";
 import { toCamelCase } from "@/utils/string";
 import { IApiContext, IToolboxComponent } from "@/interfaces/formDesigner";
 import { IPropertyMetadata } from "@/interfaces";
-import { useDeepCompareMemo } from "@/hooks";
 import { ErrorIconPopover } from "@/components/componentErrors/errorIconPopover";
 import { IModelValidation } from "@/utils/errors";
 import { formComponentActualModelPropertyFilter, updateComponentModelFromMetadata } from "@/providers/form/utils";
@@ -29,7 +28,11 @@ export const FormComponentModelPreparer: FC<FormComponentPrepareModelProps> = ({
   const shaApplication = useSheshaApplication();
   const { anyOfPermissionsGranted } = shaApplication;
   const shaForm = useShaFormInstance();
-  const { modelMetadata, isComponentFiltered, formSettings } = useForm();
+  const subForm = useSubFormOrUndefined();
+  const { modelMetadata: formMetadata, formSettings, isComponentFiltered } = useForm();
+
+  const modelMetadata = isDefined(subForm) ? subForm.modelMetadata : formMetadata;
+
   const getToolboxComponent = useFormDesignerComponentGetter();
   const [propMetadata, setPropMetadata] = useState<IPropertyMetadata | undefined>(undefined);
   // Memoize component lookup to prevent unnecessary re-renders
@@ -116,7 +119,7 @@ export const FormComponentModelPreparer: FC<FormComponentPrepareModelProps> = ({
     return { ...unwrappedModel, styleCss, wrapperStyleCss, readOnly, disabled, hidden, propertyName };
   }, [hidden, propertyName, readOnly, disabled, styleCss, wrapperStyleCss, unwrappedModel]);
 
-  const actualApiModel = useDeepCompareMemo(() => deepMergeValues(actualModel, apiModel), [actualModel, apiModel]);
+  const actualApiModel = useMemo(() => deepMergeValues(actualModel, apiModel), [actualModel, apiModel]);
 
   useEffect(() => {
     if (isDefined(componentApi))
@@ -146,7 +149,7 @@ export const FormComponentModelPreparer: FC<FormComponentPrepareModelProps> = ({
     };
   }, [modelMetadata, actualApiModel.propertyName]);
 
-  const componentModel = useDeepCompareMemo((): UnwrapCodeEvaluators<IConfigurableFormComponent> => {
+  const componentModel = useMemo((): UnwrapCodeEvaluators<IConfigurableFormComponent> => {
     return toolboxComponent && propMetadata
       ? updateComponentModelFromMetadata(toolboxComponent, actualApiModel, propMetadata) as UnwrapCodeEvaluators<IConfigurableFormComponent>
       : actualApiModel;
