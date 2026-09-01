@@ -9,7 +9,13 @@ import ReflistTag from '../refListDropDown/reflistTag';
 import { getNumberOrUndefined } from '@/utils/string';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 
-const normalizeValue = (value: number | string): number | string => getNumberOrUndefined(value) ?? value;
+/**
+ * Coerces a numeric-looking value to a number so a stored "1" matches a configured 1.
+ *
+ * Exported because callers that resolve a value against this component's options have to apply the
+ * same coercion — matching raw would reject a selection this component would accept.
+ */
+export const normalizeValue = (value: number | string): number | string => getNumberOrUndefined(value) ?? value;
 
 /** Layout effects do not run on the server, so fall back to `useEffect` there. */
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;

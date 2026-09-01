@@ -15,6 +15,7 @@ import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, mi
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { Dropdown } from '@/components/dropdown/dropdown';
 import { ILabelValue } from '@/components/dropdown/model';
+import { normalizeValue } from '@/components/dropdown/dropdown';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settings';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
@@ -96,7 +97,11 @@ const StatusTagPlaceholder: FC<{ className: string; label: string; color?: strin
  * tag alignment.
  */
 const StatusTagWrapper: FC<PropsWithChildren<{ title: string | undefined; events: EventsObject }>> = ({ title, events, children }) => {
-  const content = <span style={{ display: 'contents' }} {...events}>{children}</span>;
+  /* `inline-flex`, not `display: contents`: a contents box is not laid out, so antd Tooltip has no
+     element to measure or anchor to and the tooltip never appears. Inline-flex shrink-wraps the tag
+     instead of stretching across the row, which keeps the hover and click target on the tag rather
+     than the full width of the field. */
+  const content = <span className="sha-status-tag-wrapper" style={{ display: 'inline-flex', maxWidth: '100%' }} {...events}>{children}</span>;
 
   return isNotNullOrWhiteSpace(title)
     ? <Tooltip title={title}>{content}</Tooltip>
@@ -163,7 +168,7 @@ const StatusTagComponent: StatusTagComponentDefinition = {
           <Alert
             showIcon
             title="Status Tag configuration is incomplete"
-            description="Please make sure that you've select a reference list."
+            description="Please make sure that you have selectede a reference list."
             type="warning"
           />
         )
@@ -208,11 +213,25 @@ const StatusTagComponent: StatusTagComponentDefinition = {
              apart from "not loaded yet" — that source is left alone to avoid flashing the fallback
              during load. */
           const options = statusOptions(model.values);
-          const isResolvable = options.some((option) => option.value === resolved);
-          const useFallback = model.dataSourceType === 'values' &&
-            !isResolvable &&
-            options.some((option) => option.value === DEFAULT_STATUS_VALUE);
-          const displayValue = useFallback ? DEFAULT_STATUS_VALUE : resolved;
+          const hasFallbackRow = options.some((option) => option.value === DEFAULT_STATUS_VALUE);
+          /* Values are matched through `normalizeValue`, the same numeric coercion the drop-down
+             applies to its own options: a bound "1" and a configured 1 are the same status, and
+             comparing them raw would send a perfectly valid selection to the fallback. */
+          const isResolvable = (candidate: number | string): boolean =>
+            options.some((option) => normalizeValue(option.value) === normalizeValue(candidate));
+
+          /* Multi-select resolves entry by entry: comparing the whole array against scalar option
+             values never matches, which would collapse an entire valid selection onto the single
+             fallback row. Each unresolved entry becomes the fallback only where one is configured;
+             valid entries are preserved in place. */
+          const resolveOne = (candidate: number | string): number | string =>
+            model.dataSourceType === 'values' && !isResolvable(candidate) && hasFallbackRow
+              ? DEFAULT_STATUS_VALUE
+              : candidate;
+
+          const displayValue = Array.isArray(resolved)
+            ? resolved.map(resolveOne)
+            : resolveOne(resolved);
 
           return (
             <StatusTagWrapper title={model.description} events={events}>

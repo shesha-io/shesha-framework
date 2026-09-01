@@ -66,7 +66,7 @@ export const defaultStyles = (): IStyleValue => {
   return {
     // Empty, not a grey: a seeded colour is emitted at `&&&&` and paints every tag that has no
     // colour of its own, overriding whatever the Variant would have drawn.
-    background: BACKGROUND_DEFAULTS('#000000f'),
+    background: BACKGROUND_DEFAULTS('#d9d9d9'),
     font: {
       weight: '400',
       size: 14,

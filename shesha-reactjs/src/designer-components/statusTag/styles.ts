@@ -1,5 +1,5 @@
 import { createStyles } from '@/styles';
-import { backgroundStyles, borderRadiusStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, justifyContentFor, marginStyles, paddingStyles, popupAppearanceStyles, shadowStyles, splitBackgroundProperties } from '@/designer-components/_common/styles/utils';
+import { backgroundStyles, borderRadiusStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, justifyContentFor, marginStyles, paddingStyles, shadowStyles, splitBackgroundProperties } from '@/designer-components/_common/styles/utils';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { addPx } from '@/utils/style';
 import { CSSProperties } from 'react';
@@ -38,7 +38,6 @@ export const useStyles = createStyles((
   model: IStatusTagComponentProps & { customStyle?: CSSProperties | undefined },
 ) => {
   const textAlign = model.font?.align;
-  const fontWithoutAlignAndColor = { ...model.font, align: undefined };
 
   /* The Custom style's background half is routed to the colour selector below rather than the base
      rule, so it respects the same per-status-colour exclusion the Background panel does. */
@@ -240,41 +239,5 @@ export const useStyles = createStyles((
       }` : ''}
     `);
 
-  /* The option list is portalled to the body, out of reach of the class above, so it needs its own.
-     The single style set describes the *tag*, so almost none of it belongs here: a tag height or
-     border on the popup panel would size and outline the whole list. Only background and border
-     come through `popupAppearanceStyles`, which deliberately omits shadow so the panel keeps the
-     elevation the theme gives it, plus the font so the options match the tag text. */
-  const popup = cx('sha-status-tag-popup', css`
-      &&& {
-        ${popupAppearanceStyles({ background: model.background, border: model.border })}
-      }
-
-      /* antd paints the option list on an inner wrapper, which would cover the configured
-         background of the popup root. */
-      &&& .${prefixCls}-select-dropdown,
-      &&& .rc-virtual-list-holder,
-      &&& .${prefixCls}-select-item-empty {
-        background: transparent;
-      }
-
-      /* Font is restated on the options because antd sets it on the option element itself, where a
-         rule on the root would be overridden rather than inherited. Kept at a single class so the
-         options and the tag agree, exactly as the dropdown does. */
-      .${prefixCls}-select-item,
-      .${prefixCls}-select-item-option-active,
-      .${prefixCls}-select-item-option-selected {
-        ${fontStyles(fontWithoutAlignAndColor, model.styleCss)}
-      }
-
-      /* The Custom style at ampersand-tripled, where it must beat antd even though the rule above
-         deliberately does not. Emits nothing when no Custom style is set. */
-      &&& .${prefixCls}-select-item,
-      &&& .${prefixCls}-select-item-option-active,
-      &&& .${prefixCls}-select-item-option-selected {
-        ${fontStyles(fontWithoutAlignAndColor, model.styleCss)}
-      }
-    `);
-
-  return { statusTag, popup };
+  return { statusTag };
 });
