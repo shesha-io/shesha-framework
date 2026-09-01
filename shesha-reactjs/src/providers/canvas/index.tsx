@@ -23,7 +23,7 @@ import { DataTypes } from '@/interfaces/dataTypes';
 import { SheshaCommonContexts } from '../dataContextManager/models';
 import { ContextOnChangeData } from '../dataContextProvider/contexts';
 import { useLocalStorage } from '@/hooks';
-import { clampZoom } from './utils';
+import { clampZoom, getDeviceTypeByWidth } from './utils';
 import { boundCanvasWidthPercent } from './constants';
 
 const CanvasProvider: FC<PropsWithChildren> = ({
@@ -39,14 +39,20 @@ const CanvasProvider: FC<PropsWithChildren> = ({
         }],
       });
     },
+    // Every property here is either handled in contextOnChangeData below or marked readonly in
+    // ICanvasContextApi. A property in neither would offer intellisense for a write that is then
+    // silently dropped.
     properties: [
       { path: 'zoom', dataType: DataTypes.number },
+      { path: 'autoZoom', dataType: DataTypes.boolean },
       { path: 'autoWidth', dataType: DataTypes.boolean },
       { path: 'widthPercent', dataType: DataTypes.number },
       { path: 'designerWidth', dataType: DataTypes.string },
       { path: 'designerDevice', dataType: DataTypes.string },
       { path: 'physicalDevice', dataType: DataTypes.string },
       { path: 'activeDevice', dataType: DataTypes.string },
+      { path: 'canvas', dataType: DataTypes.object },
+      { path: 'canvasMounts', dataType: DataTypes.number },
     ],
     dataType: DataTypes.object,
   } as IObjectMetadata), []);
@@ -162,6 +168,9 @@ const CanvasProvider: FC<PropsWithChildren> = ({
     /* NEW_ACTION_GOES_HERE */
   }), [setDesignerDevice, setCanvasWidth, setCanvasZoom, setManualZoom, setCanvasAutoZoom, setCanvasAutoWidth, setCanvasWidthPercent, setAvailableCanvasWidth, setCanvasMeasurement, registerCanvas, unregisterCanvas]);
 
+  // Only fired for writes made into the context - by a script, not by the reducer - so applying one
+  // through its action cannot feed back. Every writable property in contextMetadata is handled here;
+  // the rest are readonly in ICanvasContextApi so a write to one is flagged rather than dropped.
   const contextOnChangeData: ContextOnChangeData<ICanvasStateContext> = useCallback((_, changedData) => {
     if (!isDefined(changedData))
       return;
@@ -177,7 +186,28 @@ const CanvasProvider: FC<PropsWithChildren> = ({
     if (changedData.widthPercent !== undefined && changedData.widthPercent !== state.widthPercent) {
       setCanvasWidthPercent(changedData.widthPercent);
     }
-  }, [state.designerDevice, state.autoWidth, state.widthPercent, setDesignerDevice, setCanvasAutoWidth, setCanvasWidthPercent]);
+
+    // Manual, not setCanvasZoom: an explicit zoom that auto zoom overwrites on the next resize is
+    // the same as not having applied it.
+    if (changedData.zoom !== undefined && changedData.zoom !== state.zoom && Number.isFinite(changedData.zoom)) {
+      setManualZoom(changedData.zoom);
+    }
+
+    if (changedData.autoZoom !== undefined && changedData.autoZoom !== state.autoZoom) {
+      setCanvasAutoZoom(changedData.autoZoom);
+    }
+
+    // A width pins a preset, which needs a device; resolved from the width, as the toolbar does.
+    // Applied as a number so it is always normalised to px - a script assigning "1024" rather than
+    // "1024px" would otherwise pin the canvas to a width CSS cannot read. Ignored when it is not a
+    // usable length, which would otherwise pin it to "NaNpx".
+    if (changedData.designerWidth !== undefined && changedData.designerWidth !== state.designerWidth) {
+      const width = parseFloat(changedData.designerWidth);
+      if (Number.isFinite(width) && width > 0)
+        setCanvasWidth(width, getDeviceTypeByWidth(width));
+    }
+  }, [state.designerDevice, state.autoWidth, state.widthPercent, state.zoom, state.autoZoom, state.designerWidth,
+    setDesignerDevice, setCanvasAutoWidth, setCanvasWidthPercent, setManualZoom, setCanvasAutoZoom, setCanvasWidth]);
 
   return (
     <DataContextBinder<ICanvasStateContext>

@@ -147,13 +147,8 @@ export const gradientCss = (g: IGradientValue): string => {
     : '';
 };
 
-const dimensionCss = (value: string | number, _canvasValue?: string): string | number => {
-  // If canvasWidth is provided and main contains vw, convert to calc
-  /* if (canvasValue && typeof value === 'string' && /vw/i.test(value)) {
-    return dimensionRelativeToCanvas(value, canvasValue, 'vw');
-  }*/
-
-  // For simple numeric values or values without vw, use addPx
+/** Serialises a dimension already resolved against the canvas by the caller. */
+const dimensionCss = (value: string | number): string | number => {
   if (typeof value === 'string' && /^calc\(/i.test(value.trim())) return value;
   return !hasNumber(value) ? value : addPx(value) ?? 0;
 };
