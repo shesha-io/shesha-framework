@@ -1,4 +1,5 @@
 import { InlineEditMode } from "@/components/reactTable/interfaces";
+import { getNumberOrUndefined } from "@/utils/string";
 import { YesNoInheritJs } from "../interfaces";
 
 interface ICrudOptions {
@@ -42,6 +43,9 @@ export const adjustWidth = (crudOptions: ICrudOptions): { maxWidth: number; minW
   return { minWidth: 0, maxWidth: 0 };
 };
 
+// Lenient on purpose: some data sources (url, in-memory) deliver numeric values as strings.
+// Booleans/arrays are rejected - Number() would coerce them to 0/1 and resolve a wrong reflist item.
 export const asNumber = (value: unknown): number | undefined => {
-  return typeof value === 'number' ? value : undefined;
+  if (typeof value !== 'number' && typeof value !== 'string') return undefined;
+  return getNumberOrUndefined(value);
 };

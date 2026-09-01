@@ -372,6 +372,12 @@ export type CheckboxFieldApi = InputComponentApi<boolean | undefined>;
 export type DropdownApi = InputComponentApi<number | number[] | string | string[] | (string | number)[] | undefined>;
 
 /**
+ * Status tag. A display-only drop-down: it renders the bound status as a tag and never captures one,
+ * so there is no `focus` — the component has no focusable control.
+ */
+export type StatusTagApi = Omit<InputComponentApi<number | number[] | string | string[] | (string | number)[] | undefined>, 'focus'>;
+
+/**
  * Autocomplete. The value shape follows the component's Value Format setting: a plain key for
  * `simple`, an entity reference object for `entityReference`, or whatever the configured Value
  * Function returns for `custom`. In multiple selection mode it is an array of those.

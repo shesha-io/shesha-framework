@@ -11,7 +11,7 @@ import { isPromise } from "@/utils/promises";
 
 type RefListRenderer = {
   referenceListName: string;
-  referenceListModule: string;
+  referenceListModule: string | null;
 };
 
 interface ValueWithMetadata<V = unknown> {
@@ -55,8 +55,9 @@ const MultivalueReferenceListDisplayInternal: FC<ValueWithMetadata & RefListRend
 
 const MultivalueReferenceListDisplay: FC<ValueWithMetadata> = (props) => {
   const { value, meta } = props;
-  return isDefined(value) && meta && !isNullOrWhiteSpace(meta.referenceListModule) && !isNullOrWhiteSpace(meta.referenceListName)
-    ? (<MultivalueReferenceListDisplayInternal {...props} referenceListName={meta.referenceListName} referenceListModule={meta.referenceListModule} />)
+  // module is legitimately empty for legacy reference lists - only the name is required
+  return isDefined(value) && meta && !isNullOrWhiteSpace(meta.referenceListName)
+    ? (<MultivalueReferenceListDisplayInternal {...props} referenceListName={meta.referenceListName} referenceListModule={meta.referenceListModule ?? null} />)
     : null;
 };
 
@@ -80,8 +81,8 @@ const renderValue = <V = unknown>(props: ValueWithMetadata<V>): ReactNode => {
     };
     case 'reference-list-item':
       const numberValue = asNumber(value);
-      return isDefined(numberValue) && !isNullOrWhiteSpace(meta.referenceListModule) && !isNullOrWhiteSpace(meta.referenceListName)
-        ? (<ReferenceListDisplay {...props} value={numberValue} referenceListName={meta.referenceListName} referenceListModule={meta.referenceListModule} />)
+      return isDefined(numberValue) && !isNullOrWhiteSpace(meta.referenceListName)
+        ? (<ReferenceListDisplay {...props} value={numberValue} referenceListName={meta.referenceListName} referenceListModule={meta.referenceListModule ?? null} />)
         : undefined;
     case 'boolean': return <>{Boolean(props.value) ? 'Yes' : 'No'}</>;
     case 'entity': return (<EntityDisplay {...props} />);

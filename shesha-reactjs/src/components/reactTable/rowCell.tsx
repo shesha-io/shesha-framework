@@ -137,6 +137,7 @@ export const RowCell = <TData extends ITableRowData = ITableRowData>({ cell, pre
       className={classNames(styles.td, {
         [styles.fixedColumn]: isFixed,
         [styles.relativeColumn]: !isFixed,
+        [styles.shaActionCell]: cell.column.columnType === 'action',
       })}
     >
       {preContent}

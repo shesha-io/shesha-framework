@@ -51,7 +51,7 @@ export const getAnchoredCellStyleAccessor = <D extends object = object>(
       const totalColumns = row.length;
 
       rightColumn.shadowPosition = totalColumns - calculateTotalColumnsOnFixed(row, 'right');
-      rightColumn.shift = calculatePositionShift(row, index, totalColumns - 1).reduce(
+      rightColumn.shift = calculatePositionShift(row, index + 1, totalColumns).reduce(
         (acc, curr) => (acc as number) + curr,
         0,
       );
