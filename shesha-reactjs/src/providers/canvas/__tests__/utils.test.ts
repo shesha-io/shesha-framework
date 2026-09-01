@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { MAX_CANVAS_WIDTH_PERCENT, getCanvasLayoutWidth, parseCanvasWidthPercent } from '../utils';
+import { MAX_CANVAS_WIDTH_PERCENT, calculateAutoZoom, getCanvasLayoutWidth, parseCanvasWidthPercent } from '../utils';
 
 describe('parseCanvasWidthPercent', () => {
   it('reads a well-formed percentage below the maximum as itself', () => {
@@ -59,5 +59,29 @@ describe('getCanvasLayoutWidth', () => {
 
   it('falls back to the default zoom rather than dividing by zero', () => {
     expect(getCanvasLayoutWidth(750, 0)).toBe('1000px');
+  });
+});
+
+describe('calculateAutoZoom', () => {
+  it('fits the canvas into the pane', () => {
+    expect(calculateAutoZoom({ currentZoom: 100, designerWidth: '1920px', containerWidth: 1162 })).toBe(60);
+    expect(calculateAutoZoom({ currentZoom: 100, designerWidth: '1920px', containerWidth: 385 })).toBe(20);
+  });
+
+  it('keeps the zoom it was given when the pane measures zero', () => {
+    // A pane of zero is a pane that cannot be measured yet - a hidden document tab, a collapsed
+    // panel. Fitting into nothing used to pin the zoom to the 10% minimum and fight whatever put
+    // it back, which is the reported oscillation.
+    expect(calculateAutoZoom({ currentZoom: 60, designerWidth: '1920px', containerWidth: 0 })).toBe(60);
+    expect(calculateAutoZoom({ currentZoom: 25, designerWidth: '1920px', containerWidth: 0 })).toBe(25);
+  });
+
+  it('keeps the zoom it was given when the canvas width is not a usable number', () => {
+    expect(calculateAutoZoom({ currentZoom: 75, designerWidth: 'auto', containerWidth: 1162 })).toBe(75);
+  });
+
+  it('still bounds a real measurement to the allowed range', () => {
+    expect(calculateAutoZoom({ currentZoom: 100, designerWidth: '1920px', containerWidth: 1 })).toBe(10);
+    expect(calculateAutoZoom({ currentZoom: 100, designerWidth: '100px', containerWidth: 9000 })).toBe(400);
   });
 });

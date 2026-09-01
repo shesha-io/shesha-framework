@@ -118,6 +118,7 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
   const {
     designerWidth = DEFAULT_OPTIONS.designerWidth,
     containerWidth,
+    currentZoom,
   } = params;
 
   const windowWidth = window.innerWidth;
@@ -131,6 +132,10 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
   } else {
     canvasWidth = parseFloat(designerWidth);
   }
+
+  // A pane measuring zero cannot be measured yet - a hidden document tab, a collapsed panel, a
+  // frame mid-layout - and fitting the canvas into nothing pins the zoom at the minimum.
+  if (!(containerWidth > 0) || !(canvasWidth > 0)) return currentZoom;
 
   const optimalZoom = (containerWidth / canvasWidth) * 100;
   return Math.max(DEFAULT_OPTIONS.minZoom, Math.min(DEFAULT_OPTIONS.maxZoom, Math.floor(optimalZoom)));
