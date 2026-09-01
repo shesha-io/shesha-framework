@@ -29,6 +29,35 @@ export const useStyles = createStyles(({ css, cx }, model: Pick<ITablePagerBaseP
               ${isDefined(model.font?.size) ? `font-size: ${model.font.size}px;` : ''}                
           }
       }
+
+      &.ant-pagination {
+          display: flex;
+          align-items: center;
+          flex-wrap: nowrap;
+          min-width: 0;
+          max-width: 100%;
+      }
+
+      .ant-pagination-total-text {
+          flex: 0 1 auto;
+          min-width: 0;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+      }
+
+      .ant-pagination-item,
+      .ant-pagination-prev,
+      .ant-pagination-next,
+      .ant-pagination-jump-prev,
+      .ant-pagination-jump-next {
+          flex: 0 0 auto;
+      }
+
+      .ant-pagination-item-link {
+          display: flex;
+          height: 100%;
+      }
   `);
 
   const dropdown = cx("sha-dropdown", css`
@@ -57,14 +86,19 @@ export const useStyles = createStyles(({ css, cx }, model: Pick<ITablePagerBaseP
       ${paddingStyles(model.stylingBoxJson)}
       display: flex;
       align-items: center;
-      flex-wrap: nowrap;
-      justify-content: center;
+      flex-wrap: wrap;
       height: 100%;
       align-self: center;
+      min-width: 0;
+      overflow: hidden;
   `);
 
   const pagerItemsNumber = cx("sha-pager-items-number", css`
       ${fontStyles(model.font)}
+      min-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
   `);
 
 
