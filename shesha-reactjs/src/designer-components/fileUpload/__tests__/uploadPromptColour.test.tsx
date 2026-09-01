@@ -48,4 +48,11 @@ describe('upload prompt colour', () => {
   it('lets a Custom style override the Font colour', () => {
     expect(promptColour({ color: 'rgb(1, 2, 3)' })).toBe('rgb(1, 2, 3)');
   });
+
+  /* A Custom style counts as provided whatever it sets, so gating the colour on "a style exists"
+     rather than "a colour is set" left the fallback overriding the Font colour again the moment any
+     other property was configured. */
+  it('keeps the Font colour when a Custom style sets something other than colour', () => {
+    expect(promptColour({ backgroundColor: 'rgb(9, 9, 9)' })).toBe(FONT_COLOUR);
+  });
 });
