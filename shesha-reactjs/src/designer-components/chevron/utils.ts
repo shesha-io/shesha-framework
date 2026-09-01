@@ -7,6 +7,7 @@ export const defaultStyles = (): IStyleValue => {
       type: 'Segoe UI',
       align: 'left',
       weight: '400',
+      size: 14,
     },
     dimensions: {
       width: 'auto',
