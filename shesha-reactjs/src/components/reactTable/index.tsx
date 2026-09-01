@@ -808,11 +808,11 @@ export const ReactTable = <TData extends ITableRowData = ITableRowData>({
 
                     if (anchored.isFixed && index > 0) {
                       // Shift is computed from headers (not rows) so it works before any data arrives.
-                      // The `totalColumns - 1` bound matches the body-side math in dataTable/utils.ts - keep them aligned.
+                      // Right offset = sum of the widths of the columns to the right; keep in sync with dataTable/utils.ts and newRowCell.
                       const headerColumns = headerGroup.headers.map((header) => ({ column: header }));
                       if (anchored.direction === 'right') {
                         const totalColumns = headerGroup.headers.length;
-                        rightColumn.shift = calculatePositionShift(headerColumns, index, totalColumns - 1)
+                        rightColumn.shift = calculatePositionShift(headerColumns, index + 1, totalColumns)
                           .reduce((acc, curr) => acc + curr, 0);
                         rightColumn.shadowPosition =
                           headerGroup.headers.length -

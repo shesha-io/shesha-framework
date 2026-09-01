@@ -18,6 +18,14 @@ describe('asNumber', () => {
     expect(asNumber(null)).toBeUndefined();
     expect(asNumber(undefined)).toBeUndefined();
   });
+
+  it('rejects booleans and arrays despite Number() coercing them', () => {
+    expect(asNumber(true)).toBeUndefined();
+    expect(asNumber(false)).toBeUndefined();
+    expect(asNumber([])).toBeUndefined();
+    expect(asNumber([5])).toBeUndefined();
+    expect(asNumber({})).toBeUndefined();
+  });
 });
 
 describe('adjustWidth', () => {

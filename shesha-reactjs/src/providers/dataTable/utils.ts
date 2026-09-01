@@ -287,11 +287,17 @@ export const prepareColumn = (
   if (isActionColumnProps(column)) {
     const { icon, actionConfiguration } = column;
 
-    // An icon-only column defaults to a strict icon width instead of MIN_COLUMN_WIDTH
+    // An icon-only column defaults to a strict icon width instead of MIN_COLUMN_WIDTH.
+    // A width configured in the designer or saved by the user (resize) always wins over the default.
     const hasConfiguredWidth = isDefined(column.minWidth) || isDefined(column.maxWidth);
+    const hasUserWidth = isDefined(userColumn?.width);
     const actionColumn: ITableActionColumn = {
       ...baseProps,
-      ...(hasConfiguredWidth ? {} : { minWidth: DEFAULT_ACTION_COLUMN_WIDTH, maxWidth: DEFAULT_ACTION_COLUMN_WIDTH }),
+      ...(hasConfiguredWidth
+        ? {}
+        : hasUserWidth
+          ? { minWidth: DEFAULT_ACTION_COLUMN_WIDTH }
+          : { minWidth: DEFAULT_ACTION_COLUMN_WIDTH, maxWidth: DEFAULT_ACTION_COLUMN_WIDTH }),
       icon,
       actionConfiguration,
     };
@@ -480,11 +486,17 @@ export const prepareTableColumn = (column: IConfigurableColumnsProps, repoColOve
   if (isActionColumnProps(column)) {
     const { icon, actionConfiguration } = column;
 
-    // An icon-only column defaults to a strict icon width instead of MIN_COLUMN_WIDTH
+    // An icon-only column defaults to a strict icon width instead of MIN_COLUMN_WIDTH.
+    // A width configured in the designer or saved by the user (resize) always wins over the default.
     const hasConfiguredWidth = isDefined(column.minWidth) || isDefined(column.maxWidth);
+    const hasUserWidth = isDefined(userColumn?.width);
     const actionColumn: ITableActionColumn = {
       ...baseProps,
-      ...(hasConfiguredWidth ? {} : { minWidth: DEFAULT_ACTION_COLUMN_WIDTH, maxWidth: DEFAULT_ACTION_COLUMN_WIDTH }),
+      ...(hasConfiguredWidth
+        ? {}
+        : hasUserWidth
+          ? { minWidth: DEFAULT_ACTION_COLUMN_WIDTH }
+          : { minWidth: DEFAULT_ACTION_COLUMN_WIDTH, maxWidth: DEFAULT_ACTION_COLUMN_WIDTH }),
       icon,
       actionConfiguration,
     };

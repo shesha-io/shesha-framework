@@ -28,6 +28,7 @@ export const ColumnsEditorModal: FC<IColumnsEditorModal> = ({ onChange, value, v
   const [startedEmpty, setStartedEmpty] = useState(false);
   const [localValue, setLocalValue] = useState<ColumnsItemProps[]>(deepCopyViaJson(value) ?? []);
   const [prevVisible, setPrevVisible] = useState(visible);
+  const [hasSeededDefaults, setHasSeededDefaults] = useState(false);
 
   // Re-seed the draft from the live model on every open; edits stay local until OK
   if (visible !== prevVisible) {
@@ -35,17 +36,20 @@ export const ColumnsEditorModal: FC<IColumnsEditorModal> = ({ onChange, value, v
     if (visible) {
       setLocalValue(deepCopyViaJson(value) ?? []);
       setStartedEmpty(false);
+      setHasSeededDefaults(false);
     }
   }
 
-  // Prepopulate the draft with default columns when the modal opens on an empty entity-backed table
+  // Prepopulate the draft with default columns when the modal opens on an empty entity-backed table.
+  // Seeds at most once per opening so clearing the draft doesn't repopulate it.
   useEffect(() => {
-    if (visible && isEntitySource && metadata && (!value || value.length === 0)) {
+    if (visible && !hasSeededDefaults && isEntitySource && metadata && (!value || value.length === 0) && localValue.length === 0) {
+      setHasSeededDefaults(true);
       const loadDefaultColumns = async (): Promise<void> => {
         try {
           const defaultColumns = await calculateDefaultColumns(metadata);
-          if (defaultColumns.length > 0 && (localValue.length === 0)) {
-            setLocalValue(defaultColumns);
+          if (defaultColumns.length > 0) {
+            setLocalValue((current) => (current.length === 0 ? defaultColumns : current));
             setStartedEmpty(true);
           }
         } catch (error) {
@@ -58,7 +62,7 @@ export const ColumnsEditorModal: FC<IColumnsEditorModal> = ({ onChange, value, v
         throw error;
       });
     }
-  }, [metadata, visible, isEntitySource, value, localValue]);
+  }, [metadata, visible, isEntitySource, value, localValue, hasSeededDefaults]);
 
   const onOk = (): void => {
     onChange?.(deepCopyViaJson(localValue)); // make copy of localValue to re-render table

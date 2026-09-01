@@ -21,8 +21,9 @@ describe('calculatePositionShift', () => {
     expect(shift).toBe(0);
   });
 
-  it('excludes the last column when end = length - 1 (matches the anchored shift math)', () => {
+  it('returns the columns to the right of a right-anchored column', () => {
     const row = [col(100), col(200), col(300)];
-    expect(calculatePositionShift(row, 1, row.length - 1)).toEqual([200]);
+    expect(calculatePositionShift(row, 2, row.length)).toEqual([300]);
+    expect(calculatePositionShift(row, 1, row.length)).toEqual([200, 300]);
   });
 });
