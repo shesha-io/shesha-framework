@@ -14,7 +14,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
       .addSearchableTabs({ propertyName: 'settingsTabs', parentId: 'root', label: 'Settings', hideLabel: true, labelAlign: 'right', size: 'small',
         tabs: [
           { key: 'common', title: 'Common', id: commonTabId, components: fbf(commonTabId)
-            .addSettingsInput({ inputType: 'textField', propertyName: 'componentName', label: 'Component Name', size: 'small', jsSetting: true })
+            .addSettingsInput({ inputType: 'textField', propertyName: 'componentName', label: 'Component Name', size: 'small' })
             .toJson(),
           },
           { key: 'events', title: 'Events', id: eventsTabId, components: [...fbf(eventsTabId).stdEventHandlers(['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave']).toJson()] },
