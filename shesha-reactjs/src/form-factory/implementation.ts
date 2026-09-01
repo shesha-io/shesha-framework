@@ -206,6 +206,8 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
       isDynamic: props.isDynamic === undefined ? true : props.isDynamic,
       header: props.header ?? { id: nanoid(), components: [] },
       content: props.content ?? { id: nanoid(), components: [] },
+      desktop: { ...props.desktop, stylingBoxJson: { _type: 'styleBox', paddingBottom: 0, paddingLeft: 0, paddingRight: 0, paddingTop: 0, ...props.desktop?.stylingBoxJson } },
+      stylingBoxJson: { _type: 'styleBox', paddingBottom: 0, paddingLeft: 0, paddingRight: 0, paddingTop: 0, ...props.stylingBoxJson },
     };
 
     // update header id and parentId for nested components
@@ -293,21 +295,21 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
       visibleJs,
     };
 
-    return this._addProperty(fixedProps, 'collapsiblePanel');
+    return this.addCollapsiblePanel(fixedProps);
   };
 
   stdContainer = (components: (fbf: FormBuilder) => FormBuilder, visibleJs?: string | undefined): FormBuilder => {
     const containerId = nanoid();
     const fbf = new FormBuilderImplementation(this.componentDefinitions, containerId) as FormBuilder;
     const fixedProps: FluentSettings<IContainerComponentProps> = { id: containerId, components: components(fbf).toJson(), visibleJs };
-    return this._addProperty(fixedProps, 'container');
+    return this.addContainer(fixedProps);
   };
 
   stdContainerChecker = (components: (fbf: FormBuilder) => FormBuilder, visibleJs?: string | undefined): FormBuilder => {
     const containerId = nanoid();
     const fbf = new FormBuilderImplementation(this.componentDefinitions, containerId) as FormBuilder;
     const fixedProps: FluentSettings<IContainerCheckerComponentProps> = { id: containerId, components: components(fbf).toJson(), visibleJs };
-    return this._addProperty(fixedProps, 'containerChecker');
+    return this.addContainerChecker(fixedProps);
   };
 
   stdEventHandler = (

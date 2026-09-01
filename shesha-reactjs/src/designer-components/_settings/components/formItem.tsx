@@ -83,7 +83,7 @@ const FormItem: FC<ISettingsFormItemProps> = (props) => {
         type: '',
         id: '',
         description: labelTooltip,
-        validate: { required },
+        validate: { required: required === true && valueInfo?.state !== 'usedDefault' },
         validationDependencies,
         hidden,
         layout,
