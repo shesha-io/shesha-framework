@@ -20,10 +20,10 @@ export const useStyles = createStyles(({ css, cx }, model: Pick<ITablePagerBaseP
               align-items: center;
           }
           .ant-pagination-item-ellipsis {
-              position: relative;
+              width: max-content;
           }
           .ant-pagination-item-link-icon{
-          position: absolute;
+            position: absolute;
           }
           .ant-pagination-next button {
               ${isDefined(model.font?.size) ? `font-size: ${model.font.size}px;` : ''}                
