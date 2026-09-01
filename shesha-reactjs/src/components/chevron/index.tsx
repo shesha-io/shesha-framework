@@ -10,7 +10,7 @@ import { useStyles } from "./styles";
 import { fadeColor } from "../refListSelectorDisplay/provider/utils";
 
 export const ChevronControl: FC<IChevronControlProps> = (props) => {
-  const { value, activeColor, showIcons, colorSource } = props;
+  const { value, activeColor, showIcons, colorSource, onChange, readOnly } = props;
   const { items: refListItems } = useRefListItemGroupConfigurator();
   // Render from the reference list held by the provider rather than the saved snapshot,
   // so the designer, preview and runtime cannot drift apart.
@@ -35,28 +35,36 @@ export const ChevronControl: FC<IChevronControlProps> = (props) => {
     }
   }, [activeColor, theme.application?.primaryColor]);
 
+  // The item configurator stores the per-step visibility as `hidden`, so that is what a step is
+  // filtered on. Reading `visible` never worked: the configurator's editor seeds it to `true`,
+  // so every step rendered regardless of the Hide switch.
+  const visibleItems = useMemo(() => items.filter((item) => item.hidden !== true), [items]);
+
+  const selectItem = React.useCallback((itemValue: number): void => {
+    if (readOnly === true) return;
+    onChange?.(itemValue);
+  }, [onChange, readOnly]);
+
   const renderButton = React.useCallback((itemProps: IChevronButton, uuid: string): ReactNode => {
     const color = getColor(colorSource ?? 'primary', itemProps.color);
-    // The item configurator stores the per-step visibility as `hidden`, so that is what a step is
-    // filtered on. Reading `visible` never worked: the configurator's editor seeds it to `true`,
-    // so every step rendered regardless of the Hide switch.
-    return itemProps.hidden !== true
-      ? (
-        <ConfigurableButton
-          key={uuid}
-          {...itemProps}
-          icon={showIcons === true ? itemProps.icon : undefined}
-          buttonType="default"
-          label={itemProps.item}
-          className={classNames(styles.chevronButton, { [styles.chevronButtonActive]: itemProps.itemValue === value })}
-          font={props.font}
-          background={{ type: 'color', color: itemProps.itemValue === value ? color : fadeColor(color, 70) }}
-        />
-      )
-      : undefined;
-  }, [colorSource, getColor, props.font, showIcons, styles.chevronButton, styles.chevronButtonActive, value]);
+    return (
+      <ConfigurableButton
+        key={uuid}
+        {...itemProps}
+        icon={showIcons === true ? itemProps.icon : undefined}
+        buttonType="default"
+        label={itemProps.item}
+        className={classNames(styles.chevronButton, { [styles.chevronButtonActive]: itemProps.itemValue === value })}
+        font={props.font}
+        background={{ type: 'color', color: itemProps.itemValue === value ? color : fadeColor(color, 70) }}
+        // Clicking a step must set the bound property. `onBeforeClick` runs in addition to the
+        // step's own action, so the Events configuration keeps working.
+        onBeforeClick={() => selectItem(itemProps.itemValue)}
+      />
+    );
+  }, [colorSource, getColor, props.font, selectItem, showIcons, styles.chevronButton, styles.chevronButtonActive, value]);
 
-  const buttons = useMemo(() => items.map((item) => renderButton(item, item.id)), [items, renderButton]);
+  const buttons = useMemo(() => visibleItems.map((item) => renderButton(item, item.id)), [visibleItems, renderButton]);
 
   const updateArrows = React.useCallback((stages: HTMLDivElement): void => {
     setShowLeftArrow(stages.scrollLeft > 0);

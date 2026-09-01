@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { act, render } from '@testing-library/react';
 import { ChevronControl } from '..';
 import { RefListGroupItemProps } from '@/components/refListSelectorDisplay/provider/models';
 import { IChevronProps } from '../models';
@@ -14,7 +14,9 @@ vi.mock('@/components/refListSelectorDisplay/provider', () => ({
 }));
 vi.mock('@/providers/theme', () => ({ useTheme: () => ({ theme: { application: { primaryColor: '#1890ff' } } }) }));
 vi.mock('@/designer-components/button/configurableButton', () => ({
-  default: (props: { label?: string }) => <button type="button">{props.label}</button>,
+  default: (props: { label?: string; onBeforeClick?: () => void }) => (
+    <button type="button" onClick={() => props.onBeforeClick?.()}>{props.label}</button>
+  ),
 }));
 
 const model = { id: 'c1', type: 'chevron', propertyName: 'gender' } as IChevronProps;
@@ -25,5 +27,27 @@ describe('ChevronControl', () => {
   it('does not render a hidden step', () => {
     render(<ChevronControl {...model} value={1} />);
     expect(steps()).toEqual(['Male', 'Other']);
+  });
+
+  it('writes the clicked step back to the bound property', () => {
+    const onChange = vi.fn();
+    render(<ChevronControl {...model} value={1} onChange={onChange} />);
+
+    act(() => {
+      Array.from(document.querySelectorAll('button')).find((b) => b.textContent === 'Other')!.click();
+    });
+
+    expect(onChange).toHaveBeenCalledWith(3);
+  });
+
+  it('does not write back when read only', () => {
+    const onChange = vi.fn();
+    render(<ChevronControl {...model} readOnly value={1} onChange={onChange} />);
+
+    act(() => {
+      Array.from(document.querySelectorAll('button')).find((b) => b.textContent === 'Other')!.click();
+    });
+
+    expect(onChange).not.toHaveBeenCalled();
   });
 });
