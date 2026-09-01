@@ -34,7 +34,7 @@ import { RowDragHandle, SortableRow, TableRow } from './tableRow';
 import ConditionalWrap from '@/components/conditionalWrapper';
 import { IndeterminateCheckbox } from './indeterminateCheckbox';
 import { getPlainValue } from '@/utils';
-import { getColumnAnchored } from '@/utils/datatable';
+import { calculatePositionShift, getColumnAnchored } from '@/utils/datatable';
 import NewTableRowEditor from './newTableRowEditor';
 import { ItemInterface, ReactSortable } from 'react-sortablejs';
 import { IConfigurableActionConfiguration, useConfigurableActionDispatcher, useDataTableStore, useShaFormInstanceOrUndefined } from '@/providers';
@@ -807,28 +807,21 @@ export const ReactTable = <TData extends ITableRowData = ITableRowData>({
                     let rightColumn: IAnchoredColumnProps = { shift: 0, shadowPosition: 0 };
 
                     if (anchored.isFixed && index > 0) {
+                      // Shift is computed from headers (not rows) so it works before any data arrives.
+                      // The `totalColumns - 1` bound matches the body-side math in dataTable/utils.ts - keep them aligned.
+                      const headerColumns = headerGroup.headers.map((header) => ({ column: header }));
                       if (anchored.direction === 'right') {
                         const totalColumns = headerGroup.headers.length;
-                        rightColumn.shift = (
-                          rows[0]?.cells.slice(index, totalColumns - 1).map((col) => {
-                            const isLessThanMinWidth = isDefined(col.column.minWidth) && (col.column.width as number) < col.column.minWidth;
-
-                            return isLessThanMinWidth ? col.column.minWidth : col.column.width;
-                          }) as Array<number>
-                        ).reduce((acc, curr) => (acc as number) + curr, 0);
+                        rightColumn.shift = calculatePositionShift(headerColumns, index, totalColumns - 1)
+                          .reduce((acc, curr) => acc + curr, 0);
                         rightColumn.shadowPosition =
                           headerGroup.headers.length -
                           headerGroup.headers.filter(
                             (col) => getColumnAnchored(col.anchored).direction === 'right',
                           ).length;
                       } else if (anchored.direction === 'left') {
-                        leftColumn.shift = (
-                          rows[0]?.cells.slice(0, index).map((col) => {
-                            const isLessThanMinWidth = isDefined(col.column.minWidth) && (col.column.width as number) < col.column.minWidth;
-
-                            return isLessThanMinWidth ? col.column.minWidth : col.column.width;
-                          }) as Array<number>
-                        ).reduce((acc, curr) => (acc as number) + curr, 0);
+                        leftColumn.shift = calculatePositionShift(headerColumns, 0, index)
+                          .reduce((acc, curr) => acc + curr, 0);
 
                         leftColumn.shadowPosition =
                           headerGroup.headers.filter(

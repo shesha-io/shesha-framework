@@ -25,6 +25,7 @@ export const DEFAULT_PAGE_SIZE: number = 10;
 export const DEFAULT_PAGE_SIZE_OPTIONS = [5, DEFAULT_PAGE_SIZE, 20, 30, 40, 50, 100];
 
 export const MIN_COLUMN_WIDTH = 150;
+export const DEFAULT_ACTION_COLUMN_WIDTH = 35;
 
 export interface ITableColumnUserSettings {
   id: string;

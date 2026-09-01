@@ -9,7 +9,7 @@ import {
   isRendererColumnProps,
 } from '@/providers/datatableColumnsConfigurator/models';
 import { camelcaseDotNotation, firstNonEmptyStringOrUndefined } from '@/utils/string';
-import { IDataTableStateContext, IDataTableUserConfig, MIN_COLUMN_WIDTH } from './contexts';
+import { DEFAULT_ACTION_COLUMN_WIDTH, IDataTableStateContext, IDataTableUserConfig, MIN_COLUMN_WIDTH } from './contexts';
 import {
   ColumnSorting,
   DataTableColumnDto,
@@ -287,8 +287,11 @@ export const prepareColumn = (
   if (isActionColumnProps(column)) {
     const { icon, actionConfiguration } = column;
 
+    // An icon-only column defaults to a strict icon width instead of MIN_COLUMN_WIDTH
+    const hasConfiguredWidth = isDefined(column.minWidth) || isDefined(column.maxWidth);
     const actionColumn: ITableActionColumn = {
       ...baseProps,
+      ...(hasConfiguredWidth ? {} : { minWidth: DEFAULT_ACTION_COLUMN_WIDTH, maxWidth: DEFAULT_ACTION_COLUMN_WIDTH }),
       icon,
       actionConfiguration,
     };
@@ -477,8 +480,11 @@ export const prepareTableColumn = (column: IConfigurableColumnsProps, repoColOve
   if (isActionColumnProps(column)) {
     const { icon, actionConfiguration } = column;
 
+    // An icon-only column defaults to a strict icon width instead of MIN_COLUMN_WIDTH
+    const hasConfiguredWidth = isDefined(column.minWidth) || isDefined(column.maxWidth);
     const actionColumn: ITableActionColumn = {
       ...baseProps,
+      ...(hasConfiguredWidth ? {} : { minWidth: DEFAULT_ACTION_COLUMN_WIDTH, maxWidth: DEFAULT_ACTION_COLUMN_WIDTH }),
       icon,
       actionConfiguration,
     };

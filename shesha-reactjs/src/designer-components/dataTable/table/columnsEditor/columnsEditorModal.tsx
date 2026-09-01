@@ -26,19 +26,26 @@ export const ColumnsEditorModal: FC<IColumnsEditorModal> = ({ onChange, value, v
   const isEntitySource = dataTableStore?.getRepository().repositoryType === BackendRepositoryType;
 
   const [startedEmpty, setStartedEmpty] = useState(false);
-  const [prevValue, setPrevValue] = useState<ColumnsItemProps[]>(deepCopyViaJson(value) ?? []);
   const [localValue, setLocalValue] = useState<ColumnsItemProps[]>(deepCopyViaJson(value) ?? []);
+  const [prevVisible, setPrevVisible] = useState(visible);
 
-  // Prepopulate with default columns when modal opens if items are empty and we're in a DataTable context
+  // Re-seed the draft from the live model on every open; edits stay local until OK
+  if (visible !== prevVisible) {
+    setPrevVisible(visible);
+    if (visible) {
+      setLocalValue(deepCopyViaJson(value) ?? []);
+      setStartedEmpty(false);
+    }
+  }
+
+  // Prepopulate the draft with default columns when the modal opens on an empty entity-backed table
   useEffect(() => {
-    if (visible && dataTableStore && isEntitySource && metadata && (!value || value.length === 0)) {
+    if (visible && isEntitySource && metadata && (!value || value.length === 0)) {
       const loadDefaultColumns = async (): Promise<void> => {
         try {
           const defaultColumns = await calculateDefaultColumns(metadata);
           if (defaultColumns.length > 0 && (localValue.length === 0)) {
-            setPrevValue(localValue);
             setLocalValue(defaultColumns);
-            onChange?.(defaultColumns);
             setStartedEmpty(true);
           }
         } catch (error) {
@@ -51,7 +58,7 @@ export const ColumnsEditorModal: FC<IColumnsEditorModal> = ({ onChange, value, v
         throw error;
       });
     }
-  }, [metadata, visible, onChange, isEntitySource, dataTableStore, value, localValue]);
+  }, [metadata, visible, isEntitySource, value, localValue]);
 
   const onOk = (): void => {
     onChange?.(deepCopyViaJson(localValue)); // make copy of localValue to re-render table
@@ -63,11 +70,6 @@ export const ColumnsEditorModal: FC<IColumnsEditorModal> = ({ onChange, value, v
 
   const onCancel = (): void => {
     hideModal();
-    setLocalValue(deepCopyViaJson(prevValue));
-    onChange?.(deepCopyViaJson(prevValue));
-    if (prevValue.length === 0) {
-      setStartedEmpty(false);
-    }
   };
 
   return (
