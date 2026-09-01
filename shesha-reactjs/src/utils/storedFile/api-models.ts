@@ -4,6 +4,12 @@ import { IEntityTypeIdentifier } from "../../providers/sheshaApplication/publicA
 export type DownloadFilePayload = {
   id: string;
   versionNo?: number | undefined;
+  /**
+   * Fetch the bytes without recording a download against the current user. The endpoint marks the
+   * file downloaded by default, which is right for a save-to-disk and wrong for anything that only
+   * reads the file to put it on screen — a preview, a background, a thumbnail source.
+   */
+  skipMarkDownload?: boolean | undefined;
 };
 
 export type DownloadZipByIdsPayload = {

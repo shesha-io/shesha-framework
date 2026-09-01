@@ -37,12 +37,12 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                     .stdDimensionsPanel()
                     .stdMarginPaddingPanel()
                     .stdCollapsiblePanel('Header Style', (f) => f
-                      .stdFontPanel('headerStyles.font')
+                      .stdFontPanel(undefined, 'headerStyles.font')
                       .stdDimensionsPanel('headerStyles.dimensions', ['width', 'minWidth', 'maxWidth'])
                       .stdBorderPanel(removeStyleRouter !== true, 'headerStyles.border', 'radius')
                       .stdBackgroundPanel(removeStyleRouter !== true, 'headerStyles.background')
                       .stdMarginPaddingPanel('headerStyles.stylingBoxJson'),
-                    // .stdCustomStylePanel('headerStyles.style'),
+                    // .stdCustomStylePanel(undefined, 'headerStyles.style'),
                     true,
                     )
                     .toJson()],
@@ -79,12 +79,12 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   .stdMarginPaddingPanel()
                   .stdCustomStylePanel()
                   .stdCollapsiblePanel('Header Style', (f) => f
-                    .stdFontPanel('headerStyles.font')
+                    .stdFontPanel(undefined, 'headerStyles.font')
                     .stdDimensionsPanel('headerStyles.dimensions', ['width', 'minWidth', 'maxWidth'])
                     .stdBorderPanel(removeStyleRouter !== true, 'headerStyles.border', 'radius')
                     .stdBackgroundPanel(removeStyleRouter !== true, 'headerStyles.background')
                     .stdMarginPaddingPanel('headerStyles.stylingBoxJson'),
-                  // .stdCustomStylePanel('headerStyles.style'),
+                  // .stdCustomStylePanel(undefined, 'headerStyles.style'),
                   true,
                   )
                   .toJson(),

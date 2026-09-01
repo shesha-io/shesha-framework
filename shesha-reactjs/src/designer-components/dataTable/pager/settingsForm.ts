@@ -21,7 +21,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
               .addPropertyRouter({ id: styleRouterId, componentName: 'propertyRouter2', label: 'Property router2', labelAlign: 'right',
                 propertyRouteName: removeStyleRouter === true ? '' : { _mode: "code", _code: "return contexts.canvasContext?.designerDevice || 'desktop';", _value: "" },
                 components: fbf(styleRouterId)
-                  .stdFontPanel(undefined, ['align'])
+                  .stdFontPanel(undefined, undefined, ['align'])
                   .stdMarginPaddingPanel()
                   .addSettingsInput({ inputType: 'codeEditor', propertyName: 'style', label: 'Style', description: 'A script that returns the style of the element as an object. This should conform to CSSProperties' })
                   .toJson(),

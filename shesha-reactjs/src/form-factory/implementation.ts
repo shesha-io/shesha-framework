@@ -74,6 +74,31 @@ const excludeInputs = <TInput extends { propertyName: string }>(inputs: TInput[]
   return inputs.filter((input) => !isExcluded(input.propertyName, exclude));
 };
 
+/**
+ * Expression for the settings the active device's Appearance tab edits — the slice a condition on a
+ * sibling setting has to read. An Appearance tab behind a property router stores one set per device,
+ * so the same setting lives at `data.desktop.x` there and at `data.x` without the router; a panel
+ * gated on one has to be told which, or its condition reads a property that is never there.
+ */
+export const deviceDataPath = (isResponsive?: boolean): string =>
+  isResponsive === true
+    /* Optional all the way down: executeScriptSync swallows a throw and returns undefined, which the
+       caller reads as "not visible", so an unbound `contexts` would hide the panel outright rather
+       than fall back to the device the router defaults to. */
+    ? 'data[`${contexts?.canvasContext?.designerDevice || "desktop"}`]'
+    : 'data';
+
+/**
+ * Prefixes a caller's condition with `device`, bound to the settings for the device being edited (see
+ * {@link deviceDataPath}). Lets a condition be written once — `return !!getSettingValue(device?.x)` —
+ * and hold whether or not the panel sits behind a property router, instead of the caller spelling the
+ * router's path out and being wrong in the other case.
+ */
+const withDeviceScope = (visibleJs: string | undefined, isResponsive?: boolean): string | undefined =>
+  isNullOrWhiteSpace(visibleJs)
+    ? visibleJs
+    : `const device = ${deviceDataPath(isResponsive)};\n${visibleJs}`;
+
 export class FormBuilderImplementation implements FormBuilder, StandardFormBuilderMethods<AllComponentsConfig> {
   addKeyInformationBar = (props: FluentSettings<IKeyInformationBarComponentProps>, meta?: IPropertyMetadata): FormBuilder => this._addProperty(props, 'KeyInformationBar', meta);
 
@@ -328,8 +353,8 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
     return this;
   };
 
-  stdFontPanel = (propertyName: string = 'font', exclude?: string[], panelTitle: string = 'Font'): FormBuilder => {
-    this.stdCollapsiblePanel(panelTitle, (f) => f.stdFontControls(propertyName, exclude, panelTitle, false));
+  stdFontPanel = (isResponsive?: boolean, propertyName: string = 'font', exclude?: string[], panelTitle: string = 'Font', visibleJs?: string): FormBuilder => {
+    this.stdCollapsiblePanel(panelTitle, (f) => f.stdFontControls(propertyName, exclude, panelTitle, false), false, withDeviceScope(visibleJs, isResponsive));
     return this;
   };
 
@@ -483,6 +508,9 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
   };
 
   stdBackgroundPanel = (isResponsive?: boolean, propertyName: string = 'background', exclude?: string[], panelTitle: string = 'Background'): FormBuilder => {
+    /* Not deviceDataPath: this reads `page.canvasContext`, which does not exist (IPageApi is state +
+       location), so it silently resolves to desktop on every device. Left as it is because changing
+       it changes which slice these conditions read on tablet and mobile — a fix of its own. */
     const dataPath = isResponsive === true ? 'data[`${page.canvasContext?.designerDevice || "desktop"}`]' : 'data';
     const keep = (propertyName: string): boolean => !isExcluded(propertyName, exclude);
     this.stdCollapsiblePanel(panelTitle, (f) => {
@@ -549,12 +577,12 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
     return this;
   };
 
-  stdCustomStylePanel = (propertyName: string = 'style', panelTitle: string = 'Custom Styles'): FormBuilder => {
+  stdCustomStylePanel = (isResponsive?: boolean, propertyName: string = 'style', panelTitle: string = 'Custom Styles', visibleJs?: string): FormBuilder => {
     this.stdCollapsiblePanel(panelTitle, (f) => f
       .addSettingsInput({
         inputType: 'codeEditor', propertyName: propertyName, hideLabel: false, label: 'Style',
         description: 'A script that returns the style of the element as an object. This should conform to CSSProperties',
-      }));
+      }), false, withDeviceScope(visibleJs, isResponsive));
     return this;
   };
 
@@ -576,10 +604,10 @@ export class FormBuilderImplementation implements FormBuilder, StandardFormBuild
           fbf.stdMarginPaddingPanel(undefined, panelTitle);
           break;
         case 'customStyle':
-          fbf.stdCustomStylePanel(undefined, panelTitle);
+          fbf.stdCustomStylePanel(removeStyleRouter !== true, undefined, panelTitle);
           break;
         case 'font':
-          fbf.stdFontPanel(undefined, exclude, panelTitle);
+          fbf.stdFontPanel(removeStyleRouter !== true, undefined, exclude, panelTitle);
           break;
         case 'dimensions':
           fbf.stdDimensionsPanel(undefined, exclude, panelTitle);

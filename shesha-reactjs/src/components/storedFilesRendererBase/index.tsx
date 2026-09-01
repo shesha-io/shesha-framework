@@ -37,6 +37,7 @@ import { isFileTypeAllowed } from '@/utils/fileValidation';
 import { ShaIcon, IconType } from '@/components/shaIcon';
 import { getFileExtension } from '@/utils/storedFile/utils';
 import { DownloadFileArgs, ReplaceFilePayload, StoredFileModel } from '@/utils/storedFile/models';
+import * as FileApiModels from '@/utils/storedFile/api-models';
 import { useHttpClient } from '@/providers/sheshaApplication/publicApi/http/hooks';
 import { ValidationErrors } from '../validationErrors';
 import { buildUrl } from '@/utils';
@@ -528,7 +529,15 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
     const fileId = file.id;
     setPreviewLoading(true);
-    const fullImageDownloadUrl = buildUrl(STORED_FILE_URLS.DOWNLOAD_FILE, { id: fileId });
+    /* Reading the image to put it on screen is not the user downloading it. The endpoint records a
+       download unless told not to, and the record is what the Downloaded Files styling is resolved
+       from on the next load — so without this a preview marks the file on the server while the list
+       in front of the user still says otherwise, and the styling appears out of nowhere later. The
+       explicit Download action is the one that marks, and it applies the styling as it goes. */
+    const fullImageDownloadUrl = buildUrl<FileApiModels.DownloadFilePayload>(
+      STORED_FILE_URLS.DOWNLOAD_FILE,
+      { id: fileId, skipMarkDownload: true },
+    );
     fetchStoredFile(httpClient, fullImageDownloadUrl)
       .then(({ url: fullImageUrl, revoke }) => {
         // The preview may have moved to another file (or closed) while this was loading.

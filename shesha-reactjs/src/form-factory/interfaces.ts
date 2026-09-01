@@ -168,14 +168,21 @@ export type StandardFormBuilderMethods<TConfig extends Record<ComponentTypes, ob
   /** `events` is readonly so the shared `ALL_INPUT_EVENTS` constant can be passed directly. */
   stdEventHandlers(events: readonly StandardEventHandler[], valueType?: string | undefined, prefix?: string | undefined, prefixLabel?: string | undefined): FluentFormBuilder<TConfig>;
   stdFontControls(propertyName?: string, exclude?: string[], panelTitle?: string, showSeparator?: boolean): FluentFormBuilder<TConfig>;
-  stdFontPanel(propertyName?: string, exclude?: string[], panelTitle?: string): FluentFormBuilder<TConfig>;
+  /**
+   * `visibleJs` gates the whole panel. Set `isResponsive` when the panel sits behind a device
+   * property router — as `stdAppearancePanels` does — and write the condition against `device`, which
+   * is bound to the settings for the device being edited: `return !!getSettingValue(device?.x)`. The
+   * same condition then holds with or without the router, which a hand-written path cannot.
+   */
+  stdFontPanel(isResponsive?: boolean, propertyName?: string, exclude?: string[], panelTitle?: string, visibleJs?: string): FluentFormBuilder<TConfig>;
   stdLayoutPanel(isResponsive?: boolean, propertyName?: string, panelTitle?: string): FluentFormBuilder<TConfig>;
   stdDimensionsPanel(propertyName?: string, exclude?: string[], panelTitle?: string): FluentFormBuilder<TConfig>;
   stdBorderPanel(isResponsive?: boolean, propertyName?: string, exclude?: 'border' | 'radius' | undefined, panelTitle?: string): FluentFormBuilder<TConfig>;
   stdBackgroundPanel(isResponsive?: boolean, propertyName?: string, exclude?: string[], panelTitle?: string): FluentFormBuilder<TConfig>;
   stdShadowPanel(propertyName?: string, exclude?: string[], panelTitle?: string): FluentFormBuilder<TConfig>;
   stdMarginPaddingPanel(propertyName?: string, panelTitle?: string): FluentFormBuilder<TConfig>;
-  stdCustomStylePanel(propertyName?: string, panelTitle?: string): FluentFormBuilder<TConfig>;
+  /** `visibleJs` and `isResponsive` behave as they do on {@link StandardFormBuilderMethods.stdFontPanel}. */
+  stdCustomStylePanel(isResponsive?: boolean, propertyName?: string, panelTitle?: string, visibleJs?: string): FluentFormBuilder<TConfig>;
   stdAppearancePanels(appearancePanels: StandardAppearancePanelConfig[], removeStyleRouter?: boolean): FluentFormBuilder<TConfig>;
 };
 

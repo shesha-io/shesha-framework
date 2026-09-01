@@ -80,21 +80,21 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   propertyRouteName: removeStyleRouter === true ? '' : { _mode: "code", _code: "    return contexts.canvasContext?.designerDevice || 'desktop';", _value: "" },
                   components: [
                     ...fbf(commonStyleRouterId)
-                      .stdFontPanel('font', ['align'])
+                      .stdFontPanel(undefined, 'font', ['align'])
                       .stdDimensionsPanel('dimensions')
                       .stdBorderPanel(removeStyleRouter !== true, 'border')
                       .stdBackgroundPanel(removeStyleRouter !== true, 'background')
                       .stdShadowPanel('shadow')
                       .stdMarginPaddingPanel('stylingBoxJson')
-                      .stdCustomStylePanel('style')
+                      .stdCustomStylePanel(undefined, 'style')
                       .stdCollapsiblePanel('Checkbox Style', (f) => f
-                        .stdFontPanel('checkbox.font', ['align', 'type'], 'Check Mark')
+                        .stdFontPanel(undefined, 'checkbox.font', ['align', 'type'], 'Check Mark')
                         .stdDimensionsPanel('checkbox.dimensions')
                         .stdBorderPanel(removeStyleRouter !== true, 'checkbox.border', 'radius')
                         .stdBackgroundPanel(removeStyleRouter !== true, 'checkbox.background')
                         .stdShadowPanel('checkbox.shadow')
                         .stdMarginPaddingPanel('checkbox.stylingBoxJson')
-                        .stdCustomStylePanel('checkbox.style'),
+                        .stdCustomStylePanel(undefined, 'checkbox.style'),
                       true,
                       )
                       .toJson()],
