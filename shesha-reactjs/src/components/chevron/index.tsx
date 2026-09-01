@@ -37,7 +37,10 @@ export const ChevronControl: FC<IChevronControlProps> = (props) => {
 
   const renderButton = React.useCallback((itemProps: IChevronButton, uuid: string): ReactNode => {
     const color = getColor(colorSource ?? 'primary', itemProps.color);
-    return itemProps.visible !== false
+    // The item configurator stores the per-step visibility as `hidden`, so that is what a step is
+    // filtered on. Reading `visible` never worked: the configurator's editor seeds it to `true`,
+    // so every step rendered regardless of the Hide switch.
+    return itemProps.hidden !== true
       ? (
         <ConfigurableButton
           key={uuid}
