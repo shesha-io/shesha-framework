@@ -1,5 +1,5 @@
 import { Modal } from 'antd';
-import { FC, useState } from 'react';
+import { FC, useRef, useState } from 'react';
 import { useDeepCompareEffect } from 'react-use';
 import RefListItemGroupConfigurator from './configurator';
 import RefListItemsContainer from './refListItemsContainer';
@@ -47,7 +47,16 @@ export const TableViewSelectorSettingsModalInner: FC<ITableViewSelectorSettingsM
   hideModal,
 }) => {
   const { items, readOnly } = useRefListItemGroupConfigurator();
+
+  // Only actual changes are written back. Reporting the items the host already holds queued a
+  // no-op save on every open of the settings panel and, while the reference list was still being
+  // read, briefly wrote an empty list over the configured one.
+  const hasReportedInitialItems = useRef(false);
   useDeepCompareEffect(() => {
+    if (!hasReportedInitialItems.current) {
+      hasReportedInitialItems.current = true;
+      return;
+    }
     onChange?.(items);
   }, [items]);
 

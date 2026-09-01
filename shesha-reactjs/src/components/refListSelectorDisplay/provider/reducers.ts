@@ -1,7 +1,7 @@
 import {
   REF_LIST_ITEM_GROUP_CONTEXT_INITIAL_STATE,
 } from './contexts';
-import { isIRefListItemGroup, RefListGroupItemProps } from '@/components/refListSelectorDisplay/provider/models';
+import { IRefListItemGroup, isIRefListItemGroup, RefListGroupItemProps } from '@/components/refListSelectorDisplay/provider/models';
 import { getItemPositionById } from '@/components/refListSelectorDisplay/provider/utils';
 import { createReducer } from '@reduxjs/toolkit';
 import { setItems, selectItemAction, updateItemAction, updateChildItemsAction, storeSettingsAction } from './actions';
@@ -10,8 +10,8 @@ import { isDefined } from '@/utils/nullables';
 export const RefListItemGroupReducer = createReducer(REF_LIST_ITEM_GROUP_CONTEXT_INITIAL_STATE, (builder) => {
   builder
     .addCase(setItems, (state, { payload }) => {
-      // Preserve any per-item configuration (Hide/Events) the user already set, matched by itemValue,
-      // so re-fetching the reference list does not wipe saved settings (the cause of #5125).
+      // Preserve the per-item configuration the user already set, matched by itemValue, so
+      // re-reading the reference list does not wipe saved settings (the cause of #5125).
       const priorByValue = new Map<number, RefListGroupItemProps>();
       const indexPriorItems = (items: RefListGroupItemProps[]): void => {
         items.forEach((prior) => {
@@ -28,13 +28,17 @@ export const RefListItemGroupReducer = createReducer(REF_LIST_ITEM_GROUP_CONTEXT
         ...state,
         items: payload.map<RefListGroupItemProps>((item) => {
           const prior = priorByValue.get(item.itemValue);
+          // Keep every setting the user configured for the item and refresh only the data the
+          // reference list owns. Listing the preserved properties one by one silently dropped the
+          // rest of the item configuration on each re-read. `childItems` is not carried over: the
+          // reference list defines a flat set of items.
+          const { childItems: _childItems, ...priorSettings } = (prior ?? {}) as IRefListItemGroup;
           return {
+            ...priorSettings,
             ...item,
             item: item.item ?? undefined,
             color: item.color ?? undefined,
             icon: item.icon ?? undefined,
-            ...(isDefined(prior?.hidden) ? { hidden: prior.hidden } : {}),
-            ...(isDefined(prior?.actionConfiguration) ? { actionConfiguration: prior.actionConfiguration } : {}),
           };
         }),
       };
