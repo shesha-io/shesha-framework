@@ -6,12 +6,8 @@ import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
 import { jsonSafeParse } from '@/utils/object';
 
 /**
- * The complete background shape, as `card` and `drawer` define it.
- *
- * Every slot has to be present for the Appearance tab to offer inheritance on the compound
- * background inputs: the inheritance popover only renders for properties the default model actually
- * contains, so a bare `{ type, color }` leaves size/position/repeat/gradient/image with nothing to
- * inherit from and no inheritance state shown at all.
+ * The complete background shape, as `card` and `drawer` define it. Every slot must be present or the
+ * Appearance tab shows no inheritance state for the compound background inputs.
  */
 const BACKGROUND_DEFAULTS = (color: string): IBackgroundValue => ({
   type: 'color',
@@ -23,10 +19,7 @@ const BACKGROUND_DEFAULTS = (color: string): IBackgroundValue => ({
   url: '',
 });
 
-/**
- * A no-op shadow, present so the Shadow panel offers inheritance — an absent slot renders nothing
- * *and* shows no inheritance state. The zeroed values emit a shadow that is not visible.
- */
+/** Zeroed, so the Shadow panel offers inheritance without rendering a visible shadow. */
 const SHADOW_DEFAULTS = (): IShadowValue => ({
   offsetX: 0,
   offsetY: 0,
@@ -35,7 +28,7 @@ const SHADOW_DEFAULTS = (): IShadowValue => ({
   color: '#000',
 });
 
-/** Zeroed margin/padding, present for the same inheritance reason as `SHADOW_DEFAULTS`. */
+/** Zeroed margin/padding, present for the same inheritance reason. */
 const STYLING_BOX_DEFAULTS = (): StyleBoxValue => ({
   _type: 'styleBox',
   marginTop: '0',
@@ -49,18 +42,9 @@ const STYLING_BOX_DEFAULTS = (): StyleBoxValue => ({
 });
 
 /**
- * Appearance defaults for an unconfigured status tag.
- *
- * A single, flat style set — there is deliberately no nested second set and no container styles.
- * The component *is* the tag, so every Appearance input describes the tag itself; a wrapper set
- * would give the user two places to configure one visible thing, and a container border or
- * background would draw an empty-looking box around the status. `styles.ts` scopes these flat
- * properties onto the tag element, the same way the checkbox scopes its set onto the box.
- *
- * The colour-bearing slots are left empty so the Variant decides them: seeded, they are emitted at
- * `&&&&` and beat antd's variant rules, which is what the dropdown's migration 15 had to undo.
- * `border` omits `all` for the same reason — `borderLinesStyles` emits a border for any present
- * `all`, so even an empty one erases the Variant's border.
+ * A single flat style set describing the tag; `styles.ts` scopes it onto the tag element. Colour
+ * slots are left empty so the Variant decides them — seeded, they are emitted at `&&&&` and beat
+ * antd's variant rules. `border` omits `all` for the same reason.
  */
 export const defaultStyles = (): IStyleValue => {
   return {
@@ -91,26 +75,13 @@ export const defaultStyles = (): IStyleValue => {
   };
 };
 
-/**
- * The value the catch-all row is stored under.
- *
- * `mappings.default` had no code — it was matched by *failing* to match anything else. `values` has
- * no catch-all concept, so the row needs a value of its own to exist as an option; a sentinel is
- * used rather than a number so it can never collide with a real reference-list code.
- */
+/** Sentinel for the catch-all row, which had no code of its own. A string cannot collide with a real code. */
 export const DEFAULT_STATUS_VALUE = 'default';
 
 /**
- * The legacy Default Mappings JSON, as a Values script.
- *
- * Default Mappings was a code editor, so what the user wrote is source text, not data. It is moved
- * across as the body of the Values script rather than parsed into rows: parsing would discard
- * whatever the author actually wrote — comments, formatting, and the `override`/`text` distinction
- * the mapping shape carries — and hand them back a list they did not write. As a script it stays
- * theirs, and the inline editor stays empty.
- *
- * `mapping` is unwrapped to the bare array because that is the list the Values setting expects; a
- * table with no `mapping` is passed through whole so nothing is silently dropped.
+ * Default Mappings was a code editor, so the user's text is moved across as the Values script body
+ * rather than parsed into rows. `mapping` is unwrapped to the bare array the setting expects; a
+ * table without it is passed through whole.
  */
 export const mappingsToValuesSetting = (mappings: string | undefined): IPropertySetting<ILabelValue<number | string>[]> | undefined => {
   if (!isNotNullOrWhiteSpace(mappings)) return undefined;
@@ -129,14 +100,7 @@ export const mappingsToValuesSetting = (mappings: string | undefined): IProperty
   };
 };
 
-/**
- * The Values setting a status tag ships with, as a script rather than rows in the inline editor.
- *
- * The returned array is the mapping table 0.45 seeded into Default Mappings, in its original shape
- * (`code`/`text`/`color`/`override`) so it reads the same way it did there. Shipping it as a script
- * leaves the inline Values editor empty — a new component is not pre-filled with four rows the user
- * has to clear — while still showing the statuses out of the box.
- */
+/** The 0.45 Default Mappings table, shipped as a script so the inline Values editor starts empty. */
 export const defaultValuesSetting = (): IPropertySetting<ILabelValue<number | string>[]> => ({
   _mode: 'code',
   _code: `return [

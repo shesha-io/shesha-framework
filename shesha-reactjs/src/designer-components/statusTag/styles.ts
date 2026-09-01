@@ -6,13 +6,8 @@ import { CSSProperties } from 'react';
 import { IStatusTagComponentProps } from './model';
 
 /**
- * The colour classes antd may put on a tag (`ant-tag-red`, `ant-tag-success`, …).
- *
- * Declared locally rather than imported from `antd/es/theme/interface`, which is an internal path
- * with no compatibility guarantee. `@ant-design/colors` is not a substitute: its
- * `presetPrimaryColors` omits `pink` and adds `grey`, so it does not describe the tag classes antd
- * actually emits. Status colours are not preset colours but produce the same kind of class, and
- * `-inverse` variants render through the base colour class.
+ * The colour classes antd puts on a tag. Declared locally: `antd/es/theme/interface` is an internal
+ * path, and `@ant-design/colors` omits `pink` and adds `grey`, so neither matches what antd emits.
  */
 const TAG_COLOUR_CLASSES: readonly string[] = [
   'blue', 'purple', 'cyan', 'green', 'magenta', 'pink', 'red', 'orange', 'yellow', 'volcano',
@@ -21,16 +16,7 @@ const TAG_COLOUR_CLASSES: readonly string[] = [
 ];
 
 /**
- * Emits the status tag's single Appearance style set.
- *
- * Unlike the dropdown — which has two sets, one for the select box and a nested one for its tags —
- * the status tag has exactly one, and it targets the tag. The component *is* the tag, so the
- * bare-named model properties (`font`, `border`, `background`, …) are scoped onto the `.ant-tag`
- * descendant rather than applied to the wrapper, in the same way the checkbox scopes its flat set
- * onto the box element. Nothing here paints the container: a border or background on the wrapper
- * would draw an empty-looking box around the status.
- *
- * Only properties actually present in the model emit CSS, so anything left unconfigured keeps
+ * The single Appearance set, scoped onto the tag rather than the wrapper — the component *is* the
  * cascading from the theme.
  */
 export const useStyles = createStyles((
@@ -100,25 +86,15 @@ export const useStyles = createStyles((
   `;
 
   const statusTag = cx('sha-status-tag', css`
-      /* Auto height/width: the select hugs the tag it contains rather than taking the fixed antd
-         control height, so "auto" in Dimensions means the tag decides the size. An explicit value
-         is applied to the tag itself, below. */
+      /* Auto: the select hugs its tag rather than taking the fixed antd control height. */
       &&& {
         ${isDefined(model.dimensions?.width) && model.dimensions.width !== 'auto' ? '' : 'width: max-content;'}
         ${isDefined(model.dimensions?.height) && model.dimensions.height !== 'auto' ? '' : 'height: max-content;'}
       }
 
-      /* The visible box is the selector element, not the root. Cleared so the select frames
-         nothing — the tag is the only thing that should read as a box.
-
-         Centring the items is what keeps the tag centred in the space the select occupies: with
-         an explicit Dimensions height, or a row taller than the tag, the tag would otherwise sit at
-         the top. Padding is zeroed here so only the configured Margin & Padding positions the tag —
-         any left over from antd would offset it and read as mis-centred.
-
-         Font align is deliberately NOT applied here. The Appearance settings describe the tag, so
-         alignment belongs to the text inside it; setting it on this container instead slid the whole
-         tag along the row, which is a different thing entirely. */
+      /* The visible box is the selector, not the root — cleared so only the tag reads as a box, and
+         centred so the tag does not sit at the top of a taller row. Font align is deliberately not
+         applied here: it belongs to the text inside the tag, not to the tag's position in the row. */
       &.${prefixCls}-select .${prefixCls}-select-selector {
         background: transparent;
         border: none;
@@ -129,9 +105,6 @@ export const useStyles = createStyles((
         align-items: center;
       }
 
-      /* antd centres the selection by absolutely positioning it and offsetting it by half its own
-         height. That relies on a line-height the tag no longer has, so the offset lands slightly
-         off; a plain flex row centres it against the real height instead. */
       &&& .${prefixCls}-select-selection-wrap,
       &&& .${prefixCls}-select-selection-overflow {
         display: flex;
@@ -144,8 +117,7 @@ export const useStyles = createStyles((
          explicit Dimensions width would span the whole field rather than hugging its label — and
          any alignment set here would slide the tag along the row instead of aligning its text.
          Kept at the start so the tag sits where the field begins and sizes to its own content. */
-      /* The event/tooltip wrapper shrink-wraps its tag so the hover and click target is the tag,
-         not the full width of the field. */
+      /* Shrink-wrapped so the hover and click target is the tag, not the whole field. */
       &&& .sha-status-tag-wrapper {
         width: max-content;
         max-width: 100%;
@@ -156,10 +128,11 @@ export const useStyles = createStyles((
         justify-content: flex-start;
         align-items: center;
 
-        /* The read-only renderer sets an inline full width on this element, which would stretch
-           the wrapper above it back across the row. Overridden so it sizes to the tag. */
+        /* Overrides the inline full width the read-only renderer sets. */
         width: max-content;
         max-width: 100%;
+        /* The events are bound to an ancestor of this row, so without this they fire anywhere along
+           it rather than on the tag. */
         pointer-events: none;
       }
 
@@ -167,10 +140,8 @@ export const useStyles = createStyles((
         pointer-events: auto;
       }
 
-      /* In multi-select antd wraps each tag in a selection item carrying its own shaded background,
-         border and padding — which reads as a light box around the tag and its close icon. The tag
-         is the only thing that should be visible, so the wrapper is stripped back to a plain
-         container. Its margin is left alone: that is the gap between selections. */
+      /* antd's per-selection wrapper carries its own background, border and padding, which reads as
+         a box around the tag. Margin is left alone — that is the gap between selections. */
       &&& .${prefixCls}-select-selection-item {
         background: transparent;
         border: none;
@@ -178,13 +149,11 @@ export const useStyles = createStyles((
         height: auto;
         display: flex;
         align-items: center;
-        /* antd sets a line-height here to fake vertical centring for text; the tag is a flex box
-           with its own height, so an inherited line-height only skews it. */
+        /* antd fakes vertical centring with line-height, which only skews a flex tag. */
         line-height: normal;
       }
 
-      /* The close affordance lives in that wrapper and takes its own muted colour from antd.
-         Inherited instead, so it matches the tag text it belongs to. */
+      /* Inherited so the close icon matches its tag rather than antd's muted default. */
       &&& .${prefixCls}-select-selection-item-remove {
         color: inherit;
       }
