@@ -45,7 +45,10 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
           { key: 'common', title: 'Common', id: commonTabId, components: fbf(commonTabId)
             .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true }, jsSetting: true })
             .addLabelConfigurator({ propertyName: 'hideLabel', label: 'Label', hideLabel: true })
-            .stdPlaceholderDescriptionInputs()
+            /* Tooltip only — no Placeholder. The standard pair assumes a text input with empty space
+               to prompt into; this component's control is an upload trigger and a single file, which
+               have nowhere to show one, and nothing ever read the property. Same as the file list. */
+            .addSettingsInputRow({ inputs: [{ type: 'textArea', propertyName: 'description', label: 'Tooltip', jsSetting: true }] })
             .stdVisibleEditableInputs('full')
             .stdCollapsiblePanel('Display', (fb) => fb
               .addSettingsInputRow({ inputs: [

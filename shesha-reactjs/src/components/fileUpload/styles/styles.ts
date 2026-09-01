@@ -365,7 +365,12 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
       ` : ''}
 
       .ant-btn {
-        color: ${firstSet(color, token.colorPrimary)} !important;
+        /* Gated like commonTextStyles above, and for the same reason: with no caller style there is
+           no colour to state here, and stating one anyway — !important, so specificity could not
+           settle it — overrode the Font colour the component class puts on this very button. That is
+           why Font colour did nothing to the upload prompt. Unset, the button falls back to antd's
+           link colour, which is what it is. */
+        ${styleProvided ? `color: ${firstSet(color, token.colorPrimary)} !important;` : ''}
         ${commonTextStyles}
         justify-content: ${layout ? 'center' : justifyContentValue} !important;
         align-items: center;
