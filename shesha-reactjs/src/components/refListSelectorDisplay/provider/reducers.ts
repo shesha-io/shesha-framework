@@ -4,7 +4,7 @@ import {
 import { IRefListItemGroup, isIRefListItemGroup, RefListGroupItemProps } from '@/components/refListSelectorDisplay/provider/models';
 import { getItemPositionById } from '@/components/refListSelectorDisplay/provider/utils';
 import { createReducer } from '@reduxjs/toolkit';
-import { setItems, selectItemAction, updateItemAction, updateChildItemsAction, storeSettingsAction } from './actions';
+import { setItems, selectItemAction, updateItemAction, updateChildItemsAction, storeSettingsAction, syncConfiguredItemsAction } from './actions';
 import { isDefined } from '@/utils/nullables';
 
 export const RefListItemGroupReducer = createReducer(REF_LIST_ITEM_GROUP_CONTEXT_INITIAL_STATE, (builder) => {
@@ -40,6 +40,32 @@ export const RefListItemGroupReducer = createReducer(REF_LIST_ITEM_GROUP_CONTEXT
             color: item.color ?? undefined,
             icon: item.icon ?? undefined,
           };
+        }),
+      };
+    })
+    .addCase(syncConfiguredItemsAction, (state, { payload }) => {
+      // Adopt the configuration held by the host (the component model). The items are seeded into
+      // the reducer only once, so without this a setting saved in the designer - a step hidden, an
+      // action changed - was not reflected until the whole component was re-created.
+      // The provider dispatches this only when the incoming configuration actually differs, so
+      // rebuilding the items here cannot feed back into itself.
+      if (payload.length === 0) return state;
+
+      const configuredByValue = new Map<number, RefListGroupItemProps>();
+      payload.forEach((configured) => {
+        if (isDefined(configured.itemValue))
+          configuredByValue.set(configured.itemValue, configured);
+      });
+
+      return {
+        ...state,
+        items: state.items.map<RefListGroupItemProps>((item) => {
+          const configured = isDefined(item.itemValue) ? configuredByValue.get(item.itemValue) : undefined;
+          if (!isDefined(configured)) return item;
+
+          // The reference list owns the display data, the host owns the configuration.
+          const { childItems: _childItems, id: _id, item: _item, itemValue: _itemValue, color: _color, icon: _icon, ...settings } = configured as IRefListItemGroup;
+          return { ...item, ...settings };
         }),
       };
     })

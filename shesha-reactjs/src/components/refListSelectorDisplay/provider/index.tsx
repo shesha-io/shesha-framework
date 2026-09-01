@@ -21,6 +21,7 @@ import {
   selectItemAction,
   setItems,
   storeSettingsAction,
+  syncConfiguredItemsAction,
   updateChildItemsAction,
   updateItemAction,
 } from '@/components/refListSelectorDisplay/provider/actions';
@@ -78,6 +79,20 @@ const RefListSelectorDisplayProvider: FC<PropsWithChildren<IRefListItemGroupConf
       console.error('Failed to fetch reference list', error);
     });
   }, [getReferenceList, referenceList]);
+
+  // The items are seeded into the reducer only once, so a configuration saved by the host (the
+  // component model in the designer) has to be adopted explicitly - otherwise hiding a step or
+  // changing its action showed no effect until the component was re-created.
+  // The signature, rather than the array, drives the effect: the host rebuilds the array on every
+  // render, and the settings panel derives it from this state in the first place, so keying on the
+  // content is what stops the sync from feeding back into itself.
+  const configuredItemsSignature = JSON.stringify(props.items);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const configuredItems = useMemo(() => props.items, [configuredItemsSignature]);
+
+  useEffect(() => {
+    dispatch(syncConfiguredItemsAction(configuredItems));
+  }, [configuredItems]);
 
   const selectItem = useCallback((uid: string): void => {
     dispatch(selectItemAction(uid));
