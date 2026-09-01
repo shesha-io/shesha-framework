@@ -29,9 +29,6 @@ export interface IStatusLegacyRow extends IDefaultStatusMarker {
   override?: string | undefined;
 }
 
-/** Either shape, as they arrive mixed in one `values` array. */
-export type IStatusRow = IStatusValueRow & IStatusLegacyRow;
-
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 
