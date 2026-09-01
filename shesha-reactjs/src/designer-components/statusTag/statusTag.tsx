@@ -93,10 +93,14 @@ const StatusTagPlaceholder: FC<{ className: string; label: string; color?: strin
  *   at all, so On Click and On Mouse Move never reached the DOM.
  *
  * The wrapping element is always present, so the handlers have something to bind to whether or not
- * a Tooltip is configured; `display: contents` keeps it out of the layout so it cannot disturb the
- * tag alignment.
+ * a Tooltip is configured.
+ *
+ * `title` is only used where the component renders a tag itself — the placeholder and the
+ * mis-configuration notice. Resolved statuses do not pass one: each of those tags renders its own
+ * tooltip from its description, which the Factory pre-fills with the component Tooltip where the
+ * status has none, so the hover text stays per tag in multi-select.
  */
-const StatusTagWrapper: FC<PropsWithChildren<{ title: string | undefined; events: EventsObject }>> = ({ title, events, children }) => {
+const StatusTagWrapper: FC<PropsWithChildren<{ title?: string | undefined; events: EventsObject }>> = ({ title, events, children }) => {
   /* `inline-flex`, not `display: contents`: a contents box is not laid out, so antd Tooltip has no
      element to measure or anchor to and the tooltip never appears. Inline-flex shrink-wraps the tag
      instead of stretching across the row, which keeps the hover and click target on the tag rather
@@ -233,11 +237,31 @@ const StatusTagComponent: StatusTagComponentDefinition = {
             ? resolved.map(resolveOne)
             : resolveOne(resolved);
 
+          /* The hover text is per tag, not per component: every tag renders its own tooltip showing
+             its status description, and in multi-select each tag needs its own rather than one
+             shared across the row. So the component Tooltip is applied as the *fallback
+             description* on each option that has none, and the tags do the rest — a tag with its
+             own description keeps it, and a tag without one falls back to the component Tooltip.
+
+             This replaces wrapping the whole component in a single tooltip, which could only ever
+             be all-or-nothing: with three tags where one lacked a description, either that tag got
+             no hover text or all three got the same generic one. */
+          const tooltip = model.description;
+          const optionsWithTooltip: ILabelValue<number | string>[] = isNotNullOrWhiteSpace(tooltip)
+            ? options.map((option) => (isNotNullOrWhiteSpace(option.description)
+              ? option
+              : { ...option, description: tooltip }))
+            : options;
+
           return (
-            <StatusTagWrapper title={model.description} events={events}>
+            <StatusTagWrapper events={events}>
               <Dropdown
                 {...modelWithoutStyle}
-                values={options}
+                values={optionsWithTooltip}
+                /* Reference-list options are built inside `Dropdown` from the fetched items, out of
+                   reach of the mapping above, so the fallback is handed over for it to apply per
+                   option — same rule, applied where those options are made. */
+                {...(isNotNullOrWhiteSpace(tooltip) ? { fallbackDescription: tooltip } : {})}
                 className={styles.statusTag}
                 value={displayValue}
                 size={model.size}

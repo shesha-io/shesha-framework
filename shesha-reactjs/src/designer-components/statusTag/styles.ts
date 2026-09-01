@@ -144,10 +144,22 @@ export const useStyles = createStyles((
          explicit Dimensions width would span the whole field rather than hugging its label — and
          any alignment set here would slide the tag along the row instead of aligning its text.
          Kept at the start so the tag sits where the field begins and sizes to its own content. */
+      /* The event/tooltip wrapper shrink-wraps its tag so the hover and click target is the tag,
+         not the full width of the field. */
+      &&& .sha-status-tag-wrapper {
+        width: max-content;
+        max-width: 100%;
+      }
+
       &&&${tagWrapperSelector},
       &&& ${tagWrapperSelector} {
         justify-content: flex-start;
         align-items: center;
+
+        /* The read-only renderer sets an inline full width on this element, which would stretch
+           the wrapper above it back across the row. Overridden so it sizes to the tag. */
+        width: max-content;
+        max-width: 100%;
         pointer-events: none;
       }
 

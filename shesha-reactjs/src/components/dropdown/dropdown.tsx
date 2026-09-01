@@ -59,6 +59,7 @@ export const Dropdown: FC<IDropdownProps> = ({
   selectRef,
   events,
   styleValue,
+  fallbackDescription,
 }) => {
   /* Enable Multi-Select supersedes `mode`; `mode` is still honoured for forms saved before the
      rename. 'tags' is left alone because the boolean cannot express it — overriding it would
@@ -187,9 +188,11 @@ export const Dropdown: FC<IDropdownProps> = ({
       data: itemData as unknown as number,
       color: fetchedItem.color ?? undefined,
       icon: fetchedItem.icon ?? undefined,
-      description: fetchedItem.description ?? undefined,
+      /* Falls back to the caller's text so a tag whose item has no description of its own still
+         has hover text. Per item, so in multi-select each tag keeps its own. */
+      description: isNotNullOrWhiteSpace(fetchedItem.description) ? fetchedItem.description : fallbackDescription,
     } satisfies ISelectOption<number>;
-  }, [labelCustomJs, outcomeValueFunc, incomeValueFunc]);
+  }, [labelCustomJs, outcomeValueFunc, incomeValueFunc, fallbackDescription]);
 
   if (dataSourceType === 'referenceList') {
     return isDefined(referenceListId)

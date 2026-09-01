@@ -97,6 +97,13 @@ export interface IDropdownProps {
    * has no class hook, so it still takes the style model as a value.
    */
   styleValue?: IStyleValue | undefined;
+  /**
+   * Hover text for an option that carries no description of its own.
+   *
+   * Applied per option, so each rendered tag keeps its own tooltip rather than the whole control
+   * sharing one — which is what a multi-select needs.
+   */
+  fallbackDescription?: string | undefined;
 }
 
 /** The subset of antd `Select` props used to relay the standard component events. */
