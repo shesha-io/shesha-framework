@@ -33,10 +33,29 @@
 		<PackageReference Include="Abp.HangFire.AspNetCore" Version="9.0.0" />
 		<PackageReference Include="Hangfire.SqlServer" Version="1.8.6" />
 		<PackageReference Include="Hangfire.PostgreSql" Version="1.20.8" />
+		<PackageReference Include="Abp.AspNetCore" Version="9.0.0" />
+		<PackageReference Include="Abp.AspNetCore.SignalR" Version="9.0.0" />
+		<PackageReference Include="Abp.ZeroCore" Version="9.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.2" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\..\shesha-functional-tests\backend\src\Boxfusion.SheshaFunctionalTests.Web.Core\Boxfusion.SheshaFunctionalTests.Web.Core.csproj" />
+		<!--
+		  shesha-core only. This previously referenced Boxfusion.SheshaFunctionalTests.Web.Core,
+		  which pulled that whole application into the framework solution. The caching behaviour
+		  under test is framework-level, so nothing from it was needed.
+		-->
+		<ProjectReference Include="..\..\src\Shesha.Application\Shesha.Application.csproj" />
+		<ProjectReference Include="..\..\src\Shesha.Elmah\Shesha.Elmah.csproj" />
+		<ProjectReference Include="..\..\src\Shesha.GraphQL\Shesha.GraphQL.csproj" />
+		<ProjectReference Include="..\..\src\Shesha.Import\Shesha.Import.csproj" />
+		<ProjectReference Include="..\..\src\Shesha.NHibernate\Shesha.NHibernate.csproj" />
+		<ProjectReference Include="..\..\src\Shesha.Redis\Shesha.Redis.csproj" />
+		<ProjectReference Include="..\..\src\Shesha.Sms.Clickatell\Shesha.Sms.Clickatell.csproj" />
+		<ProjectReference Include="..\..\src\Shesha.Web.Core\Shesha.Web.Core.csproj" />
+		<ProjectReference Include="..\..\src\Shesha.Web.FormsDesigner\Shesha.Web.FormsDesigner.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
