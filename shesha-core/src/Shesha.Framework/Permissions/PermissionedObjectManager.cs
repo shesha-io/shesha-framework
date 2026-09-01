@@ -96,7 +96,11 @@ namespace Shesha.Permissions
             var childKey = GetCacheKey(dto.Object, dto.Type);
             await _permissionedObjectsCache.SetAsync(childKey, item ?? new CacheItemWrapper<PermissionedObjectDto>(dto, dto));
             var cache = await _relationsCache.TryGetValueAsync(parentKey);
-            var relation = cache.HasValue ? cache.Value : new PermissionedObjectRelations();
+
+            // Copy before mutating: the cache returns a shared reference, so AddChildren on the
+            // cached instance would publish the change to every other holder immediately, and
+            // would land even if the SetAsync below failed.
+            var relation = cache.HasValue ? cache.Value.Copy() : new PermissionedObjectRelations();
             relation.AddChildren(childKey);
             await _relationsCache.SetAsync(parentKey, relation);
         }
@@ -303,12 +307,25 @@ namespace Shesha.Permissions
             var key = GetCacheKey(dbObj.Object, dbObj.Type);
             var cacheObj = await _permissionedObjectsCache.TryGetValueAsync(key);
             if (cacheObj.HasValue)
-                return cacheObj.Value.DbValue ?? cacheObj.Value.DefaultValue;
+            {
+                // Copy before returning: GetAllFlatAsync feeds GetObjectWithChild, which builds
+                // the tree by appending to dto.Children. Handing back the cached instance would
+                // leave the cached object permanently carrying that tree.
+                //
+                // Not the per-request permission path -- that is GetOrDefaultAsync, which is
+                // read-only and still returns the shared instance.
+                var cached = cacheObj.Value.DbValue ?? cacheObj.Value.DefaultValue;
+                return cached?.Copy();
+            }
 
             var dto = await GetDtoAsync(dbObj);
 
             await SetCacheAsync(dto);
-            return dto;
+
+            // SetCacheAsync just put this instance in the cache, so returning it directly
+            // would hand the caller the cached object -- the same problem the hit path above
+            // avoids. Both paths must isolate.
+            return dto.Copy();
         }
 
         [UnitOfWork]

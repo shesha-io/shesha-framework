@@ -11,5 +11,11 @@ namespace Shesha.Redis.Caching
         /// Gets the database connection.
         /// </summary>
         IDatabase GetDatabase();
+
+        /// <summary>
+        /// Gets a pub/sub subscriber on the same connection. Used to broadcast L1 cache
+        /// invalidations between instances.
+        /// </summary>
+        ISubscriber GetSubscriber();
     }
 }

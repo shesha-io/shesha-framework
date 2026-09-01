@@ -1,0 +1,72 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<!--
+	  Purpose-built web host for the cache-coherence rig.
+
+	  This is the application that runs in the three containers. It exists so the test-only
+	  diagnostics endpoints and the "no background workers" policy live with the tests rather than
+	  as edits to Boxfusion.SheshaFunctionalTests.Web.Host, which stays untouched.
+
+	  It loads the same module graph as that host (SheshaFunctionalTestsWebCoreModule), so the
+	  framework behaviour under test (authorization filter, Redis caching, NHibernate) is
+	  identical. The differences are deliberate and limited to:
+	    * no Hangfire server (storage/client only), so three instances cannot run duplicate jobs
+	    * no Swagger UI or GraphQL playground (unused by the tests)
+	    * the CacheDiagnostics controller
+	-->
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<OutputType>Exe</OutputType>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>disable</ImplicitUsings>
+		<IsPackable>false</IsPackable>
+		<PreserveCompilationContext>true</PreserveCompilationContext>
+		<AssemblyName>Shesha.CacheTests.Host</AssemblyName>
+		<RootNamespace>Shesha.CacheTests.Host</RootNamespace>
+		<!-- Not a test project: it must not be picked up by `dotnet test`. -->
+		<IsTestProject>false</IsTestProject>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Abp.Castle.Log4Net" Version="9.0.0" />
+		<PackageReference Include="Abp.HangFire.AspNetCore" Version="9.0.0" />
+		<PackageReference Include="Hangfire.SqlServer" Version="1.8.6" />
+		<PackageReference Include="Hangfire.PostgreSql" Version="1.20.8" />
+		<PackageReference Include="Abp.AspNetCore" Version="9.0.0" />
+		<PackageReference Include="Abp.AspNetCore.SignalR" Version="9.0.0" />
+		<PackageReference Include="Abp.ZeroCore" Version="9.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="7.0.2" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!--
+		  shesha-core only. This previously referenced Boxfusion.SheshaFunctionalTests.Web.Core,
+		  which pulled that whole application into the framework solution. The caching behaviour
+		  under test is framework-level, so nothing from it was needed.
+		-->
+		<ProjectReference Include="..\..\src\Shesha.Application\Shesha.Application.csproj" />
+		<ProjectReference Include="..\..\src\Shesha.Elmah\Shesha.Elmah.csproj" />
+		<ProjectReference Include="..\..\src\Shesha.GraphQL\Shesha.GraphQL.csproj" />
+		<ProjectReference Include="..\..\src\Shesha.Import\Shesha.Import.csproj" />
+		<ProjectReference Include="..\..\src\Shesha.NHibernate\Shesha.NHibernate.csproj" />
+		<ProjectReference Include="..\..\src\Shesha.Redis\Shesha.Redis.csproj" />
+		<ProjectReference Include="..\..\src\Shesha.Sms.Clickatell\Shesha.Sms.Clickatell.csproj" />
+		<ProjectReference Include="..\..\src\Shesha.Web.Core\Shesha.Web.Core.csproj" />
+		<ProjectReference Include="..\..\src\Shesha.Web.FormsDesigner\Shesha.Web.FormsDesigner.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="appsettings.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<CopyToPublishDirectory>Always</CopyToPublishDirectory>
+		</None>
+		<None Update="log4net.config">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</None>
+	</ItemGroup>
+
+</Project>

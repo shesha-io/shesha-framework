@@ -65,6 +65,49 @@ namespace Shesha.Permissions
         }
 
         // code based persmission Md5
-        public string Md5 { get; set; } 
+        public string Md5 { get; set; }
+
+        /// <summary>
+        /// Independent copy, for callers that build a tree by appending to <see cref="Children"/>.
+        /// The cache hands out shared references, so mutating a value read from it would leave the
+        /// cached object permanently carrying that tree.
+        /// </summary>
+        public PermissionedObjectDto Copy()
+        {
+            // Children are copied recursively: a new list holding the same child instances
+            // would still let a caller mutate nodes shared with the cached object.
+            var children = new List<PermissionedObjectDto>();
+            if (Children != null)
+            {
+                foreach (var child in Children)
+                    children.Add(child?.Copy());
+            }
+
+            return new PermissionedObjectDto
+            {
+                Id = Id,
+                Hardcoded = Hardcoded,
+                Object = Object,
+                Category = Category,
+                Module = Module,
+                ModuleId = ModuleId,
+                Type = Type,
+                Name = Name,
+                Description = Description,
+                Permissions = Permissions != null ? new List<string>(Permissions) : null,
+                ActualPermissions = ActualPermissions != null ? new List<string>(ActualPermissions) : null,
+                InheritedPermissions = InheritedPermissions != null ? new List<string>(InheritedPermissions) : null,
+                Access = Access,
+                ActualAccess = ActualAccess,
+                InheritedAccess = InheritedAccess,
+                Parent = Parent,
+                Children = children,
+                Hidden = Hidden,
+                AdditionalParameters = AdditionalParameters != null
+                    ? new Dictionary<string, string>(AdditionalParameters)
+                    : null,
+                Md5 = Md5,
+            };
+        }
     }
 }

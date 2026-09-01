@@ -29,6 +29,14 @@ namespace Shesha.Redis.Caching
             return _connectionMultiplexer.GetDatabase(_options.DatabaseId);
         }
 
+        /// <summary>
+        /// Gets a pub/sub subscriber on the same (resilient) connection.
+        /// </summary>
+        public ISubscriber GetSubscriber()
+        {
+            return _connectionMultiplexer.GetSubscriber();
+        }
+
         private IResilientConnectionMultiplexer CreateMultiplexer()
         {
             var multiplexer = new ResilientConnectionMultiplexer(() => ConnectionMultiplexer.Connect(_options.ConnectionString));

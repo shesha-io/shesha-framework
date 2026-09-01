@@ -28,5 +28,25 @@ namespace Shesha.Authorization.Dtos
         {
             UserId = userId;
         }
+
+        /// <summary>
+        /// Independent copy, for callers that need to record a newly evaluated permission without
+        /// touching the instance held in the cache. The cache hands out shared references, so
+        /// adding to the collections of a value read from it would publish the result to every
+        /// other caller before -- or even instead of -- the cache write that is supposed to
+        /// commit it.
+        /// </summary>
+        public CustomUserPermissionCacheItem Copy()
+        {
+            var copy = new CustomUserPermissionCacheItem(UserId);
+
+            foreach (var permission in GrantedPermissions)
+                copy.GrantedPermissions.Add(permission);
+
+            foreach (var permission in ProhibitedPermissions)
+                copy.ProhibitedPermissions.Add(permission);
+
+            return copy;
+        }
     }
 }
