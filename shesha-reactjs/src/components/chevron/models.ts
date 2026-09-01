@@ -37,6 +37,7 @@ export interface IChevronProps extends IConfigurableFormComponent<IChevronStyleP
 
 export interface IChevronControlProps extends IChevronProps {
   value?: number | null | undefined;
+  onChange?: ((value: number | null | undefined) => void) | undefined;
 }
 
 export interface IChevronButton extends IButtonGroupItem {

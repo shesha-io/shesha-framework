@@ -34,7 +34,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   propertyName: 'componentName',
                   label: 'Component Name',
                   size: 'large',
-                  jsSetting: true,
                 })
                 .addSettingsInputRow({
                   id: 'headerTitle-row-s4gmBg31azZC0UjZjpfTm',
