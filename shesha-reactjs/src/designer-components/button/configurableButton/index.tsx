@@ -20,6 +20,13 @@ export interface IConfigurableButtonProps extends Omit<IButtonItem, 'itemSubType
   className?: string | undefined;
   additionalDomProperties?: Record<string, unknown> | undefined;
   onClick?: React.MouseEventHandler<HTMLElement> | undefined;
+  /**
+   * Runs before the button's own behaviour instead of replacing it: unlike `onClick`, the
+   * configured action still executes afterwards. Used by hosts that need to react to the click
+   * themselves (e.g. the Chevron writing the selected step back to the bound property) while
+   * leaving the item's Events configuration in charge of everything else.
+   */
+  onBeforeClick?: ((event: React.MouseEvent<HTMLElement>) => void) | undefined;
 }
 
 export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
@@ -59,6 +66,8 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
       return;
     }
 
+    props.onBeforeClick?.(event);
+
     if (props.onClick) {
       props.onClick(event);
       return;
@@ -78,7 +87,7 @@ export const ConfigurableButton: FC<IConfigurableButtonProps> = (props) => {
             setClickDisabled(false);
             debouncedLoading(false);
           });
-      } else console.warn('Action is not configured');
+      } else if (!isDefined(props.onBeforeClick)) console.warn('Action is not configured');
     } catch (error) {
       setClickDisabled(false);
       debouncedLoading(false);

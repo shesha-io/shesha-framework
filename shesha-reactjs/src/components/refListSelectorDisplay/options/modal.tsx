@@ -7,6 +7,10 @@ import { useStyles } from './styles/styles';
 import { IRefListItemFormModel } from '../provider/models';
 import { RefListItemGroupConfiguratorProvider, useRefListItemGroupConfigurator } from '../provider';
 import { IReferenceListIdentifier } from '@/interfaces';
+import { removeUndefinedProps } from '@/utils/object';
+import { isEqual } from 'lodash';
+
+const EMPTY_ITEMS: IRefListItemFormModel[] = [];
 
 interface IFiltersListProps {
   items?: IRefListItemFormModel[];
@@ -41,18 +45,32 @@ export interface ITableViewSelectorSettingsModal {
   referenceList?: IReferenceListIdentifier | undefined;
 }
 
+/**
+ * Compares two item lists the way the host stores them: a property that is absent, undefined,
+ * null or blank means the same thing once saved, so reading the reference list must not read as a
+ * change simply because it filled those in.
+ */
+const isSameConfiguration = (left: IRefListItemFormModel[], right: IRefListItemFormModel[] | null | undefined): boolean =>
+  isEqual(removeUndefinedProps(left), removeUndefinedProps(right ?? EMPTY_ITEMS));
+
 export const TableViewSelectorSettingsModalInner: FC<ITableViewSelectorSettingsModal> = ({
   visible,
+  value,
   onChange,
   hideModal,
 }) => {
   const { items, readOnly } = useRefListItemGroupConfigurator();
+
+  // Report the items only when they differ from what the host already holds. Reading the reference
+  // list normalises them, and reporting that normalisation marked the form as modified as soon as
+  // the component was selected - before the user had changed anything.
   useDeepCompareEffect(() => {
+    if (isSameConfiguration(items, value)) return;
     onChange?.(items);
-  }, [items]);
+  }, [items, value]);
 
   const updateFilters = (): void => {
-    if (typeof onChange === 'function') onChange(items);
+    if (typeof onChange === 'function' && !isSameConfiguration(items, value)) onChange(items);
     hideModal();
   };
 
@@ -72,7 +90,6 @@ export const TableViewSelectorSettingsModalInner: FC<ITableViewSelectorSettingsM
   );
 };
 
-const EMPTY_ITEMS: IRefListItemFormModel[] = [];
 export const RefListItemSelectorSettingsModal: FC<Omit<ITableViewSelectorSettingsModal, 'visible' | 'hideModal'>> = (
   props,
 ) => {
