@@ -10,7 +10,6 @@ import { IInputStyles } from '@/providers/form/models';
 import { useForm } from '@/providers';
 
 import { IStatusTagComponentProps, IStatusTagComponentPropsV0, StatusTagComponentDefinition } from './model';
-import { IStatusMap } from '@/components/statusTag';
 import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, migrateStylingBoxToJson } from '@/designer-components/_common-migrations/migrateSettings';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { Dropdown } from '@/components/dropdown/dropdown';
@@ -19,7 +18,8 @@ import { normalizeValue } from '@/components/dropdown/dropdown';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
 import { getSettings } from './settings';
 import { migratePrevStyles } from '../_common-migrations/migrateStyles';
-import { DEFAULT_STATUS_VALUE, defaultStyles, defaultValuesSetting, mappingsToValuesSetting } from './utils';
+import { defaultStyles, defaultValuesSetting, mappingsToValuesSetting } from './utils';
+import { DEFAULT_STATUS_FLAG, IDefaultStatusMarker, isDefaultStatusRow, isStatusLegacyRow, isStatusValueRow } from './rows';
 import { useStyles } from './styles';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { useComponentApiProvider } from '@/providers/componentApi/provider';
@@ -33,29 +33,54 @@ import apiCode from "../../componentsApi/componentApi.ts?raw";
 /** Shown inside the tag when there is no value and no Placeholder has been configured. */
 const EMPTY_STATUS_LABEL = '-';
 
+/** A built option. The marker rides along so the catch-all can be picked out among them. */
+type StatusOption = ILabelValue<number | string> & IDefaultStatusMarker;
+
 function hasStatusValue<T>(value: T | null | undefined): value is T {
   return isDefined(value) && (Array.isArray(value) ? value.length > 0 : !isNullOrWhiteSpace(String(value)));
 }
 
-const statusOptions = (values: IStatusTagComponentProps['values']): ILabelValue<number | string>[] => {
+/**
+ * Two shapes reach this: `{ value, label }` from the Values editor, and `{ code, text, override }`
+ * from a form migrated from Default Mappings. Both come out of a JS setting, so each row is narrowed
+ * by a guard before its own fields are read — malformed evaluator output is dropped, not trusted.
+ *
+ * `flatMap` drops rows that match neither shape, and rows with no value, which could never be
+ * matched anyway. `override` wins over `text`, as the legacy renderer did.
+ */
+const statusOptions = (values: IStatusTagComponentProps['values']): StatusOption[] => {
   if (!Array.isArray(values)) return [];
 
-  /* Two shapes: `{ value, label }` from the Values editor, and `{ code, text, override }` from a
-     form migrated from Default Mappings. `override` wins over `text`, as the legacy renderer did. */
-  /* `flatMap` drops rows with no value — unmatched anyway — and narrows the rest. */
-  return values.flatMap((row, index) => {
-    const legacy = row as Partial<ILabelValue<number | string>> & IStatusMap;
-    const value = legacy.value ?? legacy.code;
-    if (!isDefined(value)) return [];
+  /* Built field by field rather than spread: only what a guard has checked reaches the option. */
+  const option = (row: IDefaultStatusMarker, id: string, value: number | string, label: string, color: string | undefined): StatusOption => ({
+    id,
+    value,
+    label,
+    ...(isDefined(color) ? { color } : {}),
+    ...(isDefaultStatusRow(row) ? { [DEFAULT_STATUS_FLAG]: true } : {}),
+  });
 
-    const label = legacy.label ?? (isNotNullOrWhiteSpace(legacy.override) ? legacy.override : legacy.text);
+  return values.flatMap((row: unknown, index): StatusOption[] => {
+    if (isStatusValueRow(row)) {
+      if (!isDefined(row.value)) return [];
 
-    return [{
-      ...legacy,
-      id: legacy.id ?? `status-${index}`,
-      value,
-      label: label ?? '',
-    }];
+      const built = option(row, row.id ?? `status-${index}`, row.value, row.label ?? '', row.color);
+      /* Carried straight through: both are `ILabelValue`'s own fields, already checked by the guard. */
+      if (isDefined(row.icon)) built.icon = row.icon;
+      if (isDefined(row.description)) built.description = row.description;
+
+      return [built];
+    }
+
+    if (isStatusLegacyRow(row)) {
+      if (!isDefined(row.code)) return [];
+
+      const label = isNotNullOrWhiteSpace(row.override) ? row.override : row.text;
+
+      return [option(row, `status-${index}`, row.code, label ?? '', row.color)];
+    }
+
+    return [];
   });
 };
 
@@ -161,16 +186,20 @@ const StatusTagComponent: StatusTagComponentDefinition = {
              otherwise render an unmatched value as its own label. Reference-list rows are fetched, so
              "no match" cannot be told from "not loaded" — that source is left alone. */
           const options = statusOptions(model.values);
-          const hasFallbackRow = options.some((option) => option.value === DEFAULT_STATUS_VALUE);
-          /* `normalizeValue` so a bound "1" matches a configured 1, as the drop-down does. */
+          /* Found by its flag, not by its value: a status whose value genuinely is "default" is an
+             ordinary row and must not be mistaken for the catch-all. */
+          const fallbackOption = options.find(isDefaultStatusRow);
+          /* `normalizeValue` so a bound "1" matches a configured 1, as the drop-down does. The
+             catch-all is excluded: it stands in for unmatched values, it does not match one. */
           const isResolvable = (candidate: number | string): boolean =>
-            options.some((option) => normalizeValue(option.value) === normalizeValue(candidate));
+            options.some((option) => !isDefaultStatusRow(option) &&
+              normalizeValue(option.value) === normalizeValue(candidate));
 
           /* Entry by entry: comparing the whole array against scalar values never matches, which
              would collapse a valid multi-selection onto the fallback. */
           const resolveOne = (candidate: number | string): number | string =>
-            model.dataSourceType === 'values' && !isResolvable(candidate) && hasFallbackRow
-              ? DEFAULT_STATUS_VALUE
+            model.dataSourceType === 'values' && !isResolvable(candidate) && isDefined(fallbackOption)
+              ? fallbackOption.value
               : candidate;
 
           const displayValue = Array.isArray(resolved)
@@ -180,7 +209,7 @@ const StatusTagComponent: StatusTagComponentDefinition = {
           /* Hover text is per tag, so the component Tooltip becomes the fallback description on each
              option that has none. A single wrapper tooltip could only ever be all-or-nothing. */
           const tooltip = model.description;
-          const optionsWithTooltip: ILabelValue<number | string>[] = isNotNullOrWhiteSpace(tooltip)
+          const optionsWithTooltip: StatusOption[] = isNotNullOrWhiteSpace(tooltip)
             ? options.map((option) => (isNotNullOrWhiteSpace(option.description)
               ? option
               : { ...option, description: tooltip }))
