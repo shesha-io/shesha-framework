@@ -85,20 +85,20 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   propertyRouteName: removeStyleRouter === true ? '' : { _mode: "code", _code: "    return contexts.canvasContext?.designerDevice || 'desktop';", _value: "" },
                   components: [
                     ...fbf(commonStyleRouterId)
-                      .stdFontPanel('font', ['align'])
+                      .stdFontPanel(undefined, 'font', ['align'])
                       .stdDimensionsPanel('dimensions')
                       .stdBorderPanel(removeStyleRouter !== true, 'border')
                       .stdBackgroundPanel(removeStyleRouter !== true, 'background')
                       .stdShadowPanel('shadow')
                       .stdMarginPaddingPanel('stylingBoxJson')
-                      .stdCustomStylePanel('style')
+                      .stdCustomStylePanel(undefined, 'style')
                       .stdCollapsiblePanel('Radio Style', (f) => f
                         .stdDimensionsPanel('radio.dimensions')
                         .stdBorderPanel(removeStyleRouter !== true, 'radio.border')
                         .stdBackgroundPanel(removeStyleRouter !== true, 'radio.background')
                         .stdShadowPanel('radio.shadow')
                         .stdMarginPaddingPanel('radio.stylingBoxJson')
-                        .stdCustomStylePanel('radio.style'),
+                        .stdCustomStylePanel(undefined, 'radio.style'),
                       true,
                       )
                       .toJson()],

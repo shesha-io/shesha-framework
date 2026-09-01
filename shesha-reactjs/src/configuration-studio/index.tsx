@@ -20,7 +20,7 @@ import { useLocalStorage } from '@/hooks';
 const ConfigurationStudio: FC = () => {
   const { styles } = useStyles();
   const [treeCollapsed, setTreeCollapsed] = useLocalStorage('shesha:cs-tree-collapsed', false);
-  const [treeTreePinned, setTreeTreePinned] = useLocalStorage('shesha:cs-tree-pinned', true);
+  const [treePinned, setTreePinned] = useLocalStorage('shesha:cs-tree-pinned', true);
   const defaultTreePanelSize = typeof window !== 'undefined' ? (20 / 100) * window.innerWidth : 350;
 
   return (
@@ -59,10 +59,10 @@ const ConfigurationStudio: FC = () => {
             panelMax="50%"
 
             defaultPanelSize={defaultTreePanelSize}
-            defaultExpanded={!treeCollapsed}
+            defaultExpanded={!treeCollapsed && treePinned}
             onExpandedToggle={(expanded) => setTreeCollapsed(!expanded)}
-            defaultPinned={treeTreePinned}
-            onPinnedToggle={(pinned) => setTreeTreePinned(pinned)}
+            defaultPinned={treePinned}
+            onPinnedToggle={(pinned) => setTreePinned(pinned)}
           >
             <WorkArea />
           </SplitLayout>

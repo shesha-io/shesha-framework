@@ -150,12 +150,22 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
   // the box appearance (see the note on styleProvided above).
   const ownedBorderStyles = styleProvided ? commonBorderStyles : '';
 
-  // Text styling falls back to hardcoded defaults (25px Segoe UI, the primary colour) when no style
-  // is supplied. On the component-class path that would override the configured Font, so emit
-  // nothing and let the class own the text as well as the box.
+  /* Colour is emitted only when the caller's style actually carries one — not merely when it carries
+     something. A style that sets only a background still counts as provided, and a fallback colour
+     stated on that basis lands on the very elements the component class puts the configured Font
+     colour on, and outranks it. So the fallback is dropped rather than gated: unset, colour belongs
+     to the class, and to antd where there is no class. Where the caller does state a colour it still
+     wins, which is the precedence every other style set here uses. */
+  const customColor = firstSet(color);
+  const customColorCss = customColor === '' ? '' : `color: ${customColor};`;
+  const customColorImportantCss = customColor === '' ? '' : `color: ${customColor} !important;`;
+
+  // The rest of the text styling falls back to hardcoded defaults (25px Segoe UI) when no style is
+  // supplied. On the component-class path that would override the configured Font, so emit nothing
+  // and let the class own the text as well as the box.
   const commonTextStyles = styleProvided
     ? `
-    color: ${firstSet(color, token.colorPrimary)};
+    ${customColorCss}
     font-family: ${fontFamily};
     font-size: ${fontSize};
     font-weight: ${fontWeight};
@@ -365,7 +375,11 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
       ` : ''}
 
       .ant-btn {
-        color: ${firstSet(color, token.colorPrimary)} !important;
+        /* Only the caller's own colour, for the reason given where customColor is derived: stating a
+           fallback here — !important, so specificity could not settle it — overrode the Font colour
+           the component class puts on this very button, which is why Font colour did nothing to the
+           upload prompt. Unset, the button falls back to the class, then to antd's link colour. */
+        ${customColorImportantCss}
         ${commonTextStyles}
         justify-content: ${layout ? 'center' : justifyContentValue} !important;
         align-items: center;
