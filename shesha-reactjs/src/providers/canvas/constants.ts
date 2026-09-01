@@ -15,7 +15,8 @@ export const boundCanvasWidthPercent = (percent: number | undefined): number =>
     : MAX_CANVAS_WIDTH_PERCENT;
 
 /**
- * Converts viewport units (vw/vh) to be relative to a specific canvas dimension
+ * Converts viewport units (vw/vh) to be relative to a specific canvas dimension, whether the
+ * value is the whole dimension ("100vh") or nested in an expression ("calc(100vh - 50px)")
  * @param dimension - The dimension value (e.g., "50vw", "100vh", "100px", 300)
  * @param canvasDimension - The canvas dimension to calculate relative to (e.g., '100vw', '1024px')
  * @param unit - The unit type to convert ('vw' or 'vh')
@@ -41,7 +42,14 @@ export const dimensionRelativeToCanvas = (
     }
   }
 
-  return trimmed;
+  // Nested in an expression: every occurrence resolves the same way the whole value would.
+  const nestedRegex = new RegExp(String.raw`(\d+(?:\.\d+)?)\s*${unit}\b`, 'gi');
+  return trimmed.replace(nestedRegex, (whole, value: string) => {
+    const percentageOfCanvas = parseFloat(value);
+    return Number.isNaN(percentageOfCanvas)
+      ? whole
+      : `((${percentageOfCanvas} * ${canvasDimension}) / 100)`;
+  });
 };
 
 /** Levels the +/- buttons step through. Direct entry is free-form within [minZoom, maxZoom]. */

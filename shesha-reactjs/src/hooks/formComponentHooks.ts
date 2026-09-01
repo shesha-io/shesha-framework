@@ -310,7 +310,7 @@ export const useFormComponentStyles = <TModel extends IStyleValue & Pick<IConfig
     ? model.wrapperStyle
     : model.style;
   const jsStyle = useActualContextExecution(styleSource, undefined, {}); // use default style if empty or error
-  const { designerWidth, canvas } = useCanvas();
+  const { canvas } = useCanvas();
 
   const { dimensions, border, font, shadow, background, stylingBox, stylingBoxJson, overflow } = model;
 
@@ -324,7 +324,7 @@ export const useFormComponentStyles = <TModel extends IStyleValue & Pick<IConfig
   const fontStyles = useMemo(() => getFontStyle(font), [font]);
   const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
   const stylingBoxAsCSS = useMemo(() => pickStyleFromModel(stylingBoxParsed as StyleBoxValue), [stylingBoxParsed]);
-  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, designerWidth, canvas?.height), [dimensions, designerWidth, canvas?.height]);
+  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, canvas?.width, canvas?.height), [dimensions, canvas?.width, canvas?.height]);
   const overflowStyles = useMemo(() => isDefined(overflow) ? getOverflowStyle(overflow, false) : {}, [overflow]);
 
   const appearanceStyle = useDeepCompareMemo(() => removeUndefinedProps(

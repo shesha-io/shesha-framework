@@ -8,8 +8,12 @@ import {
   useCallback,
 } from 'react';
 import { reducer } from './reducer';
-import { setCanvasMeasurementAction, setAvailableCanvasWidthAction, setCanvasAutoWidthAction, setCanvasWidthPercentAction, setCanvasAutoZoomAction, setCanvasWidthAction, setCanvasZoomAction, setDesignerDeviceAction, setManualZoomAction, setScreenWidthAction } from './actions';
-import { CANVAS_CONTEXT_INITIAL_STATE, CanvasActionsContext, CanvasStateContext, ICanvasActionsContext, ICanvasMeasurement, ICanvasStateContext, DeviceTypes } from './contexts';
+import {
+  registerCanvasAction, unregisterCanvasAction, setCanvasMeasurementAction, setAvailableCanvasWidthAction,
+  setCanvasAutoWidthAction, setCanvasWidthPercentAction, setCanvasAutoZoomAction, setCanvasWidthAction,
+  setCanvasZoomAction, setDesignerDeviceAction, setManualZoomAction, setScreenWidthAction,
+} from './actions';
+import { CANVAS_CONTEXT_INITIAL_STATE, CanvasActionsContext, CanvasStateContext, ICanvasActionsContext, ICanvasMeasurement, ICanvasStateContext, ICanvasWidthMeasurement, DeviceTypes } from './contexts';
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { canvasContextCode } from '@/publicJsApis/apis';
 import { isDefined } from '@/utils/nullables';
@@ -37,6 +41,8 @@ const CanvasProvider: FC<PropsWithChildren> = ({
     },
     properties: [
       { path: 'zoom', dataType: DataTypes.number },
+      { path: 'autoWidth', dataType: DataTypes.boolean },
+      { path: 'widthPercent', dataType: DataTypes.number },
       { path: 'designerWidth', dataType: DataTypes.string },
       { path: 'designerDevice', dataType: DataTypes.string },
       { path: 'physicalDevice', dataType: DataTypes.string },
@@ -123,12 +129,20 @@ const CanvasProvider: FC<PropsWithChildren> = ({
     dispatch(setCanvasWidthPercentAction(percent));
   }, []);
 
-  const setAvailableCanvasWidth = useCallback((width: string) => {
-    dispatch(setAvailableCanvasWidthAction(width));
+  const setAvailableCanvasWidth = useCallback((measurement: ICanvasWidthMeasurement) => {
+    dispatch(setAvailableCanvasWidthAction(measurement));
   }, []);
 
-  const setCanvasMeasurement = useCallback((measurement: ICanvasMeasurement | undefined) => {
+  const setCanvasMeasurement = useCallback((measurement: ICanvasMeasurement) => {
     dispatch(setCanvasMeasurementAction(measurement));
+  }, []);
+
+  const registerCanvas = useCallback(() => {
+    dispatch(registerCanvasAction());
+  }, []);
+
+  const unregisterCanvas = useCallback(() => {
+    dispatch(unregisterCanvasAction());
   }, []);
 
   /* NEW_ACTION_DECLARATION_GOES_HERE */
@@ -143,8 +157,10 @@ const CanvasProvider: FC<PropsWithChildren> = ({
     setCanvasWidthPercent,
     setAvailableCanvasWidth,
     setCanvasMeasurement,
+    registerCanvas,
+    unregisterCanvas,
     /* NEW_ACTION_GOES_HERE */
-  }), [setDesignerDevice, setCanvasWidth, setCanvasZoom, setManualZoom, setCanvasAutoZoom, setCanvasAutoWidth, setCanvasWidthPercent, setAvailableCanvasWidth, setCanvasMeasurement]);
+  }), [setDesignerDevice, setCanvasWidth, setCanvasZoom, setManualZoom, setCanvasAutoZoom, setCanvasAutoWidth, setCanvasWidthPercent, setAvailableCanvasWidth, setCanvasMeasurement, registerCanvas, unregisterCanvas]);
 
   const contextOnChangeData: ContextOnChangeData<ICanvasStateContext> = useCallback((_, changedData) => {
     if (!isDefined(changedData))
@@ -153,7 +169,15 @@ const CanvasProvider: FC<PropsWithChildren> = ({
     if (changedData.designerDevice !== undefined && changedData.designerDevice !== state.designerDevice) {
       setDesignerDevice(changedData.designerDevice);
     }
-  }, [state.designerDevice, setDesignerDevice]);
+
+    if (changedData.autoWidth !== undefined && changedData.autoWidth !== state.autoWidth) {
+      setCanvasAutoWidth(changedData.autoWidth);
+    }
+
+    if (changedData.widthPercent !== undefined && changedData.widthPercent !== state.widthPercent) {
+      setCanvasWidthPercent(changedData.widthPercent);
+    }
+  }, [state.designerDevice, state.autoWidth, state.widthPercent, setDesignerDevice, setCanvasAutoWidth, setCanvasWidthPercent]);
 
   return (
     <DataContextBinder<ICanvasStateContext>

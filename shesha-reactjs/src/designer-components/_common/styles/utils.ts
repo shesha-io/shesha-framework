@@ -1,7 +1,7 @@
 import { BorderStyle, getGradientColors, IBackgroundValue, IBorderValue, IDimensionsValue, IFontValue, IGradientValue, IShadowValue } from "@/designer-components/_settings/utils";
 import { IConfigurableFormComponent, IStyleValue, StyleBoxValue } from "../../../providers/form/models";
 import { addPx, hasNumber } from "@/utils/style";
-import { boundWidth } from "@/designer-components/_settings/utils/dimensions/bounds";
+import { boundWidthToCanvas } from "@/designer-components/_settings/utils/dimensions/bounds";
 import { dimensionRelativeToCanvas } from "@/providers/canvas/constants";
 import { StringBuilder } from "@/utils";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
@@ -214,7 +214,7 @@ export const backgroundStyles = (model: IBackgroundValue | undefined): string =>
   return sb.build();
 };
 
-export const dimensionsStyles = (model: IDimensionsValue | undefined, canvasHeight?: string): string => {
+export const dimensionsStyles = (model: IDimensionsValue | undefined, canvasWidth?: string, canvasHeight?: string): string => {
   if (!model) return '';
   const sb = new StringBuilder();
 
@@ -224,12 +224,19 @@ export const dimensionsStyles = (model: IDimensionsValue | undefined, canvasHeig
       ? dimensionRelativeToCanvas(value, canvasHeight, 'vh')
       : value;
 
-  // The width axes go through boundWidth, as they do in getDimensionsStyle. No canvas width reaches
-  // this path, so only a percentage can be judged - vw stays viewport-relative here and an absolute
-  // length has nothing to be compared against.
-  if (isDefined(model.width)) sb.append(`width: ${dimensionCss(boundWidth(model.width))};`);
-  if (isDefined(model.minWidth)) sb.append(`min-width: ${dimensionCss(boundWidth(model.minWidth))};`);
-  if (isDefined(model.maxWidth)) sb.append(`max-width: ${dimensionCss(boundWidth(model.maxWidth))};`);
+  // The width axes match getDimensionsStyle: bounded against the canvas and resolved against it,
+  // and left exactly as configured when there is no canvas to judge them by.
+  const width = (value: string | number): string | number => {
+    if (!isDefined(canvasWidth)) return value;
+    const bounded = boundWidthToCanvas(value, canvasWidth);
+    return typeof bounded === 'string' && /vw/i.test(bounded)
+      ? dimensionRelativeToCanvas(bounded, canvasWidth, 'vw')
+      : bounded;
+  };
+
+  if (isDefined(model.width)) sb.append(`width: ${dimensionCss(width(model.width))};`);
+  if (isDefined(model.minWidth)) sb.append(`min-width: ${dimensionCss(width(model.minWidth))};`);
+  if (isDefined(model.maxWidth)) sb.append(`max-width: ${dimensionCss(width(model.maxWidth))};`);
   // The height axes resolve vh against the canvas: this is the path the container component uses,
   // and a container is the usual place a full-viewport height is set.
   if (isDefined(model.height)) sb.append(`height: ${dimensionCss(height(model.height))};`);

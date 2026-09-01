@@ -90,20 +90,29 @@ describe('exceedsWidth', () => {
 
 
 describe('getDimensionsStyle', () => {
-  it('bounds every width axis so none can overflow the container', () => {
-    const style = getDimensionsStyle({ width: '200%', minWidth: '300%', maxWidth: '400%' });
+  it('bounds every width axis on the canvas so none can overflow it', () => {
+    const style = getDimensionsStyle({ width: '200%', minWidth: '300%', maxWidth: '400%' }, '1024px');
 
     expect(style.width).toBe(`${MAX_DIMENSION_PERCENT}%`);
     expect(style.minWidth).toBe(`${MAX_DIMENSION_PERCENT}%`);
     expect(style.maxWidth).toBe(`${MAX_DIMENSION_PERCENT}%`);
   });
 
-  it('bounds a width already saved in a form before the bound existed', () => {
-    expect(getDimensionsStyle({ width: '200%' }).width).toBe('100%');
+  it('leaves an over-wide width alone on a rendered page', () => {
+    // Over 100% inside an overflow wrapper is deliberate, and the settings input already warns at
+    // the point of entry. Rewriting it here changed forms that were already working.
+    expect(getDimensionsStyle({ width: '200%' }).width).toBe('200%');
+    expect(getDimensionsStyle({ width: '2000px' }).width).toBe('2000px');
+    expect(getDimensionsStyle({ width: '200vw' }).width).toBe('200vw');
+  });
+
+  it('leaves vw as the real viewport on a rendered page', () => {
+    // The leak this replaces resolved vw against a device preset restored from local storage.
+    expect(getDimensionsStyle({ width: '50vw' }).width).toBe('50vw');
   });
 
   it('leaves widths within the container as they were', () => {
-    const style = getDimensionsStyle({ width: '80%', minWidth: '10px', maxWidth: 'max-content' });
+    const style = getDimensionsStyle({ width: '80%', minWidth: '10px', maxWidth: 'max-content' }, '1024px');
 
     expect(style.width).toBe('80%');
     expect(style.minWidth).toBe('10px');
@@ -111,7 +120,7 @@ describe('getDimensionsStyle', () => {
   });
 
   it('does not bound heights - a different axis, and 100vh is the reported case there', () => {
-    const style = getDimensionsStyle({ height: '200%', minHeight: '300%' });
+    const style = getDimensionsStyle({ height: '200%', minHeight: '300%' }, '1024px');
 
     expect(style.height).toBe('200%');
     expect(style.minHeight).toBe('300%');
@@ -162,8 +171,12 @@ describe('viewport heights', () => {
     expect(getDimensionsStyle({ height: '120%' }, undefined, CANVAS).height).toBe('120%');
   });
 
-  it('does not yet reach a vh nested in calc - only a whole value is resolved', () => {
-    expect(getDimensionsStyle({ height: 'calc(100vh - 10px)' }, undefined, CANVAS).height).toBe('calc(100vh - 10px)');
+  it('resolves a vh nested in an expression, which a whole-value match missed', () => {
+    expect(getDimensionsStyle({ height: 'calc(100vh - 10px)' }, undefined, CANVAS).height).toBe('calc(((100 * 820px) / 100) - 10px)');
+  });
+
+  it('leaves a nested vh alone with no canvas', () => {
+    expect(getDimensionsStyle({ height: 'calc(100vh - 10px)' }).height).toBe('calc(100vh - 10px)');
   });
 
   it('does not touch widths', () => {

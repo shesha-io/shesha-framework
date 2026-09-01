@@ -34,7 +34,7 @@ const ContainerComponent: ContainerComponentDefinition = {
   getWrapperStyle: (model) => getFullSizeWrapperDesignerStyle(model),
   Factory: ({ model }) => {
     const { canvas } = useCanvas();
-    const { styles, cx } = useStyles({ ...model, canvasHeight: canvas?.height });
+    const { styles, cx } = useStyles({ ...model, canvasWidth: canvas?.width, canvasHeight: canvas?.height });
     // use ...NoRefresh to prevent unnecessary re-renders
     const wrappedStyleJson = useActualContextExecutionNoRefresh(model.wrapperStyle, undefined, {});
     const handleEvent = useEvents<void>(model.componentName);

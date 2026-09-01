@@ -1,6 +1,6 @@
 import { useCanvas } from '@/providers';
 import { FC, PropsWithChildren, useCallback, useEffect, useLayoutEffect, useState } from 'react';
-import { calculateAutoZoom, DEFAULT_OPTIONS, getCanvasLayoutHeight, getCanvasLayoutWidth, usePinchZoom } from '@/providers/canvas/utils';
+import { calculateAutoZoom, DEFAULT_OPTIONS, getCanvasDeviceWidth, getCanvasLayoutHeight, getCanvasLayoutWidth, usePinchZoom } from '@/providers/canvas/utils';
 import { useStyles } from './styles';
 import classNames from 'classnames';
 import { useElementSizeTracking } from '@/hooks/useElementSize';
@@ -15,7 +15,7 @@ export interface IZoomableCanvasProps {
 
 export const ZoomableCanvas: FC<PropsWithChildren<IZoomableCanvasProps>> = ({ children, canZoom }) => {
   const { styles } = useStyles();
-  const { zoom, setCanvasZoom, setAvailableCanvasWidth, setCanvasMeasurement, designerWidth, autoZoom, autoWidth, widthPercent } = useCanvas();
+  const { zoom, setCanvasZoom, setAvailableCanvasWidth, setCanvasMeasurement, registerCanvas, unregisterCanvas, designerWidth, autoZoom, autoWidth, widthPercent } = useCanvas();
 
   const handleZoomChange = useCallback((newZoom: number) => {
     if (!canZoom) return;
@@ -27,8 +27,14 @@ export const ZoomableCanvas: FC<PropsWithChildren<IZoomableCanvasProps>> = ({ ch
     zoom,
     DEFAULT_OPTIONS.minZoom,
     DEFAULT_OPTIONS.maxZoom,
-    autoZoom || autoWidth,
+    autoZoom,
   );
+
+  // Refcounted: the quick-edit dialog mounts a second canvas over the designer's own.
+  useEffect(() => {
+    registerCanvas();
+    return () => unregisterCanvas();
+  }, [registerCanvas, unregisterCanvas]);
 
   const [availableWidth, setAvailableWidth] = useState(0);
   const [availableHeight, setAvailableHeight] = useState(0);
@@ -74,10 +80,12 @@ export const ZoomableCanvas: FC<PropsWithChildren<IZoomableCanvasProps>> = ({ ch
 
   // Layout effect, not effect: the reducer resolves activeDevice from this width, so publishing
   // after paint shows one frame in the previously pinned device's settings.
+  const deviceWidth = getCanvasDeviceWidth(availableWidth, widthPercent);
+
   useIsomorphicLayoutEffect(() => {
     if (isAutoWidth)
-      setAvailableCanvasWidth(canvasWidth);
-  }, [isAutoWidth, canvasWidth, setAvailableCanvasWidth]);
+      setAvailableCanvasWidth({ layoutWidth: canvasWidth, deviceWidth });
+  }, [isAutoWidth, canvasWidth, deviceWidth, setAvailableCanvasWidth]);
 
   // What `vh` means on the canvas: the pane it scrolls inside, pre-zoom as the width is.
   const canvasHeight = availableHeight > 0
@@ -86,11 +94,8 @@ export const ZoomableCanvas: FC<PropsWithChildren<IZoomableCanvasProps>> = ({ ch
 
   useIsomorphicLayoutEffect(() => {
     if (isDefined(canvasHeight))
-      setCanvasMeasurement({ height: canvasHeight });
-  }, [canvasHeight, setCanvasMeasurement]);
-
-  // Unmount only: CanvasProvider outlives the canvas, so a stale measurement would reach live pages.
-  useEffect(() => () => setCanvasMeasurement(undefined), [setCanvasMeasurement]);
+      setCanvasMeasurement({ width: canvasWidth, height: canvasHeight });
+  }, [canvasWidth, canvasHeight, setCanvasMeasurement]);
 
   return (
     <>

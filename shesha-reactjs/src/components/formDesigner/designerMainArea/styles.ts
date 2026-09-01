@@ -11,6 +11,8 @@ export const useStyles = createStyles(({ css, cx }) => {
     height: 100%;
     /* The single scroll container - the canvas itself must not scroll, see overflow: clip below. */
     overflow: auto;
+    /* Reserved always, so a classic scrollbar appearing cannot narrow the pane and re-wrap it. */
+    scrollbar-gutter: stable;
 
     /* Absorbs sub-pixel rounding in the measured canvas width. Not applied to device presets,
        which are legitimately wider than the pane. */

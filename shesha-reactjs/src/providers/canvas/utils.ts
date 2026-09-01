@@ -85,6 +85,14 @@ export const getCanvasLayoutWidth = (availableWidth: number, zoom: number, width
   return `${Math.max(0, Math.floor((availableWidth * fraction) / zoomFactor))}px`;
 };
 
+/** On-screen width the canvas covers, which the device resolves from. Independent of zoom. */
+export const getCanvasDeviceWidth = (availableWidth: number, widthPercent: number = MAX_CANVAS_WIDTH_PERCENT): string => {
+  const fraction = Number.isFinite(widthPercent) && widthPercent > 0
+    ? Math.min(widthPercent, MAX_CANVAS_WIDTH_PERCENT) / 100
+    : 1;
+  return `${Math.max(0, Math.floor(availableWidth * fraction))}px`;
+};
+
 /** Pre-zoom height that fills the pane exactly once CSS `zoom` is applied. */
 export const getCanvasLayoutHeight = (availableHeight: number, zoom: number): string => {
   const zoomFactor = (zoom > 0 ? zoom : DEFAULT_OPTIONS.defaultZoom) / 100;
@@ -172,9 +180,11 @@ export const usePinchZoom = (
   }, [getDistance, onZoomChange, minZoom, maxZoom, isZoomLocked]);
 
   const handleWheel = useCallback((e: WheelEvent) => {
-    if (isZoomLocked || !e.ctrlKey) return;
+    if (!e.ctrlKey) return;
 
+    // Swallowed before the lock check: leaving it to the browser page-zooms the whole designer.
     e.preventDefault();
+    if (isZoomLocked) return;
     const delta = e.deltaY > 0 ? -DEFAULT_OPTIONS.zoomStep : DEFAULT_OPTIONS.zoomStep;
     const newZoom = Math.max(minZoom, Math.min(maxZoom, currentZoom + delta));
     onZoomChange(newZoom);

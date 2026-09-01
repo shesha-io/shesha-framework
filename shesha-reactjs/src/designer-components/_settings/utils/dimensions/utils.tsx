@@ -1,6 +1,7 @@
 import { CSSProperties } from "react";
 import { EyeOutlined, EyeInvisibleOutlined, ColumnWidthOutlined, BorderlessTableOutlined } from "@ant-design/icons";
 import { IDimensionsValue } from "./interfaces";
+import { isDefined } from "@/utils/nullables";
 import { addPx, hasNumber } from "@/utils/style";
 import { IDropdownOption } from "@/designer-components/settingsInput/interfaces";
 import { dimensionRelativeToCanvas } from "@/providers/canvas/utils";
@@ -11,10 +12,9 @@ import { MAX_DIMENSION_PERCENT, boundWidth, boundWidthToCanvas, exceedsWidth } f
 export { MAX_DIMENSION_PERCENT, boundWidth, boundWidthToCanvas, exceedsWidth };
 
 const getWidthDimension = (main: string | number, canvasWidth?: string, context?: object): string | number | undefined => {
-  // Bounded first, so an over-wide value cannot reach the rendered style by any route - including
-  // one already saved in a form before the bound existed. Absolute lengths are only judgeable when
-  // the canvas width is known.
-  const bounded = boundWidthToCanvas(main, canvasWidth);
+  // Bounded only against a canvas. On a rendered page a width over 100% inside an overflow wrapper
+  // is deliberate, and the settings input already warns about one at the point of entry.
+  const bounded = isDefined(canvasWidth) ? boundWidthToCanvas(main, canvasWidth) : main;
 
   // If canvasWidth is provided and bounded contains vw, convert to calc
   if (canvasWidth && typeof bounded === 'string' && /vw/i.test(bounded)) {

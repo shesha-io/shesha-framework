@@ -9,6 +9,8 @@ import { setCanvasZoomAction,
   setAvailableCanvasWidthAction,
   setManualZoomAction,
   setCanvasMeasurementAction,
+  registerCanvasAction,
+  unregisterCanvasAction,
 } from './actions';
 import { CANVAS_CONTEXT_INITIAL_STATE, ICanvasStateContext } from './contexts';
 import { clampZoom, getDeviceTypeByWidth, getSmallerDevice } from './utils';
@@ -87,8 +89,11 @@ export const reducer = createReducer(CANVAS_CONTEXT_INITIAL_STATE, (builder) => 
 
       // Device is re-resolved even when the width has not moved: a width restored from storage can
       // already equal the measured one while the device is still the initial default.
-      const measured = state.designerWidth === payload ? state : { ...state, designerWidth: payload };
-      const resolved = resolveDeviceForWidth(measured, payload);
+      const { layoutWidth, deviceWidth } = payload;
+      const measured = state.designerWidth === layoutWidth ? state : { ...state, designerWidth: layoutWidth };
+      // Resolved from the on-screen width, not the zoom-derived layout width: zoom is a magnifier,
+      // and zooming in must not silently retarget style edits at a narrower device.
+      const resolved = resolveDeviceForWidth(measured, deviceWidth);
 
       return measured === state &&
         resolved.designerDevice === state.designerDevice &&
@@ -98,14 +103,30 @@ export const reducer = createReducer(CANVAS_CONTEXT_INITIAL_STATE, (builder) => 
     })
     .addCase(setCanvasMeasurementAction, (state, { payload }) => {
       // Re-reported on every resize tick; returning state unchanged keeps the render count down.
-      return state.canvas?.height === payload?.height ? state : { ...state, canvas: payload };
+      return state.canvas?.width === payload.width && state.canvas.height === payload.height
+        ? state
+        : { ...state, canvas: payload };
+    })
+    .addCase(registerCanvasAction, (state) => {
+      return { ...state, canvasMounts: state.canvasMounts + 1 };
+    })
+    .addCase(unregisterCanvasAction, (state) => {
+      // Refcounted: the quick-edit dialog's canvas closing must not blank the designer's own.
+      const canvasMounts = Math.max(0, state.canvasMounts - 1);
+      return canvasMounts === 0
+        ? { ...state, canvasMounts, canvas: undefined }
+        : { ...state, canvasMounts };
     })
     .addCase(setScreenWidthAction, (state, { payload }) => {
       const device = getDeviceTypeByWidth(payload);
       return {
         ...state,
         physicalDevice: device,
-        activeDevice: getSmallerDevice(device, state.designerDevice ?? "desktop"),
+        // With no canvas mounted the physical device is the only one there is. Narrowing against a
+        // designerDevice restored from storage is what pinned rendered pages to mobile for good.
+        activeDevice: state.canvasMounts > 0
+          ? getSmallerDevice(device, state.designerDevice ?? "desktop")
+          : device,
       };
     })
     .addCase(setDesignerDeviceAction, (state, { payload }) => {

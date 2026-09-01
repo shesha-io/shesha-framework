@@ -1,5 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
-import { ICanvasMeasurement, ICanvasWidthProps, DeviceTypes } from './contexts';
+import { ICanvasMeasurement, ICanvasWidthMeasurement, ICanvasWidthProps, DeviceTypes } from './contexts';
 
 export enum CanvasConfigActionEnums {
   SetCanvasWidth = 'SET_FORM_WIDTH',
@@ -12,6 +12,8 @@ export enum CanvasConfigActionEnums {
   SetCanvasWidthPercent = 'SET_CANVAS_WIDTH_PERCENT',
   SetManualZoom = 'SET_MANUAL_ZOOM',
   SetCanvasMeasurement = 'SET_CANVAS_MEASUREMENT',
+  RegisterCanvas = 'REGISTER_CANVAS',
+  UnregisterCanvas = 'UNREGISTER_CANVAS',
 }
 
 export const setCanvasZoomAction = createAction<number>(CanvasConfigActionEnums.SetCanvasZoom);
@@ -31,10 +33,14 @@ export const setCanvasAutoWidthAction = createAction<boolean | undefined>(Canvas
 export const setCanvasWidthPercentAction = createAction<number>(CanvasConfigActionEnums.SetCanvasWidthPercent);
 
 // Reports the width currently available to the canvas; only applied while auto width is on.
-export const setAvailableCanvasWidthAction = createAction<string>(CanvasConfigActionEnums.SetAvailableCanvasWidth);
+export const setAvailableCanvasWidthAction = createAction<ICanvasWidthMeasurement>(CanvasConfigActionEnums.SetAvailableCanvasWidth);
 
 // Sets an explicit zoom value and switches the canvas into manual mode (disables auto-zoom).
 export const setManualZoomAction = createAction<number>(CanvasConfigActionEnums.SetManualZoom);
 
-// Reports the mounted canvas; undefined once it unmounts, which is how a rendered page is told apart.
-export const setCanvasMeasurementAction = createAction<ICanvasMeasurement | undefined>(CanvasConfigActionEnums.SetCanvasMeasurement);
+// Reports the mounted canvas. Its absence is how a rendered page is told apart from the designer.
+export const setCanvasMeasurementAction = createAction<ICanvasMeasurement>(CanvasConfigActionEnums.SetCanvasMeasurement);
+
+// Mount/unmount of a canvas. Refcounted: the quick-edit dialog opens a second one over the first.
+export const registerCanvasAction = createAction(CanvasConfigActionEnums.RegisterCanvas);
+export const unregisterCanvasAction = createAction(CanvasConfigActionEnums.UnregisterCanvas);
