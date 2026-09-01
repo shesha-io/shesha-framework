@@ -78,4 +78,16 @@ export interface ISelectOption<TValue = unknown> extends BaseOptionType {
   description?: string | undefined;
 }
 
-export type CustomLabeledValue<TValue = unknown> = LabeledValue & { data: TValue };
+/**
+ * A selected value carrying the presentation fields of the item it came from.
+ *
+ * `color`/`icon`/`description` ride along because the read-only renderer draws the selection as a
+ * tag and reads them off this object — without them every tag falls back to antd's default colour.
+ * They are optional: a plain `LabeledValue` from a source that has no such fields is still valid.
+ */
+export type CustomLabeledValue<TValue = unknown> = LabeledValue & {
+  data: TValue;
+  color?: string | undefined;
+  icon?: string | undefined;
+  description?: string | undefined;
+};
