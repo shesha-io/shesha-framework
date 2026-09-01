@@ -80,11 +80,9 @@ const ExpressionValueCell = <TItem extends object>(props: ExpressionValueCellPro
         itemOnChange({ ...item, [propertyName]: newValue }, { isReorder: false });
       }}
       context={context}
-      placeholder={placeholder}
+      placeholder={placeholder ? `${placeholder} or {{expression}}` : 'Value or {{expression}}'}
       disabled={readOnly}
       focusRows={6}
-      inline
-      allowExpand
     />
   );
 };
