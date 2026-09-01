@@ -3,11 +3,11 @@ import { ChevronControl } from '..';
 import { RefListGroupItemProps } from '@/components/refListSelectorDisplay/provider/models';
 import { IChevronProps } from '../models';
 
-const items: RefListGroupItemProps[] = [
-  { id: 'male-id', item: 'Male', itemValue: 1 } as RefListGroupItemProps,
-  { id: 'female-id', item: 'Female', itemValue: 2, hidden: true } as RefListGroupItemProps,
-  { id: 'other-id', item: 'Other', itemValue: 3 } as RefListGroupItemProps,
-];
+const items = [
+  { id: 'male-id', item: 'Male', itemValue: 1 },
+  { id: 'female-id', item: 'Female', itemValue: 2, hidden: true },
+  { id: 'other-id', item: 'Other', itemValue: 3 },
+] satisfies RefListGroupItemProps[];
 
 vi.mock('@/components/refListSelectorDisplay/provider', () => ({
   useRefListItemGroupConfigurator: () => ({ items }),
@@ -19,7 +19,7 @@ vi.mock('@/designer-components/button/configurableButton', () => ({
   ),
 }));
 
-const model = { id: 'c1', type: 'chevron', propertyName: 'gender' } as IChevronProps;
+const model = { id: 'c1', type: 'chevron', propertyName: 'gender' } satisfies IChevronProps;
 
 const steps = (): (string | null)[] => Array.from(document.querySelectorAll('button')).map((b) => b.textContent);
 

@@ -1,11 +1,21 @@
 import {
   REF_LIST_ITEM_GROUP_CONTEXT_INITIAL_STATE,
 } from './contexts';
-import { IRefListItemGroup, isIRefListItemGroup, RefListGroupItemProps } from '@/components/refListSelectorDisplay/provider/models';
+import { IRefListGroupItemBase, isIRefListItemGroup, RefListGroupItemProps } from '@/components/refListSelectorDisplay/provider/models';
 import { getItemPositionById } from '@/components/refListSelectorDisplay/provider/utils';
 import { createReducer } from '@reduxjs/toolkit';
 import { setItems, selectItemAction, updateItemAction, updateChildItemsAction, storeSettingsAction, syncConfiguredItemsAction } from './actions';
 import { isDefined } from '@/utils/nullables';
+
+/**
+ * The reference list defines a flat set of items, so a group's children are never carried over
+ * when its settings are reapplied.
+ */
+const withoutChildItems = (item: RefListGroupItemProps): IRefListGroupItemBase => {
+  if (!isIRefListItemGroup(item)) return item;
+  const { childItems: _childItems, ...rest } = item;
+  return rest;
+};
 
 export const RefListItemGroupReducer = createReducer(REF_LIST_ITEM_GROUP_CONTEXT_INITIAL_STATE, (builder) => {
   builder
@@ -30,11 +40,9 @@ export const RefListItemGroupReducer = createReducer(REF_LIST_ITEM_GROUP_CONTEXT
           const prior = priorByValue.get(item.itemValue);
           // Keep every setting the user configured for the item and refresh only the data the
           // reference list owns. Listing the preserved properties one by one silently dropped the
-          // rest of the item configuration on each re-read. `childItems` is not carried over: the
-          // reference list defines a flat set of items.
-          const { childItems: _childItems, ...priorSettings } = (prior ?? {}) as IRefListItemGroup;
+          // rest of the item configuration on each re-read.
           return {
-            ...priorSettings,
+            ...(isDefined(prior) ? withoutChildItems(prior) : {}),
             ...item,
             item: item.item ?? undefined,
             color: item.color ?? undefined,
@@ -64,7 +72,7 @@ export const RefListItemGroupReducer = createReducer(REF_LIST_ITEM_GROUP_CONTEXT
           if (!isDefined(configured)) return item;
 
           // The reference list owns the display data, the host owns the configuration.
-          const { childItems: _childItems, id: _id, item: _item, itemValue: _itemValue, color: _color, icon: _icon, ...settings } = configured as IRefListItemGroup;
+          const { id: _id, item: _item, itemValue: _itemValue, color: _color, icon: _icon, ...settings } = withoutChildItems(configured);
           return { ...item, ...settings };
         }),
       };

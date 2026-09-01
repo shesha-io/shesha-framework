@@ -29,10 +29,11 @@ const Probe: FC<{ onReady: (handle: IProbeHandle) => void }> = ({ onReady }) => 
       configureFirstItem: () => updateItem({
         id: 'male-id',
         settings: {
+          id: 'male-id',
           hidden: true,
           tooltip: 'first step',
-          actionConfiguration: { actionName: 'Show Dialog', actionOwner: 'x' },
-        } as RefListGroupItemProps,
+          actionConfiguration: { actionOwner: 'x', actionName: 'Show Dialog', handleSuccess: false, handleFail: false, _type: undefined },
+        },
       }),
     });
   });
@@ -113,7 +114,7 @@ describe('RefList item configurator', () => {
 
     // the designer saves "Hide" on the second step
     await act(async () => {
-      rendered?.rerender(<Canvas items={[{ id: 'female-id', itemValue: 2, hidden: true } as RefListGroupItemProps]} onReady={captureHandle} />);
+      rendered?.rerender(<Canvas items={[{ id: 'female-id', itemValue: 2, hidden: true }]} onReady={captureHandle} />);
       await Promise.resolve();
     });
 
