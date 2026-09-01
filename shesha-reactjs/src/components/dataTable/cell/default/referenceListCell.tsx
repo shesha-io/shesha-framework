@@ -8,7 +8,7 @@ export type IReferenceListCellProps<D extends object = object, V = unknown> = ID
 
 type ReferenceListCellInternalProps = {
   referenceListName: string;
-  referenceListModule: string;
+  referenceListModule: string | null;
   value: number;
 };
 const ReferenceListCellInternal = (props: ReferenceListCellInternalProps): ReactNode => {
@@ -22,11 +22,12 @@ export const ReferenceListCell = <D extends object = object, V = unknown>(props:
   const itemValue = asNumber(props.value);
   const { referenceListModule, referenceListName } = props.columnConfig;
 
-  return isDefined(itemValue) && !isNullOrWhiteSpace(referenceListModule) && !isNullOrWhiteSpace(referenceListName)
+  // module is legitimately empty for legacy reference lists - only the name is required
+  return isDefined(itemValue) && !isNullOrWhiteSpace(referenceListName)
     ? (
       <ReferenceListCellInternal
         value={itemValue}
-        referenceListModule={referenceListModule}
+        referenceListModule={referenceListModule ?? null}
         referenceListName={referenceListName}
       />
     )

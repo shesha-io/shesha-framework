@@ -379,7 +379,15 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
       };
     }
 
-    if (isNonEmptyArray(configuredColumns) || !isDefined(metadata)) {
+    if (isNonEmptyArray(configuredColumns)) {
+      // Columns already exist - disarm permanently so a transient empty `items` never repopulates defaults
+      hasAutoConfiguredRef.current = true;
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    if (!isDefined(metadata)) {
       return () => {
         cancelled = true;
       };

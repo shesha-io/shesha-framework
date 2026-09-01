@@ -1205,6 +1205,41 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                       .toJson(),
                   ],
                 })
+                .addCollapsiblePanel({
+                  id: nanoid(),
+                  parentId: appearanceTabId,
+                  propertyName: 'tableEmptyState',
+                  label: 'Empty State',
+                  labelAlign: 'right',
+                  ghost: true,
+                  collapsible: 'header',
+                  content: {
+                    id: nanoid(),
+                    components: [...fbf()
+                      .addSettingsInput({
+                        id: nanoid(),
+                        propertyName: 'noDataIcon',
+                        label: 'Icon',
+                        inputType: 'iconPicker',
+                        jsSetting: true,
+                      })
+                      .addSettingsInput({
+                        id: nanoid(),
+                        propertyName: 'noDataText',
+                        label: 'Primary Text',
+                        inputType: 'textField',
+                        jsSetting: true,
+                      })
+                      .addSettingsInput({
+                        id: nanoid(),
+                        propertyName: 'noDataSecondaryText',
+                        label: 'Secondary Text',
+                        inputType: 'textField',
+                        jsSetting: true,
+                      }).toJson(),
+                    ],
+                  },
+                })
                 .toJson(),
             ],
           },

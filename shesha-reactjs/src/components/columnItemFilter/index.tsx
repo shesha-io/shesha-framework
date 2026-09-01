@@ -138,7 +138,7 @@ const NumberRangeFilter: FC<INumberRangeFilterProps> = (props) => {
 
 interface IRefListFilterProps extends IFilterBaseProps {
   referenceListName: string;
-  referenceListModule: string;
+  referenceListModule: string | null;
   value?: number[];
   onChange: (changeValue: number[] | undefined) => void;
 }
@@ -503,14 +503,14 @@ export const ColumnItemFilter: FC<IColumnItemFilterProps> = ({
         )}
 
         {(['reference-list-item', 'multiValueRefList'].includes(dataType) || isMultivalueRefList) &&
-          !isNullOrWhiteSpace(referenceListName) && !isNullOrWhiteSpace(referenceListModule) && (
+          !isNullOrWhiteSpace(referenceListName) && (
           <RefListFilter
             onChange={handleRawFilter}
             onPressEnter={handlePressEnter}
             placeholder={`Filter ${filterName}`}
             value={Array.isArray(filter) && isNonEmptyArray<unknown>(filter) && typeof (filter[0]) === "number" ? filter as number[] : []}
             referenceListName={referenceListName}
-            referenceListModule={referenceListModule}
+            referenceListModule={referenceListModule ?? null}
           />
         )}
       </div>

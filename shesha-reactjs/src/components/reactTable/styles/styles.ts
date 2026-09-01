@@ -13,6 +13,7 @@ const tableClassNames = {
   trHead: 'tr-head',
   trBody: 'tr-body',
   shaCrudCell: 'sha-crud-cell',
+  shaActionCell: 'sha-action-cell',
   shaNewRow: 'sha-new-row',
   trBodyGhost: 'tr-body-ghost',
   trOdd: 'tr-odd',
@@ -90,6 +91,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     trHead,
     trBody,
     shaCrudCell,
+    shaActionCell,
     shaNewRow,
     trBodyGhost,
     trOdd,
@@ -194,8 +196,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         justify-content: center;
         height: 100%;
       }
-      .anticon svg{
-        margin-top: 3px !important;
+      .anticon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        vertical-align: middle;
       }
 
       .${shaTable} {
@@ -762,6 +767,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           /* Allow overflow for cells with forms to show validation messages */
           &:has(.sha-form-cell) {
             overflow: visible;
+          }
+
+          /* Icon-only action cells: reduced side padding so the icon fits a strict icon-width column */
+          &.${shaActionCell} {
+            padding: 0.5rem 0.25rem;
+            justify-content: center !important;
           }
 
           .resizer {
