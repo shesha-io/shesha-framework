@@ -1,22 +1,23 @@
-import { IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
+import { IConfigurableActionColumnsProps, IConfigurableColumnsProps } from '@/providers/datatableColumnsConfigurator/models';
 import { DEFAULT_ACTION_COLUMN_WIDTH, IDataTableUserConfig } from './contexts';
 import { prepareColumn, prepareTableColumn } from './utils';
 
-const actionColumn = (extra: Partial<IConfigurableColumnsProps> = {}): IConfigurableColumnsProps =>
-  ({
-    id: 'act1',
-    caption: 'Edit',
-    columnType: 'action',
-    sortOrder: 0,
-    itemType: 'item',
-    isVisible: true,
-    icon: 'EditOutlined',
-    actionConfiguration: undefined,
-    ...extra,
-  }) as IConfigurableColumnsProps;
+const actionColumn = (extra: Partial<IConfigurableActionColumnsProps> = {}): IConfigurableActionColumnsProps => ({
+  id: 'act1',
+  caption: 'Edit',
+  columnType: 'action',
+  sortOrder: 0,
+  itemType: 'item',
+  isVisible: true,
+  icon: 'EditOutlined',
+  ...extra,
+});
 
-const userConfigWithWidth = (width: number): IDataTableUserConfig =>
-  ({ quickSearch: '', tableSorting: [], columns: [{ id: 'act1', width }] }) as IDataTableUserConfig;
+const userConfigWithWidth = (width: number): IDataTableUserConfig => ({
+  quickSearch: '',
+  tableSorting: [],
+  columns: [{ id: 'act1', width }],
+});
 
 describe.each([
   ['prepareColumn', (column: IConfigurableColumnsProps, userConfig?: IDataTableUserConfig) => prepareColumn(column, [], userConfig)],
