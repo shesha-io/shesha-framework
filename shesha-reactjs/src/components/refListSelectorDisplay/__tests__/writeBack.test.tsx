@@ -34,7 +34,38 @@ vi.mock('../options/configurator', async () => {
 
 import RefListItemSelectorSettingsModal from '../options/modal';
 
+/**
+ * A previously saved list, as it comes back from the form configuration: the reference list's
+ * blank display data (colour, icon, alias) was dropped when it was serialised.
+ * `orderIndex` is carried on the stored items but is not part of the declared item type.
+ */
+const savedItems = [
+  { id: 'male-id', item: 'Male', itemValue: 1, orderIndex: 0 },
+  { id: 'female-id', item: 'Female', itemValue: 2, orderIndex: 1 },
+] as unknown as RefListGroupItemProps[];
+
 describe('RefList items write-back', () => {
+  beforeEach(() => {
+    getReferenceList.mockClear();
+  });
+
+  it('reports nothing when the reference list only fills in blank display data', async () => {
+    const onChange = vi.fn();
+    await act(async () => {
+      render(
+        <RefListItemSelectorSettingsModal
+          value={savedItems}
+          onChange={onChange}
+          readOnly={false}
+          referenceList={{ name: 'Gender', module: 'Core' }}
+        />,
+      );
+      await Promise.resolve();
+    });
+
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
   it('propagates a first-step configuration to the host form value', async () => {
     const onChange = vi.fn();
     await act(async () => {
