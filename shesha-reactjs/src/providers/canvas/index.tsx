@@ -8,8 +8,8 @@ import {
   useCallback,
 } from 'react';
 import { reducer } from './reducer';
-import { setAvailableCanvasWidthAction, setCanvasAutoWidthAction, setCanvasWidthPercentAction, setCanvasAutoZoomAction, setCanvasWidthAction, setCanvasZoomAction, setDesignerDeviceAction, setManualZoomAction, setScreenWidthAction } from './actions';
-import { CANVAS_CONTEXT_INITIAL_STATE, CanvasActionsContext, CanvasStateContext, ICanvasActionsContext, ICanvasStateContext, DeviceTypes } from './contexts';
+import { setCanvasMeasurementAction, setAvailableCanvasWidthAction, setCanvasAutoWidthAction, setCanvasWidthPercentAction, setCanvasAutoZoomAction, setCanvasWidthAction, setCanvasZoomAction, setDesignerDeviceAction, setManualZoomAction, setScreenWidthAction } from './actions';
+import { CANVAS_CONTEXT_INITIAL_STATE, CanvasActionsContext, CanvasStateContext, ICanvasActionsContext, ICanvasMeasurement, ICanvasStateContext, DeviceTypes } from './contexts';
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { canvasContextCode } from '@/publicJsApis/apis';
 import { isDefined } from '@/utils/nullables';
@@ -127,6 +127,10 @@ const CanvasProvider: FC<PropsWithChildren> = ({
     dispatch(setAvailableCanvasWidthAction(width));
   }, []);
 
+  const setCanvasMeasurement = useCallback((measurement: ICanvasMeasurement | undefined) => {
+    dispatch(setCanvasMeasurementAction(measurement));
+  }, []);
+
   /* NEW_ACTION_DECLARATION_GOES_HERE */
 
   const actions = useMemo<ICanvasActionsContext>(() => ({
@@ -138,8 +142,9 @@ const CanvasProvider: FC<PropsWithChildren> = ({
     setCanvasAutoWidth,
     setCanvasWidthPercent,
     setAvailableCanvasWidth,
+    setCanvasMeasurement,
     /* NEW_ACTION_GOES_HERE */
-  }), [setDesignerDevice, setCanvasWidth, setCanvasZoom, setManualZoom, setCanvasAutoZoom, setCanvasAutoWidth, setCanvasWidthPercent, setAvailableCanvasWidth]);
+  }), [setDesignerDevice, setCanvasWidth, setCanvasZoom, setManualZoom, setCanvasAutoZoom, setCanvasAutoWidth, setCanvasWidthPercent, setAvailableCanvasWidth, setCanvasMeasurement]);
 
   const contextOnChangeData: ContextOnChangeData<ICanvasStateContext> = useCallback((_, changedData) => {
     if (!isDefined(changedData))

@@ -1,5 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
-import { ICanvasWidthProps, DeviceTypes } from './contexts';
+import { ICanvasMeasurement, ICanvasWidthProps, DeviceTypes } from './contexts';
 
 export enum CanvasConfigActionEnums {
   SetCanvasWidth = 'SET_FORM_WIDTH',
@@ -11,6 +11,7 @@ export enum CanvasConfigActionEnums {
   SetAvailableCanvasWidth = 'SET_AVAILABLE_CANVAS_WIDTH',
   SetCanvasWidthPercent = 'SET_CANVAS_WIDTH_PERCENT',
   SetManualZoom = 'SET_MANUAL_ZOOM',
+  SetCanvasMeasurement = 'SET_CANVAS_MEASUREMENT',
 }
 
 export const setCanvasZoomAction = createAction<number>(CanvasConfigActionEnums.SetCanvasZoom);
@@ -34,3 +35,6 @@ export const setAvailableCanvasWidthAction = createAction<string>(CanvasConfigAc
 
 // Sets an explicit zoom value and switches the canvas into manual mode (disables auto-zoom).
 export const setManualZoomAction = createAction<number>(CanvasConfigActionEnums.SetManualZoom);
+
+// Reports the mounted canvas; undefined once it unmounts, which is how a rendered page is told apart.
+export const setCanvasMeasurementAction = createAction<ICanvasMeasurement | undefined>(CanvasConfigActionEnums.SetCanvasMeasurement);

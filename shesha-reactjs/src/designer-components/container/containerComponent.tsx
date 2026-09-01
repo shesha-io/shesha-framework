@@ -20,6 +20,7 @@ import { useEvents } from '@/components/formDesigner/components/eventsAndApiValu
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { getFullSizeWrapperDesignerStyle } from '@/components/formDesigner/utils/stylingUtils';
 import { useActualContextExecutionNoRefresh } from '@/hooks/formComponentHooks';
+import { useCanvas } from '@/providers/canvas';
 
 const ContainerComponent: ContainerComponentDefinition = {
   styleGroup: 'containers',
@@ -32,7 +33,8 @@ const ContainerComponent: ContainerComponentDefinition = {
   emptyComponents: [],
   getWrapperStyle: (model) => getFullSizeWrapperDesignerStyle(model),
   Factory: ({ model }) => {
-    const { styles, cx } = useStyles(model);
+    const { canvas } = useCanvas();
+    const { styles, cx } = useStyles({ ...model, canvasHeight: canvas?.height });
     // use ...NoRefresh to prevent unnecessary re-renders
     const wrappedStyleJson = useActualContextExecutionNoRefresh(model.wrapperStyle, undefined, {});
     const handleEvent = useEvents<void>(model.componentName);

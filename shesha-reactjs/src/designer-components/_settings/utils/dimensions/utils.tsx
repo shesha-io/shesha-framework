@@ -1,7 +1,7 @@
 import { CSSProperties } from "react";
 import { EyeOutlined, EyeInvisibleOutlined, ColumnWidthOutlined, BorderlessTableOutlined } from "@ant-design/icons";
 import { IDimensionsValue } from "./interfaces";
-import { addPx, allowForCanvasChromeHeight, hasNumber } from "@/utils/style";
+import { addPx, hasNumber } from "@/utils/style";
 import { IDropdownOption } from "@/designer-components/settingsInput/interfaces";
 import { dimensionRelativeToCanvas } from "@/providers/canvas/utils";
 import { MAX_DIMENSION_PERCENT, boundWidth, boundWidthToCanvas, exceedsWidth } from "./bounds";
@@ -27,18 +27,16 @@ const getWidthDimension = (main: string | number, canvasWidth?: string, context?
 };
 
 const getHeightDimension = (main: string | number, canvasHeight?: string, context?: object): string | number | undefined => {
-  // A full-viewport height is reduced first: it resolves against the browser viewport, which is
-  // taller than the canvas, so 100vh would otherwise always overshoot the device screen.
-  const allowed = allowForCanvasChromeHeight(main);
-
-  // If canvasHeight is provided and allowed contains vh, convert to calc
-  if (canvasHeight && typeof allowed === 'string' && /vh/i.test(allowed)) {
-    return dimensionRelativeToCanvas(allowed, canvasHeight, 'vh');
+  // On the canvas vh means the canvas pane, which is shorter than the browser viewport by the
+  // designer chrome around it. With no canvas there is nothing to resolve against, and vh is
+  // already the viewport it was asked for.
+  if (canvasHeight && typeof main === 'string' && /vh/i.test(main)) {
+    return dimensionRelativeToCanvas(main, canvasHeight, 'vh');
   }
 
   // For simple numeric values or values without vh, use addPx
-  if (typeof allowed === 'string' && /^calc\(/i.test(allowed.trim())) return allowed;
-  return !hasNumber(allowed) ? allowed : addPx(allowed, context);
+  if (typeof main === 'string' && /^calc\(/i.test(main.trim())) return main;
+  return !hasNumber(main) ? main : addPx(main, context);
 };
 
 /**

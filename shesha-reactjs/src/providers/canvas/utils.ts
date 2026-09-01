@@ -1,12 +1,12 @@
 import { deepMergeValues } from "@/utils/object";
 import type { DeviceTypes } from "./contexts";
-import { DEFAULT_OPTIONS, MAX_CANVAS_WIDTH_PERCENT, defaultDesignerWidth } from "./constants";
+import { DEFAULT_OPTIONS, MAX_CANVAS_WIDTH_PERCENT, defaultDesignerWidth, dimensionRelativeToCanvas } from "./constants";
 import { DesktopOutlined, MobileOutlined, TabletOutlined } from '@ant-design/icons';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 
 // Re-exported for existing `@/providers/canvas/utils` consumers; they live in `constants` to
 // break an import cycle.
-export { DEFAULT_OPTIONS, MAX_CANVAS_WIDTH_PERCENT, defaultDesignerWidth };
+export { DEFAULT_OPTIONS, MAX_CANVAS_WIDTH_PERCENT, defaultDesignerWidth, dimensionRelativeToCanvas };
 
 export const getDeviceTypeByWidth = (width: number): DeviceTypes => {
   return width > 724
@@ -40,36 +40,6 @@ export const getSmallerDevice = (a: DeviceTypes, b: DeviceTypes): DeviceTypes =>
       : 'desktop';
 };
 
-
-/**
- * Converts viewport units (vw/vh) to be relative to a specific canvas dimension
- * @param dimension - The dimension value (e.g., "50vw", "100vh", "100px", 300)
- * @param canvasDimension - The canvas dimension to calculate relative to (e.g., '100vw', '1024px')
- * @param unit - The unit type to convert ('vw' or 'vh')
- * @returns The converted dimension string
- */
-export const dimensionRelativeToCanvas = (
-  dimension: string | number,
-  canvasDimension: string,
-  unit: 'vw' | 'vh',
-): string => {
-  if (typeof dimension === 'number') {
-    return `${dimension}px`;
-  }
-
-  const trimmed = String(dimension).trim();
-  const unitRegex = new RegExp(`^([\\d.]+)\\s*${unit}$`, 'i');
-  const unitMatch = unitRegex.exec(trimmed);
-
-  if (unitMatch && unitMatch[1] !== undefined) {
-    const percentageOfCanvas = parseFloat(unitMatch[1]);
-    if (!Number.isNaN(percentageOfCanvas)) {
-      return `calc((${percentageOfCanvas} * ${canvasDimension}) / 100)`;
-    }
-  }
-
-  return trimmed;
-};
 
 /** Sentinel value for the responsive Canvas preset in the dropdown */
 export const CANVAS_PRESET_SENTINEL = '__CANVAS_RESPONSIVE__' as const;
@@ -113,6 +83,12 @@ export const getCanvasLayoutWidth = (availableWidth: number, zoom: number, width
     : 1;
   // Floor so sub-pixel rounding cannot push the canvas past the available space.
   return `${Math.max(0, Math.floor((availableWidth * fraction) / zoomFactor))}px`;
+};
+
+/** Pre-zoom height that fills the pane exactly once CSS `zoom` is applied. */
+export const getCanvasLayoutHeight = (availableHeight: number, zoom: number): string => {
+  const zoomFactor = (zoom > 0 ? zoom : DEFAULT_OPTIONS.defaultZoom) / 100;
+  return `${Math.max(0, Math.floor(availableHeight / zoomFactor))}px`;
 };
 
 export interface IAutoZoomParams {

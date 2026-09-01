@@ -8,6 +8,7 @@ import { setCanvasZoomAction,
   setCanvasWidthPercentAction,
   setAvailableCanvasWidthAction,
   setManualZoomAction,
+  setCanvasMeasurementAction,
 } from './actions';
 import { CANVAS_CONTEXT_INITIAL_STATE, ICanvasStateContext } from './contexts';
 import { clampZoom, getDeviceTypeByWidth, getSmallerDevice } from './utils';
@@ -94,6 +95,10 @@ export const reducer = createReducer(CANVAS_CONTEXT_INITIAL_STATE, (builder) => 
         resolved.activeDevice === state.activeDevice
         ? state
         : resolved;
+    })
+    .addCase(setCanvasMeasurementAction, (state, { payload }) => {
+      // Re-reported on every resize tick; returning state unchanged keeps the render count down.
+      return state.canvas?.height === payload?.height ? state : { ...state, canvas: payload };
     })
     .addCase(setScreenWidthAction, (state, { payload }) => {
       const device = getDeviceTypeByWidth(payload);

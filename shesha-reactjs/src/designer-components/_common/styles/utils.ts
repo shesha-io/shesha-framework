@@ -1,7 +1,8 @@
 import { BorderStyle, getGradientColors, IBackgroundValue, IBorderValue, IDimensionsValue, IFontValue, IGradientValue, IShadowValue } from "@/designer-components/_settings/utils";
 import { IConfigurableFormComponent, IStyleValue, StyleBoxValue } from "../../../providers/form/models";
-import { addPx, allowForCanvasChromeHeight, hasNumber } from "@/utils/style";
+import { addPx, hasNumber } from "@/utils/style";
 import { boundWidth } from "@/designer-components/_settings/utils/dimensions/bounds";
+import { dimensionRelativeToCanvas } from "@/providers/canvas/constants";
 import { StringBuilder } from "@/utils";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { CSSProperties } from "react";
@@ -213,20 +214,27 @@ export const backgroundStyles = (model: IBackgroundValue | undefined): string =>
   return sb.build();
 };
 
-export const dimensionsStyles = (model: IDimensionsValue | undefined): string => {
+export const dimensionsStyles = (model: IDimensionsValue | undefined, canvasHeight?: string): string => {
   if (!model) return '';
   const sb = new StringBuilder();
+
+  // On the canvas vh means the canvas pane; with no canvas it is the viewport it was asked for.
+  const height = (value: string | number): string | number =>
+    isDefined(canvasHeight) && typeof value === 'string' && /vh/i.test(value)
+      ? dimensionRelativeToCanvas(value, canvasHeight, 'vh')
+      : value;
+
   // The width axes go through boundWidth, as they do in getDimensionsStyle. No canvas width reaches
   // this path, so only a percentage can be judged - vw stays viewport-relative here and an absolute
   // length has nothing to be compared against.
   if (isDefined(model.width)) sb.append(`width: ${dimensionCss(boundWidth(model.width))};`);
   if (isDefined(model.minWidth)) sb.append(`min-width: ${dimensionCss(boundWidth(model.minWidth))};`);
   if (isDefined(model.maxWidth)) sb.append(`max-width: ${dimensionCss(boundWidth(model.maxWidth))};`);
-  // The height axes go through allowForCanvasChromeHeight: this is the path the container
-  // component uses, and a container is the usual place a full-viewport height is set.
-  if (isDefined(model.height)) sb.append(`height: ${dimensionCss(allowForCanvasChromeHeight(model.height))};`);
-  if (isDefined(model.minHeight)) sb.append(`min-height: ${dimensionCss(allowForCanvasChromeHeight(model.minHeight))};`);
-  if (isDefined(model.maxHeight)) sb.append(`max-height: ${dimensionCss(allowForCanvasChromeHeight(model.maxHeight))};`);
+  // The height axes resolve vh against the canvas: this is the path the container component uses,
+  // and a container is the usual place a full-viewport height is set.
+  if (isDefined(model.height)) sb.append(`height: ${dimensionCss(height(model.height))};`);
+  if (isDefined(model.minHeight)) sb.append(`min-height: ${dimensionCss(height(model.minHeight))};`);
+  if (isDefined(model.maxHeight)) sb.append(`max-height: ${dimensionCss(height(model.maxHeight))};`);
   if (isDefined(model.gridRow) && model.gridRow > 0) sb.append(`grid-row: span ${model.gridRow};`);
   if (isDefined(model.gridColumn) && model.gridColumn > 0) sb.append(`grid-column: span ${model.gridColumn};`);
   return sb.build();

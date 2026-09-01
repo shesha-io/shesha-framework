@@ -133,20 +133,37 @@ describe('getDimensionsStyle', () => {
   });
 });
 
-describe('full-viewport heights on the designer canvas', () => {
-  it('takes the allowance off an exact 100vh', () => {
-    expect(getDimensionsStyle({ height: '100vh' }).height).toBe('80vh');
-    expect(getDimensionsStyle({ minHeight: '100vh' }).minHeight).toBe('80vh');
-    expect(getDimensionsStyle({ maxHeight: '100vh' }).maxHeight).toBe('80vh');
+describe('viewport heights', () => {
+  // getDimensionsStyle(dimensions, canvasWidth, canvasHeight): a canvas height exists only while a
+  // designer canvas is mounted, so its absence is what a rendered page looks like.
+  const CANVAS = '820px';
+
+  it('leaves a viewport height alone on a rendered page, where vh already means the viewport', () => {
+    expect(getDimensionsStyle({ height: '100vh' }).height).toBe('100vh');
+    expect(getDimensionsStyle({ minHeight: '100vh' }).minHeight).toBe('100vh');
+    expect(getDimensionsStyle({ maxHeight: '100vh' }).maxHeight).toBe('100vh');
   });
 
-  it('leaves any other height alone', () => {
-    // Only the value meaning "as tall as the screen" is adjusted; the rest are deliberate sizes.
-    expect(getDimensionsStyle({ height: '50vh' }).height).toBe('50vh');
-    expect(getDimensionsStyle({ height: '120vh' }).height).toBe('120vh');
-    expect(getDimensionsStyle({ height: '800px' }).height).toBe('800px');
-    expect(getDimensionsStyle({ height: 'auto' }).height).toBe('auto');
-    expect(getDimensionsStyle({ height: 'calc(100vh - 10px)' }).height).toBe('calc(100vh - 10px)');
+  it('resolves a viewport height against the canvas when one is mounted', () => {
+    expect(getDimensionsStyle({ height: '100vh' }, undefined, CANVAS).height).toBe('calc((100 * 820px) / 100)');
+    expect(getDimensionsStyle({ minHeight: '100vh' }, undefined, CANVAS).minHeight).toBe('calc((100 * 820px) / 100)');
+    expect(getDimensionsStyle({ maxHeight: '100vh' }, undefined, CANVAS).maxHeight).toBe('calc((100 * 820px) / 100)');
+  });
+
+  it('resolves every vh proportionally, not only an exact 100vh', () => {
+    // The flat allowance this replaces fired on 100vh alone, leaving 99vh to overshoot the canvas.
+    expect(getDimensionsStyle({ height: '99vh' }, undefined, CANVAS).height).toBe('calc((99 * 820px) / 100)');
+    expect(getDimensionsStyle({ height: '50vh' }, undefined, CANVAS).height).toBe('calc((50 * 820px) / 100)');
+  });
+
+  it('leaves a height that is not in vh alone, canvas or no canvas', () => {
+    expect(getDimensionsStyle({ height: '800px' }, undefined, CANVAS).height).toBe('800px');
+    expect(getDimensionsStyle({ height: 'auto' }, undefined, CANVAS).height).toBe('auto');
+    expect(getDimensionsStyle({ height: '120%' }, undefined, CANVAS).height).toBe('120%');
+  });
+
+  it('does not yet reach a vh nested in calc - only a whole value is resolved', () => {
+    expect(getDimensionsStyle({ height: 'calc(100vh - 10px)' }, undefined, CANVAS).height).toBe('calc(100vh - 10px)');
   });
 
   it('does not touch widths', () => {

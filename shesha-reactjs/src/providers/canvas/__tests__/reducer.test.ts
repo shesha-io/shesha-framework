@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { reducer } from '../reducer';
 import { CANVAS_CONTEXT_INITIAL_STATE, ICanvasStateContext } from '../contexts';
-import { setAvailableCanvasWidthAction, setCanvasAutoWidthAction, setCanvasWidthAction, setCanvasWidthPercentAction } from '../actions';
+import { setAvailableCanvasWidthAction, setCanvasAutoWidthAction, setCanvasMeasurementAction, setCanvasWidthAction, setCanvasWidthPercentAction } from '../actions';
 import { MAX_CANVAS_WIDTH_PERCENT } from '../constants';
 
 const state = (overrides: Partial<ICanvasStateContext> = {}): ICanvasStateContext => ({
@@ -142,5 +142,27 @@ describe('canvas reducer - a stale device is corrected, without needless re-rend
 
     expect(next.widthPercent).toBe(80);
     expect(next.designerDevice).toBe('desktop');
+  });
+});
+
+describe('canvas reducer - canvas measurement', () => {
+  it('has no canvas until one is mounted, which is what tells a rendered page apart', () => {
+    expect(state().canvas).toBeUndefined();
+  });
+
+  it('records the measurement a mounted canvas reports', () => {
+    expect(reducer(state(), setCanvasMeasurementAction({ height: '820px' })).canvas).toEqual({ height: '820px' });
+  });
+
+  it('clears the measurement when the canvas unmounts', () => {
+    const measured = reducer(state(), setCanvasMeasurementAction({ height: '820px' }));
+
+    expect(reducer(measured, setCanvasMeasurementAction(undefined)).canvas).toBeUndefined();
+  });
+
+  it('returns the same state object when the measurement has not moved', () => {
+    const measured = reducer(state(), setCanvasMeasurementAction({ height: '820px' }));
+
+    expect(reducer(measured, setCanvasMeasurementAction({ height: '820px' }))).toBe(measured);
   });
 });
