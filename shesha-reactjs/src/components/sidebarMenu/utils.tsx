@@ -52,23 +52,13 @@ function getItem({ label, key, icon, children, isParent, itemType, onClick, navi
           : <span className={className} onClick={clickHandler}>{label}</span>)
         : <span className={className}>{label}</span>;
 
-      // Extract text content for the overflow tooltip
-      const textContent = typeof label === 'string' ? label : undefined;
+      const hasTooltip = isDefined(tooltip) && (typeof tooltip !== 'string' || !isNullOrWhiteSpace(tooltip));
+      if (!hasTooltip) return baseContent;
 
-      // Wrap content in tooltip for text overflow (CSS handles the ellipsis)
-      const contentWithOverflowTooltip = !isNullOrWhiteSpace(textContent) ? (
-        <Tooltip title={textContent} placement="top" mouseEnterDelay={0.5}>
-          {baseContent}
-        </Tooltip>
-      ) : baseContent;
-
-      if (!isDefined(tooltip)) return contentWithOverflowTooltip;
-
-      const tooltipText = typeof tooltip === 'string' ? tooltip : undefined;
       return (
         <span style={{ display: 'inline-flex', alignItems: 'center' }}>
-          {contentWithOverflowTooltip}
-          <Tooltip title={tooltipText} placement="right">
+          {baseContent}
+          <Tooltip title={tooltip} placement="right">
             <QuestionCircleOutlined style={{ marginLeft: 8, fontSize: '12px', opacity: 0.6, zIndex: 1000 }} />
           </Tooltip>
         </span>
