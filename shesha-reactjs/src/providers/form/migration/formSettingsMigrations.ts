@@ -33,6 +33,7 @@ const formSettingsMigrations = (migrator: Migrator<IFormSettings, IFormSettings,
       wrapperCol: isDefined(prev.wrapperCol) ? prev.wrapperCol : { span: 18 },
     }))
     .add(9, (prev) => migrateEmptyStaticLoaderEndpoint(prev))
+    .add(10, (prev) => ({ ...prev, onBeforeDataLoad: prev.onBeforeDataLoad?.replace('form.setFieldsValue({...form.formArguments});', 'form.data = {...form.arguments};') })) // Udate Api
   ;
 
 export const migrateFormSettings = (form: IFormDto, designerComponents: IToolboxComponents): Omit<IFormDto, 'settings'> & { settings: IFormSettings } => {

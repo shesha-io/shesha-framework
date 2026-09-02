@@ -155,6 +155,10 @@ class PublicFormApi<Values extends object = object> implements IFormApi<Values> 
     return this.#data;
   };
 
+  set data(value: FormData<Values>) {
+    this.#form.setFormData({ values: value, mergeValues: false });
+  }
+
   get defaultApiEndpoints(): IEntityEndpoints {
     return this.#form.defaultApiEndpoints;
   };
