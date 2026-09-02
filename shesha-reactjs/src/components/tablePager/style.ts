@@ -7,15 +7,11 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: Pick<ITabl
   const pagination = `${prefixCls}-pagination`;
   const select = `${prefixCls}-select`;
 
+  const itemSizeVar = `--${prefixCls}-pagination-item-size-actual`;
+
   const pager = cx("sha-pager", css`
       * { 
           ${fontStyles(model.font)}
-          ${isDefined(model.font?.size)
-            ? `
-            --ant-pagination-item-size-sm: calc(${model.font.size}px * 1.5px);
-            --ant-pagination-item-size: calc(${model.font.size}px * 1.5px);
-            `
-            : ''}
           -ms-overflow-style: none;
           scrollbar-width: none;
           .${pagination}-item-container {
@@ -33,12 +29,15 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: Pick<ITabl
           }
       }
 
-      &.${pagination} {
+      &&.${pagination} {
           display: flex;
           align-items: center;
           flex-wrap: nowrap;
           min-width: 0;
           max-width: 100%;
+          /* Doubled specificity so this wins over antd's own -small rule, which sets the same
+             property - the pager renders at size="small". */
+          ${isDefined(model.font?.size) ? itemSizeVar + ': ' + (model.font.size * 1.5) + 'px;' : ''}
       }
 
       /* Shrinks ahead of the controls, so a long total truncates instead of pushing them off. */
