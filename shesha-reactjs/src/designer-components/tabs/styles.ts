@@ -122,6 +122,7 @@ export const useStyles = createStyles(({ css, cx, token }, { model, cardStyleCss
                   ${isBottom ? 'border-top-width: 0px;' : ''}
 
                   ${fontStyles(model.font)}
+                  ${isDefined(model.font?.color) ? `--ant-tabs-item-selected-color: ${model.font.color} !important;` : ''}
                   --primary-color: ${token.colorPrimary} !important;
                   --ant-tabs-card-bg: ${background};
                   --ant-color-bg-container: ${background};
