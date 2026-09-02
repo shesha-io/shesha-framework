@@ -552,24 +552,31 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
       return result;
     })
     .add<IAttachmentsEditorProps>(14, (prev, context) => ({ ...prev, downloadZip: context.isNew ?? false ? false : prev.downloadZip }))
-    .add<IAttachmentsEditorProps>(15, (prev) => ({
-      ...prev,
-      desktop: {
-        ...prev.desktop,
-        filesLayout: prev.desktop?.filesLayout ?? prev.filesLayout ?? 'horizontal',
-        gap: prev.desktop?.gap ?? prev.gap ?? 8,
-      },
-      mobile: {
-        ...prev.mobile,
-        filesLayout: prev.mobile?.filesLayout ?? prev.filesLayout ?? 'horizontal',
-        gap: prev.mobile?.gap ?? prev.gap ?? 8,
-      },
-      tablet: {
-        ...prev.tablet,
-        filesLayout: prev.tablet?.filesLayout ?? prev.filesLayout ?? 'horizontal',
-        gap: prev.tablet?.gap ?? prev.gap ?? 8,
-      },
-    }))
+    /* Only an already-saved component gets the layout baked into its devices. Writing it on a newly
+       dropped one would put a value in the model identical to the default, which the settings panel
+       then reports as an override of a setting nobody touched. */
+    .add<IAttachmentsEditorProps>(15, (prev, context) => {
+      if (context.isNew === true) return prev;
+
+      return {
+        ...prev,
+        desktop: {
+          ...prev.desktop,
+          filesLayout: prev.desktop?.filesLayout ?? prev.filesLayout ?? 'horizontal',
+          gap: prev.desktop?.gap ?? prev.gap ?? 8,
+        },
+        mobile: {
+          ...prev.mobile,
+          filesLayout: prev.mobile?.filesLayout ?? prev.filesLayout ?? 'horizontal',
+          gap: prev.mobile?.gap ?? prev.gap ?? 8,
+        },
+        tablet: {
+          ...prev.tablet,
+          filesLayout: prev.tablet?.filesLayout ?? prev.filesLayout ?? 'horizontal',
+          gap: prev.tablet?.gap ?? prev.gap ?? 8,
+        },
+      };
+    })
     /* Freeze the appearance of every already-saved component by baking the real defaults into all
        three device models, so a later change to `defaultStyles()` cannot shift how an existing form
        renders. A newly dropped component skips this and inherits from metadata instead. */
@@ -581,7 +588,11 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
     .add<IAttachmentsEditorProps>(17, (prev) => {
       return swapContainerAndThumbnailStyles(prev);
     })
-    .add<IAttachmentsEditorProps>(18, (prev) => {
+    /* Same reason as 15: a new component has no device models to fill, and creating them here would
+       pin every thumbnail property to the default it already inherits. */
+    .add<IAttachmentsEditorProps>(18, (prev, context) => {
+      if (context.isNew === true) return prev;
+
       const withThumbnail = (device: IAttachmentsEditorDeviceStyles | undefined): IAttachmentsEditorDeviceStyles | undefined =>
         isDefined(device)
           ? { ...device, thumbnailStyle: { ...thumbnailDefaultStyles(), ...device.thumbnailStyle } }
@@ -597,7 +608,13 @@ const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
   /* Rename-only step: runs for new and old alike, and carries the permissions that used to live on
        the Security tab onto the Visible / Interaction Mode settings. */
     .add<IAttachmentsEditorProps>(19, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev))))
-    .add<IAttachmentsEditorProps>(20, (prev) => {
+    /* Carries the two downloaded-file settings onto the devices of a saved component, where the flag
+       used to sit at the root. A newly dropped one is skipped: it has no root value to carry, and a
+       written-out `false` / `CheckCircleOutlined` is what made Style Downloaded Files and Downloaded
+       Icon come up as Overridden on a component straight out of the toolbox. */
+    .add<IAttachmentsEditorProps>(20, (prev, context) => {
+      if (context.isNew === true) return prev;
+
       const withDownloadedFlags = (device: IAttachmentsEditorDeviceStyles | undefined): IAttachmentsEditorDeviceStyles | undefined =>
         isDefined(device)
           ? {
