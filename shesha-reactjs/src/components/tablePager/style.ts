@@ -52,6 +52,10 @@ export const useStyles = createStyles(({ css, cx }, model: Pick<ITablePagerBaseP
       .ant-pagination-jump-prev,
       .ant-pagination-jump-next {
           flex: 0 0 auto;
+          a:not(.ant-pagination-item-link) {
+            display: flex;
+            justify-content: center;
+          }
       }
 
       .ant-pagination-item-link {

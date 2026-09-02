@@ -117,14 +117,18 @@ export class DatasetInstance implements IDatasetInstance {
 
   initialPageSize: number = 10;
 
+  initialCurrentPage: number = DATA_TABLE_CONTEXT_INITIAL_STATE.currentPage;
+
   init = async (args: DatatableInitArgs): Promise<void> => {
     this.log("Initializing datatable instance");
     this.#metadata = args.metadata;
     this.userConfigId = args.userConfigId;
     this.initialPageSize = args.initialPageSize ?? DATA_TABLE_CONTEXT_INITIAL_STATE.selectedPageSize;
+    this.initialCurrentPage = args.currentPage ?? DATA_TABLE_CONTEXT_INITIAL_STATE.currentPage;
     this.state.sortMode = args.sortMode; // TODO: make mandetory and split models
     this.state.dataFetchingMode = args.dataFetchingMode;
     this.state.selectedPageSize = args.initialPageSize ?? DATA_TABLE_CONTEXT_INITIAL_STATE.selectedPageSize;
+    this.state.currentPage = args.currentPage ?? DATA_TABLE_CONTEXT_INITIAL_STATE.currentPage;
     this.state.standardSorting = sortingItems2ColumnSorting(args.standardSorting);
     this.state.strictSortBy = args.strictSortBy;
     this.state.strictSortOrder = args.strictSortOrder;
@@ -204,7 +208,7 @@ export class DatasetInstance implements IDatasetInstance {
         columns: cols,
         configurableColumns: columns,
         // user config
-        currentPage: userConfig?.currentPage ?? 1,
+        currentPage: userConfig?.currentPage ?? state.currentPage,
         selectedPageSize: userConfig?.pageSize ?? state.selectedPageSize,
         quickSearch: userConfig?.quickSearch ?? "",
         tableFilter: userConfig?.advancedFilter ?? [],
@@ -580,12 +584,17 @@ export class DatasetInstance implements IDatasetInstance {
   };
 
   private saveUserConfigAsync = async (updater?: (userConfig: IDataTableUserConfig) => void): Promise<void> => {
-    const { state, initialPageSize, userConfigId } = this;
+    const { state, initialPageSize, initialCurrentPage, userConfigId } = this;
     if (isNullOrWhiteSpace(userConfigId))
       return;
 
     // don't save value if it's set to default, it helps to apply defaults
     const pageSize = state.selectedPageSize === initialPageSize ? undefined : state.selectedPageSize;
+
+    // Same rule for the page, and for the same reason. This runs on every fetch and every column
+    // resize - including from `ReactTable`'s resize effect, which fires during mount while the page
+    // is still the default - so writing 1 here would overwrite the page the user actually left on.
+    const currentPage = state.currentPage === initialCurrentPage ? undefined : state.currentPage;
 
     const columns: ITableColumnUserSettings[] = [];
     if (isNonEmptyArray(state.columns)) {
@@ -602,7 +611,7 @@ export class DatasetInstance implements IDatasetInstance {
 
     const userConfig: IDataTableUserConfig = {
       pageSize: pageSize,
-      currentPage: state.currentPage,
+      currentPage: currentPage,
       quickSearch: state.quickSearch,
       columns: columns,
       tableSorting: state.userSorting ?? [],
