@@ -1,12 +1,12 @@
 import { IDimensionFieldSettingsInputProps } from '@/designer-components/settingsInput/interfaces';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { FCUnwrapped } from '@/providers/form/models';
 import { App, AutoComplete } from 'antd';
 import Icon from '@/components/icon/Icon';
 import { useStyles } from '../styles';
 import { isDefined, isNullOrWhiteSpace } from '@/utils';
 import { DIMENSION_VALUES, GRID_DIMENSION_VALUES } from '@/utils/style';
-import { boundWidthToCanvas, exceedsWidth } from '@/designer-components/_settings/utils/dimensions/bounds';
+import { exceedsWidth } from '@/designer-components/_settings/utils/dimensions/bounds';
 import { useCanvas } from '@/providers/canvas';
 
 const convertOprtions = (options: string[]): { value: string }[] => options.map((item) => ({ value: item }));
@@ -19,8 +19,10 @@ export const DimensionFieldWrapper: FCUnwrapped<IDimensionFieldSettingsInputProp
 
   const { styles } = useStyles();
   const { message } = App.useApp();
-  // Lets an absolute width be judged against the canvas, not just a percentage against 100.
-  const { designerWidth } = useCanvas();
+  // Judged against the on-screen width the canvas covers, which zoom does not move. In "Canvas"
+  // mode designerWidth is the zoom-derived layout width, so judging by it would shift the warning
+  // threshold with the zoom level.
+  const { designerWidth, deviceWidth, autoWidth } = useCanvas();
 
   const allOptions = useMemo (() => {
     return ['gridRowHeight', 'gridColumnWidth'].includes(dimensionType) ? GRID_DIMENSION_VALUES : DIMENSION_VALUES;
@@ -43,25 +45,25 @@ export const DimensionFieldWrapper: FCUnwrapped<IDimensionFieldSettingsInputProp
     setOptions(convertOprtions(filtered));
   };
 
+  // Only a value the user actually edited in this focus session is judged on blur: focusing a
+  // field that already holds an over-wide width and clicking away must stay a no-op.
+  const editedSinceFocus = useRef(false);
+
   /**
-   * Overrides a width wider than the container and says so. On commit, not per keystroke - bounding
-   * as the user types would rewrite "150" to "100" mid-entry.
+   * Warns when a committed width is wider than the canvas. Presentation-only: the value is stored
+   * exactly as entered - the canvas bounds it visually at render time, nothing rewrites it here.
    */
-  const commit = (data: string | undefined): void => {
+  const warnIfExceedsCanvas = (data: string | undefined): void => {
     if (!WIDTH_DIMENSIONS.includes(dimensionType)) return;
 
     // exceedsWidth returns a boolean and so does not narrow `data`; guard the type first.
-    if (typeof data !== 'string' || !exceedsWidth(data, designerWidth)) return;
+    if (typeof data !== 'string' || !exceedsWidth(data, autoWidth ? deviceWidth : designerWidth)) return;
 
-    // boundWidthToCanvas is string | number, so narrow rather than assert.
-    const bounded = boundWidthToCanvas(data, designerWidth);
-    if (typeof bounded !== 'string') return;
-
-    message.warning(`${data.trim()} is wider than the space the component sits in. Applied ${bounded} instead, which is the maximum.`);
-    onChange?.(bounded);
+    message.warning(`${data.trim()} is wider than the canvas, so the canvas displays it bounded. The value is kept as entered.`);
   };
 
   const handleChange = (data: string): void => {
+    editedSinceFocus.current = true;
     onChange?.(data);
   };
 
@@ -69,7 +71,6 @@ export const DimensionFieldWrapper: FCUnwrapped<IDimensionFieldSettingsInputProp
     onChange?.(data);
     setOpen(false);
     handleSearch('');
-    commit(data);
   };
 
   const handleOnClick = (): void => {
@@ -77,9 +78,15 @@ export const DimensionFieldWrapper: FCUnwrapped<IDimensionFieldSettingsInputProp
     setOpen(true);
   };
 
+  const handleFocus = (): void => {
+    editedSinceFocus.current = false;
+    handleOnClick();
+  };
+
   const handleBlur = (): void => {
     setOpen(false);
-    commit(value);
+    if (editedSinceFocus.current) warnIfExceedsCanvas(value);
+    editedSinceFocus.current = false;
   };
 
   return (
@@ -94,7 +101,7 @@ export const DimensionFieldWrapper: FCUnwrapped<IDimensionFieldSettingsInputProp
       }}
       onSelect={handleSelect}
       onChange={handleChange}
-      onFocus={handleOnClick}
+      onFocus={handleFocus}
       onBlur={handleBlur}
       onClick={handleOnClick}
       value={value ?? ''}
