@@ -58,7 +58,6 @@ export const DimensionFieldWrapper: FCUnwrapped<IDimensionFieldSettingsInputProp
       style={{ width }}
       showSearch={{
         onSearch: handleSearch,
-        searchValue: ' ',
       }}
       onSelect={handleSelect}
       onChange={handleChange}

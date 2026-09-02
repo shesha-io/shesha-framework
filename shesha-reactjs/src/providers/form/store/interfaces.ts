@@ -8,7 +8,6 @@ import { ISetFormDataPayload } from "../contexts";
 import { IEntityEndpoints } from "@/providers/sheshaApplication/publicApi/entities/entityTypeAccessor";
 import { ExpressionCaller, IDataArguments, SubmitCaller } from "../submitters/interfaces";
 import { ShaFormSubscriptionType } from "./shaFormInstance";
-import { RecursivePartial } from "@/interfaces/entity";
 
 export type LoaderType = 'gql' | 'custom' | 'none';
 export type SubmitType = 'gql' | 'custom' | 'none';
@@ -125,7 +124,7 @@ export interface IShaFormInstance<Values extends object = object> {
 
   //#region antd methods
   submit: () => void;
-  setFieldsValue: (values: RecursivePartial<Values>) => void;
+  setFieldsValue: (values: Partial<Values>) => void;
   resetFields: () => void;
   getFieldsValue: () => Values;
   validateFields: () => Promise<Values>;

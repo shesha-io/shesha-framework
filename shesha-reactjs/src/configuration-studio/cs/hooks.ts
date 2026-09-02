@@ -62,6 +62,14 @@ export type UseCsTreeDndResponse = {
   readonly isDragging: boolean;
   setIsDragging: (isDragging: boolean) => void;
 };
+
+const EMPTY_CS_TREE_DND_RESPONSE: UseCsTreeDndResponse = {
+  isDragging: false,
+  setIsDragging: () => {
+    //
+  },
+};
+
 export const useCsTreeDnd = (): UseCsTreeDndResponse => {
   const cs = useConfigurationStudioIfAvailable();
   useCsSubscription('tree-dnd');
@@ -70,12 +78,7 @@ export const useCsTreeDnd = (): UseCsTreeDndResponse => {
       isDragging: cs.isTreeDragging,
       setIsDragging: cs.setIsTreeDragging,
     }
-    : {
-      isDragging: false,
-      setIsDragging: () => {
-        //
-      },
-    };
+    : EMPTY_CS_TREE_DND_RESPONSE;
 };
 
 export type UseCsTabsResponse = {
