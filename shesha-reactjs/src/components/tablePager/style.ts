@@ -3,7 +3,10 @@ import { ITablePagerBaseProps } from './tablePaging';
 import { isDefined, isNullOrWhiteSpace } from '@/utils';
 import { fontStyles, marginStyles, paddingStyles } from '@/designer-components/_common/styles/utils';
 
-export const useStyles = createStyles(({ css, cx }, model: Pick<ITablePagerBaseProps, 'font' | 'stylingBoxJson'>) => {
+export const useStyles = createStyles(({ css, cx, prefixCls }, model: Pick<ITablePagerBaseProps, 'font' | 'stylingBoxJson'>) => {
+  const pagination = `${prefixCls}-pagination`;
+  const select = `${prefixCls}-select`;
+
   const pager = cx("sha-pager", css`
       * { 
           ${fontStyles(model.font)}
@@ -15,22 +18,22 @@ export const useStyles = createStyles(({ css, cx }, model: Pick<ITablePagerBaseP
             : ''}
           -ms-overflow-style: none;
           scrollbar-width: none;
-          .ant-pagination-item-container {
+          .${pagination}-item-container {
               display: flex;
               align-items: center;
           }
-          .ant-pagination-item-ellipsis {
+          .${pagination}-item-ellipsis {
               width: max-content;
           }
-          .ant-pagination-item-link-icon{
-            position: absolute;
+          .${pagination}-item-link-icon {
+              position: absolute;
           }
-          .ant-pagination-next button {
+          .${pagination}-next button {
               ${isDefined(model.font?.size) ? `font-size: ${model.font.size}px;` : ''}                
           }
       }
 
-      &.ant-pagination {
+      &.${pagination} {
           display: flex;
           align-items: center;
           flex-wrap: nowrap;
@@ -38,7 +41,8 @@ export const useStyles = createStyles(({ css, cx }, model: Pick<ITablePagerBaseP
           max-width: 100%;
       }
 
-      .ant-pagination-total-text {
+      /* Shrinks ahead of the controls, so a long total truncates instead of pushing them off. */
+      .${pagination}-total-text {
           flex: 0 1 auto;
           min-width: 0;
           overflow: hidden;
@@ -46,26 +50,26 @@ export const useStyles = createStyles(({ css, cx }, model: Pick<ITablePagerBaseP
           text-overflow: ellipsis;
       }
 
-      .ant-pagination-item,
-      .ant-pagination-prev,
-      .ant-pagination-next,
-      .ant-pagination-jump-prev,
-      .ant-pagination-jump-next {
+      .${pagination}-item,
+      .${pagination}-prev,
+      .${pagination}-next,
+      .${pagination}-jump-prev,
+      .${pagination}-jump-next {
           flex: 0 0 auto;
-          a:not(.ant-pagination-item-link) {
-            display: flex;
-            justify-content: center;
+          a:not(.${pagination}-item-link) {
+              display: flex;
+              justify-content: center;
           }
       }
 
-      .ant-pagination-item-link {
+      .${pagination}-item-link {
           display: flex;
           height: 100%;
       }
   `);
 
   const dropdown = cx("sha-dropdown", css`
-      .ant-select-selection-item {
+      .${select}-selection-item {
           ${isDefined(model.font?.size) ? `height: calc(${model.font.size}px * 1.5px);` : ''}            
           display: flex;
           align-items: center;
@@ -80,7 +84,7 @@ export const useStyles = createStyles(({ css, cx }, model: Pick<ITablePagerBaseP
   `);
 
   const popup = cx("sha-popup", css`
-      .ant-select-item-option-content {
+      .${select}-item-option-content {
           ${fontStyles(model.font)}
       }
   `);
