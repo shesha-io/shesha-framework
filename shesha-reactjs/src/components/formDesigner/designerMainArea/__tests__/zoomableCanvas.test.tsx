@@ -9,6 +9,7 @@ vi.mock('@/providers/dataContextProvider/dataContextBinder', () => ({
 import { CanvasProvider, useCanvasState } from '@/providers/canvas';
 import { ICanvasStateContext } from '@/providers/canvas/contexts';
 import { DEFAULT_OPTIONS } from '@/providers/canvas/constants';
+import { sheshaStyles } from '@/styles';
 import { ZoomableCanvas } from '../zoomableCanvas';
 
 /**
@@ -72,9 +73,19 @@ beforeEach(() => {
   renders = [];
 });
 
+const PADDING = 2 * sheshaStyles.paddingLG;
 const zoomFactor = DEFAULT_OPTIONS.defaultZoom / 100;
 
 describe('ZoomableCanvas - published measurement', () => {
+  it('publishes the content-box width: the border-box layout width less the canvas padding', () => {
+    render(<Harness dialogOpen={false} />);
+
+    // Components lay out inside the canvas padding, so vw/bounding must use the content box -
+    // against the border-box width, a "maximum" width still overflowed by the padding.
+    const layoutWidth = Math.floor(1300 / zoomFactor);
+    expect(observed()?.canvas?.width).toBe(`${layoutWidth - PADDING}px`);
+  });
+
   it('keeps the surviving canvas measurement after a sibling canvas unmounts', () => {
     const { rerender } = render(<Harness dialogOpen={false} />);
     const mainWidth = observed()?.canvas?.width;

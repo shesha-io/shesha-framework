@@ -1,4 +1,5 @@
 import { deepMergeValues } from "@/utils/object";
+import { sheshaStyles } from "@/styles";
 import type { DeviceTypes } from "./contexts";
 import { DEFAULT_OPTIONS, MAX_CANVAS_WIDTH_PERCENT, defaultDesignerWidth, dimensionRelativeToCanvas } from "./constants";
 import { DesktopOutlined, MobileOutlined, TabletOutlined } from '@ant-design/icons';
@@ -113,6 +114,22 @@ export const getCanvasDeviceWidth = (availableWidth: number, widthPercent: numbe
     ? Math.min(widthPercent, MAX_CANVAS_WIDTH_PERCENT) / 100
     : 1;
   return `${Math.max(0, Math.floor(availableWidth * fraction))}px`;
+};
+
+/** Padding `.designer-canvas` carries on each side (border-box), doubled for the two sides. */
+const CANVAS_PADDING_PX = 2 * sheshaStyles.paddingLG;
+
+/**
+ * Content-box width of the canvas: its border-box layout width less its own padding. Components
+ * lay out in the content box, so this - not the border-box width - is what the published
+ * measurement must carry: a `100vw` or a width bounded "to the maximum" against the border-box
+ * width still overflowed the content box by the padding and was clipped.
+ */
+export const getCanvasContentBoxWidth = (borderBoxWidth: string): string => {
+  const parsed = parseFloat(borderBoxWidth);
+  return Number.isFinite(parsed)
+    ? `${Math.max(0, parsed - CANVAS_PADDING_PX)}px`
+    : borderBoxWidth;
 };
 
 /** Pre-zoom height that fills the pane exactly once CSS `zoom` is applied. */

@@ -1,5 +1,23 @@
 import { describe, expect, it } from 'vitest';
-import { MAX_CANVAS_WIDTH_PERCENT, calculateAutoZoom, getCanvasLayoutWidth, parseCanvasContextWidth, parseCanvasWidthPercent } from '../utils';
+import { sheshaStyles } from '@/styles';
+import { MAX_CANVAS_WIDTH_PERCENT, calculateAutoZoom, getCanvasContentBoxWidth, getCanvasLayoutWidth, parseCanvasContextWidth, parseCanvasWidthPercent } from '../utils';
+
+describe('getCanvasContentBoxWidth - the published width components are bounded by', () => {
+  const PADDING = 2 * sheshaStyles.paddingLG;
+
+  it('subtracts the canvas padding from the border-box width', () => {
+    expect(getCanvasContentBoxWidth('1733px')).toBe(`${1733 - PADDING}px`);
+    expect(getCanvasContentBoxWidth('375px')).toBe(`${375 - PADDING}px`);
+  });
+
+  it('never goes negative on a width narrower than the padding', () => {
+    expect(getCanvasContentBoxWidth('10px')).toBe('0px');
+  });
+
+  it('leaves a width it cannot read untouched', () => {
+    expect(getCanvasContentBoxWidth('auto')).toBe('auto');
+  });
+});
 
 describe('parseCanvasContextWidth - a script writing canvasContext.designerWidth', () => {
   it('reads a plain length, with or without the px unit', () => {

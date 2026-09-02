@@ -1,6 +1,6 @@
 import { useCanvas } from '@/providers';
 import { FC, PropsWithChildren, useCallback, useEffect, useLayoutEffect, useState } from 'react';
-import { calculateAutoZoom, DEFAULT_OPTIONS, getCanvasDeviceWidth, getCanvasLayoutHeight, getCanvasLayoutWidth, usePinchZoom } from '@/providers/canvas/utils';
+import { calculateAutoZoom, DEFAULT_OPTIONS, getCanvasContentBoxWidth, getCanvasDeviceWidth, getCanvasLayoutHeight, getCanvasLayoutWidth, usePinchZoom } from '@/providers/canvas/utils';
 import { useStyles } from './styles';
 import classNames from 'classnames';
 import { useElementSizeTracking } from '@/hooks/useElementSize';
@@ -96,11 +96,16 @@ export const ZoomableCanvas: FC<PropsWithChildren<IZoomableCanvasProps>> = ({ ch
     ? getCanvasLayoutHeight(availableHeight, canZoom ? zoom : 100)
     : undefined;
 
+  // Published as the content box: `.designer-canvas` is border-box with its own padding (applied
+  // with canZoom), and components lay out inside that padding. The div's style.width below stays
+  // the border-box layout width.
+  const measuredWidth = canZoom ? getCanvasContentBoxWidth(canvasWidth) : canvasWidth;
+
   // canvasMounts: same republish-on-sibling-unmount rule as the width effect above.
   useIsomorphicLayoutEffect(() => {
     if (isDefined(canvasHeight))
-      setCanvasMeasurement({ width: canvasWidth, height: canvasHeight });
-  }, [canvasWidth, canvasHeight, setCanvasMeasurement, canvasMounts]);
+      setCanvasMeasurement({ width: measuredWidth, height: canvasHeight });
+  }, [measuredWidth, canvasHeight, setCanvasMeasurement, canvasMounts]);
 
   return (
     <>
