@@ -5,10 +5,12 @@ import { IConfigurableActionGroupDictionary } from '@/providers/configurableActi
 import { SourceFilesFolderProvider } from '@/providers/sourceFileManager/sourcesFolderProvider';
 import { arrayHasAtLeastNDefined } from '@/utils/array';
 import { useAvailableStandardConstantsMetadata } from '@/utils/metadata/hooks';
+import { useConstantsEvaluator } from '../codeEditor/hooks/useConstantsEvaluator';
+import { IObjectMetadata } from '@/interfaces/metadata';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { nanoid } from '@/utils/uuid';
 import { Collapse, Form } from 'antd';
-import { FC, ReactNode, useMemo } from 'react';
+import { FC, ReactNode, useEffect, useMemo, useState } from 'react';
 import FormItem from '../_settings/components/formItem';
 import { StyledLabel } from '../_settings/utils/utils';
 import { SettingInput } from '../settingsInput/settingsInput';
@@ -46,7 +48,24 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
   const { getActions, getConfigurableActionOrNull } = useConfigurableActionDispatcher();
   const actions = getActions();
 
-  const availableConstants = useAvailableStandardConstantsMetadata();
+  const standardConstants = useAvailableStandardConstantsMetadata();
+  // settings markup can widen the constants exposed to the action arguments (e.g. datatable row events add `selectedRow`)
+  const constantsEvaluator = useConstantsEvaluator({ availableConstantsExpression: props.editorConfig?.availableConstantsExpression });
+  const [evaluatedConstants, setEvaluatedConstants] = useState<IObjectMetadata | undefined>(undefined);
+  useEffect(() => {
+    if (!constantsEvaluator) return undefined;
+    let cancelled = false;
+    constantsEvaluator()
+      .then((meta) => {
+        if (!cancelled) setEvaluatedConstants(meta);
+      })
+      .catch((error) => console.error('Failed to evaluate available constants', error));
+    return () => {
+      cancelled = true;
+    };
+  }, [constantsEvaluator]);
+  const customConstants = constantsEvaluator ? evaluatedConstants : undefined;
+  const availableConstants = customConstants ?? standardConstants;
 
   const formValues = useMemo<IActionFormModel | null>(() => {
     if (!value)
@@ -137,7 +156,9 @@ export const ConfigurableActionConfigurator: FC<IConfigurableActionConfiguratorP
         {selectedAction && selectedAction.hasArguments && (
           <SourceFilesFolderProvider folder={`action-${props.level}`}>
             <Form.Item name={FORM_ARGUMENTS_FIELD} label={null}>
+              {/* the editor memoizes its constants on mount, remount once the custom set is resolved */}
               <ActionArgumentsEditor
+                key={customConstants ? 'custom' : 'standard'}
                 action={selectedAction}
                 readOnly={readOnly}
                 availableConstants={availableConstants}
