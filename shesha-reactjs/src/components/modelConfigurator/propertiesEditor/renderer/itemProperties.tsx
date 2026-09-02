@@ -12,7 +12,6 @@ import { useFormBuilderFactory } from '@/form-factory/hooks';
 import { useModelConfigurator } from '@/providers/modelConfigurator';
 import { IModelItem } from '@/interfaces/modelConfigurator';
 import { OnFormValuesChangeHandler } from '@/components/configurableForm/models';
-import { RecursivePartial } from '@/interfaces/entity';
 import { isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 
 export const ToolbarItemProperties: FC = () => {
@@ -37,7 +36,7 @@ export const ToolbarItemProperties: FC = () => {
   const currentItem: IModelItem | undefined = isNotNullOrWhiteSpace(selectedItemId) ? getItem(selectedItemId) : undefined;
   useDeepCompareEffect(() => {
     if (currentItem)
-      formRef.current?.setFieldsValue(currentItem as RecursivePartial<IModelItem>);
+      formRef.current?.setFieldsValue(currentItem);
   }, [currentItem]);
 
   useEffect(() => {
