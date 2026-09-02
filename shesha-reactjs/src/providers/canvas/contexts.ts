@@ -35,6 +35,22 @@ export interface ICanvasStateContext {
   activeDevice?: DeviceTypes;
 }
 
+/**
+ * Script-facing subset of the canvas state, bound to the data context. The per-tick canvas
+ * measurement and the mount refcount stay in React context only: binding them fanned a
+ * forceUpdate across every data context on each zoom tick and each pixel of pane resize.
+ */
+export interface ICanvasScriptState {
+  zoom: number;
+  autoZoom: boolean;
+  autoWidth: boolean;
+  widthPercent: number;
+  designerWidth: string;
+  designerDevice: DeviceTypes | undefined;
+  physicalDevice: DeviceTypes | undefined;
+  activeDevice: DeviceTypes | undefined;
+}
+
 /** What a mounted canvas reports as its pane is resized. */
 export interface ICanvasWidthMeasurement {
   /** Pre-zoom width the canvas is laid out at. */

@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { GroupOutlined } from '@ant-design/icons';
 import { IContainerComponentProps } from '@/interfaces';
 
@@ -37,11 +38,14 @@ const ContainerComponent: ContainerComponentDefinition = {
     const { canvas } = useCanvas();
     // Same gate as useFormComponentStyles: a container off the canvas ignores its measurement.
     const isOnCanvas = useIsOnCanvas();
-    const { styles, cx } = useStyles({
-      ...model,
-      canvasWidth: isOnCanvas ? canvas?.width : undefined,
-      canvasHeight: isOnCanvas ? canvas?.height : undefined,
-    });
+    const canvasWidth = isOnCanvas ? canvas?.width : undefined;
+    const canvasHeight = isOnCanvas ? canvas?.height : undefined;
+    // Stable reference: a fresh object every render defeats createStyles' reference-based memo.
+    const styleModel = useMemo(
+      () => ({ ...model, canvasWidth, canvasHeight }),
+      [model, canvasWidth, canvasHeight],
+    );
+    const { styles, cx } = useStyles(styleModel);
     // use ...NoRefresh to prevent unnecessary re-renders
     const wrappedStyleJson = useActualContextExecutionNoRefresh(model.wrapperStyle, undefined, {});
     const handleEvent = useEvents<void>(model.componentName);

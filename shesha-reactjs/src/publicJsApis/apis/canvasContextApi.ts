@@ -1,13 +1,5 @@
 export type DeviceTypes = 'desktop' | 'mobile' | 'tablet' | 'custom';
 
-/** The designer canvas, measured. Absent on a rendered page, which has no canvas. */
-export interface ICanvasMeasurement {
-  /** Pre-zoom width the canvas is laid out at - what `vw` resolves against on it. */
-  readonly width: string;
-  /** Pre-zoom height of the pane the canvas scrolls inside - what `vh` resolves against on it. */
-  readonly height: string;
-}
-
 /**
  * The measurement plumbing the canvas drives from its own ResizeObserver - `setCanvasMeasurement`,
  * `setAvailableCanvasWidth`, `registerCanvas`, `unregisterCanvas` - is deliberately absent. Those
@@ -27,8 +19,10 @@ export interface ICanvasActions {
 
 /**
  * Every writable member below is applied through the matching action. The `readonly` ones are
- * derived - from the browser, or from the canvas measuring itself - so assigning to one would be
- * silently discarded on the next measurement rather than doing what it looks like it does.
+ * derived from the browser, so assigning to one would be silently discarded on the next
+ * measurement rather than doing what it looks like it does. The canvas's own live measurement is
+ * not exposed here: it changes on every zoom tick and pane resize, and is presentation state of
+ * the designer, not of the form.
  */
 export interface ICanvasContextApi {
   /** Assigning a zoom is a manual zoom: it turns auto zoom off, as the toolbar input does. */
@@ -50,8 +44,5 @@ export interface ICanvasContextApi {
   readonly physicalDevice?: DeviceTypes;
   /** The device styles are read for: the smaller of the canvas and physical devices. */
   readonly activeDevice?: DeviceTypes;
-  readonly canvas?: ICanvasMeasurement;
-  /** Canvases mounted. Zero on a rendered page; the quick-edit dialog opens a second one. */
-  readonly canvasMounts?: number;
   api: ICanvasActions;
 }

@@ -13,7 +13,7 @@ import {
   setCanvasAutoWidthAction, setCanvasWidthPercentAction, setCanvasAutoZoomAction, setCanvasWidthAction,
   setCanvasZoomAction, setDesignerDeviceAction, setManualZoomAction, setScreenWidthAction,
 } from './actions';
-import { CANVAS_CONTEXT_INITIAL_STATE, CanvasActionsContext, CanvasStateContext, ICanvasActionsContext, ICanvasMeasurement, ICanvasStateContext, ICanvasWidthMeasurement, DeviceTypes } from './contexts';
+import { CANVAS_CONTEXT_INITIAL_STATE, CanvasActionsContext, CanvasStateContext, ICanvasActionsContext, ICanvasMeasurement, ICanvasScriptState, ICanvasStateContext, ICanvasWidthMeasurement, DeviceTypes } from './contexts';
 import DataContextBinder from '../dataContextProvider/dataContextBinder';
 import { canvasContextCode } from '@/publicJsApis/apis';
 import { isDefined } from '@/utils/nullables';
@@ -23,6 +23,7 @@ import { DataTypes } from '@/interfaces/dataTypes';
 import { SheshaCommonContexts } from '../dataContextManager/models';
 import { ContextOnChangeData } from '../dataContextProvider/contexts';
 import { useLocalStorage } from '@/hooks';
+import { useDebouncedCallback } from 'use-debounce';
 import { clampZoom, getDeviceTypeByWidth, parseCanvasContextWidth } from './utils';
 import { boundCanvasWidthPercent } from './constants';
 
@@ -41,7 +42,7 @@ const CanvasProvider: FC<PropsWithChildren> = ({
     },
     // Every property here is either handled in contextOnChangeData below or marked readonly in
     // ICanvasContextApi. A property in neither would offer intellisense for a write that is then
-    // silently dropped.
+    // silently dropped. Mirrors ICanvasScriptState - only the script-facing subset is bound.
     properties: [
       { path: 'zoom', dataType: DataTypes.number },
       { path: 'autoZoom', dataType: DataTypes.boolean },
@@ -51,8 +52,6 @@ const CanvasProvider: FC<PropsWithChildren> = ({
       { path: 'designerDevice', dataType: DataTypes.string },
       { path: 'physicalDevice', dataType: DataTypes.string },
       { path: 'activeDevice', dataType: DataTypes.string },
-      { path: 'canvas', dataType: DataTypes.object },
-      { path: 'canvasMounts', dataType: DataTypes.number },
     ],
     dataType: DataTypes.object,
   } as IObjectMetadata), []);
@@ -88,18 +87,43 @@ const CanvasProvider: FC<PropsWithChildren> = ({
     widthPercent: boundCanvasWidthPercent(storedWidthPercent),
   });
 
-  useEffect(() => {
+  // Debounced: a zoom tick or a pane resize updates this state per frame, and localStorage
+  // writes are synchronous. Values that have not moved are skipped entirely.
+  const persistState = useDebouncedCallback((s: {
+    autoWidth: boolean;
+    designerWidth: string;
+    zoom: number;
+    designerDevice: DeviceTypes | undefined;
+    widthPercent: number;
+  }): void => {
     // In "Canvas" mode designerWidth is a measurement of the pane, not a user choice. Persisting it
     // would restore a stale width on the next load - and lay the canvas out at it for a frame -
     // before the pane has been measured again.
-    if (!state.autoWidth)
-      setStoredDesignerWidth(state.designerWidth);
-    setStoredDesigneZoom(state.zoom);
-    setStoredAutoWidth(state.autoWidth);
-    setStoredDesignerDevice(state.designerDevice ?? 'desktop');
-    setStoredWidthPercent(state.widthPercent);
-  }, [setStoredDesigneZoom, setStoredDesignerWidth, setStoredAutoWidth, setStoredDesignerDevice, setStoredWidthPercent,
-    state.autoWidth, state.designerWidth, state.zoom, state.designerDevice, state.widthPercent]);
+    if (!s.autoWidth && s.designerWidth !== storedDesignerWidth)
+      setStoredDesignerWidth(s.designerWidth);
+    if (s.zoom !== storedDesigneZoom)
+      setStoredDesigneZoom(s.zoom);
+    if (s.autoWidth !== storedAutoWidth)
+      setStoredAutoWidth(s.autoWidth);
+    const designerDevice = s.designerDevice ?? 'desktop';
+    if (designerDevice !== storedDesignerDevice)
+      setStoredDesignerDevice(designerDevice);
+    if (s.widthPercent !== storedWidthPercent)
+      setStoredWidthPercent(s.widthPercent);
+  }, 300);
+
+  useEffect(() => {
+    persistState({
+      autoWidth: state.autoWidth,
+      designerWidth: state.designerWidth,
+      zoom: state.zoom,
+      designerDevice: state.designerDevice,
+      widthPercent: state.widthPercent,
+    });
+  }, [persistState, state.autoWidth, state.designerWidth, state.zoom, state.designerDevice, state.widthPercent]);
+
+  // Flush on unmount so a change made just before the designer closes still lands.
+  useEffect(() => () => persistState.flush(), [persistState]);
 
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
@@ -171,10 +195,25 @@ const CanvasProvider: FC<PropsWithChildren> = ({
     /* NEW_ACTION_GOES_HERE */
   }), [setDesignerDevice, setCanvasWidth, setCanvasZoom, setManualZoom, setCanvasAutoZoom, setCanvasAutoWidth, setCanvasWidthPercent, setAvailableCanvasWidth, setCanvasMeasurement, registerCanvas, unregisterCanvas]);
 
+  // The script-facing subset of the state. The per-tick canvas measurement and the mount refcount
+  // stay in React context only: binding them fanned a forceUpdate across every data context on
+  // each zoom tick and each pixel of pane resize.
+  const contextData = useMemo<ICanvasScriptState>(() => ({
+    zoom: state.zoom,
+    autoZoom: state.autoZoom,
+    autoWidth: state.autoWidth,
+    widthPercent: state.widthPercent,
+    designerWidth: state.designerWidth,
+    designerDevice: state.designerDevice,
+    physicalDevice: state.physicalDevice,
+    activeDevice: state.activeDevice,
+  }), [state.zoom, state.autoZoom, state.autoWidth, state.widthPercent, state.designerWidth,
+    state.designerDevice, state.physicalDevice, state.activeDevice]);
+
   // Only fired for writes made into the context - by a script, not by the reducer - so applying one
   // through its action cannot feed back. Every writable property in contextMetadata is handled here;
   // the rest are readonly in ICanvasContextApi so a write to one is flagged rather than dropped.
-  const contextOnChangeData: ContextOnChangeData<ICanvasStateContext> = useCallback((_, changedData) => {
+  const contextOnChangeData: ContextOnChangeData<ICanvasScriptState> = useCallback((_, changedData) => {
     if (!isDefined(changedData))
       return;
 
@@ -215,12 +254,12 @@ const CanvasProvider: FC<PropsWithChildren> = ({
     setDesignerDevice, setCanvasAutoWidth, setCanvasWidthPercent, setManualZoom, setCanvasAutoZoom, setCanvasWidth]);
 
   return (
-    <DataContextBinder<ICanvasStateContext>
+    <DataContextBinder<ICanvasScriptState>
       id={SheshaCommonContexts.CanvasContext}
       name={SheshaCommonContexts.CanvasContext}
       description="Canvas context"
       type="appLayer"
-      data={state}
+      data={contextData}
       api={actions}
       onChangeData={contextOnChangeData}
       metadata={contextMetadata}
