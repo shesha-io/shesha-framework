@@ -32,6 +32,7 @@ import { getBackgroundStyle } from "@/designer-components/_settings/utils/backgr
 import { jsonSafeParse, removeUndefinedProps } from "@/utils/object";
 import { getDimensionsStyle } from "@/designer-components/_settings/utils/dimensions/utils";
 import { getOverflowStyle } from "@/designer-components/_settings/utils/overflow/util";
+import { useIsOnCanvas } from "@/providers/canvas/onCanvas";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { useIsFirstRender } from "./useIsFirstRender";
 import { ISheshaApplicationInstance } from "@/providers/sheshaApplication/application";
@@ -311,6 +312,11 @@ export const useFormComponentStyles = <TModel extends IStyleValue & Pick<IConfig
     : model.style;
   const jsStyle = useActualContextExecution(styleSource, undefined, {}); // use default style if empty or error
   const { canvas } = useCanvas();
+  // The canvas measurement is app-level state; only components on the canvas may consume it.
+  // Off-canvas forms - the properties panel, settings modals - take the "no canvas" path.
+  const isOnCanvas = useIsOnCanvas();
+  const canvasWidth = isOnCanvas ? canvas?.width : undefined;
+  const canvasHeight = isOnCanvas ? canvas?.height : undefined;
 
   const { dimensions, border, font, shadow, background, stylingBox, stylingBoxJson, overflow } = model;
 
@@ -324,7 +330,7 @@ export const useFormComponentStyles = <TModel extends IStyleValue & Pick<IConfig
   const fontStyles = useMemo(() => getFontStyle(font), [font]);
   const shadowStyles = useMemo(() => getShadowStyle(shadow), [shadow]);
   const stylingBoxAsCSS = useMemo(() => pickStyleFromModel(stylingBoxParsed as StyleBoxValue), [stylingBoxParsed]);
-  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, canvas?.width, canvas?.height), [dimensions, canvas?.width, canvas?.height]);
+  const dimensionsStyles = useMemo(() => getDimensionsStyle(dimensions, canvasWidth, canvasHeight), [dimensions, canvasWidth, canvasHeight]);
   const overflowStyles = useMemo(() => isDefined(overflow) ? getOverflowStyle(overflow, false) : {}, [overflow]);
 
   const appearanceStyle = useDeepCompareMemo(() => removeUndefinedProps(

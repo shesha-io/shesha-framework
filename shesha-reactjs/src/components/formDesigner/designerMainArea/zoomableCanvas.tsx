@@ -5,6 +5,7 @@ import { useStyles } from './styles';
 import classNames from 'classnames';
 import { useElementSizeTracking } from '@/hooks/useElementSize';
 import { isDefined } from '@/utils/nullables';
+import { OnCanvasContext } from '@/providers/canvas/onCanvas';
 
 // useLayoutEffect warns on the server, where there is nothing to measure.
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
@@ -111,7 +112,10 @@ export const ZoomableCanvas: FC<PropsWithChildren<IZoomableCanvasProps>> = ({ ch
             zoom: `${zoom}%`,
           } : {}}
         >
-          {children}
+          {/* Only this subtree is on the canvas; forms elsewhere must ignore its measurement. */}
+          <OnCanvasContext.Provider value={true}>
+            {children}
+          </OnCanvasContext.Provider>
         </div>
         {/* Dedicated popup container for canvas components - applies zoom transformation */}
         {canZoom && (

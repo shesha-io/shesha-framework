@@ -21,6 +21,7 @@ import { migratePermissionsToVisiblePermissions } from '../_common-migrations/mi
 import { getFullSizeWrapperDesignerStyle } from '@/components/formDesigner/utils/stylingUtils';
 import { useActualContextExecutionNoRefresh } from '@/hooks/formComponentHooks';
 import { useCanvas } from '@/providers/canvas';
+import { useIsOnCanvas } from '@/providers/canvas/onCanvas';
 
 const ContainerComponent: ContainerComponentDefinition = {
   styleGroup: 'containers',
@@ -34,7 +35,13 @@ const ContainerComponent: ContainerComponentDefinition = {
   getWrapperStyle: (model) => getFullSizeWrapperDesignerStyle(model),
   Factory: ({ model }) => {
     const { canvas } = useCanvas();
-    const { styles, cx } = useStyles({ ...model, canvasWidth: canvas?.width, canvasHeight: canvas?.height });
+    // Same gate as useFormComponentStyles: a container off the canvas ignores its measurement.
+    const isOnCanvas = useIsOnCanvas();
+    const { styles, cx } = useStyles({
+      ...model,
+      canvasWidth: isOnCanvas ? canvas?.width : undefined,
+      canvasHeight: isOnCanvas ? canvas?.height : undefined,
+    });
     // use ...NoRefresh to prevent unnecessary re-renders
     const wrappedStyleJson = useActualContextExecutionNoRefresh(model.wrapperStyle, undefined, {});
     const handleEvent = useEvents<void>(model.componentName);
