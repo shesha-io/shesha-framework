@@ -1,6 +1,7 @@
 import { Migrator } from '@/utils/fluentMigrator/migrator';
 import { IConfigurableFormComponent, SettingsMigrationContext } from '@/interfaces';
 import { IFlatComponentsStructure } from '@/providers/form/models';
+import { isDefined } from '@/utils/nullables';
 import AttachmentsEditor from '../attachmentsEditor';
 import { IAttachmentsEditorProps } from '../interfaces';
 
@@ -16,8 +17,13 @@ import { IAttachmentsEditorProps } from '../interfaces';
  */
 describe('a newly dropped File List', () => {
   const newComponentModel = (): IAttachmentsEditorProps => {
-    const migrator = new Migrator<IConfigurableFormComponent, IConfigurableFormComponent, SettingsMigrationContext>();
-    const fluent = AttachmentsEditor.migrator(migrator);
+    const migrator = new Migrator<IConfigurableFormComponent, IAttachmentsEditorProps, SettingsMigrationContext>();
+
+    /* Declared optional on the toolbox component, so it is checked rather than asserted — a File
+       List that had lost its migrator would otherwise fail these as an unrelated crash. */
+    const fluent = AttachmentsEditor.migrator?.(migrator);
+    if (!isDefined(fluent)) throw new Error('The File List component defines no migrator.');
+
     const context: SettingsMigrationContext = {
       isNew: true,
       formSettings: undefined,
@@ -27,10 +33,16 @@ describe('a newly dropped File List', () => {
       componentId: 'attachments-editor',
     };
 
-    return fluent.migrator.upgrade(
-      { id: 'attachments-editor', type: AttachmentsEditor.type, propertyName: 'documents', version: -1 },
-      context,
-    ) as IAttachmentsEditorProps;
+    /* Typed rather than passed as a literal: `upgrade` takes an IHasVersion, which the rest of a
+       component model is excess to. */
+    const dropped: IConfigurableFormComponent = {
+      id: 'attachments-editor',
+      type: AttachmentsEditor.type,
+      propertyName: 'documents',
+      version: -1,
+    };
+
+    return fluent.migrator.upgrade(dropped, context);
   };
 
   it.each(['desktop', 'tablet', 'mobile'] as const)('carries no %s style model', (device) => {
