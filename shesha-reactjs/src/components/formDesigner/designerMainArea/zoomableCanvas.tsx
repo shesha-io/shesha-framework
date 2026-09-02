@@ -16,7 +16,7 @@ export interface IZoomableCanvasProps {
 
 export const ZoomableCanvas: FC<PropsWithChildren<IZoomableCanvasProps>> = ({ children, canZoom }) => {
   const { styles } = useStyles();
-  const { zoom, setCanvasZoom, setAvailableCanvasWidth, setCanvasMeasurement, registerCanvas, unregisterCanvas, designerWidth, autoZoom, autoWidth, widthPercent } = useCanvas();
+  const { zoom, setCanvasZoom, setAvailableCanvasWidth, setCanvasMeasurement, registerCanvas, unregisterCanvas, designerWidth, autoZoom, autoWidth, widthPercent, canvasMounts } = useCanvas();
 
   const handleZoomChange = useCallback((newZoom: number) => {
     if (!canZoom) return;
@@ -83,20 +83,24 @@ export const ZoomableCanvas: FC<PropsWithChildren<IZoomableCanvasProps>> = ({ ch
   // after paint shows one frame in the previously pinned device's settings.
   const deviceWidth = getCanvasDeviceWidth(availableWidth, widthPercent);
 
+  // canvasMounts is a dependency on purpose: the measurements are last-writer-wins across mounted
+  // canvases, so when a sibling (the quick-edit dialog's canvas) unmounts, the refcount change
+  // re-runs this effect and the survivor republishes its own measurement over the departed one.
   useIsomorphicLayoutEffect(() => {
     if (isAutoWidth)
       setAvailableCanvasWidth({ layoutWidth: canvasWidth, deviceWidth });
-  }, [isAutoWidth, canvasWidth, deviceWidth, setAvailableCanvasWidth]);
+  }, [isAutoWidth, canvasWidth, deviceWidth, setAvailableCanvasWidth, canvasMounts]);
 
   // What `vh` means on the canvas: the pane it scrolls inside, pre-zoom as the width is.
   const canvasHeight = availableHeight > 0
     ? getCanvasLayoutHeight(availableHeight, canZoom ? zoom : 100)
     : undefined;
 
+  // canvasMounts: same republish-on-sibling-unmount rule as the width effect above.
   useIsomorphicLayoutEffect(() => {
     if (isDefined(canvasHeight))
       setCanvasMeasurement({ width: canvasWidth, height: canvasHeight });
-  }, [canvasWidth, canvasHeight, setCanvasMeasurement]);
+  }, [canvasWidth, canvasHeight, setCanvasMeasurement, canvasMounts]);
 
   return (
     <>
