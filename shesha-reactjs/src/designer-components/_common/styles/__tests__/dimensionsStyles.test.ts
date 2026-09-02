@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { dimensionsStyles } from '../utils';
 
 describe('dimensionsStyles - the CSS-string path used by the container component', () => {

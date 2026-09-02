@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { reducer } from '../reducer';
 import { CANVAS_CONTEXT_INITIAL_STATE, ICanvasStateContext } from '../contexts';
 import { registerCanvasAction, setAvailableCanvasWidthAction, setCanvasAutoWidthAction, setCanvasMeasurementAction, setCanvasWidthAction, setCanvasWidthPercentAction, setScreenWidthAction, unregisterCanvasAction } from '../actions';

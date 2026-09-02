@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { MAX_DIMENSION_PERCENT, boundWidth, boundWidthToCanvas, exceedsWidth, getDimensionsStyle } from '../utils';
 
 describe('boundWidth', () => {

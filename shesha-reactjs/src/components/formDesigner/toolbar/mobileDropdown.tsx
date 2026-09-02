@@ -45,6 +45,10 @@ export const DeviceOptions: FC = () => {
           return;
         }
 
+        // A malformed percentage must never reach parseInt: "1e2%" would pin a 1px mobile canvas
+        // and "50%px" a 50px one. Anything with a % that the parser rejected is ignored.
+        if (val.includes('%')) return;
+
         const value = parseInt(val, 10);
         // Ignore custom entries that are not a usable width ("abc" would pin the canvas to "NaNpx")
         if (!Number.isFinite(value) || value <= 0) return;

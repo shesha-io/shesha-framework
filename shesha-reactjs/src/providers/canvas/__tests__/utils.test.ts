@@ -1,4 +1,3 @@
-import { describe, expect, it } from 'vitest';
 import { sheshaStyles } from '@/styles';
 import { MAX_CANVAS_WIDTH_PERCENT, calculateAutoZoom, getCanvasContentBoxWidth, getCanvasLayoutWidth, parseCanvasContextWidth, parseCanvasWidthPercent } from '../utils';
 
