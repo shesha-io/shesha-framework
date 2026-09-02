@@ -70,17 +70,17 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
     const properties = asPropertiesArray(metaProperties ?? [], []);
 
     const prefix = useMemo(() => {
-      return model.numberFormat === 'custom'
+      return ["currency", "custom"].includes(model.numberFormat ?? '')
         ? <>{model.prefixIcon && <ShaIcon iconName={model.prefixIcon} style={suffixStyle} />}{model.prefix}</>
         : null;
     }, [model.numberFormat, model.prefix, model.prefixIcon]);
     const suffix = useMemo(() => {
-      return model.numberFormat === 'custom'
+      return ["currency", "custom"].includes(model.numberFormat ?? '')
         ? <>{model.suffix}{model.suffixIcon && <ShaIcon iconName={model.suffixIcon} style={suffixStyle} />}</>
         : null;
     }, [model.numberFormat, model.suffix, model.suffixIcon]);
 
-    const inputProps: InputNumberProps<number> = {
+    const inputProps: InputNumberProps<number | string> = {
       disabled: model.disabled === true,
       ...(Boolean(model.hideBorder) ? { variant: 'borderless' } : {}),
       placeholder: model.placeholder,
@@ -123,7 +123,7 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
       };
       inputProps.parser = (value) => {
         if (!isDefined(value))
-          return 0;
+          return '';
         const ts = model.thousandsSeparator;
         const escapedTs = isDefined(ts) ? ts.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') : '';
         const regex = new RegExp(`[+-]?(?:\\d+${(isDefined(ts) ? `(?:${escapedTs}\\d*)*` : '')}(?:\\.\\d*)?|\\.\\d+)`, 'g');
@@ -134,7 +134,7 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
           const cleanNumber = !isNullOrWhiteSpace(ts) ? rawNumber.replaceAll(ts, '') : rawNumber; // "-1234.56"
           return parseFloat(cleanNumber); // -1234.56
         }
-        return 0;
+        return value;
       };
     }
 
@@ -170,12 +170,10 @@ const NumberFieldComponent: NumberFieldComponentDefinition = {
                       ? strVal.substring(0, decimal + numDecimalPlaces + 1)
                       : strVal;
                     numValue = parseFloat(formattedValue);
-                    newValue = Boolean(model.highPrecision)
-                      ? parseFloat(formattedValue)
-                      : Number.isNaN(numValue)
-                        ? undefined
-                        : numValue;
-                  }
+                    newValue = Number.isNaN(numValue)
+                      ? undefined
+                      : numValue;
+                  } else newValue = undefined;
 
                   ctx?.handleEvent(undefined, { value: newValue }, model.onChangeCustom);
                   onChange(newValue);
