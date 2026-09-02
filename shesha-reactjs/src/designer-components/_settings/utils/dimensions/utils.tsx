@@ -5,11 +5,11 @@ import { isDefined } from "@/utils/nullables";
 import { addPx, hasNumber } from "@/utils/style";
 import { IDropdownOption } from "@/designer-components/settingsInput/interfaces";
 import { dimensionRelativeToCanvas } from "@/providers/canvas/utils";
-import { MAX_DIMENSION_PERCENT, boundWidth, boundWidthToCanvas, exceedsWidth } from "./bounds";
+import { MAX_DIMENSION_PERCENT, boundWidth, boundWidthToCanvas } from "./bounds";
 
 // Re-exported for existing `dimensions/utils` consumers; they live in the leaf `bounds` module so
 // the CSS-string path can use them without pulling the providers barrel in.
-export { MAX_DIMENSION_PERCENT, boundWidth, boundWidthToCanvas, exceedsWidth };
+export { MAX_DIMENSION_PERCENT, boundWidth, boundWidthToCanvas };
 
 const getWidthDimension = (main: string | number, canvasWidth?: string, context?: object): string | number | undefined => {
   // Bounded only against a canvas. On a rendered page a width over 100% inside an overflow wrapper

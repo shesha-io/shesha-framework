@@ -78,7 +78,3 @@ export const boundWidthToCanvas = (value: string | number, canvasWidth: string |
 
   return widthPx > canvasLimit ? `${Math.floor(canvasLimit)}px` : bounded;
 };
-
-/** True when bounding would override the value. */
-export const exceedsWidth = (value: string | number | undefined, canvasWidth?: string | undefined): boolean =>
-  isDefined(value) && boundWidthToCanvas(value, canvasWidth) !== value;

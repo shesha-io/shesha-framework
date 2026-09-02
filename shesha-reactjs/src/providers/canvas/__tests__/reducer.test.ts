@@ -14,8 +14,6 @@ describe('canvas reducer - device resolution', () => {
     const next = reducer(state({ autoWidth: true }), setCanvasWidthAction({ width: '375px', deviceType: 'mobile' }));
 
     expect(next.designerWidth).toBe('375px');
-    // A pinned preset is laid out at its own width, so the zoom-independent width is the same.
-    expect(next.deviceWidth).toBe('375px');
     expect(next.designerDevice).toBe('mobile');
     expect(next.autoWidth).toBe(false);
   });
@@ -132,7 +130,7 @@ describe('canvas reducer - a stale device is corrected, without needless re-rend
   });
 
   it('returns the same state object when neither the width nor the device would change', () => {
-    const settled = state({ autoWidth: true, designerWidth: '1125px', deviceWidth: '1125px', designerDevice: 'desktop', activeDevice: 'desktop' });
+    const settled = state({ autoWidth: true, designerWidth: '1125px', designerDevice: 'desktop', activeDevice: 'desktop' });
 
     expect(reducer(settled, setAvailableCanvasWidthAction({ layoutWidth: '1125px', deviceWidth: '1125px' }))).toBe(settled);
   });
@@ -210,7 +208,5 @@ describe('canvas reducer - zoom does not retarget the device', () => {
 
     expect(measured.designerWidth).toBe('650px');
     expect(measured.designerDevice).toBe('desktop');
-    // Recorded so a typed width is judged against a limit zoom cannot move.
-    expect(measured.deviceWidth).toBe('1300px');
   });
 });

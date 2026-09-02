@@ -21,11 +21,6 @@ export interface ICanvasStateContext {
   /** Share of the available space taken while `autoWidth` is on. 100 is the maximum. */
   widthPercent: number;
   designerWidth: string;
-  /**
-   * On-screen width the canvas covers, which zoom does not move - unlike `designerWidth`, which in
-   * "Canvas" mode is the zoom-derived layout width. What a typed width is judged against.
-   */
-  deviceWidth: string | undefined;
   /** Set only while a designer canvas is mounted; absent means the real browser viewport. */
   canvas: ICanvasMeasurement | undefined;
   /** Canvases mounted. The quick-edit dialog opens a second one over the designer's own. */
@@ -89,7 +84,6 @@ export const CANVAS_CONTEXT_INITIAL_STATE: ICanvasStateContext = {
   widthPercent: MAX_CANVAS_WIDTH_PERCENT,
   designerDevice: 'desktop',
   designerWidth: defaultDesignerWidth,
-  deviceWidth: undefined,
   canvas: undefined,
   canvasMounts: 0,
 };

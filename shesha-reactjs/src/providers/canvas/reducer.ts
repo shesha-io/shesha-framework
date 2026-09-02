@@ -47,13 +47,10 @@ export const reducer = createReducer(CANVAS_CONTEXT_INITIAL_STATE, (builder) => 
     })
     .addCase(setCanvasWidthAction, (state, { payload }) => {
       const { width, deviceType } = payload;
-      const designerWidth = typeof width === 'string' ? width : `${width}px`;
 
       return {
         ...state,
-        designerWidth,
-        // A pinned preset is laid out at its own width, so the two widths coincide.
-        deviceWidth: designerWidth,
+        designerWidth: typeof width === 'string' ? width : `${width}px`,
         designerDevice: deviceType,
         activeDevice: getSmallerDevice(deviceType, state.physicalDevice ?? "desktop"),
         // A preset pins the width, which makes any percentage in force meaningless.
@@ -93,9 +90,7 @@ export const reducer = createReducer(CANVAS_CONTEXT_INITIAL_STATE, (builder) => 
       // Device is re-resolved even when the width has not moved: a width restored from storage can
       // already equal the measured one while the device is still the initial default.
       const { layoutWidth, deviceWidth } = payload;
-      const measured = state.designerWidth === layoutWidth && state.deviceWidth === deviceWidth
-        ? state
-        : { ...state, designerWidth: layoutWidth, deviceWidth };
+      const measured = state.designerWidth === layoutWidth ? state : { ...state, designerWidth: layoutWidth };
       // Resolved from the on-screen width, not the zoom-derived layout width: zoom is a magnifier,
       // and zooming in must not silently retarget style edits at a narrower device.
       const resolved = resolveDeviceForWidth(measured, deviceWidth);

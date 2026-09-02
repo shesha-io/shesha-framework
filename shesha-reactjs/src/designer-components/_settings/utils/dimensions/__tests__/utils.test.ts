@@ -1,4 +1,4 @@
-import { MAX_DIMENSION_PERCENT, boundWidth, boundWidthToCanvas, exceedsWidth, getDimensionsStyle } from '../utils';
+import { MAX_DIMENSION_PERCENT, boundWidth, boundWidthToCanvas, getDimensionsStyle } from '../utils';
 
 describe('boundWidth', () => {
   it('overrides a percentage wider than the container', () => {
@@ -69,24 +69,6 @@ describe('boundWidthToCanvas', () => {
     expect(boundWidthToCanvas('500em', '1157px')).toBe('500em');
   });
 });
-
-describe('exceedsWidth', () => {
-  it('reports only the values that would be overridden', () => {
-    expect(exceedsWidth('200%')).toBe(true);
-    expect(exceedsWidth('200vw', '1157px')).toBe(true);
-    expect(exceedsWidth('200vw')).toBe(false);
-    expect(exceedsWidth('100%')).toBe(false);
-    expect(exceedsWidth('50%')).toBe(false);
-    expect(exceedsWidth(undefined)).toBe(false);
-  });
-
-  it('reports an absolute width only when the canvas width makes it judgeable', () => {
-    expect(exceedsWidth('2000px')).toBe(false);
-    expect(exceedsWidth('2000px', '1157px')).toBe(true);
-    expect(exceedsWidth('800px', '1157px')).toBe(false);
-  });
-});
-
 
 describe('getDimensionsStyle', () => {
   it('bounds every width axis on the canvas so none can overflow it', () => {
