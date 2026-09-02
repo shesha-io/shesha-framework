@@ -79,9 +79,12 @@ const CanvasProvider: FC<PropsWithChildren> = ({
     zoom: clampZoom(storedDesigneZoom),
     autoWidth: storedAutoWidth,
     designerDevice: storedDesignerDevice,
-    // The physical device is not known until the first resize handler runs, so the canvas device
-    // stands alone here; setScreenWidthAction narrows it on mount.
-    activeDevice: storedDesignerDevice,
+    // Never seeded from storage: activeDevice is what rendered pages resolve styles from, and the
+    // persisted designer device here styled every first paint - and, under SSR, the hydration
+    // pass - for whatever was last pinned in the designer. The viewport is the only trustworthy
+    // source; the stored designerDevice stays designer-only, narrowed in by the reducer only
+    // while a canvas is mounted.
+    activeDevice: typeof window !== 'undefined' ? getDeviceTypeByWidth(window.innerWidth) : 'desktop',
     widthPercent: boundCanvasWidthPercent(storedWidthPercent),
   });
 

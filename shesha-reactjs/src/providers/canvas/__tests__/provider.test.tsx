@@ -84,3 +84,18 @@ describe('CanvasProvider - script writes to designerWidth', () => {
     expect(latest().autoWidth).toBe(before.autoWidth);
   });
 });
+
+describe('CanvasProvider - initial activeDevice on a rendered page', () => {
+  it('takes the viewport, not the designer device persisted by a previous session', () => {
+    // The leak: pin iPhone SE in the designer once, and the first client render of every page in
+    // that browser resolved styles as mobile.
+    window.localStorage.setItem('shesha:designerDevice', JSON.stringify('mobile'));
+
+    renderProvider();
+
+    // The very first render, before any effect has run - jsdom's window is desktop-width.
+    expect(renders[0]?.activeDevice).toBe('desktop');
+    // The stored device still applies to the designer itself.
+    expect(renders[0]?.designerDevice).toBe('mobile');
+  });
+});
