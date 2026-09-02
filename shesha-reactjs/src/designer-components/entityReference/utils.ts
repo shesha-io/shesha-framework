@@ -17,7 +17,6 @@ export const defaultStyles = (): IStyleValue => {
     font: {
       weight: '400',
       size: 14,
-      color: '#1677ff',
       type: 'Segoe UI',
       align: 'left',
     },
