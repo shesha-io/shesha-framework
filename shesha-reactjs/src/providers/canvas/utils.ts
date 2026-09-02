@@ -71,6 +71,28 @@ export const parseCanvasWidthPercent = (value: string): ICanvasWidthPercent | un
     : { percent, wasClamped: false };
 };
 
+const PLAIN_LENGTH_REGEX = /^\s*(\d+(?:\.\d+)?)\s*(px)?\s*$/i;
+
+/** A width assigned to `designerWidth` through the canvas context API, classified. */
+export type CanvasContextWidth = { kind: 'px'; width: number } | { kind: 'percent'; percent: number };
+
+/**
+ * Reads a width a script assigned to `designerWidth`. A plain length ("1024", "1024px") pins a
+ * preset; a percentage routes to `widthPercent`, as the toolbar does. Anything else - "50vw",
+ * "80em", "abc" - is undefined and must be ignored: a bare `parseFloat` would read "80%" as 80
+ * and pin an 80px mobile canvas.
+ */
+export const parseCanvasContextWidth = (value: string): CanvasContextWidth | undefined => {
+  const percent = parseCanvasWidthPercent(value);
+  if (percent !== undefined) return { kind: 'percent', percent: percent.percent };
+
+  const match = PLAIN_LENGTH_REGEX.exec(value);
+  if (!match) return undefined;
+
+  const width = parseFloat(match[1] ?? '');
+  return Number.isFinite(width) && width > 0 ? { kind: 'px', width } : undefined;
+};
+
 /**
  * Pre-zoom layout width that renders exactly `availableWidth` wide once CSS `zoom` is applied, so
  * zooming out re-wraps components into more room instead of overflowing the pane. `widthPercent`

@@ -1,5 +1,27 @@
 import { describe, expect, it } from 'vitest';
-import { MAX_CANVAS_WIDTH_PERCENT, calculateAutoZoom, getCanvasLayoutWidth, parseCanvasWidthPercent } from '../utils';
+import { MAX_CANVAS_WIDTH_PERCENT, calculateAutoZoom, getCanvasLayoutWidth, parseCanvasContextWidth, parseCanvasWidthPercent } from '../utils';
+
+describe('parseCanvasContextWidth - a script writing canvasContext.designerWidth', () => {
+  it('reads a plain length, with or without the px unit', () => {
+    expect(parseCanvasContextWidth('1024')).toEqual({ kind: 'px', width: 1024 });
+    expect(parseCanvasContextWidth('1024px')).toEqual({ kind: 'px', width: 1024 });
+    expect(parseCanvasContextWidth(' 375 px ')).toEqual({ kind: 'px', width: 375 });
+  });
+
+  it('routes a percentage to widthPercent instead of reading it as pixels', () => {
+    // parseFloat('80%') is 80, which used to pin an 80px mobile canvas and persist it.
+    expect(parseCanvasContextWidth('80%')).toEqual({ kind: 'percent', percent: 80 });
+    expect(parseCanvasContextWidth('150%')).toEqual({ kind: 'percent', percent: MAX_CANVAS_WIDTH_PERCENT });
+  });
+
+  it('ignores anything that is not a plain length or a percentage', () => {
+    expect(parseCanvasContextWidth('50vw')).toBeUndefined();
+    expect(parseCanvasContextWidth('80em')).toBeUndefined();
+    expect(parseCanvasContextWidth('abc')).toBeUndefined();
+    expect(parseCanvasContextWidth('0')).toBeUndefined();
+    expect(parseCanvasContextWidth('')).toBeUndefined();
+  });
+});
 
 describe('parseCanvasWidthPercent', () => {
   it('reads a well-formed percentage below the maximum as itself', () => {

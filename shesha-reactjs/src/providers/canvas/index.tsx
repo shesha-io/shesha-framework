@@ -23,7 +23,7 @@ import { DataTypes } from '@/interfaces/dataTypes';
 import { SheshaCommonContexts } from '../dataContextManager/models';
 import { ContextOnChangeData } from '../dataContextProvider/contexts';
 import { useLocalStorage } from '@/hooks';
-import { clampZoom, getDeviceTypeByWidth } from './utils';
+import { clampZoom, getDeviceTypeByWidth, parseCanvasContextWidth } from './utils';
 import { boundCanvasWidthPercent } from './constants';
 
 const CanvasProvider: FC<PropsWithChildren> = ({
@@ -198,13 +198,15 @@ const CanvasProvider: FC<PropsWithChildren> = ({
     }
 
     // A width pins a preset, which needs a device; resolved from the width, as the toolbar does.
-    // Applied as a number so it is always normalised to px - a script assigning "1024" rather than
-    // "1024px" would otherwise pin the canvas to a width CSS cannot read. Ignored when it is not a
-    // usable length, which would otherwise pin it to "NaNpx".
+    // Only a plain length is accepted ("1024", "1024px" - normalised to px). A percentage routes
+    // to widthPercent, again as the toolbar does; anything else ("50vw", "abc") is ignored - a
+    // bare parseFloat would read "80%" as 80 and pin an 80px mobile canvas.
     if (changedData.designerWidth !== undefined && changedData.designerWidth !== state.designerWidth) {
-      const width = parseFloat(changedData.designerWidth);
-      if (Number.isFinite(width) && width > 0)
-        setCanvasWidth(width, getDeviceTypeByWidth(width));
+      const parsed = parseCanvasContextWidth(changedData.designerWidth);
+      if (parsed?.kind === 'px')
+        setCanvasWidth(parsed.width, getDeviceTypeByWidth(parsed.width));
+      else if (parsed?.kind === 'percent')
+        setCanvasWidthPercent(parsed.percent);
     }
   }, [state.designerDevice, state.autoWidth, state.widthPercent, state.zoom, state.autoZoom, state.designerWidth,
     setDesignerDevice, setCanvasAutoWidth, setCanvasWidthPercent, setManualZoom, setCanvasAutoZoom, setCanvasWidth]);
