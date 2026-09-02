@@ -66,23 +66,6 @@ export const AdvancedFilterButton: FCUnwrapped<IAdvancedFilterButtonComponentPro
             disabled={props.disabled}
             stylingBoxJson={padding}
           />
-          {/* <Button
-            type={actualButtonType}
-            ghost={isGhostType}
-            title={filterColumns.join('  ')}
-            onClick={() => toggleAdvancedFilter(true)}
-            className={styles.button}
-            danger={props.danger === true}
-            disabled={props.readOnly || isAdvancedFilterVisible}
-            icon={filterIcon}
-            size={props.size}
-            style={isAdvancedFilterVisible || props.readOnly
-              ? { ...buttonStyle, opacity: 0.5, border: ['link', 'ghost'].includes(props.buttonType) ? 'none' : buttonStyle.border }
-              : { ...buttonStyle }}
-          >
-            {props.label}
-          </Button>
-          */}
         </Badge>
       </Tooltip>
     </div>
