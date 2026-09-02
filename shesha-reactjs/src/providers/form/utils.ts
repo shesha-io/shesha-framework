@@ -933,7 +933,7 @@ export const evaluateString = (template: string = '', data: object, skipUnknownT
       // (e.g. the constants context) refresh in place, and skipUnknownTags mutates the view's
       // nested nodes — both would leak shared state across evaluations.
       const view: IAnyObject = {
-        ...(cloneAndDecorateForMustache(data) as IAnyObject),
+        ...data,
         // adding a function to the data object that will format datetime
         dateFormat: function () {
           return function (timestamp: unknown, render: (renderArgs: unknown) => string) {

@@ -46,12 +46,12 @@ export const ContextPropertyAutocomplete: FC<IContextPropertyAutocompleteProps> 
 
   const setContextMode = (): void => {
     setState({ ...state, mode: 'context' });
-    onValuesChange?.({ context: state.context, componentName: state.componentName });
+    onValuesChange?.({ context: state.context, componentName: state.componentName, propertyName: state.propertyName });
   };
 
   const setFormDataMode = (): void => {
     setState({ ...state, mode: 'formData' });
-    onValuesChange?.({ context: null, componentName: state.propertyName });
+    onValuesChange?.({ context: null, componentName: state.propertyName, propertyName: state.propertyName });
   };
 
   const mode = state.mode;

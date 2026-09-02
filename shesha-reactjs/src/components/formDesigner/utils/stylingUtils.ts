@@ -25,7 +25,7 @@ const getFullSizeComponentDimensionsValue = (value: string | number | undefined)
  * Gets full size component dimensions
  *
  * Calculates three states:
- * 1. If the dimensions are percentage, return `100%` because wrapper will use configured percentage
+ * 1. If the dimensions are percentage, return `stretch` because wrapper will use configured percentage
  * 2. If the dimensions are exact, return them as they are
  * 3. If the dimensions are calc, auto/stretch/fit-content etc, return them as they are
  *
@@ -34,11 +34,11 @@ const getFullSizeComponentDimensionsValue = (value: string | number | undefined)
  */
 export const getFullSizeComponentDimensions = (dimensions: IDimensionsValue | undefined): IDimensionsValue => ({
   height: getFullSizeComponentDimensionsValue(dimensions?.height),
-  minHeight: dimensions?.minHeight,
-  maxHeight: dimensions?.maxHeight,
+  minHeight: getFullSizeComponentDimensionsValue(dimensions?.minHeight),
+  maxHeight: getFullSizeComponentDimensionsValue(dimensions?.maxHeight),
   width: getFullSizeComponentDimensionsValue(dimensions?.width),
-  minWidth: dimensions?.minWidth,
-  maxWidth: dimensions?.maxWidth,
+  minWidth: getFullSizeComponentDimensionsValue(dimensions?.minWidth),
+  maxWidth: getFullSizeComponentDimensionsValue(dimensions?.maxWidth),
 });
 
 const getFullSizeWrapperDimensionsValue = (value: string | number | undefined): string | number | undefined =>

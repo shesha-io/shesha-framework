@@ -7,10 +7,11 @@ import { FormMarkup } from '@/providers/form/models';
 import { GenericSettingsEditor } from './genericSettingsEditor';
 import { IObjectMetadata, ISettingsFormFactoryArgs } from '@/interfaces';
 import { IDynamicActionsContext } from '@/providers/dynamicActions/contexts';
-import { CollapsiblePanel } from '@/components/panel';
 import { FormBuilderFactory } from '@/form-factory/interfaces';
 import { useFormBuilderFactory } from '@/form-factory/hooks';
 import { isDefined } from '@/utils/nullables';
+import { SectionSeparator } from '@/components/sectionSeparator';
+
 export interface IProviderSettingsEditorProps<TSettings extends object = object> {
   provider: IDynamicActionsContext<TSettings>;
   value?: TSettings;
@@ -75,31 +76,19 @@ export const ProviderSettingsEditor = <TSettings extends object = object>({
     if (onChange) onChange(values);
   };
 
-  return (
-    <CollapsiblePanel
-      ghost={false}
-      headerStyles={{
-        background: { type: "color", color: "#fff" },
-        border: {
-          borderType: "custom",
-          border: { bottom: { color: "var(--primary-color)", width: "2px", style: "solid" } },
-          radiusType: "custom",
-          radius: { topLeft: "0px", topRight: "0px" },
-        },
-        font: { color: "darkslategray", type: "Segoe UI", size: 14, weight: "500" },
-      }}
-      border={{ borderType: "all", border: { all: { width: "0px", style: "none" } } }}
-      stylingBoxJson={{ _type: "styleBox", marginBottom: "5px" }}
-      header="Settings"
-    >
-      {settingsFormFactory && settingsFormFactory({
-        model: value ?? {} as TSettings,
-        onSave,
-        onCancel,
-        onValuesChange,
-        readOnly,
-        availableConstants,
-      })}
-    </CollapsiblePanel>
-  );
+  return isDefined(settingsFormFactory)
+    ? (
+      <>
+        <div style={{ marginBottom: 16, marginTop: 16 }}><SectionSeparator title="Settings" labelAlign="left" /></div>
+        {settingsFormFactory({
+          model: value ?? {} as TSettings,
+          onSave,
+          onCancel,
+          onValuesChange,
+          readOnly,
+          availableConstants,
+        })}
+      </>
+    )
+    : null;
 };
