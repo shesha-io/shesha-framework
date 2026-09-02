@@ -898,13 +898,13 @@ export const evaluateString = (template: string = '', data: object, skipUnknownT
         const escape = (value: unknown | StaticMustacheTag): string => {
           return value instanceof StaticMustacheTag
             ? value.toEscapedString()
-            : unproxyValue(value)?.toString() ?? ''; // unwrap proxy value
+            : Mustache.escape(unproxyValue(value)); // unwrap proxy value
         };
 
         return Mustache.render(normalizedTemplate, view, undefined, { escape });
       } else {
         const unwrapEscape = (value: unknown): string => {
-          return unproxyValue(value)?.toString() ?? ''; // unwrap proxy value
+          return Mustache.escape(unproxyValue(value)?.toString()); // unwrap proxy value
         };
         return Mustache.render(normalizedTemplate, view, undefined, { escape: unwrapEscape });
       }
