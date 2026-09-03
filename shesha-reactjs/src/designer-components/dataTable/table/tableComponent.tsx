@@ -39,6 +39,7 @@ import { useComponentApi } from '@/providers/componentApi/hooks';
 import { DataTableApi } from '@/componentsApi/dataTableApi';
 
 import apiCode from "../../../componentsApi/dataTableApi.ts?raw";
+import { getFullSizeWrapperDesignerStyle } from '@/components/formDesigner/utils/stylingUtils';
 
 const columnsMismatchError = 'CONFIGURATION ERROR: The DataTable columns do not match the data source. Please change the columns configured to suit your data source.';
 
@@ -84,6 +85,7 @@ const TableComponent: TableComponentDefinition = {
   name: 'Data Table',
   preserveDimensionsInDesigner: true,
   icon: <TableOutlined />,
+  getWrapperStyle: (model) => getFullSizeWrapperDesignerStyle(model),
   Factory: ({ model }) => {
     const store = useDataTableStoreOrUndefined();
     const metadata = useMetadataOrUndefined();

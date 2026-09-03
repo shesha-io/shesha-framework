@@ -114,7 +114,11 @@ export type ToolboxComponentAsTemplate = {
 export type StyleGroups = 'common' | 'inputs' | 'containers' | 'buttons';
 
 export type IToolboxComponentBase = {
-  styleGroup?: StyleGroups;
+  /** Show the component in the theme editor (true by default) */
+  showInThemeEditor?: boolean | undefined;
+
+  /** Groupping components by style */
+  styleGroup?: StyleGroups | undefined;
 
   // ToDo: AS - remove after all components are migrated to inheritance
   /**

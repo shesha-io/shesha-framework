@@ -253,7 +253,7 @@ const EntityPickerModalInternal = (props: IEntityPickerModalProps): React.JSX.El
           options={{ omitClick: true }}
           rowDividers
           rowAlternateBackgroundColor={getTableDefaults().rowAlternateBackgroundColor}
-          headerBackgroundColor="transparent"
+          headerBackgroundColor={getTableDefaults().headerBackgroundColor}
           {...(isNotNullOrWhiteSpace(headerTextColor) ? { headerTextColor } : {})}
           {...(isNotNullOrWhiteSpace(headerFontFamily) ? { headerFontFamily } : {})}
         />

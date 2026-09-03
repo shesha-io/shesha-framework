@@ -1,4 +1,4 @@
-import { CSSProperties, FC } from 'react';
+import { CSSProperties, FC, ReactNode } from 'react';
 import { Pagination, Select } from 'antd';
 import { useMedia } from 'react-use';
 import { useStyles } from './style';
@@ -61,9 +61,11 @@ export const TablePaging: FC<ITablePagerBaseProps> = (props) => {
     setCurrentPage(current);
   };
 
-  const showTotal = (total: number, range: number[]): string | null => {
+  const showTotal = (total: number, range: number[]): ReactNode => {
     if (showTotalItems) {
-      return total > 0 ? `${range[0]}-${range[1]} of ${total} items` : '0 items found';
+      const text = total > 0 ? `${range[0]}-${range[1]} of ${total} items` : '0 items found';
+
+      return <span title={text}>{text}</span>;
     }
 
     return null;

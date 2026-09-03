@@ -21,7 +21,6 @@ import { ITableRowData } from '@/providers/dataTable/interfaces';
 import { isNonEmptyArray } from '@/utils/array';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
-import { RecursivePartial } from '@/interfaces/entity';
 
 const KanbanReactComponent: FCUnwrapped<IKanbanProps> = (props) => {
   const { gap, groupingProperty, createFormId, componentName, editFormId } = props;
@@ -157,7 +156,7 @@ const KanbanReactComponent: FCUnwrapped<IKanbanProps> = (props) => {
     // editForm is only mounted while an item is selected; closeModal resets it while it is
     // still connected, so there is nothing to reset here.
     if (isDefined(selectedItem))
-      editForm.setFieldsValue(selectedItem as RecursivePartial<ITableRowData>);
+      editForm.setFieldsValue(selectedItem);
   }, [selectedItem, editForm]);
 
   const closeModal = (): void => {

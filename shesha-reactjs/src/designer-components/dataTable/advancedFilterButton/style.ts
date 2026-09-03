@@ -13,6 +13,10 @@ export const useStyles = createStyles(({ token, cx, css }, model: IAdvancedFilte
     &.disabled {
       opacity: 0.5;
     }
+
+    &.active .ant-btn {
+      color: ${primaryColor};
+    }
   `);
 
   const button = cx("filter-btn", css`

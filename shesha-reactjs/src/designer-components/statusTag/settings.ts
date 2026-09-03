@@ -8,7 +8,6 @@ const refListHiddenJs = "return getSettingValue(data.dataSourceType) !== 'refere
 const valuesVisibleJs = "return getSettingValue(data.dataSourceType) === 'values';";
 const refListVisibleJs = "return getSettingValue(data.dataSourceType) === 'referenceList';";
 // Disabled values needs both a reference list and the Disable Item Value toggle.
-const disabledValuesHiddenOrNotRefListJs = "return getSettingValue(data.dataSourceType) !== 'referenceList' || !getSettingValue(data.disableItemValue);";
 
 export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter }) => {
   const searchableTabsId = nanoid();
@@ -70,12 +69,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                    affordance the spec describes, shown only for a reference list. */
                 .stdCollapsiblePanel('Advanced', (fb) => fb
                   .addSettingsInput({ inputType: 'queryBuilder', propertyName: 'filter', label: 'Filter', isDynamic: true, validate: {}, modelType: 'Shesha.Framework.ReferenceListItem', hidden: { _code: refListHiddenJs, _mode: 'code', _value: false } })
-                  .addSettingsInput({ inputType: 'switch', propertyName: 'disableItemValue', tooltip: 'Disable reference list from selection', label: 'Disable Item Value', jsSetting: true, layout: 'horizontal', hidden: { _code: refListHiddenJs, _mode: 'code', _value: false } })
-                  .addSettingsInput({
-                    inputType: 'textArea', propertyName: 'disabledValues', label: 'Disabled values', allowClear: true, jsSetting: true,
-                    tooltip: 'Pass an array of positive integers to disable specific values. For example: [1, 2, 3].',
-                    hidden: { _code: disabledValuesHiddenOrNotRefListJs, _mode: 'code', _value: false },
-                  })
                   .addSettingsInput({
                     inputType: 'textArea', propertyName: 'ignoredValues', label: 'Hidden values', allowClear: true, jsSetting: true,
                     tooltip: 'Pass an array of positive integers to hide specific values. For example: [1, 2, 3].',

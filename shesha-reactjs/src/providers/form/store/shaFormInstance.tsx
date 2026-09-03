@@ -40,7 +40,6 @@ import { IDelayedUpdateGroup } from "@/providers/delayedUpdateProvider/models";
 import { removeGhostKeys } from "@/utils/form";
 import { FieldValueSetter } from "@/utils/dotnotation";
 import { addDelayedUpdateProperty } from "@/providers/delayedUpdateProvider";
-import { RecursivePartial } from "@/interfaces/entity";
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from "@/utils/nullables";
 import { extractErrorInfo, throwError } from "@/utils/errors";
 import { GetShaFormDataAccessor } from "@/providers/dataContextProvider/contexts/shaDataAccessProxy";
@@ -154,6 +153,10 @@ class PublicFormApi<Values extends object = object> implements IFormApi<Values> 
   get data(): FormData<Values> {
     return this.#data;
   };
+
+  set data(value: FormData<Values>) {
+    this.#form.setFormData({ values: value, mergeValues: true });
+  }
 
   get defaultApiEndpoints(): IEntityEndpoints {
     return this.#form.defaultApiEndpoints;
@@ -433,7 +436,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     this.antdForm.submit();
   };
 
-  setFieldsValue = (values: RecursivePartial<Values>): void => {
+  setFieldsValue = (values: Partial<Values>): void => {
     this.antdForm.setFieldsValue(values);
     this.updateData?.();
   };
@@ -682,7 +685,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     await this.loadDataWithBeforeAfterLoad(() => {
       this.antdForm.resetFields();
       if (this.initialValues)
-        this.antdForm.setFieldsValue(this.initialValues as RecursivePartial<Values>);
+        this.antdForm.setFieldsValue(this.initialValues);
 
       this.dataLoadingState = { status: 'ready', hint: undefined, error: undefined };
       this.#setIsDataModified(false);

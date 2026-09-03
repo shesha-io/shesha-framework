@@ -73,6 +73,7 @@ const getEntityTypeFromMetadata = (propertyName: string, metadata: IModelMetadat
 };
 
 const SubFormComponent: IToolboxComponent<ISubFormComponentProps> = {
+  showInThemeEditor: false,
   allowInherit: true,
   type: 'subForm',
   name: 'Sub Form',

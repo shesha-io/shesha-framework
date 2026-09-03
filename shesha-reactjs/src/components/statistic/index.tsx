@@ -3,14 +3,13 @@ import * as React from 'react';
 import { Statistic, StatisticProps } from 'antd';
 import { useStyles } from './styles/styles';
 import classNames from 'classnames';
-import { StatisticSemanticStyles } from 'antd/lib/statistic';
 
 export interface IShaStatisticProps extends StatisticProps {
   onClick?: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
 }
 
 export const ShaStatistic: FC<IShaStatisticProps> = ({ className, ...rest }) => {
-  const fontSize = (rest.styles as StatisticSemanticStyles | undefined)?.content?.fontSize;
+  const fontSize = (rest.styles as { content?: React.CSSProperties } | undefined)?.content?.fontSize;
   const { styles } = useStyles({
     token: {
       fontSize: fontSize,

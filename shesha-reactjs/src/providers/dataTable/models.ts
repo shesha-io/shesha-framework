@@ -15,6 +15,7 @@ export type DatatableInitArgs = {
   dataFetchingMode: DataFetchingMode;
   initialPageSize?: number | undefined;
 
+  currentPage?: number | undefined;
   standardSorting?: ISortingItem[] | undefined;
   strictSortBy?: string | undefined;
   strictSortOrder?: ColumnSorting | undefined;

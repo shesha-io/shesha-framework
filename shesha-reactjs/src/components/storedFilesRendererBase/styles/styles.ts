@@ -4,7 +4,7 @@ import { CSSProperties } from 'react';
 import { addPx } from '@/utils/style';
 import { IStyleValue } from '@/providers';
 import { backgroundStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, marginStyles, paddingStyles, shadowStyles, splitTextProperties } from '@/designer-components/_common/styles/utils';
-import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 interface IModelInterface extends IStyleValue {
   thumbnailStyle?: IStyleValue | undefined;
   thumbnailStyleCss?: CSSProperties | undefined;
@@ -27,14 +27,16 @@ export const useStyles = createStyles((
   const font = model.font;
   const textAlign = font?.align;
 
-  /* Flex equivalent of the configured text alignment. Several parts of the component are flex
+  /* Flex equivalent of a configured text alignment. Several parts of the component are flex
      containers rather than blocks of text, and `text-align` does nothing on those — their content
      is placed by `justify-content`, so the alignment has to be translated to reach them. */
-  const justifyContent = textAlign === 'center'
+  const toJustifyContent = (align: CSSProperties['textAlign']): string => align === 'center'
     ? 'center'
-    : textAlign === 'right'
+    : align === 'right'
       ? 'flex-end'
       : 'flex-start';
+
+  const justifyContent = toJustifyContent(textAlign);
 
   const isThumbnail = model.listType === "thumbnail" && model.isDragger !== true;
 
@@ -108,6 +110,14 @@ export const useStyles = createStyles((
      directly and which therefore inherits nothing, and the rest reach the row around it. */
   const { text: downloadedText, box: downloadedBox } = splitTextProperties(downloadedFileStyles);
 
+  /* Its Align needs the same translation as the root's, and for the same reason: the name sits in a
+     flex container, so the `text-align` in `downloadedText` reaches it but places nothing. Emitted
+     only when the set actually carries an alignment — an unset one has to leave the root's in place
+     rather than resetting downloaded files to the left. */
+  const downloadedJustifyContent = isDefined(downloadedText.textAlign)
+    ? toJustifyContent(downloadedText.textAlign)
+    : undefined;
+
   const storedFilesRendererBtnContainer = "sha-stored-files-renderer-btn-container";
   const shaThumbnail = "sha-thumbnail";
 
@@ -180,6 +190,14 @@ export const useStyles = createStyles((
       color: ${downloadedColor};
       ${cssPropertiesToString(downloadedText)}
     }
+
+    /* The root Font's alignment sits on this very element as an important justify-content, so the
+       doubled class alone is not enough to displace it — the override has to be important too and
+       win on specificity. Kept off the selector above: the name itself is not a flex container, and
+       the property would do nothing there. */
+    ${isDefined(downloadedJustifyContent)
+      ? `&& .sha-item-file-name { justify-content: ${downloadedJustifyContent} !important; }`
+      : ''}
 
     .${prefixCls}-upload-list-item-action .anticon-download {
       color: ${downloadedColor};

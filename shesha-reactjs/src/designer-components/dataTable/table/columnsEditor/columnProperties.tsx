@@ -12,7 +12,6 @@ import { useFormBuilderFactory } from '@/form-factory/hooks';
 import { usePrevious } from '@/hooks';
 import { useShaFormRef } from '@/providers/form/providers/shaFormProvider';
 import { OnFormValuesChangeHandler } from '@/components/configurableForm/models';
-import { RecursivePartial } from '@/interfaces/entity';
 
 export interface IColumnPropertiesProps {
   item?: ColumnsItemProps | undefined;
@@ -70,7 +69,7 @@ export const ColumnProperties: FC<IColumnPropertiesProps> = ({ item, onChange, r
       description: metadata.description ?? undefined,
       permissions: values.permissions ?? [],
     };
-    form.setFieldsValue(newValues as RecursivePartial<ColumnsItemProps>);
+    form.setFieldsValue(newValues);
     debouncedSave(newValues, newValues);
   };
 

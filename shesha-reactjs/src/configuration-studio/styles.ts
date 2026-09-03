@@ -129,26 +129,30 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
         }
         .${csWorkArea}{
             height: calc(100vh - ${headerHeight}px);
-            overflow: auto;
             flex-grow: 1 !important;
             .${csDocTabs}{
                 height: 100%;
-                >.ant-tabs-content-holder{
+                >.ant-tabs-body-holder {
                     height: 100%;
                     ${sheshaStyles.thinScrollbars}
-                    >.ant-tabs-content{
+                    >.ant-tabs-body {
                         height: 100%;
                         overflow: hidden;
+                        >.ant-tabs-content {
+                            height: 100%;
+                        }
                         >.ant-tabs-tabpane {
                             height: 100%;
                         }
-                    }
+                    }                    
                 }
             }
         }
         .${csDocEditor}{
             padding: 0;
             height: 100%;
+            overflow: auto;
+            ${sheshaStyles.thinScrollbars}
         }
         .${csWorkAreaEmpty}{
             height: 100%;

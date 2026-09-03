@@ -19,8 +19,11 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
               .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true } })
               .addLabelConfigurator({ propertyName: 'hideLabel', label: 'Label', hideLabel: true })
               .stdPlaceholderDescriptionInputs()
-              .stdVisibleEditableInputs('full')
-
+              .addSettingsInputRow({
+                inputs: [
+                  { type: 'switch', propertyName: 'visible', label: 'Visible', jsSetting: true, layout: 'horizontal', permissionSettings: true },
+                ],
+              })
               .stdCollapsiblePanel('Entity', (fb) => fb
                 .addSettingsInput({
                   inputType: 'entityTypeAutocomplete', propertyName: 'entityType', label: 'Entity Type',

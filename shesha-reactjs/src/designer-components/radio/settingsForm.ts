@@ -80,11 +80,11 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
             key: 'appearance', title: 'Appearance', id: appearanceTabId,
             components: [
               ...fbf(appearanceTabId)
-                .addSettingsInput({ inputType: 'dropdown', propertyName: 'direction', label: 'Direction', size: 'small', jsSetting: true, dropdownOptions: directionOptions })
                 .addPropertyRouter({ id: commonStyleRouterId, propertyName: 'propertyRouter1', componentName: 'propertyRouter', label: 'Property router1', labelAlign: 'right',
                   propertyRouteName: removeStyleRouter === true ? '' : { _mode: "code", _code: "    return contexts.canvasContext?.designerDevice || 'desktop';", _value: "" },
                   components: [
                     ...fbf(commonStyleRouterId)
+                      .addSettingsInput({ inputType: 'dropdown', propertyName: 'direction', label: 'Direction', size: 'small', jsSetting: true, dropdownOptions: directionOptions })
                       .stdFontPanel(undefined, 'font', ['align'])
                       .stdDimensionsPanel('dimensions')
                       .stdBorderPanel(removeStyleRouter !== true, 'border')

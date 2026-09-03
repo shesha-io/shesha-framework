@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 import { IDateFieldProps } from './interfaces';
-import { backgroundStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, marginStyles, paddingStyles, popupAppearanceStyles, shadowStyles } from '../_common/styles/utils';
+import { backgroundStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, paddingStyles, popupAppearanceStyles, shadowStyles } from '../_common/styles/utils';
 
 export const useStyles = createStyles(({ css, cx }, model: IDateFieldProps) => {
   /* The appearance the user configured. Emitted in the base state and re-asserted in every state
@@ -27,7 +27,6 @@ export const useStyles = createStyles(({ css, cx }, model: IDateFieldProps) => {
   const dateField = cx('sha-date-field', css`
     ${configuredAppearance}
     ${paddingStyles(model.stylingBoxJson)}
-    ${marginStyles(model.stylingBoxJson)}
     ${dimensionsStyles(model.dimensions)}
 
     ${statefulAppearance}
@@ -56,7 +55,6 @@ export const useStyles = createStyles(({ css, cx }, model: IDateFieldProps) => {
   const rangePicker = cx('sha-date-field-range', css`
     ${configuredAppearance}
     ${paddingStyles(model.stylingBoxJson)}
-    ${marginStyles(model.stylingBoxJson)}
     ${dimensionsStyles(model.dimensions)}
 
     ${statefulAppearance}

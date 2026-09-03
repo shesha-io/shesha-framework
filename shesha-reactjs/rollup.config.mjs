@@ -7,11 +7,42 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 import localResolve from 'rollup-plugin-local-resolve';
 import terser from '@rollup/plugin-terser';
 import json from '@rollup/plugin-json';
-import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import pkg from './package.json' with { type: 'json' };
 import { codeAsText } from "./src/rollup-plugins/codeAsText.js";
 import { memoryTrace } from "./src/rollup-plugins/memoryTrace.js";
 import { warningHandlerPlugin } from "./src/rollup-plugins/warningHandler.mjs";
+import { nodeExternals } from 'rollup-plugin-node-externals';
+
+const EXTERNAL_PACKAGES = [
+  '@ant-design/icons',
+  '@microsoft/signalr',
+  'antd',
+  'antd-style',
+  'assert',
+  'axios',
+  'camelcase',
+  'classnames',
+  'component-classes',
+  'crypto',
+  'https',
+  'invert-color',
+  'moment',
+  'nanoid',
+  'next',
+  'os',
+  'react',
+  'react-dom',
+  'react-markdown',
+  'react-sortablejs',
+  'react-syntax-highlighter',
+  'sortablejs',
+  'stream',
+  'tty',
+  'url',
+  'use-debounce',
+  'util',
+  'zlib',
+];
 
 export default {
   input: ['src/index.tsx', 'src/providers/index.ts'],
@@ -29,36 +60,7 @@ export default {
       inlineDynamicImports: true,
     },
   ],
-  external: [
-    '@ant-design/icons',
-    '@microsoft/signalr',
-    'antd',
-    'antd-style',
-    'assert',
-    'axios',
-    'camelcase',
-    'classnames',
-    'component-classes',
-    'crypto',
-    'https',
-    'invert-color',
-    'moment',
-    'nanoid',
-    'next',
-    'os',
-    'react',
-    'react-dom',
-    'react-markdown',
-    'react-sortablejs',
-    'react-syntax-highlighter',
-    'sortablejs',
-    'stream',
-    'tty',
-    'url',
-    'use-debounce',
-    'util',
-    'zlib',
-  ],
+  external: EXTERNAL_PACKAGES,
   plugins: [
     warningHandlerPlugin({
       logFile: 'build-warnings.log',
@@ -70,8 +72,10 @@ export default {
     memoryTrace(false),
     codeAsText(),
     multi(),
-    peerDepsExternal({
-      includeDependencies: true,
+    nodeExternals({
+      deps: true,
+      peerDeps: true,
+      exclude: ["@rc-component/portal"],
     }),
     terser(),
     postCss({

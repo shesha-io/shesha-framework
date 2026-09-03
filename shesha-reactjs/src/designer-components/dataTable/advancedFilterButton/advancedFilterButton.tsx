@@ -49,7 +49,7 @@ export const AdvancedFilterButton: FCUnwrapped<IAdvancedFilterButtonComponentPro
   const { marginTop, marginRight, marginBottom, marginLeft, ...padding } = props.stylingBoxJson ?? { _type: 'styleBox' };
 
   return (
-    <div className={classNames(styles.buttonContainer, { disabled: props.disabled || isAdvancedFilterVisible })}>
+    <div className={classNames(styles.buttonContainer, { disabled: props.disabled, active: isAdvancedFilterVisible })}>
       <Tooltip title={props.tooltip}>
         <Badge
           count={tableFilter.length}
@@ -63,26 +63,9 @@ export const AdvancedFilterButton: FCUnwrapped<IAdvancedFilterButtonComponentPro
             icon={filterIcon}
             tooltip={filterColumns.join('  ')}
             onClick={() => toggleAdvancedFilter(!isAdvancedFilterVisible)}
-            disabled={props.disabled || isAdvancedFilterVisible}
+            disabled={props.disabled}
             stylingBoxJson={padding}
           />
-          {/* <Button
-            type={actualButtonType}
-            ghost={isGhostType}
-            title={filterColumns.join('  ')}
-            onClick={() => toggleAdvancedFilter(true)}
-            className={styles.button}
-            danger={props.danger === true}
-            disabled={props.readOnly || isAdvancedFilterVisible}
-            icon={filterIcon}
-            size={props.size}
-            style={isAdvancedFilterVisible || props.readOnly
-              ? { ...buttonStyle, opacity: 0.5, border: ['link', 'ghost'].includes(props.buttonType) ? 'none' : buttonStyle.border }
-              : { ...buttonStyle }}
-          >
-            {props.label}
-          </Button>
-          */}
         </Badge>
       </Tooltip>
     </div>
