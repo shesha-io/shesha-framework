@@ -23,9 +23,11 @@ const ChevronComponent: IToolboxComponent<IChevronProps> = {
     if (model.hidden === true) return null;
     return (
       <ConfigurableFormItem<number> model={model}>
-        {(value) => (
+        {(value, onChange) => (
           <RefListItemGroupConfiguratorProvider items={model.items ?? []} referenceList={model.referenceList} readOnly={model.readOnly}>
-            <ChevronControl value={value} {...model} />
+            {/* `onChange` is passed after the model spread so clicking a step writes the selected
+                item value back to the bound property. */}
+            <ChevronControl {...model} value={value} onChange={onChange} />
           </RefListItemGroupConfiguratorProvider>
         )}
       </ConfigurableFormItem>

@@ -36,7 +36,7 @@ import { Migrator } from '@/utils/fluentMigrator/migrator';
 import { ExpressionNodeValue } from '@/utils/jsonLogic';
 import { getFullPath } from '@/utils/metadata/helpers';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
-import { deepCopyViaJson, deepMergeSkipUndefinedFunc, deepMergeValues, jsonSafeParse, unsafeGetValueByPropertyName } from '@/utils/object';
+import { deepCopyViaJson, deepMergeSkipUndefinedFunc, deepMergeValues, jsonSafeParse, unproxyValue, unsafeGetValueByPropertyName } from '@/utils/object';
 import { QueryStringParams } from '@/utils/url';
 import { nanoid } from '@/utils/uuid';
 import { App } from 'antd';
@@ -823,78 +823,6 @@ type MomentProto = {
 };
 
 /**
- * Deep-clones data into plain objects/arrays and attaches a JSON-producing `toString` so
- * Mustache's `{{path}}` interpolation yields JSON instead of "[object Object]" / "1,2,3".
- *
- * Why this is needed:
- *  - Shesha data-access proxies (ShaArrayAccessProxy / ShaObjectAccessProxy) route every
- *    property read through their `get` trap, including `toString`. We unwrap them via
- *    `getAccessorValue()` to recover the underlying data.
- *  - Plain arrays/objects produce useless default string forms when Mustache stringifies them.
- *
- * Exported separately so it can be unit-tested without going through the full evaluator.
- *
- * Note on circular references: the `seen` WeakMap preserves cycles in the cloned structure,
- * which means the custom `toString` will catch the JSON.stringify error and return ''.
- * That's intentional — better than throwing during template rendering.
- */
-export const cloneAndDecorateForMustache = (input: unknown, seen: WeakMap<object, unknown> = new WeakMap()): unknown => {
-  if (input == null || typeof input !== 'object') return input;
-  if (input instanceof Date || moment.isMoment(input)) return input;
-
-  // Shesha data-access proxies are terminal: never iterate them via Object.keys (each
-  // property access re-triggers the proxy's `get` trap and may expose internal accessor
-  // properties or cause side effects). Whatever `getAccessorValue` returns is the answer.
-  const accessor = (input as { getAccessorValue?: () => unknown }).getAccessorValue;
-  if (typeof accessor === 'function') {
-    try {
-      const unwrapped = accessor.call(input);
-      return unwrapped === input ? undefined : cloneAndDecorateForMustache(unwrapped, seen);
-    } catch {
-      return undefined;
-    }
-  }
-
-  // Preserve known special types that carry internal state which would break under a generic
-  // clone (Map, Set, RegExp, Error, URL, typed arrays, etc.). We detect them via the
-  // [[Class]] tag — anything that's not `[object Object]` or `[object Array]` is returned by
-  // reference. Class instances (which have `[object Object]` tag) ARE walked so their
-  // enumerable fields are cloned and any nested Shesha proxies inside get unwrapped.
-  const tag = Object.prototype.toString.call(input);
-  if (tag !== '[object Object]' && tag !== '[object Array]') return input;
-
-  const cached = seen.get(input);
-  if (isDefined(cached)) return cached;
-
-  const isArray = Array.isArray(input);
-  // Preserve the prototype for class instances so prototype methods/getters remain reachable.
-  const result: Record<string, unknown> | unknown[] = isArray
-    ? []
-    : Object.create(Object.getPrototypeOf(input) as object | null) as Record<string, unknown>;
-  seen.set(input, result);
-  for (const key of Object.keys(input))
-    (result as Record<string, unknown>)[key] = cloneAndDecorateForMustache((input as Record<string, unknown>)[key], seen);
-  // Only override toString on objects — arrays must stay as real arrays so their values are
-  // submitted correctly to the API. Attaching JSON.stringify-based toString to arrays caused
-  // array fields (e.g. multi-select) to be sent as "[32,128,64]" strings instead of [32,128,64].
-  if (!isArray) {
-    Object.defineProperty(result, 'toString', {
-      value: () => {
-        try {
-          return JSON.stringify(result);
-        } catch {
-          return '';
-        }
-      },
-      configurable: true,
-      enumerable: false,
-      writable: true,
-    });
-  }
-  return result;
-};
-
-/**
  * Evaluates the string using Mustache template.
  *
  * Given a the below expression
@@ -929,11 +857,8 @@ export const evaluateString = (template: string = '', data: object, skipUnknownT
 
     // The function throws an exception if the expression passed doesn't have a corresponding curly braces
     try {
-      // Clone per call: caching the decorated structure is unsafe because long-lived proxies
-      // (e.g. the constants context) refresh in place, and skipUnknownTags mutates the view's
-      // nested nodes — both would leak shared state across evaluations.
       const view: IAnyObject = {
-        ...(cloneAndDecorateForMustache(data) as IAnyObject),
+        ...data,
         // adding a function to the data object that will format datetime
         dateFormat: function () {
           return function (timestamp: unknown, render: (renderArgs: unknown) => string) {
@@ -970,15 +895,19 @@ export const evaluateString = (template: string = '', data: object, skipUnknownT
           }
         });
 
-        const escape = (value: string | StaticMustacheTag): string => {
+        const escape = (value: unknown | StaticMustacheTag): string => {
           return value instanceof StaticMustacheTag
             ? value.toEscapedString()
-            : value;
+            : Mustache.escape(unproxyValue(value)); // unwrap proxy value
         };
 
         return Mustache.render(normalizedTemplate, view, undefined, { escape });
-      } else
-        return Mustache.render(normalizedTemplate, view);
+      } else {
+        const unwrapEscape = (value: unknown): string => {
+          return Mustache.escape(unproxyValue(value)?.toString()); // unwrap proxy value
+        };
+        return Mustache.render(normalizedTemplate, view, undefined, { escape: unwrapEscape });
+      }
     } catch (error) {
       console.warn('evaluateString ', error);
       return template;

@@ -52,7 +52,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
             key: 'common', title: 'Common', id: commonTabId,
             components: [
               ...fbf(commonTabId)
-                .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true }, jsSetting: true })
+                .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true } })
                 .addSettingsInput({
                   inputType: 'dropdown', propertyName: 'bindingFormat', label: 'Binding Format', size: 'small', jsSetting: true,
                   dropdownOptions: bindingFormatOptions,
@@ -130,26 +130,26 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   propertyRouteName: removeStyleRouter === true ? '' : { _mode: "code", _code: "    return contexts.canvasContext?.designerDevice || 'desktop';", _value: "" },
                   components: [
                     ...fbf(commonStyleRouterId)
-                      .stdFontPanel('font', ['align'])
+                      .stdFontPanel(undefined, 'font', ['align'])
                       .stdDimensionsPanel('dimensions')
                       .stdBorderPanel(removeStyleRouter !== true, 'border')
                       .stdBackgroundPanel(removeStyleRouter !== true, 'background')
                       .stdShadowPanel('shadow')
                       .stdMarginPaddingPanel('stylingBoxJson')
-                      .stdCustomStylePanel('style')
+                      .stdCustomStylePanel(undefined, 'style')
                       .stdCollapsiblePanel('Tag Style', (f) => f
                         .addSettingsInput({
                           inputType: 'dropdown', propertyName: 'tagVariant', label: 'Variant', size: 'small', jsSetting: true,
                           dropdownOptions: tagVariantOptions,
                           tooltip: 'How each tag is filled when the option carries its own colour. Solid fills the tag, Outlined draws a coloured border, Filled applies a soft tint.',
                         })
-                        .stdFontPanel('tag.font')
+                        .stdFontPanel(undefined, 'tag.font')
                         .stdDimensionsPanel('tag.dimensions')
                         .stdBorderPanel(removeStyleRouter !== true, 'tag.border', 'radius')
                         .stdBackgroundPanel(removeStyleRouter !== true, 'tag.background')
                         .stdShadowPanel('tag.shadow')
                         .stdMarginPaddingPanel('tag.stylingBoxJson')
-                        .stdCustomStylePanel('tag.style'),
+                        .stdCustomStylePanel(undefined, 'tag.style'),
                       true,
                       /* Plain text hands antd the raw label, so nothing in this panel reaches the
                          DOM — hidden rather than left inert, like Show Item Name / Show Icon. */

@@ -43,31 +43,44 @@ const RadioGroup = (model: IRadioProps & { ref?: React.Ref<HTMLDivElement> }): R
   const options = model.options ?? resolvedOptions;
   const isDisabled = model.disabled === true || model.readOnly === true;
 
+  /* Every configured handler goes on this wrapper, matching the checkbox group. antd's
+     Radio.Group renders its div through `pickAttrs(props, { aria: true, data: true })` and
+     forwards only onMouseEnter/onMouseLeave/onFocus/onBlur, silently dropping onClick,
+     onMouseMove, onKeyDown and onKeyUp — so hosting them here is what makes them fire at all,
+     and keeps every handler reporting the same element as `event.currentTarget`.
+
+     The class stays on Radio.Group: the Appearance styles are scoped to it and its options. */
   const renderCheckGroup = (): ReactElement => (
-    <Radio.Group
+    <div
       ref={ref}
-      {...(isNotNullOrWhiteSpace(model.className) ? { className: model.className } : {})}
-      disabled={isDisabled}
-      value={value != null ? `${value}` : undefined}
-      {...(model.onBlur ? { onBlur: model.onBlur } : {})}
-      {...(model.onFocus ? { onFocus: model.onFocus } : {})}
-      {...(model.onChange ? { onChange: model.onChange } : {})}
-      {...(model.onClick ? { onClick: model.onClick } : {})}
-      {...(model.onMouseEnter ? { onMouseEnter: model.onMouseEnter } : {})}
-      {...(model.onMouseLeave ? { onMouseLeave: model.onMouseLeave } : {})}
+      onFocus={isDisabled ? undefined : model.onFocus}
+      onBlur={isDisabled ? undefined : model.onBlur}
+      onClick={isDisabled ? undefined : model.onClick}
+      onMouseEnter={isDisabled ? undefined : model.onMouseEnter}
+      onMouseMove={isDisabled ? undefined : model.onMouseMove}
+      onMouseLeave={isDisabled ? undefined : model.onMouseLeave}
+      onKeyDown={isDisabled ? undefined : model.onKeyDown}
+      onKeyUp={isDisabled ? undefined : model.onKeyUp}
       {...(model.style ? { style: model.style } : {})}
     >
-      <Space
-        {...(model.direction ? { orientation: model.direction } : {})}
-        style={{ margin: `${DEFAULT_MARGINS.vertical} ${DEFAULT_MARGINS.horizontal}` }}
+      <Radio.Group
+        {...(isNotNullOrWhiteSpace(model.className) ? { className: model.className } : {})}
+        disabled={isDisabled}
+        value={value != null ? `${value}` : undefined}
+        {...(model.onChange ? { onChange: model.onChange } : {})}
       >
-        {options.map((checkItem, index) => (
-          <Radio key={index} value={`${checkItem.value}`} disabled={isDisabled}>
-            {checkItem.label}
-          </Radio>
-        ))}
-      </Space>
-    </Radio.Group>
+        <Space
+          {...(model.direction ? { orientation: model.direction } : {})}
+          style={{ margin: `${DEFAULT_MARGINS.vertical} ${DEFAULT_MARGINS.horizontal}` }}
+        >
+          {options.map((checkItem, index) => (
+            <Radio key={index} value={`${checkItem.value}`} disabled={isDisabled}>
+              {checkItem.label}
+            </Radio>
+          ))}
+        </Space>
+      </Radio.Group>
+    </div>
   );
 
   return renderCheckGroup();

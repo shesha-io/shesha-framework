@@ -16,7 +16,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
           { key: 'common', title: 'Common', id: commonTabId,
             components: fbf(commonTabId)
               .addSettingsInput({ inputType: 'textField', propertyName: 'componentName', label: 'Component Name', validate: { required: true }, jsSetting: false })
-              .addSettingsInput({ inputType: 'textField', propertyName: 'label', label: 'Heading', jsSetting: true })
               .stdVisibleEditableInputs('full')
               .addSettingsInput({ inputType: 'columnsList', propertyName: 'columns', label: 'Columns', labelAlign: 'right', tooltip: 'Configure columns', size: 'small' })
               .addSettingsInputRow({ inline: true, inputs: [

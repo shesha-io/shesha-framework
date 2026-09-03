@@ -1,4 +1,3 @@
-import { useRef } from 'react';
 import { nanoid } from '@/utils/uuid';
 import { useSheshaApplication } from "@/providers";
 import { useAvailableConstantsData, evaluateString, executeScript, genericActionArgumentsEvaluator } from '@/providers/form/utils';
@@ -104,7 +103,8 @@ const getApiCallArgumentsForm: FormMarkupFactory = ({ fbf }) => {
         type: 'endpointsAutocomplete',
         propertyName: 'url',
         label: 'URL',
-        description: 'Relative or absolute URL of the API endpoint. Relative ones will be send to the current back-end. Absolute URLs can be used for external applications.',
+        description: 'Relative or absolute URL of the API endpoint. Relative ones will be sent to the current back-end. Absolute URLs (must start with http:// or https://) can be used for ' +
+          'external applications — a bare domain without the scheme is treated as relative and will still be sent to this app’s own back-end.',
         httpVerb: "{data.verb}",
       },
     ],
@@ -150,7 +150,7 @@ const applyResponseTransformation = async (
 };
 
 const isGlobalUrl = (url: string): boolean => {
-  return !isNullOrWhiteSpace(url) && Boolean(url.match(/^(http|ftp|https):\/\//gi));
+  return !isNullOrWhiteSpace(url) && Boolean(url.match(/^(http|https):\/\//gi));
 };
 
 const hasHeader = (headers: Record<string, string>, name: string): boolean =>
@@ -180,12 +180,15 @@ export const useApiCallAction = (): void => {
   const { backendUrl, httpHeaders } = useSheshaApplication();
 
   // The response transformation runs as a standard Shesha script, so it needs the same constants
-  // (globalState, pageContext, http, form, data, …) as every other code editor. `responseHolder`
-  // is a stable object whose `response` key is registered as an available constant; we write the
-  // actual response into it just before executing the transformation. The accessor reads it lazily,
-  // so the live value is picked up without rebuilding the constants on every API response.
-  const responseHolder = useRef<{ response: unknown }>({ response: undefined });
-  const allData = useAvailableConstantsData({}, responseHolder.current);
+  // (globalState, pageContext, http, form, data, …) as every other code editor. `useApiCallAction` is
+  // registered once, permanently, from `ApplicationActionsProcessor` near the app root — outside every
+  // form's `FormProvider` — so form-scoped constants (`form`, `data`, `selectedRow`, …) can never be
+  // populated on `allData` itself. The `context` the executer receives from the dispatcher, however,
+  // *is* scoped to whichever component actually triggered the action, so it carries a working `form`.
+  // We merge `context` on top of `allData` (context wins on overlaps) when building the transformation
+  // script's execution context, below, so it gets both the working form-scoped constants and the
+  // standard global ones.
+  const allData = useAvailableConstantsData({});
 
   useConfigurableAction<IApiCallArguments>({
     isPermament: true,
@@ -370,9 +373,12 @@ export const useApiCallAction = (): void => {
         ...(baseUrl && { baseURL: baseUrl }),
       }).then((response) => {
         const original: unknown = unwrapAbpResponse(response.data) as unknown;
-        // Expose the freshly-received response to the transformation script as `response`.
-        responseHolder.current.response = original;
-        return applyResponseTransformation(original, allData, requestConfig?.responseTransformation);
+        // Build the transformation script's context from the CALLER's context (has a working `form`,
+        // `data`, `selectedRow`, …, since it was built where the triggering button/component actually
+        // lives) merged over this hook's own `allData` (has the standard global constants but no
+        // working form-scoped ones — see the comment on `allData` above), plus `response` itself.
+        const transformationContext = { ...allData, ...(context as object), response: original };
+        return applyResponseTransformation(original, transformationContext, requestConfig?.responseTransformation);
       });
     },
   }, [backendUrl, httpHeaders, allData]);

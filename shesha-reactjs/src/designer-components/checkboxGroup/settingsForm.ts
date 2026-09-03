@@ -30,7 +30,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
             key: 'common', title: 'Common', id: commonTabId,
             components: [
               ...fbf(commonTabId)
-                .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true }, jsSetting: true })
+                .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true } })
                 .addLabelConfigurator({ propertyName: 'hideLabel', label: 'Label', hideLabel: true })
                 .addSettingsInputRow({ inputs: [{ type: 'textArea', propertyName: 'description', label: 'Tooltip', jsSetting: true }] })
                 .stdVisibleEditableInputs('full')
@@ -40,7 +40,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                     inputs: [{
                       type: 'labelValueEditor', propertyName: 'items', label: 'Items',
                       labelTitle: 'Label', labelName: 'label', valueTitle: 'Value', valueName: 'value',
-                      mode: 'dialog', jsSetting: true,
+                      mode: 'dialog', jsSetting: true, valueEditor: 'expression',
                     }],
                     // An unset data source renders as `values`, so the Items editor stays visible for it.
                     visibleJs: 'return (getSettingValue(data?.dataSourceType) ?? "values") === "values";',
@@ -80,21 +80,21 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   propertyRouteName: removeStyleRouter === true ? '' : { _mode: "code", _code: "    return contexts.canvasContext?.designerDevice || 'desktop';", _value: "" },
                   components: [
                     ...fbf(commonStyleRouterId)
-                      .stdFontPanel('font', ['align'])
+                      .stdFontPanel(undefined, 'font', ['align'])
                       .stdDimensionsPanel('dimensions')
                       .stdBorderPanel(removeStyleRouter !== true, 'border')
                       .stdBackgroundPanel(removeStyleRouter !== true, 'background')
                       .stdShadowPanel('shadow')
                       .stdMarginPaddingPanel('stylingBoxJson')
-                      .stdCustomStylePanel('style')
+                      .stdCustomStylePanel(undefined, 'style')
                       .stdCollapsiblePanel('Checkbox Style', (f) => f
-                        .stdFontPanel('checkbox.font', ['align', 'type'], 'Check Mark')
+                        .stdFontPanel(undefined, 'checkbox.font', ['align', 'type'], 'Check Mark')
                         .stdDimensionsPanel('checkbox.dimensions')
                         .stdBorderPanel(removeStyleRouter !== true, 'checkbox.border', 'radius')
                         .stdBackgroundPanel(removeStyleRouter !== true, 'checkbox.background')
                         .stdShadowPanel('checkbox.shadow')
                         .stdMarginPaddingPanel('checkbox.stylingBoxJson')
-                        .stdCustomStylePanel('checkbox.style'),
+                        .stdCustomStylePanel(undefined, 'checkbox.style'),
                       true,
                       )
                       .toJson()],

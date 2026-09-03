@@ -1,17 +1,27 @@
 import {
   REF_LIST_ITEM_GROUP_CONTEXT_INITIAL_STATE,
 } from './contexts';
-import { isIRefListItemGroup, RefListGroupItemProps } from '@/components/refListSelectorDisplay/provider/models';
+import { IRefListGroupItemBase, isIRefListItemGroup, RefListGroupItemProps } from '@/components/refListSelectorDisplay/provider/models';
 import { getItemPositionById } from '@/components/refListSelectorDisplay/provider/utils';
 import { createReducer } from '@reduxjs/toolkit';
-import { setItems, selectItemAction, updateItemAction, updateChildItemsAction, storeSettingsAction } from './actions';
+import { setItems, selectItemAction, updateItemAction, updateChildItemsAction, storeSettingsAction, syncConfiguredItemsAction } from './actions';
 import { isDefined } from '@/utils/nullables';
+
+/**
+ * The reference list defines a flat set of items, so a group's children are never carried over
+ * when its settings are reapplied.
+ */
+const withoutChildItems = (item: RefListGroupItemProps): IRefListGroupItemBase => {
+  if (!isIRefListItemGroup(item)) return item;
+  const { childItems: _childItems, ...rest } = item;
+  return rest;
+};
 
 export const RefListItemGroupReducer = createReducer(REF_LIST_ITEM_GROUP_CONTEXT_INITIAL_STATE, (builder) => {
   builder
     .addCase(setItems, (state, { payload }) => {
-      // Preserve any per-item configuration (Hide/Events) the user already set, matched by itemValue,
-      // so re-fetching the reference list does not wipe saved settings (the cause of #5125).
+      // Preserve the per-item configuration the user already set, matched by itemValue, so
+      // re-reading the reference list does not wipe saved settings (the cause of #5125).
       const priorByValue = new Map<number, RefListGroupItemProps>();
       const indexPriorItems = (items: RefListGroupItemProps[]): void => {
         items.forEach((prior) => {
@@ -28,14 +38,42 @@ export const RefListItemGroupReducer = createReducer(REF_LIST_ITEM_GROUP_CONTEXT
         ...state,
         items: payload.map<RefListGroupItemProps>((item) => {
           const prior = priorByValue.get(item.itemValue);
+          // Keep every setting the user configured for the item and refresh only the data the
+          // reference list owns. Listing the preserved properties one by one silently dropped the
+          // rest of the item configuration on each re-read.
           return {
+            ...(isDefined(prior) ? withoutChildItems(prior) : {}),
             ...item,
             item: item.item ?? undefined,
             color: item.color ?? undefined,
             icon: item.icon ?? undefined,
-            ...(isDefined(prior?.hidden) ? { hidden: prior.hidden } : {}),
-            ...(isDefined(prior?.actionConfiguration) ? { actionConfiguration: prior.actionConfiguration } : {}),
           };
+        }),
+      };
+    })
+    .addCase(syncConfiguredItemsAction, (state, { payload }) => {
+      // Adopt the configuration held by the host (the component model). The items are seeded into
+      // the reducer only once, so without this a setting saved in the designer - a step hidden, an
+      // action changed - was not reflected until the whole component was re-created.
+      // The provider dispatches this only when the incoming configuration actually differs, so
+      // rebuilding the items here cannot feed back into itself.
+      if (payload.length === 0) return state;
+
+      const configuredByValue = new Map<number, RefListGroupItemProps>();
+      payload.forEach((configured) => {
+        if (isDefined(configured.itemValue))
+          configuredByValue.set(configured.itemValue, configured);
+      });
+
+      return {
+        ...state,
+        items: state.items.map<RefListGroupItemProps>((item) => {
+          const configured = isDefined(item.itemValue) ? configuredByValue.get(item.itemValue) : undefined;
+          if (!isDefined(configured)) return item;
+
+          // The reference list owns the display data, the host owns the configuration.
+          const { id: _id, item: _item, itemValue: _itemValue, color: _color, icon: _icon, ...settings } = withoutChildItems(configured);
+          return { ...item, ...settings };
         }),
       };
     })

@@ -1,5 +1,6 @@
 import { FC, PropsWithChildren, useMemo, useState } from 'react';
 import * as React from 'react';
+import { createPortal } from 'react-dom';
 import { ShaForm } from '@/providers/form';
 import { Tooltip } from 'antd';
 import { useFormDesigner, useFormDesignerSelectedComponentId, useFormDesignerIsDebug } from '@/providers/formDesigner';
@@ -11,11 +12,20 @@ interface IDragWrapperProps {
   className?: string | undefined;
 }
 
+/** Marks the wrapper element so nested wrappers can work out which one of them is the innermost under the cursor. */
+const DRAG_WRAPPER_MARKER = 'data-sha-drag-wrapper';
+/** Width of the anchor, which is what keeps the tooltip clear of the cursor it sits next to. */
+const CURSOR_GAP = 14;
+
 export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => {
   const selectedComponentId = useFormDesignerSelectedComponentId();
   const isDebug = useFormDesignerIsDebug();
   const { setSelectedComponent } = useFormDesigner();
-  const [isOpen, setIsOpen] = useState(false);
+  /**
+   * Viewport position the tooltip is pinned to, or `null` while the component is not hovered. Pinned to the
+   * cursor rather than to the component, whose right edge can be a whole canvas away for a container.
+   */
+  const [anchor, setAnchor] = useState<{ x: number; y: number } | null>(null);
 
   const componentModel = ShaForm.useComponentModel(props.componentId);
 
@@ -51,22 +61,59 @@ export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => 
       );
   };
 
+  // Wrappers nest (a container's wrapper contains its children's wrappers), so only the innermost one under the
+  // cursor shows its tooltip. That decision is made explicitly instead of by stopping propagation: ancestors must
+  // still receive these events, otherwise their tooltips never get the chance to close.
   const onMouseOver = (event: React.MouseEvent<HTMLElement>): void => {
-    event.stopPropagation();
-    setIsOpen(true);
+    const target = event.target instanceof Element ? event.target : null;
+    if (target?.closest(`[${DRAG_WRAPPER_MARKER}]`) !== event.currentTarget) {
+      setAnchor(null);
+      return;
+    }
+
+    const { clientX, clientY } = event;
+    // pinned to where the cursor entered, so it doesn't hop as the cursor crosses inner elements
+    setAnchor((prev) => prev ?? { x: clientX, y: clientY });
   };
 
   const onMouseOut = (event: React.MouseEvent<HTMLElement>): void => {
-    event.stopPropagation();
-    setIsOpen(false);
+    // moves between elements inside this wrapper are not a leave - closing on those flickers the tooltip
+    const nextTarget = event.relatedTarget instanceof Node ? event.relatedTarget : null;
+    if (nextTarget !== null && event.currentTarget.contains(nextTarget)) return;
+
+    setAnchor(null);
   };
 
   return (
-    <Tooltip title={tooltip} placement="right" open={isOpen}>
-      <div className={props.className} onClick={onClick} onMouseOver={onMouseOver} onMouseOut={onMouseOut}>
-        {props.children}
-      </div>
-    </Tooltip>
+    <div
+      {...{ [DRAG_WRAPPER_MARKER]: true }}
+      className={props.className}
+      onClick={onClick}
+      onMouseOver={onMouseOver}
+      onMouseOut={onMouseOut}
+    >
+      {props.children}
+
+      {anchor !== null && createPortal(
+        // Portalled into the body so the canvas' CSS `zoom` scales neither these viewport coordinates nor
+        // the overlay (see the theme provider's getPopupContainer). `pointerEvents: none` keeps the overlay
+        // out of hit-testing - otherwise reaching it counts as leaving the component and the tooltip flickers.
+        <Tooltip open title={tooltip} placement="right" styles={{ root: { pointerEvents: 'none' } }}>
+          <span
+            data-testid="drag-wrapper-tooltip-anchor"
+            style={{
+              position: 'fixed',
+              left: anchor.x,
+              top: anchor.y,
+              width: CURSOR_GAP,
+              height: 1,
+              pointerEvents: 'none',
+            }}
+          />
+        </Tooltip>,
+        document.body,
+      )}
+    </div>
   );
 };
 

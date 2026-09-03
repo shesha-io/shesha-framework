@@ -6,6 +6,7 @@
 
 import * as React from 'react';
 import { getToolboxComponents } from "@/providers/form/defaults/toolboxComponents";
+import { isNullOrWhiteSpace } from '@/utils';
 
 export interface IMenuItem {
   key: string;
@@ -22,16 +23,18 @@ const buildComponentItems = (): IMenuItem[] => {
   const toolboxComponents = getToolboxComponents(false, undefined);
 
   return toolboxComponents
-    .filter((group) => group.visible)
+    .filter((group) => group.visible !== false)
     .map((componentGroup) => ({
       key: componentGroup.name,
       title: componentGroup.name,
-      children: componentGroup.components.map((component) => ({
-        key: component.type,
-        title: component.name,
-        type: component.type,
-        icon: component.icon,
-      })),
+      children: componentGroup.components
+        .filter((component) => component.showInThemeEditor !== false && component.isHidden !== true)
+        .map((component) => ({
+          key: component.type,
+          title: component.name,
+          type: component.type,
+          icon: component.icon,
+        })),
     }));
 };
 
@@ -64,7 +67,7 @@ export const getAllComponentTypes = (items?: IMenuItem[]): IMenuItem[] => {
   const searchItems = items ?? getMenuItems();
   const result: IMenuItem[] = [];
   for (const node of searchItems) {
-    if (node.type) {
+    if (!isNullOrWhiteSpace(node.type)) {
       result.push(node);
     }
     if (node.children) {

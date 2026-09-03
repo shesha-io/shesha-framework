@@ -131,7 +131,7 @@ export const getStyleValueFromModel = (model: IConfigurableFormComponent): IStyl
   };
 };
 
-export const borderCss = (b: BorderStyle | undefined): string => `${addPx(b?.width) ?? '0px'} ${b?.style ?? 'none'} ${b?.color ?? 'transparent'}`;
+export const borderCss = (b: BorderStyle | undefined): string => `${addPx(b?.width) ?? '0px'} ${b?.style ?? 'none'} ${isNullOrWhiteSpace(b?.color) ? 'transparent' : b.color}`;
 
 export const gradientCss = (g: IGradientValue): string => {
   const direction = g.direction;
@@ -303,3 +303,20 @@ export const popupAppearanceStyles = (model: {
   ${borderStyles(model.border)}
   ${backgroundStyles(model.background)}
 `;
+
+/**
+ * The trigger is laid out as a flex row, which makes `text-align` inert. Map the Font panel
+ * alignment onto `justify-content` so the Align input keeps working. `justify` has no flex
+ * equivalent for a single item and falls back to start.
+ */
+export const justifyContentFor = (align: AlignSetting | undefined): string => {
+  switch (align) {
+    case 'right':
+    case 'end':
+      return 'flex-end';
+    case 'center':
+      return 'center';
+    default:
+      return 'flex-start';
+  }
+};

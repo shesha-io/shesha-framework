@@ -9,7 +9,13 @@ import ReflistTag from '../refListDropDown/reflistTag';
 import { getNumberOrUndefined } from '@/utils/string';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 
-const normalizeValue = (value: number | string): number | string => getNumberOrUndefined(value) ?? value;
+/**
+ * Coerces a numeric-looking value to a number so a stored "1" matches a configured 1.
+ *
+ * Exported because callers that resolve a value against this component's options have to apply the
+ * same coercion — matching raw would reject a selection this component would accept.
+ */
+export const normalizeValue = (value: number | string): number | string => getNumberOrUndefined(value) ?? value;
 
 /** Layout effects do not run on the server, so fall back to `useEffect` there. */
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
@@ -53,6 +59,7 @@ export const Dropdown: FC<IDropdownProps> = ({
   selectRef,
   events,
   styleValue,
+  fallbackDescription,
 }) => {
   /* Enable Multi-Select supersedes `mode`; `mode` is still honoured for forms saved before the
      rename. 'tags' is left alone because the boolean cannot express it — overriding it would
@@ -148,10 +155,13 @@ export const Dropdown: FC<IDropdownProps> = ({
       ? {
         value: itemValue,
         label: !isNullOrWhiteSpace(item.label) ? item.label : 'unknown',
-        // color: item.color,
-        // icon: item.icon,
+        /* Carried through so the read-only renderer can draw the selection as a coloured tag: it
+           reads these off the labeled value, and without them every tag renders in antd's default
+           colour regardless of what the reference list item configured. */
+        color: item.color,
+        icon: item.icon,
+        description: item.description,
         data: item.data,
-        // description: item.description,
       } satisfies CustomLabeledValue<number | string>
       : undefined;
   }, [incomeValueFunc]);
@@ -178,9 +188,11 @@ export const Dropdown: FC<IDropdownProps> = ({
       data: itemData as unknown as number,
       color: fetchedItem.color ?? undefined,
       icon: fetchedItem.icon ?? undefined,
-      description: fetchedItem.description ?? undefined,
+      /* Falls back to the caller's text so a tag whose item has no description of its own still
+         has hover text. Per item, so in multi-select each tag keeps its own. */
+      description: isNotNullOrWhiteSpace(fetchedItem.description) ? fetchedItem.description : fallbackDescription,
     } satisfies ISelectOption<number>;
-  }, [labelCustomJs, outcomeValueFunc, incomeValueFunc]);
+  }, [labelCustomJs, outcomeValueFunc, incomeValueFunc, fallbackDescription]);
 
   if (dataSourceType === 'referenceList') {
     return isDefined(referenceListId)

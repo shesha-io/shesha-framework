@@ -100,7 +100,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
             key: 'common', title: 'Common', id: commonTabId,
             components: [
               ...fbf(commonTabId)
-                .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true }, jsSetting: true })
+                .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true } })
                 .addLabelConfigurator({ propertyName: 'hideLabel', label: 'Label', hideLabel: true })
                 .stdPlaceholderDescriptionInputs()
                 .stdVisibleEditableInputs('full')
@@ -112,7 +112,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   .addSettingsInput({
                     inputType: 'labelValueEditor', propertyName: 'queryParams', label: 'Query Param',
                     labelName: 'param', labelTitle: 'Param', valueName: 'value', valueTitle: 'Value',
-                    mode: 'dialog', jsSetting: true, version: 2, visibleJs: urlVisibleJs,
+                    mode: 'dialog', jsSetting: true, version: 2, visibleJs: urlVisibleJs, valueEditor: 'expression',
                   })
                   .addSettingsInput({ inputType: 'entityTypeAutocomplete', propertyName: 'entityType', label: 'Entity Type', labelAlign: 'right', jsSetting: true, visibleJs: entitiesListVisibleJs, onChangeSetting: onEntityTypeChange })
                   .addSettingsInput({

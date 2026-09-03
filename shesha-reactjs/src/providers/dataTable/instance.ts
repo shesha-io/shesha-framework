@@ -117,6 +117,8 @@ export class DatasetInstance implements IDatasetInstance {
 
   initialPageSize: number = 10;
 
+  initialCurrentPage: number = DATA_TABLE_CONTEXT_INITIAL_STATE.currentPage;
+
   init = async (args: DatatableInitArgs): Promise<void> => {
     this.log("Initializing datatable instance");
     this.#metadata = args.metadata;
@@ -125,6 +127,7 @@ export class DatasetInstance implements IDatasetInstance {
     this.state.sortMode = args.sortMode; // TODO: make mandetory and split models
     this.state.dataFetchingMode = args.dataFetchingMode;
     this.state.selectedPageSize = args.initialPageSize ?? DATA_TABLE_CONTEXT_INITIAL_STATE.selectedPageSize;
+    this.state.currentPage = args.currentPage ?? DATA_TABLE_CONTEXT_INITIAL_STATE.currentPage;
     this.state.standardSorting = sortingItems2ColumnSorting(args.standardSorting);
     this.state.strictSortBy = args.strictSortBy;
     this.state.strictSortOrder = args.strictSortOrder;
@@ -204,7 +207,7 @@ export class DatasetInstance implements IDatasetInstance {
         columns: cols,
         configurableColumns: columns,
         // user config
-        currentPage: userConfig?.currentPage ?? 1,
+        currentPage: userConfig?.currentPage ?? state.currentPage,
         selectedPageSize: userConfig?.pageSize ?? state.selectedPageSize,
         quickSearch: userConfig?.quickSearch ?? "",
         tableFilter: userConfig?.advancedFilter ?? [],
@@ -583,6 +586,11 @@ export class DatasetInstance implements IDatasetInstance {
     const { state, initialPageSize, userConfigId } = this;
     if (isNullOrWhiteSpace(userConfigId))
       return;
+
+    if (!this.isInitialized) {
+      this.log("saveUserConfig skipped: configuration is not loaded yet");
+      return;
+    }
 
     // don't save value if it's set to default, it helps to apply defaults
     const pageSize = state.selectedPageSize === initialPageSize ? undefined : state.selectedPageSize;

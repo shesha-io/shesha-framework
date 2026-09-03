@@ -37,6 +37,7 @@ import { isFileTypeAllowed } from '@/utils/fileValidation';
 import { ShaIcon, IconType } from '@/components/shaIcon';
 import { getFileExtension } from '@/utils/storedFile/utils';
 import { DownloadFileArgs, ReplaceFilePayload, StoredFileModel } from '@/utils/storedFile/models';
+import * as FileApiModels from '@/utils/storedFile/api-models';
 import { useHttpClient } from '@/providers/sheshaApplication/publicApi/http/hooks';
 import { ValidationErrors } from '../validationErrors';
 import { buildUrl } from '@/utils';
@@ -528,7 +529,15 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
 
     const fileId = file.id;
     setPreviewLoading(true);
-    const fullImageDownloadUrl = buildUrl(STORED_FILE_URLS.DOWNLOAD_FILE, { id: fileId });
+    /* Reading the image to put it on screen is not the user downloading it. The endpoint records a
+       download unless told not to, and the record is what the Downloaded Files styling is resolved
+       from on the next load — so without this a preview marks the file on the server while the list
+       in front of the user still says otherwise, and the styling appears out of nowhere later. The
+       explicit Download action is the one that marks, and it applies the styling as it goes. */
+    const fullImageDownloadUrl = buildUrl<FileApiModels.DownloadFilePayload>(
+      STORED_FILE_URLS.DOWNLOAD_FILE,
+      { id: fileId, skipMarkDownload: true },
+    );
     fetchStoredFile(httpClient, fullImageDownloadUrl)
       .then(({ url: fullImageUrl, revoke }) => {
         // The preview may have moved to another file (or closed) while this was loading.
@@ -872,6 +881,17 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
   const showStubFileName = listType !== 'text' && !hideFileName;
   const showStubExtraContent = hasExtraContent === true && isDefined(extraFormId);
 
+  /* The stub's tile and the name under it belong in one box, the way itemRender groups them for a
+     real file. Left as siblings they are two items of the gapped renderer column, so Gap — which is
+     the spacing *between* files — was inserted between a file and its own name and grew the stub by
+     that much. Past the container's max height the column then resolved the overflow by shrinking
+     its items, and the tile was squashed. Grouped, Gap no longer reaches inside the pair, and the
+     tile holds its height because it is a block child here rather than a flex item.
+
+     Only thumbnail mode is grouped: in text mode the tile is the flex item that stretches to the
+     container's width, and a box around it would take that away. */
+  const StubGroup = listType === 'thumbnail' ? 'div' : React.Fragment;
+
   const renderUploadContent = (): React.ReactNode => {
     return (
       disabled !== true && (
@@ -923,7 +943,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
             ? (isDragger
               ? <Dragger style={{ padding: 0 }} disabled><DraggerStub text={dropzoneText} /></Dragger>
               : (
-                <>
+                <StubGroup>
                   <Button
                     type="link"
                     icon={<PictureOutlined />}
@@ -933,8 +953,8 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                   >
                     {listType === 'text' && '(press to upload)'}
                   </Button>
-                  {/* The renderer is a gapped flex column, so an empty box here would still take a
-                      gap and pad the control column out of line with the label. */}
+                  {/* Ungrouped in text mode, where an empty box would still take a gap and pad the
+                      control column out of line with the label. */}
                   {(showStubFileName || showStubExtraContent) && (
                     <div style={(listType === 'thumbnail') ? { width, minWidth, maxWidth } : {}}>
                       {showStubFileName && (
@@ -950,7 +970,7 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
                       )}
                     </div>
                   )}
-                </>
+                </StubGroup>
               )
             )
             : (props.disabled === true && fileList.length === 0

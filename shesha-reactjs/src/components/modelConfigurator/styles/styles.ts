@@ -24,7 +24,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { height }: { hei
           height: 100%;
           .sha-components-container.vertical, .sha-components-container-inner {
             height: 100%;
-            .ant-tabs, .ant-tabs-content, .ant-tabs-tabpane-active {
+            .ant-tabs, .ant-tabs-body, .ant-tabs-tabpane-active {
               height: 100%;
               .shaViewsEditorForm {
                 height: 100%;

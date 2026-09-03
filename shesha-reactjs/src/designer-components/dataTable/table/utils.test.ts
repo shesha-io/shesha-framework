@@ -28,12 +28,12 @@ const asMetadata = (properties: IPropertyMetadata[]): IModelMetadata =>
 const pathsOf = (properties: IPropertyMetadata[]): string[] => properties.map((p) => p.path);
 
 describe('filterPropertiesBySupportedTypes', () => {
-  it('drops reference lists and entity references by default (grid columns)', () => {
+  it('keeps reference lists but drops entity references by default (grid columns)', () => {
     const result = pathsOf(filterPropertiesBySupportedTypes(membershipPayment));
 
     expect(result).toContain('amount');
     expect(result).toContain('paymentDate');
-    expect(result).not.toContain('paymentType');
+    expect(result).toContain('paymentType');
     expect(result).not.toContain('member');
   });
 
@@ -64,10 +64,10 @@ describe('calculateDefaultColumns', () => {
     expect(columns.map((c) => c.propertyName)).toContain('paymentType');
   });
 
-  it('omits paymentType with the default (grid) options, which is the reported bug', async () => {
+  it('includes paymentType with the default (grid) options', async () => {
     const columns = await calculateDefaultColumns(asMetadata(membershipPayment));
 
-    expect(columns.map((c) => c.propertyName)).not.toContain('paymentType');
+    expect(columns.map((c) => c.propertyName)).toContain('paymentType');
   });
 
   it('excludes framework-related and id properties regardless of the type set', async () => {

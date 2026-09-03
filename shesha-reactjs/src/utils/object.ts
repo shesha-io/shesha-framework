@@ -9,6 +9,7 @@ import { ShaArrayAccessProxy, ShaObjectAccessProxy } from "@/providers/dataConte
 import { WritableDraft } from "@reduxjs/toolkit";
 import { StorageArrayProperty, StorageProperty } from "@/providers/dataContextProvider/contexts/storageProxy";
 import { ObservableProxy } from "@/providers/form/observableProxy";
+import { isEntityReferenceId } from "./entity";
 
 export const jsonSafeParse = <T = unknown>(value: string | null | undefined, defaultValue?: T): T | undefined => {
   try {
@@ -93,6 +94,13 @@ export const deepMergeValues = <TObject extends object = object, TSource extends
     // handle moemnt objects
     if (moment.isMoment(srcValue)) {
       // save moment object without merging
+      return srcValue;
+    }
+
+    // handle entity references
+    if (isEntityReferenceId(srcValue)) {
+      // replace without merging: a reference identifies a *different* entity, so keys from the
+      // previous one (id, _displayName) must not survive underneath the new value
       return srcValue;
     }
 

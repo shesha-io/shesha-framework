@@ -35,7 +35,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
             key: 'common', title: 'Common', id: commonTabId,
             components: [
               ...fbf(commonTabId)
-                .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true }, jsSetting: true })
+                .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true } })
                 .addLabelConfigurator({ propertyName: 'hideLabel', label: 'Label', hideLabel: true })
                 .addSettingsInputRow({ inputs: [{ type: 'textArea', propertyName: 'description', label: 'Tooltip', jsSetting: true }] })
                 .stdVisibleEditableInputs('full')
@@ -45,7 +45,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                     inputs: [{
                       type: 'labelValueEditor', propertyName: 'items', label: 'Items',
                       labelTitle: 'Label', labelName: 'label', valueTitle: 'Value', valueName: 'value',
-                      mode: 'dialog', jsSetting: true,
+                      mode: 'dialog', jsSetting: true, valueEditor: 'expression',
                     }],
                     // An unset data source renders as `values`, so the Items editor stays visible for it.
                     visibleJs: 'return (getSettingValue(data?.dataSourceType) ?? "values") === "values";',
@@ -80,25 +80,25 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
             key: 'appearance', title: 'Appearance', id: appearanceTabId,
             components: [
               ...fbf(appearanceTabId)
-                .addSettingsInput({ inputType: 'dropdown', propertyName: 'direction', label: 'Direction', size: 'small', jsSetting: true, dropdownOptions: directionOptions })
                 .addPropertyRouter({ id: commonStyleRouterId, propertyName: 'propertyRouter1', componentName: 'propertyRouter', label: 'Property router1', labelAlign: 'right',
                   propertyRouteName: removeStyleRouter === true ? '' : { _mode: "code", _code: "    return contexts.canvasContext?.designerDevice || 'desktop';", _value: "" },
                   components: [
                     ...fbf(commonStyleRouterId)
-                      .stdFontPanel('font', ['align'])
+                      .addSettingsInput({ inputType: 'dropdown', propertyName: 'direction', label: 'Direction', size: 'small', jsSetting: true, dropdownOptions: directionOptions })
+                      .stdFontPanel(undefined, 'font', ['align'])
                       .stdDimensionsPanel('dimensions')
                       .stdBorderPanel(removeStyleRouter !== true, 'border')
                       .stdBackgroundPanel(removeStyleRouter !== true, 'background')
                       .stdShadowPanel('shadow')
                       .stdMarginPaddingPanel('stylingBoxJson')
-                      .stdCustomStylePanel('style')
+                      .stdCustomStylePanel(undefined, 'style')
                       .stdCollapsiblePanel('Radio Style', (f) => f
                         .stdDimensionsPanel('radio.dimensions')
                         .stdBorderPanel(removeStyleRouter !== true, 'radio.border')
                         .stdBackgroundPanel(removeStyleRouter !== true, 'radio.background')
                         .stdShadowPanel('radio.shadow')
                         .stdMarginPaddingPanel('radio.stylingBoxJson')
-                        .stdCustomStylePanel('radio.style'),
+                        .stdCustomStylePanel(undefined, 'radio.style'),
                       true,
                       )
                       .toJson()],

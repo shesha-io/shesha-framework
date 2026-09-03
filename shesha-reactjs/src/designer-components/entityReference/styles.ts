@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 import { IEntityReferenceControlProps } from './interfaces';
-import { dimensionsStyles, fontStyles, marginStyles, paddingStyles } from '../_common/styles/utils';
+import { dimensionsStyles, fontStyles, paddingStyles } from '../_common/styles/utils';
 
 export const useStyles = createStyles(({ css, cx }, model: IEntityReferenceControlProps) => {
   /*
@@ -11,7 +11,6 @@ export const useStyles = createStyles(({ css, cx }, model: IEntityReferenceContr
    */
   const entityReference = cx('sha-entity-reference', css`
     ${dimensionsStyles(model.dimensions)}
-    ${marginStyles(model.stylingBoxJson)}
     ${paddingStyles(model.stylingBoxJson)}
     ${fontStyles(model.font, model.styleCss)}
 
@@ -54,45 +53,7 @@ export const useStyles = createStyles(({ css, cx }, model: IEntityReferenceContr
     }
   `);
 
-  /*
-   * Popover and modal are portalled to the body, so no descendant selector from the root class can
-   * reach them — each needs its own class passed through the relevant prop.
-   *
-   * They carry font only. The panel itself keeps the theme's own background, border and elevation
-   * so it stays consistent with every other popup in the app; the component contributes just the
-   * text styling, so the panel's content matches the link that opened it.
-   */
-  const popupFont = `
-    ${fontStyles(model.font, model.styleCss)}
-  `;
-
-  /* antd 6 renders the popover as root > `-container` (the painted panel) wrapping `-title` and
-     `-content`. antd sets colour and font on those elements themselves, so a rule on the panel is
-     overridden rather than inherited — restate it where the text actually is. */
-  const entityReferencePopup = cx('sha-entity-reference-popup', css`
-    &&& .ant-popover-title,
-    &&& .ant-popover-content,
-    &&& .ant-form-item-label > label,
-    &&& .read-only-display-form-item {
-      ${popupFont}
-    }
-  `);
-
-  /* Same shape for the modal: `-container` is the panel, with `-header`, `-title` and `-body`
-     inside it. The class lands on the modal wrapper (`wrapClassName`), so rules are scoped from
-     there. */
-  const entityReferenceModal = cx('sha-entity-reference-modal', css`
-    &&& .ant-modal-title,
-    &&& .ant-modal-body,
-    &&& .ant-form-item-label > label,
-    &&& .read-only-display-form-item {
-      ${popupFont}
-    }
-  `);
-
   return {
     entityReference,
-    entityReferencePopup,
-    entityReferenceModal,
   };
 });

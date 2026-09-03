@@ -30,7 +30,7 @@ import { useStyles } from './styles';
 import { useComponentApiProvider } from '@/providers/componentApi/provider';
 import { RadioApi } from '@/componentsApi/componentApi';
 import { useEffectOnce } from '@/hooks/useEffectOnce';
-import { getComponentEvents } from '../_common/events';
+import { ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, getComponentEvents } from '../_common/events';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
 
@@ -122,7 +122,7 @@ const RadioComponent: RadioComponentDefinition = {
                   ctx?.handleEvent(event, { value: newValue }, model.onChangeCustom);
                   onChange(newValue);
                 }}
-                {...getComponentEvents<number | string>(model, ['onFocus', 'onBlur', 'onClick', 'onMouseEnter', 'onMouseLeave'], ctx, value, DataTypes.string)}
+                {...getComponentEvents<number | string>(model, ALL_INPUT_EVENTS_WITHOUT_CHANGE_AND_DOUBLE_CLICK, ctx, value, DataTypes.string)}
               />
             );
         }}

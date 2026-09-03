@@ -37,7 +37,7 @@ export type IRequestBody =
  */
 export interface IResponseTransformationConfiguration {
   enabled: boolean;
-  /** JavaScript body that receives `input` (the response) and returns the transformed value. */
+  /** JavaScript body that receives `response` (the raw API response) and returns the transformed value. */
   script: string;
 }
 

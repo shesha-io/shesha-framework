@@ -16,11 +16,12 @@ import { SheshaDocumentDefinitions } from './document-definitions';
 import { DocumentDefinitionRegistration } from './document-definitions/documentDefinitionRegistration';
 import { useStyles } from './styles';
 import { useLocalStorage } from '@/hooks';
+import { CustomErrorBoundary } from '../components';
 
 const ConfigurationStudio: FC = () => {
   const { styles } = useStyles();
   const [treeCollapsed, setTreeCollapsed] = useLocalStorage('shesha:cs-tree-collapsed', false);
-  const [treeTreePinned, setTreeTreePinned] = useLocalStorage('shesha:cs-tree-pinned', true);
+  const [treePinned, setTreePinned] = useLocalStorage('shesha:cs-tree-pinned', true);
   const defaultTreePanelSize = typeof window !== 'undefined' ? (20 / 100) * window.innerWidth : 350;
 
   return (
@@ -54,15 +55,15 @@ const ConfigurationStudio: FC = () => {
             position="start"
             panelTitle="Explorer"
             panelClassName={styles.csTreeArea}
-            panel={<ConfigurationTree />}
+            panel={<CustomErrorBoundary><ConfigurationTree /></CustomErrorBoundary>}
             panelMin={100}
             panelMax="50%"
 
             defaultPanelSize={defaultTreePanelSize}
-            defaultExpanded={!treeCollapsed}
+            defaultExpanded={!treeCollapsed && treePinned}
             onExpandedToggle={(expanded) => setTreeCollapsed(!expanded)}
-            defaultPinned={treeTreePinned}
-            onPinnedToggle={(pinned) => setTreeTreePinned(pinned)}
+            defaultPinned={treePinned}
+            onPinnedToggle={(pinned) => setTreePinned(pinned)}
           >
             <WorkArea />
           </SplitLayout>

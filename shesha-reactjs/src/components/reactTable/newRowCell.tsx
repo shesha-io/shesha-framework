@@ -54,7 +54,7 @@ export const NewRowCell = <D extends ITableRowData = ITableRowData>({ column, ro
       const totalColumns = row.length;
       rightColumn.shadowPosition = totalColumns - calculateTotalColumnsOnFixed(rowColumns, 'right');
 
-      rightColumn.shift = calculatePositionShift(rowColumns, index, totalColumns - 1).reduce(
+      rightColumn.shift = calculatePositionShift(rowColumns, index + 1, totalColumns).reduce(
         (acc, curr) => (acc as number) + curr,
         0,
       );

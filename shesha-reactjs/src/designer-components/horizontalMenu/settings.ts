@@ -41,7 +41,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                 validate: {
                   required: true,
                 },
-                jsSetting: true,
               })
               .addSettingsInputRow({
                 id: nanoid(),

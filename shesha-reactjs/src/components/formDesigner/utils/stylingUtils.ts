@@ -25,7 +25,7 @@ const getFullSizeComponentDimensionsValue = (value: string | number | undefined)
  * Gets full size component dimensions
  *
  * Calculates three states:
- * 1. If the dimensions are percentage, return `100%` because wrapper will use configured percentage
+ * 1. If the dimensions are percentage, return `stretch` because wrapper will use configured percentage
  * 2. If the dimensions are exact, return them as they are
  * 3. If the dimensions are calc, auto/stretch/fit-content etc, return them as they are
  *
@@ -59,11 +59,11 @@ const getFullSizeWrapperDimensionsValue = (value: string | number | undefined): 
  */
 export const getFullSizeWrapperDimensions = (dimensions: IDimensionsValue | undefined): IDimensionsValue => ({
   height: getFullSizeWrapperDimensionsValue(dimensions?.height),
-  minHeight: getFullSizeWrapperDimensionsValue(dimensions?.minHeight),
-  maxHeight: getFullSizeWrapperDimensionsValue(dimensions?.maxHeight),
+  minHeight: dimensions?.minHeight,
+  maxHeight: dimensions?.maxHeight,
   width: getFullSizeWrapperDimensionsValue(dimensions?.width),
-  minWidth: getFullSizeWrapperDimensionsValue(dimensions?.minWidth),
-  maxWidth: getFullSizeWrapperDimensionsValue(dimensions?.maxWidth),
+  minWidth: dimensions?.minWidth,
+  maxWidth: dimensions?.maxWidth,
 });
 
 export const getFullSizeWrapperStyle = (model: IStyleValue): IStyleValue => ({

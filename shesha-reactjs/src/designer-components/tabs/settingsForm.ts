@@ -53,12 +53,11 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   .stdMarginPaddingPanel()
                   .addSettingsInput({ inputType: 'codeEditor', propertyName: 'style', label: 'Style', description: 'A script that returns the style of the element as an object. This should conform to CSSProperties' })
                   .stdCollapsiblePanel('Card Styles', (fbf) => fbf
-                    .stdFontPanel('card.font')
+                    .stdFontPanel(undefined, 'card.font')
                     .stdDimensionsPanel('card.dimensions')
                     .stdContainer((fbf) => fbf.stdBackgroundPanel(removeStyleRouter !== true, 'card.background'), 'return  getSettingValue(data?.tabType) !== "line";')
                     .addSettingsInput({ inputType: 'codeEditor', propertyName: 'card.style', label: 'Style', description: 'A script that returns the style of the element as an object. This should conform to CSSProperties' })
                     .addSettingsInput({ inputType: 'codeEditor', propertyName: 'card.activeStyle', label: 'Active Card Style', description: 'A script that returns the style of the element as an object. This should conform to CSSProperties' }),
-                  true,
                   ).toJson(),
               }).toJson(),
           },

@@ -33,7 +33,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   styledLabel: true,
                   validate: { required: true },
                   size: 'small',
-                  jsSetting: true,
                 })
                 .addLabelConfigurator({
                   id: nanoid(),

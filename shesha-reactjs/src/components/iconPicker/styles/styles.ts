@@ -5,27 +5,11 @@ import {
   borderStyles,
   cssPropertiesToString,
   fontStyles,
+  justifyContentFor,
   marginStyles,
   paddingStyles,
   shadowStyles,
 } from '@/designer-components/_common/styles/utils';
-
-/**
- * The trigger is laid out as a flex row, which makes `text-align` inert. Map the Font panel
- * alignment onto `justify-content` so the Align input keeps working. `justify` has no flex
- * equivalent for a single item and falls back to start.
- */
-const justifyContentFor = (align: AlignSetting | undefined): string => {
-  switch (align) {
-    case 'right':
-    case 'end':
-      return 'flex-end';
-    case 'center':
-      return 'center';
-    default:
-      return 'flex-start';
-  }
-};
 
 /**
  * Styles for both the plain picker and the configurable form component.

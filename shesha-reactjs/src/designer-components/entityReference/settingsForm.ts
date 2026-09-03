@@ -16,11 +16,14 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
         tabs: [
           {
             key: 'common', title: 'Common', id: commonTabId, components: fbf(commonTabId)
-              .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true }, jsSetting: true })
+              .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true } })
               .addLabelConfigurator({ propertyName: 'hideLabel', label: 'Label', hideLabel: true })
               .stdPlaceholderDescriptionInputs()
-              .stdVisibleEditableInputs('full')
-
+              .addSettingsInputRow({
+                inputs: [
+                  { type: 'switch', propertyName: 'visible', label: 'Visible', jsSetting: true, layout: 'horizontal', permissionSettings: true },
+                ],
+              })
               .stdCollapsiblePanel('Entity', (fb) => fb
                 .addSettingsInput({
                   inputType: 'entityTypeAutocomplete', propertyName: 'entityType', label: 'Entity Type',
@@ -125,7 +128,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   inputs: [
                     {
                       type: 'labelValueEditor', propertyName: 'additionalProperties', label: 'Additional Properties', jsSetting: true,
-                      labelTitle: 'Key', valueTitle: 'Value', labelName: 'key', valueName: 'value',
+                      labelTitle: 'Key', valueTitle: 'Value', labelName: 'key', valueName: 'value', valueEditor: 'expression',
                       tooltip:
                         'Additional properties you want to be passed when the form gets submitted like parentId in the case where the modal is used in a childTable. ' +
                         'Also note you can use Mustache expression like {{id}} for value property. \n\n' +

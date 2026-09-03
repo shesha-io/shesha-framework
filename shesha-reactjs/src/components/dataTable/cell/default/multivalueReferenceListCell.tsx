@@ -10,7 +10,7 @@ export type IMultivalueReferenceListCellProps<D extends object = object, V = unk
 type MultivalueReferenceListCellInternalProps = {
   value: Array<number>;
   referenceListName: string;
-  referenceListModule: string;
+  referenceListModule: string | null;
 };
 
 const MultivalueReferenceListCellInternal = (props: MultivalueReferenceListCellInternalProps): ReactNode => {
@@ -44,7 +44,8 @@ export const MultivalueReferenceListCell = <D extends object = object, V = unkno
   const { value } = props;
   const { referenceListModule, referenceListName } = props.columnConfig;
 
-  return Array.isArray(value) && isNonEmptyArray(value) && !isNullOrWhiteSpace(referenceListModule) && !isNullOrWhiteSpace(referenceListName)
-    ? <MultivalueReferenceListCellInternal value={value} referenceListModule={referenceListModule} referenceListName={referenceListName} />
+  // module is legitimately empty for legacy reference lists - only the name is required
+  return Array.isArray(value) && isNonEmptyArray(value) && !isNullOrWhiteSpace(referenceListName)
+    ? <MultivalueReferenceListCellInternal value={value} referenceListModule={referenceListModule ?? null} referenceListName={referenceListName} />
     : undefined;
 };

@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 import { ITextAreaComponentProps } from './interfaces';
-import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, paddingStyles, marginStyles, shadowStyles } from '../_common/styles/utils';
+import { backgroundStyles, borderStyles, dimensionsStyles, fontStyles, paddingStyles, shadowStyles } from '../_common/styles/utils';
 
 export const useStyles = createStyles(({ css, cx }, model: ITextAreaComponentProps) => {
   // antd repaints the field's background/border in several states: `hoverBg` on :hover,
@@ -33,7 +33,6 @@ export const useStyles = createStyles(({ css, cx }, model: ITextAreaComponentPro
       ${paddingStyles(model.stylingBoxJson)}
       ${configuredDimensions}
       ${fontStyles(model.font, model.styleCss)}
-      ${marginStyles(model.stylingBoxJson)}
 
       ${statefulAppearance}
 
@@ -56,7 +55,6 @@ export const useStyles = createStyles(({ css, cx }, model: ITextAreaComponentPro
         ${configuredAppearance}
         ${paddingStyles(model.stylingBoxJson)}
         ${dimensionsStyles(model.dimensions)}
-        ${marginStyles(model.stylingBoxJson)}
         /* The inner textarea and the clear icon both inherit their font from here. */
         ${fontStyles(model.font, model.styleCss)}
         ${statefulAppearance}

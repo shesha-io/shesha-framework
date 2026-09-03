@@ -119,4 +119,6 @@ export class EntityMetadataFetcher implements IEntityMetadataFetcher {
       return Boolean(this.#typesMap.identifierExists(modelType as IEntityTypeIdentifier));
     });
   };
+
+  getModuleNameByAccessorAsync = (accessor: string): Promise<string | undefined> => this.#configurationItemsLoader.getModuleNameByAccessorAsync(accessor);
 };

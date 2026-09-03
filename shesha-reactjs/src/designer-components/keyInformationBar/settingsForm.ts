@@ -4,7 +4,7 @@ import { SettingsFormMarkupFactory } from '@/interfaces';
 
 export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter }) => {
   const commonTabId = nanoid();
-  const eventsTabId = nanoid();
+  // const eventsTabId = nanoid();
   const styleRouter1Id = nanoid();
   const styleRouter2Id = nanoid();
   const appearanceTabId = nanoid();
@@ -62,7 +62,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
               })
               .toJson(),
           },
-          { key: 'events', title: 'Events', id: eventsTabId, components: [...fbf(eventsTabId).stdEventHandlers(['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave']).toJson()] },
+          // { key: 'events', title: 'Events', id: eventsTabId, components: [...fbf(eventsTabId).stdEventHandlers(['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave']).toJson()] },
           { key: 'appearance', title: 'Appearance', id: appearanceTabId,
             components: fbf(appearanceTabId)
               .addPropertyRouter({ id: styleRouter2Id, componentName: 'propertyRouter2', label: 'Property router2', labelAlign: 'right',

@@ -19,6 +19,7 @@ export const useStyles = createStyles(({ css, cx, token }, model: IKeyInformatio
   const flexContainer = cx("flex-container", css`
         background-color: ${token.colorTextLightSolid};
         flex-wrap: wrap;
+         ${model.orientation !== 'vertical' && isDefined(model.gap) ? `gap: ${addPx(model.gap) ?? model.gap};` : ''}
         ${dimensionsStyles(getFullSizeComponentDimensions(model.dimensions))}
         ${isDefined(model.alignItems)
             ? !vertical ? `justify-content: ${model.alignItems};` : `align-items: ${model.alignItems};`

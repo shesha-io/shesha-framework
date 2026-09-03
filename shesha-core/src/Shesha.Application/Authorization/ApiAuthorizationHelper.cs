@@ -7,6 +7,7 @@ using Abp.Localization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Shesha.Configuration.Security;
+using Shesha.Domain.Enums;
 using Shesha.Extensions;
 using Shesha.Permissions;
 using Shesha.Reflection;
@@ -42,13 +43,14 @@ namespace Shesha.Authorization
             if (!_authConfiguration.IsEnabled)
                 return;
 
-            if (type == null ||
-                type.HasAttribute<AllowAnonymousAttribute>() || methodInfo.HasAttribute<AllowAnonymousAttribute>() || 
-                type.HasAttribute<AbpAllowAnonymousAttribute>() || methodInfo.HasAttribute<AbpAllowAnonymousAttribute>())
+            if (type == null)
                 return;
 
+            var hasCodeAllowAnonymous = type.HasAttribute<AllowAnonymousAttribute>() || methodInfo.HasAttribute<AllowAnonymousAttribute>()
+                || type.HasAttribute<AbpAllowAnonymousAttribute>() || methodInfo.HasAttribute<AbpAllowAnonymousAttribute>();
+
             var controllerType = typeof(ControllerBase);
-            if (type == null || !controllerType.IsAssignableFrom(type) && !type.HasInterface(typeof(IApplicationService)))
+            if (!controllerType.IsAssignableFrom(type) && !type.HasInterface(typeof(IApplicationService)))
                 return;
 
             var typeName = type.GetRequiredFullName();
@@ -60,6 +62,12 @@ namespace Shesha.Authorization
 
             var securitySettings = await _securitySettings.SecuritySettings.GetValueOrNullAsync();
 
+            // If code-level [AllowAnonymous] is present, use it as the fallback for Inherited.
+            // Database configuration with an explicit access level will still take precedence.
+            var defaultAccess = hasCodeAllowAnonymous
+                ? RefListPermissionedAccess.AllowAnonymous
+                : securitySettings?.DefaultEndpointAccess ?? RefListPermissionedAccess.AnyAuthenticated;
+
             // Note: requireAll is intentionally false — multiple permissions are OR'd (any single permission grants access)
             await _objectPermissionChecker.AuthorizeAsync(
                 false,
@@ -67,7 +75,7 @@ namespace Shesha.Authorization
                 methodName,
                 ShaPermissionedObjectsTypes.WebApiAction,
                 AbpSession.UserId.HasValue,
-                securitySettings?.DefaultEndpointAccess ?? Domain.Enums.RefListPermissionedAccess.AnyAuthenticated,
+                defaultAccess,
                 securitySettings?.DefaultEndpointPermissions
             );
         }

@@ -7,7 +7,6 @@ import { linkComponentToModelMetadata } from '@/providers/form/utils';
 import { ConfigurableFormActionsProvider } from '@/providers/form/actions';
 import { deepMergeValues } from '@/utils/object';
 import { FormAction, IConfigurableFormComponent, useShaFormInstance } from '@/providers';
-import { RecursivePartial } from '@/interfaces/entity';
 
 interface SettingsFormState<TModel extends object = object> {
   model: TModel;
@@ -56,14 +55,14 @@ const SettingsForm = <TModel extends IConfigurableFormComponent = IConfigurableF
     const incomingState = updateSettingsFromValues(model, changedValues);
     setState({ model: incomingState, values: getValuesFromSettings(incomingState) });
     onValuesChange?.(changedValues, incomingState);
-    form.setFieldsValue(incomingState as RecursivePartial<TModel>);
+    form.setFieldsValue(incomingState);
   };
 
   const settingsChange: FormProps<TModel>["onValuesChange"] = (changedValues): void => {
     const incomingState = deepMergeValues(state.model, changedValues);
     setState({ model: incomingState, values: getValuesFromSettings(incomingState) });
     onValuesChange?.(changedValues, incomingState);
-    form.setFieldsValue(incomingState as RecursivePartial<TModel>);
+    form.setFieldsValue(incomingState);
   };
 
   const onSaveInternal = (): void => {

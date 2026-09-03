@@ -80,11 +80,9 @@ const ExpressionValueCell = <TItem extends object>(props: ExpressionValueCellPro
         itemOnChange({ ...item, [propertyName]: newValue }, { isReorder: false });
       }}
       context={context}
-      placeholder={placeholder}
+      placeholder={placeholder ? `${placeholder} or {{expression}}` : 'Value or {{expression}}'}
       disabled={readOnly}
       focusRows={6}
-      inline
-      allowExpand
     />
   );
 };
@@ -126,7 +124,7 @@ const LabelValueList: FC<ILabelValueListProps> = ({
   >
     {({ item, itemOnChange, readOnly }) => {
       return (
-        <Row>
+        <Row gutter={4}>
           <Col span={12}>
             <InputPropertyEditor<ILabelValueItem> item={item} itemOnChange={itemOnChange} propertyName={labelName} readOnly={readOnly} placeholder={labelTitle} />
           </Col>

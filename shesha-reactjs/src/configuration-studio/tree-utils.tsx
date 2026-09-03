@@ -6,6 +6,7 @@ import { TreeNodeProps } from "antd";
 import { CsTreeNode } from "./components/tree-node";
 import { isDefined } from "@/utils/nullables";
 import { IConfigurationStudioEnvironment } from "./cs-environment/interfaces";
+import { CustomErrorBoundary } from "../components";
 
 export const getIcon = (csEnvironment: IConfigurationStudioEnvironment, nodeType: TreeNodeType, itemType?: string, expanded?: boolean): ReactNode => {
   switch (nodeType) {
@@ -41,7 +42,7 @@ const applyIcon = (csEnvironment: IConfigurationStudioEnvironment, node: TreeNod
 };
 
 export const renderCsTreeNode = (node: TreeNode, displayText?: ReactNode): ReactNode => {
-  return <CsTreeNode node={node}>{displayText ?? node.name}</CsTreeNode>;
+  return <CustomErrorBoundary><CsTreeNode node={node}>{displayText ?? node.name}</CsTreeNode></CustomErrorBoundary>;
 };
 
 export const flatNode2TreeNode = async (csEnvironment: IConfigurationStudioEnvironment, node: FlatTreeNode): Promise<TreeNode> => {

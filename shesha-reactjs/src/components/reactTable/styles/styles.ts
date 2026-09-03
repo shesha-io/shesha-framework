@@ -13,6 +13,7 @@ const tableClassNames = {
   trHead: 'tr-head',
   trBody: 'tr-body',
   shaCrudCell: 'sha-crud-cell',
+  shaActionCell: 'sha-action-cell',
   shaNewRow: 'sha-new-row',
   trBodyGhost: 'tr-body-ghost',
   trOdd: 'tr-odd',
@@ -90,6 +91,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
     trHead,
     trBody,
     shaCrudCell,
+    shaActionCell,
     shaNewRow,
     trBodyGhost,
     trOdd,
@@ -194,8 +196,11 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         justify-content: center;
         height: 100%;
       }
-      .anticon svg{
-        margin-top: 3px !important;
+      .anticon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        vertical-align: middle;
       }
 
       .${shaTable} {
@@ -639,13 +644,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
               text-overflow: ellipsis;
               cursor: auto;
 
+              /* content must stay inside the cell: overflow/z-index escapes here paint over
+                 neighbouring cells and swallow their clicks (e.g. the row drag handle) */
               & .ant-form-item-control-input {
-                overflow: visible;
-                position: relative;
-                z-index: 999;
                 width: 100% !important;
               }
-              
+
               /* Override vertical alignment for form controls in table cells */
               & .ant-select,
               & .ant-input,
@@ -657,10 +661,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
 
           .${shaCellParentFW} {
               min-width: 100%;
+              overflow: hidden;
               & .ant-form-item-control-input {
-                overflow: visible;
-                position: relative;
-                z-index: 999;
                 width: 100% !important;
               }
               
@@ -765,6 +767,12 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           /* Allow overflow for cells with forms to show validation messages */
           &:has(.sha-form-cell) {
             overflow: visible;
+          }
+
+          /* Icon-only action cells: reduced side padding so the icon fits a strict icon-width column */
+          &.${shaActionCell} {
+            padding: 0.5rem 0.25rem;
+            justify-content: center !important;
           }
 
           .resizer {

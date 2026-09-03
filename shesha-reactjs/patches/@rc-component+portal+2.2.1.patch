@@ -1,0 +1,43 @@
+diff --git a/node_modules/@rc-component/portal/es/Portal.js b/node_modules/@rc-component/portal/es/Portal.js
+index 3a2b35a..89ad1b2 100644
+--- a/node_modules/@rc-component/portal/es/Portal.js
++++ b/node_modules/@rc-component/portal/es/Portal.js
+@@ -51,12 +51,14 @@ const Portal = /*#__PURE__*/React.forwardRef((props, ref) => {
+   React.useEffect(() => {
+     const customizeContainer = getPortalContainer(getContainer);
+ 
++    if (customizeContainer === innerContainer)
++      return;
+     // Tell component that we check this in effect which is safe to be `null`
+     setInnerContainer(() =>
+-    // React do the state update even the value is the same,
+-    // Use function call to force React to compare update
+-    customizeContainer ?? null);
+-  });
++      // React do the state update even the value is the same,
++      // Use function call to force React to compare update
++      customizeContainer ?? null);
++  }, [getContainer]);
+   const [defaultContainer, queueCreate] = useDom(mergedRender && !innerContainer, debug);
+   const mergedContainer = innerContainer ?? defaultContainer;
+ 
+diff --git a/node_modules/@rc-component/portal/lib/Portal.js b/node_modules/@rc-component/portal/lib/Portal.js
+index ce4c0fc..0d05855 100644
+--- a/node_modules/@rc-component/portal/lib/Portal.js
++++ b/node_modules/@rc-component/portal/lib/Portal.js
+@@ -60,12 +60,14 @@ const Portal = /*#__PURE__*/React.forwardRef((props, ref) => {
+   React.useEffect(() => {
+     const customizeContainer = getPortalContainer(getContainer);
+ 
++    if (customizeContainer === innerContainer)
++      return;    
+     // Tell component that we check this in effect which is safe to be `null`
+     setInnerContainer(() =>
+     // React do the state update even the value is the same,
+     // Use function call to force React to compare update
+     customizeContainer ?? null);
+-  });
++  }, [getContainer]);
+   const [defaultContainer, queueCreate] = (0, _useDom.default)(mergedRender && !innerContainer, debug);
+   const mergedContainer = innerContainer ?? defaultContainer;
+ 

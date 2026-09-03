@@ -21,6 +21,7 @@ import {
   selectItemAction,
   setItems,
   storeSettingsAction,
+  syncConfiguredItemsAction,
   updateChildItemsAction,
   updateItemAction,
 } from '@/components/refListSelectorDisplay/provider/actions';
@@ -29,7 +30,7 @@ import RefListItemGroupReducer from '@/components/refListSelectorDisplay/provide
 import { getItemById } from '@/components/refListSelectorDisplay/provider/utils';
 import { useReferenceListDispatcher } from '@/providers/referenceListDispatcher';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNotNullOrWhiteSpace } from '@/utils/nullables';
 import { throwError } from '@/utils/errors';
 
 export interface IRefListItemGroupConfiguratorProviderPropsBase {
@@ -52,20 +53,46 @@ const RefListSelectorDisplayProvider: FC<PropsWithChildren<IRefListItemGroupConf
     readOnly: readOnly ?? false,
   });
 
-  useEffect(() => {
-    if (props.items.length && props.items.some((x) => x.referenceList === props.referenceList)) return;
-    if (!isDefined(props.referenceList))
-      return;
+  // The hosting settings input rebuilds the identifier object on every render, so it is narrowed
+  // to its parts here. Keeping the object itself in the dependencies re-read the reference list on
+  // every re-render, and each read replaced the items - racing the per-item configuration the user
+  // was editing (#5125).
+  const referenceListName = props.referenceList?.name;
+  const referenceListModule = props.referenceList?.module;
+  const referenceList = useMemo<IReferenceListIdentifier | undefined>(
+    () => isNotNullOrWhiteSpace(referenceListName)
+      ? { name: referenceListName, module: referenceListModule ?? null }
+      : undefined,
+    [referenceListName, referenceListModule],
+  );
 
+  useEffect(() => {
+    if (!isDefined(referenceList))
+      return;
+    // The items are read once per reference list, and freshly on every mount, so a reference list
+    // edited elsewhere is still picked up without discarding local configuration.
     getReferenceList({
-      refListId: props.referenceList,
+      refListId: referenceList,
     }).promise.then((t) => {
       dispatch(setItems(t.items));
     }).catch((error) => {
       console.error('Failed to fetch reference list', error);
-      throw error;
     });
-  }, [getReferenceList, props.items, props.referenceList]);
+  }, [getReferenceList, referenceList]);
+
+  // The items are seeded into the reducer only once, so a configuration saved by the host (the
+  // component model in the designer) has to be adopted explicitly - otherwise hiding a step or
+  // changing its action showed no effect until the component was re-created.
+  // The signature, rather than the array, drives the effect: the host rebuilds the array on every
+  // render, and the settings panel derives it from this state in the first place, so keying on the
+  // content is what stops the sync from feeding back into itself.
+  const configuredItemsSignature = JSON.stringify(props.items);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const configuredItems = useMemo(() => props.items, [configuredItemsSignature]);
+
+  useEffect(() => {
+    dispatch(syncConfiguredItemsAction(configuredItems));
+  }, [configuredItems]);
 
   const selectItem = useCallback((uid: string): void => {
     dispatch(selectItemAction(uid));

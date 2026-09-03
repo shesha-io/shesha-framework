@@ -140,6 +140,27 @@ const ButtonGroupComponent: IToolboxComponent<IButtonGroupComponentProps> = {
       return migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(newModel)));
     }),
   settingsFormMarkup: getSettings,
+  previewConfiguration: {
+    type: 'buttonGroup',
+    componentName: 'ButtonGroup',
+    id: 'buttonGroup',
+    items: [{
+      id: 'button1',
+      itemType: 'item',
+      itemSubType: 'button',
+      name: 'Button 1',
+      label: 'Button 1',
+      buttonType: 'primary',
+    },
+    {
+      id: 'button2',
+      itemType: 'item',
+      itemSubType: 'button',
+      name: 'Button 2',
+      label: 'Button 2',
+      buttonType: 'default',
+    }],
+  },
 };
 
 export default ButtonGroupComponent;

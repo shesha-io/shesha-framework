@@ -32,13 +32,14 @@ const validateColumns = (columns: IColumnProps[] | undefined): IColumnProps[] =>
 };
 
 const ColumnsComponent: ColumnsComponentDefinition = {
+  showInThemeEditor: false,
   allowInherit: true,
   type: 'columns',
   isInput: false,
   name: 'Columns',
   icon: <SplitCellsOutlined />,
   getWrapperStyle: (model) => getFullSizeWrapperDesignerStyle(model),
-  Factory: ({ model }) => {
+  Factory: ({ model, form }) => {
     const { styles } = useStyles(model);
     const handleEvent = useEvents<void>(model.componentName);
     const events = useMemo(() => getComponentEvents<void>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent }), [handleEvent, model]);
@@ -56,7 +57,11 @@ const ColumnsComponent: ColumnsComponentDefinition = {
           <ParentProvider model={model} name={`Columns-${model.id}`}>
             {validatedColumns.map((col, index) => (
               <Col key={index} md={col.flex} offset={col.offset} pull={col.pull} push={col.push}>
-                <ComponentsContainer containerId={col.id} dynamicComponents={model.isDynamic === true ? col.components : []} />
+                {
+                  form.formMode === 'designer'
+                    ? <div className={styles.shaColumnDesignerWrapper}><ComponentsContainer containerId={col.id} dynamicComponents={model.isDynamic === true ? col.components : []} /></div>
+                    : <ComponentsContainer containerId={col.id} dynamicComponents={model.isDynamic === true ? col.components : []} />
+                }
               </Col>
             ))}
           </ParentProvider>

@@ -43,9 +43,12 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
       .addSearchableTabs({ id: searchableTabsId, propertyName: 'settingsTabs', label: 'Settings', hideLabel: true, labelAlign: 'right', size: 'small',
         tabs: [
           { key: 'common', title: 'Common', id: commonTabId, components: fbf(commonTabId)
-            .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true }, jsSetting: true })
+            .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true } })
             .addLabelConfigurator({ propertyName: 'hideLabel', label: 'Label', hideLabel: true })
-            .stdPlaceholderDescriptionInputs()
+            /* Tooltip only — no Placeholder. The standard pair assumes a text input with empty space
+               to prompt into; this component's control is an upload trigger and a single file, which
+               have nowhere to show one, and nothing ever read the property. Same as the file list. */
+            .addSettingsInputRow({ inputs: [{ type: 'textArea', propertyName: 'description', label: 'Tooltip', jsSetting: true }] })
             .stdVisibleEditableInputs('full')
             .stdCollapsiblePanel('Display', (fb) => fb
               .addSettingsInputRow({ inputs: [
@@ -99,8 +102,8 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                     // content is forced to centre, so the input would collect a value that never
                     // renders. Two variants of the panel, one with Align and one without, keep it
                     // visible only where it does something (matching releases/0.45).
-                    .stdContainer((fb) => fb.stdFontPanel('font'), FILE_NAME_WITH_ALIGN_JS)
-                    .stdContainer((fb) => fb.stdFontPanel('font', ['font.align']), NO_ALIGN_JS)
+                    .stdContainer((fb) => fb.stdFontPanel(undefined, 'font'), FILE_NAME_WITH_ALIGN_JS)
+                    .stdContainer((fb) => fb.stdFontPanel(undefined, 'font', ['font.align']), NO_ALIGN_JS)
                     // The box styles describe the thumbnail tile, which only exists in thumbnail
                     // mode. In file-name mode the component is a plain file name and an upload
                     // button with no box to style, so these panels are hidden rather than left to
@@ -113,7 +116,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                     THUMBNAIL_ONLY_JS)
                     // Spacing and the Custom style apply to the component as a whole, so they stay.
                     .stdMarginPaddingPanel('stylingBoxJson')
-                    .stdCustomStylePanel('style')
+                    .stdCustomStylePanel(undefined, 'style')
                     .toJson(),
                 ],
               })

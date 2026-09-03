@@ -31,7 +31,7 @@ export const defaultStyles = (model?: ITextComponentPropsV0 | undefined): IStyle
       radiusType: 'all',
     },
     dimensions: {
-      width: '100%',
+      width: 'fit-content',
       height: 'auto',
       minHeight: '0px',
       maxHeight: 'auto',

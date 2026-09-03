@@ -22,7 +22,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
       .addSearchableTabs({ id: searchableTabsId, propertyName: 'settingsTabs', label: 'Settings', hideLabel: true, labelAlign: 'right', size: 'small',
         tabs: [
           { key: 'common', title: 'Common', id: commonTabId, components: fbf(commonTabId)
-            .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true }, jsSetting: true })
+            .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true } })
             .addLabelConfigurator({ propertyName: 'hideLabel', label: 'Label', hideLabel: true })
             .stdPlaceholderDescriptionInputs()
             .stdVisibleEditableInputs('full')
@@ -35,7 +35,6 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
               .addSettingsInputRow({ inputs: [
                 { type: 'textField', propertyName: `customFormat`, label: 'Custom format', tooltip: 'numbro.js like format (https://numbrojs.com/old-format.html) or you can use JS mode to implement any transformation',
                   jsSetting: 'lazy', availableConstantsExpression: 'return metadataBuilder.object("constants").addAllStandard().addString("value", "Component current value").build();' },
-                { type: 'switch', propertyName: 'highPrecision', label: 'String format', tooltip: 'Save value as string to prevent loss of precision' },
               ], visibleJs: 'return data?.numberFormat !== "integer";' })
               .addSettingsInputRow({ inputs: [
                 { type: 'textField', propertyName: `thousandsSeparator`, label: 'Thousands separator' },

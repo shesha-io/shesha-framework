@@ -52,10 +52,22 @@ const ColorCircle: FC<ColorCircleProps> = ({ color, onChange, label, readOnly })
   );
 };
 
+/** Update empty properties to undefined. This is necessary for base theme values bucause there is no way to reset them */
+const setUndefinedForEmptyProperties = (data: Record<string, unknown | undefined>): Record<string, unknown | undefined> => {
+  for (const key in data) {
+    if (!data.hasOwnProperty(key)) continue;
+    if (typeof data[key] === 'object')
+      setUndefinedForEmptyProperties(data[key] as Record<string, unknown>);
+    if (data[key] === '')
+      data[key] = undefined;
+  }
+  return data;
+};
+
 const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, readOnly, themeLevel = 1 }) => {
   // it is necessary to use debounce save because it changes the theme and it results in re-rendering of all components.
   const debouncedSave = useDebouncedCallback(
-    (values: IConfigurableTheme) => onChange(values),
+    (values: IConfigurableTheme) => onChange(setUndefinedForEmptyProperties(values as Record<string, unknown | undefined>)),
     // delay in ms
     200,
   );

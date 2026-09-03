@@ -2,6 +2,7 @@ import { FormLayout } from 'antd/lib/form/Form';
 import { nanoid } from '@/utils/uuid';
 import { DataTypes, SettingsFormMarkupFactory } from '@/interfaces';
 import { FILE_EVENTS_WITHOUT_CHANGE } from '../_common/events';
+import { deviceDataPath } from '@/form-factory/implementation';
 
 /* Every Display Style but File name renders a tile. Listed rather than tested as "not text" so an
    unset value reads as file-name instead of silently enabling every thumbnail-only setting. */
@@ -15,7 +16,17 @@ const isThumbnailListJs = `return ${THUMBNAIL_STYLES}.includes(getSettingValue(d
 const isCustomThumbnailJs = 'return getSettingValue(data?.displayStyle) === "thumbnailCustom" && !getSettingValue(data?.isDragger);';
 const isEditableJs = 'const r = getSettingValue(data?.readOnly); return r !== true && r !== "readOnly";';
 const showCustomContentFormJs = 'return !!getSettingValue(data?.customContent) && getSettingValue(data?.extraFormSelectionMode) !== "dynamic";';
-const styleDownloadedFilesJs = 'return !!getSettingValue(data?.[`${contexts?.canvasContext?.designerDevice || "desktop"}`]?.styleDownloadedFiles);';
+
+/**
+ * Style Downloaded Files gates the Downloaded Files panel, and it is device-scoped, so the condition
+ * has to read the slice the Appearance tab is actually editing. That is not always a device: the
+ * theme settings page renders these settings with the style router removed, and the settings sit flat
+ * on `data`. Spelled out for the device case only, the condition read `data.desktop` on that page,
+ * found nothing, and hid the panel outright — which is why the Downloaded Files styling could not be
+ * reached from theme settings at all.
+ */
+const styleDownloadedFilesJs = (removeStyleRouter?: boolean): string =>
+  `return !!getSettingValue(${deviceDataPath(removeStyleRouter !== true)}?.styleDownloadedFiles);`;
 
 /**
  * One of the four per-action handlers on the Events tab. `value` is the list as it stands after the
@@ -78,9 +89,13 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
           {
             key: 'common', title: 'Common', id: commonTabId,
             components: fbf(commonTabId)
-              .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', jsSetting: true })
+              .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small' })
               .addLabelConfigurator({ propertyName: 'hideLabel', label: 'Label', hideLabel: true })
-              .stdPlaceholderDescriptionInputs()
+              /* Tooltip only — no Placeholder. The standard pair assumes a text input with empty
+                 space to prompt into; this component's control is an upload trigger and a file list,
+                 which have nowhere to show one, and nothing ever read the property. Same shape the
+                 checkbox group uses for the same reason. */
+              .addSettingsInputRow({ inputs: [{ type: 'textArea', propertyName: 'description', label: 'Tooltip', jsSetting: true }] })
               .stdVisibleEditableInputs('full')
               .stdCollapsiblePanel('Display', (fb) => fb
                 .addSettingsInputRow({
@@ -145,7 +160,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   ],
                 }))
               .stdCollapsiblePanel('Data', (fb) => fb
-                .addSettingsInput({ inputType: 'propertyAutocomplete', propertyName: 'ownerName', label: 'Owner', autoFillProps: false })
+                .addSettingsInput({ inputType: 'propertyAutocomplete', propertyName: 'ownerName', label: 'Bound Property', autoFillProps: false })
                 .addSettingsInput({ inputType: 'entityTypeAutocomplete', propertyName: 'ownerType', label: 'Parent Entity Type', jsSetting: true })
                 .addSettingsInputRow({
                   inputs: [
@@ -154,7 +169,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   ],
                 })
                 .addSettingsInput({
-                  inputType: 'editableTagGroupProps', propertyName: 'allowedFileTypes', label: 'Allowed File Types', jsSetting: true,
+                  inputType: 'editableTagGroupProps', propertyName: 'allowedFileTypes', label: 'Accepted File Types', jsSetting: true,
                   tooltip: 'File types that can be accepted. The file type should include the leading dot, for example .png',
                 }))
               .stdCollapsiblePanel('Custom', (fb) => fb
@@ -234,7 +249,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                       .stdBackgroundPanel(removeStyleRouter !== true, 'thumbnailStyle.background')
                       .stdShadowPanel('thumbnailStyle.shadow')
                       .stdMarginPaddingPanel('thumbnailStyle.stylingBoxJson')
-                      .stdCustomStylePanel('thumbnailStyle.style'),
+                      .stdCustomStylePanel(undefined, 'thumbnailStyle.style'),
                     true, isThumbnailListJs,
                     )
                     .addSettingsInputRow({
@@ -242,16 +257,20 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                         { type: 'switch', propertyName: 'styleDownloadedFiles', label: 'Style Downloaded Files', jsSetting: true },
                       ],
                     })
+                    /* The panel's own gate is enough for everything inside it, so the Font and Custom
+                       Style panels carry no condition of their own — they are only reachable when it
+                       is open. Both still take the device flag, since their property names resolve
+                       through the same router. */
                     .stdCollapsiblePanel('Downloaded Files', (f) => f
                       .addSettingsInputRow({
-                        visibleJs: styleDownloadedFilesJs,
+                        visibleJs: styleDownloadedFilesJs(removeStyleRouter),
                         inputs: [
                           { type: 'iconPicker', propertyName: 'downloadedIcon', label: 'Downloaded Icon', jsSetting: true },
                         ],
                       })
-                      .stdFontPanel('downloadedFileStyles.font')
-                      .stdCustomStylePanel('downloadedFileStyles.style'),
-                    false, styleDownloadedFilesJs)
+                      .stdFontPanel(removeStyleRouter !== true, 'downloadedFileStyles.font')
+                      .stdCustomStylePanel(removeStyleRouter !== true, 'downloadedFileStyles.style'),
+                    false, styleDownloadedFilesJs(removeStyleRouter))
                     .toJson(),
                 ],
               })

@@ -54,6 +54,16 @@ export type FormIdentifier = FormFullName | FormUid;
 
 export interface IFormSettings {
   modelType?: string | IEntityTypeIdentifier | undefined;
+
+  postUrl?: string | undefined;
+  putUrl?: string | undefined;
+  deleteUrl?: string | undefined;
+  getUrl?: string | undefined;
+
+  fieldsToFetch?: string[] | undefined;
+
+  /** if true then need to update components structure for using Setting component */
+  isSettingsForm?: boolean | undefined;
 };
 
 export interface FormInstance {
@@ -96,7 +106,7 @@ export interface FormApi<Values extends object = object> {
   /** Form mode */
   mode: FormMode;
   /** Form data */
-  readonly data: FormData<Values>;
+  data: FormData<Values>;
   /** Form arguments passed by caller */
   readonly arguments?: any;
   /** Default API endpoints (create, read, update, delete). Note: available only when model type is entity */

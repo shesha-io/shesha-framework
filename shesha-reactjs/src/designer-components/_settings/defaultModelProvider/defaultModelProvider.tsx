@@ -47,7 +47,7 @@ export const useDefaultModelSubscription = (subscriptionType: DefaultModelSubscr
 
 const DefaultModelProvider = <TData extends object = object>(props: PropsWithChildren<IDefaultModelProviderProps<TData>>): ReactElement => {
   const [, forceUpdate] = useState({});
-  const [instance] = useState<IDefaultModelInstance<object>>(new DefaultModelInstance<object>(() => forceUpdate({})));
+  const [instance] = useState<IDefaultModelInstance<object>>(() => new DefaultModelInstance<object>(() => forceUpdate({})));
 
   // Update models if props changed
   useEffect(() => {

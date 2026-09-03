@@ -196,6 +196,7 @@ export const SUPPORTED_COLUMN_DATA_TYPES = [
   'boolean',
   'date',
   'date-time',
+  DataTypes.referenceListItem,
 ];
 
 /**
@@ -207,7 +208,6 @@ export const SUPPORTED_FETCH_DATA_TYPES = [
   ...SUPPORTED_COLUMN_DATA_TYPES,
   DataTypes.guid,
   DataTypes.time,
-  DataTypes.referenceListItem,
   DataTypes.entityReference,
 ];
 
