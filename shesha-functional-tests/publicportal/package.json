@@ -17,7 +17,7 @@
     "build:analyze": "ANALYZE=true npm run build",
     "lint": "eslint src/**/*.ts{,x}",
     "lint-errors": "eslint src/**/*.ts{,x} --quiet",
-    "postinstall": "shesha-copy-local-monaco",
+    "postinstall": "shesha init",
     "knip": "knip"
   },
   "overrides": {
