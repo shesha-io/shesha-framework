@@ -1,3 +1,4 @@
+import { sheshaStyles } from '@/styles';
 import { createStyles } from 'antd-style';
 
 export const usePinnablePanelStyles = createStyles(
@@ -24,6 +25,7 @@ export const usePinnablePanelStyles = createStyles(
     content: css`
       flex: 1;
       overflow: auto;
+      ${sheshaStyles.thinScrollbars}
       padding: 12px;
       display: ${$expanded ? 'block' : 'none'};
     `,
