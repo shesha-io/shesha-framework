@@ -61,4 +61,53 @@ describe('Downloaded Files styling', () => {
     expect(computed.fontSize).toBe('14px');
     expect(computed.fontWeight).toBe('400');
   });
+
+  /**
+   * In thumbnail mode the name is a sibling under the tile, not inside it, so no descendant selector
+   * from the downloaded class reached it and the name stayed on the root Font.
+   */
+  const renderThumbnailName = (downloadedFileStyles: React.CSSProperties): CSSStyleDeclaration => {
+    const { result } = renderHook(() => useStyles({
+      model: { listType: 'thumbnail', layout: true, hasFiles: true, font: { ...ROOT_FONT } },
+      downloadedFileStyles,
+    }));
+
+    const s = result.current.styles;
+    /* The thumbnail nesting: the tile carries the downloaded class, the name is the sibling after it. */
+    document.body.innerHTML = `
+      <div class="${s.shaStoredFilesRenderer}">
+        <div>
+          <div class="${s.downloadedFile} ${s.shaThumbnail}"></div>
+          <div>
+            <div class="${s.shaItemFileName} ${s.downloadedFileName}">
+              <span id="target" class="ant-typography">file.pdf</span>
+            </div>
+          </div>
+        </div>
+      </div>`;
+
+    return getComputedStyle(document.getElementById('target')!);
+  };
+
+  it('overrides the root Font on a downloaded file in thumbnail mode', () => {
+    const computed = renderThumbnailName({
+      color: 'rgb(1, 2, 3)',
+      fontSize: '27px',
+      fontWeight: '700',
+      fontFamily: 'Comic Sans MS',
+    });
+
+    expect(computed.color).toBe('rgb(1, 2, 3)');
+    expect(computed.fontSize).toBe('27px');
+    expect(computed.fontWeight).toBe('700');
+    expect(computed.fontFamily.replace(/"/g, '')).toBe('Comic Sans MS');
+  });
+
+  it('leaves the root Font in place in thumbnail mode for the properties it does not set', () => {
+    const computed = renderThumbnailName({ color: 'rgb(1, 2, 3)' });
+
+    expect(computed.color).toBe('rgb(1, 2, 3)');
+    expect(computed.fontSize).toBe('14px');
+    expect(computed.fontWeight).toBe('400');
+  });
 });

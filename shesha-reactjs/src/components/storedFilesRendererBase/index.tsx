@@ -786,9 +786,14 @@ export const StoredFilesRendererBase: FC<IStoredFilesRendererBaseProps> = ({
         {renderContent()}
         {listType === 'thumbnail' && !isDragger && !hideFileName && (
           <div>
+            {/* The name sits outside the tile here, so the downloaded set cannot reach it through
+                the wrapper as it does in text mode and is applied to the name itself. */}
             <FileNameDisplay
               file={shaFile}
-              className={styles.shaItemFileName}
+              className={classNames(
+                styles.shaItemFileName,
+                isDownloaded && styleDownloadedFiles ? styles.downloadedFileName : '',
+              )}
             />
           </div>
         )}
