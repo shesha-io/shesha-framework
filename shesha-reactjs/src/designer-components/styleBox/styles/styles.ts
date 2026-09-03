@@ -6,6 +6,7 @@ export const useStyles = createStyles(({ css, cx }) => {
       height: 155px;
       overflow: hidden;
       min-width: 200px;
+      max-width: 300px;
       width: 100%; 
       margin-top: 10px;
 
