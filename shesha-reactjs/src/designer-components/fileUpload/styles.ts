@@ -5,7 +5,6 @@ import {
   borderStyles,
   dimensionsStyles,
   fontStyles,
-  marginStyles,
   paddingStyles,
   shadowStyles,
 } from '../_common/styles/utils';
@@ -103,7 +102,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: IFileUploa
     : '';
 
   const fileUpload = cx('sha-file-upload', css`
-    ${marginStyles(model.stylingBoxJson)}
     ${paddingStyles(model.stylingBoxJson)}
     ${fontStyles(model.font, model.styleCss)}
 
