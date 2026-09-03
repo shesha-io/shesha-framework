@@ -17,7 +17,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
       margin-bottom: 16px;
     }
 
-    .ant-tabs-content {
+    .ant-tabs-body {
       min-height: 400px;
     }
   `);
@@ -77,7 +77,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }) => {
         margin-bottom: 16px;
       }
 
-      .ant-tabs-content {
+      .ant-tabs-body {
         padding: 8px 0;
       }
     }
