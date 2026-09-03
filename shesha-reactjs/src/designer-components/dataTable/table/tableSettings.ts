@@ -3,6 +3,27 @@ import { FormLayout } from "antd/lib/form/Form";
 import { fontTypes, fontWeightsOptions, textAlignOptions } from '../../_settings/utils/font/utils';
 import { backgroundTypeOptions, positionOptions, repeatOptions, sizeOptions } from '../../_settings/utils/background/utils';
 import { SettingsFormMarkupFactory } from "@/interfaces";
+import { GetAvailableConstantsFunc } from "@/designer-components/codeEditor/interfaces";
+
+// constants exposed to the row event handlers in addition to the standard ones
+const rowEventConstants: GetAvailableConstantsFunc = ({ metadataBuilder }) => Promise.resolve(
+  metadataBuilder.object('constants')
+    .addAllStandard()
+    .addObject('selectedRow', 'Row the event was raised for', (b) => b
+      .addString('id', 'Row id')
+      .addNumber('index', 'Row index')
+      .addObject('row', 'Row data', undefined))
+    .addObject('row', 'Row data', undefined)
+    .addNumber('rowIndex', 'Row index')
+    .build(),
+);
+
+const selectionChangeConstants: GetAvailableConstantsFunc = ({ metadataBuilder }) => Promise.resolve(
+  metadataBuilder.object('constants')
+    .addAllStandard()
+    .addArray('selectedIds', 'Ids of the selected rows')
+    .build(),
+);
 
 export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
   const searchableTabsId = nanoid();
@@ -339,6 +360,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   propertyName: 'onRowClick',
                   parentId: eventsTabId,
                   label: 'On Row Click',
+                  availableConstantsExpression: rowEventConstants,
                   description: 'Action to execute when a row is clicked',
                 })
                 .addConfigurableActionConfigurator({
@@ -346,6 +368,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   propertyName: 'onRowDoubleClick',
                   parentId: eventsTabId,
                   label: 'On Row Double-Click',
+                  availableConstantsExpression: rowEventConstants,
                   description: 'Action to execute when a row is double-clicked',
                 })
                 .addConfigurableActionConfigurator({
@@ -353,6 +376,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   propertyName: 'onRowHover',
                   parentId: eventsTabId,
                   label: 'On Row Hover',
+                  availableConstantsExpression: rowEventConstants,
                   description: 'Action to execute when hovering over a row',
                 })
                 .addConfigurableActionConfigurator({
@@ -360,6 +384,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   propertyName: 'onRowSelect',
                   parentId: eventsTabId,
                   label: 'On Row Select',
+                  availableConstantsExpression: rowEventConstants,
                   description: 'Action to execute when a row is selected',
                   hidden: { _code: 'return getSettingValue(data?.selectionMode) === "none";', _mode: 'code', _value: false },
                 })
@@ -368,6 +393,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                   propertyName: 'onSelectionChange',
                   parentId: eventsTabId,
                   label: 'On Selection Change',
+                  availableConstantsExpression: selectionChangeConstants,
                   description: 'Action to execute when the selection changes',
                   hidden: { _code: 'return getSettingValue(data?.selectionMode) === "none";', _mode: 'code', _value: false },
                 })

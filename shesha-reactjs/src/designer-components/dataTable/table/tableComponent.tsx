@@ -380,7 +380,8 @@ const TableComponent: TableComponentDefinition = {
       };
     })
     .add<ITableComponentProps>(29, (prev) => ({ ...prev, actionIconSize: prev.actionIconSize ?? '14px' })) // Set default actionIconSize for existing tables
-    .add<ITableComponentProps>(30, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev))),
+    .add<ITableComponentProps>(30, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev)))
+    .add<ITableComponentProps>(31, (prev) => ({ ...prev, visible: prev.visible ?? true })),
   actualModelPropertyFilter: (name, value) => {
     // Allow all styling properties through to the settings form
     const allowedStyleProperties = [
