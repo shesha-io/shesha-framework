@@ -116,8 +116,11 @@ export const ZoomableCanvas: FC<PropsWithChildren<IZoomableCanvasProps>> = ({ ch
         <div
           ref={canvasRef}
           className={classNames({ [styles.designerCanvas]: canZoom })}
+          // min-height, not height, and inline rather than a percentage: the canvas has to fill
+          // the pane at any zoom but still grow past it for a long form.
           style={canZoom ? {
             width: canvasWidth,
+            minHeight: canvasHeight,
             zoom: `${zoom}%`,
           } : {}}
         >
