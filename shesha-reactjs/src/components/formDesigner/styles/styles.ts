@@ -153,9 +153,9 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         .${sidebarContainerMainAreaBody} {
             .content-heading {
                 .${shaDesignerHeader} {
-                  background: white;
+                  background: ${token.colorBgContainer};
                   margin: unset;
-                  border-top: 1px solid lightgrey;
+                  border-top: 1px solid ${token.colorBorderSecondary};
                   padding: ${sheshaStyles.paddingMD}px;
                 }
             }
@@ -173,7 +173,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             }
         }
         .${shaDesignerToolbar} {
-            background: white;
+            background: ${token.colorBgContainer};
             padding: 8px 12px 0px 12px;
             display: flex;
             align-items: center;
@@ -270,8 +270,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 }
         
                 .${siteTreeSearchValue} {
-                    background-color: chartreuse;
-                    color: #f50;
+                    background-color: ${token.colorWarningBg};
+                    color: ${token.colorWarningText};
                 }
             }
             
@@ -318,9 +318,10 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 align-content: flex-start;
                 line-height: 1.5;
                 border-radius: 3px;
-                background: #fff;
+                background: ${token.colorBgContainer};
+                color: ${token.colorText};
                 margin: 4px 0;
-                border: 1px solid #ddd;
+                border: 1px solid ${token.colorBorder};
         
                 .${iconPrefixCls} {
                     margin: 5px 10px 5px 10px;
@@ -350,7 +351,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
 
         .${designerWorkArea}{
-            background-color: white;
+            background-color: ${token.colorBgLayout};
             height: calc(100vh - ${HEADER_HEIGHT} - ${TOOLBAR_HEIGHT} - ${SIDEBAR_BTN_HEIGHT});
             .${shaComponentsContainer} {
 

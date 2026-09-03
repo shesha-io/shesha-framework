@@ -3,7 +3,7 @@ import { createStyles } from 'antd-style';
 
 export const useStyles = createStyles(({ css }) => ({
   markdownBody: css`
-    @media (prefers-color-scheme: dark) {
+    &.sha-markdown-dark {
       & {
         color-scheme: dark;
         --color-prettylights-syntax-comment: #8b949e;
@@ -51,7 +51,7 @@ export const useStyles = createStyles(({ css }) => ({
       }
     }
 
-    @media (prefers-color-scheme: light) {
+    &:not(.sha-markdown-dark) {
       & {
         color-scheme: light;
         --color-prettylights-syntax-comment: #6e7781;

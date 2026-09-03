@@ -5,8 +5,9 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
   // variables
   const layoutTriggerHeight = sheshaStyles.layoutHeaderHeight; // @layout-trigger-height
   const shaPageToolbarHeight = '33px'; // @sha-page-toolbar-height
-  const backgroundColor = '#f0f2f5'; // @background-color
-  const shaBorder = '1px solid #d3d3d3';
+  // Theme-aware: resolves to the light/dark token emitted by antd's active algorithm.
+  const backgroundColor = token.colorBgLayout;
+  const shaBorder = `1px solid ${token.colorBorderSecondary}`;
   const shaSiderExpandedWidth = '250px'; // @sha-sider-expanded-width
   const shaSiderCollapsedWidth = '60px'; // @sha-sider-collapsed-width
 
@@ -40,6 +41,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
         align-items: center;
     `;
   const antLayoutHeader = cx(css`
+    background: ${token.colorBgContainer};
     border-bottom: ${shaBorder};
     position: fixed !important;
     z-index: 999 !important;
@@ -92,7 +94,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
         border-radius: 8px;
 
         &:hover {
-          color: white;
+          color: ${token.colorPrimaryText};
           background-color: ${token.colorPrimaryBgHover};
         }
       }
@@ -112,7 +114,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
 
       .${prefixCls}-dropdown-link {
         margin-left: 15px;
-        color: black;
+        color: ${token.colorText};
 
         &:hover {
           color: ${token.colorPrimary};
@@ -211,7 +213,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
     .sha-site-layout-toolbar {
       ${flexCenterAlignedSpaceBetween}
       min-height: ${shaPageToolbarHeight};
-      background: white;
+      background: ${token.colorBgContainer};
 
       margin: -2px;
       margin-bottom: 2px;
@@ -219,7 +221,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
 
     .sha-index-table-full {
       .sha-index-table-controls {
-        background: white;
+        background: ${token.colorBgContainer};
       }
     }
   `;
