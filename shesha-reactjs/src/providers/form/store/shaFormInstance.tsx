@@ -508,6 +508,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     const current = previous.finally(async () => {
       if (!this.form) return;
 
+      // If the settings were not passed in the parameter, then we use those already set in the form.
       if (settings)
         this.form.settings = settings;
 
@@ -595,7 +596,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
       });
 
       this.form = form;
-      await this.setFormSettings(formSettings);
+      await this.setFormSettings(); // use setFormSettings instead of applyFormSettingsAsync to avoid race conditions if markup or settings are updated before form is loaded
 
       if (this.onMarkupLoaded)
         await this.onMarkupLoaded(this);
@@ -627,7 +628,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
       });
 
       this.form = form;
-      await this.setFormSettings();
+      await this.setFormSettings(); // use setFormSettings instead of applyFormSettingsAsync to avoid race conditions if markup or settings are updated before form is loaded
 
       if (this.onMarkupLoaded)
         await this.onMarkupLoaded(this);
@@ -660,7 +661,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
         flatStructure: formFlatMarkup,
         settings: formSettings,
       };
-      await this.setFormSettings(formSettings);
+      await this.setFormSettings(); // use setFormSettings instead of applyFormSettingsAsync to avoid race conditions if markup or settings are updated before form is loaded
 
       if (this.onMarkupLoaded)
         await this.onMarkupLoaded(this);
