@@ -32,7 +32,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: RadioStyle
     ${dimensionsStyles(model.dimensions)}
     ${backgroundStyles(model.background)}
     ${paddingStyles(model.stylingBoxJson)}
-    ${marginStyles(model.stylingBoxJson)}
     ${shadowStyles(model.shadow)}
     .${prefixCls}-radio-wrapper {
       ${fontStyles(model.font, model.styleCss)}

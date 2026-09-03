@@ -86,7 +86,6 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: IDr
   const tagFontColour = isNullOrWhiteSpace(tag?.font?.color) ? '' : `color: ${tag.font.color};`;
 
   const dropdown = cx('sha-dropdown', css`
-      ${marginStyles(model.stylingBoxJson)}
       ${isDefined(model.dimensions?.height) && model.dimensions.height !== 'auto' ? 'overflow-y: auto;' : ''}
       ${configuredAppearance}
       
