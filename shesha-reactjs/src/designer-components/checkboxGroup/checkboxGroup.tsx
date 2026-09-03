@@ -27,6 +27,7 @@ import { getStringEnumOrDefault } from '@/utils/object';
 import { IInputStyles } from '@/providers';
 import { migratePrevStyles } from '../_common-migrations';
 import { defaultStyles } from './utils';
+import { IRadioComponentProps } from '../radio/interfaces';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { migrateHiddenToVisible } from '@/designer-components/_common-migrations/migrateSettings';
 import { useComponentApiProvider } from '@/providers/componentApi/provider';
@@ -172,12 +173,11 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
       .add<IEnhancedICheckboxGroupProps>(3, (prev) => migrateVisibility(prev))
       .add<IEnhancedICheckboxGroupProps>(4, (prev) => migrateReadOnly(prev))
       .add<IEnhancedICheckboxGroupProps>(5, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-      // Checkbox group now only ever works in multi-select mode. Drop the legacy
-      // "mode" property so existing forms stop rendering the single (radio) variant.
-      .add<IEnhancedICheckboxGroupProps>(6, (prev) => {
-        const { mode, ...rest } = prev as IEnhancedICheckboxGroupProps & { mode?: string };
-        return rest;
-      })
+      // Kept for the legacy "mode" property, which used to switch the group between multi- and
+      // single-select rendering. Multi-select is now the only mode this component supports, but
+      // "mode" itself is left on the model here (rather than deleted) so version 9 can still see
+      // it and hand single-select forms off to the Radio component.
+      .add<IEnhancedICheckboxGroupProps>(6, (prev) => prev)
       // Seed the new per-checkbox Appearance style model (font/border/background/
       // dimensions/shadow/padding) for existing forms only.
       .add<IEnhancedICheckboxGroupProps>(7, (prev, context) => {
@@ -189,7 +189,16 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
 
         return migratePrevStyles({ ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } }, defaultStyles());
       })
-      .add<IEnhancedICheckboxGroupProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
+      .add<IEnhancedICheckboxGroupProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev))))
+      // Checkbox group now only ever works in multi-select mode. Forms still carrying the
+      // legacy "mode: single" become a Radio component instead, since that is the component
+      // that now covers single-selection; every other form just drops the legacy "mode" field.
+      .add<IEnhancedICheckboxGroupProps | IRadioComponentProps>(9, (prev) => {
+        const { mode, checkbox, ...rest } = prev as IEnhancedICheckboxGroupProps & { mode?: string };
+        if (mode !== 'single') return rest;
+
+        return { ...rest, type: 'radio', radio: checkbox } as IRadioComponentProps;
+      }),
   linkToModelMetadata: (model, metadata): IEnhancedICheckboxGroupProps => {
     const refListId: IReferenceListIdentifier | undefined = !isNullOrWhiteSpace(metadata.referenceListModule) && !isNullOrWhiteSpace(metadata.referenceListName)
       ? { module: metadata.referenceListModule, name: metadata.referenceListName }
