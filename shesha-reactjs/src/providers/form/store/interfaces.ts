@@ -110,6 +110,7 @@ export interface IShaFormInstance<Values extends object = object> {
   readonly modelMetadata?: IModelMetadata | undefined;
   readonly validationErrors?: IFormValidationErrors | undefined;
 
+  setFormSettings: (settings: IFormSettings) => Promise<void>;
   setFormMode: (formMode: FormMode) => void;
   setFormData: (payload: ISetFormDataPayload<Values>) => void;
   setParentFormValues: (values: object | undefined) => void;

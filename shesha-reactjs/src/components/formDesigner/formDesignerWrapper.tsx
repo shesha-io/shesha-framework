@@ -39,6 +39,12 @@ const FormProviderWrapperInner: FC<PropsWithChildren<{ form: FormInstance }>> = 
     },
   });
 
+  // update form settings in shaForm to re-initialize model metadata
+  useEffect(() => {
+    void shaForm.setFormSettings(formSettings)
+      .catch((e) => console.warn('Failed to update shaForm settings', e));
+  }, [formSettings, shaForm]);
+
   // init form data
   useEffect(() => {
     if (shaForm.markupLoadingState.status === 'ready' && shaForm.dataLoadingState.status === 'waiting')
