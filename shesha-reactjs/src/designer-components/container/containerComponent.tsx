@@ -46,7 +46,7 @@ const ContainerComponent: ContainerComponentDefinition = {
           style={model.styleCss}
           className={cx(model.className, styles.container)}
           dynamicComponents={model.isDynamic === true ? model.components : ContainerComponent.emptyComponents}
-          additionalDomProperties={getComponentEvents<void, IContainerComponentProps>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent })}
+          additionalDomProperties={getComponentEvents<void, IContainerComponentProps>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave', 'onKeyDown'], { handleEvent })}
         />
       </ParentProvider>
     );
