@@ -190,9 +190,6 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
         return migratePrevStyles({ ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } }, defaultStyles());
       })
       .add<IEnhancedICheckboxGroupProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev))))
-      // Checkbox group now only ever works in multi-select mode. Forms still carrying the
-      // legacy "mode: single" become a Radio component instead, since that is the component
-      // that now covers single-selection; every other form just drops the legacy "mode" field.
       .add<IEnhancedICheckboxGroupProps | IRadioComponentProps>(9, (prev) => {
         const { mode, checkbox, ...rest } = prev as IEnhancedICheckboxGroupProps & { mode?: string };
         if (mode !== 'single') return rest;
