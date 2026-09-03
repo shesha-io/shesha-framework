@@ -28,8 +28,8 @@ export const defaultStyles = (prev?: ICheckboxComponentProps & IInputStyles): IS
       radiusType: 'all',
     },
     dimensions: {
-      width: hasDimension(prev?.width) ? prev.width : '16px',
-      height: hasDimension(prev?.height) ? prev.height : '16px',
+      width: hasDimension(prev?.width) ? prev.width : '14px',
+      height: hasDimension(prev?.height) ? prev.height : '14px',
       minHeight: '0px',
       maxHeight: 'auto',
       minWidth: '0px',
