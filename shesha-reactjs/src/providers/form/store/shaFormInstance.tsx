@@ -500,6 +500,32 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     this.form = undefined;
   };
 
+  private pendingSetFormSettingsPromise: Promise<void> | undefined = undefined;
+
+  setFormSettings = async (settings?: IFormSettings | undefined): Promise<void> => {
+    // wait previous call
+    const previous = this.pendingSetFormSettingsPromise || Promise.resolve();
+    const current = previous.finally(async () => {
+      if (!this.form) return;
+
+      if (settings)
+        this.form.settings = settings;
+
+      await this.applyFormSettingsAsync();
+    });
+    this.pendingSetFormSettingsPromise = current;
+
+    try {
+      await current;
+    } finally {
+      // if current is still pending - clear
+      if (this.pendingSetFormSettingsPromise === current) {
+        this.pendingSetFormSettingsPromise = undefined;
+      }
+      this.forceRootUpdate();
+    }
+  };
+
   applyFormSettingsAsync = async (): Promise<void> => {
     const { settings } = this;
 
@@ -569,7 +595,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
       });
 
       this.form = form;
-      await this.applyFormSettingsAsync();
+      await this.setFormSettings(formSettings);
 
       if (this.onMarkupLoaded)
         await this.onMarkupLoaded(this);
@@ -601,7 +627,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
       });
 
       this.form = form;
-      await this.applyFormSettingsAsync();
+      await this.setFormSettings();
 
       if (this.onMarkupLoaded)
         await this.onMarkupLoaded(this);
@@ -634,7 +660,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
         flatStructure: formFlatMarkup,
         settings: formSettings,
       };
-      await this.applyFormSettingsAsync();
+      await this.setFormSettings(formSettings);
 
       if (this.onMarkupLoaded)
         await this.onMarkupLoaded(this);
