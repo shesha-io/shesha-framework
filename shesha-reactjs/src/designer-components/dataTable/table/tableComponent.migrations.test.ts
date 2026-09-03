@@ -37,6 +37,12 @@ describe('datatable migrations - visible', () => {
     expect(model.visible).toBe(false);
   });
 
+  it('a table already migrated to visible: false stays hidden', () => {
+    const model = upgrade({ ...baseModel, version: 30, visible: false } as unknown as IConfigurableFormComponent, false);
+    expect(model.visible).toBe(false);
+    expect(model.hidden).toBeUndefined();
+  });
+
   it('a js visibility setting is preserved', () => {
     const setting = { _mode: 'code', _code: 'return data.x;', _value: false };
     const model = upgrade({ ...baseModel, version: 30, visible: setting } as unknown as IConfigurableFormComponent, false);
