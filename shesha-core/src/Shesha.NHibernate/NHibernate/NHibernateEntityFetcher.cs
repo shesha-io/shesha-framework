@@ -80,6 +80,11 @@ namespace Shesha.NHibernate
                         var displayNamePropInfo = typeof(T).GetEntityConfiguration()?.DisplayNamePropertyInfo;
                         if (displayNamePropInfo != null)
                         {
+                            if (!CanFetchProperty(displayNamePropInfo))
+                            {
+                                propertiesToFetch = null;
+                                return false;
+                            }
                             result.Add(displayNamePropInfo.Name);
                         }
                     }
