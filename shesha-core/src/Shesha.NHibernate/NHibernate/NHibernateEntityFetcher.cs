@@ -9,6 +9,7 @@ using Shesha.Services;
 using Shesha.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -30,9 +31,24 @@ namespace Shesha.NHibernate
 
         public Task<List<T>> ToListAsync<T>(IQueryable<T> queryable, List<string> properties) where T : class, new()
         {
-            var propertiesToFetch = new List<string>();
+            if (TryGetPropertiesToFetch<T>(properties, out var propertiesToFetch)) 
+            { 
+                var partialQuery = queryable.SelectProperties(propertiesToFetch);
+                return _asyncExecuter.ToListAsync(partialQuery);
+            }
+            return _asyncExecuter.ToListAsync(queryable);
+        }
+
+        private bool CanFetchProperty(PropertyInfo property) 
+        {
+            return property.CanWrite && (property.GetSetMethod(true)?.IsPublic ?? false);
+        }
+
+        private bool TryGetPropertiesToFetch<T>(List<string> properties, [NotNullWhen(true)] out List<string>? propertiesToFetch) where T : class, new()
+        {
+            var result = new List<string>();
             var missingProperties = new List<string>();
-            foreach (var propName in properties) 
+            foreach (var propName in properties)
             {
                 var propWithPath = ExtractPropNameAndPath(propName);
                 if (propWithPath.PropName == EntityConstants.DisplayNameField)
@@ -42,26 +58,33 @@ namespace Shesha.NHibernate
                     if (!string.IsNullOrWhiteSpace(ownerProperty))
                     {
                         var ownerProp = GetPropertyWithPath(typeof(T), ownerProperty);
-                        if (ownerProp != null && ownerProp.PropertyInfo.PropertyType.IsEntityType()) 
+                        if (ownerProp != null && ownerProp.PropertyInfo.PropertyType.IsEntityType())
                         {
                             var displayNamePropInfo = ownerProp.PropertyInfo.PropertyType.GetEntityConfiguration()?.DisplayNamePropertyInfo;
-                            if (displayNamePropInfo != null && !string.IsNullOrWhiteSpace(displayNamePropInfo.Name)) 
+                            if (displayNamePropInfo != null && !string.IsNullOrWhiteSpace(displayNamePropInfo.Name))
                             {
+                                if (!CanFetchProperty(displayNamePropInfo))
+                                {
+                                    propertiesToFetch = null;
+                                    return false;
+                                }                                
+
                                 string[] nestedPath = [.. ownerProp.Path, displayNamePropInfo.Name];
                                 var nestedProp = nestedPath.Delimited(".");
-                                propertiesToFetch.Add(nestedProp);
+                                result.Add(nestedProp);
                             }
                         }
                     }
                     else
                     {
                         var displayNamePropInfo = typeof(T).GetEntityConfiguration()?.DisplayNamePropertyInfo;
-                        if (displayNamePropInfo != null) 
+                        if (displayNamePropInfo != null)
                         {
-                            propertiesToFetch.Add(displayNamePropInfo.Name);
+                            result.Add(displayNamePropInfo.Name);
                         }
                     }
-                } else
+                }
+                else
                 if (propWithPath.PropName == EntityConstants.ClassNameField)
                 {
                     // noop
@@ -71,39 +94,43 @@ namespace Shesha.NHibernate
                     var propertyWithPath = GetPropertyWithPath(typeof(T), propName);
                     if (propertyWithPath != null)
                     {
-                        if (propertyWithPath.PropertyInfo.CanWrite) 
+                        if (!CanFetchProperty(propertyWithPath.PropertyInfo)) 
                         {
-                            var realPath = propertyWithPath.Path.Delimited(".");
-                            if (!propertiesToFetch.Contains(realPath))
-                                propertiesToFetch.Add(realPath);
-                        }                        
+                            propertiesToFetch = null;
+                            return false;
+                        }
+                        
+                        var realPath = propertyWithPath.Path.Delimited(".");
+                        if (!result.Contains(realPath))
+                            result.Add(realPath);
                     }
                     else
                     {
                         if (propName.EndsWith("Id"))
                         {
                             var nestedEntityPropName = propName.RemovePostfix("Id");
-                            if (!string.IsNullOrWhiteSpace(nestedEntityPropName)) 
+                            if (!string.IsNullOrWhiteSpace(nestedEntityPropName))
                             {
                                 var nestedEntityPropertyWithPath = GetPropertyWithPath(typeof(T), nestedEntityPropName);
-                                if (nestedEntityPropertyWithPath != null && nestedEntityPropertyWithPath.PropertyInfo.PropertyType.IsEntityType()) 
+                                if (nestedEntityPropertyWithPath != null && nestedEntityPropertyWithPath.PropertyInfo.PropertyType.IsEntityType())
                                 {
                                     string[] nestedPath = [.. nestedEntityPropertyWithPath.Path, "Id"];
                                     var nestedProp = nestedPath.Delimited(".");
-                                    propertiesToFetch.Add(nestedProp);
-                                } else
+                                    result.Add(nestedProp);
+                                }
+                                else
                                     missingProperties.Add(propName);
-                            } else
+                            }
+                            else
                                 missingProperties.Add(propName);
-                        }                        
-                        
+                        }
+
                         missingProperties.Add(propName);
                     }
-                }                
-            }            
-
-            var partialQuery = queryable.SelectProperties(propertiesToFetch);
-            return _asyncExecuter.ToListAsync(partialQuery);
+                }
+            }
+            propertiesToFetch = result;
+            return true;
         }
 
         public PropertyInfoWithPath? GetPropertyWithPath(Type type, string propertyName)
