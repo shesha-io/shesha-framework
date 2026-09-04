@@ -25,9 +25,17 @@ export const RenderButton: FC<IRenderButtonProps> = ({ props, buttonComponent: t
     </>
   ), [props.label, props.downIcon]);
 
+  const isIconOnly = !isDefined(props.label) || (typeof props.label === 'string' && isNullOrWhiteSpace(props.label));
+
   return (
     <div className={shaComponentStyles.shaComponent}>
-      <ConfigurableButton key={props.id} {...props} label={label} additionalDomProperties={getComponentEvents<void, ButtonGroupItemProps>(props, ['onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent })} />
+      <ConfigurableButton
+        key={props.id}
+        {...props}
+        label={label}
+        className={isIconOnly ? 'ant-btn-icon-only' : ''}
+        additionalDomProperties={getComponentEvents<void, ButtonGroupItemProps>(props, ['onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent })}
+      />
     </div>
   );
 };

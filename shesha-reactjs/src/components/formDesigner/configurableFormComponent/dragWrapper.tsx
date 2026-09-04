@@ -5,6 +5,7 @@ import { ShaForm } from '@/providers/form';
 import { Tooltip } from 'antd';
 import { useFormDesigner, useFormDesignerSelectedComponentId, useFormDesignerIsDebug } from '@/providers/formDesigner';
 import { FunctionOutlined } from '@ant-design/icons';
+import { isDefined } from '@/utils';
 
 interface IDragWrapperProps {
   componentId: string;
@@ -70,10 +71,14 @@ export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => 
       setAnchor(null);
       return;
     }
+    const shaComponent = target.closest('.sha-component-drag-handle');
+    if (!isDefined(shaComponent)) return;
+    const rect = shaComponent.getBoundingClientRect();
+    const x = rect.left + rect.width / 2;
+    const y = rect.top;
 
-    const { clientX, clientY } = event;
     // pinned to where the cursor entered, so it doesn't hop as the cursor crosses inner elements
-    setAnchor((prev) => prev ?? { x: clientX, y: clientY });
+    setAnchor((prev) => prev ?? { x, y });
   };
 
   const onMouseOut = (event: React.MouseEvent<HTMLElement>): void => {
@@ -98,7 +103,7 @@ export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => 
         // Portalled into the body so the canvas' CSS `zoom` scales neither these viewport coordinates nor
         // the overlay (see the theme provider's getPopupContainer). `pointerEvents: none` keeps the overlay
         // out of hit-testing - otherwise reaching it counts as leaving the component and the tooltip flickers.
-        <Tooltip open title={tooltip} placement="right" styles={{ root: { pointerEvents: 'none' } }}>
+        <Tooltip open title={tooltip} placement="top" styles={{ root: { pointerEvents: 'none' } }}>
           <span
             data-testid="drag-wrapper-tooltip-anchor"
             style={{
