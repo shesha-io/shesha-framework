@@ -831,7 +831,7 @@ export const ReactTable = <TData extends ITableRowData = ITableRowData>({
                             position: 'sticky',
                             [direction]: shiftedBy,
                           }),
-                          backgroundColor: 'white',
+                          backgroundColor: 'transparent',
                           borderBottom: '1px solid #f0f0f0',
                           fontWeight: '600',
                           display: 'flex',
