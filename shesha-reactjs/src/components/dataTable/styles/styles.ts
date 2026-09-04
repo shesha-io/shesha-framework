@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx }) => {
+export const useStyles = createStyles(({ css, cx, token }) => {
   const shaMultiEntityCell = cx("sha-form-cell", css`
       white-space: normal;
     `);
@@ -85,7 +85,7 @@ export const useStyles = createStyles(({ css, cx }) => {
 
       .ant-form-item-control-input {
         width: 100%;
-        min-height: --ant-control-height;
+        min-height: ${token.controlHeight}px;
         max-width: 100%;
       }
 

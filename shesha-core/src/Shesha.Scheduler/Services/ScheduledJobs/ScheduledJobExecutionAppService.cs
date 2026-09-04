@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 namespace Shesha.Scheduler.Services.ScheduledJobs
 {
     [SheshaAuthorize(RefListPermissionedAccess.RequiresPermissions, ShaPermissionNames.Pages_Maintenance)]
-    public class ScheduledJobExecutionAppService : SheshaAppServiceBase, ITransientDependency
+    public class ScheduledJobExecutionAppService : DynamicCrudAppService<ScheduledJobExecution, DynamicDto<ScheduledJobExecution, Guid>, Guid>, ITransientDependency
     {
         private readonly IRepository<ScheduledJobExecution, Guid> _repository;
         private readonly IMimeMappingService _mimeMappingService;
@@ -32,47 +32,19 @@ namespace Shesha.Scheduler.Services.ScheduledJobs
         public ScheduledJobExecutionAppService(
             IRepository<ScheduledJobExecution, Guid> repository,
             IMimeMappingService mimeMappingService,
-            IStoredFileService storedFileService)
+            IStoredFileService storedFileService) : base(repository)
         {
             _repository = repository;
             _mimeMappingService = mimeMappingService;
             _storedFileService = storedFileService;
         }
 
-        /// <summary>
-        /// Get list of scheduled job executions
-        /// </summary>
-        public async Task<PagedResultDto<DynamicDto<ScheduledJobExecution, Guid>>> GetAllAsync(FilteredPagedAndSortedResultRequestDto input)
+        /// keep the most recent executions first when no explicit sorting is requested
+        protected override IQueryable<ScheduledJobExecution> ApplySorting(IQueryable<ScheduledJobExecution> query, PropsFilteredPagedAndSortedResultRequestDto input)
         {
-            var query = _repository.GetAll()
-                .ApplyFilter<ScheduledJobExecution, Guid>(input.Filter);
-
-            var totalCount = await AsyncQueryableExecuter.CountAsync(query);
-
-            query = string.IsNullOrWhiteSpace(input.Sorting)
+            return string.IsNullOrWhiteSpace(input.Sorting)
                 ? query.OrderByDescending(e => e.StartedOn)
-                : query.OrderBy(input.Sorting);
-            query = query.PageBy(input);
-
-            var entities = await AsyncQueryableExecuter.ToListAsync(query);
-
-            var settings = new DynamicMappingSettings { UseDtoForEntityReferences = true };
-            var items = new List<DynamicDto<ScheduledJobExecution, Guid>>();
-            foreach (var entity in entities)
-            {
-                items.Add(await MapToDynamicDtoAsync<ScheduledJobExecution, Guid>(entity, settings));
-            }
-
-            return new PagedResultDto<DynamicDto<ScheduledJobExecution, Guid>>(totalCount, items);
-        }
-
-        /// <summary>
-        /// Get scheduled job execution by id
-        /// </summary>
-        public async Task<DynamicDto<ScheduledJobExecution, Guid>> GetAsync(EntityDto<Guid> input)
-        {
-            var entity = await _repository.GetAsync(input.Id);
-            return await MapToDynamicDtoAsync<ScheduledJobExecution, Guid>(entity, new DynamicMappingSettings { UseDtoForEntityReferences = true });
+                : base.ApplySorting(query, input);
         }
 
         /// <summary>
