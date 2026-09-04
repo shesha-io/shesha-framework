@@ -36,58 +36,73 @@ export const isProxy = <TValue>(value: TValue): boolean => {
   );
 };
 
-export const unproxyValue = <TValue = unknown>(value: TValue): TValue => {
-  const result = isDefined(value)
-    ? value instanceof TouchableProperty ||
+const resolveProxy = <TValue>(value: TValue): TValue => {
+  if (!isDefined(value)) return value;
+  if (value instanceof TouchableProperty ||
     value instanceof TouchableArrayProperty ||
     value instanceof TouchableProxy ||
     value instanceof StorageProperty ||
-    value instanceof StorageArrayProperty
-      ? value.getData() as TValue
-      : value instanceof ShaArrayAccessProxy ||
-        value instanceof ShaObjectAccessProxy
-        ? value.getAccessorValue() as TValue
-        : value instanceof ObservableProxy
-          ? Array.isArray(value) ? [...value] : { ...value }
-          : value
-    : value;
+    value instanceof StorageArrayProperty)
+    return value.getData() as TValue;
+  if (value instanceof ShaArrayAccessProxy || value instanceof ShaObjectAccessProxy)
+    return value.getAccessorValue() as TValue;
+  if (value instanceof ObservableProxy)
+    return (Array.isArray(value) ? [...value] : { ...value }) as TValue;
+  return value;
+};
 
-  // a proxy that resolves to itself has lost its data, stop instead of recursing forever
-  return isProxy(result) && result !== value ? unproxyValue<TValue>(result as TValue) : result as TValue;
+export const unproxyValue = <TValue = unknown>(value: TValue): TValue => {
+  // a proxy may resolve to another proxy; stop at the first one seen twice so a cycle cannot recurse forever
+  const seen = new Set<unknown>();
+  let current = value;
+  while (isProxy(current) && !seen.has(current)) {
+    seen.add(current);
+    current = resolveProxy(current);
+  }
+  return current;
+};
+
+const isRecord = (value: unknown): value is Record<string, unknown> => isPlainObject(value);
+
+const isOpaqueObject = (value: object): boolean =>
+  moment.isMoment(value) || value instanceof Date || (typeof Blob !== 'undefined' && value instanceof Blob);
+
+const containsProxy = (value: unknown, seen: WeakSet<object>): boolean => {
+  if (!isDefined(value) || typeof value !== 'object') return false;
+  if (isProxy(value)) return true;
+  if (isOpaqueObject(value) || seen.has(value)) return false;
+  seen.add(value);
+  if (Array.isArray(value)) return value.some((item) => containsProxy(item, seen));
+  return isRecord(value) && Object.values(value).some((item) => containsProxy(item, seen));
+};
+
+const unproxyTree = (value: unknown, results: WeakMap<object, unknown>): unknown => {
+  if (!isDefined(value) || typeof value !== 'object') return value;
+  const plain = unproxyValue(value);
+  if (!isDefined(plain) || typeof plain !== 'object' || isProxy(plain) || isOpaqueObject(plain)) return plain;
+  if (results.has(plain)) return results.get(plain);
+
+  if (Array.isArray(plain)) {
+    const result: unknown[] = [];
+    results.set(plain, result); // registered before the children so cycles and shared references resolve to this copy
+    plain.forEach((item) => result.push(unproxyTree(item, results)));
+    return result;
+  }
+  if (!isRecord(plain)) return plain;
+  const result: Record<string, unknown> = {};
+  results.set(plain, result);
+  Object.entries(plain).forEach(([key, item]) => {
+    result[key] = unproxyTree(item, results);
+  });
+  return result;
 };
 
 /**
  * Replaces every data-access proxy inside `value` with the plain data it points at.
- * Returns the same reference when nothing had to change, so untouched values keep their identity.
+ * Returns the same reference when the tree holds no proxy, so untouched values keep their identity.
  */
-export const unproxyDeep = <TValue = unknown>(value: TValue, seen: WeakSet<object> = new WeakSet()): TValue => {
-  if (!isDefined(value) || typeof value !== 'object')
-    return value;
-  const plain = isProxy(value) ? unproxyValue(value) : value;
-  if (!isDefined(plain) || typeof plain !== 'object' || isProxy(plain) || seen.has(plain))
-    return plain;
-  if (moment.isMoment(plain) || plain instanceof Date || (typeof Blob !== 'undefined' && plain instanceof Blob))
-    return plain;
-  seen.add(plain);
-
-  let changed = plain !== value;
-  if (Array.isArray(plain)) {
-    const items = plain.map((item: unknown) => {
-      const result = unproxyDeep(item, seen);
-      if (result !== item) changed = true;
-      return result;
-    });
-    return (changed ? items : plain) as TValue;
-  }
-  if (!isPlainObject(plain))
-    return plain;
-  const result: Record<string, unknown> = {};
-  Object.entries(plain as Record<string, unknown>).forEach(([key, item]) => {
-    const itemResult = unproxyDeep(item, seen);
-    if (itemResult !== item) changed = true;
-    result[key] = itemResult;
-  });
-  return (changed ? result : plain) as TValue;
+export const unproxyDeep = <TValue = unknown>(value: TValue): TValue => {
+  return containsProxy(value, new WeakSet()) ? unproxyTree(value, new WeakMap()) as TValue : value;
 };
 
 export const deepMergeSkipUndefinedFunc = (objValue: unknown, srcValue: unknown, _key: string): unknown => srcValue === undefined ? objValue : undefined;

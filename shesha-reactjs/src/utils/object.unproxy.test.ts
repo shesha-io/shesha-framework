@@ -43,6 +43,26 @@ describe('unproxyDeep', () => {
     expect(hasFiles(safe)).toBe(false);
   });
 
+  it('gives shared references the same proxy-free copy', () => {
+    const formData: Data = { referenceList: { id: '1' } };
+    const shared = { nested: formProxy(() => formData).referenceList };
+    const plain = unproxyDeep({ first: shared, second: shared });
+    expect(isProxy((plain.first as Data).nested)).toBe(false);
+    expect(isProxy((plain.second as Data).nested)).toBe(false);
+    expect(plain.first).toBe(plain.second);
+  });
+
+  it('unproxyValue stops on two proxies that resolve to each other', () => {
+    let formData: Data = {};
+    const getField = (formProxy(() => formData) as { getFieldValue: (n: string) => unknown }).getFieldValue;
+    formData = { a: { id: 'a' }, b: { id: 'b' } };
+    const proxyA = getField('a');
+    const proxyB = getField('b');
+    formData = { a: proxyB, b: proxyA };
+    expect(() => unproxyValue(proxyA)).not.toThrow();
+    expect(() => unproxyDeep({ a: proxyA })).not.toThrow();
+  });
+
   it('unproxyValue returns a self-referencing proxy instead of recursing', () => {
     let formData: Data = {};
     const nested = (formProxy(() => formData) as { getFieldValue: (n: string) => unknown }).getFieldValue;
