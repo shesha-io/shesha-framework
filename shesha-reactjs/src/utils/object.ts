@@ -1,6 +1,6 @@
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import cleanDeep from "clean-deep";
-import { mergeWith } from "lodash";
+import { isPlainObject, mergeWith } from "lodash";
 import moment from "moment";
 import { Path, PathValue } from "./dotnotation";
 import { TouchableArrayProperty, TouchableProperty } from "@/providers/form/touchableProperty";
@@ -36,23 +36,76 @@ export const isProxy = <TValue>(value: TValue): boolean => {
   );
 };
 
-export const unproxyValue = <TValue = unknown>(value: TValue): TValue => {
-  const result = isDefined(value)
-    ? value instanceof TouchableProperty ||
+const resolveProxy = (value: unknown): unknown => {
+  if (value instanceof TouchableProperty ||
     value instanceof TouchableArrayProperty ||
     value instanceof TouchableProxy ||
     value instanceof StorageProperty ||
-    value instanceof StorageArrayProperty
-      ? value.getData() as TValue
-      : value instanceof ShaArrayAccessProxy ||
-        value instanceof ShaObjectAccessProxy
-        ? value.getAccessorValue() as TValue
-        : value instanceof ObservableProxy
-          ? Array.isArray(value) ? [...value] : { ...value }
-          : value
-    : value;
+    value instanceof StorageArrayProperty)
+    return value.getData();
+  if (value instanceof ShaArrayAccessProxy || value instanceof ShaObjectAccessProxy)
+    return value.getAccessorValue();
+  if (value instanceof ObservableProxy)
+    return Array.isArray(value) ? [...value] : { ...value };
+  return value;
+};
 
-  return isProxy(result) ? unproxyValue<TValue>(result as TValue) : result as TValue;
+/**
+ * Resolves a proxy (or a chain of proxies) to the data it points at. Callers keep the declared `TValue`
+ * because the proxies are typed as the data they wrap; the resolved data is what that type describes.
+ */
+export const unproxyValue = <TValue = unknown>(value: TValue): TValue => {
+  // a proxy may resolve to another proxy; stop at the first one seen twice so a cycle cannot recurse forever
+  const seen = new Set<unknown>();
+  let current: unknown = value;
+  while (isProxy(current) && !seen.has(current)) {
+    seen.add(current);
+    current = resolveProxy(current);
+  }
+  return current as TValue;
+};
+
+const isRecord = (value: unknown): value is Record<string, unknown> => isPlainObject(value);
+
+const isOpaqueObject = (value: object): boolean =>
+  moment.isMoment(value) || value instanceof Date || (typeof Blob !== 'undefined' && value instanceof Blob);
+
+const containsProxy = (value: unknown, seen: WeakSet<object>): boolean => {
+  if (!isDefined(value) || typeof value !== 'object') return false;
+  if (isProxy(value)) return true;
+  if (isOpaqueObject(value) || seen.has(value)) return false;
+  seen.add(value);
+  if (Array.isArray(value)) return value.some((item) => containsProxy(item, seen));
+  return isRecord(value) && Object.values(value).some((item) => containsProxy(item, seen));
+};
+
+const unproxyTree = (value: unknown, results: WeakMap<object, unknown>): unknown => {
+  if (!isDefined(value) || typeof value !== 'object') return value;
+  const plain = unproxyValue(value);
+  if (!isDefined(plain) || typeof plain !== 'object' || isProxy(plain) || isOpaqueObject(plain)) return plain;
+  if (results.has(plain)) return results.get(plain);
+
+  if (Array.isArray(plain)) {
+    const result: unknown[] = [];
+    results.set(plain, result); // registered before the children so cycles and shared references resolve to this copy
+    plain.forEach((item) => result.push(unproxyTree(item, results)));
+    return result;
+  }
+  if (!isRecord(plain)) return plain;
+  const result: Record<string, unknown> = {};
+  results.set(plain, result);
+  Object.entries(plain).forEach(([key, item]) => {
+    result[key] = unproxyTree(item, results);
+  });
+  return result;
+};
+
+/**
+ * Replaces every data-access proxy inside `value` with the plain data it points at.
+ * Returns the same reference when the tree holds no proxy, so untouched values keep their identity.
+ */
+export const unproxyDeep = <TValue = unknown>(value: TValue): TValue => {
+  return containsProxy(value, new WeakSet()) ? unproxyTree(value, new WeakMap()) as TValue : value;
 };
 
 export const deepMergeSkipUndefinedFunc = (objValue: unknown, srcValue: unknown, _key: string): unknown => srcValue === undefined ? objValue : undefined;

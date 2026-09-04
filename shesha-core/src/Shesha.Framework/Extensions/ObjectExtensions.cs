@@ -18,7 +18,8 @@ namespace Shesha.Extensions
 
         public static string? GetClassName(this object obj)
         {
-            return obj == null ? null : obj.GetType().FullName;
+            // lazily loaded entities are NHibernate proxies, report the real entity type
+            return obj == null ? null : obj.GetType().StripCastleProxyType().FullName;
         }
 
         /// <summary>

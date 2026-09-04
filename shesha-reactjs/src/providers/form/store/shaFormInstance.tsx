@@ -28,7 +28,7 @@ import { executeScript, getComponentsAndSettings, IApplicationContext, isSameFor
 import { Form, FormInstance } from "antd";
 import { IFormApi } from "../formApi";
 import { ISetFormDataPayload } from "../contexts";
-import { deepMergeValues, setValueByPropertyName } from "@/utils/object";
+import { deepMergeValues, setValueByPropertyName, unproxyDeep } from "@/utils/object";
 import { makeObservableProxy } from "../observableProxy";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
 import { isEntityTypeIdEmpty } from "@/providers/metadataDispatcher/entities/utils";
@@ -393,13 +393,15 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
   };
 
   setFormData = (payload: ISetFormDataPayload<Values>): void => {
-    const { values, mergeValues } = payload;
+    const { mergeValues } = payload;
+    // scripts may pass `{...form.data}`, whose nested objects are proxies; storing those corrupts the form data
+    const values = unproxyDeep(payload.values);
     if (isEmpty(values) && mergeValues)
       return;
 
     const newData = typeof this.getMergedOrValue === "function"
-      ? this.getMergedOrValue(payload, this)
-      : payload.mergeValues && this.formData
+      ? this.getMergedOrValue({ ...payload, values }, this)
+      : mergeValues && this.formData
         ? deepMergeValues(this.formData, values)
         : values;
 
