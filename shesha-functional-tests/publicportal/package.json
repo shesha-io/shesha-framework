@@ -17,7 +17,7 @@
     "build:analyze": "ANALYZE=true npm run build",
     "lint": "eslint src/**/*.ts{,x}",
     "lint-errors": "eslint src/**/*.ts{,x} --quiet",
-    "postinstall": "shesha-copy-local-monaco",
+    "postinstall": "shesha init",
     "knip": "knip"
   },
   "overrides": {
@@ -25,6 +25,7 @@
     "next-navigation-guard": {
       "next": "$next"
     },
+    "@rc-component/portal": "2.2.1",
     "@react-awesome-query-builder/antd": {
       "antd": "$antd",
       "@ant-design/icons": "$@ant-design/icons"

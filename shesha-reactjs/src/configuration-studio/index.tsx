@@ -16,6 +16,7 @@ import { SheshaDocumentDefinitions } from './document-definitions';
 import { DocumentDefinitionRegistration } from './document-definitions/documentDefinitionRegistration';
 import { useStyles } from './styles';
 import { useLocalStorage } from '@/hooks';
+import { CustomErrorBoundary } from '../components';
 
 const ConfigurationStudio: FC = () => {
   const { styles } = useStyles();
@@ -54,7 +55,7 @@ const ConfigurationStudio: FC = () => {
             position="start"
             panelTitle="Explorer"
             panelClassName={styles.csTreeArea}
-            panel={<ConfigurationTree />}
+            panel={<CustomErrorBoundary><ConfigurationTree /></CustomErrorBoundary>}
             panelMin={100}
             panelMax="50%"
 

@@ -27,6 +27,8 @@ import { getStringEnumOrDefault } from '@/utils/object';
 import { IInputStyles } from '@/providers';
 import { migratePrevStyles } from '../_common-migrations';
 import { defaultStyles } from './utils';
+import { IRadioComponentProps } from '../radio/interfaces';
+import { defaultStyles as radioDefaultStyles } from '../radio/utils';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { migrateHiddenToVisible } from '@/designer-components/_common-migrations/migrateSettings';
 import { useComponentApiProvider } from '@/providers/componentApi/provider';
@@ -37,6 +39,13 @@ import apiCode from "../../componentsApi/componentApi.ts?raw";
 
 interface IEnhancedICheckboxGroupProps extends Omit<CheckboxGroupComponentProps, 'style' | 'readOnly'>, IConfigurableFormComponent {
 }
+
+/** Shape of a persisted model still carrying the legacy `mode: 'single'` property (removed from the current schema). */
+type LegacySingleModeCheckboxGroup = IEnhancedICheckboxGroupProps & { mode: 'single' };
+
+/** Narrows `prev` to a legacy single-mode checkbox group, without asserting fields the current type doesn't declare. */
+const hasLegacySingleMode = (prev: IEnhancedICheckboxGroupProps): prev is LegacySingleModeCheckboxGroup =>
+  'mode' in prev && (prev as { mode?: unknown }).mode === 'single';
 
 /** Values derived from the model before render — currently the evaluated `url` data source. */
 interface ICheckboxGroupCalculatedValues {
@@ -172,14 +181,23 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
       .add<IEnhancedICheckboxGroupProps>(3, (prev) => migrateVisibility(prev))
       .add<IEnhancedICheckboxGroupProps>(4, (prev) => migrateReadOnly(prev))
       .add<IEnhancedICheckboxGroupProps>(5, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-      // Checkbox group now only ever works in multi-select mode. Drop the legacy
-      // "mode" property so existing forms stop rendering the single (radio) variant.
-      .add<IEnhancedICheckboxGroupProps>(6, (prev) => {
-        const { mode, ...rest } = prev as IEnhancedICheckboxGroupProps & { mode?: string };
-        return rest;
+      .add<IEnhancedICheckboxGroupProps | IRadioComponentProps>(6, (prev) => {
+        if (!hasLegacySingleMode(prev)) return prev;
+
+        const { mode: _mode, checkbox, ...rest } = prev;
+        const radioDefaults = radioDefaultStyles();
+
+        const radioModel: IRadioComponentProps = migratePrevStyles(
+          {
+            ...rest,
+            type: 'radio',
+            radio: checkbox ?? radioDefaults.radio,
+            version: 8,
+          },
+          radioDefaults,
+        );
+        return radioModel;
       })
-      // Seed the new per-checkbox Appearance style model (font/border/background/
-      // dimensions/shadow/padding) for existing forms only.
       .add<IEnhancedICheckboxGroupProps>(7, (prev, context) => {
         if (context.isNew === true) return prev;
 

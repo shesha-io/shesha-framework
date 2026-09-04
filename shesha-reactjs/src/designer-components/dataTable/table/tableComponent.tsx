@@ -39,6 +39,7 @@ import { useComponentApi } from '@/providers/componentApi/hooks';
 import { DataTableApi } from '@/componentsApi/dataTableApi';
 
 import apiCode from "../../../componentsApi/dataTableApi.ts?raw";
+import { getFullSizeWrapperDesignerStyle } from '@/components/formDesigner/utils/stylingUtils';
 
 const columnsMismatchError = 'CONFIGURATION ERROR: The DataTable columns do not match the data source. Please change the columns configured to suit your data source.';
 
@@ -77,6 +78,11 @@ const TableComponentFactory: React.FC<{ model: ITableComponentProps; columnsMism
   return <TableWrapper {...model} columnsMismatch={columnsMismatch} />;
 };
 
+export const ROW_EVENT_ACTION_PROPERTIES = [
+  'onRowClick', 'onRowDoubleClick', 'onRowHover', 'onRowSelect', 'onSelectionChange',
+  'onRowSaveSuccessAction', 'onRowDeleteSuccessAction', 'dblClickActionConfiguration',
+];
+
 const TableComponent: TableComponentDefinition = {
   type: 'datatable',
   isInput: true,
@@ -84,6 +90,7 @@ const TableComponent: TableComponentDefinition = {
   name: 'Data Table',
   preserveDimensionsInDesigner: true,
   icon: <TableOutlined />,
+  getWrapperStyle: (model) => getFullSizeWrapperDesignerStyle(model),
   Factory: ({ model }) => {
     const store = useDataTableStoreOrUndefined();
     const metadata = useMetadataOrUndefined();
@@ -378,8 +385,13 @@ const TableComponent: TableComponentDefinition = {
       };
     })
     .add<ITableComponentProps>(29, (prev) => ({ ...prev, actionIconSize: prev.actionIconSize ?? '14px' })) // Set default actionIconSize for existing tables
-    .add<ITableComponentProps>(30, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev))),
+    .add<ITableComponentProps>(30, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(prev)))
+    .add<ITableComponentProps>(31, (prev) => ({ ...prev, visible: prev.visible ?? true })),
   actualModelPropertyFilter: (name, value) => {
+    // row event actions carry templates like {{selectedRow.id}} that only resolve when the event fires
+    if (ROW_EVENT_ACTION_PROPERTIES.includes(name))
+      return false;
+
     // Allow all styling properties through to the settings form
     const allowedStyleProperties = [
       // Old properties (deprecated but kept for backward compatibility)

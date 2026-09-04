@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 import { IEntityReferenceControlProps } from './interfaces';
-import { dimensionsStyles, fontStyles, marginStyles, paddingStyles } from '../_common/styles/utils';
+import { dimensionsStyles, fontStyles, paddingStyles } from '../_common/styles/utils';
 
 export const useStyles = createStyles(({ css, cx }, model: IEntityReferenceControlProps) => {
   /*
@@ -11,7 +11,6 @@ export const useStyles = createStyles(({ css, cx }, model: IEntityReferenceContr
    */
   const entityReference = cx('sha-entity-reference', css`
     ${dimensionsStyles(model.dimensions)}
-    ${marginStyles(model.stylingBoxJson)}
     ${paddingStyles(model.stylingBoxJson)}
     ${fontStyles(model.font, model.styleCss)}
 

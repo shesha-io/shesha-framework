@@ -47,7 +47,7 @@ export interface IFormApi<Values extends object = object> {
   /** Configurable form settings */
   readonly settings: IFormSettings | undefined;
   /** Form data */
-  readonly data: FormData<Values>;
+  data: FormData<Values>;
   /** Default API endpoints (create, read, update, delete) */
   readonly defaultApiEndpoints: IEntityEndpoints;
   /** Form mode */

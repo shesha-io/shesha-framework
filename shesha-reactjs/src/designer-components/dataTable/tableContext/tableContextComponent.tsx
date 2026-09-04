@@ -42,7 +42,8 @@ const TableContextComponent: TableContextComponentDefinition = {
 
     return initialModel;
   },
-  actualModelPropertyFilter: (name) => name !== 'permanentFilter',
+  // reorder actions carry templates that only resolve when the event fires
+  actualModelPropertyFilter: (name) => !['permanentFilter', 'onBeforeRowReorder', 'onAfterRowReorder'].includes(name),
   settingsFormMarkup: (data) => getSettings(data),
 
   getFieldsToFetch: (propertyName, rawModel) => {

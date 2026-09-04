@@ -15,6 +15,16 @@ export const useStyles = createStyles(({ css, cx, token }, model: IPhoneNumberCo
       ${fontStyles(model.font)}
       ${inputBoxStyles}
 
+      /* The Appearance tab's dimensions land on this element, and its Styling Box padding and border
+         land here too. Unlike the other input components - which hang their class straight off an antd
+         Input, and so inherit antd's own border-box reset - this is a plain div, and no global reset
+         applies one. Left at the default content-box, a width of 100% (the default) resolves to the
+         parent's full width and then adds the horizontal padding and border on top, so the field spills
+         past the form whenever nothing around it has slack to absorb the overflow - a Create form's
+         root, say. It also made the field render taller than a text field beside it, since a configured
+         height gained the border the same way. */
+      box-sizing: border-box;
+
       /* The Appearance-tab border/background/dimensions live on this wrapper only. antd-phone-input renders
          a Select (country flag + dial code) and an Input joined via antd's Space.Compact - each of those has
          its own border/box-shadow stripped below so there is exactly one visible border on the wrapper, and

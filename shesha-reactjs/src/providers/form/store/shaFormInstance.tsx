@@ -40,7 +40,6 @@ import { IDelayedUpdateGroup } from "@/providers/delayedUpdateProvider/models";
 import { removeGhostKeys } from "@/utils/form";
 import { FieldValueSetter } from "@/utils/dotnotation";
 import { addDelayedUpdateProperty } from "@/providers/delayedUpdateProvider";
-import { RecursivePartial } from "@/interfaces/entity";
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from "@/utils/nullables";
 import { extractErrorInfo, throwError } from "@/utils/errors";
 import { GetShaFormDataAccessor } from "@/providers/dataContextProvider/contexts/shaDataAccessProxy";
@@ -154,6 +153,10 @@ class PublicFormApi<Values extends object = object> implements IFormApi<Values> 
   get data(): FormData<Values> {
     return this.#data;
   };
+
+  set data(value: FormData<Values>) {
+    this.#form.setFormData({ values: value, mergeValues: true });
+  }
 
   get defaultApiEndpoints(): IEntityEndpoints {
     return this.#form.defaultApiEndpoints;
@@ -433,7 +436,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     this.antdForm.submit();
   };
 
-  setFieldsValue = (values: RecursivePartial<Values>): void => {
+  setFieldsValue = (values: Partial<Values>): void => {
     this.antdForm.setFieldsValue(values);
     this.updateData?.();
   };
@@ -495,6 +498,33 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
 
   resetMarkup = (): void => {
     this.form = undefined;
+  };
+
+  private pendingSetFormSettingsPromise: Promise<void> | undefined = undefined;
+
+  setFormSettings = async (settings?: IFormSettings | undefined): Promise<void> => {
+    // wait previous call
+    const previous = this.pendingSetFormSettingsPromise || Promise.resolve();
+    const current = previous.finally(async () => {
+      if (!this.form) return;
+
+      // If the settings were not passed in the parameter, then we use those already set in the form.
+      if (settings)
+        this.form.settings = settings;
+
+      await this.applyFormSettingsAsync();
+    });
+    this.pendingSetFormSettingsPromise = current;
+
+    try {
+      await current;
+    } finally {
+      // if current is still pending - clear
+      if (this.pendingSetFormSettingsPromise === current) {
+        this.pendingSetFormSettingsPromise = undefined;
+      }
+      this.forceRootUpdate();
+    }
   };
 
   applyFormSettingsAsync = async (): Promise<void> => {
@@ -566,7 +596,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
       });
 
       this.form = form;
-      await this.applyFormSettingsAsync();
+      await this.setFormSettings(); // use setFormSettings instead of applyFormSettingsAsync to avoid race conditions if markup or settings are updated before form is loaded
 
       if (this.onMarkupLoaded)
         await this.onMarkupLoaded(this);
@@ -598,7 +628,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
       });
 
       this.form = form;
-      await this.applyFormSettingsAsync();
+      await this.setFormSettings(); // use setFormSettings instead of applyFormSettingsAsync to avoid race conditions if markup or settings are updated before form is loaded
 
       if (this.onMarkupLoaded)
         await this.onMarkupLoaded(this);
@@ -631,7 +661,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
         flatStructure: formFlatMarkup,
         settings: formSettings,
       };
-      await this.applyFormSettingsAsync();
+      await this.setFormSettings(); // use setFormSettings instead of applyFormSettingsAsync to avoid race conditions if markup or settings are updated before form is loaded
 
       if (this.onMarkupLoaded)
         await this.onMarkupLoaded(this);
@@ -682,7 +712,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     await this.loadDataWithBeforeAfterLoad(() => {
       this.antdForm.resetFields();
       if (this.initialValues)
-        this.antdForm.setFieldsValue(this.initialValues as RecursivePartial<Values>);
+        this.antdForm.setFieldsValue(this.initialValues);
 
       this.dataLoadingState = { status: 'ready', hint: undefined, error: undefined };
       this.#setIsDataModified(false);

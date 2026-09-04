@@ -55,7 +55,7 @@ export const useStyles = createStyles(({ css, cx, token }, { model, cardStyleCss
         ${dimensionsStyles(model.dimensions)}
       }
 
-      .ant-tabs-content-holder {
+      .ant-tabs-body-holder {
           ${(isLeft && (model.shadow?.offsetX ?? 0) > 0) ||
           (isRight && (model.shadow?.offsetX ?? 0) < 0) ||
           (isTop && (model.shadow?.offsetY ?? 0) > 0) ||
@@ -72,7 +72,7 @@ export const useStyles = createStyles(({ css, cx, token }, { model, cardStyleCss
           ${paddingStyles(model.stylingBoxJson)}
           ${cssPropertiesToString(model.styleCss)}
 
-          .ant-tabs-content {
+          .ant-tabs-body {
               height: 100%;
               width: 100%;
               overflow: auto;
@@ -122,6 +122,7 @@ export const useStyles = createStyles(({ css, cx, token }, { model, cardStyleCss
                   ${isBottom ? 'border-top-width: 0px;' : ''}
 
                   ${fontStyles(model.font)}
+                  ${isDefined(model.font?.color) ? `--ant-tabs-item-selected-color: ${model.font.color} !important;` : ''}
                   --primary-color: ${token.colorPrimary} !important;
                   --ant-tabs-card-bg: ${background};
                   --ant-color-bg-container: ${background};

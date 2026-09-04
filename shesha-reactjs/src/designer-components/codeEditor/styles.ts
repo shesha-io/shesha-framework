@@ -10,9 +10,9 @@ export const useStyles = createStyles(({ css, cx }) => {
         }
         .ant-tabs {
           height: 70vh;
-        .ant-tabs-content-holder {
+        .ant-tabs-body-holder {
             height: 100%;
-          .ant-tabs-content {
+          .ant-tabs-body {
             height: 100%;
             .ant-tabs-tabpane {
               height: 100%;

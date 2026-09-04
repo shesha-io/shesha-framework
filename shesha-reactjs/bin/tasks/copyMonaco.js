@@ -1,14 +1,4 @@
-#!/usr/bin/env node
 /* eslint-disable no-console */
-
-/**
- * Post-install script to copy Monaco Editor worker files to the consuming app.
- * This ensures Monaco Editor language features (TypeScript, JSON, etc.) work offline.
- *
- * Workers are copied directly from the consuming app's monaco-editor package
- * to avoid bundling 14MB of worker files with @shesha-io/reactjs.
- */
-
 const fs = require('fs');
 const path = require('path');
 
@@ -43,4 +33,4 @@ async function copyMonaco() {
   }
 }
 
-copyMonaco();
+module.exports = { copyMonaco };

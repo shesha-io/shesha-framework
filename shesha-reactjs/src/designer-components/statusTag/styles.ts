@@ -1,5 +1,5 @@
 import { createStyles } from '@/styles';
-import { backgroundStyles, borderRadiusStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, justifyContentFor, marginStyles, paddingStyles, shadowStyles, splitBackgroundProperties } from '@/designer-components/_common/styles/utils';
+import { backgroundStyles, borderRadiusStyles, borderStyles, cssPropertiesToString, dimensionsStyles, fontStyles, justifyContentFor, paddingStyles, shadowStyles, splitBackgroundProperties } from '@/designer-components/_common/styles/utils';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { addPx } from '@/utils/style';
 import { CSSProperties } from 'react';
@@ -187,7 +187,6 @@ export const useStyles = createStyles((
         ${shadowStyles(model.shadow)}
         ${tagDimensions}
         ${paddingStyles(model.stylingBoxJson)}
-        ${marginStyles(model.stylingBoxJson)}
         ${fontWithoutColour}
         ${cssPropertiesToString(customStyle.rest)}
 

@@ -2,10 +2,9 @@ import { FC, PropsWithChildren } from 'react';
 import { ConfigurableFormComponent } from '../configurableFormComponent';
 import { ShaForm } from '@/providers/form';
 import { IComponentsContainerProps } from './componentsContainer';
-import { useStyles } from '../styles/styles';
-import classNames from 'classnames';
 import { useParent } from '@/providers/parentProvider';
 import { useDeepCompareMemo } from '@/hooks';
+import { ComponentsContainerRender } from './componentsContainerRender';
 
 export const ComponentsContainerLive: FC<PropsWithChildren<IComponentsContainerProps>> = (props) => {
   const {
@@ -19,26 +18,15 @@ export const ComponentsContainerLive: FC<PropsWithChildren<IComponentsContainerP
     noDefaultStyling = false,
     additionalDomProperties,
   } = props;
-  const { styles } = useStyles();
   const parent = useParent();
   const components = ShaForm.useChildComponents(containerId.replace(`${parent.subFormIdPrefix}.`, ''));
 
-  const renderComponents = useDeepCompareMemo(() => {
-    const renderedComponents = components.map((c) => (
+  const renderedComponents = useDeepCompareMemo((): React.ReactNode | React.JSX.Element[] => {
+    const rendered = components.map((c) => (
       <ConfigurableFormComponent id={c.id} key={c.id} />
     ));
-    return typeof render === 'function' ? render(renderedComponents) : renderedComponents;
-  }, [components]);
+    return typeof render === 'function' ? render(rendered) : rendered;
+  }, [components, render]);
 
-
-  return noDefaultStyling ? (
-    <div className={styles.shaComponentsContainerInner} style={{ ...style, textJustify: 'auto' }} {...additionalDomProperties}>{renderComponents}</div>
-  ) : (
-    <div className={classNames(styles.shaComponentsContainer, direction, className)} style={wrapperStyle} {...additionalDomProperties}>
-      <div className={styles.shaComponentsContainerInner} style={style}>
-        {renderComponents}
-      </div>
-      {children}
-    </div>
-  );
+  return <ComponentsContainerRender {...{ direction, className, wrapperStyle, children, additionalDomProperties, noDefaultStyling, style, renderedComponents }}>{children}</ComponentsContainerRender>;
 };

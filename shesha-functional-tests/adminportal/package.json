@@ -17,7 +17,7 @@
     "build:analyze": "ANALYZE=true npm run build",
     "lint": "eslint src/**/*.ts{,x}",
     "lint-errors": "eslint src/**/*.ts{,x} --quiet",
-    "postinstall": "shesha-copy-local-monaco",
+    "postinstall": "shesha init",
     "knip": "knip"
   },
   "overrides": {
@@ -25,9 +25,14 @@
     "next-navigation-guard": {
       "next": "$next"
     },
+    "@rc-component/portal": "2.2.1",
     "@react-awesome-query-builder/antd": {
       "antd": "$antd",
-      "@ant-design/icons": "$@ant-design/icons"
+      "@ant-design/icons": "$@ant-design/icons",
+      "rc-picker": "4.11.3"
+    },
+    "rc-picker": {
+      "@rc-component/trigger": "2.3.1"
     }
   },
   "resolutions": {
@@ -38,7 +43,7 @@
     "@next/bundle-analyzer": "^14.2.4",
     "@shesha-io/reactjs": "file:shesha-local.tgz",
     "@types/react-dom": "^19.2.4",
-    "antd": "^6.3.5",
+    "antd": "^6.6.2",
     "next": "^16.3.1",
     "next-navigation-guard": "^0.2.0",
     "qs": "^6.14.0",

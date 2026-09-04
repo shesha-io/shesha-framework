@@ -24,6 +24,7 @@ import { useDeepCompareMemo } from '@/hooks';
 import { useBackgroundStyles } from '../_settings/utils/background/useBackground';
 
 const SizableColumnsComponent: IToolboxComponent<ISizableColumnComponentProps> = {
+  showInThemeEditor: false,
   type: 'sizableColumns',
   isInput: false,
   name: 'SizableColumns',

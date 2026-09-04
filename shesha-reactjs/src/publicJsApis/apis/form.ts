@@ -106,7 +106,7 @@ export interface FormApi<Values extends object = object> {
   /** Form mode */
   mode: FormMode;
   /** Form data */
-  readonly data: FormData<Values>;
+  data: FormData<Values>;
   /** Form arguments passed by caller */
   readonly arguments?: any;
   /** Default API endpoints (create, read, update, delete). Note: available only when model type is entity */

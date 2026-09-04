@@ -8,6 +8,7 @@ import { NodeIndicator } from './nodeIndicators';
 import { gray } from '@ant-design/colors';
 import { useCsTreeDnd } from '@/configuration-studio/cs/hooks';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isNonEmptyArray } from '@/utils/array';
 
 const { Text } = Typography;
 
@@ -60,80 +61,88 @@ const getNodeTitle = (node: TreeNode): string | undefined => {
     : undefined;
 };
 
+const getPopoverItems = (node: TreeNode, isDevMode: boolean): LabelValueOrNode[] => {
+  const result: LabelValueOrNode[] = [];
+  if (!isConfigItemTreeNode(node))
+    return result;
+
+  if (isDevMode)
+    result.push({ label: 'Id', value: <Typography.Text copyable>{node.id}</Typography.Text> });
+
+  if (!isNullOrWhiteSpace(node.applicationName))
+    result.push({ label: 'Application', value: node.applicationName });
+
+  if (node.flags.isExposed)
+    result.push({ label: 'Exposed from', value: node.baseModule });
+  if (!isNullOrWhiteSpace(node.description))
+    result.push({ label: 'Description', value: node.description });
+  if (node.flags.isUpdated) {
+    const typeName = getItemTypeFriendlyName(node.itemType);
+    const modUser = node.lastModifierUser;
+    const modTime = node.lastModificationTime;
+    if (!isNullOrWhiteSpace(modUser) && !isNullOrWhiteSpace(modTime)) {
+      result.push(
+        <div>
+          {typeName} was last updated by {modUser} on{' '}
+          <DateDisplay format="MMMM D, YYYY">{modTime}</DateDisplay> at{' '}
+          <DateDisplay format="h:mm A">{modTime}</DateDisplay>
+        </div>,
+      );
+    } else if (!isNullOrWhiteSpace(modUser)) {
+      result.push(<div>{typeName} was last updated by {modUser}</div>);
+    } else if (!isNullOrWhiteSpace(modTime)) {
+      result.push(
+        <div>
+          {typeName} was last updated on{' '}
+          <DateDisplay format="MMMM D, YYYY">{modTime}</DateDisplay> at{' '}
+          <DateDisplay format="h:mm A">{modTime}</DateDisplay>
+        </div>,
+      );
+    } else {
+      result.push(<div>{typeName} has manual changes</div>);
+    }
+  } else {
+    const modUser = node.lastModifierUser;
+    const modTime = node.lastModificationTime;
+    if (!isNullOrWhiteSpace(modUser) && !isNullOrWhiteSpace(modTime)) {
+      const typeName = getItemTypeFriendlyName(node.itemType);
+      result.push(
+        <div>
+          {typeName} was last updated by {modUser} on{' '}
+          <DateDisplay format="MMMM D, YYYY">{modTime}</DateDisplay> at{' '}
+          <DateDisplay format="h:mm A">{modTime}</DateDisplay>
+        </div>,
+      );
+    }
+  }
+
+  return result;
+};
+
 export const CsTreeNode: FC<ICsTreeNodeProps> = ({ node, children }) => {
   const isDevMode = useIsDevMode();
   const { isDragging } = useCsTreeDnd();
 
-  const items: LabelValueOrNode[] = useMemo(() => {
-    const result: LabelValueOrNode[] = [];
-    if (!isConfigItemTreeNode(node))
-      return result;
-
-    if (isDevMode)
-      result.push({ label: 'Id', value: <Typography.Text copyable>{node.id}</Typography.Text> });
-
-    if (!isNullOrWhiteSpace(node.applicationName))
-      result.push({ label: 'Application', value: node.applicationName });
-
-    if (node.flags.isExposed)
-      result.push({ label: 'Exposed from', value: node.baseModule });
-    if (!isNullOrWhiteSpace(node.description))
-      result.push({ label: 'Description', value: node.description });
-    if (node.flags.isUpdated) {
-      const typeName = getItemTypeFriendlyName(node.itemType);
-      const modUser = node.lastModifierUser;
-      const modTime = node.lastModificationTime;
-      if (!isNullOrWhiteSpace(modUser) && !isNullOrWhiteSpace(modTime)) {
-        result.push(
-          <div>
-            {typeName} was last updated by {modUser} on{' '}
-            <DateDisplay format="MMMM D, YYYY">{modTime}</DateDisplay> at{' '}
-            <DateDisplay format="h:mm A">{modTime}</DateDisplay>
-          </div>,
-        );
-      } else if (!isNullOrWhiteSpace(modUser)) {
-        result.push(<div>{typeName} was last updated by {modUser}</div>);
-      } else if (!isNullOrWhiteSpace(modTime)) {
-        result.push(
-          <div>
-            {typeName} was last updated on{' '}
-            <DateDisplay format="MMMM D, YYYY">{modTime}</DateDisplay> at{' '}
-            <DateDisplay format="h:mm A">{modTime}</DateDisplay>
-          </div>,
-        );
-      } else {
-        result.push(<div>{typeName} has manual changes</div>);
-      }
-    } else {
-      const modUser = node.lastModifierUser;
-      const modTime = node.lastModificationTime;
-      if (!isNullOrWhiteSpace(modUser) && !isNullOrWhiteSpace(modTime)) {
-        const typeName = getItemTypeFriendlyName(node.itemType);
-        result.push(
-          <div>
-            {typeName} was last updated by {modUser} on{' '}
-            <DateDisplay format="MMMM D, YYYY">{modTime}</DateDisplay> at{' '}
-            <DateDisplay format="h:mm A">{modTime}</DateDisplay>
-          </div>,
-        );
-      }
-    }
-
-    return result;
+  const popoverContent = useMemo<ReactNode>(() => {
+    const items = getPopoverItems(node, isDevMode);
+    return isNonEmptyArray(items)
+      ? (
+        <div>
+          {items.map((item, index) => (isLabelValueItem(item) ? <LabelValue key={index} data={item} /> : <Fragment key={index}>{item}</Fragment>))}
+        </div>
+      )
+      : undefined;
   }, [node, isDevMode]);
 
   const nodeStyle = isConfigItemTreeNode(node) && !node.flags.isUpdated
     ? GRAY_OUT_STYLE
     : undefined;
 
-  return items.length > 0 && !isDragging
+  return isDefined(popoverContent)
     ? (
       <Popover
-        content={(
-          <div>
-            {items.map((item, index) => (isLabelValueItem(item) ? <LabelValue key={index} data={item} /> : <Fragment key={index}>{item}</Fragment>))}
-          </div>
-        )}
+        disabled={isDragging}
+        content={popoverContent}
         trigger="hover"
         placement="bottomLeft"
         mouseEnterDelay={0.4}

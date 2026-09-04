@@ -1,6 +1,5 @@
 import { FC } from 'react';
 import { IInputDirection, IValue } from '../interfaces';
-import { getStyleClassName } from '../styles/styles';
 import camelcase from 'camelcase';
 import { StyleBoxValue } from '../../../providers/form/models';
 import { InputComponent } from '@/designer-components/inputComponent';
@@ -46,19 +45,17 @@ const BoxInput: FC<IProps> = ({ direction, onChange, readOnly, type, value, prop
 
   return (
     <div className={className}>
-      <div className={getStyleClassName(type, direction)}>
-        <InputComponent<string>
-          type="textField"
-          size="small"
-          value={localValue}
-          onChange={internalOnChange}
-          label=""
-          propertyName={fullName}
-          readOnly={readOnly}
-          width="30px"
-          placeholder="0"
-        />
-      </div>
+      <InputComponent<string>
+        type="textField"
+        size="small"
+        value={localValue}
+        onChange={internalOnChange}
+        label=""
+        propertyName={fullName}
+        readOnly={readOnly}
+        width="30px"
+        placeholder="0"
+      />
     </div>
   );
 };

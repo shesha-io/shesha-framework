@@ -58,7 +58,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: CheckboxGr
       ${shadowStyles(model.shadow)}
       ${dimensionsStyles(model.dimensions)}
       ${paddingStyles(model.stylingBoxJson)}
-      ${marginStyles(model.stylingBoxJson)}
       ${fontStyles(model.font, model.styleCss)}
 
       >.${prefixCls}-checkbox-wrapper {

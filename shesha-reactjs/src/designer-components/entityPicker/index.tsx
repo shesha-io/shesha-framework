@@ -44,20 +44,28 @@ const ENTITY_PICKER_RUNTIME_EVENTS: readonly StandardEventHandlerWithoutChange[]
 import { EntityPickerApi } from '../../componentsApi/componentApi';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
+import { addPx } from '@/utils/style';
 
 type EntityPickerValueType = string | string[] | IEntityReferenceDto | IEntityReferenceDto[];
+
+/** The "Small" option in the Dialog Width setting - see `modalWidthOptions` in `settingsForm.ts`. */
+const DEFAULT_DIALOG_WIDTH = '40%';
 
 /**
  * Resolves a configured dialog width. The settings form stores the width directly, but older
  * configurations stored the literal `'custom'` alongside a separate numeric width and unit.
+ * Falls back to the "Small" preset when no width is configured, rather than antd Modal's own
+ * default (520px), which reads as too wide next to the picker's other Appearance settings. Also
+ * falls back to it when `modalWidth` is the legacy `'custom'` marker but `customWidth` was never
+ * set - otherwise the literal string `'custom'` would reach `Modal`'s `width` prop.
  */
-const resolveDialogWidth = (
+export const resolveDialogWidth = (
   modalWidth: IEntityPickerComponentProps['modalWidth'],
   customWidth: number | undefined,
   widthUnits: string | undefined,
-): number | string | undefined => modalWidth === 'custom' && isDefined(customWidth)
-  ? `${customWidth}${widthUnits}`
-  : modalWidth;
+): number | string | undefined => modalWidth === 'custom'
+  ? (isDefined(customWidth) ? addPx(`${customWidth}${widthUnits}`) : DEFAULT_DIALOG_WIDTH)
+  : modalWidth ?? DEFAULT_DIALOG_WIDTH;
 
 export type { IEntityPickerComponentProps };
 
@@ -301,7 +309,10 @@ const EntityPickerComponent: EntityPickerComponentDefinition = {
         addNewCustomWidth: prev.addNewCustomWidth ?? prev.customWidth,
         addNewWidthUnits: prev.addNewWidthUnits ?? prev.widthUnits,
       };
-    }),
+    }).add<IEntityPickerComponentProps>(16, (prev) => ({
+      ...prev,
+      modalWidth: prev.modalWidth ?? DEFAULT_DIALOG_WIDTH,
+    })),
   settingsFormMarkup: getSettings,
 
   getDefaultStyles: () => defaultStyles(),
