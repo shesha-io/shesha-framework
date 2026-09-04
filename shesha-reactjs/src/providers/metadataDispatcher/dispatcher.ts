@@ -59,7 +59,7 @@ export class MetadataDispatcher implements IMetadataDispatcher {
   };
 
   #getNested = (meta: IModelMetadata, propName: string): Promise<IModelMetadata | null> => {
-    const propMeta = asPropertiesArray(meta.properties, []).find((p) => camelcase(p.path) === propName);
+    const propMeta = this.#getPropertyByName(asPropertiesArray(meta.properties, []), propName);
 
     if (!propMeta) return Promise.reject(`property '${propName}' not found`);
 
