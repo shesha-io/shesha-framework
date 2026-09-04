@@ -39,6 +39,13 @@ import apiCode from "../../componentsApi/componentApi.ts?raw";
 interface IEnhancedICheckboxGroupProps extends Omit<CheckboxGroupComponentProps, 'style' | 'readOnly'>, IConfigurableFormComponent {
 }
 
+/** Shape of a persisted model still carrying the legacy `mode: 'single'` property (removed from the current schema). */
+type LegacySingleModeCheckboxGroup = IEnhancedICheckboxGroupProps & { mode: 'single' };
+
+/** Narrows `prev` to a legacy single-mode checkbox group, without asserting fields the current type doesn't declare. */
+const hasLegacySingleMode = (prev: IEnhancedICheckboxGroupProps): prev is LegacySingleModeCheckboxGroup =>
+  'mode' in prev && (prev as { mode?: unknown }).mode === 'single';
+
 /** Values derived from the model before render — currently the evaluated `url` data source. */
 interface ICheckboxGroupCalculatedValues {
   dataSourceUrl?: string | undefined;
@@ -191,10 +198,11 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
       })
       .add<IEnhancedICheckboxGroupProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev))))
       .add<IEnhancedICheckboxGroupProps | IRadioComponentProps>(9, (prev) => {
-        const { mode, checkbox, ...rest } = prev as IEnhancedICheckboxGroupProps & { mode?: string };
-        if (mode !== 'single') return rest;
+        if (!hasLegacySingleMode(prev)) return prev;
 
-        return { ...rest, type: 'radio', radio: checkbox } as IRadioComponentProps;
+        const { mode: _mode, checkbox, ...rest } = prev;
+        const radioModel: IRadioComponentProps = { ...rest, type: 'radio', ...(isDefined(checkbox) ? { radio: checkbox } : {}) };
+        return radioModel;
       }),
   linkToModelMetadata: (model, metadata): IEnhancedICheckboxGroupProps => {
     const refListId: IReferenceListIdentifier | undefined = !isNullOrWhiteSpace(metadata.referenceListModule) && !isNullOrWhiteSpace(metadata.referenceListName)
