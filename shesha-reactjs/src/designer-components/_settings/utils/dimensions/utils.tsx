@@ -1,23 +1,35 @@
 import { CSSProperties } from "react";
 import { EyeOutlined, EyeInvisibleOutlined, ColumnWidthOutlined, BorderlessTableOutlined } from "@ant-design/icons";
 import { IDimensionsValue } from "./interfaces";
+import { isDefined } from "@/utils/nullables";
 import { addPx, hasNumber } from "@/utils/style";
 import { IDropdownOption } from "@/designer-components/settingsInput/interfaces";
 import { dimensionRelativeToCanvas } from "@/providers/canvas/utils";
+import { MAX_DIMENSION_PERCENT, boundWidth, boundWidthToCanvas } from "./bounds";
+
+// Re-exported for existing `dimensions/utils` consumers; they live in the leaf `bounds` module so
+// the CSS-string path can use them without pulling the providers barrel in.
+export { MAX_DIMENSION_PERCENT, boundWidth, boundWidthToCanvas };
 
 const getWidthDimension = (main: string | number, canvasWidth?: string, context?: object): string | number | undefined => {
-  // If canvasWidth is provided and main contains vw, convert to calc
-  if (canvasWidth && typeof main === 'string' && /vw/i.test(main)) {
-    return dimensionRelativeToCanvas(main, canvasWidth, 'vw');
+  // Bounded only against a canvas. On a rendered page a width over 100% inside an overflow wrapper
+  // is deliberate, and the settings input already warns about one at the point of entry.
+  const bounded = isDefined(canvasWidth) ? boundWidthToCanvas(main, canvasWidth) : main;
+
+  // If canvasWidth is provided and bounded contains vw, convert to calc
+  if (canvasWidth && typeof bounded === 'string' && /vw/i.test(bounded)) {
+    return dimensionRelativeToCanvas(bounded, canvasWidth, 'vw');
   }
 
   // For simple numeric values or values without vw, use addPx
-  if (typeof main === 'string' && /^calc\(/i.test(main.trim())) return main;
-  return !hasNumber(main) ? main : addPx(main, context);
+  if (typeof bounded === 'string' && /^calc\(/i.test(bounded.trim())) return bounded;
+  return !hasNumber(bounded) ? bounded : addPx(bounded, context);
 };
 
 const getHeightDimension = (main: string | number, canvasHeight?: string, context?: object): string | number | undefined => {
-  // If canvasHeight is provided and main contains vh, convert to calc
+  // On the canvas vh means the canvas pane, which is shorter than the browser viewport by the
+  // designer chrome around it. With no canvas there is nothing to resolve against, and vh is
+  // already the viewport it was asked for.
   if (canvasHeight && typeof main === 'string' && /vh/i.test(main)) {
     return dimensionRelativeToCanvas(main, canvasHeight, 'vh');
   }

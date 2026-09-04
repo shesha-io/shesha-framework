@@ -1,9 +1,14 @@
 import { useCanvas } from '@/providers';
-import { FC, PropsWithChildren, useCallback } from 'react';
-import { calculateAutoZoom, DEFAULT_OPTIONS, usePinchZoom } from '@/providers/canvas/utils';
+import { FC, PropsWithChildren, useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { calculateAutoZoom, DEFAULT_OPTIONS, getCanvasContentBoxWidth, getCanvasDeviceWidth, getCanvasLayoutHeight, getCanvasLayoutWidth, usePinchZoom } from '@/providers/canvas/utils';
 import { useStyles } from './styles';
 import classNames from 'classnames';
 import { useElementSizeTracking } from '@/hooks/useElementSize';
+import { isDefined } from '@/utils/nullables';
+import { OnCanvasContext } from '@/providers/canvas/onCanvas';
+
+// useLayoutEffect warns on the server, where there is nothing to measure.
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 export interface IZoomableCanvasProps {
   canZoom: boolean;
@@ -11,7 +16,7 @@ export interface IZoomableCanvasProps {
 
 export const ZoomableCanvas: FC<PropsWithChildren<IZoomableCanvasProps>> = ({ children, canZoom }) => {
   const { styles } = useStyles();
-  const { zoom, setCanvasZoom, designerWidth, autoZoom } = useCanvas();
+  const { zoom, setCanvasZoom, setAvailableCanvasWidth, setCanvasMeasurement, registerCanvas, unregisterCanvas, designerWidth, autoZoom, autoWidth, widthPercent, canvasMounts } = useCanvas();
 
   const handleZoomChange = useCallback((newZoom: number) => {
     if (!canZoom) return;
@@ -26,9 +31,24 @@ export const ZoomableCanvas: FC<PropsWithChildren<IZoomableCanvasProps>> = ({ ch
     autoZoom,
   );
 
+  // Refcounted: the quick-edit dialog mounts a second canvas over the designer's own.
+  useEffect(() => {
+    registerCanvas();
+    return () => unregisterCanvas();
+  }, [registerCanvas, unregisterCanvas]);
+
+  const [availableWidth, setAvailableWidth] = useState(0);
+  const [availableHeight, setAvailableHeight] = useState(0);
+
   const onResize = useCallback((entry: ResizeObserverEntry) => {
-    const { width } = entry.contentRect;
-    if (canZoom && autoZoom) {
+    const { width, height } = entry.contentRect;
+
+    // Dead-band: in "Canvas" mode this width feeds the canvas layout, so every fraction oscillates.
+    setAvailableWidth((prev) => (Math.abs(prev - width) < 1 ? prev : width));
+    setAvailableHeight((prev) => (Math.abs(prev - height) < 1 ? prev : height));
+
+    // Auto zoom is skipped in "Canvas" mode - the width is derived from the zoom, so it feeds back.
+    if (canZoom && autoZoom && !autoWidth) {
       const newZoom = calculateAutoZoom({
         currentZoom: zoom,
         designerWidth,
@@ -39,21 +59,75 @@ export const ZoomableCanvas: FC<PropsWithChildren<IZoomableCanvasProps>> = ({ ch
         setCanvasZoom(newZoom);
       }
     }
-  }, [autoZoom, canZoom, designerWidth, setCanvasZoom, zoom]);
+  }, [autoZoom, autoWidth, canZoom, designerWidth, setCanvasZoom, zoom]);
   const wrapperRef = useElementSizeTracking(onResize);
+
+  // useElementSizeTracking observes in a plain effect, so seed the first measurement before paint.
+  useIsomorphicLayoutEffect(() => {
+    const width = wrapperRef.current?.clientWidth ?? 0;
+    if (width > 0)
+      setAvailableWidth((prev) => (Math.abs(prev - width) < 1 ? prev : width));
+
+    const height = wrapperRef.current?.clientHeight ?? 0;
+    if (height > 0)
+      setAvailableHeight((prev) => (Math.abs(prev - height) < 1 ? prev : height));
+  }, [wrapperRef, autoWidth, canZoom]);
+
+  const isAutoWidth = canZoom && autoWidth && availableWidth > 0;
+
+  const canvasWidth = isAutoWidth
+    ? getCanvasLayoutWidth(availableWidth, zoom, widthPercent)
+    : designerWidth;
+
+  // Layout effect, not effect: the reducer resolves activeDevice from this width, so publishing
+  // after paint shows one frame in the previously pinned device's settings.
+  const deviceWidth = getCanvasDeviceWidth(availableWidth, widthPercent);
+
+  // canvasMounts is a dependency on purpose: the measurements are last-writer-wins across mounted
+  // canvases, so when a sibling (the quick-edit dialog's canvas) unmounts, the refcount change
+  // re-runs this effect and the survivor republishes its own measurement over the departed one.
+  useIsomorphicLayoutEffect(() => {
+    if (isAutoWidth)
+      setAvailableCanvasWidth({ layoutWidth: canvasWidth, deviceWidth });
+  }, [isAutoWidth, canvasWidth, deviceWidth, setAvailableCanvasWidth, canvasMounts]);
+
+  // What `vh` means on the canvas: the pane it scrolls inside, pre-zoom as the width is.
+  const canvasHeight = availableHeight > 0
+    ? getCanvasLayoutHeight(availableHeight, canZoom ? zoom : 100)
+    : undefined;
+
+  // Published as the content box: `.designer-canvas` is border-box with its own padding (applied
+  // with canZoom), and components lay out inside that padding. The div's style.width below stays
+  // the border-box layout width.
+  const measuredWidth = canZoom ? getCanvasContentBoxWidth(canvasWidth) : canvasWidth;
+
+  // canvasMounts: same republish-on-sibling-unmount rule as the width effect above.
+  useIsomorphicLayoutEffect(() => {
+    if (isDefined(canvasHeight))
+      setCanvasMeasurement({ width: measuredWidth, height: canvasHeight });
+  }, [measuredWidth, canvasHeight, setCanvasMeasurement, canvasMounts]);
 
   return (
     <>
-      <div className={styles.canvasWrapper} ref={wrapperRef}>
+      <div
+        className={classNames(styles.canvasWrapper, { [styles.canvasAutoWidth]: isAutoWidth })}
+        ref={wrapperRef}
+      >
         <div
           ref={canvasRef}
           className={classNames({ [styles.designerCanvas]: canZoom })}
+          // min-height, not height, and inline rather than a percentage: the canvas has to fill
+          // the pane at any zoom but still grow past it for a long form.
           style={canZoom ? {
-            width: designerWidth,
+            width: canvasWidth,
+            minHeight: canvasHeight,
             zoom: `${zoom}%`,
           } : {}}
         >
-          {children}
+          {/* Only this subtree is on the canvas; forms elsewhere must ignore its measurement. */}
+          <OnCanvasContext.Provider value={true}>
+            {children}
+          </OnCanvasContext.Provider>
         </div>
         {/* Dedicated popup container for canvas components - applies zoom transformation */}
         {canZoom && (

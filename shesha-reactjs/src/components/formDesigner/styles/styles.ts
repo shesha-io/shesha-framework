@@ -57,6 +57,11 @@ export const useStyles = (): typeof useStylesResponse => {
 export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCls }) => {
   const { SIDEBAR_BTN_HEIGHT, TOOLBAR_HEIGHT, HEADER_HEIGHT } = LAYOUT_CONSTANTS;
 
+  // Viewport less the chrome above the canvas and the canvas own padding. A bare 100vh overshoots
+  // the pane by the chrome, which grows the canvas past it and then the page.
+  const canvasChrome = sheshaStyles.paddingLG * 4;
+  const formAvailableHeight = `calc(100vh - ${HEADER_HEIGHT} - ${TOOLBAR_HEIGHT} - ${SIDEBAR_BTN_HEIGHT} - ${canvasChrome}px)`;
+
   const {
     shaHelpIcon,
     shaDragging,
@@ -130,6 +135,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
   const designerPage = "sha-designer-page";
 
   const formDesigner = cx(formDesignerClassName, css`
+        /* Bounds the designer so the canvas pane scrolls, not the whole editor. */
         height: 100%;
         .${designerClassNames.mainArea}{
             height: 100%;
@@ -351,7 +357,8 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
 
         .${designerWorkArea}{
             background-color: white;
-            height: calc(100vh - ${HEADER_HEIGHT} - ${TOOLBAR_HEIGHT} - ${SIDEBAR_BTN_HEIGHT});
+            /* min-height, not height: a long form has to be able to grow past the canvas. */
+            min-height: ${formAvailableHeight};
             .${shaComponentsContainer} {
 
                 .${shaDropHintContainer} {
@@ -374,10 +381,25 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
                 }
             }
 
+            /* A gap, not margins: margin-top/bottom is what the styling box already writes onto
+               .sha-component, so a margin would override configured spacing instead of adding to it. */
+            .${shaComponentsContainer}.vertical > .sha-components-container-inner {
+                display: flex;
+                flex-direction: column;
+                row-gap: ${sheshaStyles.paddingMD}px;
+
+                /* Flex would otherwise compress a component taller than the space available. */
+                > * {
+                    flex-shrink: 0;
+                }
+            }
+
             > div {
-             height: 100%;
+                /* Same reason as the work area above - these wrap the list that grows. */
+                min-height: 100%;
                 > div:not(.sha-drop-hint):not(.sha-drop-hint-container) {
-                    height: 100%;
+                    /* Not a percentage: the ancestors have min-height, not a definite height. */
+                    min-height: ${formAvailableHeight};
                 }
 
                 > .sha-components-container-inner:not(:has(.sha-component)) {

@@ -1,7 +1,13 @@
 import { deepMergeValues } from "@/utils/object";
-import { DeviceTypes, ICanvasStateContext } from "./contexts";
+import { sheshaStyles } from "@/styles";
+import type { DeviceTypes } from "./contexts";
+import { DEFAULT_OPTIONS, MAX_CANVAS_WIDTH_PERCENT, defaultDesignerWidth, dimensionRelativeToCanvas } from "./constants";
 import { DesktopOutlined, MobileOutlined, TabletOutlined } from '@ant-design/icons';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
+
+// Re-exported for existing `@/providers/canvas/utils` consumers; they live in `constants` to
+// break an import cycle.
+export { DEFAULT_OPTIONS, MAX_CANVAS_WIDTH_PERCENT, defaultDesignerWidth, dimensionRelativeToCanvas };
 
 export const getDeviceTypeByWidth = (width: number): DeviceTypes => {
   return width > 724
@@ -36,40 +42,101 @@ export const getSmallerDevice = (a: DeviceTypes, b: DeviceTypes): DeviceTypes =>
 };
 
 
-/**
- * Converts viewport units (vw/vh) to be relative to a specific canvas dimension
- * @param dimension - The dimension value (e.g., "50vw", "100vh", "100px", 300)
- * @param canvasDimension - The canvas dimension to calculate relative to (e.g., '100vw', '1024px')
- * @param unit - The unit type to convert ('vw' or 'vh')
- * @returns The converted dimension string
- */
-export const dimensionRelativeToCanvas = (
-  dimension: string | number,
-  canvasDimension: string,
-  unit: 'vw' | 'vh',
-): string => {
-  if (typeof dimension === 'number') {
-    return `${dimension}px`;
-  }
-
-  const trimmed = String(dimension).trim();
-  const unitRegex = new RegExp(`^([\\d.]+)\\s*${unit}$`, 'i');
-  const unitMatch = unitRegex.exec(trimmed);
-
-  if (unitMatch && unitMatch[1] !== undefined) {
-    const percentageOfCanvas = parseFloat(unitMatch[1]);
-    if (!Number.isNaN(percentageOfCanvas)) {
-      return `calc((${percentageOfCanvas} * ${canvasDimension}) / 100)`;
-    }
-  }
-
-  return trimmed;
-};
-
-export const defaultDesignerWidth = `${(typeof window !== 'undefined' ? window.screen.availWidth : 1024)}px`;
-
 /** Sentinel value for the responsive Canvas preset in the dropdown */
 export const CANVAS_PRESET_SENTINEL = '__CANVAS_RESPONSIVE__' as const;
+
+const PERCENT_WIDTH_REGEX = /^\s*(\d+(?:\.\d+)?)\s*%\s*$/;
+
+/** A percentage canvas width, read and bounded. */
+export interface ICanvasWidthPercent {
+  percent: number;
+  /** True when the entered value was above the maximum and was overridden. */
+  wasClamped: boolean;
+}
+
+/**
+ * Reads a percentage width entered as a custom resolution, e.g. "80%", bounded to
+ * (0, `MAX_CANVAS_WIDTH_PERCENT`]. Returns undefined for anything that is not a usable percentage -
+ * a "1024px" preset, "abc%", "-10%", "0%" - which the caller ignores rather than guessing at.
+ */
+export const parseCanvasWidthPercent = (value: string): ICanvasWidthPercent | undefined => {
+  const match = PERCENT_WIDTH_REGEX.exec(value);
+  if (!match) return undefined;
+
+  const percent = parseFloat(match[1] ?? '');
+  if (!Number.isFinite(percent) || percent <= 0)
+    return undefined;
+
+  return percent > MAX_CANVAS_WIDTH_PERCENT
+    ? { percent: MAX_CANVAS_WIDTH_PERCENT, wasClamped: true }
+    : { percent, wasClamped: false };
+};
+
+const PLAIN_LENGTH_REGEX = /^\s*(\d+(?:\.\d+)?)\s*(px)?\s*$/i;
+
+/** A width assigned to `designerWidth` through the canvas context API, classified. */
+export type CanvasContextWidth = { kind: 'px'; width: number } | { kind: 'percent'; percent: number };
+
+/**
+ * Reads a width a script assigned to `designerWidth`. A plain length ("1024", "1024px") pins a
+ * preset; a percentage routes to `widthPercent`, as the toolbar does. Anything else - "50vw",
+ * "80em", "abc" - is undefined and must be ignored: a bare `parseFloat` would read "80%" as 80
+ * and pin an 80px mobile canvas.
+ */
+export const parseCanvasContextWidth = (value: string): CanvasContextWidth | undefined => {
+  const percent = parseCanvasWidthPercent(value);
+  if (percent !== undefined) return { kind: 'percent', percent: percent.percent };
+
+  const match = PLAIN_LENGTH_REGEX.exec(value);
+  if (!match) return undefined;
+
+  const width = parseFloat(match[1] ?? '');
+  return Number.isFinite(width) && width > 0 ? { kind: 'px', width } : undefined;
+};
+
+/**
+ * Pre-zoom layout width that renders exactly `availableWidth` wide once CSS `zoom` is applied, so
+ * zooming out re-wraps components into more room instead of overflowing the pane. `widthPercent`
+ * takes only a fraction of that space, and is bounded here as well as at the point of entry.
+ */
+export const getCanvasLayoutWidth = (availableWidth: number, zoom: number, widthPercent: number = MAX_CANVAS_WIDTH_PERCENT): string => {
+  const zoomFactor = (zoom > 0 ? zoom : DEFAULT_OPTIONS.defaultZoom) / 100;
+  const fraction = Number.isFinite(widthPercent) && widthPercent > 0
+    ? Math.min(widthPercent, MAX_CANVAS_WIDTH_PERCENT) / 100
+    : 1;
+  // Floor so sub-pixel rounding cannot push the canvas past the available space.
+  return `${Math.max(0, Math.floor((availableWidth * fraction) / zoomFactor))}px`;
+};
+
+/** On-screen width the canvas covers, which the device resolves from. Independent of zoom. */
+export const getCanvasDeviceWidth = (availableWidth: number, widthPercent: number = MAX_CANVAS_WIDTH_PERCENT): string => {
+  const fraction = Number.isFinite(widthPercent) && widthPercent > 0
+    ? Math.min(widthPercent, MAX_CANVAS_WIDTH_PERCENT) / 100
+    : 1;
+  return `${Math.max(0, Math.floor(availableWidth * fraction))}px`;
+};
+
+/** Padding `.designer-canvas` carries on each side (border-box), doubled for the two sides. */
+const CANVAS_PADDING_PX = 2 * sheshaStyles.paddingLG;
+
+/**
+ * Content-box width of the canvas: its border-box layout width less its own padding. Components
+ * lay out in the content box, so this - not the border-box width - is what the published
+ * measurement must carry: a `100vw` or a width bounded "to the maximum" against the border-box
+ * width still overflowed the content box by the padding and was clipped.
+ */
+export const getCanvasContentBoxWidth = (borderBoxWidth: string): string => {
+  const parsed = parseFloat(borderBoxWidth);
+  return Number.isFinite(parsed)
+    ? `${Math.max(0, parsed - CANVAS_PADDING_PX)}px`
+    : borderBoxWidth;
+};
+
+/** Pre-zoom height that fills the pane exactly once CSS `zoom` is applied. */
+export const getCanvasLayoutHeight = (availableHeight: number, zoom: number): string => {
+  const zoomFactor = (zoom > 0 ? zoom : DEFAULT_OPTIONS.defaultZoom) / 100;
+  return `${Math.max(0, Math.floor(availableHeight / zoomFactor))}px`;
+};
 
 export interface IAutoZoomParams {
   currentZoom: number;
@@ -77,21 +144,11 @@ export interface IAutoZoomParams {
   containerWidth: number;
 };
 
-/**
- * Predefined zoom levels (percentages) that the +/- buttons step through.
- * Direct numeric entry in the zoom input is free-form within [minZoom, maxZoom]
- * and is not restricted to these levels.
- */
-export const ZOOM_LEVELS = [25, 50, 75, 80, 100, 125, 150, 200] as const;
-
-export const DEFAULT_OPTIONS = {
-  minZoom: 10,
-  maxZoom: 400,
-  defaultZoom: 80,
-  designerWidth: defaultDesignerWidth,
-  zoomStep: 1,
-  zoomLevels: ZOOM_LEVELS,
-};
+/** Non-numeric input - e.g. a storage value that was never a number - falls back to the default. */
+export const clampZoom = (zoom: number): number =>
+  Number.isFinite(zoom)
+    ? Math.max(DEFAULT_OPTIONS.minZoom, Math.min(DEFAULT_OPTIONS.maxZoom, zoom))
+    : DEFAULT_OPTIONS.defaultZoom;
 
 export function calculateAutoZoom(params: IAutoZoomParams): number {
   if (typeof window === 'undefined')
@@ -100,6 +157,7 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
   const {
     designerWidth = DEFAULT_OPTIONS.designerWidth,
     containerWidth,
+    currentZoom,
   } = params;
 
   const windowWidth = window.innerWidth;
@@ -114,6 +172,10 @@ export function calculateAutoZoom(params: IAutoZoomParams): number {
     canvasWidth = parseFloat(designerWidth);
   }
 
+  // A pane measuring zero cannot be measured yet - a hidden document tab, a collapsed panel, a
+  // frame mid-layout - and fitting the canvas into nothing pins the zoom at the minimum.
+  if (!(containerWidth > 0) || !(canvasWidth > 0)) return currentZoom;
+
   const optimalZoom = (containerWidth / canvasWidth) * 100;
   return Math.max(DEFAULT_OPTIONS.minZoom, Math.min(DEFAULT_OPTIONS.maxZoom, Math.floor(optimalZoom)));
 }
@@ -123,8 +185,8 @@ export const usePinchZoom = (
   currentZoom: number,
   minZoom: number = DEFAULT_OPTIONS.minZoom,
   maxZoom: number = DEFAULT_OPTIONS.maxZoom,
-  isAutoWidth: boolean = false,
-  // onResize: (width: number, height: number) => void,
+  /** Suppresses manual pinch/ctrl+wheel zoom while the zoom level is driven automatically. */
+  isZoomLocked: boolean = false,
 ): RefObject<HTMLDivElement | null> => {
   const elementRef = useRef<HTMLDivElement>(null);
   const lastDistance = useRef<number>(0);
@@ -141,15 +203,15 @@ export const usePinchZoom = (
   }, []);
 
   const handleTouchStart = useCallback((e: TouchEvent) => {
-    if (isAutoWidth || e.touches.length !== 2) return;
+    if (isZoomLocked || e.touches.length !== 2) return;
 
     e.preventDefault();
     lastDistance.current = getDistance(e.touches);
     initialZoom.current = currentZoom;
-  }, [getDistance, currentZoom, isAutoWidth]);
+  }, [getDistance, currentZoom, isZoomLocked]);
 
   const handleTouchMove = useCallback((e: TouchEvent) => {
-    if (isAutoWidth || e.touches.length !== 2) return;
+    if (isZoomLocked || e.touches.length !== 2) return;
 
     e.preventDefault();
     const currentDistance = getDistance(e.touches);
@@ -159,16 +221,18 @@ export const usePinchZoom = (
       const newZoom = Math.max(minZoom, Math.min(maxZoom, initialZoom.current * scale));
       onZoomChange(Math.round(newZoom));
     }
-  }, [getDistance, onZoomChange, minZoom, maxZoom, isAutoWidth]);
+  }, [getDistance, onZoomChange, minZoom, maxZoom, isZoomLocked]);
 
   const handleWheel = useCallback((e: WheelEvent) => {
-    if (isAutoWidth || !e.ctrlKey) return;
+    if (!e.ctrlKey) return;
 
+    // Swallowed before the lock check: leaving it to the browser page-zooms the whole designer.
     e.preventDefault();
+    if (isZoomLocked) return;
     const delta = e.deltaY > 0 ? -DEFAULT_OPTIONS.zoomStep : DEFAULT_OPTIONS.zoomStep;
     const newZoom = Math.max(minZoom, Math.min(maxZoom, currentZoom + delta));
     onZoomChange(newZoom);
-  }, [onZoomChange, currentZoom, minZoom, maxZoom, isAutoWidth]);
+  }, [onZoomChange, currentZoom, minZoom, maxZoom, isZoomLocked]);
 
   const handleTouchEnd = useCallback((e: TouchEvent) => {
     if (e.touches.length < 2) {
@@ -202,6 +266,9 @@ export const usePinchZoom = (
 
 export const screenSizeOptions = [
   {
+    label: 'Canvas', value: CANVAS_PRESET_SENTINEL, icon: DesktopOutlined,
+  },
+  {
     label: 'iPhone SE', value: '375px', icon: MobileOutlined,
   },
   {
@@ -234,9 +301,6 @@ export const screenSizeOptions = [
   {
     label: 'Full HD 1920x1080', value: '1920px', icon: DesktopOutlined,
   },
-  {
-    label: 'Canvas', value: CANVAS_PRESET_SENTINEL, icon: DesktopOutlined,
-  },
 ];
 
 export const getDeviceStyle = (data: Record<string, object | undefined> | undefined, device: DeviceTypes | undefined, defaultDevice: DeviceTypes = 'desktop'): object | undefined => {
@@ -245,12 +309,3 @@ export const getDeviceStyle = (data: Record<string, object | undefined> | undefi
   return deepMergeValues(data[defaultDevice] ?? {}, data[device] ?? {});
 };
 
-
-export const applyCanvasSize = (state: ICanvasStateContext, width: number | string, deviceType: DeviceTypes): ICanvasStateContext => {
-  return {
-    ...state,
-    designerWidth: typeof width === 'string' ? width : `${width}px`,
-    designerDevice: deviceType,
-    activeDevice: getSmallerDevice(deviceType, state.physicalDevice ?? "desktop"),
-  };
-};

@@ -7,7 +7,7 @@ import { isDefined } from '@/utils';
 import { addPx } from '@/utils/style';
 import { getFullSizeComponentDimensions } from '@/components/formDesigner/utils/stylingUtils';
 
-export const useStyles = createStyles(({ css, cx }, model: IContainerComponentProps) => {
+export const useStyles = createStyles(({ css, cx }, { canvasWidth, canvasHeight, ...model }: IContainerComponentProps & { canvasWidth: string | undefined; canvasHeight: string | undefined }) => {
   const overflowStyles = { ...getOverflowStyle(true, false) };
 
   const horizontalNotBlock = model.direction === 'horizontal' || model.display !== 'block';
@@ -22,7 +22,7 @@ export const useStyles = createStyles(({ css, cx }, model: IContainerComponentPr
         transition: all 0.2s ease;
 
         overflow: hidden;
-        ${dimensionsStyles(getFullSizeComponentDimensions(model.dimensions))}
+        ${dimensionsStyles(getFullSizeComponentDimensions(model.dimensions), canvasWidth, canvasHeight)}
         ${borderStyles(model.border)}
         ${backgroundStyles(model.background)}
         ${shadowStyles(model.shadow)}
