@@ -181,24 +181,7 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
       .add<IEnhancedICheckboxGroupProps>(3, (prev) => migrateVisibility(prev))
       .add<IEnhancedICheckboxGroupProps>(4, (prev) => migrateReadOnly(prev))
       .add<IEnhancedICheckboxGroupProps>(5, (prev) => ({ ...migrateFormApi.eventsAndProperties(prev) }))
-      // Kept for the legacy "mode" property, which used to switch the group between multi- and
-      // single-select rendering. Multi-select is now the only mode this component supports, but
-      // "mode" itself is left on the model here (rather than deleted) so version 9 can still see
-      // it and hand single-select forms off to the Radio component.
-      .add<IEnhancedICheckboxGroupProps>(6, (prev) => prev)
-      // Seed the new per-checkbox Appearance style model (font/border/background/
-      // dimensions/shadow/padding) for existing forms only.
-      .add<IEnhancedICheckboxGroupProps>(7, (prev, context) => {
-        if (context.isNew === true) return prev;
-
-        const styles: IInputStyles = {
-          style: prev.style,
-        };
-
-        return migratePrevStyles({ ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } }, defaultStyles());
-      })
-      .add<IEnhancedICheckboxGroupProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev))))
-      .add<IEnhancedICheckboxGroupProps | IRadioComponentProps>(9, (prev) => {
+      .add<IEnhancedICheckboxGroupProps | IRadioComponentProps>(6, (prev) => {
         if (!hasLegacySingleMode(prev)) return prev;
 
         const { mode: _mode, checkbox, ...rest } = prev;
@@ -214,7 +197,17 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
           radioDefaults,
         );
         return radioModel;
-      }),
+      })
+      .add<IEnhancedICheckboxGroupProps>(7, (prev, context) => {
+        if (context.isNew === true) return prev;
+
+        const styles: IInputStyles = {
+          style: prev.style,
+        };
+
+        return migratePrevStyles({ ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } }, defaultStyles());
+      })
+      .add<IEnhancedICheckboxGroupProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
   linkToModelMetadata: (model, metadata): IEnhancedICheckboxGroupProps => {
     const refListId: IReferenceListIdentifier | undefined = !isNullOrWhiteSpace(metadata.referenceListModule) && !isNullOrWhiteSpace(metadata.referenceListName)
       ? { module: metadata.referenceListModule, name: metadata.referenceListName }
