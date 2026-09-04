@@ -40,7 +40,7 @@ const DropdownComponent: DropdownComponentDefinition = {
   name: 'Dropdown',
   icon: <DownSquareOutlined />,
   preserveDimensionsInDesigner: true,
-  dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.referenceListItem || (dataType === DataTypes.array && dataFormat === ArrayFormats.multivalueReferenceList),
+  dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.array && dataFormat === ArrayFormats.multivalueReferenceList,
   Factory: ({ model }) => {
     const componentApi = useComponentApiProvider();
     const selectRef = useRef<DropdownSelectRef>(null);
