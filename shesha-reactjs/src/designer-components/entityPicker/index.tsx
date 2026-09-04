@@ -44,6 +44,7 @@ const ENTITY_PICKER_RUNTIME_EVENTS: readonly StandardEventHandlerWithoutChange[]
 import { EntityPickerApi } from '../../componentsApi/componentApi';
 
 import apiCode from "../../componentsApi/componentApi.ts?raw";
+import { addPx } from '@/utils/style';
 
 type EntityPickerValueType = string | string[] | IEntityReferenceDto | IEntityReferenceDto[];
 
@@ -63,7 +64,7 @@ export const resolveDialogWidth = (
   customWidth: number | undefined,
   widthUnits: string | undefined,
 ): number | string | undefined => modalWidth === 'custom'
-  ? (isDefined(customWidth) ? `${customWidth}${widthUnits}` : DEFAULT_DIALOG_WIDTH)
+  ? (isDefined(customWidth) ? addPx(`${customWidth}${widthUnits}`) : DEFAULT_DIALOG_WIDTH)
   : modalWidth ?? DEFAULT_DIALOG_WIDTH;
 
 export type { IEntityPickerComponentProps };
