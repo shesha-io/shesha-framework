@@ -189,8 +189,9 @@ const SettingsEditorProvider: FC<PropsWithChildren> = ({ children }) => {
         dispatch(setSaveStatusAction('success'));
         // Drop the cached value so consumers (e.g. the idle timer reading security settings)
         // pick up the change without a full page reload
-        if (!isNullOrWhiteSpace(settingId.module))
-          settingsClient?.invalidateSetting({ module: settingId.module, name: settingId.name });
+        // Module-less settings are identified by an empty module (see SettingsClient.getSetting)
+        if (!isNullOrWhiteSpace(settingId.name))
+          settingsClient?.invalidateSetting({ module: settingId.module ?? '', name: settingId.name });
       })
       .catch((error) => {
         dispatch(setSaveStatusAction('error'));

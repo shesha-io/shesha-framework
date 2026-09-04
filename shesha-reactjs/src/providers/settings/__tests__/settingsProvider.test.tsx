@@ -121,19 +121,68 @@ describe('SettingsProvider / useSettingValue', () => {
     expect(get).toHaveBeenCalledTimes(2);
   });
 
-  it('does not cache failed requests', async () => {
+  it('does not cache failed requests, so a retry performs a new request without invalidation', async () => {
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
     get.mockRejectedValueOnce(new Error('network'));
     const { client } = renderAll();
     await waitFor(() => expect(stateText()).toBe('failed'));
+    expect(get).toHaveBeenCalledTimes(1);
 
     get.mockResolvedValueOnce(ok({ useAutoLogoff: true }));
-    act(() => {
-      client().invalidateSetting(SETTING_ID);
-    });
+    const retried = await client().getSetting<{ useAutoLogoff: boolean }>(SETTING_ID);
 
-    await waitFor(() => expect(valueText()).toBe('true'));
+    expect(retried).toEqual({ useAutoLogoff: true });
     expect(get).toHaveBeenCalledTimes(2);
     consoleError.mockRestore();
+  });
+
+  it('invalidates module-less settings (empty module) locally and across tabs', async () => {
+    get.mockResolvedValue(ok({ useAutoLogoff: false }));
+    const { client } = renderAll();
+    await waitFor(() => expect(stateText()).toBe('ready'));
+
+    const moduleLessId = { module: '', name: 'ModuleLessSetting' };
+    const listener = vi.fn();
+    client().subscribe(moduleLessId, listener);
+
+    act(() => {
+      client().invalidateSetting(moduleLessId);
+    });
+    expect(listener).toHaveBeenCalledTimes(1);
+
+    // the broadcast message written by this tab must be decodable by another tab
+    const broadcast = localStorage.getItem(SETTINGS_INVALIDATION_STORAGE_KEY);
+    expect(broadcast).not.toBeNull();
+    act(() => {
+      window.dispatchEvent(new StorageEvent('storage', {
+        key: SETTINGS_INVALIDATION_STORAGE_KEY,
+        newValue: broadcast,
+      }));
+    });
+    expect(listener).toHaveBeenCalledTimes(2);
+  });
+
+  it('writes a distinct broadcast value for repeated invalidations within the same millisecond', async () => {
+    get.mockResolvedValue(ok({ useAutoLogoff: false }));
+    const { client } = renderAll();
+    await waitFor(() => expect(stateText()).toBe('ready'));
+
+    vi.useFakeTimers();
+    try {
+      act(() => {
+        client().invalidateSetting(SETTING_ID);
+      });
+      const first = localStorage.getItem(SETTINGS_INVALIDATION_STORAGE_KEY);
+      act(() => {
+        client().invalidateSetting(SETTING_ID);
+      });
+      const second = localStorage.getItem(SETTINGS_INVALIDATION_STORAGE_KEY);
+
+      expect(first).not.toBeNull();
+      expect(second).not.toBeNull();
+      expect(second).not.toBe(first);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

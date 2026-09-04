@@ -21,19 +21,33 @@ const SETTINGS_URLS = {
 export const SETTINGS_INVALIDATION_STORAGE_KEY = 'shesha:settings:invalidated';
 
 const INVALIDATION_MESSAGE_SEPARATOR = '/';
+const INVALIDATION_MESSAGE_PARTS = 3;
+
+let invalidationCounter = 0;
 
 /**
  * Encodes the setting identifier into the value written to localStorage.
- * A timestamp is appended so that repeated invalidations of the same setting still fire the `storage` event.
+ * A unique suffix (timestamp + counter) is appended so that repeated invalidations of the same setting,
+ * even within the same millisecond, still fire the `storage` event.
  */
 const encodeInvalidationMessage = (settingId: ISettingIdentifier): string => {
-  return [encodeURIComponent(settingId.module), encodeURIComponent(settingId.name), Date.now().toString()]
-    .join(INVALIDATION_MESSAGE_SEPARATOR);
+  invalidationCounter += 1;
+  return [
+    encodeURIComponent(settingId.module),
+    encodeURIComponent(settingId.name),
+    `${Date.now()}-${invalidationCounter}`,
+  ].join(INVALIDATION_MESSAGE_SEPARATOR);
 };
 
+/**
+ * Decodes the message written by `encodeInvalidationMessage`. Module-less settings have an empty module.
+ */
 const decodeInvalidationMessage = (message: string): ISettingIdentifier | undefined => {
-  const [module, name] = message.split(INVALIDATION_MESSAGE_SEPARATOR);
-  if (isNullOrWhiteSpace(module) || isNullOrWhiteSpace(name)) return undefined;
+  const parts = message.split(INVALIDATION_MESSAGE_SEPARATOR);
+  if (parts.length !== INVALIDATION_MESSAGE_PARTS) return undefined;
+
+  const [module = '', name = ''] = parts;
+  if (isNullOrWhiteSpace(name)) return undefined;
 
   return { module: decodeURIComponent(module), name: decodeURIComponent(name) };
 };
