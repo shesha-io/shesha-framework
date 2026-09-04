@@ -4,6 +4,7 @@ import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { extractAjaxResponse, IAjaxResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxResponse';
 import { GetAllResponse, IGenericGetAllPayload } from '@/interfaces/gql';
 import { useHttpClient, useTheme } from '@/providers';
+import { useSettingsOrUndefined } from '@/providers/settings';
 import { GENERIC_ENTITIES_ENDPOINT } from '@/shesha-constants';
 import { buildUrl } from '@/utils';
 import { makeErrorWithMessage, throwError } from '@/utils/errors';
@@ -69,6 +70,7 @@ const SettingsEditorProvider: FC<PropsWithChildren> = ({ children }) => {
     ...SETTINGS_EDITOR_STATE_CONTEXT_INITIAL_STATE,
   };
   const httpClient = useHttpClient();
+  const settingsClient = useSettingsOrUndefined();
   const [state, dispatch] = useThunkReducer(settingsEditorReducer, initial);
 
   const { resetToApplicationTheme } = useTheme();
@@ -185,12 +187,16 @@ const SettingsEditorProvider: FC<PropsWithChildren> = ({ children }) => {
       .then((response) => {
         extractAjaxResponse(response.data);
         dispatch(setSaveStatusAction('success'));
+        // Drop the cached value so consumers (e.g. the idle timer reading security settings)
+        // pick up the change without a full page reload
+        if (!isNullOrWhiteSpace(settingId.module))
+          settingsClient?.invalidateSetting({ module: settingId.module, name: settingId.name });
       })
       .catch((error) => {
         dispatch(setSaveStatusAction('error'));
         console.error(error);
       });
-  }, [dispatch, httpClient]);
+  }, [dispatch, httpClient, settingsClient]);
 
   const setEditor = useCallback((editorBridge: IEditorBridge): void => {
     dispatch(setEditorBridgeAction(editorBridge));
