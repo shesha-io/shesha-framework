@@ -36,30 +36,33 @@ export const isProxy = <TValue>(value: TValue): boolean => {
   );
 };
 
-const resolveProxy = <TValue>(value: TValue): TValue => {
-  if (!isDefined(value)) return value;
+const resolveProxy = (value: unknown): unknown => {
   if (value instanceof TouchableProperty ||
     value instanceof TouchableArrayProperty ||
     value instanceof TouchableProxy ||
     value instanceof StorageProperty ||
     value instanceof StorageArrayProperty)
-    return value.getData() as TValue;
+    return value.getData();
   if (value instanceof ShaArrayAccessProxy || value instanceof ShaObjectAccessProxy)
-    return value.getAccessorValue() as TValue;
+    return value.getAccessorValue();
   if (value instanceof ObservableProxy)
-    return (Array.isArray(value) ? [...value] : { ...value }) as TValue;
+    return Array.isArray(value) ? [...value] : { ...value };
   return value;
 };
 
+/**
+ * Resolves a proxy (or a chain of proxies) to the data it points at. Callers keep the declared `TValue`
+ * because the proxies are typed as the data they wrap; the resolved data is what that type describes.
+ */
 export const unproxyValue = <TValue = unknown>(value: TValue): TValue => {
   // a proxy may resolve to another proxy; stop at the first one seen twice so a cycle cannot recurse forever
   const seen = new Set<unknown>();
-  let current = value;
+  let current: unknown = value;
   while (isProxy(current) && !seen.has(current)) {
     seen.add(current);
     current = resolveProxy(current);
   }
-  return current;
+  return current as TValue;
 };
 
 const isRecord = (value: unknown): value is Record<string, unknown> => isPlainObject(value);

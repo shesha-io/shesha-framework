@@ -11,6 +11,16 @@ const formProxy = (getData: () => Data): Data => {
   return GetShaFormDataAccessor(api) as unknown as Data;
 };
 
+type FieldGetter = { getFieldValue: (name: string) => unknown };
+// `in` is answered by the proxy's `has` trap for the form data, so read the accessor member instead
+const hasGetFieldValue = (value: unknown): value is FieldGetter =>
+  typeof value === 'object' && value !== null && typeof Reflect.get(value, 'getFieldValue') === 'function';
+const fieldGetter = (getData: () => Data): FieldGetter['getFieldValue'] => {
+  const proxy = formProxy(getData);
+  if (!hasGetFieldValue(proxy)) throw new Error('form proxy has no getFieldValue');
+  return proxy.getFieldValue;
+};
+
 describe('unproxyDeep', () => {
   it('replaces nested data-access proxies produced by spreading form.data', () => {
     const formData: Data = { item: 'a', referenceList: { id: '1', _displayName: 'RL' }, tags: [{ id: 't1' }] };
@@ -47,14 +57,14 @@ describe('unproxyDeep', () => {
     const formData: Data = { referenceList: { id: '1' } };
     const shared = { nested: formProxy(() => formData).referenceList };
     const plain = unproxyDeep({ first: shared, second: shared });
-    expect(isProxy((plain.first as Data).nested)).toBe(false);
-    expect(isProxy((plain.second as Data).nested)).toBe(false);
+    expect(isProxy(plain.first.nested)).toBe(false);
+    expect(isProxy(plain.second.nested)).toBe(false);
     expect(plain.first).toBe(plain.second);
   });
 
   it('unproxyValue stops on two proxies that resolve to each other', () => {
     let formData: Data = {};
-    const getField = (formProxy(() => formData) as { getFieldValue: (n: string) => unknown }).getFieldValue;
+    const getField = fieldGetter(() => formData);
     formData = { a: { id: 'a' }, b: { id: 'b' } };
     const proxyA = getField('a');
     const proxyB = getField('b');
@@ -65,7 +75,7 @@ describe('unproxyDeep', () => {
 
   it('unproxyValue returns a self-referencing proxy instead of recursing', () => {
     let formData: Data = {};
-    const nested = (formProxy(() => formData) as { getFieldValue: (n: string) => unknown }).getFieldValue;
+    const nested = fieldGetter(() => formData);
     formData = { referenceList: { id: '1' } };
     const proxy = nested('referenceList');
     formData = { referenceList: proxy };
