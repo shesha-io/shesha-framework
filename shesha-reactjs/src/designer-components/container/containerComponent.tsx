@@ -23,7 +23,7 @@ import { useActualContextExecutionNoRefresh } from '@/hooks/formComponentHooks';
 
 const ContainerComponent: ContainerComponentDefinition = {
   showInThemeEditor: false,
-  styleGroup: 'containers',
+  styleGroup: 'common-containers',
   allowInherit: true,
   type: 'container',
   isInput: false,
@@ -52,7 +52,7 @@ const ContainerComponent: ContainerComponentDefinition = {
     );
   },
   settingsFormMarkup: getSettings,
-
+  getDefaultStyles: defaultStyles,
   migrator: (m) => m
     .add<IContainerComponentPropsV0>(0, (prev) => ({
       ...prev,

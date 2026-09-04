@@ -13,7 +13,6 @@ export class ComponentApiInstance implements IComponentApi {
 
   private onApiChange: (() => void) | undefined;
 
-
   public get components(): Record<string, Record<string, unknown>> {
     return this._components;
   }
@@ -93,9 +92,11 @@ export class ComponentApiInstance implements IComponentApi {
     const localApi = (existsApi ?? { id: api.id }) as IComponentApiDescription<T>;
     if (localApi.api === undefined) localApi.api = { } as T;
     localApi.componentName = componentName;
-    if (api.typeDefinition && (localApi.typeDefinition === undefined || api.skipUpdateTypeDefinitionIfExists !== true))
+    if (api.typeDefinition && (localApi.typeDefinition === undefined || (localApi.definitionLevel ?? 0) <= api.level)) {
       // Component APIs are always nullable because they may not have been initialized yet at some point in the lifecycle.
       localApi.typeDefinition = { ...api.typeDefinition };
+      localApi.definitionLevel = api.definitionLevel ?? api.level;
+    }
     if (api.componentModel)
       localApi.componentModel = api.componentModel;
     if (api.metadata)

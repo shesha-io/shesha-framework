@@ -32,6 +32,7 @@ const validateColumns = (columns: IColumnProps[] | undefined): IColumnProps[] =>
 };
 
 const ColumnsComponent: ColumnsComponentDefinition = {
+  styleGroup: 'common-containers',
   showInThemeEditor: false,
   allowInherit: true,
   type: 'columns',

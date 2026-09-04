@@ -5,7 +5,7 @@ import { migrateCustomFunctions, migrateHiddenToVisible, migratePropertyName, mi
 import { migrateVisibility } from '@/designer-components/_common-migrations/migrateVisibility';
 import { GroupOutlined } from '@ant-design/icons';
 import { nanoid } from '@/utils/uuid';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { CollapsiblePanelComponentDefinition, ICollapsiblePanelComponentProps, ICollapsiblePanelComponentPropsV0, ICollapsiblePanelContent } from './interfaces';
 import ParentProvider from '@/providers/parentProvider/index';
 import { migrateFormApi } from '../_common-migrations/migrateFormApi1';
@@ -17,19 +17,18 @@ import { isDefined } from '@/utils/nullables';
 import { isNonEmptyArray } from '@/utils/array';
 import { defaultHeaderStyles as getDefaultHeaderStyles, defaultStyles as getDefaultStyles } from './utils';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
-import { useComponentApiProvider } from '@/providers/componentApi/provider';
-import { useEffectOnce } from '@/hooks/useEffectOnce';
 import { PanelApi } from '@/componentsApi/componentApi';
 
-import apiCode from "../../componentsApi/componentApi.ts?raw";
 import { useEvents } from '@/components/formDesigner/components/eventsAndApiValueProcessor';
 import { getComponentEvents } from '../_common/events';
 import { getStyleValueFromModel } from '../_common/styles/utils';
 import { IStyleValue } from '@/providers';
 import { getFullSizeWrapperDesignerStyle } from '@/components/formDesigner/utils/stylingUtils';
 import { EMPTY_STYLE } from '@/styles/variables';
+import { useComponentApi } from '@/providers/componentApi/hooks';
 
 const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
+  styleGroup: 'common-containers',
   allowInherit: true,
   type: 'collapsiblePanel',
   isInput: false,
@@ -60,18 +59,11 @@ const CollapsiblePanelComponent: CollapsiblePanelComponentDefinition = {
     }, [sourceModel]);
 
     const collapsedRef = useRef<ICollapseRef>(undefined);
-    const componentApi = useComponentApiProvider();
-    useEffect(() => {
-      componentApi?.updateApi<PanelApi>({
-        id: model.id,
-        componentName: model.componentName ?? "",
-        level: 3,
-        typeDefinition: { typeName: 'PanelApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
-        properties: [{ name: 'isExpanded', getter: () => collapsedRef.current?.collapsed !== true, setter: (value) => collapsedRef.current?.setCollapsed(!value) }],
-        api: { expand: () => collapsedRef.current?.setCollapsed(false), collapse: () => collapsedRef.current?.setCollapsed(true) },
-      });
-    }, [componentApi, model.componentName, model.id]);
-    useEffectOnce(() => () => componentApi?.removeApi(model.id));
+    useComponentApi<PanelApi>({ model, typeName: 'PanelApi',
+      properties: [{ name: 'isExpanded', getter: () => collapsedRef.current?.collapsed !== true, setter: (value) => collapsedRef.current?.setCollapsed(!value) }],
+      api: { expand: () => collapsedRef.current?.setCollapsed(false), collapse: () => collapsedRef.current?.setCollapsed(true) },
+    }, [collapsedRef.current?.collapsed]);
+
     const handleEvent = useEvents<void>(model.componentName);
 
     const isIconHidden = expandIconPosition === 'hide';
