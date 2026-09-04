@@ -505,7 +505,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
   setFormSettings = async (settings?: IFormSettings | undefined): Promise<void> => {
     // wait previous call
     const previous = this.pendingSetFormSettingsPromise || Promise.resolve();
-    const current = previous.finally(async () => {
+    const current = previous.finally(async () => { // Use finaaly to update the new settings regardless of the result of the previous execution
       if (!this.form) return;
 
       // If the settings were not passed in the parameter, then we use those already set in the form.
