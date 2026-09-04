@@ -33,7 +33,7 @@ export class MetadataDispatcher implements IMetadataDispatcher {
   //#region private methods
 
   #getPropertyByName = (properties: IPropertyMetadata[], name: string): IPropertyMetadata | undefined => {
-    return properties.find((p) => camelcase(p.path) === name);
+    return properties.find((p) => camelcase(p.path) === camelcase(name));
   };
 
   #getEntityTypeId = (property: IHasEntityType): IEntityTypeIdentifier | undefined =>

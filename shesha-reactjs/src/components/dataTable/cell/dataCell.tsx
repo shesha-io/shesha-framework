@@ -24,15 +24,18 @@ import MultiEntityCell from './default/multiEntityCell';
 import FormComponentMemo from '@/components/formDesigner/formComponent/formComponent';
 import { useStyles } from '../styles/styles';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
-import { getNumberOrUndefined } from '@/utils/string';
+import { camelcaseDotNotation, getNumberOrUndefined } from '@/utils/string';
 import { IPropertyMetadata, IToolboxComponent } from '@/interfaces';
 
 export const DefaultDataDisplayCell = <D extends object = object, V = unknown>(props: IDataCellProps<D, V>): ReactNode => {
   const { columnConfig } = props;
   const { form } = useForm();
-  const value = !isNullOrWhiteSpace(columnConfig.propertyName) && isDefined(form)
-    ? form.getFieldValue(columnConfig.propertyName.split('.')) as unknown
+  const formValue = !isNullOrWhiteSpace(columnConfig.propertyName) && isDefined(form)
+    ? form.getFieldValue(camelcaseDotNotation(columnConfig.propertyName).split('.')) as unknown
     : undefined;
+
+  // the table has already resolved the cell value; the form wins while inline editing
+  const value = isDefined(formValue) ? formValue : props.value;
 
   switch (columnConfig.dataType) {
     case 'number':

@@ -11,6 +11,7 @@ using Shesha.Domain.Enums;
 using Shesha.DynamicEntities;
 using Shesha.DynamicEntities.Dtos;
 using Shesha.Extensions;
+using Shesha.GraphQL.Mvc;
 using Shesha.Scheduler.Domain;
 using Shesha.Scheduler.SignalR;
 using Shesha.Services;
@@ -46,6 +47,40 @@ namespace Shesha.Scheduler.Services.ScheduledJobs
                 ? query.OrderByDescending(e => e.StartedOn)
                 : base.ApplySorting(query, input);
         }
+
+        #region Execution records are written by the scheduler only - no write endpoints
+
+        [NonAction]
+        public override Task<DynamicDto<ScheduledJobExecution, Guid>> CreateAsync(DynamicDto<ScheduledJobExecution, Guid> input)
+        {
+            return base.CreateAsync(input);
+        }
+
+        [NonAction]
+        public override Task<GraphQLDataResult<ScheduledJobExecution>> CreateGqlAsync(string properties, DynamicDto<ScheduledJobExecution, Guid> input)
+        {
+            return base.CreateGqlAsync(properties, input);
+        }
+
+        [NonAction]
+        public override Task<DynamicDto<ScheduledJobExecution, Guid>> UpdateAsync(DynamicDto<ScheduledJobExecution, Guid> input)
+        {
+            return base.UpdateAsync(input);
+        }
+
+        [NonAction]
+        public override Task<GraphQLDataResult<ScheduledJobExecution>> UpdateGqlAsync(string properties, DynamicDto<ScheduledJobExecution, Guid> input)
+        {
+            return base.UpdateGqlAsync(properties, input);
+        }
+
+        [NonAction]
+        public override Task DeleteAsync(EntityDto<Guid> input)
+        {
+            return base.DeleteAsync(input);
+        }
+
+        #endregion
 
         /// <summary>
         /// Get event log items for the specified job execution
