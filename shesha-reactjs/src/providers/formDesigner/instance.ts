@@ -1,5 +1,6 @@
 /* eslint @typescript-eslint/strict-boolean-expressions: "error" */
 import {
+  ComponentValidator,
   FormMarkup,
   FormMarkupWithSettings,
   FormMode,
@@ -41,6 +42,7 @@ import { ValidationCollector } from "../validator";
 import { IValidationCollector, ValidationResult } from "../validator/interfaces";
 import { FormBuilderFactory } from "@/form-factory/interfaces";
 import { getFormSettingsFormMarkup } from "@/components/formDesigner/formSettings";
+import { ReactNode } from "react";
 
 export type FormDesignerArgs = {
   readOnly: boolean;
@@ -525,6 +527,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
   };
 
   validateComponentAsync = async <TModel extends IConfigurableFormComponent = IConfigurableFormComponent>(component: TModel): Promise<void> => {
+    // console.log('LOG: validateComponentAsync', component);
     const toolboxComponent = this.getToolboxComponentOrUndefined(component.type);
     const validationErrors: IAsyncValidationError[] = [];
     if (isDefined(toolboxComponent)) {
@@ -534,9 +537,19 @@ export class FormDesignerInstance implements IFormDesignerInstance {
         });
       }
 
-      if (isDefined(toolboxComponent.validateSettings)) {
+      // todo: implement default validation
+      const validator: ComponentValidator<TModel> = isDefined(toolboxComponent.validateSettings)
+        ? toolboxComponent.validateSettings
+        : (model) => {
+          if (!isDefined(toolboxComponent.settingsFormMarkup))
+            return Promise.resolve();
+
+          return validateConfigurableComponentSettings(toolboxComponent.settingsFormMarkup, model);
+        };
+
+      if (isDefined(validator)) {
         try {
-          await toolboxComponent.validateSettings(component);
+          await validator(component);
         } catch (error: unknown) {
           if (isValidationError(error)) {
             error.errors.forEach((fieldError) => {
@@ -554,7 +567,19 @@ export class FormDesignerInstance implements IFormDesignerInstance {
       });
 
 
-    this.updateValidationResults({ type: VALIDATABLE_ITEM_TYPES.COMPONENT, componentId: component.id, validationErrors: validationErrors });
+    this.updateValidationResults({
+      type: VALIDATABLE_ITEM_TYPES.COMPONENT,
+      componentId: component.id,
+      displayName: this.getComponentDisplayName(component.id),
+      validationErrors: validationErrors,
+    });
+  };
+
+  getComponentDisplayName = (componentId: string): string | ReactNode => {
+    const component = this.getComponent(componentId);
+    return isDefined(component.label)
+      ? component.label
+      : `${component.type} (no name)`;
   };
 
   validateAllComponentsAsync = async (): Promise<void> => {
@@ -590,7 +615,11 @@ export class FormDesignerInstance implements IFormDesignerInstance {
         console.error('Unknown error ocurred while validating settings', error);
       }
     }
-    this.updateValidationResults({ type: VALIDATABLE_ITEM_TYPES.FORM_SETTINGS, validationErrors: validationErrors });
+    this.updateValidationResults({
+      type: VALIDATABLE_ITEM_TYPES.FORM_SETTINGS,
+      validationErrors: validationErrors,
+      displayName: "Form settings",
+    });
   };
 
   validateFormAsync = async (): Promise<void> => {
@@ -607,10 +636,11 @@ export class FormDesignerInstance implements IFormDesignerInstance {
         type: 'error',
         description: undefined,
         documentationUrl: undefined,
+        propertyName: err.field,
       });
     });
 
-    this.validationCollector.updateValidationResults(payload.type, payload.type === "component" ? payload.componentId : "", results);
+    this.validationCollector.updateValidationResults(payload.type, payload.type === "component" ? payload.componentId : "", payload.displayName, results);
   };
 
   addComponent = (payload: IComponentAddPayload): void => {

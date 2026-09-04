@@ -1,4 +1,5 @@
 import { ISheshaErrorTypes } from "@/utils/errors";
+import { ReactNode } from "react";
 
 export type ValidationResult = {
   type: ISheshaErrorTypes;
@@ -12,6 +13,7 @@ export type ItemValidationResult = ValidationResult & {
   itemType: string;
   itemId: string;
   itemName: string;
+  displayName: string | ReactNode;
 };
 
 export type OnValidationResultsChanged = (newResults: ItemValidationResult[]) => void;
@@ -21,7 +23,7 @@ export type ValidationCollectorSubscription = (cs: IValidationCollector) => void
 export interface IValidationCollector {
   clear: (predicate?: (item: ItemValidationResult) => boolean) => void;
   validationResults: ItemValidationResult[];
-  updateValidationResults: (itemType: string, itemId: string, results: ValidationResult[]) => void;
+  updateValidationResults: (itemType: string, itemId: string, displayName: string | ReactNode, results: ValidationResult[]) => void;
   subscribe: (callback: ValidationCollectorSubscription) => () => void;
 }
 
