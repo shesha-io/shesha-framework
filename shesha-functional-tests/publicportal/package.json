@@ -25,6 +25,7 @@
     "next-navigation-guard": {
       "next": "$next"
     },
+    "@rc-component/portal": "2.2.1",
     "@react-awesome-query-builder/antd": {
       "antd": "$antd",
       "@ant-design/icons": "$@ant-design/icons"
