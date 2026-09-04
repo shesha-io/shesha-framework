@@ -1,6 +1,6 @@
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import cleanDeep from "clean-deep";
-import { mergeWith } from "lodash";
+import { isPlainObject, mergeWith } from "lodash";
 import moment from "moment";
 import { Path, PathValue } from "./dotnotation";
 import { TouchableArrayProperty, TouchableProperty } from "@/providers/form/touchableProperty";
@@ -52,7 +52,42 @@ export const unproxyValue = <TValue = unknown>(value: TValue): TValue => {
           : value
     : value;
 
-  return isProxy(result) ? unproxyValue<TValue>(result as TValue) : result as TValue;
+  // a proxy that resolves to itself has lost its data, stop instead of recursing forever
+  return isProxy(result) && result !== value ? unproxyValue<TValue>(result as TValue) : result as TValue;
+};
+
+/**
+ * Replaces every data-access proxy inside `value` with the plain data it points at.
+ * Returns the same reference when nothing had to change, so untouched values keep their identity.
+ */
+export const unproxyDeep = <TValue = unknown>(value: TValue, seen: WeakSet<object> = new WeakSet()): TValue => {
+  if (!isDefined(value) || typeof value !== 'object')
+    return value;
+  const plain = isProxy(value) ? unproxyValue(value) : value;
+  if (!isDefined(plain) || typeof plain !== 'object' || isProxy(plain) || seen.has(plain))
+    return plain;
+  if (moment.isMoment(plain) || plain instanceof Date || (typeof Blob !== 'undefined' && plain instanceof Blob))
+    return plain;
+  seen.add(plain);
+
+  let changed = plain !== value;
+  if (Array.isArray(plain)) {
+    const items = plain.map((item: unknown) => {
+      const result = unproxyDeep(item, seen);
+      if (result !== item) changed = true;
+      return result;
+    });
+    return (changed ? items : plain) as TValue;
+  }
+  if (!isPlainObject(plain))
+    return plain;
+  const result: Record<string, unknown> = {};
+  Object.entries(plain as Record<string, unknown>).forEach(([key, item]) => {
+    const itemResult = unproxyDeep(item, seen);
+    if (itemResult !== item) changed = true;
+    result[key] = itemResult;
+  });
+  return (changed ? result : plain) as TValue;
 };
 
 export const deepMergeSkipUndefinedFunc = (objValue: unknown, srcValue: unknown, _key: string): unknown => srcValue === undefined ? objValue : undefined;
