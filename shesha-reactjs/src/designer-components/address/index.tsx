@@ -26,6 +26,7 @@ import { InputRef } from 'antd';
 import apiCode from "../../componentsApi/componentApi.ts?raw";
 
 const AddressCompoment: AddressComponentDefinition = {
+  styleGroup: 'inputs',
   allowInherit: true,
   type: 'address',
   name: 'Address',

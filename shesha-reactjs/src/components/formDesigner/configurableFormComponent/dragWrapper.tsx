@@ -75,7 +75,7 @@ export const DragWrapper: FC<PropsWithChildren<IDragWrapperProps>> = (props) => 
     if (!isDefined(shaComponent)) return;
     const rect = shaComponent.getBoundingClientRect();
     const x = rect.left + rect.width / 2;
-    const y = rect.top;
+    const y = rect.top + 5;
 
     // pinned to where the cursor entered, so it doesn't hop as the cursor crosses inner elements
     setAnchor((prev) => prev ?? { x, y });

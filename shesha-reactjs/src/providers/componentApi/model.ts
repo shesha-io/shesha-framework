@@ -23,7 +23,7 @@ export interface IComponentApiDescription<T extends object = Record<string, unkn
   componentModel?: IConfigurableFormComponent | undefined;
   metadata?: IApiMetadata | undefined;
   typeDefinition?: TypeDefinition | undefined;
-  skipUpdateTypeDefinitionIfExists?: boolean | undefined;
+  definitionLevel?: number | undefined;
   api?: Partial<T> | undefined;
   propertiesLevel?: Record<string, number> | undefined;
   properties?: ComponentApiProperty<T>[] | undefined;

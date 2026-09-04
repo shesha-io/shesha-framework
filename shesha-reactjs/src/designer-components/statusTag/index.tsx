@@ -106,6 +106,7 @@ const StatusTagWrapper: FC<PropsWithChildren<{ title?: string | undefined; event
 };
 
 const StatusTagComponent: StatusTagComponentDefinition = {
+  styleGroup: 'inputs',
   allowInherit: true,
   type: 'statusTag',
   name: 'Status Tag',

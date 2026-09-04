@@ -1,7 +1,7 @@
 import { ReactNode, useCallback, useEffect, useState } from "react";
 import { HandleEvent, IConfigurableFormItemChildFunc } from "./model";
 import { useComponentApiProvider } from "@/providers/componentApi/provider";
-import { InputComponentApi } from "@/componentsApi/componentApi";
+import { BaseInputComponentApi } from "@/componentsApi/componentApi";
 import { IComponentApiInputRef } from "@/providers/componentApi/model";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { executeScriptSync, useAvailableConstantsDataNoRefresh } from "@/providers/form/utils";
@@ -47,7 +47,7 @@ export const EventsAndApiValueProcessor = <TValue = unknown>({ value, onChange, 
   }, [apiRef]);
 
   useEffect(() => {
-    componentApi?.updateApi<InputComponentApi>({
+    componentApi?.updateApi<BaseInputComponentApi>({
       id: componentId,
       componentName: componentName,
       level: 2,
