@@ -28,6 +28,7 @@ import { IInputStyles } from '@/providers';
 import { migratePrevStyles } from '../_common-migrations';
 import { defaultStyles } from './utils';
 import { IRadioComponentProps } from '../radio/interfaces';
+import { defaultStyles as radioDefaultStyles } from '../radio/utils';
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { migrateHiddenToVisible } from '@/designer-components/_common-migrations/migrateSettings';
 import { useComponentApiProvider } from '@/providers/componentApi/provider';
@@ -201,7 +202,17 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
         if (!hasLegacySingleMode(prev)) return prev;
 
         const { mode: _mode, checkbox, ...rest } = prev;
-        const radioModel: IRadioComponentProps = { ...rest, type: 'radio', ...(isDefined(checkbox) ? { radio: checkbox } : {}) };
+        const radioDefaults = radioDefaultStyles();
+
+        const radioModel: IRadioComponentProps = migratePrevStyles(
+          {
+            ...rest,
+            type: 'radio',
+            radio: checkbox ?? radioDefaults.radio,
+            version: 8,
+          },
+          radioDefaults,
+        );
         return radioModel;
       }),
   linkToModelMetadata: (model, metadata): IEnhancedICheckboxGroupProps => {
