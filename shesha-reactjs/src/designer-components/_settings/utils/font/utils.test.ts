@@ -17,6 +17,11 @@ describe('withFontFallback', () => {
       .toBe("-apple-system, BlinkMacSystemFont, Segoe UI, 'Inter Variable', sans-serif");
   });
 
+  it('leaves an explicitly chosen generic family in first place', () => {
+    expect(withFontFallback('monospace')).toBe('monospace');
+    expect(withFontFallback('serif, Georgia')).toBe('serif, Georgia');
+  });
+
   it('returns undefined for an empty family', () => {
     expect(withFontFallback(undefined)).toBeUndefined();
     expect(withFontFallback(null)).toBeUndefined();

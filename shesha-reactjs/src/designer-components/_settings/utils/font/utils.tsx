@@ -15,6 +15,8 @@ export const withFontFallback = (family: string | null | undefined): string | un
   const parts = trimmed.split(',').map((p) => p.trim()).filter((p) => p !== '');
   const genericIdx = parts.findIndex((p) => GENERIC_FAMILY.test(p));
   if (genericIdx < 0) return `${trimmed}, ${DEFAULT_FONT_FAMILY}`;
+  // A stack that starts with a generic family (e.g. a deliberate `monospace`) is an explicit choice, not a fallback.
+  if (genericIdx === 0) return trimmed;
   parts.splice(genericIdx, 0, "'Inter Variable'");
   return parts.join(', ');
 };
