@@ -128,7 +128,7 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
 
   // Compute effective header font values with backward compatibility
   const effectiveHeaderFontFamily = useMemo(() => {
-    return props.headerFont?.type ?? props.headerFontFamily;
+    return withFontFallback(props.headerFont?.type ?? props.headerFontFamily);
   }, [props.headerFont?.type, props.headerFontFamily]);
 
   const effectiveHeaderFontSize = useMemo(() => {
