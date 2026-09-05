@@ -10,6 +10,13 @@ describe('withFontFallback', () => {
     expect(withFontFallback('Inter Variable')).toBe('Inter Variable');
   });
 
+  it('inserts Inter ahead of a generic family so it is tried before the browser default', () => {
+    expect(withFontFallback('Arial, sans-serif')).toBe("Arial, 'Inter Variable', sans-serif");
+    expect(withFontFallback('Courier New, monospace')).toBe("Courier New, 'Inter Variable', monospace");
+    expect(withFontFallback('-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif'))
+      .toBe("-apple-system, BlinkMacSystemFont, Segoe UI, 'Inter Variable', sans-serif");
+  });
+
   it('returns undefined for an empty family', () => {
     expect(withFontFallback(undefined)).toBeUndefined();
     expect(withFontFallback(null)).toBeUndefined();

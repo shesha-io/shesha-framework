@@ -5,11 +5,18 @@ import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 // Bundled and self-hosted, so the default look is identical on every OS.
 export const DEFAULT_FONT_FAMILY = "'Inter Variable', sans-serif";
 
-/** Appends the bundled Inter fallback so a font the OS lacks (e.g. Segoe UI on macOS) degrades to Inter, not the browser default. */
+const GENERIC_FAMILY = /^(serif|sans-serif|monospace|cursive|fantasy|system-ui|ui-[a-z-]+|emoji|math|fangsong)$/i;
+
+/** Inserts the bundled Inter fallback ahead of any generic family, so a font the OS lacks (e.g. Segoe UI on macOS) degrades to Inter, not the browser default. */
 export const withFontFallback = (family: string | null | undefined): string | undefined => {
   if (isNullOrWhiteSpace(family)) return undefined;
   const trimmed = family.trim();
-  return trimmed.includes('Inter Variable') ? trimmed : `${trimmed}, ${DEFAULT_FONT_FAMILY}`;
+  if (trimmed.includes('Inter Variable')) return trimmed;
+  const parts = trimmed.split(',').map((p) => p.trim()).filter((p) => p !== '');
+  const genericIdx = parts.findIndex((p) => GENERIC_FAMILY.test(p));
+  if (genericIdx < 0) return `${trimmed}, ${DEFAULT_FONT_FAMILY}`;
+  parts.splice(genericIdx, 0, "'Inter Variable'");
+  return parts.join(', ');
 };
 
 export const getFontStyle = (input?: IFontValue): CSSProperties => {
