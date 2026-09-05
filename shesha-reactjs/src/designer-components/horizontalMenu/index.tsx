@@ -15,6 +15,7 @@ import { migratePrevStyles } from "../_common-migrations/migrateStyles";
 import Editor from "./modal";
 import { getSettings } from "./settings";
 import { defaultStyles } from "./utils";
+import { withFontFallback } from '@/designer-components/_settings/utils/font/utils';
 
 interface IMenuListProps extends IConfigurableFormComponent, ILayoutColor {
   items?: ItemType[];
@@ -128,7 +129,7 @@ export const MenuListComponent: IToolboxComponent<IMenuListProps> = {
     const finalFontStyles = useMemo(() => {
       return {
         fontSize: model.font?.size ? `${model.font.size}px` : `${fontSize}px`,
-        fontFamily: model.font?.type,
+        fontFamily: withFontFallback(model.font?.type),
         fontWeight: model.font?.weight as CSSProperties['fontWeight'],
         color: model.font?.color,
         textAlign: model.font?.align as CSSProperties['textAlign'],

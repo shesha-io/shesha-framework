@@ -32,6 +32,7 @@ import { useGlobalState } from '@/providers/globalState';
 import { useSheshaApplication } from '@/providers/sheshaApplication';
 import { ConfigurableForm } from '@/components/configurableForm';
 import { isDefined } from '@/utils/nullables';
+import { withFontFallback } from '@/designer-components/_settings/utils/font/utils';
 
 interface IProfileDropdown extends IConfigurableFormComponent {
   items?: IButtonGroupItemBase[];
@@ -86,7 +87,7 @@ const ProfileDropdown: IToolboxComponent<IProfileDropdown> = {
       color: subTextColor,
       fontSize: subTextFontSize,
       fontWeight: subTextFontWeight,
-      fontFamily: subTextFontFamily,
+      fontFamily: withFontFallback(subTextFontFamily),
       textAlign: subTextTextAlign,
       ...getStyle(subTextStyle, formData, globalState),
     };

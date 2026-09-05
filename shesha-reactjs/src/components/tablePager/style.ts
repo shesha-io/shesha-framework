@@ -2,6 +2,7 @@ import { createStyles } from '@/styles';
 import { ITablePagerBaseProps } from './tablePaging';
 import { isDefined, isNullOrWhiteSpace } from '@/utils';
 import { fontStyles, marginStyles, paddingStyles } from '@/designer-components/_common/styles/utils';
+import { withFontFallback } from '@/designer-components/_settings/utils/font/utils';
 
 export const useStyles = createStyles(({ css, cx, prefixCls }, model: Pick<ITablePagerBaseProps, 'font' | 'stylingBoxJson'>) => {
   const pagination = `${prefixCls}-pagination`;
@@ -77,7 +78,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model: Pick<ITabl
       * {
           ${isNullOrWhiteSpace(model.font?.color) ? '' : `--ant-color-text : ${model.font.color};`}
           ${isDefined(model.font?.size) ? `--ant-font-size : ${model.font.size};` : ''}
-          ${isNullOrWhiteSpace(model.font?.type) ? '' : `--ant-font-family : ${model.font.type};`}
+          ${isNullOrWhiteSpace(model.font?.type) ? '' : `--ant-font-family : ${withFontFallback(model.font.type)};`}
           ${fontStyles(model.font)}
       }
   `);
