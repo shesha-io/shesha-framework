@@ -227,6 +227,6 @@ export const defaultStyles = (prev?: IContainerComponentPropsV0): IStyleValue & 
     justifySelf: justifySelf ?? "normal",
     noDefaultStyling: noDefaultStyling ?? false,
     gridColumnsCount: gridColumnsCount ?? undefined,
-    gap: gap ?? '8px',
+    gap: gap,
   };
 };
