@@ -9,11 +9,25 @@ interface ITextTheme {
   link?: string;
 }
 
-export type SidebarTheme = 'dark' | 'light';
+/** Resolved colour scheme actually applied to the UI. Never 'system'. */
+export type ResolvedTheme = 'dark' | 'light';
+
+/**
+ * Colour scheme as configured by the user. 'system' follows the OS
+ * `prefers-color-scheme` setting and is resolved to a {@link ResolvedTheme} at render time.
+ */
+export type ColorScheme = ResolvedTheme | 'system';
+
+/** @deprecated use {@link ColorScheme}. Kept as an alias because `sidebar` used to be sidebar-only. */
+export type SidebarTheme = ColorScheme;
 
 export interface IConfigurableTheme {
   application?: Theme | undefined;
-  sidebar?: SidebarTheme | undefined;
+  /**
+   * Application-wide colour scheme. Named `sidebar` for backwards compatibility with
+   * previously saved theme settings, where it only controlled the side menu.
+   */
+  sidebar?: ColorScheme | undefined;
   sidebarBackground?: string | undefined;
   layoutBackground?: string | undefined;
   text?: ITextTheme | undefined;
@@ -28,6 +42,8 @@ export interface IConfigurableTheme {
 
 export interface IThemeStateContext {
   readonly theme: IConfigurableTheme;
+  /** Colour scheme currently applied, with 'system' already resolved against the OS setting. */
+  readonly resolvedTheme: ResolvedTheme;
   readonly initialTheme: IConfigurableTheme | undefined;
   prefixCls: string;
   iconPrefixCls: string;
@@ -47,6 +63,7 @@ export interface IThemeActionsContext {
 }
 
 export const THEME_CONTEXT_INITIAL_STATE: IThemeStateContext = {
+  resolvedTheme: 'light',
   theme: {
     application: {
       primaryColor: '#1890ff',
@@ -55,7 +72,7 @@ export const THEME_CONTEXT_INITIAL_STATE: IThemeStateContext = {
       successColor: '#52c41a',
       infoColor: '#1890ff',
     },
-    sidebar: 'dark',
+    sidebar: 'light',
     layoutBackground: '#f0f2f5',
     text: {
       default: '#000000d9',

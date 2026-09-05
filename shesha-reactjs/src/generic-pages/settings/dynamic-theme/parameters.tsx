@@ -2,7 +2,7 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Button, Card, Col, Radio, Row, Slider, Space, Tooltip, Typography } from 'antd';
 import { FC } from 'react';
 import { ColorPicker } from '@/components/colorPicker';
-import { IConfigurableTheme, SidebarTheme } from '@/providers/theme/contexts';
+import { ColorScheme, IConfigurableTheme } from '@/providers/theme/contexts';
 import { ComponentDefaultsPanel } from './componentSettings/componentSettingsPanel';
 import { useStyles } from './styles/styles';
 import AlertsExample from './alertsPreview';
@@ -123,11 +123,11 @@ const ThemeParameters: FC<ThemeParametersProps> = ({ value: theme, onChange, rea
 
           <Typography.Title level={5} style={{ marginBottom: 12 }}>Theme</Typography.Title>
           <Radio.Group
-            value={theme.sidebar || 'light'}
+            value={theme.sidebar ?? 'system'}
             onChange={(e) => {
               changeThemeInternal({
                 ...theme,
-                sidebar: e.target.value === "system" ? undefined : e.target.value as SidebarTheme,
+                sidebar: e.target.value as ColorScheme,
               });
             }}
             disabled={readOnly}
