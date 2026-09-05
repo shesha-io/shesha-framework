@@ -3,6 +3,7 @@ import { addPx } from '@/utils/style';
 import { CSSProperties } from 'react';
 import { CSSInterpolation } from '@emotion/serialize';
 import { isDefined } from '@/utils/nullables';
+import { withFontFallback } from '@/designer-components/_settings/utils/font/utils';
 
 interface ModelProps {
   layout?: boolean | undefined;
@@ -71,7 +72,7 @@ export const useStyles = createStyles<FileUploadStylesParams, FileUploadStylesRe
     backgroundColor,
     borderStyle = 'solid',
     color,
-    fontFamily = 'Segoe UI',
+    fontFamily = withFontFallback('Segoe UI'),
     fontSize = '25px',
     fontWeight = '400',
     height,

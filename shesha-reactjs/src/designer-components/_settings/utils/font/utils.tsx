@@ -1,6 +1,16 @@
 import { CSSProperties } from 'react';
 import { IFontValue } from './interfaces';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+
+// Bundled and self-hosted, so the default look is identical on every OS.
+export const DEFAULT_FONT_FAMILY = "'Inter Variable', sans-serif";
+
+/** Appends the bundled Inter fallback so a font the OS lacks (e.g. Segoe UI on macOS) degrades to Inter, not the browser default. */
+export const withFontFallback = (family: string | null | undefined): string | undefined => {
+  if (isNullOrWhiteSpace(family)) return undefined;
+  const trimmed = family.trim();
+  return trimmed.includes('Inter Variable') ? trimmed : `${trimmed}, ${DEFAULT_FONT_FAMILY}`;
+};
 
 export const getFontStyle = (input?: IFontValue): CSSProperties => {
   if (!input) return {};
@@ -14,8 +24,9 @@ export const getFontStyle = (input?: IFontValue): CSSProperties => {
     }
   }
 
-  if (isDefined(input.type)) {
-    style.fontFamily = input.type;
+  const family = withFontFallback(input.type);
+  if (isDefined(family)) {
+    style.fontFamily = family;
   }
 
   if (isDefined(input.weight)) {

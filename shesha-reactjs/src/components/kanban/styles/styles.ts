@@ -1,6 +1,7 @@
 import { addPx } from '@/utils/style';
 import { createStyles } from '@/styles';
 import { CSSProperties } from 'react';
+import { withFontFallback } from '@/designer-components/_settings/utils/font/utils';
 
 type StylesArgs = {
   isCollapsed?: boolean;
@@ -38,7 +39,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, { isCollapsed, di
       color: ${fontStyles?.color || '#000000'};
       font-size: ${fontStyles?.fontSize || '15px'};
       font-weight: ${fontStyles?.fontWeight || '400'};
-      font-family: ${fontStyles?.fontFamily || 'Arial'};
+      font-family: ${fontStyles?.fontFamily || withFontFallback('Arial')};
       padding: 15px 15px;
       transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
       text-align: center;
