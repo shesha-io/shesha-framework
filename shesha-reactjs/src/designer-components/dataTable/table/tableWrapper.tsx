@@ -5,6 +5,7 @@ import { getStyle } from '@/providers/form/utils';
 import { ITableComponentProps } from './models';
 import { useFormComponentStyles } from '@/hooks/formComponentHooks';
 import { getShadowStyle } from '@/designer-components/_settings/utils/shadow/utils';
+import { withFontFallback } from '@/designer-components/_settings/utils/font/utils';
 import { getBackgroundImageUrl, getBackgroundStyle } from '@/designer-components/_settings/utils/background/utils';
 import { SidebarContainer } from '@/components/sidebarContainer';
 import { DataTable } from '@/components/dataTable';
@@ -127,7 +128,7 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
 
   // Compute effective header font values with backward compatibility
   const effectiveHeaderFontFamily = useMemo(() => {
-    return props.headerFont?.type ?? props.headerFontFamily;
+    return withFontFallback(props.headerFont?.type ?? props.headerFontFamily);
   }, [props.headerFont?.type, props.headerFontFamily]);
 
   const effectiveHeaderFontSize = useMemo(() => {
@@ -225,7 +226,7 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
 
   const { styles } = useStyles({
     // Use resolved font styles from allStyles to properly handle device-specific styling
-    fontFamily: allStyles.fontStyles.fontFamily ?? props.font?.type,
+    fontFamily: allStyles.fontStyles.fontFamily ?? withFontFallback(props.font?.type),
     fontWeight: allStyles.fontStyles.fontWeight ?? props.font?.weight,
     textAlign: allStyles.fontStyles.textAlign ?? props.font?.align,
     color: allStyles.fontStyles.color ?? props.font?.color,
@@ -550,7 +551,7 @@ export const TableWrapper: FC<TableWrapperProps> = (props) => {
             headerShadow={props.headerShadow}
             rowShadow={props.rowShadow}
             rowDividers={props.rowDividers}
-            bodyFontFamily={allStyles.fontStyles.fontFamily ?? props.font?.type as string}
+            bodyFontFamily={allStyles.fontStyles.fontFamily ?? withFontFallback(props.font?.type)}
             bodyFontSize={allStyles.fontStyles.fontSize
               ? (allStyles.fontStyles.fontSize as string)
               : (props.font?.size ? `${props.font.size}px` : undefined)}

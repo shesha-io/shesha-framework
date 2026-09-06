@@ -3,6 +3,7 @@ import { IConfigurableFormComponent, IStyleValue, StyleBoxValue } from "../../..
 import { addPx, hasNumber } from "@/utils/style";
 import { StringBuilder } from "@/utils";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
+import { withFontFallback } from '@/designer-components/_settings/utils/font/utils';
 import { CSSProperties } from "react";
 
 /** Properties that are unitless in CSS, so a bare number must not gain a `px` suffix. */
@@ -269,7 +270,7 @@ export const fontStyles = (model: IFontValue | undefined, customStyle?: CSSPrope
   const color = !isNullOrWhiteSpace(custom.color) ? custom.color : model?.color;
   const size = isDefined(custom.fontSize) ? custom.fontSize : (isDefined(model?.size) ? model.size : undefined);
   const weight = isDefined(custom.fontWeight) ? custom.fontWeight : model?.weight;
-  const family = !isNullOrWhiteSpace(custom.fontFamily) ? custom.fontFamily : model?.type;
+  const family = withFontFallback(!isNullOrWhiteSpace(custom.fontFamily) ? custom.fontFamily : model?.type);
   const align = isDefined(custom.textAlign) ? custom.textAlign : model?.align;
 
   if (!isNullOrWhiteSpace(color)) sb.append(`color: ${color};`);

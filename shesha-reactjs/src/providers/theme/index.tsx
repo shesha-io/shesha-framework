@@ -6,16 +6,13 @@ import { IConfigurableTheme, IThemeActionsContext, IThemeStateContext, THEME_CON
 import { defaultRequiredMark } from './shaRequiredMark';
 import { useSettings, useSheshaApplication } from '..';
 import { isNotNullOrWhiteSpace } from '@/utils/nullables';
+import { DEFAULT_FONT_FAMILY } from '@/designer-components/_settings/utils/font/utils';
 
 export interface ThemeProviderProps {
   prefixCls?: string;
   iconPrefixCls?: string;
   themeConfigKey?: string;
 }
-
-// Bundled and self-hosted (not a system font) so the default look is identical on every OS,
-// instead of resolving to whatever native UI font each OS happens to ship.
-const DEFAULT_FONT_FAMILY = "'Inter Variable', sans-serif";
 
 const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
   children,
