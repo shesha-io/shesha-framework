@@ -2,13 +2,13 @@ import { InputNumber, InputNumberProps } from 'antd';
 import React, { FC } from 'react';
 import { customOnChangeValueEventHandler } from '@/components/formDesigner/components/utils';
 import { getStyle, useAvailableConstantsData } from '@/providers/form/utils';
-import { INumberFieldComponentProps } from './interfaces';
+import { INumberFieldComponentProps, NumberFieldValue } from './interfaces';
 
 interface IProps {
   disabled: boolean;
   model: INumberFieldComponentProps;
-  onChange?: Function;
-  value?: number;
+  onChange?: (value: NumberFieldValue) => void;
+  value?: NumberFieldValue;
 }
 
 const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value }) => {
@@ -27,7 +27,9 @@ const NumberFieldControl: FC<IProps> = ({ disabled, model, onChange, value }) =>
     style: style ? getStyle(style, allData.data, allData.globalState) : { width: '100%' },
     step: model?.highPrecision ? model?.stepNumeric : model?.stepNumeric,
     ...customOnChangeValueEventHandler(model, allData, onChange),
-    defaultValue: model?.defaultValue,
+    // NOTE: antd's `defaultValue` is deliberately not passed here. It only feeds the control's own
+    // uncontrolled state, so it would render a value that is absent from the form data and therefore never
+    // submitted. The configured default value is applied on form level, as a part of the model initialization.
     changeOnWheel: false,
   };
 
