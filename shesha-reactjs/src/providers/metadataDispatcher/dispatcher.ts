@@ -33,7 +33,7 @@ export class MetadataDispatcher implements IMetadataDispatcher {
   //#region private methods
 
   #getPropertyByName = (properties: IPropertyMetadata[], name: string): IPropertyMetadata | undefined => {
-    return properties.find((p) => camelcase(p.path) === name);
+    return properties.find((p) => camelcase(p.path) === camelcase(name));
   };
 
   #getEntityTypeId = (property: IHasEntityType): IEntityTypeIdentifier | undefined =>
@@ -59,7 +59,7 @@ export class MetadataDispatcher implements IMetadataDispatcher {
   };
 
   #getNested = (meta: IModelMetadata, propName: string): Promise<IModelMetadata | null> => {
-    const propMeta = asPropertiesArray(meta.properties, []).find((p) => camelcase(p.path) === propName);
+    const propMeta = this.#getPropertyByName(asPropertiesArray(meta.properties, []), propName);
 
     if (!propMeta) return Promise.reject(`property '${propName}' not found`);
 

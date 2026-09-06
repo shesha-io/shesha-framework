@@ -549,28 +549,28 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
 
           &.${trSelected} {
             .sha-link {
-              color: white;
+              color: ${token.colorTextLightSolid};
             }
             background: ${rowSelectedBackgroundColor || token.colorPrimary} !important;
-            color: white;
+            color: ${token.colorTextLightSolid};
 
             .ant-form-item-control-input-content, button, a {
-                    color: white;
+                    color: ${token.colorTextLightSolid};
               }
 
             .sha-form-cell{
               .ant-form-item-control-input-content, a, button {
-                  color: white;
+                  color: ${token.colorTextLightSolid};
               }
 
               .sha-stored-files-renderer, .ant-upload-list {
-                  color: white;
+                  color: ${token.colorTextLightSolid};
               }
 
             }
 
             .sha-data-cell {
-              color: white;
+              color: ${token.colorTextLightSolid};
             }
 
             /* Remove white background from dropdowns in selected rows */
@@ -591,27 +591,27 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
             .ant-picker-input > input,
             .sha-data-cell input,
             .sha-data-cell .ant-select-selection-search-input {
-              color: white !important;
+              color: ${token.colorTextLightSolid} !important;
             }
 
             /* Ensure autocomplete text is white */
             .sha-autocomplete-raw-value,
             .sha-entity-reference-display-name {
-              color: white !important;
+              color: ${token.colorTextLightSolid} !important;
             }
 
             /* Ensure readonly display components show white text */
             .read-only-display-form-item,
             .read-only-display-form-item div {
-              color: white !important;
+              color: ${token.colorTextLightSolid} !important;
             }
 
             /* Ensure sha-input components (textfield) show white text */
             .sha-input {
-              color: white !important;
+              color: ${token.colorTextLightSolid} !important;
 
               input {
-                color: white !important;
+                color: ${token.colorTextLightSolid} !important;
               }
             }
           }
@@ -619,7 +619,7 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
           /* Ensure selected row styling always takes priority over striped rows */
           &.${trOdd}.${trSelected} {
             background: ${rowSelectedBackgroundColor || token.colorPrimary} !important;
-            color: white;
+            color: ${token.colorTextLightSolid};
           }
 
           .${prefixCls}-form-item {
