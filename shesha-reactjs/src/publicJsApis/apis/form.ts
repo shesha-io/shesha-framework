@@ -90,6 +90,11 @@ export interface FormApi<Values extends object = object> {
   submit(): void;
   /** Get form data. Need for getting actual form data (using in scripts) */
   getFormData(): Values;
+  /**
+   * Set fields value
+   * @param values
+   */
+  setFieldsValue: (values: Values) => void;
   /** Set validation errors. Need for display validation errors in the ValidationErrors component */
   setValidationErrors(payload: string | IErrorInfo | IAjaxResponseBase | AxiosResponse<IAjaxResponseBase> | Error): void;
   /**

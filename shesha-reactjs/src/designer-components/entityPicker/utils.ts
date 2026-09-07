@@ -38,8 +38,8 @@ export const defaultStyles = (prev?: IEntityPickerComponentProps): IStyleValue =
       marginRight: "0",
       marginTop: "0",
       paddingBottom: "0",
-      paddingLeft: "0",
-      paddingRight: "0",
+      paddingLeft: "8",
+      paddingRight: "8",
       paddingTop: "0",
     },
   };

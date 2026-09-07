@@ -2,7 +2,7 @@ import { ProfileOutlined } from '@ant-design/icons';
 import { CSSProperties, useEffect, useMemo, useRef } from 'react';
 import { useActualContextExecution } from '@/hooks';
 import { IConfigurableFormComponent, IToolboxComponent } from '@/interfaces';
-import { DataTypes } from '@/interfaces/dataTypes';
+import { ArrayFormats, DataTypes } from '@/interfaces/dataTypes';
 import { executeScriptSync } from '@/providers/form/utils';
 import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { getLegacyReferenceListIdentifier } from '@/utils/referenceList';
@@ -62,7 +62,7 @@ const CheckboxGroupComponent: IToolboxComponent<IEnhancedICheckboxGroupProps, IC
   // Checkbox has its own intrinsic size and should not be forced to fill wrapper
   preserveDimensionsInDesigner: true,
   icon: <ProfileOutlined />,
-  dataTypeSupported: ({ dataType }) => dataType === DataTypes.referenceListItem,
+  dataTypeSupported: ({ dataType, dataFormat }) => dataType === DataTypes.array && dataFormat === ArrayFormats.multivalueReferenceList,
   // `dataSourceUrl` is a script (it may read form data, localStorage, etc.), so evaluate it
   // here and hand the resolved endpoint to the group.
   calculateModel: (model, allData) => ({

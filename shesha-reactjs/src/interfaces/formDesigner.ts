@@ -111,7 +111,7 @@ export type ToolboxComponentAsTemplate = {
   build?: never;
 };
 
-export type StyleGroups = 'common' | 'inputs' | 'containers' | 'buttons';
+export type StyleGroups = 'common' | 'inputs' | 'common-containers' | 'buttons';
 
 export type IToolboxComponentBase = {
   /** Show the component in the theme editor (true by default) */

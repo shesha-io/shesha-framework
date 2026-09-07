@@ -31,12 +31,22 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model?: IS
   const shaReactTable = "sha-react-table";
   const shaGlobalTableFilter = "sha-global-table-filter";
 
+  /* Only the modal panel itself (.ant-modal-container below) is painted with the configured
+     background. A solid color looks fine repeated across every inner element, but a gradient or
+     image tiles independently on each one and reads as busy, so every child below is instead
+     made transparent and lets the panel's background show through - see `transparentBackground`. */
   const configuredAppearance = `
     ${borderColorStyles(model?.border)}
     ${backgroundStyles(model?.background)}
   `;
 
-  const configuredBackground = backgroundStyles(model?.background);
+  /* Cancels every property `backgroundStyles` can set (color/gradient shorthand as well as the
+     image/size/repeat/position set), so a configured image or gradient doesn't repeat on this
+     element regardless of which background type is configured. */
+  const transparentBackground = `
+    background: transparent;
+    background-image: none;
+  `;
 
   const textStyle = fontStyles(
     { type: model?.font?.type, color: model?.font?.color },
@@ -96,7 +106,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model?: IS
       padding: unset;
 
       .${prefixCls}-input-affix-wrapper, .${prefixCls}-btn {
-        ${configuredAppearance}
+        ${transparentBackground}
         ${borderColorStyles(model?.border)}
         border-width: 1px !important;
 
@@ -113,12 +123,12 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model?: IS
       }
 
       .${prefixCls}-btn {
-        ${configuredBackground}
+        ${transparentBackground}
         ${textStyle}
 
        &:hover,
         &:active {
-          ${configuredBackground}
+          ${transparentBackground}
           border-color: ${token.colorPrimary} !important;
         }
       }
@@ -129,7 +139,8 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model?: IS
       width: 100% !important;
       display: block !important;
       overflow: auto;
-      ${configuredAppearance}
+      ${transparentBackground}
+      ${borderColorStyles(model?.border)}
       border-width: 1px;
       border-style: solid;
       border-radius: 6px;
@@ -139,7 +150,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model?: IS
       /* The table paints its own row and cell backgrounds, and sets the font on the cell elements
          themselves, so both have to be restated all the way down. */
       .sha-table {
-        ${configuredBackground}
+        ${transparentBackground}
         ${textStyle}
 
         * {
@@ -152,6 +163,25 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model?: IS
           .th * {
             ${textStyle}
           }
+        }
+
+        /* A sticky/anchored column has other columns' cells scrolling underneath it, so unlike the
+           rest of the table it can't be fully transparent - it would let that scrolling content
+           bleed through. A flat fallback color would solve that but stand out as a mismatched
+           patch against a configured gradient or image, so instead the column blurs whatever is
+           behind it: it still reads as part of the same themed surface, for any background type,
+           without needing to know what that background actually is.
+
+           This has to apply to every row, not just the header: body cells get their own opaque
+           striping color as an inline style (see rowCell.tsx), so !important is needed here to
+           actually clear it to transparent - otherwise there is nothing for the blur to show
+           through and only the header would appear to work. */
+        .th.fixed-column,
+        .td.fixed-column {
+          background: transparent !important;
+          background-image: none !important;
+          backdrop-filter: blur(20px);
+          -webkit-backdrop-filter: blur(20px);
         }
       }
     }
@@ -166,10 +196,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model?: IS
         ${textStyle}
       }
 
-      /* Each page number is its own opaque box, which reads as a white chip against a configured
-         background. */
+      /* Each page number is its own opaque box by default, which would repeat a configured
+         gradient or image instead of letting the modal panel's background show through it. */
       .${prefixCls}-pagination-item {
-        ${configuredBackground}
+        ${transparentBackground}
 
         a {
           ${textStyle}
@@ -179,17 +209,14 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model?: IS
       .${prefixCls}-pagination-prev, .${prefixCls}-pagination-next {
       color: orange;
         .anticon {
-          ${textStyle} 
+          ${textStyle}
         }
       }
 
-      /* The declaration order here is deliberate: configuredAppearance comes last so its
-         background wins over the transparent one above. Swapping the two changes what the page
-         size changer is painted with. */
       .${prefixCls}-select {
         margin-right: 0 !important;
-        background: transparent;
-        ${configuredAppearance}
+        ${transparentBackground}
+        ${borderColorStyles(model?.border)}
         border-width: 1px;
         ${textStyle}
 
@@ -213,7 +240,8 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model?: IS
       column-gap: 12px;
 
       .${prefixCls}-btn {
-        ${configuredAppearance}
+        ${transparentBackground}
+        ${borderColorStyles(model?.border)}
         border-width: 1px;
         ${textStyle}
 
@@ -221,7 +249,8 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model?: IS
 
         &:hover,
         &:active {
-          ${configuredAppearance}
+          ${transparentBackground}
+          ${borderColorStyles(model?.border)}
           border-width: 1px;
           border-color: ${token.colorPrimary} !important;
         }

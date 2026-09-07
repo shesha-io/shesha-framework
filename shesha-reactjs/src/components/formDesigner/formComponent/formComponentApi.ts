@@ -1,4 +1,4 @@
-import { AnyComponentStyles, BaseComponentApi, CommonComponentApi, IComponentStyle, InputComponentApi, InputComponentStyles, InputStyles } from "@/componentsApi/componentApi";
+import { BaseComponentApi, IBaseContainerStyles, ICommonStyles, BaseInputComponentApi, ICommonInputComponentStyles, ICommonInputStyles, IBaseComponentStyles, ICommonComponentStyles } from "@/componentsApi/componentApi";
 import { IBackgroundValue, IBorderValue, IFontValue, IShadowValue } from "@/designer-components/_settings/utils";
 import { IShaFormInstance } from "@/providers/form/store/interfaces";
 import { EditMode, IConfigurableFormComponent, IStyleValue, StyleBoxValue } from "@/providers";
@@ -40,33 +40,45 @@ export interface IUpdateApiArgs {
   setApiStyles: (f: (prev: Partial<IStyleValue>) => Partial<IStyleValue>) => void;
 }
 
-const getCommonStyleProperties = (args: IUpdateApiArgs): ComponentApiProperty<CommonComponentApi> => {
+const getBaseContainerStyleObject = (args: IUpdateApiArgs): IBaseContainerStyles => {
   const { componentApi, apiModel, setApiStyles } = args;
 
-  const style = {} as IComponentStyle;
-  componentApi.createOrUpdateApiProperty(style, { name: 'font', getter: () => apiModel.font, setter: (value) => updateApiModel(setApiStyles, { font: value as IFontValue }) });
+  const style = {} as ICommonStyles;
   componentApi.createOrUpdateApiProperty(style, { name: 'background', getter: () => apiModel.background, setter: (value) => updateApiModel(setApiStyles, { background: value as IBackgroundValue }) });
   componentApi.createOrUpdateApiProperty(style, { name: 'border', getter: () => apiModel.border, setter: (value) => updateApiModel(setApiStyles, { border: value as IBorderValue }) });
   componentApi.createOrUpdateApiProperty(style, { name: 'shadow', getter: () => apiModel.shadow, setter: (value) => updateApiModel(setApiStyles, { shadow: value as IShadowValue }) });
   componentApi.createOrUpdateApiProperty(style, { name: 'styleBox', getter: () => apiModel.stylingBoxJson, setter: (value) => updateApiModel(setApiStyles, { stylingBoxJson: value as StyleBoxValue }) });
+  return style;
+};
 
+const getCommonComponentStyleObject = (args: IUpdateApiArgs): ICommonStyles => {
+  const { componentApi, apiModel, setApiStyles } = args;
+
+  const style = getBaseContainerStyleObject(args) as ICommonStyles;
+  componentApi.createOrUpdateApiProperty(style, { name: 'font', getter: () => apiModel.font, setter: (value) => updateApiModel(setApiStyles, { font: value as IFontValue }) });
+
+  return style;
+};
+
+const getBaseContainerStyleProperties = (args: IUpdateApiArgs): ComponentApiProperty<IBaseComponentStyles> => {
+  const style = getBaseContainerStyleObject(args);
   return { name: 'styles', getter: () => style };
 };
 
-const getInputStyleProperties = (args: IUpdateApiArgs): ComponentApiProperty<InputComponentStyles> => {
+const getCommonComponentStyleProperties = (args: IUpdateApiArgs): ComponentApiProperty<ICommonComponentStyles> => {
+  const style = getCommonComponentStyleObject(args);
+  return { name: 'styles', getter: () => style };
+};
+
+const getInputComponentStyleProperties = (args: IUpdateApiArgs): ComponentApiProperty<ICommonInputComponentStyles> => {
   const { componentApi, apiModel, setApiStyles } = args;
 
-  const editor = {} as InputStyles['editor'];
-  componentApi.createOrUpdateApiProperty(editor, { name: 'font', getter: () => apiModel.font, setter: (value) => updateApiModel(setApiStyles, { font: value as IFontValue }) });
-  componentApi.createOrUpdateApiProperty(editor, { name: 'background', getter: () => apiModel.background, setter: (value) => updateApiModel(setApiStyles, { background: value as IBackgroundValue }) });
-  componentApi.createOrUpdateApiProperty(editor, { name: 'border', getter: () => apiModel.border, setter: (value) => updateApiModel(setApiStyles, { border: value as IBorderValue }) });
-  componentApi.createOrUpdateApiProperty(editor, { name: 'shadow', getter: () => apiModel.shadow, setter: (value) => updateApiModel(setApiStyles, { shadow: value as IShadowValue }) });
-  componentApi.createOrUpdateApiProperty(editor, { name: 'styleBox', getter: () => apiModel.stylingBoxJson, setter: (value) => updateApiModel(setApiStyles, { stylingBoxJson: value as StyleBoxValue }) });
+  const editor = getCommonComponentStyleObject(args);
 
-  const wrapper = {} as InputStyles['wrapper'];
+  const wrapper = {} as ICommonInputStyles['wrapper'];
   componentApi.createOrUpdateApiProperty(wrapper, { name: 'styleBox', getter: () => apiModel.stylingBoxJson, setter: (value) => updateApiModel(setApiStyles, { stylingBoxJson: value as StyleBoxValue }) });
 
-  const style: InputStyles = { editor, wrapper };
+  const style: ICommonInputStyles = { editor, wrapper };
   componentApi.createOrUpdateApiProperty(style, { name: 'editor', getter: () => editor });
   componentApi.createOrUpdateApiProperty(style, { name: 'wrapper', getter: () => wrapper });
 
@@ -80,20 +92,23 @@ export const updateApi = (args: IUpdateApiArgs): void => {
     return;
 
   const propertyName = model.propertyName ?? "";
-  // common Api
-  const commonApi: IComponentApiDescription<InputComponentApi & AnyComponentStyles> = {
+  const baseApi = {
     id: model.id,
     componentName: model.componentName,
     componentModel: model,
     level: 1,
     isInput: toolboxComponent?.isInput ?? false,
+  };
+
+  // common Api
+  const commonApi: IComponentApiDescription<BaseComponentApi> = {
+    ...baseApi,
+    typeDefinition: { typeName: 'BaseComponentApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
     api: {
       componentName: model.componentName,
       context: model.context,
       propertyName: propertyName,
     },
-    typeDefinition: { typeName: 'CommonComponentApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
-    skipUpdateTypeDefinitionIfExists: true,
     properties: [
       // component properties
       // use model.hidden because it's already filtered by some other means (eg permissions)
@@ -112,38 +127,48 @@ export const updateApi = (args: IUpdateApiArgs): void => {
       } as ComponentApiProperty<BaseComponentApi>,
     ],
   };
+  componentApi.updateApi<BaseComponentApi>(commonApi);
 
-  switch (toolboxComponent?.styleGroup) {
-    case 'inputs':
-      commonApi.properties?.push(getInputStyleProperties(args));
-      break;
-    case 'common':
-      commonApi.properties?.push(getCommonStyleProperties(args));
-      break;
+  // input styles
+
+  if (toolboxComponent?.styleGroup === 'common-containers') {
+    const styleApi: IComponentApiDescription<IBaseComponentStyles> = {
+      ...baseApi,
+      typeDefinition: { typeName: 'CommonContainerComponentApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+      properties: [getBaseContainerStyleProperties(args)],
+    };
+    componentApi.updateApi<IBaseComponentStyles>(styleApi);
+  }
+
+  if (toolboxComponent?.styleGroup === 'common') {
+    const styleApi: IComponentApiDescription<ICommonComponentStyles> = {
+      ...baseApi,
+      typeDefinition: { typeName: 'CommonComponentApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+      properties: [getCommonComponentStyleProperties(args)],
+    };
+    componentApi.updateApi<ICommonComponentStyles>(styleApi);
   }
 
   // input common Api
   if (toolboxComponent?.isInput === true) {
-    commonApi.api = {
-      ...commonApi.api,
-      isValid: () => !isNullOrWhiteSpace(propertyName)
-        ? shaForm.antdForm.validateFields([propertyName], { validateOnly: true })
-          .then(() => true).catch(() => false)
-        : Promise.resolve(true),
-      getErrors: () => !isNullOrWhiteSpace(propertyName)
-        ? shaForm.antdForm.validateFields([propertyName], { validateOnly: true })
-          .then(() => []).catch((e: ValidateErrorEntity) => isNonEmptyArray(e.errorFields) ? e.errorFields[0].errors : [])
-        : Promise.resolve([]),
-      reset: () => !isNullOrWhiteSpace(propertyName)
-        ? shaForm.antdForm.resetFields([propertyName])
-        : undefined,
-    } as InputComponentApi;
-    commonApi.typeDefinition = { typeName: 'InputComponentApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] };
-
-    commonApi.properties = [
-      ...(commonApi.properties ?? []),
-      ...[
-        { name: 'required', getter: () => apiModel.validate?.required, setter: (v) => updateApiModel(setApiModel, { validate: { required: v } }) },
+    const inputApi: IComponentApiDescription<BaseInputComponentApi> = {
+      ...baseApi,
+      typeDefinition: { typeName: 'BaseInputComponentApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+      api: {
+        isValid: () => !isNullOrWhiteSpace(propertyName)
+          ? shaForm.antdForm.validateFields([propertyName], { validateOnly: true })
+            .then(() => true).catch(() => false)
+          : Promise.resolve(true),
+        getErrors: () => !isNullOrWhiteSpace(propertyName)
+          ? shaForm.antdForm.validateFields([propertyName], { validateOnly: true })
+            .then(() => []).catch((e: ValidateErrorEntity) => isNonEmptyArray(e.errorFields) ? e.errorFields[0].errors : [])
+          : Promise.resolve([]),
+        reset: () => !isNullOrWhiteSpace(propertyName)
+          ? shaForm.antdForm.resetFields([propertyName])
+          : undefined,
+      },
+      properties: [
+        { name: 'required', getter: () => apiModel.validate?.required === true, setter: (v) => updateApiModel(setApiModel, { validate: { required: v } }) },
         {
           name: 'value',
           getter: () => !isNullOrWhiteSpace(propertyName)
@@ -154,9 +179,17 @@ export const updateApi = (args: IUpdateApiArgs): void => {
               shaForm.setFieldsValue(setValueByPropertyName({}, propertyName, value));
           },
         },
-      ] as ComponentApiProperty<InputComponentApi>[],
-    ];
-  }
+      ],
+    };
+    componentApi.updateApi<BaseInputComponentApi>(inputApi);
 
-  componentApi.updateApi<InputComponentApi & AnyComponentStyles>(commonApi);
+    if (toolboxComponent.styleGroup === 'inputs') {
+      const styleApi: IComponentApiDescription<ICommonInputComponentStyles> = {
+        ...baseApi,
+        typeDefinition: { typeName: 'CommonInputComponentApi', files: [{ content: apiCode, fileName: 'apis/componentApi.ts' }] },
+        properties: [getInputComponentStyleProperties(args)],
+      };
+      componentApi.updateApi<ICommonInputComponentStyles>(styleApi);
+    }
+  }
 };

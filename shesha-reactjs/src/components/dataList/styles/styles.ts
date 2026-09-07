@@ -56,10 +56,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
                 background-color: ${token.colorPrimaryBgHover};
             }
     
-            span {
-                &:last-child {
-                    flex-grow: 1;
-                }
+            /* Direct children only: a descendant selector also reached the icon span inside the
+               circle action buttons and stretched it, pushing the glyph to the button's left edge. */
+            > span:last-child {
+                flex-grow: 1;
             }
 
             /* The row content is a sibling of the selection control now, not a child of its <label>,
@@ -154,6 +154,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }) => {
             position: absolute;
             top: 5px;
             left: 5px;
+
+            > .${shaDatalistComponentItemCheckbox} {
+                gap: 6px;
+            }
         }
 
         .${shaDatalistWrapParent} {

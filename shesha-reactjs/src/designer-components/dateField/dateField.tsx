@@ -36,6 +36,7 @@ const toSelectionType = (picker: string | undefined, showTime: boolean | undefin
 };
 
 const DateField: DateFieldDefinition = {
+  styleGroup: 'inputs',
   allowInherit: true,
   type: 'dateField',
   name: 'Date field',
