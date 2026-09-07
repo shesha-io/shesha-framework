@@ -28,7 +28,7 @@ import { executeScript, getComponentsAndSettings, IApplicationContext, isSameFor
 import { Form, FormInstance } from "antd";
 import { IFormApi } from "../formApi";
 import { ISetFormDataPayload } from "../contexts";
-import { deepMergeValues, setValueByPropertyName } from "@/utils/object";
+import { deepMergeValues, setValueByPropertyName, unproxyDeep } from "@/utils/object";
 import { makeObservableProxy } from "../observableProxy";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
 import { isEntityTypeIdEmpty } from "@/providers/metadataDispatcher/entities/utils";
@@ -393,13 +393,15 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
   };
 
   setFormData = (payload: ISetFormDataPayload<Values>): void => {
-    const { values, mergeValues } = payload;
+    const { mergeValues } = payload;
+    // scripts may pass `{...form.data}`, whose nested objects are proxies; storing those corrupts the form data
+    const values = unproxyDeep(payload.values);
     if (isEmpty(values) && mergeValues)
       return;
 
     const newData = typeof this.getMergedOrValue === "function"
-      ? this.getMergedOrValue(payload, this)
-      : payload.mergeValues && this.formData
+      ? this.getMergedOrValue({ ...payload, values }, this)
+      : mergeValues && this.formData
         ? deepMergeValues(this.formData, values)
         : values;
 
@@ -500,6 +502,33 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     this.form = undefined;
   };
 
+  private pendingSetFormSettingsPromise: Promise<void> | undefined = undefined;
+
+  setFormSettings = async (settings?: IFormSettings | undefined): Promise<void> => {
+    // wait previous call
+    const previous = this.pendingSetFormSettingsPromise || Promise.resolve();
+    const current = previous.finally(async () => { // Use finaaly to update the new settings regardless of the result of the previous execution
+      if (!this.form) return;
+
+      // If the settings were not passed in the parameter, then we use those already set in the form.
+      if (settings)
+        this.form.settings = settings;
+
+      await this.applyFormSettingsAsync();
+    });
+    this.pendingSetFormSettingsPromise = current;
+
+    try {
+      await current;
+    } finally {
+      // if current is still pending - clear
+      if (this.pendingSetFormSettingsPromise === current) {
+        this.pendingSetFormSettingsPromise = undefined;
+      }
+      this.forceRootUpdate();
+    }
+  };
+
   applyFormSettingsAsync = async (): Promise<void> => {
     const { settings } = this;
 
@@ -569,7 +598,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
       });
 
       this.form = form;
-      await this.applyFormSettingsAsync();
+      await this.setFormSettings(); // use setFormSettings instead of applyFormSettingsAsync to avoid race conditions if markup or settings are updated before form is loaded
 
       if (this.onMarkupLoaded)
         await this.onMarkupLoaded(this);
@@ -601,7 +630,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
       });
 
       this.form = form;
-      await this.applyFormSettingsAsync();
+      await this.setFormSettings(); // use setFormSettings instead of applyFormSettingsAsync to avoid race conditions if markup or settings are updated before form is loaded
 
       if (this.onMarkupLoaded)
         await this.onMarkupLoaded(this);
@@ -634,7 +663,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
         flatStructure: formFlatMarkup,
         settings: formSettings,
       };
-      await this.applyFormSettingsAsync();
+      await this.setFormSettings(); // use setFormSettings instead of applyFormSettingsAsync to avoid race conditions if markup or settings are updated before form is loaded
 
       if (this.onMarkupLoaded)
         await this.onMarkupLoaded(this);

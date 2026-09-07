@@ -248,7 +248,7 @@ export type ConfigurableFormComponentTypes =
 
 export interface IComponentLabelProps {
   /** The label for this field that will appear next to it. */
-  label?: string | React.ReactNode;
+  label?: string | ReactNode;
   /** Hide label of the field */
   hideLabel?: boolean | undefined;
 

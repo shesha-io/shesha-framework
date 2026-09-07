@@ -29,6 +29,7 @@ import { isDefined } from '@/utils/nullables';
 import apiCode from "../../componentsApi/componentApi.ts?raw";
 
 const SwitchComponent: SwitchComponentDefinition = {
+  styleGroup: 'common',
   allowInherit: true,
   type: 'switch',
   isInput: true,

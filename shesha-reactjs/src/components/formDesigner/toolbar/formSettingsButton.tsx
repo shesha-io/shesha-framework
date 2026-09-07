@@ -1,10 +1,9 @@
-import { FC, useCallback, useState } from 'react';
+import { useFormDesignerReadOnly } from '@/providers/formDesigner';
+import { SettingOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
-import { FormSettingsEditor } from '../formSettingsEditor';
-import { CheckCircleTwoTone, SettingOutlined } from '@ant-design/icons';
-import { useFormDesigner, useFormDesignerReadOnly } from '@/providers/formDesigner';
 import { SizeType } from 'antd/es/config-provider/SizeContext';
-import { useIsDevMode } from '@/hooks/useIsDevMode';
+import { FC, useCallback, useState } from 'react';
+import { FormSettingsEditor } from '../formSettingsEditor';
 
 export interface IFormSettingsButtonProps {
   buttonText?: string;
@@ -14,14 +13,9 @@ export interface IFormSettingsButtonProps {
 export const FormSettingsButton: FC<IFormSettingsButtonProps> = ({ buttonText, size }) => {
   const [settingsVisible, setSettingsVisible] = useState(false);
   const readOnly = useFormDesignerReadOnly();
-  const { validateFormAsync } = useFormDesigner();
-  const isDevMode = useIsDevMode();
 
   const onSettingsClick = (): void => {
     setSettingsVisible(true);
-  };
-  const onValidateClick = (): void => {
-    void validateFormAsync();
   };
   const onClose = useCallback(() => {
     setSettingsVisible(false);
@@ -29,9 +23,6 @@ export const FormSettingsButton: FC<IFormSettingsButtonProps> = ({ buttonText, s
 
   return (
     <>
-      {isDevMode && (
-        <Button icon={<CheckCircleTwoTone />} size={size} onClick={onValidateClick} title="Validate Form" />
-      )}
       <Button icon={<SettingOutlined />} size={size} onClick={onSettingsClick} title="Form Settings">
         {buttonText !== undefined ? buttonText : "Settings"}
       </Button>

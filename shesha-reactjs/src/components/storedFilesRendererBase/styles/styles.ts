@@ -209,6 +209,22 @@ export const useStyles = createStyles((
     }
   `);
 
+  /* The downloaded set applied to the file name directly: in thumbnail mode the name is a sibling
+     under the tile, so no descendant selector from `downloadedFile` can reach it. Tripled to clear
+     the root Font's three-class restatement in the container set below, which is emitted later. */
+  const downloadedFileName = cx("sha-downloaded-file-name", css`
+    &&& {
+      color: ${downloadedColor};
+      ${cssPropertiesToString(downloadedText)}
+      ${isDefined(downloadedJustifyContent) ? `justify-content: ${downloadedJustifyContent} !important;` : ''}
+    }
+
+    &&& > .${prefixCls}-typography {
+      color: ${downloadedColor};
+      ${cssPropertiesToString(downloadedText)}
+    }
+  `);
+
   const downloadedIcon = cx("sha-downloaded-icon", css`
     position: ${layout ? 'absolute' : 'relative'};
     top: 4px;
@@ -586,6 +602,7 @@ export const useStyles = createStyles((
     shaStoredFilesRendererVertical,
     shaStoredFilesRendererGrid,
     downloadedFile,
+    downloadedFileName,
     downloadedIcon,
     actionsPopover,
     shaThumbnail,

@@ -27,6 +27,11 @@ export interface IFormSettings {
  * Form instance API
  */
 export interface IFormApi<Values extends object = object> {
+  /**
+   * Set fields value
+   * @param values
+   */
+  setFieldsValue: (values: Values) => void;
   /** Clear fields value */
   clear: () => void;
   /** Submit form */
@@ -79,11 +84,6 @@ export interface IFormApi<Values extends object = object> {
    * @param value field value
    */
   setFieldValue: FieldValueSetter<Values>;
-  /**
-   * @deprecated Set fields value
-   * @param values
-   */
-  setFieldsValue: (values: Values) => void;
   /**
    * Set form data
    * @deprecated The method should not be used

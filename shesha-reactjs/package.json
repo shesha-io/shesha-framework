@@ -35,7 +35,7 @@
     "type-check-replace": "powershell -Command \"(Get-Content typescript-errors.log) -replace 'src/', 'D:\\Boxfusion\\shesha-framework-main\\shesha-reactjs\\src/' | Set-Content typescript-errors.log\"",
     "type-check": "tsc --noEmit > typescript-errors.log",
     "type-check-log": "npm run type-check & npm run type-check-replace",
-    "postinstall": "npx patch-package && node bin/copy-local-monaco.js || true",
+    "postinstall": "npx patch-package && node bin/shesha-cli.js copy-monaco || true",
     "knip": "knip"
   },
   "overrides": {
@@ -215,7 +215,6 @@
     ]
   },
   "bin": {
-    "shesha-copy-local-monaco": "./bin/copy-local-monaco.js",
-    "shesha-apply-patches": "./bin/apply-patches.js"
+    "shesha": "./bin/shesha-cli.js"
   }
 }

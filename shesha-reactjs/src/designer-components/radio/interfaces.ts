@@ -3,7 +3,7 @@ import { IReferenceListIdentifier } from '@/interfaces/referenceList';
 import { CSSProperties } from 'react';
 import { DataSourceType, ILabelValue } from '@/designer-components/dropdown/model';
 import { ComponentDefinition, IConfigurableFormComponent } from '@/interfaces';
-import { IInputStyles, INestedStyleValue } from '@/providers/form/models';
+import { IInputStyles, INestedStyleValue, IStyleValue } from '@/providers/form/models';
 
 export type DirectionType = 'horizontal' | 'vertical';
 export const DIRECTION_TYPE: readonly DirectionType[] = ['horizontal', 'vertical'];
@@ -51,7 +51,7 @@ export interface IRadioProps extends Partial<IRadioOptionsSource> {
   readOnly?: boolean | undefined;
 }
 
-// Extends IInputStyles/INestedStyleValue so the wrapper's Appearance style model is typed here,
+// Extends IStyleValue/INestedStyleValue so the wrapper's Appearance style model is typed here,
 // with the per-option set under `radio`.
 export interface IRadioComponentProps extends IRadioOptionsSource, IConfigurableFormComponent, IInputStyles, INestedStyleValue<'radio'> {
   /**
@@ -63,7 +63,7 @@ export interface IRadioComponentProps extends IRadioOptionsSource, IConfigurable
    */
   referenceListName?: string | undefined;
   direction?: SpaceProps['orientation'] | undefined;
-  radio?: IInputStyles;
+  radio?: IStyleValue | undefined;
 }
 
 /** Values derived from the model before render — currently the evaluated `url` data source. */

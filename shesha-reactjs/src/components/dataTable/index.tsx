@@ -249,7 +249,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
     return (row: ITableRowData, rowIndex: number) => {
       const currentSelectedRow = { index: rowIndex, row: row, id: row.id };
-      const evaluationContext = { ...appContext, data: row, rowIndex, selectedRow: currentSelectedRow };
+      const evaluationContext = { ...appContext, data: row, row, rowIndex, selectedRow: currentSelectedRow };
 
       try {
         void executeAction({
@@ -322,7 +322,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
 
     return (row: ITableRowData, rowIndex?: number) => {
       const currentSelectedRow = { index: rowIndex, row: row, id: row.id };
-      const evaluationContext = { ...appContext, data: row, rowIndex, selectedRow: currentSelectedRow };
+      const evaluationContext = { ...appContext, data: row, row, rowIndex, selectedRow: currentSelectedRow };
 
       try {
         void executeAction({

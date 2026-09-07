@@ -180,6 +180,7 @@ const removeLegacyProperties = (result: Record<string, unknown>): void => {
 };
 
 const AttachmentsEditor: AttachmentsEditorComponentDefinition = {
+  styleGroup: 'inputs',
   allowInherit: true,
   type: 'attachmentsEditor',
   isInput: true,

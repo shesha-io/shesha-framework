@@ -272,19 +272,32 @@ export interface StyleBoxStyles {
 }
 
 
-export interface IComponentStyle extends FontStyles, BackgroundStyles, BorderStyles, IShadowStyles, StyleBoxStyles {
+export interface IBaseContainerStyles extends BackgroundStyles, BorderStyles, IShadowStyles, StyleBoxStyles {
 }
 
-export interface InputStyles {
+export interface ICommonStyles extends FontStyles, IBaseContainerStyles {
+}
+
+export interface ICommonInputStyles {
   /** Styles for the input element of the component */
-  readonly editor: Omit<IComponentStyle, 'styleBox'> & PaddingStyles;
+  readonly editor: Omit<ICommonStyles, 'styleBox'> & PaddingStyles;
   /** Styles for the wrapper element of the component */
   readonly wrapper: MarginStyles;
 }
 
-export interface InputComponentStyles {
+export interface IBaseComponentStyles {
   /** Current styles overrides applied to the component. */
-  readonly styles: InputStyles;
+  readonly styles: IBaseContainerStyles;
+}
+
+export interface ICommonComponentStyles {
+  /** Current styles overrides applied to the component. */
+  readonly styles: ICommonStyles;
+}
+
+export interface ICommonInputComponentStyles {
+  /** Current styles overrides applied to the component. */
+  readonly styles: ICommonInputStyles;
 }
 
 export interface AnyComponentStyles {
@@ -308,18 +321,13 @@ export interface BaseComponentApi {
   interactionMode: InteractionMode | undefined;
 }
 
-export interface CommonComponentApi extends BaseComponentApi {
-  /** Current styles overrides applied to the component. */
-  readonly styles: IComponentStyle;
-}
-
 /**
  * Everything an input exposes **except** its value: focus, validation and the required flag.
  *
  * Split out so a component whose value cannot be assigned can inherit the rest without also
  * inheriting a writable `value`. Redeclaring `value` as `readonly` on a subinterface is not enough
  * on its own — `readonly` is not part of assignability, so widening the object back to
- * `InputComponentApi` restores the write.
+ * `InputComponentApiBase` restores the write.
  */
 export interface InputComponentApiBase extends BaseComponentApi {
   /** If 'true', the component is required (for now is working only for binding to the form data) */
@@ -336,18 +344,35 @@ export interface InputComponentApiBase extends BaseComponentApi {
   reset(): void;
 }
 
-export interface InputComponentApi<T = unknown> extends InputComponentApiBase {
+export interface BaseInputComponentApi<T = unknown> extends InputComponentApiBase {
   /** Component value. Readable and writable */
   value: T;
 }
 
+export interface CommonInputComponentApi extends BaseInputComponentApi, ICommonInputComponentStyles {
+}
+
+export interface CommonContainerComponentApi extends BaseComponentApi, IBaseComponentStyles {
+}
+
+export interface CommonComponentApi extends BaseComponentApi, ICommonComponentStyles {
+}
+
 // Components API
 
-export type TextFieldApi = InputComponentApi<string | undefined> & InputComponentStyles;
+export type ColumnsApi = BaseComponentApi & IBaseComponentStyles;
 
-export type TextAreaApi = InputComponentApi<string | undefined> & InputComponentStyles;
+export type KayInformationBarApi = BaseComponentApi & IBaseComponentStyles;
 
-export interface NumberFieldApi extends InputComponentApi<number | undefined>, InputComponentStyles {
+export type TableFilterApi = BaseComponentApi & ICommonComponentStyles;
+
+export type ValidationErrorApi = BaseComponentApi & ICommonComponentStyles;
+
+export type TextFieldApi = BaseInputComponentApi<string | undefined> & ICommonInputComponentStyles;
+
+export type TextAreaApi = BaseInputComponentApi<string | undefined> & ICommonInputComponentStyles;
+
+export interface NumberFieldApi extends BaseInputComponentApi<number | undefined>, ICommonInputComponentStyles {
   /** Minimum value */
   min?: number;
   /** Maximum value */
@@ -362,27 +387,27 @@ export interface RadioOption {
   readonly value: string | number | undefined;
 }
 
-export interface RadioApi extends InputComponentApi<number | string | undefined> {
+export interface RadioApi extends BaseInputComponentApi<number | string | undefined>, ICommonInputComponentStyles {
   /** Options currently displayed by the radio group, whatever the configured data source is. Read-only. */
   readonly options: readonly RadioOption[];
 };
 
-export type CheckboxFieldApi = InputComponentApi<boolean | undefined>;
+export type CheckboxFieldApi = BaseInputComponentApi<boolean | undefined> & ICommonInputComponentStyles;
 
-export type DropdownApi = InputComponentApi<number | number[] | string | string[] | (string | number)[] | undefined>;
+export type DropdownApi = BaseInputComponentApi<number | number[] | string | string[] | (string | number)[] | undefined> & ICommonInputComponentStyles;
 
 /**
  * Status tag. A display-only drop-down: it renders the bound status as a tag and never captures one,
  * so there is no `focus` — the component has no focusable control.
  */
-export type StatusTagApi = Omit<InputComponentApi<number | number[] | string | string[] | (string | number)[] | undefined>, 'focus'>;
+export type StatusTagApi = Omit<BaseInputComponentApi<number | number[] | string | string[] | (string | number)[] | undefined>, 'focus'> & ICommonInputComponentStyles;
 
 /**
  * Autocomplete. The value shape follows the component's Value Format setting: a plain key for
  * `simple`, an entity reference object for `entityReference`, or whatever the configured Value
  * Function returns for `custom`. In multiple selection mode it is an array of those.
  */
-export interface AutocompleteApi extends InputComponentApi<unknown> {
+export interface AutocompleteApi extends BaseInputComponentApi<unknown>, ICommonInputComponentStyles {
   /** Whether the component currently allows selecting more than one item. Read-only. */
   readonly multiple: boolean;
 };
@@ -402,7 +427,7 @@ export type EntityReferenceTypes = "Dialog" | "NavigateLink" | "Quickview";
  * Entity reference. The value is the referenced entity's id — either stored directly as a string,
  * or normalised out of an `{ id, _className, _displayName }` object bound from the form data.
  */
-export interface EntityReferenceApi extends InputComponentApi<string | undefined> {
+export interface EntityReferenceApi extends BaseInputComponentApi<string | undefined> {
   /** Id of the entity the component currently points at, or `undefined` when nothing is selected. Read-only. */
   readonly entityId: string | undefined;
   /** How the reference is opened. Read-only. */
@@ -410,16 +435,16 @@ export interface EntityReferenceApi extends InputComponentApi<string | undefined
 };
 
 /** Checkbox group. Multi-select only, so the value is always the list of selected item values. */
-export type CheckboxGroupApi = InputComponentApi<string[] | undefined>;
+export type CheckboxGroupApi = BaseInputComponentApi<string[] | undefined>;
 
-export type SwitchFieldApi = InputComponentApi<boolean | undefined>;
+export type SwitchFieldApi = BaseInputComponentApi<boolean | undefined> & ICommonComponentStyles;
 
 /**
  * File upload. The value is the stored file the component is bound to: its id once the file has been
  * persisted, the `File` itself while a synchronous upload is still pending, or `null` when no file is
  * attached. Setting it to `null` clears the component.
  */
-export interface FileUploadApi extends InputComponentApi<File | string | null | undefined> {
+export interface FileUploadApi extends BaseInputComponentApi<File | string | null | undefined> {
   /** Whether the user can currently upload a file. Combines the Allow Upload setting with the interaction mode. */
   readonly allowUpload: boolean;
   /** Whether the user can currently replace the attached file. Combines the Allow Replace setting with the interaction mode. */
@@ -439,7 +464,7 @@ export interface FileUploadApi extends InputComponentApi<File | string | null | 
  * the stored collection nor anything that is persisted. Files are added, replaced and removed by the
  * user through the component itself, or through the storage provider's own API.
  */
-export interface FileListApi extends InputComponentApiBase {
+export interface FileListApi extends InputComponentApiBase, ICommonInputComponentStyles {
   /**
    * The files currently attached to the owner. Read-only, and so is the array: the collection is the
    * storage provider's, so replacing it or mutating it in place changes nothing that is persisted.
@@ -475,7 +500,7 @@ export interface StoredFileApiModel {
  * Reference list status. The value is the item value of the reference list item currently displayed,
  * so writing it switches the component to the matching status.
  */
-export interface RefListStatusApi extends InputComponentApi<number | undefined> {
+export interface RefListStatusApi extends BaseInputComponentApi<number | undefined>, ICommonInputComponentStyles {
   /** Text shown for the current item, taken from the reference list. Read-only. */
   readonly itemText: string | undefined;
 };
@@ -484,7 +509,7 @@ export interface RefListStatusApi extends InputComponentApi<number | undefined> 
  * Date field. The value is the serialised date as stored in the form data, so its shape follows the
  * component's Binding Format; when Range is enabled it is a `[start, end]` pair instead.
  */
-export interface DateFieldApi extends InputComponentApi<string | [string | null, string | null] | null | undefined> {
+export interface DateFieldApi extends BaseInputComponentApi<string | [string | null, string | null] | null | undefined>, ICommonInputComponentStyles {
   /** Whether the component is currently picking a range rather than a single date. Read-only. */
   readonly isRange: boolean;
 };
@@ -493,7 +518,7 @@ export interface DateFieldApi extends InputComponentApi<string | [string | null,
  * Address field. The value is the formatted address as entered or as selected from the Google
  * Places suggestions.
  */
-export type AddressApi = InputComponentApi<string | undefined>;
+export type AddressApi = BaseInputComponentApi<string | undefined> & ICommonInputComponentStyles;
 
 /** A single entity selected in an entity picker. */
 export interface EntityPickerSelection {
@@ -508,7 +533,7 @@ export interface EntityPickerSelection {
  * an entity reference object with `entityReference`, or whatever the custom scripts return. When
  * Selection Type is Multiple the value is the corresponding array instead.
  */
-export interface EntityPickerApi extends InputComponentApi<string | string[] | EntityReferenceValue | EntityReferenceValue[] | undefined> {
+export interface EntityPickerApi extends BaseInputComponentApi<string | string[] | EntityReferenceValue | EntityReferenceValue[] | undefined>, ICommonInputComponentStyles {
   /** Entities currently selected, whatever the configured Value Format is. Read-only. */
   readonly selectedItems: readonly EntityPickerSelection[];
   /** Open the selection dialog. */
@@ -531,9 +556,9 @@ export interface EntityReferenceValue {
  * Icon picker. The value is the name of the selected Ant Design icon (for example
  * `"HeartOutlined"`), or `undefined` when no icon is selected.
  */
-export type IconPickerApi = InputComponentApi<string | undefined>;
+export type IconPickerApi = BaseInputComponentApi<string | undefined>;
 
-export interface PanelApi extends CommonComponentApi {
+export interface PanelApi extends BaseComponentApi, IBaseComponentStyles {
   /** Whether the panel is expanded */
   isExpanded: boolean;
   /** Expand the panel */
@@ -558,7 +583,7 @@ export interface NotesApiNote {
  * Notes editor. It is not bound to a form value — the notes live against the owner entity — so it
  * exposes the notes it is showing and the owner it is showing them for, rather than a `value`.
  */
-export interface NotesApi extends CommonComponentApi {
+export interface NotesApi extends BaseComponentApi {
   /** Notes currently listed by the component, newest first. */
   readonly notes: ReadonlyArray<NotesApiNote>;
   /** Id of the entity the notes belong to. */
@@ -575,14 +600,14 @@ export interface NotesApi extends CommonComponentApi {
   deleteNote(id: string): Promise<void>;
 };
 
-export interface ButtonApi extends CommonComponentApi {
+export interface ButtonApi extends BaseComponentApi, ICommonComponentStyles {
   /** Focus on component */
   focus(): void;
   /** Click on button */
   click(): void;
 };
 
-export interface AlertApi extends CommonComponentApi {
+export interface AlertApi extends BaseComponentApi {
   /** Text of the alert */
   text?: string;
   /** Description of the alert */
@@ -604,7 +629,7 @@ export interface TabsApiTab {
   select(): void;
 }
 
-export interface TabsApi extends CommonComponentApi {
+export interface TabsApi extends BaseComponentApi {
   /** Current visible tab. The tab index starts from zero */
   currentTab?: number | undefined;
   /** List of tabs */

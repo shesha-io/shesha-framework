@@ -23,7 +23,7 @@ import { useActualContextExecutionNoRefresh } from '@/hooks/formComponentHooks';
 
 const ContainerComponent: ContainerComponentDefinition = {
   showInThemeEditor: false,
-  styleGroup: 'containers',
+  styleGroup: 'common-containers',
   allowInherit: true,
   type: 'container',
   isInput: false,
@@ -46,13 +46,13 @@ const ContainerComponent: ContainerComponentDefinition = {
           style={model.styleCss}
           className={cx(model.className, styles.container)}
           dynamicComponents={model.isDynamic === true ? model.components : ContainerComponent.emptyComponents}
-          additionalDomProperties={getComponentEvents<void, IContainerComponentProps>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave'], { handleEvent })}
+          additionalDomProperties={getComponentEvents<void, IContainerComponentProps>(model, ['onClick', 'onDoubleClick', 'onMouseEnter', 'onMouseMove', 'onMouseLeave', 'onKeyDown'], { handleEvent })}
         />
       </ParentProvider>
     );
   },
   settingsFormMarkup: getSettings,
-
+  getDefaultStyles: defaultStyles,
   migrator: (m) => m
     .add<IContainerComponentPropsV0>(0, (prev) => ({
       ...prev,
@@ -120,7 +120,38 @@ const ContainerComponent: ContainerComponentDefinition = {
       };
     })
     .add<IContainerComponentProps>(7, (prev, ctx) => ctx.isNew === true ? prev : { ...prev, ...migratePrevStyles(prev, defaultStyles(prev)) })
-    .add<IContainerComponentProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev)))),
+    .add<IContainerComponentProps>(8, (prev) => migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(prev))))
+    // fix wrong migrations (Thulasizwe changed old migrations and this lead to skip migrations for some forms)
+    // 5b13f3ad518763c7f67527a98e5686c990bc7abf
+    // e8a8cb8eaf1f72c765a767881f137f5cf5d622e6
+    // c202d0260d1522c3a715640a901b411b6dd73da1
+    .add<IContainerComponentPropsV0>(9, (prev, ctx) => {
+      if (ctx.isNew === true) return prev;
+
+      const flexAndGridStyles: Omit<ICommonContainerPropsV0, 'style'> = {
+        display: prev.display,
+        flexDirection: prev.flexDirection,
+        direction: prev.direction,
+        justifyContent: prev.justifyContent,
+        alignItems: prev.alignItems,
+        alignSelf: prev.alignSelf,
+        justifySelf: prev.justifySelf,
+        justifyItems: prev.justifyItems,
+        textJustify: prev.textJustify,
+        noDefaultStyling: prev.noDefaultStyling,
+        gridColumnsCount: prev.gridColumnsCount,
+        flexWrap: prev.flexWrap,
+        gap: prev.gap,
+        overflow: prev.overflow,
+      };
+
+      return {
+        ...prev,
+        desktop: { ...flexAndGridStyles, ...prev.desktop },
+        tablet: { ...flexAndGridStyles, ...prev.tablet },
+        mobile: { ...flexAndGridStyles, ...prev.mobile },
+      };
+    }),
 };
 
 export const isContainerComponent = (component: IConfigurableFormComponent): component is IContainerComponentProps => component.type === ContainerComponent.type;

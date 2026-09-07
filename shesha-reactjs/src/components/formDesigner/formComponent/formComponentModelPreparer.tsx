@@ -10,7 +10,7 @@ import { ErrorIconPopover } from "@/components/componentErrors/errorIconPopover"
 import { IModelValidation } from "@/utils/errors";
 import { formComponentActualModelPropertyFilter, updateComponentModelFromMetadata } from "@/providers/form/utils";
 import { deepMergeSkipUndefinedFunc, deepMergeValues } from "@/utils/object";
-import { isDefined } from "@/utils";
+import { isDefined, isNullOrWhiteSpace } from "@/utils";
 import { getStyleBoxValue } from "@/designer-components/styleBox/utils";
 import { useActualContextData, useActualContextExecution, useBackgroundStoredFile } from "@/hooks/formComponentHooks";
 import { useComponentApiProvider } from "@/providers/componentApi/provider";
@@ -29,9 +29,9 @@ export const FormComponentModelPreparer: FC<FormComponentPrepareModelProps> = ({
   const { anyOfPermissionsGranted } = shaApplication;
   const shaForm = useShaFormInstance();
   const subForm = useSubFormOrUndefined();
-  const { modelMetadata: formMetadata, formSettings, isComponentFiltered } = useForm();
+  const { formSettings, isComponentFiltered } = useForm();
 
-  const modelMetadata = isDefined(subForm) ? subForm.modelMetadata : formMetadata;
+  const modelMetadata = isDefined(subForm) ? subForm.modelMetadata : shaForm.modelMetadata;
 
   const getToolboxComponent = useFormDesignerComponentGetter();
   const [propMetadata, setPropMetadata] = useState<IPropertyMetadata | undefined>(undefined);
@@ -144,9 +144,14 @@ export const FormComponentModelPreparer: FC<FormComponentPrepareModelProps> = ({
         });
       }
     }
+    // clear prop metadata if model metadata is cleared
+    if ((!isDefined(modelMetadata) || isNullOrWhiteSpace(actualApiModel.propertyName)) && isDefined(propMetadata))
+      setPropMetadata(undefined);
     return () => {
       cancelled = true;
     };
+  // propertyMetadat can retrigger the request after every resolution and cause an endless fetch loop
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modelMetadata, actualApiModel.propertyName]);
 
   const componentModel = useMemo((): UnwrapCodeEvaluators<IConfigurableFormComponent> => {

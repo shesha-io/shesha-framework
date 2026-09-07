@@ -4,17 +4,9 @@ import { useStyles } from '../styles/styles';
 import { MainArea } from './mainArea';
 import { withToolbox } from './withToolbox';
 import { withPropertiesPanel } from './withPropertiesPanel';
+import { withValidationPanel } from './withValidationPanel';
 
-/*
-import { ComponentPropertiesPanel } from '../componentPropertiesPanel';
-import { ComponentPropertiesTitle } from '../componentPropertiesTitle';
-export const rightSidebarProps = {
-  title: () => <ComponentPropertiesTitle />,
-  content: () => <ComponentPropertiesPanel />,
-  placeholder: 'Properties',
-};
-*/
-const CanvasWithPanels = withToolbox(withPropertiesPanel(MainArea));
+const CanvasWithPanels = withToolbox(withPropertiesPanel(withValidationPanel(MainArea)));
 
 export const DesignerMainArea: FC = () => {
   const formMode = useFormDesignerFormMode();
