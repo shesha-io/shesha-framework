@@ -64,7 +64,7 @@ export const filterDynamicComponents = (components: IConfigurableFormComponent[]
             components: contentComponents,
           }
           : undefined,
-        hidden: evaluateHidden(c.hidden, directMatch, hasVisibleChildren),
+        hidden: evaluateHidden(c.hidden === true, directMatch, hasVisibleChildren),
         collapsedByDefault: false,
       } satisfies ICollapsiblePanelComponentProps;
     }
@@ -95,14 +95,14 @@ export const filterDynamicComponents = (components: IConfigurableFormComponent[]
       return {
         ...c,
         components: filteredComponents,
-        hidden: evaluateHidden(c.hidden, directMatch, hasVisibleChildren),
+        hidden: evaluateHidden(c.hidden === true, directMatch, hasVisibleChildren),
       } satisfies IConfigurableFormComponent & IComponentsContainer;
     }
 
     // Handle basic component
     return {
       ...c,
-      hidden: evaluateHidden(c.hidden, directMatch, false),
+      hidden: evaluateHidden(c.hidden === true, directMatch, false),
     } satisfies IConfigurableFormComponent;
   });
 

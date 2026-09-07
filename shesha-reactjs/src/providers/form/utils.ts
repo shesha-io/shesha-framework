@@ -1,5 +1,5 @@
 /* eslint @typescript-eslint/strict-boolean-expressions: "error" */
-import { updateJsSettingsForComponents } from '@/designer-components/_settings/utils/utils';
+import { isPropertySettings, updateJsSettingsForComponents } from '@/designer-components/_settings/utils/utils';
 import { normalizeSingleBraceAccessor } from '@/providers/form/utils/mustacheNormalization';
 import {
   IToolboxComponent,
@@ -37,7 +37,7 @@ import { ExpressionNodeValue } from '@/utils/jsonLogic';
 import { getFullPath } from '@/utils/metadata/helpers';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { isPromise } from '@/utils/promises';
-import { deepCopyViaJson, deepMergeSkipUndefinedFunc, deepMergeValues, jsonSafeParse, unproxyValue, unsafeGetValueByPropertyName } from '@/utils/object';
+import { deepCopyViaJson, deepMergeSkipUndefinedFunc, deepMergeValues, getStringPropertyOrUndefined, jsonSafeParse, unproxyValue, unsafeGetValueByPropertyName } from '@/utils/object';
 import { QueryStringParams } from '@/utils/url';
 import { nanoid } from '@/utils/uuid';
 import { App } from 'antd';
@@ -70,6 +70,7 @@ import {
   IFormSettings,
   IFormValidationRulesOptions,
   IPersistedFormProps,
+  IPropertySetting,
   ROOT_COMPONENT_KEY,
 } from './models';
 import { isHasPropsAccessor, makeObservableProxy, ProxyPropertiesAccessors, TypedProxy } from './observableProxy';
@@ -100,6 +101,7 @@ import { useComponentApiUpdate } from '../componentApi/provider';
 import { IUtilsApi } from '@/publicJsApis/apis/utils';
 import { IActionsApi } from '@/publicJsApis/apis/actions';
 import { ICurrentUserApi } from '@/publicJsApis/apis/user';
+import { isEqual } from 'lodash';
 
 export {
   executeExpression, executeScript,
@@ -582,9 +584,22 @@ export const getComponentsChain = (markup: IFlatComponentsStructure, id: string)
 export const isComponentHidden = (markup: IFlatComponentsStructure, id: string, allData: object): boolean => {
   const chain = getComponentsChain(markup, id);
   const isVisible = chain.every((c) => {
-    const componentWithActualHidden = getActualModel('', c, allData, undefined, (name) => name === "hidden");
-    // const hiddenValue = getSettingValue("hidden", c);
-    return componentWithActualHidden.hidden !== true;
+    const visibleJs = getStringPropertyOrUndefined(c, "visibleJs");
+    const visibleFixed: IPropertySetting<boolean> | undefined = !isNullOrWhiteSpace(visibleJs)
+      ? { _mode: 'code', _code: visibleJs }
+      : isPropertySettings<boolean>(c.visible) // already converted
+        ? c.visible
+        : typeof (c.visible) === "boolean"
+          ? { _mode: 'value', _value: c.visible }
+          : undefined;
+
+    const componentWithActualProps = getActualModel('', { ...c, visible: visibleFixed }, allData, undefined, (name) => name === "hidden" || name === "visible" || name === "visibleJs");
+
+    const { visible, hidden } = componentWithActualProps;
+
+    return isDefined(visible)
+      ? visible
+      : hidden !== true;
   });
   return !isVisible;
 };
@@ -1315,6 +1330,20 @@ export const isRequired = (rule: RuleItem | RuleItem[]): boolean => {
 
 type RequiredRule = RuleItem & { required: true };
 const isRequiredRule = (rule: unknown): rule is RequiredRule => isDefined(rule) && typeof rule === 'object' && "required" in rule && rule.required === true;
+const mergeRules = (rulesA: RuleItem[], rulesB: RuleItem[]): RuleItem[] => {
+  const combined = [...rulesA, ...rulesB];
+  const unique: RuleItem[] = [];
+
+  combined.forEach((item) => {
+    // Check if this item already exists in the 'unique' array
+    const isDuplicate = unique.some((existing) => isEqual(existing, item));
+    if (!isDuplicate) {
+      unique.push(item);
+    }
+  });
+
+  return unique;
+};
 export const setRuleAtPath = (rules: RulesDescriptor, path: string, rule: RuleItem | RuleItem[]): void => {
   const newRules: RuleItem[] = Array.isArray(rule) ? rule : [rule];
   const segments = path.split('.');
@@ -1330,11 +1359,8 @@ export const setRuleAtPath = (rules: RulesDescriptor, path: string, rule: RuleIt
       // ---- Leaf: merge the rule ----
       const target = current[segment];
       if (isDefined(target)) {
-        if (Array.isArray(target)) {
-          current[segment] = [...target, ...newRules];
-        } else if (typeof target === 'object') {
-          current[segment] = [target, ...newRules];
-        }
+        const currentLeaf = Array.isArray(target) ? target : [target];
+        current[segment] = mergeRules(currentLeaf, newRules);
       } else
         current[segment] = [...newRules];
     } else {
