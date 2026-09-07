@@ -1132,6 +1132,9 @@ const toValidationMessage = (error: unknown): string => error instanceof Error ?
  * a returned promise (resolve = valid, reject = invalid), a synchronous `callback(error)` call, or a plain
  * return with neither, which counts as valid. The validation library alone waits forever for a script
  * that only calls `callback` on failure and returns nothing on success (#5073).
+ *
+ * Contract for asynchronous checks: return the promise. A `callback` made after the script has returned
+ * is not awaited, because a script that returned nothing is already treated as complete.
  */
 export const runCustomValidator = (validatorFunc: ValidatorFunc, rule: InternalRuleItem, value: unknown, data: unknown): Promise<void> =>
   new Promise<void>((resolve, reject) => {
