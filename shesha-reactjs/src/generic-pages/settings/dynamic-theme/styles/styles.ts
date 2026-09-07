@@ -144,9 +144,6 @@ export const useStyles = createStyles(({ css, cx }) => {
     css`
       margin-bottom: 16px;
       height: 400px;
-      .ant-card-head {
-        background: #fafafa;
-      }
     `,
   );
 

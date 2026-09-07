@@ -2,7 +2,7 @@ import { App, ConfigProvider, ThemeConfig, theme as antdTheme } from 'antd';
 import { FC, PropsWithChildren, useCallback, useContext, useMemo, useState } from 'react';
 import './interFont.generated.css';
 import './baseFont.css';
-import { ColorScheme, IConfigurableTheme, IThemeActionsContext, IThemeStateContext, ResolvedTheme, THEME_CONTEXT_INITIAL_STATE, UiActionsContext, UiStateContext } from './contexts';
+import { ColorScheme, IConfigurableTheme, IThemeActionsContext, IThemeStateContext, normalizeColorScheme, ResolvedTheme, THEME_CONTEXT_INITIAL_STATE, UiActionsContext, UiStateContext } from './contexts';
 import { useResolvedTheme } from './useResolvedTheme';
 import { defaultRequiredMark } from './shaRequiredMark';
 import { useSettings, useSheshaApplication } from '..';
@@ -33,7 +33,9 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
   const application = useSheshaApplication();
   application.registerInitialization('theme', async () => {
     // load theme settings
-    const theme = await settings.getSetting<IConfigurableTheme>({ module: 'Shesha', name: 'Shesha.ThemeSettings' });
+    const loaded = await settings.getSetting<IConfigurableTheme>({ module: 'Shesha', name: 'Shesha.ThemeSettings' });
+    // Persisted settings predate the 'system' option, so the stored scheme may be empty or stale.
+    const theme: IConfigurableTheme = { ...loaded, sidebar: normalizeColorScheme(loaded.sidebar) };
     setState((prev) => ({ ...prev, theme: theme, initialTheme: theme }));
   });
 

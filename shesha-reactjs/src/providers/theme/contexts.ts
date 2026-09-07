@@ -21,6 +21,18 @@ export type ColorScheme = ResolvedTheme | 'system';
 /** @deprecated use {@link ColorScheme}. Kept as an alias because `sidebar` used to be sidebar-only. */
 export type SidebarTheme = ColorScheme;
 
+const COLOR_SCHEMES: readonly ColorScheme[] = ['light', 'dark', 'system'];
+
+/**
+ * Coerces a persisted colour scheme to a valid {@link ColorScheme}.
+ *
+ * Saved theme settings predate the 'system' option and are not schema-validated, so the stored
+ * value can be empty or something no longer supported. Anything unrecognised falls back to
+ * 'system' — the default — so the settings control always has exactly one option selected.
+ */
+export const normalizeColorScheme = (value: unknown): ColorScheme =>
+  COLOR_SCHEMES.includes(value as ColorScheme) ? (value as ColorScheme) : 'system';
+
 export interface IConfigurableTheme {
   application?: Theme | undefined;
   /**

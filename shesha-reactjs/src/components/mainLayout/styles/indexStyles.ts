@@ -15,6 +15,11 @@ export const GlobalSheshaStyles = createGlobalStyle`
     }
   }
 
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: ${(p) => p.theme.colorBgLayout};
+  }
+
   .sha-index-table-full {
     .sha-react-table {
       margin-top: ${sheshaStyles.paddingLG}px;
@@ -26,14 +31,9 @@ export const GlobalSheshaStyles = createGlobalStyle`
 
   .sha-index-toolbar {
     border-bottom: ${shaBorder};
-
-    background: white;
+    background:  ${(p) => p.theme.colorBgContainer}};
     max-height: ${sheshaStyles.pageHeadingHeight} !important;
-  
-    .sha-components-container-inner {
-      display: flex !important;
-    }
-  
+
     ${sheshaStyles.flexCenterAlignedSpaceBetween}
     width: 100%;
     padding: 0 ${sheshaStyles.paddingLG}px;
