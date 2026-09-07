@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { Table, Tag, Typography, Space, Badge, Button } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { ItemValidationResult } from '@/providers/validator/interfaces';
 import { ISheshaErrorTypes } from '@/utils/errors';
 import { useFormDesigner } from '@/providers/formDesigner';
@@ -92,7 +92,9 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
       dataIndex: 'message',
       key: 'message',
       render: (_, record) => {
-        const propName = record.propertyLabel ?? record.propertyName;
+        const propName = typeof (record.propertyLabel) === "string" && !isNullOrWhiteSpace(record.propertyLabel)
+          ? record.propertyLabel
+          : record.propertyName;
         return isDefined(propName)
           ? `${propName}: ${record.message}`
           : record.message;

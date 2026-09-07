@@ -195,6 +195,10 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     return component;
   };
 
+  private componentExists = (id: string): boolean => {
+    return isDefined(this.getComponentOrContainer(id));
+  };
+
   private getComponent = (id: string): IConfigurableFormComponent => {
     const result = this.getComponentOrContainer(id);
     if (!isConfigurableFormComponent(result))
@@ -577,6 +581,9 @@ export class FormDesignerInstance implements IFormDesignerInstance {
   };
 
   getComponentDisplayName = (componentId: string): string | ReactNode => {
+    if (!this.componentExists(componentId))
+      return `unknown component ${componentId}`;
+
     const component = this.getComponent(componentId);
     return isDefined(component.label)
       ? component.label
