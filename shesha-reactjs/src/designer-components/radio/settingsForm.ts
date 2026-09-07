@@ -66,7 +66,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                   .addSettingsInputRow({
                     inputs: [
                       { type: 'textField', propertyName: 'validate.message', label: 'Message', size: 'small', jsSetting: true },
-                      { type: 'codeEditor', propertyName: 'validate.validator', label: 'Custom Validator', labelAlign: 'right', tooltip: 'Enter custom validator logic for form.item rules. Returns a Promise' },
+                      { type: 'codeEditor', propertyName: 'validate.validator', label: 'Custom Validator', labelAlign: 'right', tooltip: 'Custom validation script. Return a Promise (reject it to fail), or call callback("message") to fail. Returning nothing passes.' },
                     ],
                   }))
                 .toJson(),
