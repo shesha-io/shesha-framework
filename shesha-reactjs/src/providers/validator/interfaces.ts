@@ -4,12 +4,14 @@ import { ReactNode } from "react";
 export type ValidationResult = {
   type: ISheshaErrorTypes;
   propertyName?: string | undefined;
+  propertyLabel?: string | ReactNode;
   message: string;
   description: string | undefined;
   documentationUrl: string | undefined;
 };
 
 export type ItemValidationResult = ValidationResult & {
+  key: string;
   itemType: string;
   itemId: string;
   itemName: string;

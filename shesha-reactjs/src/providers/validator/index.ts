@@ -41,12 +41,14 @@ export class ValidationCollector implements IValidationCollector {
   updateValidationResults = (itemType: string, itemId: string, displayName: string | ReactNode, results: ValidationResult[]): void => {
     this.clearValidationResults(itemType, itemId);
     if (isNonEmptyArray(results)) {
-      results.forEach((result) => this.validationResults.push({
+      results.forEach((result, index) => this.validationResults.push({
+        key: `${itemType}-${itemId}-${index}`,
         itemType: itemType,
         itemId: itemId,
         itemName: "",
         displayName: displayName,
         propertyName: result.propertyName,
+        propertyLabel: result.propertyLabel,
         ...result,
       }));
     }

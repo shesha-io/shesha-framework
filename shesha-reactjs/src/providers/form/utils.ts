@@ -45,7 +45,7 @@ import camelcase from 'camelcase';
 import FileSaver from 'file-saver';
 import moment from 'moment';
 import Mustache from 'mustache';
-import { CSSProperties, useRef } from 'react';
+import { CSSProperties, ReactNode, useRef } from 'react';
 import { IArgumentsEvaluationContext } from '../configurableActionsDispatcher/contexts';
 import { IDataContextManagerActions, IDataContextManagerFullInstance, IDataContextsData, SheshaCommonContexts } from '../dataContextManager/models';
 import { ISetStatePayload } from '../globalState/contexts';
@@ -1347,7 +1347,12 @@ export const setRuleAtPath = (rules: RulesDescriptor, path: string, rule: RuleIt
   }
 };
 
-export const getFormValidationRules = (markup: FormMarkup, values: Values): Rules => {
+type ValidationSettings = {
+  rules: Rules;
+  friendlyNames: Record<string, string | ReactNode>;
+};
+
+export const getFormValidationSettings = (markup: FormMarkup, values: Values): ValidationSettings => {
   const components = getComponentsFromMarkup(markup);
 
   const designerComponents: IToolboxComponents = Object.fromEntries(getComponentDefinitions());
@@ -1355,11 +1360,14 @@ export const getFormValidationRules = (markup: FormMarkup, values: Values): Rule
   const flatStructure = componentsTreeToFlatStructure(designerComponents, components);
 
   const rules: Rules = {};
+  const friendlyNames: Record<string, string | ReactNode> = {};
   for (const key in flatStructure.allComponents) {
     if (flatStructure.allComponents.hasOwnProperty(key)) {
       const item = flatStructure.allComponents[key];
 
       if (isConfigurableFormComponent(item) && !isNullOrWhiteSpace(item.propertyName)) {
+        if (isDefined(item.label))
+          friendlyNames[item.propertyName] = item.label;
         const itemRules = getValidationRules(item);
         if (isNonEmptyArray(itemRules)) {
           // validate only when component is not hidden
@@ -1372,7 +1380,14 @@ export const getFormValidationRules = (markup: FormMarkup, values: Values): Rule
     }
   }
 
-  return rules;
+  return {
+    rules,
+    friendlyNames,
+  };
+};
+
+export type ValidateErrorWithFriendlyName = ValidateError & {
+  fieldLabel?: string | ReactNode;
 };
 
 export const validateConfigurableComponentSettings = (markupOrFactory: FormMarkup | SettingsFormMarkupFactory, values: Values): Promise<Values> => {
@@ -1381,9 +1396,16 @@ export const validateConfigurableComponentSettings = (markupOrFactory: FormMarku
     ? markupOrFactory({ fbf: makeFormBuliderFactory(getComponentDefinitions()), removeStyleRouter: true })
     : markupOrFactory;
 
-  const rules = getFormValidationRules(markup, values);
-  const validator = new RawAsyncValidator(rules);
-  return validator.validate(values);
+  const validationSettings = getFormValidationSettings(markup, values);
+  const validator = new RawAsyncValidator(validationSettings.rules);
+  return validator.validate(values, undefined, (errors, _fields) => {
+    if (isDefined(errors)) {
+      errors.forEach((error) => {
+        if (!isNullOrWhiteSpace(error.field))
+          (error as ValidateErrorWithFriendlyName).fieldLabel = validationSettings.friendlyNames[error.field];
+      });
+    }
+  });
 };
 
 export function linkComponentToModelMetadata<TModel extends IConfigurableFormComponent>(

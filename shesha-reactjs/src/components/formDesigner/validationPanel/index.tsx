@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { Table, Tag, Typography, Space, Badge, Button } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined } from '@/utils/nullables';
 import { ItemValidationResult } from '@/providers/validator/interfaces';
 import { ISheshaErrorTypes } from '@/utils/errors';
 import { useFormDesigner } from '@/providers/formDesigner';
@@ -69,9 +69,7 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
     },
     {
       title: 'Item',
-      // dataIndex: 'itemName',
       key: 'itemName',
-      // width: 120,
       render: (_, record) => {
         return (
           <Button
@@ -80,6 +78,7 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
               event.stopPropagation();
               if (record.itemType === "component") {
                 formDesigner.setSelectedComponent(record.itemId);
+                // form.scrollToField('bio')
               }
             }}
           >
@@ -93,8 +92,9 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
       dataIndex: 'message',
       key: 'message',
       render: (_, record) => {
-        return !isNullOrWhiteSpace(record.propertyName)
-          ? `${record.propertyName}: ${record.message}`
+        const propName = record.propertyLabel ?? record.propertyName;
+        return isDefined(propName)
+          ? `${propName}: ${record.message}`
           : record.message;
       },
     },
@@ -121,7 +121,7 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
       <Table<ItemValidationResult>
         dataSource={data}
         columns={columns}
-        rowKey={(record, index) => `${record.type}-${record.message}-${index}`}
+        rowKey={(record) => record.key}
         size={size}
         pagination={false}
         {...(isDefined(scrollY) ? { scroll: { y: scrollY } } : {})}

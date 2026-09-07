@@ -22,7 +22,7 @@ import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { camelcaseDotNotation } from '@/utils/string';
 import { nanoid } from "@/utils/uuid";
 import { toolbarGroupsToComponents } from "../form/hooks";
-import { componentsFlatStructureToTree, createComponentModelForDataProperty, isValidationError, processRecursive, upgradeComponent, validateConfigurableComponentSettings } from "../form/utils";
+import { componentsFlatStructureToTree, createComponentModelForDataProperty, isValidationError, processRecursive, upgradeComponent, validateConfigurableComponentSettings, ValidateErrorWithFriendlyName } from "../form/utils";
 import {
   FormDesignerFormState,
   IAddDataPropertyPayload,
@@ -553,7 +553,8 @@ export class FormDesignerInstance implements IFormDesignerInstance {
         } catch (error: unknown) {
           if (isValidationError(error)) {
             error.errors.forEach((fieldError) => {
-              validationErrors.push({ field: fieldError.field ?? "", message: fieldError.message ?? "Unknown error" });
+              const fieldLabel = (fieldError as ValidateErrorWithFriendlyName).fieldLabel;
+              validationErrors.push({ field: fieldError.field ?? "", fieldLabel: fieldLabel, message: fieldError.message ?? "Unknown error" });
             });
           } else {
             console.error('Unknown error ocurred while validating settings', error);
@@ -637,6 +638,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
         description: undefined,
         documentationUrl: undefined,
         propertyName: err.field,
+        propertyLabel: err.fieldLabel,
       });
     });
 

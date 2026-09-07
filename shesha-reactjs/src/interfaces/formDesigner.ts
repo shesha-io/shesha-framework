@@ -331,6 +331,7 @@ export { type IConfigurableFormComponent as IConfigurableFormComponent, type IFo
 
 export interface IAsyncValidationError {
   field: string;
+  fieldLabel?: string | ReactNode;
   message: string;
 }
 
