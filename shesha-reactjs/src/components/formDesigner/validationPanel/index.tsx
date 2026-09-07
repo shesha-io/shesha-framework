@@ -6,6 +6,7 @@ import { ItemValidationResult } from '@/providers/validator/interfaces';
 import { ISheshaErrorTypes } from '@/utils/errors';
 import { useFormDesigner } from '@/providers/formDesigner';
 import { useAllValidationResults } from '@/providers/validator/hooks';
+import { useIsDevMode } from '@/hooks/useIsDevMode';
 
 const { Text } = Typography;
 
@@ -25,6 +26,7 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
 }) => {
   const formDesigner = useFormDesigner();
   const data = useAllValidationResults();
+  const isDevMode = useIsDevMode();
 
   // Count results by type
   const counts = React.useMemo(() => {
@@ -86,6 +88,12 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
           </Button>
         );
       },
+    },
+    {
+      title: 'Item Id',
+      dataIndex: 'itemId',
+      key: 'itemId',
+      hidden: !isDevMode,
     },
     {
       title: 'Message',
