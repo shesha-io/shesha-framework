@@ -31,7 +31,7 @@ export const GlobalSheshaStyles = createGlobalStyle`
 
   .sha-index-toolbar {
     border-bottom: ${shaBorder};
-    background:  ${(p) => p.theme.colorBgContainer}};
+    background:  ${(p) => p.theme.colorBgContainer};
     max-height: ${sheshaStyles.pageHeadingHeight} !important;
 
     ${sheshaStyles.flexCenterAlignedSpaceBetween}
