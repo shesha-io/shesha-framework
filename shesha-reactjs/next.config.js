@@ -61,6 +61,9 @@ const nextConfig = (phase) => {
     typescript: {
       tsconfigPath: './tsconfig.next.json',
     },
+    logging: {
+      browserToTerminal: false,
+    },
     compiler: {
       // Remove `console.*` output except `console.error`
       removeConsole: isProd

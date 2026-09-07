@@ -25,7 +25,7 @@ export const RenderButton: FC<IRenderButtonProps> = ({ props, buttonComponent: t
     </>
   ), [props.label, props.downIcon]);
 
-  const isIconOnly = !isDefined(props.label) || (typeof props.label === 'string' && isNullOrWhiteSpace(props.label));
+  const isIconOnly = props.itemType === 'item' && props.buttonType === 'link' && (!isDefined(props.label) || (typeof props.label === 'string' && isNullOrWhiteSpace(props.label)));
 
   return (
     <div className={shaComponentStyles.shaComponent}>
