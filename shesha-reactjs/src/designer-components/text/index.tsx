@@ -75,7 +75,9 @@ const TextComponent: TextComponentDefinition = {
           ...prev,
           content: prev.contentDisplay === 'name' && !isNullOrWhiteSpace(prev.propertyName)
             ? isNullOrWhiteSpace(prev.context) ? `{{data.${prev.propertyName}}}` : `{{contexts.${prev.context}.${prev.propertyName}}}`
-            : typeof prev.content === 'string' ? prev.content.replaceAll('{{', '{{data.') : prev.content, // previous versions of the component used only `data` as root context, current version uses extended context (`data`, `application.state`, etc)
+            // previous versions of the component used only `data` as root context, current version uses extended context (`data`, `application.state`, etc)
+            // {{name}} - {{{description}}} -> {{name}} - %{{description}}} -> {{data.name}} - %{{data.description}}} -> {{data.name}} - {{{data.description}}}
+            : typeof prev.content === 'string' ? prev.content.replaceAll('{{{', '%{{').replaceAll('{{', '{{data.').replaceAll('%{{', '{{{') : prev.content,
         };
         return migratePermissionsToVisiblePermissions(migrateHiddenToVisible(migrateStylingBoxToJson(newModel)));
       }),
