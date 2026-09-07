@@ -70,6 +70,7 @@ export const resolveDialogWidth = (
 export type { IEntityPickerComponentProps };
 
 const EntityPickerComponent: EntityPickerComponentDefinition = {
+  styleGroup: 'inputs',
   allowInherit: true,
   type: 'entityPicker',
   isInput: true,

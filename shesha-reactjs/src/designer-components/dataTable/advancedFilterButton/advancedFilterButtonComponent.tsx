@@ -17,6 +17,7 @@ import { migratePermissionsToVisiblePermissions } from '@/designer-components/_c
 const outsideContextValidationError = validationError('Table Filter');
 
 const AdvancedFilterButtonComponent: IToolboxComponent<IAdvancedFilterButtonComponentProps> = {
+  styleGroup: 'common',
   allowInherit: true,
   type: 'datatable.filter',
   isInput: false,

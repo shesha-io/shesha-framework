@@ -80,7 +80,7 @@ namespace Shesha.DynamicEntities
             if (obj != null && obj.IsEntity())
             {
                 if (!jobj.Properties().Any(x => x.Name == nameof(IHasClassNameField._className)))
-                    jobj.Add(nameof(IHasClassNameField._className), obj?.GetType().FullName);
+                    jobj.Add(nameof(IHasClassNameField._className), obj?.GetClassName());
                 if (!jobj.Properties().Any(x => x.Name == nameof(IHasDisplayNameField._displayName)))
                     jobj.Add(nameof(IHasDisplayNameField._displayName), obj?.GetEntityDisplayName());
             }
@@ -136,7 +136,7 @@ namespace Shesha.DynamicEntities
                 var jref = new JObject
                 {
                     { nameof(EntityReferenceDto<int>._displayName).ToCamelCase(), JToken.FromObject(val.GetEntityDisplayName() ?? string.Empty) },
-                    { nameof(EntityReferenceDto<int>._className).ToCamelCase(), JToken.FromObject((val.GetType() ?? propType).GetRequiredFullName()) },
+                    { nameof(EntityReferenceDto<int>._className).ToCamelCase(), JToken.FromObject(val.GetType().StripCastleProxyType().GetRequiredFullName()) },
                     { nameof(EntityReferenceDto<int>.Id).ToCamelCase(), JToken.FromObject(val.GetId().NotNull()) }
                 };
                 return jref;

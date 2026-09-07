@@ -1,6 +1,7 @@
 import { isNonEmptyArray } from "@/utils/array";
 import { ItemValidationResult, IValidationCollector, OnValidationResultsChanged, ValidationCollectorSubscription, ValidationResult } from "./interfaces";
 import { isDefined } from "@/utils/nullables";
+import { ReactNode } from "react";
 
 export class ValidationCollector implements IValidationCollector {
   validationResults: ItemValidationResult[];
@@ -37,10 +38,19 @@ export class ValidationCollector implements IValidationCollector {
     this.notifySubscribers();
   };
 
-  updateValidationResults = (itemType: string, itemId: string, results: ValidationResult[]): void => {
+  updateValidationResults = (itemType: string, itemId: string, displayName: string | ReactNode, results: ValidationResult[]): void => {
     this.clearValidationResults(itemType, itemId);
     if (isNonEmptyArray(results)) {
-      results.forEach((result) => this.validationResults.push({ itemType: itemType, itemId: itemId, itemName: "", ...result }));
+      results.forEach((result, index) => this.validationResults.push({
+        key: `${itemType}-${itemId}-${index}`,
+        itemType: itemType,
+        itemId: itemId,
+        itemName: "",
+        displayName: displayName,
+        propertyName: result.propertyName,
+        propertyLabel: result.propertyLabel,
+        ...result,
+      }));
     }
     this.notifySubscribers();
   };
