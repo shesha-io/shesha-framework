@@ -351,7 +351,6 @@ export const useMainStyles = createStyles(({ css, cx, token, prefixCls, iconPref
         }
 
         .${designerWorkArea}{
-            background-color: ${token.colorBgLayout};
             height: calc(100vh - ${HEADER_HEIGHT} - ${TOOLBAR_HEIGHT} - ${SIDEBAR_BTN_HEIGHT});
             .${shaComponentsContainer} {
 
