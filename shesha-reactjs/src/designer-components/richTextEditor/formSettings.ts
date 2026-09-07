@@ -240,6 +240,19 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                           parentId: optionsCollapsiblePanelId,
                           inputs: [
                             {
+                              type: 'switch',
+                              id: nanoid(),
+                              propertyName: 'spellcheck',
+                              label: 'Spell Check',
+                              tooltip: "If yes, the browser will spell-check the editor's content",
+                            },
+                          ],
+                        })
+                        .addSettingsInputRow({
+                          id: nanoid(),
+                          parentId: optionsCollapsiblePanelId,
+                          inputs: [
+                            {
                               type: 'dropdown',
                               id: nanoid(),
                               propertyName: 'preset',
