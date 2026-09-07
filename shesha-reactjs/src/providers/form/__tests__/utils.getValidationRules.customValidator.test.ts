@@ -42,6 +42,12 @@ describe('custom validator rule (#5073)', () => {
     await expect(settlesWithin(runRule("throw new Error('boom');", 'x'))).resolves.toBe('boom');
   });
 
+  it('does not wait for a callback made after the script has returned (asynchronous checks must return a Promise)', async () => {
+    // documents the contract: a script that returns nothing is complete; a later callback is ignored
+    await expect(settlesWithin(runRule("setTimeout(() => callback('too late'), 20);", 'x'))).resolves.toBe('resolved');
+    await expect(settlesWithin(runRule("return new Promise((_, reject) => setTimeout(() => reject('async fail'), 20));", 'x'))).resolves.toBe('async fail');
+  });
+
   it('passes form data to the script', async () => {
     await expect(settlesWithin(runRule("if (data.name !== value) callback('mismatch');", 'same'))).resolves.toBe('resolved');
   });

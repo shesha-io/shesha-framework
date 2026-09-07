@@ -43,9 +43,6 @@ export const ComponentsContainerSubForm: FC<IComponentsContainerSubFormProps> = 
     return typeof render === 'function' ? render(components) : components;
   }, [containerId, context, getChildComponents, parent.subFormIdPrefix, readOnly, render]);
 
-    console.log('ComponentsContainerLive Style', style);
-
-
   return <ComponentsContainerRender {...{ direction, className, wrapperStyle, additionalDomProperties, noDefaultStyling, style, renderedComponents }}></ComponentsContainerRender>;
 };
 

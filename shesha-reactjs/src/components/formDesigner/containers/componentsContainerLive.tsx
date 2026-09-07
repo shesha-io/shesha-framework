@@ -27,6 +27,6 @@ export const ComponentsContainerLive: FC<PropsWithChildren<IComponentsContainerP
     ));
     return typeof render === 'function' ? render(rendered) : rendered;
   }, [components, render]);
-  console.log('ComponentsContainerLive Style', style);
+
   return <ComponentsContainerRender {...{ direction, className, wrapperStyle, children, additionalDomProperties, noDefaultStyling, style, renderedComponents }}>{children}</ComponentsContainerRender>;
 };
