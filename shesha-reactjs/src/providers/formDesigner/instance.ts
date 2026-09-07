@@ -531,7 +531,6 @@ export class FormDesignerInstance implements IFormDesignerInstance {
   };
 
   validateComponentAsync = async <TModel extends IConfigurableFormComponent = IConfigurableFormComponent>(component: TModel): Promise<void> => {
-    // console.log('LOG: validateComponentAsync', component);
     const toolboxComponent = this.getToolboxComponentOrUndefined(component.type);
     const validationErrors: IAsyncValidationError[] = [];
     if (isDefined(toolboxComponent)) {

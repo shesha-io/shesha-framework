@@ -101,7 +101,6 @@ export interface IWizardComponentPropsV0 extends IConfigurableFormComponent {
   visibility?: 'Yes' | 'No' | 'Removed' | undefined;
   uniqueStateId?: string | undefined;
   permissions?: string[] | undefined;
-  hidden?: boolean | undefined;
   customVisibility?: string | undefined;
   defaultActiveStep?: string | undefined;
 }
@@ -145,7 +144,7 @@ export interface IWizardComponentPropsV1 extends Omit<IConfigurableFormComponent
   visibility?: 'Yes' | 'No' | 'Removed' | undefined;
   // uniqueStateId?: string;
   permissions?: string[] | undefined;
-  hidden?: boolean | undefined;
+  // hidden?: boolean | undefined;
   customVisibility?: string | undefined;
   defaultActiveStep?: string | undefined;
   defaultActiveValue?: string | undefined;

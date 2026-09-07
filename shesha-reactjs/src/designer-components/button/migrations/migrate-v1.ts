@@ -4,7 +4,7 @@ import { IButtonComponentProps } from '../interfaces';
 import { IConfigurableActionConfiguration } from '@/interfaces/configurableAction';
 import { IKeyValue } from '@/interfaces/keyValue';
 import { ReactNode } from 'react';
-import { SettingsMigrationContext } from '@/interfaces';
+import { SettingsMigrationContext, ValueOrCodeEvaluator } from '@/interfaces';
 import { IShowModalActionArgumentsV0 } from '@/providers/dynamicModal/migrations/ver0';
 import { IHasVersion } from '@/utils/fluentMigrator/migrator';
 import { getStringPropertyOrUndefined } from '@/utils/object';
@@ -140,7 +140,7 @@ export interface IButtonGroupItemBaseV0 extends IHasVersion {
   tooltip?: string | undefined;
   sortOrder: number;
   danger?: boolean | undefined;
-  hidden?: boolean | undefined;
+  hidden?: ValueOrCodeEvaluator<boolean> | undefined;
   disabled?: boolean | undefined;
   isDynamic?: boolean | undefined;
   itemType: ButtonGroupItemTypeV0;
