@@ -1,6 +1,6 @@
 import { CSSProperties, FC } from 'react';
 import { useTheme } from '@/providers';
-import { Col, Form, FormItemProps, Input, Space } from 'antd';
+import { Col, Form, FormItemProps, Input } from 'antd';
 
 const InputStatesPreview: FC = () => {
   const { theme } = useTheme();
