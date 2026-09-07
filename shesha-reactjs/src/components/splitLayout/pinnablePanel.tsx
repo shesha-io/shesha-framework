@@ -1,10 +1,12 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, ReactNode } from 'react';
 import { Button, Divider, Space, Typography } from 'antd';
 import {
   PushpinOutlined,
   PushpinFilled,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  DownOutlined,
+  RightOutlined,
 } from '@ant-design/icons';
 import { cx } from 'antd-style';
 import { usePinnablePanelStyles } from './pinnable-panel-styles';
@@ -13,7 +15,7 @@ import { isDefined } from '@/utils';
 const { Text } = Typography;
 
 export interface PinnablePanelProps {
-  title: string;
+  title: ReactNode | (() => React.ReactNode) | undefined;
   children: React.ReactNode;
   expanded: boolean;
   onExpandedToggle: () => void;
@@ -47,6 +49,13 @@ export const PinnablePanel = forwardRef<HTMLDivElement, PinnablePanelProps>(
 
     const barTextClass = direction === 'horizontal' ? styles.verticalText : styles.horizontalText;
 
+    const renderTitle = (defaultRender: (stringTitle: ReactNode) => ReactNode): ReactNode =>
+      !isDefined(title)
+        ? undefined
+        : typeof (title) === 'function'
+          ? title()
+          : defaultRender(title);
+
     return (
       <div ref={ref} className={cx(styles.panelContainer, className, "main-area")} style={style}>
         {/* Collapsed bar – visible when collapsed */}
@@ -54,8 +63,12 @@ export const PinnablePanel = forwardRef<HTMLDivElement, PinnablePanelProps>(
           className={cx(styles.collapsedBar, barTextClass, "collapsed-bar")}
           onClick={onExpandedToggle}
         >
-          {position === 'start' ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-          <span>{title}</span>
+          {direction === 'horizontal'
+            ? position === 'start'
+              ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />
+            : <RightOutlined />}
+
+          {renderTitle((str) => <span>{str}</span>)}
         </div>
 
         {/* Expanded content */}
@@ -64,11 +77,14 @@ export const PinnablePanel = forwardRef<HTMLDivElement, PinnablePanelProps>(
             <Space>
               <Button
                 type="text"
-                icon={(expanded && position === 'start') || (!expanded && position === 'end') ? <MenuFoldOutlined /> : <MenuUnfoldOutlined />}
+                icon={direction === 'horizontal'
+                  ? position === 'start'
+                    ? <MenuFoldOutlined /> : <MenuUnfoldOutlined />
+                  : <DownOutlined />}
                 onClick={onExpandedToggle}
                 title={expanded ? 'Collapse' : 'Expand'}
               />
-              <Text strong>{title}</Text>
+              {renderTitle((str) => <Text strong>{str}</Text>)}
             </Space>
             <div>
               {isDefined(extra) && <>{extra}<Divider orientation="vertical" /></>}

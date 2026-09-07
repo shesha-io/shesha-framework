@@ -15,6 +15,7 @@ import {
 import { createNamedContext } from '@/utils/react';
 import { BaseHistoryItem, FormDesignerSubscription, FormDesignerSubscriptionType } from './models';
 import { IValidationCollector } from '../validator/interfaces';
+import { ReactNode } from 'react';
 
 export interface AddComponentPayloadBase {
   index: number;
@@ -58,6 +59,7 @@ export const VALIDATABLE_ITEM_TYPES = {
 export type ValidatableItemType = typeof VALIDATABLE_ITEM_TYPES[keyof typeof VALIDATABLE_ITEM_TYPES];
 
 export type IValidationResultsPayload = ({ type: typeof VALIDATABLE_ITEM_TYPES.COMPONENT; componentId: string } | { type: typeof VALIDATABLE_ITEM_TYPES.FORM_SETTINGS }) & {
+  displayName: string | ReactNode;
   validationErrors: IAsyncValidationError[];
 };
 

@@ -108,7 +108,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
                 .addSettingsInput({ inputType: 'switch', propertyName: 'disableSearch', label: 'Disable Search', size: 'small', layout: 'horizontal', jsSetting: true })
                 .stdCollapsiblePanel('Data', (fb) => fb
                   .addSettingsInput({ inputType: 'dropdown', propertyName: 'dataSourceType', label: 'Data Source Type', size: 'small', jsSetting: true, dropdownOptions: dataSourceTypeOptions, onChangeSetting: onDataSourceTypeChange })
-                  .addSettingsInput({ inputType: 'endpointsAutocomplete', propertyName: 'dataSourceUrl', label: 'Data Source URL', size: 'small', jsSetting: true, mode: 'url', httpVerb: 'get', isDynamic: false, visibleJs: urlVisibleJs })
+                  .addSettingsInput({ inputType: 'endpointsAutocomplete', propertyName: 'dataSourceUrl', label: 'Data Source URL', size: 'small', jsSetting: true, mode: 'url', httpVerb: 'get', isDynamic: false, visibleJs: urlVisibleJs, validate: { required: true } })
                   .addSettingsInput({
                     inputType: 'labelValueEditor', propertyName: 'queryParams', label: 'Query Param',
                     labelName: 'param', labelTitle: 'Param', valueName: 'value', valueTitle: 'Value',

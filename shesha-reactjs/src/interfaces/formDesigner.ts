@@ -199,6 +199,8 @@ export interface IWrapperStyle {
   designerStyle?: IStyleValue | undefined;
 }
 
+export type ComponentValidator<TModel extends IConfigurableFormComponent = IConfigurableFormComponent> = (model: TModel) => Promise<unknown>;
+
 export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfigurableFormComponent, TCalculatedModel extends object = never> = IToolboxComponentBase & {
   /**
    * Component factory. Renders the component according to the passed model (props)
@@ -258,7 +260,7 @@ export type IToolboxComponent<TModel extends IConfigurableFormComponent = IConfi
   /**
    * Settings validator
    */
-  validateSettings?: ((model: TModel) => Promise<unknown>) | undefined;
+  validateSettings?: ComponentValidator<TModel> | undefined;
 
   /**
    * Settings migrations. Returns last version of settings
@@ -329,6 +331,7 @@ export { type IConfigurableFormComponent as IConfigurableFormComponent, type IFo
 
 export interface IAsyncValidationError {
   field: string;
+  fieldLabel?: string | ReactNode;
   message: string;
 }
 

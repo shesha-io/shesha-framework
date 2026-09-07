@@ -10,7 +10,7 @@ export interface SplitLayoutProps {
   position?: 'start' | 'end';
   panel: ReactNode;
   panelClassName?: string;
-  panelTitle: string;
+  panelTitle: ReactNode | ((expanded: boolean) => ReactNode);
   panelMin?: number | string;
   panelMax?: number | string;
   panelExtra?: ReactNode;
@@ -91,7 +91,7 @@ export const SplitLayout: FC<PropsWithChildren<SplitLayoutProps>> = (props) => {
     >
       <PinnablePanel
         ref={panelRef}
-        title={panelTitle}
+        title={typeof (panelTitle) === 'function' ? panelTitle(panelExpanded) : panelTitle}
         expanded={panelExpanded}
         onExpandedToggle={handlePanelExpandedToggle}
         pinned={panelPinned}
