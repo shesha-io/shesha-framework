@@ -36,6 +36,7 @@ import { Migrator } from '@/utils/fluentMigrator/migrator';
 import { ExpressionNodeValue } from '@/utils/jsonLogic';
 import { getFullPath } from '@/utils/metadata/helpers';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isPromise } from '@/utils/promises';
 import { deepCopyViaJson, deepMergeSkipUndefinedFunc, deepMergeValues, getStringPropertyOrUndefined, jsonSafeParse, unproxyValue, unsafeGetValueByPropertyName } from '@/utils/object';
 import { QueryStringParams } from '@/utils/url';
 import { nanoid } from '@/utils/uuid';
@@ -1121,7 +1122,45 @@ export const hasBoolean = (value: unknown): boolean => {
   return false;
 };
 
-type ValidatorFunc = (rule: InternalRuleItem, value: unknown, callback: (error?: string) => void, data: unknown) => Promise<void>;
+type ValidatorCallback = (error?: string | Error) => void;
+type ValidatorFunc = (rule: InternalRuleItem, value: unknown, callback: ValidatorCallback, data: unknown) => unknown;
+
+const toValidationMessage = (error: unknown): string => error instanceof Error ? error.message : String(error);
+
+/**
+ * Runs a configured Custom Validator script and settles no matter how the script reports its result:
+ * a returned promise (resolve = valid, reject = invalid), a synchronous `callback(error)` call, or a plain
+ * return with neither, which counts as valid. The validation library alone waits forever for a script
+ * that only calls `callback` on failure and returns nothing on success (#5073).
+ *
+ * Contract for asynchronous checks: return the promise. A `callback` made after the script has returned
+ * is not awaited, because a script that returned nothing is already treated as complete.
+ */
+export const runCustomValidator = (validatorFunc: ValidatorFunc, rule: InternalRuleItem, value: unknown, data: unknown): Promise<void> =>
+  new Promise<void>((resolve, reject) => {
+    let settled = false;
+    const settle = (error?: unknown): void => {
+      if (settled) return;
+      settled = true;
+      if (isDefined(error) && error !== '') reject(toValidationMessage(error));
+      else resolve();
+    };
+
+    let result: unknown;
+    try {
+      result = validatorFunc(rule, value, settle, data);
+    } catch (error) {
+      settle(error ?? 'Validation failed');
+      return;
+    }
+
+    if (isPromise(result)) {
+      result.then(() => settle(), (error: unknown) => settle(error ?? 'Validation failed'));
+      return;
+    }
+    // no promise and no synchronous callback: the script finished without reporting a problem
+    settle();
+  });
 
 export type ValidationError = {
   errors: ValidateError[];
@@ -1180,14 +1219,9 @@ export const getValidationRules = (component: IConfigurableFormComponent, option
       const validatorFunc = new Function('rule', 'value', 'callback', 'data', validate.validator) as ValidatorFunc;
 
       rules.push({
-        asyncValidator: (rule, value, callback) => {
+        asyncValidator: (rule, value) => {
           const formData = options.getFormData ? options.getFormData() : options.formData;
-          return validatorFunc(
-            rule,
-            value,
-            callback,
-            formData,
-          );
+          return runCustomValidator(validatorFunc, rule, value, formData);
         },
       });
     }
