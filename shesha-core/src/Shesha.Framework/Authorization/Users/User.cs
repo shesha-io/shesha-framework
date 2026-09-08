@@ -67,6 +67,10 @@ namespace Shesha.Authorization.Users
         [MaxLength(MaxEmailAddressLength)]
         public override string? EmailAddress { get; set; }         
 
+        // overridden to drop the inherited [Required] - SetNormalizedNames populates it after validation
+        [MaxLength(MaxEmailAddressLength)]
+        public override string? NormalizedEmailAddress { get; set; }
+
         public override void SetNormalizedNames()
         {
             NormalizedUserName = UserName.ToUpperInvariant();
