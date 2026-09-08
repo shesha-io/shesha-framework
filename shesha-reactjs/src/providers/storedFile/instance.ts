@@ -5,7 +5,7 @@ import { IStoredFileHelper, StoredFileHelper } from "../../utils/storedFile/stor
 import { IEntityTypeIdentifier } from "../sheshaApplication/publicApi/entities/models";
 import { DownloadFileArgs, FileUploadMode, OnFileUploadChanged, UploadFileArgs } from "./models";
 import { FileReference, StoredFileModel } from "../../utils/storedFile/models";
-import { isNullOrWhiteSpace } from "@/utils/nullables";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { STORED_FILES_DELAYED_UPDATE } from "../delayedUpdateProvider/models";
 import { extractErrorMessage } from "@/utils/errors";
 import { nanoid } from "@/utils/uuid";
@@ -196,12 +196,12 @@ export class FileUploadInstance implements IFileUpload {
     // Only fetch file info if we need it and don't already have it
     // This avoids unnecessary fetch after upload (which already returns file info)
     const shouldFetch = this.uploadMode === 'async' &&
-      (this.fileId || this.getValidFileReference()) &&
+      (!isNullOrWhiteSpace(this.fileId) || isDefined(this.getValidFileReference())) &&
       (!this.fileInfo || this.fileInfo.id !== this.fileId);
 
     if (shouldFetch) {
       void this.fetchFileInfo();
-    } else if (this.uploadMode === 'async' && !this.fileId && !this.getValidFileReference()) {
+    } else if (this.uploadMode === 'async' && isNullOrWhiteSpace(this.fileId) && !this.getValidFileReference()) {
       // Clear stale fileInfo when there's no valid target to prevent showing old data
       this.clearFileInfo();
     }
@@ -209,7 +209,7 @@ export class FileUploadInstance implements IFileUpload {
 
   fetchFileInfo = async (): Promise<void> => {
     try {
-      if (this.fileId) {
+      if (!isNullOrWhiteSpace(this.fileId)) {
         const fileDto = await this.#fileHelper.fetchFileInfoByIdAsync(this.fileId);
         this.updateFileInfo(() => storedFileDtoToModel(fileDto));
         return;

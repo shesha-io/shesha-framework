@@ -16,6 +16,7 @@ import { IFormSettings, isConfigurableFormComponent, useMetadataDispatcher } fro
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { getIdOrUndefined } from "@/utils/entity";
 import { extractErrorInfo } from "@/utils/errors";
+import { isValidEntityType } from "@/providers/metadataDispatcher/entities/utils";
 
 export interface GqlLoaderArguments {
   httpClient: HttpClientApi;
@@ -117,7 +118,7 @@ export class GqlLoader<Values extends object = object> implements IFormDataLoade
       var gqlFields = gqlFieldsToString(gqlFieldsList);
 
       const queryParams: IAnyObject = { properties: gqlFields };
-      if (dataId) queryParams['id'] = dataId;
+      if (!isNullOrWhiteSpace(dataId)) queryParams['id'] = dataId;
       const finalUrl = constructUrl(undefined, getDataUrl, queryParams);
 
       loadingCallback?.({ loadingState: 'loading', loaderHint: 'Fetching data...' });
@@ -127,7 +128,7 @@ export class GqlLoader<Values extends object = object> implements IFormDataLoade
       const responseData = extractAjaxResponse(response.data, 'Failed to load data');
 
       // note: checked after the request so that more specific failures (endpoint, server, permissions) surface first
-      if (!dataId)
+      if (isNullOrWhiteSpace(dataId))
         throw this.#missingDataIdError(payload, getDataUrl);
 
       loadingCallback?.({ loadingState: 'ready', loaderHint: undefined });
@@ -196,7 +197,7 @@ export class GqlLoader<Values extends object = object> implements IFormDataLoade
 
         // get data only for isInput components
         // and for context = null or empty string (form context)
-        if (component && (component.isInput || component.isOutput) && !model.context) {
+        if (component && (component.isInput || component.isOutput === true) && isNullOrWhiteSpace(model.context)) {
           const propName = model.propertyName;
 
           // TODO: AS - calc actual propName from JS setting
@@ -252,7 +253,7 @@ export class GqlLoader<Values extends object = object> implements IFormDataLoade
     const { formSettings } = payload;
     const { getMetadata, getContainerProperties } = this.#metadataDispatcher;
 
-    if (!formSettings.modelType) return Promise.resolve([]);
+    if (!isValidEntityType(formSettings.modelType)) return Promise.resolve([]);
 
     const metadata = await getMetadata({ dataType: DataTypes.entityReference, modelType: formSettings.modelType });
 

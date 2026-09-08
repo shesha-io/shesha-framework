@@ -19,12 +19,12 @@ const prepareLoadedData = (data: ModelConfigurationDto): ModelConfigurationDto =
   return {
     ...data,
     properties: data.properties
-      .filter((p) => !p.isFrameworkRelated) // remove framework fields
+      .filter((p) => p.isFrameworkRelated !== true) // remove framework fields
       .map((p) => {
         const prop = { ...p };
         if (p.dataType === DataTypes.entityReference && p.dataFormat === EntityFormats.genericEntity)
           prop.genericEntityReference = true;
-        prop.allowEdit = !p.createdInDb && !p.inheritedFromId && p.source !== 1;
+        prop.allowEdit = p.createdInDb !== true && isNullOrWhiteSpace(p.inheritedFromId) && p.source !== 1;
         return prop;
       }),
   };

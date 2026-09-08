@@ -6,7 +6,7 @@ import { isPropertiesArray, isPropertiesLoader } from "@/interfaces/metadata";
 import { IEntityTypeIdentifier } from "../../entities/models";
 import { isEntityTypeIdEmpty } from "@/providers/metadataDispatcher/entities/utils";
 import { FormBuilder } from "@/form-factory/interfaces";
-import { isDefined } from "@/utils/nullables";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { IPropertyMetadata } from "@/publicJsApis/apis/metadata";
 
 /**
@@ -86,7 +86,7 @@ export class FormMetadataHelper {
 
       // Filter out framework-related properties and add to our collection with safe values
       for (const prop of propertiesArray) {
-        if (!prop.isFrameworkRelated) {
+        if (prop.isFrameworkRelated !== true) {
           nonFrameworkProperties.push(prop);
         }
       }
@@ -97,7 +97,7 @@ export class FormMetadataHelper {
 
         // Filter out framework-related properties and add to our collection with safe values
         for (const prop of loadedProperties) {
-          if (!prop.isFrameworkRelated) {
+          if (prop.isFrameworkRelated !== true) {
             nonFrameworkProperties.push(prop);
           }
         }
@@ -131,7 +131,7 @@ export class FormMetadataHelper {
       label: property.label,
       editMode: isReadOnly ? 'readOnly' as EditMode : 'inherited' as EditMode,
       hideLabel: isReadOnly,
-      hidden: !property.isVisible,
+      hidden: property.isVisible !== true,
       validate: {
         required: property.required ?? false,
       },
@@ -161,7 +161,7 @@ export class FormMetadataHelper {
           break;
 
         case DataTypes.entityReference:
-          if (!property.entityType) {
+          if (isNullOrWhiteSpace(property.entityType)) {
             console.warn(`Entity type is missing for entityReference property '${property.path}'; skipping`);
             break;
           }
@@ -173,7 +173,7 @@ export class FormMetadataHelper {
           break;
 
         case DataTypes.referenceListItem:
-          if (!property.referenceListName || !property.referenceListModule) {
+          if (isNullOrWhiteSpace(property.referenceListName) || isNullOrWhiteSpace(property.referenceListModule)) {
             console.warn(`Reference list metadata missing for property '${property.path}'; skipping`);
             break;
           }
@@ -215,7 +215,7 @@ export class FormMetadataHelper {
             ...commonProps,
             font: { size: 14 },
             ownerId: '{data.id}',
-            ownerType: this._modelType || '',
+            ownerType: this._modelType ?? '',
             useSync: false,
           }, property);
           break;

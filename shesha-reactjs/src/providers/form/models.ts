@@ -490,7 +490,7 @@ export interface IFormSettingsCommon {
 export interface ILegacyFormSettings extends IFormSettingsCommon {
   version?: -1 | 1 | null | undefined;
   fieldsToFetch?: string[] | undefined;
-  excludeFormFieldsInPayload?: string | undefined;
+  excludeFormFieldsInPayload?: boolean | undefined;
 
   //#region urls
   postUrl?: string | undefined;

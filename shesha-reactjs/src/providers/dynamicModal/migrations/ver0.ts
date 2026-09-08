@@ -42,7 +42,7 @@ export const migrateToV0 = (prev: IShowModalActionArgumentsV0): IShowModalAction
   const { modalWidth, formMode, additionalProperties, submitHttpVerb, ...restProps } = prev;
   return {
     ...restProps,
-    modalWidth: modalWidth || "60%",
+    modalWidth: !isDefined(modalWidth) || (typeof (modalWidth) === "string" && isNullOrWhiteSpace(modalWidth)) ? "60%" : modalWidth,
     formMode: formMode || "edit",
     formArguments: isDefined(additionalProperties) ? makeEvaluatorFromItems(additionalProperties) : undefined,
   };

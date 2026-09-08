@@ -27,6 +27,7 @@ import { extractAjaxResponse, isAjaxSuccessResponse } from '@/interfaces/ajaxRes
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { IShaRouter } from '../shaRouting/contexts';
 import { extractErrorInfo } from '@/utils/errors';
+import { isNonEmptyArray } from '@/utils/array';
 
 type RerenderTrigger = () => void;
 
@@ -101,9 +102,14 @@ export class Authenticator implements IAuthenticator {
     this.#rerender = forceRootUpdate;
     this.state = { status: 'waiting' };
 
-    this.#tokenName = args.tokenName || DEFAULT_ACCESS_TOKEN_NAME;
-    this.#unauthorizedRedirectUrl = args.unauthorizedRedirectUrl || URL_LOGIN_PAGE;
-    this.#homePageUrl = args.homePageUrl || URL_HOME_PAGE;
+    const {
+      tokenName = "",
+      unauthorizedRedirectUrl = "",
+      homePageUrl = "",
+    } = args;
+    this.#tokenName = tokenName || DEFAULT_ACCESS_TOKEN_NAME;
+    this.#unauthorizedRedirectUrl = unauthorizedRedirectUrl || URL_LOGIN_PAGE;
+    this.#homePageUrl = homePageUrl || URL_HOME_PAGE;
     this.#onSetRequestHeaders = args.onSetRequestHeaders;
     this.#onTokenExpired = args.onTokenExpired;
   }
@@ -127,12 +133,13 @@ export class Authenticator implements IAuthenticator {
     const headers: IHttpHeaders = {};
 
     const token = this.#getToken();
-    if (token && token.accessToken) headers['Authorization'] = `Bearer ${token.accessToken}`;
+    if (token && !isNullOrWhiteSpace(token.accessToken))
+      headers['Authorization'] = `Bearer ${token.accessToken}`;
 
     headers[ASPNET_CORE_CULTURE] = getLocalizationOrDefault();
 
     const tenantId = getTenantId();
-    if (tenantId) {
+    if (isDefined(tenantId)) {
       headers['Abp.TenantId'] = tenantId.toString();
     }
 
@@ -160,22 +167,22 @@ export class Authenticator implements IAuthenticator {
     const result = extractAjaxResponse(response);
 
     if (result.resultType === AuthenticateResultType.RedirectNoAuth) {
-      if (result.redirectUrl) {
+      if (!isNullOrWhiteSpace(result.redirectUrl)) {
         this.#redirect(`/no-auth/${result.redirectUrl}`);
         throw new Error('Redirecting to another page.');
       }
-      if (result.redirectModule && result.redirectForm) {
+      if (!isNullOrWhiteSpace(result.redirectModule) && !isNullOrWhiteSpace(result.redirectForm)) {
         this.#redirect(
           `/no-auth/${result.redirectModule}/${result.redirectForm}?user=${result.userId}`,
         );
         throw new Error('Redirecting to another form.');
       }
     } else if (result.resultType === AuthenticateResultType.Redirect) {
-      if (result.redirectUrl) {
+      if (!isNullOrWhiteSpace(result.redirectUrl)) {
         this.#redirect(result.redirectUrl);
         throw new Error('Redirecting to another page.');
       }
-      if (result.redirectModule && result.redirectForm) {
+      if (!isNullOrWhiteSpace(result.redirectModule) && !isNullOrWhiteSpace(result.redirectForm)) {
         this.#redirect(`/dynamic/${result.redirectModule}/${result.redirectForm}`);
         throw new Error('Redirecting to another form.');
       }
@@ -195,7 +202,7 @@ export class Authenticator implements IAuthenticator {
       ? response.result
       : null;
 
-    if (token && token.accessToken) {
+    if (token && !isNullOrWhiteSpace(token.accessToken)) {
       // save token to the localStorage
       this.#saveUserToken({
         accessToken: token.accessToken,
@@ -232,7 +239,7 @@ export class Authenticator implements IAuthenticator {
 
     if (isSameUrls(currentUrlWithoutReturn, this.#unauthorizedRedirectUrl)) {
       const returnUrlParam = this.#router.query[RETURN_URL_KEY];
-      const returnUrl = returnUrlParam ? decodeURIComponent(returnUrlParam.toString()) : undefined;
+      const returnUrl = isDefined(returnUrlParam) ? decodeURIComponent(returnUrlParam.toString()) : undefined;
 
       const redirects = [returnUrl, userLogin.homeUrl, this.#homePageUrl, DEFAULT_HOME_PAGE];
       const redirectUrl = redirects.find((r) => !isNullOrWhiteSpace(r)); // skip all null/undefined and empty strings
@@ -296,7 +303,7 @@ export class Authenticator implements IAuthenticator {
     // Now make the logout API call with the token we saved earlier
     // We pass the token explicitly in headers since it's no longer in localStorage
     try {
-      if (currentToken?.accessToken) {
+      if (!isNullOrWhiteSpace(currentToken?.accessToken)) {
         await this.#httpClient.post<void>(
           URLS.LOGOFF,
           {},
@@ -318,7 +325,7 @@ export class Authenticator implements IAuthenticator {
   #startTokenExpirationTimer = (expireOn: string | undefined): void => {
     this.#clearTokenExpirationTimer();
 
-    if (expireOn) {
+    if (!isNullOrWhiteSpace(expireOn)) {
       const expirationDate = new Date(expireOn);
       const timeUntilExpiration = expirationDate.getTime() - Date.now();
       if (timeUntilExpiration > 0) {
@@ -362,7 +369,7 @@ export class Authenticator implements IAuthenticator {
         ? getQueryParam(RETURN_URL_KEY, notAuthorizedRedirectUrl)
         : undefined;
       const redirectUrl =
-        existingReturnUrl ||
+        !isNullOrWhiteSpace(existingReturnUrl?.toString()) ||
         isSameUrls(currentPath, this.#homePageUrl) ||
         isSameUrls(currentPath, notAuthorizedRedirectUrl)
           ? ''
@@ -420,9 +427,10 @@ export class Authenticator implements IAuthenticator {
           gp.permission === p &&
           (!gp.permissionedEntity ||
             gp.permissionedEntity.length === 0 ||
-            gp.permissionedEntity.some((pe) =>
-              permissionedEntities?.some((ppe) => pe.id === ppe.id && ppe._className === pe._className),
-            )),
+            (isNonEmptyArray(permissionedEntities) &&
+              gp.permissionedEntity.some((pe) =>
+                permissionedEntities.some((ppe) => pe.id === ppe.id && ppe._className === pe._className),
+              ))),
       ),
     );
   };

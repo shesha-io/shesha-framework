@@ -144,7 +144,7 @@ class PropertyTouchAccessor<T = object> implements IPropertyTouched {
 
   getChildAccessor(accessor: string): IPropertyTouched | unknown {
     const existing = this._children.get(accessor);
-    if (existing)
+    if (isDefined(existing))
       return existing;
 
     const children = this.createChild(accessor);

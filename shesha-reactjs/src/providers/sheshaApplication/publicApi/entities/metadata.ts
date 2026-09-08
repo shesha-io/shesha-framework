@@ -9,7 +9,7 @@ import { TypesImporter } from "@/utils/metadata/typesImporter";
 import { getEntityIdJsType } from "@/utils/metadata";
 import camelcase from "camelcase";
 import { EOL } from "@/utils/metadata/models";
-import { isDefined } from "@/utils/nullables";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 
 type EntityItemType = 'module' | 'entityType';
 
@@ -170,7 +170,7 @@ const entitiesConfigurationToTypeDefinition = async (configurations: EntityConfi
   };
 
   const writeObject = async (sb: StringBuilder, typesImporter: TypesImporter, property: IEntityPropertyMetadata): Promise<void> => {
-    if (property.description)
+    if (!isNullOrWhiteSpace(property.description))
       sb.append(`/** ${property.description} */`);
 
     sb.append(`export interface ${getModuleTypeName(property)} {`);
@@ -200,7 +200,7 @@ const entitiesConfigurationToTypeDefinition = async (configurations: EntityConfi
             if (idType === UNKNOWN_TYPE)
               console.warn(`Could not find id type for entity '${prop.entityModule}:${prop.entityType}'. Replaced with '${UNKNOWN_TYPE}'`);
 
-            if (prop.description)
+            if (!isNullOrWhiteSpace(prop.description))
               sb.append(`/** ${prop.description} */`);
             sb.append(`${prop.path}: EntityAccessor<${idType}, ${typeDef.typeName}>;`);
           } else {
