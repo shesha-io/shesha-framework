@@ -12,7 +12,7 @@ export interface IComponentDefaultsPreviewProps {
 }
 
 export const ComponentDefaultsPreview: FC<IComponentDefaultsPreviewProps> = ({ componentDefinition, theme }) => {
-  const { styles } = useStyles();
+  const { styles } = useStyles(theme);
 
   const componentTitle = componentDefinition.name;
 
@@ -32,7 +32,7 @@ export const ComponentDefaultsPreview: FC<IComponentDefaultsPreviewProps> = ({ c
   } as FormMarkup), [componentModel, theme.colon, theme.layout, theme.labelSpan, theme.componentSpan]);
 
   return (
-    <Card>
+    <Card className={styles.previewSection}>
       <h4 style={{ marginBottom: 4 }}>{componentTitle} preview:</h4>
       <ConfigurableForm mode="edit" markup={markup} initialValues={theme} className={styles.appearanceForm} />
     </Card>

@@ -3,6 +3,8 @@ import { createGlobalStyle } from 'antd-style';
 
 const shaBorder = '1px solid #d3d3d3'; // @sha-border
 const shaPageHeadingHeight = '45px';
+/* antd's default light-theme text colour. Deliberately fixed rather than themed - see usage below. */
+const FORM_LABEL_COLOR = 'rgba(0, 0, 0, 0.88)';
 
 export const GlobalSheshaStyles = createGlobalStyle`
   .sha-header-configuration {
@@ -70,6 +72,15 @@ export const GlobalSheshaStyles = createGlobalStyle`
   .${(p) => p.theme.prefixCls}-form-item-label  {
     white-space: normal;
     font-weight: bold;
+
+    /* Labels stay dark in every theme: configured forms are authored on light surfaces, so the
+       dark algorithm's near-white label text would be unreadable there. Overriding antd's own
+       --ant-form-label-color variable beats its higher-specificity rule without a specificity war. */
+    --ant-form-label-color: ${FORM_LABEL_COLOR};
+
+    > label {
+      color: ${FORM_LABEL_COLOR};
+    }
   }
     
   .${(p) => p.theme.prefixCls}-form-item {

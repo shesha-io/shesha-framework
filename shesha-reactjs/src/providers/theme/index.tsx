@@ -1,5 +1,5 @@
 import { App, ConfigProvider, ThemeConfig, theme as antdTheme } from 'antd';
-import { FC, PropsWithChildren, useCallback, useContext, useMemo, useState } from 'react';
+import { FC, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import './interFont.generated.css';
 import './baseFont.css';
 import { ColorScheme, IConfigurableTheme, IThemeActionsContext, IThemeStateContext, normalizeColorScheme, ResolvedTheme, THEME_CONTEXT_INITIAL_STATE, UiActionsContext, UiStateContext } from './contexts';
@@ -62,6 +62,12 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
     () => ({ ...state, resolvedTheme }),
     [state, resolvedTheme],
   );
+
+  // Drives the browser's native UI — scrollbars above all — so they follow the app theme instead
+  // of staying light on a dark page. Set on the root element to cover the whole document.
+  useEffect(() => {
+    document.documentElement.style.colorScheme = resolvedTheme;
+  }, [resolvedTheme]);
 
   const themeConfig = useMemo<ThemeConfig>(() => {
     const appTheme = state.theme.application;

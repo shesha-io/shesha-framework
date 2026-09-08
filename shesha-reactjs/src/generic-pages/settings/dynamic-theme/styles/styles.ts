@@ -1,6 +1,7 @@
+import { IConfigurableTheme } from '@/providers';
 import { createStyles, sheshaStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx }) => {
+export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) => {
   const slider = cx(
     'slider',
     css`
@@ -133,7 +134,7 @@ export const useStyles = createStyles(({ css, cx }) => {
     'preview-section',
     css`
       padding: 16px;
-      background: #fafafa;
+      background: ${theme?.layoutBackground};
       border-radius: 8px;
       border: 1px solid #f0f0f0;
     `,
@@ -152,9 +153,6 @@ export const useStyles = createStyles(({ css, cx }) => {
     css`
       margin-bottom: 16px;
       height: 200px;
-      .ant-card-head {
-        background: #fafafa;
-      }
     `,
   );
 
