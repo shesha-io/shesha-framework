@@ -297,6 +297,38 @@ const baseTsConfig = {
     }
 };
 
+const strictFolders = [
+    //"src/providers",
+];
+
+const makeStrictConfig = (path) => {
+    return {
+        ...baseTsConfig,
+        files: [
+            `${path}/**/*.ts`,
+            `${path}/**/*.tsx`,
+        ],
+        languageOptions: {
+            ...baseTsConfig.languageOptions,
+            parserOptions: {
+                projectService: true, // Enable project service
+                tsconfigRootDir: __dirname,
+            },
+        },
+        rules: {
+            ...baseTsConfig.rules,
+            ...typescriptEslint.configs.recommended.rules,
+            ...typescriptOverrides,
+            ...stylisticOverrides,
+
+            "react-hooks/exhaustive-deps": "error",
+            "no-unsafe-optional-chaining": "error",
+            // strict overrides
+            "@typescript-eslint/strict-boolean-expressions": "error",
+        },
+    };
+}
+
 export default [
     {
         // Global ignores: an object with ONLY `ignores` (no `files`) applies repo-wide in flat config.
@@ -316,7 +348,7 @@ export default [
             "src/**/*.ts",
             "src/**/*.tsx",
         ],
-        ignores: [...baseTsConfig.ignores],
+        ignores: [...baseTsConfig.ignores, ...strictFolders.map(f => `${f}/**/*`)],
         languageOptions: {
             ...baseTsConfig.languageOptions,
             parserOptions: {
@@ -334,6 +366,7 @@ export default [
             "no-unsafe-optional-chaining": "error",
         },
     },
+    ...strictFolders.map(f => makeStrictConfig(f)),
     {
         files: ['**/*.js', '**/*.mjs'],
         ignores: [
