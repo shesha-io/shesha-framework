@@ -11,6 +11,7 @@ import { BaseGenerationLogic } from "../baseGenerationLogic";
 import { IEntityTypeIdentifier } from "../../../entities/models";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { isTextComponent } from "@/designer-components/text/models";
+import { isValidEntityType } from "@/providers/metadataDispatcher/entities/utils";
 
 /**
  * Implements generation logic for detail views.
@@ -21,7 +22,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
 
   protected getModelTypeFromReplacements(replacements: object): string | IEntityTypeIdentifier | null {
     const extensionJson = castToExtensionType<DetailsViewExtensionJson>(replacements);
-    return extensionJson.modelType;
+    return isValidEntityType(extensionJson.modelType) ? extensionJson.modelType : null;
   }
 
   protected async addComponentsToMarkup(

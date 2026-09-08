@@ -4,7 +4,7 @@ import { nanoid } from '@/utils/uuid';
 import { FormIdentifier, FormMode } from '../form/models';
 import { ICommonModalProps, IModalProps, IModalWithContentProps } from './models';
 import { ModalFuncProps } from 'antd/lib/modal';
-import { isDefined } from '@/utils';
+import { isNullOrWhiteSpace } from '@/utils';
 
 /**
  * Form identifier - can be a string path or an object with name and module
@@ -134,7 +134,7 @@ export interface IModalApi {
  * Convert width preset to actual width value
  */
 const getWidthFromPreset = (width?: ModalWidth): string | number | undefined => {
-  if (!isDefined(width)) return undefined;
+  if (isNullOrWhiteSpace(width)) return undefined;
 
   const presets: Record<string, string> = {
     small: '40%',

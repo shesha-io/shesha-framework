@@ -22,7 +22,7 @@ export const isValidConfigurableItemRawId = (id: ConfigurableItemIdentifier | un
   return isConfigurableItemRawId(id) && !isNullOrWhiteSpace(id);
 };
 
-export const isValidConfigurableItemFullName = (id: ConfigurableItemIdentifier | undefined): id is ConfigurableItemIdentifier => {
+export const isValidConfigurableItemFullName = (id: ConfigurableItemIdentifier | undefined): id is ConfigurableItemFullName => {
   return isConfigurableItemFullName(id) && !isNullOrWhiteSpace(id.module) && !isNullOrWhiteSpace(id.name);
 };
 

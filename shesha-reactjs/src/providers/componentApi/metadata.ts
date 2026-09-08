@@ -22,7 +22,10 @@ export const componentsToTypeDefinition = (components: IComponentApiDescription<
   sb.incIndent();
 
   components.forEach((component) => {
-    if (isDefined(component.typeDefinition) && component.typeDefinition.typeName && isNonEmptyArray(component.typeDefinition.files)) {
+    if (isDefined(component.typeDefinition) &&
+      !isNullOrWhiteSpace(component.typeDefinition.typeName) &&
+      isNonEmptyArray(component.typeDefinition.files)
+    ) {
       const files = component.typeDefinition.files;
       const fileName = files[0].fileName;
       if (!isNullOrWhiteSpace(fileName)) {
