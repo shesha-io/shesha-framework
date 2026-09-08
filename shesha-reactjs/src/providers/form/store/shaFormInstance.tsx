@@ -133,6 +133,10 @@ class PublicFormApi<Values extends object = object> implements IFormApi<Values> 
     this.#formLoaderContext?.hideLoaders();
   };
 
+  setFormLoaderContext = (formLoaderContext: FormLoaderContextValue | undefined): void => {
+    this.#formLoaderContext = formLoaderContext;
+  };
+
   get formInstance(): FormInstance<Values> {
     return this.#form.antdForm;
   };
@@ -378,6 +382,11 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
 
   setExpressionExecuter = (expressionExecuter: ExpressionExecuter): void => {
     this.expressionExecuter = expressionExecuter;
+  };
+
+  setFormLoaderContext = (formLoaderContext: FormLoaderContextValue | undefined): void => {
+    this.formLoaderContext = formLoaderContext;
+    this.#publicFormApi?.setFormLoaderContext(formLoaderContext);
   };
 
   setFormMode = (formMode: FormMode): void => {
@@ -951,6 +960,9 @@ const useShaForm = <Values extends object = object>(args: UseShaFormArgs<Values>
 
   const [formInstance] = useState<IShaFormInstance<Values>>(() => {
     if (form) {
+      // Keep the supplied instance's loader wired to this render's (nested) FormLoaderProvider,
+      // so ConfigurableForm's externalShaForm uses the same showLoader/hideLoaders as a locally-created instance.
+      form.setFormLoaderContext(formLoaderContext);
       return form;
     } else {
       // Create a new FormStore if not provided

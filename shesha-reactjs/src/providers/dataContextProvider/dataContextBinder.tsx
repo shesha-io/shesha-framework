@@ -137,8 +137,10 @@ const DataContextBinder = <TData extends object = object>(props: PropsWithChildr
     const data: IDataContextFull = getData();
     const api = getApi();
     if (api) {
-      // Spread api properties directly onto data for easy access (e.g., pageContext.showLoader())
-      Object.assign(data, api);
+      // Build a new object instead of mutating `data` in place - `data` may be the same
+      // reference as `dataRef.current`/caller-owned data when no custom `getData` is supplied,
+      // and api properties (e.g., showLoader, hideLoaders) must not leak back into it.
+      return { ...data, ...api };
     }
     return data;
   };

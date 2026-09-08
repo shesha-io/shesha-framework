@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { forwardRef, useState } from 'react';
 import { Spin } from 'antd';
 import { useStyles } from './styles';
 import { LoaderMode } from './index';
@@ -8,7 +8,7 @@ export interface LoaderOverlayProps {
   mode?: LoaderMode;
 }
 
-export const LoaderOverlay: FC<LoaderOverlayProps> = ({ message, mode = 'non-blocking' }) => {
+export const LoaderOverlay = forwardRef<HTMLDivElement, LoaderOverlayProps>(({ message, mode = 'non-blocking' }, ref) => {
   const { styles } = useStyles();
   const [useSpinFallback, setUseSpinFallback] = useState(false);
 
@@ -18,6 +18,9 @@ export const LoaderOverlay: FC<LoaderOverlayProps> = ({ message, mode = 'non-blo
 
   return (
     <div
+      ref={ref}
+      // Focusable only programmatically (not via Tab) so blocking mode can move focus here.
+      tabIndex={-1}
       className={mode === 'blocking' ? styles.globalLoaderOverlayBlocking : styles.globalLoaderOverlay}
       role="status"
       aria-live="polite"
@@ -41,4 +44,6 @@ export const LoaderOverlay: FC<LoaderOverlayProps> = ({ message, mode = 'non-blo
       </div>
     </div>
   );
-};
+});
+
+LoaderOverlay.displayName = 'LoaderOverlay';

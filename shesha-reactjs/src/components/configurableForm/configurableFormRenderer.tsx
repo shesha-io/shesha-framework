@@ -93,28 +93,30 @@ export const ConfigurableFormRenderer = <Values extends object = object>({
   return (
     <ComponentsContainerProvider ContainerComponent={ComponentsContainerForm}>
       <div style={{ position: 'relative' }}>
-        <ShaSpin spinning={showDataSubmitIndicator && dataSubmitState.status === 'loading'} tip="Saving data...">
-          <Form
-            {...(form ? { form } : {})}
-            labelWrap
-            size={props.size}
-            onFinish={onFinishInternal}
-            onFinishFailed={onFinishFailedInternal}
-            onValuesChange={onValuesChangeInternal}
-            {...(initialValues ? { initialValues } : {})}
-            className={classNames(styles.shaForm, props.className)}
-            {...mergedProps}
-            {...(shaForm.form
-              ? {
-                "data-sha-form-id": shaForm.form.id,
-                "data-sha-form-name": `${shaForm.form.module}/${shaForm.form.name}`,
-              }
-              : {})}
-          >
-            <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
-            {children}
-          </Form>
-        </ShaSpin>
+        <div inert={Boolean(currentLoader)}>
+          <ShaSpin spinning={showDataSubmitIndicator && dataSubmitState.status === 'loading'} tip="Saving data...">
+            <Form
+              {...(form ? { form } : {})}
+              labelWrap
+              size={props.size}
+              onFinish={onFinishInternal}
+              onFinishFailed={onFinishFailedInternal}
+              onValuesChange={onValuesChangeInternal}
+              {...(initialValues ? { initialValues } : {})}
+              className={classNames(styles.shaForm, props.className)}
+              {...mergedProps}
+              {...(shaForm.form
+                ? {
+                  "data-sha-form-id": shaForm.form.id,
+                  "data-sha-form-name": `${shaForm.form.module}/${shaForm.form.name}`,
+                }
+                : {})}
+            >
+              <ComponentsContainer containerId={ROOT_COMPONENT_KEY} />
+              {children}
+            </Form>
+          </ShaSpin>
+        </div>
         {currentLoader && <FormLoader message={currentLoader.message} />}
       </div>
     </ComponentsContainerProvider>
