@@ -3,7 +3,6 @@ import { createNamedContext } from '@/utils/react';
 import { DEFAULT_CONTEXT_METADATA } from '../dataContextManager/models';
 import { Path, PathValue } from '@/utils/dotnotation';
 import { IModelMetadata } from '@/interfaces/metadata';
-import { LoaderMode } from '../globalLoader';
 
 export interface IDataContextFullInstance extends IDataContextProviderStateContext, IDataContextProviderActionsContext { }
 
@@ -22,8 +21,6 @@ export interface IDataContextFull {
   api?: unknown;
   metadata?: Promise<IModelMetadata> | undefined;
   setFieldValue?: ContextSetFieldValue | undefined;
-  showLoader?: (message?: string, mode?: LoaderMode) => string;
-  hideLoaders?: () => void;
 }
 
 export interface IDataContextProviderActionsContext<TData extends object = object> {

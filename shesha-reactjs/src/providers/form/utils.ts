@@ -90,6 +90,7 @@ import {
 import { IMetadataDispatcher } from '../metadataDispatcher/contexts';
 import { IModalApi } from '../dynamicModal/modalApi';
 import { useModalApiWithFallback } from '../dynamicModal';
+import { IPublicLoaderApi, LoaderApi, useGlobalLoader } from '../globalLoader';
 import { makeFormBuliderFactory } from '@/form-factory/implementation';
 import { firstNonEmptyString } from '@/utils/string';
 import { getComponentDefinitions } from './defaults/toolboxComponents';
@@ -157,6 +158,8 @@ export interface IApplicationContext<Value extends object = object> {
   message: MessageInstance;
   /** Modal API - for displaying dialogs and forms in modals (limited functionality if DynamicModalProvider is not available) */
   modal: IModalApi;
+  /** Loader API - for showing and hiding blocking loaders (no-op if GlobalLoaderProvider is not available) */
+  loader: IPublicLoaderApi;
   /** File Saver API */
   fileSaver: (data: Blob | string, filename?: string) => void;
 
@@ -204,6 +207,7 @@ export type AvailableConstantsContext = {
   setGlobalState: (payload: ISetStatePayload) => void;
   message: MessageInstance;
   modal: IModalApi;
+  loaderApi: LoaderApi;
   httpClient: HttpClientApi;
 };
 
@@ -224,6 +228,8 @@ const useBaseAvailableConstantsContexts = (): AvailableConstantsContext => {
   // get selected row if exists
   const selectedRow = useDataTableStateOrUndefined()?.selectedRow;
   const httpClient = useHttpClient();
+  // returns a no-op implementation when GlobalLoaderProvider is not available
+  const loaderApi = useGlobalLoader();
 
   const result: AvailableConstantsContext = {
     closestShaFormApi: undefined,
@@ -236,6 +242,7 @@ const useBaseAvailableConstantsContexts = (): AvailableConstantsContext => {
     httpClient,
     message,
     modal,
+    loaderApi,
   };
   return result;
 };
@@ -307,6 +314,7 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
     message,
     metadataDispatcher,
     modal,
+    loaderApi,
   } = fullContext;
   const shaFormApi = (shaForm?.getPublicFormApi() ?? closestShaForm) as IFormApi<TValues> | undefined;
 
@@ -357,6 +365,13 @@ export const wrapConstantsData = <TValues extends object = object>(args: WrapCon
     http: () => httpClient,
     message: () => message,
     modal: () => modal,
+    loader: () => ({
+      show: (text, mode = 'blocking') => {
+        const loaderId = loaderApi.showLoader(text, mode);
+        return () => loaderApi.hideLoader(loaderId);
+      },
+      hide: () => loaderApi.hideLoaders(),
+    }),
     fileSaver: () => FileSaver,
     data: () => (shaFormApi?.data ?? EMPTY_DATA) as TValues,
     form: () => shaFormApi,

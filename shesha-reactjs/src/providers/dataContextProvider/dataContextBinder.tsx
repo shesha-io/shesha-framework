@@ -136,13 +136,13 @@ const DataContextBinder = <TData extends object = object>(props: PropsWithChildr
   const getFull: ContextGetFull = () => {
     const data: IDataContextFull = getData();
     const api = getApi();
-    if (api) {
-      // Build a new object instead of mutating `data` in place - `data` may be the same
-      // reference as `dataRef.current`/caller-owned data when no custom `getData` is supplied,
-      // and api properties (e.g., showLoader, hideLoaders) must not leak back into it.
-      return { ...data, ...api };
-    }
-    return data;
+    // Keep the api nested under `api`: that is the shape declared by the public context api
+    // definitions (IWizardApi, IDataTableContextApi, ICanvasContextApi) that form scripts are
+    // written against. Returning `data` untouched when there is no api also preserves the live
+    // data proxy, so writes from scripts still reach the context.
+    return isDefined(api)
+      ? { ...data, api }
+      : data;
   };
 
   const actionContext: IDataContextProviderActionsContext = {
