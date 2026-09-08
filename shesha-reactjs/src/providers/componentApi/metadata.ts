@@ -31,9 +31,10 @@ export const componentsToTypeDefinition = (components: IComponentApiDescription<
       if (!isNullOrWhiteSpace(fileName)) {
         typesImporter.import({ typeName: component.typeDefinition.typeName, filePath: fileName });
         files.forEach((file) => {
-          if (processedFiles.has(file.fileName)) return;
-          processedFiles.add(file.fileName);
-          context.typeDefinitionBuilder.makeFile(file.fileName, file.content);
+          if (!isNullOrWhiteSpace(file.fileName) && !processedFiles.has(file.fileName)) {
+            processedFiles.add(file.fileName);
+            context.typeDefinitionBuilder.makeFile(file.fileName, file.content);
+          }
         });
         const { isNullable = false } = component.typeDefinition;
         if (isNullable || makeComponentsNullable)
