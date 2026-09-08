@@ -228,7 +228,7 @@ export const isEntityTypeIdentifier = (modelType: string | IEntityTypeIdentifier
   typeof modelType.name === 'string';
 
 export const isValidEntityType = (modelType: string | IEntityTypeIdentifier | null | undefined): modelType is IEntityTypeIdentifier | string => {
-  return isEntityTypeIdentifier(modelType) || (typeof modelType === 'string' && !isNullOrWhiteSpace(modelType));
+  return (isEntityTypeIdentifier(modelType) && !isNullOrWhiteSpace(modelType.name)) || (typeof modelType === 'string' && !isNullOrWhiteSpace(modelType));
 };
 
 export const getEntityTypeIdentifier = (modelType: string | IEntityTypeIdentifier): IEntityTypeIdentifier =>
