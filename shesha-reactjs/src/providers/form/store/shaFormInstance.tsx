@@ -17,7 +17,7 @@ import {
   SubmitHandler,
 } from "./interfaces";
 import { IFormDataLoader } from "../loaders/interfaces";
-import { DataTypes, FormIdentifier, FormMarkup, FormMode, IFlatComponentsStructure, IFormSettings, IFormValidationErrors, IModelMetadata, isEntityMetadata } from "@/interfaces";
+import { DataTypes, FormIdentifier, FormMarkup, FormMode, IErrorInfo, IFlatComponentsStructure, IFormSettings, IFormValidationErrors, IModelMetadata, isEntityMetadata } from "@/interfaces";
 import { ExpressionCaller, ExpressionExecuter, IDataArguments, IFormDataSubmitter } from "../submitters/interfaces";
 import { IFormManagerActionsContext } from "@/providers/formManager/contexts";
 import { useFormManager } from "@/providers/formManager";
@@ -25,7 +25,8 @@ import { IFormDataLoadersContext, useFormDataLoaders } from "../loaders/formData
 import { IFormDataSubmittersContext, useFormDataSubmitters } from "../submitters/formDataSubmittersProvider";
 import { FormInfo } from "../api";
 import { executeScript, getComponentsAndSettings, IApplicationContext, isSameFormIds, useAvailableConstantsContextsNoRefresh, wrapConstantsData } from "../utils";
-import { Form, FormInstance } from "antd";
+import { App, Form, FormInstance } from "antd";
+import type { NotificationInstance } from "antd/es/notification/interface";
 import { IFormApi } from "../formApi";
 import { ISetFormDataPayload } from "../contexts";
 import { deepMergeValues, setValueByPropertyName, unproxyDeep } from "@/utils/object";
@@ -59,6 +60,7 @@ interface ShaFormInstanceArguments<Values extends object = object> {
   context: IDataContextDescriptor | undefined;
   componentApi: IComponentApi | undefined;
   dataSource: IShaFormDataSource<Values> | undefined;
+  notification: NotificationInstance;
 }
 
 export type FormData<Values extends object = object> = Values & {
@@ -275,6 +277,8 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
 
   dataSubmitState: ProcessingState;
 
+  notification: NotificationInstance;
+
   form?: FormInfo | undefined;
 
   get settings(): IFormSettings | undefined {
@@ -304,6 +308,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
     this.expressionExecuter = undefined;
     this.context = args.context;
     this.componentApi = args.componentApi;
+    this.notification = args.notification;
 
     this.logEnabled = false;
     this.isSettingsForm = false;
@@ -835,6 +840,22 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
       : undefined;
   }
 
+  #notifySubmitFailed = (errorInfo: IErrorInfo | undefined): void => {
+    const rendersErrorsInline = Object.values(this.flatStructure?.allComponents ?? {})
+      .some((c) => isDefined(c) && 'type' in c && c.type === 'validationErrors');
+    if (rendersErrorsInline)
+      return;
+
+    const violations = [...new Set(errorInfo?.validationErrors?.map((e) => e.message).filter(isNotNullOrWhiteSpace) ?? [])];
+    this.notification.error({
+      key: 'sha-form-submit-error',
+      message: 'Failed to save',
+      description: violations.length > 0
+        ? <ul>{violations.map((m, i) => <li key={i}>{m}</li>)}</ul>
+        : errorInfo?.message ?? 'Please correct the errors and try again.',
+    });
+  };
+
   submitData = async (payload: SubmitDataPayload = {}): Promise<Values> => {
     this.log('LOG: ShaForm submit...');
     const { customSubmitCaller } = payload;
@@ -886,6 +907,7 @@ class ShaFormInstance<Values extends object = object> implements IShaFormInstanc
         const errorInfo = extractErrorInfo(error);
         this.dataSubmitState = { status: 'failed', error: errorInfo };
         this.setValidationErrors(errorInfo);
+        this.#notifySubmitFailed(errorInfo);
         this.forceRootUpdate();
         throw error;
       }
@@ -930,6 +952,7 @@ const useShaForm = <Values extends object = object>(args: UseShaFormArgs<Values>
   const metadataDispatcher = useMetadataDispatcher();
   const componentApi = useComponentApiProvider();
   const formContext = useDataContextManagerActions().getNearestDataContext(SheshaCommonContexts.FormContext, 'form');
+  const { notification } = App.useApp();
 
   const [formInstance] = useState<IShaFormInstance<Values>>(() => {
     if (form) {
@@ -950,6 +973,7 @@ const useShaForm = <Values extends object = object>(args: UseShaFormArgs<Values>
         metadataDispatcher: metadataDispatcher,
         componentApi: componentApi,
         context: formContext,
+        notification,
       });
       const accessors = wrapConstantsData<Values>({
         topContextId: DataContextTopLevels.Full,
