@@ -1,5 +1,5 @@
 import { IErrorInfo, isAjaxErrorResponse, isErrorInfo, isHasErrorInfo } from "@/interfaces";
-import { isDefined, isNullOrWhiteSpace } from "./nullables";
+import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from "./nullables";
 import axios from "axios";
 import { isAxiosResponse } from "@/interfaces/ajaxResponse";
 
@@ -110,6 +110,16 @@ export const extractErrorInfo = (error: unknown): IErrorInfo | undefined => {
             ? error
             : undefined;
   }
+};
+
+/** Flat human readable text of an error, validation errors included. Used by configurable actions */
+export const extractErrorText = (error: unknown): string => {
+  const errorInfo = extractErrorInfo(error);
+  const violations = [...new Set((errorInfo?.validationErrors ?? []).map((e) => e.message).filter(isNotNullOrWhiteSpace))];
+
+  return violations.length > 0
+    ? violations.join('; ')
+    : isNotNullOrWhiteSpace(errorInfo?.message) ? errorInfo.message : 'Unknown error';
 };
 
 export const makeErrorWithMessage = (error: unknown, message: string): IErrorInfo => {
