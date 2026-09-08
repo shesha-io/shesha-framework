@@ -2,6 +2,10 @@
 import { isPropertySettings, updateJsSettingsForComponents } from '@/designer-components/_settings/utils/utils';
 import { normalizeSingleBraceAccessor } from '@/providers/form/utils/mustacheNormalization';
 import {
+  isConfigurableItemFullName,
+  isValidConfigurableItemFullName,
+  isValidConfigurableItemIdentifier,
+  isValidConfigurableItemRawId,
   IToolboxComponent,
   IToolboxComponentGroup,
   IToolboxComponents,
@@ -1739,12 +1743,14 @@ export const convertDotNotationPropertiesToGraphQL = (properties: string[]): str
   return getNodes(tree);
 };
 
+
 export const isFormRawId = (formId: FormIdentifier): formId is FormUid => {
-  return isDefined(formId) && typeof formId === 'string';
+  return isValidConfigurableItemRawId(formId);
 };
 
+
 export const isFormFullName = (formId: FormIdentifier | undefined): formId is FormFullName => {
-  return isDefined(formId) && typeof (formId) === 'object' && "name" in formId && typeof (formId.name) === 'string';
+  return isConfigurableItemFullName(formId);
 };
 
 /**
@@ -1753,7 +1759,11 @@ export const isFormFullName = (formId: FormIdentifier | undefined): formId is Fo
  * @returns True if the formId is a valid FormFullName, false otherwise
  */
 export const isValidFormFullName = (formId: FormIdentifier | undefined): formId is FormFullName => {
-  return isFormFullName(formId) && !isNullOrWhiteSpace(formId.module) && !isNullOrWhiteSpace(formId.name);
+  return isValidConfigurableItemFullName(formId);
+};
+
+export const isValidFormIdentifier = (formId: FormIdentifier | undefined): formId is FormIdentifier => {
+  return isValidConfigurableItemIdentifier(formId);
 };
 
 export const isSameFormIds = (id1: FormIdentifier, id2: FormIdentifier): boolean => {

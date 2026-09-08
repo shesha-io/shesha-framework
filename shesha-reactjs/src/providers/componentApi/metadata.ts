@@ -1,7 +1,8 @@
 import { ITypeDefinitionLoadingContext, SourceFile, TypeDefinition } from "@/interfaces";
 import { IComponentApiDescription } from "./model";
-import { StringBuilder, TypesImporter } from "@/utils";
+import { isDefined, isNullOrWhiteSpace, StringBuilder, TypesImporter } from "@/utils";
 import { EOL } from "@/utils/metadata/models";
+import { isNonEmptyArray } from "@/utils/array";
 
 export const componentsToTypeDefinition = (components: IComponentApiDescription<Record<string, unknown>>[], context: ITypeDefinitionLoadingContext, makeComponentsNullable: boolean): Promise<TypeDefinition> => {
   const apiFile: SourceFile = {
@@ -21,19 +22,23 @@ export const componentsToTypeDefinition = (components: IComponentApiDescription<
   sb.incIndent();
 
   components.forEach((component) => {
-    const files = component.typeDefinition?.files ?? [];
-    if (component.typeDefinition?.typeName && files[0]?.fileName) {
-      typesImporter.import({ typeName: component.typeDefinition.typeName, filePath: files[0].fileName });
-      files.forEach((file) => {
-        if (processedFiles.has(file.fileName)) return;
-        processedFiles.add(file.fileName);
-        context.typeDefinitionBuilder.makeFile(file.fileName, file.content);
-      });
-      if (component.typeDefinition.isNullable || makeComponentsNullable)
-        sb.append(`/** Please note: the component may be unavailable (undefined) during initialization of the form. */`);
-      const componentName = `${component.componentName}${component.typeDefinition.isNullable || makeComponentsNullable ? "?" : ""}`;
-      const componentType = `${component.typeDefinition.typeName}${component.typeDefinition.isNullable || makeComponentsNullable ? " | undefined" : ""}`;
-      sb.append(`readonly ${componentName}: ${componentType};`);
+    if (isDefined(component.typeDefinition) && component.typeDefinition.typeName && isNonEmptyArray(component.typeDefinition.files)) {
+      const files = component.typeDefinition.files;
+      const fileName = files[0].fileName;
+      if (!isNullOrWhiteSpace(fileName)) {
+        typesImporter.import({ typeName: component.typeDefinition.typeName, filePath: fileName });
+        files.forEach((file) => {
+          if (processedFiles.has(file.fileName)) return;
+          processedFiles.add(file.fileName);
+          context.typeDefinitionBuilder.makeFile(file.fileName, file.content);
+        });
+        const { isNullable = false } = component.typeDefinition;
+        if (isNullable || makeComponentsNullable)
+          sb.append(`/** Please note: the component may be unavailable (undefined) during initialization of the form. */`);
+        const componentName = `${component.componentName}${isNullable || makeComponentsNullable ? "?" : ""}`;
+        const componentType = `${component.typeDefinition.typeName}${isNullable || makeComponentsNullable ? " | undefined" : ""}`;
+        sb.append(`readonly ${componentName}: ${componentType};`);
+      }
     }
   });
   sb.decIndent();

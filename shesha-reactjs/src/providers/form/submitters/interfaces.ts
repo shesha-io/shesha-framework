@@ -32,7 +32,7 @@ export interface IFormDataSubmitter<Values extends object = object> {
 export type SubmitterEndpointType = 'default' | 'static' | 'dynamic';
 
 export interface GqlSubmitterSettings {
-  excludeFormFields?: string | undefined;
+  excludeFormFields?: boolean | undefined;
   endpointType: SubmitterEndpointType;
   staticEndpoint?: IApiEndpoint | undefined;
   dynamicEndpoint?: string | undefined;

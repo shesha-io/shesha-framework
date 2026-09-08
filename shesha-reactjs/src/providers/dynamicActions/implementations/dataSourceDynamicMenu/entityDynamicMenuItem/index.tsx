@@ -62,13 +62,13 @@ const useEntityActions: DynamicItemsEvaluationHook<IDataSourceArguments> = ({ it
   const fetchTemplateData = useCallback(async (): Promise<void> => {
     if (isEntityTypeIdentifier(entityType)) {
       const props: string[] = [];
-      if (labelProperty) props.push(labelProperty);
-      if (tooltipProperty) props.push(tooltipProperty);
+      if (!isNullOrWhiteSpace(labelProperty)) props.push(labelProperty);
+      if (!isNullOrWhiteSpace(tooltipProperty)) props.push(tooltipProperty);
 
       const properties = convertDotNotationPropertiesToGraphQL(props);
       const queryParams = {
         ...getEntityTypeIdentifierQueryParams(entityType),
-        maxResultCount: maxResultCount || 100,
+        maxResultCount: maxResultCount ?? 100,
         properties: properties,
         filter: evaluatedFilters,
       };

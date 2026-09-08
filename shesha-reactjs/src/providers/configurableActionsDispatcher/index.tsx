@@ -252,12 +252,13 @@ function useConfigurableAction<TArguments extends object = object, TResponse = u
 ): void {
   const { registerAction, unregisterAction } = useConfigurableActionDispatcher();
 
+  const { owner, ownerUid, isPermament = false } = payload;
   useEffect(() => {
-    if (isNullOrWhiteSpace(payload.owner) || isNullOrWhiteSpace(payload.ownerUid)) return undefined;
+    if (isNullOrWhiteSpace(owner) || isNullOrWhiteSpace(ownerUid)) return undefined;
 
     registerAction(payload);
 
-    return !payload.isPermament
+    return !isPermament
       ? () => {
         unregisterAction(payload);
       }

@@ -298,7 +298,7 @@ const baseTsConfig = {
 };
 
 const strictFolders = [
-    //"src/providers",
+    "src/providers",
 ];
 
 const makeStrictConfig = (path) => {

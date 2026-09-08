@@ -49,7 +49,7 @@ export class GqlSubmitter implements IFormDataSubmitter {
       : postData;
 
     // handle formFields
-    const postDataWithServiceFields = settings.excludeFormFields
+    const postDataWithServiceFields = settings.excludeFormFields === true
       ? postDataAfterPreparation
       : addFormFieldsList({}, postDataAfterPreparation, antdForm);
 

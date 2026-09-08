@@ -222,7 +222,7 @@ export const prepareColumn = (
   userConfig: IDataTableUserConfig | undefined,
 ): ITableColumn | undefined => {
   const resolvedPropertyName = isDataColumnProps(column)
-    ? (column.propertyName || column.accessor || column.id)
+    ? firstNonEmptyStringOrUndefined(column.propertyName, column.accessor, column.id)
     : undefined;
   const userColumnId = isDataColumnProps(column) ? resolvedPropertyName : column.id;
   const userColumn = userConfig?.columns?.find((c) => c.id === userColumnId);
@@ -250,14 +250,14 @@ export const prepareColumn = (
   if (isDataColumnProps(column)) {
     const colVisibility = userColumn && isDefined(userColumn.show) ? userColumn.show : column.isVisible;
 
-    const srvColumn = resolvedPropertyName
+    const srvColumn = !isNullOrWhiteSpace(resolvedPropertyName)
       ? columns.find((c) => !isNullOrWhiteSpace(c.propertyName) && camelcaseDotNotation(c.propertyName) === camelcaseDotNotation(resolvedPropertyName))
       : {};
 
     const dataCol: ITableDataColumn = {
       ...baseProps,
-      id: resolvedPropertyName || column.id,
-      accessor: resolvedPropertyName ? camelcaseDotNotation(resolvedPropertyName) : column.accessor ?? "",
+      id: !isNullOrWhiteSpace(resolvedPropertyName) ? resolvedPropertyName : column.id,
+      accessor: !isNullOrWhiteSpace(resolvedPropertyName) ? camelcaseDotNotation(resolvedPropertyName) : column.accessor ?? "",
       propertyName: resolvedPropertyName,
 
       propertiesToFetch: resolvedPropertyName,

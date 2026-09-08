@@ -4,6 +4,7 @@ import qs from "qs";
 import { IAjaxResponse } from "@/interfaces";
 import { ISettingFullAccessor, ISettingIdentifier } from "@/providers/settings/models";
 import { isAjaxErrorResponse } from "@/interfaces/ajaxResponse";
+import { isNullOrWhiteSpace } from "@/utils";
 
 interface CategorySettingsMap {
   name: string;
@@ -37,7 +38,7 @@ export class SettingsManager {
           throw new Error(`Category '${id.category}' not found in module '${id.module}'`);
 
         const settingName = category.settings.get(id.name);
-        if (!settingName)
+        if (isNullOrWhiteSpace(settingName))
           throw new Error(`Setting with name '${id.name}' not found in category '${id.category}' of module '${id.module}'`);
 
         return {

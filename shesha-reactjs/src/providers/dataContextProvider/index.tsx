@@ -11,6 +11,7 @@ import { Path } from "@/utils/dotnotation";
 import { GetShaDataContextAccessor, useShaDataContextAccessor } from "./contexts/contextDataAccessor";
 import { WebStorageType } from "./contexts/webStorageProxy";
 import { useDataContextManagerActions } from "../dataContextManager/hooks";
+import { isDefined } from "@/utils";
 
 export interface IDataContextProviderProps<TData extends object> {
   id: string;
@@ -46,7 +47,7 @@ export const DataContextProvider = <TData extends object = object>(props: PropsW
   const initialDataRef = useRef<Promise<TData> | undefined>(undefined);
 
   const onChangeAction = (changedData?: Partial<TData>): void => {
-    if (props.onChangeAction?.actionName) {
+    if (isDefined(props.onChangeAction)) {
       void executeAction({
         actionConfiguration: props.onChangeAction,
         argumentsEvaluationContext: { ...allData, changedData },

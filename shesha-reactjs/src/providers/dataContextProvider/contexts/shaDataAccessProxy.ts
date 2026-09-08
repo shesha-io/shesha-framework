@@ -53,7 +53,7 @@ export const CreateDataAccessor = <TData extends object = object>(
         return undefined;
 
       if (propertyName === 'hasOwnProperty')
-        return (prop: string | symbol) => prop ? propertyName in target.accessor : false;
+        return (prop: string | symbol) => isDefined(prop) ? propertyName in target.accessor : false;
 
       if (hasProperty(target.accessor, propertyName))
         return typeof target.accessor[propertyName] === 'function'
@@ -74,7 +74,7 @@ export const CreateDataAccessor = <TData extends object = object>(
     },
     ownKeys(target) {
       const data = target.getAccessorValue();
-      return data && typeof (data) === 'object'
+      return isDefined(data) && typeof (data) === 'object'
         ? Reflect.ownKeys(data)
         : [];
     },

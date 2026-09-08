@@ -4,7 +4,7 @@ export class ConfigurationLoadingError extends Error implements IErrorInfo {
   code: number | null;
 
   constructor(message?: string, code?: number, options?: ErrorOptions) {
-    super(message || "Failed to load configuration", options);
+    super(message ?? "Failed to load configuration", options);
 
     this.name = 'ConfigurationLoadingError';
     this.code = code ?? null;

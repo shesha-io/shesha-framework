@@ -8,7 +8,7 @@ import { useConfigurableAction } from "@/providers/configurableActionsDispatcher
 import qs from "qs";
 import { unwrapAbpResponse } from "@/utils/fetchers";
 import { getQueryParams } from "@/utils/url";
-import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { FormMarkupFactory } from '@/interfaces/configurableAction';
 import { IRequestParam, IRequestHeader, IRequestBody, IFormDataField, IResponseTransformationConfiguration, executeResponseTransformation } from '@/components/requestConfigModal';
 import { IDictionary } from '@/interfaces';
@@ -136,7 +136,7 @@ const applyResponseTransformation = async (
   context: object,
   transformation?: IResponseTransformationConfiguration,
 ): Promise<unknown> => {
-  if (!transformation?.enabled || !transformation.script.trim()) {
+  if (!isDefined(transformation) || !transformation.enabled || isNullOrWhiteSpace(transformation.script)) {
     return original;
   }
 
@@ -370,7 +370,7 @@ export const useApiCallAction = (): void => {
         data: preparedData,
         method: verb as Method,
         headers: allHeaders,
-        ...(baseUrl && { baseURL: baseUrl }),
+        ...(!isNullOrWhiteSpace(baseUrl) && { baseURL: baseUrl }),
       }).then((response) => {
         const original: unknown = unwrapAbpResponse(response.data) as unknown;
         // Build the transformation script's context from the CALLER's context (has a working `form`,
