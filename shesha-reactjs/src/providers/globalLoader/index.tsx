@@ -93,7 +93,7 @@ export const GlobalLoaderProvider: FC<PropsWithChildren> = ({ children }) => {
     const loaderId = nanoid();
     const loaderInstance: ActiveLoader = {
       id: loaderId,
-      message: message || 'Loading...',
+      message: message ?? 'Loading...',
       isBlocking,
     };
 

@@ -72,7 +72,7 @@ export const FormLoaderProvider: FC<PropsWithChildren> = ({ children }) => {
     const loaderId = nanoid();
     const loaderInstance: InternalFormLoaderInstance = {
       id: loaderId,
-      message: message || 'Loading...',
+      message: message ?? 'Loading...',
     };
 
     setActiveLoaders((prev) => [...prev, loaderInstance]);
