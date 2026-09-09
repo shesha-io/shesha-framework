@@ -7,7 +7,7 @@ namespace Shesha.Domain
     public interface INotificationTypeSpecificProps
     {
         /// <summary>
-        /// The default priority of the message unless overridden during the send operation
+        /// The default priority used when the notification type is sent
         /// </summary>
         public RefListNotificationPriority? DefaultPriority { get; set; }
 
