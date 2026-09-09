@@ -2,17 +2,17 @@ export const loaderApiDefinition = `
 /**
  * Loader instance with methods for progressive feedback and control
  * @example
- * const loader = loader.show("Fetching items...");
+ * const activeLoader = loader.show("Fetching items...");
  * try {
  *   const items = await getItems();
  *
- *   loader.updateMessage("Processing...");
+ *   activeLoader.updateMessage("Processing...");
  *
  *   myCollection.forEach((item, index) => {
- *     loader.updateMessage(\`Processing item \${index}...\`);
+ *     activeLoader.updateMessage(\`Processing item \${index}...\`);
  *   });
  * } finally {
- *   loader.close();
+ *   activeLoader.close();
  * }
  */
 export interface LoaderInstance {
@@ -45,13 +45,13 @@ export type LoaderApi = {
      * @param isBlocking - Whether the loader should prevent user interaction (default: true)
      * @returns A loader instance with methods for progressive feedback
      * @example
-     * const loader = loader.show('Hang tight whilst we update...');
+     * const activeLoader = loader.show('Hang tight whilst we update...');
      * try {
      *   await http.post('/api/save', data);
-     *   loader.close();
+     *   activeLoader.close();
      *   message.success('Saved successfully!');
      * } catch (error) {
-     *   loader.close();
+     *   activeLoader.close();
      *   message.error('Failed to save');
      * }
      */
