@@ -16,7 +16,6 @@ namespace Shesha.Notifications
             destination.MaxMessageSize = source.MaxMessageSize;
             destination.SupportedMechanism = source.SupportedMechanism;
             destination.SenderTypeName = source.SenderTypeName;
-            destination.DefaultPriority = source.DefaultPriority;
             destination.Status = source.Status;
             destination.SupportsAttachment = source.SupportsAttachment;
 
