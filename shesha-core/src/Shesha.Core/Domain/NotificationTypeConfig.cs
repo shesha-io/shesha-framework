@@ -57,7 +57,7 @@ namespace Shesha.Domain
         public virtual bool AllowAttachments { get; set; }
 
         /// <summary>
-        /// The default priority of the message unless overridden during the send operation
+        /// The default priority used when the notification type is sent
         /// </summary>
         public virtual RefListNotificationPriority? DefaultPriority { get; set; }
     }

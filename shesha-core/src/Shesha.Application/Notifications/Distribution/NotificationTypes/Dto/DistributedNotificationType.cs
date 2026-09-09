@@ -13,7 +13,7 @@ namespace Shesha.Notifications.Distribution.NotificationTypes.Dto
     public class DistributedNotificationType: DistributedConfigurableItemBase, INotificationTypeSpecificProps
     {
         /// <summary>
-        /// The default priority of the message unless overridden during the send operation
+        /// The default priority used when the notification type is sent
         /// </summary>
         public RefListNotificationPriority? DefaultPriority { get; set; }
         /// <summary>
