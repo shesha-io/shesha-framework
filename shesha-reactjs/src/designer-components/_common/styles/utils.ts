@@ -259,9 +259,9 @@ export const paddingValue = (model: StyleBoxValue | undefined): string => {
 export const normalizeFontFamily = (fontFamily: string | undefined): string | undefined => {
   const userAgent = window.navigator.userAgent;
   if (/Mac/i.test(userAgent))
-    return fontFamily === 'Segoe UI'
+    return /Segoe UI/.test(fontFamily ?? '')
       ? '-apple-system'
-      : fontFamily === 'Arial'
+      : /Arial/.test(fontFamily ?? '')
         ? 'Helvetica Neue'
         : fontFamily;
   return fontFamily;
