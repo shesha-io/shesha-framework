@@ -136,8 +136,8 @@ const RichTextEditorComponent: IToolboxComponent<IRichTextEditorProps> = {
           theme: prev.theme,
           autoHeight: prev.autoHeight ?? true,
           autoWidth: prev.autoWidth ?? true,
-          allowResizeX: true,
-          allowResizeY: true,
+          allowResizeX: prev.allowResizeX ?? true,
+          allowResizeY: prev.allowResizeY ?? true,
         };
         return { ...prev, desktop: { ...styles }, tablet: { ...styles }, mobile: { ...styles } };
       })

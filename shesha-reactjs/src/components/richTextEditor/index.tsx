@@ -16,7 +16,7 @@ export interface IRichTextEditorProps {
   id?: string | undefined;
 }
 
-export const RichTextEditor: FC<IRichTextEditorProps> = ({ value, onChange, config, style, className, autoWidth, autoHeight, allowBase64Images, id }) => {
+export const RichTextEditor: FC<IRichTextEditorProps> = ({ value, onChange, config, style, className, autoWidth, autoHeight, allowBase64Images = true, id }) => {
   const { styles } = useStyles();
   return (
     <div

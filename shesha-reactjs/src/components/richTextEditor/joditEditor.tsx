@@ -20,7 +20,7 @@ export interface IJoditEditorProps {
   value?: string | undefined;
   onChange?: ((value: string) => void) | undefined;
   config?: JoditConfig | undefined;
-  allowBase64Images?: boolean | undefined;
+  allowBase64Images: boolean;
   id?: string | undefined;
 }
 
@@ -39,7 +39,7 @@ const sanitizeContent = (value: string, allowBase64Images: boolean): string => {
 };
 
 export const JoditEditorWrapper: FC<IJoditEditorProps> = (props) => {
-  const { config, value, onChange, allowBase64Images = true, id } = props;
+  const { config, value, onChange, allowBase64Images, id } = props;
 
   const sanitizedValue = useMemo(() => (!isNullOrWhiteSpace(value) ? sanitizeContent(value, allowBase64Images) : ""),
     [value, allowBase64Images],
