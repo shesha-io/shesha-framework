@@ -4,9 +4,9 @@ import { FormIdentifier } from '../form/models';
 import { FormConfigurationDto } from './models';
 
 export const getConfigurationNotFoundMessage = (configurationType: string, configurationId: ConfigurableItemIdentifier | undefined): string => {
-  if (configurationId && isConfigurableItemRawId(configurationId)) return `${configurationType} with id='${configurationId}' not found`;
+  if (isConfigurableItemRawId(configurationId)) return `${configurationType} with id='${configurationId}' not found`;
 
-  if (configurationId && isConfigurableItemFullName(configurationId)) return `${configurationType} '${getFormFullName(configurationId.module, configurationId.name)}' not found`;
+  if (isConfigurableItemFullName(configurationId)) return `${configurationType} '${getFormFullName(configurationId.module, configurationId.name)}' not found`;
 
   return `${configurationType} not found`;
 };
@@ -15,9 +15,9 @@ export const getFormNotFoundMessage = (formId: FormIdentifier | undefined): stri
 export const getReferenceListNotFoundMessage = (refListId: IReferenceListIdentifier): string => getConfigurationNotFoundMessage("Reference list", refListId);
 
 export const getConfigurationForbiddenMessage = (configurationType: string, configurationId: ConfigurableItemIdentifier | undefined): string => {
-  if (configurationId && isConfigurableItemRawId(configurationId)) return `You are not authorized to access the ${configurationType} with id='${configurationId}'`;
+  if (isConfigurableItemRawId(configurationId)) return `You are not authorized to access the ${configurationType} with id='${configurationId}'`;
 
-  if (configurationId && isConfigurableItemFullName(configurationId)) return `You are not authorized to access the ${configurationType} '${getFormFullName(configurationId.module, configurationId.name)}'`;
+  if (isConfigurableItemFullName(configurationId)) return `You are not authorized to access the ${configurationType} '${getFormFullName(configurationId.module, configurationId.name)}'`;
 
   return `${configurationType} not found`;
 };

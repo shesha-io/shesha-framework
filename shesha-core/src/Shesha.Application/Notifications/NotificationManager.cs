@@ -102,6 +102,7 @@ namespace Shesha.Notifications
             destination.OverrideChannels = source.OverrideChannels;
             destination.IsTimeSensitive = source.IsTimeSensitive;
             destination.AllowAttachments = source.AllowAttachments;
+            destination.DefaultPriority = source.DefaultPriority;
 
             await CopyTemplatesAsync(source, destination);
         }

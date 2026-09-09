@@ -7,7 +7,7 @@ import { isDefined } from '@/utils/nullables';
 
 export const NumberFieldWrapper: FCUnwrapped<INumberFieldSettingsInputProps> = (props) => {
   const { styles } = useStyles();
-  const { value, onChange, readOnly = false, size, icon, variant, placeholder, tooltip, label, min, max } = props;
+  const { value, onChange, readOnly = false, size, icon, variant, placeholder, tooltip, label, min, max, step } = props;
 
   return (
     <Space.Compact style={{ width: "100%" }}>
@@ -21,6 +21,7 @@ export const NumberFieldWrapper: FCUnwrapped<INumberFieldSettingsInputProps> = (
         style={{ width: "100%" }}
         {...(isDefined(min) ? { min } : {})}
         {...(isDefined(max) ? { max } : {})}
+        {...(isDefined(step) ? { step } : {})}
         controls={!icon}
       />
       {icon && <Space.Addon><Icon icon={icon} hint={tooltip || (typeof label === 'string' ? label : undefined)} className={styles.icon} /></Space.Addon>}

@@ -69,7 +69,8 @@ namespace Shesha.Notifications.Distribution.NotificationTypes
 
         protected override async Task<bool> CustomPropsAreEqualAsync(NotificationTypeConfig item, DistributedNotificationType distributedItem)
         {
-            var equals = item.IsTimeSensitive == distributedItem.IsTimeSensitive &&
+            var equals = item.DefaultPriority == distributedItem.DefaultPriority &&
+                item.IsTimeSensitive == distributedItem.IsTimeSensitive &&
                 item.AllowAttachments == distributedItem.AllowAttachments &&
                 item.Disable == distributedItem.Disable &&
                 item.CanOptOut == distributedItem.CanOptOut &&

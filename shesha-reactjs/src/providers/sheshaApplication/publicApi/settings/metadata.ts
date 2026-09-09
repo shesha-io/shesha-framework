@@ -5,7 +5,7 @@ import { SettingConfigurationDto } from "./models";
 import { SettingsManager } from "./manager";
 import { HttpClientApi } from "@/publicJsApis/apis/httpClient";
 import { StringBuilder } from "@/utils/metadata/stringBuilder";
-import { isDefined } from "@/utils/nullables";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 
 type SettingItemType = 'module' | 'category' | 'setting';
 
@@ -106,7 +106,7 @@ const settingsConfigurationToTypeDefinition = (settings: SettingConfigurationDto
   ];
 
   const writeObject = (sb: StringBuilder, property: ISettingPropertyMetadata): void => {
-    if (property.description)
+    if (!isNullOrWhiteSpace(property.description))
       sb.append(`/** ${property.description} */`);
 
     sb.append(`${property.path}: {`);
@@ -117,7 +117,7 @@ const settingsConfigurationToTypeDefinition = (settings: SettingConfigurationDto
     sb.incIndent();
     property.properties.forEach((prop) => {
       if ((prop as ISettingPropertyMetadata).settingItemType === 'setting') {
-        if (prop.description)
+        if (!isNullOrWhiteSpace(prop.description))
           sb.append(`/** ${prop.description} */`);
         sb.append(`${prop.path}: ApplicationSettingAccessor<${prop.dataType}>;`);
       } else

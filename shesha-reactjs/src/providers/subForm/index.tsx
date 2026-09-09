@@ -12,6 +12,7 @@ import { App, ColProps } from 'antd';
 import {
   componentsFlatStructureToTree,
   componentsTreeToFlatStructure,
+  isValidFormIdentifier,
   upgradeComponents,
   useApplicationContextData,
 } from '@/providers/form/utils';
@@ -46,7 +47,7 @@ import { AxiosResponse } from 'axios';
 import { ConfigurableItemIdentifier, configurableItemIdentifierToString, isConfigurableItemFullName } from '@/interfaces/configurableItems';
 import { IErrorInfo } from '@/interfaces/errorInfo';
 import { extractAjaxResponse, IAjaxResponse, IAjaxResponseBase } from '@/interfaces/ajaxResponse';
-import { getEntityTypeIdentifierQueryParams, getEntityTypeName, isEntityTypeIdEqual, isEntityTypeIdentifier } from '../metadataDispatcher/entities/utils';
+import { getEntityTypeIdentifierQueryParams, getEntityTypeName, isEntityTypeIdEqual, isEntityTypeIdentifier, isValidEntityType } from '../metadataDispatcher/entities/utils';
 import { IEntityTypeIdentifier } from '../sheshaApplication/publicApi/entities/models';
 import { IEntity, IGenericGetPayload } from '@/interfaces/gql';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
@@ -283,7 +284,7 @@ const SubFormWithMetadataProvider: FC<PropsWithChildren<ISubForWithMetadataProvi
           model={props}
           context={contextId}
           isScope
-          name={`SubForm ${componentName || (formId ? configurableItemIdentifierToString(formId) : "")}`}
+          name={`SubForm ${!isNullOrWhiteSpace(componentName) ? componentName : configurableItemIdentifierToString(formId ?? "")}`}
           formApi={subFormApi}
           formFlatMarkup={{ allComponents: state.allComponents, componentRelations: state.componentRelations, parents: state.parents }}
         >
@@ -389,7 +390,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
     return !isNullOrWhiteSpace(actualGetUrl)
       ? Promise.resolve(actualGetUrl) // if getUrl is specified - evaluate value using JS
-      : internalEntityType
+      : isValidEntityType(internalEntityType)
         ? urlHelper // if entityType is specified - get default url for the entity
           .getDefaultActionUrl({ modelType: internalEntityType, actionName: StandardEntityActions.read })
           .then((endpoint) => endpoint ? endpoint.url : "")
@@ -455,7 +456,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
   // show form based on the entity type
   useEffect(() => {
     if (formSelectionMode === 'dynamic') {
-      if (dynamicFormEntityType) {
+      if (isValidEntityType(dynamicFormEntityType)) {
         clearedForMissingEntityType.current = false;
         const renderedForm = prevRenderedEntityTypeForm.current;
         const isAlreadyRendered = isDefined(renderedForm) &&
@@ -560,7 +561,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     const id = getIdOrUndefined(actualQueryParams) ?? getIdOrUndefined(value) ?? "";
 
     const params: IGenericGetPayload = {
-      ...(internalEntityType ? getEntityTypeIdentifierQueryParams(internalEntityType) : {}),
+      ...(isValidEntityType(internalEntityType) ? getEntityTypeIdentifierQueryParams(internalEntityType) : {}),
       properties: Boolean(properties)
         ? ['id', ...Array.from(new Set(Array.isArray(properties) ? properties : [properties]))].join(' ')
         : "",
@@ -601,7 +602,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
     if (dataRequestAbortController.current) dataRequestAbortController.current.abort('out of date');
 
     // Skip loading if we work with entity and the `id` is not specified
-    if (internalEntityType && !finalQueryParams?.id) {
+    if (isValidEntityType(internalEntityType) && isNullOrWhiteSpace(finalQueryParams?.id)) {
       return;
     }
 
@@ -697,7 +698,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         .then((response) => {
           const result = extractAjaxResponse(response.data);
           onChangeInternal(result);
-          if (onUpdated) {
+          if (!isNullOrWhiteSpace(onUpdated)) {
             const evaluateOnUpdated = (): void => {
               const func = new Function('data, globalState, response, message', onUpdated) as OnUpdated;
               func(value, globalState, result, message);
@@ -715,7 +716,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
 
   //#region Fetch Form
   useDeepCompareEffect(() => {
-    if (formConfig.formId && !markup) {
+    if (isValidFormIdentifier(formConfig.formId) && !markup) {
       const requestId = ++markupRequestId.current;
       setFormLoadingState({ isLoading: true, error: null });
 
@@ -725,7 +726,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
             return;
           setFormLoadingState({ isLoading: false, error: null });
 
-          if (dynamicFormEntityType && formSelectionMode === 'dynamic') {
+          if (isValidEntityType(dynamicFormEntityType) && formSelectionMode === 'dynamic') {
             const cacheKey = getDynamicFormCacheKey(dynamicFormEntityType, formType);
             if (!entityTypeFormCache.current[cacheKey])
               entityTypeFormCache.current[cacheKey] = response;
@@ -751,7 +752,7 @@ const SubFormProvider: FC<PropsWithChildren<ISubFormProviderProps>> = (props) =>
         });
     }
 
-    if (!formConfig.formId) {
+    if (!isValidFormIdentifier(formConfig.formId)) {
       // there is nothing left to fetch, a spinner left over from a cancelled request would never stop
       setFormLoadingState((prev) => prev.isLoading ? { isLoading: false, error: prev.error } : prev);
 

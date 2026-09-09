@@ -24,7 +24,7 @@ export const setTenantId = (tenantId: string): void => {
  */
 export const getTenantId = (): number | null => {
   const value = getLocalStorage()?.getItem(TENANT_KEY);
-  if (!value) {
+  if (isNullOrWhiteSpace(value)) {
     return null;
   }
 

@@ -8,6 +8,7 @@ import { convertFormMarkupToFlatStructure } from '../form/utils';
 import { DEFAULT_FORM_SETTINGS, FormIdentifier, IFormDto, IFormSettings } from '../form/models';
 import { useFormById, useFormByMarkup } from './hooks';
 import { migrateFormSettings } from '../form/migration/formSettingsMigrations';
+import { isNullOrWhiteSpace } from '@/utils';
 
 /**
  * FormManager. Component responsible for preparation of forms and caching.
@@ -63,7 +64,7 @@ export const FormManager: FC<PropsWithChildren> = ({ children }) => {
   const getFormByIdLoader = (payload: GetFormByIdPayload): FormLoadingItem => {
     const cacheKey = getFormCacheKey(payload.formId);
 
-    if (!payload.skipCache && cacheKey) {
+    if (!payload.skipCache && !isNullOrWhiteSpace(cacheKey)) {
       const cachedItem = cacheById.current[cacheKey];
       if (cachedItem)
         return cachedItem;
@@ -71,7 +72,7 @@ export const FormManager: FC<PropsWithChildren> = ({ children }) => {
 
     const item = makeFormByIdLoader(payload);
 
-    if (cacheKey)
+    if (!isNullOrWhiteSpace(cacheKey))
       cacheById.current[cacheKey] = item;
 
     return item;
@@ -79,7 +80,7 @@ export const FormManager: FC<PropsWithChildren> = ({ children }) => {
 
   const clearCache = (formId: FormIdentifier): void => {
     const cacheKey = getFormCacheKey(formId);
-    if (cacheKey)
+    if (!isNullOrWhiteSpace(cacheKey))
       delete cacheById.current[cacheKey];
   };
 
@@ -87,7 +88,7 @@ export const FormManager: FC<PropsWithChildren> = ({ children }) => {
     return getFormByIdLoader(payload).promise;
   };
 
-  const getFormByMarkupAsync = ({ markup, formSettings = DEFAULT_FORM_SETTINGS, isSettingsForm: convertToSettings }: GetFormByMarkupPayload): Promise<UpToDateForm> => {
+  const getFormByMarkupAsync = ({ markup, formSettings = DEFAULT_FORM_SETTINGS, isSettingsForm: convertToSettings = false }: GetFormByMarkupPayload): Promise<UpToDateForm> => {
     const settings: IFormSettings = convertToSettings
       ? { ...formSettings, isSettingsForm: true }
       : formSettings;
@@ -135,7 +136,7 @@ export const FormManager: FC<PropsWithChildren> = ({ children }) => {
 
   const getFormByMarkupLoader = (payload: GetFormByMarkupPayload): FormLoadingItem => {
     const cacheKey = payload.key;
-    if (!cacheKey) {
+    if (isNullOrWhiteSpace(cacheKey)) {
       // console.warn('Form markup key is not defined');
       return makeFormByMarkupLoader(payload);
     }

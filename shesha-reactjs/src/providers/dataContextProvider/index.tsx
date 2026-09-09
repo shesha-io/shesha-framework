@@ -12,6 +12,7 @@ import { GetShaDataContextAccessor, useShaDataContextAccessor } from "./contexts
 import { WebStorageType } from "./contexts/webStorageProxy";
 import { useDataContextManagerActions } from "../dataContextManager/hooks";
 import { useGlobalLoader } from "../globalLoader";
+import { isDefined, isNullOrWhiteSpace } from "@/utils";
 
 export interface IDataContextProviderProps<TData extends object> {
   id: string;
@@ -49,7 +50,7 @@ export const DataContextProvider = <TData extends object = object>(props: PropsW
   const { showLoader, hideLoaders } = useGlobalLoader();
 
   const onChangeAction = (changedData?: Partial<TData>): void => {
-    if (props.onChangeAction?.actionName) {
+    if (isDefined(props.onChangeAction) && !isNullOrWhiteSpace(props.onChangeAction.actionName)) {
       void executeAction({
         actionConfiguration: props.onChangeAction,
         argumentsEvaluationContext: { ...allData, changedData },

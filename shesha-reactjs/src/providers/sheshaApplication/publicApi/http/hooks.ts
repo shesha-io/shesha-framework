@@ -13,15 +13,20 @@ export class AxiosHttpClient implements HttpClientApi {
     if (!isDefined(config))
       return this.#axiosConfig;
 
-    const headers = { ...(config.omitStandardHeaders ? {} : this.#axiosConfig.headers), ...config.headers };
+    const {
+      omitStandardHeaders = false,
+      timeout = undefined,
+    } = config;
+
+    const headers = { ...(omitStandardHeaders ? {} : this.#axiosConfig.headers), ...config.headers };
 
     const finalConfig: AxiosRequestConfig = {
       ...this.#axiosConfig,
       headers,
     };
 
-    if (config.timeout)
-      finalConfig.timeout = config.timeout;
+    if (isDefined(timeout))
+      finalConfig.timeout = timeout;
 
     if (isDefined(config.responseType))
       finalConfig.responseType = config.responseType;
