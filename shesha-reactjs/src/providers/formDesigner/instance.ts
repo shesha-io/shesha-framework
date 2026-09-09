@@ -21,7 +21,7 @@ import {
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { camelcaseDotNotation } from '@/utils/string';
 import { nanoid } from "@/utils/uuid";
-import { toolbarGroupsToComponents } from "../form/hooks";
+import { FormDesignerComponentGetter, toolbarGroupsToComponents } from "../form/hooks";
 import { componentsFlatStructureToTree, createComponentModelForDataProperty, isValidationError, processRecursive, upgradeComponent, validateConfigurableComponentSettings, ValidateErrorWithFriendlyName } from "../form/utils";
 import {
   FormDesignerFormState,
@@ -542,6 +542,10 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     }, `Component ${payload.componentId} updated`);
   };
 
+  getComponentDefinition: FormDesignerComponentGetter = (type: string) => {
+    return this.toolboxComponents[type];
+  };
+
   validateComponentAsync = async <TModel extends IConfigurableFormComponent = IConfigurableFormComponent>(component: TModel): Promise<void> => {
     const toolboxComponent = this.getToolboxComponentOrUndefined(component.type);
     const validationErrors: IAsyncValidationError[] = [];
@@ -566,7 +570,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
           const effectiveStyle = getEffectiveStyle(model, this.activeDevice ?? 'desktop', this.theme, toolboxComponent, formSettings.isSettingsForm);
           const modelWithInheritedValues = { ...model, ...effectiveStyle };
 
-          return validateConfigurableComponentSettings(settingsFormMarkup, modelWithInheritedValues);
+          return validateConfigurableComponentSettings(settingsFormMarkup, modelWithInheritedValues, this.getComponentDefinition);
         };
 
       if (isDefined(validator)) {
@@ -631,7 +635,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     const validationErrors: IAsyncValidationError[] = [];
     try {
       this.log('FD: validateFormSettingsAsync');
-      await validateConfigurableComponentSettings(this.formSettingsFormMarkup, formSettings);
+      await validateConfigurableComponentSettings(this.formSettingsFormMarkup, formSettings, this.getComponentDefinition);
     } catch (error: unknown) {
       if (isValidationError(error)) {
         error.errors.forEach((fieldError) => {
@@ -687,8 +691,7 @@ export class FormDesignerInstance implements IFormDesignerInstance {
       };
       let newComponents: IConfigurableFormComponent[] = [];
       if (toolboxComponent.isTemplate === true) {
-        const allComponents = toolbarGroupsToComponents(this.toolboxComponentGroups);
-        const builtResult = toolboxComponent.build(allComponents);
+        const builtResult = toolboxComponent.build(this.toolboxComponents);
         newComponents = this.cloneComponents(builtResult);
       } else {
         // create new component

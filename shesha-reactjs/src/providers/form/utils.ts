@@ -95,13 +95,14 @@ import { useModalApiWithFallback } from '../dynamicModal';
 import { firstNonEmptyString } from '@/utils/string';
 import { getComponentDefinitions } from './defaults/toolboxComponents';
 import RawAsyncValidator, { InternalRuleItem, RuleItem, Rules, ValidateError, Values } from '@rc-component/async-validator';
-import { Rule as FormRule } from 'antd/es/form';
 import { isNonEmptyArray } from '@/utils/array';
 import { useComponentApiUpdate } from '../componentApi/provider';
 import { IUtilsApi } from '@/publicJsApis/apis/utils';
 import { IActionsApi } from '@/publicJsApis/apis/actions';
 import { ICurrentUserApi } from '@/publicJsApis/apis/user';
 import { isEqual } from 'lodash';
+import { getComponentValidationRules } from '../formValidator/utils';
+import { FormDesignerComponentGetter } from './hooks';
 
 export {
   executeExpression, executeScript,
@@ -1197,11 +1198,6 @@ export const getValidationRules = (component: IConfigurableFormComponent, option
   return rules;
 };
 
-export const getAntdFormValidationRules = (component: IConfigurableFormComponent, options?: IFormValidationRulesOptions): FormRule[] => {
-  const rules = getValidationRules(component, options);
-  return rules as FormRule[];
-};
-
 const DICTIONARY_ACCESSOR_REGEX = /(^[\s]*\{(?<key>[\w]+)\.(?<accessor>[^\}]+)\}[\s]*$)/;
 const NESTED_ACCESSOR_REGEX = /((?<key>[\w]+)\.(?<accessor>[^\}]+))/;
 
@@ -1379,7 +1375,7 @@ type ValidationSettings = {
   friendlyNames: Record<string, string | ReactNode>;
 };
 
-export const getFormValidationSettings = (markup: FormMarkup, values: Values): ValidationSettings => {
+export const getFormValidationSettings = (markup: FormMarkup, values: Values, componentGetter: FormDesignerComponentGetter): ValidationSettings => {
   const components = getComponentsFromMarkup(markup);
 
   const designerComponents: IToolboxComponents = Object.fromEntries(getComponentDefinitions());
@@ -1395,7 +1391,9 @@ export const getFormValidationSettings = (markup: FormMarkup, values: Values): V
       if (isConfigurableFormComponent(item) && !isNullOrWhiteSpace(item.propertyName)) {
         if (isDefined(item.label))
           friendlyNames[item.propertyName] = item.label;
-        const itemRules = getValidationRules(item);
+
+        const itemRules = getComponentValidationRules(item, componentGetter, { getFormData: () => values }) as RuleItem[];
+
         if (isNonEmptyArray(itemRules)) {
           // validate only when component is not hidden
           const hidden = isComponentHidden(flatStructure, item.id, { data: values });
@@ -1418,8 +1416,8 @@ export type ValidateErrorWithFriendlyName = ValidateError & {
 };
 
 
-export const validateConfigurableComponentSettings = (markup: FormMarkup, values: Values): Promise<Values> => {
-  const validationSettings = getFormValidationSettings(markup, values);
+export const validateConfigurableComponentSettings = (markup: FormMarkup, values: Values, componentGetter: FormDesignerComponentGetter): Promise<Values> => {
+  const validationSettings = getFormValidationSettings(markup, values, componentGetter);
   const validator = new RawAsyncValidator(validationSettings.rules);
   return validator.validate(values, undefined, (errors, _fields) => {
     if (isDefined(errors)) {
