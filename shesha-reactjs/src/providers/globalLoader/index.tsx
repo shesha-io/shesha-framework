@@ -74,7 +74,7 @@ export const GlobalLoaderProvider: FC<PropsWithChildren> = ({ children }) => {
   const updateLoader = useCallback((id: string, updates: Partial<ActiveLoader>) => {
     setActiveLoaders((prev) => {
       const updated = prev.map((loader) =>
-        loader.id === id ? { ...loader, ...updates } : loader
+        loader.id === id ? { ...loader, ...updates } : loader,
       );
       const loader = updated.find((l) => l.id === id);
       if (loader) {
