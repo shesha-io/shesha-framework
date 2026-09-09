@@ -8,9 +8,7 @@ import {
   isValidConfigurableItemRawId,
   IToolboxComponent,
   IToolboxComponentGroup,
-  IToolboxComponents,
-  SettingsFormMarkupFactory,
-  SettingsMigrationContext,
+  IToolboxComponents, SettingsMigrationContext,
 } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import {
@@ -94,7 +92,6 @@ import {
 import { IMetadataDispatcher } from '../metadataDispatcher/contexts';
 import { IModalApi } from '../dynamicModal/modalApi';
 import { useModalApiWithFallback } from '../dynamicModal';
-import { makeFormBuliderFactory } from '@/form-factory/implementation';
 import { firstNonEmptyString } from '@/utils/string';
 import { getComponentDefinitions } from './defaults/toolboxComponents';
 import RawAsyncValidator, { InternalRuleItem, RuleItem, Rules, ValidateError, Values } from '@rc-component/async-validator';
@@ -1420,12 +1417,8 @@ export type ValidateErrorWithFriendlyName = ValidateError & {
   fieldLabel?: string | ReactNode;
 };
 
-export const validateConfigurableComponentSettings = (markupOrFactory: FormMarkup | SettingsFormMarkupFactory, values: Values): Promise<Values> => {
-  // TODO(validation): pass fbf as argument to use full components list
-  const markup = typeof markupOrFactory === 'function'
-    ? markupOrFactory({ fbf: makeFormBuliderFactory(getComponentDefinitions()), removeStyleRouter: true })
-    : markupOrFactory;
 
+export const validateConfigurableComponentSettings = (markup: FormMarkup, values: Values): Promise<Values> => {
   const validationSettings = getFormValidationSettings(markup, values);
   const validator = new RawAsyncValidator(validationSettings.rules);
   return validator.validate(values, undefined, (errors, _fields) => {

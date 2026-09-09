@@ -43,6 +43,9 @@ import { IValidationCollector, ValidationResult } from "../validator/interfaces"
 import { FormBuilderFactory } from "@/form-factory/interfaces";
 import { getFormSettingsFormMarkup } from "@/components/formDesigner/formSettings";
 import { ReactNode } from "react";
+import { getEffectiveStyle } from "@/utils/style";
+import { IConfigurableTheme } from "../theme";
+import { DeviceTypes } from "../canvas/contexts";
 
 export type FormDesignerArgs = {
   readOnly: boolean;
@@ -52,6 +55,8 @@ export type FormDesignerArgs = {
   logEnabled?: boolean;
   formPersister: IFormPersisterContext;
   formBuilderFactory: FormBuilderFactory;
+  theme: IConfigurableTheme;
+  activeDevice: DeviceTypes | undefined;
 };
 
 const isComponentsArray = (value: unknown): value is IConfigurableFormComponent[] => {
@@ -96,11 +101,16 @@ export class FormDesignerInstance implements IFormDesignerInstance {
 
   formBuilderFactory: FormBuilderFactory;
 
+  theme: IConfigurableTheme;
+
+  activeDevice: DeviceTypes | undefined;
+
   formSettingsFormMarkup: FormMarkup;
 
   get state(): FormDesignerFormState {
     return this.undoableState.getState();
   }
+
 
   constructor(args: FormDesignerArgs) {
     this.toolboxComponentGroups = args.toolboxComponentGroups;
@@ -116,6 +126,8 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     this.subscriptions = new Map<FormDesignerSubscriptionType, Set<FormDesignerSubscription>>();
     this.validationCollector = new ValidationCollector();
     this.formBuilderFactory = args.formBuilderFactory;
+    this.theme = args.theme;
+    this.activeDevice = args.activeDevice;
 
     this.formSettingsFormMarkup = getFormSettingsFormMarkup({ fbf: this.formBuilderFactory });
 
@@ -547,7 +559,14 @@ export class FormDesignerInstance implements IFormDesignerInstance {
           if (!isDefined(toolboxComponent.settingsFormMarkup))
             return Promise.resolve();
 
-          return validateConfigurableComponentSettings(toolboxComponent.settingsFormMarkup, model);
+          const settingsFormMarkup = typeof toolboxComponent.settingsFormMarkup === 'function'
+            ? toolboxComponent.settingsFormMarkup({ fbf: this.formBuilderFactory, removeStyleRouter: true })
+            : toolboxComponent.settingsFormMarkup;
+          const { formSettings } = this.state;
+          const effectiveStyle = getEffectiveStyle(model, this.activeDevice ?? 'desktop', this.theme, toolboxComponent, formSettings.isSettingsForm);
+          const modelWithInheritedValues = { ...model, ...effectiveStyle };
+
+          return validateConfigurableComponentSettings(settingsFormMarkup, modelWithInheritedValues);
         };
 
       if (isDefined(validator)) {
@@ -829,6 +848,14 @@ export class FormDesignerInstance implements IFormDesignerInstance {
     if (this.readOnly === value) return;
     this.readOnly = value;
     this.notifySubscribers(['readonly']);
+  };
+
+  setActiveDevice = (value: DeviceTypes | undefined): void => {
+    if (this.activeDevice === value)
+      return;
+
+    this.activeDevice = value;
+    void this.validateAllComponentsAsync();
   };
 
   setFormMode = (value: FormMode): void => {

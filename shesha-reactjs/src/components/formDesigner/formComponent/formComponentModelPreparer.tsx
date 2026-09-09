@@ -110,7 +110,6 @@ export const FormComponentModelPreparer: FC<FormComponentPrepareModelProps> = ({
     if (modelMetadata?.properties && Boolean(actualApiModel.propertyName)) {
       const pName = toCamelCase(actualApiModel.propertyName ?? '');
       if (Array.isArray(modelMetadata.properties)) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setPropMetadata(modelMetadata.properties.find((p) => toCamelCase(p.path) === pName));
       } else {
         modelMetadata.properties().then((propsMeta) => {
