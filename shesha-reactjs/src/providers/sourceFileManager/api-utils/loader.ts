@@ -3,15 +3,17 @@ export const loaderApiDefinition = `
  * Loader instance with methods for progressive feedback and control
  * @example
  * const loader = loader.show("Fetching items...");
- * const items = await getItems();
+ * try {
+ *   const items = await getItems();
  *
- * loader.updateMessage("Processing...");
+ *   loader.updateMessage("Processing...");
  *
- * myCollection.forEach((item, index) => {
- *   loader.updateMessage(\`Processing item \${index}...\`);
- * });
- *
- * loader.close();
+ *   myCollection.forEach((item, index) => {
+ *     loader.updateMessage(\`Processing item \${index}...\`);
+ *   });
+ * } finally {
+ *   loader.close();
+ * }
  */
 export interface LoaderInstance {
     /**
