@@ -257,14 +257,17 @@ export const paddingValue = (model: StyleBoxValue | undefined): string => {
 };
 
 export const normalizeFontFamily = (fontFamily: string | undefined): string | undefined => {
-  const userAgent = window.navigator.userAgent;
-  if (/Mac/i.test(userAgent))
-    return /Segoe UI/.test(fontFamily ?? '')
-      ? '-apple-system'
-      : /Arial/.test(fontFamily ?? '')
-        ? 'Helvetica Neue'
-        : fontFamily;
-  return fontFamily;
+  if (!isDefined(fontFamily)) return fontFamily;
+
+  const fonts = fontFamily.split(',').map((f) => {
+    const font = f.trim();
+    return / /.test(font) ? `"${font}"` : font;
+  });
+  const newFonts = fonts.splice(0);
+  newFonts.push('"Inter Variable"');
+  newFonts.concat(fonts);
+
+  return newFonts.join(', ');
 };
 
 export const fontStyles = (model: IFontValue | undefined, customStyle?: CSSProperties | undefined): string => {
