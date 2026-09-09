@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { Table, Tag, Typography, Space, Badge, Button } from 'antd';
+import { Table, Tag, Typography, Space, Badge, Button, Empty } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { ItemValidationResult } from '@/providers/validator/interfaces';
@@ -110,34 +110,41 @@ export const ValidationPanel: React.FC<ValidationPanelProps> = ({
     },
   ];
 
-  return (
-    <div className="validation-panel">
-      {showSummary && data.length > 0 && (
-        <Space size="large" style={{ marginBottom: 16 }}>
-          <Badge count={counts.error || 0} style={{ backgroundColor: '#ff4d4f' }}>
-            <Text strong>Errors</Text>
-          </Badge>
-          <Badge count={counts.warning || 0} style={{ backgroundColor: '#faad14' }}>
-            <Text strong>Warnings</Text>
-          </Badge>
-          <Badge count={counts.info || 0} style={{ backgroundColor: '#1890ff' }}>
-            <Text strong>Info</Text>
-          </Badge>
-          <Text type="secondary">|</Text>
-          <Text strong>Total: {data.length}</Text>
-        </Space>
-      )}
+  return data.length > 0
+    ? (
+      <div>
+        {showSummary && (
+          <Space size="large" style={{ marginBottom: 16 }}>
+            <Badge count={counts.error || 0} style={{ backgroundColor: '#ff4d4f' }}>
+              <Text strong>Errors</Text>
+            </Badge>
+            <Badge count={counts.warning || 0} style={{ backgroundColor: '#faad14' }}>
+              <Text strong>Warnings</Text>
+            </Badge>
+            <Badge count={counts.info || 0} style={{ backgroundColor: '#1890ff' }}>
+              <Text strong>Info</Text>
+            </Badge>
+            <Text type="secondary">|</Text>
+            <Text strong>Total: {data.length}</Text>
+          </Space>
+        )}
 
-      <Table<ItemValidationResult>
-        dataSource={data}
-        columns={columns}
-        rowKey={(record) => record.key}
-        size={size}
-        pagination={false}
-        {...(isDefined(scrollY) ? { scroll: { y: scrollY } } : {})}
-        bordered
-        locale={{ emptyText: 'No validation results' }}
+        <Table<ItemValidationResult>
+          dataSource={data}
+          columns={columns}
+          rowKey={(record) => record.key}
+          size={size}
+          pagination={false}
+          {...(isDefined(scrollY) ? { scroll: { y: scrollY } } : {})}
+          bordered
+          locale={{ emptyText: 'No validation results' }}
+        />
+      </div>
+    )
+    : (
+      <Empty
+        image={Empty.PRESENTED_IMAGE_SIMPLE}
+        description="Congratulations! No problems found."
       />
-    </div>
-  );
+    );
 };

@@ -16,6 +16,7 @@ import { createNamedContext } from '@/utils/react';
 import { BaseHistoryItem, FormDesignerSubscription, FormDesignerSubscriptionType } from './models';
 import { IValidationCollector } from '../validator/interfaces';
 import { ReactNode } from 'react';
+import { DeviceTypes } from '../canvas/contexts';
 
 export interface AddComponentPayloadBase {
   index: number;
@@ -125,6 +126,7 @@ export type FormDesignerActions = {
   updateFormSettings: (settings: IFormSettings) => void;
 
   setReadOnly: (value: boolean) => void;
+  setActiveDevice: (value: DeviceTypes | undefined) => void;
   setFormMode: (value: FormMode) => void;
   setActiveSettingsTabKey: (key: string) => void;
 

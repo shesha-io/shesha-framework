@@ -25,16 +25,18 @@ export const useComponentValidationResults = (componentId: string): ValidationRe
   return results;
 };
 
+const sortValidationResults = (results: ItemValidationResult[]): ItemValidationResult[] => results.sort((a, b) => a.key.localeCompare(b.key));
+
 export const useAllValidationResults = (): ItemValidationResult[] => {
   const collector = useValidationCollector();
 
   const [results, setResults] = useState<ItemValidationResult[]>(() => {
-    return collector.validationResults;
+    return sortValidationResults(collector.validationResults);
   });
 
   useEffect(() => {
     return collector.subscribe((collector) => {
-      setResults(collector.validationResults);
+      setResults(sortValidationResults(collector.validationResults));
     });
   }, [collector]);
 
