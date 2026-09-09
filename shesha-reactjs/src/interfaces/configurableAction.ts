@@ -9,17 +9,12 @@ import { FormBuilderFactory } from '@/form-factory/interfaces';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { IArgumentsEvaluationContext } from '@/providers/configurableActionsDispatcher/contexts';
 import { ISettingsFormFactoryArgs } from '..';
-import { IErrorInfo } from './errorInfo';
 
 export interface IHasPreviousActionResponse {
   actionResponse?: unknown;
 }
 export interface IHasPreviousActionError {
   actionError?: unknown;
-  /** Extracted error info of the failed action, available to `onFail` action arguments */
-  actionErrorInfo?: IErrorInfo | undefined;
-  /** Flat error text of the failed action, validation errors included */
-  actionErrorMessage?: string | undefined;
 }
 
 export type HasPreviousActionResult = IHasPreviousActionResponse | IHasPreviousActionError;

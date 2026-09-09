@@ -23,7 +23,6 @@ import { ActionParametersDictionary, GenericDictionary } from '@/interfaces';
 import { IHasVersion, Migrator } from '@/utils/fluentMigrator/migrator';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { mergeActionGroups } from './utils';
-import { extractErrorInfo, extractErrorText } from '@/utils/errors';
 
 const getActualActionArguments = <TArguments extends ActionParametersDictionary = ActionParametersDictionary>(action: IConfigurableActionDescriptor<TArguments>, actionArguments: TArguments | undefined): TArguments | undefined => {
   const { migrator } = action;
@@ -185,12 +184,7 @@ const ConfigurableActionDispatcherProvider: FC<PropsWithChildren> = ({
             console.error(`Failed to execute action '${actionOwner}:${actionName}', error:`, error);
             if (handleFail) {
               if (onFail) {
-                const onFailContext = {
-                  ...argumentsEvaluationContext,
-                  actionError: error,
-                  actionErrorInfo: extractErrorInfo(error),
-                  actionErrorMessage: extractErrorText(error),
-                };
+                const onFailContext = { ...argumentsEvaluationContext, actionError: error };
                 await executeAction({
                   actionConfiguration: { ...onFail },
                   argumentsEvaluationContext: onFailContext,
