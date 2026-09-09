@@ -91,7 +91,6 @@ namespace Shesha.Notifications
         /// <param name="sender"></param>
         /// <param name="receiver"></param>
         /// <param name="data"></param>
-        /// <param name="priority"></param>
         /// <param name="attachments"></param>
         /// <param name="cc"></param>
         /// <param name="triggeringEntity"></param>
@@ -99,19 +98,18 @@ namespace Shesha.Notifications
         /// <param name="category"></param>
         /// <returns></returns>
         public async Task SendNotificationAsync<TData>(
-            NotificationTypeConfig type, 
-            IMessageSender? sender, 
-            IMessageReceiver receiver, 
-            TData data, 
-            RefListNotificationPriority priority, 
+            NotificationTypeConfig type,
+            IMessageSender? sender,
+            IMessageReceiver receiver,
+            TData data,
             List<NotificationAttachmentDto>? attachments = null,
             string? cc = null,
-            GenericEntityReference? triggeringEntity = null, 
+            GenericEntityReference? triggeringEntity = null,
             NotificationChannelConfig? channel = null,
             string? category = null) where TData : NotificationData
         {
             // Check if the notification type is disabled
-            if (type.Disable) 
+            if (type.Disable)
                 return;
 
             if (type.CanOptOut)
@@ -120,6 +118,8 @@ namespace Shesha.Notifications
                 if (optedOut)
                     return;
             }
+
+            var priority = type.DefaultPriority ?? RefListNotificationPriority.Medium;
 
             var notification = await _notificationRepository.InsertAsync(new Notification()
             {
@@ -143,7 +143,7 @@ namespace Shesha.Notifications
             else
             {
                 // Send notification to all determined channels
-                var channels = await _notificationManager.GetChannelsAsync(type, receiver, (RefListNotificationPriority)priority);
+                var channels = await _notificationManager.GetChannelsAsync(type, receiver, priority);
 
                 foreach (var channelConfig in channels)
                 {
@@ -355,22 +355,21 @@ namespace Shesha.Notifications
         }
 
         public Task SendNotificationAsync<TData>(
-            NotificationTypeConfig type, 
-            Person? senderPerson, 
-            Person receiverPerson, 
-            TData data, 
-            RefListNotificationPriority priority, 
+            NotificationTypeConfig type,
+            Person? senderPerson,
+            Person receiverPerson,
+            TData data,
             List<NotificationAttachmentDto>? attachments = null,
             string? cc = null,
-            GenericEntityReference? triggeringEntity = null, 
+            GenericEntityReference? triggeringEntity = null,
             NotificationChannelConfig? channel = null,
             string? category = null) where TData : NotificationData
         {
-            var sender = senderPerson != null 
+            var sender = senderPerson != null
                 ? new PersonMessageParticipant(senderPerson)
                 : null;
-            var receiver = new PersonMessageParticipant(receiverPerson);            
-            return SendNotificationAsync(type, sender, receiver, data, priority, attachments, cc, triggeringEntity, channel, category);
+            var receiver = new PersonMessageParticipant(receiverPerson);
+            return SendNotificationAsync(type, sender, receiver, data, attachments, cc, triggeringEntity, channel, category);
         }
     }
 }
