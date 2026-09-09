@@ -1,5 +1,6 @@
 ﻿using Shesha.Domain.Attributes;
 using Shesha.Domain.Constants;
+using Shesha.Domain.Enums;
 using System.Collections.Generic;
 
 namespace Shesha.Domain
@@ -51,8 +52,13 @@ namespace Shesha.Domain
         public virtual bool IsTimeSensitive { get; set; }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
-        public virtual bool AllowAttachments { get; set; }        
+        public virtual bool AllowAttachments { get; set; }
+
+        /// <summary>
+        /// The default priority used when the notification type is sent
+        /// </summary>
+        public virtual RefListNotificationPriority? DefaultPriority { get; set; }
     }
 }
