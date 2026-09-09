@@ -1,4 +1,4 @@
-import { MetadataProvider } from '@/providers';
+import { FormItemProvider, MetadataProvider } from '@/providers';
 import { FormProvider, ShaForm } from '@/providers/form';
 import { FormIdentifier } from '@/providers/form/models';
 import { ShaFormProvider } from '@/providers/form/providers/shaFormProvider';
@@ -90,9 +90,11 @@ const FormPersisterStateConsumer: FC<PropsWithChildren> = ({ children }) => {
         formSettings={settings}
         readOnly={readOnly}
       >
-        <FormProviderWrapperInner form={form}>
-          {children}
-        </FormProviderWrapperInner>
+        <FormItemProvider namePrefix="">
+          <FormProviderWrapperInner form={form}>
+            {children}
+          </FormProviderWrapperInner>
+        </FormItemProvider>
       </FormDesignerProvider>
     );
   }
