@@ -37,6 +37,7 @@ export const RelationPrefix: React.FC<RelationPrefixProps> = ({ isFirst, onChang
         disabled={readOnly}
         popupMatchSelectWidth={false}
         size="small"
+        aria-label="How this rule combines with the previous one"
       />
     </div>
   );

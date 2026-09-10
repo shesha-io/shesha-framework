@@ -35,10 +35,14 @@ function toDate(value: unknown): Date {
 
 const pad = (n: number): string => String(n).padStart(2, '0');
 
-/** Local calendar date, optionally with the time, in the ISO shape the backend parses. */
+/** Local calendar date, or an ISO date-time with the local offset so the instant survives the round trip. Same shape the date pickers send. */
 function formatDate(date: Date, withTime: boolean): string {
   const day = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
-  return withTime ? `${day}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}` : day;
+  if (!withTime) return day;
+  const offsetMinutes = -date.getTimezoneOffset();
+  const sign = offsetMinutes >= 0 ? '+' : '-';
+  const abs = Math.abs(offsetMinutes);
+  return `${day}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}${sign}${pad(Math.floor(abs / 60))}:${pad(abs % 60)}`;
 }
 
 /** A Date, or a string that carries a time component, keeps its time through date arithmetic. */

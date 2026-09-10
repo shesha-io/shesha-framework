@@ -5,33 +5,47 @@ import type { MenuProps } from 'antd';
 
 export type SourceSelectorVariant = 'field' | 'value';
 
-type SourceItem = [string, { label: string }];
+/** The three places a rule operand can come from, in the order the menu lists them. */
+export type SourceKey = 'func' | 'field' | 'value';
+export type SourceItem = [SourceKey, { label: string }];
+
+const SOURCE_ORDER: readonly SourceKey[] = ['func', 'field', 'value'];
+
+export const isSourceKey = (key: unknown): key is SourceKey => typeof key === 'string' && (SOURCE_ORDER as readonly string[]).includes(key);
 
 export interface ISourceSelectorProps {
-  /** Items provided by the library: tuples of [sourceKey, { label }] */
   valueSources: SourceItem[];
-  valueSrc?: string;
-  setValueSrc: (source: string) => void;
+  valueSrc?: SourceKey;
+  setValueSrc: (source: SourceKey) => void;
   readonly?: boolean;
-  /** Controls visual sizing/style — 'field' is wider, 'value' is compact */
+  /** 'field' is wider, 'value' is compact */
   variant?: SourceSelectorVariant;
 }
 
-const SOURCE_PREFERRED_ORDER = ['func', 'field', 'value'];
-
-const getSourceOrder = (key: string): number => {
-  const index = SOURCE_PREFERRED_ORDER.indexOf(key);
-  return index >= 0 ? index : SOURCE_PREFERRED_ORDER.length + 1;
-};
-
-const getSourceIcon = (key: string): React.ReactNode => {
+const getSourceIcon = (key: SourceKey): React.ReactNode => {
   switch (key) {
     case 'field': return <AppstoreOutlined />;
     case 'func': return <FunctionOutlined />;
     case 'value': return <NumberOutlined />;
-    default: return <AppstoreOutlined />;
   }
 };
+
+interface SourceBadgeProps {
+  source: SourceKey;
+  variant?: SourceSelectorVariant;
+}
+
+/** The trigger's glyph for a column with one possible source: nothing to choose, so nothing to focus. */
+export const SourceBadge: FC<SourceBadgeProps> = ({ source, variant = 'value' }) => (
+  <span className={`sha-query-builder-source-dropdown-trigger sha-query-builder-source-dropdown-trigger--${variant}`}>
+    <span
+      className={`sha-query-builder-source-trigger sha-query-builder-source-trigger--${variant} sha-query-builder-source-trigger--static`}
+      aria-hidden="true"
+    >
+      <span className="sha-query-builder-source-trigger-icon">{getSourceIcon(source)}</span>
+    </span>
+  </span>
+);
 
 export const SourceSelector: FC<ISourceSelectorProps> = ({
   valueSources,
@@ -40,10 +54,11 @@ export const SourceSelector: FC<ISourceSelectorProps> = ({
   readonly,
   variant = 'value',
 }) => {
-  const orderedSources = [...valueSources].sort(([a], [b]) => getSourceOrder(a) - getSourceOrder(b));
+  const [open, setOpen] = React.useState(false);
+  const orderedSources = [...valueSources].sort(([a], [b]) => SOURCE_ORDER.indexOf(a) - SOURCE_ORDER.indexOf(b));
 
-  const fallbackKey = variant === 'field' ? 'field' : 'value';
-  const activeSource: string = orderedSources.some(([key]) => key === valueSrc) && valueSrc !== undefined
+  const fallbackKey: SourceKey = variant === 'field' ? 'field' : 'value';
+  const activeSource: SourceKey = valueSrc !== undefined && orderedSources.some(([key]) => key === valueSrc)
     ? valueSrc
     : (orderedSources.find(([key]) => key === fallbackKey)?.[0] ?? orderedSources[0]?.[0] ?? fallbackKey);
 
@@ -60,7 +75,7 @@ export const SourceSelector: FC<ISourceSelectorProps> = ({
     items: menuItems,
     onClick: ({ key, domEvent }) => {
       domEvent.stopPropagation();
-      setValueSrc(String(key));
+      if (isSourceKey(key)) setValueSrc(key);
     },
   };
 
@@ -71,7 +86,7 @@ export const SourceSelector: FC<ISourceSelectorProps> = ({
   };
 
   return (
-    <Dropdown menu={menu} trigger={['click']} placement="bottomLeft" {...(readonly !== undefined ? { disabled: readonly } : {})}>
+    <Dropdown menu={menu} trigger={['click']} placement="bottomLeft" onOpenChange={setOpen} {...(readonly !== undefined ? { disabled: readonly } : {})}>
       <span
         className={`sha-query-builder-source-dropdown-trigger sha-query-builder-source-dropdown-trigger--${variant}`}
         onMouseDown={stopPropagation}
@@ -82,6 +97,8 @@ export const SourceSelector: FC<ISourceSelectorProps> = ({
           className={`sha-query-builder-source-trigger sha-query-builder-source-trigger--${variant}`}
           title={activeLabel}
           aria-label={activeLabel}
+          aria-haspopup="menu"
+          aria-expanded={open}
           disabled={readonly}
         >
           <span className="sha-query-builder-source-trigger-icon">{getSourceIcon(activeSource)}</span>

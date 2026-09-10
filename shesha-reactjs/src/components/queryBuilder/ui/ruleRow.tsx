@@ -4,12 +4,10 @@ import { Select } from 'antd';
 import { findField, getFieldKind } from '../catalogue/fields';
 import { getOperator, getOperatorsForKind } from '../catalogue/operators';
 import { RuleNode } from '../model/types';
-import { SourceSelector } from '../sourceSelector';
+import { SourceBadge } from '../sourceSelector';
 import { useBuilder } from './context';
 import { FieldPicker } from './fieldPicker';
 import { RuleValueEditor } from './ruleValueEditor';
-
-const FIELD_SOURCE_ITEMS: Array<[string, { label: string }]> = [['field', { label: 'Field' }]];
 
 const stopPointerPropagation = (event: React.MouseEvent | React.PointerEvent): void => {
   event.stopPropagation();
@@ -37,13 +35,7 @@ export const RuleRow: React.FC<RuleRowProps> = ({ rule }) => {
     <div className={classNames('sha-query-builder-rule-row', isUnary && 'is-unary')}>
       <div className="sha-query-builder-packed-control sha-query-builder-packed-control--field">
         <div className="sha-query-builder-source-slot">
-          <SourceSelector
-            variant="field"
-            valueSources={FIELD_SOURCE_ITEMS}
-            valueSrc="field"
-            setValueSrc={() => undefined}
-            readonly={readOnly}
-          />
+          <SourceBadge source="field" variant="field" />
         </div>
         <div className="sha-query-builder-field-slot sha-query-builder-control-slot">
           <FieldPicker value={rule.field} onChange={onFieldChange} readOnly={readOnly} placeholder="Select field" />

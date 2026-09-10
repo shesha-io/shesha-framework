@@ -15,6 +15,7 @@ export const BoolButtonGroup: React.FC<BoolButtonGroupProps> = ({ value, readOnl
       type="button"
       disabled={readOnly}
       className={`sha-bool-btn-group__btn${value === true ? ' is-active' : ''}`}
+      aria-pressed={value === true}
       onClick={() => onChange(true)}
     >
       {labelYes}
@@ -23,6 +24,7 @@ export const BoolButtonGroup: React.FC<BoolButtonGroupProps> = ({ value, readOnl
       type="button"
       disabled={readOnly}
       className={`sha-bool-btn-group__btn${value === false ? ' is-active' : ''}`}
+      aria-pressed={value === false}
       onClick={() => onChange(false)}
     >
       {labelNo}

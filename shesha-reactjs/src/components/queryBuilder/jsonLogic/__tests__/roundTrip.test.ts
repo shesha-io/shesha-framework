@@ -1,6 +1,6 @@
 import { OPERATORS } from '../../catalogue/operators';
 import { createEmptyTree, newNodeId } from '../../model/factories';
-import { isGroupNode, isRawRuleNode, QueryNode, QueryTree, RuleNode } from '../../model/types';
+import { isGroupNode, isRawRuleNode, QueryNode, QueryTree, RuleNode, RuleValue } from '../../model/types';
 import { exportToJsonLogic } from '../export';
 import { importFromJsonLogic } from '../import';
 import corpus from './fixtures/corpus.json';
@@ -67,7 +67,7 @@ describe('catalogue coverage', () => {
     ...createEmptyTree(),
     children: [{ kind: 'rule', id: newNodeId(), field, operator, values }],
   });
-  const v = (value: unknown): RuleNode['values'][number] => ({ source: 'value', value: value as string });
+  const v = (value: Extract<RuleValue, { source: 'value' }>['value']): RuleValue => ({ source: 'value', value });
 
   const samples: Array<[string, RuleNode['values'], Logic]> = [
     ['is', [v('x')], { '==': [{ var: 'f' }, 'x'] }],
@@ -141,6 +141,16 @@ describe('import fallbacks', () => {
     const logic = { and: [{ date_add: [{ now: [] }, 1, 'day'] }, { '==': [{ var: 'a' }, { toLowerCase: [{ var: 'b' }] }] }] };
     const tree = importFromJsonLogic(logic);
     expect(rawRules(tree)).toHaveLength(2);
+    expect(exportToJsonLogic(tree)).toEqual(logic);
+  });
+
+  it.each<[string, Logic]>([
+    ['an expression with an unknown type', { and: [{ '==': [{ var: 'a' }, { evaluate: [{ expression: 'x', type: 'python' }] }] }] }],
+    ['a specification with extra arguments', { and: [{ is_satisfied: [{ var: 'spec' }, 'return true;', 'extra'] }] }],
+    ['a scalar group child', { and: [true] }],
+  ])('keeps %s raw and writes it back unchanged', (_name, logic) => {
+    const tree = importFromJsonLogic(logic);
+    expect(rawRules(tree)).toHaveLength(1);
     expect(exportToJsonLogic(tree)).toEqual(logic);
   });
 

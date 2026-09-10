@@ -876,6 +876,12 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             min-width: 0;
         }
 
+        /* A column with one source shows the glyph only: no caret, nothing to focus. */
+        .sha-query-builder-source-trigger--static {
+            justify-content: center;
+            cursor: default;
+        }
+
         /* Controls bring their own minimum widths; the slot decides the width here so the suffix icon stays visible. */
         .sha-query-builder-control-slot .${prefixCls}-select,
         .sha-query-builder-control-slot .${prefixCls}-picker,

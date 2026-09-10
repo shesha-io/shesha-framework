@@ -2,16 +2,24 @@ import React from 'react';
 import classNames from 'classnames';
 import { DeleteOutlined, HolderOutlined } from '@ant-design/icons';
 
-interface ItemActionProps {
-  action: 'delete' | 'drag';
+interface DeleteActionProps {
+  action: 'delete';
   disabled: boolean;
-  onDelete?: (() => void) | undefined;
-  onDragStart?: React.DragEventHandler<HTMLButtonElement> | undefined;
-  onDragEnd?: React.DragEventHandler<HTMLButtonElement> | undefined;
+  onDelete: () => void;
 }
 
-export const ItemAction: React.FC<ItemActionProps> = ({ action, disabled, onDelete, onDragEnd, onDragStart }) => {
-  const isDelete = action === 'delete';
+interface DragActionProps {
+  action: 'drag';
+  disabled: boolean;
+  onDragStart: React.DragEventHandler<HTMLButtonElement>;
+  onDragEnd: React.DragEventHandler<HTMLButtonElement>;
+}
+
+type ItemActionProps = DeleteActionProps | DragActionProps;
+
+export const ItemAction: React.FC<ItemActionProps> = (props) => {
+  const isDelete = props.action === 'delete';
+  const label = isDelete ? 'Delete' : 'Drag';
 
   return (
     <button
@@ -20,13 +28,13 @@ export const ItemAction: React.FC<ItemActionProps> = ({ action, disabled, onDele
         'sha-query-builder-item-action',
         isDelete ? 'sha-query-builder-item-action--delete' : 'sha-query-builder-item-action--drag',
       )}
-      onClick={isDelete ? onDelete : undefined}
-      draggable={!isDelete && !disabled}
-      disabled={disabled}
-      onDragStart={!isDelete ? onDragStart : undefined}
-      onDragEnd={!isDelete ? onDragEnd : undefined}
-      aria-label={isDelete ? 'Delete' : 'Drag'}
-      title={isDelete ? 'Delete' : 'Drag'}
+      onClick={props.action === 'delete' ? props.onDelete : undefined}
+      draggable={props.action === 'drag' && !props.disabled}
+      disabled={props.disabled}
+      onDragStart={props.action === 'drag' ? props.onDragStart : undefined}
+      onDragEnd={props.action === 'drag' ? props.onDragEnd : undefined}
+      aria-label={label}
+      title={label}
     >
       {isDelete ? <DeleteOutlined /> : <HolderOutlined />}
     </button>

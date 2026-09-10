@@ -9,7 +9,7 @@ const SINGLE_TEMPLATE_PATTERN = /^\s*\{\{([\s\S]*?)\}\}\s*$/;
 const STRING_LITERAL_PATTERN = /'(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"/g;
 const SAFE_EXPRESSION_PATTERN = /^[A-Za-z0-9_$\s.'"(),+\-*/<>=!&|?:]+$/;
 const DISALLOWED_KEYWORD_PATTERN = /\b(?:new|function|class|while|for|if|return|this|window|globalThis|document|constructor|prototype|__proto__|eval|Function|Object|Array|Reflect|Proxy)\b/;
-const IDENTIFIER_PATTERN = /[A-Za-z_$][A-Za-z0-9_$]*/g;
+const IDENTIFIER_PATTERN = /^[A-Za-z_$][A-Za-z0-9_$]*$/;
 const LITERAL_WORDS = new Set(['true', 'false', 'null', 'undefined']);
 const DATE_OUTPUT_FORMAT = 'YYYY-MM-DDTHH:mm:ss';
 
@@ -27,10 +27,8 @@ const getReferencedRoots = (expression: string, functionNames: Set<string>): str
   for (const segment of segments) {
     const root = segment.split('.')[0];
     if (root === undefined || root === '' || !IDENTIFIER_PATTERN.test(root) || LITERAL_WORDS.has(root) || functionNames.has(root)) continue;
-    IDENTIFIER_PATTERN.lastIndex = 0;
     roots.add(root);
   }
-  IDENTIFIER_PATTERN.lastIndex = 0;
   return Array.from(roots);
 };
 

@@ -192,15 +192,15 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .query-builder .group--footer > .sha-query-builder-empty-state--root .sha-query-builder-empty-state-actions .action--ADD-RULE.ant-btn {
-            background: #1890ff !important;
-            border-color: #1890ff !important;
+            background: ${token.colorPrimary} !important;
+            border-color: ${token.colorPrimary} !important;
             color: #fff !important;
         }
 
         .query-builder .group--footer > .sha-query-builder-empty-state--root .sha-query-builder-empty-state-actions .action--ADD-GROUP.ant-btn {
             background: #fff !important;
-            border-color: #1890ff !important;
-            color: #1890ff !important;
+            border-color: ${token.colorPrimary} !important;
+            color: ${token.colorPrimary} !important;
         }
 
         .query-builder .group--footer > .sha-query-builder-empty-state--root .sha-query-builder-empty-state-actions .action--ADD-RULE.ant-btn .ant-btn-icon,
@@ -590,8 +590,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             flex-direction: column;
             align-items: flex-start;
             gap: 10px;
-            background: rgba(43, 120, 228, 0.30) !important;
-            border: 1px solid #7fa8dc !important;
+            background: color-mix(in srgb, ${token.colorPrimary} 30%, transparent) !important;
+            border: 1px solid color-mix(in srgb, ${token.colorPrimary} 50%, #fff) !important;
             border-radius: 11px;
             position: relative;
             box-sizing: border-box;
@@ -1958,8 +1958,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             flex-direction: column;
             align-items: flex-start;
             gap: 10px;
-            background: rgba(43, 120, 228, 0.30) !important;
-            border: 1px solid #7fa8dc !important;
+            background: color-mix(in srgb, ${token.colorPrimary} 30%, transparent) !important;
+            border: 1px solid color-mix(in srgb, ${token.colorPrimary} 50%, #fff) !important;
             border-radius: 11px;
             position: relative;
             box-sizing: border-box;

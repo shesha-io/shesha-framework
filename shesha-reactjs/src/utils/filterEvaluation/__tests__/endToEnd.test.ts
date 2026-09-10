@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-deprecated -- these tests pin the behaviour of the compatibility adapters */
+import moment from 'moment';
 import { IStoredFilter } from '@/providers/dataTable/interfaces';
 import { evaluateDynamicFilters } from '../adapters';
 import { buildEvaluationContext, resolveFilter } from '../engine';
@@ -11,6 +13,7 @@ const savedFilter = {
 };
 
 describe('saved filter with a date function, from designer JSON to the request', () => {
+  const fourDaysLater = moment('2026-09-14T08:30:00').format();
   const mappings = [{ match: 'data', data: { creationTime: '2026-09-10T08:30:00' } }, { match: 'user', data: { id: 'u1' } }];
 
   it('resolves the function in the browser so the backend only sees a literal', async () => {
@@ -19,7 +22,7 @@ describe('saved filter with a date function, from designer JSON to the request',
     expect(JSON.stringify(result.logic)).not.toContain('evaluate');
     expect(JSON.stringify(result.logic)).not.toContain('DATEADD');
     const constant = (result.logic as { and: Array<{ '>='?: unknown[] }> }).and[1]?.['>=']?.[1];
-    expect(constant).toBe('2026-09-14T08:30:00');
+    expect(constant).toBe(fourDaysLater);
   });
 
   it('goes through the table filter path used by the data context', async () => {
@@ -28,7 +31,7 @@ describe('saved filter with a date function, from designer JSON to the request',
     expect(filter?.expression).toEqual({
       and: [
         { '==': [{ var: 'isActive' }, true] },
-        { '>=': [{ var: 'creationTime' }, '2026-09-14T08:30:00'] },
+        { '>=': [{ var: 'creationTime' }, fourDaysLater] },
       ],
     });
   });

@@ -52,6 +52,7 @@ import { ApplicationContextsProvider } from './context';
 import { useApplicationPlugin, usePublicApplicationApi } from './context/applicationContext';
 import { DEFAULT_ACCESS_TOKEN_NAME, IHttpHeadersDictionary, ISheshaRoutes } from './contexts';
 import { ProgressBar } from './progressBar';
+import { setFilterEvaluationDebug } from '@/utils/filterEvaluation';
 
 export interface IShaApplicationProviderProps {
   isDebugMode?: boolean;
@@ -94,6 +95,7 @@ const ShaApplicationProvider: FC<PropsWithChildren<IShaApplicationProviderProps>
   const authRef = useRef<IAuthProviderRefProps>(undefined);
   const application = useSheshaApplicationInstance({ ...props, authorizer: authRef });
   useEffect(() => {
+    setFilterEvaluationDebug(application.isDebugMode);
     void application.init();
   }, [application]);
 

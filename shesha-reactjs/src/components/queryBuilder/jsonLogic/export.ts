@@ -59,14 +59,14 @@ const exportRule = (rule: RuleNode): Logic | undefined => {
   }
 };
 
-const exportNode = (node: QueryNode): Logic | undefined => {
-  if (isRawRuleNode(node)) return node.json as Logic;
+const exportNode = (node: QueryNode): unknown => {
+  if (isRawRuleNode(node)) return node.json;
   if (isGroupNode(node)) return exportGroup(node);
   return exportRule(node);
 };
 
 const exportGroup = (group: GroupNode): Logic | undefined => {
-  const children = group.children.map(exportNode).filter((child): child is Logic => child !== undefined);
+  const children = group.children.map(exportNode).filter((child) => child !== undefined);
   if (children.length === 0) return undefined;
   const body: Logic = { [group.conjunction]: children };
   return group.not ? { '!': body } : body;

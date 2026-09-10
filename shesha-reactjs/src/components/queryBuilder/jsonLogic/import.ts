@@ -25,7 +25,10 @@ const importValue = (node: unknown): RuleValue | undefined => {
   const evaluate = isObject(node) ? asList(node['evaluate']) : undefined;
   const args = evaluate?.length === 1 ? evaluate[0] : undefined;
   if (isObject(args) && typeof args['expression'] === 'string') {
-    const language: ExpressionLanguage = args['type'] === 'javascript' ? 'javascript' : 'mustache';
+    // a missing type is the legacy mustache node; anything else unknown is not ours to normalise
+    const type = args['type'];
+    if (type !== undefined && type !== 'mustache' && type !== 'javascript') return undefined;
+    const language: ExpressionLanguage = type === 'javascript' ? 'javascript' : 'mustache';
     return { source: 'expression', language, expression: args['expression'], required: args['required'] === true };
   }
   if (isScalar(node) || isScalarList(node)) return { source: 'value', value: node };
@@ -34,7 +37,7 @@ const importValue = (node: unknown): RuleValue | undefined => {
 
 const rule = (field: string, operator: string, values: RuleValue[] = []): RuleNode => ({ kind: 'rule', id: newNodeId(), field, operator, values });
 
-const raw = (json: object, reason: string): RawRuleNode => ({ kind: 'raw', id: newNodeId(), json, reason });
+const raw = (json: unknown, reason: string): RawRuleNode => ({ kind: 'raw', id: newNodeId(), json, reason });
 
 /** Comparison with the property on either side; returns [path, otherOperand] or undefined. */
 const splitComparison = (args: unknown): [string, unknown] | undefined => {
@@ -118,6 +121,7 @@ const importRule = (node: Logic): QueryNode => {
     }
     case 'is_satisfied': {
       const list = asList(args) ?? [args];
+      if (list.length > 2) return raw(node, 'A specification rule takes a name and at most one condition');
       const name = varPath(list[0]);
       if (name === undefined) return raw(node, 'A specification rule needs the specification name');
       if (list.length === 1) return rule(name, 'is_satisfied');
@@ -132,7 +136,7 @@ const importRule = (node: Logic): QueryNode => {
 };
 
 const importNode = (node: unknown): QueryNode => {
-  if (!isObject(node)) return raw({ value: node }, 'Not a JsonLogic node');
+  if (!isObject(node)) return raw(node, 'Not a JsonLogic node');
   const entry = single(node);
   if (entry) {
     const [operator, args] = entry;

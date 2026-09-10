@@ -25,7 +25,7 @@ interface ItemProps {
   drag: IDragHandlers;
 }
 
-const RawRule: React.FC<{ json: object; reason: string }> = ({ json, reason }) => (
+const RawRule: React.FC<{ json: unknown; reason: string }> = ({ json, reason }) => (
   <div className="sha-query-builder-rule-row is-unary" title={reason}>
     <code className="sha-query-builder-raw-rule">{JSON.stringify(json)}</code>
   </div>
@@ -118,9 +118,11 @@ export const QueryBuilderGroup: React.FC<GroupProps> = ({ group, depth, canDelet
               Add Rule
             </Button>
             <Tooltip title={!canAddGroup ? 'Maximum group nesting level reached' : undefined}>
-              <Button icon={<FolderOutlined />} onClick={() => dispatch({ type: 'addGroup', groupId: group.id })} disabled={readOnly || !canAddGroup}>
-                Add Group
-              </Button>
+              <span className="sha-query-builder-tooltip-target">
+                <Button icon={<FolderOutlined />} onClick={() => dispatch({ type: 'addGroup', groupId: group.id })} disabled={readOnly || !canAddGroup}>
+                  Add Group
+                </Button>
+              </span>
             </Tooltip>
           </div>
         </div>
@@ -145,7 +147,7 @@ export const QueryBuilderGroup: React.FC<GroupProps> = ({ group, depth, canDelet
             menu={{
               items: [
                 { key: 'rule', icon: <PlusOutlined />, label: 'Add Rule', onClick: () => dispatch({ type: 'addRule', groupId: group.id }) },
-                { key: 'group', icon: <FolderOutlined />, label: !canAddGroup ? <Tooltip title="Maximum group nesting level reached">Add Group</Tooltip> : 'Add Group', onClick: () => dispatch({ type: 'addGroup', groupId: group.id }), disabled: !canAddGroup },
+                { key: 'group', icon: <FolderOutlined />, label: canAddGroup ? 'Add Group' : 'Add Group (maximum nesting reached)', onClick: () => dispatch({ type: 'addGroup', groupId: group.id }), disabled: !canAddGroup },
               ],
             }}
             trigger={['click']}

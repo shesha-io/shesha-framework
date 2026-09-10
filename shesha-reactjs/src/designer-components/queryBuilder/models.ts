@@ -14,7 +14,7 @@ export interface IQueryBuilderProps {
 export interface IQueryBuilderFieldProps {
   jsonExpanded?: boolean | undefined;
   value?: JsonLogicFilter | undefined;
-  onChange?: (value: JsonLogicFilter | null) => void | undefined;
+  onChange?: ((value: JsonLogicFilter | null) => void) | undefined;
   showJsonTestingTools?: boolean | undefined;
   readOnly?: boolean | undefined;
 }

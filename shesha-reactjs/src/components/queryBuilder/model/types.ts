@@ -48,7 +48,8 @@ export interface GroupNode {
 export interface RawRuleNode {
   kind: 'raw';
   id: string;
-  json: object;
+  /** The saved JSON exactly as it was, so it is written back unchanged. */
+  json: unknown;
   reason: string;
 }
 

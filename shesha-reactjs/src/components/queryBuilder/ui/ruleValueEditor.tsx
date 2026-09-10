@@ -5,7 +5,7 @@ import { QueryField, isDateLikeKind } from '../catalogue/fields';
 import { OperatorDef } from '../catalogue/operators';
 import { createValue } from '../model/factories';
 import { RuleNode, RuleValue, ValueSource } from '../model/types';
-import { SourceSelector } from '../sourceSelector';
+import { SourceBadge, SourceItem, SourceKey, SourceSelector } from '../sourceSelector';
 import { useBuilder } from './context';
 import { resolveValueEditor } from './editors/registry';
 import { EditorValue } from './editors/types';
@@ -13,10 +13,9 @@ import { ExpressionValueEditor } from './expressionValueEditor';
 import { FieldPicker } from './fieldPicker';
 
 /** The source selector keeps the previous builder's keys so its icons and styles still apply. */
-const SOURCE_KEYS: Record<ValueSource, string> = { value: 'value', field: 'field', expression: 'func' };
+const SOURCE_KEYS: Record<ValueSource, SourceKey> = { value: 'value', field: 'field', expression: 'func' };
+const SOURCE_VALUES: Record<SourceKey, ValueSource> = { value: 'value', field: 'field', func: 'expression' };
 const SOURCE_LABELS: Record<ValueSource, string> = { value: 'Value', field: 'Field', expression: 'Function' };
-const EMPTY_SOURCES: Array<[string, { label: string }]> = [['value', { label: 'Value' }]];
-const fromSourceKey = (key: string): ValueSource => key === 'func' ? 'expression' : key === 'field' ? 'field' : 'value';
 
 interface RuleValueEditorProps {
   rule: RuleNode;
@@ -32,7 +31,7 @@ export const RuleValueEditor: React.FC<RuleValueEditorProps> = ({ rule, field, o
     return (
       <div className="sha-query-builder-value-shell sha-query-builder-value-shell--empty">
         <div className="sha-query-builder-source-slot">
-          <SourceSelector variant="value" valueSources={EMPTY_SOURCES} valueSrc="value" setValueSrc={() => undefined} readonly />
+          <SourceBadge source="value" />
         </div>
         <div className="sha-query-builder-value-editor">
           <div className="sha-query-builder-value-editor-slot sha-query-builder-control-slot">
@@ -45,7 +44,7 @@ export const RuleValueEditor: React.FC<RuleValueEditorProps> = ({ rule, field, o
   if (operator.cardinality === 0)
     return null;
 
-  const sourceItems: Array<[string, { label: string }]> = operator.sources.map((source) => [SOURCE_KEYS[source], { label: SOURCE_LABELS[source] }]);
+  const sourceItems: SourceItem[] = operator.sources.map((source) => [SOURCE_KEYS[source], { label: SOURCE_LABELS[source] }]);
   const showRangeSeparator = operator.cardinality === 2 && isDateLikeKind(field.kind);
   const placeholder = `Enter ${field.label}`;
 
@@ -100,7 +99,7 @@ export const RuleValueEditor: React.FC<RuleValueEditorProps> = ({ rule, field, o
         variant="value"
         valueSources={sourceItems}
         valueSrc={SOURCE_KEYS[valueAt(index).source]}
-        setValueSrc={(key) => dispatch({ type: 'setValueSource', id: rule.id, index, source: fromSourceKey(key) })}
+        setValueSrc={(key) => dispatch({ type: 'setValueSource', id: rule.id, index, source: SOURCE_VALUES[key] })}
         readonly={readOnly}
       />
     </div>

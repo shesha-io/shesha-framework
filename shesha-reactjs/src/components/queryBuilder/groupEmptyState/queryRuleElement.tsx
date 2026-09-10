@@ -17,6 +17,8 @@ export const QueryRuleElement: FC<IQueryRuleElementProps> = ({
   disabled,
   addGroupDisabled,
 }) => {
+  const isDisabled = disabled ?? false;
+  const groupBlocked = isDisabled || (addGroupDisabled ?? false);
   return (
     <Flex
       vertical
@@ -30,17 +32,17 @@ export const QueryRuleElement: FC<IQueryRuleElementProps> = ({
           icon={<PlusOutlined />}
           {...(onAddRule !== undefined ? { onClick: onAddRule } : {})}
           className="action action--ADD-RULE"
-          disabled={disabled ?? false}
+          disabled={isDisabled || onAddRule === undefined}
         >
           Add Rule
         </Button>
-        <Tooltip title={addGroupDisabled ? 'Maximum group nesting level reached' : undefined}>
+        <Tooltip title={addGroupDisabled === true ? 'Maximum group nesting level reached' : undefined}>
           <Button
             size="small"
             icon={<FolderOutlined />}
             {...(onAddGroup !== undefined ? { onClick: onAddGroup } : {})}
             className="action action--ADD-GROUP"
-            disabled={Boolean(disabled || addGroupDisabled)}
+            disabled={groupBlocked || onAddGroup === undefined}
           >
             Add Group
           </Button>

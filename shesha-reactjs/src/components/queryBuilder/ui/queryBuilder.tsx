@@ -14,30 +14,36 @@ import { BuilderContextProvider, IBuilderContext } from './context';
 import { useDragHandlers } from './dnd';
 import { QueryBuilderGroup } from './group';
 
+/** Same reference, or the same JSON: a parent that clones the value it was given is not making a change. */
+const isSameLogic = (a: JsonLogicFilter | undefined, b: JsonLogicFilter | undefined): boolean =>
+  a === b || (a !== undefined && b !== undefined && JSON.stringify(a) === JSON.stringify(b));
+
 /** Hosts the model. Edits go through the reducer; each committed edit is exported once and handed to `onChange`. */
 export const QueryBuilder: FC<IQueryBuilderProps> = ({ value, onChange, readOnly = false }) => {
   const { styles } = useStyles();
   const { fields, fetchFields } = useQueryBuilder();
 
-  const [tree, setTree] = useState<QueryTree>(() => importFromJsonLogic(value));
+  // consumers hand back null for an empty query; the builder treats it as undefined throughout
+  const incoming = value ?? undefined;
+  const [tree, setTree] = useState<QueryTree>(() => importFromJsonLogic(incoming));
   // the last logic this builder emitted; an incoming `value` equal to it is our own echo, not an external change
-  const lastEmitted = useRef<JsonLogicFilter | undefined>(value);
+  const lastEmitted = useRef<JsonLogicFilter | undefined>(incoming);
   const externalTree = useRef<QueryTree>(tree);
 
   // properties referenced by the saved filter but not loaded yet (nested containers) are fetched on demand
   useEffect(() => {
-    if (value === undefined) return;
-    const missing = extractVars(value).filter((path) => findProperty(fields, path) === undefined);
+    if (incoming === undefined) return;
+    const missing = extractVars(incoming).filter((path) => findProperty(fields, path) === undefined);
     if (missing.length > 0) fetchFields(missing);
-  }, [value, fields, fetchFields]);
+  }, [incoming, fields, fetchFields]);
 
   useEffect(() => {
-    if (value === lastEmitted.current) return;
-    lastEmitted.current = value;
-    const next = importFromJsonLogic(value);
+    if (isSameLogic(incoming, lastEmitted.current)) return;
+    lastEmitted.current = incoming;
+    const next = importFromJsonLogic(incoming);
     externalTree.current = next;
     setTree(next);
-  }, [value]);
+  }, [incoming]);
 
   useEffect(() => {
     if (tree === externalTree.current) return;

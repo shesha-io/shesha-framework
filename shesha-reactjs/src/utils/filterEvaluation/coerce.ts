@@ -25,13 +25,17 @@ export const getSiblingDataType = (siblings: unknown[], getVariableDataType: Var
 /** Coerces a resolved expression value to the type of the property it is compared with. */
 export const coerceToDataType = (value: unknown, dataType: string | undefined): unknown => {
   switch (dataType) {
-    case DataTypes.number:
-    case DataTypes.referenceListItem: {
+    case DataTypes.number: {
       if (typeof value === 'number') return value;
       if (typeof value === 'string' && !isNullOrWhiteSpace(value)) {
-        const parsed = parseInt(value, 10);
-        return Number.isNaN(parsed) ? null : parsed;
+        const parsed = Number(value);
+        return Number.isFinite(parsed) ? parsed : null;
       }
+      return null;
+    }
+    case DataTypes.referenceListItem: {
+      if (typeof value === 'number') return value;
+      if (typeof value === 'string' && /^\s*-?\d+\s*$/.test(value)) return parseInt(value, 10);
       return null;
     }
     case DataTypes.boolean:

@@ -87,7 +87,8 @@ export const useDragHandlers = (tree: QueryTree, dispatch: (action: QueryAction)
   }, [canAccept, dispatch, dragId, reset]);
 
   const onDragLeaveItem = React.useCallback((event: React.DragEvent<HTMLDivElement>): void => {
-    if (!event.currentTarget.contains(event.relatedTarget as Node | null))
+    const related = event.relatedTarget;
+    if (!(related instanceof Node) || !event.currentTarget.contains(related))
       setDropHint(null);
   }, []);
 

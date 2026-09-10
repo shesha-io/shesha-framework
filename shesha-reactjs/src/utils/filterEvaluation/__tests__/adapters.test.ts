@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-deprecated -- these tests pin the behaviour of the compatibility adapters */
+import { IPropertyMetadata } from '@/interfaces/metadata';
 import { IStoredFilter } from '@/providers/dataTable/interfaces';
 import { convertJsonLogicNode, convertJsonLogicNodeSync, evaluateDynamicFilters, evaluateDynamicFiltersSync } from '../adapters';
 
@@ -30,7 +32,42 @@ describe('legacy adapters', () => {
     ];
     const [a, b] = evaluateDynamicFiltersSync(filters, mappings, undefined);
     expect(a?.expression).toEqual({ '==': [{ var: 'id' }, 'A1'] });
-    expect((b as IStoredFilter & { hasInvalidExpression?: boolean }).hasInvalidExpression).toBe(true);
+    expect(b?.hasInvalidExpression).toBe(true);
+  });
+
+  it('evaluateDynamicFilters parses string expressions the same way', async () => {
+    const filters: IStoredFilter[] = [
+      { id: 'a', name: 'a', expression: '{"==":[{"var":"id"},"{{data.id}}"]}' },
+      { id: 'b', name: 'b', expression: '{not json' },
+    ];
+    const [a, b] = await evaluateDynamicFilters(filters, mappings, undefined);
+    expect(a?.expression).toEqual({ '==': [{ var: 'id' }, 'A1'] });
+    expect(b?.hasInvalidExpression).toBe(true);
+    expect(b?.expressionError).toBeDefined();
+  });
+
+  it('reports a throwing JavaScript expression as failed, not as waiting', () => {
+    const seen: unknown[] = [];
+    const result = convertJsonLogicNodeSync(
+      { and: [{ evaluate: [{ expression: 'throw new Error("boom")', type: 'javascript', required: true }] }] },
+      { argumentEvaluator: () => ({ handled: false }), mappings, onEvaluated: (args) => seen.push(args) },
+    );
+    expect(result).toEqual({ and: [false] });
+    expect(seen).toEqual([{ expression: 'throw new Error("boom")', result: null, success: false, unevaluatedExpressions: [] }]);
+  });
+
+  it('coerces resolved values to the compared property type', () => {
+    const metadata = [
+      { path: 'age', label: 'Age', dataType: 'number' },
+      { path: 'isActive', label: 'Active', dataType: 'boolean' },
+    ] as unknown as IPropertyMetadata[];
+    const filters: IStoredFilter[] = [
+      { id: 'n', name: 'n', expression: { '>=': [{ var: 'age' }, '{{data.age}}'] } },
+      { id: 'b', name: 'b', expression: { '==': [{ var: 'isActive' }, '{{data.active}}'] } },
+    ];
+    const [n, b] = evaluateDynamicFiltersSync(filters, [{ match: 'data', data: { age: '42.5', active: 'true' } }], metadata);
+    expect(n?.expression).toEqual({ '>=': [{ var: 'age' }, 42.5] });
+    expect(b?.expression).toEqual({ '==': [{ var: 'isActive' }, true] });
   });
 
   it('convertJsonLogicNode keeps the onEvaluated callback contract', async () => {

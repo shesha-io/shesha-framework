@@ -8,7 +8,7 @@ export interface QueryChangeResult {
 
 export interface IQueryBuilderProps {
   /** The saved JsonLogic to display. Consumers feed `QueryChangeResult.logic` back in. */
-  value?: JsonLogicFilter | undefined;
+  value?: JsonLogicFilter | null | undefined;
   onChange?: ((result: QueryChangeResult) => void) | undefined;
   readOnly?: boolean | undefined;
 }

@@ -117,11 +117,19 @@ const JSON_LOGIC_OPERATORS = new Set([
   'cat', 'substr', 'merge', '+', '-', '*', '/', '%', 'min', 'max', 'map', 'filter', 'reduce', 'all', 'some', 'none',
 ]);
 
-/** True for a JsonLogic node. Such nodes are values to replace, never structures to merge: merging `{or}` into `{and}` corrupts both. */
+/**
+ * True for a JsonLogic node: exactly one operator key whose argument is a list, a nested node, or a `var` path.
+ * Such nodes are values to replace, never structures to merge: merging `{or}` into `{and}` corrupts both.
+ * `{ min: 1, max: 10 }` is a settings bag, not a node, and still merges field by field.
+ */
 export const isJsonLogicNode = (value: unknown): value is Record<string, unknown> => {
   if (!isDefined(value) || typeof value !== 'object' || Array.isArray(value)) return false;
   const keys = Object.keys(value);
-  return keys.length > 0 && keys.every((key) => JSON_LOGIC_OPERATORS.has(key));
+  const key = keys[0];
+  if (keys.length !== 1 || key === undefined || !JSON_LOGIC_OPERATORS.has(key)) return false;
+  const args = (value as Record<string, unknown>)[key];
+  if (key === 'var') return typeof args === 'string';
+  return Array.isArray(args) || (typeof args === 'object' && args !== null);
 };
 
 export const deepMergeValues = <TObject extends object = object, TSource extends object = object>(

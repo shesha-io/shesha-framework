@@ -22,9 +22,18 @@ const SPECIFICATION_OPERATOR = 'is_satisfied';
 
 interface EvaluateNodeArgs {
   expression: string;
-  type?: ExpressionLanguage | undefined;
+  type?: string | undefined;
   required?: boolean | undefined;
 }
+
+const isExpressionLanguage = (type: unknown): type is ExpressionLanguage => type === 'mustache' || type === 'javascript';
+
+let debugLogging = false;
+
+/** Turns the per-filter console diagnostic on. Off by default: the log includes context values such as the signed-in user. */
+export const setFilterEvaluationDebug = (enabled: boolean): void => {
+  debugLogging = enabled;
+};
 
 interface ExpressionNode {
   expression: string;
@@ -32,14 +41,22 @@ interface ExpressionNode {
   required: boolean;
 }
 
+interface UnsupportedExpressionNode {
+  expression: string;
+  type: string;
+}
+
 /** `{"evaluate":[{"expression","type","required"}]}`; a missing `type` is the legacy mustache node. */
-const asExpressionNode = (node: object): ExpressionNode | undefined => {
+const asExpressionNode = (node: object): ExpressionNode | UnsupportedExpressionNode | undefined => {
   if (!('evaluate' in node) || !Array.isArray(node.evaluate) || node.evaluate.length !== 1) return undefined;
   const args: unknown = node.evaluate[0];
   if (typeof args !== 'object' || args === null || !('expression' in args) || typeof (args as EvaluateNodeArgs).expression !== 'string') return undefined;
   const { expression, type, required } = args as EvaluateNodeArgs;
+  if (type !== undefined && !isExpressionLanguage(type)) return { expression, type };
   return { expression, language: type ?? 'mustache', required: required === true };
 };
+
+const isUnsupported = (node: ExpressionNode | UnsupportedExpressionNode): node is UnsupportedExpressionNode => 'type' in node;
 
 /** Every `var` path in the tree, for callers that need to look data types up before evaluating. */
 export const collectVariablePaths = (logic: object): string[] => {
@@ -118,6 +135,11 @@ const evaluateInlineTemplate = (session: Session, literal: string, siblings: unk
 
 const resolveNode = (session: Session, node: object, siblings: unknown[], parentOperator: string): NodeResult => {
   const expressionNode = asExpressionNode(node);
+  if (expressionNode && isUnsupported(expressionNode)) {
+    session.failed = true;
+    session.unresolved.push({ expression: expressionNode.expression, language: 'mustache', required: true, reason: 'error', message: `Unsupported expression type '${expressionNode.type}'` });
+    return { value: null, drop: true };
+  }
   if (expressionNode) return evaluateExpressionNode(session, expressionNode, siblings);
   const nested = resolveLogic(session, node);
   // a nested rule that was dropped disappears from an and/or; anywhere else it takes its parent with it
@@ -216,7 +238,7 @@ export const resolveFilterSync = (logic: JsonLogicFilter | undefined, options: R
 
 /** Diagnostic: what the filter looked like when saved and what will be sent. Only filters with expressions are logged. */
 const logResolution = (saved: JsonLogicFilter, result: ResolvedFilter): void => {
-  if (!result.hasExpressions) return;
+  if (!debugLogging || !result.hasExpressions) return;
   console.groupCollapsed(`[query builder] filter evaluated: ${result.status}`);
   console.dir({ saved, evaluated: result.logic, unresolved: result.unresolved }, { depth: null });
   console.groupEnd();

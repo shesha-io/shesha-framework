@@ -79,6 +79,11 @@ export const convertJsonLogicNodeSync = (jsonLogic: object, options: IJsonLogicC
 
 const EMPTY_FILTERS: IStoredFilter[] = [];
 
+const invalidFilter = (filter: IStoredFilter, error: string): IStoredFilter => {
+  console.error(`Failed to parse filter expression for filter ${filter.id || 'unknown'}:`, error);
+  return { ...filter, hasInvalidExpression: true, expressionError: error };
+};
+
 const toStoredFilter = (filter: IStoredFilter, resolved: ResolvedFilter): IStoredFilter => ({
   ...filter,
   hasDynamicExpression: resolved.hasExpressions,
@@ -112,9 +117,11 @@ export const evaluateDynamicFilters = (
     ? async (path: string): Promise<string | undefined> => (await propertyMetadataAccessor(path))?.dataType
     : undefined;
 
-  return Promise.all(filters.map((filter) => {
-    if (typeof filter.expression !== 'object') return Promise.resolve(filter);
-    return resolveFilter(filter.expression, { context, getVariableDataType }).then((resolved) => toStoredFilter(filter, resolved));
+  return Promise.all(filters.map(async (filter) => {
+    const { logic, error } = parseExpression(filter);
+    if (error !== undefined) return invalidFilter(filter, error);
+    if (!isDefined(logic)) return filter;
+    return toStoredFilter({ ...filter, expression: logic }, await resolveFilter(logic, { context, getVariableDataType }));
   }));
 };
 
@@ -132,10 +139,7 @@ export const evaluateDynamicFiltersSync = (
 
   return filters.map((filter) => {
     const { logic, error } = parseExpression(filter);
-    if (error !== undefined) {
-      console.error(`Failed to parse filter expression for filter ${filter.id || 'unknown'}:`, error);
-      return { ...filter, hasInvalidExpression: true, expressionError: error } as IStoredFilter;
-    }
+    if (error !== undefined) return invalidFilter(filter, error);
     if (!isDefined(logic)) return filter;
     return toStoredFilter({ ...filter, expression: logic }, resolveFilterSync(logic, { context, getVariableDataType }));
   });
