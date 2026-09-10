@@ -9,6 +9,7 @@ import { IQueryBuilderFieldProps } from './models';
 import { useStyles } from './styles/styles';
 import { QueryBuilder } from '@/components/queryBuilder';
 import { Show } from '@/components/show';
+import { QUERY_BUILDER_DOC_URL } from '@/components/queryBuilder/constants';
 
 const queryBuilderTabKey = 'queryBuilderTab';
 const jsonInputTabKey = 'jsonInputTab';
@@ -18,7 +19,6 @@ const maxQueryBuilderModalWidth = 1240;
 const queryBuilderModalWidth = `min(${maxQueryBuilderModalWidth}px, 92vw)`;
 
 export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
-  const queryBuilderDocUrl = 'https://docs.shesha.io/docs/front-end-basics/form-components/tables-lists/datatable-context';
   const { styles } = useStyles();
   const [modalVisible, setModalVisible] = useState(false);
   const [jsonLogicResult, setJsonLogicResult] = useState<QueryChangeResult | undefined>(undefined);
@@ -240,9 +240,9 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
         <div className={styles.shaQueryBuilderModalBody}>
           <Space size={6} className={styles.shaQueryBuilderModalHelpWrap}>
             <span className={styles.shaQueryBuilderModalHelpText}>Create your own filter using the query builder below.</span>
-            <Tooltip title={<a href={queryBuilderDocUrl} target="_blank" rel="noopener noreferrer">Open documentation</a>}>
+            <Tooltip title={<a href={QUERY_BUILDER_DOC_URL} target="_blank" rel="noopener noreferrer">Open documentation</a>}>
               <a
-                href={queryBuilderDocUrl}
+                href={QUERY_BUILDER_DOC_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={styles.shaQueryBuilderModalHelpIcon}

@@ -31,7 +31,7 @@ export const FieldPicker: React.FC<FieldPickerProps> = ({ value, onChange, readO
   return (
     <PropertySelect
       readOnly={readOnly}
-      value={value ?? ''}
+      {...(value !== undefined ? { value } : {})}
       onChange={(next) => {
         if (next === null || next === '') onChange(undefined);
       }}

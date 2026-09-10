@@ -26,6 +26,7 @@ export interface IPropertySelectProps {
   style?: CSSProperties;
   dropdownStyle?: CSSProperties;
   size?: SizeType;
+  placeholder?: string;
   onChange?: (value: string | null) => void;
   onSelect?: (value: string, selectedProperty: IPropertyItem | undefined) => void;
   readOnly?: boolean;
@@ -237,6 +238,7 @@ export const PropertySelect: FC<IPropertySelectProps> = ({ readOnly = false, isP
         onSearch: onSearch,
       }}
       size={props.size}
+      placeholder={props.placeholder}
       disabled={readOnly}
       options={state.options}
       style={{ minWidth: "150px" }}

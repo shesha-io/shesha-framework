@@ -175,14 +175,19 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             padding: 6px 10px 10px;
             box-sizing: border-box;
             border-radius: 12px;
-            border: 1px solid #2b78e4;
-            background: #2B78E44D;
+            border: 1px solid transparent;
+            background: color-mix(in srgb, ${token.colorPrimary} 10%, transparent);
+        }
+
+        .sha-query-builder-group-card .sha-query-builder-group-card {
+            border-color: color-mix(in srgb, ${token.colorPrimary} 45%, #fff);
+            background: color-mix(in srgb, ${token.colorPrimary} 15%, transparent);
         }
 
         .sha-query-builder-group-card.is-drop-append {
             border-color: ${token.colorPrimary};
             box-shadow: 0 0 0 2px ${token.colorPrimaryBg};
-            background: color-mix(in srgb, ${token.colorPrimary} 15%, #2B78E44D);
+            background: color-mix(in srgb, ${token.colorPrimary} 30%, transparent);
         }
 
         .sha-query-builder-group-card.is-drop-append > .sha-query-builder-group-children:empty,
@@ -466,9 +471,16 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         /* A function needs room for its own selector plus an argument editor underneath. */
-        .sha-query-builder-rule-row > .sha-query-builder-value-shell.is-function {
+        .sha-query-builder-rule-row > .sha-query-builder-value-shell.is-function,
+        .sha-query-builder-rule-row > .sha-query-builder-value-shell:has(.sha-query-builder-value-editor-slot.is-function) {
             flex: 1 1 460px;
             min-width: 440px;
+        }
+
+        /* A range with a function at both ends carries two pickers and two skip boxes; below this it wraps to its own line. */
+        .sha-query-builder-rule-row > .sha-query-builder-value-shell:has(.sha-query-builder-value-editor-slot.is-function ~ .sha-query-builder-value-editor-slot.is-function) {
+            flex: 1 1 600px;
+            min-width: 560px;
         }
 
         .sha-query-builder-rule-row.is-unary {
@@ -764,9 +776,17 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             overflow: hidden;
         }
 
+        /* A range has a source picker per end, so it takes the whole shell instead of the source column. */
+        .sha-query-builder-value-shell:has(> .sha-query-builder-value-editor.is-range) {
+            grid-template-columns: minmax(0, 1fr);
+        }
 
         .sha-query-builder-value-shell--empty {
             background: rgba(255, 255, 255, 0.6);
+        }
+
+        .sha-query-builder-value-shell--empty .${prefixCls}-input-disabled {
+            color: #98a2b3;
         }
 
         .sha-query-builder-packed-control:has(.${prefixCls}-select-focused),
@@ -776,8 +796,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         .sha-query-builder-value-shell:has(.${prefixCls}-input-affix-wrapper-focused),
         .sha-query-builder-value-shell:has(.${prefixCls}-input-number-focused),
         .sha-query-builder-value-shell:has(input:focus:not(.sha-expression-editor-input)) {
-            border-color: #2b78e4;
-            box-shadow: 0 0 0 1px #2b78e4;
+            border-color: ${token.colorPrimary};
+            box-shadow: 0 0 0 1px ${token.colorPrimary};
         }
 
         .sha-query-builder-value-editor {
@@ -791,23 +811,17 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
 
-        .sha-query-builder-boolean-value {
-            width: 100%;
-            min-width: 0;
-            min-height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            border: 0;
-            background: transparent;
-            box-shadow: none;
-            overflow: visible;
-        }
-
-        .sha-query-builder-boolean-value .sha-query-builder-widget-host {
+        /* Inside the value shell the Yes / No control keeps its segmented look as a compact pill. */
+        .sha-query-builder-control-slot .sha-bool-btn-group {
             width: auto;
             flex: 0 0 auto;
-            overflow: visible;
+            align-self: center;
+            height: 26px;
+            min-height: 26px;
+            max-height: 26px;
+            margin: 0 6px;
+            border-radius: 6px;
+            box-shadow: none;
         }
 
         .sha-query-builder-value-editor.is-range {
@@ -2078,8 +2092,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             width: auto;
         }
 
-        .sha-query-builder-ignore-unassigned .${prefixCls}-checkbox-wrapper,
-        .sha-query-builder-ignore-unassigned .${prefixCls}-checkbox {
+        .sha-query-builder-ignore-unassigned .${prefixCls}-checkbox-wrapper {
             flex: 0 0 24px;
             width: 24px;
             height: 24px;
@@ -2087,6 +2100,13 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             display: inline-flex;
             align-items: center;
             justify-content: center;
+        }
+
+        /* antd positions the tick for its own 16px box, so the box keeps that size and only the hit area grows. */
+        .sha-query-builder-ignore-unassigned .${prefixCls}-checkbox {
+            margin: 0;
+            top: 0;
+            align-self: center;
         }
 
         .sha-query-builder-ignore-unassigned .${prefixCls}-checkbox-inner {
@@ -2166,10 +2186,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             box-sizing: border-box;
         }
 
-        .sha-query-builder-boolean-value .sha-bool-btn-group {
-            flex: 0 0 auto;
-        }
-
         .sha-bool-btn-group.is-disabled {
             opacity: 0.6;
             pointer-events: none;
@@ -2197,7 +2213,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
 
         .sha-bool-btn-group__btn.is-active {
-            background: #2b78e4;
+            background: ${token.colorPrimary};
             color: #ffffff;
         }
 
@@ -2984,8 +3000,45 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         }
     `);
 
+  /* The skip checkbox hint renders in a portal, so it gets its own root class: a light card with the documentation link. */
+  const shaQueryBuilderHint = css`
+        max-width: 300px;
+
+        .${prefixCls}-tooltip-inner {
+            padding: 10px 12px;
+            color: #344054;
+            font-size: 12px;
+            line-height: 1.45;
+            border: 1px solid #e4e7ec;
+            border-radius: 8px;
+            box-shadow: 0 6px 16px rgba(16, 24, 40, 0.12);
+        }
+
+        .sha-query-builder-hint-title {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 600;
+            color: #1d2939;
+        }
+
+        .sha-query-builder-hint-body {
+            margin: 0 0 8px;
+        }
+
+        .sha-query-builder-hint-link {
+            margin: 0;
+        }
+
+        .sha-query-builder-hint-link a {
+            color: ${token.colorPrimary};
+            text-decoration: underline;
+            font-style: italic;
+        }
+    `;
+
   return {
     shaQueryBuilder,
     shaQueryBuilderBtns,
+    shaQueryBuilderHint,
   };
 });

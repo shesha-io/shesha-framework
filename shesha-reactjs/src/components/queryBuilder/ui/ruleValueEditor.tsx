@@ -1,5 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
+import { Input } from 'antd';
 import { QueryField, isDateLikeKind } from '../catalogue/fields';
 import { OperatorDef } from '../catalogue/operators';
 import { createValue } from '../model/factories';
@@ -13,7 +14,8 @@ import { FieldPicker } from './fieldPicker';
 
 /** The source selector keeps the previous builder's keys so its icons and styles still apply. */
 const SOURCE_KEYS: Record<ValueSource, string> = { value: 'value', field: 'field', expression: 'func' };
-const SOURCE_LABELS: Record<ValueSource, string> = { value: 'Value', field: 'Field', expression: 'Expression' };
+const SOURCE_LABELS: Record<ValueSource, string> = { value: 'Value', field: 'Field', expression: 'Function' };
+const EMPTY_SOURCES: Array<[string, { label: string }]> = [['value', { label: 'Value' }]];
 const fromSourceKey = (key: string): ValueSource => key === 'func' ? 'expression' : key === 'field' ? 'field' : 'value';
 
 interface RuleValueEditorProps {
@@ -25,8 +27,20 @@ interface RuleValueEditorProps {
 export const RuleValueEditor: React.FC<RuleValueEditorProps> = ({ rule, field, operator }) => {
   const { dispatch, readOnly } = useBuilder();
 
+  // The design shows the value control before a field is chosen: a source icon and a disabled input.
   if (!field || !operator)
-    return <div className="sha-query-builder-value-shell sha-query-builder-value-shell--empty" />;
+    return (
+      <div className="sha-query-builder-value-shell sha-query-builder-value-shell--empty">
+        <div className="sha-query-builder-source-slot">
+          <SourceSelector variant="value" valueSources={EMPTY_SOURCES} valueSrc="value" setValueSrc={() => undefined} readonly />
+        </div>
+        <div className="sha-query-builder-value-editor">
+          <div className="sha-query-builder-value-editor-slot sha-query-builder-control-slot">
+            <Input size="small" disabled placeholder="Enter value" />
+          </div>
+        </div>
+      </div>
+    );
 
   if (operator.cardinality === 0)
     return null;
@@ -91,14 +105,6 @@ export const RuleValueEditor: React.FC<RuleValueEditorProps> = ({ rule, field, o
       />
     </div>
   );
-
-  if (field.kind === 'boolean') {
-    return (
-      <div className="sha-query-builder-boolean-value">
-        {renderEditor(0)}
-      </div>
-    );
-  }
 
   if (operator.cardinality === 1) {
     const isExpression = valueAt(0).source === 'expression';
