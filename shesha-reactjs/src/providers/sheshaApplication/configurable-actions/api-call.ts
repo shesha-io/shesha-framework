@@ -76,6 +76,15 @@ const migrateV0toV1 = (prev: IApiCallArgumentsV0): IApiCallArguments => {
   return { ...rest, verb, requestConfig };
 };
 
+/** Default "Send Standard Headers" to on. Runs for both freshly-created actions (which start at
+ * version -1 and pass through every migration step, including this one) and pre-existing configs
+ * that never had the switch set, so standard headers (incl. Authorization) are sent unless a user
+ * has explicitly turned the switch off — an explicit `false` is preserved as-is. */
+const migrateV1toV2 = (prev: IApiCallArguments): IApiCallArguments => ({
+  ...prev,
+  sendStandardHeaders: prev.sendStandardHeaders ?? true,
+});
+
 const HttpVerbs: Method[] = ['get',
   'delete',
   'head',
@@ -200,7 +209,8 @@ export const useApiCallAction = (): void => {
     hasArguments: true,
     argumentsFormMarkup: getApiCallArgumentsForm,
     migrator: (m) => m
-      .add<IApiCallArgumentsV0>(0, (prev) => migrateV0toV1(prev)),
+      .add<IApiCallArgumentsV0>(0, (prev) => migrateV0toV1(prev))
+      .add<IApiCallArguments>(1, (prev) => migrateV1toV2(prev)),
     // Evaluate arguments normally (params/headers/url get their Mustache resolved), but keep the
     // JSON/raw body template raw. A JSON body is one big string, and letting the generic pass run
     // Mustache over it can blank tags before the body data is available; instead the executer
