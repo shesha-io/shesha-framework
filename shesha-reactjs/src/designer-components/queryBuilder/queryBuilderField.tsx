@@ -210,7 +210,7 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
             label: actionButtons,
             children: (
               <CodeEditor
-                readOnly={true}
+                readOnly={false}
                 value={inlineJsonInput}
                 language="javascript"
                 style={{ marginTop: 8 }}

@@ -41,7 +41,7 @@ const normalizeValue = (value: unknown): unknown => {
 };
 
 const isEmptyValue = (value: unknown): boolean =>
-  value === undefined || value === null || (typeof value === 'string' && isNullOrWhiteSpace(value));
+  value === undefined || value === null || (typeof value === 'string' && isNullOrWhiteSpace(value)) || (typeof value === 'number' && Number.isNaN(value));
 
 /** Runs a single `{{ expression }}` as a guarded JavaScript expression with the function library in scope. */
 const evaluateExpression = (expression: string, context: EvaluationContext): { ok: true; value: unknown } | { ok: false } => {

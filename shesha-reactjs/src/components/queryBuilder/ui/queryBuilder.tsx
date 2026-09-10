@@ -1,6 +1,8 @@
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import classNames from 'classnames';
 import { useQueryBuilder } from '@/providers';
+import { extractVars } from '@/utils/jsonLogic';
+import { findProperty } from '../catalogue/fields';
 import { JsonLogicFilter } from '@/interfaces/jsonLogic';
 import { IQueryBuilderProps } from '../interfaces';
 import { exportToJsonLogic } from '../jsonLogic/export';
@@ -15,12 +17,19 @@ import { QueryBuilderGroup } from './group';
 /** Hosts the model. Edits go through the reducer; each committed edit is exported once and handed to `onChange`. */
 export const QueryBuilder: FC<IQueryBuilderProps> = ({ value, onChange, readOnly = false }) => {
   const { styles } = useStyles();
-  const { fields } = useQueryBuilder();
+  const { fields, fetchFields } = useQueryBuilder();
 
   const [tree, setTree] = useState<QueryTree>(() => importFromJsonLogic(value));
   // the last logic this builder emitted; an incoming `value` equal to it is our own echo, not an external change
   const lastEmitted = useRef<JsonLogicFilter | undefined>(value);
   const externalTree = useRef<QueryTree>(tree);
+
+  // properties referenced by the saved filter but not loaded yet (nested containers) are fetched on demand
+  useEffect(() => {
+    if (value === undefined) return;
+    const missing = extractVars(value).filter((path) => findProperty(fields, path) === undefined);
+    if (missing.length > 0) fetchFields(missing);
+  }, [value, fields, fetchFields]);
 
   useEffect(() => {
     if (value === lastEmitted.current) return;

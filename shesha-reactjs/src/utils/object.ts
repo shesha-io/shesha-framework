@@ -110,6 +110,20 @@ export const unproxyDeep = <TValue = unknown>(value: TValue): TValue => {
 
 export const deepMergeSkipUndefinedFunc = (objValue: unknown, srcValue: unknown, _key: string): unknown => srcValue === undefined ? objValue : undefined;
 
+/** Operators a saved filter can contain. An object whose keys are all operators is an expression tree, not a settings bag. */
+const JSON_LOGIC_OPERATORS = new Set([
+  'and', 'or', '!', '!!', '==', '===', '!=', '!==', '<', '<=', '>', '>=', 'in', 'var', 'if', 'missing', 'missing_some',
+  'evaluate', 'startsWith', 'endsWith', 'is_satisfied', 'now', 'date_add', 'datetime_add', 'toLowerCase', 'toUpperCase',
+  'cat', 'substr', 'merge', '+', '-', '*', '/', '%', 'min', 'max', 'map', 'filter', 'reduce', 'all', 'some', 'none',
+]);
+
+/** True for a JsonLogic node. Such nodes are values to replace, never structures to merge: merging `{or}` into `{and}` corrupts both. */
+export const isJsonLogicNode = (value: unknown): value is Record<string, unknown> => {
+  if (!isDefined(value) || typeof value !== 'object' || Array.isArray(value)) return false;
+  const keys = Object.keys(value);
+  return keys.length > 0 && keys.every((key) => JSON_LOGIC_OPERATORS.has(key));
+};
+
 export const deepMergeValues = <TObject extends object = object, TSource extends object = object>(
   target: TObject,
   source: TSource | null | undefined,
@@ -141,6 +155,11 @@ export const deepMergeValues = <TObject extends object = object, TSource extends
     // handle arrays
     if (Array.isArray(srcValue)) {
       // save array as is without merging
+      return srcValue;
+    }
+
+    // a filter expression is replaced as a whole
+    if (isJsonLogicNode(objValue) || isJsonLogicNode(srcValue)) {
       return srcValue;
     }
 

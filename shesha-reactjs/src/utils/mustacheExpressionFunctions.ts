@@ -33,6 +33,20 @@ function toDate(value: unknown): Date {
   return date;
 }
 
+const pad = (n: number): string => String(n).padStart(2, '0');
+
+/** Local calendar date, optionally with the time, in the ISO shape the backend parses. */
+function formatDate(date: Date, withTime: boolean): string {
+  const day = `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+  return withTime ? `${day}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}` : day;
+}
+
+/** A Date, or a string that carries a time component, keeps its time through date arithmetic. */
+function hasTimeComponent(value: unknown): boolean {
+  if (value instanceof Date) return true;
+  return typeof value === 'string' && /\d[T ]\d{1,2}:\d{2}/.test(value);
+}
+
 function toBool(value: unknown): boolean {
   if (typeof value === 'boolean') return value;
   if (typeof value === 'number') return value !== 0;
@@ -213,7 +227,7 @@ register({
   description: 'Returns the current date (YYYY-MM-DD)',
   category: 'Date',
   args: [],
-  evaluate: () => new Date().toISOString().slice(0, 10),
+  evaluate: () => formatDate(new Date(), false),
 });
 
 register({
@@ -264,7 +278,7 @@ register({
     else if (normalizedUnit === 'year' || normalizedUnit === 'years') result.setFullYear(result.getFullYear() + numericAmount);
     else throw new Error(`Unknown unit: "${normalizedUnit}"`);
 
-    return result.toISOString().slice(0, 10);
+    return formatDate(result, hasTimeComponent(date));
   },
 });
 

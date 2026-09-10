@@ -101,9 +101,15 @@ const evaluateExpressionNode = (session: Session, node: ExpressionNode, siblings
   }
 
   const dataType = getSiblingDataType(siblings, session.getVariableDataType);
-  const value = coerceToDataType(result.value, dataType);
+  const coerced = coerceToDataType(result.value, dataType);
+  // a coercion that produced nothing (NaN, null) is an empty result, not a literal to send
+  const value = typeof coerced === 'number' && Number.isNaN(coerced) ? null : coerced;
   const empty = value === '' || value === null;
-  return { value, drop: empty && !node.required };
+  if (empty) {
+    const already = session.unresolved.some((item) => item.expression === node.expression);
+    if (!already) session.unresolved.push({ expression: node.expression, language: node.language, required: node.required, reason: 'empty' });
+  }
+  return { value: empty ? '' : value, drop: empty && !node.required };
 };
 
 /** A bare string argument carrying `{{…}}` is treated as a required mustache expression rather than sent raw. */
@@ -203,7 +209,17 @@ export const resolveFilterSync = (logic: JsonLogicFilter | undefined, options: R
   const waiting = session.unresolved.some((item) => item.required && item.reason === 'empty');
   const status: FilterStatus = session.failed ? 'failed' : waiting ? 'waiting' : 'ready';
 
-  return { logic: resolved ?? undefined, status, hasExpressions: session.hasExpressions, unresolved: session.unresolved };
+  const result: ResolvedFilter = { logic: resolved ?? undefined, status, hasExpressions: session.hasExpressions, unresolved: session.unresolved };
+  logResolution(logic, result);
+  return result;
+};
+
+/** Diagnostic: what the filter looked like when saved and what will be sent. Only filters with expressions are logged. */
+const logResolution = (saved: JsonLogicFilter, result: ResolvedFilter): void => {
+  if (!result.hasExpressions) return;
+  console.groupCollapsed(`[query builder] filter evaluated: ${result.status}`);
+  console.dir({ saved, evaluated: result.logic, unresolved: result.unresolved }, { depth: null });
+  console.groupEnd();
 };
 
 export type AsyncVariableDataTypeResolver = (path: string) => Promise<string | undefined>;

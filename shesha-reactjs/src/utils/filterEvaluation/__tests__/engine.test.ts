@@ -75,6 +75,43 @@ describe('resolveFilterSync', () => {
     expect(result.logic).toEqual({ and: [{ '==': [{ var: 'age' }, 30] }, { '==': [{ var: 'active' }, true] }, { '==': [{ var: 'status' }, 7] }] });
   });
 
+  it('treats arithmetic on a missing value (NaN) as no value, so it never reaches the backend as null', () => {
+    const logic = { '==': [{ var: 'population' }, evaluate('{{FLOOR(data.population*3)}}')] };
+    const withData = resolveFilterSync(logic, { context: { data: { population: 7 } } });
+    expect(withData.logic).toEqual({ '==': [{ var: 'population' }, 21] });
+
+    const noData = resolveFilterSync(logic, { context: { data: {} } });
+    expect(noData.status).toBe('waiting');
+    expect(JSON.stringify(noData.logic)).not.toContain('null');
+
+    const optional = resolveFilterSync({ '==': [{ var: 'population' }, evaluate('{{FLOOR(data.population*3)}}', false)] }, { context: { data: {} } });
+    expect(optional.logic).toBeUndefined();
+  });
+
+  it('resolves the current script roots: application.state, page.state, form.state and user', () => {
+    const scriptContext = buildEvaluationContext([
+      { match: 'application', data: { state: { region: 'ZA' } } },
+      { match: 'page', data: { state: { selectedId: 'P1' }, location: undefined } },
+      { match: 'form', data: { state: { step: 2 } } },
+      { match: 'user', data: { id: 'U9', userName: 'james' } },
+    ]);
+    const result = resolveFilterSync({
+      and: [
+        { '==': [{ var: 'region' }, evaluate('{{application.state.region}}')] },
+        { '==': [{ var: 'parentId' }, evaluate('{{page.state.selectedId}}')] },
+        { '==': [{ var: 'step' }, evaluate('{{form.state.step}}')] },
+        { '==': [{ var: 'owner' }, evaluate('{{user.id}}')] },
+      ],
+    }, { context: scriptContext });
+    expect(result.status).toBe('ready');
+    expect(result.logic).toEqual({ and: [
+      { '==': [{ var: 'region' }, 'ZA'] },
+      { '==': [{ var: 'parentId' }, 'P1'] },
+      { '==': [{ var: 'step' }, 2] },
+      { '==': [{ var: 'owner' }, 'U9'] },
+    ] });
+  });
+
   it('accepts the legacy evaluate node without a type as mustache', () => {
     const result = resolveFilterSync({ '==': [{ var: 'id' }, evaluate('{{data.id}}', true, null)] }, { context });
     expect(result.logic).toEqual({ '==': [{ var: 'id' }, 'A1'] });

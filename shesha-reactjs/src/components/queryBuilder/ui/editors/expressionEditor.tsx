@@ -7,11 +7,13 @@ import { useAvailableConstantsMetadata } from '@/utils/metadata/hooks';
 import { SheshaConstants } from '@/utils/metadata/standardProperties';
 import { isNotNullOrWhiteSpace } from '@/utils/nullables';
 
-// hoisted: a fresh array each render re-triggers the metadata hook and loops
+// hoisted: a fresh array each render re-triggers the metadata hook and loops.
+// The current script API: application.state, page.state, form.state and the signed-in user.
 const EXPRESSION_STANDARD_CONSTANTS = [
-  SheshaConstants.globalState,
-  SheshaConstants.pageContext,
-  SheshaConstants.contexts,
+  SheshaConstants.application,
+  SheshaConstants.page,
+  SheshaConstants.form,
+  SheshaConstants.user,
 ];
 
 interface MustacheExpressionEditorProps {
