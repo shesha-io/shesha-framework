@@ -1,4 +1,4 @@
-import { FC, useState, useEffect, useRef, useMemo } from 'react';
+import { FC, useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { Modal, Tabs } from 'antd';
 import { ParamsTab } from './paramsTab';
 import { HeadersTab } from './headersTab';
@@ -14,7 +14,8 @@ import {
 } from '@/components/expressionEditor/contextMetadata';
 import { useAsyncMemo } from '@/hooks/useAsyncMemo';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/hooks';
-import { SheshaConstants } from '@/utils/metadata/standardProperties';
+import { SheshaConstants, registerSelectedRowAction } from '@/utils/metadata/standardProperties';
+import { IObjectMetadataBuilder } from '@/utils/metadata/metadataBuilder';
 import { useMetadataOrUndefined } from '@/providers/metadata';
 import { asPropertiesArray } from '@/interfaces/metadata';
 
@@ -52,8 +53,15 @@ export const RequestConfigModal: FC<IRequestConfigModalProps> = ({
     wasVisible.current = visible;
   }, [visible, config]);
 
-  // Build expression context once so all tabs share the same autocomplete data.
-  const availableConstants = useAvailableConstantsMetadata({ standardConstants: STANDARD_CONSTANTS });
+  // Build expression context once so all tabs share the same autocomplete data. `selectedRow` isn't
+  // part of the app-wide standard constants set (its registration is currently disabled globally —
+  // see useMetadataBuilderFactory), but it IS actually populated at runtime whenever this action runs
+  // off a table row action button (ActionCell injects it), so it's registered here explicitly to
+  // surface it in autocomplete — the gap was in suggestions only, not evaluation.
+  const onBuildConstants = useCallback((builder: IObjectMetadataBuilder) => {
+    registerSelectedRowAction(builder, 'selectedRow');
+  }, []);
+  const availableConstants = useAvailableConstantsMetadata({ standardConstants: STANDARD_CONSTANTS, onBuild: onBuildConstants });
   const formMetadata = useMetadataOrUndefined()?.metadata;
 
   const dataPathContext = useMemo<ExpressionContext>(() => {
