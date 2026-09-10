@@ -1,5 +1,5 @@
-import { Dispatch } from 'redux';
+import type { Dispatch } from 'react';
 
 export interface IDispatchable {
-  readonly dispatch?: Dispatch;
+  readonly dispatch?: Dispatch<unknown>;
 }
