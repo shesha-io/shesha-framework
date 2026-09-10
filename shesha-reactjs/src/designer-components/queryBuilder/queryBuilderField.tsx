@@ -1,7 +1,8 @@
 import { CaretRightOutlined, FilterOutlined, QuestionCircleOutlined } from '@ant-design/icons';
-import { JsonLogicResult } from '@react-awesome-query-builder/antd';
+import { QueryChangeResult } from '@/components/queryBuilder/interfaces';
+import { JsonLogicFilter } from '@/interfaces/jsonLogic';
 import { Alert, Button, Collapse, Modal, Space, Tabs, Tooltip } from 'antd';
-import React, { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { useMedia } from 'react-use';
 import { CodeEditor } from '@/components/codeEditor/codeEditor';
 import { IQueryBuilderFieldProps } from './models';
@@ -20,8 +21,8 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
   const queryBuilderDocUrl = 'https://docs.shesha.io/docs/front-end-basics/form-components/tables-lists/datatable-context';
   const { styles } = useStyles();
   const [modalVisible, setModalVisible] = useState(false);
-  const [jsonLogicResult, setJsonLogicResult] = useState<JsonLogicResult | undefined>(undefined);
-  const [draftLogic, setDraftLogic] = useState<object | undefined>(props.value);
+  const [jsonLogicResult, setJsonLogicResult] = useState<QueryChangeResult | undefined>(undefined);
+  const [draftLogic, setDraftLogic] = useState<JsonLogicFilter | undefined>(props.value);
   const [builderErrors, setBuilderErrors] = useState<string[]>([]);
   const [jsonInput, setJsonInput] = useState('');
   const [jsonInputError, setJsonInputError] = useState<string | null>(null);
@@ -84,9 +85,9 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
     setModalVisible(false);
   };
 
-  const onChange = (result: JsonLogicResult): void => {
+  const onChange = (result: QueryChangeResult): void => {
     if (result !== jsonLogicResult) setJsonLogicResult(result);
-    setBuilderErrors(result.errors ?? []);
+    setBuilderErrors(result.errors);
     setDraftLogic(result.logic);
     setJsonInput(result.logic ? JSON.stringify(result.logic, null, 2) : '');
     setJsonInputError(null);
@@ -111,7 +112,7 @@ export const QueryBuilderField: FC<IQueryBuilderFieldProps> = (props) => {
       if (!parsed || Array.isArray(parsed) || typeof parsed !== 'object')
         throw new Error('JSON must be an object');
 
-      setDraftLogic(parsed);
+      setDraftLogic(parsed as JsonLogicFilter);
       setJsonInput(JSON.stringify(parsed, null, 2));
       setJsonInputError(null);
       setBuilderErrors([]);

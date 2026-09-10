@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { FolderOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Flex, Tooltip, Typography } from 'antd';
 

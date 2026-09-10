@@ -1,3 +1,4 @@
+import { JsonLogicFilter } from '@/interfaces/jsonLogic';
 import { ConfigurableFormItem } from '@/components/formDesigner/components/formItem';
 import QueryBuilderField from './queryBuilderField';
 import { FC } from 'react';
@@ -26,7 +27,7 @@ export const QueryBuilderRenderer: FC<IQueryBuilderComponentPropsUnwrapped> = (p
       <Typography.Text type="secondary">{fieldsUnavailableHint}</Typography.Text>
     </ConfigurableFormItem>
   ) : (
-    <ConfigurableFormItem<object> model={props}>
+    <ConfigurableFormItem<JsonLogicFilter> model={props}>
       {(value, onChange) => {
         return (
           <QueryBuilderField

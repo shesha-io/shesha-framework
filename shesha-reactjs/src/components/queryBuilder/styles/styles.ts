@@ -1,12 +1,8 @@
 import { createStyles, sheshaStyles } from '@/styles';
 
-import qb_compact_styles from './css/compact_styles.css';
-
 export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
   const shaQueryBuilderBtns = "sha-query-builder-btns";
   const shaQueryBuilder = cx("sha-query-builder", css`
-        ${qb_compact_styles}
-
         background-image: white !important;
     
         .query-builder-container {
