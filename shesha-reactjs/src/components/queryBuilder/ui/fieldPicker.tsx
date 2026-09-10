@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { IPropertyItem, isPropertyMetadata, PropertySelect } from '@/components/propertyAutocomplete/propertySelect';
 import { DataTypes } from '@/interfaces';
 import { isEntityReferencePropertyMetadata, IPropertyMetadata } from '@/interfaces/metadata';
@@ -15,9 +15,6 @@ interface FieldPickerProps {
 
 /** Property path picker with lazy container drill-down, shared by the rule's field and by field-sourced values. */
 export const FieldPicker: React.FC<FieldPickerProps> = ({ value, onChange, readOnly, placeholder, compareTo }) => {
-  const [text, setText] = useState<string | undefined>(value);
-  useEffect(() => setText(value), [value]);
-
   const isPropertyVisible = (property: IPropertyItem): boolean => {
     if (!isDefined(compareTo)) return true;
     return isPropertyMetadata(property) &&
@@ -34,9 +31,8 @@ export const FieldPicker: React.FC<FieldPickerProps> = ({ value, onChange, readO
   return (
     <PropertySelect
       readOnly={readOnly}
-      value={text ?? ''}
+      value={value ?? ''}
       onChange={(next) => {
-        setText(next ?? undefined);
         if (next === null || next === '') onChange(undefined);
       }}
       onSelect={(key) => onChange(key)}

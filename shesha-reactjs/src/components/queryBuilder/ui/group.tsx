@@ -14,6 +14,9 @@ import { RuleRow } from './ruleRow';
 const getGroupLogicLabel = (group: GroupNode): string =>
   group.conjunction === 'or' ? 'Any of the following are true...' : 'All of the following are true...';
 
+/** The design reads "Show all..." at the root; nested groups spell the conjunction out. */
+const getRootLabel = (group: GroupNode): string => group.conjunction === 'or' ? 'Show any...' : 'Show all...';
+
 interface ItemProps {
   node: QueryNode;
   parent: GroupNode;
@@ -107,7 +110,7 @@ export const QueryBuilderGroup: React.FC<GroupProps> = ({ group, depth, canDelet
 
     return (
       <div className="sha-query-builder-surface">
-        <div className="sha-query-builder-heading">{getGroupLogicLabel(group)}</div>
+        <div className="sha-query-builder-heading">{getRootLabel(group)}</div>
         <div className="sha-query-builder-filter">
           <div className="sha-query-builder-filter-body">{children}</div>
           <div className="sha-query-builder-filter-actions">
@@ -148,9 +151,10 @@ export const QueryBuilderGroup: React.FC<GroupProps> = ({ group, depth, canDelet
             trigger={['click']}
             disabled={readOnly}
           >
-            <Button type="primary" icon={<PlusOutlined />} disabled={readOnly} className="sha-query-builder-group-action-button" aria-label="Add" title="Add" />
+            <Button type="text" icon={<PlusOutlined />} disabled={readOnly} className="sha-query-builder-group-action-button" aria-label="Add" title="Add" />
           </Dropdown>
           <Button
+            type="text"
             icon={<DeleteOutlined />}
             onClick={() => dispatch({ type: 'remove', id: group.id })}
             disabled={!canDelete}
@@ -160,6 +164,7 @@ export const QueryBuilderGroup: React.FC<GroupProps> = ({ group, depth, canDelet
             title="Delete Group"
           />
           <Button
+            type="text"
             icon={<HolderOutlined />}
             draggable={canDrag}
             disabled={!canDrag}

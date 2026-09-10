@@ -263,26 +263,22 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             justify-content: flex-end;
         }
 
+        /* Plain icons per the design: no card chrome, colour alone marks the action. */
         .sha-query-builder-group-action-button.${prefixCls}-btn {
             width: 26px;
             min-width: 26px;
             height: 26px !important;
             padding: 0;
             border-radius: 6px;
-            border: 1px solid #d0d5dd;
-            background: #fff;
-            box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
-        }
-
-        .sha-query-builder-group-action-button.${prefixCls}-btn.${prefixCls}-btn-primary {
-            background: #fff;
+            border: none;
+            background: transparent;
+            box-shadow: none;
             color: #667085;
         }
 
         .sha-query-builder-group-action-button.${prefixCls}-btn:hover:not(:disabled),
         .sha-query-builder-group-action-button.${prefixCls}-btn:focus-visible:not(:disabled) {
-            border-color: #98a2b3;
-            background: #f8fafc;
+            background: rgba(16, 24, 40, 0.06);
             color: #344054;
         }
 
@@ -294,11 +290,14 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             font-size: 14px;
         }
 
-        .sha-query-builder-group-action-button--danger.${prefixCls}-btn,
-        .sha-query-builder-group-action-button--danger.${prefixCls}-btn:hover,
-        .sha-query-builder-group-action-button--danger.${prefixCls}-btn:focus-visible {
-            background: #fffaf9;
-            border-color: #fcb4ab;
+        .sha-query-builder-group-action-button--danger.${prefixCls}-btn {
+            color: #d92d20;
+        }
+
+        .sha-query-builder-group-action-button--danger.${prefixCls}-btn:hover:not(:disabled),
+        .sha-query-builder-group-action-button--danger.${prefixCls}-btn:focus-visible:not(:disabled) {
+            background: #fef3f2;
+            color: #b42318;
         }
 
         .sha-query-builder-group-action-button--drag.${prefixCls}-btn,
@@ -863,6 +862,17 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             min-width: 0;
         }
 
+        /* Controls bring their own minimum widths; the slot decides the width here so the suffix icon stays visible. */
+        .sha-query-builder-control-slot .${prefixCls}-select,
+        .sha-query-builder-control-slot .${prefixCls}-picker,
+        .sha-query-builder-control-slot .${prefixCls}-input-number,
+        .sha-query-builder-control-slot .${prefixCls}-input,
+        .sha-query-builder-control-slot .sha-expression-editor {
+            width: 100% !important;
+            min-width: 0 !important;
+            max-width: 100%;
+        }
+
         /* Function editor: an optional function picker followed by one slot per declared argument. */
         .sha-query-builder-func-editor {
             min-width: 0;
@@ -897,7 +907,7 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
         /* A boolean flag argument only needs room for its control, so it opts out of the even split. */
         .sha-query-builder-func-arg:has(.sha-query-builder-ignore-unassigned) {
             flex: 0 0 auto;
-            width: 33px;
+            width: auto;
             min-width: 33px;
             justify-content: center;
             background: #fff;
@@ -905,6 +915,15 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
 
         .sha-query-builder-func-arg .${prefixCls}-checkbox-wrapper {
             margin-inline-start: 0;
+        }
+
+        /* The value shell draws the border; the editor's own box would double it. */
+        .sha-query-builder-control-slot .sha-expression-editor-preview,
+        .sha-query-builder-control-slot .sha-expression-editor-preview:hover:not(:disabled),
+        .sha-query-builder-control-slot .sha-expression-editor-preview:focus-visible {
+            border-color: transparent !important;
+            background: transparent !important;
+            box-shadow: none !important;
         }
 
 
@@ -2078,7 +2097,10 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             position: relative;
         }
 
-        .sha-query-builder-ignore-unassigned .${prefixCls}-checkbox-checked .${prefixCls}-checkbox-inner {
+        .sha-query-builder-ignore-unassigned .${prefixCls}-checkbox-checked .${prefixCls}-checkbox-inner,
+        .sha-query-builder-ignore-unassigned .${prefixCls}-checkbox-wrapper:hover .${prefixCls}-checkbox-checked:not(.${prefixCls}-checkbox-disabled) .${prefixCls}-checkbox-inner,
+        .sha-query-builder-ignore-unassigned .${prefixCls}-checkbox-checked:not(.${prefixCls}-checkbox-disabled):hover .${prefixCls}-checkbox-inner,
+        .sha-query-builder-ignore-unassigned .${prefixCls}-checkbox-checked:not(.${prefixCls}-checkbox-disabled):focus-within .${prefixCls}-checkbox-inner {
             background-color: #52c41a;
             border-color: #52c41a;
         }
@@ -2091,6 +2113,25 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             display: block;
             transform: translate(-50%, -58%) rotate(45deg) scale(1);
             transform-origin: center;
+        }
+
+        /* antd 6 paints the box on the .ant-checkbox span (tick in its ::after); the -inner rules above cover antd 5 */
+        .sha-query-builder-ignore-unassigned .${prefixCls}-checkbox.${prefixCls}-checkbox-checked,
+        .sha-query-builder-ignore-unassigned .${prefixCls}-checkbox-wrapper:hover .${prefixCls}-checkbox.${prefixCls}-checkbox-checked:not(.${prefixCls}-checkbox-disabled),
+        .sha-query-builder-ignore-unassigned .${prefixCls}-checkbox.${prefixCls}-checkbox-checked:not(.${prefixCls}-checkbox-disabled):hover,
+        .sha-query-builder-ignore-unassigned .${prefixCls}-checkbox.${prefixCls}-checkbox-checked:not(.${prefixCls}-checkbox-disabled):focus-within {
+            background-color: #52c41a;
+            border-color: #52c41a;
+        }
+
+        .sha-query-builder-ignore-unassigned .${prefixCls}-checkbox-checked .${prefixCls}-checkbox-input,
+        .sha-query-builder-ignore-unassigned .${prefixCls}-checkbox-wrapper:hover .${prefixCls}-checkbox-checked:not(.${prefixCls}-checkbox-disabled) .${prefixCls}-checkbox-input,
+        .sha-query-builder-ignore-unassigned .${prefixCls}-checkbox-checked:not(.${prefixCls}-checkbox-disabled) .${prefixCls}-checkbox-input:hover,
+        .sha-query-builder-ignore-unassigned .${prefixCls}-checkbox-checked:not(.${prefixCls}-checkbox-disabled) .${prefixCls}-checkbox-input:focus-visible {
+            background-color: #52c41a;
+            border-color: #52c41a;
+            outline-color: #52c41a;
+            accent-color: #52c41a;
         }
 
         .sha-query-builder-ignore-unassigned-icon {

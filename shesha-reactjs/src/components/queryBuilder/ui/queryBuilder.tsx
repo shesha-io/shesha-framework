@@ -56,7 +56,7 @@ export const QueryBuilder: FC<IQueryBuilderProps> = ({ value, onChange, readOnly
 
   const context = useMemo<IBuilderContext>(() => ({ tree, fields, readOnly, dispatch }), [tree, fields, readOnly, dispatch]);
   const hasRules = tree.children.length > 0;
-  const rootLabel = tree.conjunction === 'or' ? 'Any of the following are true...' : 'All of the following are true...';
+  const rootLabel = tree.conjunction === 'or' ? 'Show any...' : 'Show all...';
 
   return (
     <BuilderContextProvider value={context}>
