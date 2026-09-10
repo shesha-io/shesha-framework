@@ -170,6 +170,22 @@ const isGlobalUrl = (url: string): boolean => {
   return !isNullOrWhiteSpace(url) && Boolean(url.match(/^(http|https):\/\//gi));
 };
 
+/** True when `url`'s effective destination is this app's own backend — either a relative path
+ * (always resolved against `backendUrl`) or an absolute URL whose origin exactly matches
+ * `backendUrl`'s. Standard headers (including the current user's Authorization bearer token)
+ * must never be forwarded anywhere else, regardless of the "Send Standard Headers" switch —
+ * otherwise pointing the action at an arbitrary absolute URL (by mistake, or by a form author
+ * who shouldn't have that reach) would leak the session's credentials to a third party. */
+const isApprovedDestination = (url: string, backendUrl: string): boolean => {
+  if (!isGlobalUrl(url)) return true;
+  if (isNullOrWhiteSpace(backendUrl)) return false;
+  try {
+    return new URL(url).origin === new URL(backendUrl).origin;
+  } catch {
+    return false;
+  }
+};
+
 const hasHeader = (headers: Record<string, string>, name: string): boolean =>
   Object.keys(headers).some((k) => k.toLowerCase() === name.toLowerCase());
 
@@ -360,7 +376,9 @@ export const useApiCallAction = (): void => {
         }
       }
 
-      const standardHeaders = sendStandardHeaders ? httpHeaders : {};
+      // Never forward standard headers (incl. Authorization) to a destination outside this app's
+      // own backend, even when the switch is on — see isApprovedDestination.
+      const standardHeaders = sendStandardHeaders && isApprovedDestination(url, backendUrl) ? httpHeaders : {};
       const allHeaders = { ...standardHeaders, ...finalHeaders };
 
       // validate arguments
