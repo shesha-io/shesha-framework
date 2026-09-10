@@ -1,6 +1,10 @@
 import { createStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, token }) => {
+  const searchIcon = cx(css`
+    color: ${token.colorTextPlaceholder};
+  `);
+
   const searchField = cx(css`
     z-index: unset;
     margin-bottom: 8px;
@@ -48,6 +52,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
 
   return {
     searchField,
+    searchIcon,
     content,
   };
 });
