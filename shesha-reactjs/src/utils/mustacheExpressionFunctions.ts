@@ -246,7 +246,7 @@ register({
 
 register({
   name: 'DATEADD',
-  description: 'Adds a number of units to a date. Units: days, months, years',
+  description: 'Adds a number of units to a date. Units: day(s), month(s), year(s)',
   category: 'Date',
   args: [
     { name: 'date', description: 'The base date' },
@@ -259,9 +259,9 @@ register({
     const numericAmount = toNum(amount);
     const normalizedUnit = toStr(unit).toLowerCase();
 
-    if (normalizedUnit === 'days') result.setDate(result.getDate() + numericAmount);
-    else if (normalizedUnit === 'months') result.setMonth(result.getMonth() + numericAmount);
-    else if (normalizedUnit === 'years') result.setFullYear(result.getFullYear() + numericAmount);
+    if (normalizedUnit === 'day' || normalizedUnit === 'days') result.setDate(result.getDate() + numericAmount);
+    else if (normalizedUnit === 'month' || normalizedUnit === 'months') result.setMonth(result.getMonth() + numericAmount);
+    else if (normalizedUnit === 'year' || normalizedUnit === 'years') result.setFullYear(result.getFullYear() + numericAmount);
     else throw new Error(`Unknown unit: "${normalizedUnit}"`);
 
     return result.toISOString().slice(0, 10);
