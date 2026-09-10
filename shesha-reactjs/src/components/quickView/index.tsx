@@ -27,6 +27,8 @@ import { isDefined } from '@/utils/nullables';
 import { extractErrorInfo } from '@/utils/errors';
 import { useDeepCompareEffect } from '@/hooks/useDeepCompareEffect';
 
+export const QUICKVIEW_PLACEMENT: PopoverProps['placement'] = 'topLeft';
+
 export interface IQuickViewProps extends PropsWithChildren {
   /** The id or guid for the entity */
   entityId?: string | undefined;
@@ -273,6 +275,7 @@ const QuickView: FC<Omit<IQuickViewProps, 'formType'>> = ({
 
   return (
     <Popover
+      placement={QUICKVIEW_PLACEMENT}
       {...(isDefined(popupClassName) ? { rootClassName: popupClassName } : {})}
       styles={{
         root: typeof cappedWidth === 'string' && /%$/.test(cappedWidth as string) ? { width: cappedWidth } : {},
@@ -338,6 +341,7 @@ export const GenericQuickView: FC<IQuickViewProps> = (props) => {
   if (formConfig === null) {
     return (
       <Popover
+        placement={QUICKVIEW_PLACEMENT}
         {...(isDefined(props.popupClassName) ? { rootClassName: props.popupClassName } : {})}
         content="Quickview not configured properly"
         title="Quickview not configured properly"
