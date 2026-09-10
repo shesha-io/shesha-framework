@@ -3,6 +3,10 @@ import { createGlobalStyle } from 'antd-style';
 
 const shaBorder = '1px solid #d3d3d3'; // @sha-border
 const shaPageHeadingHeight = '45px';
+/* antd's light-theme colorFill / colorBgLayout. Fixed rather than themed because configured
+   forms are always rendered light. */
+const CONFIGURED_FORM_SCROLLBAR_THUMB = 'rgba(0, 0, 0, 0.15)';
+const CONFIGURED_FORM_SCROLLBAR_TRACK = '#f5f5f5';
 
 export const GlobalSheshaStyles = createGlobalStyle`
   .sha-header-configuration {
@@ -17,7 +21,14 @@ export const GlobalSheshaStyles = createGlobalStyle`
 
   * {
     scrollbar-width: thin;
-    scrollbar-color: ${(p) => p.theme.colorBgLayout};
+    /* Two values required (thumb then track) - a single value makes the declaration invalid. */
+    scrollbar-color: ${(p) => p.theme.colorFill} ${(p) => p.theme.colorBgLayout};
+  }
+
+  /* Configured forms render on a light surface in every theme (see ConfigurableFormRenderer),
+     so their scrollbars must stay light too rather than following the app theme. */
+  .sha-form, .sha-form * {
+    scrollbar-color: ${CONFIGURED_FORM_SCROLLBAR_THUMB} ${CONFIGURED_FORM_SCROLLBAR_TRACK};
   }
 
   .sha-index-table-full {

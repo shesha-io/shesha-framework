@@ -3,7 +3,7 @@ import { ColorScheme, ResolvedTheme } from './contexts';
 
 const DARK_SCHEME_QUERY = '(prefers-color-scheme: dark)';
 
-/** Reads the OS colour scheme. Returns 'light' during SSR, where matchMedia is unavailable. */
+/** Reads the OS colour scheme on demand. Returns 'light' where matchMedia is unavailable (SSR). */
 const getSystemTheme = (): ResolvedTheme => {
   if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return 'light';
   return window.matchMedia(DARK_SCHEME_QUERY).matches ? 'dark' : 'light';
@@ -22,9 +22,10 @@ const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffec
 export const useResolvedTheme = (scheme: ColorScheme | undefined): ResolvedTheme => {
   const followSystem = scheme === 'system' || scheme === undefined;
 
-  // Lazily initialised so the first client render already matches the OS. On the server this
-  // yields 'light', and the pre-paint effect below corrects it during hydration.
-  const [systemTheme, setSystemTheme] = useState<ResolvedTheme>(getSystemTheme);
+  // Always 'light' on the first render so server and client hydration produce identical output.
+  // The pre-paint effect below corrects it before the browser paints, so a dark-mode user still
+  // does not see a light flash.
+  const [systemTheme, setSystemTheme] = useState<ResolvedTheme>('light');
 
   useIsomorphicLayoutEffect(() => {
     if (!followSystem) return undefined;
