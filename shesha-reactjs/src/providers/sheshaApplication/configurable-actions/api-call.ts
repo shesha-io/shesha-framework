@@ -79,10 +79,18 @@ const migrateV0toV1 = (prev: IApiCallArgumentsV0): IApiCallArguments => {
 /** Default "Send Standard Headers" to on. Runs for both freshly-created actions (which start at
  * version -1 and pass through every migration step, including this one) and pre-existing configs
  * that never had the switch set, so standard headers (incl. Authorization) are sent unless a user
- * has explicitly turned the switch off — an explicit `false` is preserved as-is. */
-const migrateV1toV2 = (prev: IApiCallArguments): IApiCallArguments => ({
+ * has explicitly turned the switch off — an explicit `false` is preserved as-is.
+ * Registered as version 2 (not 1): many already-saved configs were hand-authored directly in the
+ * post-requestConfig shape with `version: 1` as a "nothing to migrate" marker, never having gone
+ * through migrateV0toV1. Migrator.upgrade only runs migrations whose version is strictly greater
+ * than the stored version, so registering this at version 1 would have silently skipped every one
+ * of those already-version-1 configs. */
+const migrateToV2 = (prev: IApiCallArguments): IApiCallArguments => ({
   ...prev,
-  sendStandardHeaders: prev.sendStandardHeaders ?? true,
+  // `sendStandardHeaders` is typed as a required boolean, but migration input is whatever was
+  // actually persisted — plenty of already-saved configs predate this field entirely, so it can be
+  // missing at runtime despite the type. Cast acknowledges that trust boundary.
+  sendStandardHeaders: (prev.sendStandardHeaders as boolean | undefined) ?? true,
 });
 
 const HttpVerbs: Method[] = ['get',
@@ -172,9 +180,14 @@ const setHeaderIfMissing = (headers: Record<string, string>, name: string, value
 const prepareUrlAndData = (url: string, verb: string, parameters: IDictionary<string>): { url: string; data: IDictionary<string> | undefined } => {
   const encodeAsQueryString = ['get', 'delete'].includes(verb.toLowerCase());
   if (encodeAsQueryString) {
+    // getQueryParams(url) already extracts and merges in whatever query string `url` carries, so it
+    // must be stripped from `url` itself before re-appending the merged one below — otherwise a `url`
+    // that already has a `?...` (its own literal query string, or one injected by the
+    // bodyOverridesParams branch above) ends up with the same params appended a second time, e.g.
+    // `/Delete?id=X?id=X`, which most backends reject as an invalid parameter value.
     const queryStringData = { ...getQueryParams(url), ...parameters };
     return {
-      url: `${url}?${qs.stringify(queryStringData, { allowDots: true })}`,
+      url: `${url.split('?')[0]}?${qs.stringify(queryStringData, { allowDots: true })}`,
       data: undefined,
     };
   } else {
@@ -210,7 +223,7 @@ export const useApiCallAction = (): void => {
     argumentsFormMarkup: getApiCallArgumentsForm,
     migrator: (m) => m
       .add<IApiCallArgumentsV0>(0, (prev) => migrateV0toV1(prev))
-      .add<IApiCallArguments>(1, (prev) => migrateV1toV2(prev)),
+      .add<IApiCallArguments>(2, (prev) => migrateToV2(prev)),
     // Evaluate arguments normally (params/headers/url get their Mustache resolved), but keep the
     // JSON/raw body template raw. A JSON body is one big string, and letting the generic pass run
     // Mustache over it can blank tags before the body data is available; instead the executer
