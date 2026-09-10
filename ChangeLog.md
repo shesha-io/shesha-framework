@@ -26,7 +26,7 @@ Shesha 0.46 is a rebuild release. Where 0.45 rethought how configuration is mana
 
 ## ⚠️ Breaking Changes 
 
-- **The Scripting API Was Reworked** (AWAITING FOR API REWORK DOCS FROM ALEX, this was pulled from code base) 
+- **The Scripting API Was Reworked**
 
   - Scripts now work with a single, consistent set of objects: `form`, `formData`, `user`, `actions`, `utils`, `page`, `components`, `storage`, `application`, and `query`. 
 
