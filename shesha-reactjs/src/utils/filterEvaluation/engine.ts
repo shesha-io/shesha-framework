@@ -1,5 +1,6 @@
 import { JsonLogicFilter } from '@/interfaces/jsonLogic';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
+import { isRecord } from '@/utils/object';
 import { coerceToDataType, getSiblingDataType } from './coerce';
 import { createJavaScriptEvaluator } from './expressions/javascript';
 import { createMustacheEvaluator } from './expressions/mustache';
@@ -23,8 +24,12 @@ const SPECIFICATION_OPERATOR = 'is_satisfied';
 interface EvaluateNodeArgs {
   expression: string;
   type?: string | undefined;
-  required?: boolean | undefined;
+  required?: unknown;
 }
+
+/** The argument object of an `evaluate` node. `required` is left loose: legacy filters stored it in more than one shape. */
+const isEvaluateNodeArgs = (value: unknown): value is EvaluateNodeArgs =>
+  isRecord(value) && typeof value['expression'] === 'string' && (value['type'] === undefined || typeof value['type'] === 'string');
 
 const isExpressionLanguage = (type: unknown): type is ExpressionLanguage => type === 'mustache' || type === 'javascript';
 
@@ -41,22 +46,18 @@ interface ExpressionNode {
   required: boolean;
 }
 
-interface UnsupportedExpressionNode {
-  expression: string;
-  type: string;
-}
+type ParsedExpressionNode = { kind: 'supported'; node: ExpressionNode } |
+  { kind: 'unsupported'; expression: string; type: string };
 
 /** `{"evaluate":[{"expression","type","required"}]}`; a missing `type` is the legacy mustache node. */
-const asExpressionNode = (node: object): ExpressionNode | UnsupportedExpressionNode | undefined => {
+const asExpressionNode = (node: object): ParsedExpressionNode | undefined => {
   if (!('evaluate' in node) || !Array.isArray(node.evaluate) || node.evaluate.length !== 1) return undefined;
   const args: unknown = node.evaluate[0];
-  if (typeof args !== 'object' || args === null || !('expression' in args) || typeof (args as EvaluateNodeArgs).expression !== 'string') return undefined;
-  const { expression, type, required } = args as EvaluateNodeArgs;
-  if (type !== undefined && !isExpressionLanguage(type)) return { expression, type };
-  return { expression, language: type ?? 'mustache', required: required === true };
+  if (!isEvaluateNodeArgs(args)) return undefined;
+  const { expression, type, required } = args;
+  if (type !== undefined && !isExpressionLanguage(type)) return { kind: 'unsupported', expression, type };
+  return { kind: 'supported', node: { expression, language: type ?? 'mustache', required: required === true } };
 };
-
-const isUnsupported = (node: ExpressionNode | UnsupportedExpressionNode): node is UnsupportedExpressionNode => 'type' in node;
 
 /** Every `var` path in the tree, for callers that need to look data types up before evaluating. */
 export const collectVariablePaths = (logic: object): string[] => {
@@ -134,13 +135,13 @@ const evaluateInlineTemplate = (session: Session, literal: string, siblings: unk
   evaluateExpressionNode(session, { expression: literal, language: 'mustache', required: true }, siblings);
 
 const resolveNode = (session: Session, node: object, siblings: unknown[], parentOperator: string): NodeResult => {
-  const expressionNode = asExpressionNode(node);
-  if (expressionNode && isUnsupported(expressionNode)) {
+  const parsed = asExpressionNode(node);
+  if (parsed?.kind === 'unsupported') {
     session.failed = true;
-    session.unresolved.push({ expression: expressionNode.expression, language: 'mustache', required: true, reason: 'error', message: `Unsupported expression type '${expressionNode.type}'` });
+    session.unresolved.push({ expression: parsed.expression, language: 'mustache', required: true, reason: 'error', message: `Unsupported expression type '${parsed.type}'` });
     return { value: null, drop: true };
   }
-  if (expressionNode) return evaluateExpressionNode(session, expressionNode, siblings);
+  if (parsed) return evaluateExpressionNode(session, parsed.node, siblings);
   const nested = resolveLogic(session, node);
   // a nested rule that was dropped disappears from an and/or; anywhere else it takes its parent with it
   if (nested === null) return { value: undefined, drop: !CONJUNCTIONS.has(parentOperator) };

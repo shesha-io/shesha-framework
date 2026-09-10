@@ -57,10 +57,8 @@ describe('legacy adapters', () => {
   });
 
   it('coerces resolved values to the compared property type', () => {
-    const metadata = [
-      { path: 'age', label: 'Age', dataType: 'number' },
-      { path: 'isActive', label: 'Active', dataType: 'boolean' },
-    ] as unknown as IPropertyMetadata[];
+    const property = (path: string, label: string, dataType: string): IPropertyMetadata => ({ path, label, dataType });
+    const metadata: IPropertyMetadata[] = [property('age', 'Age', 'number'), property('isActive', 'Active', 'boolean')];
     const filters: IStoredFilter[] = [
       { id: 'n', name: 'n', expression: { '>=': [{ var: 'age' }, '{{data.age}}'] } },
       { id: 'b', name: 'b', expression: { '==': [{ var: 'isActive' }, '{{data.active}}'] } },

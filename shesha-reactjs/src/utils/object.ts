@@ -65,7 +65,8 @@ export const unproxyValue = <TValue = unknown>(value: TValue): TValue => {
   return current as TValue;
 };
 
-const isRecord = (value: unknown): value is Record<string, unknown> => isPlainObject(value);
+/** A plain object (not an array, not a class instance): the shape settings and JsonLogic nodes share. */
+export const isRecord = (value: unknown): value is Record<string, unknown> => isPlainObject(value);
 
 const isOpaqueObject = (value: object): boolean =>
   moment.isMoment(value) || value instanceof Date || (typeof Blob !== 'undefined' && value instanceof Blob);
@@ -123,13 +124,13 @@ const JSON_LOGIC_OPERATORS = new Set([
  * `{ min: 1, max: 10 }` is a settings bag, not a node, and still merges field by field.
  */
 export const isJsonLogicNode = (value: unknown): value is Record<string, unknown> => {
-  if (!isDefined(value) || typeof value !== 'object' || Array.isArray(value)) return false;
+  if (!isRecord(value)) return false;
   const keys = Object.keys(value);
   const key = keys[0];
   if (keys.length !== 1 || key === undefined || !JSON_LOGIC_OPERATORS.has(key)) return false;
-  const args = (value as Record<string, unknown>)[key];
+  const args = value[key];
   if (key === 'var') return typeof args === 'string';
-  return Array.isArray(args) || (typeof args === 'object' && args !== null);
+  return Array.isArray(args) || isRecord(args);
 };
 
 export const deepMergeValues = <TObject extends object = object, TSource extends object = object>(
