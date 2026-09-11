@@ -170,17 +170,24 @@ const isGlobalUrl = (url: string): boolean => {
   return !isNullOrWhiteSpace(url) && Boolean(url.match(/^(http|https):\/\//gi));
 };
 
-/** True when `url`'s effective destination is this app's own backend — either a relative path
- * (always resolved against `backendUrl`) or an absolute URL whose origin exactly matches
- * `backendUrl`'s. Standard headers (including the current user's Authorization bearer token)
- * must never be forwarded anywhere else, regardless of the "Send Standard Headers" switch —
- * otherwise pointing the action at an arbitrary absolute URL (by mistake, or by a form author
- * who shouldn't have that reach) would leak the session's credentials to a third party. */
+/** True when `url`'s effective destination is this app's own backend. Resolves `url` against
+ * `backendUrl` as the base — the same rule a browser (and axios's own `isAbsoluteURL` check) uses
+ * for any URL reference — then compares origins. Standard headers (including the current user's
+ * Authorization bearer token) must never be forwarded anywhere else, regardless of the "Send
+ * Standard Headers" switch, otherwise pointing the action at a destination outside this app's
+ * backend (by mistake, or by a form author who shouldn't have that reach) would leak the
+ * session's credentials to a third party.
+ *
+ * A scheme-anchored check like `isGlobalUrl` (`^(http|https):\/\/`) isn't enough here on its own:
+ * a protocol-relative URL such as `//attacker.example/path` doesn't match that regex, but it's
+ * still resolved as an absolute, cross-origin reference by both browsers and axios's own
+ * `isAbsoluteURL` (whose scheme group is optional). Resolving through `new URL(url, backendUrl)`
+ * handles a plain relative path, a protocol-relative URL, and a fully-qualified absolute URL
+ * uniformly, so none of those shapes can slip past this check. */
 const isApprovedDestination = (url: string, backendUrl: string): boolean => {
-  if (!isGlobalUrl(url)) return true;
   if (isNullOrWhiteSpace(backendUrl)) return false;
   try {
-    return new URL(url).origin === new URL(backendUrl).origin;
+    return new URL(url, backendUrl).origin === new URL(backendUrl).origin;
   } catch {
     return false;
   }
