@@ -6,7 +6,7 @@ const buildModel = (overrides: Partial<ICustomLayoutComponentProps> = {}): ICust
   type: 'customLayout',
   components: [],
   ...overrides,
-} as ICustomLayoutComponentProps);
+});
 
 const initModel = (model: ICustomLayoutComponentProps): ICustomLayoutComponentProps => {
   const init = CustomLayoutComponent.initModel;
