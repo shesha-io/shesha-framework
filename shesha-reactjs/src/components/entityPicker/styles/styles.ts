@@ -1,7 +1,7 @@
 import { createStyles, sheshaStyles } from '@/styles';
 import { IStyleValue } from '@/providers/form/models';
 import { backgroundStyles } from '@/designer-components/_common/styles/utils';
-import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 
 export const useStyles = createStyles(({ css, cx, prefixCls }, model?: IStyleValue) => {
   const pickerEllipsisBtnWidth = "45px";
@@ -13,10 +13,9 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model?: IStyleVal
 
   const shaReactTable = "sha-react-table";
   const shaGlobalTableFilter = "sha-global-table-filter";
-
-  /* Only the family: the picker configures the dialog typeface, but size, weight and colour are
-     left to each control so the table, buttons and search keep their own defaults. */
-  const fontFamily = model?.font?.type ?? model?.styleCss?.fontFamily;
+  const fontFamily = isNotNullOrWhiteSpace(model?.font?.type)
+    ? model.font.type
+    : model?.styleCss?.fontFamily;
   const fontFamilyStyle = isNullOrWhiteSpace(fontFamily) ? '' : `font-family: ${fontFamily};`;
 
   const entityPickerContainer = cx("entity-picker-container", css`
@@ -67,6 +66,14 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model?: IStyleVal
       margin: unset !important;
       width: 100%;
       padding: unset;
+
+      /* The search box is an Input.Search: an input plus a button. Neither inherits the family
+         (see the footer rule below), so both are named here. The placeholder is a pseudo-element
+         and follows the input, so it needs no rule of its own. */
+      input,
+      .${prefixCls}-btn {
+        ${fontFamilyStyle}
+      }
     }
 
     .${shaReactTable} {
@@ -77,6 +84,14 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model?: IStyleVal
       border-radius: 6px;
       box-sizing: border-box;
       ${sheshaStyles.thinScrollbars}
+
+      /* The table sets a family on its header and body cells only when the caller passes one, and
+         the picker deliberately passes no styling so the table keeps its own defaults otherwise.
+         That leaves the cells on the theme family rather than inheriting the dialog one, so the
+         family alone is restated here. Nothing else about the cells is touched. */
+      .th, .td {
+        ${fontFamilyStyle}
+      }
     }
 
     .${entityPickerModalPagerContainer} {
@@ -84,8 +99,23 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model?: IStyleVal
       justify-content: flex-end;
       margin: ${sheshaStyles.paddingLG}px 0;
 
+      /* antd sets font-family on the pagination items themselves (token.fontFamily), so the page
+         numbers and the prev/next/jump controls never inherit the dialog family. The page-size
+         select is a Select, whose own rule is font-family: inherit, so it follows its container -
+         which is one of these items. */
+      .${prefixCls}-pagination-item,
+      .${prefixCls}-pagination-prev,
+      .${prefixCls}-pagination-next,
+      .${prefixCls}-pagination-jump-prev,
+      .${prefixCls}-pagination-jump-next,
+      .${prefixCls}-pagination-options,
+      .${prefixCls}-pagination-total-text {
+        ${fontFamilyStyle}
+      }
+
       .${prefixCls}-select {
         margin-right: 0 !important;
+        ${fontFamilyStyle}
       }
     }
 
@@ -95,6 +125,18 @@ export const useStyles = createStyles(({ css, cx, prefixCls }, model?: IStyleVal
       flex-direction: row;
       justify-content: space-between;
       column-gap: 12px;
+
+      /* Form controls do not inherit font-family: the browser gives input, button and select
+         their own UA font, and antd inherits font-size and colour on them but not the family.
+         So the footer buttons (Close, Add New) have to be named explicitly. */
+      .${prefixCls}-btn {
+        ${fontFamilyStyle}
+      }
+    }
+
+    /* The dialog close (X) is rendered outside the header/body/footer, on the modal root. */
+    .${prefixCls}-modal-close {
+      ${fontFamilyStyle}
     }
   `);
 
