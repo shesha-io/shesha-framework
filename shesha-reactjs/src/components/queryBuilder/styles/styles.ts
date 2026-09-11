@@ -582,22 +582,49 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             overflow: hidden;
         }
 
+        /* The source picker: a bare icon button inside the control's border. Declared once, here. */
         .sha-query-builder-source-dropdown-trigger,
         .sha-query-builder-source-trigger {
             width: 58px;
             height: 100%;
         }
 
+        .sha-query-builder-source-dropdown-trigger {
+            display: inline-flex;
+            min-width: 0;
+            pointer-events: auto !important;
+        }
+
         .sha-query-builder-source-trigger {
             padding: 10px 5px;
             border: 0;
             border-radius: 0;
+            outline: none;
             background: transparent;
+            box-shadow: none;
+            box-sizing: border-box;
+            appearance: none;
+            -webkit-appearance: none;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 0 !important;
+            color: rgba(0, 0, 0, 0.45);
+            cursor: pointer;
+            transition: background-color 0.15s ease, color 0.15s ease;
+        }
+
+        .sha-query-builder-source-trigger:hover,
+        .sha-query-builder-source-trigger:focus-visible {
+            color: ${token.colorPrimary};
+            outline: none;
             box-shadow: none;
+            border-color: transparent;
+        }
+
+        .sha-query-builder-source-trigger:disabled {
+            cursor: not-allowed;
+            opacity: 0.55;
         }
 
         .sha-query-builder-source-trigger-icon,
@@ -609,10 +636,8 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-        }
-
-        .sha-query-builder-source-trigger-label {
-            display: none;
+            line-height: 1;
+            font-size: 11px;
         }
 
         /* Every embedded control is hosted by a control slot, which owns the border. The control
@@ -936,65 +961,6 @@ export const useStyles = createStyles(({ css, cx, prefixCls, token }) => {
             button {
                 margin-left: ${sheshaStyles.paddingLG}px;
             }
-        }
-
-        .sha-query-builder-source-trigger {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-sizing: border-box;
-            transition: background-color 0.15s ease, color 0.15s ease;
-            border: 0;
-            outline: none;
-            box-shadow: none;
-            border-radius: 0;
-            background: transparent;
-            color: rgba(0, 0, 0, 0.45);
-            appearance: none;
-            -webkit-appearance: none;
-        }
-
-        .sha-query-builder-source-trigger:hover,
-        .sha-query-builder-source-trigger:focus-visible {
-            color: #1677ff;
-            outline: none;
-            box-shadow: none;
-            border-color: transparent;
-        }
-
-        .sha-query-builder-source-trigger:disabled {
-            cursor: not-allowed;
-            opacity: 0.55;
-        }
-
-        .sha-query-builder-source-dropdown-trigger {
-            display: inline-flex;
-            min-width: 0;
-            pointer-events: auto !important;
-        }
-
-        .sha-query-builder-source-trigger-icon,
-        .sha-query-builder-source-trigger-arrow {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 24px;
-            height: 24px;
-            flex-shrink: 0;
-            aspect-ratio: 1 / 1;
-            line-height: 1;
-            font-size: 11px;
-        }
-
-        .sha-query-builder-source-trigger-label {
-            flex: 1 1 0;
-            min-width: 0;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            font-size: 13px;
-            line-height: 1;
         }
 
         .sha-query-builder-packed-select {
