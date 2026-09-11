@@ -14,7 +14,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
 
   const shaSettingsEditor = cx("sha-settings-editor", css`
         .${shaSettingsEditorToolbar} {
-          background: white;
+          background: ${token.colorBgContainer};
           padding: 12px;
           display: flex;
           justify-content: space-between;
@@ -38,13 +38,13 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
       
         .${shaSettingsEditorMain} {
           padding: 8px;
-          background-color: white;
+          background-color: ${token.colorBgContainer};
         }
       
         .${shaSettingsEditorToolbox} {
           padding: 8px;
           height: 100%;
-          background-color: white;
+          background-color: ${token.colorBgContainer};
       
           .${prefixCls}-collapse-item {
             .${prefixCls}-collapse-header {
@@ -76,7 +76,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
             }
       
             &.active {
-              background-color: #ebf3fb;
+              background-color: ${token.colorPrimaryBg};
             }
           }
       
@@ -88,9 +88,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
             align-content: flex-start;
             line-height: 1.5;
             border-radius: 3px;
-            background: #fff;
+            background: ${token.colorBgContainer};
+            color: ${token.colorText};
             margin: 4px 0;
-            border: 1px solid #ddd;
+            border: 1px solid ${token.colorBorder};
       
             .${iconPrefixCls} {
               margin: 5px 10px 5px 10px;
@@ -161,7 +162,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
       .${propsPanel} {
         overflow-x: hidden;
         overflow-y: auto;
-        background: white;
+        background: ${token.colorBgContainer};
         height: calc(100vh - 160px);
         
         .${propsPanelContent} {
@@ -177,12 +178,12 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
     
             .${propsPanelTitle} {
               display: flex;
-              background: #282828;
+              background: ${token.colorBgSpotlight};
               align-items: center;
               padding: 0 ${sheshaStyles.paddingLG}px;
               font-weight: 500;
               font-size: 16px;
-              color: white;
+              color: ${token.colorTextLightSolid};
               flex-grow: 1;
             }
           }

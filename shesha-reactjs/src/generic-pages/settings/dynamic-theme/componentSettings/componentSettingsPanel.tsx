@@ -1,4 +1,4 @@
-import { Card, Col, Menu, Row } from 'antd';
+import { Card, Col, Empty, Menu, Row } from 'antd';
 import { CSSProperties, FC, useCallback, useMemo, useState } from 'react';
 import * as React from 'react';
 import { IConfigurableTheme } from '@/providers/theme/contexts';
@@ -14,6 +14,7 @@ import {
 } from '@/providers/form/models';
 import { ITabPaneProps } from '@/designer-components/propertiesTabs/models';
 import { ItemType } from 'antd/es/menu/interface';
+import { SearchBox } from '@/components/formDesigner/toolboxSearchBox';
 import { ComponentDefaultsPreview } from './preview';
 import { ComponentDefaultsSettings } from './settings';
 import DefaultModelProvider from '@/designer-components/_settings/defaultModelProvider/defaultModelProvider';
@@ -48,17 +49,40 @@ export interface IComponentDefaultsPanelProps {
 
 const componentMenuCardStyle = { height: '600px', overflowY: 'auto' } as CSSProperties;
 
+/** Filters the component tree by name, keeping groups that match or that contain a match. */
+export const filterMenuItems = (items: IMenuItem[], searchText: string): IMenuItem[] => {
+  const query = searchText.trim().toLowerCase();
+  if (query === '') return items;
+
+  const result: IMenuItem[] = [];
+  items.forEach((item) => {
+    const matches = item.title.toLowerCase().includes(query);
+    const children = item.children ? filterMenuItems(item.children, query) : undefined;
+
+    if (matches) {
+      // A matching group keeps all of its components so they remain selectable.
+      result.push(item);
+    } else if (children && children.length > 0) {
+      result.push({ ...item, children });
+    }
+  });
+  return result;
+};
+
 /**
  * Component Defaults Panel - Shows menu of components on left, appearance settings on right
  */
 export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value: theme, onChange, readOnly: readonly }) => {
   const { styles } = useStyles();
   const [selectedKey, setSelectedKey] = useState<string>('button');
+  const [searchText, setSearchText] = useState<string>('');
   const fbf = useFormBuilderFactory();
 
   const selectedNode = useMemo(() => findComponentNode(selectedKey), [selectedKey]);
   const componentType = selectedNode?.type;
   const componentTitle = selectedNode?.title;
+
+  const filteredMenuItems = useMemo(() => filterMenuItems(getMenuItems(), searchText), [searchText]);
 
   // Convert tree data to Ant Design Menu format with groups
   const menuData = useMemo(() => {
@@ -68,8 +92,14 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
       icon: component.icon,
       children: component.children?.map(convertComponent),
     });
-    return getMenuItems().map(convertComponent);
-  }, []);
+    return filteredMenuItems.map(convertComponent);
+  }, [filteredMenuItems]);
+
+  // While searching, expand the matching groups so results are visible without extra clicks.
+  const openKeys = useMemo(
+    () => (searchText.trim() === '' ? undefined : filteredMenuItems.map((group) => group.key)),
+    [searchText, filteredMenuItems],
+  );
 
   const componentDef = useMemo((): IToolboxComponent | undefined => {
     if (isNullOrWhiteSpace(componentType)) return undefined;
@@ -150,7 +180,18 @@ export const ComponentDefaultsPanel: FC<IComponentDefaultsPanelProps> = ({ value
           style={componentMenuCardStyle}
           className={styles.themeCardMenu}
         >
-          <Menu items={menuData} mode="inline" selectedKeys={selectedKeys} onClick={menuOnClick} />
+          <SearchBox value={searchText} onChange={setSearchText} placeholder="Search components" />
+          {menuData.length > 0
+            ? (
+              <Menu
+                items={menuData}
+                mode="inline"
+                selectedKeys={selectedKeys}
+                onClick={menuOnClick}
+                {...(openKeys ? { openKeys } : {})}
+              />
+            )
+            : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Components not found" />}
         </Card>
       </Col>
 

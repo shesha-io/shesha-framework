@@ -71,10 +71,11 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
     headerControls,
     headerFormId,
   } = props;
-  const { theme: themeFromStorage } = useTheme();
+  const { theme: themeFromStorage, resolvedTheme } = useTheme();
   const { styles } = useStyles();
 
-  const sideMenuTheme = themeFromStorage.sidebar;
+  // antd's Sider/Menu only understand 'light' | 'dark', so pass the resolved scheme.
+  const sideMenuTheme = resolvedTheme;
 
   const [collapsed, setCollapsed] = useLocalStorage(SIDEBAR_COLLAPSE, true);
 
@@ -184,7 +185,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
         collapsed={collapsed}
         onCollapse={onCollapse}
         trigger={<MenuTrigger collapsed={collapsed} />}
-        {...(sideMenuTheme ? { theme: sideMenuTheme } : {})}
+        theme={sideMenuTheme}
       >
         <ConfigurableSidebarMenu
           theme={sideMenuTheme}
@@ -194,7 +195,7 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
       </Sider>
 
       <Layout className={styles.layout}>
-        <Header className={styles.antLayoutHeader} style={{ background: '#ffffff', height: 'inherit' }}>
+        <Header className={styles.antLayoutHeader} style={{ height: 'inherit' }}>
           <LayoutHeader collapsed={collapsed} headerFormId={headerFormId} />
         </Header>
         <Content className={classNames(styles.content, { collapsed })} style={contentStyle}>
@@ -206,7 +207,12 @@ const DefaultLayout: FC<PropsWithChildren<IMainLayoutProps>> = (props) => {
 
             <div
               className={classNames(styles.mainArea, styles.shaSiteLayoutBackground)}
-              style={{ ...layoutBackgroundStyle, background: themeFromStorage.layoutBackground }}
+              style={{
+                ...layoutBackgroundStyle,
+                ...(isNullOrWhiteSpace(themeFromStorage.layoutBackground)
+                  ? {}
+                  : { background: themeFromStorage.layoutBackground }),
+              }}
             >
               {children}
             </div>

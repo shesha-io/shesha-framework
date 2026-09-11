@@ -1,8 +1,9 @@
-import { App, ConfigProvider, ThemeConfig } from 'antd';
-import { FC, PropsWithChildren, useCallback, useContext, useMemo, useState } from 'react';
+import { App, ConfigProvider, ThemeConfig, theme as antdTheme } from 'antd';
+import { FC, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import './interFont.generated.css';
 import './baseFont.css';
-import { IConfigurableTheme, IThemeActionsContext, IThemeStateContext, THEME_CONTEXT_INITIAL_STATE, UiActionsContext, UiStateContext } from './contexts';
+import { ColorScheme, IConfigurableTheme, IThemeActionsContext, IThemeStateContext, normalizeColorScheme, ResolvedTheme, THEME_CONTEXT_INITIAL_STATE, UiActionsContext, UiStateContext } from './contexts';
+import { useResolvedTheme } from './useResolvedTheme';
 import { defaultRequiredMark } from './shaRequiredMark';
 import { useSettings, useSheshaApplication } from '..';
 import { isNotNullOrWhiteSpace } from '@/utils/nullables';
@@ -32,7 +33,9 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
   const application = useSheshaApplication();
   application.registerInitialization('theme', async () => {
     // load theme settings
-    const theme = await settings.getSetting<IConfigurableTheme>({ module: 'Shesha', name: 'Shesha.ThemeSettings' });
+    const loaded = await settings.getSetting<IConfigurableTheme>({ module: 'Shesha', name: 'Shesha.ThemeSettings' });
+    // Persisted settings predate the 'system' option, so the stored scheme may be empty or stale.
+    const theme: IConfigurableTheme = { ...loaded, sidebar: normalizeColorScheme(loaded.sidebar) };
     setState((prev) => ({ ...prev, theme: theme, initialTheme: theme }));
   });
 
@@ -51,6 +54,21 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
 
   const getComponentStyle = useCallback((componentName: string) => state.theme.components?.[componentName] ?? {}, [state.theme.components]);
 
+  // 'system' follows the OS preference and re-resolves when the user flips it.
+  const resolvedTheme = useResolvedTheme(state.theme.sidebar);
+  const isDark = resolvedTheme === 'dark';
+
+  const stateWithResolvedTheme = useMemo<IThemeStateContext>(
+    () => ({ ...state, resolvedTheme }),
+    [state, resolvedTheme],
+  );
+
+  // Drives the browser's native UI — scrollbars above all — so they follow the app theme instead
+  // of staying light on a dark page. Set on the root element to cover the whole document.
+  useEffect(() => {
+    document.documentElement.style.colorScheme = resolvedTheme;
+  }, [resolvedTheme]);
+
   const themeConfig = useMemo<ThemeConfig>(() => {
     const appTheme = state.theme.application;
     const themeDefaults: ThemeConfig['token'] = {};
@@ -66,6 +84,7 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
       : {};
 
     const result: ThemeConfig = {
+      algorithm: isDark ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
       cssVar: {
         prefix: 'ant',
       },
@@ -81,10 +100,10 @@ const ThemeProvider: FC<PropsWithChildren<ThemeProviderProps>> = ({
       },
     };
     return result;
-  }, [state.theme]);
+  }, [state.theme, isDark]);
 
   return (
-    <UiStateContext.Provider value={state}>
+    <UiStateContext.Provider value={stateWithResolvedTheme}>
       <UiActionsContext.Provider
         value={{
           changeTheme,
@@ -157,4 +176,13 @@ function useTheme(): IThemeStateContext & IThemeActionsContext {
   return { ...useThemeState(), ...useThemeActions() };
 }
 
-export { ThemeProvider, useTheme, useThemeActions, useThemeState, type IConfigurableTheme };
+export {
+  ThemeProvider,
+  useTheme,
+  useThemeActions,
+  useThemeState,
+  useResolvedTheme,
+  type IConfigurableTheme,
+  type ColorScheme,
+  type ResolvedTheme,
+};

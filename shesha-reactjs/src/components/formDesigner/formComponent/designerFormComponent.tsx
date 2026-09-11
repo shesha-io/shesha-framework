@@ -7,7 +7,7 @@ import { isPropertySettings } from "@/designer-components/_settings/utils/utils"
 import classNames from "classnames";
 import { isNonEmptyArray } from "@/utils/array";
 import Show from "@/components/show";
-import { Tooltip } from "antd";
+import { ConfigProvider, Tooltip, theme as antdTheme } from "antd";
 import { EyeInvisibleOutlined, FunctionOutlined, LockOutlined } from "@ant-design/icons";
 import DragWrapper from "../configurableFormComponent/dragWrapper";
 import { useFormDesigner, useFormDesignerSelectedComponentId, useFormDesignerSettingsPanelElement } from "@/providers/formDesigner";
@@ -18,6 +18,7 @@ import { UnknownFormComponent } from "./unknownFormComponent";
 import { IFormComponentProps } from "./formComponent";
 import Icon from "@/components/icon/Icon";
 import { useShaComponentStyles } from "../styles/shaComponentStyles";
+import { useThemeState } from "@/providers/theme";
 import { useFormDesignerComponentGetter } from "@/providers/form/hooks";
 import { createPortal } from "react-dom";
 import { ComponentProperties } from "../componentPropertiesPanel/componentProperties";
@@ -45,6 +46,7 @@ const DesignerFormComponentInner: FC<IDesignerFormComponentProps> = ({
   const component = useMemo(() => getToolboxComponent(componentModel.type), [getToolboxComponent, componentModel.type]);
   const selectedComponentId = useFormDesignerSelectedComponentId();
   const isSelected = Boolean(componentModel.id) && selectedComponentId === componentModel.id;
+  const { resolvedTheme } = useThemeState();
 
   // Note: sourceComponentModel is intentionally NOT in dependencies to prevent focus loss
   // when typing in the properties panel. The portal is created once and the component
@@ -57,12 +59,16 @@ const DesignerFormComponentInner: FC<IDesignerFormComponentProps> = ({
 
     const result = createPortal((
       <div onClick={(e) => e.stopPropagation()} onMouseOver={(e) => e.stopPropagation()} onMouseOut={(e) => e.stopPropagation()}>
-        <ComponentProperties componentModel={sourceComponentModel} readOnly={readOnly} toolboxComponent={component} />
+        {/* The portal moves this into the properties panel, but React context still follows the
+            component tree - so without this it would inherit the canvas's light-pinned theme. */}
+        <ConfigProvider theme={{ algorithm: resolvedTheme === 'dark' ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm }}>
+          <ComponentProperties componentModel={sourceComponentModel} readOnly={readOnly} toolboxComponent={component} />
+        </ConfigProvider>
       </div>
     ), settingsPanelElement, "propertiesPanel");
     return result;
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSelected, settingsPanelElement, readOnly, component]);
+  }, [isSelected, settingsPanelElement, readOnly, component, resolvedTheme]);
 
   const hiddenFx = (isPropertySettings(sourceComponentModel.hidden) && sourceComponentModel.hidden._mode === 'code') || // ToDo: AS - remove hidden after migration all components
     (isPropertySettings(sourceComponentModel.visible) && sourceComponentModel.visible._mode === 'code');
