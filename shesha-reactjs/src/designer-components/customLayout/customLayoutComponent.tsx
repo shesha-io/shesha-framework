@@ -37,7 +37,14 @@ const CustomLayoutComponent: CustomLayoutComponentDefinition = {
       </ParentProvider>
     );
   },
-  initModel: (model) => ({ ...model, label: 'Custom Layout', hideLabel: false, labelAlign: 'left' }),
+  initModel: (model) => ({
+    ...model,
+    label: 'Custom Layout',
+    hideLabel: false,
+    labelAlign: 'left',
+    // Set explicitly so the heading does not inherit colour from the surrounding chrome.
+    headingFont: { color: '#000', size: 14, weight: '500' },
+  }),
   settingsFormMarkup: getSettings,
   getDefaultStyles: defaultStyles,
 };

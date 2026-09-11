@@ -56,6 +56,9 @@ export const useStyles = createStyles(({ css, cx }, model: ICustomLayoutComponen
     `);
 
   const heading = cx("sha-custom-layout-heading", css`
+        /* The container owns the padding, so the heading repeats it to stay aligned with the children. */
+        ${paddingStyles(model.stylingBoxJson)}
+        padding-bottom: 4px;
         ${fontStyles(model.headingFont)}
         ${isDefined(model.labelAlign) ? `text-align: ${model.labelAlign};` : ''}
     `);
