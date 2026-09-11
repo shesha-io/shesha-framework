@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { GroupOutlined } from '@ant-design/icons';
 import { IContainerComponentProps } from '@/interfaces';
 
@@ -20,6 +21,8 @@ import { useEvents } from '@/components/formDesigner/components/eventsAndApiValu
 import { migratePermissionsToVisiblePermissions } from '../_common-migrations/migratePermissionsToVisiblePermissions';
 import { getFullSizeWrapperDesignerStyle } from '@/components/formDesigner/utils/stylingUtils';
 import { useActualContextExecutionNoRefresh } from '@/hooks/formComponentHooks';
+import { useCanvas } from '@/providers/canvas';
+import { useIsOnCanvas } from '@/providers/canvas/onCanvas';
 
 const ContainerComponent: ContainerComponentDefinition = {
   showInThemeEditor: false,
@@ -33,7 +36,17 @@ const ContainerComponent: ContainerComponentDefinition = {
   emptyComponents: [],
   getWrapperStyle: (model) => getFullSizeWrapperDesignerStyle(model),
   Factory: ({ model }) => {
-    const { styles, cx } = useStyles(model);
+    const { canvas } = useCanvas();
+    // Same gate as useFormComponentStyles: a container off the canvas ignores its measurement.
+    const isOnCanvas = useIsOnCanvas();
+    const canvasWidth = isOnCanvas ? canvas?.width : undefined;
+    const canvasHeight = isOnCanvas ? canvas?.height : undefined;
+    // Stable reference: a fresh object every render defeats createStyles' reference-based memo.
+    const styleModel = useMemo(
+      () => ({ ...model, canvasWidth, canvasHeight }),
+      [model, canvasWidth, canvasHeight],
+    );
+    const { styles, cx } = useStyles(styleModel);
     // use ...NoRefresh to prevent unnecessary re-renders
     const wrappedStyleJson = useActualContextExecutionNoRefresh(model.wrapperStyle, undefined, {});
     const handleEvent = useEvents<void>(model.componentName);

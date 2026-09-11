@@ -1,6 +1,8 @@
 import { BorderStyle, getGradientColors, IBackgroundValue, IBorderValue, IDimensionsValue, IFontValue, IGradientValue, IShadowValue } from "@/designer-components/_settings/utils";
 import { IConfigurableFormComponent, IStyleValue, StyleBoxValue } from "../../../providers/form/models";
 import { addPx, hasNumber } from "@/utils/style";
+import { boundWidthToCanvas } from "@/designer-components/_settings/utils/dimensions/bounds";
+import { dimensionRelativeToCanvas } from "@/providers/canvas/constants";
 import { StringBuilder } from "@/utils";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { CSSProperties } from "react";
@@ -145,13 +147,8 @@ export const gradientCss = (g: IGradientValue): string => {
     : '';
 };
 
-const dimensionCss = (value: string | number, _canvasValue?: string): string | number => {
-  // If canvasWidth is provided and main contains vw, convert to calc
-  /* if (canvasValue && typeof value === 'string' && /vw/i.test(value)) {
-    return dimensionRelativeToCanvas(value, canvasValue, 'vw');
-  }*/
-
-  // For simple numeric values or values without vw, use addPx
+/** Serialises a dimension already resolved against the canvas by the caller. */
+const dimensionCss = (value: string | number): string | number => {
   if (typeof value === 'string' && /^calc\(/i.test(value.trim())) return value;
   return !hasNumber(value) ? value : addPx(value) ?? 0;
 };
@@ -212,15 +209,34 @@ export const backgroundStyles = (model: IBackgroundValue | undefined): string =>
   return sb.build();
 };
 
-export const dimensionsStyles = (model: IDimensionsValue | undefined): string => {
+export const dimensionsStyles = (model: IDimensionsValue | undefined, canvasWidth?: string, canvasHeight?: string): string => {
   if (!model) return '';
   const sb = new StringBuilder();
-  if (isDefined(model.width)) sb.append(`width: ${dimensionCss(model.width)};`);
-  if (isDefined(model.minWidth)) sb.append(`min-width: ${dimensionCss(model.minWidth)};`);
-  if (isDefined(model.maxWidth)) sb.append(`max-width: ${dimensionCss(model.maxWidth)};`);
-  if (isDefined(model.height)) sb.append(`height: ${dimensionCss(model.height)};`);
-  if (isDefined(model.minHeight)) sb.append(`min-height: ${dimensionCss(model.minHeight)};`);
-  if (isDefined(model.maxHeight)) sb.append(`max-height: ${dimensionCss(model.maxHeight)};`);
+
+  // On the canvas vh means the canvas pane; with no canvas it is the viewport it was asked for.
+  const height = (value: string | number): string | number =>
+    isDefined(canvasHeight) && typeof value === 'string' && /vh/i.test(value)
+      ? dimensionRelativeToCanvas(value, canvasHeight, 'vh')
+      : value;
+
+  // The width axes match getDimensionsStyle: bounded against the canvas and resolved against it,
+  // and left exactly as configured when there is no canvas to judge them by.
+  const width = (value: string | number): string | number => {
+    if (!isDefined(canvasWidth)) return value;
+    const bounded = boundWidthToCanvas(value, canvasWidth);
+    return typeof bounded === 'string' && /vw/i.test(bounded)
+      ? dimensionRelativeToCanvas(bounded, canvasWidth, 'vw')
+      : bounded;
+  };
+
+  if (isDefined(model.width)) sb.append(`width: ${dimensionCss(width(model.width))};`);
+  if (isDefined(model.minWidth)) sb.append(`min-width: ${dimensionCss(width(model.minWidth))};`);
+  if (isDefined(model.maxWidth)) sb.append(`max-width: ${dimensionCss(width(model.maxWidth))};`);
+  // The height axes resolve vh against the canvas: this is the path the container component uses,
+  // and a container is the usual place a full-viewport height is set.
+  if (isDefined(model.height)) sb.append(`height: ${dimensionCss(height(model.height))};`);
+  if (isDefined(model.minHeight)) sb.append(`min-height: ${dimensionCss(height(model.minHeight))};`);
+  if (isDefined(model.maxHeight)) sb.append(`max-height: ${dimensionCss(height(model.maxHeight))};`);
   if (isDefined(model.gridRow) && model.gridRow > 0) sb.append(`grid-row: span ${model.gridRow};`);
   if (isDefined(model.gridColumn) && model.gridColumn > 0) sb.append(`grid-column: span ${model.gridColumn};`);
   return sb.build();

@@ -4,13 +4,11 @@ import { Button, InputNumber, Space, Tooltip } from "antd";
 import { ExpandOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { useCanvas } from "@/providers";
 import { DeviceOptions } from "./mobileDropdown";
-import { DEFAULT_OPTIONS } from "@/providers/canvas/utils";
+import { clampZoom } from "@/providers/canvas/utils";
+import { DEFAULT_OPTIONS } from "@/providers/canvas/constants";
 import { useDebouncedCallback } from "use-debounce";
 
 const ZOOM_LEVELS = DEFAULT_OPTIONS.zoomLevels;
-
-const clampZoom = (zoom: number): number =>
-  Math.max(DEFAULT_OPTIONS.minZoom, Math.min(DEFAULT_OPTIONS.maxZoom, zoom));
 
 const getNextZoomLevel = (currentZoom: number): number =>
   ZOOM_LEVELS.find((level) => level > currentZoom) ?? DEFAULT_OPTIONS.maxZoom;
@@ -20,7 +18,7 @@ const getPrevZoomLevel = (currentZoom: number): number =>
 
 export const CanvasConfig: FC = () => {
   const { styles } = useStyles();
-  const { setCanvasZoom, setCanvasAutoZoom, autoZoom, zoom } = useCanvas();
+  const { setCanvasZoom, setCanvasAutoZoom, autoZoom, autoWidth, zoom } = useCanvas();
 
   // Local state so the user can type freely before committing the value
   const [inputZoom, setInputZoom] = useState<number | null>(zoom);
@@ -97,12 +95,15 @@ export const CanvasConfig: FC = () => {
       <Space orientation="horizontal" size={5} style={{ flexWrap: "nowrap" }}>
         <DeviceOptions />
         <Space orientation="horizontal" size={2} style={{ flexWrap: "nowrap" }}>
-          <Tooltip title={autoZoom ? "Auto" : "Manual"}>
+          <Tooltip title={autoWidth ? "Auto zoom is not needed while the canvas fills the available space" : autoZoom ? "Auto" : "Manual"}>
             <Button
               size="small"
               type="default"
               icon={<ExpandOutlined size={14} />}
-              style={autoZoom ? { color: 'var(--ant-button-default-hover-color)', borderColor: 'var(--ant-button-default-hover-color)' } : {}}
+              // Auto zoom fits a fixed-width canvas into the pane. With the "Canvas" resolution the
+              // canvas already fills the pane at whatever zoom is chosen, so there is nothing to fit.
+              disabled={autoWidth}
+              style={autoZoom && !autoWidth ? { color: 'var(--ant-button-default-hover-color)', borderColor: 'var(--ant-button-default-hover-color)' } : {}}
               title={autoZoom ? "Auto" : "Manual"}
               onClick={() => {
                 setCanvasAutoZoom();
@@ -119,7 +120,13 @@ export const CanvasConfig: FC = () => {
               controls={false}
               style={{ width: 56 }}
               formatter={(value) => `${value}%`}
-              parser={(value) => Number((value ?? '').replace('%', ''))}
+              // An emptied field must parse to NaN, not 0: 0 is a "real" value that survives to
+              // blur and gets clamped up to minZoom, so clearing the box would jump the canvas to
+              // 10% instead of restoring the zoom that was there.
+              parser={(value) => {
+                const raw = (value ?? '').replace('%', '').trim();
+                return raw === '' ? Number.NaN : Number(raw);
+              }}
               onFocus={handleInputFocus}
               onChange={handleInputZoomChange}
               onBlur={commitInputZoom}
