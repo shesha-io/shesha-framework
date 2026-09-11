@@ -9,7 +9,12 @@ INSERT INTO frwk.notification_channel_revisions
            ,supports_attachment)
 select 
 	cio."Id"
-	,ncc."DefaultPriorityLkp"
+	-- M20260614111200 on releases/0.43 moves this column onto Core_NotificationTypeConfigs
+	-- and drops it here, so a database fed from that line no longer has it. Reading the row
+	-- as jsonb and looking the key up by name means the column is never resolved at parse
+	-- time: a missing key simply yields null. The MsSql variant defers it with dynamic SQL,
+	-- which has no equivalent here, and these scripts use no dollar-quoted blocks.
+	,(to_jsonb(ncc) ->> 'DefaultPriorityLkp')::bigint
 	,ncc."MaxMessageSize"
 	,ncc."SenderTypeName"
 	,ncc."StatusLkp"
