@@ -65,7 +65,8 @@ export const unproxyValue = <TValue = unknown>(value: TValue): TValue => {
   return current as TValue;
 };
 
-const isRecord = (value: unknown): value is Record<string, unknown> => isPlainObject(value);
+/** A plain object (not an array, not a class instance): the shape settings and JsonLogic nodes share. */
+export const isRecord = (value: unknown): value is Record<string, unknown> => isPlainObject(value);
 
 const isOpaqueObject = (value: object): boolean =>
   moment.isMoment(value) || value instanceof Date || (typeof Blob !== 'undefined' && value instanceof Blob);
@@ -110,6 +111,28 @@ export const unproxyDeep = <TValue = unknown>(value: TValue): TValue => {
 
 export const deepMergeSkipUndefinedFunc = (objValue: unknown, srcValue: unknown, _key: string): unknown => srcValue === undefined ? objValue : undefined;
 
+/** Operators a saved filter can contain. An object whose keys are all operators is an expression tree, not a settings bag. */
+const JSON_LOGIC_OPERATORS = new Set([
+  'and', 'or', '!', '!!', '==', '===', '!=', '!==', '<', '<=', '>', '>=', 'in', 'var', 'if', 'missing', 'missing_some',
+  'evaluate', 'startsWith', 'endsWith', 'is_satisfied', 'now', 'date_add', 'datetime_add', 'toLowerCase', 'toUpperCase',
+  'cat', 'substr', 'merge', '+', '-', '*', '/', '%', 'min', 'max', 'map', 'filter', 'reduce', 'all', 'some', 'none',
+]);
+
+/**
+ * True for a JsonLogic node: exactly one operator key whose argument is a list, a nested node, or a `var` path.
+ * Such nodes are values to replace, never structures to merge: merging `{or}` into `{and}` corrupts both.
+ * `{ min: 1, max: 10 }` is a settings bag, not a node, and still merges field by field.
+ */
+export const isJsonLogicNode = (value: unknown): value is Record<string, unknown> => {
+  if (!isRecord(value)) return false;
+  const keys = Object.keys(value);
+  const key = keys[0];
+  if (keys.length !== 1 || key === undefined || !JSON_LOGIC_OPERATORS.has(key)) return false;
+  const args = value[key];
+  if (key === 'var') return typeof args === 'string';
+  return Array.isArray(args) || isRecord(args);
+};
+
 export const deepMergeValues = <TObject extends object = object, TSource extends object = object>(
   target: TObject,
   source: TSource | null | undefined,
@@ -141,6 +164,11 @@ export const deepMergeValues = <TObject extends object = object, TSource extends
     // handle arrays
     if (Array.isArray(srcValue)) {
       // save array as is without merging
+      return srcValue;
+    }
+
+    // a filter expression is replaced as a whole
+    if (isJsonLogicNode(objValue) || isJsonLogicNode(srcValue)) {
       return srcValue;
     }
 

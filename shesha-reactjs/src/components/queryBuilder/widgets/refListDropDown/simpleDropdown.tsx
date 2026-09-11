@@ -5,7 +5,7 @@ import { ReactNode } from 'react';
 
 export type IRefListSimpleDropdownProps<TValue = unknown> = Pick<IGenericRefListDropDownProps<TValue>, 'onChange' | 'referenceListId' | 'style' | 'size' | 'value' | 'readOnly'>;
 
-const getOptionFromFetchedItem = (fetchedItem: ReferenceListItemDto): ISelectOption<number> => {
+export const getOptionFromFetchedItem = (fetchedItem: ReferenceListItemDto): ISelectOption<number> => {
   const label = fetchedItem.item;
   const value = fetchedItem.itemValue;
 
@@ -16,7 +16,7 @@ const getOptionFromFetchedItem = (fetchedItem: ReferenceListItemDto): ISelectOpt
   };
 };
 
-const getLabeledValue: GetLabeledValueFunc<number> = (value, options) => {
+export const getLabeledValue: GetLabeledValueFunc<number> = (value, options) => {
   const item = options.find((i) => i.value === value);
   return {
     value: value,

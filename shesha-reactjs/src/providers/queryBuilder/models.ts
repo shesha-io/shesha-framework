@@ -1,8 +1,10 @@
-import { FieldOrGroup, FieldSettings } from '@react-awesome-query-builder/antd';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import { isDefined } from '@/utils/nullables';
 
 // Fields
+
+/** Opaque per-property builder config kept for API compatibility; the current builder derives everything from metadata. */
+export type QueryBuilderFieldConfig = Record<string, unknown>;
 
 export interface CustomFieldSettings {
   typeShortAlias?: string;
@@ -20,13 +22,13 @@ export interface IProperty {
   propertyName: string;
   dataType: string;
   visible: boolean;
-  fieldSettings?: FieldSettings | CustomFieldSettings;
+  fieldSettings?: QueryBuilderFieldConfig | CustomFieldSettings;
   childProperties: IProperty[];
   preferWidgets?: string[] | undefined;
 }
 
 export interface IHasQueryBuilderConfig extends IProperty {
-  convert: (property: IProperty) => FieldOrGroup;
+  convert: (property: IProperty) => QueryBuilderFieldConfig;
 }
 
 export const propertyHasQBConfig = (property: IProperty): property is IHasQueryBuilderConfig => {
@@ -34,7 +36,7 @@ export const propertyHasQBConfig = (property: IProperty): property is IHasQueryB
 };
 
 export interface IHasCustomQBSettings {
-  toQueryBuilderField: (defaultConverter: () => FieldOrGroup | undefined) => FieldOrGroup;
+  toQueryBuilderField: (defaultConverter: () => QueryBuilderFieldConfig | undefined) => QueryBuilderFieldConfig;
 }
 
 export interface IPropertyMetadataWithQBSettings extends IPropertyMetadata, IHasCustomQBSettings {

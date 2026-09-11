@@ -1,30 +1,21 @@
 import { FC } from 'react';
-import { JsonLogicResult } from '@react-awesome-query-builder/antd';
+import { QueryChangeResult } from '@/components/queryBuilder/interfaces';
 import { QueryBuilder } from '@/components/queryBuilder';
 import { useStyles } from './styles/styles';
-import { isDefined } from '@/utils/nullables';
 import { JsonLogicFilter } from '@/interfaces/jsonLogic';
 
 export interface IQueryBuilderPlainProps {
-  value?: object | undefined;
+  value?: JsonLogicFilter | undefined;
   onChange?: ((value: JsonLogicFilter | null) => void) | undefined;
   readOnly?: boolean | undefined;
 }
 
 export const QueryBuilderPlain: FC<IQueryBuilderPlainProps> = ({ value, onChange, readOnly = false }) => {
   const { styles } = useStyles();
-  const handleChange = (jsonLogicResult: JsonLogicResult): void => {
+  const handleChange = (jsonLogicResult: QueryChangeResult): void => {
     if (readOnly) return;
-    if (isDefined(jsonLogicResult)) {
-      if (jsonLogicResult.errors && jsonLogicResult.errors.length > 0) {
-        // show errors
-        return;
-      }
-
-      if (onChange) {
-        onChange(jsonLogicResult.logic ?? null);
-      }
-    }
+    if (jsonLogicResult.errors.length > 0) return;
+    if (onChange) onChange(jsonLogicResult.logic ?? null);
   };
 
   return (

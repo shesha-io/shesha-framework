@@ -47,11 +47,6 @@
       "react": "$react",
       "react-dom": "$react-dom"
     },
-    "@react-awesome-query-builder/antd": {
-      "antd": "$antd",
-      "@ant-design/icons": "$@ant-design/icons",
-      "rc-picker": "4.11.3"
-    },
     "rc-picker": {
       "@rc-component/trigger": "3.10.1"
     }
@@ -165,7 +160,6 @@
     "@atlaskit/pragmatic-drag-and-drop": "^1.7.7",
     "@bprogress/next": "^3.2.12",
     "@monaco-editor/react": "^4.6.0",
-    "@react-awesome-query-builder/antd": "^6.7.0-alpha.0",
     "@reduxjs/toolkit": "^2.9.0",
     "@types/pluralize": "^0.0.33",
     "antd-phone-input": "^0.3.20",

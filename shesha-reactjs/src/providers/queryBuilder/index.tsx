@@ -4,14 +4,13 @@ import { IHasQueryBuilderConfig, IProperty, IPropertyMetadataWithQBSettings, pro
 import { getPropertyFullPath, propertyMetadata2QbProperty } from './utils';
 import { useMetadataDispatcher } from '@/providers';
 import { IModelMetadata, asPropertiesArray, isEntityMetadata } from '@/interfaces/metadata';
-import { Widgets } from '@react-awesome-query-builder/antd';
 import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 import { throwError } from '@/utils/errors';
 
 export interface IQueryBuilderProviderProps {
   metadata: IModelMetadata;
   id?: string; // Just for testing
-  customWidgets?: Widgets;
+  customWidgets?: Record<string, unknown>;
 }
 
 const getContainerNode = (properties: IProperty[], containerNames: string[]): IProperty | undefined => {

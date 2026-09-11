@@ -204,6 +204,11 @@ export interface IStoredFilter {
 
   expression?: FilterExpression | undefined;
 
+  /** Set when `expression` was a string that failed to parse as JSON. */
+  hasInvalidExpression?: boolean | undefined;
+
+  expressionError?: string | undefined;
+
   selected?: boolean | undefined;
 
   defaultSelected?: boolean | undefined;
