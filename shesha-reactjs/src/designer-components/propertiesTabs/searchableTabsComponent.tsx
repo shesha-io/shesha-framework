@@ -185,7 +185,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
   ), [effectiveActiveKey, handleTabChange, model.size, model.tabType, newFilteredTabs, styles.content, model.position]);
 
   return (
-    <>
+    <div className={styles.root}>
       {renderSearchInput({
         ref: searchInputRef,
         autoFocus: newFilteredTabs.length === 0,
@@ -194,7 +194,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
       {newFilteredTabs.length === 0 && searchQuery
         ? <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Property Not Found" />
         : localTabs}
-    </>
+    </div>
   );
 };
 
