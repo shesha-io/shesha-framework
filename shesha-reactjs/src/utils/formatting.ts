@@ -38,9 +38,11 @@ const formatDate = (dateText: string, targetFormat: string): string => {
 };
 
 export const formatDateStringAndPrefix = (content: string, dateFormat: string = DATE_TIME_FORMATS.date): string => {
-  // Match any date-like pattern
+  // Match any date-like pattern.
+  // Date-time alternatives come first: alternation is leftmost-first, so a date-only
+  // alternative placed ahead of them consumes the date and leaves the time in the output.
   const datePattern =
-    /\d{2}[-/]\d{2}[-/]\d{4}|\d{4}[-/]\d{2}[-/]\d{2}|\d{4}\d{2}\d{2}T\d{6}|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/g;
+    /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}|\d{4}\d{2}\d{2}T\d{6}|\d{2}[-/]\d{2}[-/]\d{4}|\d{4}[-/]\d{2}[-/]\d{2}/g;
 
   return !isNullOrWhiteSpace(content)
     ? content.replace(datePattern, (match) => {
