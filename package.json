@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "build": "cd shesha-functional-tests/adminportal && npm install && npm run build"
+  },
   "devDependencies": {
     "lint-staged": "^15.2.1"
   }
