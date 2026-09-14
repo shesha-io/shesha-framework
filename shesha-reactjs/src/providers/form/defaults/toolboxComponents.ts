@@ -67,6 +67,7 @@ import CollapsiblePanel from '@/designer-components/collapsiblePanel/collapsible
 import ConfigurableActionConfigurator from '@/designer-components/configurableActionsConfigurator';
 import ContainerComponent from '@/designer-components/container/containerComponent';
 import ContextPropertyAutocompleteComponent from '@/designer-components/contextPropertyAutocomplete';
+import CustomLayoutComponent from '@/designer-components/customLayout/customLayoutComponent';
 import DataContextSelector from '@/designer-components/dataContextSelector';
 import ChildTable from '@/designer-components/dataTable/childTable';
 import Pager from '@/designer-components/dataTable/pager/pagerComponent';
@@ -222,6 +223,7 @@ export const getToolboxComponents = (
         CollapsiblePanel,
         Columns,
         ContainerComponent,
+        CustomLayoutComponent,
         Drawer,
         KeyInformationBarComponent,
         SectionSeprator,
