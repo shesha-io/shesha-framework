@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -659,6 +660,106 @@ namespace Shesha.JsonLogic
                             var toLowerMethod = typeof(string).GetRequiredMethod(nameof(string.ToLower), []);
                             return Expression.Call(arg, toLowerMethod);
                         }
+
+                    #region functions over the row (string, arithmetic, date parts)
+
+                    case JsOperators.Cat:
+                        {
+                            // string.Concat(a, b) pairwise: every dialect NHibernate supports translates the two-argument form
+                            var args = ParseArguments<T>(@operator, param).Select(AsString).ToArray();
+                            if (args.Length == 0)
+                                throw new Exception($"{JsOperators.Cat} operator require at least 1 argument");
+                            var concatMethod = typeof(string).GetRequiredMethod(nameof(string.Concat), [typeof(string), typeof(string)]);
+                            return args.Skip(1).Aggregate(args[0], (acc, next) => Expression.Call(concatMethod, acc, next));
+                        }
+                    case JsOperators.Substr:
+                        {
+                            var count = @operator.Arguments.Count();
+                            if (count != 2 && count != 3)
+                                throw new Exception($"{JsOperators.Substr} operator require 2 or 3 arguments: string, start and optional length");
+
+                            var text = AsString(ParseTree<T>(@operator.Arguments[0], param));
+                            var start = GetAsInt64(@operator.Arguments[1]) ?? throw new ArgumentException($"{JsOperators.Substr}: the `start` argument must not be null");
+                            if (start < 0)
+                                throw new NotSupportedException($"{JsOperators.Substr}: a negative `start` is not supported");
+
+                            if (count == 2)
+                                return Expression.Call(text, typeof(string).GetRequiredMethod(nameof(string.Substring), [typeof(int)]), Expression.Constant((int)start));
+
+                            var length = GetAsInt64(@operator.Arguments[2]) ?? throw new ArgumentException($"{JsOperators.Substr}: the `length` argument must not be null");
+                            if (length < 0)
+                                throw new NotSupportedException($"{JsOperators.Substr}: a negative `length` is not supported");
+                            return Expression.Call(text, typeof(string).GetRequiredMethod(nameof(string.Substring), [typeof(int), typeof(int)]), Expression.Constant((int)start), Expression.Constant((int)length));
+                        }
+                    case JsOperators.Trim:
+                        {
+                            var text = AsString(ParseSingleArgument<T>(@operator, param));
+                            return Expression.Call(text, typeof(string).GetRequiredMethod(nameof(string.Trim), []));
+                        }
+                    case JsOperators.Length:
+                        {
+                            var text = AsString(ParseSingleArgument<T>(@operator, param));
+                            return Expression.Property(text, nameof(string.Length));
+                        }
+
+                    case JsOperators.Add:
+                        return ReduceArithmetic<T>(@operator, param, Expression.Add);
+                    case JsOperators.Multiply:
+                        return ReduceArithmetic<T>(@operator, param, Expression.Multiply);
+                    case JsOperators.Subtract:
+                        {
+                            var args = ParseArguments<T>(@operator, param);
+                            if (args.Length == 1)
+                                return Expression.Negate(RequireNumeric(args[0], JsOperators.Subtract));
+                            if (args.Length != 2)
+                                throw new Exception($"{JsOperators.Subtract} operator require 1 or 2 arguments");
+                            return Arithmetic(args[0], args[1], Expression.Subtract);
+                        }
+                    case JsOperators.Divide:
+                        {
+                            var args = ParseArguments<T>(@operator, param);
+                            if (args.Length != 2)
+                                throw new Exception($"{JsOperators.Divide} operator require 2 arguments");
+                            // integer division would truncate `population / 1000`; JsonLogic divides as numbers, so integrals are promoted
+                            return Arithmetic(args[0], args[1], Expression.Divide, promoteIntegral: true);
+                        }
+                    case JsOperators.Modulo:
+                        {
+                            var args = ParseArguments<T>(@operator, param);
+                            if (args.Length != 2)
+                                throw new Exception($"{JsOperators.Modulo} operator require 2 arguments");
+                            return Arithmetic(args[0], args[1], Expression.Modulo);
+                        }
+                    case JsOperators.Abs:
+                        {
+                            var arg = UnwrapNullable(RequireNumeric(ParseSingleArgument<T>(@operator, param), JsOperators.Abs));
+                            return Expression.Call(typeof(Math).GetRequiredMethod(nameof(Math.Abs), [arg.Type]), arg);
+                        }
+                    case JsOperators.Floor:
+                        return RoundingFunction<T>(@operator, param, nameof(Math.Floor));
+                    case JsOperators.Ceil:
+                        return RoundingFunction<T>(@operator, param, nameof(Math.Ceiling));
+                    case JsOperators.Round:
+                        {
+                            var count = @operator.Arguments.Count();
+                            if (count != 1 && count != 2)
+                                throw new Exception($"{JsOperators.Round} operator require 1 or 2 arguments: number and optional digits");
+                            var arg = ToFloatingPoint(UnwrapNullable(RequireNumeric(ParseTree<T>(@operator.Arguments[0], param), JsOperators.Round)));
+                            if (count == 1)
+                                return Expression.Call(typeof(Math).GetRequiredMethod(nameof(Math.Round), [arg.Type]), arg);
+                            var digits = GetAsInt64(@operator.Arguments[1]) ?? throw new ArgumentException($"{JsOperators.Round}: the `digits` argument must not be null");
+                            return Expression.Call(typeof(Math).GetRequiredMethod(nameof(Math.Round), [arg.Type, typeof(int)]), arg, Expression.Constant((int)digits));
+                        }
+
+                    case JsOperators.Year:
+                        return DatePart<T>(@operator, param, nameof(DateTime.Year));
+                    case JsOperators.Month:
+                        return DatePart<T>(@operator, param, nameof(DateTime.Month));
+                    case JsOperators.Day:
+                        return DatePart<T>(@operator, param, nameof(DateTime.Day));
+
+                    #endregion
+
                     default:
                         throw new NotSupportedException($"Operator `{@operator.Name}` is not supported");
                 }
@@ -666,6 +767,141 @@ namespace Shesha.JsonLogic
             
             return null;
         }
+
+        #region helpers for functions over the row
+
+        private static readonly Type[] NumericTypes = [typeof(byte), typeof(short), typeof(int), typeof(long), typeof(float), typeof(double), typeof(decimal)];
+
+        private static bool IsNumericType(Type type) => NumericTypes.Contains(type.GetUnderlyingTypeIfNullable());
+
+        private static bool IsIntegralType(Type type)
+        {
+            var underlying = type.GetUnderlyingTypeIfNullable();
+            return underlying == typeof(byte) || underlying == typeof(short) || underlying == typeof(int) || underlying == typeof(long);
+        }
+
+        private Expression[] ParseArguments<T>(OperationProps @operator, ParameterExpression param) =>
+            @operator.Arguments.Select(a => ParseTree<T>(a, param)).ToArray();
+
+        private Expression ParseSingleArgument<T>(OperationProps @operator, ParameterExpression param)
+        {
+            if (@operator.Arguments.Count() != 1)
+                throw new Exception($"{@operator.Name} operator require 1 argument");
+            return ParseTree<T>(@operator.Arguments[0], param);
+        }
+
+        /// <summary>
+        /// A string-typed expression: strings pass through, constants are formatted, anything else calls ToString().
+        /// </summary>
+        private Expression AsString(Expression expression)
+        {
+            if (expression.Type == typeof(string))
+                return expression;
+            if (expression is ConstantExpression constant)
+                return Expression.Constant(constant.Value == null ? string.Empty : Convert.ToString(constant.Value, CultureInfo.InvariantCulture));
+            return Expression.Call(expression, typeof(object).GetRequiredMethod(nameof(object.ToString), []));
+        }
+
+        private Expression RequireNumeric(Expression expression, string operatorName)
+        {
+            if (!IsNumericType(expression.Type))
+                throw new NotSupportedException($"{operatorName}: numeric argument expected, got `{expression.Type.Name}`");
+            return expression;
+        }
+
+        /// <summary>
+        /// Nullable numbers become their underlying type: the SQL translation propagates NULL by itself.
+        /// </summary>
+        private static Expression UnwrapNullable(Expression expression)
+        {
+            var underlying = Nullable.GetUnderlyingType(expression.Type);
+            return underlying == null ? expression : Expression.Convert(expression, underlying);
+        }
+
+        private static Expression ToFloatingPoint(Expression expression)
+        {
+            var type = expression.Type;
+            if (type == typeof(decimal) || type == typeof(double))
+                return expression;
+            return ConvertTo(expression, type == typeof(float) ? typeof(double) : typeof(decimal));
+        }
+
+        private static Expression ConvertTo(Expression expression, Type type)
+        {
+            if (expression.Type == type)
+                return expression;
+            if (expression is ConstantExpression constant)
+            {
+                var underlying = Nullable.GetUnderlyingType(type) ?? type;
+                var value = constant.Value == null ? null : Convert.ChangeType(constant.Value, underlying, CultureInfo.InvariantCulture);
+                return Expression.Constant(value, type);
+            }
+            return Expression.Convert(expression, type);
+        }
+
+        /// <summary>
+        /// The type both sides of an arithmetic operation are brought to: decimal wins over floating point, floating point over integral.
+        /// </summary>
+        private static Type WiderNumericType(Type a, Type b)
+        {
+            if (a == typeof(decimal) || b == typeof(decimal)) return typeof(decimal);
+            if (a == typeof(double) || b == typeof(double) || a == typeof(float) || b == typeof(float)) return typeof(double);
+            if (a == typeof(long) || b == typeof(long)) return typeof(long);
+            return typeof(int);
+        }
+
+        private void AlignNumeric(ref Expression left, ref Expression right, bool promoteIntegral)
+        {
+            ConvertNumericConsts(left, ref right);
+            ConvertNumericConsts(right, ref left);
+            RequireNumeric(left, "arithmetic");
+            RequireNumeric(right, "arithmetic");
+
+            var target = WiderNumericType(left.Type.GetUnderlyingTypeIfNullable(), right.Type.GetUnderlyingTypeIfNullable());
+            if (promoteIntegral && IsIntegralType(target))
+                target = typeof(decimal);
+            if (Nullable.GetUnderlyingType(left.Type) != null || Nullable.GetUnderlyingType(right.Type) != null)
+                target = typeof(Nullable<>).MakeGenericType(target);
+
+            left = ConvertTo(left, target);
+            right = ConvertTo(right, target);
+        }
+
+        private Expression Arithmetic(Expression left, Expression right, Func<Expression, Expression, BinaryExpression> operation, bool promoteIntegral = false)
+        {
+            AlignNumeric(ref left, ref right, promoteIntegral);
+            return operation(left, right);
+        }
+
+        private Expression ReduceArithmetic<T>(OperationProps @operator, ParameterExpression param, Func<Expression, Expression, BinaryExpression> operation)
+        {
+            var args = ParseArguments<T>(@operator, param);
+            if (args.Length < 2)
+                throw new Exception($"{@operator.Name} operator require at least 2 arguments");
+            return args.Skip(1).Aggregate(args[0], (acc, next) => Arithmetic(acc, next, operation));
+        }
+
+        /// <summary>
+        /// Math.Floor / Math.Ceiling. An integral argument is already whole, so it is returned as is.
+        /// </summary>
+        private Expression RoundingFunction<T>(OperationProps @operator, ParameterExpression param, string methodName)
+        {
+            var arg = UnwrapNullable(RequireNumeric(ParseSingleArgument<T>(@operator, param), @operator.Name));
+            if (IsIntegralType(arg.Type))
+                return arg;
+            arg = ToFloatingPoint(arg);
+            return Expression.Call(typeof(Math).GetRequiredMethod(methodName, [arg.Type]), arg);
+        }
+
+        private Expression DatePart<T>(OperationProps @operator, ParameterExpression param, string partName)
+        {
+            var arg = ParseSingleArgument<T>(@operator, param);
+            if (arg.Type.GetUnderlyingTypeIfNullable() != typeof(DateTime))
+                throw new NotSupportedException($"{@operator.Name}: date argument expected, got `{arg.Type.Name}`");
+            return Expression.Property(UnwrapNullable(arg), partName);
+        }
+
+        #endregion
 
         private string? GetAsString(JToken token) 
         {
@@ -860,8 +1096,10 @@ namespace Shesha.JsonLogic
 
         private void ConvertNumericConsts(Expression memberExpressionToCompare, ref Expression numericConstToConvert)
         {
-            if (!(memberExpressionToCompare is MemberExpression memberExpr && numericConstToConvert is ConstantExpression constExpr))
+            // the left side may be a member, or a computed value such as `(x + 1)`, `s.Length` or `d.Year`
+            if (memberExpressionToCompare is ConstantExpression || !(numericConstToConvert is ConstantExpression constExpr))
                 return;
+            var memberExpr = memberExpressionToCompare;
 
             if (memberExpr.Type.GetUnderlyingTypeIfNullable() == typeof(int)) 
             {
@@ -871,7 +1109,7 @@ namespace Shesha.JsonLogic
                     if (constValue <= int.MaxValue)
                         numericConstToConvert = Expression.Constant(Convert.ToInt32(constValue));
                     else
-                        throw new OverflowException($"Constant value must be not grester than {int.MaxValue} (max int size) to compare with {memberExpr.Member.Name}, currtent value is {constValue}");
+                        throw new OverflowException($"Constant value must be not grester than {int.MaxValue} (max int size) to compare with {memberExpr}, currtent value is {constValue}");
                 }
                 else
                     if (constExpr.Type == typeof(string) && int.TryParse((string?)constExpr.Value, out var intValue)) 
@@ -1219,6 +1457,24 @@ namespace Shesha.JsonLogic
         public const string Now = "now";
         public const string Upper = "toUpperCase";
         public const string Lower = "toLowerCase";
+
+        // functions over the row, emitted by the query builder when an expression only reads columns and literals
+        public const string Cat = "cat";
+        public const string Substr = "substr";
+        public const string Trim = "trim";
+        public const string Length = "length";
+        public const string Add = "+";
+        public const string Subtract = "-";
+        public const string Multiply = "*";
+        public const string Divide = "/";
+        public const string Modulo = "%";
+        public const string Abs = "abs";
+        public const string Floor = "floor";
+        public const string Ceil = "ceil";
+        public const string Round = "round";
+        public const string Year = "year";
+        public const string Month = "month";
+        public const string Day = "day";
     }
 
     public class ExpressionPair 
