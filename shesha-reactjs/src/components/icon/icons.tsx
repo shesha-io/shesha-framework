@@ -124,36 +124,26 @@ export const customIcons = {
   ),
   offsetHorizontalIcon: (
     <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-      <mask id="mask0_6_193" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
-        <rect width="20" height="20" fill="currentColor" />
-      </mask>
-      <g mask="url(#mask0_6_193)">
-        <path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M20 6.30775L16.6923 3L15.9845 3.71925L18.073 5.80775H11V6.80775H18.073L15.9845 8.89625L16.6923 9.6155L20 6.30775ZM13 18.1923H5.927L8.0155 20.2808L7.30775
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M20 6.30775L16.6923 3L15.9845 3.71925L18.073 5.80775H11V6.80775H18.073L15.9845 8.89625L16.6923 9.6155L20 6.30775ZM13 18.1923H5.927L8.0155 20.2808L7.30775
              21L4 17.6923L7.30775 14.3845L8.0155
              15.1038L5.927 17.1923H13V18.1923ZM13 11H11V13H13V11Z"
-          fill="currentColor"
-        />
-      </g>
+        fill="currentColor"
+      />
     </svg>
   ),
   offsetVerticalIcon: (
     <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-      <mask id="mask0_6_164" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
-        <rect width="20" height="20" fill="currentColor" />
-      </mask>
-      <g mask="url(#mask0_6_164)">
-        <path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M17.6923 20L21 16.6923L20.2808 15.9845L18.1923 18.073V11H17.1923V18.073L15.1038 15.9845L14.3845 16.6923L17.6923 20ZM5.80775 13V5.927L3.71925 8.0155L3
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M17.6923 20L21 16.6923L20.2808 15.9845L18.1923 18.073V11H17.1923V18.073L15.1038 15.9845L14.3845 16.6923L17.6923 20ZM5.80775 13V5.927L3.71925 8.0155L3
              7.30775L6.30775 4L9.6155 7.30775L8.89625
              8.0155L6.80775 5.927V13H5.80775ZM13 11H11V13H13V11Z"
-          fill="currentColor"
-        />
-      </g>
+        fill="currentColor"
+      />
     </svg>
   ),
   repeatXIcon: (

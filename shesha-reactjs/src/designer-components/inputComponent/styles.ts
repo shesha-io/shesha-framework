@@ -37,7 +37,9 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     `);
 
   const icon = cx("sha-input-component-icon", css`
-        color: ${token.colorText};
+    display: flex;
+    align-items: center;
+    color: ${token.colorText};
     `);
 
   const radioBtns = cx(css`
@@ -47,6 +49,11 @@ export const useStyles = createStyles(({ css, cx, token }) => {
         &&&& .sha-input-component-icon {
           color: unset !important;
         }
+      }
+
+      .ant-radio-button-wrapper {
+        display: inline-flex;
+        align-items: center;
       }
       
       `);
