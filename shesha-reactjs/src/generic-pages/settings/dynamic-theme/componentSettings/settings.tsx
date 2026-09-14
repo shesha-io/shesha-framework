@@ -54,6 +54,7 @@ export const ComponentDefaultsSettings: FC<IComponentDefaultsSettingsProps> = ({
           onValuesChange={onChange}
           cacheKey={`theme-component-style:${componentType}`}
           className={styles.appearanceForm}
+          isSettingsForm
           dataSource={{ dataGetter: defaultModel?.getMergedModel, dataSetter: defaultModel?.setModel, getMergedOrValue }}
         />
       ) : (
