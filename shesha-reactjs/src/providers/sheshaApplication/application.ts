@@ -13,6 +13,7 @@ import { isDefined } from '@/utils/nullables';
 import { setOrDelete } from '@/utils/dictionary';
 
 export interface IShaApplicationArgs {
+  isDebugMode?: boolean;
   backendUrl: string;
   /**
    * Unique identifier (key) of the front-end application, is used to separate some settings and application parts when use multiple front-ends
@@ -33,6 +34,7 @@ export interface IShaApplicationArgs {
 export type InitializationAction = (application: ISheshaApplicationInstance) => Promise<void>;
 
 export interface ISheshaApplicationInstance {
+  isDebugMode: boolean;
   backendUrl: string;
   httpHeaders: IHttpHeadersDictionary;
   setRequestHeaders: (headers: IRequestHeaders) => void;
@@ -77,6 +79,8 @@ export class SheshaApplicationInstance implements ISheshaApplicationInstance {
 
   #initializationState: ApplicationInitializationState;
 
+  #isDebugMode: boolean;
+
   #backendUrl: string;
 
   #httpHeaders: IHttpHeadersDictionary;
@@ -100,6 +104,10 @@ export class SheshaApplicationInstance implements ISheshaApplicationInstance {
   #globalVariables: Record<string, unknown>;
 
   #rerender: RerenderTrigger;
+
+  get isDebugMode(): boolean {
+    return this.#isDebugMode;
+  }
 
   get backendUrl(): string {
     return this.#backendUrl;
@@ -141,6 +149,7 @@ export class SheshaApplicationInstance implements ISheshaApplicationInstance {
     this.#initializationState = {
       status: 'waiting',
     };
+    this.#isDebugMode = args.isDebugMode ?? false;
     this.#backendUrl = args.backendUrl;
     this.#applicationKey = args.applicationKey ?? FRONTEND_DEFAULT_APP_KEY;
     this.#applicationName = args.applicationName;

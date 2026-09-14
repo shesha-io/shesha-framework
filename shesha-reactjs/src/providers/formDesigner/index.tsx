@@ -19,6 +19,8 @@ import ParentProvider from '../parentProvider';
 import { SheshaCommonContexts } from '../dataContextManager/models';
 import { ValidationCollectorContext } from '../validator/contexts';
 import { useFormBuilderFactory } from '@/form-factory/hooks';
+import { useTheme } from '../theme';
+import { useCanvas } from '../canvas';
 
 export interface IFormDesignerProviderProps {
   flatMarkup: IFlatComponentsStructure;
@@ -34,6 +36,8 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
   } = props;
   const toolboxComponentGroups = useFormDesignerComponentGroups();
   const formPersister = useFormPersister();
+  const { theme } = useTheme();
+  const { activeDevice } = useCanvas();
   const devMode = useIsDevMode();
   const noPageContext = !Boolean(useDataContextManagerActionsOrUndefined()?.getPageContext());
   const formBuilderFactory = useFormBuilderFactory();
@@ -47,12 +51,17 @@ const FormDesignerProvider: FC<PropsWithChildren<IFormDesignerProviderProps>> = 
       formSettings,
       logEnabled: devMode,
       formBuilderFactory,
+      theme,
+      activeDevice,
     });
   });
 
   useEffect(() => {
     formDesigner.setReadOnly(readOnly);
   }, [formDesigner, readOnly]);
+  useEffect(() => {
+    formDesigner.setActiveDevice(activeDevice);
+  }, [formDesigner, activeDevice]);
 
   // TODO: sync markup and settings
   useEffect(() => {

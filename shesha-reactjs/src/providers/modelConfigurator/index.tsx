@@ -35,6 +35,7 @@ import modelReducer from './reducer';
 import { extractAjaxResponse, IAjaxResponse } from '@/interfaces/ajaxResponse';
 import { propertyModelValidator, validateDuplicated } from '@/components/modelConfigurator/propertiesEditor/renderer/propertySettings/propertyModelValidator';
 import { extractErrorInfo, throwError } from '@/utils/errors';
+import { isNullOrWhiteSpace } from '@/utils';
 
 export interface IModelConfiguratorProviderPropsBase {
   baseUrl?: string;
@@ -58,7 +59,7 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
   });
 
   const load = useCallback(async (): Promise<void> => {
-    if (state.id) {
+    if (!isNullOrWhiteSpace(state.id)) {
       dispatch(loadRequestAction());
 
       try {
@@ -83,7 +84,7 @@ const ModelConfiguratorProvider: FC<PropsWithChildren<IModelConfiguratorProvider
   }, [form]);
 
   const prepareValues = useCallback((values: ModelConfigurationDto): ModelConfigurationDto => {
-    return state.id
+    return !isNullOrWhiteSpace(state.id)
       ? { ...values, id: state.id }
       : { ...values, className: values.name, namespace: values.module };
   }, [state.id]);

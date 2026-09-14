@@ -137,7 +137,7 @@ export const migrateFormLifecycle = (settings: IFormSettings): IFormSettings => 
     return `    return data?.id ? ${updateUrlExpression} : ${createUrlExpression}`;
   };
   const gqlSubmitterSettings: GqlSubmitterSettings = {
-    excludeFormFields: excludeFormFieldsInPayload,
+    excludeFormFields: excludeFormFieldsInPayload === true || (typeof (excludeFormFieldsInPayload) === "string" && excludeFormFieldsInPayload === 'true'),
     endpointType: isNullOrWhiteSpace(urls.create) && isNullOrWhiteSpace(urls.update) ? 'default' : 'dynamic',
     staticEndpoint: undefined,
     dynamicEndpoint: getDynamicSubmitEndpoint(urls.create, urls.update),

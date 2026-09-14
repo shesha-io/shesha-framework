@@ -28,6 +28,7 @@ export const ConfigurableEditor: FC<IConfigurableEditorProps> = (props) => {
       formArguments={formArguments}
       isActionsOwner={true}
       logEnabled={false}
+      isSettingsForm
     />
   );
 };

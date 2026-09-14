@@ -10,6 +10,7 @@ import { FormMetadataHelper } from "./generation-logic/formMetadataHelper";
 import { IMetadataDispatcher } from "@/providers/metadataDispatcher/contexts";
 import { FormBuilderFactory } from "@/form-factory/interfaces";
 import { isValidGuid } from "@/components/formDesigner/components/utils";
+import { isNullOrWhiteSpace } from "@/utils";
 
 export interface IFormsApi {
   /**
@@ -58,7 +59,7 @@ export class FormsApi implements IFormsApi {
       return Promise.resolve('');
 
     const url = this.buildTemplateUrl(templateId.trim());
-    if (!url)
+    if (isNullOrWhiteSpace(url))
       return Promise.resolve('');
     return this._httpClient
       .get<IAbpWrappedGetEntityResponse<FormConfigurationDto>>(url)
@@ -77,7 +78,7 @@ export class FormsApi implements IFormsApi {
         };
 
         try {
-          if (!markup) {
+          if (isNullOrWhiteSpace(markup)) {
             throw new Error('Markup parameter is required');
           }
           if (!replacements) {

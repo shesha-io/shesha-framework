@@ -12,7 +12,7 @@ import { FormMetadataHelper } from "./formMetadataHelper";
 import pluralize from 'pluralize';
 import { EditMode, IComponentsContainer, IConfigurableFormComponent, IPropertyMetadata, isComponentsContainer, isConfigurableFormComponent } from "@/interfaces";
 import { FormBuilderFactory } from "@/form-factory/interfaces";
-import { isDefined } from "@/utils/nullables";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 
 export function findContainersWithPlaceholderRecursive(
   token: unknown,
@@ -89,7 +89,7 @@ export function findComponentsWithPlaceholder(markup: object, placeholder: strin
  * @throws {Error} If the data is not an object.
  */
 export function castToExtensionType<T>(data: unknown): T {
-  if (!data || typeof data !== 'object') {
+  if (!isDefined(data) || typeof data !== 'object') {
     throw new Error(`Invalid extension data: expected object, got ${typeof data}`);
   }
   return data as T;
@@ -108,7 +108,9 @@ export function humanizeModelType(modelType: string): string {
   const name = parts[parts.length - 1];
 
   // Convert from PascalCase to space-separated words (e.g. "PersonAddress" -> "Person Address")
-  const humanized = name?.replace(/([A-Z])/g, ' $1').trim() || '';
+  const humanized = !isNullOrWhiteSpace(name)
+    ? name.replace(/([A-Z])/g, ' $1').trim()
+    : "";
 
   // Handle empty string case
   if (!humanized) return '';
@@ -122,7 +124,7 @@ export function processBaseMarkup(markup: string, replacements: Record<string, u
 }
 
 export function getDataTypePriority(dataType: string | null | undefined, dataFormat?: string | null): number {
-  if (!dataType) return 99;
+  if (isNullOrWhiteSpace(dataType)) return 99;
 
   switch (dataType) {
     case DataTypes.string:
@@ -148,7 +150,7 @@ export function getDataTypePriority(dataType: string | null | undefined, dataFor
  * @returns Object containing min and max width values
  */
 export function getColumnWidthByDataType(dataType: string | null | undefined, dataFormat?: string | null): { min: number; max: number } {
-  if (!dataType) return COLUMN_WIDTH_DEFAULT; // Default values
+  if (isNullOrWhiteSpace(dataType)) return COLUMN_WIDTH_DEFAULT; // Default values
 
   switch (dataType) {
     case DataTypes.boolean:
@@ -214,7 +216,7 @@ export function addDetailsPanel(
   const sortedMetadata = [...metadata].sort((a, b) => {
     // Sort by required status (required first)
     if (a.required !== b.required) {
-      return a.required ? -1 : 1;
+      return a.required === true ? -1 : 1;
     }
 
     // Sort by dataType priority only

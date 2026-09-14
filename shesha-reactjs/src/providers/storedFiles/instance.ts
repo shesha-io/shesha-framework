@@ -15,6 +15,7 @@ import { FileAction, OnFileAction, OnFileDownloaded, OnFileListChanged } from ".
 import { isOwnerReferenceValid } from "@/utils/entity";
 import { isFile } from "@/utils/fileValidation";
 import { RefObject } from "react";
+import { firstNonEmptyString } from "@/utils/string";
 
 export type StoredFilesProcessorArgs = {
   httpClient: HttpClientApi;
@@ -268,7 +269,7 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
       }
 
       // Use the persisted id for the API call if available, otherwise use the provided id
-      const persistedId = file.id || fileId;
+      const persistedId = firstNonEmptyString(file.id, fileId);
       const replaceArgs: ReplaceFilePayload = {
         ...args,
         fileId: persistedId,
@@ -303,7 +304,7 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
       }
 
       // Use the persisted id for the API call if available, otherwise use the provided id
-      const persistedId = file.id || fileId;
+      const persistedId = firstNonEmptyString(file.id, fileId);
 
       this.invalidatePendingFetch();
       this.updateFileByIdOrUid(fileId, (file) => ({ ...file, status: 'removed' }));
@@ -349,7 +350,7 @@ export class AttachmentsEditorInstance implements IAttachmentsEditorInstance {
     }
 
     // Use the persisted id for the API call if available, otherwise use the provided id
-    const persistedId = file.id || args.fileId;
+    const persistedId = firstNonEmptyString(file.id, args.fileId);
     const downloadArgs: DownloadFileArgs = {
       ...args,
       fileId: persistedId,

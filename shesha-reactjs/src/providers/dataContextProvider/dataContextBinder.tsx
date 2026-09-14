@@ -136,7 +136,7 @@ const DataContextBinder = <TData extends object = object>(props: PropsWithChildr
   const getFull: ContextGetFull = () => {
     const data: IDataContextFull = getData();
     const api = getApi();
-    return api
+    return isDefined(api)
       ? { ...data, api }
       : data;
   };

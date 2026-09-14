@@ -27,7 +27,7 @@ export const CreateStorageProperty = <TData extends object = object>(onChange: (
       const propertyName = name.toString();
 
       if (propertyName === 'hasOwnProperty')
-        return (prop: string | symbol) => prop ? propertyName in target.accessor : false;
+        return (prop: string | symbol) => isDefined(prop) ? prop in target.accessor : false;
 
       if (hasProperty(target.accessor, propertyName))
         return typeof target.accessor[propertyName] === 'function'

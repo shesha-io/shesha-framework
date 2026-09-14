@@ -6,7 +6,6 @@ import { IToolboxComponent } from "@/interfaces";
 import { useMemo } from "react";
 import { deepMergeValues } from "@/utils/object";
 import { DEFAULT_DESIGNER_PADDING } from "../utils/stylingUtils";
-import { isNullOrWhiteSpace } from "@/utils";
 
 const getShaComponentStyles = createStyles(({ css, cx, token }, wrapperStyle: IStyleValue) => {
   const wrapperMargin = marginStyles(wrapperStyle.stylingBoxJson);
@@ -19,8 +18,6 @@ const getShaComponentStyles = createStyles(({ css, cx, token }, wrapperStyle: IS
     ${wrapperMargin}
 
     >.ant-form-item {
-      ${isNullOrWhiteSpace(wrapperPadding) ? 'margin-bottom: 0;' : ''}
-      
       .ant-form-item-label {
         padding-bottom: 3px;
       }

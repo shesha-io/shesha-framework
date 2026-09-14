@@ -338,6 +338,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   id: nanoid(),
                                   label: "Object Fit",
                                   propertyName: "objectFit",
+                                  tooltip: 'How the image is resized to fill its box. Cover fills the box and crops any overflow, Contain fits the whole image inside the box and may leave empty space, and Fill stretches the image to the exact box size, ignoring its aspect ratio.',
                                   dropdownOptions: [
                                     {
                                       value: "cover",
@@ -357,6 +358,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   type: 'customDropdown',
                                   id: nanoid(),
                                   label: "Object Position",
+                                  tooltip: 'Which part of the image stays visible when Object Fit crops it. Pick a preset or enter two space-separated values with units, e.g. "5em 100px" (horizontal then vertical).',
                                   customTooltip: 'Position of the background image, two space separated values with units e.g "5em 100px"',
                                   propertyName: "objectPosition",
                                   dropdownOptions: positionOptions,
@@ -373,6 +375,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   type: 'dropdown',
                                   label: 'Filter',
                                   propertyName: 'filter',
+                                  tooltip: 'Applies a visual effect to the image. Choose None to leave it unchanged; any other option is applied using the Filter Intensity value below.',
                                   dropdownOptions: [
                                     {
                                       value: 'none',
@@ -417,6 +420,9 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                                   label: 'Filter Intensity',
                                   propertyName: 'filterIntensity',
                                   type: 'numberField',
+                                  tooltip: 'How strongly the selected Filter is applied. The unit depends on the filter: pixels for Blur, degrees for Hue Rotate, and a percentage for the rest. Has no effect when Filter is None.',
+                                  min: 0,
+                                  max: 100,
                                 },
                               ],
                             })
@@ -426,6 +432,10 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
                               label: 'Opacity',
                               propertyName: 'opacity',
                               inputType: 'numberField',
+                              tooltip: 'Controls how transparent the image is. Accepts a value from 0 (fully transparent) to 1 (fully opaque).',
+                              min: 0,
+                              max: 1,
+                              step: 0.1,
                             })
                             .toJson(),
                         ],

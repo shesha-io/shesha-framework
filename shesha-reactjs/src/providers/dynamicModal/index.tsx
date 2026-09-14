@@ -3,7 +3,7 @@ import { FC, PropsWithChildren, useCallback, useContext, useMemo, useReducer } f
 import { useConfigurableAction, useConfigurableActionDispatcherProxy } from '@/providers/configurableActionsDispatcher';
 import { IActionExecutionContext } from '@/interfaces/configurableAction';
 import { SheshaActionOwners } from '../configurableActionsDispatcher/models';
-import { EvaluationContext, executeScript, recursiveEvaluator } from '../form/utils';
+import { EvaluationContext, executeScript, isValidFormIdentifier, recursiveEvaluator } from '../form/utils';
 import { createModalAction, openAction, removeAllModalsAction, removeModalAction } from './actions';
 import {
   IShowConfirmationArguments,
@@ -28,7 +28,7 @@ import { showDialogArgumentsFormFactory } from './configurable-actions/show-dial
 import { throwError } from '@/utils/errors';
 import { getLatestInstance } from './utils';
 import { createModalApi, IModalApi, createFallbackModalApi } from './modalApi';
-import { isDefined } from '@/utils/nullables';
+import { isDefined, isNullOrWhiteSpace } from '@/utils/nullables';
 
 type IDynamicModalActionExecutionContext = IActionExecutionContext & {
   configurableActionsDispatcherProxy?: FC<PropsWithChildren>;
@@ -106,11 +106,11 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
         const modalId = nanoid();
 
         const { formMode, formId, ...restArguments } = actionArgs;
-        if (!formId)
+        if (!isValidFormIdentifier(formId))
           throw new Error("Form Id is required");
 
         const argumentsExpression = actionArgs.formArguments?.trim();
-        const argumentsPromise = argumentsExpression
+        const argumentsPromise = !isNullOrWhiteSpace(argumentsExpression)
           ? executeScript<object>(argumentsExpression, context)
           : Promise.resolve(undefined);
 
@@ -127,7 +127,7 @@ const DynamicModalProvider: FC<PropsWithChildren> = ({ children }) => {
               id: modalId,
               title: actionArgs.modalTitle,
               showCloseIcon: showCloseIcon,
-              width: modalWidth === 'custom' && customWidth ? `${customWidth}${widthUnits}` : modalWidth,
+              width: modalWidth === 'custom' && isDefined(customWidth) ? `${customWidth}${widthUnits}` : modalWidth,
               formArguments: dialogArguments,
               parentFormValues: parentFormValues,
               isVisible: true,

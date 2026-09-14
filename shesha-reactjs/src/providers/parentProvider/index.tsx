@@ -13,6 +13,7 @@ import { DataContextProvider, IDataContextProviderProps } from "../dataContextPr
 import { useShaFormInstanceOrUndefined } from "../form/providers/shaFormProvider";
 import { FormMode, IConfigurableFormComponent, IFlatComponentsStructure, isConfigurableFormComponent } from "../form/models";
 import ComponentApiProvider from "../componentApi/provider";
+import { firstNonEmptyString } from "@/utils/string";
 
 export interface IParentProviderStateContext<Values extends object = object> {
   id: string;
@@ -106,8 +107,9 @@ const ParentProvider = <TValue extends object = object>(props: PropsWithChildren
     parent,
   ]);
 
+  const apiId = firstNonEmptyString(props.name, id);
   const contextProps: IDataContextProviderProps<object> | undefined = addContext && !props.contextProps
-    ? { id: SheshaCommonContexts.FormContext, name: SheshaCommonContexts.FormContext, type: "form", webStorageType: "sessionStorage", description: `${props.name || id}` }
+    ? { id: SheshaCommonContexts.FormContext, name: SheshaCommonContexts.FormContext, type: "form", webStorageType: "sessionStorage", description: `${apiId}` }
     : props.contextProps;
 
   return (
@@ -115,7 +117,7 @@ const ParentProvider = <TValue extends object = object>(props: PropsWithChildren
       condition={isScope}
       wrap={(children: React.ReactNode) => {
         return (
-          <ComponentApiProvider id={props.name || id}>
+          <ComponentApiProvider id={apiId}>
             <ValidateProvider>
               <DataContextManager id={id}>
                 <ConfigurableActionDispatcherProvider>

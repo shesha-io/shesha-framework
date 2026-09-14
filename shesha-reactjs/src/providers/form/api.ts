@@ -7,6 +7,7 @@ import {
   IFormSettings,
   isConfigurableFormComponent,
 } from './models';
+import { isDefined, isNullOrWhiteSpace } from '@/utils';
 
 /**
  * Form configuration DTO
@@ -86,12 +87,13 @@ export const filterDataByOutputComponents = <TData extends object = object>(
   const newData = { ...data };
   for (const key in components) {
     if (components.hasOwnProperty(key)) {
-      var component = components[key];
-      if (isConfigurableFormComponent(component) && component.propertyName &&
+      const component = components[key];
+      if (isConfigurableFormComponent(component) && !isNullOrWhiteSpace(component.propertyName) &&
         component.type &&
-        data.hasOwnProperty(component.propertyName) &&
-        !toolboxComponents[component.type]?.isOutput) {
-        delete newData[component.propertyName as keyof typeof newData];
+        data.hasOwnProperty(component.propertyName)) {
+        const componentType = toolboxComponents[component.type];
+        if (!isDefined(componentType) || componentType.isOutput !== true)
+          delete newData[component.propertyName as keyof typeof newData];
       }
     }
   }

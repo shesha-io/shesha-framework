@@ -91,7 +91,8 @@ export class CurrentUserApi implements IInternalCurrentUserApi {
         ? this.#grantedPermissions.some(
           (p) =>
             p.permission === permissionName &&
-            p.permissionedEntity?.some(
+            isDefined(p.permissionedEntity) &&
+            p.permissionedEntity.some(
               (e) => e.id === permissionedEntity.id && e._className === permissionedEntity._className,
             ),
         )

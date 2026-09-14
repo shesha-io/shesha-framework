@@ -13,7 +13,7 @@ export class CreateViewGenerationLogic extends BaseGenerationLogic {
 
   protected getModelTypeFromReplacements(replacements: object): string | IEntityTypeIdentifier | null {
     const extensionJson = castToExtensionType<CreateViewExtensionJson>(replacements);
-    return extensionJson.modelType || null;
+    return extensionJson.modelType ?? null;
   }
 
   protected async addComponentsToMarkup(

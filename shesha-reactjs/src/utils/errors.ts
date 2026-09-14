@@ -95,7 +95,7 @@ export const extractErrorInfo = (error: unknown): IErrorInfo | undefined => {
       const responseData = error.response?.data as unknown;
 
       if (isAjaxErrorResponse(responseData))
-        return { message: responseData.error.message ?? "Unknown error", details: responseData.error.details ?? null } satisfies IErrorInfo;
+        return { ...responseData.error, message: responseData.error.message ?? "Unknown error", details: responseData.error.details ?? null } satisfies IErrorInfo;
     }
 
     return { message: error.message };

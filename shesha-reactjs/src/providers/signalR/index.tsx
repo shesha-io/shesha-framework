@@ -31,7 +31,7 @@ const SignalRProvider: FC<PropsWithChildren<ISignalRProvider>> = ({
   hubUrl,
   onConnected,
   onDisconnected,
-  enableReconnect,
+  enableReconnect = false,
   reconnectIntervals,
 }) => {
   const [state, dispatch] = useReducer(signalRReducer, { ...SIGNAL_R_CONTEXT_INITIAL_STATE });

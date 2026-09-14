@@ -6,6 +6,8 @@ import { FormIdentifier, FormMarkupWithSettings, IFormSettings, toErrorInfo } fr
 import { HttpClientApi } from "../sheshaApplication/publicApi";
 import { FormUpdateMarkupInput } from "@/apis/formConfiguration";
 import { IConfigurationLoader } from "../configurationItemsLoader/configurationLoader";
+import { isNullOrWhiteSpace } from "@/utils";
+import { isValidEntityType } from "../metadataDispatcher/entities/utils";
 
 type ForceUpdateTrigger = () => void;
 
@@ -79,7 +81,7 @@ export class FormPersister implements IFormPersisterActionsContext {
 
     try {
       const formId = this.state.formProps?.id;
-      if (!formId)
+      if (isNullOrWhiteSpace(formId))
         throw new Error('Form identifier is not defined');
 
       const dto: FormUpdateMarkupInput = {
@@ -87,12 +89,12 @@ export class FormPersister implements IFormPersisterActionsContext {
         markup: JSON.stringify(payload),
         access: payload.formSettings.access,
         permissions: payload.formSettings.permissions,
-        modelType: payload.formSettings.modelType
+        modelType: isValidEntityType(payload.formSettings.modelType)
           ? typeof payload.formSettings.modelType === 'string'
             ? payload.formSettings.modelType
-            : payload.formSettings.modelType.module && payload.formSettings.modelType.name
+            : !isNullOrWhiteSpace(payload.formSettings.modelType.module) && !isNullOrWhiteSpace(payload.formSettings.modelType.name)
               ? `${payload.formSettings.modelType.module}:${payload.formSettings.modelType.name}`
-              : payload.formSettings.modelType.name || undefined
+              : payload.formSettings.modelType.name
           : undefined,
       };
       await this.httpClient.put(URLS.SAVE_FORM, dto);

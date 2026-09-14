@@ -84,7 +84,7 @@ export class ShaRouter implements IShaRouter {
       : ANONYMOUS_DYNAMIC_PAGE;
 
     return isFormFullName(formId)
-      ? `/${dynamicPage}${formId.module ? `/${formId.module}` : ''}/${formId.name}`
+      ? `/${dynamicPage}${!isNullOrWhiteSpace(formId.module) ? `/${formId.module}` : ''}/${formId.name}`
       : '';
   };
 

@@ -17,6 +17,7 @@ export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({ children
   return (
     <GlobalStateProvider>
       <ShaApplicationProvider
+        isDebugMode={true}
         backendUrl={backendUrl}
         router={nextRouter}
         noAuth={nextRouter.path.includes('/no-auth')}

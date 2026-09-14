@@ -49,7 +49,7 @@ const useAppConfiguratorSettings = (): IUseAppConfiguratorSettingsResponse => {
   const auth = useAuthOrUndefined();
 
   const hasRights = useMemo(() => {
-    const result = auth && auth.anyOfPermissionsGranted([PERM_APP_CONFIGURATOR]);
+    const result = isDefined(auth) && auth.anyOfPermissionsGranted([PERM_APP_CONFIGURATOR]);
 
     return result;
   // eslint-disable-next-line react-hooks/exhaustive-deps

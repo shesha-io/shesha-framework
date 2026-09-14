@@ -102,9 +102,8 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
             await _notificationService.SendNotificationAsync(
                 type,
                 sender,
-                recipient,                
+                recipient,
                 data,
-                notification.Priority,
                 attachments,
                 notification.Cc,
                 null,
@@ -147,7 +146,6 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                         sender,
                         receiver,
                         data,
-                        notification.Priority,
                         attachments,
                         null,
                         null,
@@ -155,7 +153,7 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                      );
                 }
             }
-           
+
             if (notification.Recipients != null)
             {
 
@@ -168,14 +166,13 @@ namespace Boxfusion.SheshaFunctionalTests.Common.Application.Services
                         senderPerson,
                         receiver,
                         data,
-                        notification.Priority,
                         attachments,
                         null,
                         null,
                         channel
                      );
-                }            
-            }           
+                }
+            }
         }        
     }
 }

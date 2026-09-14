@@ -1,21 +1,8 @@
 import { createStyles, sheshaStyles } from '@/styles';
 
 export const useStyles = createStyles(({ css, cx, token }) => {
-  /**
-   * The settings panel is a fixed-height column: the search box and the tab strip stay put and only the
-   * body of the active tab scrolls. Without this the whole panel scrolled as one block, so scrolling to a
-   * property further down took the search box and the tab titles off screen with it.
-   */
-  const root = cx("sha-properties-tabs", css`
-    display: flex;
-    flex-direction: column;
-    /* Fill whatever height the host gives this panel rather than growing past it. min-height:0 lets the
-       tab body shrink below its content so it, and not an ancestor, is the element that overflows.
-       Where the host cannot offer a height (a plain block wrapper), max-height keeps this a no-op and
-       the surrounding container keeps scrolling as it did before. */
-    height: 100%;
-    max-height: 100%;
-    min-height: 0;
+  const searchIcon = cx(css`
+    color: ${token.colorTextPlaceholder};
   `);
 
   const searchField = cx(css`
@@ -101,6 +88,7 @@ export const useStyles = createStyles(({ css, cx, token }) => {
   return {
     root,
     searchField,
+    searchIcon,
     content,
   };
 });

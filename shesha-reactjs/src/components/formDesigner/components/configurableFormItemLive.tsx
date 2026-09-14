@@ -1,6 +1,6 @@
 import { ReactNode, useMemo } from 'react';
 import { Form, FormItemProps } from 'antd';
-import { getAntdFormValidationRules, getFieldNameFromExpression, useAvailableConstantsDataNoRefresh } from '@/providers/form/utils';
+import { getFieldNameFromExpression, useAvailableConstantsDataNoRefresh } from '@/providers/form/utils';
 import classNames from 'classnames';
 import { UnwrapCodeEvaluators, useFormItem, useShaFormInstance } from '@/providers';
 import { IConfigurableFormItemProps } from './model';
@@ -11,6 +11,7 @@ import { useStyles } from './styles';
 import { isDefined, isNotNullOrWhiteSpace, isNullOrWhiteSpace } from '@/utils/nullables';
 import { useFormDesignerComponentGetter } from '@/providers/form/hooks';
 import { designerConstants } from '../utils/designerConstants';
+import { useComponentValidationRules } from '@/providers/formValidator/utils';
 
 export const ConfigurableFormItemLive = <TValue = unknown>({
   children,
@@ -25,7 +26,6 @@ export const ConfigurableFormItemLive = <TValue = unknown>({
   const toolboxComponent = useFormDesignerComponentGetter()(model.type);
 
   const shaForm = useShaFormInstance();
-  const getFormData = shaForm.getPublicFormApi().getFormData;
   const formItem = useFormItem();
   const { namePrefix, wrapperCol: formItemWrapperCol, labelCol: formItemlabelCol } = formItem;
   const allData = useAvailableConstantsDataNoRefresh();
@@ -38,9 +38,13 @@ export const ConfigurableFormItemLive = <TValue = unknown>({
     return { labelCol: formItemlabelCol ?? labelCol, wrapperCol: formItemWrapperCol || wrapperCol };
   }, [formItemlabelCol, labelCol, formItemWrapperCol, wrapperCol]);
 
-  const isVertical = (model.layout ?? shaForm.settings?.layout) === 'vertical';
+  const validationRules = useComponentValidationRules(model);
 
-  const { hideLabel, hidden } = model;
+  const { hideLabel, hidden = false } = model;
+
+  if (hidden) return null;
+
+  const isVertical = (model.layout ?? shaForm.settings?.layout) === 'vertical';
 
   const { top: defaultMarginTop, left: defaultMarginLeft, right: defaultMarginRight, bottom: defaultMarginBottom } = designerConstants.DEFAULT_FORM_ITEM_MARGINS;
 
@@ -65,7 +69,6 @@ export const ConfigurableFormItemLive = <TValue = unknown>({
     ? namePrefix + '.' + model.propertyName
     : model.propertyName;
 
-  if (Boolean(hidden)) return null;
 
   const formItemProps: FormItemProps = {
     className: classNames(className, styles.formItem),
@@ -73,7 +76,7 @@ export const ConfigurableFormItemLive = <TValue = unknown>({
     ...(isNotNullOrWhiteSpace(valuePropName) ? { valuePropName: valuePropName } : {}),
     initialValue: initialValue,
     tooltip: isNotNullOrWhiteSpace(model.description) ? model.description : undefined,
-    rules: [...getAntdFormValidationRules(model, { getFormData }), ...(toolboxComponent?.getExtraValidationRules?.(model) ?? [])],
+    rules: validationRules,
     ...(isDefined(model.validationDependencies?.length) ? { dependencies: model.validationDependencies } : {}),
     name: isNotNullOrWhiteSpace(model.context) ? undefined : getFieldNameFromExpression(propName),
     style: marginStyle,

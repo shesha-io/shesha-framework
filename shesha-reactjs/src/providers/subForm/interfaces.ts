@@ -16,9 +16,9 @@ export interface ISubFormProviderProps<TValue extends object = object> extends I
   componentName?: string | undefined;
 
   formSelectionMode?: 'name' | 'dynamic' | undefined;
-  formType?: string | undefined | undefined;
+  formType?: string | undefined;
 
-  formId?: FormIdentifier | undefined | undefined;
+  formId?: FormIdentifier | undefined;
 
   labelCol?: number | ColProps | undefined;
   wrapperCol?: number | ColProps | undefined;

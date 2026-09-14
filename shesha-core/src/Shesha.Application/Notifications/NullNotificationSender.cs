@@ -1,6 +1,5 @@
 using Abp.Notifications;
 using Shesha.Domain;
-using Shesha.Domain.Enums;
 using Shesha.EntityReferences;
 using Shesha.Notifications.Dto;
 using Shesha.Notifications.MessageParticipants;
@@ -20,11 +19,10 @@ namespace Shesha.Notifications
         public static NullNotificationSender Instance { get; } = new NullNotificationSender();
 
         public Task SendNotificationAsync<TData>(
-            NotificationTypeConfig type, 
-            IMessageSender? sender, 
-            IMessageReceiver receiver, 
-            TData data, 
-            RefListNotificationPriority priority, 
+            NotificationTypeConfig type,
+            IMessageSender? sender,
+            IMessageReceiver receiver,
+            TData data,
             List<NotificationAttachmentDto>? attachments = null,
             string? cc = null,
             GenericEntityReference? triggeringEntity = null, 
@@ -35,11 +33,10 @@ namespace Shesha.Notifications
         }
 
         public Task SendNotificationAsync<TData>(
-            NotificationTypeConfig type, 
-            Person? sender, 
-            Person receiver, 
-            TData data, 
-            RefListNotificationPriority priority, 
+            NotificationTypeConfig type,
+            Person? sender,
+            Person receiver,
+            TData data,
             List<NotificationAttachmentDto>? attachments = null,
             string? cc = null,
             GenericEntityReference? triggeringEntity = null, 

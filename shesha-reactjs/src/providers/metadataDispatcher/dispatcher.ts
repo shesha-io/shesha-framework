@@ -9,7 +9,7 @@ import { HttpClientApi } from "@/publicJsApis/apis/httpClient";
 import qs from "qs";
 import { isAjaxErrorResponse } from "@/interfaces/ajaxResponse";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
-import { getEntityTypeIdentifierQueryParams, isEntityTypeIdEmpty, isEntityTypeIdentifier } from "./entities/utils";
+import { getEntityTypeIdentifierQueryParams, isEntityTypeIdEmpty, isEntityTypeIdentifier, isValidEntityType } from "./entities/utils";
 import { IEntityTypeIdentifier } from "../sheshaApplication/publicApi/entities/models";
 
 interface IPropertyPathWithMetadata {
@@ -37,7 +37,7 @@ export class MetadataDispatcher implements IMetadataDispatcher {
   };
 
   #getEntityTypeId = (property: IHasEntityType): IEntityTypeIdentifier | undefined =>
-    property.entityType
+    !isNullOrWhiteSpace(property.entityType)
       ? ({ name: property.entityType, module: property.entityModule ?? null })
       : undefined;
 
@@ -240,7 +240,7 @@ export class MetadataDispatcher implements IMetadataDispatcher {
   };
 
   isEntityType = (modelType: string | IEntityTypeIdentifier): Promise<boolean> => {
-    if (!modelType) return Promise.resolve(false);
+    if (!isValidEntityType(modelType)) return Promise.resolve(false);
 
     return this.getMetadata({ dataType: null, modelType: modelType }).then((m) => {
       return m?.dataType === DataTypes.entityReference;

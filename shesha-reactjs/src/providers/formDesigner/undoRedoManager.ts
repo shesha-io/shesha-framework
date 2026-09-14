@@ -118,7 +118,7 @@ export class UndoRedoManager<T> implements IUndoRedoManager<T> {
 
   getHistory(): { description: string; canUndo: boolean; canRedo: boolean } {
     return {
-      description: this.history[this.currentIndex]?.description || "",
+      description: this.history[this.currentIndex]?.description ?? "",
       canUndo: this.currentIndex > 0,
       canRedo: this.currentIndex < this.history.length - 1,
     };

@@ -23,7 +23,6 @@ namespace Shesha.Notifications.Distribution.NotificationChannels
             result.MaxMessageSize = item.MaxMessageSize;
             result.SupportedMechanism = item.SupportedMechanism;
             result.SenderTypeName = item.SenderTypeName;
-            result.DefaultPriority = item.DefaultPriority;
             result.Status = item.Status;
 
             return Task.CompletedTask;

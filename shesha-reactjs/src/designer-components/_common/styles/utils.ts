@@ -256,6 +256,20 @@ export const paddingValue = (model: StyleBoxValue | undefined): string => {
   return sb.join(' ');
 };
 
+export const normalizeFontFamily = (fontFamily: string | undefined): string | undefined => {
+  if (!isDefined(fontFamily)) return fontFamily;
+
+  const fonts = fontFamily.split(',').map((f) => {
+    const font = f.trim();
+    return / /.test(font) ? `"${font}"` : font;
+  });
+  const newFonts = fonts.splice(0);
+  newFonts.push('"Inter Variable"');
+  newFonts.concat(fonts);
+
+  return newFonts.join(', ');
+};
+
 export const fontStyles = (model: IFontValue | undefined, customStyle?: CSSProperties | undefined): string => {
   /* An explicit Custom style wins over the model's own `styleCss`, so a caller that has already
      narrowed it — stripping `textAlign` for a calendar cell, say — keeps that narrowing. Either way
@@ -275,7 +289,7 @@ export const fontStyles = (model: IFontValue | undefined, customStyle?: CSSPrope
   if (!isNullOrWhiteSpace(color)) sb.append(`color: ${color};`);
   if (isDefined(size)) sb.append(`font-size: ${addPx(size)};`);
   if (isDefined(weight) && `${weight}` !== '') sb.append(`font-weight: ${weight};`);
-  if (!isNullOrWhiteSpace(family)) sb.append(`font-family: ${family};`);
+  if (!isNullOrWhiteSpace(family)) sb.append(`font-family: ${normalizeFontFamily(family)};`);
   if (isDefined(align)) sb.append(`text-align: ${align};`);
   return sb.build();
 };

@@ -29,7 +29,6 @@ namespace Shesha.Notifications.Distribution.NotificationChannels
                 item.MaxMessageSize == distributedItem.MaxMessageSize &&
                 item.SupportedMechanism == distributedItem.SupportedMechanism &&
                 item.SenderTypeName == distributedItem.SenderTypeName &&
-                item.DefaultPriority == distributedItem.DefaultPriority &&
                 item.Status == distributedItem.Status;
 
             return Task.FromResult(result);
@@ -41,7 +40,6 @@ namespace Shesha.Notifications.Distribution.NotificationChannels
             item.MaxMessageSize = distributedItem.MaxMessageSize;
             item.SupportedMechanism = distributedItem.SupportedMechanism;
             item.SenderTypeName = distributedItem.SenderTypeName ?? string.Empty;
-            item.DefaultPriority = distributedItem.DefaultPriority;
             item.Status = distributedItem.Status;
 
             return Task.CompletedTask;

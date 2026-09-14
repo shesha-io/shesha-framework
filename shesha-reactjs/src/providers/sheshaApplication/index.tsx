@@ -54,6 +54,7 @@ import { DEFAULT_ACCESS_TOKEN_NAME, IHttpHeadersDictionary, ISheshaRoutes } from
 import { ProgressBar } from './progressBar';
 
 export interface IShaApplicationProviderProps {
+  isDebugMode?: boolean;
   backendUrl: string;
   /**
    * Unique identifier (key) of the front-end application, is used to separate some settings and application parts when use multiple front-ends

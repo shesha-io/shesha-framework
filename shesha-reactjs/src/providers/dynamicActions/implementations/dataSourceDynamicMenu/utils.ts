@@ -7,6 +7,7 @@ import { useDataContextManagerActionsOrUndefined } from '@/providers/dataContext
 import { evaluateString } from '@/providers/form/utils';
 import { FetcherOptions, IQueryParams } from '@/utils/fetchers';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
+import { isNonEmptyArray } from '@/utils/array';
 
 type UseUrlTemplatesResponse = {
   getUrlTemplateState: () => FetcherOptions | undefined;
@@ -21,7 +22,7 @@ export const useUrlTemplates = (settings: IDataSourceArguments | undefined): Use
   const getQueryParams = useMemo(() => {
     return (): IQueryParams => {
       const queryParamObj: IQueryParams = {};
-      if (queryParams?.length) {
+      if (isNonEmptyArray(queryParams)) {
         queryParams.forEach(({ param, value }) => {
           if (!isNullOrWhiteSpace(param) && !isNullOrWhiteSpace(value)) {
             queryParamObj[param] = /{.*}/i.test(value)

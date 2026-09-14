@@ -1,4 +1,4 @@
-import { useCanvas } from '@/providers';
+import { useCanvas, useTheme } from '@/providers';
 import { FC, PropsWithChildren, useCallback } from 'react';
 import { calculateAutoZoom, DEFAULT_OPTIONS, usePinchZoom } from '@/providers/canvas/utils';
 import { useStyles } from './styles';
@@ -11,6 +11,7 @@ export interface IZoomableCanvasProps {
 
 export const ZoomableCanvas: FC<PropsWithChildren<IZoomableCanvasProps>> = ({ children, canZoom }) => {
   const { styles } = useStyles();
+  const { theme } = useTheme();
   const { zoom, setCanvasZoom, designerWidth, autoZoom } = useCanvas();
 
   const handleZoomChange = useCallback((newZoom: number) => {
@@ -51,6 +52,7 @@ export const ZoomableCanvas: FC<PropsWithChildren<IZoomableCanvasProps>> = ({ ch
           style={canZoom ? {
             width: designerWidth,
             zoom: `${zoom}%`,
+            backgroundColor: theme.layoutBackground,
           } : {}}
         >
           {children}

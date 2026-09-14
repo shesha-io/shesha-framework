@@ -2,11 +2,13 @@
 import { isPropertySettings, updateJsSettingsForComponents } from '@/designer-components/_settings/utils/utils';
 import { normalizeSingleBraceAccessor } from '@/providers/form/utils/mustacheNormalization';
 import {
+  isConfigurableItemFullName,
+  isValidConfigurableItemFullName,
+  isValidConfigurableItemIdentifier,
+  isValidConfigurableItemRawId,
   IToolboxComponent,
   IToolboxComponentGroup,
-  IToolboxComponents,
-  SettingsFormMarkupFactory,
-  SettingsMigrationContext,
+  IToolboxComponents, SettingsMigrationContext,
 } from '@/interfaces';
 import { IPropertyMetadata } from '@/interfaces/metadata';
 import {
@@ -90,17 +92,17 @@ import {
 import { IMetadataDispatcher } from '../metadataDispatcher/contexts';
 import { IModalApi } from '../dynamicModal/modalApi';
 import { useModalApiWithFallback } from '../dynamicModal';
-import { makeFormBuliderFactory } from '@/form-factory/implementation';
 import { firstNonEmptyString } from '@/utils/string';
 import { getComponentDefinitions } from './defaults/toolboxComponents';
 import RawAsyncValidator, { InternalRuleItem, RuleItem, Rules, ValidateError, Values } from '@rc-component/async-validator';
-import { Rule as FormRule } from 'antd/es/form';
 import { isNonEmptyArray } from '@/utils/array';
 import { useComponentApiUpdate } from '../componentApi/provider';
 import { IUtilsApi } from '@/publicJsApis/apis/utils';
 import { IActionsApi } from '@/publicJsApis/apis/actions';
 import { ICurrentUserApi } from '@/publicJsApis/apis/user';
 import { isEqual } from 'lodash';
+import { getComponentValidationRules } from '../formValidator/utils';
+import { FormDesignerComponentGetter } from './hooks';
 
 export {
   executeExpression, executeScript,
@@ -1196,11 +1198,6 @@ export const getValidationRules = (component: IConfigurableFormComponent, option
   return rules;
 };
 
-export const getAntdFormValidationRules = (component: IConfigurableFormComponent, options?: IFormValidationRulesOptions): FormRule[] => {
-  const rules = getValidationRules(component, options);
-  return rules as FormRule[];
-};
-
 const DICTIONARY_ACCESSOR_REGEX = /(^[\s]*\{(?<key>[\w]+)\.(?<accessor>[^\}]+)\}[\s]*$)/;
 const NESTED_ACCESSOR_REGEX = /((?<key>[\w]+)\.(?<accessor>[^\}]+))/;
 
@@ -1378,7 +1375,7 @@ type ValidationSettings = {
   friendlyNames: Record<string, string | ReactNode>;
 };
 
-export const getFormValidationSettings = (markup: FormMarkup, values: Values): ValidationSettings => {
+export const getFormValidationSettings = (markup: FormMarkup, values: Values, componentGetter: FormDesignerComponentGetter): ValidationSettings => {
   const components = getComponentsFromMarkup(markup);
 
   const designerComponents: IToolboxComponents = Object.fromEntries(getComponentDefinitions());
@@ -1394,7 +1391,9 @@ export const getFormValidationSettings = (markup: FormMarkup, values: Values): V
       if (isConfigurableFormComponent(item) && !isNullOrWhiteSpace(item.propertyName)) {
         if (isDefined(item.label))
           friendlyNames[item.propertyName] = item.label;
-        const itemRules = getValidationRules(item);
+
+        const itemRules = getComponentValidationRules(item, componentGetter, { getFormData: () => values }) as RuleItem[];
+
         if (isNonEmptyArray(itemRules)) {
           // validate only when component is not hidden
           const hidden = isComponentHidden(flatStructure, item.id, { data: values });
@@ -1416,13 +1415,9 @@ export type ValidateErrorWithFriendlyName = ValidateError & {
   fieldLabel?: string | ReactNode;
 };
 
-export const validateConfigurableComponentSettings = (markupOrFactory: FormMarkup | SettingsFormMarkupFactory, values: Values): Promise<Values> => {
-  // TODO(validation): pass fbf as argument to use full components list
-  const markup = typeof markupOrFactory === 'function'
-    ? markupOrFactory({ fbf: makeFormBuliderFactory(getComponentDefinitions()), removeStyleRouter: true })
-    : markupOrFactory;
 
-  const validationSettings = getFormValidationSettings(markup, values);
+export const validateConfigurableComponentSettings = (markup: FormMarkup, values: Values, componentGetter: FormDesignerComponentGetter): Promise<Values> => {
+  const validationSettings = getFormValidationSettings(markup, values, componentGetter);
   const validator = new RawAsyncValidator(validationSettings.rules);
   return validator.validate(values, undefined, (errors, _fields) => {
     if (isDefined(errors)) {
@@ -1739,12 +1734,14 @@ export const convertDotNotationPropertiesToGraphQL = (properties: string[]): str
   return getNodes(tree);
 };
 
+
 export const isFormRawId = (formId: FormIdentifier): formId is FormUid => {
-  return isDefined(formId) && typeof formId === 'string';
+  return isValidConfigurableItemRawId(formId);
 };
 
+
 export const isFormFullName = (formId: FormIdentifier | undefined): formId is FormFullName => {
-  return isDefined(formId) && typeof (formId) === 'object' && "name" in formId && typeof (formId.name) === 'string';
+  return isConfigurableItemFullName(formId);
 };
 
 /**
@@ -1753,7 +1750,11 @@ export const isFormFullName = (formId: FormIdentifier | undefined): formId is Fo
  * @returns True if the formId is a valid FormFullName, false otherwise
  */
 export const isValidFormFullName = (formId: FormIdentifier | undefined): formId is FormFullName => {
-  return isFormFullName(formId) && !isNullOrWhiteSpace(formId.module) && !isNullOrWhiteSpace(formId.name);
+  return isValidConfigurableItemFullName(formId);
+};
+
+export const isValidFormIdentifier = (formId: FormIdentifier | undefined): formId is FormIdentifier => {
+  return isValidConfigurableItemIdentifier(formId);
 };
 
 export const isSameFormIds = (id1: FormIdentifier, id2: FormIdentifier): boolean => {

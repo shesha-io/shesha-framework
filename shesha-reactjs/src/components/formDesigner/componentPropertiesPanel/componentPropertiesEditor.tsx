@@ -1,9 +1,10 @@
+/* eslint-disable react-hooks/static-components */
 import { ReactNode, RefObject } from 'react';
 import { IComponentSettingsFormFactoryArgs, IFormLayoutSettings, ISettingsFormFactory, ISettingsFormInstance, IToolboxComponent, SettingsFormMarkupFactory } from '@/interfaces';
 import { useDebouncedCallback } from 'use-debounce';
 import { FormMarkup } from '@/providers/form/models';
 import GenericSettingsForm from '../genericSettingsForm';
-import { IConfigurableFormComponent } from '@/providers';
+import { FormItemProvider, IConfigurableFormComponent } from '@/providers';
 import { useFormDesigner } from '@/providers/formDesigner';
 import { useFormBuilderFactory } from '@/form-factory/hooks';
 import { FormBuilderFactory } from '@/form-factory/interfaces';
@@ -84,22 +85,23 @@ export const ComponentPropertiesEditor = <TModel extends IConfigurableFormCompon
   return isDefined(SettingsForm)
     ? (
       // Settings form is getting from cache and not created on the each rerender
-      // eslint-disable-next-line react-hooks/static-components
-      <SettingsForm
-        readOnly={readOnly}
-        model={componentModel}
-        onSave={onSave}
-        onCancel={onCancel}
-        onValuesChange={(_changedValues, values) => {
-          if (autoSave && !readOnly)
-            void debouncedSave(values);
-        }}
-        toolboxComponent={toolboxComponent}
-        formRef={formRef}
-        propertyFilter={propertyFilter}
-        layoutSettings={layoutSettings}
-        isInModal={isInModal}
-      />
+      <FormItemProvider namePrefix="">
+        <SettingsForm
+          readOnly={readOnly}
+          model={componentModel}
+          onSave={onSave}
+          onCancel={onCancel}
+          onValuesChange={(_changedValues, values) => {
+            if (autoSave && !readOnly)
+              void debouncedSave(values);
+          }}
+          toolboxComponent={toolboxComponent}
+          formRef={formRef}
+          propertyFilter={propertyFilter}
+          layoutSettings={layoutSettings}
+          isInModal={isInModal}
+        />
+      </FormItemProvider>
     )
     : null;
 };

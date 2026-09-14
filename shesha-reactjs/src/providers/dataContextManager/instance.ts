@@ -2,7 +2,7 @@ import { ConfigurableFormInstance } from "../form/contexts";
 import { DataContextTopLevels, RootContexts } from "./index";
 import { DataContextType, IDataContextFull } from "../dataContextProvider/contexts";
 import { IRegisterDataContextPayload, IDataContextDescriptor, IDataContextDictionary, IDataContextManagerFullInstance, SHESHA_ROOT_DATA_CONTEXT_MANAGER, IDataContextsData } from "./models";
-import { isDefined } from "@/utils/nullables";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { isEqual } from "lodash";
 
 export class DataContextManagerInstance implements IDataContextManagerFullInstance {
@@ -99,7 +99,7 @@ export class DataContextManagerInstance implements IDataContextManagerFullInstan
       if (Object.hasOwn(this.contexts, key))
         dataContexts.push(this.contexts[key] as IDataContextDescriptor);
 
-    if (!topId)
+    if (isNullOrWhiteSpace(topId))
       return dataContexts.filter((x) => x.type === DataContextTopLevels.Root);
 
     if (topId === DataContextTopLevels.All)

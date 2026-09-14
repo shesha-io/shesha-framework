@@ -1,7 +1,7 @@
 import { PropertyMetadataDto } from "@/apis/metadata";
 import { EditMode, IEntityMetadata, IPropertyMetadata, isConfigurableFormComponent } from "@/interfaces";
 import { nanoid } from "@/utils/uuid";
-import { toCamelCase } from "@/utils/string";
+import { firstNonEmptyString, toCamelCase } from "@/utils/string";
 import { FormMetadataHelper } from "../formMetadataHelper";
 import { IConfigurableColumnsProps, standardCellComponentTypes } from "@/providers/datatableColumnsConfigurator/models";
 import { findContainersWithPlaceholder, findComponentsWithPlaceholder, castToExtensionType, humanizeModelType, addDetailsPanel, getDataTypePriority, getColumnWidthByDataType } from "../viewGenerationUtils";
@@ -9,8 +9,9 @@ import { DetailsViewExtensionJson } from "../../models/DetailsViewExtensionJson"
 import { ROW_COUNT } from "../../constants";
 import { BaseGenerationLogic } from "../baseGenerationLogic";
 import { IEntityTypeIdentifier } from "../../../entities/models";
-import { isDefined } from "@/utils/nullables";
+import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { isTextComponent } from "@/designer-components/text/models";
+import { isValidEntityType } from "@/providers/metadataDispatcher/entities/utils";
 
 /**
  * Implements generation logic for detail views.
@@ -21,7 +22,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
 
   protected getModelTypeFromReplacements(replacements: object): string | IEntityTypeIdentifier | null {
     const extensionJson = castToExtensionType<DetailsViewExtensionJson>(replacements);
-    return extensionJson.modelType || null;
+    return isValidEntityType(extensionJson.modelType) ? extensionJson.modelType : null;
   }
 
   protected async addComponentsToMarkup(
@@ -39,7 +40,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
 
       // Filter out properties shown in the key information bar
       const propertiesForDetailsPanel = nonFrameworkProperties.filter((prop) => {
-        const propIdentifier = prop.path || prop.label || '';
+        const propIdentifier = firstNonEmptyString(prop.path, prop.label, '');
         return !usedKeyInfoPropertyPaths.includes(propIdentifier);
       });
 
@@ -93,7 +94,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
   private addHeader(entity: IEntityMetadata, metadata: IPropertyMetadata[], markup: object, extensionJson: DetailsViewExtensionJson, metadataHelper: FormMetadataHelper): string[] {
     // Try to find a display name property, falling back to static entity type name
     const displayNameProperty = this.findDisplayNameProperty(metadata);
-    const title = displayNameProperty
+    const title = !isNullOrWhiteSpace(displayNameProperty)
       ? `{{${toCamelCase(displayNameProperty)}}}`
       : `${entity.typeAccessor} Details`;
 
@@ -125,7 +126,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
       });
 
       const keyInfoProperties = metadata.filter((x) =>
-        keyInformationBarProperties.includes(x.path || x.label || ''),
+        keyInformationBarProperties.includes(firstNonEmptyString(x.path, x.label, '')),
       );
 
       if (keyInfoProperties.length === 0) {
@@ -161,7 +162,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
               hideLabel: true,
               hidden: false,
               componentName: `text${count}`,
-              content: prop.label || '',
+              content: prop.label ?? '',
               color: 'default',
               desktop: { ...customDefaults },
               tablet: { ...customDefaults },
@@ -292,7 +293,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
             .sort((a, b) => {
               // Sort by required status (required first)
               if (a.required !== b.required) {
-                return a.required ? -1 : 1;
+                return a.required === true ? -1 : 1;
               }
 
               // Sort by dataType priority only
@@ -310,9 +311,9 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
               id: nanoid(),
               columnType: 'data',
               propertyName: toCamelCase(prop.path || ''),
-              caption: prop.label || '',
+              caption: prop.label ?? '',
               isVisible: true,
-              description: prop.description || '',
+              description: prop.description ?? '',
               sortOrder: idx,
               itemType: 'item',
               minWidth: width.min,
@@ -333,7 +334,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
             canAddInline: 'yes',
             canEditInline: 'yes',
             canDeleteInline: 'yes',
-            onNewRowInitialize: `return {${toCamelCase(filterProperty || 'parentId')}: form.data.id}`,
+            onNewRowInitialize: `return {${toCamelCase(firstNonEmptyString(filterProperty, 'parentId'))}: form.data.id}`,
             items: [
               {
                 id: nanoid(),
@@ -370,7 +371,7 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
                   "==": [
                     {
                       // Fallback to "parentId" if no matching property is found
-                      var: filterProperty ? toCamelCase(filterProperty) : "parentId",
+                      var: !isNullOrWhiteSpace(filterProperty) ? toCamelCase(filterProperty) : "parentId",
                     },
                     {
                       evaluate: [
@@ -385,15 +386,15 @@ export class DetailsViewGenerationLogic extends BaseGenerationLogic {
                 },
               ],
             },
-            entityType: extensionJson.childTablesList[index] || '',
+            entityType: extensionJson.childTablesList[index] ?? '',
             components: contextComponents,
           });
 
           return {
             id: nanoid(),
-            title: humanizeModelType(childTable.typeAccessor || ''),
+            title: humanizeModelType(childTable.typeAccessor ?? ''),
             key: String(index),
-            label: humanizeModelType(childTable.typeAccessor || ''),
+            label: humanizeModelType(childTable.typeAccessor ?? ''),
             closable: false,
             components: childTableContextBuilder.toJson(),
           };

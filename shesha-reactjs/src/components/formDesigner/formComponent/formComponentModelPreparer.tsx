@@ -11,12 +11,12 @@ import { IModelValidation } from "@/utils/errors";
 import { formComponentActualModelPropertyFilter, updateComponentModelFromMetadata } from "@/providers/form/utils";
 import { deepMergeSkipUndefinedFunc, deepMergeValues } from "@/utils/object";
 import { isDefined, isNullOrWhiteSpace } from "@/utils";
-import { getStyleBoxValue } from "@/designer-components/styleBox/utils";
 import { useActualContextData, useActualContextExecution, useBackgroundStoredFile } from "@/hooks/formComponentHooks";
 import { useComponentApiProvider } from "@/providers/componentApi/provider";
 import { updateApi, updateApiModel } from "./formComponentApi";
 import { useEffectOnce } from "@/hooks/useEffectOnce";
 import { FormComponentAllStylesPreparer } from "./formComponentAllStylesPreparer";
+import { getEffectiveStyle } from "@/utils/style";
 
 interface FormComponentPrepareModelProps {
   componentModel: IConfigurableFormComponent;
@@ -49,32 +49,8 @@ export const FormComponentModelPreparer: FC<FormComponentPrepareModelProps> = ({
   const effectiveDevice = activeDevice || 'desktop';
 
   const effectiveStyle = useMemo((): IStyleValue => {
-    // for settings form components should use their own styles
-    if (shaForm.form?.settings.isSettingsForm === true)
-      return sourceComponentModel;
-
-    // Default styles + Theme component styles
-    const defStyle: IStyleValue = toolboxComponent?.getDefaultStyles?.() ?? { styleCss: {} };
-    const themeDefStyle: IStyleValue = isDefined(theme.components)
-      ? deepMergeValues(defStyle, theme.components[sourceComponentModel.type] as IStyleValue, deepMergeSkipUndefinedFunc)
-      : defStyle;
-
-    // Default styles + Theme component styles + Desktop component styles
-    const desktopModel = sourceComponentModel.desktop;
-    // ToDo: AS - remove all using stylingBox after migration all components
-    const desktopStylingBox = isDefined(desktopModel?.stylingBox) ? getStyleBoxValue(desktopModel.stylingBox) : undefined;
-    const desktopStylingBoxJson = desktopModel?.stylingBoxJson;
-    const desktopThemeStyle: IStyleValue = deepMergeValues(themeDefStyle, { ...desktopModel, stylingBoxJson: Boolean(desktopStylingBoxJson) ? desktopStylingBoxJson : desktopStylingBox }, deepMergeSkipUndefinedFunc);
-
-    if (effectiveDevice === 'desktop') return desktopThemeStyle;
-
-    // Default styles + Theme component styles + Desktop component styles + Effective component styles
-    const effectiveModel = sourceComponentModel[effectiveDevice as keyof typeof sourceComponentModel] as IStyleValue | undefined;
-    const effectiveStylingBox = isDefined(effectiveModel?.stylingBox) ? getStyleBoxValue(effectiveModel.stylingBox) : undefined;
-    const effectiveStylingBoxJson = effectiveModel?.stylingBoxJson;
-    const effectiveDesktopStyle = deepMergeValues(desktopThemeStyle, { ...effectiveModel, stylingBoxJson: (Boolean(effectiveStylingBoxJson)) ? effectiveStylingBoxJson : effectiveStylingBox }, deepMergeSkipUndefinedFunc);
-    return effectiveDesktopStyle as IStyleValue;
-  }, [shaForm.form?.settings.isSettingsForm, sourceComponentModel, toolboxComponent, theme.components, effectiveDevice]);
+    return getEffectiveStyle(sourceComponentModel, effectiveDevice, theme, toolboxComponent, shaForm.form?.settings.isSettingsForm);
+  }, [sourceComponentModel, effectiveDevice, theme, toolboxComponent, shaForm.form?.settings.isSettingsForm]);
 
   const sfBackground = useBackgroundStoredFile(effectiveStyle.background, shaApplication);
   const sfStyle = useMemo((): IStyleValue => ({ ...effectiveStyle, background: sfBackground }), [effectiveStyle, sfBackground]);
@@ -134,7 +110,6 @@ export const FormComponentModelPreparer: FC<FormComponentPrepareModelProps> = ({
     if (modelMetadata?.properties && Boolean(actualApiModel.propertyName)) {
       const pName = toCamelCase(actualApiModel.propertyName ?? '');
       if (Array.isArray(modelMetadata.properties)) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setPropMetadata(modelMetadata.properties.find((p) => toCamelCase(p.path) === pName));
       } else {
         modelMetadata.properties().then((propsMeta) => {

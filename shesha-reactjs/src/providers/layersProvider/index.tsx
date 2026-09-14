@@ -32,12 +32,12 @@ export interface ILayerGroupConfiguratorProviderProps {
 }
 
 const LayerGroupConfiguratorProvider: FC<PropsWithChildren<ILayerGroupConfiguratorProviderProps>> = (props) => {
-  const { children, readOnly } = props;
+  const { children, readOnly = false } = props;
 
   const [state, dispatch] = useReducer(reducer, {
     ...LAYER_GROUP_CONTEXT_INITIAL_STATE,
     items: props.items ?? [],
-    readOnly: !!readOnly,
+    readOnly: readOnly,
   });
 
   const addLayer = (): void => {

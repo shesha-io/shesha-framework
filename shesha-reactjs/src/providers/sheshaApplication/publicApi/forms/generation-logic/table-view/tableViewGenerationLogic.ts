@@ -6,6 +6,7 @@ import { toCamelCase } from "@/utils/string";
 import { TableViewExtensionJson } from "../../models/TableViewExtensionJson";
 import { BaseGenerationLogic } from "../baseGenerationLogic";
 import { IConfigurableColumnsProps, standardCellComponentTypes } from "@/providers/datatableColumnsConfigurator/models";
+import { isNullOrWhiteSpace } from "@/utils";
 
 /**
  * Implements generation logic for table views.
@@ -50,7 +51,7 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
    * @param metadataHelper The metadata helper instance.
    */
   private addHeader(entity: IEntityMetadata, markup: object): void {
-    const title = entity.typeAccessor ? humanizeModelType(entity.typeAccessor) : "Table";
+    const title = !isNullOrWhiteSpace(entity.typeAccessor) ? humanizeModelType(entity.typeAccessor) : "Table";
 
     const titleContainer = findContainersWithPlaceholder(markup, "//*TABLEFILTER*//");
 
@@ -94,7 +95,7 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
     const sortedProperties = [...nonFrameworkProperties].sort((a, b) => {
       // Sort by required status (required first)
       if (a.required !== b.required) {
-        return a.required ? -1 : 1;
+        return a.required === true ? -1 : 1;
       }
 
       // Sort by dataType priority only
@@ -120,9 +121,9 @@ export class TableViewGenerationLogic extends BaseGenerationLogic {
           id: nanoid(),
           columnType: 'data',
           propertyName: toCamelCase(prop.path || ''),
-          caption: prop.label || '',
+          caption: prop.label ?? '',
           isVisible: true,
-          description: prop.description || '',
+          description: prop.description ?? '',
           sortOrder: idx,
           itemType: 'item',
           minWidth: width.min,

@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/strict-boolean-expressions: "error" */
 import { ConfigurableActionConfigurator } from './configurator';
 import { getSettings } from './settings';
 import { Form } from 'antd';
@@ -15,15 +16,24 @@ const ConfigurableActionConfiguratorComponent: ConfigurableActionConfiguratorCom
   isInput: true,
   isOutput: true,
   Factory: ({ model }) => {
-    if (model.hidden) return null;
+    const { propertyName, hidden = false } = model;
+    if (hidden) return null;
 
-    if (isNullOrWhiteSpace(model.propertyName)) {
+    if (isNullOrWhiteSpace(propertyName)) {
       console.error('Property name is required for configurableActionConfigurator. Component id: ', model.id);
-      return;
+      return undefined;
     }
     return (
-      <Form.Item name={model.propertyName} labelCol={{ span: 0 }} wrapperCol={{ span: 24 }} noStyle>
-        <ConfigurableActionConfigurator allowedActions={model.allowedActions} editorConfig={model} level={1} readOnly={model.readOnly} label={model.label as string} description={model.description} hideLabel={model.hideLabel} />
+      <Form.Item name={propertyName} labelCol={{ span: 0 }} wrapperCol={{ span: 24 }} noStyle>
+        <ConfigurableActionConfigurator
+          allowedActions={model.allowedActions}
+          editorConfig={model}
+          level={1}
+          readOnly={model.readOnly}
+          label={model.label}
+          description={model.description}
+          hideLabel={model.hideLabel}
+        />
       </Form.Item>
     );
   },

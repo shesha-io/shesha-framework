@@ -2,6 +2,39 @@ import * as React from 'react';
 import { isDefined, isNotNullOrWhiteSpace } from "@/utils/nullables";
 import { executeScriptSync } from '@/providers/form/utils';
 import { IPropertySetting } from '..';
+import { getStyleBoxValue } from "@/designer-components/styleBox/utils";
+import { IConfigurableFormComponent, IStyleValue, IToolboxComponent } from "@/interfaces";
+import { IConfigurableTheme } from "@/providers";
+import { DeviceTypes } from "@/providers/canvas/contexts";
+import { deepMergeSkipUndefinedFunc, deepMergeValues } from "@/utils/object";
+
+export const getEffectiveStyle = (model: IConfigurableFormComponent, effectiveDevice: DeviceTypes, theme?: IConfigurableTheme | undefined, toolboxComponent?: IToolboxComponent | undefined, isSettingsForm: boolean = false): IStyleValue => {
+  // for settings form components should use their own styles
+  if (isSettingsForm === true)
+    return model;
+
+  // Default styles + Theme component styles
+  const defStyle: IStyleValue = toolboxComponent?.getDefaultStyles?.() ?? { styleCss: {} };
+  const themeDefStyle: IStyleValue = isDefined(theme?.components)
+    ? deepMergeValues(defStyle, theme.components[model.type] as IStyleValue, deepMergeSkipUndefinedFunc)
+    : defStyle;
+
+  // Default styles + Theme component styles + Desktop component styles
+  const desktopModel = model.desktop;
+  // ToDo: AS - remove all using stylingBox after migration all components
+  const desktopStylingBox = isDefined(desktopModel?.stylingBox) ? getStyleBoxValue(desktopModel.stylingBox) : undefined;
+  const desktopStylingBoxJson = desktopModel?.stylingBoxJson;
+  const desktopThemeStyle: IStyleValue = deepMergeValues(themeDefStyle, { ...desktopModel, stylingBoxJson: Boolean(desktopStylingBoxJson) ? desktopStylingBoxJson : desktopStylingBox }, deepMergeSkipUndefinedFunc);
+
+  if (effectiveDevice === 'desktop') return desktopThemeStyle;
+
+  // Default styles + Theme component styles + Desktop component styles + Effective component styles
+  const effectiveModel = model[effectiveDevice as keyof typeof model] as IStyleValue | undefined;
+  const effectiveStylingBox = isDefined(effectiveModel?.stylingBox) ? getStyleBoxValue(effectiveModel.stylingBox) : undefined;
+  const effectiveStylingBoxJson = effectiveModel?.stylingBoxJson;
+  const effectiveDesktopStyle = deepMergeValues(desktopThemeStyle, { ...effectiveModel, stylingBoxJson: (Boolean(effectiveStylingBoxJson)) ? effectiveStylingBoxJson : effectiveStylingBox }, deepMergeSkipUndefinedFunc);
+  return effectiveDesktopStyle as IStyleValue;
+};
 
 export const DIMENSION_UNITS = ['px', '%', 'vw', 'vh', 'em', 'rem', 'auto', 'calc', 'none', 'fr', 'in', 'cm', 'mm', 'pt', 'pc'] as const;
 export type DimensionUnits = typeof DIMENSION_UNITS[number];
