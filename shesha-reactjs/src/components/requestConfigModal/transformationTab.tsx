@@ -7,6 +7,7 @@ import { validateTransformationScript } from './transformationRunner';
 import { useAvailableConstantsMetadata } from '@/utils/metadata/hooks';
 import { IObjectMetadataBuilder } from '@/utils/metadata/metadataBuilder';
 import { DataTypes } from '@/interfaces';
+import { isNullOrWhiteSpace } from '@/utils/nullables';
 import { useStyles } from './styles';
 
 const { Text } = Typography;
@@ -44,10 +45,10 @@ export const TransformationTab: FC<ITransformationTabProps> = ({ value, onChange
   // present (an empty script is a no-op, mirrored by the isNullOrWhiteSpace check in
   // applyResponseTransformation).
   const handleScriptChange = (next: string): void => {
-    onChange({ enabled: Boolean(next.trim()), script: next });
+    onChange({ enabled: !isNullOrWhiteSpace(next), script: next });
   };
 
-  const scriptValidation = script.trim() ? validateTransformationScript(script) : null;
+  const scriptValidation = isNullOrWhiteSpace(script) ? null : validateTransformationScript(script);
 
   return (
     <div className={styles.bodyEditor}>
