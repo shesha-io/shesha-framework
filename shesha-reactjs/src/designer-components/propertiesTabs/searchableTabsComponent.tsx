@@ -185,7 +185,7 @@ const SearchableTabs: React.FC<SearchableTabsProps> = ({ model }) => {
   ), [effectiveActiveKey, handleTabChange, model.size, model.tabType, newFilteredTabs, styles.content, model.position]);
 
   return (
-    <div className={styles.root}>
+    <div>
       {renderSearchInput({
         ref: searchInputRef,
         autoFocus: newFilteredTabs.length === 0,

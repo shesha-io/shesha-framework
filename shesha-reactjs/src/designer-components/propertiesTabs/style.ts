@@ -86,7 +86,6 @@ export const useStyles = createStyles(({ css, cx, token }) => {
   `);
 
   return {
-    root,
     searchField,
     searchIcon,
     content,
