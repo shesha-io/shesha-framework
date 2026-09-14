@@ -28,11 +28,15 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     }
   `);
 
-  const content = cx(css`
+  const content = cx("sha-tabs-content", css`
     display: flex;
     flex-direction: column;
     flex: 1 1 auto;
     min-height: 0;
+    
+    &&&& .ant-collapse-header, .ant-collapse-body  {
+      padding: 5px 0px !important;
+    }
 
     /* Tab strip: fixed. */
     > .ant-tabs-nav {
