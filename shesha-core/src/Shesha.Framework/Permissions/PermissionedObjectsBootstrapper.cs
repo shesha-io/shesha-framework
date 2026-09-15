@@ -77,7 +77,12 @@ namespace Shesha.Permission
                         dbItem.Module = await _moduleReporsitory.FirstOrDefaultAsync(x => x.Id == item.ModuleId);
                         dbItem.Parent = item.Parent;
                         dbItem.Name = item.Name;
-                        if (item.Hardcoded == true || dbItem.Access == Domain.Enums.RefListPermissionedAccess.Inherited)
+
+                        // dbItem.Hardcoded == false means the row was explicitly configured (e.g. imported)
+                        // rather than left at its bootstrap/code-derived default -- imported configuration
+                        // outranks a code attribute, so skip the overwrite below even if the code still
+                        // says Hardcoded or the object's Md5 has drifted since the import.
+                        if (dbItem.Hardcoded != false && (item.Hardcoded == true || dbItem.Access == Domain.Enums.RefListPermissionedAccess.Inherited))
                         {
                             dbItem.Access = item.Access ?? Domain.Enums.RefListPermissionedAccess.Inherited;
                             dbItem.Permissions = string.Join(",", item.Permissions);
