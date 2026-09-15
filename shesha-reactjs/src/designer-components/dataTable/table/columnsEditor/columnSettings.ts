@@ -18,7 +18,7 @@ export const getColumnSettings = (fbf: FormBuilderFactory, data?: object): FormM
         tabs: [
           {
             key: "common",
-            title: "Common",
+            title: "Main",
             id: "commonTab1",
             components: [
               ...fbf()

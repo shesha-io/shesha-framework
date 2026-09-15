@@ -23,6 +23,7 @@ import { useFormDesignerComponentGetter } from "@/providers/form/hooks";
 import { createPortal } from "react-dom";
 import { ComponentProperties } from "../componentPropertiesPanel/componentProperties";
 import { useComponentValidationResults } from "@/providers/validator/hooks";
+import { getDesignerIndicators } from "./designerIndicators";
 export interface IDesignerFormComponentProps {
   componentModel: UnwrapCodeEvaluators<IComponentModelProps>;
   sourceComponentModel: IComponentModelProps;
@@ -70,27 +71,9 @@ const DesignerFormComponentInner: FC<IDesignerFormComponentProps> = ({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSelected, settingsPanelElement, readOnly, component, resolvedTheme]);
 
-  const hiddenFx = (isPropertySettings(sourceComponentModel.hidden) && sourceComponentModel.hidden._mode === 'code') || // ToDo: AS - remove hidden after migration all components
-    (isPropertySettings(sourceComponentModel.visible) && sourceComponentModel.visible._mode === 'code');
+  const { showPermissions, showCustomLogic, showHidden } = getDesignerIndicators(sourceComponentModel);
+
   const editModeFx = isPropertySettings(sourceComponentModel.editMode) && sourceComponentModel.editMode._mode === 'code';
-  const hiddenPs = isNonEmptyArray(sourceComponentModel.visiblePermissions);
-  const editModePs = isNonEmptyArray(sourceComponentModel.editModePermissions);
-  const hiddenCondition = hiddenFx || hiddenPs;
-  const editModeCondition = editModeFx || editModePs;
-  const fxCondition = hiddenFx || editModeFx;
-  const psCondition = hiddenPs || editModePs;
-
-  const actionText1 = (hiddenCondition ? 'hidden' : '') + (hiddenCondition && editModeCondition ? ' and ' : '') + (editModeCondition ? 'disabled' : '');
-  const actionText2 = (fxCondition ? 'condition' : '') + (fxCondition && psCondition ? '/' : '') + (psCondition ? 'permissions' : '');
-  const actionText3 = (hiddenCondition ? 'showing' : '') + (hiddenCondition && editModeCondition ? '/' : '') + (editModeCondition ? 'enabled' : '');
-
-  const visibleValue = isPropertySettings(sourceComponentModel.visible) && sourceComponentModel.visible._mode === 'value'
-    ? sourceComponentModel.visible._value !== false
-    : sourceComponentModel.visible !== false;
-  const hiddenValue = isPropertySettings(sourceComponentModel.hidden) && sourceComponentModel.hidden._mode === 'value'
-    ? sourceComponentModel.hidden._value === true
-    : sourceComponentModel.hidden === true;
-
   const editModeValue = isPropertySettings(sourceComponentModel.editMode) && sourceComponentModel.editMode._mode === 'value'
     ? sourceComponentModel.editMode._value
     : sourceComponentModel.editMode;
@@ -107,27 +90,40 @@ const DesignerFormComponentInner: FC<IDesignerFormComponentProps> = ({
         })}
     >
       <span className={styles.shaComponentIndicator}>
-        <Show when={fxCondition || psCondition}>
-          <Tooltip title={`This component is ${actionText1} by ${actionText2}. It's now ${actionText3} because we're in a designer mode`}>
-            {fxCondition && <FunctionOutlined />}
-            {psCondition && <LockOutlined />}
+        <Show when={showPermissions}>
+          <Tooltip title="This field is hidden and disabled by permissions. It's shown and enabled here so you can configure it in the Form Builder.">
+            <span className={styles.shaComponentIndicatorIcon}><LockOutlined /></span>
           </Tooltip>
         </Show>
 
-        <Show when={!hiddenFx && (!visibleValue || hiddenValue)}>
-          <Tooltip title="This component is hidden. It's now showing because we're in a designer mode"><EyeInvisibleOutlined /></Tooltip>
+        <Show when={showCustomLogic}>
+          <Tooltip title="This field is hidden by custom logic. It's shown here so you can configure it in the Form Builder.">
+            <span className={styles.shaComponentIndicatorIcon}><FunctionOutlined /></span>
+          </Tooltip>
+        </Show>
+
+        <Show when={showHidden}>
+          <Tooltip title="This field is set to hidden. It's shown here so you can configure it in the Form Builder.">
+            <span className={styles.shaComponentIndicatorIcon}><EyeInvisibleOutlined /></span>
+          </Tooltip>
         </Show>
 
         <Show when={!editModeFx && (editModeValue === 'readOnly' || editModeValue === false)}>
-          <Tooltip title="This component is always in Read only mode"><Icon icon="editLockIcon" /></Tooltip>
+          <Tooltip title="This component is always in Read only mode">
+            <span className={styles.shaComponentIndicatorIcon}><Icon icon="editLockIcon" /></span>
+          </Tooltip>
         </Show>
 
         <Show when={!editModeFx && editModeValue === 'disabled'}>
-          <Tooltip title="This component is always disabled"><Icon icon="editDisableIcon" /></Tooltip>
+          <Tooltip title="This component is always disabled">
+            <span className={styles.shaComponentIndicatorIcon}><Icon icon="editDisableIcon" /></span>
+          </Tooltip>
         </Show>
 
         <Show when={!editModeFx && editModeValue === 'editable'}>
-          <Tooltip title="This component is always in Edit/Action mode"><Icon icon="editIcon" /></Tooltip>
+          <Tooltip title="This component is always in Edit/Action mode">
+            <span className={styles.shaComponentIndicatorIcon}><Icon icon="editIcon" /></span>
+          </Tooltip>
         </Show>
       </span>
 

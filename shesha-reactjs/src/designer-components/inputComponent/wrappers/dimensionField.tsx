@@ -23,7 +23,7 @@ export const DimensionFieldWrapper: FCUnwrapped<IDimensionFieldSettingsInputProp
 
   const suffix = useMemo(() => {
     return isDefined(icon) &&
-      <Icon style={{ color: 'black' }} icon={icon} hint={isDefined(tooltip) ? tooltip : (typeof label === 'string' ? label : undefined)} className={styles.icon} />;
+      <Icon icon={icon} hint={isDefined(tooltip) ? tooltip : (typeof label === 'string' ? label : undefined)} className={styles.icon} />;
   }, [icon, tooltip, label, styles.icon]);
 
   const handleSearch = (searchText: string): void => {

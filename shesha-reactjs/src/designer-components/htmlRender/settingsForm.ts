@@ -11,7 +11,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf }) => {
     components: fbf()
       .addSearchableTabs({ propertyName: 'settingsTabs', parentId: 'root', label: 'Settings', hideLabel: true, labelAlign: 'right', size: 'small',
         tabs: [
-          { key: 'common', title: 'Common', id: commonTabId,
+          { key: 'common', title: 'Main', id: commonTabId,
             components: fbf(commonTabId)
               .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small', validate: { required: true } })
               .addSettingsInput({ inputType: 'switch', propertyName: 'visible', label: 'Visible', jsSetting: true, layout: 'horizontal', permissionSettings: true })

@@ -208,7 +208,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token, prefixCls }
   `);
 
   const shaSiteLayoutBackground = css`
-    background: ${backgroundColor};
+    background: ${token.colorBgContainer};
 
     .sha-site-layout-toolbar {
       ${flexCenterAlignedSpaceBetween}

@@ -1,6 +1,10 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx }) => {
+export const useStyles = createStyles(({ css, cx, token }) => {
+  const isDarkMode = token.colorBgBase === '#000';
+  const backgroundColorMargin = isDarkMode ? token.colorBgBase : '#f5f5f5';
+  const backgroundColorPadding = isDarkMode ? token.colorBgContainer : '#fff';
+
   const shaStyleBox = cx("sha-style-box", css`
       display: block;
       height: 155px;
@@ -24,11 +28,11 @@ export const useStyles = createStyles(({ css, cx }) => {
       }
       
       .sha-style-box-margin {
-        background-color: #f5f5f5;
+        background-color: ${backgroundColorMargin};
       }
       
       .sha-style-box-padding {
-        background-color: #fff;
+        background-color: ${backgroundColorPadding};
       }
       
       .sha-style-box-text {
@@ -36,7 +40,7 @@ export const useStyles = createStyles(({ css, cx }) => {
         left: 4px;
         font-size: 11px;
         max-height: 28px;
-        color: darkslategrey;
+        color: ${token.colorTextSecondary};
         font-weight: 500;
       }
       

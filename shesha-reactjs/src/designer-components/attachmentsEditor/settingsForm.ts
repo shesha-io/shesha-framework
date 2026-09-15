@@ -87,7 +87,7 @@ export const getSettings: SettingsFormMarkupFactory = ({ fbf, removeStyleRouter 
         size: 'small',
         tabs: [
           {
-            key: 'common', title: 'Common', id: commonTabId,
+            key: 'common', title: 'Main', id: commonTabId,
             components: fbf(commonTabId)
               .addContextPropertyAutocomplete({ propertyName: 'propertyName', label: 'Property Name', styledLabel: true, size: 'small' })
               .addLabelConfigurator({ propertyName: 'hideLabel', label: 'Label', hideLabel: true })
