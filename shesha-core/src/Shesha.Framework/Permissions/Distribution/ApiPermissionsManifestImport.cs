@@ -95,7 +95,7 @@ namespace Shesha.Permissions.Distribution
             }
 
             // Parents before children so that child rows can resolve their parent when created for the first time.
-            var orderedItems = item.Items
+            var orderedItems = (item.Items ?? new List<DistributedPermissionedObject>())
                 .OrderBy(i => string.IsNullOrEmpty(i.Parent) ? 0 : 1)
                 .ToList();
 
