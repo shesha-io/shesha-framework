@@ -399,7 +399,7 @@ namespace Shesha.EntityHistory
                         new Relation()
                         {
                             Id = manyToManyType.GetProperty("Id")?.GetValue(x)?.ToString(),
-                            RelatedObject = x.ForceCast<IFullAudited>(),
+                            RelatedObject = (x as IFullAudited)!,
                             InnerObject = manyToManyType.GetProperty(attr.RelatedEntityField)?.GetValue(x) as IFullAudited,
                         })
                     .Select(x =>
@@ -581,7 +581,7 @@ namespace Shesha.EntityHistory
                         new Relation()
                         {
                             Id = manyToOneType.GetProperty("Id")?.GetValue(x)?.ToString(),
-                            RelatedObject = x.ForceCast<IFullAudited>(),
+                            RelatedObject = (x as IFullAudited)!,
                             Name = GetEntityName(x, relatedNameField)
                         })
                     .ToList();
@@ -723,7 +723,7 @@ namespace Shesha.EntityHistory
                         new Relation()
                         {
                             Id = childType.GetProperty("Id")?.GetValue(x)?.ToString(),
-                            RelatedObject = x.ForceCast<IFullAudited>(),
+                            RelatedObject = (x as IFullAudited)!,
                             Name = GetEntityName(x, childNameField)
                         })
                     .ToList();
