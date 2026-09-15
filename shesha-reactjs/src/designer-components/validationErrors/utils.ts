@@ -27,12 +27,5 @@ export const defaultStyles = (): IStyleValue => {
       paddingRight: sheshaStyles.paddingLG,
       marginBottom: sheshaStyles.paddingMD,
     },
-    shadow: {
-      offsetX: 0,
-      offsetY: 0,
-      blurRadius: 0,
-      spreadRadius: 0,
-      color: '',
-    },
   };
 };
