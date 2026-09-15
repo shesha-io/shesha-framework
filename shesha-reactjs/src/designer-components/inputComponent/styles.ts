@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx }) => {
+export const useStyles = createStyles(({ css, cx, token }) => {
   const inlineInputs = cx(css`
         align-items: end !important;
         display: flex;
@@ -37,8 +37,9 @@ export const useStyles = createStyles(({ css, cx }) => {
     `);
 
   const icon = cx("sha-input-component-icon", css`
-    display: flex;
-    align-items: center;
+        display: flex;
+        align-items: center;
+        color: ${token.colorText}
     `);
 
   const radioBtns = cx(css`
