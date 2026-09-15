@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/strict-boolean-expressions: "error" */
 import { FormInstance } from 'antd';
 import { IConfigurableFormComponent, YesNoInherit } from '@/interfaces/formDesigner';
 import { FormFullName, FormIdentifier, FormMode } from '@/providers/form/models';
@@ -15,7 +16,7 @@ export const GHOST_PAYLOAD_KEY = '_&@#GH0ST';
 
 export const getFieldNames = (data: object): string[] => {
   const processContainer = (container: unknown, containerName: string, fieldsList: string[]): void => {
-    if (!container) return;
+    if (!isDefined(container)) return;
     if (containerName) fieldsList.push(containerName);
 
     if (typeof container === 'object' && !(container instanceof Date) && !(container instanceof File)) {
@@ -54,18 +55,18 @@ export function addFormFieldsList<TData = object>(
 }
 
 export const getFormFullName = (moduleName: string | null, name: string): string => {
-  return moduleName ? `${moduleName}/${name}` : name;
+  return !isNullOrWhiteSpace(moduleName) ? `${moduleName}/${name}` : name;
 };
 
 const buildFormData = (formData: FormData, data: unknown, parentKey: string | undefined): void => {
-  if (data && typeof data === 'object' && !(data instanceof Date) && !(data instanceof File)) {
+  if (isDefined(data) && typeof data === 'object' && !(data instanceof Date) && !(data instanceof File)) {
     Object.keys(data).forEach((key) => {
-      buildFormData(formData, (data as Record<string, unknown>)[key], parentKey ? `${parentKey}[${key}]` : key);
+      buildFormData(formData, (data as Record<string, unknown>)[key], !isNullOrWhiteSpace(parentKey) ? `${parentKey}[${key}]` : key);
     });
   } else {
     const value = isDefined(data) ? data : '';
-    if (parentKey)
-      formData.append(parentKey, value.toString());
+    if (!isNullOrWhiteSpace(parentKey))
+      formData.append(parentKey, value instanceof Blob ? value : value.toString());
   }
 };
 
