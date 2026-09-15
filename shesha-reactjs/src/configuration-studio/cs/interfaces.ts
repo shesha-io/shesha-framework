@@ -68,6 +68,7 @@ export interface IConfigurationStudio {
   readonly treeNodes: TreeNode[];
   readonly treeLoadingState: ProcessingState;
   readonly quickSearch: string | undefined;
+  readonly itemTypeFilter: string[];
   readonly treeExpandedKeys: React.Key[];
   readonly treeSelectedKeys: React.Key[];
   readonly treeSelectedNode: TreeNode | undefined;
@@ -87,6 +88,7 @@ export interface IConfigurationStudio {
 
   onTreeNodeExpand: (expandedKeys: React.Key[]) => void;
   setQuickSearch: (value: string) => void;
+  setItemTypeFilter: (value: string[]) => void;
 
   loadTreeAndDocsAsync: () => Promise<void>;
   moveTreeNodeAsync: (payload: MoveNodePayload) => Promise<void>;

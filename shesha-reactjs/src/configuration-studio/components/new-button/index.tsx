@@ -1,4 +1,4 @@
-import { DownOutlined } from '@ant-design/icons';
+import { DownOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Dropdown, Empty, Space, theme } from 'antd';
 import { FC, useMemo } from 'react';
 import * as React from 'react';
@@ -38,9 +38,9 @@ export const NewButton: FC = () => {
           )
       )}
     >
-      <Button size="small">
+      <Button size="small" icon={<PlusOutlined />}>
         <Space>
-          New
+          Create New
           <DownOutlined />
         </Space>
       </Button>

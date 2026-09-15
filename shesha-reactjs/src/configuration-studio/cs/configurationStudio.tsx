@@ -89,6 +89,7 @@ const STORAGE_KEYS = {
   TREE_EXPANDED_KEYS: 'treeExpandedKeys',
   // TREE_SELECTION: 'treeSelection',
   QUICK_SEARCH: 'quickSearch',
+  ITEM_TYPE_FILTER: 'itemTypeFilter',
 };
 
 interface CreateItemResponse {
@@ -164,6 +165,8 @@ export class ConfigurationStudio implements IConfigurationStudio {
   private _treeExpandedKeys: React.Key[] = [];
 
   private _quickSearch?: string;
+
+  private _itemTypeFilter: string[] = [];
 
   private _itemTypes: ItemTypeDefinition[] = [];
 
@@ -269,6 +272,16 @@ export class ConfigurationStudio implements IConfigurationStudio {
     this.notifySubscribers(['tree']);
   };
 
+  get itemTypeFilter(): string[] {
+    return this._itemTypeFilter;
+  }
+
+  setItemTypeFilter = (value: string[]): void => {
+    this._itemTypeFilter = value;
+    void this.saveItemTypeFilterAsync();
+    this.notifySubscribers(['tree']);
+  };
+
   get treeExpandedKeys(): React.Key[] {
     return this._treeExpandedKeys;
   };
@@ -314,6 +327,10 @@ export class ConfigurationStudio implements IConfigurationStudio {
     await this.storage.setAsync(STORAGE_KEYS.QUICK_SEARCH, this._quickSearch);
   };
 
+  private saveItemTypeFilterAsync = async (): Promise<void> => {
+    await this.storage.setAsync(STORAGE_KEYS.ITEM_TYPE_FILTER, this._itemTypeFilter);
+  };
+
   private loadTreeExpandedNodesAsync = async (): Promise<void> => {
     this._treeExpandedKeys = (await this.storage.getAsync(STORAGE_KEYS.TREE_EXPANDED_KEYS)) ?? [];
   };
@@ -322,8 +339,13 @@ export class ConfigurationStudio implements IConfigurationStudio {
     this._quickSearch = (await this.storage.getAsync<string>(STORAGE_KEYS.QUICK_SEARCH, false)) ?? "";
   };
 
+  private loadItemTypeFilterAsync = async (): Promise<void> => {
+    this._itemTypeFilter = (await this.storage.getAsync<string[]>(STORAGE_KEYS.ITEM_TYPE_FILTER)) ?? [];
+  };
+
   private loadTreeStateAsync = async (): Promise<void> => {
     await this.loadQuickSearchAsync();
+    await this.loadItemTypeFilterAsync();
     await this.loadTreeExpandedNodesAsync();
     // await this.loadTreeSelectionAsync();
   };

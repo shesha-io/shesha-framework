@@ -13,6 +13,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
   const csNavPanelContent = "sha-cs-nav-content";
   const csNavPanelHeader = 'sha-cs-nav-content-hd';
   const csNavPanelTree = 'sha-cs-nav-content-tree';
+  const csTreeFilterButton = 'sha-cs-tree-filter-btn';
   const csQuickInfoIcons = 'sha-cs-quick-info-icons';
   const csDocTabs = 'sha-cs-doc-tabs';
   const csDocEditor = 'sha-cs-doc-editor';
@@ -47,6 +48,10 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
             }
             .${csHeaderRight}{
                 margin-right: 10px;
+                
+                .${prefixCls}-divider {
+                    height: 24px;
+                }
             }            
         }
         .${csContent}{
@@ -71,6 +76,18 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
                 .${csNavPanelHeader}{
                     margin-bottom: 8px;
                     flex-grow: 0;
+                    display: flex;
+                    align-items: center;
+                    gap: 4px;
+                    /* Let the search box take the slack so the filter button keeps its size. */
+                    >.${prefixCls}-input-group-wrapper,
+                    >.${prefixCls}-input-wrapper {
+                        flex: 1 1 auto;
+                        min-width: 0;
+                    }
+                    .${prefixCls}-badge {
+                        flex: 0 0 auto;
+                    }
                 }
                 .${csNavPanelTree}{
                     flex-grow: 1;
@@ -177,6 +194,7 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
     csNavPanelContent,
     csNavPanelHeader,
     csNavPanelTree,
+    csTreeFilterButton,
     csQuickInfoIcons,
     csDocTabs,
     csDocEditor,
