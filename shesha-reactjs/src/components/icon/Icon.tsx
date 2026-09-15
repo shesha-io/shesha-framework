@@ -23,14 +23,14 @@ export const Icon = ({
 
   if (typeof icon !== 'string') {
     if (React.isValidElement(icon))
-      return <Tooltip title={hint}><div style={style} className={className}>{icon}</div></Tooltip>;
+      return <Tooltip title={hint}><span style={style} className={className}>{icon}</span></Tooltip>;
     return icon;
   }
 
   if (isKeyOf(icon, icons)) {
     return (
       <Tooltip title={hint}>
-        <div style={style} className={className}><ShaIcon iconName={icon} style={style} /></div>
+        <span style={style} className={className}><ShaIcon iconName={icon} style={style} /></span>
       </Tooltip>
     );
   }
@@ -38,7 +38,7 @@ export const Icon = ({
   if (isKeyOf(icon, customIcons)) {
     return (
       <Tooltip title={hint}>
-        <div className={className} style={style}>{customIcons[icon]}</div>
+        <span className={className} style={style}>{customIcons[icon]}</span>
       </Tooltip>
     );
   }

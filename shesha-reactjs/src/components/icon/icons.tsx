@@ -19,107 +19,72 @@ export const customIcons = {
   ),
   heightIcon: (
     <svg width="16" height="16" viewBox="0 0 22 22" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-      <mask id="mask0_5_99" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
-        <rect width="20" height="20" fill="currentColor" />
-      </mask>
-      <g mask="url(#mask0_5_99)">
-        <path d="M11.9808 20L8.69226 16.7115L9.38076 16.023L11.4808 18.0788V5.902L9.40001 7.977L8.71151 7.2885L12 4L15.2885 7.2885L14.5808 8.002L12.4808 5.92125V18.0788L14.5808 16.023L15.2693 16.7115L11.9808 20Z" fill="currentColor" />
-      </g>
+      <path d="M11.9808 20L8.69226 16.7115L9.38076 16.023L11.4808 18.0788V5.902L9.40001 7.977L8.71151 7.2885L12 4L15.2885 7.2885L14.5808 8.002L12.4808 5.92125V18.0788L14.5808 16.023L15.2693 16.7115L11.9808 20Z" fill="currentColor" />
     </svg>
   ),
   maxHeightIcon: (
     <svg width="16" height="16" viewBox="0 0 22 22" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-      <mask id="mask0_6_103" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
-        <rect width="20" height="20" fill="currentColor" />
-      </mask>
-      <g mask="url(#mask0_6_103)">
-        <path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M8 4H16V5H12.0088H8V4ZM11.9912 19L14.9825 16.1226L14.3562 15.5201L12.446 17.3189V6.68109L14.3562 8.50175L15 7.87744L12.0088 5L9.01751 7.87744L9.64377 8.47988L11.5364 6.66425V17.3189L9.62627 15.5201L9 16.1226L11.9912 19ZM11.9912 19H16V20H8V19H11.9912Z"
-          fill="currentColor"
-        />
-      </g>
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M8 4H16V5H12.0088H8V4ZM11.9912 19L14.9825 16.1226L14.3562 15.5201L12.446 17.3189V6.68109L14.3562 8.50175L15 7.87744L12.0088 5L9.01751 7.87744L9.64377 8.47988L11.5364 6.66425V17.3189L9.62627 15.5201L9 16.1226L11.9912 19ZM11.9912 19H16V20H8V19H11.9912Z"
+        fill="currentColor"
+      />
     </svg>
   ),
   maxWidthIcon: (
     <svg width="16" height="16" viewBox="0 0 22 22" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-      <mask id="mask0_6_110" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
-        <rect width="20" height="20" fill="currentColor" />
-      </mask>
-      <g mask="url(#mask0_6_110)">
-        <path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M4 16L4 8H5V11.9912V16H4ZM19 12.0088L16.1226 9.01751L15.5201 9.64377L17.3189 11.554H6.68109L8.50175 9.64377L7.87744 9L5 11.9912L7.87744 14.9825L8.47988 14.3562L6.66425 12.4636H17.3189L15.5201
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M4 16L4 8H5V11.9912V16H4ZM19 12.0088L16.1226 9.01751L15.5201 9.64377L17.3189 11.554H6.68109L8.50175 9.64377L7.87744 9L5 11.9912L7.87744 14.9825L8.47988 14.3562L6.66425 12.4636H17.3189L15.5201
              14.3737L16.1226 15L19 12.0088ZM19 12.0088V8H20V16H19V12.0088Z"
-          fill="currentColor"
-        />
-      </g>
+        fill="currentColor"
+      />
     </svg>
   ),
   minHeightIcon: (
     <svg width="16" height="16" viewBox="0 0 22 22" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-      <mask id="mask0_6_116" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
-        <rect width="20" height="20" fill="currentColor" />
-      </mask>
-      <g mask="url(#mask0_6_116)">
-        <path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M8 20H16V19H12.446V13.6811L14.3562 15.4799L14.9825 14.8774L11.9912 12L9 14.8774L9.62627 15.4799L11.5364 13.6811V19H8V20ZM8 5H11.554V10.3189L9.64378 8.52013L9.01752 9.12256L12.0088 12L15 9.12256L14.3737 8.52013L12.4636
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M8 20H16V19H12.446V13.6811L14.3562 15.4799L14.9825 14.8774L11.9912 12L9 14.8774L9.62627 15.4799L11.5364 13.6811V19H8V20ZM8 5H11.554V10.3189L9.64378 8.52013L9.01752 9.12256L12.0088 12L15 9.12256L14.3737 8.52013L12.4636
              10.3189V5H16V4H8V5Z"
-          fill="currentColor"
-        />
-      </g>
+        fill="currentColor"
+      />
     </svg>
   ),
   minWidthIcon: (
     <svg width="16" height="16" viewBox="0 0 22 22" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-      <mask id="mask0_6_138" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
-        <rect width="20" height="20" fill="currentColor" />
-      </mask>
-      <g mask="url(#mask0_6_138)">
-        <path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M4 8V16H5V12.446H10.3189L8.52013 14.3562L9.12256 14.9825L12 11.9912L9.12256 9L8.52013 9.62627L10.3189 11.5364H5V8H4ZM19 8V11.554H13.6811L15.4799 9.64378L14.8774 9.01752L12 12.0088L14.8774 15L15.4799 14.3737L13.6811
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M4 8V16H5V12.446H10.3189L8.52013 14.3562L9.12256 14.9825L12 11.9912L9.12256 9L8.52013 9.62627L10.3189 11.5364H5V8H4ZM19 8V11.554H13.6811L15.4799 9.64378L14.8774 9.01752L12 12.0088L14.8774 15L15.4799 14.3737L13.6811
              12.4636H19V16H20V8H19Z"
-          fill="currentColor"
-        />
-      </g>
+        fill="currentColor"
+      />
     </svg>
   ),
   widthIcon: (
     <svg width="16" height="16" viewBox="0 0 22 22" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-      <mask id="mask0_6_100" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
-        <rect y="20" width="20" height="20" transform="rotate(-90 0 20)" fill="currentColor" />
-      </mask>
-      <g mask="url(#mask0_6_100)">
-        <path
-          d="M20 12.0192L16.7115 15.3077L16.023 14.6192L18.0788 12.5192H5.902L7.977 14.6L7.2885 15.2885L4 12L7.2885 8.71149L8.002 9.41920L5.92125 11.5192H18.0788L16.023 9.41920L16.7115 8.73074L20
+      <path
+        d="M20 12.0192L16.7115 15.3077L16.023 14.6192L18.0788 12.5192H5.902L7.977 14.6L7.2885 15.2885L4 12L7.2885 8.71149L8.002 9.41920L5.92125 11.5192H18.0788L16.023 9.41920L16.7115 8.73074L20
              12.0192Z"
-          fill="currentColor"
-        />
-      </g>
+        fill="currentColor"
+      />
     </svg>
   ),
   noRepeatIcon: (
     <svg width="16" height="16" viewBox="0 0 22 22" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-      <mask id="mask0_6_161" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
-        <rect width="20" height="20" fill="currentColor" />
-      </mask>
-      <g mask="url(#mask0_6_161)">
-        <path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M4 17.6923L7.30775 21L8.0155 20.2808L5.927 18.1923H16.089L15.089 17.1923H5.927L8.0155 15.1038L7.30775 14.3845L4 17.6923ZM5.69225 10.8078V7.79551L6.69225
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M4 17.6923L7.30775 21L8.0155 20.2808L5.927 18.1923H16.089L15.089 17.1923H5.927L8.0155 15.1038L7.30775 14.3845L4 17.6923ZM5.69225 10.8078V7.79551L6.69225
              8.79551V10.8078H5.69225ZM17.3077 15.213L18.3077 16.213V13.1923H17.3077V15.213ZM8.90253 6.80775L7.90253 5.80775H18.073L15.9845 3.71925L16.6923 3L20 6.30775L16.6923 9.6155L15.9845 8.89625L18.073
               6.80775H8.90253ZM4.88101
               4.17387L4.1739 4.88098L19.1814 19.8885L19.8886 19.1814L4.88101 4.17387Z"
-          fill="currentColor"
-        />
-      </g>
+        fill="currentColor"
+      />
     </svg>
   ),
   offsetHorizontalIcon: (
@@ -148,51 +113,36 @@ export const customIcons = {
   ),
   repeatXIcon: (
     <svg width="16" height="16" viewBox="0 0 22 22" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-      <mask id="mask0_6_155" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
-        <rect width="20" height="20" fill="currentColor" />
-      </mask>
-      <g mask="url(#mask0_6_155)">
-        <path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M4 17.6923L7.30775 21L8.0155 20.2808L5.927 18.1923H18.3077V13.1923H17.3077V17.1923H5.927L8.0155 15.1038L7.30775 14.3845L4 17.6923ZM5.69225
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M4 17.6923L7.30775 21L8.0155 20.2808L5.927 18.1923H18.3077V13.1923H17.3077V17.1923H5.927L8.0155 15.1038L7.30775 14.3845L4 17.6923ZM5.69225
              5.80775V10.8078H6.69225V6.80775H18.073L15.9845
              8.89625L16.6923 9.6155L20 6.30775L16.6923 3L15.9845 3.71925L18.073 5.80775H5.69225ZM11.978 11.4574L10.5859 9.18182H9.56889L11.4126 12.0909L9.55753 15H10.5803L11.978 12.7557H12.0234L13.4212
               15H14.4439L12.62 12.0909L14.4325 9.18182H13.4155L12.0234 11.4574H11.978Z"
-          fill="currentColor"
-        />
-      </g>
+        fill="currentColor"
+      />
     </svg>
   ),
   repeatYIcon: (
     <svg width="16" height="16" viewBox="0 0 22 22" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-      <mask id="mask0_6_158" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
-        <rect width="20" height="20" fill="currentColor" />
-      </mask>
-      <g mask="url(#mask0_6_158)">
-        <path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M17.6923 20L21 16.6923L20.2808 15.9845L18.1923 18.073V5.69225H13.1923V6.69225H17.1923V18.073L15.1038 15.9845L14.3845 16.6923L17.6923 20ZM5.80775
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M17.6923 20L21 16.6923L20.2808 15.9845L18.1923 18.073V5.69225H13.1923V6.69225H17.1923V18.073L15.1038 15.9845L14.3845 16.6923L17.6923 20ZM5.80775
              18.3077H10.8078V17.3077H6.80775V5.927L8.89625 8.0155L9.6155 7.30775L6.30775
              4L3 7.30775L3.71925 8.0155L5.80775 5.927V18.3077ZM10.4492 9.18182H9.45206L11.5629 12.7159V15H12.4379V12.7159L14.5487 9.18182H13.5515L12.0316 11.8267H11.9691L10.4492 9.18182Z"
-          fill="currentColor"
-        />
-      </g>
+        fill="currentColor"
+      />
     </svg>
   ),
   repeatIcon: (
     <svg width="16" height="16" viewBox="0 0 22 22" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-      <mask id="mask0_6_154" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
-        <rect width="20" height="20" fill="currentColor" />
-      </mask>
-      <g mask="url(#mask0_6_154)">
-        <path
-          d="M7.30775 21L4 17.6923L7.30775 14.3845L8.0155 15.1038L5.927 17.1923H17.3077V13.1923H18.3077V18.1923H5.927L8.0155 20.2808L7.30775 21ZM5.69225 10.8078V5.80775H18.073L15.9845 3.71925L16.6923
+      <path
+        d="M7.30775 21L4 17.6923L7.30775 14.3845L8.0155 15.1038L5.927 17.1923H17.3077V13.1923H18.3077V18.1923H5.927L8.0155 20.2808L7.30775 21ZM5.69225 10.8078V5.80775H18.073L15.9845 3.71925L16.6923
              3L20 6.30775L16.6923 9.6155L15.9845 8.89625L18.073 6.80775H6.69225V10.8078H5.69225Z"
-          fill="currentColor"
-        />
-      </g>
+        fill="currentColor"
+      />
     </svg>
   ),
   spreadIcon: (
