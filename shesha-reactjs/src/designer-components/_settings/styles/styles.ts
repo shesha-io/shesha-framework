@@ -36,7 +36,7 @@ export const useStyles = createStyles(({ css, cx, responsive, token }) => {
 
   const label = cx("properties-label", css`
             font-size: 12px;
-            color: darkslategrey;
+            color: ${token.colorTextSecondary};
             font-weight: 500;
             position: relative;
             /* Long labels ("Interaction Mode") used to run into the control below them in a narrow
@@ -114,17 +114,40 @@ export const useStyles = createStyles(({ css, cx, responsive, token }) => {
     .ant-color-picker-trigger
   `;
 
+  /* antd renders the editable text in a nested node whose own rule is more specific than a bare
+     `input`, so the wrapper's colour never reaches it. These need the text colour only - the
+     wrapper above already paints the background, and repainting it here would double the tint. */
+  const nestedTextSelectors = `
+    .ant-input-number .ant-input-number-input,
+    .ant-select .ant-select-content,
+    .ant-select .ant-select-selection-item,
+    /* AutoComplete (dimension fields) keeps its value in a real input that overrides
+       .ant-select-content. */
+    .ant-select .ant-select-input,
+    .ant-input-affix-wrapper > input.ant-input
+  `;
+
+  const isDarkMode = token.colorBgBase === '#000';
+  const inheritedBg = isDarkMode ? token.colorSuccessBg : '#D7E8D9';
+  const overriddenBg = isDarkMode ? token.colorWarningBg : '#F4E9D6';
+
   const inheritedValue = cx(css`
     ${valueHighlightSelectors} {
-      background-color: #D7E8D9;
-      color: #1C1B1F;
+      background-color: ${inheritedBg};
+    }
+
+    ${nestedTextSelectors} {
+      background-color: transparent;
     }
   `);
 
   const overriddenValue = cx(css`
     ${valueHighlightSelectors} {
-      background-color: #F4E9D6;
-      color: #1C1B1F;
+      background-color: ${overriddenBg};
+    }
+
+    ${nestedTextSelectors} {
+      background-color: transparent;
     }
   `);
 

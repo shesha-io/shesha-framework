@@ -48,7 +48,7 @@ export const MultiColorInput = ({ value, onChange, readOnly }: MultiColorInputPr
           return (
             <Tag
               key={index}
-              style={{ backgroundColor: '#fff', padding: 0, margin: 0, display: 'flex', flexDirection: 'row' }}
+              style={{ backgroundColor: 'transparent', padding: 0, margin: 0, display: 'flex', flexDirection: 'row' }}
               closable={canRemoveColor && readOnly !== true}
               onClose={() => removeColorAt(index)}
             >

@@ -21,8 +21,12 @@ export const useStyles = createStyles(({ css, cx, token }) => {
     flex: 1 1 auto;
     min-height: 0;
     
-    &&&& .ant-collapse-header, .ant-collapse-body  {
-      padding: 5px 0px !important;
+    &&&& .ant-collapse-body, .ant-collapse-header  {
+      padding: 0px !important;
+    }
+
+    &&&& .ant-collapse-body  {
+      padding: 8px 0px !important;
     }
 
     /* Tab strip: fixed. */

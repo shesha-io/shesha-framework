@@ -13,20 +13,6 @@ type IconProps = {
   className?: string | undefined;
 };
 
-/**
- * These icons are mixed freely with text - in radio buttons, labels and settings rows - and the SVGs
- * they wrap sit on the text baseline by default, which left them a couple of pixels low wherever they
- * appeared. An inline-flex box centres the glyph on the line box instead, and `line-height: 1` stops a
- * tall inherited line-height from adding leading of its own.
- */
-const ICON_WRAPPER_STYLE: React.CSSProperties = {
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  lineHeight: 1,
-  verticalAlign: 'middle',
-};
-
 export const Icon = ({
   icon,
   hint,
@@ -34,18 +20,17 @@ export const Icon = ({
   className,
 }: IconProps): ReactNode => {
   const icons = antdIcons;
-  const wrapperStyle: React.CSSProperties = { ...ICON_WRAPPER_STYLE, ...style };
 
   if (typeof icon !== 'string') {
     if (React.isValidElement(icon))
-      return <Tooltip title={hint}><span style={wrapperStyle} className={className}>{icon}</span></Tooltip>;
+      return <Tooltip title={hint}><div style={style} className={className}>{icon}</div></Tooltip>;
     return icon;
   }
 
   if (isKeyOf(icon, icons)) {
     return (
       <Tooltip title={hint}>
-        <span style={wrapperStyle} className={className}><ShaIcon iconName={icon} style={style} /></span>
+        <div style={style} className={className}><ShaIcon iconName={icon} style={style} /></div>
       </Tooltip>
     );
   }
@@ -53,7 +38,7 @@ export const Icon = ({
   if (isKeyOf(icon, customIcons)) {
     return (
       <Tooltip title={hint}>
-        <span style={wrapperStyle} className={className}>{customIcons[icon]}</span>
+        <div className={className} style={style}>{customIcons[icon]}</div>
       </Tooltip>
     );
   }

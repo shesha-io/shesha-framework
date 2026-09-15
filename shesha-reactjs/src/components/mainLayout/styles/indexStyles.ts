@@ -26,8 +26,10 @@ export const GlobalSheshaStyles = createGlobalStyle`
   }
 
   /* Configured forms render on a light surface in every theme (see ConfigurableFormRenderer),
-     so their scrollbars must stay light too rather than following the app theme. */
-  .sha-form, .sha-form * {
+     so their scrollbars must stay light too rather than following the app theme. Scoped to the
+     configured-form marker: .sha-form is on every form, settings panels included, and those
+     do follow the theme. */
+  .sha-configured-form, .sha-configured-form * {
     scrollbar-color: ${CONFIGURED_FORM_SCROLLBAR_THUMB} ${CONFIGURED_FORM_SCROLLBAR_TRACK};
   }
 
