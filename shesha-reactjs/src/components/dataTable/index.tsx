@@ -44,6 +44,7 @@ import { DataTableColumn, IShaDataTableProps, OnSaveHandler, OnSaveSuccessHandle
 import { ValueRenderer } from '../valueRenderer/index';
 import { IBorderValue } from '@/designer-components/_settings/utils/border/interfaces';
 import { IShadowValue } from '@/designer-components/_settings/utils/shadow/interfaces';
+import { withFontFallback } from '@/designer-components/_settings/utils/font/utils';
 import { isEqual } from 'lodash';
 import { Collapse, Typography } from 'antd';
 import { RowsReorderPayload } from '@/providers/dataTable/repository/interfaces';
@@ -212,7 +213,7 @@ export const DataTable: FC<Partial<IIndexTableProps>> = ({
   const appContext = useAvailableConstantsData();
 
   // Compute effective header font values with backward compatibility
-  const effectiveHeaderFontFamily = headerFont?.type ?? headerFontFamily;
+  const effectiveHeaderFontFamily = withFontFallback(headerFont?.type ?? headerFontFamily);
   const effectiveHeaderFontSize = headerFont?.size ? `${headerFont.size}px` : headerFontSize;
   const effectiveHeaderFontWeight = headerFont?.weight ?? headerFontWeight;
   const effectiveHeaderTextColor = headerFont?.color ?? headerTextColor;
