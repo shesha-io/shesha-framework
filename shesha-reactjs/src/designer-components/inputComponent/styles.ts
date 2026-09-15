@@ -1,6 +1,6 @@
 import { createStyles } from '@/styles';
 
-export const useStyles = createStyles(({ css, cx, token }) => {
+export const useStyles = createStyles(({ css, cx }) => {
   const inlineInputs = cx(css`
         align-items: end !important;
         display: flex;
@@ -39,19 +39,21 @@ export const useStyles = createStyles(({ css, cx, token }) => {
   const icon = cx("sha-input-component-icon", css`
     display: flex;
     align-items: center;
-    color: ${token.colorText};
     `);
 
   const radioBtns = cx(css`
       .ant-radio-button-wrapper-checked {
         z-index: 0 !important;
-
-        &&&& .sha-input-component-icon {
-          color: unset !important;
-        }
       }
 
       .ant-radio-button-wrapper {
+
+        & .ant-radio-button-label {
+         > div {
+          display: flex;
+          align-items: center;
+         }
+        }
         display: inline-flex;
         align-items: center;
       }

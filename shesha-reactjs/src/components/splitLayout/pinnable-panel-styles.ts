@@ -48,7 +48,6 @@ export const usePinnablePanelStyles = createStyles(
 
     verticalText: css`
       writing-mode: vertical-rl;
-      letter-spacing: 4px;
     `,
 
     horizontalText: css``,
