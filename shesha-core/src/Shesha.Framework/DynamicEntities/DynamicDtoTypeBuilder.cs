@@ -109,6 +109,11 @@ namespace Shesha.DynamicEntities
             {
                 case DataTypes.Guid:
                     return typeof(Guid?);
+                case DataTypes.File:
+                    // Represented by the referenced StoredFile's Id, same as an unwrapped entity reference
+                    // (see DataTypes.EntityReference/GetEntityReferenceType below) -- not the StoredFile
+                    // entity itself, which would pull the full NHibernate entity into the dynamic DTO/schema.
+                    return typeof(Guid?);
                 case DataTypes.String:
                     return typeof(string);
                 case DataTypes.Geometry:
