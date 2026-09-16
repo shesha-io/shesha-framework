@@ -187,14 +187,19 @@ const isGlobalUrl = (url: string): boolean => {
  * handles a plain relative path, a protocol-relative URL, and a fully-qualified absolute URL
  * uniformly, so none of those shapes can slip past this check.
  *
+ * `backendUrl` itself may be relative (e.g. `/api`, when the backend is proxied same-origin) —
+ * `new URL` has no implicit base, so a relative `backendUrl` is first resolved against the page's
+ * own origin before it's used as the base for `url` and compared against.
+ *
  * Requiring `https:` on top of the origin match closes a second gap: an origin match alone
  * doesn't rule out cleartext transport — an http backendUrl (or an http URL that happens to
  * resolve to the same origin) would still expose the bearer token to anyone on the network path. */
 const isApprovedDestination = (url: string, backendUrl: string): boolean => {
   if (isNullOrWhiteSpace(backendUrl)) return false;
   try {
-    const resolved = new URL(url, backendUrl);
-    const backend = new URL(backendUrl);
+    const pageOrigin = typeof window !== 'undefined' ? window.location.origin : undefined;
+    const backend = new URL(backendUrl, pageOrigin);
+    const resolved = new URL(url, backend);
     return resolved.protocol === 'https:' && backend.protocol === 'https:' && resolved.origin === backend.origin;
   } catch {
     return false;
