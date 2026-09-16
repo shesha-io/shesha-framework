@@ -2,9 +2,9 @@
 
 import React, { FC, PropsWithChildren } from "react";
 import {
+  AttachmentsEditorProvider,
   GlobalStateProvider,
   ShaApplicationProvider,
-  StoredFilesProvider,
   useNextRouter,
 } from "@shesha-io/reactjs";
 import { AppProgressBar } from "next-nprogress-bar";
@@ -29,9 +29,11 @@ export const AppProvider: FC<PropsWithChildren<IAppProviderProps>> = ({
         router={nextRouter}
         noAuth={nextRouter.path?.includes('/no-auth')}
       >
-        <StoredFilesProvider baseUrl={backendUrl} ownerId={""} ownerType={""}>
+        {/* 0.46.0 replaced StoredFilesProvider with AttachmentsEditorProvider.
+            It takes no baseUrl - the backend URL comes from ShaApplicationProvider. */}
+        <AttachmentsEditorProvider ownerId={""} ownerType={""}>
           {children}
-        </StoredFilesProvider>
+        </AttachmentsEditorProvider>
       </ShaApplicationProvider>
     </GlobalStateProvider>
   );
