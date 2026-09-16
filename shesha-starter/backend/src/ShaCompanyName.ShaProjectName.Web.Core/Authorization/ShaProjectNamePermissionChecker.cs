@@ -16,16 +16,14 @@ namespace ShaCompanyName.ShaProjectName.Common.Authorization
     {
         private readonly IRepository<Person, Guid> _personRepository;
         private readonly IRepository<ShaRoleAppointedPerson, Guid> _rolePersonRepository;
-        private readonly IRepository<ShaRoleAppointmentEntity, Guid> _appEntityRepository;
 
         /// <summary>
         /// Default constructor
         /// </summary>
-        public ShaProjectNamePermissionChecker(IRepository<Person, Guid> personRepository, IRepository<ShaRoleAppointedPerson, Guid> rolePersonRepository, IRepository<ShaRoleAppointmentEntity, Guid> appEntityRepository)
+        public ShaProjectNamePermissionChecker(IRepository<Person, Guid> personRepository, IRepository<ShaRoleAppointedPerson, Guid> rolePersonRepository)
         {
             _personRepository = personRepository;
             _rolePersonRepository = rolePersonRepository;
-            _appEntityRepository = appEntityRepository;
         }
 
         /// <summary>
@@ -36,7 +34,7 @@ namespace ShaCompanyName.ShaProjectName.Common.Authorization
         /// <returns></returns>
         public async Task<bool> IsGrantedAsync(long userId, string permissionName)
         {
-            var person = await _personRepository.GetAll().Where(p => p.User.Id == userId).FirstOrDefaultAsync();
+            var person = await (await _personRepository.GetAllAsync()).Where(p => p.User.Id == userId).FirstOrDefaultAsync();
             if (person == null)
                 return false;
 
@@ -69,7 +67,7 @@ namespace ShaCompanyName.ShaProjectName.Common.Authorization
         /// <returns></returns>
         public async Task<bool> IsInAnyOfRoles(Person person, params string[] roles)
         {
-            return await _rolePersonRepository.GetAll()
+            return await (await _rolePersonRepository.GetAllAsync())
                 .Where(e => roles.Contains(e.Role.Name) && e.Person == person).AnyAsync();
         }
 

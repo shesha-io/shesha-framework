@@ -15,6 +15,7 @@ module.exports = {
       'next.config.js',
       '/test/*',
       '/public/static/**',
+      '/public/monaco/**',
       'server.js',
       '/packages/*',
     ],
