@@ -1,5 +1,6 @@
 <Project>
   <PropertyGroup>
-    <SheshaVersion>0.40.0</SheshaVersion>
+    <SheshaVersion>0.46.0</SheshaVersion>
+    <TargetFramework>net10.0</TargetFramework>
   </PropertyGroup>
 </Project>

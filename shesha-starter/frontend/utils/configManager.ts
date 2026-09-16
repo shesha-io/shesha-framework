@@ -1,11 +1,4 @@
-import getGlobalConfig from 'next/config';
 import { camelCase } from './string';
-const { publicRuntimeConfig } = getGlobalConfig();
-
-const { shaEnv }: IShaEnvAppConfig = publicRuntimeConfig;
-
-type IShaEnvAppConfig = { shaEnv: IAppConfigManager };
-
 const CONFIG_KEY = '__APP_CONFIG__';
 
 export interface IAppConfigManager {
@@ -20,13 +13,19 @@ const defaultConfig: IAppConfigManager = {
   appInsightsInstrumentationKey: null,
 };
 
+const shaEnv: IAppConfigManager = {
+  baseUrl: process.env.NEXT_PUBLIC_BASE_URL ?? '',
+  googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? null,
+  appInsightsInstrumentationKey: process.env.NEXT_PUBLIC_APPINSIGHTS_KEY ?? null,
+};
+
 export default class ConfigManager {
   private devConfig = { ...camelCase(shaEnv) };
 
   getConfig(): IAppConfigManager {
     try {
       if (process.env.NODE_ENV !== 'production' && !shaEnv?.baseUrl) {
-        if (window) {
+        if (typeof window !== 'undefined') {
           this.devConfig = window[CONFIG_KEY];
         } else {
           this.devConfig = defaultConfig;
