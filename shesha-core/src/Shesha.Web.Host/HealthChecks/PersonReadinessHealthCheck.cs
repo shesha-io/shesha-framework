@@ -37,25 +37,48 @@ namespace Shesha.Web.Host.HealthChecks
             _logger = logger;
         }
 
+        /// <summary>
+        /// Runs the DB probe and reports Healthy/Unhealthy, bounding the wall-clock time to
+        /// <see cref="ProbeTimeout"/> even if the probe itself never observes cancellation.
+        /// </summary>
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
-            using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            timeoutCts.CancelAfter(ProbeTimeout);
+            var probeTask = ProbeDatabaseAsync(cancellationToken);
+
+            // NHibernate's default connection provider opens the ADO connection via the
+            // synchronous SqlConnection.Open(), which takes no CancellationToken - so a token
+            // passed into the query can only be observed once a connection already exists, never
+            // while establishing it. Racing against Task.Delay is what actually bounds the
+            // response time when the DB is unreachable over the network (as opposed to refusing
+            // the connection immediately), which is what Azure's health check needs.
+            var timeoutTask = Task.Delay(ProbeTimeout, cancellationToken);
+            var completedTask = await Task.WhenAny(probeTask, timeoutTask);
+
+            if (completedTask == timeoutTask)
+            {
+                _logger.LogWarning("Readiness health check timed out after {ProbeTimeout}.", ProbeTimeout);
+                return HealthCheckResult.Unhealthy("Database unreachable");
+            }
 
             try
             {
-                using (var uow = _unitOfWorkManager.Begin())
-                {
-                    var personRepository = _iocResolver.Resolve<IRepository<Person, Guid>>();
-                    await personRepository.GetAll().AnyAsync(timeoutCts.Token);
-                    await uow.CompleteAsync();
-                }
+                await probeTask;
                 return HealthCheckResult.Healthy();
             }
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, "Readiness health check failed: database not reachable.");
                 return HealthCheckResult.Unhealthy("Database unreachable");
+            }
+        }
+
+        private async Task ProbeDatabaseAsync(CancellationToken cancellationToken)
+        {
+            using (var uow = _unitOfWorkManager.Begin())
+            {
+                var personRepository = _iocResolver.Resolve<IRepository<Person, Guid>>();
+                await personRepository.GetAll().AnyAsync(cancellationToken);
+                await uow.CompleteAsync();
             }
         }
     }

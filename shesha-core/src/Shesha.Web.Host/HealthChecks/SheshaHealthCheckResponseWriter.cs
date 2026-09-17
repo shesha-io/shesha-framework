@@ -13,6 +13,9 @@ namespace Shesha.Web.Host.HealthChecks
     /// </summary>
     public static class SheshaHealthCheckResponseWriter
     {
+        /// <summary>
+        /// Writes <paramref name="report"/> to <paramref name="context"/>'s response as sanitized JSON.
+        /// </summary>
         public static Task WriteResponse(HttpContext context, HealthReport report)
         {
             context.Response.ContentType = "application/json";
