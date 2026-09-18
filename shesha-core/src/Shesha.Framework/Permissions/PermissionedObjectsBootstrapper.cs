@@ -118,12 +118,14 @@ namespace Shesha.Permission
 
         private async Task EnsureApiPermissionsManifestsAsync()
         {
-            var webApiObjects = await _permissionedObjectRepository.GetAll()
+            var modules = await _permissionedObjectRepository.GetAll()
                 .Where(x => x.Type == ShaPermissionedObjectsTypes.WebApi || x.Type == ShaPermissionedObjectsTypes.WebApiAction)
+                .Select(x => x.Module)
+                .Distinct()
                 .ToListAsync();
 
-            var moduleKeys = webApiObjects
-                .Select(x => (Guid?)x.Module?.Id)
+            var moduleKeys = modules
+                .Select(m => (Guid?)m?.Id)
                 .Distinct()
                 .ToList();
 
