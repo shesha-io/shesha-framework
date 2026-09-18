@@ -10,7 +10,6 @@ namespace Shesha.Domain
     /// time and applied onto those rows at import time.
     /// </summary>
     [Entity(TypeShortAlias = "Shesha.Framework.ApiPermissionsManifest", GenerateApplicationService = GenerateApplicationServiceState.DisableGenerateApplicationService)]
-    [JoinedProperty("Frwk_ApiPermissionsManifests")]
     [DiscriminatorValue(ItemTypeName)]
     public class ApiPermissionsManifest : ConfigurationItemBase
     {

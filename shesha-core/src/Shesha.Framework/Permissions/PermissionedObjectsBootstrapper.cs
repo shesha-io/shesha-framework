@@ -9,6 +9,7 @@ using Shesha.Extensions;
 using Shesha.Permissions;
 using Shesha.Services.VersionedFields;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,13 +23,15 @@ namespace Shesha.Permission
         private readonly IVersionedFieldManager _versionedFieldManager;
         private readonly IRepository<Module, Guid> _moduleReporsitory;
         private readonly IIocResolver _iocResolver;
+        private readonly IRepository<ApiPermissionsManifest, Guid> _manifestRepository;
 
         public PermissionedObjectsBootstrapper(
             IRepository<PermissionedObject, Guid> permissionedObjectRepository,
             IObjectMapper objectMapper,
             IVersionedFieldManager versionedFieldManager,
             IRepository<Module, Guid> moduleReporsitory,
-            IIocResolver iocResolver
+            IIocResolver iocResolver,
+            IRepository<ApiPermissionsManifest, Guid> manifestRepository
         )
         {
             _permissionedObjectRepository = permissionedObjectRepository;
@@ -36,6 +39,7 @@ namespace Shesha.Permission
             _versionedFieldManager = versionedFieldManager;
             _moduleReporsitory = moduleReporsitory;
             _iocResolver = iocResolver;
+            _manifestRepository = manifestRepository;
         }
 
         public async Task ProcessAsync()
@@ -106,8 +110,53 @@ namespace Shesha.Permission
                     }*/
                 }
             }
-            
+
+            await EnsureApiPermissionsManifestsAsync();
+
             // todo: write changelog
+        }
+
+        private async Task EnsureApiPermissionsManifestsAsync()
+        {
+            var webApiObjects = await _permissionedObjectRepository.GetAll()
+                .Where(x => x.Type == ShaPermissionedObjectsTypes.WebApi || x.Type == ShaPermissionedObjectsTypes.WebApiAction)
+                .ToListAsync();
+
+            var moduleKeys = webApiObjects
+                .Select(x => (Guid?)x.Module?.Id)
+                .Distinct()
+                .ToList();
+
+            foreach (var moduleId in moduleKeys)
+            {
+                var manifests = await _manifestRepository.GetAll()
+                    .Where(m => m.Name == ApiPermissionsManifest.ManifestName
+                        && (moduleId == null ? m.Module == null : m.Module != null && m.Module.Id == moduleId))
+                    .ToListAsync();
+
+                if (!manifests.Any())
+                {
+                    var manifest = new ApiPermissionsManifest
+                    {
+                        Name = ApiPermissionsManifest.ManifestName,
+                        Module = moduleId.HasValue ? await _moduleReporsitory.GetAsync(moduleId.Value) : null,
+                        VersionNo = 1,
+                        VersionStatus = ConfigurationItemVersionStatus.Live,
+                    };
+                    manifest.Normalize();
+                    await _manifestRepository.InsertAsync(manifest);
+                }
+                else if (manifests.Count > 1)
+                {
+                    var toKeep = manifests.FirstOrDefault(m => m.VersionStatus == ConfigurationItemVersionStatus.Live)
+                        ?? manifests.OrderBy(m => m.CreationTime).First();
+
+                    foreach (var duplicate in manifests.Where(m => m.Id != toKeep.Id))
+                    {
+                        await _manifestRepository.DeleteAsync(duplicate);
+                    }
+                }
+            }
         }
     }
 }

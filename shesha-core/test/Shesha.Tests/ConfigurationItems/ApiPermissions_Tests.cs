@@ -8,6 +8,7 @@ using Shesha.ConfigurationItems.Distribution;
 using Shesha.Domain;
 using Shesha.Domain.ConfigurationItems;
 using Shesha.Domain.Enums;
+using Shesha.Permission;
 using Shesha.Permissions;
 using Shesha.Permissions.Distribution;
 using Shesha.Permissions.Distribution.Dto;
@@ -392,6 +393,115 @@ namespace Shesha.Tests.ConfigurationItems
                 (codeScannedItem.Hardcoded == true || dbRow.Access == RefListPermissionedAccess.Inherited);
 
             collisionCondition.ShouldBeFalse("Imported configuration on a Hardcoded endpoint must outrank a code attribute on the next bootstrap run");
+        }
+
+        [Fact]
+        public async Task When_Bootstrapper_Runs_ShouldCreate_MissingManifest_TestAsync()
+        {
+            // Uses the container-resolved bootstrapper/repos (not the in-memory harness) since
+            // EnsureApiPermissionsManifestsAsync is private and only reachable via ProcessAsync.
+            var permissionedObjectRepo = Resolve<IRepository<PermissionedObject, Guid>>();
+            var manifestRepo = Resolve<IRepository<ApiPermissionsManifest, Guid>>();
+            var moduleRepo = Resolve<IRepository<Module, Guid>>();
+            var uowManager = Resolve<IUnitOfWorkManager>();
+            var bootstrapper = Resolve<PermissionedObjectsBootstrapper>();
+
+            var uniqueObjectName = $"{TestService}@{Guid.NewGuid():N}";
+            var moduleName = $"test-module-{Guid.NewGuid():N}";
+
+            using (var uow = uowManager.Begin())
+            {
+                var module = new Module { Id = Guid.NewGuid(), Name = moduleName };
+                await moduleRepo.InsertAsync(module);
+
+                await permissionedObjectRepo.InsertAsync(new PermissionedObject
+                {
+                    Id = Guid.NewGuid(),
+                    Module = module,
+                    Object = uniqueObjectName,
+                    Type = ShaPermissionedObjectsTypes.WebApi,
+                    Name = "TestAppService",
+                    Access = RefListPermissionedAccess.Inherited,
+                });
+                await uowManager.Current.SaveChangesAsync();
+
+                var existing = await manifestRepo.FirstOrDefaultAsync(m => m.Name == ApiPermissionsManifest.ManifestName && m.Module == module);
+                existing.ShouldBeNull("No manifest should exist for this module before the bootstrapper runs");
+
+                await bootstrapper.ProcessAsync();
+                await uowManager.Current.SaveChangesAsync();
+
+                var created = manifestRepo.GetAll().Where(m => m.Name == ApiPermissionsManifest.ManifestName && m.Module.Id == module.Id).ToList();
+                created.Count.ShouldBe(1, "Bootstrapper must create exactly one manifest for a module with WebApi permissioned objects");
+                created[0].VersionStatus.ShouldBe(ConfigurationItemVersionStatus.Live);
+
+                await uow.CompleteAsync();
+            }
+        }
+
+        [Fact]
+        public async Task When_Bootstrapper_Runs_ShouldDelete_DuplicateManifests_TestAsync()
+        {
+            var permissionedObjectRepo = Resolve<IRepository<PermissionedObject, Guid>>();
+            var manifestRepo = Resolve<IRepository<ApiPermissionsManifest, Guid>>();
+            var moduleRepo = Resolve<IRepository<Module, Guid>>();
+            var uowManager = Resolve<IUnitOfWorkManager>();
+            var bootstrapper = Resolve<PermissionedObjectsBootstrapper>();
+
+            var uniqueObjectName = $"{TestService}@{Guid.NewGuid():N}";
+            var moduleName = $"test-module-{Guid.NewGuid():N}";
+
+            using (var uow = uowManager.Begin())
+            {
+                var module = new Module { Id = Guid.NewGuid(), Name = moduleName };
+                await moduleRepo.InsertAsync(module);
+
+                await permissionedObjectRepo.InsertAsync(new PermissionedObject
+                {
+                    Id = Guid.NewGuid(),
+                    Module = module,
+                    Object = uniqueObjectName,
+                    Type = ShaPermissionedObjectsTypes.WebApi,
+                    Name = "TestAppService",
+                    Access = RefListPermissionedAccess.Inherited,
+                });
+
+                // Simulate the duplicate-manifest scenario this fix is meant to clean up: a Live manifest
+                // plus a stray Draft one (as arose from repeated manual creation during manual testing).
+                // VersionNo must differ between the two since uq_Frwk_ConfigurationItems_Versioning is keyed
+                // on (Name, ModuleId, ApplicationId, ItemType, TenantId, VersionNo), and only one row may be
+                // Live per uq_Frwk_ConfigurationItems_LiveVersion.
+                var liveManifestId = Guid.NewGuid();
+                await manifestRepo.InsertAsync(new ApiPermissionsManifest
+                {
+                    Id = liveManifestId,
+                    Name = ApiPermissionsManifest.ManifestName,
+                    Module = module,
+                    VersionNo = 1,
+                    VersionStatus = ConfigurationItemVersionStatus.Live,
+                });
+                await manifestRepo.InsertAsync(new ApiPermissionsManifest
+                {
+                    Id = Guid.NewGuid(),
+                    Name = ApiPermissionsManifest.ManifestName,
+                    Module = module,
+                    VersionNo = 2,
+                    VersionStatus = ConfigurationItemVersionStatus.Draft,
+                });
+                await uowManager.Current.SaveChangesAsync();
+
+                var beforeCount = manifestRepo.GetAll().Count(m => m.Name == ApiPermissionsManifest.ManifestName && m.Module.Id == module.Id);
+                beforeCount.ShouldBe(2, "Test setup must start with duplicate manifests");
+
+                await bootstrapper.ProcessAsync();
+                await uowManager.Current.SaveChangesAsync();
+
+                var remaining = manifestRepo.GetAll().Where(m => m.Name == ApiPermissionsManifest.ManifestName && m.Module.Id == module.Id && !m.IsDeleted).ToList();
+                remaining.Count.ShouldBe(1, "Bootstrapper must collapse duplicate manifests for the same module down to one");
+                remaining[0].Id.ShouldBe(liveManifestId, "The Live manifest must survive, not an arbitrary/earliest-created one");
+
+                await uow.CompleteAsync();
+            }
         }
 
         #region private declarations
