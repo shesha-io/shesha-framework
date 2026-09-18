@@ -127,8 +127,7 @@ namespace Shesha.Permission
             foreach (var module in modules)
             {
                 var manifests = await _manifestRepository.GetAll()
-                    .Where(m => m.Name == ApiPermissionsManifest.ManifestName
-                        && (module == null ? m.Module == null : m.Module != null && m.Module.Id == module.Id))
+                    .Where(m => m.Name == ApiPermissionsManifest.ManifestName && m.Module == module)
                     .ToListAsync();
 
                 if (!manifests.Any())
