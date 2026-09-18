@@ -19,6 +19,7 @@ using Shesha.Extensions;
 using Shesha.Locks;
 using Shesha.Migrations;
 using Shesha.Modules;
+using Shesha.Permissions.Distribution;
 using Shesha.Services;
 using Shesha.Services.ReferenceLists;
 using Shesha.Services.ReferenceLists.Distribution;
@@ -137,6 +138,10 @@ namespace Shesha
             IocManager
                 .RegisterConfigurableItemExport<PermissionDefinition, IPermissionDefinitionExport, PermissionDefinitionExport>()
                 .RegisterConfigurableItemImport<PermissionDefinition, PermissionDefinitionImport, PermissionDefinitionImport>();
+
+            IocManager
+                .RegisterConfigurableItemExport<ApiPermissionsManifest, IApiPermissionsManifestExport, ApiPermissionsManifestExport>()
+                .RegisterConfigurableItemImport<ApiPermissionsManifest, IApiPermissionsManifestImport, ApiPermissionsManifestImport>();
 
             IocManager
                 .RegisterConfigurableItemManager<SettingConfiguration, ISettingStore, SettingStore>()

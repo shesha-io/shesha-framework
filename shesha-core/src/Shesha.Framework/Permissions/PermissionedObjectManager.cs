@@ -429,6 +429,12 @@ namespace Shesha.Permissions
             obj.Hidden = permissionedObject.Hidden;
             obj.Access = permissionedObject.Access ?? RefListPermissionedAccess.Inherited;
 
+            // Marks the row as explicitly configured (e.g. via an admin/import action) rather than
+            // code-owned, so PermissionedObjectsBootstrapper stops treating a later code-attribute
+            // change on this object as authoritative -- otherwise the next deployment that bumps the
+            // object's Md5 would silently revert this value back to the code default.
+            obj.Hardcoded = false;
+
             var newObj = await _permissionedObjectRepository.InsertOrUpdateAsync(obj);
 
             var dto = await GetDtoAsync(newObj);

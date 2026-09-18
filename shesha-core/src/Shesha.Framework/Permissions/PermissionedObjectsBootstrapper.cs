@@ -9,6 +9,7 @@ using Shesha.Extensions;
 using Shesha.Permissions;
 using Shesha.Services.VersionedFields;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,13 +23,15 @@ namespace Shesha.Permission
         private readonly IVersionedFieldManager _versionedFieldManager;
         private readonly IRepository<Module, Guid> _moduleReporsitory;
         private readonly IIocResolver _iocResolver;
+        private readonly IRepository<ApiPermissionsManifest, Guid> _manifestRepository;
 
         public PermissionedObjectsBootstrapper(
             IRepository<PermissionedObject, Guid> permissionedObjectRepository,
             IObjectMapper objectMapper,
             IVersionedFieldManager versionedFieldManager,
             IRepository<Module, Guid> moduleReporsitory,
-            IIocResolver iocResolver
+            IIocResolver iocResolver,
+            IRepository<ApiPermissionsManifest, Guid> manifestRepository
         )
         {
             _permissionedObjectRepository = permissionedObjectRepository;
@@ -36,6 +39,7 @@ namespace Shesha.Permission
             _versionedFieldManager = versionedFieldManager;
             _moduleReporsitory = moduleReporsitory;
             _iocResolver = iocResolver;
+            _manifestRepository = manifestRepository;
         }
 
         public async Task ProcessAsync()
@@ -77,7 +81,12 @@ namespace Shesha.Permission
                         dbItem.Module = await _moduleReporsitory.FirstOrDefaultAsync(x => x.Id == item.ModuleId);
                         dbItem.Parent = item.Parent;
                         dbItem.Name = item.Name;
-                        if (item.Hardcoded == true || dbItem.Access == Domain.Enums.RefListPermissionedAccess.Inherited)
+
+                        // dbItem.Hardcoded == false means the row was explicitly configured (e.g. imported)
+                        // rather than left at its bootstrap/code-derived default -- imported configuration
+                        // outranks a code attribute, so skip the overwrite below even if the code still
+                        // says Hardcoded or the object's Md5 has drifted since the import.
+                        if (dbItem.Hardcoded != false && (item.Hardcoded == true || dbItem.Access == Domain.Enums.RefListPermissionedAccess.Inherited))
                         {
                             dbItem.Access = item.Access ?? Domain.Enums.RefListPermissionedAccess.Inherited;
                             dbItem.Permissions = string.Join(",", item.Permissions);
@@ -101,8 +110,52 @@ namespace Shesha.Permission
                     }*/
                 }
             }
-            
+
+            await EnsureApiPermissionsManifestsAsync();
+
             // todo: write changelog
+        }
+
+        private async Task EnsureApiPermissionsManifestsAsync()
+        {
+            var modules = await _permissionedObjectRepository.GetAll()
+                .Where(x => x.Type == ShaPermissionedObjectsTypes.WebApi || x.Type == ShaPermissionedObjectsTypes.WebApiAction)
+                .Select(x => x.Module)
+                .Distinct()
+                .ToListAsync();
+
+            foreach (var module in modules)
+            {
+                var manifests = await _manifestRepository.GetAll()
+                    .Where(m => m.Name == ApiPermissionsManifest.ManifestName && m.Module == module)
+                    .ToListAsync();
+
+                if (!manifests.Any())
+                {
+                    var manifest = new ApiPermissionsManifest
+                    {
+                        Name = ApiPermissionsManifest.ManifestName,
+                        Module = module,
+                        VersionNo = 1,
+                        VersionStatus = ConfigurationItemVersionStatus.Live,
+                    };
+                    manifest.Normalize();
+                    await _manifestRepository.InsertAsync(manifest);
+                }
+                else if (manifests.Count > 1)
+                {
+                    var toKeep = manifests
+                        .Where(m => m.VersionStatus == ConfigurationItemVersionStatus.Live)
+                        .OrderBy(m => m.CreationTime)
+                        .FirstOrDefault()
+                        ?? manifests.OrderBy(m => m.CreationTime).First();
+
+                    foreach (var duplicate in manifests.Where(m => m.Id != toKeep.Id))
+                    {
+                        await _manifestRepository.DeleteAsync(duplicate);
+                    }
+                }
+            }
         }
     }
 }
