@@ -9,6 +9,8 @@ using Shesha.Testing.Fixtures;
 using Shesha.Web.Host.HealthChecks;
 using Shouldly;
 using System;
+using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -42,12 +44,33 @@ namespace Shesha.Tests.HealthChecks
     }
 
     /// <summary>
-    /// Covers the failure path with plain mocks - no DB needed since the repository is made to
-    /// throw directly, simulating a DB that's unreachable.
+    /// Covers the failure paths with plain mocks - no DB needed, since the repository is made to
+    /// throw or to block, simulating a DB that's unreachable.
     /// </summary>
     [Trait("RunOnPipeline", "yes")]
     public class PersonReadinessHealthCheck_UnhealthyPath_Tests
     {
+        // Blocks synchronously, the way NHibernate does while opening a connection to a server
+        // that accepts the TCP connection but never answers.
+        private static Mock<IUnitOfWorkManager> BlockingUnitOfWorkManager(ManualResetEventSlim release)
+        {
+            var unitOfWorkManager = new Mock<IUnitOfWorkManager>();
+            unitOfWorkManager.Setup(m => m.Begin()).Returns(() =>
+            {
+                release.Wait(TimeSpan.FromSeconds(30));
+                return Mock.Of<IUnitOfWorkCompleteHandle>();
+            });
+            return unitOfWorkManager;
+        }
+
+        private static PersonReadinessHealthCheck CreateSut(IUnitOfWorkManager unitOfWorkManager)
+        {
+            return new PersonReadinessHealthCheck(
+                Mock.Of<IIocResolver>(),
+                unitOfWorkManager,
+                Mock.Of<ILogger<PersonReadinessHealthCheck>>());
+        }
+
         [Fact]
         public async Task CheckHealthAsync_WhenRepositoryThrows_ReturnsUnhealthyWithoutLeakingException()
         {
@@ -75,6 +98,40 @@ namespace Shesha.Tests.HealthChecks
             result.Description.ShouldNotBeNull();
             result.Description!.ShouldBe("Database unreachable");
             result.Description!.ShouldNotContain(sensitiveMessage);
+        }
+
+        [Fact]
+        public async Task CheckHealthAsync_WhenProbeOutlivesTimeout_ReturnsUnhealthyWithoutWaitingForIt()
+        {
+            using var release = new ManualResetEventSlim(false);
+            var sut = CreateSut(BlockingUnitOfWorkManager(release).Object);
+
+            var stopwatch = Stopwatch.StartNew();
+            var result = await sut.CheckHealthAsync(new HealthCheckContext());
+            stopwatch.Stop();
+
+            result.Status.ShouldBe(HealthStatus.Unhealthy);
+            result.Description!.ShouldBe("Database unreachable");
+            // The probe is still blocked; answering anyway is the point. Without the offload in
+            // CheckHealthAsync this waits out the full 30s block rather than the 3s ProbeTimeout.
+            stopwatch.Elapsed.ShouldBeLessThan(TimeSpan.FromSeconds(15));
+
+            release.Set();
+        }
+
+        [Fact]
+        public async Task CheckHealthAsync_WhenCallerCancels_PropagatesCancellationInsteadOfReportingDbOutage()
+        {
+            using var release = new ManualResetEventSlim(false);
+            var sut = CreateSut(BlockingUnitOfWorkManager(release).Object);
+
+            using var callerCts = new CancellationTokenSource();
+            callerCts.CancelAfter(TimeSpan.FromMilliseconds(200));
+
+            await Should.ThrowAsync<OperationCanceledException>(
+                async () => { await sut.CheckHealthAsync(new HealthCheckContext(), callerCts.Token); });
+
+            release.Set();
         }
     }
 }
