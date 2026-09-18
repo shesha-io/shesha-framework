@@ -79,6 +79,9 @@ namespace Shesha.Web.Host.Startup
 
             services.AddSheshaRateLimiting(opts => _appConfiguration.GetSection("RateLimiting").Bind(opts));
 
+            // Singleton so the readiness probe is shared: only one runs at a time, however many
+            // requests arrive while the database is unreachable.
+            services.AddSingleton<PersonReadinessHealthCheck>();
             services.AddHealthChecks()
                 .AddCheck<PersonReadinessHealthCheck>("person-db", tags: new[] { "ready" });
 

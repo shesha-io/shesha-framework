@@ -34,7 +34,6 @@ namespace Shesha.Tests.HealthChecks
         {
             var sut = new PersonReadinessHealthCheck(
                 Resolve<IIocResolver>(),
-                Resolve<IUnitOfWorkManager>(),
                 Resolve<ILogger<PersonReadinessHealthCheck>>());
 
             var result = await sut.CheckHealthAsync(new HealthCheckContext());
@@ -45,14 +44,14 @@ namespace Shesha.Tests.HealthChecks
 
     /// <summary>
     /// Covers the failure paths with plain mocks - no DB needed, since the repository is made to
-    /// throw or to block, simulating a DB that's unreachable.
+    /// throw or the unit of work to block, simulating a DB that's unreachable.
     /// </summary>
     [Trait("RunOnPipeline", "yes")]
     public class PersonReadinessHealthCheck_UnhealthyPath_Tests
     {
-        // Blocks synchronously, the way NHibernate does while opening a connection to a server
-        // that accepts the TCP connection but never answers.
-        private static Mock<IUnitOfWorkManager> BlockingUnitOfWorkManager(ManualResetEventSlim release)
+        // Begin() blocks synchronously, the way opening a connection to a server that accepts the
+        // TCP connection but never answers does.
+        private static Mock<IIocResolver> BlockingIocResolver(ManualResetEventSlim release)
         {
             var unitOfWorkManager = new Mock<IUnitOfWorkManager>();
             unitOfWorkManager.Setup(m => m.Begin()).Returns(() =>
@@ -60,15 +59,21 @@ namespace Shesha.Tests.HealthChecks
                 release.Wait(TimeSpan.FromSeconds(30));
                 return Mock.Of<IUnitOfWorkCompleteHandle>();
             });
-            return unitOfWorkManager;
+
+            return IocResolverFor(unitOfWorkManager.Object, Mock.Of<IRepository<Person, Guid>>());
         }
 
-        private static PersonReadinessHealthCheck CreateSut(IUnitOfWorkManager unitOfWorkManager)
+        private static Mock<IIocResolver> IocResolverFor(IUnitOfWorkManager unitOfWorkManager, IRepository<Person, Guid> personRepository)
         {
-            return new PersonReadinessHealthCheck(
-                Mock.Of<IIocResolver>(),
-                unitOfWorkManager,
-                Mock.Of<ILogger<PersonReadinessHealthCheck>>());
+            var iocResolver = new Mock<IIocResolver>();
+            iocResolver.Setup(r => r.Resolve<IUnitOfWorkManager>()).Returns(unitOfWorkManager);
+            iocResolver.Setup(r => r.Resolve<IRepository<Person, Guid>>()).Returns(personRepository);
+            return iocResolver;
+        }
+
+        private static PersonReadinessHealthCheck CreateSut(IIocResolver iocResolver)
+        {
+            return new PersonReadinessHealthCheck(iocResolver, Mock.Of<ILogger<PersonReadinessHealthCheck>>());
         }
 
         [Fact]
@@ -78,19 +83,10 @@ namespace Shesha.Tests.HealthChecks
             var personRepository = new Mock<IRepository<Person, Guid>>();
             personRepository.Setup(r => r.GetAll()).Throws(new InvalidOperationException(sensitiveMessage));
 
-            var iocResolver = new Mock<IIocResolver>();
-            iocResolver.Setup(r => r.Resolve<IRepository<Person, Guid>>()).Returns(personRepository.Object);
-
-            var unitOfWork = new Mock<IUnitOfWorkCompleteHandle>();
-            unitOfWork.Setup(u => u.CompleteAsync()).Returns(Task.CompletedTask);
-
             var unitOfWorkManager = new Mock<IUnitOfWorkManager>();
-            unitOfWorkManager.Setup(m => m.Begin()).Returns(unitOfWork.Object);
+            unitOfWorkManager.Setup(m => m.Begin()).Returns(Mock.Of<IUnitOfWorkCompleteHandle>());
 
-            var sut = new PersonReadinessHealthCheck(
-                iocResolver.Object,
-                unitOfWorkManager.Object,
-                new Mock<ILogger<PersonReadinessHealthCheck>>().Object);
+            var sut = CreateSut(IocResolverFor(unitOfWorkManager.Object, personRepository.Object).Object);
 
             var result = await sut.CheckHealthAsync(new HealthCheckContext());
 
@@ -104,7 +100,7 @@ namespace Shesha.Tests.HealthChecks
         public async Task CheckHealthAsync_WhenProbeOutlivesTimeout_ReturnsUnhealthyWithoutWaitingForIt()
         {
             using var release = new ManualResetEventSlim(false);
-            var sut = CreateSut(BlockingUnitOfWorkManager(release).Object);
+            var sut = CreateSut(BlockingIocResolver(release).Object);
 
             var stopwatch = Stopwatch.StartNew();
             var result = await sut.CheckHealthAsync(new HealthCheckContext());
@@ -113,8 +109,28 @@ namespace Shesha.Tests.HealthChecks
             result.Status.ShouldBe(HealthStatus.Unhealthy);
             result.Description!.ShouldBe("Database unreachable");
             // The probe is still blocked; answering anyway is the point. Without the offload in
-            // CheckHealthAsync this waits out the full 30s block rather than the 3s ProbeTimeout.
+            // StartOrJoinProbe this waits out the full 30s block rather than the 3s ProbeTimeout.
             stopwatch.Elapsed.ShouldBeLessThan(TimeSpan.FromSeconds(15));
+
+            release.Set();
+        }
+
+        [Fact]
+        public async Task CheckHealthAsync_WhenProbeAlreadyRunning_JoinsItInsteadOfStartingAnother()
+        {
+            using var release = new ManualResetEventSlim(false);
+            var iocResolver = BlockingIocResolver(release);
+            var sut = CreateSut(iocResolver.Object);
+
+            var first = sut.CheckHealthAsync(new HealthCheckContext());
+            var second = sut.CheckHealthAsync(new HealthCheckContext());
+            var results = await Task.WhenAll(first, second);
+
+            results[0].Status.ShouldBe(HealthStatus.Unhealthy);
+            results[1].Status.ShouldBe(HealthStatus.Unhealthy);
+            // One probe served both requests. Starting one per request is what would pile up
+            // blocked threads, sessions and connection attempts during an outage.
+            iocResolver.Verify(r => r.Resolve<IUnitOfWorkManager>(), Times.Once);
 
             release.Set();
         }
@@ -123,7 +139,7 @@ namespace Shesha.Tests.HealthChecks
         public async Task CheckHealthAsync_WhenCallerCancels_PropagatesCancellationInsteadOfReportingDbOutage()
         {
             using var release = new ManualResetEventSlim(false);
-            var sut = CreateSut(BlockingUnitOfWorkManager(release).Object);
+            var sut = CreateSut(BlockingIocResolver(release).Object);
 
             using var callerCts = new CancellationTokenSource();
             callerCts.CancelAfter(TimeSpan.FromMilliseconds(200));

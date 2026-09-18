@@ -19,7 +19,7 @@ a path with no dependencies and never auto-recycles instances over a transient d
 | `Shesha.Web.Host/Startup/Startup.cs` | registers the `person-db` check tagged `ready`, maps both paths |
 | `Shesha.Web.Host/HealthChecks/PersonReadinessHealthCheck.cs` | the DB probe, bounded to 3s |
 | `Shesha.Web.Host/HealthChecks/SheshaHealthCheckResponseWriter.cs` | sanitized JSON payload |
-| `Shesha.Tests/HealthChecks/*` | 6 tests |
+| `Shesha.Tests/HealthChecks/*` | 7 tests |
 | `shesha-core/docs/health-checks.md`, `shesha-core/README.md` | documentation |
 
 ## The defect found while verifying, and the fix
@@ -29,9 +29,14 @@ The readiness probe's 3-second timeout did not work. `CheckHealthAsync` raced th
 ever handing back a task. The race was therefore set up only after the blocking work had already
 finished - `Task.Delay` never got to win.
 
-(The measurement below establishes that the probe blocks before yielding; which frame does the
-blocking is an inference, most likely the connection open reached from `AnyAsync`, since neither
-`IUnitOfWorkManager.Begin()` nor `IIocResolver.Resolve` opens a connection.)
+The blocking frame is `IUnitOfWorkManager.Begin()`, confirmed by the logged stack: NHibernate opens
+the ADO connection when it begins the transaction, before the query is ever reached.
+
+```
+WARN ... PersonReadinessHealthCheck - Readiness probe failed: database not reachable.
+System.AggregateException: One or more errors occurred. (Begin failed with SQL exception)
+ ---> NHibernate.TransactionException: Begin failed with SQL exception
+```
 
 Fix: run the probe on a thread-pool thread so `CheckHealthAsync` reaches the race immediately.
 
@@ -43,6 +48,24 @@ var timeoutTask = Task.Delay(ProbeTimeout, timeoutCts.Token);
 Note this is not something ASP.NET Core's built-in per-check `timeout:` could have solved.
 `DefaultHealthCheckService` bounds a check by cancelling a token and awaiting the check anyway; a
 probe that never observes the token is never cut short. The explicit race is what actually returns.
+
+## Second finding, from review: probe accumulation
+
+Offloading the probe fixed the response time but moved the cost onto a thread-pool thread, which
+stays blocked until the connection attempt gives up (~27s after the response). One such probe per
+request would accumulate for as long as the database stayed unreachable - at a 1s poll interval,
+~30 blocked pool threads, enough to starve the app.
+
+Contained with a single-flight gate: requests arriving while a probe is in flight join it instead
+of starting another, so the cost is one probe regardless of poll rate, and the second and later
+requests answer immediately instead of waiting out their own 3s. The check is registered as a
+singleton (`services.AddSingleton<PersonReadinessHealthCheck>()`) so the gate is process-wide;
+`AddCheck<T>` resolves through `GetServiceOrCreateInstance`, so it picks up that registration.
+
+`IUnitOfWorkManager` moved out of the constructor at the same time - it is transient in ABP, so a
+singleton holding one is a captive dependency. It and the repository are now resolved per probe
+via `ResolveAsDisposable`, which also fixes a leak: the repository resolved from `IIocResolver` was
+never released.
 
 ## Evidence
 
@@ -94,6 +117,28 @@ the first failure.
 Bounded at `ProbeTimeout` and consistent across repeats. `/live` is unaffected throughout, which
 is the entire point of the split.
 
+### Database hung - single-flight containment
+
+Six requests during one outage: four concurrent, then two more staggered after they returned.
+
+```
+  concurrent-1  503  3.109s        staggered-5  503  3.022s
+  concurrent-2  503  3.100s        staggered-6  503  3.031s
+  concurrent-3  503  3.083s        live         200  0.006s
+  concurrent-4  503  3.068s
+```
+
+All six bounded at ~3.0s, `/live` unaffected. The log then shows the containment directly: the
+per-probe failure is logged once for the whole outage, not once per request.
+
+```
+$ grep -c "Readiness probe failed" Logs.txt   # logged once per probe that actually ran
+1
+```
+
+(`Logs.txt` appends across restarts, so the per-request "timed out" count in it spans earlier runs
+too; the per-probe message is new in this change and so counts only this outage.)
+
 ### Recovery
 
 ```
@@ -118,9 +163,9 @@ $ docker unpause sheshadb-sql
 - If the database is unreachable *during startup*, ABP module initialization fails before the
   request pipeline is registered, so neither endpoint exists to answer. Startup-time constraint of
   the ABP/NHibernate bootstrap.
-- An abandoned probe holds a thread, an NHibernate session and a unit of work until its connection
-  attempt gives up (up to `Connection Timeout`). At a one-minute cadence that is one or two at a
-  time, and each logs a warning when it settles.
+- An abandoned probe holds a thread, an NHibernate session and a connection attempt until it gives
+  up (up to `Connection Timeout`). Bounded to one at a time by the single-flight gate, so it does
+  not scale with how hard `/ready` is polled.
 - The endpoints live in `Shesha.Web.Host`, which downstream applications do not reference. They
   reach the framework's own host only. Promoting them to a packaged project plus the starter
   template would be a separate change.

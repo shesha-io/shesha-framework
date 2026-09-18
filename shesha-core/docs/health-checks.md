@@ -59,10 +59,12 @@ offload the race is only set up after the blocking work has already finished, an
 waits out the connection string's `Connection Timeout` instead - measured at 35s with
 `Connection Timeout=30`, against 3.0s once offloaded.
 
-One consequence: when a timed-out probe is abandoned, it keeps a thread, an NHibernate session and
-a unit of work until its connection attempt finally gives up. At a one-minute monitoring cadence
-against a dead database that is at most one or two at a time, and each one logs a warning when it
-settles.
+A timed-out probe keeps running - it cannot be cancelled - holding a thread, an NHibernate session
+and a connection attempt until it gives up. Only one probe runs at a time: requests arriving while
+one is in flight join it instead of starting another, so an outage costs the same whether `/ready`
+is polled once a minute or ten times a second, and the second and later requests answer
+immediately rather than waiting out their own 3 seconds. The failure is logged once, when the
+probe finally settles.
 
 ## Not the same as the startup database health check
 

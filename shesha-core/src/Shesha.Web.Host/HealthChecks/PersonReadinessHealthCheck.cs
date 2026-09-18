@@ -14,22 +14,21 @@ namespace Shesha.Web.Host.HealthChecks
     /// <summary>
     /// Readiness probe: confirms the DB connection the rest of the app uses is reachable via a
     /// cheap query against <see cref="Person"/>. Not the path Azure auto-recycles on - see
-    /// /api/health/live.
+    /// /api/health/live. Registered as a singleton so one probe is shared process-wide.
     /// </summary>
     public class PersonReadinessHealthCheck : IHealthCheck
     {
         private static readonly TimeSpan ProbeTimeout = TimeSpan.FromSeconds(3);
 
-        // Resolved per check rather than constructor-injected: a repository captured at
-        // registration time never gets its Windsor-injected properties set, and NREs when queried.
         private readonly IIocResolver _iocResolver;
-        private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly ILogger<PersonReadinessHealthCheck> _logger;
 
-        public PersonReadinessHealthCheck(IIocResolver iocResolver, IUnitOfWorkManager unitOfWorkManager, ILogger<PersonReadinessHealthCheck> logger)
+        private readonly object _probeLock = new object();
+        private Task? _inFlightProbe;
+
+        public PersonReadinessHealthCheck(IIocResolver iocResolver, ILogger<PersonReadinessHealthCheck> logger)
         {
             _iocResolver = iocResolver;
-            _unitOfWorkManager = unitOfWorkManager;
             _logger = logger;
         }
 
@@ -39,13 +38,9 @@ namespace Shesha.Web.Host.HealthChecks
         /// </summary>
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
-            using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            var probeTask = StartOrJoinProbe();
 
-            // Task.Run is load-bearing: the probe blocks before it yields, so without offloading
-            // it runs to completion here and Task.Delay never gets to race it. Measured against an
-            // unresponsive server, the response then takes the connection string's Connection
-            // Timeout (35s) rather than ProbeTimeout.
-            var probeTask = Task.Run(() => ProbeDatabaseAsync(timeoutCts.Token), timeoutCts.Token);
+            using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             var timeoutTask = Task.Delay(ProbeTimeout, timeoutCts.Token);
 
             var completedTask = await Task.WhenAny(probeTask, timeoutTask);
@@ -58,7 +53,6 @@ namespace Shesha.Web.Host.HealthChecks
                 cancellationToken.ThrowIfCancellationRequested();
 
                 _logger.LogWarning("Readiness health check timed out after {ProbeTimeout}.", ProbeTimeout);
-                ObserveAbandonedProbe(probeTask);
                 return HealthCheckResult.Unhealthy("Database unreachable");
             }
 
@@ -67,32 +61,53 @@ namespace Shesha.Web.Host.HealthChecks
                 await probeTask;
                 return HealthCheckResult.Healthy();
             }
-            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+            catch (Exception)
             {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "Readiness health check failed: database not reachable.");
+                // Logged once by the continuation in StartOrJoinProbe.
                 return HealthCheckResult.Unhealthy("Database unreachable");
             }
         }
 
-        private async Task ProbeDatabaseAsync(CancellationToken cancellationToken)
+        /// <summary>
+        /// Returns the probe already running, or starts one. A probe that outlives its caller's
+        /// timeout cannot be cancelled, so starting one per request would pile up a blocked thread,
+        /// session and connection attempt for as long as the database stays unreachable.
+        /// </summary>
+        private Task StartOrJoinProbe()
         {
-            using var uow = _unitOfWorkManager.Begin();
-            var personRepository = _iocResolver.Resolve<IRepository<Person, Guid>>();
-            await personRepository.GetAll().AnyAsync(cancellationToken);
-            await uow.CompleteAsync();
+            lock (_probeLock)
+            {
+                var inFlight = _inFlightProbe;
+                if (inFlight != null && !inFlight.IsCompleted)
+                    return inFlight;
+
+                // Task.Run is load-bearing: the probe blocks before it yields, so without
+                // offloading it runs to completion here and Task.Delay never gets to race it.
+                // Measured against an unresponsive server, the response then takes the connection
+                // string's Connection Timeout (35s) rather than ProbeTimeout.
+                var probe = Task.Run(ProbeDatabaseAsync);
+
+                // Observed here, not at the call site: an abandoned probe may have no caller left
+                // to await it, and joiners must not each log the same failure.
+                _ = probe.ContinueWith(
+                    t => _logger.LogWarning(t.Exception, "Readiness probe failed: database not reachable."),
+                    TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously);
+
+                _inFlightProbe = probe;
+                return probe;
+            }
         }
 
-        // The Unhealthy response was already sent by the time an abandoned probe settles, so log
-        // its fault rather than leaving it unobserved.
-        private void ObserveAbandonedProbe(Task probeTask)
+        // No CancellationToken: the probe is shared, so one caller dropping its request must not
+        // kill another caller's probe - and the connection open it blocks in ignores tokens anyway.
+        private async Task ProbeDatabaseAsync()
         {
-            _ = probeTask.ContinueWith(
-                t => _logger.LogWarning(t.Exception, "Abandoned readiness probe failed after the response was already sent."),
-                TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously);
+            using var unitOfWorkManager = _iocResolver.ResolveAsDisposable<IUnitOfWorkManager>();
+            using var personRepository = _iocResolver.ResolveAsDisposable<IRepository<Person, Guid>>();
+            using var uow = unitOfWorkManager.Object.Begin();
+
+            await personRepository.Object.GetAll().AnyAsync();
+            await uow.CompleteAsync();
         }
     }
 }
