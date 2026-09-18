@@ -148,7 +148,10 @@ namespace Shesha.Permission
                 }
                 else if (manifests.Count > 1)
                 {
-                    var toKeep = manifests.FirstOrDefault(m => m.VersionStatus == ConfigurationItemVersionStatus.Live)
+                    var toKeep = manifests
+                        .Where(m => m.VersionStatus == ConfigurationItemVersionStatus.Live)
+                        .OrderBy(m => m.CreationTime)
+                        .FirstOrDefault()
                         ?? manifests.OrderBy(m => m.CreationTime).First();
 
                     foreach (var duplicate in manifests.Where(m => m.Id != toKeep.Id))
