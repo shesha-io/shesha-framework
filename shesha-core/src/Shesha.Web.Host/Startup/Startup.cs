@@ -9,6 +9,7 @@ using GraphQL.NewtonsoftJson;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -40,6 +41,7 @@ using Shesha.Scheduler.Extensions;
 using Shesha.Scheduler.Hangfire;
 using Shesha.Specifications;
 using Shesha.Swagger;
+using Shesha.Web.Host.HealthChecks;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
@@ -76,6 +78,12 @@ namespace Shesha.Web.Host.Startup
             services.AddSheshaElmah(_appConfiguration);
 
             services.AddSheshaRateLimiting(opts => _appConfiguration.GetSection("RateLimiting").Bind(opts));
+
+            // Singleton so the readiness probe is shared: only one runs at a time, however many
+            // requests arrive while the database is unreachable.
+            services.AddSingleton<PersonReadinessHealthCheck>();
+            services.AddHealthChecks()
+                .AddCheck<PersonReadinessHealthCheck>("person-db", tags: new[] { "ready" });
 
             services.AddMvcCore(options =>
                 {
@@ -197,6 +205,20 @@ namespace Shesha.Web.Host.Startup
                 endpoints.MapHub<AbpCommonHub>("/signalr");
                 endpoints.MapControllers();
                 endpoints.MapSignalRHubs();
+
+                // Liveness: no dependency checks, this is the path Azure App Service Health Check
+                // should ping. Readiness: probes the DB via Person, for internal monitoring only -
+                // see docs/guides for why Azure's auto-recycle must not use /ready.
+                endpoints.MapHealthChecks("/api/health/live", new HealthCheckOptions
+                {
+                    Predicate = _ => false,
+                    ResponseWriter = SheshaHealthCheckResponseWriter.WriteResponse
+                });
+                endpoints.MapHealthChecks("/api/health/ready", new HealthCheckOptions
+                {
+                    Predicate = check => check.Tags.Contains("ready"),
+                    ResponseWriter = SheshaHealthCheckResponseWriter.WriteResponse
+                });
             });
 
             // Block access to Swagger UI when the setting is disabled
