@@ -124,16 +124,11 @@ namespace Shesha.Permission
                 .Distinct()
                 .ToListAsync();
 
-            var moduleKeys = modules
-                .Select(m => (Guid?)m?.Id)
-                .Distinct()
-                .ToList();
-
-            foreach (var moduleId in moduleKeys)
+            foreach (var module in modules)
             {
                 var manifests = await _manifestRepository.GetAll()
                     .Where(m => m.Name == ApiPermissionsManifest.ManifestName
-                        && (moduleId == null ? m.Module == null : m.Module != null && m.Module.Id == moduleId))
+                        && (module == null ? m.Module == null : m.Module != null && m.Module.Id == module.Id))
                     .ToListAsync();
 
                 if (!manifests.Any())
@@ -141,7 +136,7 @@ namespace Shesha.Permission
                     var manifest = new ApiPermissionsManifest
                     {
                         Name = ApiPermissionsManifest.ManifestName,
-                        Module = moduleId.HasValue ? await _moduleReporsitory.GetAsync(moduleId.Value) : null,
+                        Module = module,
                         VersionNo = 1,
                         VersionStatus = ConfigurationItemVersionStatus.Live,
                     };
