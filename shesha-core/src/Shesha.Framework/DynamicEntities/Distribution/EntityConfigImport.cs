@@ -104,6 +104,10 @@ namespace Shesha.DynamicEntities.Distribution
 
                 // create new version
                 var newItemVersion = await _entityConfigManager.CreateNewVersionAsync(dbItem);
+
+                // flush so MapPropertiesAsync's FirstOrDefaultAsync lookups see the properties CreateNewVersionAsync just cloned
+                await _unitOfWorkManager.Current.SaveChangesAsync();
+
                 await MapEntityConfigAsync(item, newItemVersion, context);
 
                 // important: set status according to the context
@@ -155,9 +159,7 @@ namespace Shesha.DynamicEntities.Distribution
 
             dbItem.Label = item.Label;
             dbItem.Description = item.Description;
-            // VersionNo is intentionally not set here -- it's owned by the version lifecycle
-            // (EntityConfigManager.CreateNewVersionAsync increments it; the "new item" branch below
-            // sets it to 1 explicitly), not by the imported DTO's original VersionNo.
+            // VersionNo is owned by the version lifecycle, not the imported DTO -- do not set it here
             dbItem.VersionStatus = item.VersionStatus;
             dbItem.Suppress = item.Suppress;
 
@@ -175,11 +177,7 @@ namespace Shesha.DynamicEntities.Distribution
 
             dbItem.ViewConfigurations = item.ViewConfigurations.ToList();
 
-            // Parent service permission is Entity; each CRUD action permission is EntityAction
-            // (matching ApiPermissionedObjectProvider/ModelConfigurationManager). SetAsync matches
-            // existing rows on (Object, Type), so writing the wrong Type here would insert a duplicate
-            // row instead of updating the real one, and EntityCrudAuthorizationHelper (which looks up
-            // EntityAction) would miss it and silently fall back to DefaultEndpointAccess.
+            // parent permission is Entity; CRUD actions must be EntityAction or lookups silently fall back to DefaultEndpointAccess
             await SetPermissionAsync(item.Permission, ShaPermissionedObjectsTypes.Entity);
             await SetPermissionAsync(item.PermissionGet, ShaPermissionedObjectsTypes.EntityAction);
             await SetPermissionAsync(item.PermissionCreate, ShaPermissionedObjectsTypes.EntityAction);
@@ -273,9 +271,16 @@ namespace Shesha.DynamicEntities.Distribution
             dbItem.CascadeUpdate = src.CascadeUpdate;
             dbItem.CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced;
 
-            dbItem.ItemsType = src.ItemsType != null
-                ? await MapItemsTypeAsync(item, src.ItemsType, dbItem)
-                : null;
+            if (src.ItemsType != null)
+            {
+                dbItem.ItemsType = await MapItemsTypeAsync(item, src.ItemsType, dbItem);
+            }
+            else if (dbItem.ItemsType != null)
+            {
+                var oldItemsType = dbItem.ItemsType;
+                dbItem.ItemsType = null;
+                await _propertyConfigRepo.DeleteAsync(oldItemsType);
+            }
 
             await _propertyConfigRepo.InsertOrUpdateAsync(dbItem);
 
@@ -290,9 +295,7 @@ namespace Shesha.DynamicEntities.Distribution
         {
             var dbItem = ownerProperty.ItemsType ?? new EntityProperty();
 
-            // ItemsType is a standalone property row describing the array's element type -- not part
-            // of the entity's own Properties tree, so it is neither attached to EntityConfig nor to a
-            // ParentProperty, and it is not tracked for stale-property deletion.
+            // standalone row describing the array element type -- not part of the entity's own Properties tree
             dbItem.EntityConfig = null;
             dbItem.ParentProperty = null;
             dbItem.Name = src.Name;

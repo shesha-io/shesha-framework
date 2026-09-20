@@ -61,14 +61,8 @@ namespace Shesha.Tests.ConfigurationItems
         [Fact]
         public async Task When_Import_EntityPermissions_ShouldBeEnforceable_TestAsync()
         {
-            // Unique per run so no stale row from an earlier test/run can make this pass vacuously.
-            //
-            // The pre-existing dst row below is seeded at a DIFFERENT access level (AnyAuthenticated)
-            // than what src exports (RequiresPermissions). This specifically catches D1: SetAsync
-            // matches rows on (Object, Type), so a buggy import that writes the wrong Type inserts a
-            // SIBLING row instead of updating this one -- leaving it at AnyAuthenticated and letting
-            // the assertion below fail, which a same-value seed (or no pre-existing row at all,
-            // combined with GetOrDefaultAsync's non-null default) would not reliably catch.
+            // dst is pre-seeded at a different access level than src exports, so a wrong-Type import
+            // (inserting a sibling row instead of updating this one) would leave the assertion failing
             var uniqueClassName = $"{Cls}_{Guid.NewGuid():N}";
             var uniqueFullClassName = $"{Ns}.{uniqueClassName}";
 
@@ -109,8 +103,7 @@ namespace Shesha.Tests.ConfigurationItems
             var export = new EntityConfigExport(src.EntityConfigRepo, src.EntityPropertyRepo, permissionedObjectManager);
             var exported = await export.ExportItemAsync(entityConfig.Id);
 
-            // dst-side: pre-seed the SAME (Object, Type) rows at a different access level, so the
-            // import must UPDATE them (not insert siblings) for the post-import assertion to hold.
+            // pre-seed at a different access level so the import must UPDATE these rows, not insert siblings
             using (var uow = uowManager.Begin())
             {
                 foreach (var action in new[] { "Get", "Create", "Update", "Delete" })
@@ -378,7 +371,12 @@ namespace Shesha.Tests.ConfigurationItems
             };
             var importContext = new PackageImportContext { CreateModules = true };
 
-            var imported = await importer.ImportItemAsync(exported, importContext) as EntityConfig;
+            EntityConfig imported;
+            using (var uow = uowManager.Begin())
+            {
+                imported = await importer.ImportItemAsync(exported, importContext) as EntityConfig;
+                await uow.CompleteAsync();
+            }
             imported.ShouldNotBeNull();
 
             var staleStillThere = dst.EntityPropertyRepo.GetAll().Any(p => p.EntityConfig == imported && p.Name == "StaleProp");
@@ -427,10 +425,7 @@ namespace Shesha.Tests.ConfigurationItems
 
             var uowManager = Resolve<IUnitOfWorkManager>();
             var mapper = Resolve<global::AutoMapper.IMapper>();
-            // Built against dst's in-memory repos, not Resolve<IEntityConfigManager>() -- the real,
-            // container-resolved manager operates on the real NHibernate-backed repos, which don't
-            // know about the in-memory Module/EntityConfig rows this test set up and would fail on
-            // real FK constraints when the UoW below flushes.
+            // built against dst's in-memory repos -- the container-resolved manager uses real NHibernate repos and would fail FK checks
             var entityConfigManager = new EntityConfigManager(dst.EntityConfigRepo, dst.EntityPropertyRepo, dst.ModuleRepo, uowManager, mapper);
             var modelConfigsCacheHolder = Resolve<IModelConfigsCacheHolder>();
             var importer = new EntityConfigImport(dst.ModuleRepo, dst.FrontEndAppRepo, dst.EntityConfigRepo, dst.EntityPropertyRepo, permissionedObjectManager, entityConfigManager, uowManager, modelConfigsCacheHolder)
@@ -500,9 +495,7 @@ namespace Shesha.Tests.ConfigurationItems
                 };
                 initAction?.Invoke(property);
 
-                // NHibernate populates ParentProperty's Properties collection live from the DB
-                // relationship (it's an [InverseProperty] navigation); the in-memory test double
-                // doesn't, so link it explicitly to mirror what the real exporter expects to see.
+                // the in-memory repo doesn't populate this NHibernate navigation collection automatically
                 property.ParentProperty?.Properties.Add(property);
 
                 await EntityPropertyRepo.InsertAsync(property);
