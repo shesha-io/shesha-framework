@@ -12,6 +12,7 @@ const SUPPORTED_DATE_FORMATS = [
   'MM/DD/YYYY', // 12/01/2004
   'YYYYMMDDTHHmmss', // 20041201T000000
   'YYYY-MM-DDTHH:mm:ss', // 2004-12-01T00:00:00
+  moment.ISO_8601, // ISO date-times with fractional seconds or timezone offsets
 ];
 
 const isValidDate = (dateString: string): boolean => {
@@ -42,7 +43,7 @@ export const formatDateStringAndPrefix = (content: string, dateFormat: string = 
   // Date-time alternatives come first: alternation is leftmost-first, so a date-only
   // alternative placed ahead of them consumes the date and leaves the time in the output.
   const datePattern =
-    /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}|\d{4}\d{2}\d{2}T\d{6}|\d{2}[-/]\d{2}[-/]\d{4}|\d{4}[-/]\d{2}[-/]\d{2}/g;
+    /(?:\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}|\d{8}T\d{6})(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2})?|\d{2}[-/]\d{2}[-/]\d{4}|\d{4}[-/]\d{2}[-/]\d{2}/g;
 
   return !isNullOrWhiteSpace(content)
     ? content.replace(datePattern, (match) => {
