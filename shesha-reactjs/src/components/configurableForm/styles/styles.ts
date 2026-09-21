@@ -3,6 +3,8 @@ import { createGlobalStyle } from 'antd-style';
 const formClassNames = {
   shaFormContainer: 'sha-form-container',
   shaForm: 'sha-form',
+  /** Marks a user-configured form, which renders light in every theme (see ConfigurableFormRenderer). */
+  shaConfiguredForm: 'sha-configured-form',
   shaComponentsContainer: 'sha-components-container',
   shaComponentsContainerInner: 'sha-components-container-inner',
   shaFormInfoCard: 'sha-form-info-card',

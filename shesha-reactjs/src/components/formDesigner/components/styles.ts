@@ -24,6 +24,7 @@ export const useStyles = createStyles(({ css, cx, token }, model: IConfigurableF
 
             > .ant-form-item-label {
                 min-height: fit-content;
+                padding-bottom: 0px !important;
                 ${model.autoAlignLabel !== false
                   ? `
                   /* Both halves of auto-alignment. An opted-out control stacks, so its label

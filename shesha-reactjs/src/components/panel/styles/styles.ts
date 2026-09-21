@@ -146,6 +146,11 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls }, model: ICo
         > .ant-collapse-content {
           border: none;
 
+          /* A ghost panel draws no frame of its own, so the default 16px content inset only indents its
+             settings relative to the ones outside it - the reason properties under Format / Validations
+             sat further in than the rest of the panel. Only apply an inset the configurer asked for. */
+          ${isDefined(model.stylingBoxJson) ? '' : 'padding-inline: 0;'}
+
           > .ant-collapse-content-box {
             padding: 5px 0;
           }

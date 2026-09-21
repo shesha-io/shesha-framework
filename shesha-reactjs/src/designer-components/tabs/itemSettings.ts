@@ -8,7 +8,7 @@ export const getItemSettings = (fbf: FormBuilderFactory): IConfigurableFormCompo
   return fbf()
     .addSearchableTabs({ propertyName: 'settingsTabs', parentId: 'root', label: 'Settings', hideLabel: true, labelAlign: 'right', size: 'small',
       tabs: [
-        { key: 'common', title: 'Common', id: commonTabId,
+        { key: 'common', title: 'Main', id: commonTabId,
           components: fbf(commonTabId)
             .addSettingsInputRow({ inputs: [
               { type: 'textField', propertyName: 'name', label: 'Name', labelAlign: 'right', jsSetting: false },
