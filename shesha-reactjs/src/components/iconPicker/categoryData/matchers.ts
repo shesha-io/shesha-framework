@@ -24,6 +24,7 @@ const buildReverseIndex = (categories: Record<string, string[]>): Map<string, st
 };
 
 // Dynamically imported so a page that never opens the picker never pays to load this static data.
+// A rejected import is evicted so a later call retries instead of replaying the same rejection.
 let materialDesignIndex: Map<string, string> | undefined;
 let materialDesignIndexPromise: Promise<Map<string, string>> | undefined;
 export const ensureMaterialDesignIndexLoaded = (): Promise<Map<string, string>> => {
@@ -31,6 +32,9 @@ export const ensureMaterialDesignIndexLoaded = (): Promise<Map<string, string>> 
     materialDesignIndexPromise = import('./materialDesignCategories').then((mod) => {
       materialDesignIndex = buildReverseIndex(mod.MATERIAL_DESIGN_CATEGORIES);
       return materialDesignIndex;
+    }).catch((error: unknown) => {
+      materialDesignIndexPromise = undefined;
+      throw error;
     });
   }
   return materialDesignIndexPromise;
@@ -43,6 +47,9 @@ export const ensureFontAwesome6IndexLoaded = (): Promise<Map<string, string>> =>
     fontAwesome6IndexPromise = import('./fontAwesome6Categories').then((mod) => {
       fontAwesome6Index = buildReverseIndex(mod.FONT_AWESOME_6_CATEGORIES);
       return fontAwesome6Index;
+    }).catch((error: unknown) => {
+      fontAwesome6IndexPromise = undefined;
+      throw error;
     });
   }
   return fontAwesome6IndexPromise;

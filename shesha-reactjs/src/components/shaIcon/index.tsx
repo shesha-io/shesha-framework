@@ -47,5 +47,5 @@ export const ShaIcon: FC<IShaIconProps> = ({ iconName = 'WarningFilled', style, 
   return <IconComponent style={style} className={className} twoToneColor={resolvedTwoToneColor} {...rest} />;
 };
 
-export { REACT_ICON_FAMILIES, loadFamilyModule, parseReactIconValue, buildReactIconValue } from './reactIconFamilies';
+export { REACT_ICON_FAMILIES, loadFamilyModule, getFamilyIconComponent, parseReactIconValue, buildReactIconValue } from './reactIconFamilies';
 export type { IReactIconFamily, FamilyModule, ReactIconComponent } from './reactIconFamilies';

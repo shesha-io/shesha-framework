@@ -17,10 +17,17 @@ const HEURISTIC_CATEGORIES: { label: string; keywords: string[] }[] = [
   { label: 'Shapes', keywords: ['circle', 'square', 'triangle', 'box', 'shape', 'grid', 'dot', 'line', 'hexagon'] },
 ];
 
+// Keywords this short are matched as whole word segments (not substrings) so e.g. "up" doesn't match "group"/"upload".
+const SHORT_KEYWORD_LENGTH = 4;
+
 export const heuristicCategoryFor = (exportName: string, commonPrefix: string): string | undefined => {
-  const rest = exportName.slice(commonPrefix.length).toLowerCase();
+  const rest = exportName.slice(commonPrefix.length);
+  const restLower = rest.toLowerCase();
+  const segments = new Set(rest.replace(/([a-z0-9])([A-Z])/g, '$1 $2').toLowerCase().split(/[\s_-]+/));
   for (const category of HEURISTIC_CATEGORIES) {
-    if (category.keywords.some((keyword) => rest.includes(keyword))) return category.label;
+    if (category.keywords.some((keyword) => (keyword.length <= SHORT_KEYWORD_LENGTH ? segments.has(keyword) : restLower.includes(keyword)))) {
+      return category.label;
+    }
   }
   return undefined;
 };

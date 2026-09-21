@@ -1,12 +1,12 @@
-import { ComponentType, FC, ReactNode, useEffect, useMemo, useState } from 'react';
+import { FC, ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import * as React from 'react';
 import { IconBaseProps } from '@ant-design/icons/lib/components/Icon';
 import { FilledIconTypes, FILLED_ICON_GROUPS } from './iconNamesFilled';
 import { OutlinedIconTypes, OUTLINED_ICON_GROUPS } from './iconNamesOutlined';
 import { TwoToneIconTypes, TWO_FACED_ICON_GROUPS } from './iconNamesTwoTone';
-import { ShaIcon, REACT_ICON_FAMILIES, loadFamilyModule, buildReactIconValue } from '@/components/shaIcon';
+import { ShaIcon, REACT_ICON_FAMILIES, loadFamilyModule, getFamilyIconComponent, buildReactIconValue } from '@/components/shaIcon';
 import { computeCommonPrefix, ensureCategoryDataLoaded, getFamilyCategories } from './categoryData';
-import { Button, Input, Modal, Select, Skeleton } from 'antd';
+import { Alert, Button, Input, Modal, Select, Skeleton } from 'antd';
 import { SelectOutlined } from '@ant-design/icons';
 import { SizeType } from 'antd/lib/config-provider/SizeContext';
 import { humanizeString } from '@/utils/string';
@@ -37,8 +37,8 @@ const FAMILY_VARIANTS: Record<string, IFamilyVariant[]> = {
 };
 
 type IPickerOption =
-  | { key: string; label: string; kind: 'reactIcons'; family: string; variant?: IFamilyVariant | undefined }
-  | { key: string; label: string; kind: 'legacyAntd'; groups: IconsGroupType };
+  | { key: string; label: string; kind: 'reactIcons'; family: string; variant?: IFamilyVariant | undefined } |
+  { key: string; label: string; kind: 'legacyAntd'; groups: IconsGroupType };
 
 // Ant Design's own curated icon taxonomy, used instead of react-icons' uncategorized "ai" mirror.
 const LEGACY_ANTD_OPTIONS: IPickerOption[] = [
@@ -81,10 +81,23 @@ const ReactIconGridCell = ({
   const index = rowIndex * columnCount + columnIndex;
   const name = names[index];
   if (!name) return <div style={style} />;
-  const Icon = iconModule[name] as ComponentType<{ style?: React.CSSProperties }> | undefined;
+  const Icon = getFamilyIconComponent(iconModule, name);
   if (!Icon) return <div style={style} />;
   return (
-    <span style={style} className={iconClassName} title={name} onClick={() => onSelect(name)}>
+    <span
+      style={style}
+      className={iconClassName}
+      title={name}
+      role="button"
+      tabIndex={0}
+      onClick={() => onSelect(name)}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onSelect(name);
+        }
+      }}
+    >
       <Icon style={{ fontSize: 30 }} />
       <span className={iconNameClassName}>{name}</span>
     </span>
@@ -131,7 +144,10 @@ const IconPicker: FC<IIconPickerProps> = ({
   const [familyModule, setFamilyModule] = useState<Record<string, unknown>>({});
   const [familyNames, setFamilyNames] = useState<string[]>([]);
   const [familyLoading, setFamilyLoading] = useState(false);
+  const [familyLoadError, setFamilyLoadError] = useState<string | undefined>(undefined);
   const [activeCategories, setActiveCategories] = useState<Set<string>>(new Set());
+  // Tracks which family the in-flight load belongs to, so a slow, superseded request can't overwrite a newer selection.
+  const activeLoadRequestRef = useRef<string | undefined>(undefined);
 
   const pickerOptions = useMemo(getPickerOptions, []);
   const selectedOption = useMemo<IPickerOption>(
@@ -147,14 +163,25 @@ const IconPicker: FC<IIconPickerProps> = ({
 
   const loadFamily = (family: string): void => {
     setFamilyLoading(true);
+    setFamilyLoadError(undefined);
     setActiveCategories(new Set());
+    activeLoadRequestRef.current = family;
     // Category data (md/fa6 only) loads alongside the icon set so `familyCategories` is never called before it's ready.
-    Promise.all([loadFamilyModule(family), ensureCategoryDataLoaded(family)]).then(([mod]) => {
-      setFamilyModule(mod);
-      setFamilyNames(Object.keys(mod).filter((key) => key !== 'default').sort());
-      setLoadedFamily(family);
-      setFamilyLoading(false);
-    });
+    void Promise.all([loadFamilyModule(family), ensureCategoryDataLoaded(family)])
+      .then(([mod]) => {
+        if (activeLoadRequestRef.current !== family) return; // A newer family was selected before this one resolved.
+        setFamilyModule(mod);
+        setFamilyNames(Object.keys(mod).filter((key) => key !== 'default').sort());
+        setLoadedFamily(family);
+      })
+      .catch((error: unknown) => {
+        if (activeLoadRequestRef.current !== family) return;
+        console.error(`Failed to load icon family "${family}"`, error);
+        setFamilyLoadError(family);
+      })
+      .finally(() => {
+        if (activeLoadRequestRef.current === family) setFamilyLoading(false);
+      });
   };
 
   // Load the default family lazily, only once the picker is actually opened.
@@ -285,7 +312,7 @@ const IconPicker: FC<IIconPickerProps> = ({
         open={showModal}
         width={1250}
         style={{ top: 24 }}
-         styles={{ body: { height: 'calc(100vh - 200px)', display: 'flex', flexDirection: 'column', overflow: 'hidden' } }}
+        styles={{ body: { height: 'calc(100vh - 200px)', display: 'flex', flexDirection: 'column', overflow: 'hidden' } }}
         title="Select Icon"
         footer={(
           <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
@@ -320,7 +347,11 @@ const IconPicker: FC<IIconPickerProps> = ({
                   className={classNames(styles.shaIconPickerCategoryIndexItem, { active: activeCategories.has(category) })}
                   onClick={() => setActiveCategories((current) => {
                     const next = new Set(current);
-                    if (next.has(category)) next.delete(category); else next.add(category);
+                    if (next.has(category)) {
+                      next.delete(category);
+                    } else {
+                      next.add(category);
+                    }
                     return next;
                   })}
                 >
@@ -346,6 +377,8 @@ const IconPicker: FC<IIconPickerProps> = ({
           </div>
         ) : familyLoading ? (
           <Skeleton active />
+        ) : familyLoadError !== undefined && familyLoadError === selectedOption.family ? (
+          <Alert type="error" showIcon title="Failed to load this icon family." />
         ) : (
           <div className={styles.shaIconPickerBrowseArea}>
             <div className={styles.shaIconPickerCategoryIndex}>
@@ -356,7 +389,11 @@ const IconPicker: FC<IIconPickerProps> = ({
                   className={classNames(styles.shaIconPickerCategoryIndexItem, { active: activeCategories.has(category) })}
                   onClick={() => setActiveCategories((current) => {
                     const next = new Set(current);
-                    if (next.has(category)) next.delete(category); else next.add(category);
+                    if (next.has(category)) {
+                      next.delete(category);
+                    } else {
+                      next.add(category);
+                    }
                     return next;
                   })}
                 >

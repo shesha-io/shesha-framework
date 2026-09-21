@@ -54,11 +54,15 @@ export const REACT_ICON_FAMILIES: IReactIconFamily[] = IconsManifest
   .map((m) => ({ key: m.id, label: m.name }));
 
 // Cached per family so re-selecting it in the picker, or rendering many icons from it elsewhere, only imports once.
+// A rejected import (e.g. transient network failure) is evicted so a later call retries instead of replaying the same rejection.
 const familyModuleCache = new Map<string, Promise<FamilyModule>>();
 export function loadFamilyModule(family: string): Promise<FamilyModule> {
   let cached = familyModuleCache.get(family);
   if (!cached) {
-    cached = (FAMILY_IMPORTERS[family] ?? (() => Promise.resolve({} as FamilyModule)))();
+    cached = (FAMILY_IMPORTERS[family] ?? (() => Promise.resolve({} as FamilyModule)))().catch((error: unknown) => {
+      familyModuleCache.delete(family);
+      throw error;
+    });
     familyModuleCache.set(family, cached);
   }
   return cached;
