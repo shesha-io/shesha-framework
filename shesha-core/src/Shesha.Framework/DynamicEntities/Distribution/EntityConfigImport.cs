@@ -193,6 +193,8 @@ namespace Shesha.DynamicEntities.Distribution
             {
                 var dbItem = await MapPropertyAsync(item, src, parentProperty);
                 importedIds.Add(dbItem.Id);
+                if (dbItem.ItemsType != null)
+                    importedIds.Add(dbItem.ItemsType.Id);
 
                 if (src.Properties != null && src.Properties.Any())
                     await MapPropertiesAsync(item, src.Properties, dbItem, importedIds);
@@ -205,67 +207,32 @@ namespace Shesha.DynamicEntities.Distribution
             EntityProperty parentProperty
         )
         {
-            var dbItem = parentProperty != null
+            var existing = parentProperty != null
                 ? await _propertyConfigRepo.FirstOrDefaultAsync(x => x.Name == src.Name && x.ParentProperty == parentProperty)
                 : await _propertyConfigRepo.FirstOrDefaultAsync(x => x.Name == src.Name && x.EntityConfig == item && x.ParentProperty == null);
-            dbItem = dbItem ?? new EntityProperty();
 
-            dbItem.EntityConfig = item;
-            dbItem.ParentProperty = parentProperty;
-            dbItem.Name = src.Name;
-            dbItem.Label = src.Label;
-            dbItem.Description = src.Description;
-            dbItem.DataType = src.DataType;
-            dbItem.DataFormat = src.DataFormat;
-            dbItem.EntityType = src.EntityType;
-            dbItem.ReferenceListName = src.ReferenceListName;
-            dbItem.ReferenceListModule = src.ReferenceListModule;
-            dbItem.Source = src.Source;
-            dbItem.SortOrder = src.SortOrder;
-            dbItem.IsFrameworkRelated = src.IsFrameworkRelated;
+            var dbItem = await MapPropertyFieldsAsync(item, src, parentProperty, existing);
 
-            dbItem.Min = src.Min;
-            dbItem.Max = src.Max;
-            dbItem.MinLength = src.MinLength;
-            dbItem.MaxLength = src.MaxLength;
-            dbItem.Suppress = src.Suppress;
-            dbItem.Audited = src.Audited;
-            dbItem.Required = src.Required;
-            dbItem.ReadOnly = src.ReadOnly;
-            dbItem.RegExp = src.RegExp;
-            dbItem.ValidationMessage = src.ValidationMessage;
-
-            dbItem.CascadeCreate = src.CascadeCreate;
-            dbItem.CascadeUpdate = src.CascadeUpdate;
-            dbItem.CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced;
-
-            if (src.ItemsType != null)
-            {
-                dbItem.ItemsType = await MapItemsTypeAsync(item, src.ItemsType, dbItem);
-            }
-            else if (dbItem.ItemsType != null)
-            {
-                var oldItemsType = dbItem.ItemsType;
-                dbItem.ItemsType = null;
-                await _propertyConfigRepo.DeleteAsync(oldItemsType);
-            }
+            dbItem.ItemsType = src.ItemsType != null
+                ? await MapPropertyFieldsAsync(item, src.ItemsType, dbItem, dbItem.ItemsType)
+                : null;
 
             await _propertyConfigRepo.InsertOrUpdateAsync(dbItem);
 
             return dbItem;
         }
 
-        private async Task<EntityProperty> MapItemsTypeAsync(
+        private async Task<EntityProperty> MapPropertyFieldsAsync(
             EntityConfig item,
             DistributedEntityConfigProperty src,
-            EntityProperty ownerProperty
+            EntityProperty parentProperty,
+            EntityProperty existing
         )
         {
-            var dbItem = ownerProperty.ItemsType ?? new EntityProperty();
+            var dbItem = existing ?? new EntityProperty();
 
-            // standalone row describing the array element type -- not part of the entity's own Properties tree
-            dbItem.EntityConfig = null;
-            dbItem.ParentProperty = null;
+            dbItem.EntityConfig = item;
+            dbItem.ParentProperty = parentProperty;
             dbItem.Name = src.Name;
             dbItem.Label = src.Label;
             dbItem.Description = src.Description;
