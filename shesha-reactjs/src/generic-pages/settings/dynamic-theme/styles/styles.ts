@@ -34,12 +34,14 @@ export const useStyles = createStyles(({ css, cx }, theme?: IConfigurableTheme) 
         gap: 8px;
         padding: 8px;
         align-items: start;
+      }
 
-        &&& .ant-collapse-header {
-         > .ant-collapse-body {
-          padding: 0px;
-         }
-        }
+      /* The grid above supplies the spacing between the grouping panels (Border, Radius,
+         Background, ...), so drop antd's padding inside each one. The header and body are
+         siblings under the item, so the body is addressed via the panel, not the header. */
+      .ant-collapse-item > .ant-collapse-panel > .ant-collapse-body,
+      .ant-collapse-item > .ant-collapse-panel > .ant-collapse-header {
+        padding: 0px;
       }
 
       /* Adjust form items within the grid panels */
