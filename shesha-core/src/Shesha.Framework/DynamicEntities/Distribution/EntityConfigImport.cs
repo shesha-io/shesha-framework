@@ -10,6 +10,7 @@ using Shesha.Domain.ConfigurationItems;
 using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Distribution.Dto;
 using Shesha.DynamicEntities.Dtos;
+using Shesha.Extensions;
 using Shesha.Permissions;
 using Shesha.Services.ConfigurationItems;
 using System;
@@ -207,7 +208,7 @@ namespace Shesha.DynamicEntities.Distribution
             // delete properties absent from the imported package, mirroring
             // ModelConfigurationManager.cs's deletion semantics
             var existingProperties = await _propertyConfigRepo.GetAllListAsync(x => x.EntityConfig == item);
-            var toDelete = existingProperties.Where(p => !importedIds.Contains(p.Id)).ToList();
+            var toDelete = existingProperties.Where(p => !p.Name.IsSpecialProperty() && !importedIds.Contains(p.Id)).ToList();
             foreach (var prop in toDelete)
             {
                 await _propertyConfigRepo.DeleteAsync(prop);

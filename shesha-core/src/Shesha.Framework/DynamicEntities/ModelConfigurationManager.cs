@@ -379,7 +379,9 @@ namespace Shesha.DynamicEntities
                 cfg.ShouldMapMethod = (m) => { return false; };
 
                 var mapExpression = cfg.CreateMap<ModelConfigurationDto, EntityConfig>()
-                    .ForMember(d => d.Id, o => o.Ignore());
+                    .ForMember(d => d.Id, o => o.Ignore())
+                    .ForMember(d => d.VersionNo, o => o.Ignore())
+                    .ForMember(d => d.VersionStatus, o => o.Ignore());
 
                 if (sourceType == MetadataSourceType.ApplicationCode)
                 {
