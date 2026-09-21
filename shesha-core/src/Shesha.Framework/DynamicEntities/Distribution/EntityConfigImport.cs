@@ -10,6 +10,7 @@ using Shesha.Domain.ConfigurationItems;
 using Shesha.DynamicEntities.Cache;
 using Shesha.DynamicEntities.Distribution.Dto;
 using Shesha.DynamicEntities.Dtos;
+using Shesha.Extensions;
 using Shesha.Permissions;
 using Shesha.Services.ConfigurationItems;
 using System;
@@ -76,11 +77,13 @@ namespace Shesha.DynamicEntities.Distribution
 
             if (dbItem != null)
             {
-
-                // ToDo: Tempjrary update the current version.
-                // Need to update the rest of the other code to work with versioning EntityConfigs first
-
+                // entity versioning is not implemented for this release -- update the existing config in place
                 await MapEntityConfigAsync(item, dbItem, context);
+
+                dbItem.VersionStatus = statusToImport;
+                dbItem.CreatedByImport = context.ImportResult;
+                dbItem.Normalize();
+
                 await _entityConfigRepo.UpdateAsync(dbItem);
 
                 await MapPropertiesAsync(dbItem, item.Properties);
@@ -88,45 +91,6 @@ namespace Shesha.DynamicEntities.Distribution
                 await _modelConfigsCache.RemoveAsync($"{dbItem.Namespace}|{dbItem.ClassName}");
 
                 return dbItem;
-
-                /*switch (dbItem.VersionStatus)
-                {
-                    case ConfigurationItemVersionStatus.Draft:
-                    case ConfigurationItemVersionStatus.Ready:
-                        {
-                            // cancel existing version
-                            await _entityConfigManager.CancelVersoinAsync(dbItem);
-                            break;
-                        }
-                }
-                // mark existing live form as retired if we import new form as live
-                if (statusToImport == ConfigurationItemVersionStatus.Live)
-                {
-                    var liveForm = dbItem.VersionStatus == ConfigurationItemVersionStatus.Live
-                        ? dbItem
-                        : await _entityConfigRepo.FirstOrDefaultAsync(f => f.Name == item.Name && (f.Module == null && item.ModuleName == null || f.Module.Name == item.ModuleName) && f.VersionStatus == ConfigurationItemVersionStatus.Live);
-                    if (liveForm != null)
-                    {
-                        await _entityConfigManager.UpdateStatusAsync(liveForm, ConfigurationItemVersionStatus.Retired);
-                        await _unitOfWorkManager.Current.SaveChangesAsync(); // save changes to guarantee sequence of update
-                    }
-                }
-
-                // create new version
-                var newItemVersion = await _entityConfigManager.CreateNewVersionAsync(dbItem);
-                await MapEntityConfigAync(item, newItemVersion, context);
-                await MapPropertiesAsync(dbItem, item.Properties);
-
-                // important: set status according to the context
-                newItemVersion.VersionStatus = statusToImport;
-                newItemVersion.CreatedByImport = context.ImportResult;
-                newItemVersion.Normalize();
-
-                await _entityConfigRepo.UpdateAsync(newItemVersion);
-
-                await ModelConfigsCache.RemoveAsync($"{newItemVersion.Namespace}|{newItemVersion.ClassName}");
-
-                return newItemVersion;*/
             }
             else
             {
@@ -164,7 +128,6 @@ namespace Shesha.DynamicEntities.Distribution
 
             dbItem.Label = item.Label;
             dbItem.Description = item.Description;
-            dbItem.VersionNo = item.VersionNo;
             dbItem.VersionStatus = item.VersionStatus;
             dbItem.Suppress = item.Suppress;
 
@@ -180,36 +143,25 @@ namespace Shesha.DynamicEntities.Distribution
             dbItem.EntityConfigType = item.EntityConfigType;
             dbItem.HardcodedPropertiesMD5 = item.PropertiesMD5;
 
-            dbItem.ViewConfigurations = item.ViewConfigurations.ToList();
+            dbItem.ViewConfigurations = item.ViewConfigurations?.ToList() ?? new List<EntityViewConfigurationDto>();
 
-            if (item.Permission != null)
-            {
-                // fix Type for old configurations
-                item.Permission.Type = ShaPermissionedObjectsTypes.Entity;
-                await _permissionedObjectManager.SetAsync(item.Permission);
-            }
-            if (item.PermissionGet != null)
-            {
-                item.PermissionGet.Type = ShaPermissionedObjectsTypes.Entity;
-                await _permissionedObjectManager.SetAsync(item.PermissionGet);
-            }
-            if (item.PermissionCreate != null)
-            {
-                item.PermissionCreate.Type = ShaPermissionedObjectsTypes.Entity;
-                await _permissionedObjectManager.SetAsync(item.PermissionCreate);
-            }
-            if (item.PermissionUpdate != null)
-            {
-                item.PermissionUpdate.Type = ShaPermissionedObjectsTypes.Entity;
-                await _permissionedObjectManager.SetAsync(item.PermissionUpdate);
-            }
-            if (item.PermissionDelete != null)
-            {
-                item.PermissionDelete.Type = ShaPermissionedObjectsTypes.Entity;
-                await _permissionedObjectManager.SetAsync(item.PermissionDelete);
-            }
+            // parent permission is Entity; CRUD actions must be EntityAction or lookups silently fall back to DefaultEndpointAccess
+            await SetPermissionAsync(item.Permission, ShaPermissionedObjectsTypes.Entity);
+            await SetPermissionAsync(item.PermissionGet, ShaPermissionedObjectsTypes.EntityAction);
+            await SetPermissionAsync(item.PermissionCreate, ShaPermissionedObjectsTypes.EntityAction);
+            await SetPermissionAsync(item.PermissionUpdate, ShaPermissionedObjectsTypes.EntityAction);
+            await SetPermissionAsync(item.PermissionDelete, ShaPermissionedObjectsTypes.EntityAction);
 
             return dbItem;
+        }
+
+        private async Task SetPermissionAsync(PermissionedObjectDto permission, string type)
+        {
+            if (permission == null)
+                return;
+
+            permission.Type = type;
+            await _permissionedObjectManager.SetAsync(permission);
         }
 
         protected async Task MapPropertiesAsync(
@@ -217,39 +169,100 @@ namespace Shesha.DynamicEntities.Distribution
             List<DistributedEntityConfigProperty> Properties
         )
         {
-            foreach (var src in Properties)
+            var importedIds = new HashSet<Guid>();
+            await MapPropertiesAsync(item, Properties, null, importedIds);
+
+            // delete properties absent from the imported package, mirroring
+            // ModelConfigurationManager.cs's deletion semantics
+            var existingProperties = await _propertyConfigRepo.GetAllListAsync(x => x.EntityConfig == item);
+            var toDelete = existingProperties.Where(p => !p.Name.IsSpecialProperty() && !importedIds.Contains(p.Id)).ToList();
+            foreach (var prop in toDelete)
             {
-                var dbItem = await _propertyConfigRepo.FirstOrDefaultAsync(x => x.Name == src.Name && x.EntityConfig == item)
-                    ?? new EntityProperty();
-                
-                dbItem.EntityConfig = item;
-                dbItem.Name = src.Name;
-                dbItem.Label = src.Label;
-                dbItem.Description = src.Description;
-                dbItem.DataType = src.DataType;
-                dbItem.DataFormat = src.DataFormat;
-                dbItem.EntityType = src.EntityType;
-                dbItem.ReferenceListName = src.ReferenceListName;
-                dbItem.ReferenceListModule = src.ReferenceListModule;
-                dbItem.IsFrameworkRelated = src.IsFrameworkRelated;
-
-                dbItem.Min = src.Min;
-                dbItem.Max = src.Max;
-                dbItem.MinLength = src.MinLength;
-                dbItem.MaxLength = src.MaxLength;
-                dbItem.Suppress = src.Suppress;
-                dbItem.Audited = src.Audited;
-                dbItem.Required = src.Required;
-                dbItem.ReadOnly = src.ReadOnly;
-                dbItem.RegExp = src.RegExp;
-                dbItem.ValidationMessage = src.ValidationMessage;
-
-                dbItem.CascadeCreate = src.CascadeCreate;
-                dbItem.CascadeUpdate = src.CascadeUpdate;
-                dbItem.CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced;
-
-                await _propertyConfigRepo.InsertOrUpdateAsync(dbItem);
+                await _propertyConfigRepo.DeleteAsync(prop);
             }
+        }
+
+        private async Task MapPropertiesAsync(
+            EntityConfig item,
+            List<DistributedEntityConfigProperty> properties,
+            EntityProperty parentProperty,
+            HashSet<Guid> importedIds
+        )
+        {
+            foreach (var src in properties)
+            {
+                var dbItem = await MapPropertyAsync(item, src, parentProperty);
+                importedIds.Add(dbItem.Id);
+                if (dbItem.ItemsType != null)
+                    importedIds.Add(dbItem.ItemsType.Id);
+
+                if (src.Properties != null && src.Properties.Any())
+                    await MapPropertiesAsync(item, src.Properties, dbItem, importedIds);
+            }
+        }
+
+        private async Task<EntityProperty> MapPropertyAsync(
+            EntityConfig item,
+            DistributedEntityConfigProperty src,
+            EntityProperty parentProperty
+        )
+        {
+            var existing = parentProperty != null
+                ? await _propertyConfigRepo.FirstOrDefaultAsync(x => x.Name == src.Name && x.ParentProperty == parentProperty)
+                : await _propertyConfigRepo.FirstOrDefaultAsync(x => x.Name == src.Name && x.EntityConfig == item && x.ParentProperty == null);
+
+            var dbItem = await MapPropertyFieldsAsync(item, src, parentProperty, existing);
+
+            dbItem.ItemsType = src.ItemsType != null
+                ? await MapPropertyFieldsAsync(item, src.ItemsType, dbItem, dbItem.ItemsType)
+                : null;
+
+            await _propertyConfigRepo.InsertOrUpdateAsync(dbItem);
+
+            return dbItem;
+        }
+
+        private async Task<EntityProperty> MapPropertyFieldsAsync(
+            EntityConfig item,
+            DistributedEntityConfigProperty src,
+            EntityProperty parentProperty,
+            EntityProperty existing
+        )
+        {
+            var dbItem = existing ?? new EntityProperty();
+
+            dbItem.EntityConfig = item;
+            dbItem.ParentProperty = parentProperty;
+            dbItem.Name = src.Name;
+            dbItem.Label = src.Label;
+            dbItem.Description = src.Description;
+            dbItem.DataType = src.DataType;
+            dbItem.DataFormat = src.DataFormat;
+            dbItem.EntityType = src.EntityType;
+            dbItem.ReferenceListName = src.ReferenceListName;
+            dbItem.ReferenceListModule = src.ReferenceListModule;
+            dbItem.Source = src.Source;
+            dbItem.SortOrder = src.SortOrder;
+            dbItem.IsFrameworkRelated = src.IsFrameworkRelated;
+
+            dbItem.Min = src.Min;
+            dbItem.Max = src.Max;
+            dbItem.MinLength = src.MinLength;
+            dbItem.MaxLength = src.MaxLength;
+            dbItem.Suppress = src.Suppress;
+            dbItem.Audited = src.Audited;
+            dbItem.Required = src.Required;
+            dbItem.ReadOnly = src.ReadOnly;
+            dbItem.RegExp = src.RegExp;
+            dbItem.ValidationMessage = src.ValidationMessage;
+
+            dbItem.CascadeCreate = src.CascadeCreate;
+            dbItem.CascadeUpdate = src.CascadeUpdate;
+            dbItem.CascadeDeleteUnreferenced = src.CascadeDeleteUnreferenced;
+
+            await _propertyConfigRepo.InsertOrUpdateAsync(dbItem);
+
+            return dbItem;
         }
 
         public async Task<DistributedConfigurableItemBase> ReadFromJsonAsync(Stream jsonStream)

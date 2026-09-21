@@ -283,9 +283,11 @@ namespace Shesha.DynamicEntities
 
             modelConfig.Module = module;
 
-            // ToDo: Temporary
-            modelConfig.VersionNo = 1;
-            modelConfig.VersionStatus = ConfigurationItemVersionStatus.Live;
+            if (create)
+            {
+                modelConfig.VersionNo = 1;
+                modelConfig.VersionStatus = ConfigurationItemVersionStatus.Live;
+            }
 
             modelConfig.Normalize();
 
@@ -377,7 +379,9 @@ namespace Shesha.DynamicEntities
                 cfg.ShouldMapMethod = (m) => { return false; };
 
                 var mapExpression = cfg.CreateMap<ModelConfigurationDto, EntityConfig>()
-                    .ForMember(d => d.Id, o => o.Ignore());
+                    .ForMember(d => d.Id, o => o.Ignore())
+                    .ForMember(d => d.VersionNo, o => o.Ignore())
+                    .ForMember(d => d.VersionStatus, o => o.Ignore());
 
                 if (sourceType == MetadataSourceType.ApplicationCode)
                 {
