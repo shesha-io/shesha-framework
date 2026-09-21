@@ -143,7 +143,7 @@ namespace Shesha.DynamicEntities.Distribution
             dbItem.EntityConfigType = item.EntityConfigType;
             dbItem.HardcodedPropertiesMD5 = item.PropertiesMD5;
 
-            dbItem.ViewConfigurations = item.ViewConfigurations.ToList();
+            dbItem.ViewConfigurations = item.ViewConfigurations?.ToList() ?? new List<EntityViewConfigurationDto>();
 
             // parent permission is Entity; CRUD actions must be EntityAction or lookups silently fall back to DefaultEndpointAccess
             await SetPermissionAsync(item.Permission, ShaPermissionedObjectsTypes.Entity);
