@@ -362,10 +362,8 @@ namespace Shesha.Tests.ConfigurationItems
             });
 
             var uowManager = Resolve<IUnitOfWorkManager>();
-            var mapper = Resolve<global::AutoMapper.IMapper>();
-            var entityConfigManager = new EntityConfigManager(dst.EntityConfigRepo, dst.EntityPropertyRepo, dst.ModuleRepo, uowManager, mapper);
             var modelConfigsCacheHolder = Resolve<IModelConfigsCacheHolder>();
-            var importer = new EntityConfigImport(dst.ModuleRepo, dst.FrontEndAppRepo, dst.EntityConfigRepo, dst.EntityPropertyRepo, permissionedObjectManager, entityConfigManager, uowManager, modelConfigsCacheHolder)
+            var importer = new EntityConfigImport(dst.ModuleRepo, dst.FrontEndAppRepo, dst.EntityConfigRepo, dst.EntityPropertyRepo, permissionedObjectManager, null, uowManager, modelConfigsCacheHolder)
             {
                 UnitOfWorkManager = uowManager,
             };
@@ -387,8 +385,10 @@ namespace Shesha.Tests.ConfigurationItems
         }
 
         [Fact]
-        public async Task When_Import_Existing_EntityConfig_ShouldCreateNewVersion_TestAsync()
+        public async Task When_Import_Existing_EntityConfig_ShouldUpdateInPlace_TestAsync()
         {
+            // entity versioning is not implemented for this release -- re-importing an existing
+            // config must update the same row rather than create a new version
             var src = PrepareImportContext();
             var srcModule = await src.GetOrCreateModuleAsync("test-module");
             var srcEntityConfig = await src.AddEntityConfigAsync(c =>
@@ -424,11 +424,8 @@ namespace Shesha.Tests.ConfigurationItems
             });
 
             var uowManager = Resolve<IUnitOfWorkManager>();
-            var mapper = Resolve<global::AutoMapper.IMapper>();
-            // built against dst's in-memory repos -- the container-resolved manager uses real NHibernate repos and would fail FK checks
-            var entityConfigManager = new EntityConfigManager(dst.EntityConfigRepo, dst.EntityPropertyRepo, dst.ModuleRepo, uowManager, mapper);
             var modelConfigsCacheHolder = Resolve<IModelConfigsCacheHolder>();
-            var importer = new EntityConfigImport(dst.ModuleRepo, dst.FrontEndAppRepo, dst.EntityConfigRepo, dst.EntityPropertyRepo, permissionedObjectManager, entityConfigManager, uowManager, modelConfigsCacheHolder)
+            var importer = new EntityConfigImport(dst.ModuleRepo, dst.FrontEndAppRepo, dst.EntityConfigRepo, dst.EntityPropertyRepo, permissionedObjectManager, null, uowManager, modelConfigsCacheHolder)
             {
                 UnitOfWorkManager = uowManager,
             };
@@ -442,10 +439,9 @@ namespace Shesha.Tests.ConfigurationItems
             }
             imported.ShouldNotBeNull();
 
-            imported.Id.ShouldNotBe(dstEntityConfig.Id, "a new version record should be created, not the existing row mutated in place");
-            imported.VersionNo.ShouldBe(dstEntityConfig.VersionNo + 1, "the new version number should be one greater than the existing version");
-            imported.ParentVersion.ShouldBe(dstEntityConfig, "the new version's ParentVersion should point at the previous record");
-            dstEntityConfig.VersionStatus.ShouldBe(ConfigurationItemVersionStatus.Retired, "the previous Live version should be retired");
+            imported.Id.ShouldBe(dstEntityConfig.Id, "the existing row should be updated in place, not replaced by a new version");
+            imported.VersionNo.ShouldBe(10, "VersionNo is not touched by import in this release");
+            imported.Label.ShouldBe("src-label", "fields should be updated from the imported package");
         }
 
         #region private declarations

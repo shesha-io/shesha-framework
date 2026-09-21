@@ -77,52 +77,20 @@ namespace Shesha.DynamicEntities.Distribution
 
             if (dbItem != null)
             {
-                switch (dbItem.VersionStatus)
-                {
-                    case ConfigurationItemVersionStatus.Draft:
-                    case ConfigurationItemVersionStatus.Ready:
-                        {
-                            // cancel existing version
-                            await _entityConfigManager.CancelVersoinAsync(dbItem);
-                            break;
-                        }
-                }
-                // mark existing live config as retired if we import new config as live
-                if (statusToImport == ConfigurationItemVersionStatus.Live)
-                {
-                    var liveConfig = dbItem.VersionStatus == ConfigurationItemVersionStatus.Live
-                        ? dbItem
-                        : await _entityConfigRepo.FirstOrDefaultAsync(f =>
-                            f.Namespace == item.Namespace && f.ClassName == item.ClassName
-                            && (f.Module == null && item.ModuleName == null || f.Module.Name == item.ModuleName)
-                            && f.VersionStatus == ConfigurationItemVersionStatus.Live);
-                    if (liveConfig != null)
-                    {
-                        await _entityConfigManager.UpdateStatusAsync(liveConfig, ConfigurationItemVersionStatus.Retired);
-                        await _unitOfWorkManager.Current.SaveChangesAsync(); // save changes to guarantee sequence of update
-                    }
-                }
+                // entity versioning is not implemented for this release -- update the existing config in place
+                await MapEntityConfigAsync(item, dbItem, context);
 
-                // create new version
-                var newItemVersion = await _entityConfigManager.CreateNewVersionAsync(dbItem);
+                dbItem.VersionStatus = statusToImport;
+                dbItem.CreatedByImport = context.ImportResult;
+                dbItem.Normalize();
 
-                // flush so MapPropertiesAsync's FirstOrDefaultAsync lookups see the properties CreateNewVersionAsync just cloned
-                await _unitOfWorkManager.Current.SaveChangesAsync();
+                await _entityConfigRepo.UpdateAsync(dbItem);
 
-                await MapEntityConfigAsync(item, newItemVersion, context);
+                await MapPropertiesAsync(dbItem, item.Properties);
 
-                // important: set status according to the context
-                newItemVersion.VersionStatus = statusToImport;
-                newItemVersion.CreatedByImport = context.ImportResult;
-                newItemVersion.Normalize();
+                await _modelConfigsCache.RemoveAsync($"{dbItem.Namespace}|{dbItem.ClassName}");
 
-                await _entityConfigRepo.UpdateAsync(newItemVersion);
-
-                await MapPropertiesAsync(newItemVersion, item.Properties);
-
-                await _modelConfigsCache.RemoveAsync($"{newItemVersion.Namespace}|{newItemVersion.ClassName}");
-
-                return newItemVersion;
+                return dbItem;
             }
             else
             {
@@ -160,7 +128,6 @@ namespace Shesha.DynamicEntities.Distribution
 
             dbItem.Label = item.Label;
             dbItem.Description = item.Description;
-            // VersionNo is owned by the version lifecycle, not the imported DTO -- do not set it here
             dbItem.VersionStatus = item.VersionStatus;
             dbItem.Suppress = item.Suppress;
 
