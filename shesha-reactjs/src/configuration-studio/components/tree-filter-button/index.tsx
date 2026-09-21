@@ -9,6 +9,9 @@ type MenuItems = Required<MenuProps>['items'];
 
 const CLEAR_KEY = '__clear-all__';
 
+/** Joins the active type names into a readable list: "A", "A and B", "A, B, and C". */
+const TYPE_LIST_FORMATTER = new Intl.ListFormat('en', { style: 'long', type: 'conjunction' });
+
 export const TreeFilterButton: FC = () => {
   const { itemTypes, itemTypeFilter, setItemTypeFilter } = useCsTree();
   const { styles } = useStyles();
@@ -53,6 +56,17 @@ export const TreeFilterButton: FC = () => {
 
   const isFiltered = itemTypeFilter.length > 0;
 
+  // Name the active types, in menu order rather than the order they were clicked. Unknown
+  // types (e.g. a filter restored from storage after a type was unregistered) are skipped.
+  const selectedNames = itemTypes
+    .filter((it) => itemTypeFilter.includes(it.itemType))
+    .map((it) => it.friendlyName);
+
+  // "A", "A and B", "A, B, and C".
+  const tooltipTitle = selectedNames.length > 0
+    ? `Showing ${TYPE_LIST_FORMATTER.format(selectedNames)} only`
+    : 'Filter by type';
+
   return (
     <Dropdown
       open={open}
@@ -67,13 +81,14 @@ export const TreeFilterButton: FC = () => {
         onClick: onMenuClick,
       }}
     >
-      <Tooltip title={isFiltered ? `Filtered by ${itemTypeFilter.length} type(s)` : 'Filter by type'}>
+      <Tooltip title={tooltipTitle}>
         <Badge count={itemTypeFilter.length} size="small" offset={[-2, 2]}>
           <Button
             className={styles.csTreeFilterButton}
             icon={<FilterOutlined />}
             type={isFiltered ? 'primary' : 'default'}
             aria-label="Filter by type"
+            size="small"
           />
         </Badge>
       </Tooltip>

@@ -9,11 +9,11 @@ import { ReactNode, useEffect } from "react";
 import { FormToolbar } from "./toolbar";
 import { useFormDesigner } from "@/providers/formDesigner";
 import { useConfigurationStudio } from "@/configuration-studio/cs/contexts";
-import { FormOutlined } from "@ant-design/icons";
+import { CsFormIcon } from "@/icons/configurationStudioIcons";
 
 export const FormDocumentDefinition: DocumentDefinition = {
   documentType: ITEM_TYPES.FORM,
-  icon: <FormOutlined />,
+  icon: <CsFormIcon />,
   Editor: (props: ItemEditorProps): ReactNode => {
     const { styles } = useMainStyles();
     const cs = useConfigurationStudio();

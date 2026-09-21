@@ -44,6 +44,21 @@ describe('getPreviewModelExtras', () => {
     expect(getPreviewModelExtras('textField')).toBeUndefined();
   });
 
+  // Charts show "Chart control properties not set correctly!" until all four are set.
+  it.each(['barChart', 'lineChart', 'pieChart', 'polarAreaChart'])(
+    'gives %s the entity and axis/value properties it needs to render',
+    (chartType) => {
+      expect(getPreviewModelExtras(chartType)).toEqual({
+        dataMode: 'entityType',
+        entityType: { name: 'DummyTable', module: 'Shesha' },
+        simpleOrPivot: 'simple',
+        axisProperty: 'country',
+        valueProperty: 'population',
+        aggregationMethod: 'sum',
+      });
+    },
+  );
+
   it('returns undefined for a missing component type', () => {
     expect(getPreviewModelExtras(undefined)).toBeUndefined();
     expect(getPreviewModelExtras('  ')).toBeUndefined();
@@ -70,6 +85,15 @@ describe('getPreviewComponentModel', () => {
       entityType: { name: 'DummyTable', module: 'Shesha' },
       displayPropName: 'city',
       fields: ['city'],
+    });
+  });
+
+  it('gives a chart every property its control checks for before rendering', () => {
+    // Mirrors the guard in chartControl.tsx - any missing one renders the warning instead of a chart.
+    expect(getPreviewComponentModel(makeDefinition('barChart'))).toMatchObject({
+      entityType: { name: 'DummyTable', module: 'Shesha' },
+      axisProperty: 'country',
+      valueProperty: 'population',
     });
   });
 

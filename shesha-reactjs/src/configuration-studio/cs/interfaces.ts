@@ -4,6 +4,7 @@ import { MoveNodePayload } from "../apis";
 import {
   CloseDocumentResponse,
   ConfigItemTreeNode,
+  FolderDraft,
   FolderTreeNode,
   ForceRenderFunc,
   IDocumentInstance,
@@ -99,6 +100,16 @@ export interface IConfigurationStudio {
   selectTreeNode: (node?: TreeNode) => void;
   setMultiSelection: (nodeIds: string[]) => Promise<void>;
   clickTreeNode: (node: TreeNode) => void;
+  /** Expand every ancestor of the node, then select and highlight it. */
+  revealAndSelectTreeNodeAsync: (node: TreeNode) => Promise<void>;
+
+  //#region inline folder editing (issue #4783)
+  /** The folder currently being named inline in the tree, if any. */
+  folderDraft: FolderDraft | undefined;
+  beginFolderDraft: (draft: FolderDraft) => void;
+  cancelFolderDraft: () => void;
+  commitFolderDraftAsync: (name: string) => Promise<void>;
+  //#endregion
 
   docs: IDocumentInstance[];
   activeDocId: string | undefined;

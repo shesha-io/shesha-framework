@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useState } from "react";
-import { CloseDocumentResponse, ConfigItemTreeNode, IDocumentInstance, ItemTypeDefinition, TreeNode } from "../models";
+import { CloseDocumentResponse, ConfigItemTreeNode, FolderDraft, IDocumentInstance, ItemTypeDefinition, TreeNode } from "../models";
 import { CsSubscriptionType, ProcessingState } from "./interfaces";
 import { useConfigurationStudio, useConfigurationStudioIfAvailable } from "./contexts";
 import { TreeProps } from "antd";
@@ -41,6 +41,8 @@ export type UseCsTreeResponse = {
   selectedNodes: TreeNode[];
   selectedItemNode?: ConfigItemTreeNode | undefined;
   onNodeExpand: OnTreeExpand;
+  /** Folder currently being named inline in the tree (issue #4783). */
+  folderDraft: FolderDraft | undefined;
 };
 export const useCsTree = (): UseCsTreeResponse => {
   const cs = useConfigurationStudio();
@@ -61,6 +63,7 @@ export const useCsTree = (): UseCsTreeResponse => {
     selectedNodes: cs.treeSelectedNodes,
     selectedItemNode: cs.treeSelectedItemNode,
     onNodeExpand: cs.onTreeNodeExpand,
+    folderDraft: cs.folderDraft,
   };
 };
 

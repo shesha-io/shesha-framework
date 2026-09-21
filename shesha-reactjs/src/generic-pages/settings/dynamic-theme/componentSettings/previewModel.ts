@@ -2,6 +2,23 @@ import { IToolboxComponent } from '@/interfaces/formDesigner';
 import { IConfigurableFormComponent } from '@/providers/form/models';
 import { isNullOrWhiteSpace } from '@/utils/nullables';
 
+/** Sample entity used to give data-driven components something to render in the preview. */
+const DUMMY_ENTITY_TYPE = { name: 'DummyTable', module: 'Shesha' };
+
+/**
+ * Charts refuse to render and show "Chart control properties not set correctly!" until they have an
+ * entity plus an axis and value property. DummyTable's country/population make a readable sample:
+ * a categorical axis and a numeric value, aggregated so repeated countries collapse into one bar.
+ */
+const chartPreviewExtras: Record<string, unknown> = {
+  dataMode: 'entityType',
+  entityType: DUMMY_ENTITY_TYPE,
+  simpleOrPivot: 'simple',
+  axisProperty: 'country',
+  valueProperty: 'population',
+  aggregationMethod: 'sum',
+};
+
 /**
  * Preview-only model properties, keyed by component type.
  *
@@ -12,10 +29,14 @@ import { isNullOrWhiteSpace } from '@/utils/nullables';
  */
 const previewModelExtrasByType: Record<string, Record<string, unknown>> = {
   autocomplete: {
-    entityType: { name: 'DummyTable', module: 'Shesha' },
+    entityType: DUMMY_ENTITY_TYPE,
     displayPropName: 'city',
     fields: ['city'],
   },
+  barChart: chartPreviewExtras,
+  lineChart: chartPreviewExtras,
+  pieChart: chartPreviewExtras,
+  polarAreaChart: chartPreviewExtras,
 };
 
 /**

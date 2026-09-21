@@ -48,9 +48,20 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
             }
             .${csHeaderRight}{
                 margin-right: 10px;
-                
+                display: flex;
+                align-items: center;
+                gap: 8px;
+
+                /* Contextual grouping: Form/Canvas -> user actions -> avatar, split by separators (issue #4783). */
                 .${prefixCls}-divider {
                     height: 24px;
+                    margin: 0 4px;
+                    border-inline-start-color: ${token.colorBorder};
+                }
+
+                /* Icons sit on the left of the label rather than centred with it. */
+                .${prefixCls}-btn > .${iconPrefixCls} + span {
+                    margin-inline-start: 6px;
                 }
             }            
         }
@@ -62,7 +73,8 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
             height: calc(100vh - ${headerHeight}px);
             overflow: hidden;
             background: ${token.colorBgContainer};
-            border-right: 1px solid ${token.colorBorderSecondary};
+            /* Darker divider so the panel reads as separate from the work area (issue #4783). */
+            border-right: 1px solid ${token.colorBorder};
             .${csNavPanelSpinner}{
                 height: 100%;
                 >.${prefixCls}-spin-container {
@@ -99,8 +111,46 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
                     .${prefixCls}-tree-treenode {
                       width: 100%;
                       max-width: 100%;
+
+                      /* Cleaner drag handle: a subtle grip that only appears on hover (issue #4783). */
                       .${prefixCls}-tree-draggable-icon {
-                        display: none;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        width: 12px;
+                        opacity: 0;
+                        cursor: grab;
+                        color: ${token.colorTextQuaternary};
+                        transition: opacity 0.2s;
+                      }
+                      &:hover .${prefixCls}-tree-draggable-icon {
+                        opacity: 1;
+                      }
+
+                      /* Darker, more emphasised selection (issue #4783). */
+                      .${prefixCls}-tree-node-content-wrapper.${prefixCls}-tree-node-selected {
+                        background-color: ${token.colorPrimaryBg};
+                        color: ${token.colorPrimaryText};
+                        font-weight: 500;
+                      }
+
+                      /* Inline folder-name editor row (issue #4783). */
+                      &.sha-cs-tree-folder-draft {
+                        .${prefixCls}-tree-node-content-wrapper {
+                          cursor: default;
+                          &:hover {
+                            background: transparent;
+                          }
+                        }
+                        .${prefixCls}-tree-title {
+                          display: block;
+                          width: 100%;
+                          /* The editor must keep its full width instead of being clipped like a label. */
+                          overflow: visible;
+                        }
+                        .${prefixCls}-tree-switcher {
+                          visibility: hidden;
+                        }
                       }
                       /* Empty-folder placeholder (filter.ts): shown as a muted hint, not hidden - display:none broke rc-virtual-list's scroll bookkeeping. */
                       &.sha-cs-tree-empty-placeholder {
@@ -149,6 +199,17 @@ export const useStyles = createStyles(({ css, cx, token, prefixCls, iconPrefixCl
             flex-grow: 1 !important;
             .${csDocTabs}{
                 height: 100%;
+                /* Reduced tab height and a darker tab-bar rule (issue #4783). */
+                >.ant-tabs-nav {
+                    margin-bottom: 0;
+                    &::before {
+                        border-bottom-color: ${token.colorBorder};
+                    }
+                    .ant-tabs-tab {
+                        padding-top: 6px;
+                        padding-bottom: 6px;
+                    }
+                }
                 >.ant-tabs-body-holder {
                     height: 100%;
                     ${sheshaStyles.thinScrollbars}

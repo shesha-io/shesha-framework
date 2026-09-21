@@ -1,6 +1,6 @@
 import { getTitleWithHighlight } from "@/configuration-studio/filter-utils";
-import { isConfigItemTreeNode, isFolderTreeNode, isNodeWithChildren, TreeNode, TreeNodeType } from "@/configuration-studio/models";
-import { renderCsTreeNode } from "@/configuration-studio/tree-utils";
+import { FOLDER_DRAFT_NODE_KEY, FolderDraft, isConfigItemTreeNode, isFolderTreeNode, isNodeWithChildren, TreeNode, TreeNodeType } from "@/configuration-studio/models";
+import { renderCsTreeNode, renderFolderDraftIcon, renderFolderDraftNode } from "@/configuration-studio/tree-utils";
 import { isDefined, isNullOrWhiteSpace } from "@/utils/nullables";
 import { useMemo } from "react";
 
@@ -27,7 +27,53 @@ const createPlaceholderNode = (parent: TreeNode): TreeNode => ({
 const withPlaceholderIfEmpty = (node: TreeNode, children: TreeNode[]): TreeNode[] =>
   children.length > 0 ? children : [createPlaceholderNode(node)];
 
-export const useFilteredTreeNodes = (treeNodes: TreeNode[], quickSearch?: string, itemTypeFilter: string[] = emptyItemTypes): TreeNode[] => {
+/** Synthetic node hosting the inline folder-name editor (issue #4783). */
+const createFolderDraftNode = (draft: FolderDraft): TreeNode => ({
+  id: FOLDER_DRAFT_NODE_KEY,
+  key: FOLDER_DRAFT_NODE_KEY,
+  parentId: draft.parentFolderId,
+  moduleId: draft.moduleId,
+  name: draft.initialName,
+  label: draft.initialName,
+  title: renderFolderDraftNode(draft.initialName),
+  icon: renderFolderDraftIcon(),
+  nodeType: TreeNodeType.FolderDraft,
+  selectable: false,
+  checkable: false,
+  isLeaf: true,
+  className: 'sha-cs-tree-folder-draft',
+});
+
+/**
+ * Insert the draft row into its container. When renaming, the draft replaces the folder being
+ * renamed; when creating, it is appended to the target container's children. The container is
+ * addressed by folder id, or by module id when creating at the module root.
+ */
+const insertFolderDraft = (nodes: TreeNode[], draft: FolderDraft): TreeNode[] => {
+  const draftNode = createFolderDraftNode(draft);
+  const containerId = draft.parentFolderId ?? draft.moduleId;
+
+  const loop = (data: TreeNode[]): TreeNode[] => data.map((node) => {
+    // Rename: swap the target folder for the editor row.
+    if (isDefined(draft.folderId) && node.id === draft.folderId)
+      return draftNode;
+
+    if (!isNodeWithChildren(node))
+      return node;
+
+    if (node.id === containerId && !isDefined(draft.folderId)) {
+      // Drop the "Empty" placeholder - the draft row now occupies the folder.
+      const realChildren = node.children.filter((c: TreeNode) => c.nodeType !== TreeNodeType.Placeholder);
+      return { ...node, children: [...loop(realChildren), draftNode] };
+    }
+
+    return { ...node, children: loop(node.children) };
+  });
+
+  return loop(nodes);
+};
+
+export const useFilteredTreeNodes = (treeNodes: TreeNode[], quickSearch?: string, itemTypeFilter: string[] = emptyItemTypes, folderDraft?: FolderDraft | undefined): TreeNode[] => {
   const filteredTreeNodes = useMemo<TreeNode[]>(() => {
     if (treeNodes.length === 0)
       return emptyNodes;
@@ -99,5 +145,9 @@ export const useFilteredTreeNodes = (treeNodes: TreeNode[], quickSearch?: string
     return loop(treeNodes);
   }, [treeNodes, quickSearch, itemTypeFilter]);
 
-  return filteredTreeNodes;
+  // Applied after filtering so the editor row is never filtered out of its own container.
+  return useMemo<TreeNode[]>(
+    () => isDefined(folderDraft) ? insertFolderDraft(filteredTreeNodes, folderDraft) : filteredTreeNodes,
+    [filteredTreeNodes, folderDraft],
+  );
 };
